@@ -144,6 +144,10 @@ ArCoreGl::~ArCoreGl() {
   CloseBindingsIfOpen();
 }
 
+bool ArCoreGl::CanRenderDOMContent() {
+  return use_ar_compositor_;
+}
+
 void ArCoreGl::Initialize(
     ArCoreSessionUtils* session_utils,
     ArCoreFactory* arcore_factory,
@@ -197,6 +201,17 @@ void ArCoreGl::Initialize(
         depth_options->data_format_preferences);
   }
 
+  device::DomOverlaySetup dom_setup = device::DomOverlaySetup::kNone;
+  if (CanRenderDOMContent()) {
+    if (base::Contains(required_features,
+                       device::mojom::XRSessionFeature::DOM_OVERLAY)) {
+      dom_setup = device::DomOverlaySetup::kRequired;
+    } else if (base::Contains(optional_features,
+                              device::mojom::XRSessionFeature::DOM_OVERLAY)) {
+      dom_setup = device::DomOverlaySetup::kOptional;
+    }
+  }
+
   arcore_ = arcore_factory->Create();
   base::Optional<ArCore::InitializeResult> maybe_initialize_result =
       arcore_->Initialize(application_context, required_features,
@@ -222,7 +237,8 @@ void ArCoreGl::Initialize(
                                    weak_ptr_factory_.GetWeakPtr()));
 
   if (use_ar_compositor_) {
-    InitializeArCompositor(surface_handle, root_window, xr_frame_sink_client);
+    InitializeArCompositor(surface_handle, root_window, xr_frame_sink_client,
+                           dom_setup);
     webxr_->SetStateMachineType(
         WebXrPresentationState::StateMachineType::kVizComposited);
   } else {
@@ -239,7 +255,8 @@ void ArCoreGl::Initialize(
 
 void ArCoreGl::InitializeArCompositor(gpu::SurfaceHandle surface_handle,
                                       ui::WindowAndroid* root_window,
-                                      XrFrameSinkClient* xr_frame_sink_client) {
+                                      XrFrameSinkClient* xr_frame_sink_client,
+                                      device::DomOverlaySetup dom_setup) {
   ArCompositorFrameSink::BeginFrameCallback begin_frame_callback =
       base::BindRepeating(&ArCoreGl::OnBeginFrame,
                           weak_ptr_factory_.GetWeakPtr());
@@ -271,9 +288,12 @@ void ArCoreGl::InitializeArCompositor(gpu::SurfaceHandle surface_handle,
       gl_thread_task_runner_, begin_frame_callback,
       compositor_received_frame_callback, rendering_finished_callback,
       can_issue_new_frame_callback);
+
   ar_compositor_->Initialize(
       surface_handle, root_window, camera_image_size_, xr_frame_sink_client,
-      base::BindOnce(&ArCoreGl::OnInitialized, weak_ptr_factory_.GetWeakPtr()),
+      dom_setup,
+      base::BindOnce(&ArCoreGl::OnArCompositorInitialized,
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ArCoreGl::OnBindingDisconnect,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -281,6 +301,25 @@ void ArCoreGl::InitializeArCompositor(gpu::SurfaceHandle surface_handle,
 void ArCoreGl::OnArImageTransportReady() {
   DVLOG(1) << __func__;
   is_image_transport_ready_ = true;
+  OnInitialized();
+}
+
+void ArCoreGl::OnArCompositorInitialized(bool initialized) {
+  DVLOG(1) << __func__ << " intialized=" << initialized;
+  if (!initialized) {
+    std::move(initialized_callback_).Run(base::nullopt);
+    return;
+  }
+
+  // Note that this erasing is acceptable, as the ArCompositor would not return
+  // that it was initialized successfully if it was told that initializing the
+  // DOM was required.
+  if (CanRenderDOMContent() &&
+      IsFeatureEnabled(device::mojom::XRSessionFeature::DOM_OVERLAY) &&
+      !ar_compositor_->CanCompositeDomContent()) {
+    enabled_features_.erase(device::mojom::XRSessionFeature::DOM_OVERLAY);
+  }
+
   OnInitialized();
 }
 

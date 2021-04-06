@@ -10,13 +10,18 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/compositor/surface_utils.h"
+#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 
 namespace content {
-XrFrameSinkClientImpl::XrFrameSinkClientImpl()
-    : ui_thread_task_runner_(GetUIThreadTaskRunner({})) {
+XrFrameSinkClientImpl::XrFrameSinkClientImpl(int32_t render_process_id,
+                                             int32_t render_frame_id)
+    : ui_thread_task_runner_(GetUIThreadTaskRunner({})),
+      render_process_id_(render_process_id),
+      render_frame_id_(render_frame_id) {
   DCHECK(IsOnUiThread())
       << "XrFrameSinkClientImpl must be constructed on the UI thread.";
 }
@@ -51,8 +56,44 @@ void XrFrameSinkClientImpl::SurfaceDestroyed() {
   root_frame_sink_id_ = viz::FrameSinkId();
 }
 
+base::Optional<viz::SurfaceId> XrFrameSinkClientImpl::GetDOMSurface() {
+  base::AutoLock lock(dom_surface_lock_);
+  return dom_surface_id_;
+}
+
+void XrFrameSinkClientImpl::ScheduleUpdateDOMSurface() {
+  ui_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&XrFrameSinkClientImpl::UpdateDOMSurface,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void XrFrameSinkClientImpl::UpdateDOMSurface() {
+  // The GetView call later will fail if we aren't on the UI thread, so save a
+  // bit of time by just failing now for debugging purposes.
+  DCHECK(IsOnUiThread());
+  base::AutoLock lock(dom_surface_lock_);
+
+  RenderFrameHost* render_frame_host =
+      RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+  if (!render_frame_host) {
+    dom_surface_id_ = base::nullopt;
+    return;
+  }
+
+  RenderWidgetHostViewBase* view =
+      static_cast<RenderWidgetHostViewBase*>(render_frame_host->GetView());
+
+  if (!view) {
+    dom_surface_id_ = base::nullopt;
+    return;
+  }
+
+  dom_surface_id_ = view->GetCurrentSurfaceId();
+}
+
 void XrFrameSinkClientImpl::InitializeRootCompositorFrameSink(
     viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
+    device::DomOverlaySetup dom_setup,
     base::OnceClosure on_initialized) {
   DCHECK(!initialized_);
   DVLOG(1) << __func__;
@@ -61,11 +102,12 @@ void XrFrameSinkClientImpl::InitializeRootCompositorFrameSink(
       FROM_HERE,
       base::BindOnce(&XrFrameSinkClientImpl::InitializeOnUiThread,
                      weak_ptr_factory_.GetWeakPtr(), std::move(root_params),
-                     std::move(on_initialized)));
+                     dom_setup, std::move(on_initialized)));
 }
 
 void XrFrameSinkClientImpl::InitializeOnUiThread(
     viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
+    device::DomOverlaySetup dom_setup,
     base::OnceClosure on_initialized) {
   // AllocateFrameSinkId needs to be called from the UI thread.
   DCHECK(IsOnUiThread());
@@ -78,6 +120,14 @@ void XrFrameSinkClientImpl::InitializeOnUiThread(
       root_params->frame_sink_id, this, viz::ReportFirstSurfaceActivation::kNo);
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
       std::move(root_params));
+
+  if (dom_setup != device::DomOverlaySetup::kNone) {
+    UpdateDOMSurface();
+    if (dom_surface_id_ && dom_surface_id_->is_valid()) {
+      GetHostFrameSinkManager()->RegisterFrameSinkHierarchy(
+          root_frame_sink_id_, dom_surface_id_->frame_sink_id());
+    }
+  }
 
   initialized_ = true;
   std::move(on_initialized).Run();

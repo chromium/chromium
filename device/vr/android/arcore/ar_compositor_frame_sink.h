@@ -89,8 +89,9 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   void Initialize(gpu::SurfaceHandle surface_handle,
                   ui::WindowAndroid* root_window,
                   const gfx::Size& frame_size,
-                  device::XrFrameSinkClient* xr_frame_sink_client,
-                  base::OnceClosure on_initialized,
+                  XrFrameSinkClient* xr_frame_sink_client,
+                  DomOverlaySetup dom_setup,
+                  base::OnceCallback<void(bool)> on_initialized,
                   base::OnceClosure on_bindings_disconnect);
 
   // This will tick the ExternalBeginFrameController to start a frame in the viz
@@ -105,10 +106,15 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   void SubmitFrame(WebXrFrame* xr_frame, FrameType frame_type);
   void DidNotProduceFrame(WebXrFrame* xr_frame);
 
+  // For the purposes of our callers we *can* composite DOM content as long as
+  // we think we *should* try to do so. This prevents issues with this check if
+  // we temporarily have an invalid surface id for some reason.
+  bool CanCompositeDomContent() { return should_composite_dom_overlay_; }
+
  private:
   bool IsOnGlThread() const;
 
-  void OnRootCompositorFrameSinkReady();
+  void OnRootCompositorFrameSinkReady(DomOverlaySetup dom_setup);
 
   viz::CompositorFrame CreateFrame(WebXrFrame* xr_frame, FrameType frame_type);
 
@@ -131,7 +137,7 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   void CloseBindingsIfOpen();
 
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;
-  device::XrFrameSinkClient* xr_frame_sink_client_;
+  XrFrameSinkClient* xr_frame_sink_client_;
   gfx::Size frame_size_;
   bool can_issue_new_begin_frame_ = true;
   bool is_initialized_ = false;
@@ -142,7 +148,7 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   // it could be 2*Swapchain size in a worst case.
   base::flat_map<viz::ResourceId, WebXrFrame*> id_to_frame_map_;
 
-  base::OnceClosure on_initialized_;
+  base::OnceCallback<void(bool)> on_initialized_;
   BeginFrameCallback on_begin_frame_;
   CompositorReceivedFrameCallback on_compositor_received_frame_;
   RenderingFinishedCallback on_rendering_finished_;
@@ -154,6 +160,7 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   viz::FrameTokenGenerator next_frame_token_;
   viz::ResourceIdGenerator resource_id_generator_;
   uint64_t next_begin_frame_id_ = 1;
+  bool should_composite_dom_overlay_ = false;
 
   // Mojom remotes and helpers
   mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private_;

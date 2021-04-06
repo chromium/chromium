@@ -59,14 +59,17 @@ bool IsEnabled(const base::CommandLine* command_line,
 }
 #endif
 
-std::unique_ptr<device::XrFrameSinkClient> FrameSinkClientFactory() {
+std::unique_ptr<device::XrFrameSinkClient> FrameSinkClientFactory(
+    int32_t render_process_id,
+    int32_t render_frame_id) {
   // The XrFrameSinkClientImpl needs to be constructed (and destructed) on the
   // main thread. Currently, the only runtime that uses this is ArCore, which
   // runs on the browser main thread (which per comments in
   // content/public/browser/browser_thread.h is also the UI thread).
   DCHECK(GetUIThreadTaskRunner({})->BelongsToCurrentThread())
       << "Must construct XrFrameSinkClient from UI thread";
-  return std::make_unique<XrFrameSinkClientImpl>();
+  return std::make_unique<XrFrameSinkClientImpl>(render_process_id,
+                                                 render_frame_id);
 }
 
 }  // namespace

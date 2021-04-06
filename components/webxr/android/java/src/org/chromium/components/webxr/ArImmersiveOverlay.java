@@ -57,7 +57,8 @@ public class ArImmersiveOverlay
     private Integer mPrimaryPointerId;
 
     public void show(@NonNull ArCompositorDelegate compositorDelegate,
-            @NonNull WebContents webContents, @NonNull ArCoreJavaUtils caller, boolean useOverlay) {
+            @NonNull WebContents webContents, @NonNull ArCoreJavaUtils caller, boolean useOverlay,
+            boolean canRenderDomContent) {
         if (DEBUG_LOGS) Log.i(TAG, "constructor");
         mArCoreJavaUtils = caller;
 
@@ -72,7 +73,7 @@ public class ArImmersiveOverlay
         // Choose a concrete implementation to create a drawable Surface and make it fullscreen.
         // It forwards SurfaceHolder callbacks and touch events to this ArImmersiveOverlay object.
         if (useOverlay) {
-            mSurfaceUi = new SurfaceUiCompositor();
+            mSurfaceUi = new SurfaceUiCompositor(canRenderDomContent);
         } else {
             mSurfaceUi = new SurfaceUiDialog();
         }
@@ -175,12 +176,24 @@ public class ArImmersiveOverlay
     private class SurfaceUiCompositor implements SurfaceUiWrapper {
         private SurfaceView mSurfaceView;
         private WebContentsObserver mWebContentsObserver;
+        private boolean mDomSurfaceNeedsConfiguring;
 
         @SuppressLint("ClickableViewAccessibility")
-        public SurfaceUiCompositor() {
+        public SurfaceUiCompositor(boolean canRenderDomContent) {
+            // If we can't render the dom content on top of the camera/gl layers manually, then
+            // we need to configure the DOM content's surface view to overlay ours. We need to
+            // track this so that we ensure we teardown everything we need to teardown as well.
+            mDomSurfaceNeedsConfiguring = !canRenderDomContent;
+
+            // Enable alpha channel for the compositor and make the background transparent.
+            // Note that this needs to happen before we create and parent our SurfaceView, so that
+            // it ends up on top if the Dom Surface did not need configuring.
+            if (DEBUG_LOGS) {
+                Log.i(TAG, "calling mArCompositorDelegate.setOverlayImmersiveArMode(true)");
+            }
+            mArCompositorDelegate.setOverlayImmersiveArMode(true, mDomSurfaceNeedsConfiguring);
+
             mSurfaceView = new SurfaceView(mActivity);
-            // Keep the camera layer at "default" Z order. Chrome's compositor SurfaceView is in
-            // OverlayVideoMode, putting it in front of that, but behind other non-SurfaceView UI.
             mSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
             mSurfaceView.getHolder().addCallback(ArImmersiveOverlay.this);
             mSurfaceView.setKeepScreenOn(true);
@@ -192,13 +205,6 @@ public class ArImmersiveOverlay
             View content = mActivity.getWindow().findViewById(android.R.id.content);
             ViewGroup group = (ViewGroup) content.getParent();
             group.addView(mSurfaceView);
-
-            // Enable alpha channel for the compositor and make the background
-            // transparent. (A variant of CompositorView::SetOverlayVideoMode.)
-            if (DEBUG_LOGS) {
-                Log.i(TAG, "calling mArCompositorDelegate.setOverlayImmersiveArMode(true)");
-            }
-            mArCompositorDelegate.setOverlayImmersiveArMode(true);
 
             mWebContentsObserver = new WebContentsObserver() {
                 @Override
@@ -234,7 +240,7 @@ public class ArImmersiveOverlay
             ViewGroup group = (ViewGroup) content.getParent();
             group.removeView(mSurfaceView);
             mSurfaceView = null;
-            mArCompositorDelegate.setOverlayImmersiveArMode(false);
+            mArCompositorDelegate.setOverlayImmersiveArMode(false, mDomSurfaceNeedsConfiguring);
         }
     }
 

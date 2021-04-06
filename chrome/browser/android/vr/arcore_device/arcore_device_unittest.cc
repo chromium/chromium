@@ -99,6 +99,7 @@ class StubArCoreSessionUtils : public ArCoreSessionUtils {
   void RequestArSession(int render_process_id,
                         int render_frame_id,
                         bool use_overlay,
+                        bool can_render_dom_content,
                         SurfaceReadyCallback ready_callback,
                         SurfaceTouchCallback touch_callback,
                         SurfaceDestroyedCallback destroyed_callback) override {
@@ -233,6 +234,7 @@ class StubXrFrameSinkClient : public XrFrameSinkClient {
   // device::XrFrameSinkClient
   void InitializeRootCompositorFrameSink(
       viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
+      DomOverlaySetup dom_setup,
       base::OnceClosure on_initialized) override {
     // The StubCompositorFrameSink must be created/destroyed on the same thread
     // as the mojo bindings in RootCompositorFrameSinkParamsPtr were on. Since
@@ -245,13 +247,17 @@ class StubXrFrameSinkClient : public XrFrameSinkClient {
     std::move(on_initialized).Run();
   }
   void SurfaceDestroyed() override {}
+  base::Optional<viz::SurfaceId> GetDOMSurface() override {
+    return base::nullopt;
+  }
+  void ScheduleUpdateDOMSurface() override {}
 
  private:
   std::unique_ptr<StubCompositorFrameSink> compositor_frame_sink_;
   scoped_refptr<base::SingleThreadTaskRunner> mojo_thread_task_runner_;
 };
 
-std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory() {
+std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory(int32_t, int32_t) {
   return std::make_unique<StubXrFrameSinkClient>();
 }
 

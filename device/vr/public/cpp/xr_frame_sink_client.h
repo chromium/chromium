@@ -8,9 +8,22 @@
 #include <memory>
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/optional.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h"
 
+namespace viz {
+class SurfaceId;
+}  // namespace viz
 namespace device {
+
+// Helper enum used to describe if DOMOverlay should attempt to be setup, and if
+// it should, if initialization should fail if it is unable to be setup.
+enum DomOverlaySetup {
+  kNone,
+  kRequired,
+  kOptional,
+};
+
 // There are a handful of methods to create/register RootCompositorFrameSinks
 // that must be run on the UI thread; however, the interfaces that need to be
 // called are restricted to //content. This interface is designed to allow
@@ -22,20 +35,38 @@ class COMPONENT_EXPORT(VR_PUBLIC_CPP) XrFrameSinkClient {
   virtual ~XrFrameSinkClient();
 
   // Registers/sets up a RootCompositorFrameSink. Note that on_initialized will
-  // be run on the UI thread.
+  // be run on the UI thread. If a SurfaceId is returned via on_initialized, it
+  // means that the compositor can handle rendering DOM content.
   virtual void InitializeRootCompositorFrameSink(
       viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
+      DomOverlaySetup dom_setup,
       base::OnceClosure on_initialized) = 0;
 
   // Used to shutdown a RootCompositorFrameSink upon its drawing surface being
   // destroyed. This must be called from the UI thread.
   virtual void SurfaceDestroyed() = 0;
+
+  // Used to get the SurfaceId of the DOM content to be rendered.
+  // May be called from any thread.
+  virtual base::Optional<viz::SurfaceId> GetDOMSurface() = 0;
+
+  // Since the DOMSurface can only be queried on the UI thread, this method
+  // (callable from any thread), provides a way to schedule a task to check for
+  // changes to the DOM SurfaceId. Note that it doesn't take a callback to
+  // notify when the update has finished, as we don't want to block frames on
+  // waiting for this update. (It's better to submit a frame on-time with either
+  // outdated or no DOM surface, than it is to delay for the DOM Surface to be
+  // finished getting updated).
+  // TODO(https://crbug.com/1195461): Investigate creating an Observer for the
+  // DOM SurfaceID that we can subscribe to, rather than forcing callers to call
+  // this function.
+  virtual void ScheduleUpdateDOMSurface() = 0;
 };
 
 // This factory must be run on the UI thread, so that the XrFrameSinkClient can
 // be created and destroyed on the UI thread.
-using XrFrameSinkClientFactory =
-    base::RepeatingCallback<std::unique_ptr<XrFrameSinkClient>()>;
+using XrFrameSinkClientFactory = base::RepeatingCallback<std::unique_ptr<
+    XrFrameSinkClient>(int32_t render_process_id, int32_t render_frame_id)>;
 }  // namespace device
 
 #endif  // DEVICE_VR_PUBLIC_CPP_XR_FRAME_SINK_CLIENT_H_

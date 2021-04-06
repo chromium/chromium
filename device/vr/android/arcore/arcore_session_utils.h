@@ -50,6 +50,7 @@ class ArCoreSessionUtils {
       int render_process_id,
       int render_frame_id,
       bool use_overlay,
+      bool can_render_dom_content,
       SurfaceReadyCallback ready_callback,
       SurfaceTouchCallback touch_callback,
       SurfaceDestroyedCallback destroyed_callback) = 0;

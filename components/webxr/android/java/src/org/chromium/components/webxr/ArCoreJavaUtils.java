@@ -82,12 +82,12 @@ public class ArCoreJavaUtils {
 
     @CalledByNative
     private void startSession(final ArCompositorDelegateProvider compositorDelegateProvider,
-            final WebContents webContents, boolean useOverlay) {
+            final WebContents webContents, boolean useOverlay, boolean canRenderDomContent) {
         if (DEBUG_LOGS) Log.i(TAG, "startSession");
         mArImmersiveOverlay = new ArImmersiveOverlay();
         sActiveSessionInstance = this;
-        mArImmersiveOverlay.show(
-                compositorDelegateProvider.create(webContents), webContents, this, useOverlay);
+        mArImmersiveOverlay.show(compositorDelegateProvider.create(webContents), webContents, this,
+                useOverlay, canRenderDomContent);
     }
 
     @CalledByNative

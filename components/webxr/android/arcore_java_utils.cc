@@ -41,6 +41,7 @@ void ArCoreJavaUtils::RequestArSession(
     int render_process_id,
     int render_frame_id,
     bool use_overlay,
+    bool can_render_dom_content,
     device::SurfaceReadyCallback ready_callback,
     device::SurfaceTouchCallback touch_callback,
     device::SurfaceDestroyedCallback destroyed_callback) {
@@ -54,7 +55,7 @@ void ArCoreJavaUtils::RequestArSession(
   Java_ArCoreJavaUtils_startSession(
       env, j_arcore_java_utils_, compositor_delegate_provider_.GetJavaObject(),
       webxr::GetJavaWebContents(render_process_id, render_frame_id),
-      use_overlay);
+      use_overlay, can_render_dom_content);
 }
 
 void ArCoreJavaUtils::EndSession() {

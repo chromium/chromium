@@ -27,8 +27,8 @@ public class ArCompositorDelegateImpl implements ArCompositorDelegate {
     }
 
     @Override
-    public void setOverlayImmersiveArMode(boolean enabled) {
-        mCompositorView.setOverlayImmersiveArMode(enabled);
+    public void setOverlayImmersiveArMode(boolean enabled, boolean domSurfaceNeedsConfiguring) {
+        mCompositorView.setOverlayImmersiveArMode(enabled, domSurfaceNeedsConfiguring);
     }
 
     @Override

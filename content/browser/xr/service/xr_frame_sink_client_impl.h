@@ -10,7 +10,10 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "base/synchronization/lock.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h"
@@ -26,22 +29,25 @@ namespace content {
 class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
                               viz::HostFrameSinkClient {
  public:
-  XrFrameSinkClientImpl();
+  XrFrameSinkClientImpl(int32_t render_process_id, int32_t render_frame_id);
   ~XrFrameSinkClientImpl() override;
 
   // device::XrFrameSinkClient:
   void InitializeRootCompositorFrameSink(
       viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
+      device::DomOverlaySetup dom_setup,
       base::OnceClosure on_initialized) override;
   void SurfaceDestroyed() override;
-
-  viz::FrameSinkId root_frame_sink_id() const { return root_frame_sink_id_; }
+  base::Optional<viz::SurfaceId> GetDOMSurface() override;
+  void ScheduleUpdateDOMSurface() override;
 
  private:
   bool IsOnUiThread() const;
   void InitializeOnUiThread(
       viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
+      device::DomOverlaySetup dom_setup,
       base::OnceClosure on_initialized);
+  void UpdateDOMSurface();
 
   // viz::HostFrameSinkClient:
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
@@ -50,9 +56,14 @@ class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
                            base::TimeTicks activation_time) override {}
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
+  int32_t render_process_id_;
+  int32_t render_frame_id_;
 
   viz::FrameSinkId root_frame_sink_id_;
   bool initialized_ = false;
+
+  base::Optional<viz::SurfaceId> dom_surface_id_;
+  base::Lock dom_surface_lock_;
 
   // Must be last so that it will be invalidated before any other members.
   base::WeakPtrFactory<XrFrameSinkClientImpl> weak_ptr_factory_{this};

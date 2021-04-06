@@ -139,6 +139,12 @@ void ArCoreDevice::RequestSession(
   // OnSessionEnded().
   DCHECK(mailbox_bridge_);
 
+  // We create the FrameSinkClient here and clear it in OnSessionEnded.
+  DCHECK(!frame_sink_client_);
+  frame_sink_client_ = xr_frame_sink_client_factory_.Run(
+      options->render_process_id, options->render_frame_id);
+  DCHECK(frame_sink_client_);
+
   for (auto& image : options->tracked_images) {
     DVLOG(3) << __func__ << ": tracked image size_in_pixels="
              << image->size_in_pixels.ToString();
@@ -164,8 +170,11 @@ void ArCoreDevice::OnGlThreadReady(int render_process_id,
   auto destroyed_callback =
       base::BindOnce(&ArCoreDevice::OnDrawingSurfaceDestroyed, GetWeakPtr());
 
+  bool can_render_dom_content =
+      session_state_->arcore_gl_thread_->GetArCoreGl()->CanRenderDOMContent();
+
   arcore_session_utils_->RequestArSession(
-      render_process_id, render_frame_id, use_overlay,
+      render_process_id, render_frame_id, use_overlay, can_render_dom_content,
       std::move(ready_callback), std::move(touch_callback),
       std::move(destroyed_callback));
 }
@@ -365,7 +374,6 @@ void ArCoreDevice::RequestArCoreGlInitialization(
     // up once that initialization completes. We set is_arcore_gl_initialized_
     // in the callback to block operations that require it to be ready.
     auto rotation = static_cast<display::Display::Rotation>(drawing_rotation);
-    frame_sink_client_ = xr_frame_sink_client_factory_.Run();
     PostTaskToGlThread(base::BindOnce(
         &ArCoreGl::Initialize,
         session_state_->arcore_gl_thread_->GetArCoreGl()->GetWeakPtr(),

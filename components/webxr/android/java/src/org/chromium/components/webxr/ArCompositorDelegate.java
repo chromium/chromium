@@ -14,7 +14,7 @@ public interface ArCompositorDelegate {
     /**
      * Enables/disables immersive AR mode in the compositor.
      */
-    void setOverlayImmersiveArMode(boolean enabled);
+    void setOverlayImmersiveArMode(boolean enabled, boolean domSurfaceNeedsConfiguring);
 
     /**
      * Dispatches a touch event that was consumed by the immersive AR overlay.

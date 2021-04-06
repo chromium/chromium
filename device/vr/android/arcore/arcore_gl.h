@@ -118,6 +118,11 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
     return gl_thread_task_runner_;
   }
 
+  // Used to indicate whether or not the ArCoreGl can handle rendering DOM
+  // content or if "tricks" like ensuring that a separate layer with the DOM
+  // content are rendered over top of the ArCoreGl content need to be used.
+  bool CanRenderDOMContent();
+
   // mojom::XRFrameDataProvider
   void GetFrameData(mojom::XRFrameDataRequestOptionsPtr options,
                     GetFrameDataCallback callback) override;
@@ -204,8 +209,10 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   bool InitializeGl(gfx::AcceleratedWidget drawing_widget);
   void InitializeArCompositor(gpu::SurfaceHandle surface_handle,
                               ui::WindowAndroid* root_window,
-                              XrFrameSinkClient* xr_frame_sink_client);
+                              XrFrameSinkClient* xr_frame_sink_client,
+                              device::DomOverlaySetup dom_setup);
   void OnArImageTransportReady();
+  void OnArCompositorInitialized(bool initialized);
   void OnInitialized();
   bool IsOnGlThread() const;
   void CopyCameraImageToFramebuffer();

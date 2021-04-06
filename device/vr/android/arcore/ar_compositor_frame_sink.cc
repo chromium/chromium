@@ -80,7 +80,8 @@ void ArCompositorFrameSink::Initialize(
     ui::WindowAndroid* root_window,
     const gfx::Size& frame_size,
     device::XrFrameSinkClient* xr_frame_sink_client,
-    base::OnceClosure on_initialized,
+    DomOverlaySetup dom_setup,
+    base::OnceCallback<void(bool)> on_initialized,
     base::OnceClosure on_bindings_disconnect) {
   DCHECK(IsOnGlThread());
   DCHECK(!is_initialized_);
@@ -121,11 +122,11 @@ void ArCompositorFrameSink::Initialize(
   allocator_.GenerateId();
 
   xr_frame_sink_client_->InitializeRootCompositorFrameSink(
-      std::move(root_params),
+      std::move(root_params), dom_setup,
       base::BindPostTask(
           gl_thread_task_runner_,
           base::BindOnce(&ArCompositorFrameSink::OnRootCompositorFrameSinkReady,
-                         weak_ptr_factory_.GetWeakPtr())));
+                         weak_ptr_factory_.GetWeakPtr(), dom_setup)));
 
   // Note that since we own these remotes, Unretained(this) is okay, since they
   // will be destroyed (and thus unable to call the disconnect handler), before
@@ -140,17 +141,32 @@ void ArCompositorFrameSink::Initialize(
       &ArCompositorFrameSink::OnBindingsDisconnect, base::Unretained(this)));
 }
 
-void ArCompositorFrameSink::OnRootCompositorFrameSinkReady() {
+void ArCompositorFrameSink::OnRootCompositorFrameSinkReady(
+    DomOverlaySetup dom_setup) {
   DVLOG(1) << __func__;
   DCHECK(IsOnGlThread());
   DCHECK(!is_initialized_);
+
+  if (dom_setup != DomOverlaySetup::kNone) {
+    // If the frame sink client doesn't have a valid SurfaceId at this point,
+    // then the compositor hierarchy did not get set up, which means that we'll
+    // be unable to composite DOM content.
+    base::Optional<viz::SurfaceId> dom_surface =
+        xr_frame_sink_client_->GetDOMSurface();
+    if (dom_surface && dom_surface->is_valid()) {
+      should_composite_dom_overlay_ = true;
+    } else if (dom_setup == DomOverlaySetup::kRequired) {
+      std::move(on_initialized_).Run(false);
+      return;
+    }
+  }
 
   display_private_->Resize(frame_size_);
   display_private_->SetDisplayVisible(true);
   sink_remote_->SetNeedsBeginFrame(true);
 
   is_initialized_ = true;
-  std::move(on_initialized_).Run();
+  std::move(on_initialized_).Run(true);
 }
 
 void ArCompositorFrameSink::RequestBeginFrame(base::TimeDelta interval,
@@ -163,6 +179,14 @@ void ArCompositorFrameSink::RequestBeginFrame(base::TimeDelta interval,
       << "Previous frame must finish being submitted before a new frame can be "
          "requested.";
   DVLOG(3) << __func__;
+
+  // If we should be compositing the DOM content schedule an update for the
+  // surface id now.
+  // TODO(https://crbug.com/1195461): Switch XrFrameSinkClient to an Observer
+  // so that this scheduling becomes unnecessary.
+  if (should_composite_dom_overlay_) {
+    xr_frame_sink_client_->ScheduleUpdateDOMSurface();
+  }
 
   // Note that the Unretained(this) below is okay, since if this is destroyed,
   // the remote will be closed and the callback is guaranteed to not be run.
@@ -332,9 +356,28 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
   // 2) The GL(WebXr) content from the renderer
   // 3) The camera image
 
-  // TODO(https://crbug.com/1182864): Integrate the DOM content with the
-  // viz::Compositor code directly, rather than relying on it's SurfaceView
-  // overlaying ours.
+  // First the DOM, if it's enabled
+  if (should_composite_dom_overlay_) {
+    auto dom_surface_id = xr_frame_sink_client_->GetDOMSurface();
+    if (dom_surface_id && dom_surface_id->is_valid()) {
+      viz::SharedQuadState* dom_quad_state =
+          render_pass->CreateAndAppendSharedQuadState();
+      dom_quad_state->SetAll(
+          gfx::Transform(),
+          /*quad_layer_rect=*/output_rect,
+          /*visible_quad_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
+          /*clip_rect=*/gfx::Rect(),
+          /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
+          SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+
+      viz::SurfaceDrawQuad* dom_quad =
+          render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
+      dom_quad->SetNew(dom_quad_state, gfx::Rect(output_rect.size()),
+                       gfx::Rect(output_rect.size()),
+                       viz::SurfaceRange(*dom_surface_id), SK_ColorTRANSPARENT,
+                       /*stretch_content_to_fill_bounds=*/true);
+    }
+  }
 
   // Setup some variables for the SharedQuadState that are the same for the
   // Camera/Renderer
