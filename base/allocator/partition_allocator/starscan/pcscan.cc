@@ -1307,17 +1307,10 @@ void PCScanTask::ScanPartitions() {
 }
 
 void PCScanTask::SynchronizeAllScanningThreads() {
-  {
-    std::unique_lock<std::mutex> lock(mutex_);
-    condvar_.wait(lock, [this] {
-      return !number_of_scanning_threads_.load(std::memory_order_relaxed);
-    });
-  }
-  // Notify mutators that scan is done and there is no need to enter
-  // or reenter the safepoint. This must be acquire-release to make sure
-  // that scanning has indeed finished.
-  pcscan_.state_.store(PCScan::State::kSweepingAndFinishing,
-                       std::memory_order_release);
+  std::unique_lock<std::mutex> lock(mutex_);
+  condvar_.wait(lock, [this] {
+    return !number_of_scanning_threads_.load(std::memory_order_relaxed);
+  });
 }
 
 void PCScanTask::SweepQuarantine() {
@@ -1433,6 +1426,11 @@ void PCScanTask::RunFromScanner() {
       }
     }
     SynchronizeAllScanningThreads();
+    // Notify mutators that scan is done and there is no need to enter
+    // or reenter the safepoint. This must be acquire-release to make sure
+    // that scanning has indeed finished.
+    pcscan_.state_.store(PCScan::State::kSweepingAndFinishing,
+                         std::memory_order_release);
     {
       // Sweep unreachable quarantined objects.
       StatsCollector::ScannerScope sweep_scope(
