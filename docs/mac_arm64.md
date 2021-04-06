@@ -52,7 +52,7 @@ get updates on progress.
 
 ### Universal Builds
 
-A “universal” (or “fat”) `.app` can be created from distinct x86_64 and arm64
+A “universal” (or “fat”) `.app` can be created from distinct x86\_64 and arm64
 builds produced from the same source version. Chromium has a `universalizer.py`
 tool that can then be used to merge the two builds into a single universal
 `.app`.
@@ -70,10 +70,10 @@ all-encompassing `gn` configuration because:
 
  - Chromium builds tend to take a long time, even maximizing the parallelism
    capabilities of a single machine. This split allows an additional dimension
-   of parallelism by delegating the x86_64 and arm64 build tasks to different
+   of parallelism by delegating the x86\_64 and arm64 build tasks to different
    machines.
- - During the mac-arm64 bring-up, the x86_64 and arm64 versions were built using
-   different SDK and toolchain versions. When using the hermetic SDK and
+ - During the mac-arm64 bring-up, the x86\_64 and arm64 versions were built
+   using different SDK and toolchain versions. When using the hermetic SDK and
    toolchain, a single version of this package must be shared by an entire
    source tree, because it’s managed by `gclient`, not `gn`. However, as of
    November 2020, Chromium builds for the two architectures converged and are
@@ -82,31 +82,37 @@ all-encompassing `gn` configuration because:
 
 ## Building _on_ arm Macs
 
-Building _on_ arm Macs means that all the tools we use to build chrome need
-to either work under Rosetta or have a native arm binary.
+It's possible to build _on_ an arm Mac, without Rosetta. However, this
+configuration is not yet covered by bots, so it might be broken from time to
+time. If you run into issues, complain on https://crbug.com/1103236
 
-We think it makes sense to use arch-specific binaries for stuff that's
-downloaded in a hook (things pulled from cipd and elsewhere in gclient hooks --
-I think this includes clang, gn, clang-format, python3 in depot\_tools, ...),
-and fat binaries for things where we'd end up downloading both binaries anyways
-(mostly ninja-mac in depot\_tools). There's a
-[tracking bug](https://crbug.com/1103236) for eventually making native arm
-binaries available for everything.
+Also, several of the hermetic binaries in depot\_tools aren't available for
+arm yet. Most notably, `vpython` is not yet working ([tracking
+bug](https://crbug.com/1103275)). `vpython` is needed by `git cl`, so things
+like `git cl upload` don't yet work on an arm Mac. The build will also use
+system `python`, `python3`, and `git`, instead of depot\_tools's hermetic
+versions for now.
 
-Go does [not yet](https://github.com/golang/go/issues/38485) support building
-binaries for arm macs, so all our go tooling needs to run under Rosetta for
-now.
+However, enough works to be able to check out and build, with some setup.
 
-`cipd` defaults to downloading Intel binaries on arm macs for now, so that
-they can run under Rosetta.
+1. opt in to arm64 binaries from cipd by running
 
-If a binary runs under Rosetta, the subprocesses it spawns by default also
-run under rosetta, even if they have a native slice. The `arch` tool
-can be used to prevent this ([example cl](https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/2287751)),
-which can be useful to work around Rosetta bugs.
+       echo arm64 > $(dirname $(which gclient))/.cipd_client_platform
 
-As of today, it's possible to install depot\_tools and then run
-`fetch chromium`, and it will download Chromium and its dependencies,
-but it will die in `runhooks`.
+   (If you want to build `tools/metrics:histograms_xml`, you also need to
+   `echo arm64 > third_party/depot_tools/.cipd_client_platform` in your
+   chromium checkout. This isn't needed for building chromium or any test
+   targets.)
 
-`ninja`, `gn`, and `gomacc` all work fine under Rosetta.
+2. opt out of vpython by running
+
+       export VPYTHON_BYPASS="manually managed python not supported by chrome operations"
+
+With this, you should be able to run `fetch chromium` normally, and then
+build, using `gn`, `ninja` etc like normal.
+
+gtest-based binaries should build, run, and mostly pass. Web tests probably
+don't work yet due to lack of an arm apache binary
+([tracking bug](https://crbug.com/1190885)).
+
+(goma does not yet work, [internal tracking bug](https://b/183118231).)
