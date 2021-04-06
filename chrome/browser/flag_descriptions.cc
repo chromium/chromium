@@ -4695,6 +4695,11 @@ const char kScanAppMediaLinkDescription[] =
     "Enables showing a link in the Scan app to open scanned images in the Media"
     " app.";
 
+const char kScanAppStickySettingsName[] = "Enable sticky settings in Scan app";
+const char kScanAppStickySettingsDescription[] =
+    "Enables sticky settings in Scan app for automatically saving scan"
+    " settings in Chrome OS.";
+
 const char kSchedulerConfigurationName[] = "Scheduler Configuration";
 const char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";

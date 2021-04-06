@@ -4594,6 +4594,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "scan-app-sticky-settings",
+    "owners": [ "gavinwill", "cros-peripherals@google.com" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "scheduler-configuration",
     "owners": [ "kerrnel", "mnissler" ],
     // This flag never expires because some users need to override CPU security

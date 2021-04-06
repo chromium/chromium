@@ -44583,6 +44583,7 @@ from previous Chrome versions.
   <int value="-1514611301" label="enable-data-reduction-proxy-bypass-warnings"/>
   <int value="-1512656386" label="disable-new-audio-rendering-mixing-strategy"/>
   <int value="-1512555526" label="PaintPreviewShowOnStartup:enabled"/>
+  <int value="-1510844027" label="ScanAppStickySettings:enabled"/>
   <int value="-1510839574" label="disable-sync-synced-notifications"/>
   <int value="-1508852757" label="CreditCardAutofillTouchBar:disabled"/>
   <int value="-1506880454"
@@ -44798,6 +44799,7 @@ from previous Chrome versions.
       label="disallow-autofill-sync-credential-for-reauth"/>
   <int value="-1349826793" label="ArcInputMethod:disabled"/>
   <int value="-1349532167" label="enable-wifi-credential-sync"/>
+  <int value="-1348040371" label="ScanAppStickySettings:disabled"/>
   <int value="-1346722635" label="gesture-selection"/>
   <int value="-1345931804" label="TabbedAppOverflowMenuIcons:disabled"/>
   <int value="-1344375439" label="ServiceWorkerPaymentApps:disabled"/>
