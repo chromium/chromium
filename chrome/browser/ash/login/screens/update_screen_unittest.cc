@@ -51,7 +51,8 @@ class UpdateScreenUnitTest : public testing::Test {
     if (critical) {
       ASSERT_TRUE(available) << "Does not make sense for an update to be "
                                 "critical if one is not even available.";
-      update_screen->set_ignore_update_deadlines_for_testing(true);
+      update_engine_status.set_update_urgency(
+          update_engine::UpdateUrgency::CRITICAL);
     }
     update_engine_status.set_current_operation(
         available ? update_engine::Operation::UPDATE_AVAILABLE
@@ -189,6 +190,8 @@ TEST_F(UpdateScreenUnitTest, HandleCriticalUpdateError) {
   update_engine::StatusResult update_engine_status;
   update_engine_status.set_current_operation(
       update_engine::Operation::REPORTING_ERROR_EVENT);
+  update_engine_status.set_update_urgency(
+      update_engine::UpdateUrgency::CRITICAL);
   fake_update_engine_client_->NotifyObserversThatStatusChanged(
       update_engine_status);
 

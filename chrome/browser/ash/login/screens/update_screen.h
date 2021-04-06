@@ -80,9 +80,6 @@ class UpdateScreen : public BaseScreen,
   base::OneShotTimer* GetErrorMessageTimerForTesting();
   VersionUpdater* GetVersionUpdaterForTesting();
 
-  void set_ignore_update_deadlines_for_testing(bool ignore_update_deadlines) {
-    ignore_update_deadlines_ = ignore_update_deadlines;
-  }
 
   // VersionUpdater::Delegate:
   void OnWaitForRebootTimeElapsed() override;
@@ -166,9 +163,6 @@ class UpdateScreen : public BaseScreen,
   ErrorScreen* error_screen_;
   ScreenExitCallback exit_callback_;
 
-  // If true, update deadlines are ignored.
-  // Note, this is false by default.
-  bool ignore_update_deadlines_ = false;
   // Whether the update screen is shown.
   bool is_shown_ = false;
 
