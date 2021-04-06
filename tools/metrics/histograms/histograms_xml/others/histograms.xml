@@ -11290,9 +11290,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>djean@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
-    Page load time for Browser-initiated navigations. Recorded when
-    CRWWebRequestController::didFinishWithURL completes successfully. iOS
-    specific.
+    Page load time for Browser-initiated navigations.
+
+    Browser-initiated navigations include all navigations initiated by
+    interacting with Chrome's UI elements, except for back/forward navigations.
+    Specifically, typing a URL into the omnibox, tapping the reload button,
+    loading a bookmark, and loading a page from the reading list (including when
+    offline) are all considered browser-initiated. Additionally, background
+    loads for prerendering and reading-list offline sync are also
+    browser-initiated, as is a reload triggered by switching to a tab whose
+    WKWebView renderer process was killed by the OS.
+
+    This is recorded for successful main-frame navigations (that is, navigations
+    that don't result in the browser displaying an error page). The recorded
+    value measures the time from the navigation request being sent to the
+    renderer process until all frames have fired their load events. For
+    background loads, the same interval is measured while the page loads and
+    fires load events in the background; the metric is not recorded again if the
+    background-loaed page is later displayed in the foreground.
+
+    It is possible for a user to interact with a page before all load events
+    have been fired, so the recorded value should not be interpreted as the time
+    before the page becomes interactive.
+
+    Any navigation that is not considered browser-initiated is considered to be
+    renderer-initiated (see PLT.iOS.RendererInitiatedPageLoadTime).
   </summary>
 </histogram>
 
@@ -11301,9 +11323,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>djean@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
-    Page load time for Renderer-initiated navigations. Recorded when
-    CRWWebRequestController::didFinishWithURL completes successfully. iOS
-    specific.
+    Page load time for Renderer-initiated navigations.
+
+    Renderer-initiated navigations are all main-frame navigations that are not
+    considered to be browser-initiated (see
+    PLT.iOS.BrowserInitiatedPageLoadTime). Specificially, tapping on links
+    within web content, navigations triggered by JavaScript, navigations for
+    restoring tabs on launch, and back/forward navigations are all considered to
+    be renderer-initiated.
+
+    This is recorded for successful main-frame navigations (that is, navigations
+    that don't result in the browser displaying an error page). However, this is
+    not recorded when WebKit handles a navigation using its page cache (that is,
+    when the DOM representation of the destination is still loaded in memory
+    from a recent visit). The recorded value measures the time from the browser
+    process being notified that the navigation has started, to all frames having
+    fired their load events. The time that the browser process is notified that
+    the navigation has started is usually just after a network request is sent,
+    but can be later for back/forward navigations on sites that use pushState to
+    generate history entries; in the latter case, the navigation may be almost
+    finished by the time the browser finds out about it.
+
+    It is possible for a user to interact with a page before all load events
+    have been fired, so the recorded value should not be interpreted as the time
+    before the page becomes interactive.
   </summary>
 </histogram>
 
