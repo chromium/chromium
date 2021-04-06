@@ -462,7 +462,7 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
 
   if (CanAttachReferrerChain() && referrer_chain_provider_) {
     referrer_chain_provider_->IdentifyReferrerChainByPendingEventURL(
-        SanitizeURL(url), /*user_gesture_count_limit=*/2,
+        SanitizeURL(url), GetReferrerUserGestureLimit(),
         request->mutable_referrer_chain());
     if (!CanCheckSubresourceURL()) {
       SanitizeReferrerChainEntries(request->mutable_referrer_chain());

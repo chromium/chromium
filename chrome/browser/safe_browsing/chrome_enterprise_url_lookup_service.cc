@@ -62,6 +62,13 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanAttachReferrerChain() const {
   return false;
 }
 
+int ChromeEnterpriseRealTimeUrlLookupService::GetReferrerUserGestureLimit()
+    const {
+  NOTREACHED()
+      << "Referrer chain is currently not supported for enterprise users.";
+  return 0;
+}
+
 bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckSubresourceURL() const {
   return false;
 }

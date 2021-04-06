@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/realtime/url_lookup_service.h"
 
 #include "base/base64url.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -27,6 +28,14 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace {
+
+constexpr char kRealTimeUrlLookupReferrerLengthParam[] =
+    "SafeBrowsingRealTimeUrlLookupReferrerLengthParam";
+constexpr int kDefaultRealTimeUrlLookupReferrerLength = 2;
+
+}  // namespace
 
 namespace safe_browsing {
 
@@ -91,6 +100,12 @@ bool RealTimeUrlLookupService::CanPerformFullURLLookupWithToken() const {
 
 bool RealTimeUrlLookupService::CanAttachReferrerChain() const {
   return base::FeatureList::IsEnabled(kRealTimeUrlLookupReferrerChain);
+}
+
+int RealTimeUrlLookupService::GetReferrerUserGestureLimit() const {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kRealTimeUrlLookupReferrerChain, kRealTimeUrlLookupReferrerLengthParam,
+      kDefaultRealTimeUrlLookupReferrerLength);
 }
 
 bool RealTimeUrlLookupService::CanCheckSubresourceURL() const {

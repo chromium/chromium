@@ -190,15 +190,28 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
 
   RealTimeUrlLookupService* rt_service() { return rt_service_.get(); }
 
-  void EnableRealTimeUrlLookup(
-      const std::vector<base::Feature>& enabled_features,
-      const std::vector<base::Feature>& disabled_features) {
+  void EnableMbb() {
     unified_consent::UnifiedConsentService::RegisterPrefs(
         test_pref_service_.registry());
     test_pref_service_.SetUserPref(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         std::make_unique<base::Value>(true));
+  }
+
+  void EnableRealTimeUrlLookup(
+      const std::vector<base::Feature>& enabled_features,
+      const std::vector<base::Feature>& disabled_features) {
+    EnableMbb();
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void EnableRealTimeUrlLookupWithParameters(
+      const std::vector<base::test::ScopedFeatureList::FeatureAndParams>&
+          enabled_features_and_params,
+      const std::vector<base::Feature>& disabled_features) {
+    EnableMbb();
+    feature_list_.InitWithFeaturesAndParameters(enabled_features_and_params,
+                                                disabled_features);
   }
 
   void EnableTokenFetchesInClient() {
@@ -751,7 +764,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestReferrerUrl, /*main_frame_url=*/"").get());
   EXPECT_CALL(*referrer_chain_provider_,
-              IdentifyReferrerChainByPendingEventURL(url, _, _))
+              IdentifyReferrerChainByPendingEventURL(
+                  url, /*user_gesture_count_limit=*/2, _))
       .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
                       Return(ReferrerChainProvider::SUCCESS)));
 
@@ -819,7 +833,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestReferrerUrl, kTestReferrerUrl).get());
   EXPECT_CALL(*referrer_chain_provider_,
-              IdentifyReferrerChainByPendingEventURL(url, _, _))
+              IdentifyReferrerChainByPendingEventURL(
+                  url, /*user_gesture_count_limit=*/2, _))
       .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
                       Return(ReferrerChainProvider::SUCCESS)));
 
@@ -863,7 +878,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
       CreateReferrerChainEntry(kTestSubframeReferrerUrl, kTestReferrerUrl)
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
-              IdentifyReferrerChainByPendingEventURL(url, _, _))
+              IdentifyReferrerChainByPendingEventURL(
+                  url, /*user_gesture_count_limit=*/2, _))
       .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
                       Return(ReferrerChainProvider::SUCCESS)));
 
@@ -882,6 +898,45 @@ TEST_F(RealTimeUrlLookupServiceTest,
         EXPECT_EQ(kTestReferrerUrl,
                   request->referrer_chain().Get(1).main_frame_url());
       }),
+      response_callback.Get());
+
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
+                                     /* is_cached_response */ false, _));
+
+  task_environment_->RunUntilIdle();
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestReferrerChain_UserGestureLimitIsConfigurable) {
+  EnableRealTimeUrlLookupWithParameters(
+      {{kRealTimeUrlLookupReferrerChain,
+        {{"SafeBrowsingRealTimeUrlLookupReferrerLengthParam",
+          base::NumberToString(1)}}}},
+      {});
+  GURL url(kTestUrl);
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
+                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                        "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+  ReferrerChain returned_referrer_chain;
+  returned_referrer_chain.Add()->Swap(
+      CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"").get());
+  // The user gesture count limit should be set to 1.
+  EXPECT_CALL(*referrer_chain_provider_,
+              IdentifyReferrerChainByPendingEventURL(
+                  url, /*user_gesture_count_limit=*/1, _))
+      .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
+                      Return(ReferrerChainProvider::SUCCESS)));
+
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  rt_service()->StartLookup(
+      url,
+      base::BindOnce(
+          [](std::unique_ptr<RTLookupRequest> request, std::string token) {
+            EXPECT_EQ(2, request->version());
+            EXPECT_EQ(1, request->referrer_chain().size());
+            EXPECT_EQ(kTestUrl, request->referrer_chain().Get(0).url());
+          }),
       response_callback.Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,

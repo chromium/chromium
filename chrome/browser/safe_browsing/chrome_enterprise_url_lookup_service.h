@@ -54,6 +54,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
   net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const override;
   bool CanPerformFullURLLookupWithToken() const override;
   bool CanAttachReferrerChain() const override;
+  int GetReferrerUserGestureLimit() const override;
   void GetAccessToken(const GURL& url,
                       RTLookupRequestCallback request_callback,
                       RTLookupResponseCallback response_callback) override;
