@@ -183,6 +183,7 @@ base::trace_event::MemoryAllocatorDump* ClientDiscardableSharedMemoryManager::
     DiscardableMemoryImpl::CreateMemoryAllocatorDump(
         const char* name,
         base::trace_event::ProcessMemoryDump* pmd) const {
+  base::AutoLock lock(manager_->lock_);
   return manager_->CreateMemoryAllocatorDump(span_.get(), name, pmd);
 }
 
@@ -569,7 +570,6 @@ ClientDiscardableSharedMemoryManager::CreateMemoryAllocatorDump(
     DiscardableSharedMemoryHeap::Span* span,
     const char* name,
     base::trace_event::ProcessMemoryDump* pmd) const {
-  base::AutoLock lock(lock_);
   return heap_->CreateMemoryAllocatorDump(span, name, pmd);
 }
 

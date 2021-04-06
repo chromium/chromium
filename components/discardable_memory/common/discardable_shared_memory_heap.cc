@@ -503,7 +503,7 @@ DiscardableSharedMemoryHeap::CreateMemoryAllocatorDump(
     Span* span,
     const char* name,
     base::trace_event::ProcessMemoryDump* pmd) const {
-  if (!span->shared_memory()) {
+  if (!span || !span->shared_memory()) {
     base::trace_event::MemoryAllocatorDump* dump =
         pmd->CreateAllocatorDump(name);
     dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,

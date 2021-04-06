@@ -76,7 +76,8 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   base::trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
       DiscardableSharedMemoryHeap::Span* span,
       const char* name,
-      base::trace_event::ProcessMemoryDump* pmd) const LOCKS_EXCLUDED(lock_);
+      base::trace_event::ProcessMemoryDump* pmd) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   struct Statistics {
     size_t total_size;
