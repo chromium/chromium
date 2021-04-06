@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 131 tests; 130 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 179 tests; 178 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS SanitizerAPI sanitize function without argument should throw an error.
 PASS SanitizerAPI sanitize function for null.
 PASS SanitizerAPI with config: string, sanitize from string function for string
@@ -44,6 +44,22 @@ PASS SanitizerAPI with config: allowAttributes list {"id": ["div"]} with id attr
 PASS SanitizerAPI with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitize from string function for allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
 PASS SanitizerAPI with config: allowAttributes list {"*": ["a"]} with style attribute, sanitize from string function for allowAttributes list {"*": ["a"]} with style attribute
 PASS SanitizerAPI with config: allowAttributes list has no influence to dropAttributes, sanitize from string function for allowAttributes list has no influence to dropAttributes
+PASS SanitizerAPI with config: Template element, sanitize from string function for Template element
+PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal, sanitize from string function for HTMLAnchorElement with javascript protocal
+PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal start with space, sanitize from string function for HTMLAnchorElement with javascript protocal start with space
+PASS SanitizerAPI with config: HTMLAnchorElement, sanitize from string function for HTMLAnchorElement
+PASS SanitizerAPI with config: HTMLAreaElement with javascript protocal, sanitize from string function for HTMLAreaElement with javascript protocal
+PASS SanitizerAPI with config: HTMLAreaElement with javascript protocal start with space, sanitize from string function for HTMLAreaElement with javascript protocal start with space
+PASS SanitizerAPI with config: HTMLAreaElement, sanitize from string function for HTMLAreaElement
+PASS SanitizerAPI with config: HTMLFormElement with javascript action, sanitize from string function for HTMLFormElement with javascript action
+PASS SanitizerAPI with config: HTMLFormElement with javascript action start with space, sanitize from string function for HTMLFormElement with javascript action start with space
+PASS SanitizerAPI with config: HTMLFormElement, sanitize from string function for HTMLFormElement
+PASS SanitizerAPI with config: HTMLInputElement with javascript formaction, sanitize from string function for HTMLInputElement with javascript formaction
+PASS SanitizerAPI with config: HTMLInputElement with javascript formaction start with space, sanitize from string function for HTMLInputElement with javascript formaction start with space
+PASS SanitizerAPI with config: HTMLInputElement, sanitize from string function for HTMLInputElement
+PASS SanitizerAPI with config: HTMLButtonElement with javascript formaction, sanitize from string function for HTMLButtonElement with javascript formaction
+PASS SanitizerAPI with config: HTMLButtonElement with javascript formaction start with space, sanitize from string function for HTMLButtonElement with javascript formaction start with space
+PASS SanitizerAPI with config: HTMLButtonElement, sanitize from string function for HTMLButtonElement
 PASS SanitizerAPI sanitize function shouldn't load the image.
 PASS SanitizerAPI with config: string, sanitize from document function for string
 PASS SanitizerAPI with config: html fragment, sanitize from document function for html fragment
@@ -87,6 +103,22 @@ PASS SanitizerAPI with config: allowAttributes list {"id": ["div"]} with id attr
 PASS SanitizerAPI with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitize from document function for allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
 PASS SanitizerAPI with config: allowAttributes list {"*": ["a"]} with style attribute, sanitize from document function for allowAttributes list {"*": ["a"]} with style attribute
 PASS SanitizerAPI with config: allowAttributes list has no influence to dropAttributes, sanitize from document function for allowAttributes list has no influence to dropAttributes
+PASS SanitizerAPI with config: Template element, sanitize from document function for Template element
+PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal, sanitize from document function for HTMLAnchorElement with javascript protocal
+PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal start with space, sanitize from document function for HTMLAnchorElement with javascript protocal start with space
+PASS SanitizerAPI with config: HTMLAnchorElement, sanitize from document function for HTMLAnchorElement
+PASS SanitizerAPI with config: HTMLAreaElement with javascript protocal, sanitize from document function for HTMLAreaElement with javascript protocal
+PASS SanitizerAPI with config: HTMLAreaElement with javascript protocal start with space, sanitize from document function for HTMLAreaElement with javascript protocal start with space
+PASS SanitizerAPI with config: HTMLAreaElement, sanitize from document function for HTMLAreaElement
+PASS SanitizerAPI with config: HTMLFormElement with javascript action, sanitize from document function for HTMLFormElement with javascript action
+PASS SanitizerAPI with config: HTMLFormElement with javascript action start with space, sanitize from document function for HTMLFormElement with javascript action start with space
+PASS SanitizerAPI with config: HTMLFormElement, sanitize from document function for HTMLFormElement
+PASS SanitizerAPI with config: HTMLInputElement with javascript formaction, sanitize from document function for HTMLInputElement with javascript formaction
+PASS SanitizerAPI with config: HTMLInputElement with javascript formaction start with space, sanitize from document function for HTMLInputElement with javascript formaction start with space
+PASS SanitizerAPI with config: HTMLInputElement, sanitize from document function for HTMLInputElement
+PASS SanitizerAPI with config: HTMLButtonElement with javascript formaction, sanitize from document function for HTMLButtonElement with javascript formaction
+PASS SanitizerAPI with config: HTMLButtonElement with javascript formaction start with space, sanitize from document function for HTMLButtonElement with javascript formaction start with space
+PASS SanitizerAPI with config: HTMLButtonElement, sanitize from document function for HTMLButtonElement
 PASS SanitizerAPI with config: string, sanitize from document fragment function for string
 PASS SanitizerAPI with config: html fragment, sanitize from document fragment function for html fragment
 PASS SanitizerAPI with config: broken html, sanitize from document fragment function for broken html
@@ -129,6 +161,22 @@ PASS SanitizerAPI with config: allowAttributes list {"id": ["div"]} with id attr
 PASS SanitizerAPI with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitize from document fragment function for allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
 PASS SanitizerAPI with config: allowAttributes list {"*": ["a"]} with style attribute, sanitize from document fragment function for allowAttributes list {"*": ["a"]} with style attribute
 PASS SanitizerAPI with config: allowAttributes list has no influence to dropAttributes, sanitize from document fragment function for allowAttributes list has no influence to dropAttributes
+PASS SanitizerAPI with config: Template element, sanitize from document fragment function for Template element
+PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal, sanitize from document fragment function for HTMLAnchorElement with javascript protocal
+PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal start with space, sanitize from document fragment function for HTMLAnchorElement with javascript protocal start with space
+PASS SanitizerAPI with config: HTMLAnchorElement, sanitize from document fragment function for HTMLAnchorElement
+PASS SanitizerAPI with config: HTMLAreaElement with javascript protocal, sanitize from document fragment function for HTMLAreaElement with javascript protocal
+PASS SanitizerAPI with config: HTMLAreaElement with javascript protocal start with space, sanitize from document fragment function for HTMLAreaElement with javascript protocal start with space
+PASS SanitizerAPI with config: HTMLAreaElement, sanitize from document fragment function for HTMLAreaElement
+PASS SanitizerAPI with config: HTMLFormElement with javascript action, sanitize from document fragment function for HTMLFormElement with javascript action
+PASS SanitizerAPI with config: HTMLFormElement with javascript action start with space, sanitize from document fragment function for HTMLFormElement with javascript action start with space
+PASS SanitizerAPI with config: HTMLFormElement, sanitize from document fragment function for HTMLFormElement
+PASS SanitizerAPI with config: HTMLInputElement with javascript formaction, sanitize from document fragment function for HTMLInputElement with javascript formaction
+PASS SanitizerAPI with config: HTMLInputElement with javascript formaction start with space, sanitize from document fragment function for HTMLInputElement with javascript formaction start with space
+PASS SanitizerAPI with config: HTMLInputElement, sanitize from document fragment function for HTMLInputElement
+PASS SanitizerAPI with config: HTMLButtonElement with javascript formaction, sanitize from document fragment function for HTMLButtonElement with javascript formaction
+PASS SanitizerAPI with config: HTMLButtonElement with javascript formaction start with space, sanitize from document fragment function for HTMLButtonElement with javascript formaction start with space
+PASS SanitizerAPI with config: HTMLButtonElement, sanitize from document fragment function for HTMLButtonElement
 PASS SanitizerAPI sanitize from TrustedHTML.
 PASS SanitizerAPI sanitize from string with default policy.
 Harness: the test ran to completion.

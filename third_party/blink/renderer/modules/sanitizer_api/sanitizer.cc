@@ -22,9 +22,14 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
@@ -152,13 +157,13 @@ DocumentFragment* Sanitizer::sanitize(
   return SanitizeImpl(script_state, new_input, exception_state);
 }
 
-DocumentFragment* Sanitizer::SanitizeImpl(
+DocumentFragment* Sanitizer::PrepareFragment(
+    LocalDOMWindow* window,
     ScriptState* script_state,
     StringOrDocumentFragmentOrDocument& input,
     ExceptionState& exception_state) {
   DocumentFragment* fragment = nullptr;
 
-  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   if (!window) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot find current DOM window.");
@@ -195,7 +200,12 @@ DocumentFragment* Sanitizer::SanitizeImpl(
                                       "Cannot find current DOM window.");
     return nullptr;
   }
+  return fragment;
+}
 
+DocumentFragment* Sanitizer::DoSanitizing(DocumentFragment* fragment,
+                                          LocalDOMWindow* window,
+                                          ExceptionState& exception_state) {
   Node* node = fragment->firstChild();
 
   while (node) {
@@ -240,12 +250,34 @@ DocumentFragment* Sanitizer::SanitizeImpl(
       node = BlockElement(node, fragment, exception_state);
       UseCounter::Count(window->GetExecutionContext(),
                         WebFeature::kSanitizerAPIActionTaken);
+    } else if (IsA<HTMLTemplateElement>(node)) {
+      // 8. If |element|'s [=element interface=] is {{HTMLTemplateElement}}
+      // Run the steps of the [=sanitize document fragment=] algorithm on
+      // |element|'s |content| attribute.
+      DoSanitizing(To<HTMLTemplateElement>(node)->content(), window,
+                   exception_state);
+      UseCounter::Count(window->GetExecutionContext(),
+                        WebFeature::kSanitizerAPIActionTaken);
+      node = KeepElement(node, fragment, name, window);
     } else {
       node = KeepElement(node, fragment, name, window);
     }
   }
 
   return fragment;
+}
+
+DocumentFragment* Sanitizer::SanitizeImpl(
+    ScriptState* script_state,
+    StringOrDocumentFragmentOrDocument& input,
+    ExceptionState& exception_state) {
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  DocumentFragment* fragment =
+      PrepareFragment(window, script_state, input, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  return DoSanitizing(fragment, window, exception_state);
 }
 
 // If the current element needs to be dropped, remove current element entirely
@@ -308,6 +340,34 @@ Node* Sanitizer::KeepElement(Node* node,
                   !(allow_attributes_.Contains(name) &&
                     (allow_attributes_.at(name) == kVectorStar ||
                      allow_attributes_.at(name).Contains(node_name)));
+      // 9. If |element|'s [=element interface=] is {{HTMLAnchorElement}} or
+      // {{HTMLAreaElement}} and |element|'s `protocol` property is
+      // "javascript:", then remove the `href` attribute from |element|.
+      if (IsA<HTMLAnchorElement>(element) && name == "href" &&
+          To<HTMLAnchorElement>(element)->Href().Protocol() == "javascript") {
+        drop = true;
+      } else if (IsA<HTMLAreaElement>(element) && name == "href" &&
+                 To<HTMLAreaElement>(element)->Href().Protocol() ==
+                     "javascript") {
+        drop = true;
+      } else if (IsA<HTMLFormElement>(element) && name == "action" &&
+                 To<HTMLFormElement>(element)->action().StartsWith(
+                     "javascript:")) {
+        // 10. If |element|'s [=element interface=] is {{HTMLFormElement}} and
+        // |element|'s `action` attribute is a [[URL]] with `javascript:`
+        // protocol, them drop it.
+        drop = true;
+      } else if ((IsA<HTMLInputElement>(element) ||
+                  IsA<HTMLButtonElement>(element)) &&
+                 name == "formaction" &&
+                 To<HTMLFormControlElement>(element)->formAction().StartsWith(
+                     "javascript:")) {
+        // 11. If |element|'s [=element interface=] is {{HTMLInputElement}}
+        // or {{HTMLButtonElement}} and |element|'s `action` attribute is a
+        // [[URL]] with `javascript:` protocol, them drop it.
+        drop = true;
+      }
+
       if (drop) {
         element->removeAttribute(name);
         UseCounter::Count(window->GetExecutionContext(),

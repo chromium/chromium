@@ -55,6 +55,13 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   void AttrFormatter(HashMap<String, Vector<String>>&,
                      const Vector<std::pair<String, Vector<String>>>&);
 
+  DocumentFragment* PrepareFragment(LocalDOMWindow*,
+                                    ScriptState*,
+                                    StringOrDocumentFragmentOrDocument&,
+                                    ExceptionState&);
+  DocumentFragment* DoSanitizing(DocumentFragment*,
+                                 LocalDOMWindow*,
+                                 ExceptionState&);
   DocumentFragment* SanitizeImpl(ScriptState*,
                                  StringOrDocumentFragmentOrDocument&,
                                  ExceptionState&);
