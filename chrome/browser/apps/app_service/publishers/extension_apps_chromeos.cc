@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
@@ -601,6 +602,26 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
   }
 
   return !extension->from_bookmark();
+}
+
+void ExtensionAppsChromeOs::SetShowInFields(
+    apps::mojom::AppPtr& app,
+    const extensions::Extension* extension) {
+  if (extension->id() == extension_misc::kWallpaperManagerId) {
+    // Explicitly show the Wallpaper Picker app in search only.
+    app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
+
+    // Hide from shelf and search if new Personalization SWA is enabled.
+    auto should_show = ash::features::IsWallpaperWebUIEnabled()
+                           ? apps::mojom::OptionalBool::kFalse
+                           : apps::mojom::OptionalBool::kTrue;
+    app->show_in_shelf = should_show;
+    app->show_in_search = should_show;
+
+    app->show_in_management = apps::mojom::OptionalBool::kFalse;
+    return;
+  }
+  ExtensionAppsBase::SetShowInFields(app, extension);
 }
 
 bool ExtensionAppsChromeOs::ShouldShownInLauncher(

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/hash/sha1.h"
@@ -22,6 +23,8 @@
 #include "chrome/browser/chromeos/extensions/wallpaper_private_api.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -472,6 +475,12 @@ void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
 void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
+  if (ash::features::IsWallpaperWebUIEnabled()) {
+    web_app::LaunchSystemWebAppAsync(profile,
+                                     web_app::SystemAppType::PERSONALIZATION);
+    return;
+  }
+
   apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (proxy->AppRegistryCache().GetAppType(
