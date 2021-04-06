@@ -856,6 +856,7 @@ if (is_android) {
     deps = [
       ":weblayer_lib_webview_test",
       "//base",
+      "//components/autofill/android/provider/test_support:component_autofill_provider_native_test_support",
       "//content/public/app",
       "//weblayer/browser/java:test_weblayer_jni_registration",
     ]

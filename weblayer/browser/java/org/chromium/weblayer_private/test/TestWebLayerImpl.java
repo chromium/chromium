@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.components.autofill.AutofillProviderTestHelper;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
 import org.chromium.components.location.LocationUtils;
@@ -297,6 +298,7 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
                 ObjectWrapper.unwrap(eventsObserved, ArrayList.class);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AutofillProviderTestHelper.disableDownloadServerForTesting();
             BrowserImpl browserImpl = (BrowserImpl) browser;
             TabImpl tab = browserImpl.getActiveTab();
             tab.getAutofillProviderForTesting().setAutofillManagerWrapperForTesting(

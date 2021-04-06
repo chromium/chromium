@@ -111,8 +111,12 @@ public class AutofillTest {
         // Press "a" to trigger Autofill.
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
 
-        List<Integer> expected = Arrays.asList(AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED,
-                AUTOFILL_SESSION_STARTED, AUTOFILL_VALUE_CHANGED);
+        List<Integer> expected = new ArrayList(Arrays.asList(
+                AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED, AUTOFILL_VALUE_CHANGED));
+        // We don't have the cancel event on P+, but we will see them on O and OMR1.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            expected.add(0, AUTOFILL_CANCEL);
+        }
 
         // Wait for Autofill events.
         helper.waitForCallback(

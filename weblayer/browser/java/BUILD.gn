@@ -331,6 +331,7 @@ android_library("test_java") {
     ":weblayer_test_resources",
     "//base:base_java",
     "//components/autofill/android/provider:java",
+    "//components/autofill/android/provider/test_support:component_autofill_provider_java_test_support",
     "//components/content_capture/android:java",
     "//components/infobars/android:java",
     "//components/location/android:location_java",
