@@ -17,15 +17,6 @@
 
 namespace chromecast {
 namespace media {
-namespace {
-
-// The maximum allowed difference between the audio and video decoders used for
-// the CmaBackendProxy.
-// TODO(b/168748626): Determine the correct value for this variable
-// experimentally.
-int64_t kMaxAllowedPtsDrift = 500;
-
-}  // namespace
 
 CmaBackendProxy::CmaBackendProxy(const MediaPipelineDeviceParams& params,
                                  std::unique_ptr<CmaBackend> delegated_pipeline)
@@ -116,17 +107,7 @@ bool CmaBackendProxy::Resume() {
 }
 
 int64_t CmaBackendProxy::GetCurrentPts() {
-  if (audio_decoder_) {
-    const int64_t audio_pts = audio_decoder_->GetCurrentPts();
-    const int64_t video_pts = delegated_pipeline_->GetCurrentPts();
-    const int64_t min = std::min(audio_pts, video_pts);
-    LOG_IF(WARNING, std::max(audio_pts, video_pts) - min > kMaxAllowedPtsDrift);
-    return min;
-  } else if (has_video_decoder_) {
-    return delegated_pipeline_->GetCurrentPts();
-  } else {
-    return std::numeric_limits<int64_t>::min();
-  }
+  return delegated_pipeline_->GetCurrentPts();
 }
 
 bool CmaBackendProxy::SetPlaybackRate(float rate) {

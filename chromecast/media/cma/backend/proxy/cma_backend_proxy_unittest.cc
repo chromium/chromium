@@ -185,27 +185,6 @@ TEST_F(CmaBackendProxyTest, Resume) {
   EXPECT_FALSE(backend_->Resume());
 }
 
-TEST_F(CmaBackendProxyTest, GetCurrentPts) {
-  EXPECT_EQ(backend_->GetCurrentPts(), std::numeric_limits<int64_t>::min());
-
-  CreateVideoDecoder();
-
-  EXPECT_CALL(*delegated_backend_, GetCurrentPts()).WillOnce(Return(42));
-  EXPECT_EQ(backend_->GetCurrentPts(), 42);
-  testing::Mock::VerifyAndClearExpectations(delegated_backend_);
-
-  ASSERT_EQ(backend_->CreateAudioDecoder(), audio_decoder_);
-  EXPECT_CALL(*audio_decoder_, GetCurrentPts())
-      .WillOnce(Return(42))
-      .WillOnce(Return(42));
-  EXPECT_CALL(*delegated_backend_, GetCurrentPts())
-      .WillOnce(Return(16))
-      .WillOnce(Return(360));
-
-  EXPECT_EQ(backend_->GetCurrentPts(), 16);
-  EXPECT_EQ(backend_->GetCurrentPts(), 42);
-}
-
 TEST_F(CmaBackendProxyTest, SetPlaybackRate) {
   constexpr float kSetPlaybackRatePts = 0.5;
   EXPECT_TRUE(backend_->SetPlaybackRate(kSetPlaybackRatePts));
