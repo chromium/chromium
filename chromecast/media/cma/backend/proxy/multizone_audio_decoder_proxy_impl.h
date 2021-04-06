@@ -35,8 +35,13 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   MultizoneAudioDecoderProxyImpl(
       const MediaPipelineDeviceParams& params,
       std::unique_ptr<AudioDecoderPipelineNode> downstream_decoder);
+  MultizoneAudioDecoderProxyImpl(const MultizoneAudioDecoderProxyImpl& other) =
+      delete;
 
   ~MultizoneAudioDecoderProxyImpl() override;
+
+  MultizoneAudioDecoderProxyImpl& operator=(
+      const MultizoneAudioDecoderProxyImpl& other) = delete;
 
   // MultizoneAudioDecoderProxy implementation:
   //

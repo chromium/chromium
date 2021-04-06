@@ -34,7 +34,11 @@ class ProxyCallTranslator : public CmaProxyHandler,
   // on |client_task_runner|.
   ProxyCallTranslator(TaskRunner* client_task_runner,
                       CmaProxyHandler::Client* client);
+  ProxyCallTranslator(const ProxyCallTranslator& other) = delete;
+
   ~ProxyCallTranslator() override;
+
+  ProxyCallTranslator& operator=(const ProxyCallTranslator& other) = delete;
 
   // CmaProxyHandler overrides:
   void Initialize(

@@ -36,7 +36,11 @@ class PushBufferQueue {
   static constexpr size_t kBufferSizeBytes = 0x01 << 12;  // 4 kB.
 
   PushBufferQueue();
+  PushBufferQueue(const PushBufferQueue& other) = delete;
+
   ~PushBufferQueue();
+
+  PushBufferQueue& operator=(const PushBufferQueue& other) = delete;
 
   // Pushes the data stored in the associated type to the queue underlying this
   // object. Returns true if the operation was successful, and false otherwise.

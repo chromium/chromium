@@ -34,7 +34,12 @@ class AudioDecoderPipelineNode : public CmaBackend::Decoder::Delegate,
  public:
   explicit AudioDecoderPipelineNode(
       CmaBackend::AudioDecoder* delegated_decoder);
+  AudioDecoderPipelineNode(const AudioDecoderPipelineNode& other) = delete;
+
   ~AudioDecoderPipelineNode() override;
+
+  AudioDecoderPipelineNode& operator=(const AudioDecoderPipelineNode& other) =
+      delete;
 
   // CmaBackend::AudioDecoder overrides.
   void SetDelegate(CmaBackend::Decoder::Delegate* delegate) override;
