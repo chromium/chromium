@@ -157,9 +157,14 @@ static llvm::cl::extrahelp common_help(CommonOptionsParser::HelpMessage);
 
 int main(int argc, const char* argv[]) {
   llvm::cl::OptionCategory category("TraceAnnotator Tool");
-  CommonOptionsParser options(argc, argv, category);
-  clang::tooling::ClangTool tool(options.getCompilations(),
-                                 options.getSourcePathList());
+  llvm::Expected<CommonOptionsParser> options =
+      CommonOptionsParser::create(argc, argv, category);
+  if (!options) {
+    llvm::outs() << llvm::toString(options.takeError());
+    return 1;
+  }
+  clang::tooling::ClangTool tool(options->getCompilations(),
+                                 options->getSourcePathList());
 
   std::vector<Replacement> replacements;
   TraceAnnotator converter(&replacements);
