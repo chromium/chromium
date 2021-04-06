@@ -433,6 +433,8 @@ static_library("extensions") {
     "blocklist.h",
     "blocklist_check.cc",
     "blocklist_check.h",
+    "blocklist_extension_prefs.cc",
+    "blocklist_extension_prefs.h",
     "blocklist_factory.cc",
     "blocklist_factory.h",
     "blocklist_state_fetcher.cc",

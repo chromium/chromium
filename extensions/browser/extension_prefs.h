@@ -93,6 +93,14 @@ class ExtensionPrefs : public KeyedService {
     DELAY_REASON_WAIT_FOR_OS_UPDATE = 4,
   };
 
+  // This enum is used to specify the operation for bit map prefs.
+  enum BitMapPrefOperation {
+    BIT_MAP_PREF_ADD,
+    BIT_MAP_PREF_REMOVE,
+    BIT_MAP_PREF_REPLACE,
+    BIT_MAP_PREF_CLEAR
+  };
+
   // Wrappers around a prefs::ScopedDictionaryPrefUpdate, which allow us to
   // access the entry of a particular key for an extension. Use these if you
   // need a mutable record of a dictionary or list in the current settings.
@@ -239,6 +247,22 @@ class ExtensionPrefs : public KeyedService {
   // TODO(oleg): Replace IsExtensionBlocklisted by this method.
   BlocklistState GetExtensionBlocklistState(
       const std::string& extension_id) const;
+
+  // Gets the value of a bit map pref. Gets the value of
+  // |extension_id| from |pref_key|. If the value is not found or invalid,
+  // return the |default_bit|.
+  int GetBitMapPrefBits(const std::string& extension_id,
+                        base::StringPiece pref_key,
+                        int default_bit) const;
+  // Modifies the extensions bit map pref |pref_key| to add a new bit value,
+  // remove an existing bit value, or clear all bits. If |operation| is
+  // BIT_MAP_PREF_CLEAR, then |pending_bits| are ignored. If the updated pref
+  // value is the same as the |default_bit|, the pref value will be set to null.
+  void ModifyBitMapPrefBits(const std::string& extension_id,
+                            int pending_bits,
+                            BitMapPrefOperation operation,
+                            base::StringPiece pref_key,
+                            int default_bit);
 
   // Gets or sets profile wide ExtensionPrefs.
   void SetIntegerPref(const PrefMap& pref, int value);
@@ -748,13 +772,8 @@ class ExtensionPrefs : public KeyedService {
   friend class ExtensionPrefsBlocklistedExtensions;  // Unit test.
   friend class ExtensionPrefsComponentExtension;     // Unit test.
   friend class ExtensionPrefsUninstallExtension;     // Unit test.
-
-  enum DisableReasonChange {
-    DISABLE_REASON_ADD,
-    DISABLE_REASON_REMOVE,
-    DISABLE_REASON_REPLACE,
-    DISABLE_REASON_CLEAR
-  };
+  friend class
+      ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue;  // Unit test.
 
   // See the Create methods.
   ExtensionPrefs(
@@ -844,10 +863,10 @@ class ExtensionPrefs : public KeyedService {
   // Modifies the extensions disable reasons to add a new reason, remove an
   // existing reason, or clear all reasons. Notifies observers if the set of
   // DisableReasons has changed.
-  // If |change| is DISABLE_REASON_CLEAR, then |reason| is ignored.
+  // If |operation| is BIT_MAP_PREF_CLEAR, then |reasons| are ignored.
   void ModifyDisableReasons(const std::string& extension_id,
                             int reasons,
-                            DisableReasonChange change);
+                            BitMapPrefOperation operation);
 
   // Installs the persistent extension preferences into |prefs_|'s extension
   // pref store. Does nothing if extensions_disabled_ is true.

@@ -5359,6 +5359,7 @@ test("unit_tests") {
       "../browser/extensions/api/webstore_private/extension_install_status_unittest.cc",
       "../browser/extensions/api/webstore_private/webstore_private_unittest.cc",
       "../browser/extensions/blocklist_check_unittest.cc",
+      "../browser/extensions/blocklist_extension_prefs_unittest.cc",
       "../browser/extensions/blocklist_state_fetcher_unittest.cc",
       "../browser/extensions/chrome_app_icon_unittest.cc",
       "../browser/extensions/chrome_app_sorting_unittest.cc",

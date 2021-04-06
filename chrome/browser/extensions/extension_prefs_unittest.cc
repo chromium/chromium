@@ -679,6 +679,41 @@ class ExtensionPrefsOnExtensionInstalled : public ExtensionPrefsTest {
 TEST_F(ExtensionPrefsOnExtensionInstalled,
        ExtensionPrefsOnExtensionInstalled) {}
 
+// Tests that the bit map pref value is cleared if the value matches the default
+// bit.
+class ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue
+    : public ExtensionPrefsTest {
+ public:
+  void Initialize() override {
+    extension_ = prefs_.AddExtension("test1");
+    prefs()->ModifyBitMapPrefBits(
+        extension_->id(), disable_reason::DISABLE_PERMISSIONS_INCREASE,
+        ExtensionPrefs::BIT_MAP_PREF_ADD, "disable_reasons",
+        disable_reason::DISABLE_USER_ACTION);
+    // Set the bit map pref value to the default value, it should clear the
+    // pref.
+    prefs()->ModifyBitMapPrefBits(
+        extension_->id(), disable_reason::DISABLE_USER_ACTION,
+        ExtensionPrefs::BIT_MAP_PREF_REPLACE, "disable_reasons",
+        disable_reason::DISABLE_USER_ACTION);
+  }
+
+  void Verify() override {
+    const base::DictionaryValue* ext =
+        prefs()->GetExtensionPref(extension_->id());
+    EXPECT_NE(nullptr, ext);
+    int out_value;
+    // The pref value should be cleared.
+    EXPECT_FALSE(ext->GetInteger("disable_reasons", &out_value));
+  }
+
+ private:
+  scoped_refptr<Extension> extension_;
+};
+
+TEST_F(ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue,
+       ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue) {}
+
 class ExtensionPrefsFlags : public ExtensionPrefsTest {
  public:
   void Initialize() override {
