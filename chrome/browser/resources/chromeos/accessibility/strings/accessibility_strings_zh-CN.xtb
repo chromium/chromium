@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">浅天蓝色</translation>
 <translation id="1303806948938513162">用 4 根手指点按即可进入 ChromeVox 菜单</translation>
 <translation id="1313373992684326101">移到上一部分。例如，状态栏和启动器。</translation>
+<translation id="1315077335264761176">触摸手势入门</translation>
 <translation id="1325363694295259631"><ph name="NAME" />，未选中的菜单项单选按钮</translation>
 <translation id="1325946044405407859">棕褐色</translation>
 <translation id="1331702245475014624">第<ph name="INDEX" />个，共<ph name="TOTAL" />个</translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">欢迎学习 ChromeVox 教程。您随时都能退出此教程，只需按键盘左上角的 Esc 键即可。若要关闭 ChromeVox，请按住 Ctrl 和 Alt 键，然后按 Z 键。当您准备就绪后，按空格键即可进入下一课。</translation>
 <translation id="174268867904053074">下一个图形</translation>
 <translation id="1756785467854861272">深洋红色</translation>
+<translation id="1758693804775271377">用 1 根手指向左或向右滑动屏幕即可浏览与此主题有关的课程</translation>
 <translation id="1765245556747822181">向上滑动一根手指</translation>
 <translation id="1771761307086386028">向右滚动</translation>
 <translation id="1781173782405573156">忽略按键</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">行</translation>
 <translation id="2816868829355607410">练习区：跳转命令</translation>
 <translation id="2841013758207633010">时间</translation>
+<translation id="284171465644749950">用 1 根手指向左或向右滑动屏幕即可浏览各个主题</translation>
 <translation id="2843432675592278677">没有上一个 ARIA 地标</translation>
 <translation id="2843814945404750166">暗橄榄绿色</translation>
 <translation id="2843837985843789981">上一个群组</translation>
@@ -299,6 +302,7 @@
 <translation id="3082249673510793544">向后滚动</translation>
 <translation id="3084806535845658316">无输入回显</translation>
 <translation id="3086746722712840547">备注</translation>
+<translation id="308736057934395497">此操作会关闭您的屏幕以免被他人看到，从而更好地保护您的隐私。不过，您随时可按搜索键 +“调高亮度”键重新开启屏幕。</translation>
 <translation id="3090227230165225418">播报下载通知</translation>
 <translation id="3090532668523289635">群组</translation>
 <translation id="3093176084511590672">下一个地标</translation>
@@ -419,7 +423,6 @@
 <translation id="3870295413168340326">没有上一个 3 级标题</translation>
 <translation id="3887399638190992181">基础键</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">同样，用 4 根手指从右向左滑动屏幕即可移至上一个主要元素。现在就试试吧！</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3907138069015388678">列表网格</translation>
 <translation id="3909320334364316587">上一个6级标题</translation>
@@ -1120,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox 已更新</translation>
 <translation id="93384979447910801">暗海绿色</translation>
 <translation id="948171205378458592">减慢语速</translation>
+<translation id="957570623732056069">用 1 根手指向左或向右滑动屏幕即可浏览此课程</translation>
 <translation id="958854023026327378">向下滑动一根手指</translation>
 <translation id="962913030769097253">下一个1级标题</translation>
 <translation id="966588271015727539">选择蓝牙盲文显示屏</translation>

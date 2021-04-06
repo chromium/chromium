@@ -93,6 +93,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">თქვენ ამ გვერდის ხაზგარეშე ასლს ნახულობთ, რომლის შექმნის თარიღია: <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">ისტორია</translation>
+<translation id="1668122540633280551">აირჩიეთ, როგორ დაიკრას ვიდეოების გადასახედი ვერსიები ავტომატურად Chrome-ის მთავარ გვერდზე.</translation>
 <translation id="1670399744444387456">ძირითადი</translation>
 <translation id="1671236975893690980">ჩამოტვირთვა მოლოდინის რეჟიმშია…</translation>
 <translation id="1672586136351118594">აღარ გამოჩნდეს</translation>
@@ -237,6 +238,8 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ერთეული წაიშალა</translation>
 <translation id="2536728043171574184">თქვენ ამ გვერდის ხაზგარეშე ასლს ნახულობთ</translation>
 <translation id="2546283357679194313">ქუქი-ფაილები და საიტის მონაცემები</translation>
+<translation id="2549341709325358884">მხოლოდ Wi-Fi და მობილური ინტერნეტი</translation>
+<translation id="2561519700418191927">ვიდეოების გადასახედი ვერსიები</translation>
 <translation id="2567385386134582609">სურათი</translation>
 <translation id="2571711316400087311">სხვაენოვანი გვერდების Google Translate-ში გაგზავნის შემოთავაზება</translation>
 <translation id="2581165646603367611">ეს მოქმედება გაასუფთავებს ქუქი-ჩანაწერებს, ქეშს და საიტების სხვა მონაცემებს, რომლებსაც Chrome უმნიშვნელოდ თვლის.</translation>
@@ -415,6 +418,7 @@
 <translation id="3773856050682458546">ძირითადი მონაცემები, პლუს ინფორმაცია თქვენ მიერ მონახულებული ვებსაიტებისა და გამოყენებული აპების შესახებ</translation>
 <translation id="3775705724665058594">გააგზავნეთ თქვენს მოწყობილობებზე</translation>
 <translation id="3778956594442850293">დაემატა მთავარ ეკრანს</translation>
+<translation id="3803784507854318295">ავტომატური დაკვრის მართვა</translation>
 <translation id="3810838688059735925">ვიდეო</translation>
 <translation id="3810973564298564668">მართვა</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ჩამოტვირთული ფაილი წაიშალა</translation>

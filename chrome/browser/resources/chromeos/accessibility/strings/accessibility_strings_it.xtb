@@ -57,7 +57,7 @@
 <translation id="1299774449519412690">Azzurro cielo chiaro</translation>
 <translation id="1303806948938513162">Tocca con quattro dita per aprire i menu di ChromeVox</translation>
 <translation id="1313373992684326101">Passa alla sezione precedente. Alcuni esempi includono la barra di stato e Avvio app.</translation>
-<translation id="1315077335264761176">Orientamento del tocco</translation>
+<translation id="1315077335264761176">Tutorial sul tocco</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, pulsante di opzione di una voce di menu non selezionato</translation>
 <translation id="1325946044405407859">Marrone chiaro</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> di <ph name="TOTAL" /></translation>
@@ -302,6 +302,7 @@
 <translation id="3082249673510793544">Scorri indietro</translation>
 <translation id="3084806535845658316">eco digitazione non impostata</translation>
 <translation id="3086746722712840547">nota</translation>
+<translation id="308736057934395497">Questa opzione migliora la privacy disattivando il tuo schermo in modo che altre persone non possano vederlo. Puoi riattivare lo schermo in qualsiasi momento premendo il tasto per la ricerca + Aumenta luminosità.</translation>
 <translation id="3090227230165225418">Annuncia notifiche di download</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Punto di riferimento successivo</translation>
@@ -422,7 +423,6 @@
 <translation id="3870295413168340326">Nessuna intestazione di livello 3 precedente</translation>
 <translation id="3887399638190992181">Tasti essenziali</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">Allo stesso modo, puoi scorrere con quattro dita da destra verso sinistra per passare all'elemento principale precedente. Prova subito.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lncgrgl</translation>
 <translation id="3909320334364316587">Intestazione livello 6 precedente</translation>

@@ -57,7 +57,7 @@
 <translation id="1299774449519412690">Helles Himmelblau</translation>
 <translation id="1303806948938513162">Tippen Sie mit vier Fingern, um die ChromeVox-Menüs aufzurufen</translation>
 <translation id="1313373992684326101">Zum vorherigen Bereich wechseln, beispielsweise zur Statusleiste oder zum Launcher.</translation>
-<translation id="1315077335264761176">Touch-Ausrichtung</translation>
+<translation id="1315077335264761176">Einführung in die Verwendung von Touch-Gesten</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, Optionsfeld für Menüpunkt, nicht ausgewählt</translation>
 <translation id="1325946044405407859">Gelbbraun</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> von <ph name="TOTAL" /></translation>
@@ -302,6 +302,7 @@
 <translation id="3082249673510793544">Zurückscrollen</translation>
 <translation id="3084806535845658316">Kein Eingabeecho</translation>
 <translation id="3086746722712840547">note</translation>
+<translation id="308736057934395497">Hiermit wird das Display ausgeschaltet, um Ihre Privatsphäre besser zu schützen. Damit verhindern Sie, dass andere Personen den Bildschirminhalt sehen können. Durch Drücken von „Suchtaste + ‚Helligkeit erhöhen‘“ lässt sich das Display jederzeit wieder einschalten.</translation>
 <translation id="3090227230165225418">Download-Benachrichtigungen ankündigen</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Nächste Markierung</translation>
@@ -422,7 +423,6 @@
 <translation id="3870295413168340326">Keine vorherige Überschrift der Ebene 3</translation>
 <translation id="3887399638190992181">Wichtige Tasten</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">Sie können auch mit vier Fingern von rechts nach links wischen, um zum vorherigen Hauptelement zu gelangen. Probieren Sie es aus.</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3907138069015388678">Listenraster</translation>
 <translation id="3909320334364316587">Vorherige Überschrift der Ebene 6</translation>

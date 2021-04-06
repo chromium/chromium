@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
+<translation id="2054703085270098503">Protexe a túa seguranza con Chromium</translation>
 <translation id="2075400798887076382">Accede aquí ás pestanas que tes abertas no ordenador. Só tes que abrir Chromium no ordenador, ir ao menú e seleccionar "Iniciar sesión en Chromium…"</translation>
 <translation id="2168108852149185974">Algúns complementos fan que Chromium falle. Desinstala:</translation>
 <translation id="2178608107313874732">Chromium non pode usar a cámara neste momento</translation>
 <translation id="2195025571279539885">Queres que a próxima vez Chromium che ofreza a posibilidade de traducir as páxinas en <ph name="LANGUAGE_NAME" /> deste sitio?</translation>
 <translation id="2590893390871230428">Sincronizar os teus datos de Chromium</translation>
 <translation id="2650312721222849884">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, activa a sincronización</translation>
+<translation id="2684230048001240293">Define Chromium como predeterminado para sincronizar as pestanas, os contrasinais e a información de pago con todos os teus dispositivos</translation>
 <translation id="2730884209570016437">Chromium non pode usar a cámara porque a está usando outra aplicación</translation>
 <translation id="2915596697727466327">Chromium utiliza Face ID para garantir o acceso autorizado aos contrasinais.</translation>
 <translation id="2918709798697875261">A túa organización require que manteñas a sesión pechada en Chromium.</translation>
+<translation id="2942241131342758843">Usa Chromium de forma predeterminada para abrir ligazóns, realizar buscas desde widgets e autocompletar contrasinais noutras aplicacións</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="3256316712990552818">Copiouse en Chromium</translation>
 <translation id="3344973607274501920">Chromium non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Se esta función está activada, Chromium utilizará o Tradutor de Google para ofrecer a tradución de páxinas escritas noutros idiomas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="4681781466797808448">Activar escáner de Chromium</translation>
+<translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chromium deste dispositivo</translation>
 <translation id="4787850887676698916">Aquí aparecerán as pestanas que abrises en Chromium noutros dispositivos.</translation>
 <translation id="4828317641996116749">Chromium non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="4985291216379576555">Non tes conexión. Chromium non puido buscar actualizacións</translation>
@@ -55,6 +59,7 @@
 2. Toca Aplicación de navegador predeterminada
 3. Selecciona Chromium.</translation>
 <translation id="6268381023930128611">Pechar sesión en Chromium?</translation>
+<translation id="6337530241089703714">Indicar se queres borrar ou conservar os teus datos de Chromium neste dispositivo</translation>
 <translation id="6424492062988593837">Chromium introduciu melloras. Está dispoñible unha nova versión.</translation>
 <translation id="6820823224820483452">Chromium non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
 <translation id="6827294685447036764">Se permites que Chromium saiba cal é a túa localización, este enviaralla aos sitios aos que lles concedas a autorización pertinente. Os sitios poderán preguntarche pola túa localización se teñen información local que mostrarche (por exemplo, noticias ou tendas próximas).</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">O teu contrasinal quedou exposto debido a unha violación da seguranza dos datos. Chromium recoméndache que o cambies agora.</translation>
 <translation id="7674213385180944843">Abre Configuración &gt; Privacidade &gt; Cámara &gt; Chromium e activa a cámara.</translation>
 <translation id="7746854981345936341">Consello sobre Chromium: Agora algúns botóns, como Atrás, Adiante e Buscar, están na parte inferior da pantalla.</translation>
+<translation id="7763454117143368771">Usa Chromium como navegador predeterminado para protexer a túa seguranza contra sitios perigosos e manter a salvo os teus contrasinais</translation>
 <translation id="786327964234957808">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chromium actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Comeza a utilizar o escáner de Chromium</translation>
 <translation id="7931842119211730154">Bloquear pestanas do modo de incógnito ao pechar Chromium</translation>

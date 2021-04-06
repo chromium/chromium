@@ -132,6 +132,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2012624427112548395">U-Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Thayipha umlayezo</translation>
 <translation id="2018630726571919839">Ngitshele ihlaya</translation>
+<translation id="2021864487439853900">Chofoza ukuze uvule</translation>
 <translation id="2049240716062114887">Igama letafula lishintshelwe ku-<ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Ukuma ngobude</translation>
 <translation id="2067602449040652523">Ukukhanya kwekhibhodi</translation>
@@ -409,10 +410,12 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4421231901400348175">Ukulawula ukwabelana kwesikrini sakho nge-<ph name="HELPER_NAME" /> nge-Remote Assistance.</translation>
 <translation id="4424159417645388645">Itafula 5</translation>
 <translation id="4430019312045809116">Ivolumu</translation>
+<translation id="4445159312344259901">Ngena ngemvume ukuze uvule</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{isaziso esi-1 esibalulekile}one{izaziso ezingu-# ezibalulekile}other{izaziso ezingu-# ezibalulekile}}</translation>
 <translation id="4450893287417543264">Ungabonisi futhi</translation>
 <translation id="445864333228800152">Sawubona,</translation>
 <translation id="4458688154122353284">Misa ukuqopha isikrini</translation>
+<translation id="4467143075433126295">Cindezela futhi ubambe u-[Esc] ukuze uphume esikrinini esikhulu</translation>
 <translation id="4472575034687746823">Qalisa</translation>
 <translation id="4477350412780666475">Ithrekhi elandelayo</translation>
 <translation id="4477892968187500306">Le divayisi ingaqukatha izinhlelo zokusebenza ezingaqinisekisiwe i-Google.</translation>
@@ -796,7 +799,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="7780159184141939021">Zungezisa isikrini</translation>
 <translation id="7796353162336583443">Thepha inkinobho ye-stylus kushelufu ukuze uthathe amanothi, isithombe-skrini, usebenzise umsizi, isikhombi se-pointer, noma ingilazi yokusondeza.</translation>
 <translation id="7798302898096527229">Cindezela usesho noma u-Shift ukuze ukhansele.</translation>
-<translation id="7807966291075028781">Imingcele ayisekelwe Kwimodi Yesivakashi ngokwezizathu zokuphepha</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ne-<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Isignali enamandla</translation>
 <translation id="7837740436429729974">Isikhathi siphelile</translation>

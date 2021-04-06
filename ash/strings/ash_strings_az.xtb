@@ -132,6 +132,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Mesaj yazın</translation>
 <translation id="2018630726571919839">Gülməli əhvalat danış</translation>
+<translation id="2021864487439853900">Kiliddən çıxarmaq üçün toxunun</translation>
 <translation id="2049240716062114887">Masa adı <ph name="DESK_NAME" /> olaraq dəyişdirilib</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Klaviatura parlaqlığı</translation>
@@ -409,10 +410,12 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4421231901400348175">Uzaqdan Yardım vasitəsilə <ph name="HELPER_NAME" /> ilə ekranın kontrolunu paylaşın</translation>
 <translation id="4424159417645388645">Masa 5</translation>
 <translation id="4430019312045809116">Həcm</translation>
+<translation id="4445159312344259901">Kiliddən çıxarmaq üçün daxil olun</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 əhəmiyyətli bildiriş}other{# əhəmiyyətli bildiriş}}</translation>
 <translation id="4450893287417543264">Daha göstərməyin</translation>
 <translation id="445864333228800152">Axşamınız xeyir,</translation>
 <translation id="4458688154122353284">Ekran çəkilişini dayandırın</translation>
+<translation id="4467143075433126295">Tam ekrandan çıxmaq üçün [Esc] düyməsinə basıb saxlayın</translation>
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4477350412780666475">Növbəti trek</translation>
 <translation id="4477892968187500306">Bu cihaz Google tərəfindən doğrulanmamış tətbiqlər ehtiva edə bilər.</translation>
@@ -796,7 +799,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7780159184141939021">Ekranı fırladın</translation>
 <translation id="7796353162336583443">Qeyd etmək, skrinşot çəkmək Google Assistentdən, lazer işarəsindən və ya lupadan istifadə etmək üçün fırça düyməsinə klikləyin.</translation>
 <translation id="7798302898096527229">Ləğv etmək üçün Search və ya Shift düyməsini basın.</translation>
-<translation id="7807966291075028781">Təhlükəsizlik səbəbi ilə Qonaq Rejimində periferik cihaz dəstəklənmir</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> və <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Güclü siqnal</translation>
 <translation id="7837740436429729974">Vaxt bitdi</translation>

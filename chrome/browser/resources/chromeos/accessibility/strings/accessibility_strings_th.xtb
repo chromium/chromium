@@ -45,6 +45,7 @@
 <translation id="1225969361094801578">สีเทาอมฟ้าเข้ม</translation>
 <translation id="1230503547248836149">เริ่มส่วนที่เลือก</translation>
 <translation id="1236794971743289975">อ้างอิงท้ายเรื่อง</translation>
+<translation id="1237797094773582699">ในทำนองเดียวกัน คุณใช้ 4 นิ้วปัดจากขวาไปซ้ายเพื่อเลื่อนไปยังส่วนก่อนหน้าได้ ลองทำเลย</translation>
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">สีฟ้าดอกคอร์นฟลาวเวอร์</translation>
 <translation id="1246424317317450637">ตัวหนา</translation>
@@ -302,6 +303,7 @@
 <translation id="3082249673510793544">เลื่อนกลับ</translation>
 <translation id="3084806535845658316">ไม่พูดขณะพิมพ์</translation>
 <translation id="3086746722712840547">หมายเหตุ</translation>
+<translation id="308736057934395497">คำสั่งนี้จะเพิ่มความเป็นส่วนตัวโดยปิดหน้าจอไม่ให้ผู้อื่นเห็น คุณเปิดหน้าจออีกครั้งได้ทุกเมื่อโดยกดค้นหา + เพิ่มความสว่าง</translation>
 <translation id="3090227230165225418">ประกาศการแจ้งเตือนการดาวน์โหลด</translation>
 <translation id="3090532668523289635">กลุ่ม</translation>
 <translation id="3093176084511590672">จุดสังเกตถัดไป</translation>
@@ -422,7 +424,6 @@
 <translation id="3870295413168340326">ไม่มีส่วนหัวระดับ 3 ก่อนหน้า</translation>
 <translation id="3887399638190992181">แป้นหลัก</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">ในทำนองเดียวกัน คุณสามารถใช้ 4 นิ้วปัดจากขวาไปซ้ายเพื่อเลื่อนไปยังองค์ประกอบหลักรายการก่อนหน้าได้ ลองทำเลย</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3907138069015388678">รายการตาราง</translation>
 <translation id="3909320334364316587">ส่วนหัวระดับ 6 ก่อนหน้า</translation>

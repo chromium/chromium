@@ -57,7 +57,7 @@
 <translation id="1299774449519412690">Bleu ciel clair</translation>
 <translation id="1303806948938513162">Appuyez avec quatre doigts pour accéder aux menus ChromeVox</translation>
 <translation id="1313373992684326101">Passer à la section précédente. Exemples : barre d'état et Lanceur d'applications.</translation>
-<translation id="1315077335264761176">Orientation tactile</translation>
+<translation id="1315077335264761176">Se servir des gestes</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, case d'option désélectionnée de l'élément de menu</translation>
 <translation id="1325946044405407859">Brun clair</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> sur <ph name="TOTAL" /></translation>
@@ -422,7 +422,6 @@
 <translation id="3870295413168340326">Aucun titre de niveau 3 précédent</translation>
 <translation id="3887399638190992181">Touches essentielles</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">Essayez maintenant le même geste, mais de droite à gauche, pour passer à l'élément principal précédent.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">En-tête précédent de niveau 6</translation>

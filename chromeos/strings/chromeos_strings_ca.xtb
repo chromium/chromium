@@ -95,6 +95,7 @@
 <translation id="3226405216343213872">S'estan cercant escàners</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
+<translation id="3283504360622356314">{0,plural, =1{Edita el fitxer}other{Edita els fitxers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
 <translation id="3328783797891415197">La prova s'està executant</translation>
@@ -342,7 +343,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8483248364096924578">Adreça IP</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8503836310948963452">Només queden uns quants minuts...</translation>
-<translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>
+<translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te a la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>
 <translation id="8576249514688522074">No s'ha inicialitzat</translation>
 <translation id="8620617069779373398">Estat d'itinerància</translation>
 <translation id="8675354002693747642">Clau precompartida</translation>

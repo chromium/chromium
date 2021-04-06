@@ -132,6 +132,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2012624427112548395">Ctrl+Sök+H</translation>
 <translation id="2016340657076538683">Skriv ett meddelande</translation>
 <translation id="2018630726571919839">Dra ett skämt</translation>
+<translation id="2021864487439853900">Klicka för att låsa upp</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
@@ -409,10 +410,12 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4421231901400348175">Dela kontroll över skärmen med <ph name="HELPER_NAME" /> via Fjärrhjälp.</translation>
 <translation id="4424159417645388645">Skrivbord 5</translation>
 <translation id="4430019312045809116">Volym</translation>
+<translation id="4445159312344259901">Logga in för att låsa upp</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 viktig avisering}other{# viktiga aviseringar}}</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="445864333228800152">Hej!</translation>
 <translation id="4458688154122353284">Stoppa skärminspelningen</translation>
+<translation id="4467143075433126295">Avsluta helskärmsläget genom att hålla [Esc] nedtryckt</translation>
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4477350412780666475">Nästa spår</translation>
 <translation id="4477892968187500306">Den här enheten kan innehålla appar som inte har verifierats av Google.</translation>
@@ -796,7 +799,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
 <translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
 <translation id="7798302898096527229">Avbryt genom att trycka på söktangenten eller Skift.</translation>
-<translation id="7807966291075028781">Kringutrustningen stöds inte i gästläget av säkerhetsskäl</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> och <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">stark signal</translation>
 <translation id="7837740436429729974">Tiden är ute</translation>

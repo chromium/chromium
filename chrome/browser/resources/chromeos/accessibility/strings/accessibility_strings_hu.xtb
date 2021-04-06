@@ -302,6 +302,7 @@
 <translation id="3082249673510793544">Görgetés vissza</translation>
 <translation id="3084806535845658316">nincs gépelési visszaolvasás</translation>
 <translation id="3086746722712840547">jegyzet</translation>
+<translation id="308736057934395497">Hatékonyabban védheti az adatait a képernyő kikapcsolásával, amelynek tartalmát így nem látják mások. A képernyőt bármikor újra bekapcsolhatja a Keresés + Fényerő fel billentyűkombinációval.</translation>
 <translation id="3090227230165225418">Letöltési értesítések bejelentése</translation>
 <translation id="3090532668523289635">csop</translation>
 <translation id="3093176084511590672">Következő határjel</translation>
@@ -422,7 +423,6 @@
 <translation id="3870295413168340326">Nincs előző 3. szintű címsor</translation>
 <translation id="3887399638190992181">Alapvető billentyűk</translation>
 <translation id="3887576927692165210">szövegmező</translation>
-<translation id="3893063449310326280">Ehhez hasonlóan, ha jobbról balra csúsztat négy ujjal, az előző fő elemre léphet. Próbálja ki most!</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3907138069015388678">listnéz</translation>
 <translation id="3909320334364316587">Előző 6. szintű fejléc</translation>

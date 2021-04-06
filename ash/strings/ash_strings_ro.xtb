@@ -132,6 +132,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2012624427112548395">Ctrl + tasta de căutare + H</translation>
 <translation id="2016340657076538683">Scrie un mesaj</translation>
 <translation id="2018630726571919839">Spune-mi o glumă</translation>
+<translation id="2021864487439853900">Dă clic pentru deblocare</translation>
 <translation id="2049240716062114887">Numele desktopului a fost schimbat în <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Luminozitatea tastaturii</translation>
@@ -409,10 +410,12 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4421231901400348175">În prezent, <ph name="HELPER_NAME" /> îți poate controla ecranul prin Asistență la distanță.</translation>
 <translation id="4424159417645388645">Desktop 5</translation>
 <translation id="4430019312045809116">Volum</translation>
+<translation id="4445159312344259901">Conectează-te pentru deblocare</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificare importantă}few{# notificări importante}other{# de notificări importante}}</translation>
 <translation id="4450893287417543264">Nu mai afișa</translation>
 <translation id="445864333228800152">Bună seara!</translation>
 <translation id="4458688154122353284">Oprește înregistrarea ecranului</translation>
+<translation id="4467143075433126295">Apasă lung pe [Esc] pentru a ieși din ecranul complet</translation>
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4477350412780666475">Melodia următoare</translation>
 <translation id="4477892968187500306">Dispozitivul poate conține aplicații care nu au fost verificate de Google.</translation>
@@ -796,7 +799,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7780159184141939021">Rotește ecranul</translation>
 <translation id="7796353162336583443">Atinge butonul creion de pe raft ca să creezi note și capturi de ecran, să folosești Asistentul Google, indicatorul laser sau lupa.</translation>
 <translation id="7798302898096527229">Apasă pe tasta de căutare sau pe Shift pentru a anula.</translation>
-<translation id="7807966291075028781">Dispozitivul periferic nu este acceptat în modul pentru invitați din motive de securitate</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />:<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Semnal puternic</translation>
 <translation id="7837740436429729974">Timpul a expirat!</translation>

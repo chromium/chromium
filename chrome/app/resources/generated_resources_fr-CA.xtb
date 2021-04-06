@@ -1240,7 +1240,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2342740338116612727">Favoris ajoutés</translation>
 <translation id="2343747224442182863">Mettre cet onglet en évidence</translation>
 <translation id="2345723121311404059">1 page vers <ph name="PRINTER_NAME" /></translation>
-<translation id="2347644257713614136">L'utilisation de Hangouts et de Cast for Education est régie par la politique de confidentialité de Google.</translation>
 <translation id="2348176352564285430">Application : <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> : autorisation demandée, appuyez sur Ctrl+Suivant pour répondre</translation>
 <translation id="234889437187286781">Erreur lors du chargement des données</translation>
@@ -2356,7 +2355,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="359283478042092570">Entrer</translation>
 <translation id="3593152357631900254">Activer le mode pinyin flou</translation>
 <translation id="3593965109698325041">Contraintes de nom de certificat</translation>
-<translation id="3596235046596950091">Activer les services infonuagiques</translation>
 <translation id="3596414637720633074">Bloquer les témoins tiers en navigation privée</translation>
 <translation id="3599221874935822507">Surélevé</translation>
 <translation id="3599863153486145794">Efface l'historique de tous les appareils connectés. D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -6698,7 +6696,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour faire un zoom arrière.</trans
 <translation id="8534656636775144800">Oups! Une erreur s'est produite lorsque vous avez tenté de vous joindre au domaine. Veuillez réessayer.</translation>
 <translation id="8535005006684281994">URL de renouvellement du certificat Netscape</translation>
 <translation id="8536956381488731905">Son à chaque touche</translation>
-<translation id="8538358978858059843">Activer les services infonuagiques pour Google Cast?</translation>
 <translation id="8539727552378197395">Non (HttpOnly)</translation>
 <translation id="8539766201049804895">Mettre à niveau</translation>
 <translation id="8540136935098276800">Entrez une URL au format correct</translation>

@@ -132,6 +132,7 @@
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Хабар мәтінін енгізіңіз</translation>
 <translation id="2018630726571919839">Әзіл айтып бер</translation>
+<translation id="2021864487439853900">Құлыпты ашу үшін басыңыз</translation>
 <translation id="2049240716062114887">Жұмыс үстелінің атауы <ph name="DESK_NAME" /> деп өзгертілді.</translation>
 <translation id="2050339315714019657">Портреттік</translation>
 <translation id="2067602449040652523">Пернетақта ашықтығы</translation>
@@ -409,10 +410,12 @@
 <translation id="4421231901400348175">Remote Assistance арқылы <ph name="HELPER_NAME" /> пайдаланушысымен экранды бөлісіп басқару.</translation>
 <translation id="4424159417645388645">5-ші жұмыс үстелі</translation>
 <translation id="4430019312045809116">Дыбыс деңгейі</translation>
+<translation id="4445159312344259901">Құлыпты ашу үшін кіріңіз</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 маңызды хабарландыру}other{# маңызды хабарландыру}}</translation>
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
 <translation id="445864333228800152">Қайырлы кеш!</translation>
 <translation id="4458688154122353284">Экран жазуды тоқтату</translation>
+<translation id="4467143075433126295">Толық экраннан шығу үшін [Esc] түймесін басып ұстап тұрыңыз.</translation>
 <translation id="4472575034687746823">Іске кірісу</translation>
 <translation id="4477350412780666475">Келесі аудиотрек</translation>
 <translation id="4477892968187500306">Құрылғыда Google растамаған қолданбалар болуы мүмкін.</translation>
@@ -796,7 +799,6 @@
 <translation id="7780159184141939021">Экранды бұру</translation>
 <translation id="7796353162336583443">Жазба мен скриншот үшін сөредегі стилус түймесін түртіңіз. Google көмекшісін, лазер меңзерді немесе ұлғайтқыш әйнекті пайдаланыңыз.</translation>
 <translation id="7798302898096527229">Бас тарту үшін Іздеу не Shift пернесін басыңыз.</translation>
-<translation id="7807966291075028781">Қауіпсіздік мақсатында Қонақ режимінде перифериялық құрылғыға қолдау көрсетілмейді.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> және <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Күшті сигнал</translation>
 <translation id="7837740436429729974">Уақыт бітті</translation>

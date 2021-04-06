@@ -45,6 +45,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1225969361094801578">गहरा स्लेटी</translation>
 <translation id="1230503547248836149">यहां से चुनना शुरू करें</translation>
 <translation id="1236794971743289975">एंड नोट</translation>
+<translation id="1237797094773582699">इसी तरह, पिछले सेक्शन पर जाने के लिए, चार उंगलियों से दाईं से बाईं ओर स्वाइप कर सकते हैं. इसे अभी आज़माएं!</translation>
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">नीले जंगली फूल जैसा रंग</translation>
 <translation id="1246424317317450637">बोल्ड टेक्स्ट</translation>
@@ -302,6 +303,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3082249673510793544">पीछे की ओर स्क्रोल करें</translation>
 <translation id="3084806535845658316">कोई टाइपिंग इको नहीं</translation>
 <translation id="3086746722712840547">नोट</translation>
+<translation id="308736057934395497">यह आपके डिवाइस की स्क्रीन को बंद करके निजता को बेहतर बनाता है, ताकि यह अन्य लोगों को न दिखे. आप जब चाहें, खोज बटन और स्क्रीन की चमक बढ़ाने वाला बटन साथ में दबाकर, स्क्रीन को फिर से चालू कर सकते हैं.</translation>
 <translation id="3090227230165225418">डाउनलोड सूचनाओं का एलान करें</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">अगला लैंडमार्क</translation>
@@ -422,7 +424,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3870295413168340326">पहले से कोई लेवल 3 शीर्षक नहीं है</translation>
 <translation id="3887399638190992181">ज़रूरी बटन</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">इसी तरह, पिछले मुख्य आइटम पर जाने के लिए, चार उंगलियों से दाईं से बाईं ओर स्वाइप कर सकते हैं. इसे अभी आज़माएं!</translation>
 <translation id="3897092660631435901">मेन्यू</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">पिछले लेवल 6 का शीर्षक</translation>
@@ -1122,7 +1123,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="923331726185079994">ChromeVox अपडेट किया गया</translation>
 <translation id="93384979447910801">गहरा समुद्री हरा</translation>
 <translation id="948171205378458592">बोली की दर घटाएं</translation>
-<translation id="957570623732056069">इस लेसन पर जाने के लिए, एक उंगली से बाईं या दाईं ओर स्वाइप करें</translation>
+<translation id="957570623732056069">इस लेसन पर जाने के लिए, उंगली से बाईं या दाईं ओर स्वाइप करें</translation>
 <translation id="958854023026327378">एक उंगली से नीचे स्वाइप करें</translation>
 <translation id="962913030769097253">अगले लेवल 1 का शीर्षक</translation>
 <translation id="966588271015727539">एक ब्लूटूथ ब्रेल डिसप्ले चुनें</translation>

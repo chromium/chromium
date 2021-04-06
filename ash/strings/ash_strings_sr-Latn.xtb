@@ -132,6 +132,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2012624427112548395">Ctrl + taster za pretragu + H</translation>
 <translation id="2016340657076538683">Unesite poruku</translation>
 <translation id="2018630726571919839">Ispričaj mi vic.</translation>
+<translation id="2021864487439853900">Kliknite da biste otključali</translation>
 <translation id="2049240716062114887">Ime radne površine je promenjeno u <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertikalno</translation>
 <translation id="2067602449040652523">Osvetljenost tastature</translation>
@@ -409,10 +410,12 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4421231901400348175">Delite kontrolu nad ekranom sa osobom <ph name="HELPER_NAME" /> preko Daljinske pomoći.</translation>
 <translation id="4424159417645388645">Radna površina 5</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
+<translation id="4445159312344259901">Prijavite se da otključate</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 važno obaveštenje}one{# važno obaveštenje}few{# važna obaveštenja}other{# važnih obaveštenja}}</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="445864333228800152">Dobro veče,</translation>
 <translation id="4458688154122353284">Zaustavite snimanje ekrana</translation>
+<translation id="4467143075433126295">Pritisnite i zadržite [Esc] da biste izašli iz režima preko celog ekrana</translation>
 <translation id="4472575034687746823">Započnimo</translation>
 <translation id="4477350412780666475">Sledeća pesma</translation>
 <translation id="4477892968187500306">Ovaj uređaj može da sadrži aplikacije koje Google nije verifikovao.</translation>
@@ -796,7 +799,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7780159184141939021">Rotirajte ekran</translation>
 <translation id="7796353162336583443">Dodirnite dugme pisaljke na polici da biste napravili belešku i snimak ekrana i da biste koristili Google pomoćnik, laserski pokazivač ili lupu.</translation>
 <translation id="7798302898096527229">Pritisnite taster za pretragu ili Shift da biste otkazali.</translation>
-<translation id="7807966291075028781">Periferni uređaj nije podržan u režimu gosta iz bezbednosnih razloga</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Jak signal</translation>
 <translation id="7837740436429729974">Vreme je isteklo</translation>

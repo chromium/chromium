@@ -302,6 +302,7 @@
 <translation id="3082249673510793544">向後捲動</translation>
 <translation id="3084806535845658316">無輸入語音回應</translation>
 <translation id="3086746722712840547">附註</translation>
+<translation id="308736057934395497">這項操作會關閉螢幕，防止其他人看到螢幕畫面，因此有助於保護隱私。不過，你隨時可以按下搜尋鍵 + 調高亮度鍵重新開啟螢幕。</translation>
 <translation id="3090227230165225418">朗讀下載通知</translation>
 <translation id="3090532668523289635">群組</translation>
 <translation id="3093176084511590672">下一個地標</translation>
@@ -350,7 +351,7 @@
 <translation id="3317212938060708859">滑桿</translation>
 <translation id="3321460131042519426">允許自動換行</translation>
 <translation id="3322936298410871309">上一個第 1 階標題</translation>
-<translation id="3323447499041942178">文字框</translation>
+<translation id="3323447499041942178">文字方塊</translation>
 <translation id="3324983252691184275">深紅色</translation>
 <translation id="335581015389089642">語音</translation>
 <translation id="3356951775008366684">朗讀字詞的拼音發音</translation>
@@ -422,7 +423,6 @@
 <translation id="3870295413168340326">沒有上一個第 3 階標題</translation>
 <translation id="3887399638190992181">重要按鍵</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">同樣地，用四指由右往左滑動可移至上一個主要元素，現在就試試看吧！</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3907138069015388678">清單格線</translation>
 <translation id="3909320334364316587">上一個第 6 階標題</translation>

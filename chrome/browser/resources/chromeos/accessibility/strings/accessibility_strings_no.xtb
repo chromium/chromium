@@ -57,6 +57,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="1299774449519412690">Lys himmelblå</translation>
 <translation id="1303806948938513162">Trykk med fire fingre for å åpne ChromeVox-menyene</translation>
 <translation id="1313373992684326101">Gå til forrige del. Eksempler på dette er statusfeltet og Appoversikt.</translation>
+<translation id="1315077335264761176">Berøringsorientering</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menyelement med alternativknapp som ikke er valgt</translation>
 <translation id="1325946044405407859">Gyllenbrun</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> av <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="1730447754326314349">Velkommen til ChromeVox-veiledningen. For å avslutte denne veiledningen kan du når som helst trykke på Escape-tasten øverst til venstre på tastaturet. For å slå av ChromeVox, hold inne Ctrl og Alt, og trykk på Z. Når du er klar, bruker du mellomromstasten for å gå videre til neste leksjon.</translation>
 <translation id="174268867904053074">Neste illustrasjon</translation>
 <translation id="1756785467854861272">Mørk magenta</translation>
+<translation id="1758693804775271377">Sveip til venstre eller høyre med én finger for å bla gjennom leksjoner for dette emnet</translation>
 <translation id="1765245556747822181">Sveip én finger opp</translation>
 <translation id="1771761307086386028">Rull til høyre</translation>
 <translation id="1781173782405573156">Passér-tast</translation>
@@ -258,6 +260,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2811204574343810641">Rad</translation>
 <translation id="2816868829355607410">Øvelsesområde: hoppkommandoer</translation>
 <translation id="2841013758207633010">Klokkeslett</translation>
+<translation id="284171465644749950">Sveip til venstre eller høyre med én finger for å bla gjennom emner</translation>
 <translation id="2843432675592278677">Det finnes ingen tidligere ARIA-landemerker</translation>
 <translation id="2843814945404750166">Mørk olivengrønn</translation>
 <translation id="2843837985843789981">Forrige gruppe</translation>
@@ -299,6 +302,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3082249673510793544">Rull bakover</translation>
 <translation id="3084806535845658316">uten inntastingsekko</translation>
 <translation id="3086746722712840547">note</translation>
+<translation id="308736057934395497">Dette gir deg bedre personvern ved å slå av skjermen din, slik at den ikke er synlig for andre. Du kan alltid slå skjermen på igjen ved å trykke på søketasten + lysstyrke opp.</translation>
 <translation id="3090227230165225418">Les opp nedlastingsvarsler</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Neste landemerke</translation>
@@ -419,7 +423,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3870295413168340326">Det finnes ingen tidligere overskrifter på nivå 3</translation>
 <translation id="3887399638190992181">Essensielle taster</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">Tilsvarende kan du sveipe med fire fingre fra høyre til venstre for å gå til forrige store element. Prøv nå!</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3907138069015388678">ruteliste</translation>
 <translation id="3909320334364316587">Forrige overskrift på nivå 6</translation>
@@ -1120,6 +1123,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="923331726185079994">ChromeVox er oppdatert</translation>
 <translation id="93384979447910801">Mørk sjøgrønn</translation>
 <translation id="948171205378458592">Reduser talehastigheten</translation>
+<translation id="957570623732056069">Sveip til venstre eller høyre med én finger for å navigere i denne leksjonen</translation>
 <translation id="958854023026327378">Sveip én finger ned</translation>
 <translation id="962913030769097253">Neste overskrift på nivå 1</translation>
 <translation id="966588271015727539">Velg en Bluetooth-leselist</translation>

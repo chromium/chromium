@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Azul celeste claro</translation>
 <translation id="1303806948938513162">Toca con 4 dedos para acceder aos menús de ChromeVox</translation>
 <translation id="1313373992684326101">Ir á sección anterior. Exemplos: bandexa de estado, menú de aplicacións etc.</translation>
+<translation id="1315077335264761176">Orientación mediante toques</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, botón de opción do elemento do menú non seleccionado</translation>
 <translation id="1325946044405407859">Bronceado</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> de <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Dámosche a benvida ao titorial de ChromeVox. Para saír deste titorial en calquera momento, preme Escape, situada na esquina superior esquerda do teclado. Para desactivar ChromeVox, mantén premidas as teclas Control e Alt e usa Z. Cando teñas todo listo para pasar á lección seguinte, preme a barra de espazo.</translation>
 <translation id="174268867904053074">Seguinte gráfico</translation>
 <translation id="1756785467854861272">Maxenta escuro</translation>
+<translation id="1758693804775271377">Para explorar as leccións deste tema, pasa un dedo cara á esquerda ou cara á dereita</translation>
 <translation id="1765245556747822181">Pasa o dedo cara arriba</translation>
 <translation id="1771761307086386028">Desprazarse á dereita</translation>
 <translation id="1781173782405573156">Tecla de acceso directo</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Fila</translation>
 <translation id="2816868829355607410">Zona de práctica: comandos de desprazamento</translation>
 <translation id="2841013758207633010">Hora</translation>
+<translation id="284171465644749950">Para explorar os temas, pasa un dedo cara á esquerda ou cara á dereita</translation>
 <translation id="2843432675592278677">Non hai ningún punto de referencia de ARIA anterior</translation>
 <translation id="2843814945404750166">Verde oliva escuro</translation>
 <translation id="2843837985843789981">Grupo anterior</translation>
@@ -299,6 +302,7 @@
 <translation id="3082249673510793544">Desprazarse cara atrás</translation>
 <translation id="3084806535845658316">non reproducir en alto o que se escribe</translation>
 <translation id="3086746722712840547">nota</translation>
+<translation id="308736057934395497">Este comando mellora a privacidade, xa que apaga a pantalla para que non poidan vela outras persoas. Sempre podes volver acendela premendo os botóns Buscar + Aumentar brillo.</translation>
 <translation id="3090227230165225418">Anunciar notificacións de descarga</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Seguinte punto de referencia</translation>
@@ -419,7 +423,6 @@
 <translation id="3870295413168340326">Non hai ningunha cabeceira anterior de nivel 3</translation>
 <translation id="3887399638190992181">Teclas esenciais</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">Así mesmo, podes pasar catro dedos da dereita á esquerda para ir ao elemento principal anterior. Próbao agora!</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Cabeceira anterior de nivel 6</translation>
@@ -1120,6 +1123,7 @@
 <translation id="923331726185079994">Actualizouse ChromeVox</translation>
 <translation id="93384979447910801">Verde mariño escuro</translation>
 <translation id="948171205378458592">Reduce a velocidade da fala</translation>
+<translation id="957570623732056069">Para desprazarte por esta lección, pasa un dedo cara á esquerda ou cara á dereita</translation>
 <translation id="958854023026327378">Pasa o dedo cara abaixo</translation>
 <translation id="962913030769097253">Título de nivel 1 seguinte</translation>
 <translation id="966588271015727539">Selecciona una liña braille por Bluetooth</translation>

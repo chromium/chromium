@@ -93,6 +93,7 @@
 <translation id="1641113438599504367">Ασφαλής περιήγηση</translation>
 <translation id="164269334534774161">Βλέπετε ένα αντίγραφο εκτός σύνδεσης αυτής της σελίδας από <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
+<translation id="1668122540633280551">Επιλέξτε τον τρόπο αυτόματης αναπαραγωγής των προεπισκοπήσεων βίντεο στην αρχική σελίδα του Chrome.</translation>
 <translation id="1670399744444387456">Βασικά</translation>
 <translation id="1671236975893690980">Λήψη σε εκκρεμότητα…</translation>
 <translation id="1672586136351118594">Να μην εμφανιστεί ξανά</translation>
@@ -237,6 +238,8 @@
 <translation id="2534155362429831547">Διαγράφηκαν <ph name="NUMBER_OF_ITEMS" /> στοιχεία</translation>
 <translation id="2536728043171574184">Προβολή ενός αντιγράφου αυτής της σελίδας εκτός σύνδεσης</translation>
 <translation id="2546283357679194313">Cookie και δεδομένα ιστότοπου</translation>
+<translation id="2549341709325358884">Μόνο Wi-Fi και δεδομένα κινητής τηλεφωνίας</translation>
+<translation id="2561519700418191927">Προεπισκοπήσεις βίντεο</translation>
 <translation id="2567385386134582609">ΕΙΚΟΝΑ</translation>
 <translation id="2571711316400087311">Παρέχεται δυνατότητα αποστολής των σελίδων με περιεχόμενο σε διαφορετική γλώσσα στη Μετάφραση Google.</translation>
 <translation id="2581165646603367611">Αυτό θα διαγράψει τα cookie, την κρυφή μνήμη και άλλα δεδομένα ιστοτόπων που το Chrome θεωρεί ότι δεν είναι σημαντικά.</translation>
@@ -415,6 +418,7 @@
 <translation id="3773856050682458546">Τα βασικά δεδομένα και οι πληροφορίες σχετικά με τους ιστοτόπους που επισκέπτεστε και τις εφαρμογές που χρησιμοποιείτε.</translation>
 <translation id="3775705724665058594">Αποστολή στις συσκευές σας</translation>
 <translation id="3778956594442850293">Προστέθηκε στην αρχική οθόνη</translation>
+<translation id="3803784507854318295">Διαχείριση αυτόματης αναπαραγωγής</translation>
 <translation id="3810838688059735925">Βίντεο</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> λήψεις διαγράφηκαν</translation>

@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">হালকা আকাশী</translation>
 <translation id="1303806948938513162">ChromeVox মেনুতে প্রবেশ করার জন্য ৪টি আঙ্গুল দিয়ে ট্যাপ করুন</translation>
 <translation id="1313373992684326101">আগের বিভাগে যান। যেমন স্ট্যাটাস ট্রে ও লঞ্চার।</translation>
+<translation id="1315077335264761176">টাচ ওরিয়েন্টেশন</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, মেনু আইটেম রেডিও বোতাম বেছে নেওয়া অবস্থায় নেই</translation>
 <translation id="1325946044405407859">তামাটে</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" />-এর <ph name="INDEX" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVox টিউটোরিয়ালে স্বাগতম। এই টিউটোরিয়াল থেকে যেকোনও সময় বেরিয়ে আসতে, কীবোর্ডের উপরে বাঁদিকের কোণে Escape কী প্রেস করুন। ChromeVox বন্ধ করতে, Control ও Alt কী ধরে রেখে Z কী প্রেস করুন। আপনি প্রস্তুত হলে, পরের পাঠে যেতে Spacebar কী ব্যবহার করুন।</translation>
 <translation id="174268867904053074">পরবর্তী গ্রাফিক</translation>
 <translation id="1756785467854861272">গাঢ় ম্যাজেন্টা</translation>
+<translation id="1758693804775271377">এই বিষয়ের উপর টিউটোরিয়াল ব্রাউজ করতে একটি আঙুল দিয়ে বাঁদিকে বা ডানদিকে সোয়াইপ করুন</translation>
 <translation id="1765245556747822181">এক আঙ্গুল দিয়ে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="1771761307086386028">ডান দিকে স্ক্রল করুন</translation>
 <translation id="1781173782405573156">পার হয়ে যাওয়ার কী</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">সারি</translation>
 <translation id="2816868829355607410">অনুশীলন ক্ষেত্র: জাম্প কমান্ড</translation>
 <translation id="2841013758207633010">সময়</translation>
+<translation id="284171465644749950">বিভিন্ন বিষয় ব্রাউজ করতে একটি আঙুল দিয়ে বাঁদিকে বা ডানদিকে সোয়াইপ করুন</translation>
 <translation id="2843432675592278677">কোনও পূর্ববর্তী ARIA ল্যান্ডমার্ক নেই</translation>
 <translation id="2843814945404750166">গাঢ় জলপাই সবুজ</translation>
 <translation id="2843837985843789981">পূর্ববর্তী গ্রুপ</translation>
@@ -419,7 +422,6 @@
 <translation id="3870295413168340326">কোনও পূর্ববর্তী লেভেল ৩ শিরোনাম নেই</translation>
 <translation id="3887399638190992181">গুরুত্বপূর্ণ কী</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">একইভাবে, চার আঙুল দিয়ে ডানদিক থেকে বাঁদিকে সোয়াইপ করলে আগের গুরুত্বপূর্ণ আইটেমে নেভিগেট করতে পারবেন। এখনই করে দেখুন!</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3907138069015388678">সূচির গ্রিড</translation>
 <translation id="3909320334364316587">পূর্ববর্তী স্তর ৬ শিরোনাম</translation>
@@ -1120,6 +1122,7 @@
 <translation id="923331726185079994">ChromeVox আপডেট হয়েছে</translation>
 <translation id="93384979447910801">গাঢ় নীলাভ সবুজ</translation>
 <translation id="948171205378458592">স্পিচের হার কমান</translation>
+<translation id="957570623732056069">এই টিউটোরিয়ালে নেভিগেট করতে একটি আঙুল দিয়ে বাঁদিকে বা ডানদিকে সোয়াইপ করুন</translation>
 <translation id="958854023026327378">এক আঙ্গুল দিয়ে নিচের দিকে সোয়াইপ করুন</translation>
 <translation id="962913030769097253">পরবর্তী স্তর ১ শিরোনাম</translation>
 <translation id="966588271015727539">ব্লুটুথ ব্রেইল ডিসপ্লে বেছে নিন</translation>

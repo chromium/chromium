@@ -722,6 +722,7 @@
       注: フィールドを省略すると、すべての値に一致することになります。たとえば、接続の種類を指定しない場合、印刷プレビューは <ph name="PRINTER_TYPE_LOCAL" /> か <ph name="PRINTER_TYPE_CLOUD" /> かを問わず、あらゆる種類のプリンタの検出を開始することになります。正規表現は JavaScript RegExp 構文で指定する必要があり、大文字と小文字が区別されます。</translation>
 <translation id="2005506794355327448">ディスプレイを閉じたときに行うアクション</translation>
 <translation id="2006530844219044261">電源管理</translation>
+<translation id="2008514891623783266">WebRTC の IP 取り扱いポリシー</translation>
 <translation id="2013285471046373727">アプリのインストール方法を指定します。OPTIONAL: アプリは自動的にはインストールされませんが、ユーザーがインストールすることはできます。このポリシーが指定されていない場合は、デフォルトでこの設定が使用されます。PRELOAD: アプリは自動的にインストールされますが、ユーザーがアンインストールすることもできます。FORCE_INSTALLED: アプリは自動的にインストールされ、ユーザーがアンインストールすることはできません。BLOCKED: アプリはブロックされ、インストールできません。以前のポリシーによってアプリがインストール済みの場合はアンインストールされます。</translation>
 <translation id="2014757022750736514">ユーザーがアカウントにログインする画面の動作を制御します。制御できる設定は、ログインできるユーザー、許可するアカウントの種類、使用する認証方法などです。ユーザー補助、入力方法、言語 / 地域も設定できます。</translation>
 <translation id="201557587962247231">デバイス ステータス レポートのアップロード頻度</translation>
@@ -1659,6 +1660,7 @@
       このポリシーと <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" /> ポリシーの両方で同じ URL パターンが指定されている場合は、後者が優先され、モーション センサーや光センサーへのアクセスはブロックされます。
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
+<translation id="3207821022126246451">WebRTC は公開インターフェースで TCP を使用し、設定されたプロキシでサポートされている場合のみ UDP を使用できる。</translation>
 <translation id="3208615748170745525">アップデートが検出されてからの経過日数です。</translation>
 <translation id="3210408472559816322">このポリシーでは、読み込まないネイティブ メッセージング ホストを指定できます。拒否リストに「<ph name="WILDCARD_VALUE" />」の値を指定した場合は、明示的に許可されていない限り、すべてのネイティブ メッセージング ホストが拒否されます。
 
@@ -2037,6 +2039,7 @@
 <translation id="3758249152301468420">デベロッパー ツールを無効にする</translation>
 <translation id="3760148113224469113">ユーザーに外部プロトコルの確認メッセージを毎回表示する</translation>
 <translation id="3760231600118073732">現在のセッションをロックする。</translation>
+<translation id="3761222804122755011">WebRTC は公開インターネットに接続されているインターフェースのみを使用し、接続にプライベート IP アドレスを使用できる。</translation>
 <translation id="3762520180381586267">このポリシーを有効に設定した場合、<ph name="PRODUCT_OS_NAME" /> ではユーザーがデバイスを終了したときに再起動します。<ph name="PRODUCT_OS_NAME" /> では、UI 内の終了ボタンがすべて再起動ボタンに置き換えられます。ユーザーが電源ボタンを使ってデバイスを終了した場合は、このポリシーを有効に設定していても自動的に再起動されることはありません。
 
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="PRODUCT_OS_NAME" /> ではユーザーがそのままデバイスを終了できます。</translation>
@@ -5118,6 +5121,7 @@
 <translation id="8056237304861875584">スマートフォン ハブの作業の継続を有効にできるようにします。</translation>
 <translation id="8056273037819805106"><ph name="PRODUCT_OS_NAME" /> のログイン認証情報を管理対象プロキシのネットワーク認証に使用する。</translation>
 <translation id="8059164285174960932">リモート アクセス クライアントが認証トークンを取得する URL</translation>
+<translation id="8062375903420954294">このポリシーでは、WebRTC が最適な接続を検索する際に使用する IP アドレスとインターフェースを制限できます。RFC 8828 のセクション 5.2（https://tools.ietf.org/html/rfc8828.html#section-5.2）をご覧ください。未設定のままにした場合、デフォルトですべての利用可能なインターフェースが使用されます。</translation>
 <translation id="8062485064082966327">匿名の Google サービスを使用して、ラベル付けがない画像の説明を自動的に取得する</translation>
 <translation id="8071371098891664137"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLOCKLIST" /> が選択されている場合、<ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="8076521374016204899">このポリシーを有効に設定するか未設定のままにした場合、パスワード認証を行うユーザーは画面をロックできます。
@@ -5326,6 +5330,7 @@
 <translation id="8337114537412769126"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> では、POST を使ったキーワード候補の検索に使用するパラメータを指定できます。名前と値のペアをカンマで区切って指定します。テンプレート パラメータ（<ph name="SEARCH_TERM_MARKER" /> など）の値は、実際の検索キーワードのデータに置き換えられます。
 
       <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> を未設定のままにした場合、キーワードの候補による検索リクエストは GET メソッドを使用して送信されます。</translation>
+<translation id="8339089771335211509">WebRTC は公開インターネットに接続されているインターフェースのみを使用し、接続にプライベート IP アドレスを使用できない。</translation>
 <translation id="8339420913453596618">2 段階認証プロセスを無効にする</translation>
 <translation id="8344454543174932833">初回実行時にデフォルトのブラウザからブックマークをインポートする</translation>
 <translation id="8347993687936322631">このポリシーはサポートが終了しており、<ph name="PRODUCT_OS_NAME" /> バージョン 85 で削除されます。代わりに <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> を使用してください。
@@ -5392,6 +5397,7 @@
 <translation id="8465065632133292531">POST を使用するインスタント検索 URL のパラメータ</translation>
 <translation id="847472800012384958">すべてのサイトに対してポップアップ表示を許可しない</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
+<translation id="8479032202539686055">WebRTC は最適なパスを検索する際、すべての利用可能なインターフェースを使用できる。</translation>
 <translation id="8483004350080020634">プロキシ解決の際、<ph name="PRODUCT_NAME" /> によって使用されるプロキシ自動設定スクリプトに https:// から始まる URL を渡す前に、URL からプライバシーやセキュリティに関連する機密情報を削除します。
 
       このポリシーが True に設定されている場合は、このセキュリティ機能が

@@ -1242,7 +1242,6 @@
 <translation id="2342740338116612727">Хавчуурга нэмсэн</translation>
 <translation id="2343747224442182863">Энэ табын фокусыг тохируулах</translation>
 <translation id="2345723121311404059"><ph name="PRINTER_NAME" />-р 1 хуудас</translation>
-<translation id="2347644257713614136">Hangouts болон Cast for Education-н хэрэглээг Google-н нууцлалын бодлогын дагуу зохицуулдаг.</translation>
 <translation id="2348176352564285430">Апп: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд Ctrl + Forward дээр дарна уу</translation>
 <translation id="234889437187286781">Өгөгдлийг ачаалахад алдаа гарлаа</translation>
@@ -2359,7 +2358,6 @@
 <translation id="359283478042092570">Нэвтрэх</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin горимыг идэвхжүүл</translation>
 <translation id="3593965109698325041">Сертификатын нэрийн хязгаарлалт</translation>
-<translation id="3596235046596950091">Cloud үйлчилгээг идэвхжүүлэх</translation>
 <translation id="3596414637720633074">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="3599221874935822507">Томруулсан</translation>
 <translation id="3599863153486145794">Бүх нэвтэрсэн төхөөрөмжийн түүхийг устгана. Таны Google бүртгэл <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байж болзошгүй.</translation>
@@ -6709,7 +6707,6 @@
 <translation id="8534656636775144800">Уучлаарай, домайнд нэгдэхэд алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="8535005006684281994">Нетскейп гэрчилгээг шинэчлэх холбоос</translation>
 <translation id="8536956381488731905">Товч дарахад дуу гарах</translation>
-<translation id="8538358978858059843">Cast-д үүлний үйлчилгээг идэвхжүүлэх үү?</translation>
 <translation id="8539727552378197395">Үгүй (HttpOnly)</translation>
 <translation id="8539766201049804895">Дэвшүүлэх</translation>
 <translation id="8540136935098276800">Зөв форматтай URL оруулна уу</translation>

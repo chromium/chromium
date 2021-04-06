@@ -132,6 +132,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Ierakstiet ziņojumu</translation>
 <translation id="2018630726571919839">Pastāstīt joku</translation>
+<translation id="2021864487439853900">Noklikšķiniet, lai atbloķētu</translation>
 <translation id="2049240716062114887">Darbvietas nosaukums tika mainīts uz “<ph name="DESK_NAME" />”.</translation>
 <translation id="2050339315714019657">Portrets</translation>
 <translation id="2067602449040652523">Tastatūras spilgtums</translation>
@@ -409,10 +410,12 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4421231901400348175">Ekrāna pārvaldības koplietošana ar <ph name="HELPER_NAME" />, izmantojot attālo palīdzību.</translation>
 <translation id="4424159417645388645">5. darbvieta</translation>
 <translation id="4430019312045809116">Skaļums</translation>
+<translation id="4445159312344259901">Pierakstieties, lai atbloķētu</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 svarīgs paziņojums}zero{# svarīgu paziņojumu}one{# svarīgs paziņojums}other{# svarīgi paziņojumi}}</translation>
 <translation id="4450893287417543264">Vairs nerādīt</translation>
 <translation id="445864333228800152">Labvakar!</translation>
 <translation id="4458688154122353284">Apturēt ekrāna ierakstīšanu</translation>
+<translation id="4467143075433126295">Lai izietu no pilnekrāna režīma, nospiediet un turiet atsoļa taustiņu.</translation>
 <translation id="4472575034687746823">Sākt darbu</translation>
 <translation id="4477350412780666475">Nākamais ieraksts</translation>
 <translation id="4477892968187500306">Iespējams, šajā ierīcē ir lietotnes, ko uzņēmums Google nav verificējis.</translation>
@@ -796,7 +799,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7780159184141939021">Ekrāna pagriešana</translation>
 <translation id="7796353162336583443">Pieskarieties skārienekrāna pildspalvas pogai plauktā, lai veiktu piezīmes vai ekrānuzņēmumus, izmantotu Google asistentu, lāzera rādītāju vai lupu.</translation>
 <translation id="7798302898096527229">Lai atceltu, nospiediet meklēšanas vai pārslēgšanas taustiņu.</translation>
-<translation id="7807966291075028781">Drošības apsvērumu dēļ perifērā ierīce netiek atbalstīta viesa režīmā.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> un <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Spēcīgs signāls</translation>
 <translation id="7837740436429729974">Laiks ir beidzies!</translation>

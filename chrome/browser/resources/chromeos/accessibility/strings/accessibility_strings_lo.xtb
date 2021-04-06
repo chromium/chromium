@@ -45,6 +45,7 @@
 <translation id="1225969361094801578">ສີເທົາອົມຟ້າເຂັ້ມ</translation>
 <translation id="1230503547248836149">ຈຸດເລີ່ມຕົ້ນສ່ວນທີ່ເລືອກ</translation>
 <translation id="1236794971743289975">ໝາຍເຫດທ້າຍເລື່ອງ</translation>
+<translation id="1237797094773582699">ໃນລັກສະນະດຽວກັນ, ທ່ານສາມາດປັດຈາກຂວາໄປຊ້າຍດ້ວຍສີ່ນິ້ວເພື່ອເລື່ອນໄປພາກສ່ວນກ່ອນໜ້າໄດ້. ລອງຕອນນີ້ເລີຍ!</translation>
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">ສີຟ້າດອກຄອນຟລາວເວີ</translation>
 <translation id="1246424317317450637">ໂຕເຂັ້ມ</translation>
@@ -302,6 +303,7 @@
 <translation id="3082249673510793544">ເລື່ອນກັບຄືນ</translation>
 <translation id="3084806535845658316">ບໍ່ມີສຽງເອໂກໃນການພິມ</translation>
 <translation id="3086746722712840547">ບັນທຶກ</translation>
+<translation id="308736057934395497">ນີ້ຈະປັບປຸງຄວາມເປັນສ່ວນຕົວໂດຍການປິດໜ້າຈໍຂອງທ່ານເພື່ອບໍ່ໃຫ້ສະແດງໃຫ້ຄົນອື່ນເຫັນ. ທ່ານສາມາດເປີດໜ້າຈໍກັບມາຕອນໃດກໍໄດ້ໂດຍການກົດປຸ່ມຊອກຫາ + ເພີ່ມຄວາມສະຫວ່າງຂຶ້ນ.</translation>
 <translation id="3090227230165225418">ປະກາດການແຈ້ງເຕືອນການດາວໂຫຼດ</translation>
 <translation id="3090532668523289635">ກຸ່ມ</translation>
 <translation id="3093176084511590672">ຫຼັກ​ເຂດຕໍ່​ໄປ</translation>
@@ -422,7 +424,6 @@
 <translation id="3870295413168340326">ບໍ່ມີຫົວຂໍ້ລະດັບ 3 ກ່ອນໜ້າ</translation>
 <translation id="3887399638190992181">ປຸ່ມສຳຄັນ</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3893063449310326280">ໃນລັກສະນະດຽວກັນ, ທ່ານສາມາດປັດດ້ວຍສີ່ນິ້ວຈາກຂວາຫາຊ້າຍເພື່ອເລື່ອນໄປອົງປະກອບຫຼັກກ່ອນໜ້າໄດ້ນຳ. ລອງເຮັດຕອນນີ້ເລີຍ!</translation>
 <translation id="3897092660631435901">ເມ​ນູ</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">​ຫົວຂໍ້ລະ​ດັບ 6 ຜ່ານມາ</translation>

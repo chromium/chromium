@@ -95,6 +95,7 @@
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
+<translation id="3283504360622356314">{0,plural, =1{修改文件}other{修改文件}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3328783797891415197">正在运行测试</translation>
@@ -163,6 +164,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + 用户证书</translation>
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="4773299976671772492">已停止</translation>
+<translation id="4794140124556169553">运行 CPU 测试可能会影响系统性能</translation>
 <translation id="4808449224298348341">已取消打印任务“<ph name="DOCUMENT_TITLE" />”</translation>
 <translation id="4813345808229079766">连接</translation>
 <translation id="4832079907277790330">在“文件”应用中选择文件夹…</translation>
@@ -341,6 +343,7 @@
 <translation id="8483248364096924578">IP 地址</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="8503836310948963452">只需再等几分钟…</translation>
+<translation id="8575298406870537639">您的运营商可能会要求您启用此选项以连接到其网络。如需了解详情，请联系您的运营商。</translation>
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8620617069779373398">漫游状态</translation>
 <translation id="8675354002693747642">预共享密钥</translation>

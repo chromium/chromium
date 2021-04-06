@@ -95,6 +95,7 @@
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
+<translation id="3283504360622356314">{0,plural, =1{Rediger filen}other{Rediger filene}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er betydelig høyere enn den tillatte grenseverdien</translation>
 <translation id="3328783797891415197">Testen kjøres</translation>
@@ -163,6 +164,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + brukersertifikat</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="4773299976671772492">Stoppet</translation>
+<translation id="4794140124556169553">Kjøring av en prosessortest kan påvirke systemets ytelse</translation>
 <translation id="4808449224298348341">Avbrøt utskriftsjobben <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Tilkobling</translation>
 <translation id="4832079907277790330">Velg en mappe i Filer-appen …</translation>
@@ -341,6 +343,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8503836310948963452">Bare noen få minutter igjen …</translation>
+<translation id="8575298406870537639">Det kan hende operatøren din krever dette alternativet for at du skal kunne koble til nettverket deres Kontakt operatøren for mer informasjon.</translation>
 <translation id="8576249514688522074">Ikke initialisert</translation>
 <translation id="8620617069779373398">Status for roaming</translation>
 <translation id="8675354002693747642">Forhåndsdelt nøkkel</translation>

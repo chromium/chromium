@@ -132,6 +132,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Tik 'n boodskap</translation>
 <translation id="2018630726571919839">Vertel vir my 'n grappie</translation>
+<translation id="2021864487439853900">Klik om te ontsluit</translation>
 <translation id="2049240716062114887">Lessenaarnaam is verander na <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Sleutelbordhelderheid</translation>
@@ -410,10 +411,12 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4421231901400348175">Deel tans beheer oor jou skerm met <ph name="HELPER_NAME" /> deur afstandbystand.</translation>
 <translation id="4424159417645388645">Lessenaar 5</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4445159312344259901">Meld aan om te ontsluit</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 belangrike kennisgewing}other{# belangrike kennisgewings}}</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
 <translation id="445864333228800152">Goeienaand</translation>
 <translation id="4458688154122353284">Stop skermopname</translation>
+<translation id="4467143075433126295">Druk en hou [Esc] om volskerm te verlaat</translation>
 <translation id="4472575034687746823">Kom aan die gang</translation>
 <translation id="4477350412780666475">Volgende snit</translation>
 <translation id="4477892968187500306">Hierdie toestel kan programme bevat wat nie deur Google geverifieer is nie.</translation>
@@ -797,7 +800,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7780159184141939021">Draai skerm</translation>
 <translation id="7796353162336583443">Tik op die stilusknoppie op die rak om 'n nota of skermkiekie te neem of die Google Assistent, laseraanwyser of vergrootglas te gebruik.</translation>
 <translation id="7798302898096527229">Druk Search of Shift om te kanselleer.</translation>
-<translation id="7807966291075028781">Randtoestel word vir sekuriteitredes nie in Gasmodus gesteun nie</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> en <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sterk sein</translation>
 <translation id="7837740436429729974">Tyd is verby</translation>

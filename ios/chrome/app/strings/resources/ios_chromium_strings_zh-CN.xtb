@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium 的某些功能可帮助您管理互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
+<translation id="2054703085270098503">Chromium 可确保您始终处于保护之下</translation>
 <translation id="2075400798887076382">直接在此处访问您在计算机上打开的标签页。您只需在计算机上打开 Chromium，点击相应菜单，然后选择“登录 Chromium…”即可</translation>
 <translation id="2168108852149185974">部分插件会导致 Chromium 崩溃，请卸载这些插件：</translation>
 <translation id="2178608107313874732">Chromium 目前无法使用您的相机</translation>
 <translation id="2195025571279539885">下次访问这个网站时，您希望 Chromium 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
 <translation id="2590893390871230428">同步 Chromium 数据</translation>
 <translation id="2650312721222849884">要查看您在其他设备上用 Chromium 打开的标签页，请开启同步功能</translation>
+<translation id="2684230048001240293">将 Chromium 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="2730884209570016437">由于另一个应用正在使用您的相机，因此 Chromium 无法使用。</translation>
 <translation id="2915596697727466327">Chromium 会使用 Face ID 来确保对您密码的访问均已获授权。</translation>
 <translation id="2918709798697875261">贵组织要求您保持已退出 Chromium 的状态。</translation>
+<translation id="2942241131342758843">默认使用 Chromium 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="3256316712990552818">已复制到 Chromium</translation>
 <translation id="3344973607274501920">Chromium 无法检查您的密码。请尝试检查您的互联网连接。</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">启用此功能后，Chromium 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
 <translation id="4681781466797808448">开启 Chromium 扫描器</translation>
+<translation id="4736424910885271643">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chromium 数据将会被清除</translation>
 <translation id="4787850887676698916">您在其他设备上的 Chromium 中打开的标签页将列在此处。</translation>
 <translation id="4828317641996116749">Chromium 无法检查所有密码。请稍后再试。</translation>
 <translation id="4985291216379576555">已离线，Chromium 无法检查是否有更新</translation>
@@ -55,6 +59,7 @@
 2. 点按“默认浏览器应用”
 3. 选择“Chromium”。</translation>
 <translation id="6268381023930128611">退出 Chromium？</translation>
+<translation id="6337530241089703714">请选择是要清除还是要保留您在此设备上存储的 Chromium 数据</translation>
 <translation id="6424492062988593837">Chromium 刚刚经过了改进！新版本已推出。</translation>
 <translation id="6820823224820483452">Chromium 无法检查所有密码。请明天再试。</translation>
 <translation id="6827294685447036764">如果您允许 Chromium 获取您的位置信息，Chromium 便会将该信息发送到已获您授权的所有网站。网站可能会请求使用您的位置信息以便为您显示本地信息（例如附近的商店或新闻）。</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">您的密码遭遇了数据泄露。Chromium 建议您立即更改此密码。</translation>
 <translation id="7674213385180944843">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Chromium”，然后开启相机。</translation>
 <translation id="7746854981345936341">Chromium 提示。现在屏幕底部会显示“后退”、“前进”和“搜索”等按钮。</translation>
+<translation id="7763454117143368771">使用 Chromium 作为默认浏览器不仅可让您免受危险网站的侵害，还可保护您的密码</translation>
 <translation id="786327964234957808">您正要将同步帐号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chromium 数据由 <ph name="DOMAIN" /> 管理。切换同步帐号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="7890287942691234100">开始使用 Chromium 扫描器</translation>
 <translation id="7931842119211730154">在您关闭 Chromium 时锁定无痕式标签页</translation>

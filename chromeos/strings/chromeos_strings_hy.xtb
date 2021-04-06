@@ -95,6 +95,7 @@
 <translation id="3226405216343213872">Սկաներների որոնում</translation>
 <translation id="3246869037381808805">Տպման առաջադրանքները, որոնք 1 օրից հին են, կհեռացվեն</translation>
 <translation id="3268178239013324452">Չհաջողվեց տպել – Կափարիչը բաց է</translation>
+<translation id="3283504360622356314">{0,plural, =1{Փոփոխել ֆայլը}one{Փոփոխել ֆայլերը}other{Փոփոխել ֆայլերը}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ԳՀց</translation>
 <translation id="3310640316857623290">DNS-ի հապաղումը մեծ առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="3328783797891415197">Փորձարկում</translation>

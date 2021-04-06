@@ -163,7 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + Certificat utilisateur</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4773299976671772492">Interrompu</translation>
-<translation id="4794140124556169553">Tester le processeur risque d'affecter les performances du système</translation>
+<translation id="4794140124556169553">Tester le processeur peut affecter les performances système</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée pour <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Connexion</translation>
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
@@ -342,7 +342,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8483248364096924578">Adresse IP</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Plus que quelques minutes…</translation>
-<translation id="8575298406870537639">Votre opérateur peut exiger cette option pour que vous vous connectiez à son réseau. Contactez-le pour en savoir plus.</translation>
+<translation id="8575298406870537639">Votre opérateur peut exiger ce réglage pour la connexion à son réseau. Contactez-le pour en savoir plus.</translation>
 <translation id="8576249514688522074">Non initialisé</translation>
 <translation id="8620617069779373398">État d'itinérance</translation>
 <translation id="8675354002693747642">Clé pré-partagée</translation>

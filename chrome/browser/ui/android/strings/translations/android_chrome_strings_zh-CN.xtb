@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">导航历史记录</translation>
 <translation id="1231733316453485619">开启同步功能？</translation>
 <translation id="123724288017357924">重新加载当前网页（忽略缓存的内容）</translation>
+<translation id="1240288207750131269">正在加载<ph name="LANG" /></translation>
 <translation id="124678866338384709">关闭当前标签页</translation>
 <translation id="1258753120186372309">Google 涂鸦：<ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">无法分享<ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">管理您关注的网站</translation>
 <translation id="1283039547216852943">点按即可展开</translation>
 <translation id="1285310382777185058">更改语言</translation>
 <translation id="1291207594882862231">清除历史记录、Cookie、网站数据、缓存内容…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">应用版本</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1450753235335490080">无法分享<ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">选择要让 Chrome 采用的语言</translation>
 <translation id="147113415845704694">试着说“今天的天气如何？”</translation>
 <translation id="1477626028522505441">未能成功下载 <ph name="FILE_NAME" />，因为服务器出现了问题。</translation>
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
@@ -90,6 +93,7 @@
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="164269334534774161">您目前浏览的是此网页的离线副本（创建时间：<ph name="CREATION_TIME" />）</translation>
 <translation id="1644574205037202324">历史记录</translation>
+<translation id="1668122540633280551">选择如何在 Chrome 主页中自动播放视频预览。</translation>
 <translation id="1670399744444387456">基本</translation>
 <translation id="1671236975893690980">正在等待下载…</translation>
 <translation id="1672586136351118594">不再显示</translation>
@@ -205,6 +209,7 @@
 <translation id="2353636109065292463">检查互联网连接状况</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2369533728426058518">打开的标签页</translation>
+<translation id="2386938421315164605">隐藏和取消隐藏主题</translation>
 <translation id="2387895666653383613">文字大小</translation>
 <translation id="2394602618534698961">您下载的文件会显示在此处</translation>
 <translation id="2407481962792080328">当您登录自己的 Google 帐号后，系统即会启用此功能</translation>
@@ -233,6 +238,8 @@
 <translation id="2534155362429831547">删除了 <ph name="NUMBER_OF_ITEMS" /> 项</translation>
 <translation id="2536728043171574184">正在查看此网页的离线副本</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
+<translation id="2549341709325358884">仅限 Wi-Fi 和移动数据网络</translation>
+<translation id="2561519700418191927">视频预览</translation>
 <translation id="2567385386134582609">图片</translation>
 <translation id="2571711316400087311">询问是否要在其他语言的网页上显示 Google 翻译</translation>
 <translation id="2581165646603367611">这会清除 Chrome 认为不重要的网站的 Cookie、缓存和其他数据。</translation>
@@ -265,6 +272,7 @@
 <translation id="281504910091592009">查看和管理您的 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" />中保存的密码</translation>
 <translation id="2818669890320396765">要将您的书签同步到您的所有设备上，请登录您的帐号并开启同步功能</translation>
 <translation id="2827278682606527653">动态卡片上的菜单已半屏打开</translation>
+<translation id="2839327205551510876">已取消关注“<ph name="SITE_NAME" />”</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 天前检查过}other{# 天前检查过}}</translation>
 <translation id="2842985007712546952">父文件夹</translation>
 <translation id="2856503607207334158">登录失败</translation>
@@ -281,6 +289,7 @@
 <translation id="2909615210195135082">Google 通知平台</translation>
 <translation id="2923908459366352541">名称无效</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 存储数据</translation>
+<translation id="2932222164150889403">您的键盘不会有变化</translation>
 <translation id="2942036813789421260">预览标签页已关闭</translation>
 <translation id="2956410042958133412">该帐号由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 个未读页面}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 个未读页面}}</translation>
@@ -297,6 +306,7 @@
 <translation id="3031225630520268969">针对 Google 助理语音搜索功能的用户意见征求界面</translation>
 <translation id="3034163383943672781">将于 <ph name="DATE" />开始下载。</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />获取帮助<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">下次可更快速地转到此网站</translation>
 <translation id="305593374596241526">位置信息功能现处于关闭状态；请在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启此项功能。</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>
@@ -340,6 +350,7 @@
 <translation id="3315103659806849044">您正在自定义您的“同步功能和 Google 服务”设置。要完成开启同步功能的操作，请点按屏幕底部附近的“确认”按钮。转到上一层级</translation>
 <translation id="3334729583274622784">更改文件扩展名？</translation>
 <translation id="3341058695485821946">查看您已节省多少数据流量</translation>
+<translation id="3341262203274374114">无法取消关注。出了点问题。</translation>
 <translation id="3350687908700087792">关闭所有无痕模式标签页</translation>
 <translation id="3359667936385849800">使用您当前的服务提供商</translation>
 <translation id="3367813778245106622">重新登录以开始同步</translation>
@@ -407,6 +418,7 @@
 <translation id="3773856050682458546">基本数据加上您所访问网站、所用应用的有关信息</translation>
 <translation id="3775705724665058594">发送到您的设备</translation>
 <translation id="3778956594442850293">已添加到主屏幕</translation>
+<translation id="3803784507854318295">管理自动播放</translation>
 <translation id="3810838688059735925">视频</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3819178904835489326">已删除 <ph name="NUMBER_OF_DOWNLOADS" /> 项下载内容</translation>
@@ -434,6 +446,8 @@
 <translation id="3988213473815854515">允许访问位置信息</translation>
 <translation id="3988466920954086464">您可以在此面板查看即时搜索结果</translation>
 <translation id="4000212216660919741">离线版首页</translation>
+<translation id="4016425174436051808">无法关注。出了点问题。</translation>
+<translation id="4021916380760361450">控制您的 Google 帐号数据</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小时}other{# 小时}}</translation>
 <translation id="4045764304651014138">使用情况数据</translation>
 <translation id="4056223980640387499">棕褐色调</translation>
@@ -599,6 +613,7 @@
 <translation id="5152843274749979095">尚未安装任何支持的应用</translation>
 <translation id="5161254044473106830">必须提供标题</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 项下载失败。}other{# 项下载失败。}}</translation>
+<translation id="5168824020667180049">已关注“<ph name="SITE_NAME" />”</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5184329579814168207">在 Chrome 中打开</translation>
 <translation id="5188992787241350004">使用语音进行搜索</translation>
@@ -718,6 +733,7 @@
 <translation id="5864419784173784555">正在等待完成另一项下载…</translation>
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送至 Google</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
+<translation id="5880748256563468367">转到 Feed</translation>
 <translation id="5884076754568147479">为了帮助您执行各种操作，Google 将会收到您使用 Google 助理时所在网站的网址和内容，以及您通过 Google 助理提交的信息</translation>
 <translation id="5919204609460789179">需更新 <ph name="PRODUCT_NAME" />，才能开始同步</translation>
 <translation id="5937580074298050696">已节省 <ph name="AMOUNT" /></translation>
@@ -735,6 +751,7 @@
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="5982307838673692400">打开一个无痕式标签页</translation>
 <translation id="6000066717592683814">继续使用 Google</translation>
+<translation id="6000203700195075278">重新关注</translation>
 <translation id="6005538289190791541">建议的密码</translation>
 <translation id="6036057147555329831">额外的 ICU</translation>
 <translation id="6039379616847168523">跳转到下一个标签页</translation>
@@ -1097,6 +1114,7 @@
 <translation id="834313815369870491">一律不翻译网站</translation>
 <translation id="8349013245300336738">按已使用的数据流量排序</translation>
 <translation id="835847953965672673">已恢复 <ph name="NUMBER_OF_DOWNLOADS" /> 项下载内容</translation>
+<translation id="8362134094656482681">管理您感兴趣的主题</translation>
 <translation id="8364299278605033898">查看热门网站</translation>
 <translation id="8368027906805972958">未知或不支持的设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">可以使用<ph name="LANG" />了。</translation>

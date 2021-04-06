@@ -132,6 +132,7 @@
 <translation id="2012624427112548395">Ctrl+„Пребарување“+H</translation>
 <translation id="2016340657076538683">Напишете порака</translation>
 <translation id="2018630726571919839">Кажи ми шега</translation>
+<translation id="2021864487439853900">Кликнете за да отклучите</translation>
 <translation id="2049240716062114887">Името на работната површина е променето во <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Портрет</translation>
 <translation id="2067602449040652523">Осветленост на тастатурата</translation>
@@ -410,10 +411,12 @@
 <translation id="4421231901400348175">Споделување контрола на вашиот екран со <ph name="HELPER_NAME" /> преку далечинска помош.</translation>
 <translation id="4424159417645388645">Работна површина 5</translation>
 <translation id="4430019312045809116">Гласност</translation>
+<translation id="4445159312344259901">Најавете се за да отклучите</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важно известување}one{# важно известување}other{# важни известувања}}</translation>
 <translation id="4450893287417543264">Не прикажувај повторно</translation>
 <translation id="445864333228800152">Добровечер,</translation>
 <translation id="4458688154122353284">Запрете со снимање на екранот</translation>
+<translation id="4467143075433126295">Притиснете и задржете [Esc] за да излезете од цел екран</translation>
 <translation id="4472575034687746823">Започнете</translation>
 <translation id="4477350412780666475">Следна песна</translation>
 <translation id="4477892968187500306">Уредов може да содржи апликации што не се потврдени од Google.</translation>
@@ -797,7 +800,6 @@
 <translation id="7780159184141939021">Ротација на екранот</translation>
 <translation id="7796353162336583443">Допрете го копчето за пенкало на полицата за да напишете белешка, да направите слика од екранот или пак, да го користите „Помошникотна Google“, ласерскиот покажувач или лупата.</translation>
 <translation id="7798302898096527229">Притиснете „Пребарување“ или Shift за да откажете.</translation>
-<translation id="7807966291075028781">Периферниот уред не е поддржан во режим на гостин поради безбедносни причини</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Силен сигнал</translation>
 <translation id="7837740436429729974">Времето истече</translation>

@@ -132,6 +132,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2012624427112548395">Ctrl+Cerca+H</translation>
 <translation id="2016340657076538683">Escriu un missatge</translation>
 <translation id="2018630726571919839">Explica'm un acudit</translation>
+<translation id="2021864487439853900">Fes clic per desbloquejar</translation>
 <translation id="2049240716062114887">El nom de l'escriptori s'ha canviat a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2067602449040652523">Brillantor del teclat</translation>
@@ -409,10 +410,12 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4421231901400348175">Es comparteix el control de la pantalla amb <ph name="HELPER_NAME" /> mitjançant l'Assistència remota.</translation>
 <translation id="4424159417645388645">Escriptori 5</translation>
 <translation id="4430019312045809116">Volum</translation>
+<translation id="4445159312344259901">Inicia sessió per desbloquejar</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificació important}other{# notificacions importants}}</translation>
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>
 <translation id="445864333228800152">Bon vespre,</translation>
 <translation id="4458688154122353284">Atura la gravació de pantalla</translation>
+<translation id="4467143075433126295">Mantén premuda la tecla [Esc] per sortir de la pantalla completa</translation>
 <translation id="4472575034687746823">Comença</translation>
 <translation id="4477350412780666475">Pista següent</translation>
 <translation id="4477892968187500306">Aquest dispositiu pot contenir aplicacions que Google no ha verificat.</translation>
@@ -796,7 +799,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7780159184141939021">Gira la pantalla</translation>
 <translation id="7796353162336583443">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla, utilitzar l'Assistent de Google o fer-lo servir com a punter làser o lupa.</translation>
 <translation id="7798302898096527229">Prem Cerca o Maj per cancel·lar.</translation>
-<translation id="7807966291075028781">Aquest perifèric no s'admet en mode de convidat per motius de seguretat</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Senyal potent</translation>
 <translation id="7837740436429729974">S'ha esgotat el temps</translation>

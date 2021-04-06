@@ -132,6 +132,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2012624427112548395">Ctrl+Pesquisa+H</translation>
 <translation id="2016340657076538683">Digite uma mensagem</translation>
 <translation id="2018630726571919839">Conte uma piada</translation>
+<translation id="2021864487439853900">Clique para desbloquear</translation>
 <translation id="2049240716062114887">O nome do espaço de trabalho foi mudado para <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Retrato</translation>
 <translation id="2067602449040652523">Brilho do teclado</translation>
@@ -409,10 +410,12 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4421231901400348175">Compartilhando o controle da sua tela com <ph name="HELPER_NAME" /> via Assistência remota.</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4445159312344259901">Faça login para desbloquear</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificação importante}one{# notificação importante}other{# notificações importantes}}</translation>
 <translation id="4450893287417543264">Não mostrar novamente</translation>
 <translation id="445864333228800152">Boa noite,</translation>
 <translation id="4458688154122353284">Parar gravação da tela</translation>
+<translation id="4467143075433126295">Aperte [Esc] e mantenha essa tecla pressionada para sair do modo tela cheia</translation>
 <translation id="4472575034687746823">Primeiros passos</translation>
 <translation id="4477350412780666475">Próxima faixa</translation>
 <translation id="4477892968187500306">O dispositivo pode conter apps que não foram verificados pelo Google.</translation>
@@ -796,7 +799,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="7780159184141939021">Girar tela</translation>
 <translation id="7796353162336583443">Toque no botão da stylus na estante para criar uma nota, uma captura de tela, usar o Google Assistente, o apontador laser ou a lupa.</translation>
 <translation id="7798302898096527229">Pressione Pesquisar ou Shift para cancelar.</translation>
-<translation id="7807966291075028781">Por questões de segurança, o periférico não é compatível com o modo visitante</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7837740436429729974">Tempo esgotado</translation>
