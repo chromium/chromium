@@ -2296,7 +2296,7 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
     const char* hdr = R"(
 uniform half offset;
 uniform half multiplier;
-in shader child;
+uniform shader child;
 
 half4 main() {
   half4 color = sample(child);
