@@ -127,7 +127,7 @@ void ExtensionServiceWorkerMessageFilter::OnRequestWorker(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!browser_context_)
     return;
-  dispatcher_->Dispatch(params, nullptr, render_process_id_);
+  dispatcher_->DispatchForServiceWorker(params, render_process_id_);
 }
 
 void ExtensionServiceWorkerMessageFilter::OnResponseWorker(

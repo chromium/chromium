@@ -43,7 +43,7 @@ struct ExecuteCodeParams {
   string? injection_key;
 };
 
-// Parameters structure for ExtensionHostMsg_Request.
+// Parameters structure for LocalFrameHost.Request().
 struct RequestParams {
   // Message name.
   string name;
@@ -127,4 +127,12 @@ interface LocalFrameHost {
   RequestScriptInjectionPermission(string extension_id,
                       InjectionType script_type,
                       RunLocation run_location) => (bool granted);
+
+  // Sends an extension API request to the browser.
+  // The reply is sent back to the renderer with the response data (if any) is
+  // one of the base::Value types, wrapped as the first element in a LIST
+  // typed Value.
+  Request(RequestParams params) => (bool success,
+                                    mojo_base.mojom.ListValue response_wrapper,
+                                    string error);
 };
