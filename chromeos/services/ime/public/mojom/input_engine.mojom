@@ -157,8 +157,23 @@ struct CompletionCandidate {
   float normalized_score;
 };
 
+enum SuggestionType {
+  // A completion suggestion is text that completes an incomplete word. For
+  // example, the text "hello wor" may have a completion candidate like the
+  // following "hello world".
+  kCompletion = 0,
+
+  // A prediction suggestion is text that we predict may come after some other
+  // text that contains completed words. For example, the text "hello " may
+  // produce a prediction suggestion such as "hello world".
+  kPrediction = 1,
+};
+
 // Single request to generate suggestion candidates from the given context.
 struct SuggestionsRequest {
+  // The type of suggestions that should be generated.
+  SuggestionType suggestion_type;
+
   // The preceding text used to produced the suggestions.
   string text;
 

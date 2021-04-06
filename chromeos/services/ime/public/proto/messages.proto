@@ -216,11 +216,19 @@ message CompletionCandidate {
   optional float normalized_score = 2;
 }
 
+// Protobuf version of SuggestionType in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+enum SuggestionType {
+  COMPLETION = 0;
+  PREDICTION = 1;
+}
+
 // Protobuf version of SuggestionsRequest in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message SuggestionsRequest {
   optional string text = 1;
   repeated CompletionCandidate completion_candidates = 2;
+  optional SuggestionType suggestion_type = 3;
 }
 
 // Protobuf version of MultiWordSuggestionCandidate in
