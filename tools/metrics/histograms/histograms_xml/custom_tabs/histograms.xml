@@ -46,6 +46,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.ClientAppId.Incognito" enum="ClientAppId"
+    expires_after="2022-03-03">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    Android: This histogram is used as a means to count the total instances of
+    Incognito custom tabs created meanwhile binning them across launching first
+    party apps.
+
+    The launching first party apps are inferred by the package name they
+    provided when creating a custom tab connection and if we can't infer via
+    package name then as a fallback we rely on them declaring
+    EXTRA_APPLICATION_ID when launching Incognito custom tabs. If both fails,
+    then the launch is recorded in the Others entry.
+
+    This metric is never recorded for 3P apps.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.CloseButton.ChildTab.ScopeAlgorithm.ClosesOneTab"
     enum="BooleanCloseJustCurrentTab" expires_after="M92">
   <owner>peconn@chromium.org</owner>
