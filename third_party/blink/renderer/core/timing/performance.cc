@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -892,30 +891,14 @@ ScriptPromise Performance::profile(ScriptState* script_state,
   DCHECK(
       RuntimeEnabledFeatures::ExperimentalJSProfilerEnabled(execution_context));
 
-  if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::DocumentPolicyFeature::kJSProfiling,
-          ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "JS profiling is disabled by Document Policy.");
-    return ScriptPromise();
-  }
-
-  // Bypass COOP/COEP checks when the |--disable-web-security| flag is present.
-  bool web_security_enabled = true;
+  bool can_profile = false;
   if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
-    if (LocalFrame* local_frame = window->GetFrame()) {
-      web_security_enabled =
-          local_frame->GetSettings()->GetWebSecurityEnabled();
-    }
+    can_profile = ProfilerGroup::CanProfile(window, &exception_state,
+                                            ReportOptions::kReportOnFailure);
   }
 
-  if (web_security_enabled &&
-      !execution_context->CrossOriginIsolatedCapability()) {
-    exception_state.ThrowSecurityError(
-        "performance.profile() requires COOP+COEP (web.dev/coop-coep)");
+  if (!can_profile)
     return ScriptPromise();
-  }
 
   auto* profiler_group = ProfilerGroup::From(script_state->GetIsolate());
   DCHECK(profiler_group);

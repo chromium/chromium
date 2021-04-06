@@ -87,6 +87,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
@@ -2252,6 +2253,10 @@ void DocumentLoader::CommitNavigation() {
     if (Page* page = frame_->GetPage())
       page->HistoryNavigationVirtualTimePauser().UnpauseVirtualTime();
   }
+
+  // If profiling is enabled by document policy, ensure that profiling metadata
+  // is available by tracking the execution context's lifetime.
+  ProfilerGroup::InitializeIfEnabled(frame_->DomWindow());
 
   // Load the document if needed.
   StartLoadingResponse();
