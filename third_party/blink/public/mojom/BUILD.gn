@@ -1285,6 +1285,7 @@ mojom_component("web_feature_mojo_bindings") {
   generate_java = true
   sources = [
     "use_counter/css_property_id.mojom",
+    "use_counter/use_counter.mojom",
     "web_feature/web_feature.mojom",
   ]
 

@@ -1,0 +1,15 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/use_counter/css_property_id.mojom";
+import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
+
+// UseCounterFeature can be any enum feature type that `UseCounter` can count.
+union UseCounterFeature {
+  WebFeature web_feature;
+  CSSSampleId css_property;
+  CSSSampleId animated_css_property;
+};

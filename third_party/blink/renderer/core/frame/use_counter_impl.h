@@ -26,9 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_IMPL_H_
 
-#include <bitset>
 #include "base/macros.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/use_counter.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -66,6 +67,10 @@ class CORE_EXPORT UseCounterImpl final {
   DISALLOW_NEW();
 
  public:
+  using FeatureType = mojom::blink::UseCounterFeature::Tag;
+  using EnumValue = int32_t;
+  using Feature = std::pair<FeatureType, EnumValue>;
+
   // The context determines whether a feature is reported to UMA histograms. For
   // example, when the context is set to kDisabledContext, no features will be
   // reported to UMA, but features may still be marked as seen to avoid multiple
@@ -157,14 +162,7 @@ class CORE_EXPORT UseCounterImpl final {
   CommitState commit_state_;
 
   // Track what features/properties have been recorded.
-  std::bitset<static_cast<size_t>(WebFeature::kNumberOfFeatures)>
-      features_recorded_;
-
-  static constexpr size_t kMaxSample =
-      static_cast<size_t>(mojom::blink::CSSSampleId::kMaxValue) + 1;
-  std::bitset<kMaxSample> css_recorded_;
-  std::bitset<kMaxSample> animated_css_recorded_;
-
+  HashSet<Feature> features_recorded_;
   HeapHashSet<Member<Observer>> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(UseCounterImpl);
