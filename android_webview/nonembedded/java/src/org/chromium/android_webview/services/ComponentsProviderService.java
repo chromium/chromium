@@ -201,7 +201,7 @@ public class ComponentsProviderService extends Service {
                     new ComponentName(context, ServiceNames.AW_COMPONENT_UPDATE_SERVICE);
 
             JobInfo job = new JobInfo.Builder(JOB_ID, componentName)
-                                  .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                                  .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                                   .setPeriodic(UPDATE_INTERVAL_MS)
                                   .build();
 
