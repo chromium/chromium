@@ -249,11 +249,6 @@
     "dependencies": ["permission:contextMenus"],
     "contexts": ["blessed_extension"]
   },
-  "contextMenusInternal": {
-    "internal": true,
-    "channel": "stable",
-    "contexts": ["blessed_extension"]
-  },
   "cookies": {
     "dependencies": ["permission:cookies"],
     "contexts": ["blessed_extension"]

@@ -9,7 +9,7 @@
     "compiler_options": {
       "implemented_in": "chrome/browser/extensions/api/web_view/chrome_web_view_internal_api.h"
     },
-    "dependencies": ["contextMenusInternal", "contextMenus"],
+    "dependencies": ["contextMenus"],
     "types": [
       {
         "id": "ContextMenuItem",
@@ -91,7 +91,7 @@
                 "parameters": [
                   {
                     "name": "info",
-                    "$ref": "contextMenusInternal.OnClickData",
+                    "$ref": "contextMenus.OnClickData",
                     "description": "Information about the item clicked and the context where the click happened."
                   }
                 ]
@@ -293,7 +293,7 @@
         "name": "onClicked",
         "type": "function",
         "nodoc": true,
-        "$ref": "contextMenusInternal.onClicked"
+        "$ref": "contextMenus.onClicked"
       },
       {
         "name": "onShow",

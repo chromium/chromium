@@ -20,7 +20,6 @@ schema_sources_ = [
   "chrome_web_view_internal.json",
   "command_line_private.json",
   "content_settings.json",
-  "context_menus_internal.json",
   "context_menus.json",
   "cookies.json",
   "cryptotoken_private.idl",

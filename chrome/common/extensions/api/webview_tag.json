@@ -181,7 +181,7 @@
             "parameters": [
               {
                 "name": "info",
-                "$ref": "contextMenusInternal.OnClickData",
+                "$ref": "contextMenus.OnClickData",
                 "description": "Information about the item clicked and the context where the click happened."
               }
             ]
@@ -249,7 +249,7 @@
             "parameters": [
               {
                 "name": "info",
-                "$ref": "contextMenusInternal.OnClickData",
+                "$ref": "contextMenus.OnClickData",
                 "description": "Information about the item clicked and the context where the click happened."
               }
             ]
