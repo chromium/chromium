@@ -327,6 +327,42 @@ TEST_F(AccessContextAuditServiceTest, GetStorageRecords) {
   }
 }
 
+TEST_F(AccessContextAuditServiceTest, GetThirdPartyStorageRecords) {
+  GURL kTestUrl = GURL("https://example.com");
+  const base::Time kAccessTime1 = base::Time::Now();
+  url::Origin kTestOrigin = url::Origin::Create(kTestUrl);
+  url::Origin kTopFrameOrigin = url::Origin::Create(GURL("https://test.com"));
+
+  // Add a record of storage being accessed in a third-party context.
+  service()->RecordStorageAPIAccess(
+      kTestOrigin, AccessContextAuditDatabase::StorageAPIType::kIndexedDB,
+      kTopFrameOrigin);
+  // Add records of a cookie access and a storage access in a first-party
+  // context. These should be included in GetAllAccessRecords() but excluded
+  // from GetThirdPartyStorageAccessRecords().
+  service()->RecordCookieAccess(
+      {*net::CanonicalCookie::Create(kTestUrl, "foo=bar; max-age=3600",
+                                     kAccessTime1,
+                                     base::nullopt /* server_time */)},
+      kTopFrameOrigin);
+  service()->RecordStorageAPIAccess(
+      kTestOrigin, AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
+      kTestOrigin);
+  EXPECT_EQ(3u, GetAllAccessRecords().size());
+
+  base::RunLoop run_loop;
+  std::vector<AccessContextAuditDatabase::AccessRecord> storage_records;
+  service()->GetThirdPartyStorageAccessRecords(base::BindLambdaForTesting(
+      [&](std::vector<AccessContextAuditDatabase::AccessRecord> records) {
+        storage_records = records;
+        run_loop.QuitWhenIdle();
+      }));
+  run_loop.Run();
+  EXPECT_EQ(1u, storage_records.size());
+  EXPECT_EQ(AccessContextAuditDatabase::StorageAPIType::kIndexedDB,
+            storage_records[0].type);
+}
+
 TEST_F(AccessContextAuditServiceTest, OriginKeyedStorageDeleted) {
   // Check that informing the service that an origin's storage of a particular
   // type as been deleted removes all records of that storage.

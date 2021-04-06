@@ -93,6 +93,10 @@ class AccessContextAuditService
   // provided via |callback|.
   void GetStorageAccessRecords(AccessContextRecordsCallback callback);
 
+  // Queries database for all access context records for storage that are
+  // accessed in a 3P context, which are provided via |callback|.
+  void GetThirdPartyStorageAccessRecords(AccessContextRecordsCallback callback);
+
   // Queries database for all access context records, which are provided via
   // |callback|.
   void GetAllAccessRecords(AccessContextRecordsCallback callback);
@@ -133,6 +137,8 @@ class AccessContextAuditService
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, CookieRecords);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, ExpiredCookies);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, GetStorageRecords);
+  FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest,
+                           GetThirdPartyStorageRecords);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, HistoryDeletion);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, AllHistoryDeletion);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest,

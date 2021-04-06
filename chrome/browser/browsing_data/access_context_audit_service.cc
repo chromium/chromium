@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 AccessContextAuditService::CookieAccessHelper::CookieAccessHelper(
     AccessContextAuditService* service)
@@ -160,6 +161,33 @@ void AccessContextAuditService::GetStorageAccessRecords(
       base::BindOnce(
           &AccessContextAuditService::CompleteGetAccessRecordsInternal,
           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+namespace {
+
+bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2) {
+  return net::registry_controlled_domains::SameDomainOrHost(
+      origin1, origin2,
+      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+void SelectThirdPartyStorageAccessRecords(
+    AccessContextRecordsCallback callback,
+    std::vector<AccessContextAuditDatabase::AccessRecord> storage_records) {
+  std::vector<AccessContextAuditDatabase::AccessRecord> result;
+  for (auto& record : storage_records) {
+    if (!IsSameSite(record.origin, record.top_frame_origin))
+      result.push_back(std::move(record));
+  }
+  std::move(callback).Run(std::move(result));
+}
+
+}  // namespace
+
+void AccessContextAuditService::GetThirdPartyStorageAccessRecords(
+    AccessContextRecordsCallback callback) {
+  GetStorageAccessRecords(base::BindOnce(&SelectThirdPartyStorageAccessRecords,
+                                         std::move(callback)));
 }
 
 void AccessContextAuditService::GetAllAccessRecords(
