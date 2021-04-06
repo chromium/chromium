@@ -987,6 +987,8 @@ domain Browser
       # The default path to save downloaded files to. This is requred if behavior is set to 'allow'
       # or 'allowAndName'.
       optional string downloadPath
+      # Whether to emit download events (defaults to false).
+      optional boolean eventsEnabled
 
   # Cancel a download if in progress
   experimental command cancelDownload
@@ -995,6 +997,33 @@ domain Browser
       string guid
       # BrowserContext to perform the action in. When omitted, default browser context is used.
       optional BrowserContextID browserContextId
+
+  # Fired when page is about to start a download.
+  experimental event downloadWillBegin
+    parameters
+      # Id of the frame that caused the download to begin.
+      Page.FrameId frameId
+      # Global unique identifier of the download.
+      string guid
+      # URL of the resource being downloaded.
+      string url
+      # Suggested file name of the resource (the actual name of the file saved on disk may differ).
+      string suggestedFilename
+
+  # Fired when download makes progress. Last call has |done| == true.
+  experimental event downloadProgress
+    parameters
+      # Global unique identifier of the download.
+      string guid
+      # Total expected bytes to download.
+      number totalBytes
+      # Total bytes received.
+      number receivedBytes
+      # Download status.
+      enum state
+        inProgress
+        completed
+        canceled
 
   # Close browser gracefully.
   command close
@@ -7311,7 +7340,8 @@ domain Page
       FrameId frameId
 
   # Fired when page is about to start a download.
-  experimental event downloadWillBegin
+  # Deprecated. Use Browser.downloadWillBegin instead.
+  experimental deprecated event downloadWillBegin
     parameters
       # Id of the frame that caused download to begin.
       FrameId frameId
@@ -7323,7 +7353,8 @@ domain Page
       string suggestedFilename
 
   # Fired when download makes progress. Last call has |done| == true.
-  experimental event downloadProgress
+  # Deprecated. Use Browser.downloadProgress instead.
+  experimental deprecated event downloadProgress
     parameters
       # Global unique identifier of the download.
       string guid

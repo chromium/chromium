@@ -271,6 +271,13 @@ void WillBeginDownload(download::DownloadCreateInfo* info,
   if (!ftn)
     return;
   DispatchToAgents(ftn, &protocol::PageHandler::DownloadWillBegin, ftn, item);
+
+  for (auto* agent_host : BrowserDevToolsAgentHost::Instances()) {
+    for (auto* browser_handler :
+         protocol::BrowserHandler::ForAgentHost(agent_host)) {
+      browser_handler->DownloadWillBegin(ftn, item);
+    }
+  }
 }
 
 void OnSignedExchangeReceived(

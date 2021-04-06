@@ -370,6 +370,7 @@ Response PageHandler::Disable() {
 
   for (auto* item : pending_downloads_)
     item->RemoveObserver(this);
+  pending_downloads_.clear();
   navigate_callbacks_.clear();
   return Response::FallThrough();
 }
@@ -579,11 +580,21 @@ void PageHandler::OnDownloadDestroyed(download::DownloadItem* item) {
 void PageHandler::OnDownloadUpdated(download::DownloadItem* item) {
   if (!enabled_)
     return;
-  std::string state = Page::DownloadProgress::StateEnum::InProgress;
-  if (item->GetState() == download::DownloadItem::COMPLETE)
-    state = Page::DownloadProgress::StateEnum::Completed;
-  else if (item->GetState() == download::DownloadItem::CANCELLED)
-    state = Page::DownloadProgress::StateEnum::Canceled;
+  std::string state;
+  switch (item->GetState()) {
+    case download::DownloadItem::IN_PROGRESS:
+      state = Page::DownloadProgress::StateEnum::InProgress;
+      break;
+    case download::DownloadItem::COMPLETE:
+      state = Page::DownloadProgress::StateEnum::Completed;
+      break;
+    case download::DownloadItem::CANCELLED:
+    case download::DownloadItem::INTERRUPTED:
+      state = Page::DownloadProgress::StateEnum::Canceled;
+      break;
+    case download::DownloadItem::MAX_DOWNLOAD_STATE:
+      NOTREACHED();
+  }
   frontend_->DownloadProgress(item->GetGuid(), item->GetTotalBytes(),
                               item->GetReceivedBytes(), state);
   if (state != Page::DownloadProgress::StateEnum::InProgress) {
