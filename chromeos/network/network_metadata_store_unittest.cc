@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/optional.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -160,6 +161,14 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   }
   NetworkStateHandler* network_state_handler() {
     return network_state_handler_;
+  }
+  void ResetStore() {
+    metadata_store_ = std::make_unique<NetworkMetadataStore>(
+        network_configuration_handler_, network_connection_handler_.get(),
+        network_state_handler_, user_prefs_.get(), device_prefs_.get(),
+        /*is_enterprise_enrolled=*/false);
+    metadata_observer_ = std::make_unique<TestNetworkMetadataObserver>();
+    metadata_store_->AddObserver(metadata_observer_.get());
   }
 
  protected:
@@ -454,12 +463,40 @@ TEST_F(NetworkMetadataStoreTest, FixSyncedHiddenNetworks) {
   ASSERT_TRUE(
       network_state_handler()->GetNetworkStateFromGuid(kGuid1)->hidden_ssid());
 
+  ResetStore();
   metadata_store()->NetworkListChanged();
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(
       network_state_handler()->GetNetworkStateFromGuid(kGuid)->hidden_ssid());
   ASSERT_TRUE(
       network_state_handler()->GetNetworkStateFromGuid(kGuid1)->hidden_ssid());
+}
+
+TEST_F(NetworkMetadataStoreTest, LogHiddenNetworks) {
+  std::string service_path = ConfigureService(kConfigWifi0HiddenUser);
+  metadata_store()->OnConfigurationCreated(service_path, kGuid);
+  base::RunLoop().RunUntilIdle();
+
+  std::string service_path1 = ConfigureService(kConfigWifi1HiddenUser);
+  metadata_store()->OnConfigurationCreated(service_path1, kGuid1);
+  base::RunLoop().RunUntilIdle();
+
+  metadata_store()->ConnectSucceeded(service_path);
+  base::RunLoop().RunUntilIdle();
+
+  base::HistogramTester tester;
+  ResetStore();
+  metadata_store()->NetworkListChanged();
+  base::RunLoop().RunUntilIdle();
+
+  // Wifi0 connected today (0 days ago)
+  tester.ExpectBucketCount("Network.Shill.WiFi.Hidden.LastConnected",
+                           /*sample=*/0, /*expected_count=*/1);
+  tester.ExpectBucketCount("Network.Shill.WiFi.Hidden.EverConnected",
+                           /*sample=*/true, /*expected_count=*/1);
+  // Wifi1 never connected
+  tester.ExpectBucketCount("Network.Shill.WiFi.Hidden.EverConnected",
+                           /*sample=*/false, /*expected_count=*/1);
 }
 
 }  // namespace chromeos

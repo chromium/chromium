@@ -128,6 +128,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
                              const std::string& key);
   void UpdateExternalModifications(const std::string& network_guid,
                                    const std::string& field);
+  void LogHiddenNetworkAge();
   void FixSyncedHiddenNetworks();
   bool HasFixedHiddenNetworks();
 
@@ -143,6 +144,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   PrefService* profile_pref_service_;
   PrefService* device_pref_service_;
   bool is_enterprise_managed_;
+  bool has_profile_loaded_ = false;
   base::WeakPtrFactory<NetworkMetadataStore> weak_ptr_factory_{this};
 };
 
