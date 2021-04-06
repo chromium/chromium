@@ -38,8 +38,10 @@ source_set("test_support") {
     "ad_intervention_browser_test_utils.h",
   ]
   deps = [
+    ":ad_metrics",
     "//components/page_load_metrics/browser:test_support",
     "//content/test:test_support",
+    "//net:test_support",
   ]
 }
 

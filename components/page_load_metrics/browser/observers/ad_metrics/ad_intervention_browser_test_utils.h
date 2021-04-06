@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_AD_INTERVENTION_BROWSER_TEST_UTILS_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_AD_INTERVENTION_BROWSER_TEST_UTILS_H_
 
+#include "net/test/embedded_test_server/controllable_http_response.h"
 class GURL;
 
 namespace content {
@@ -15,7 +16,20 @@ namespace gfx {
 class Rect;
 }
 
+namespace net {
+namespace test_server {
+class ControllableHttpResponse;
+}
+}  // namespace net
+
 namespace page_load_metrics {
+
+// The header for a 200 response to an HTTP request.
+extern const char kHttpOkResponseHeader[];
+
+// The maximum possible threshold beyond which an ad resource will be classified
+// as heavy from the network perspective.
+extern const int kMaxHeavyAdNetworkSize;
 
 class PageLoadMetricsTestWaiter;
 
@@ -46,6 +60,10 @@ void TriggerAndDetectLargeStickyAd(content::WebContents* web_contents);
 // Creates an overlay popup ad and trigger a series of actions and layout
 // updates for the ad to be detected by the overlay popup detector.
 void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents);
+
+// Loads a resource of size |bytes| in |response|.
+void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
+                       int bytes);
 
 }  // namespace page_load_metrics
 

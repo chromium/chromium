@@ -5,10 +5,14 @@
 #include "components/page_load_metrics/browser/observers/ad_metrics/ad_intervention_browser_test_utils.h"
 
 #include <memory>
+#include <string>
 
+#include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -39,6 +43,16 @@ void NavigateAndWaitForTimingEvent(
 }
 
 }  // namespace
+
+const char kHttpOkResponseHeader[] =
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Type: text/html; charset=utf-8\r\n"
+    "\r\n";
+
+const int kMaxHeavyAdNetworkSize =
+    heavy_ad_thresholds::kMaxNetworkBytes +
+    AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
+        kMaxNetworkThresholdNoiseBytes;
 
 // Gets the body height of the document embedded in |web_contents|.
 int GetDocumentHeight(content::WebContents* web_contents) {
@@ -128,6 +142,14 @@ void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents) {
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
                   web_contents, "", "", content::EXECUTE_SCRIPT_NO_USER_GESTURE)
                   .error.empty());
+}
+
+void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
+                       int bytes) {
+  response->WaitForRequest();
+  response->Send(kHttpOkResponseHeader);
+  response->Send(std::string(bytes, ' '));
+  response->Done();
 }
 
 }  // namespace page_load_metrics

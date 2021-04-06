@@ -10,6 +10,7 @@
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/page_load_metrics/browser/ads_page_load_metrics_test_waiter.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/ad_intervention_browser_test_utils.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -41,25 +42,6 @@ const char kCrossOriginHistogramId[] =
 
 const char kHeavyAdInterventionTypeHistogramId[] =
     "PageLoad.Clients.Ads.HeavyAds.InterventionType2";
-
-// Use the maximum possible threshold so tests are deterministic.
-const int kMaxHeavyAdNetworkSize =
-    heavy_ad_thresholds::kMaxNetworkBytes +
-    page_load_metrics::AdsPageLoadMetricsObserver::
-        HeavyAdThresholdNoiseProvider::kMaxNetworkThresholdNoiseBytes;
-
-const char kHttpOkResponseHeader[] =
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/html; charset=utf-8\r\n"
-    "\r\n";
-
-void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
-                       int bytes) {
-  response->WaitForRequest();
-  response->Send(kHttpOkResponseHeader);
-  response->Send(std::string(bytes, ' '));
-  response->Done();
-}
 
 }  // namespace
 
@@ -230,15 +212,17 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
       // to trigger the intervention and ensure that the navigation failed.
       content::TestNavigationObserver error_observer(
           web_contents(), net::ERR_BLOCKED_BY_CLIENT);
-      LoadLargeResource(large_resource, kMaxHeavyAdNetworkSize);
+      page_load_metrics::LoadLargeResource(
+          large_resource, page_load_metrics::kMaxHeavyAdNetworkSize);
       error_observer.WaitForNavigationFinished();
       EXPECT_FALSE(error_observer.last_navigation_succeeded());
     } else {
       // Otherwise load the resource, ensuring enough bytes were loaded.
       int64_t current_network_bytes = waiter->current_network_bytes();
-      LoadLargeResource(large_resource, kMaxHeavyAdNetworkSize);
-      waiter->AddMinimumNetworkBytesExpectation(current_network_bytes +
-                                                kMaxHeavyAdNetworkSize);
+      page_load_metrics::LoadLargeResource(
+          large_resource, page_load_metrics::kMaxHeavyAdNetworkSize);
+      waiter->AddMinimumNetworkBytesExpectation(
+          current_network_bytes + page_load_metrics::kMaxHeavyAdNetworkSize);
       waiter->Wait();
     }
   }
@@ -287,7 +271,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   NavigateAndWaitForCompletion(url, shell());
 
   // Load a resource large enough to trigger the intervention.
-  LoadLargeResource(incomplete_resource_response.get(), kMaxHeavyAdNetworkSize);
+  page_load_metrics::LoadLargeResource(
+      incomplete_resource_response.get(),
+      page_load_metrics::kMaxHeavyAdNetworkSize);
 
   // Wait for the intervention page navigation to finish on the frame.
   error_observer.WaitForNavigationFinished();
@@ -533,7 +519,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceIncognitoBrowserTest,
   NavigateAndWaitForCompletion(url, shell());
 
   // Load a resource large enough to trigger the intervention.
-  LoadLargeResource(incomplete_resource_response.get(), kMaxHeavyAdNetworkSize);
+  page_load_metrics::LoadLargeResource(
+      incomplete_resource_response.get(),
+      page_load_metrics::kMaxHeavyAdNetworkSize);
 
   // Wait for the intervention page navigation to finish on the frame.
   error_observer.WaitForNavigationFinished();
