@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
 #include <tuple>
 #include <utility>
 
@@ -6839,31 +6840,57 @@ class DelegatedInkPointTest
   void SendEvent(bool match_test_hovering_state,
                  gfx::PointF point,
                  base::TimeTicks timestamp = ui::EventTimeForNow()) {
-    if (GetEventParam() == TestEvent::kTouchEvent) {
-      ui::EventPointerType pointer_type = ui::EventPointerType::kTouch;
-      if (GetHoverParam() == HoveringState::kHovering)
-        pointer_type = ui::EventPointerType::kPen;
+    SendEvent(match_test_hovering_state, point, timestamp,
+              /*use_enter_event*/ false, /*use_exit_event*/ false);
+  }
+
+  void SendEvent(bool match_test_hovering_state,
+                 const gfx::PointF& point,
+                 base::TimeTicks timestamp,
+                 bool use_enter_event,
+                 bool use_exit_event) {
+    DCHECK(!(use_enter_event && use_exit_event));
+
+    // Hovering creates and sends ui::MouseEvents with
+    // ET_MOUSE_{MOVED,ENTERED,EXITED} types, so do the same here in hovering
+    // scenarios.
+    if (GetEventParam() == TestEvent::kTouchEvent &&
+        !Hovering(match_test_hovering_state)) {
+      ui::EventType event_type = ui::ET_TOUCH_MOVED;
+      if (use_enter_event)
+        event_type = ui::ET_TOUCH_PRESSED;
+      if (use_exit_event)
+        event_type = ui::ET_TOUCH_RELEASED;
 
       // Touch needs a pressed event first to properly handle future move
       // events.
-      SendTouchPress(pointer_type);
+      SendTouchPress(point);
 
-      ui::TouchEvent touch_event(ui::ET_TOUCH_MOVED, point, point, timestamp,
-                                 ui::PointerDetails(pointer_type, kPointerId));
-      if ((GetHoverParam() == HoveringState::kHovering &&
-           match_test_hovering_state) ||
-          (GetHoverParam() == HoveringState::kNotHovering &&
-           !match_test_hovering_state)) {
-        touch_event.set_hovering(true);
-      }
+      ui::TouchEvent touch_event(
+          event_type, point, point, timestamp,
+          ui::PointerDetails(ui::EventPointerType::kTouch, kPointerId));
       view_->OnTouchEvent(&touch_event);
+
+      // Need to send a new press event after ending the previous touch.
+      if (use_exit_event)
+        sent_touch_press_ = false;
     } else {
-      int flags = match_test_hovering_state ? 0 : ui::EF_LEFT_MOUSE_BUTTON;
-      if (GetHoverParam() == HoveringState::kNotHovering)
-        flags = match_test_hovering_state ? ui::EF_LEFT_MOUSE_BUTTON : 0;
-      ui::MouseEvent mouse_event(
-          ui::ET_MOUSE_MOVED, point, point, timestamp, flags, 0,
-          ui::PointerDetails(ui::EventPointerType::kMouse, kPointerId));
+      ui::EventPointerType pointer_type = ui::EventPointerType::kMouse;
+      if (GetEventParam() == TestEvent::kTouchEvent) {
+        DCHECK(Hovering(match_test_hovering_state));
+        pointer_type = ui::EventPointerType::kPen;
+      }
+
+      ui::EventType event_type = ui::ET_MOUSE_MOVED;
+      if (use_enter_event)
+        event_type = ui::ET_MOUSE_ENTERED;
+      if (use_exit_event)
+        event_type = ui::ET_MOUSE_EXITED;
+
+      int flags =
+          Hovering(match_test_hovering_state) ? 0 : ui::EF_LEFT_MOUSE_BUTTON;
+      ui::MouseEvent mouse_event(event_type, point, point, timestamp, flags, 0,
+                                 ui::PointerDetails(pointer_type, kPointerId));
       view_->OnMouseEvent(&mouse_event);
     }
   }
@@ -6873,20 +6900,30 @@ class DelegatedInkPointTest
   int32_t GetExpectedPointerId() const { return kPointerId; }
 
  private:
-  void SendTouchPress(ui::EventPointerType pointer_type) {
+  void SendTouchPress(const gfx::PointF& requested_touch_location) {
     DCHECK(GetEventParam() == TestEvent::kTouchEvent);
     if (sent_touch_press_)
       return;
 
-    // Location of the point doesn't matter, chosen arbitrarily.
-    ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::PointF(15, 15),
-                         gfx::PointF(15, 15), ui::EventTimeForNow(),
-                         ui::PointerDetails(pointer_type, kPointerId));
-    if (GetHoverParam() == HoveringState::kHovering)
-      press.set_hovering(true);
+    // Location of the press event doesn't matter, so long as it doesn't exactly
+    // match the location of the subsequent move event. If they match, then the
+    // move event is dropped.
+    gfx::PointF point(requested_touch_location.x() + 2.f,
+                      requested_touch_location.y() + 2.f);
+
+    ui::TouchEvent press(
+        ui::ET_TOUCH_PRESSED, point, point, ui::EventTimeForNow(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, kPointerId));
 
     view_->OnTouchEvent(&press);
     sent_touch_press_ = true;
+  }
+
+  bool Hovering(bool match_test_hovering_state) {
+    return (GetHoverParam() == HoveringState::kHovering &&
+            match_test_hovering_state) ||
+           (GetHoverParam() == HoveringState::kNotHovering &&
+            !match_test_hovering_state);
   }
 
   // Pointer id to use in these tests. It must be consistent throughout a single
@@ -6904,13 +6941,33 @@ class DelegatedInkPointTest
   std::unique_ptr<MockCompositor> compositor_;
 };
 
+struct DelegatedInkPointTestPassToString {
+  std::string operator()(
+      const testing::TestParamInfo<std::tuple<TestEvent, HoveringState>> type)
+      const {
+    std::string suffix;
+
+    if (std::get<0>(type.param) == TestEvent::kMouseEvent)
+      suffix.append("Mouse");
+    else
+      suffix.append("Touch");
+
+    if (std::get<1>(type.param) == HoveringState::kHovering)
+      suffix.append("Hovering");
+    else
+      suffix.append("NotHovering");
+
+    return suffix;
+  }
+};
+
 INSTANTIATE_TEST_SUITE_P(
     DelegatedInkTrails,
     DelegatedInkPointTest,
-    testing::Combine(testing::Values(TestEvent::kMouseEvent,
-                                     TestEvent::kTouchEvent),
-                     testing::Values(HoveringState::kHovering,
-                                     HoveringState::kNotHovering)));
+    testing::Combine(
+        testing::Values(TestEvent::kMouseEvent, TestEvent::kTouchEvent),
+        testing::Values(HoveringState::kHovering, HoveringState::kNotHovering)),
+    DelegatedInkPointTestPassToString());
 
 // Tests to confirm that input events are correctly forwarded to the UI
 // Compositor when DelegatedInkTrails should be drawn, and stops forwarding when
@@ -7044,6 +7101,54 @@ TEST_P(DelegatedInkPointTest, StopForwardingOnHoverStateChange) {
 
   EXPECT_TRUE(delegated_ink_point_renderer->HasDelegatedInkPoint());
   EXPECT_FALSE(delegated_ink_point_renderer->GetPredictionState());
+}
+
+// Confirm that only move events are forwarded, not enter/exit or equivalent
+// events.
+TEST_P(DelegatedInkPointTest, IgnoreEnterAndExitEvents) {
+  // First set everything up and try forwarding a point, confirming that it is
+  // sent as expected.
+  SetInkMetadataFlagOnRenderFrameMetadata(true);
+  gfx::DelegatedInkPoint expected_point(
+      gfx::PointF(10, 10), base::TimeTicks::Now(), GetExpectedPointerId());
+  SendEvent(true, expected_point.point(), expected_point.timestamp());
+
+  MockDelegatedInkPointRenderer* delegated_ink_point_renderer =
+      compositor()->delegated_ink_point_renderer();
+  EXPECT_TRUE(delegated_ink_point_renderer);
+  delegated_ink_point_renderer->FlushForTesting();
+
+  EXPECT_TRUE(delegated_ink_point_renderer->HasDelegatedInkPoint());
+  gfx::DelegatedInkPoint actual_point =
+      delegated_ink_point_renderer->GetDelegatedInkPoint();
+  EXPECT_EQ(expected_point.point(), actual_point.point());
+  EXPECT_EQ(expected_point.timestamp(), actual_point.timestamp());
+  EXPECT_EQ(GetExpectedPointerId(), actual_point.pointer_id());
+
+  // Try sending an enter event and confirm it is not forwarded.
+  SendEvent(true, gfx::PointF(12, 12), base::TimeTicks::Now(),
+            /*use_enter_event*/ true, /*use_exit_event*/ false);
+  delegated_ink_point_renderer->FlushForTesting();
+  EXPECT_FALSE(delegated_ink_point_renderer->HasDelegatedInkPoint());
+
+  // Now try with an exit event.
+  SendEvent(true, gfx::PointF(42, 19), base::TimeTicks::Now(),
+            /*use_enter_event*/ false, /*use_exit_event*/ true);
+  delegated_ink_point_renderer->FlushForTesting();
+  EXPECT_FALSE(delegated_ink_point_renderer->HasDelegatedInkPoint());
+
+  // Finally, confirm that sending move events will work again without issue.
+  expected_point = gfx::DelegatedInkPoint(
+      gfx::PointF(20, 21), base::TimeTicks::Now(), GetExpectedPointerId());
+  SendEvent(true, expected_point.point(), expected_point.timestamp());
+
+  delegated_ink_point_renderer->FlushForTesting();
+
+  EXPECT_TRUE(delegated_ink_point_renderer->HasDelegatedInkPoint());
+  actual_point = delegated_ink_point_renderer->GetDelegatedInkPoint();
+  EXPECT_EQ(expected_point.point(), actual_point.point());
+  EXPECT_EQ(expected_point.timestamp(), actual_point.timestamp());
+  EXPECT_EQ(GetExpectedPointerId(), actual_point.pointer_id());
 }
 
 }  // namespace content

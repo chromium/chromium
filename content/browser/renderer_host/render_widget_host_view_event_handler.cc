@@ -363,13 +363,19 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
   }
 }
 
+bool IsMoveEvent(ui::EventType type) {
+  return type == ui::ET_MOUSE_MOVED || type == ui::ET_MOUSE_DRAGGED ||
+         type == ui::ET_TOUCH_MOVED;
+}
+
 void RenderWidgetHostViewEventHandler::ForwardDelegatedInkPoint(
     ui::LocatedEvent* event,
     bool hovering,
     int32_t pointer_id) {
   const cc::RenderFrameMetadata& last_metadata =
       host_->render_frame_metadata_provider()->LastRenderFrameMetadata();
-  if (last_metadata.delegated_ink_metadata.has_value() &&
+  if (IsMoveEvent(event->type()) &&
+      last_metadata.delegated_ink_metadata.has_value() &&
       hovering == last_metadata.delegated_ink_metadata.value()
                       .delegated_ink_is_hovering) {
     if (!delegated_ink_point_renderer_.is_bound()) {
