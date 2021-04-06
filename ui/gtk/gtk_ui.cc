@@ -31,6 +31,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "ui/base/cursor/cursor_theme_manager_observer.h"
+#include "ui/base/glib/glib_cast.h"
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
@@ -142,35 +143,25 @@ class GtkButtonImageSource : public gfx::ImageSkiaSource {
     if (focus_) {
       gfx::Rect focus_rect(width, height);
 
-#if BUILDFLAG(GTK_VERSION) < 4
       if (!GtkCheckVersion(3, 14)) {
         gint focus_pad;
-        gtk_style_context_get_style(context, "focus-padding", &focus_pad,
-                                    nullptr);
+        GtkStyleContextGetStyle(context, "focus-padding", &focus_pad, nullptr);
         focus_rect.Inset(focus_pad, focus_pad);
 
         if (state_ == ui::NativeTheme::kPressed) {
           gint child_displacement_x, child_displacement_y;
           gboolean displace_focus;
-          gtk_style_context_get_style(
-              context, "child-displacement-x", &child_displacement_x,
-              "child-displacement-y", &child_displacement_y, "displace-focus",
-              &displace_focus, nullptr);
+          GtkStyleContextGetStyle(context, "child-displacement-x",
+                                  &child_displacement_x, "child-displacement-y",
+                                  &child_displacement_y, "displace-focus",
+                                  &displace_focus, nullptr);
           if (displace_focus)
             focus_rect.Offset(child_displacement_x, child_displacement_y);
         }
       }
-#endif
 
-      if (!GtkCheckVersion(3, 20)) {
-        GtkBorder border;
-#if BUILDFLAG(GTK_VERSION) >= 4
-        gtk_style_context_get_border(context, &border);
-#else
-        gtk_style_context_get_border(context, state_flags, &border);
-#endif
-        focus_rect.Inset(border.left, border.top, border.right, border.bottom);
-      }
+      if (!GtkCheckVersion(3, 20))
+        focus_rect.Inset(GtkStyleContextGetBorder(context));
 
       gtk_render_focus(context, cr, focus_rect.x(), focus_rect.y(),
                        focus_rect.width(), focus_rect.height());
@@ -500,55 +491,55 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
 
   for (size_t i = 0; i < base::size(content_types); ++i) {
     auto icon = TakeGObject(g_content_type_get_icon(content_type.c_str()));
-#if BUILDFLAG(GTK_VERSION) >= 4
-    auto icon_paintable = TakeGObject(gtk_icon_theme_lookup_by_gicon(
-        theme, icon.get(), size, 1, GTK_TEXT_DIR_NONE,
-        static_cast<GtkIconLookupFlags>(0)));
-    if (!icon_paintable)
-      continue;
-
-    auto* paintable = GDK_PAINTABLE(icon_paintable);
-    auto* snapshot = gtk_snapshot_new();
-    gdk_paintable_snapshot(paintable, snapshot, size, size);
-    auto* node = gtk_snapshot_free_to_node(snapshot);
-    GdkTexture* texture = GetTextureFromRenderNode(node);
-
     SkBitmap bitmap;
-    bitmap.allocN32Pixels(gdk_texture_get_width(texture),
-                          gdk_texture_get_height(texture));
-    gdk_texture_download(texture, static_cast<guchar*>(bitmap.getAddr(0, 0)),
-                         bitmap.rowBytes());
+    if (GtkCheckVersion(4)) {
+      auto icon_paintable = Gtk4IconThemeLookupByGicon(
+          theme, icon.get(), size, 1, GTK_TEXT_DIR_NONE,
+          static_cast<GtkIconLookupFlags>(0));
+      if (!icon_paintable)
+        continue;
 
-    gsk_render_node_unref(node);
-#else
-    auto icon_info = TakeGObject(gtk_icon_theme_lookup_by_gicon(
-        theme, icon.get(), size,
-        static_cast<GtkIconLookupFlags>(GTK_ICON_LOOKUP_FORCE_SIZE)));
-    if (!icon_info)
-      continue;
-    auto* surface =
-        gtk_icon_info_load_surface(icon_info.get(), nullptr, nullptr);
-    if (!surface)
-      continue;
-    DCHECK_EQ(cairo_surface_get_type(surface), CAIRO_SURFACE_TYPE_IMAGE);
-    DCHECK_EQ(cairo_image_surface_get_format(surface), CAIRO_FORMAT_ARGB32);
+      auto* paintable = GlibCast<GdkPaintable>(icon_paintable.get(),
+                                               gdk_paintable_get_type());
+      auto* snapshot = gtk_snapshot_new();
+      gdk_paintable_snapshot(paintable, snapshot, size, size);
+      auto* node = gtk_snapshot_free_to_node(snapshot);
+      GdkTexture* texture = GetTextureFromRenderNode(node);
 
-    SkBitmap bitmap;
-    SkImageInfo image_info =
-        SkImageInfo::Make(cairo_image_surface_get_width(surface),
-                          cairo_image_surface_get_height(surface),
-                          kBGRA_8888_SkColorType, kUnpremul_SkAlphaType);
-    if (!bitmap.installPixels(
-            image_info, cairo_image_surface_get_data(surface),
-            image_info.minRowBytes(),
-            [](void*, void* surface) {
-              cairo_surface_destroy(
-                  reinterpret_cast<cairo_surface_t*>(surface));
-            },
-            surface)) {
-      continue;
+      bitmap.allocN32Pixels(gdk_texture_get_width(texture),
+                            gdk_texture_get_height(texture));
+      gdk_texture_download(texture, static_cast<guchar*>(bitmap.getAddr(0, 0)),
+                           bitmap.rowBytes());
+
+      gsk_render_node_unref(node);
+    } else {
+      auto icon_info = Gtk3IconThemeLookupByGicon(
+          theme, icon.get(), size,
+          static_cast<GtkIconLookupFlags>(GTK_ICON_LOOKUP_FORCE_SIZE));
+      if (!icon_info)
+        continue;
+      auto* surface =
+          gtk_icon_info_load_surface(icon_info.get(), nullptr, nullptr);
+      if (!surface)
+        continue;
+      DCHECK_EQ(cairo_surface_get_type(surface), CAIRO_SURFACE_TYPE_IMAGE);
+      DCHECK_EQ(cairo_image_surface_get_format(surface), CAIRO_FORMAT_ARGB32);
+
+      SkImageInfo image_info =
+          SkImageInfo::Make(cairo_image_surface_get_width(surface),
+                            cairo_image_surface_get_height(surface),
+                            kBGRA_8888_SkColorType, kUnpremul_SkAlphaType);
+      if (!bitmap.installPixels(
+              image_info, cairo_image_surface_get_data(surface),
+              image_info.minRowBytes(),
+              [](void*, void* surface) {
+                cairo_surface_destroy(
+                    reinterpret_cast<cairo_surface_t*>(surface));
+              },
+              surface)) {
+        continue;
+      }
     }
-#endif
     gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
     image_skia.MakeThreadSafe();
     return gfx::Image(image_skia);
@@ -707,11 +698,12 @@ static struct {
 
 base::flat_map<std::string, std::string> GtkUi::GetKeyboardLayoutMap() {
   GdkDisplay* display = gdk_display_get_default();
-#if BUILDFLAG(GTK_VERSION) < 4
-  GdkKeymap* keymap = gdk_keymap_get_for_display(display);
-  if (!keymap)
-    return {};
-#endif
+  GdkKeymap* keymap = nullptr;
+  if (!GtkCheckVersion(4)) {
+    keymap = gdk_keymap_get_for_display(display);
+    if (!keymap)
+      return {};
+  }
 
   auto layouts = std::make_unique<ui::DomKeyboardLayoutManager>();
   auto map = base::flat_map<std::string, std::string>();
@@ -724,16 +716,14 @@ base::flat_map<std::string, std::string> GtkUi::GetKeyboardLayoutMap() {
     guint* keyvals = nullptr;
     gint n_entries = 0;
 
-// The order of the layouts is based on the system default ordering in
-// Keyboard Settings. The currently active layout does not affect this
-// order.
-#if BUILDFLAG(GTK_VERSION) >= 4
+    // The order of the layouts is based on the system default ordering in
+    // Keyboard Settings. The currently active layout does not affect this
+    // order.
     const bool success =
-        gdk_display_map_keycode(display, keycode, &keys, &keyvals, &n_entries);
-#else
-    const bool success = gdk_keymap_get_entries_for_keycode(
-        keymap, keycode, &keys, &keyvals, &n_entries);
-#endif
+        GtkCheckVersion(4) ? gdk_display_map_keycode(display, keycode, &keys,
+                                                     &keyvals, &n_entries)
+                           : gdk_keymap_get_entries_for_keycode(
+                                 keymap, keycode, &keys, &keyvals, &n_entries);
     if (success) {
       for (gint i = 0; i < n_entries; ++i) {
         // There are 4 entries per layout group, one each for shift level 0..3.

@@ -703,8 +703,8 @@ float GetDeviceScaleFactor() {
   return linux_ui ? linux_ui->GetDeviceScaleFactor() : 1;
 }
 
-#if BUILDFLAG(GTK_VERSION) >= 4
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {
+  DCHECK(GtkCheckVersion(4));
   struct {
     GskRenderNodeType node_type;
     GskRenderNode* (*get_child)(GskRenderNode*);
@@ -753,6 +753,5 @@ GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {
   }
   return nullptr;
 }
-#endif
 
 }  // namespace gtk

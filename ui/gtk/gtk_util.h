@@ -240,9 +240,8 @@ gfx::Size GetSeparatorSize(bool horizontal);
 
 float GetDeviceScaleFactor();
 
-#if BUILDFLAG(GTK_VERSION) >= 4
+// This should only be called on Gtk4.
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
-#endif
 
 }  // namespace gtk
 

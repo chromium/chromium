@@ -20,3 +20,7 @@ void gtk_widget_destroy(GtkWidget* widget);
 gboolean gtk_bindings_activate_event(GObject* object, GdkEventKey* event);
 void gtk_widget_set_events(GtkWidget* widget, gint events);
 GType gtk_container_get_type(void);
+cairo_surface_t* gtk_icon_info_load_surface(GtkIconInfo* icon_info, GdkWindow* for_window, GError** error);
+void gtk_style_context_get_style_valist(GtkStyleContext* context, va_list args);
+GtkSnapshot* gtk_snapshot_new(void);
+GskRenderNode* gtk_snapshot_free_to_node(GtkSnapshot* snapshot);

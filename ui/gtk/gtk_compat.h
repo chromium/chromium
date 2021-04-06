@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "ui/base/glib/scoped_gobject.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gtk/gtk_types.h"
 
 extern "C" {
@@ -35,6 +37,26 @@ bool GtkCheckVersion(int major, int minor = 0, int micro = 0);
 // changed across versions, but whose (symbol) names have not.
 
 void GtkInit(const std::vector<std::string>& args);
+
+gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context);
+
+ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGicon(GtkIconTheme* theme,
+                                                      GIcon* icon,
+                                                      int size,
+                                                      GtkIconLookupFlags flags);
+
+ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupByGicon(
+    GtkIconTheme* theme,
+    GIcon* icon,
+    int size,
+    int scale,
+    GtkTextDirection direction,
+    GtkIconLookupFlags flags);
+
+// generate_stubs cannot forward to C-style variadic functions, so the
+// functions below wrap the corresponding GTK va_list functions.
+
+void GtkStyleContextGetStyle(GtkStyleContext* context, ...);
 
 }  // namespace gtk
 

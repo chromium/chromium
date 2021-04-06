@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "build/buildflag.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gtk/gtk_ui_delegate.h"

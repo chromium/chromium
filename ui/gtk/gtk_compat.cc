@@ -61,6 +61,10 @@ void* GetLibGtk() {
   return GetLibGtk3();
 }
 
+gfx::Insets InsetsFromGtkBorder(const GtkBorder& border) {
+  return gfx::Insets(border.top, border.left, border.bottom, border.right);
+}
+
 }  // namespace
 
 bool LoadGtk(int gtk_version) {
@@ -110,6 +114,55 @@ void GtkInit(const std::vector<std::string>& args) {
       DlCast<void(int*, char***)>(gtk_init)(&gtk_argc, &gtk_argv);
     }
   }
+}
+
+DISABLE_CFI_ICALL
+gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context) {
+  static void* get_border = DlSym(GetLibGtk(), "gtk_style_context_get_border");
+  GtkBorder border;
+  if (GtkCheckVersion(4)) {
+    DlCast<void(GtkStyleContext*, GtkBorder*)>(get_border)(context, &border);
+  } else {
+    DlCast<void(GtkStyleContext*, GtkStateFlags, GtkBorder*)>(get_border)(
+        context, gtk_style_context_get_state(context), &border);
+  }
+  return InsetsFromGtkBorder(border);
+}
+
+void GtkStyleContextGetStyle(GtkStyleContext* context, ...) {
+  va_list args;
+  va_start(args, context);
+  gtk_style_context_get_style_valist(context, args);
+  va_end(args);
+}
+
+DISABLE_CFI_ICALL
+ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGicon(
+    GtkIconTheme* theme,
+    GIcon* icon,
+    int size,
+    GtkIconLookupFlags flags) {
+  static void* lookup = DlSym(GetLibGtk(), "gtk_icon_theme_lookup_by_gicon");
+  DCHECK(!GtkCheckVersion(4));
+  return TakeGObject(
+      DlCast<GtkIconInfo*(GtkIconTheme*, GIcon*, int, GtkIconLookupFlags)>(
+          lookup)(theme, icon, size, flags));
+}
+
+DISABLE_CFI_ICALL
+ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupByGicon(
+    GtkIconTheme* theme,
+    GIcon* icon,
+    int size,
+    int scale,
+    GtkTextDirection direction,
+    GtkIconLookupFlags flags) {
+  static void* lookup = DlSym(GetLibGtk(), "gtk_icon_theme_lookup_by_gicon");
+  DCHECK(GtkCheckVersion(4));
+  return TakeGObject(
+      DlCast<GtkIconPaintable*(GtkIconTheme*, GIcon*, int, int,
+                               GtkTextDirection, GtkIconLookupFlags)>(lookup)(
+          theme, icon, size, scale, direction, flags));
 }
 
 }  // namespace gtk
