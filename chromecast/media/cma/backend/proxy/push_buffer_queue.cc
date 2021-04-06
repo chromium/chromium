@@ -43,13 +43,15 @@ PushBufferQueue::PushBufferQueue()
 
 PushBufferQueue::~PushBufferQueue() = default;
 
-bool PushBufferQueue::PushBuffer(const PushBufferRequest& request) {
+CmaBackend::BufferStatus PushBufferQueue::PushBuffer(
+    const PushBufferRequest& request) {
   auto success = PushBufferImpl(request);
   if (success) {
     producer_handler_.ApplyNewBytesWritten();
   }
 
-  return success;
+  return success ? CmaBackend::BufferStatus::kBufferSuccess
+                 : CmaBackend::BufferStatus::kBufferFailed;
 }
 
 bool PushBufferQueue::PushBufferImpl(const PushBufferRequest& request) {

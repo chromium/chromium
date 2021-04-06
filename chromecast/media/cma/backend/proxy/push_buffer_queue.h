@@ -11,7 +11,9 @@
 
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
+#include "chromecast/media/cma/backend/proxy/audio_channel_push_buffer_handler.h"
 #include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 
@@ -24,40 +26,28 @@ struct AudioConfig;
 // data, which are pushed together over gRPC using the PushData() API call.
 // Two sequences are expected to simultaneously access this object:
 // - A PRODUCER sequence, which will push new data in.
-// - A CONSUMER thread which will pull this data back out of the data structure.
+// - A CONSUMER sequence which will pull this data back out of the data
+//   structure.
 //
 // This is achieved through serializing this protobuf into bytes, then storing
 // these bytes in a lockless FIFO.
-class PushBufferQueue {
+class PushBufferQueue : public AudioChannelPushBufferHandler {
  public:
-  using PushBufferRequest = cast::media::PushBufferRequest;
-
   // The amount of space to allocate in the buffer.
   static constexpr size_t kBufferSizeBytes = 0x01 << 12;  // 4 kB.
 
   PushBufferQueue();
   PushBufferQueue(const PushBufferQueue& other) = delete;
 
-  ~PushBufferQueue();
+  ~PushBufferQueue() override;
 
   PushBufferQueue& operator=(const PushBufferQueue& other) = delete;
 
-  // Pushes the data stored in the associated type to the queue underlying this
-  // object. Returns true if the operation was successful, and false otherwise.
-  //
-  // May only be called by the PRODUCER.
-  bool PushBuffer(const PushBufferRequest& request);
-
-  // Returns true if there is data available for reading.
-  //
-  // May only be called by the CONSUMER.
-  bool HasBufferedData() const;
-
-  // Attempts to read the top PushBufferRequest on the queue, returning the
-  // instance on success and empty if not enough data is available yet.
-  //
-  // May only be called by the CONSUMER.
-  base::Optional<PushBufferRequest> GetBufferedData();
+  // AudioChannelPushBufferHandler overrides.
+  CmaBackend::BufferStatus PushBuffer(
+      const PushBufferRequest& request) override;
+  bool HasBufferedData() const override;
+  base::Optional<PushBufferRequest> GetBufferedData() override;
 
  private:
   // These classes exist for the following 2 reasons:

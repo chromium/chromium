@@ -86,6 +86,7 @@ cast_source_set("unittests") {
       "backend/proxy/cma_backend_proxy_unittest.cc",
       "backend/proxy/media_pipeline_buffer_extension_unittest.cc",
       "backend/proxy/proxy_call_translator_unittest.cc",
+      "backend/proxy/push_buffer_pending_handler_unittest.cc",
       "backend/proxy/push_buffer_queue_unittest.cc",
     ]
     deps += [

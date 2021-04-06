@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
+#include "chromecast/media/cma/backend/proxy/audio_channel_push_buffer_handler.h"
 #include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"
 #include "chromecast/media/cma/backend/proxy/cma_proxy_handler.h"
 #include "chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy.h"
@@ -22,9 +23,11 @@ struct MediaPipelineDeviceParams;
 
 // This class is used to proxy audio data to an external
 // CmaBackend::AudioDecoder over gRPC.
-class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
-                                       public CmaProxyHandler::Client,
-                                       public BufferIdManager::Client {
+class MultizoneAudioDecoderProxyImpl
+    : public MultizoneAudioDecoderProxy,
+      public CmaProxyHandler::Client,
+      public BufferIdManager::Client,
+      public AudioChannelPushBufferHandler::Client {
  public:
   // Creates a new MultizoneAudioDecoderProxy, such that in the event of an
   // unrecoverable error, |fatal_error_callback| will be called. Fallowing this
@@ -74,6 +77,10 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   void OnTimestampUpdateNeeded(
       BufferIdManager::TargetBufferInfo buffer) override;
 
+  // AudioChannelPushBufferHandler::Client overrides:
+  void OnAudioChannelPushBufferComplete(
+      CmaBackend::BufferStatus status) override;
+
   // The PTS offset as determined by the receiver of the gRPC endpoint wrapped
   // by this class. This value is updated as new PTS values are received over
   // the IPC.
@@ -85,6 +92,14 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   // Parameters for the Initialize() call captured in the ctor.
   const std::string cast_session_id_;
   const CmaProxyHandler::AudioDecoderOperationMode decoder_mode_;
+
+  // The buffer which has received kBufferPending from
+  // |proxy_handler_->PushBuffer()| and has not yet received the
+  // OnAudioChannelPushBufferComplete callback. Has the following states:
+  // - Empty when no such callback is expected, and no pending operation is
+  //   ongoing.
+  // - Set to a valid pointer when such an operation is ongoing.
+  scoped_refptr<DecoderBufferBase> pending_push_buffer_;
 
   // This is the local instance representing the "remote" backend. All above
   // public method calls should call into this instance to proxy the call to

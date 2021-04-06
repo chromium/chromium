@@ -36,6 +36,7 @@ cast_source_set("proxy") {
   sources = [
     "audio_channel_broker_impl.cc",
     "audio_channel_broker_impl.h",
+    "audio_channel_push_buffer_handler.h",
     "audio_decoder_pipeline_node.cc",
     "audio_decoder_pipeline_node.h",
     "buffer_id_manager.cc",
@@ -53,6 +54,8 @@ cast_source_set("proxy") {
     "multizone_audio_decoder_proxy_impl.h",
     "proxy_call_translator.cc",
     "proxy_call_translator.h",
+    "push_buffer_pending_handler.cc",
+    "push_buffer_pending_handler.h",
     "push_buffer_queue.cc",
     "push_buffer_queue.h",
   ]

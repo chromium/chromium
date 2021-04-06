@@ -6,6 +6,7 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_CMA_PROXY_HANDLER_H_
 
 #include "base/memory/ref_counted.h"
+#include "chromecast/media/cma/backend/proxy/audio_channel_push_buffer_handler.h"
 #include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"
 
 namespace chromecast {
@@ -61,8 +62,10 @@ class CmaProxyHandler {
   // Create a new implementation-specific CmaProxyHandler. Each provided
   // object must exist for the duration of the created instance's lifetime, and
   // all callbacks for |client| will be called on |task_runner|.
-  static std::unique_ptr<CmaProxyHandler> Create(TaskRunner* task_runner,
-                                                 Client* client);
+  static std::unique_ptr<CmaProxyHandler> Create(
+      TaskRunner* task_runner,
+      Client* client,
+      AudioChannelPushBufferHandler::Client* push_buffer_client);
 
   // Calls to the corresponding gRPC Methods. These functions may be called from
   // any thread.
@@ -90,8 +93,9 @@ class CmaProxyHandler {
   // - SetConfig may be called later on as-well, after which time the new config
   //   will be used for all following PushBuffer calls.
   virtual bool SetConfig(const AudioConfig& config) = 0;
-  virtual bool PushBuffer(scoped_refptr<DecoderBufferBase> buffer,
-                          BufferIdManager::BufferId buffer_id) = 0;
+  virtual CmaBackend::BufferStatus PushBuffer(
+      scoped_refptr<DecoderBufferBase> buffer,
+      BufferIdManager::BufferId buffer_id) = 0;
 };
 
 }  // namespace media

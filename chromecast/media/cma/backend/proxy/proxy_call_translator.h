@@ -13,7 +13,7 @@
 #include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
 #include "chromecast/media/cma/backend/proxy/cma_proxy_handler.h"
-#include "chromecast/media/cma/backend/proxy/push_buffer_queue.h"
+#include "chromecast/media/cma/backend/proxy/push_buffer_pending_handler.h"
 
 namespace chromecast {
 
@@ -32,8 +32,10 @@ class ProxyCallTranslator : public CmaProxyHandler,
   // Creates a new ProxyCallTranslator. All provided entities must exist for the
   // duration of this instance's lifetime. All calls to |client| will be made
   // on |client_task_runner|.
-  ProxyCallTranslator(TaskRunner* client_task_runner,
-                      CmaProxyHandler::Client* client);
+  ProxyCallTranslator(
+      TaskRunner* client_task_runner,
+      CmaProxyHandler::Client* client,
+      AudioChannelPushBufferHandler::Client* push_buffer_client);
   ProxyCallTranslator(const ProxyCallTranslator& other) = delete;
 
   ~ProxyCallTranslator() override;
@@ -54,8 +56,9 @@ class ProxyCallTranslator : public CmaProxyHandler,
   void UpdateTimestamp(
       const BufferIdManager::TargetBufferInfo& target_buffer) override;
   bool SetConfig(const AudioConfig& config) override;
-  bool PushBuffer(scoped_refptr<DecoderBufferBase> buffer,
-                  BufferIdManager::BufferId buffer_id) override;
+  CmaBackend::BufferStatus PushBuffer(
+      scoped_refptr<DecoderBufferBase> buffer,
+      BufferIdManager::BufferId buffer_id) override;
 
  private:
   friend class ProxyCallTranslatorTest;
@@ -68,6 +71,7 @@ class ProxyCallTranslator : public CmaProxyHandler,
   ProxyCallTranslator(
       TaskRunner* client_task_runner,
       CmaProxyHandler::Client* client,
+      AudioChannelPushBufferHandler::Client* push_buffer_client,
       std::unique_ptr<CastRuntimeAudioChannelBroker> decoder_channel);
 
   // CastRuntimeAudioChannelBroker::Handler overrides:
@@ -98,12 +102,12 @@ class ProxyCallTranslator : public CmaProxyHandler,
   void OnPipelineStateChangeTask(CmaProxyHandler::PipelineState state);
   void OnBytesDecodedTask(int64_t decoded_byte_count);
 
-  // Queue storing data from PushBuffer and SetConfig calls.
-  PushBufferQueue push_buffer_queue_;
-
   std::unique_ptr<CastRuntimeAudioChannelBroker> decoder_channel_;
   TaskRunner* const client_task_runner_;
   CmaProxyHandler::Client* const client_;
+
+  // Handler to queue up PushBuffer and SetConfig calls.
+  PushBufferPendingHandler push_buffer_handler_;
 
   // NOTE: All weak_ptrs created from this factory must be dereferenced on
   // |client_task_runner_|. Unfortunately, due to the structure of the

@@ -219,7 +219,9 @@ TEST_F(PushBufferQueueTests, TestWrapAround) {
     ASSERT_EQ(serialized_str.size(), size_t{6}) << name;
 
     ASSERT_TRUE(queue_.HasBufferedData()) << name;
-    ASSERT_TRUE(queue_.PushBuffer(buffer)) << name;
+    ASSERT_EQ(queue_.PushBuffer(buffer),
+              CmaBackend::BufferStatus::kBufferSuccess)
+        << name;
 
     ReadData(name, old_buffer);
   }
@@ -234,11 +236,14 @@ TEST_F(PushBufferQueueTests, TestWriteEntireBuffer) {
     std::string serialized_str;
     buffer.SerializeToString(&serialized_str);
     ASSERT_EQ(serialized_str.size(), size_t{7});
-    ASSERT_TRUE(queue_.PushBuffer(buffer)) << GetIterationName(i);
+    ASSERT_EQ(queue_.PushBuffer(buffer),
+              CmaBackend::BufferStatus::kBufferSuccess)
+        << GetIterationName(i);
   }
 
   auto failing_buffer = CreateAudioBufferRequest(0, false);
-  EXPECT_FALSE(queue_.PushBuffer(failing_buffer));
+  EXPECT_EQ(queue_.PushBuffer(failing_buffer),
+            CmaBackend::BufferStatus::kBufferFailed);
 
   for (size_t i = 0; i < (PushBufferQueue::kBufferSizeBytes >> 3); i++) {
     auto buffer = CreateAudioBufferRequest(0, false, 0, 1, 2);
