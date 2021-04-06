@@ -39,6 +39,7 @@ constexpr struct {
     {0x045e, 0x082f},  // Microsoft Bluetooth Mouse
     {0x045e, 0x0b05},  // Xbox One Elite Series 2 gamepad
     {0x046d, 0x4069},  // Logitech MX Master 2S (Unifying)
+    {0x046d, 0xb011},  // Logitech M558
     {0x046d, 0xb016},  // Logitech M535
     {0x046d, 0xb019},  // Logitech MX Master 2S (Bluetooth)
     {0x046d, 0xc093},  // Logitech M500s
