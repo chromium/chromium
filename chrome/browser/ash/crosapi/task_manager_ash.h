@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_ASH_CROSAPI_TASK_MANAGER_ASH_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list_types.h"
-#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
@@ -38,11 +36,9 @@ class TaskManagerAsh : public mojom::TaskManager {
       mojo::PendingRemote<mojom::TaskManagerProvider> provider,
       const base::UnguessableToken& token) override;
 
-  // Sets task refreshing arguments. Forward the call to the registered remote
+  // Sets task refreshing flags. Forward the call to the registered remote
   // providers.
-  // |refresh_interval| specifies the time interval tasks should be refreshed.
-  // |refresh_flags| specify the enabled resources types.
-  void SetRefreshArgs(base::TimeDelta refresh_interval, int64_t refresh_flags);
+  void SetRefreshFlags(int64_t refresh_flags);
 
   using GetTaskManagerTasksCallback =
       base::OnceCallback<void(std::vector<crosapi::mojom::TaskPtr>,
@@ -57,9 +53,18 @@ class TaskManagerAsh : public mojom::TaskManager {
   void RemoveObserver();
   void SetObserver(Observer* observer);
 
+  // Returns true if there is at least one registered task manager providers.
+  bool HasRegisteredProviders() const;
+
  private:
   // Called when a TaskManagerProvider is disconnected.
   void TaskManagerProviderDisconnected(const base::UnguessableToken& token);
+
+  // Called when TaskManagerProvider's version is ready.
+  void OnProviderVersionReady(
+      const base::UnguessableToken& token,
+      std::unique_ptr<mojo::Remote<mojom::TaskManagerProvider>> provider,
+      uint32_t interface_version);
 
   // This class supports any number of connections. This allows TaskManager to
   // have multiple, potentially thread-affine, remotes.
@@ -74,7 +79,6 @@ class TaskManagerAsh : public mojom::TaskManager {
 
   Observer* observer_ = nullptr;
 
-  base::TimeDelta refresh_interval_ = base::TimeDelta::Max();
   int64_t refresh_flags_ = task_manager::REFRESH_TYPE_NONE;
 
   base::WeakPtrFactory<TaskManagerAsh> weak_factory_{this};

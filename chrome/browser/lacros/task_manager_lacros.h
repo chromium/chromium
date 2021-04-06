@@ -10,6 +10,12 @@
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace task_manager {
+
+class TaskManagerControllerLacros;
+
+}  // namespace task_manager
+
 namespace crosapi {
 
 // This class receives the task manager api calls from ash, and send lacros
@@ -23,20 +29,21 @@ class TaskManagerLacros : public crosapi::mojom::TaskManagerProvider {
 
  private:
   // crosapi::mojom::TaskManagerProvider:
-  void SetRefreshArgs(base::TimeDelta refresh_interval,
-                      int64_t refresh_flags) override;
+  void DeprecatedSetRefreshArgs(base::TimeDelta refresh_interval,
+                                int64_t refresh_flags) override;
   using GetTaskManagerTasksCallback =
       base::OnceCallback<void(std::vector<crosapi::mojom::TaskPtr>,
                               std::vector<crosapi::mojom::TaskGroupPtr>)>;
   void GetTaskManagerTasks(GetTaskManagerTasksCallback callback) override;
   void OnTaskManagerClosed() override;
+  void SetRefreshFlags(int64_t refresh_flags) override;
 
   // A unique id that identifies this instance of Lacros.
   base::UnguessableToken id_;
   mojo::Receiver<crosapi::mojom::TaskManagerProvider> receiver_{this};
 
-  // TODO(crbug.com/1148572): Add a variable to reference
-  // task_manager::CrosapiTaskManagerController object.
+  std::unique_ptr<task_manager::TaskManagerControllerLacros>
+      task_manager_controller_;
 
   base::WeakPtrFactory<TaskManagerLacros> weak_ptr_factory_{this};
 };

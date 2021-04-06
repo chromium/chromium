@@ -127,7 +127,6 @@ class TaskManagerImpl : public TaskManagerInterface,
   // Lookup a task by child_id and possibly route_id.
   Task* GetTaskByRoute(int child_id, int route_id) const;
 
-
   PidToTaskGroupMap* GetVmPidToTaskGroupMap(Task::Type type);
   TaskGroup* GetTaskGroupByTaskId(TaskId task_id) const;
   Task* GetTaskByTaskId(TaskId task_id) const;

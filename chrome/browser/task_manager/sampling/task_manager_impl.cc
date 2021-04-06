@@ -41,7 +41,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/task_manager/providers/arc/arc_process_task_provider.h"
+#include "chrome/browser/task_manager/providers/crosapi/crosapi_task_provider_ash.h"
 #include "chrome/browser/task_manager/providers/vm/vm_process_task_provider.h"
 #include "components/arc/arc_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -88,6 +90,9 @@ TaskManagerImpl::TaskManagerImpl()
     task_providers_.push_back(std::make_unique<ArcProcessTaskProvider>());
   task_providers_.push_back(std::make_unique<VmProcessTaskProvider>());
   arc_shared_sampler_ = std::make_unique<ArcSharedSampler>();
+
+  if (crosapi::browser_util::IsLacrosEnabled())
+    task_providers_.push_back(std::make_unique<CrosapiTaskProviderAsh>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -316,7 +321,7 @@ int TaskManagerImpl::GetKeepaliveCount(TaskId task_id) const {
 
 const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
   DCHECK(is_running_) << "Task manager is not running. You must observe the "
-      "task manager for it to start running";
+                         "task manager for it to start running";
 
   if (sorted_task_ids_.empty()) {
     // |comparator| groups and sorts by subtask-ness (to push all subtasks to be
@@ -421,7 +426,7 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
 TaskIdList TaskManagerImpl::GetIdsOfTasksSharingSameProcess(
     TaskId task_id) const {
   DCHECK(is_running_) << "Task manager is not running. You must observe the "
-      "task manager for it to start running";
+                         "task manager for it to start running";
 
   TaskIdList result;
   TaskGroup* group = GetTaskGroupByTaskId(task_id);
@@ -580,8 +585,7 @@ void TaskManagerImpl::Refresh() {
                                         std::move(callback));
   }
   for (auto& groups_itr : task_groups_by_proc_id_) {
-    groups_itr.second->Refresh(gpu_memory_stats_,
-                               GetCurrentRefreshTime(),
+    groups_itr.second->Refresh(gpu_memory_stats_, GetCurrentRefreshTime(),
                                enabled_resources_flags());
   }
 

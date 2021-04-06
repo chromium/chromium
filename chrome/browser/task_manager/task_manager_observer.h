@@ -22,6 +22,10 @@ using TaskIdList = std::vector<TaskId>;
 
 // Defines a list of types of resources that an observer needs to be refreshed
 // on every task manager refresh cycle.
+// Note: task_manager.mojom API SetRefreshFlags passes the bit flags
+// (|refresh_flags|) of RefreshType as an argument, which requires that
+// RefreshType must be stablized. Therefore, we can never reorder or delete
+// old types.
 enum RefreshType {
   REFRESH_TYPE_NONE = 0,
   REFRESH_TYPE_CPU = 1,
@@ -147,6 +151,5 @@ class TaskManagerObserver {
 };
 
 }  // namespace task_manager
-
 
 #endif  // CHROME_BROWSER_TASK_MANAGER_TASK_MANAGER_OBSERVER_H_

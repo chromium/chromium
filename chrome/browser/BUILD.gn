@@ -4534,6 +4534,8 @@ static_library("browser") {
       "task_manager/providers/arc/arc_process_task_provider.h",
       "task_manager/providers/crosapi/crosapi_task.cc",
       "task_manager/providers/crosapi/crosapi_task.h",
+      "task_manager/providers/crosapi/crosapi_task_provider_ash.cc",
+      "task_manager/providers/crosapi/crosapi_task_provider_ash.h",
       "task_manager/providers/vm/crostini_process_task.cc",
       "task_manager/providers/vm/crostini_process_task.h",
       "task_manager/providers/vm/plugin_vm_process_task.cc",
@@ -4696,6 +4698,8 @@ static_library("browser") {
       "notifications/notification_platform_bridge_lacros.cc",
       "notifications/notification_platform_bridge_lacros.h",
       "platform_util_lacros.cc",
+      "task_manager/providers/crosapi/task_manager_controller_lacros.cc",
+      "task_manager/providers/crosapi/task_manager_controller_lacros.h",
     ]
     deps += [
       "//chromeos/crosapi/cpp",

@@ -22,11 +22,14 @@ void TaskManagerAsh::RegisterTaskManagerProvider(
   remote.set_disconnect_handler(
       base::BindOnce(&TaskManagerAsh::TaskManagerProviderDisconnected,
                      weak_factory_.GetWeakPtr(), token));
-  task_manager_providers_[token] = std::move(remote);
 
-  // Sets refresh args for the new provider.
-  task_manager_providers_[token]->SetRefreshArgs(refresh_interval_,
-                                                 refresh_flags_);
+  auto new_remote = std::make_unique<mojo::Remote<mojom::TaskManagerProvider>>(
+      std::move(remote));
+  // Preserve the pointer, because new_remote will be bound to the callback.
+  auto* remote_ptr = new_remote.get();
+  remote_ptr->QueryVersion(
+      base::BindOnce(&TaskManagerAsh::OnProviderVersionReady,
+                     weak_factory_.GetWeakPtr(), token, std::move(new_remote)));
 }
 
 void TaskManagerAsh::TaskManagerProviderDisconnected(
@@ -37,13 +40,24 @@ void TaskManagerAsh::TaskManagerProviderDisconnected(
     observer_->OnTaskManagerProviderDisconnected();
 }
 
-void TaskManagerAsh::SetRefreshArgs(base::TimeDelta refresh_interval,
-                                    int64_t refresh_flags) {
-  refresh_interval_ = refresh_interval;
-  refresh_flags_ = refresh_flags;
+void TaskManagerAsh::OnProviderVersionReady(
+    const base::UnguessableToken& token,
+    std::unique_ptr<mojo::Remote<mojom::TaskManagerProvider>> provider,
+    uint32_t interface_version) {
+  if (interface_version < 1) {
+    LOG(ERROR) << "Unsupported lacros version";
+    return;
+  }
+  const auto pair =
+      task_manager_providers_.emplace(token, std::move(*provider));
+  DCHECK(pair.second);
+  pair.first->second->SetRefreshFlags(refresh_flags_);
+}
 
+void TaskManagerAsh::SetRefreshFlags(int64_t refresh_flags) {
+  refresh_flags_ = refresh_flags;
   for (auto& pair : task_manager_providers_)
-    pair.second->SetRefreshArgs(refresh_interval_, refresh_flags_);
+    pair.second->SetRefreshFlags(refresh_flags);
 }
 
 void TaskManagerAsh::GetTaskManagerTasks(GetTaskManagerTasksCallback callback) {
@@ -53,7 +67,10 @@ void TaskManagerAsh::GetTaskManagerTasks(GetTaskManagerTasksCallback callback) {
   // support to handle multiple providers in the future when multiple lacros
   // instances case becomes true.
   DCHECK_EQ(task_manager_providers_.size(), 1);
-  task_manager_providers_.begin()->second->GetTaskManagerTasks(std::move(callback));
+  if (refresh_flags_ != task_manager::REFRESH_TYPE_NONE) {
+    task_manager_providers_.begin()->second->GetTaskManagerTasks(
+        std::move(callback));
+  }
 }
 
 void TaskManagerAsh::OnTaskManagerClosed() {
@@ -68,6 +85,10 @@ void TaskManagerAsh::RemoveObserver() {
 void TaskManagerAsh::SetObserver(Observer* observer) {
   DCHECK(!observer_);
   observer_ = observer;
+}
+
+bool TaskManagerAsh::HasRegisteredProviders() const {
+  return !task_manager_providers_.empty();
 }
 
 }  // namespace crosapi

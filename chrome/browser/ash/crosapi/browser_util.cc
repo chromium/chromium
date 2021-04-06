@@ -259,6 +259,13 @@ bool IsLacrosAllowedToBeEnabled(Channel channel) {
   if (g_lacros_enabled_for_test)
     return true;
 
+  // TODO(crbug.com/1185813): TaskManagerImplTest is not ready to run with
+  // Lacros enabled.
+  // UserManager is not initialized for unit tests by default, unless a fake
+  // user manager is constructed.
+  if (!user_manager::UserManager::IsInitialized())
+    return false;
+
   // GetPrimaryUser works only after user session is started.
   const User* user = user_manager::UserManager::Get()->GetPrimaryUser();
   if (!user) {
