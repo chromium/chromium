@@ -142,13 +142,9 @@ void NativeIOManager::BindReceiver(
     }
 
     base::FilePath origin_root_path = RootPathForOrigin(origin);
-    if (origin_root_path.empty()) {
-      // NativeIO is not supported for the origin.
-      return;
-    }
-
-    DCHECK(root_path_.IsParent(origin_root_path))
-        << "Per-origin data should be in a sub-directory of NativeIO/";
+    DCHECK(origin_root_path.empty() || root_path_.IsParent(origin_root_path))
+        << "Per-origin data should be in a sub-directory of NativeIO/ for "
+        << "non-incognito mode ";
 
     bool insert_succeeded;
     std::tie(it, insert_succeeded) = hosts_.emplace(

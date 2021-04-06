@@ -160,4 +160,15 @@ IN_PROC_BROWSER_TEST_F(NativeIOManagerBrowserTest,
   EXPECT_TRUE(EvalJs(browser, "openAnotherFile()").ExtractBool());
 }
 
+IN_PROC_BROWSER_TEST_F(NativeIOManagerBrowserTest, ThrowsInIncognito) {
+  const GURL& test_url =
+      embedded_test_server()->GetURL("/native_io/throws_in_incognito.html");
+  Shell* browser = CreateOffTheRecordBrowser();
+  NavigateToURLBlockUntilNavigationsComplete(browser, test_url,
+                                             /*number_of_navigations=*/1);
+  EXPECT_TRUE(EvalJs(browser, "tryAccessStorageFoundation()").ExtractBool());
+  EXPECT_TRUE(
+      EvalJs(browser, "tryAccessStorageFoundationSync()").ExtractBool());
+}
+
 }  // namespace content
