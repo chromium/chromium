@@ -611,6 +611,20 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/autofill/merge/output/primarycase.out",
     "//components/test/data/autofill/merge/output/singlemerge.out",
     "//components/test/data/autofill/merge/output/validation.out",
+    "//components/test/data/autofill/merge_structured_names/input/ambiguous.in",
+    "//components/test/data/autofill/merge_structured_names/input/case.in",
+    "//components/test/data/autofill/merge_structured_names/input/email.in",
+    "//components/test/data/autofill/merge_structured_names/input/identical.in",
+    "//components/test/data/autofill/merge_structured_names/input/primarycase.in",
+    "//components/test/data/autofill/merge_structured_names/input/singlemerge.in",
+    "//components/test/data/autofill/merge_structured_names/input/validation.in",
+    "//components/test/data/autofill/merge_structured_names/output/ambiguous.out",
+    "//components/test/data/autofill/merge_structured_names/output/case.out",
+    "//components/test/data/autofill/merge_structured_names/output/email.out",
+    "//components/test/data/autofill/merge_structured_names/output/identical.out",
+    "//components/test/data/autofill/merge_structured_names/output/primarycase.out",
+    "//components/test/data/autofill/merge_structured_names/output/singlemerge.out",
+    "//components/test/data/autofill/merge_structured_names/output/validation.out",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
