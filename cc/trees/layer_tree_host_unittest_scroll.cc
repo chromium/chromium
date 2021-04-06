@@ -541,7 +541,7 @@ class LayerTreeHostScrollTestScrollSnapping : public LayerTreeHostScrollTest {
         PostSetNeedsCommitToMainThread();
         break;
       case 2:
-        translate.Translate(-3, 0);
+        translate.Translate(-4, 0);
         EXPECT_EQ(translate,
                   scroll_layer->draw_properties().screen_space_transform);
         EndTest();

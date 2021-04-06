@@ -1534,10 +1534,7 @@ void ScrollTree::CollectScrollDeltas(
   }
 }
 
-void ScrollTree::CollectScrollDeltasForTesting() {
-  LayerTreeSettings settings;
-  bool use_fractional_deltas = settings.commit_fractional_scroll_deltas;
-
+void ScrollTree::CollectScrollDeltasForTesting(bool use_fractional_deltas) {
   for (auto map_entry : synced_scroll_offset_map_) {
     PullDeltaForMainThread(map_entry.second.get(), use_fractional_deltas);
   }
@@ -1545,7 +1542,8 @@ void ScrollTree::CollectScrollDeltasForTesting() {
 
 void ScrollTree::PushScrollUpdatesFromMainThread(
     PropertyTrees* main_property_trees,
-    LayerTreeImpl* sync_tree) {
+    LayerTreeImpl* sync_tree,
+    bool use_fractional_deltas) {
   DCHECK(!property_trees()->is_main_thread);
   const ScrollOffsetMap& main_scroll_offset_map =
       main_property_trees->scroll_tree.scroll_offset_map_;
@@ -1571,6 +1569,16 @@ void ScrollTree::PushScrollUpdatesFromMainThread(
     // committed PropertyTrees.
     bool needs_scroll_update =
         synced_scroll_offset->PushMainToPending(map_entry.second);
+    // If `use_fractional_deltas` is false, then check against the rounded
+    // pending offset instead of the offset directly. This matches
+    // PullDeltaForMainThread where only an integer delta is extracted and
+    // prevents unnecessary property change in this case.
+    if (!use_fractional_deltas) {
+      gfx::ScrollOffset pending_offset = synced_scroll_offset->Current(false);
+      gfx::ScrollOffset rounded_offset = gfx::ScrollOffset(
+          roundf(pending_offset.x()), roundf(pending_offset.y()));
+      needs_scroll_update = map_entry.second != rounded_offset;
+    }
 
     // If we are committing directly to the active tree, push pending to active
     // here. If the value differs between the pending and active trees, we need

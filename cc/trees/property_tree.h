@@ -461,7 +461,8 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // Pushes scroll updates from the ScrollTree on the main thread onto the
   // impl thread associated state.
   void PushScrollUpdatesFromMainThread(PropertyTrees* main_property_trees,
-                                       LayerTreeImpl* sync_tree);
+                                       LayerTreeImpl* sync_tree,
+                                       bool use_fractional_deltas);
 
   // Pushes scroll updates from the ScrollTree on the pending tree onto the
   // active tree associated state.
@@ -481,7 +482,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
                                       const gfx::Vector2dF& delta);
   const gfx::ScrollOffset GetScrollOffsetBaseForTesting(ElementId id) const;
   const gfx::ScrollOffset GetScrollOffsetDeltaForTesting(ElementId id) const;
-  void CollectScrollDeltasForTesting();
+  void CollectScrollDeltasForTesting(bool use_fractional_deltas = false);
 
   gfx::Vector2dF ScrollBy(const ScrollNode& scroll_node,
                           const gfx::Vector2dF& scroll,

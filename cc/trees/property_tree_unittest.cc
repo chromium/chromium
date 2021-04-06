@@ -7,10 +7,14 @@
 #include <utility>
 
 #include "cc/input/main_thread_scrolling_reason.h"
+#include "cc/test/fake_impl_task_runner_provider.h"
+#include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/geometry_test_utils.h"
+#include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
+#include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -627,6 +631,71 @@ TEST(ScrollTreeTest, GetPixelSnappedScrollOffsetNegativeOffset) {
   gfx::ScrollOffset offset =
       scroll_tree.GetPixelSnappedScrollOffset(scroll_node_id);
   EXPECT_EQ(offset.y(), 0);
+}
+
+// Verify that when fractional scroll delta is turned off, that the remaining
+// fractional delta does not cause additional property changes.
+TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
+  const bool use_fractional_deltas = false;
+
+  // Set up main property trees.
+  PropertyTrees property_trees;
+  ScrollTree& main_scroll_tree = property_trees.scroll_tree;
+  TransformTree& transform_tree = property_trees.transform_tree;
+  ElementId element_id(5);
+  int transform_node_id = transform_tree.Insert(TransformNode(), 0);
+  int scroll_node_id = main_scroll_tree.Insert(ScrollNode(), 0);
+  main_scroll_tree.Node(scroll_node_id)->transform_id = transform_node_id;
+  main_scroll_tree.Node(scroll_node_id)->element_id = element_id;
+
+  // Set up FakeLayerTreeHostImpl.
+  TestTaskGraphRunner task_graph_runner;
+  FakeImplTaskRunnerProvider impl_task_runner_provider;
+  FakeLayerTreeHostImpl host_impl(
+      LayerTreeSettings(), &impl_task_runner_provider, &task_graph_runner);
+  host_impl.CreatePendingTree();
+
+  // Set up pending property trees.
+  PropertyTrees* pending_property_trees =
+      host_impl.pending_tree()->property_trees();
+  EXPECT_TRUE(pending_property_trees);
+  ScrollTree& pending_scroll_tree = pending_property_trees->scroll_tree;
+  TransformTree& pending_transform_tree =
+      pending_property_trees->transform_tree;
+  transform_node_id = pending_transform_tree.Insert(TransformNode(), 0);
+  scroll_node_id = pending_scroll_tree.Insert(ScrollNode(), 0);
+  pending_scroll_tree.Node(scroll_node_id)->transform_id = transform_node_id;
+  pending_scroll_tree.Node(scroll_node_id)->element_id = element_id;
+  pending_property_trees->element_id_to_scroll_node_index[element_id] =
+      scroll_node_id;
+
+  // Push main scroll to pending.
+  main_scroll_tree.SetScrollOffset(element_id, gfx::ScrollOffset(0, 1));
+  pending_scroll_tree.PushScrollUpdatesFromMainThread(
+      &property_trees, host_impl.pending_tree(), use_fractional_deltas);
+  const SyncedScrollOffset* scroll_offset =
+      pending_scroll_tree.GetSyncedScrollOffset(element_id);
+  EXPECT_TRUE(scroll_offset);
+
+  // Set a fractional delta and check it is not pulled with fractional delta
+  // turned off.
+  pending_scroll_tree.SetScrollOffsetDeltaForTesting(element_id,
+                                                     gfx::Vector2dF(0, 0.25));
+  main_scroll_tree.CollectScrollDeltasForTesting(use_fractional_deltas);
+  EXPECT_EQ(gfx::ScrollOffset(0, 1),
+            main_scroll_tree.current_scroll_offset(element_id));
+
+  // Rounding logic turned on should not cause property change on push.
+  host_impl.pending_tree()->property_trees()->changed = false;
+  pending_scroll_tree.PushScrollUpdatesFromMainThread(
+      &property_trees, host_impl.pending_tree(), use_fractional_deltas);
+  EXPECT_FALSE(host_impl.pending_tree()->property_trees()->changed);
+
+  // Rounding logic turned off should cause property change on push.
+  host_impl.pending_tree()->property_trees()->changed = false;
+  pending_scroll_tree.PushScrollUpdatesFromMainThread(
+      &property_trees, host_impl.pending_tree(), true);
+  EXPECT_TRUE(host_impl.pending_tree()->property_trees()->changed);
 }
 
 }  // namespace

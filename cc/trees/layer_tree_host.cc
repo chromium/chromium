@@ -374,7 +374,7 @@ void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
     // properties, which updates the clobber_active_value flag.
     // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
     sync_tree->property_trees()->scroll_tree.PushScrollUpdatesFromMainThread(
-        property_trees(), sync_tree);
+        property_trees(), sync_tree, settings_.commit_fractional_scroll_deltas);
 
     // This must happen after synchronizing property trees and after push
     // properties, which updates property tree indices, but before animation
