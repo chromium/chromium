@@ -1554,6 +1554,13 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     // frame to prevent abusive behavior (crbug.com/890558).
     web::NavigationContext* context =
         [self contextForPendingMainFrameNavigationWithURL:responseURL];
+    if (!context) {
+      // If the data URL is originally data://foo/bar instead of data:foo/bar,
+      // then the URL is transformed to data:///bar. Considering that the "foo"
+      // part of the URL is lost, it doesn't really make sense to try to match
+      // the URL as it would only work for text.
+      return NO;
+    }
     // If the server is doing a redirect on a user reload, the navigation is
     // treated as a reload instead of a redirect. See crbug.com/1165654.
     web::NavigationItem* lastCommittedItem =
