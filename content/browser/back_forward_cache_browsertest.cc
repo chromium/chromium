@@ -3878,7 +3878,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 // Tests the case when the header was received before the page is frozen,
 // but parts of the response body is received when the page is frozen.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
-                       PageWithDrainedDatapipeRequestsShouldBeEvicted) {
+                       PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -3911,7 +3911,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kNetworkRequestDatapipeDrained},
+                         kNetworkRequestDatapipeDrainedAsBytesConsumer},
                     {}, {}, {}, FROM_HERE);
 }
 

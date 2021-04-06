@@ -345,9 +345,14 @@ RendererEvictionReasonToNotRestoredReason(
   switch (reason) {
     case blink::mojom::RendererEvictionReason::kJavaScriptExecution:
       return BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution;
-    case blink::mojom::RendererEvictionReason::kNetworkRequestDatapipeDrained:
+    case blink::mojom::RendererEvictionReason::
+        kNetworkRequestDatapipeDrainedAsDatapipe:
       return BackForwardCacheMetrics::NotRestoredReason::
-          kNetworkRequestDatapipeDrained;
+          kNetworkRequestDatapipeDrainedAsDatapipe;
+    case blink::mojom::RendererEvictionReason::
+        kNetworkRequestDatapipeDrainedAsBytesConsumer:
+      return BackForwardCacheMetrics::NotRestoredReason::
+          kNetworkRequestDatapipeDrainedAsBytesConsumer;
     case blink::mojom::RendererEvictionReason::kNetworkRequestRedirected:
       return BackForwardCacheMetrics::NotRestoredReason::
           kNetworkRequestRedirected;

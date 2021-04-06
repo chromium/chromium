@@ -109,7 +109,9 @@ class PLATFORM_EXPORT ResponseBodyLoader final
     return suspended_state_ ==
            WebURLLoader::DeferType::kDeferredWithBackForwardCache;
   }
-  bool IsDrained() const { return drained_; }
+  bool IsDrained() const {
+    return drained_as_datapipe_ || drained_as_bytes_consumer_;
+  }
 
   void EvictFromBackForwardCacheIfDrained();
 
@@ -149,7 +151,8 @@ class PLATFORM_EXPORT ResponseBodyLoader final
       WebURLLoader::DeferType::kNotDeferred;
   bool started_ = false;
   bool aborted_ = false;
-  bool drained_ = false;
+  bool drained_as_datapipe_ = false;
+  bool drained_as_bytes_consumer_ = false;
   bool finish_signal_is_pending_ = false;
   bool fail_signal_is_pending_ = false;
   bool cancel_signal_is_pending_ = false;

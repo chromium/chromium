@@ -142,9 +142,6 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
              "policy)";
     case Reason::kNavigationCancelledWhileRestoring:
       return "Navigation request was cancelled after js eviction was disabled";
-    case Reason::kNetworkRequestDatapipeDrained:
-      return "Network requests' datapipe is drained already upon bfcache "
-             "entrance";
     case Reason::kNetworkRequestRedirected:
       return "Network request is redirected in bfcache";
     case Reason::kNetworkRequestTimeout:
@@ -155,6 +152,10 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "BackForwardCache is disabled for Prerender";
     case Reason::kUserAgentOverrideDiffers:
       return "User-agent override differs";
+    case Reason::kNetworkRequestDatapipeDrainedAsDatapipe:
+      return "Network requests' datapipe has been passed to ScriptStreamer";
+    case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
+      return "Network requests' datapipe has been passed as bytes consumer";
   }
 }
 

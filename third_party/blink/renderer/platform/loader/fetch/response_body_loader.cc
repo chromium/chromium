@@ -361,7 +361,8 @@ ResponseBodyLoader::ResponseBodyLoader(
 mojo::ScopedDataPipeConsumerHandle ResponseBodyLoader::DrainAsDataPipe(
     ResponseBodyLoaderClient** client) {
   DCHECK(!started_);
-  DCHECK(!drained_);
+  DCHECK(!drained_as_datapipe_);
+  DCHECK(!drained_as_bytes_consumer_);
   DCHECK(!aborted_);
 
   *client = nullptr;
@@ -371,7 +372,7 @@ mojo::ScopedDataPipeConsumerHandle ResponseBodyLoader::DrainAsDataPipe(
     return data_pipe;
   }
 
-  drained_ = true;
+  drained_as_datapipe_ = true;
   bytes_consumer_ = nullptr;
   *client = this;
   return data_pipe;
@@ -379,7 +380,8 @@ mojo::ScopedDataPipeConsumerHandle ResponseBodyLoader::DrainAsDataPipe(
 
 BytesConsumer& ResponseBodyLoader::DrainAsBytesConsumer() {
   DCHECK(!started_);
-  DCHECK(!drained_);
+  DCHECK(!drained_as_datapipe_);
+  DCHECK(!drained_as_bytes_consumer_);
   DCHECK(!aborted_);
   DCHECK(bytes_consumer_);
   DCHECK(!delegating_bytes_consumer_);
@@ -389,7 +391,7 @@ BytesConsumer& ResponseBodyLoader::DrainAsBytesConsumer() {
   bytes_consumer_->ClearClient();
   bytes_consumer_->SetClient(delegating_bytes_consumer_);
   bytes_consumer_ = nullptr;
-  drained_ = true;
+  drained_as_bytes_consumer_ = true;
   return *delegating_bytes_consumer_;
 }
 
@@ -463,7 +465,8 @@ bool ResponseBodyLoader::CanContinueBufferingWhileInBackForwardCache() {
 
 void ResponseBodyLoader::Start() {
   DCHECK(!started_);
-  DCHECK(!drained_);
+  DCHECK(!drained_as_datapipe_);
+  DCHECK(!drained_as_bytes_consumer_);
 
   started_ = true;
   OnStateChange();
@@ -506,7 +509,11 @@ void ResponseBodyLoader::Suspend(WebURLLoader::DeferType suspended_state) {
 void ResponseBodyLoader::EvictFromBackForwardCacheIfDrained() {
   if (IsDrained()) {
     EvictFromBackForwardCache(
-        mojom::blink::RendererEvictionReason::kNetworkRequestDatapipeDrained);
+        drained_as_datapipe_
+            ? mojom::blink::RendererEvictionReason::
+                  kNetworkRequestDatapipeDrainedAsDatapipe
+            : mojom::blink::RendererEvictionReason::
+                  kNetworkRequestDatapipeDrainedAsBytesConsumer);
   }
 }
 

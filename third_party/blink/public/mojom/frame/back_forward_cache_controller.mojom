@@ -8,8 +8,10 @@ module blink.mojom;
 enum RendererEvictionReason {
   // JavaScript execution ocurrs.
   kJavaScriptExecution,
-  // Datapipe for reading network requests is already drained upon bfcache entrance.
-  kNetworkRequestDatapipeDrained,
+  // Datapipe for reading network requests has been passed to ScriptStreamer.
+  kNetworkRequestDatapipeDrainedAsDatapipe,
+  // Datapipe for reading network requests has been passed as bytes consumer.
+  kNetworkRequestDatapipeDrainedAsBytesConsumer,
   // Network request is redirected.
   kNetworkRequestRedirected,
   // Network request is open for too long.

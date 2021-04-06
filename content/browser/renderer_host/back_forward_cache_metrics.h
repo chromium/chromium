@@ -87,14 +87,17 @@ class BackForwardCacheMetrics
     // cases where the embedder disabled it due to, e.g., enterprise policy).
     kBackForwardCacheDisabledByCommandLine = 35,
     // 36: kFrameTreeNodeStateReset was removed.
-    kNetworkRequestDatapipeDrained = 37,
+    // 37: kNetworkRequestDatapipeDrained = 37 was removed and broken into 43
+    // and 44.
     kNetworkRequestRedirected = 38,
     kNetworkRequestTimeout = 39,
     kNetworkExceedsBufferLimit = 40,
     kNavigationCancelledWhileRestoring = 41,
     kBackForwardCacheDisabledForPrerender = 42,
     kUserAgentOverrideDiffers = 43,
-    kMaxValue = kUserAgentOverrideDiffers,
+    kNetworkRequestDatapipeDrainedAsDatapipe = 44,
+    kNetworkRequestDatapipeDrainedAsBytesConsumer = 45,
+    kMaxValue = kNetworkRequestDatapipeDrainedAsBytesConsumer,
   };
 
   using NotRestoredReasons =
