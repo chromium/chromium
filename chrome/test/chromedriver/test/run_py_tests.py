@@ -95,6 +95,18 @@ _OS_SPECIFIC_FILTER = {}
 _OS_SPECIFIC_FILTER['win'] = [
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=299
     'ChromeLogPathCapabilityTest.testChromeLogPath',
+    # https://bugs.chromium.org/p/chromium/issues/detail?id=1196363
+    'ChromeDownloadDirTest.testFileDownloadAfterTabHeadless',
+    'ChromeDownloadDirTest.testFileDownloadWithClickHeadless',
+    'ChromeDownloadDirTest.testFileDownloadWithGetHeadless',
+    'HeadlessChromeDriverTest.testNewTabDoesNotFocus',
+    'HeadlessChromeDriverTest.testNewWindowDoesNotFocus',
+    'HeadlessChromeDriverTest.testPrintHeadless',
+    'HeadlessChromeDriverTest.testPrintInvalidArgumentHeadless',
+    'HeadlessChromeDriverTest.testWindowFullScreen',
+    'HeadlessInvalidCertificateTest.testLoadsPage',
+    'HeadlessInvalidCertificateTest.testNavigateNewWindow',
+    'RemoteBrowserTest.testConnectToRemoteBrowserLiteralAddressHeadless',
 ]
 _OS_SPECIFIC_FILTER['linux'] = [
 ]
