@@ -29,6 +29,12 @@ export class PTZPanel extends View {
     this.track_ = null;
 
     /**
+     * @private {!HTMLDivElement}
+     * @const
+     */
+    this.panel_ = dom.get('#panel-container', HTMLDivElement);
+
+    /**
      * @private {!HTMLButtonElement}
      * @const
      */
@@ -109,6 +115,11 @@ export class PTZPanel extends View {
    * @override
    */
   entering(stream) {
+    const {bottom, right} =
+        dom.get('#open-ptz-panel', HTMLButtonElement).getBoundingClientRect();
+    this.panel_.style.bottom = `${window.innerHeight - bottom}px`;
+    this.panel_.style.left = `${right + 6}px`;
+
     this.track_ = stream.getVideoTracks()[0];
     const {pan, tilt, zoom} = this.track_.getCapabilities();
 

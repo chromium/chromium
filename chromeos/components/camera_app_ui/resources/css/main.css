@@ -1278,9 +1278,7 @@ html[dir=rtl] #banner-close {
 #panel-container {
   background: rgba(32, 33, 36, 30%);
   border-radius: 4px;
-  bottom: 106px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
-  left: 68px;
   position: absolute;
 }
 
