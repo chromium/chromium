@@ -6,12 +6,8 @@
 async_test(function(t) {
   fetch("/resources/square.png").then(t.step_func(response => {
     response.arrayBuffer().then(t.step_func(buffer => {
-      try {
-        let decoder = new ImageDecoder({data: buffer, type: "image/gif"})
-        t.unreached_func()();
-      } catch {
-        t.done();
-      }
+      let decoder = new ImageDecoder({data: buffer, type: "image/gif"})
+      decoder.decodeMetadata().then(t.unreached_func()).catch(t.done());
     })).catch(t.unreached_func());
   })).catch(t.unreached_func());
 });

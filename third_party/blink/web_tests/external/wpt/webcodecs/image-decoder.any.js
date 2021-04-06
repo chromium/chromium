@@ -173,6 +173,18 @@ promise_test(t => {
 }, 'Test invalid mime type rejects decodeMetadata() requests');
 
 promise_test(t => {
+  return fetch('four-colors.png')
+      .then(response => {
+        return response.arrayBuffer();
+      })
+      .then(buffer => {
+        let decoder = new ImageDecoder({data: buffer, type: 'image/png'});
+        return promise_rejects_dom(
+            t, 'IndexSizeError', decoder.decode({frameIndex: 1}));
+      });
+}, 'Test out of range index returns IndexSizeError');
+
+promise_test(t => {
   var decoder = null;
 
   return fetch('four-colors.png')
