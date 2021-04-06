@@ -29,7 +29,7 @@ class MessengerImpl : public Messenger,
   // Messages are relayed over the provided |channel|.
   //
   // The messenger begins observing messages as soon as it is constructed.
-  explicit MessengerImpl(
+  MessengerImpl(
       std::unique_ptr<chromeos::secure_channel::ClientChannel> channel);
   ~MessengerImpl() override;
 

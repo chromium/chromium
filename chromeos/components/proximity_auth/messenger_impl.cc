@@ -61,10 +61,6 @@ std::string GetMessageType(const base::DictionaryValue& message) {
 MessengerImpl::MessengerImpl(
     std::unique_ptr<chromeos::secure_channel::ClientChannel> channel)
     : channel_(std::move(channel)) {
-  // TODO(crbug.com/974410): This CHECK is only here to help narrow
-  // down the source of a crash. Remove once diagnosed.
-  CHECK(channel_);
-
   DCHECK(!channel_->is_disconnected());
   channel_->AddObserver(this);
 }
@@ -130,31 +126,14 @@ MessengerImpl::PendingMessage::PendingMessage(const std::string& message)
     : json_message(message), type(std::string()) {}
 
 void MessengerImpl::ProcessMessageQueue() {
-  // TODO(crbug.com/974410): This log and CHECK are only here to help
-  // narrow down the source of a crash. Remove once diagnosed.
-  PA_LOG(INFO) << __func__;
-  CHECK(channel_);
-
   if (pending_message_ || queued_messages_.empty())
     return;
-
-  // TODO(crbug.com/974410): This log is only here to help narrow down
-  // the source of a crash. Remove once diagnosed.
-  PA_LOG(INFO) << __func__ << ": A message needs to be processed.";
 
   if (channel_->is_disconnected())
     return;
 
-  // TODO(crbug.com/974410): This log is only here to help narrow down
-  // the source of a crash. Remove once diagnosed.
-  PA_LOG(INFO) << __func__ << ": Popping message off queue.";
-
   pending_message_.reset(new PendingMessage(queued_messages_.front()));
   queued_messages_.pop_front();
-
-  // TODO(crbug.com/974410): This log is only here to help narrow down
-  // the source of a crash. Remove once diagnosed.
-  PA_LOG(INFO) << __func__ << ": Sending message.";
 
   channel_->SendMessage(
       pending_message_->json_message,
