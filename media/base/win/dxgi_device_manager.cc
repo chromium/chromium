@@ -56,8 +56,10 @@ Microsoft::WRL::ComPtr<ID3D11Device> DXGIDeviceScopedHandle::GetDevice() {
 }
 
 scoped_refptr<DXGIDeviceManager> DXGIDeviceManager::Create() {
-  if (base::win::GetVersion() < base::win::Version::WIN8) {
+  if (base::win::GetVersion() < base::win::Version::WIN8 ||
+      (!::GetModuleHandle(L"mfplat.dll") && !::LoadLibrary(L"mfplat.dll"))) {
     // The MF DXGI Device manager is only supported on Win8 or later
+    // Additionally, it is not supported when mfplat.dll isn't available
     DLOG(ERROR)
         << "MF DXGI Device Manager not supported on current version of Windows";
     return nullptr;
