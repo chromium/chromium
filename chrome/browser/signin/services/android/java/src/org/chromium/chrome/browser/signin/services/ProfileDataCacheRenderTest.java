@@ -43,7 +43,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -66,8 +65,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Tests for ProfileDataCache image scaling. Leverages RenderTest instead of reimplementing
- * bitmap comparison to simplify access to the compared images on buildbots (via result_details).
+ * Tests for {@link ProfileDataCache} image scaling.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -103,12 +101,6 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     public final JniMocker mocker = new JniMocker();
 
     @Mock
-    private Profile mProfileMock;
-
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
-
-    @Mock
     private IdentityManager.Natives mIdentityManagerNativeMock;
 
     @Mock
@@ -130,10 +122,6 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     public void setUp() {
         initMocks(this);
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        Profile.setLastUsedProfileForTesting(mProfileMock);
-        when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock))
-                .thenReturn(mIdentityManager);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         AccountInfoService.init(mIdentityManager);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Activity activity = getActivity();
@@ -142,7 +130,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
             mContentView.addView(mImageView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             activity.setContentView(mContentView);
 
-            mProfileDataCache = new ProfileDataCache(getActivity(), mImageSize,
+            mProfileDataCache = new ProfileDataCache(activity, mImageSize,
                     /*badgeConfig=*/null);
             // ProfileDataCache only populates the cache when an observer is added.
             mProfileDataCache.addObserver(accountId -> {});
@@ -152,8 +140,6 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @After
     public void tearDown() {
         AccountInfoService.resetForTests();
-        IdentityServicesProvider.setInstanceForTests(null);
-        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test
