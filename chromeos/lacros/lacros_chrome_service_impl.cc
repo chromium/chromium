@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "services/device/public/mojom/hid.mojom.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -176,6 +177,18 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<
       crosapi::mojom::DeviceAttributes, &Crosapi::BindDeviceAttributes,
       Crosapi::MethodMinVersions::kBindDeviceAttributesMinVersion>();
+  ConstructRemote<crosapi::mojom::Feedback,
+                  &crosapi::mojom::Crosapi::BindFeedback,
+                  Crosapi::MethodMinVersions::kBindFeedbackMinVersion>();
+  ConstructRemote<crosapi::mojom::FileManager,
+                  &crosapi::mojom::Crosapi::BindFileManager,
+                  Crosapi::MethodMinVersions::kBindFileManagerMinVersion>();
+  ConstructRemote<device::mojom::HidManager,
+                  &crosapi::mojom::Crosapi::BindHidManager,
+                  Crosapi::MethodMinVersions::kBindHidManagerMinVersion>();
+  ConstructRemote<crosapi::mojom::IdleService,
+                  &crosapi::mojom::Crosapi::BindIdleService,
+                  Crosapi::MethodMinVersions::kBindIdleServiceMinVersion>();
 
   DCHECK(!g_instance);
   g_instance = this;
@@ -231,30 +244,6 @@ void LacrosChromeServiceImpl::BindReceiver(
     for (auto& entry : interfaces_) {
       entry.second->MaybeBind(*CrosapiVersion(), this);
     }
-  }
-
-  if (IsFeedbackAvailable()) {
-    InitializeAndBindRemote<crosapi::mojom::Feedback,
-                            &crosapi::mojom::Crosapi::BindFeedback>(
-        &feedback_remote_);
-  }
-
-  if (IsFileManagerAvailable()) {
-    InitializeAndBindRemote<crosapi::mojom::FileManager,
-                            &crosapi::mojom::Crosapi::BindFileManager>(
-        &file_manager_remote_);
-  }
-
-  if (IsHidManagerAvailable()) {
-    InitializeAndBindRemote<device::mojom::HidManager,
-                            &crosapi::mojom::Crosapi::BindHidManager>(
-        &hid_manager_remote_);
-  }
-
-  if (IsIdleServiceAvailable()) {
-    InitializeAndBindRemote<crosapi::mojom::IdleService,
-                            &crosapi::mojom::Crosapi::BindIdleService>(
-        &idle_service_remote_);
   }
 
   if (IsKeystoreServiceAvailable()) {
@@ -322,30 +311,6 @@ bool LacrosChromeServiceImpl::IsAccountManagerAvailable() const {
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindAccountManagerMinVersion;
-}
-
-bool LacrosChromeServiceImpl::IsFeedbackAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >= Crosapi::MethodMinVersions::kBindFeedbackMinVersion;
-}
-
-bool LacrosChromeServiceImpl::IsFileManagerAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
-  return version && version.value() >=
-                        Crosapi::MethodMinVersions::kBindFileManagerMinVersion;
-}
-
-bool LacrosChromeServiceImpl::IsHidManagerAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
-  return version && version.value() >=
-                        Crosapi::MethodMinVersions::kBindHidManagerMinVersion;
-}
-
-bool LacrosChromeServiceImpl::IsIdleServiceAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
-  return version && version.value() >=
-                        Crosapi::MethodMinVersions::kBindIdleServiceMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsKeystoreServiceAvailable() const {

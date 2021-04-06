@@ -50,7 +50,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace {
@@ -71,12 +71,13 @@ void BindLaCrOSHidManager(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // LaCrOS does not have direct access to the permission_broker service over
   // D-Bus. Use the HidManager interface from ash-chrome instead.
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  DCHECK(lacros_chrome_service);
+  auto* lacros_service = chromeos::LacrosService::Get();
+  DCHECK(lacros_service);
   // If the Hid manager is not available, then the pending receiver is deleted.
-  if (lacros_chrome_service->IsHidManagerAvailable())
-    lacros_chrome_service->hid_manager_remote()->AddReceiver(
+  if (lacros_service->IsAvailable<device::mojom::HidManager>()) {
+    lacros_service->GetRemote<device::mojom::HidManager>()->AddReceiver(
         std::move(receiver));
+  }
 #endif
 }
 #endif

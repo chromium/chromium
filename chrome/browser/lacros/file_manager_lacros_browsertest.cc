@@ -14,7 +14,9 @@ using FileManagerLacrosBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(FileManagerLacrosBrowserTest, Basics) {
   crosapi::mojom::FileManagerAsyncWaiter waiter(
-      chromeos::LacrosChromeServiceImpl::Get()->file_manager_remote().get());
+      chromeos::LacrosService::Get()
+          ->GetRemote<crosapi::mojom::FileManager>()
+          .get());
   crosapi::mojom::OpenResult result;
 
   // The file manager requires a large amount of setup to get it to run in

@@ -51,10 +51,11 @@ void ShowFeedbackPageLacros(const GURL& page_url,
                             const std::string& description_placeholder_text,
                             const std::string& category_tag,
                             const std::string& extra_diagnostics) {
-  chromeos::LacrosChromeServiceImpl::Get()->feedback_remote()->ShowFeedbackPage(
-      ToMojoFeedbackInfo(page_url, source, description_template,
-                         description_placeholder_text, category_tag,
-                         extra_diagnostics));
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::Feedback>()
+      ->ShowFeedbackPage(ToMojoFeedbackInfo(
+          page_url, source, description_template, description_placeholder_text,
+          category_tag, extra_diagnostics));
 }
 
 }  // namespace internal

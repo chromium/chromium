@@ -23,12 +23,8 @@
 #include "base/token.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
-#include "chromeos/crosapi/mojom/automation.mojom.h"
-#include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
-#include "chromeos/crosapi/mojom/feedback.mojom.h"
-#include "chromeos/crosapi/mojom/idle_service.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
@@ -42,7 +38,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/device/public/mojom/hid.mojom.h"
 
 class GURL;
 
@@ -54,6 +49,12 @@ class SystemIdleCache;
 // Forward declaration for class defined in .cc file that holds most of the
 // business logic of this class.
 class LacrosChromeServiceImplNeverBlockingState;
+
+// Prefer to use LacrosService instead of LacrosChromeServiceImpl. There is an
+// ongoing, low priority refactor to rename LacrosChromeServiceImpl to
+// LacrosService. https://crbug.com/1195401.
+class LacrosChromeServiceImpl;
+using LacrosService = LacrosChromeServiceImpl;
 
 // This class is responsible for receiving and routing mojo messages from
 // ash-chrome via the mojo::Receiver |sequenced_state_.receiver_|. This class is
@@ -112,10 +113,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Most use-cases of these methods can be replaced by IsAvailable(). See
   // crosapi::mojom::Clipboard for an example.
   bool IsAccountManagerAvailable() const;
-  bool IsFeedbackAvailable() const;
-  bool IsFileManagerAvailable() const;
-  bool IsHidManagerAvailable() const;
-  bool IsIdleServiceAvailable() const;
   bool IsKeystoreServiceAvailable() const;
   bool IsMediaSessionAudioFocusAvailable() const;
   bool IsMediaSessionAudioFocusDebugAvailable() const;
@@ -168,36 +165,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // helpers that expose pre-established Remotes that can only be used from the
   // affine sequence (main thread).
   // --------------------------------------------------------------------------
-
-  // This must be called on the affine sequence.
-  mojo::Remote<crosapi::mojom::Feedback>& feedback_remote() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-    DCHECK(IsFeedbackAvailable());
-    return feedback_remote_;
-  }
-
-  // Must be called on the affine sequence.
-  mojo::Remote<crosapi::mojom::FileManager>& file_manager_remote() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-    DCHECK(IsFileManagerAvailable());
-    return file_manager_remote_;
-  }
-
-  // This must be called on the affine sequence. It exposes a remote that can
-  // be used to support HID devices.
-  mojo::Remote<device::mojom::HidManager>& hid_manager_remote() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-    DCHECK(IsHidManagerAvailable());
-    return hid_manager_remote_;
-  }
-
-  // This must be called on the affine sequence. It exposes a remote that can
-  // be used to query the system keystores.
-  mojo::Remote<crosapi::mojom::IdleService>& idle_service_remote() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-    DCHECK(IsIdleServiceAvailable());
-    return idle_service_remote_;
-  }
 
   // This must be called on the affine sequence. It exposes a remote that can
   // be used to query the system keystores.
@@ -450,10 +417,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // the constructor and are immediately available for use.
   // DEPRECATED. Do not add more instances of these methods. Instead, use
   // ConstructRemote. See crosapi::mojom::Clipboard for an example.
-  mojo::Remote<crosapi::mojom::Feedback> feedback_remote_;
-  mojo::Remote<crosapi::mojom::FileManager> file_manager_remote_;
-  mojo::Remote<device::mojom::HidManager> hid_manager_remote_;
-  mojo::Remote<crosapi::mojom::IdleService> idle_service_remote_;
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_remote_;
   mojo::Remote<crosapi::mojom::MessageCenter> message_center_remote_;
   mojo::Remote<crosapi::mojom::Prefs> prefs_remote_;

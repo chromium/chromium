@@ -31,7 +31,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace feedback_private = extensions::api::feedback_private;
@@ -201,7 +201,8 @@ void ShowFeedbackPage(const GURL& page_url,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // After M87 beta, Feedback API should be supported in crosapi with all ash
   // versions on chromeOS platform where lacros is deployed.
-  DCHECK(chromeos::LacrosChromeServiceImpl::Get()->IsFeedbackAvailable());
+  DCHECK(
+      chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::Feedback>());
   // Send request to ash via crosapi mojo to show Feedback ui from ash.
   internal::ShowFeedbackPageLacros(page_url, source, description_template,
                                    description_placeholder_text, category_tag,

@@ -4,7 +4,7 @@
 
 #include "chromeos/lacros/system_idle_cache.h"
 
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 
 namespace chromeos {
 
@@ -17,9 +17,9 @@ SystemIdleCache::~SystemIdleCache() = default;
 
 void SystemIdleCache::Start() {
   DCHECK(!is_fallback_);
-  auto* lacros_service = chromeos::LacrosChromeServiceImpl::Get();
-  CHECK(lacros_service->IsIdleServiceAvailable());
-  lacros_service->idle_service_remote()->AddIdleInfoObserver(
+  auto* lacros_service = chromeos::LacrosService::Get();
+  CHECK(lacros_service->IsAvailable<crosapi::mojom::IdleService>());
+  lacros_service->GetRemote<crosapi::mojom::IdleService>()->AddIdleInfoObserver(
       receiver_.BindNewPipeAndPassRemote());
 }
 
