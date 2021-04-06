@@ -743,10 +743,7 @@ void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
   closing_tabs.reserve(tabs_in_group.length());
   for (uint32_t i = tabs_in_group.end(); i > tabs_in_group.start(); --i)
     closing_tabs.push_back(GetWebContentsAt(i - 1));
-  bool closed_all =
-      InternalCloseTabs(closing_tabs, CLOSE_CREATE_HISTORICAL_TAB);
-  if (!closed_all)
-    delegate_->GroupCloseStopped(group);
+  InternalCloseTabs(closing_tabs, CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 bool TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {

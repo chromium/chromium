@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
@@ -100,8 +102,14 @@ bool UnloadController::RunUnloadEventsHelper(content::WebContents* contents) {
 
 bool UnloadController::BeforeUnloadFired(content::WebContents* contents,
                                          bool proceed) {
-  if (!proceed)
+  if (!proceed) {
     DevToolsWindow::OnPageCloseCanceled(contents);
+    base::Optional<tab_groups::TabGroupId> group =
+        browser_->tab_strip_model()->GetTabGroupForTab(
+            browser_->tab_strip_model()->GetIndexOfWebContents(contents));
+    if (group.has_value())
+      browser_->tab_strip_model()->delegate()->GroupCloseStopped(group.value());
+  }
 
   if (!is_attempting_to_close_browser_) {
     if (!proceed)

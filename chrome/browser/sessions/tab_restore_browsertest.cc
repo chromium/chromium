@@ -626,11 +626,12 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
       gfx::Range(0, 1));
 }
 
-// Close a group that contains a tab with an unload handler, resulting in the
-// tab not closing while the group does. Then restore the group. The group
-// should restore intact and duplicate the still-open tab.
+// Close a group that contains a tab with an unload handler. Reject the
+// unload handler, resulting in the tab not closing while the group does. Then
+// restore the group. The group should restore intact and duplicate the
+// still-open tab.
 // TODO(crbug.com/1181521): Run unload handlers before the group is closed.
-IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandler) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerRejected) {
   const char kUnloadHTML[] =
       "<html><body>"
       "<script>window.onbeforeunload=function(e){return 'foo';}</script>"
@@ -691,6 +692,59 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandler) {
   browser()->tab_strip_model()->CloseAllTabs();
   dialog = ui_test_utils::WaitForAppModalDialog();
   dialog->view()->AcceptAppModalDialog();
+}
+
+// Close a group that contains a tab with an unload handler. Accept the
+// unload handler, resulting in the tab (and group) closing anyway. Then restore
+// the group. The group should restore intact with no duplicates.
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerAccepted) {
+  const char kUnloadHTML[] =
+      "<html><body>"
+      "<script>window.onbeforeunload=function(e){return 'foo';}</script>"
+      "</body></html>";
+  GURL unload_url = GURL(std::string("data:text/html,") + kUnloadHTML);
+
+  // Set up the tabstrip with:
+  // 0: An ungrouped tab (already present).
+  // 1: A grouped tab.
+  // 2: A grouped tab with an unload handler.
+  AddSomeTabs(browser(), 1);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), unload_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2});
+
+  ASSERT_EQ(browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(group)
+                ->ListTabs(),
+            gfx::Range(1, 3));
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+
+  // Close the group, then accept the unload handler and wait for the tab to
+  // close.
+  content::WebContents* tab_with_unload_handler =
+      browser()->tab_strip_model()->GetWebContentsAt(2);
+  content::PrepContentsForBeforeUnloadTest(tab_with_unload_handler);
+  content::WebContentsDestroyedWatcher destroyed_watcher(
+      tab_with_unload_handler);
+  CloseGroup(group);
+  javascript_dialogs::AppModalDialogController* dialog =
+      ui_test_utils::WaitForAppModalDialog();
+  dialog->view()->AcceptAppModalDialog();
+  destroyed_watcher.Wait();
+
+  // Restore the group, which should restore the original group intact.
+  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 1));
+
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(group)
+                ->ListTabs(),
+            gfx::Range(1, 3));
 }
 
 // Open a window with two tabs, close both (closing the window), then restore
