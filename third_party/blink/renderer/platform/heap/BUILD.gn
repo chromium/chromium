@@ -208,6 +208,7 @@ source_set("test_support") {
   sources = [
     "heap_test_objects.cc",
     "heap_test_objects.h",
+    "heap_test_platform.h",
     "heap_test_utilities.h",
   ]
 

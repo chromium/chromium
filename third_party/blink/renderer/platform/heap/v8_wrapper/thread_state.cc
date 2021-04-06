@@ -24,12 +24,20 @@ alignas(ThreadState) uint8_t
 
 // static
 ThreadState* ThreadState::AttachMainThread() {
-  return new (main_thread_state_storage_) ThreadState();
+  return new (main_thread_state_storage_) ThreadState(gin::V8Platform::Get());
+}
+
+// static
+ThreadState* ThreadState::AttachMainThreadForTesting(v8::Platform* platform) {
+  ThreadState* thread_state =
+      new (main_thread_state_storage_) ThreadState(platform);
+  thread_state->EnableDetachedGarbageCollectionsForTesting();
+  return thread_state;
 }
 
 // static
 ThreadState* ThreadState::AttachCurrentThread() {
-  return new ThreadState();
+  return new ThreadState(gin::V8Platform::Get());
 }
 
 // static
@@ -52,9 +60,9 @@ void ThreadState::DetachFromIsolate() {
   isolate_ = nullptr;
 }
 
-ThreadState::ThreadState()
+ThreadState::ThreadState(v8::Platform* platform)
     : cpp_heap_(v8::CppHeap::Create(
-          gin::V8Platform::Get(),
+          platform,
           {CustomSpaces::CreateCustomSpaces(),
            v8::WrapperDescriptor(kV8DOMWrapperTypeIndex,
                                  kV8DOMWrapperObjectIndex,

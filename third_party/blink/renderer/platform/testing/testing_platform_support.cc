@@ -38,11 +38,13 @@
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "gin/public/v8_platform.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_platform.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -176,8 +178,15 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   Platform::SetCurrentPlatformForTesting(testing_platform_support_.get());
 
   ProcessHeap::Init();
-  ThreadState::AttachMainThread();
-  blink::ThreadState::Current()->EnableDetachedGarbageCollectionsForTesting();
+  // Initializing ThreadState for testing with a testing specific platform.
+  // ScopedUnittestsEnvironmentSetup keeps the platform alive until the end of
+  // the test. The testing platform is initialized using gin::V8Platform which
+  // is the default platform used by ThreadState.
+  // Note that the platform is not initialized by AttachMainThreadForTesting
+  // to avoid including test-only headers in production build targets.
+  v8_platform_for_heap_testing_ =
+      std::make_unique<HeapTestingPlatformAdapter>(gin::V8Platform::Get());
+  ThreadState::AttachMainThreadForTesting(v8_platform_for_heap_testing_.get());
   http_names::Init();
   fetch_initiator_type_names::Init();
 

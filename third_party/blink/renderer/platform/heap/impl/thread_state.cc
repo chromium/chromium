@@ -200,6 +200,10 @@ ThreadState::~ThreadState() {
   **thread_specific_ = nullptr;
 }
 
+ThreadState* ThreadState::AttachMainThreadForTesting(v8::Platform*) {
+  return AttachMainThread();
+}
+
 ThreadState* ThreadState::AttachMainThread() {
   thread_specific_ = new WTF::ThreadSpecific<ThreadState*>();
   return new (main_thread_state_storage_) ThreadState();

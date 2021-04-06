@@ -57,6 +57,9 @@ specific_include_rules = {
     "empty_web_media_player\.cc": [
         "+media/base/video_frame.h",
     ],
+    "testing_platform_support\.cc": [
+        "+gin/public/v8_platform.h",
+    ],
     "testing_platform_support_with_mock_scheduler\.cc": [
         "+base/task/sequence_manager/test/sequence_manager_for_test.h",
     ],

@@ -188,6 +188,7 @@ class PLATFORM_EXPORT ThreadState final {
   }
 
   static ThreadState* AttachMainThread();
+  static ThreadState* AttachMainThreadForTesting(v8::Platform* platform);
 
   // Associate ThreadState object with the current thread. After this
   // call thread can start using the garbage collected heap infrastructure.

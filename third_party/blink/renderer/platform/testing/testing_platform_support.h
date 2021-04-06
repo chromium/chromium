@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "v8/include/v8-platform.h"
 
 namespace base {
 class TestDiscardableMemoryAllocator;
@@ -167,6 +168,7 @@ class ScopedUnittestsEnvironmentSetup final {
   std::unique_ptr<base::TestDiscardableMemoryAllocator>
       discardable_memory_allocator_;
   std::unique_ptr<Platform> dummy_platform_;
+  std::unique_ptr<v8::Platform> v8_platform_for_heap_testing_;
   std::unique_ptr<TestingPlatformSupport> testing_platform_support_;
 };
 
