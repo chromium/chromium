@@ -562,7 +562,7 @@ TEST(SimpleColorSpace, CanParseSkShaderSource) {
       auto transform = ColorTransform::NewColorTransform(
           src, dst, ColorTransform::Intent::INTENT_PERCEPTUAL);
       std::string source =
-          "in shader child;\n"
+          "uniform shader child;\n"
           "half4 main() {\n"
           "  half4 color = sample(child);\n" +
           transform->GetSkShaderSource() + " return color; }";
