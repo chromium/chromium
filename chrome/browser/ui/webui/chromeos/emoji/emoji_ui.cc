@@ -69,7 +69,8 @@ void EmojiUI::Show(Profile* profile) {
       ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   ui::TextInputClient* input_client =
       input_method ? input_method->GetTextInputClient() : nullptr;
-  const bool incognito_mode = !input_client->ShouldDoLearning();
+  const bool incognito_mode =
+      input_client ? !input_client->ShouldDoLearning() : false;
   const gfx::Rect caret_bounds =
       input_client ? input_client->GetCaretBounds() : gfx::Rect();
 
