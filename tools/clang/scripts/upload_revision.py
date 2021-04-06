@@ -103,8 +103,11 @@ def main():
   Git(["add", UPDATE_PY_PATH])
 
   commit_message = 'Ran `{}`.'.format(' '.join(sys.argv)) + COMMIT_FOOTER
-  Git(["commit", "-m", "Roll clang {} : {}.\n\n{}".format(
-      old_rev_string, rev_string, commit_message)])
+  Git([
+      "commit", "-m",
+      "Roll clang {} : {}\n\n{}".format(old_rev_string, rev_string,
+                                        commit_message)
+  ])
 
   Git(["cl", "upload", "-f", "--bypass-hooks"])
   Git([
