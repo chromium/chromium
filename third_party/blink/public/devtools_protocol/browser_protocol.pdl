@@ -3766,6 +3766,47 @@ domain Input
   # UTC time in seconds, counted from January 1, 1970.
   type TimeSinceEpoch extends number
 
+  experimental type DragDataItem extends object
+    properties
+      # Mime type of the dragged data.
+      string mimeType
+      # Depending of the value of `mimeType`, it contains the dragged link,
+      # text, HTML markup or any other data.
+      string data
+
+      # Title associated with a link. Only valid when `mimeType` == "text/uri-list".
+      optional string title
+
+      # Stores the base URL for the contained markup. Only valid when `mimeType`
+      # == "text/html".
+      optional string baseURL
+
+
+  experimental type DragData extends object
+    properties
+      array of DragDataItem items
+      # Bit field representing allowed drag operations. Copy = 1, Link = 2, Move = 16
+      integer dragOperationsMask
+
+  # Dispatches a drag event into the page.
+  experimental command dispatchDragEvent
+    parameters
+      # Type of the drag event.
+      enum type
+        dragEnter
+        dragOver
+        drop
+        dragCancel
+      # X coordinate of the event relative to the main frame's viewport in CSS pixels.
+      number x
+      # Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to
+      # the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
+      number y
+      DragData data
+      # Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
+      # (default: 0).
+      optional integer modifiers
+
   # Dispatches a key event to the page.
   command dispatchKeyEvent
     parameters

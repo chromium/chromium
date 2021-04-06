@@ -409,9 +409,10 @@ void WebContentsViewAndroid::OnDragEntered(
   blink::DragOperationsMask allowed_ops =
       static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
                                              blink::kDragOperationMove);
-  web_contents_->GetRenderViewHost()->GetWidget()->
-      DragTargetDragEnterWithMetaData(metadata, location, screen_location,
-                                      allowed_ops, 0);
+  web_contents_->GetRenderViewHost()
+      ->GetWidget()
+      ->DragTargetDragEnterWithMetaData(metadata, location, screen_location,
+                                        allowed_ops, 0, base::DoNothing());
 }
 
 void WebContentsViewAndroid::OnDragUpdated(const gfx::PointF& location,
@@ -423,7 +424,7 @@ void WebContentsViewAndroid::OnDragUpdated(const gfx::PointF& location,
       static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
                                              blink::kDragOperationMove);
   web_contents_->GetRenderViewHost()->GetWidget()->DragTargetDragOver(
-      location, screen_location, allowed_ops, 0);
+      location, screen_location, allowed_ops, 0, base::DoNothing());
 }
 
 void WebContentsViewAndroid::OnDragExited() {
@@ -437,7 +438,7 @@ void WebContentsViewAndroid::OnPerformDrop(DropData* drop_data,
   web_contents_->Focus();
   web_contents_->GetRenderViewHost()->GetWidget()->FilterDropData(drop_data);
   web_contents_->GetRenderViewHost()->GetWidget()->DragTargetDrop(
-      *drop_data, location, screen_location, 0);
+      *drop_data, location, screen_location, 0, base::DoNothing());
 }
 
 void WebContentsViewAndroid::OnSystemDragEnded() {
@@ -454,7 +455,8 @@ void WebContentsViewAndroid::OnSystemDragEnded() {
 
 void WebContentsViewAndroid::OnDragEnded() {
   web_contents_->GetRenderViewHost()->GetWidget()->DragSourceEndedAt(
-      drag_location_, drag_screen_location_, ui::mojom::DragOperation::kNone);
+      drag_location_, drag_screen_location_, ui::mojom::DragOperation::kNone,
+      base::DoNothing());
   OnSystemDragEnded();
 
   drag_location_ = gfx::PointF();

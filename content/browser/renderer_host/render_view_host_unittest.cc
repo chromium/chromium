@@ -178,7 +178,8 @@ TEST_F(RenderViewHostTest, DragEnteredFileURLsStillBlocked) {
   // RenderWidgetHost to work with OOPIFs. See crbug.com/647249.
   rvh()->GetWidget()->FilterDropData(&dropped_data);
   rvh()->GetWidget()->DragTargetDragEnter(
-      dropped_data, client_point, screen_point, blink::kDragOperationNone, 0);
+      dropped_data, client_point, screen_point, blink::kDragOperationNone, 0,
+      base::DoNothing());
 
   int id = process()->GetID();
   ChildProcessSecurityPolicyImpl* policy =

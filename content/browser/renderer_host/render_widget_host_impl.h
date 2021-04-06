@@ -251,23 +251,29 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   float GetDeviceScaleFactor() override;
   base::Optional<cc::TouchAction> GetAllowedTouchAction() override;
   void WriteIntoTracedValue(perfetto::TracedValue context) override;
+  using DragOperationCallback =
+      base::OnceCallback<void(::ui::mojom::DragOperation)>;
   // |drop_data| must have been filtered. The embedder should call
   // FilterDropData before passing the drop data to RWHI.
   void DragTargetDragEnter(const DropData& drop_data,
                            const gfx::PointF& client_pt,
                            const gfx::PointF& screen_pt,
                            blink::DragOperationsMask operations_allowed,
-                           int key_modifiers) override;
+                           int key_modifiers,
+                           DragOperationCallback callback) override;
+
   void DragTargetDragEnterWithMetaData(
       const std::vector<DropData::Metadata>& metadata,
       const gfx::PointF& client_pt,
       const gfx::PointF& screen_pt,
       blink::DragOperationsMask operations_allowed,
-      int key_modifiers) override;
+      int key_modifiers,
+      DragOperationCallback callback) override;
   void DragTargetDragOver(const gfx::PointF& client_point,
                           const gfx::PointF& screen_point,
                           blink::DragOperationsMask operations_allowed,
-                          int key_modifiers) override;
+                          int key_modifiers,
+                          DragOperationCallback callback) override;
   void DragTargetDragLeave(const gfx::PointF& client_point,
                            const gfx::PointF& screen_point) override;
   // |drop_data| must have been filtered. The embedder should call
@@ -275,10 +281,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void DragTargetDrop(const DropData& drop_data,
                       const gfx::PointF& client_point,
                       const gfx::PointF& screen_point,
-                      int key_modifiers) override;
+                      int key_modifiers,
+                      base::OnceClosure callback) override;
   void DragSourceEndedAt(const gfx::PointF& client_pt,
                          const gfx::PointF& screen_pt,
-                         ui::mojom::DragOperation operation) override;
+                         ui::mojom::DragOperation operation,
+                         base::OnceClosure callback) override;
   void DragSourceSystemDragEnded() override;
   void FilterDropData(DropData* drop_data) override;
   void SetCursor(const ui::Cursor& cursor) override;
@@ -950,7 +958,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // IPC message handlers
   void OnClose();
   void OnUpdateScreenRectsAck();
-  void OnUpdateDragCursor(ui::mojom::DragOperation current_op);
+  void OnUpdateDragCursor(DragOperationCallback callback,
+                          ui::mojom::DragOperation current_op);
 
   // blink::mojom::FrameWidgetHost overrides.
   void AnimateDoubleTapZoomInMainFrame(const gfx::Point& tap_point,

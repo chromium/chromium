@@ -53,10 +53,12 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   void DragTargetDrop(blink::mojom::DragDataPtr drag_data,
                       const gfx::PointF& point_in_viewport,
                       const gfx::PointF& screen_point,
-                      uint32_t key_modifiers) override {}
+                      uint32_t key_modifiers,
+                      base::OnceClosure callback) override {}
   void DragSourceEndedAt(const gfx::PointF& client_point,
                          const gfx::PointF& screen_point,
-                         ui::mojom::DragOperation operation) override {}
+                         ui::mojom::DragOperation operation,
+                         base::OnceClosure callback) override {}
   void DragSourceSystemDragEnded() override {}
   void SetBackgroundOpaque(bool value) override {}
   void SetTextDirection(base::i18n::TextDirection direction) override;

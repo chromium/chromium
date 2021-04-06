@@ -1262,7 +1262,7 @@ void WebContentsViewAura::DragEnteredCallback(
   gfx::PointF screen_pt(display::Screen::GetScreen()->GetCursorScreenPoint());
   current_rwh_for_drag_->DragTargetDragEnter(
       *current_drop_data_, transformed_pt.value(), screen_pt, op_mask,
-      ui::EventFlagsToWebEventModifiers(event.flags()));
+      ui::EventFlagsToWebEventModifiers(event.flags()), base::DoNothing());
 
   if (drag_dest_delegate_) {
     drag_dest_delegate_->OnDragEnter();
@@ -1346,7 +1346,7 @@ void WebContentsViewAura::DragUpdatedCallback(
       ConvertToDragOperationsMask(event.source_operations());
   target_rwh->DragTargetDragOver(
       transformed_pt.value(), screen_pt, op_mask,
-      ui::EventFlagsToWebEventModifiers(event.flags()));
+      ui::EventFlagsToWebEventModifiers(event.flags()), base::DoNothing());
 
   if (drag_dest_delegate_)
     drag_dest_delegate_->OnDragOver();
@@ -1535,7 +1535,8 @@ void WebContentsViewAura::CompleteDrop(RenderWidgetHostImpl* target_rwh,
                                        int key_modifiers) {
   web_contents_->Focus();
 
-  target_rwh->DragTargetDrop(drop_data, client_pt, screen_pt, key_modifiers);
+  target_rwh->DragTargetDrop(drop_data, client_pt, screen_pt, key_modifiers,
+                             base::DoNothing());
   if (drag_dest_delegate_)
     drag_dest_delegate_->OnDrop();
 

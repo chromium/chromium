@@ -1829,9 +1829,11 @@ void RenderWidgetHostImpl::DragTargetDragEnter(
     const gfx::PointF& client_pt,
     const gfx::PointF& screen_pt,
     DragOperationsMask operations_allowed,
-    int key_modifiers) {
+    int key_modifiers,
+    base::OnceCallback<void(::ui::mojom::DragOperation)> callback) {
   DragTargetDragEnterWithMetaData(DropDataToMetaData(drop_data), client_pt,
-                                  screen_pt, operations_allowed, key_modifiers);
+                                  screen_pt, operations_allowed, key_modifiers,
+                                  std::move(callback));
 }
 
 void RenderWidgetHostImpl::DragTargetDragEnterWithMetaData(
@@ -1839,14 +1841,16 @@ void RenderWidgetHostImpl::DragTargetDragEnterWithMetaData(
     const gfx::PointF& client_pt,
     const gfx::PointF& screen_pt,
     DragOperationsMask operations_allowed,
-    int key_modifiers) {
+    int key_modifiers,
+    base::OnceCallback<void(::ui::mojom::DragOperation)> callback) {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
   if (blink_frame_widget_) {
+    base::OnceCallback<void(::ui::mojom::DragOperation)> callback_wrapper =
+        base::BindOnce(&RenderWidgetHostImpl::OnUpdateDragCursor,
+                       base::Unretained(this), std::move(callback));
     blink_frame_widget_->DragTargetDragEnter(
         DropMetaDataToDragData(metadata), client_pt, screen_pt,
-        operations_allowed, key_modifiers,
-        base::BindOnce(&RenderWidgetHostImpl::OnUpdateDragCursor,
-                       base::Unretained(this)));
+        operations_allowed, key_modifiers, std::move(callback_wrapper));
   }
 }
 
@@ -1854,14 +1858,15 @@ void RenderWidgetHostImpl::DragTargetDragOver(
     const gfx::PointF& client_point,
     const gfx::PointF& screen_point,
     DragOperationsMask operations_allowed,
-    int key_modifiers) {
+    int key_modifiers,
+    base::OnceCallback<void(ui::mojom::DragOperation)> callback) {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     blink_frame_widget_->DragTargetDragOver(
         ConvertWindowPointToViewport(client_point), screen_point,
         operations_allowed, key_modifiers,
         base::BindOnce(&RenderWidgetHostImpl::OnUpdateDragCursor,
-                       base::Unretained(this)));
+                       base::Unretained(this), std::move(callback)));
   }
 }
 
@@ -1880,7 +1885,8 @@ void RenderWidgetHostImpl::DragTargetDragLeave(
 void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
                                           const gfx::PointF& client_point,
                                           const gfx::PointF& screen_point,
-                                          int key_modifiers) {
+                                          int key_modifiers,
+                                          base::OnceClosure callback) {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     DropData drop_data_with_permissions(drop_data);
@@ -1891,19 +1897,20 @@ void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
         DropDataToDragData(drop_data_with_permissions,
                            storage_partition->GetFileSystemAccessManager(),
                            GetProcess()->GetID()),
-        ConvertWindowPointToViewport(client_point), screen_point,
-        key_modifiers);
+        ConvertWindowPointToViewport(client_point), screen_point, key_modifiers,
+        std::move(callback));
   }
 }
 
-void RenderWidgetHostImpl::DragSourceEndedAt(
-    const gfx::PointF& client_point,
-    const gfx::PointF& screen_point,
-    ui::mojom::DragOperation operation) {
+void RenderWidgetHostImpl::DragSourceEndedAt(const gfx::PointF& client_point,
+                                             const gfx::PointF& screen_point,
+                                             ui::mojom::DragOperation operation,
+                                             base::OnceClosure callback) {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     blink_frame_widget_->DragSourceEndedAt(
-        ConvertWindowPointToViewport(client_point), screen_point, operation);
+        ConvertWindowPointToViewport(client_point), screen_point, operation,
+        std::move(callback));
   }
 }
 
@@ -2153,10 +2160,12 @@ void RenderWidgetHostImpl::SelectionBoundsChanged(
 }
 
 void RenderWidgetHostImpl::OnUpdateDragCursor(
+    DragOperationCallback callback,
     ui::mojom::DragOperation current_op) {
   RenderViewHostDelegateView* view = delegate_->GetDelegateView();
   if (view)
     view->UpdateDragCursor(current_op);
+  std::move(callback).Run(current_op);
 }
 
 void RenderWidgetHostImpl::RendererExited() {

@@ -4697,7 +4697,8 @@ void WebContentsImpl::DragSourceEndedAt(float client_x,
                         "WebContentsImpl::DragSourceEndedAt");
   if (source_rwh) {
     source_rwh->DragSourceEndedAt(gfx::PointF(client_x, client_y),
-                                  gfx::PointF(screen_x, screen_y), operation);
+                                  gfx::PointF(screen_x, screen_y), operation,
+                                  base::DoNothing());
   }
 }
 

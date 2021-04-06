@@ -2632,7 +2632,8 @@ static void DragAndDropURL(WebViewImpl* web_view, const std::string& url) {
   WebFrameWidget* widget = web_view->MainFrameImpl()->FrameWidget();
   widget->DragTargetDragEnter(drag_data, client_point, screen_point,
                               kDragOperationCopy, 0, base::DoNothing());
-  widget->DragTargetDrop(drag_data, client_point, screen_point, 0);
+  widget->DragTargetDrop(drag_data, client_point, screen_point, 0,
+                         base::DoNothing());
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(
       web_view->MainFrameImpl());
 }
@@ -2980,7 +2981,8 @@ TEST_F(WebViewTest, TouchDragContextMenuWithoutDrag) {
   // Simulate the end of a non-moving drag.
   const gfx::PointF dragend_point(250, 8);
   web_view->MainFrameViewWidget()->DragSourceEndedAt(
-      dragend_point, dragend_point, ui::mojom::blink::DragOperation::kNone);
+      dragend_point, dragend_point, ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
   EXPECT_TRUE(
       web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
           web_view->MainFrameImpl()->GetFrame()));
@@ -3019,7 +3021,8 @@ TEST_F(WebViewTest, TouchDragContextMenuWithDrag) {
   // Simulate the end of a drag.
   const gfx::PointF dragend_point(270, 28);
   web_view->MainFrameViewWidget()->DragSourceEndedAt(
-      dragend_point, dragend_point, ui::mojom::blink::DragOperation::kNone);
+      dragend_point, dragend_point, ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
   EXPECT_FALSE(
       web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
           web_view->MainFrameImpl()->GetFrame()));

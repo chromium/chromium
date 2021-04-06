@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
+#include "content/browser/renderer_host/data_transfer_util.h"
 #include "content/browser/renderer_host/input/synthetic_pointer_action.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -320,6 +321,27 @@ void DispatchPointerActionsResponse(
     callback->sendFailure(Response::ServerError(
         base::StringPrintf("Action sequence failed, result was %d", result)));
   }
+}
+
+DropData ProtocolDragDataToDropData(std::unique_ptr<Input::DragData> data) {
+  std::vector<blink::mojom::DragItemPtr> items;
+
+  for (const auto& item : *data->GetItems()) {
+    blink::mojom::DragItemStringPtr mojo_item =
+        blink::mojom::DragItemString::New();
+    mojo_item->string_type = item->GetMimeType();
+    mojo_item->string_data = base::UTF8ToUTF16(item->GetData());
+    if (item->HasBaseURL())
+      mojo_item->base_url = GURL(item->GetBaseURL(""));
+    if (item->HasTitle())
+      mojo_item->title = base::UTF8ToUTF16(item->GetTitle(""));
+    items.push_back(blink::mojom::DragItem::NewString(std::move(mojo_item)));
+  }
+
+  blink::mojom::DragDataPtr mojo_data =
+      blink::mojom::DragData::New(std::move(items), base::nullopt,
+                                  network::mojom::ReferrerPolicy::kDefault);
+  return DragDataToDropData(*mojo_data);
 }
 
 }  // namespace
@@ -782,6 +804,116 @@ void InputHandler::DispatchMouseEvent(
         std::move(findWidgetAndDispatchEvent));
   } else {
     std::move(findWidgetAndDispatchEvent).Run(true);
+  }
+}
+
+void InputHandler::DispatchDragEvent(
+    const std::string& event_type,
+    double x,
+    double y,
+    std::unique_ptr<Input::DragData> data,
+    Maybe<int> modifiers,
+    std::unique_ptr<DispatchDragEventCallback> callback) {
+  RenderWidgetHostImpl* widget_host =
+      host_ ? host_->GetRenderWidgetHost() : nullptr;
+  if (!widget_host || !widget_host->delegate() ||
+      !widget_host->delegate()->GetInputEventRouter() ||
+      !widget_host->GetView()) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  widget_host->delegate()
+      ->GetInputEventRouter()
+      ->GetRenderWidgetHostAtPointAsynchronously(
+          widget_host->GetView(), CssPixelsToPointF(x, y, page_scale_factor_),
+          base::BindOnce(&InputHandler::OnWidgetForDispatchDragEvent,
+                         weak_factory_.GetWeakPtr(), event_type, x, y,
+                         std::move(data), std::move(modifiers),
+                         std::move(callback)));
+}
+
+void InputHandler::OnWidgetForDispatchDragEvent(
+    const std::string& event_type,
+    double x,
+    double y,
+    std::unique_ptr<Input::DragData> data,
+    Maybe<int> modifiers,
+    std::unique_ptr<DispatchDragEventCallback> callback,
+    base::WeakPtr<RenderWidgetHostViewBase> target,
+    base::Optional<gfx::PointF> maybe_point) {
+  if (!target || !maybe_point.has_value()) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+  auto point = *maybe_point;
+  RenderWidgetHostImpl* widget_host =
+      RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
+  auto mask =
+      static_cast<blink::DragOperationsMask>(data->GetDragOperationsMask());
+  std::unique_ptr<DropData> drop_data =
+      std::make_unique<DropData>(ProtocolDragDataToDropData(std::move(data)));
+  drop_data->view_id = widget_host->GetRoutingID();
+  int event_modifiers =
+      GetEventModifiers(modifiers.fromMaybe(blink::WebInputEvent::kNoModifiers),
+                        false, false, 0, 0);
+  if (event_type == Input::DispatchDragEvent::TypeEnum::DragEnter) {
+    widget_host->DragTargetDragEnter(
+        *drop_data, point, point, mask, event_modifiers,
+        base::BindOnce(
+            [](std::unique_ptr<DispatchDragEventCallback> callback,
+               ::ui::mojom::DragOperation operation) {
+              callback->sendSuccess();
+            },
+            std::move(callback)));
+  } else if (event_type == Input::DispatchDragEvent::TypeEnum::DragOver) {
+    widget_host->DragTargetDragOver(
+        point, point, mask, event_modifiers,
+        base::BindOnce(
+            [](std::unique_ptr<DispatchDragEventCallback> callback,
+               ::ui::mojom::DragOperation operation) {
+              callback->sendSuccess();
+            },
+            std::move(callback)));
+  } else if (event_type == Input::DispatchDragEvent::TypeEnum::Drop) {
+    widget_host->DragTargetDragOver(
+        point, point, mask, event_modifiers,
+        base::BindOnce(
+            [](std::unique_ptr<DropData> drop_data, int event_modifiers,
+               std::unique_ptr<DispatchDragEventCallback> callback,
+               base::WeakPtr<RenderWidgetHostViewBase> target,
+               gfx::PointF point, ui::mojom::DragOperation current_op) {
+              if (!target) {
+                callback->sendFailure(Response::InternalError());
+                return;
+              }
+              RenderWidgetHostImpl* widget_host =
+                  RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
+              widget_host->DragTargetDrop(*drop_data, point, point,
+                                          event_modifiers, base::DoNothing());
+              widget_host->DragSourceSystemDragEnded();
+              widget_host->DragSourceEndedAt(
+                  point, point, current_op,
+                  base::BindOnce(
+                      [](std::unique_ptr<DispatchDragEventCallback> callback) {
+                        callback->sendSuccess();
+                      },
+                      std::move(callback)));
+            },
+            std::move(drop_data), event_modifiers, std::move(callback),
+            std::move(target), point));
+
+  } else if (event_type == Input::DispatchDragEvent::TypeEnum::DragCancel) {
+    widget_host->DragSourceEndedAt(
+        point, point, ui::mojom::DragOperation::kNone,
+        base::BindOnce(
+            [](std::unique_ptr<DispatchDragEventCallback> callback) {
+              callback->sendSuccess();
+            },
+            std::move(callback)));
+  } else {
+    callback->sendFailure(Response::InvalidParams(
+        base::StringPrintf("Unexpected event type '%s'", event_type.c_str())));
   }
 }
 

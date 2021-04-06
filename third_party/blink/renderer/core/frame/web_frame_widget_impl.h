@@ -389,7 +389,8 @@ class CORE_EXPORT WebFrameWidgetImpl
       const base::Optional<VisualProperties>& visual_properties) override;
   void DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                          const gfx::PointF& screen_point,
-                         ui::mojom::blink::DragOperation) override;
+                         ui::mojom::blink::DragOperation,
+                         base::OnceClosure callback) override;
 
   // Sets the display mode, which comes from the top-level browsing context and
   // is applied to all widgets.
@@ -682,7 +683,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void DragTargetDrop(const WebDragData&,
                       const gfx::PointF& point_in_viewport,
                       const gfx::PointF& screen_point,
-                      uint32_t key_modifiers) override;
+                      uint32_t key_modifiers,
+                      base::OnceClosure callback) override;
   void DragSourceSystemDragEnded() override;
   void SetBackgroundOpaque(bool opaque) override;
   void SetActive(bool active) override;

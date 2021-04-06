@@ -136,13 +136,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDragDropBrowserTest, DropFile) {
   render_widget_host_impl->DragTargetDragEnter(
       drop_data, client_point, screen_point,
       blink::DragOperationsMask::kDragOperationEvery,
-      /*key_modifiers=*/0);
+      /*key_modifiers=*/0, base::DoNothing());
   render_widget_host_impl->DragTargetDragOver(
       client_point, screen_point,
       blink::DragOperationsMask::kDragOperationEvery,
-      /*key_modifiers=*/0);
+      /*key_modifiers=*/0, base::DoNothing());
   render_widget_host_impl->DragTargetDrop(drop_data, client_point, screen_point,
-                                          /*key_modifiers=*/0);
+                                          /*key_modifiers=*/0,
+                                          base::DoNothing());
 
   // Expect the promise to resolve with `test_contents`.
   EXPECT_EQ(test_contents, EvalJs(shell(), "p"));
@@ -221,13 +222,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDragDropBrowserTest, DropDirectory) {
   render_widget_host_impl->DragTargetDragEnter(
       drop_data, client_point, screen_point,
       blink::DragOperationsMask::kDragOperationEvery,
-      /*key_modifiers=*/0);
+      /*key_modifiers=*/0, base::DoNothing());
   render_widget_host_impl->DragTargetDragOver(
       client_point, screen_point,
       blink::DragOperationsMask::kDragOperationEvery,
-      /*key_modifiers=*/0);
+      /*key_modifiers=*/0, base::DoNothing());
   render_widget_host_impl->DragTargetDrop(drop_data, client_point, screen_point,
-                                          /*key_modifiers=*/0);
+                                          /*key_modifiers=*/0,
+                                          base::DoNothing());
 
   // Wait promise to resolve and expect the directory to have child with name
   // matching the base name of `file_inside_dir`.

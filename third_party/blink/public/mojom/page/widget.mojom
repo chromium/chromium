@@ -72,12 +72,12 @@ interface FrameWidget {
   DragTargetDrop(DragData drag_data,
                  gfx.mojom.PointF point_in_viewport,
                  gfx.mojom.PointF screen_point,
-                 uint32 key_modifiers);
+                 uint32 key_modifiers) => ();
 
   // Notifies the Widget that a drag has terminated.
   DragSourceEndedAt(gfx.mojom.PointF point_in_viewport,
                     gfx.mojom.PointF screen_point,
-                    ui.mojom.DragOperation drag_operation);
+                    ui.mojom.DragOperation drag_operation) => ();
 
   // Notifies the Widget that the system drag and drop operation has ended.
   DragSourceSystemDragEnded();

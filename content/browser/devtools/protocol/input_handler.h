@@ -86,6 +86,14 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       Maybe<std::string> pointer_type,
       std::unique_ptr<DispatchMouseEventCallback> callback) override;
 
+  void DispatchDragEvent(
+      const std::string& event_type,
+      double x,
+      double y,
+      std::unique_ptr<Input::DragData> data,
+      Maybe<int> modifiers,
+      std::unique_ptr<DispatchDragEventCallback> callback) override;
+
   void DispatchTouchEvent(
       const std::string& type,
       std::unique_ptr<Array<Input::TouchPoint>> touch_points,
@@ -157,6 +165,16 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       std::unique_ptr<DispatchMouseEventCallback> callback,
       std::unique_ptr<blink::WebMouseEvent> mouse_event,
       blink::WebMouseWheelEvent* wheel_event,
+      base::WeakPtr<RenderWidgetHostViewBase> target,
+      base::Optional<gfx::PointF> point);
+
+  void OnWidgetForDispatchDragEvent(
+      const std::string& event_type,
+      double x,
+      double y,
+      std::unique_ptr<Input::DragData> data,
+      Maybe<int> modifiers,
+      std::unique_ptr<DispatchDragEventCallback> callback,
       base::WeakPtr<RenderWidgetHostViewBase> target,
       base::Optional<gfx::PointF> point);
 

@@ -409,7 +409,9 @@ void WebFrameWidgetImpl::DragTargetDragLeave(
 void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
                                         const gfx::PointF& point_in_viewport,
                                         const gfx::PointF& screen_point,
-                                        uint32_t key_modifiers) {
+                                        uint32_t key_modifiers,
+                                        base::OnceClosure callback) {
+  base::ScopedClosureRunner calllback_runner(std::move(callback));
   gfx::PointF point_in_root_frame(ViewportToRootFrame(point_in_viewport));
 
   DCHECK(current_drag_data_);
@@ -443,7 +445,9 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
 
 void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                                            const gfx::PointF& screen_point,
-                                           DragOperation operation) {
+                                           DragOperation operation,
+                                           base::OnceClosure callback) {
+  base::ScopedClosureRunner calllback_runner(std::move(callback));
   if (!local_root_) {
     // We should figure out why |local_root_| could be nullptr
     // (https://crbug.com/792345).

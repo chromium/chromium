@@ -2629,13 +2629,14 @@ void EventSender::FinishDragAndDrop(const WebMouseEvent& event,
     // tests to control the drop type (i.e. copy or move).
     MainFrameWidget()->DragTargetDrop(
         *current_drag_data_, event.PositionInWidget(), event.PositionInScreen(),
-        event.GetModifiers());
+        event.GetModifiers(), base::DoNothing());
   } else {
     MainFrameWidget()->DragTargetDragLeave(gfx::PointF(), gfx::PointF());
   }
   current_drag_data_ = base::nullopt;
-  MainFrameWidget()->DragSourceEndedAt(
-      event.PositionInWidget(), event.PositionInScreen(), current_drag_effect_);
+  MainFrameWidget()->DragSourceEndedAt(event.PositionInWidget(),
+                                       event.PositionInScreen(),
+                                       current_drag_effect_, base::DoNothing());
   MainFrameWidget()->DragSourceSystemDragEnded();
 }
 

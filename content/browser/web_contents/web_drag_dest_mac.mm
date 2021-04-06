@@ -218,7 +218,8 @@ void DropCompletionCallback(
 
   _currentRWHForDrag->DragTargetDragEnter(
       *_dropDataFiltered, transformedPt, info->location_in_screen,
-      static_cast<DragOperationsMask>(mask), GetModifierFlags());
+      static_cast<DragOperationsMask>(mask), GetModifierFlags(),
+      base::DoNothing());
 
   // We won't know the true operation (whether the drag is allowed) until we
   // hear back from the renderer. For now, be optimistic:
@@ -300,7 +301,7 @@ void DropCompletionCallback(
   NSDragOperation mask = info->operation_mask;
   targetRWH->DragTargetDragOver(transformedPt, info->location_in_screen,
                                 static_cast<DragOperationsMask>(mask),
-                                GetModifierFlags());
+                                GetModifierFlags(), base::DoNothing());
 
   if (_delegate)
     _delegate->OnDragOver();
@@ -346,7 +347,8 @@ void DropCompletionCallback(
     if (_delegate)
       _delegate->OnDrop();
     targetRWH->DragTargetDrop(*_dropDataFiltered, transformedPt,
-                              info->location_in_screen, GetModifierFlags());
+                              info->location_in_screen, GetModifierFlags(),
+                              base::DoNothing());
   }
   _dropDataUnfiltered.reset();
   _dropDataFiltered.reset();
@@ -359,9 +361,9 @@ void DropCompletionCallback(
   if (success) {
     if (_delegate)
       _delegate->OnDrop();
-    context.target_rwh->DragTargetDrop(context.drop_data, context.client_pt,
-                                       context.screen_pt,
-                                       context.modifier_flags);
+    context.target_rwh->DragTargetDrop(
+        context.drop_data, context.client_pt, context.screen_pt,
+        context.modifier_flags, base::DoNothing());
   } else {
     if (_delegate)
       _delegate->OnDragLeave();
