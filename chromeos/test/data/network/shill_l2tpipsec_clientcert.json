@@ -12,6 +12,5 @@
    "Provider.Host": "some.host.org",
    "Provider.Type": "l2tpipsec",
    "SaveCredentials": true,
-   "StaticIPConfig": {},
    "Type": "vpn",
 }

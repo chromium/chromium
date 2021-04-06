@@ -6,7 +6,6 @@
     "Host": "vpn.my.domain.com",
     "Type": "l2tpipsec"
   },
-  "StaticIPConfig": {},
   "UIData": "{\"onc_source\":\"user_policy\",\"user_settings\":{}}",
   "Type": "vpn"
 }
