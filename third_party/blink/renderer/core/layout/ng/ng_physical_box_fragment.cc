@@ -522,11 +522,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   }
   // TODO(crbug.com/829028): Block fragmentation not supported yet.
 
-  DCHECK(std::any_of(box->PhysicalFragments().begin(),
-                     box->PhysicalFragments().end(),
-                     [this](const NGPhysicalFragment& fragment) {
-                       return this == &fragment;
-                     }));
+  DCHECK(box->PhysicalFragments().Contains(*this));
   return this;
 }
 
