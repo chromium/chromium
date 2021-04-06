@@ -11,3 +11,5 @@ void gdk_texture_download(GdkTexture* texture, guchar* data, gsize stride);
 gboolean gdk_display_map_keycode(GdkDisplay* display, guint keycode, GdkKeymapKey** keys, guint** keyvals, int* n_entries);
 void gdk_paintable_snapshot(GdkPaintable* paintable, GdkSnapshot* snapshot, double width, double height);
 GType gdk_paintable_get_type(void);
+GdkSeat* gdk_display_get_default_seat(GdkDisplay* display);
+GdkDevice* gdk_seat_get_keyboard(GdkSeat* seat);

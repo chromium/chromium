@@ -48,6 +48,8 @@ using GdkTexture = struct _GdkTexture;
 using GdkSnapshot = struct _GdkSnapshot;
 using GtkSnapshot = GdkSnapshot;
 using GdkPaintable = struct _GdkPaintable;
+using GtkNative = struct _GtkNative;
+using GdkSurface = struct _GdkSurface;
 #else
 enum GtkWidgetHelpType : int;
 

@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_delegate.h"
 #include "ui/gtk/gtk_util.h"
@@ -28,7 +29,13 @@ namespace gtk {
 
 namespace {
 
-#if BUILDFLAG(GTK_VERSION) < 4
+GdkEventKey* GdkEventToKey(GdkEvent* event) {
+  DCHECK(!GtkCheckVersion(4));
+  auto* key = reinterpret_cast<GdkEventKey*>(event);
+  DCHECK(key->type == GDK_KEY_PRESS || key->type == GDK_KEY_RELEASE);
+  return key;
+}
+
 // Get IME KeyEvent's target window. Assumes root aura::Window is set to
 // Event::target(), otherwise returns null.
 GdkWindow* GetTargetWindow(const ui::KeyEvent& key_event) {
@@ -44,6 +51,7 @@ GdkWindow* GetTargetWindow(const ui::KeyEvent& key_event) {
 
 // Translate IME ui::KeyEvent to a GdkEventKey.
 GdkEvent* GdkEventFromImeKeyEvent(const ui::KeyEvent& key_event) {
+  DCHECK(!GtkCheckVersion(4));
   GdkEvent* event = GdkEventFromKeyEvent(key_event);
   if (!event)
     return nullptr;
@@ -53,10 +61,9 @@ GdkEvent* GdkEventFromImeKeyEvent(const ui::KeyEvent& key_event) {
     gdk_event_free(event);
     return nullptr;
   }
-  event->key.window = target_window;
+  GdkEventToKey(event)->window = target_window;
   return event;
 }
-#endif
 
 }  // namespace
 
@@ -80,9 +87,8 @@ InputMethodContextImplGtk::InputMethodContextImplGtk(
   // "delete-surrounding" and "retrieve-surrounding" signals should be
   // handled.
 
-#if BUILDFLAG(GTK_VERSION) >= 4
-  gtk_im_context_set_client_widget(gtk_context_, GetDummyWindow());
-#endif
+  if (GtkCheckVersion(4))
+    gtk_im_context_set_client_widget(gtk_context_, GetDummyWindow());
 }
 
 InputMethodContextImplGtk::~InputMethodContextImplGtk() {
@@ -98,21 +104,22 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   if (!gtk_context_)
     return false;
 
-#if BUILDFLAG(GTK_VERSION) < 4
-  GdkEvent* event = GdkEventFromImeKeyEvent(key_event);
-  if (!event) {
-    LOG(ERROR) << "Cannot translate a Keyevent to a GdkEvent.";
-    return false;
-  }
+  GdkEvent* event = nullptr;
+  if (!GtkCheckVersion(4)) {
+    event = GdkEventFromImeKeyEvent(key_event);
+    if (!event) {
+      LOG(ERROR) << "Cannot translate a Keyevent to a GdkEvent.";
+      return false;
+    }
 
-  GdkWindow* target_window = event->key.window;
-  if (!target_window) {
-    LOG(ERROR) << "Cannot get target GdkWindow for KeyEvent.";
-    return false;
-  }
+    GdkWindow* target_window = GdkEventToKey(event)->window;
+    if (!target_window) {
+      LOG(ERROR) << "Cannot get target GdkWindow for KeyEvent.";
+      return false;
+    }
 
-  SetContextClientWindow(target_window);
-#endif
+    SetContextClientWindow(target_window);
+  }
 
   // Convert the last known caret bounds relative to the screen coordinates
   // to a GdkRectangle relative to the client window.
@@ -126,7 +133,12 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   GdkRectangle gdk_rect = {caret_x - win_x, caret_y - win_y, caret_w, caret_h};
   gtk_im_context_set_cursor_location(gtk_context_, &gdk_rect);
 
-#if BUILDFLAG(GTK_VERSION) >= 4
+  if (!GtkCheckVersion(4)) {
+    const bool handled =
+        GtkImContextFilterKeypress(gtk_context_, GdkEventToKey(event));
+    gdk_event_free(event);
+    return handled;
+  }
   // In GTK4, clients can no longer create or modify events.  This makes using
   // the gtk_im_context_filter_keypress() API impossible.  Fortunately, an
   // alternative API called gtk_im_context_filter_key() was added for clients
@@ -143,12 +155,6 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   auto group = GetKeyEventProperty(key_event, ui::kPropertyKeyboardGroup);
   return gtk_im_context_filter_key(gtk_context_, press, surface, device, time,
                                    keycode, state, group);
-#else
-  const bool handled =
-      gtk_im_context_filter_keypress(gtk_context_, &event->key);
-  gdk_event_free(event);
-  return handled;
-#endif
 }
 
 void InputMethodContextImplGtk::Reset() {
@@ -227,8 +233,8 @@ void InputMethodContextImplGtk::OnPreeditStart(GtkIMContext* context) {
   delegate_->OnPreeditStart();
 }
 
-#if BUILDFLAG(GTK_VERSION) < 4
 void InputMethodContextImplGtk::SetContextClientWindow(GdkWindow* window) {
+  DCHECK(!GtkCheckVersion(4));
   if (window == gdk_last_set_client_window_)
     return;
   gtk_im_context_set_client_window(gtk_context_, window);
@@ -238,6 +244,5 @@ void InputMethodContextImplGtk::SetContextClientWindow(GdkWindow* window) {
     g_object_unref(gdk_last_set_client_window_);
   gdk_last_set_client_window_ = window;
 }
-#endif
 
 }  // namespace gtk

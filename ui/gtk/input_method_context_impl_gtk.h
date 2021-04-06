@@ -57,9 +57,8 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
                      OnPreeditStart,
                      GtkIMContext*);
 
-#if BUILDFLAG(GTK_VERSION) < 4
+  // Only used on GTK3.
   void SetContextClientWindow(GdkWindow* window);
-#endif
 
   // A set of callback functions.  Must not be nullptr.
   ui::LinuxInputMethodContextDelegate* const delegate_;
@@ -75,9 +74,8 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   // IME's input GTK context.
   GtkIMContext* gtk_context_ = nullptr;
 
-#if BUILDFLAG(GTK_VERSION) < 4
+  // Only used on GTK3.
   gpointer gdk_last_set_client_window_ = nullptr;
-#endif
 
   // Last known caret bounds relative to the screen coordinates, in DIPs.
   gfx::Rect last_caret_bounds_;

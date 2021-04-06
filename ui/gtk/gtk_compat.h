@@ -40,6 +40,8 @@ void GtkInit(const std::vector<std::string>& args);
 
 gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context);
 
+bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event);
+
 ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGicon(GtkIconTheme* theme,
                                                       GIcon* icon,
                                                       int size,

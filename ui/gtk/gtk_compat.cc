@@ -129,6 +129,16 @@ gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context) {
   return InsetsFromGtkBorder(border);
 }
 
+DISABLE_CFI_ICALL
+bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event) {
+  static void* filter = DlSym(GetLibGtk(), "gtk_im_context_filter_keypress");
+  if (GtkCheckVersion(4)) {
+    return DlCast<bool(GtkIMContext*, GdkEvent*)>(filter)(
+        context, reinterpret_cast<GdkEvent*>(event));
+  }
+  return DlCast<bool(GtkIMContext*, GdkEventKey*)>(filter)(context, event);
+}
+
 void GtkStyleContextGetStyle(GtkStyleContext* context, ...) {
   va_list args;
   va_start(args, context);
