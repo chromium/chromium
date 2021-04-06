@@ -197,6 +197,7 @@ public class AutofillAssistantInputActionIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1194363")
     public void fillFormFieldWithKeystrokesAndSelect() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
