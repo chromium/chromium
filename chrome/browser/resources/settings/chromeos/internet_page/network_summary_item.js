@@ -277,9 +277,11 @@ Polymer({
       case mojom.NetworkType.kWiFi:
         return deviceState.deviceState !== mojom.DeviceStateType.kUninitialized;
       case mojom.NetworkType.kCellular:
-        return deviceState.deviceState !==
-            mojom.DeviceStateType.kUninitialized &&
-            !this.simLockedOrAbsent_(deviceState);
+        return (deviceState.deviceState !==
+                    mojom.DeviceStateType.kUninitialized &&
+                !this.simLockedOrAbsent_(deviceState)) ||
+            (this.isUpdatedCellularUiEnabled_ &&
+             this.simLockedOrAbsent_(deviceState));
     }
     assertNotReached();
     return false;

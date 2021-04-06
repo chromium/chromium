@@ -19,6 +19,31 @@ suite('NetworkSummaryItem', function() {
     return (el !== null) && (el.style.display !== 'none');
   }
 
+  function initWithESimLocked(flag_enabled) {
+    const mojom = chromeos.networkConfig.mojom;
+    const kTestIccid1 = '00000000000000000000';
+
+    netSummaryItem.setProperties({
+      isUpdatedCellularUiEnabled_: flag_enabled,
+      deviceState: {
+        deviceState: mojom.DeviceStateType.kEnabled,
+        type: mojom.NetworkType.kCellular,
+        simAbsent: false,
+        simLockStatus: {lockType: 'sim-pin'},
+        simInfos:
+            [{slot_id: 1, eid: 'eid', iccid: kTestIccid1, isPrimary: true}],
+      },
+      activeNetworkState: {
+        connectionState: mojom.ConnectionStateType.kNotConnected,
+        guid: '',
+        type: mojom.NetworkType.kCellular,
+        typeState: {cellular: {networkTechnology: ''}}
+      },
+    });
+
+    Polymer.dom.flush();
+  }
+
   setup(function() {
     PolymerTest.clearBody();
     netSummaryItem = document.createElement('network-summary-item');
@@ -154,5 +179,15 @@ suite('NetworkSummaryItem', function() {
     Polymer.dom.flush();
     assertFalse(netSummaryItem.$$('#deviceEnabledButton').checked);
     assertFalse(netSummaryItem.$$('#deviceEnabledButton').disabled);
+  });
+
+  test('Mobile data toggle shown on locked device, flag on', function() {
+    initWithESimLocked(/*flag_enabled = */ true);
+    assertNotEquals(netSummaryItem.$$('#deviceEnabledButton'), null);
+  });
+
+  test('Mobile data toggle shown on locked device, flag off', function() {
+    initWithESimLocked(/*flag_enabled = */ false);
+    assertEquals(netSummaryItem.$$('#deviceEnabledButton'), null);
   });
 });
