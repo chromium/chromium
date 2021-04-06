@@ -1773,50 +1773,10 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2Finale[] =
      {"new_home_surface_from_home_button", "hide_tab_switcher_only"},
      {"enable_tab_groups_continuation", "true"}};
 
-const FeatureEntry::FeatureParam
-    kStartSurfaceAndroid_SingleSurfaceWithoutMvTiles[] = {
-        {"start_surface_variation", "single"},
-        {"exclude_mv_tiles", "true"},
-        {"hide_switch_when_no_incognito_tabs", "true"}};
-
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurfaceSingleTab[] =
     {{"start_surface_variation", "single"},
      {"show_last_active_tab_only", "true"},
      {"hide_switch_when_no_incognito_tabs", "true"}};
-
-const FeatureEntry::FeatureParam
-    kStartSurfaceAndroid_SingleSurfaceSingleTabWithoutMvTiles[] = {
-        {"start_surface_variation", "single"},
-        {"show_last_active_tab_only", "true"},
-        {"exclude_mv_tiles", "true"}};
-
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_TwoPanesSurface[] = {
-    {"start_surface_variation", "twopanes"}};
-
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_TasksOnly[] = {
-    {"start_surface_variation", "tasksonly"}};
-
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_OmniboxOnly[] = {
-    {"start_surface_variation", "omniboxonly"},
-    {"hide_switch_when_no_incognito_tabs", "true"}};
-
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_OmniboxOnly_Quick[] = {
-    {"start_surface_variation", "omniboxonly"},
-    {"omnibox_scroll_mode", "quick"},
-    {"hide_switch_when_no_incognito_tabs", "true"}};
-
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_OmniboxOnly_Pinned[] = {
-    {"start_surface_variation", "omniboxonly"},
-    {"omnibox_scroll_mode", "pinned"},
-    {"hide_switch_when_no_incognito_tabs", "true"}};
-
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_TrendyTerms[] = {
-    {"start_surface_variation", "trendyterms"},
-    {"trendy_enabled", "true"},
-    {"trendy_success_min_period_ms", "30000"},
-    {"trendy_failure_min_period_ms", "10000"},
-    {"omnibox_scroll_mode", "quick"},
-    {"hide_switch_when_no_incognito_tabs", "true"}};
 
 const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
     {"Single Surface", kStartSurfaceAndroid_SingleSurface,
@@ -1827,27 +1787,9 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
      base::size(kStartSurfaceAndroid_SingleSurface_V2), nullptr},
     {"Single Surface V2 Finale", kStartSurfaceAndroid_SingleSurface_V2Finale,
      base::size(kStartSurfaceAndroid_SingleSurface_V2Finale), nullptr},
-    {"Single Surface without MV Tiles",
-     kStartSurfaceAndroid_SingleSurfaceWithoutMvTiles,
-     base::size(kStartSurfaceAndroid_SingleSurfaceWithoutMvTiles), nullptr},
     {"Single Surface + Single Tab", kStartSurfaceAndroid_SingleSurfaceSingleTab,
      base::size(kStartSurfaceAndroid_SingleSurfaceSingleTab), nullptr},
-    {"Single Surface + Single Tab without MV Tiles",
-     kStartSurfaceAndroid_SingleSurfaceSingleTabWithoutMvTiles,
-     base::size(kStartSurfaceAndroid_SingleSurfaceSingleTabWithoutMvTiles),
-     nullptr},
-    {"Two Panes Surface", kStartSurfaceAndroid_TwoPanesSurface,
-     base::size(kStartSurfaceAndroid_TwoPanesSurface), nullptr},
-    {"Tasks Only", kStartSurfaceAndroid_TasksOnly,
-     base::size(kStartSurfaceAndroid_TasksOnly), nullptr},
-    {"Omnibox Only", kStartSurfaceAndroid_OmniboxOnly,
-     base::size(kStartSurfaceAndroid_OmniboxOnly), nullptr},
-    {"Omnibox Only, Quick", kStartSurfaceAndroid_OmniboxOnly_Quick,
-     base::size(kStartSurfaceAndroid_OmniboxOnly_Quick), nullptr},
-    {"Omnibox Only, Pinned", kStartSurfaceAndroid_OmniboxOnly_Pinned,
-     base::size(kStartSurfaceAndroid_OmniboxOnly_Pinned), nullptr},
-    {"Trendy Terms, Quick", kStartSurfaceAndroid_TrendyTerms,
-     base::size(kStartSurfaceAndroid_TrendyTerms), nullptr}};
+};
 
 const FeatureEntry::FeatureParam kConditionalTabStripAndroid_Immediate[] = {
     {"conditional_tab_strip_session_time_ms", "0"}};
