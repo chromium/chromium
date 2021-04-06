@@ -43,7 +43,10 @@ class ChromeCartModuleElement extends mixinBehaviors
       headerChipText: String,
 
       /** @type {string} */
-      headerDescriptionText: String,
+      headerDescriptionText: {
+        type: String,
+        reflectToAttribute: true,
+      },
 
       /** @private {boolean} */
       showLeftScrollButton_: Boolean,
@@ -56,9 +59,6 @@ class ChromeCartModuleElement extends mixinBehaviors
 
       /** @private {string} */
       cartMenuRemoveItem_: String,
-
-      /** @private {number} */
-      height: Number,
 
       /**
        * Data about the most recently dismissed cart item.
@@ -351,7 +351,6 @@ async function createCartElement() {
     element.headerChipText = loadTimeData.getString('modulesCartHeaderNew');
     element.headerDescriptionText =
         loadTimeData.getString('modulesCartWarmWelcome');
-    element.height = 226;
   }
   element.cartItems = carts;
   return element;
@@ -360,5 +359,4 @@ async function createCartElement() {
 /** @type {!ModuleDescriptor} */
 export const chromeCartDescriptor = new ModuleDescriptor(
     /*id=*/ 'chrome_cart',
-    /*name=*/ loadTimeData.getString('modulesCartSentence'),
-    /*heightPx=*/ 216, createCartElement);
+    /*name=*/ loadTimeData.getString('modulesCartSentence'), createCartElement);

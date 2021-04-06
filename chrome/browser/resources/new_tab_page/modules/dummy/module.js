@@ -82,12 +82,10 @@ function createDummyElement(titleId) {
 export const dummyDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy',
     /*name=*/ loadTimeData.getString('modulesDummyTitle'),
-    /*heightPx=*/ 314,
     () => Promise.resolve(createDummyElement('modulesDummyTitle')));
 
 /** @type {!ModuleDescriptor} */
 export const dummyDescriptor2 = new ModuleDescriptor(
     /*id=*/ 'dummy2',
     /*name=*/ loadTimeData.getString('modulesDummy2Title'),
-    /*heightPx=*/ 314,
     () => Promise.resolve(createDummyElement('modulesDummy2Title')));

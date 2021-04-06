@@ -94,4 +94,4 @@ async function createDriveElement() {
 export const driveDescriptor = new ModuleDescriptor(
     /*id=*/ 'drive',
     /*name=*/ loadTimeData.getString('modulesDriveSentence'),
-    /*heightPx=*/ 260, createDriveElement);
+    createDriveElement);

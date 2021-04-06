@@ -30,7 +30,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
   test('instantiate module with data', async () => {
     // Arrange.
     const element = document.createElement('div');
-    const moduleDescriptor = new ModuleDescriptor('foo', 'bar', 100, () => {
+    const moduleDescriptor = new ModuleDescriptor('foo', 'bar', () => {
       // Move time forward to simulate delay instantiating module.
       windowProxy.setResultFor('now', 128);
       return Promise.resolve(element);
@@ -55,7 +55,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
   test('instantiate module without data', async () => {
     // Arrange.
     const moduleDescriptor =
-        new ModuleDescriptor('foo', 'bar', 100, () => Promise.resolve(null));
+        new ModuleDescriptor('foo', 'bar', () => Promise.resolve(null));
 
     // Act.
     await moduleDescriptor.initialize();
@@ -71,7 +71,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
   test('module load times out', async () => {
     // Arrange.
     const moduleDescriptor = new ModuleDescriptor(
-        'foo', 'bar', 100, () => new Promise(() => {}) /* Never resolves. */);
+        'foo', 'bar', () => new Promise(() => {}) /* Never resolves. */);
 
     // Act.
     const initializePromise = moduleDescriptor.initialize(123);
@@ -82,21 +82,5 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
     // Assert.
     assertEquals(null, moduleDescriptor.element);
     assertEquals(123, timeout);
-  });
-
-  test('module update height in initialization', async () => {
-    // Arrange.
-    const element = document.createElement('div');
-    let moduleDescriptor = new ModuleDescriptor('foo', 'bar', 100, () => {
-      element.height = 200;
-      return Promise.resolve(element);
-    });
-
-    // Act.
-    await moduleDescriptor.initialize();
-
-    // Assert.
-    assertEquals(element, moduleDescriptor.element);
-    assertEquals(200, moduleDescriptor.heightPx);
   });
 });

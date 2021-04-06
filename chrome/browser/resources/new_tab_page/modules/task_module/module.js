@@ -234,12 +234,10 @@ async function createModule(taskModuleType) {
 export const recipeTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'recipe_tasks',
     /*name=*/ loadTimeData.getString('modulesRecipeTasksSentence'),
-    /*heightPx=*/ 300,
     createModule.bind(null, taskModule.mojom.TaskModuleType.kRecipe));
 
 /** @type {!ModuleDescriptor} */
 export const shoppingTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'shopping_tasks',
     /*name=*/ loadTimeData.getString('modulesShoppingTasksSentence'),
-    /*heightPx=*/ 324,
     createModule.bind(null, taskModule.mojom.TaskModuleType.kShopping));

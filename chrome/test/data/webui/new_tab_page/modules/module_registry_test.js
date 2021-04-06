@@ -54,10 +54,10 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
         /** @type {!HTMLElement} */ (document.createElement('div'));
     const bazModuleResolver = new PromiseResolver();
     ModuleRegistry.getInstance().registerModules([
-      new ModuleDescriptor('foo', 'bli', 100, () => Promise.resolve(fooModule)),
-      new ModuleDescriptor('bar', 'blu', 200, () => Promise.resolve(null)),
-      new ModuleDescriptor('baz', 'bla', 300, () => bazModuleResolver.promise),
-      new ModuleDescriptor('buz', 'blo', 400, () => Promise.resolve(fooModule)),
+      new ModuleDescriptor('foo', 'bli', () => Promise.resolve(fooModule)),
+      new ModuleDescriptor('bar', 'blu', () => Promise.resolve(null)),
+      new ModuleDescriptor('baz', 'bla', () => bazModuleResolver.promise),
+      new ModuleDescriptor('buz', 'blo', () => Promise.resolve(fooModule)),
     ]);
     windowProxy.setResultFor('now', 5.0);
 
@@ -76,10 +76,8 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     assertEquals(1, handler.getCallCount('updateDisabledModules'));
     assertEquals(2, modules.length);
     assertEquals('foo', modules[0].id);
-    assertEquals(100, modules[0].heightPx);
     assertDeepEquals(fooModule, modules[0].element);
     assertEquals('baz', modules[1].id);
-    assertEquals(300, modules[1].heightPx);
     assertDeepEquals(bazModule, modules[1].element);
     assertEquals(2, metrics.count('NewTabPage.Modules.Loaded'));
     assertEquals(1, metrics.count('NewTabPage.Modules.Loaded', 5));

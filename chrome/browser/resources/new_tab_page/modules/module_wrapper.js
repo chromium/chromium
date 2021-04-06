@@ -39,7 +39,6 @@ class ModuleWrapperElement extends PolymerElement {
   onDescriptorChange_(newValue, oldValue) {
     assert(!oldValue);
     this.$.moduleElement.appendChild(this.descriptor.element);
-    this.$.moduleElement.style.height = `${this.descriptor.heightPx}px`;
 
     // Log at most one usage per module per NTP page load. This is possible,
     // if a user opens a link in a new tab.

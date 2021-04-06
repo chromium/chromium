@@ -19,16 +19,13 @@ export class ModuleDescriptor {
   /**
    * @param {string} id
    * @param {string} name
-   * @param {number} heightPx
    * @param {!InitializeModuleCallback} initializeCallback
    */
-  constructor(id, name, heightPx, initializeCallback) {
+  constructor(id, name, initializeCallback) {
     /** @private {string} */
     this.id_ = id;
     /** @private {string} */
     this.name_ = name;
-    /** @private {number} */
-    this.heightPx_ = heightPx;
     /** @private {HTMLElement} */
     this.element_ = null;
     /** @private {!InitializeModuleCallback} */
@@ -43,11 +40,6 @@ export class ModuleDescriptor {
   /** @return {string} */
   get name() {
     return this.name_;
-  }
-
-  /** @return {number} */
-  get heightPx() {
-    return this.heightPx_;
   }
 
   /** @return {?HTMLElement} */
@@ -73,9 +65,6 @@ export class ModuleDescriptor {
     ]);
     if (!this.element_) {
       return;
-    }
-    if (this.element_.height !== undefined) {
-      this.heightPx_ = this.element_.height;
     }
     const loadEndTime = WindowProxy.getInstance().now();
     const duration = loadEndTime - loadStartTime;

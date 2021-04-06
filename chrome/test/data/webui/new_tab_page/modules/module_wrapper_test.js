@@ -36,6 +36,7 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
   test('renders module descriptor', async () => {
     // Arrange.
     const moduleElement = document.createElement('div');
+    moduleElement.style.height = '100px';
     const detectedImpression =
         eventToPromise('detect-impression', moduleWrapper);
     windowProxy.setResultFor('now', 123);
@@ -43,7 +44,6 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     // Act.
     moduleWrapper.descriptor = {
       id: 'foo',
-      heightPx: 100,
       element: moduleElement,
     };
     await detectedImpression;
@@ -62,13 +62,11 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     const moduleElement = document.createElement('div');
     moduleWrapper.descriptor = {
       id: 'foo',
-      heightPx: 100,
       element: moduleElement,
     };
     assertThrows(() => {
       moduleWrapper.descriptor = {
         id: 'foo',
-        heightPx: 100,
         element: moduleElement,
       };
     });
@@ -79,7 +77,6 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     const moduleElement = document.createElement('div');
     moduleWrapper.descriptor = {
       id: 'foo',
-      heightPx: 100,
       element: moduleElement,
     };
 
