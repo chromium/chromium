@@ -1559,6 +1559,7 @@
   'headless_browsertests': {
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
+      'Win7 Tests (dbg)(1)', # https://crbug.com/1195289
     ],
   },
   'info_collection_tests': {
