@@ -366,8 +366,16 @@ TEST_F(InputMethodAuraLinuxTest, BasicAsyncModeTest) {
   input_method_auralinux_->DispatchKeyEvent(&key);
   input_method_auralinux_->OnCommit(u"a");
 
+  test_result_->ExpectAction("keydown:65");
+  test_result_->ExpectAction("keypress:97");
+  test_result_->Verify();
+
+  key = key_new;
+  input_method_auralinux_->DispatchKeyEvent(&key);
+  input_method_auralinux_->OnCommit(u"foo");
+
   test_result_->ExpectAction("keydown:229");
-  test_result_->ExpectAction("textinput:a");
+  test_result_->ExpectAction("textinput:foo");
   test_result_->Verify();
 
   input_method_auralinux_->DetachTextInputClient(client.get());

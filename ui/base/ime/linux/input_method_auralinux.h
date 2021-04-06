@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
@@ -23,6 +23,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
       public LinuxInputMethodContextDelegate {
  public:
   explicit InputMethodAuraLinux(internal::InputMethodDelegate* delegate);
+  InputMethodAuraLinux(const InputMethodAuraLinux&) = delete;
+  InputMethodAuraLinux& operator=(const InputMethodAuraLinux&) = delete;
   ~InputMethodAuraLinux() override;
 
   LinuxInputMethodContext* GetContextForTesting(bool is_simple);
@@ -49,17 +51,27 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
                                 TextInputClient* focused) override;
 
  private:
+  // Continues to dispatch the ET_KEY_PRESSED event to the client.
+  // This needs to be called "before" committing the result string or
+  // the composition string.
+  ui::EventDispatchDetails DispatchImeFilteredKeyPressEvent(
+      ui::KeyEvent* event);
   enum class CommitResult {
     kSuccess,          // Successfully committed at least one character.
     kNoCommitString,   // No available string to commit.
     kTargetDestroyed,  // Target was destroyed during the commit.
   };
   CommitResult MaybeCommitResult(bool filtered, const KeyEvent& event);
-  bool MaybeUpdateComposition();
+  bool MaybeUpdateComposition(bool text_committed);
 
+  // Shared implementation of OnPreeditChanged and OnPreeditEnd.
+  // |force_update_client| is designed to dispatch key event/update
+  // the client's composition string, specifically for async-mode case.
+  void OnPreeditUpdate(const ui::CompositionText& composition_text,
+                       bool force_update_client);
   void ConfirmCompositionText();
   bool HasInputMethodResult();
-  bool NeedInsertChar() const;
+  bool NeedInsertChar(const std::u16string& result_text) const;
   ui::EventDispatchDetails SendFakeProcessKeyEvent(ui::KeyEvent* event) const
       WARN_UNUSED_RESULT;
   void UpdateContextFocusState();
@@ -68,6 +80,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
 
   std::unique_ptr<LinuxInputMethodContext> context_;
   std::unique_ptr<LinuxInputMethodContext> context_simple_;
+
+  // The last key event that IME is probably in process in
+  // async-mode.
+  base::Optional<ui::KeyEvent> ime_filtered_key_event_;
 
   std::u16string result_text_;
 
@@ -90,8 +106,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
 
   // Used for making callbacks.
   base::WeakPtrFactory<InputMethodAuraLinux> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodAuraLinux);
 };
 
 }  // namespace ui
