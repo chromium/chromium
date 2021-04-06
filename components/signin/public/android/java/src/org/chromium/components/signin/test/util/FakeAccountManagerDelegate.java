@@ -9,7 +9,6 @@ import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -24,8 +23,6 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.ProfileDataSource;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -50,29 +47,10 @@ import java.util.concurrent.CountDownLatch;
 public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     private static final String TAG = "FakeAccountManager";
 
-    /** Controls whether FakeAccountManagerDelegate should block get accounts. */
-    @IntDef({ENABLE_BLOCK_GET_ACCOUNTS, DISABLE_BLOCK_GET_ACCOUNTS})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface BlockGetAccountsFlag {}
-
-    /** Disables block get accounts: {@link #getAccountsSync()} will return immediately. */
-    public static final int DISABLE_BLOCK_GET_ACCOUNTS = 0;
-    /** Block get accounts until {@link #unblockGetAccounts()} is called. */
-    public static final int ENABLE_BLOCK_GET_ACCOUNTS = 1;
-
     private final Set<AccountHolder> mAccounts = new LinkedHashSet<>();
     private final ObserverList<AccountsChangeObserver> mObservers = new ObserverList<>();
-    private final CountDownLatch mBlockGetAccounts = new CountDownLatch(1);
 
-    public FakeAccountManagerDelegate() {
-        this(DISABLE_BLOCK_GET_ACCOUNTS);
-    }
-
-    public FakeAccountManagerDelegate(@BlockGetAccountsFlag int blockGetAccountsFlag) {
-        if (blockGetAccountsFlag == DISABLE_BLOCK_GET_ACCOUNTS) {
-            mBlockGetAccounts.countDown();
-        }
-    }
+    public FakeAccountManagerDelegate() {}
 
     @Nullable
     @Override
@@ -106,17 +84,6 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
 
     @Override
     public Account[] getAccountsSync() {
-        // Blocks thread that's trying to get accounts from the delegate.
-        try {
-            mBlockGetAccounts.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        return getAccountsSyncNoThrow();
-    }
-
-    private Account[] getAccountsSyncNoThrow() {
         ArrayList<Account> result = new ArrayList<>();
         synchronized (mAccounts) {
             for (AccountHolder ah : mAccounts) {
@@ -124,10 +91,6 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
             }
         }
         return result.toArray(new Account[0]);
-    }
-
-    public void unblockGetAccounts() {
-        mBlockGetAccounts.countDown();
     }
 
     /**

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.accounts.Account;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
@@ -17,13 +18,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeImplTest}.
@@ -31,12 +36,33 @@ import java.util.concurrent.CountDownLatch;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AccountManagerFacadeTest {
-    private final FakeAccountManagerDelegate mDelegate =
-            new FakeAccountManagerDelegate(FakeAccountManagerDelegate.ENABLE_BLOCK_GET_ACCOUNTS);
+    private static final ExecutorService WORKER = Executors.newSingleThreadExecutor();
+
+    private static class CustomAccountManagerDelegate extends FakeAccountManagerDelegate {
+        private final CallbackHelper mBlockGetAccounts = new CallbackHelper();
+
+        @Override
+        public Account[] getAccountsSync() {
+            // Blocks thread that's trying to get accounts from the delegate.
+            try {
+                mBlockGetAccounts.waitForFirst();
+            } catch (TimeoutException e) {
+                throw new RuntimeException(e);
+            }
+            return super.getAccountsSync();
+        }
+
+        void unblockGetAccounts() {
+            // Unblock the getAccountsSync() from a different thread to avoid deadlock on UI thread
+            WORKER.execute(mBlockGetAccounts::notifyCalled);
+        }
+    }
+
+    private final CustomAccountManagerDelegate mDelegate = new CustomAccountManagerDelegate();
 
     @Before
     public void setUp() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             AccountManagerFacadeProvider.setInstanceForTests(
                     new AccountManagerFacadeImpl(mDelegate));
         });
@@ -64,7 +90,7 @@ public class AccountManagerFacadeTest {
     @DisabledTest(message = "https://crbug.com/1190013")
     public void testRunAfterCacheIsPopulated() throws InterruptedException {
         CountDownLatch firstCounter = new CountDownLatch(1);
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Add callback. This should be done on the main thread.
             AccountManagerFacadeProvider.getInstance().runAfterCacheIsPopulated(
                     firstCounter::countDown);
@@ -77,7 +103,7 @@ public class AccountManagerFacadeTest {
         firstCounter.await();
 
         CountDownLatch secondCounter = new CountDownLatch(1);
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             AccountManagerFacadeProvider.getInstance().runAfterCacheIsPopulated(
                     secondCounter::countDown);
             assertEquals("Callback should be posted on UI thread, not executed synchronously", 1,
