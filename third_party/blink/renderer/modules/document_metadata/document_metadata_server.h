@@ -44,9 +44,7 @@ class DocumentMetadataServer final
  private:
   void Bind(mojo::PendingReceiver<mojom::blink::DocumentMetadata> receiver);
 
-  HeapMojoReceiver<mojom::blink::DocumentMetadata,
-                   DocumentMetadataServer,
-                   HeapMojoWrapperMode::kForceWithoutContextObserver>
+  HeapMojoReceiver<mojom::blink::DocumentMetadata, DocumentMetadataServer>
       receiver_;
 };
 
