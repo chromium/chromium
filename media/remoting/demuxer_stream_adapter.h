@@ -103,11 +103,11 @@ class DemuxerStreamAdapter {
   friend class MockDemuxerStreamAdapter;
 
   // Receives RPC message from RpcBroker.
-  void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message);
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // RPC message tasks.
   void Initialize(int remote_callback_handle);
-  void ReadUntil(std::unique_ptr<pb::RpcMessage> message);
+  void ReadUntil(std::unique_ptr<openscreen::cast::RpcMessage> message);
   void EnableBitstreamConverter();
   void RequestBuffer();
   void SendReadAck();

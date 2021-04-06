@@ -20,11 +20,11 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer.h"
 #include "media/mojo/mojom/remoting.mojom.h"
-#include "media/remoting/media_remoting_rpc.pb.h"
 #include "media/remoting/metrics.h"
 #include "media/remoting/rpc_broker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace media {
 
@@ -68,7 +68,7 @@ class CourierRenderer final : public Renderer {
   static void OnMessageReceivedOnMainThread(
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       base::WeakPtr<CourierRenderer> self,
-      std::unique_ptr<pb::RpcMessage> message);
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
 
  public:
   // media::Renderer implementation.
@@ -105,22 +105,30 @@ class CourierRenderer final : public Renderer {
       int video_rpc_handle);
 
   // Callback function when RPC message is received. Runs on media thread only.
-  void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message);
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Function to post task to main thread in order to send RPC message.
-  void SendRpcToRemote(std::unique_ptr<pb::RpcMessage> message);
+  void SendRpcToRemote(std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Functions when RPC message is received.
-  void AcquireRendererDone(std::unique_ptr<pb::RpcMessage> message);
-  void InitializeCallback(std::unique_ptr<pb::RpcMessage> message);
+  void AcquireRendererDone(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void InitializeCallback(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
   void FlushUntilCallback();
-  void OnTimeUpdate(std::unique_ptr<pb::RpcMessage> message);
-  void OnBufferingStateChange(std::unique_ptr<pb::RpcMessage> message);
-  void OnAudioConfigChange(std::unique_ptr<pb::RpcMessage> message);
-  void OnVideoConfigChange(std::unique_ptr<pb::RpcMessage> message);
-  void OnVideoNaturalSizeChange(std::unique_ptr<pb::RpcMessage> message);
-  void OnVideoOpacityChange(std::unique_ptr<pb::RpcMessage> message);
-  void OnStatisticsUpdate(std::unique_ptr<pb::RpcMessage> message);
+  void OnTimeUpdate(std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnBufferingStateChange(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnAudioConfigChange(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnVideoConfigChange(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnVideoNaturalSizeChange(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnVideoOpacityChange(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnStatisticsUpdate(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Called when |current_media_time_| is updated.
   void OnMediaTimeUpdated();

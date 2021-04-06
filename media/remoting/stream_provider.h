@@ -16,9 +16,9 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/remoting.mojom.h"
-#include "media/remoting/media_remoting_rpc.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -122,7 +122,8 @@ class StreamProvider final : public Demuxer {
     void Destroy();
 
     // Send RPC message on |main_task_runner_|.
-    void SendRpcMessageOnMainThread(std::unique_ptr<pb::RpcMessage> message);
+    void SendRpcMessageOnMainThread(
+        std::unique_ptr<openscreen::cast::RpcMessage> message);
 
     // mojom::RemotingDataStreamReceiver implementation.
     void InitializeDataPipe(
@@ -131,9 +132,11 @@ class StreamProvider final : public Demuxer {
     void FlushUntil(uint32_t count) override;
 
     // RPC messages handlers.
-    void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message);
-    void OnInitializeCallback(std::unique_ptr<pb::RpcMessage> message);
-    void OnReadUntilCallback(std::unique_ptr<pb::RpcMessage> message);
+    void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
+    void OnInitializeCallback(
+        std::unique_ptr<openscreen::cast::RpcMessage> message);
+    void OnReadUntilCallback(
+        std::unique_ptr<openscreen::cast::RpcMessage> message);
 
     // Issues the ReadUntil RPC message when read is pending and buffer is
     // empty.
@@ -152,8 +155,10 @@ class StreamProvider final : public Demuxer {
     // Update the audio/video decoder config. When config changes in the mid
     // stream, the new config will be stored in |next_audio_decoder_config_|.
     // Old config will be dropped when all associated frames are consumed.
-    void UpdateAudioConfig(const pb::AudioDecoderConfig& audio_message);
-    void UpdateVideoConfig(const pb::VideoDecoderConfig& video_message);
+    void UpdateAudioConfig(
+        const openscreen::cast::AudioDecoderConfig& audio_message);
+    void UpdateVideoConfig(
+        const openscreen::cast::VideoDecoderConfig& video_message);
 
     // Called when any error occurs.
     void OnError(const std::string& error);
@@ -224,8 +229,8 @@ class StreamProvider final : public Demuxer {
   void Destroy();
 
   // RPC messages handlers.
-  void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message);
-  void OnAcquireDemuxer(std::unique_ptr<pb::RpcMessage> message);
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnAcquireDemuxer(std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Called when audio/video stream is created and initialized.
   void InitializeDataPipe();

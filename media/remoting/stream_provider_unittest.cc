@@ -61,11 +61,12 @@ class StreamProviderTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void OnDemuxerStreamReceivedRpc(DemuxerStream::Type type,
-                                  std::unique_ptr<pb::RpcMessage> message) {
+  void OnDemuxerStreamReceivedRpc(
+      DemuxerStream::Type type,
+      std::unique_ptr<openscreen::cast::RpcMessage> message) {
     DCHECK(message);
     switch (message->proc()) {
-      case pb::RpcMessage::RPC_DS_INITIALIZE:
+      case openscreen::cast::RpcMessage::RPC_DS_INITIALIZE:
         if (type == DemuxerStream::Type::AUDIO) {
           receiver_audio_demuxer_stream_handle_ = message->integer_value();
         } else if (type == DemuxerStream::Type::VIDEO) {
@@ -77,7 +78,7 @@ class StreamProviderTest : public testing::Test {
         RpcInitializeCallback(type);
         break;
 
-      case pb::RpcMessage::RPC_DS_READUNTIL:
+      case openscreen::cast::RpcMessage::RPC_DS_READUNTIL:
         ReadUntil(type);
         break;
 
@@ -88,24 +89,24 @@ class StreamProviderTest : public testing::Test {
 
   void RpcInitializeCallback(DemuxerStream::Type type) {
     // Issues RPC_DS_INITIALIZE_CALLBACK RPC message.
-    auto rpc = std::make_unique<pb::RpcMessage>();
+    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
     rpc->set_handle(type == DemuxerStream::Type::AUDIO
                         ? receiver_audio_demuxer_stream_handle_
                         : receiver_video_demuxer_stream_handle_);
-    rpc->set_proc(pb::RpcMessage::RPC_DS_INITIALIZE_CALLBACK);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_INITIALIZE_CALLBACK);
     auto* init_cb_message = rpc->mutable_demuxerstream_initializecb_rpc();
     init_cb_message->set_type(type);
 
     switch (type) {
       case DemuxerStream::Type::AUDIO: {
-        pb::AudioDecoderConfig* audio_message =
+        openscreen::cast::AudioDecoderConfig* audio_message =
             init_cb_message->mutable_audio_decoder_config();
         ConvertAudioDecoderConfigToProto(audio_config_, audio_message);
         break;
       }
 
       case DemuxerStream::Type::VIDEO: {
-        pb::VideoDecoderConfig* video_message =
+        openscreen::cast::VideoDecoderConfig* video_message =
             init_cb_message->mutable_video_decoder_config();
         ConvertVideoDecoderConfigToProto(video_config_, video_message);
         break;
@@ -132,10 +133,11 @@ class StreamProviderTest : public testing::Test {
   }
 
   void SendRpcAcquireDemuxer() {
-    auto rpc = std::make_unique<pb::RpcMessage>();
+    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
     rpc->set_handle(RpcBroker::kAcquireDemuxerHandle);
-    rpc->set_proc(pb::RpcMessage::RPC_ACQUIRE_DEMUXER);
-    pb::AcquireDemuxer* message = rpc->mutable_acquire_demuxer_rpc();
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_DEMUXER);
+    openscreen::cast::AcquireDemuxer* message =
+        rpc->mutable_acquire_demuxer_rpc();
     message->set_audio_demuxer_handle(sender_audio_demuxer_stream_handle_);
     message->set_video_demuxer_handle(sender_video_demuxer_stream_handle_);
     rpc_broker_->SendMessageToRemote(std::move(rpc));
@@ -173,11 +175,11 @@ class StreamProviderTest : public testing::Test {
 
   void SendRpcReadUntilCallback(DemuxerStream::Type type) {
     // Issues RPC_DS_READUNTIL_CALLBACK RPC message.
-    auto rpc = std::make_unique<pb::RpcMessage>();
+    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
     rpc->set_handle(type == DemuxerStream::Type::AUDIO
                         ? receiver_audio_demuxer_stream_handle_
                         : receiver_video_demuxer_stream_handle_);
-    rpc->set_proc(pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
     auto* message = rpc->mutable_demuxerstream_readuntilcb_rpc();
     message->set_count(0);
     message->set_status(

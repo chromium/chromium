@@ -17,9 +17,9 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_decoder_config.h"
-#include "media/remoting/media_remoting_rpc.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 using testing::_;
 using testing::Invoke;
@@ -104,7 +104,7 @@ TEST_F(ProtoUtilsTest, AudioDecoderConfigConversionTest) {
       EncryptionScheme::kUnencrypted);
   ASSERT_TRUE(audio_config.IsValidConfig());
 
-  pb::AudioDecoderConfig audio_message;
+  openscreen::cast::AudioDecoderConfig audio_message;
   ConvertAudioDecoderConfigToProto(audio_config, &audio_message);
 
   AudioDecoderConfig audio_output_config;
@@ -132,9 +132,11 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
                                  media::VideoDecoderType::kUnknown};
 
   // There is no convert-to-proto function, so just do that here.
-  pb::PipelineStatistics pb_stats;
-  pb::VideoDecoderInfo* pb_video_info = pb_stats.mutable_video_decoder_info();
-  pb::AudioDecoderInfo* pb_audio_info = pb_stats.mutable_audio_decoder_info();
+  openscreen::cast::PipelineStatistics pb_stats;
+  openscreen::cast::VideoDecoderInfo* pb_video_info =
+      pb_stats.mutable_video_decoder_info();
+  openscreen::cast::AudioDecoderInfo* pb_audio_info =
+      pb_stats.mutable_audio_decoder_info();
   pb_stats.set_audio_bytes_decoded(original.audio_bytes_decoded);
   pb_stats.set_video_bytes_decoded(original.video_bytes_decoded);
   pb_stats.set_video_frames_decoded(original.video_frames_decoded);
@@ -175,7 +177,7 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
 TEST_F(ProtoUtilsTest, VideoDecoderConfigConversionTest) {
   const VideoDecoderConfig video_config = TestVideoConfig::Normal();
   ASSERT_TRUE(video_config.IsValidConfig());
-  pb::VideoDecoderConfig message;
+  openscreen::cast::VideoDecoderConfig message;
   ConvertVideoDecoderConfigToProto(video_config, &message);
   VideoDecoderConfig converted;
   ASSERT_TRUE(ConvertProtoToVideoDecoderConfig(message, &converted));

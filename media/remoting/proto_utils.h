@@ -16,28 +16,29 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/video_decoder_config.h"
-#include "media/remoting/media_remoting_rpc.pb.h"
+#include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace media {
 namespace remoting {
 
 // Utility class to convert data between media::DecoderBuffer and byte array.
 // It is to serialize media::DecoderBuffer structure except for actual data
-// into pb::DecoderBuffer followed by byte array of decoder buffer. The reason
-// data is not part of proto buffer because it would cost unnecessary time to
-// wait for whole proto received before conversion given the fact that decoder
-// buffer data can vary from hundred bytes to 3~5MB. Also, it would costs extra
-// CPU to serialize/de-serialize decoder buffer which is encoded and encrypted
-// as wire format for data transmission.
+// into openscreen::cast::DecoderBuffer followed by byte array of decoder
+// buffer. The reason data is not part of proto buffer because it would cost
+// unnecessary time to wait for whole proto received before conversion given the
+// fact that decoder buffer data can vary from hundred bytes to 3~5MB. Also, it
+// would costs extra CPU to serialize/de-serialize decoder buffer which is
+// encoded and encrypted as wire format for data transmission.
 //
 // DecoderBufferSegment {
 //  // Payload version. Default value is 0.
 //  u8 payload_version;
 //
-//  // Length of pb::DecoderBuffer (protobuf-encoded of media::DecoderBuffer
+//  // Length of openscreen::cast::DecoderBuffer (protobuf-encoded of
+//  media::DecoderBuffer
 //                   except for data).
 //  u16 buffer_segment_size;
-//  // pb::DecoderBuffer.
+//  // openscreen::cast::DecoderBuffer.
 //  u8[buffer_segment_size] buffer_segment;
 //
 //  // Length of data in media::DecoderBuffer.
@@ -55,22 +56,24 @@ scoped_refptr<DecoderBuffer> ByteArrayToDecoderBuffer(const uint8_t* data,
                                                       uint32_t size);
 
 // Data type conversion between media::AudioDecoderConfig and proto buffer.
-void ConvertAudioDecoderConfigToProto(const AudioDecoderConfig& audio_config,
-                                      pb::AudioDecoderConfig* audio_message);
+void ConvertAudioDecoderConfigToProto(
+    const AudioDecoderConfig& audio_config,
+    openscreen::cast::AudioDecoderConfig* audio_message);
 bool ConvertProtoToAudioDecoderConfig(
-    const pb::AudioDecoderConfig& audio_message,
+    const openscreen::cast::AudioDecoderConfig& audio_message,
     AudioDecoderConfig* audio_config);
 
 // Data type conversion between media::VideoDecoderConfig and proto buffer.
-void ConvertVideoDecoderConfigToProto(const VideoDecoderConfig& video_config,
-                                      pb::VideoDecoderConfig* video_message);
+void ConvertVideoDecoderConfigToProto(
+    const VideoDecoderConfig& video_config,
+    openscreen::cast::VideoDecoderConfig* video_message);
 bool ConvertProtoToVideoDecoderConfig(
-    const pb::VideoDecoderConfig& video_message,
+    const openscreen::cast::VideoDecoderConfig& video_message,
     VideoDecoderConfig* video_config);
 
 // Data type conversion between media::VideoDecoderConfig and proto buffer.
 void ConvertProtoToPipelineStatistics(
-    const pb::PipelineStatistics& stats_message,
+    const openscreen::cast::PipelineStatistics& stats_message,
     PipelineStatistics* stats);
 
 }  // namespace remoting

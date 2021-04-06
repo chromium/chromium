@@ -335,15 +335,15 @@ void End2EndTestRenderer::CompleteInitialize() {
 }
 
 void End2EndTestRenderer::OnReceivedRpc(
-    std::unique_ptr<media::remoting::pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(message);
   DCHECK_EQ(message->proc(),
-            media::remoting::pb::RpcMessage::RPC_ACQUIRE_RENDERER);
+            openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER);
   OnAcquireRenderer(std::move(message));
 }
 
 void End2EndTestRenderer::OnAcquireRenderer(
-    std::unique_ptr<media::remoting::pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(message->has_integer_value());
   DCHECK(message->integer_value() != RpcBroker::kInvalidHandle);
 
@@ -354,9 +354,9 @@ void End2EndTestRenderer::OnAcquireRenderer(
 }
 
 void End2EndTestRenderer::OnAcquireRendererDone(int receiver_renderer_handle) {
-  auto rpc = std::make_unique<pb::RpcMessage>();
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
   rpc->set_handle(sender_renderer_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
   rpc->set_integer_value(receiver_renderer_handle);
   receiver_rpc_broker_->SendMessageToRemote(std::move(rpc));
 }

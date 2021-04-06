@@ -178,7 +178,8 @@ void RendererController::OnMessageFromSink(
   DCHECK(thread_checker_.CalledOnValidThread());
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-  std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+  std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+      new openscreen::cast::RpcMessage());
   if (!rpc->ParseFromArray(message.data(), message.size())) {
     VLOG(1) << "corrupted Rpc message";
     OnSinkGone();

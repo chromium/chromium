@@ -71,9 +71,10 @@ class MockDemuxerStreamAdapter {
 
   // Fake to signal that it's in reading state.
   void FakeReadUntil(int read_until_count, int callback_handle) {
-    std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+    std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+        new openscreen::cast::RpcMessage());
     rpc->set_handle(rpc_handle());
-    rpc->set_proc(pb::RpcMessage::RPC_DS_READUNTIL);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL);
     auto* read_message = rpc->mutable_demuxerstream_readuntil_rpc();
     read_message->set_callback_handle(
         callback_handle);  // Given an unique callback handle.
@@ -87,11 +88,13 @@ class MockDemuxerStreamAdapter {
 
   void SignalFlush(bool flush) { demuxer_stream_adapter_->SignalFlush(flush); }
 
-  pb::RpcMessage* last_received_rpc() const { return last_received_rpc_.get(); }
+  openscreen::cast::RpcMessage* last_received_rpc() const {
+    return last_received_rpc_.get();
+  }
 
  private:
   void OnSendMessageToSink(std::unique_ptr<std::vector<uint8_t>> message) {
-    last_received_rpc_ = std::make_unique<pb::RpcMessage>();
+    last_received_rpc_ = std::make_unique<openscreen::cast::RpcMessage>();
     CHECK(last_received_rpc_->ParseFromArray(message->data(), message->size()));
   }
 
@@ -99,7 +102,7 @@ class MockDemuxerStreamAdapter {
 
   std::unique_ptr<RpcBroker> rpc_broker_;
   std::unique_ptr<DemuxerStreamAdapter> demuxer_stream_adapter_;
-  std::unique_ptr<pb::RpcMessage> last_received_rpc_;
+  std::unique_ptr<openscreen::cast::RpcMessage> last_received_rpc_;
 
   std::vector<StopTrigger> errors_;
 
@@ -187,9 +190,11 @@ TEST_F(DemuxerStreamAdapterTest, WriteOneFrameSmallerThanCapacity) {
   // Checks if it's sent to consumer side and data is correct
   ASSERT_EQ(data_stream_sender_->send_frame_count(), 1U);
   ASSERT_TRUE(data_stream_sender_->ValidateFrameBuffer(0, 50, true, 1));
-  pb::RpcMessage* last_rpc = demuxer_stream_adapter_->last_received_rpc();
+  openscreen::cast::RpcMessage* last_rpc =
+      demuxer_stream_adapter_->last_received_rpc();
   ASSERT_TRUE(last_rpc);
-  ASSERT_EQ(last_rpc->proc(), pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  ASSERT_EQ(last_rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   ASSERT_EQ(last_rpc->handle(), 999);
   data_stream_sender_->ResetHistory();
 }
@@ -204,9 +209,11 @@ TEST_F(DemuxerStreamAdapterTest, WriteOneFrameLargerThanCapacity) {
   // Checks if it's sent to consumer side and data is correct
   ASSERT_EQ(data_stream_sender_->send_frame_count(), 1U);
   ASSERT_TRUE(data_stream_sender_->ValidateFrameBuffer(0, 800, true, 1));
-  pb::RpcMessage* last_rpc = demuxer_stream_adapter_->last_received_rpc();
+  openscreen::cast::RpcMessage* last_rpc =
+      demuxer_stream_adapter_->last_received_rpc();
   ASSERT_TRUE(last_rpc);
-  ASSERT_EQ(last_rpc->proc(), pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  ASSERT_EQ(last_rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   ASSERT_EQ(last_rpc->handle(), 999);
   data_stream_sender_->ResetHistory();
 }
@@ -220,9 +227,11 @@ TEST_F(DemuxerStreamAdapterTest, SendFrameAndSignalFlushMix) {
   RunPendingTasks();
   ASSERT_EQ(data_stream_sender_->send_frame_count(), 1U);
   ASSERT_TRUE(data_stream_sender_->ValidateFrameBuffer(0, 50, true, 1));
-  pb::RpcMessage* last_rpc = demuxer_stream_adapter_->last_received_rpc();
+  openscreen::cast::RpcMessage* last_rpc =
+      demuxer_stream_adapter_->last_received_rpc();
   ASSERT_TRUE(last_rpc);
-  ASSERT_EQ(last_rpc->proc(), pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  ASSERT_EQ(last_rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   ASSERT_EQ(last_rpc->handle(), 100);
   data_stream_sender_->ResetHistory();
 
@@ -237,7 +246,8 @@ TEST_F(DemuxerStreamAdapterTest, SendFrameAndSignalFlushMix) {
   ASSERT_TRUE(data_stream_sender_->ValidateFrameBuffer(1, 150, false, 3));
   last_rpc = demuxer_stream_adapter_->last_received_rpc();
   ASSERT_TRUE(last_rpc);
-  ASSERT_EQ(last_rpc->proc(), pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  ASSERT_EQ(last_rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   ASSERT_EQ(last_rpc->handle(), 101);
   data_stream_sender_->ResetHistory();
 
@@ -268,7 +278,8 @@ TEST_F(DemuxerStreamAdapterTest, SendFrameAndSignalFlushMix) {
   ASSERT_TRUE(data_stream_sender_->ValidateFrameBuffer(0, 100, false, 4));
   last_rpc = demuxer_stream_adapter_->last_received_rpc();
   ASSERT_TRUE(last_rpc);
-  ASSERT_EQ(last_rpc->proc(), pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  ASSERT_EQ(last_rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   ASSERT_EQ(last_rpc->handle(), 103);
   data_stream_sender_->ResetHistory();
 }

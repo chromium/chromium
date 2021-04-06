@@ -13,7 +13,7 @@
 #include "media/base/sample_format.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
-#include "media/remoting/media_remoting_rpc.pb.h"
+#include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace media {
 namespace remoting {
@@ -28,41 +28,41 @@ namespace remoting {
 // conversion failed.
 
 base::Optional<AudioCodec> ToMediaAudioCodec(
-    pb::AudioDecoderConfig::Codec value);
-base::Optional<pb::AudioDecoderConfig::Codec> ToProtoAudioDecoderConfigCodec(
-    AudioCodec value);
+    openscreen::cast::AudioDecoderConfig::Codec value);
+base::Optional<openscreen::cast::AudioDecoderConfig::Codec>
+ToProtoAudioDecoderConfigCodec(AudioCodec value);
 
 base::Optional<SampleFormat> ToMediaSampleFormat(
-    pb::AudioDecoderConfig::SampleFormat value);
-base::Optional<pb::AudioDecoderConfig::SampleFormat>
+    openscreen::cast::AudioDecoderConfig::SampleFormat value);
+base::Optional<openscreen::cast::AudioDecoderConfig::SampleFormat>
 ToProtoAudioDecoderConfigSampleFormat(SampleFormat value);
 
 base::Optional<ChannelLayout> ToMediaChannelLayout(
-    pb::AudioDecoderConfig::ChannelLayout value);
-base::Optional<pb::AudioDecoderConfig::ChannelLayout>
+    openscreen::cast::AudioDecoderConfig::ChannelLayout value);
+base::Optional<openscreen::cast::AudioDecoderConfig::ChannelLayout>
 ToProtoAudioDecoderConfigChannelLayout(ChannelLayout value);
 
 base::Optional<VideoCodec> ToMediaVideoCodec(
-    pb::VideoDecoderConfig::Codec value);
-base::Optional<pb::VideoDecoderConfig::Codec> ToProtoVideoDecoderConfigCodec(
-    VideoCodec value);
+    openscreen::cast::VideoDecoderConfig::Codec value);
+base::Optional<openscreen::cast::VideoDecoderConfig::Codec>
+ToProtoVideoDecoderConfigCodec(VideoCodec value);
 
 base::Optional<VideoCodecProfile> ToMediaVideoCodecProfile(
-    pb::VideoDecoderConfig::Profile value);
-base::Optional<pb::VideoDecoderConfig::Profile>
+    openscreen::cast::VideoDecoderConfig::Profile value);
+base::Optional<openscreen::cast::VideoDecoderConfig::Profile>
 ToProtoVideoDecoderConfigProfile(VideoCodecProfile value);
 
 base::Optional<VideoPixelFormat> ToMediaVideoPixelFormat(
-    pb::VideoDecoderConfig::Format value);
+    openscreen::cast::VideoDecoderConfig::Format value);
 
 base::Optional<BufferingState> ToMediaBufferingState(
-    pb::RendererClientOnBufferingStateChange::State value);
-base::Optional<pb::RendererClientOnBufferingStateChange::State>
+    openscreen::cast::RendererClientOnBufferingStateChange::State value);
+base::Optional<openscreen::cast::RendererClientOnBufferingStateChange::State>
 ToProtoMediaBufferingState(BufferingState value);
 
 base::Optional<DemuxerStream::Status> ToDemuxerStreamStatus(
-    pb::DemuxerStreamReadUntilCallback::Status value);
-base::Optional<pb::DemuxerStreamReadUntilCallback::Status>
+    openscreen::cast::DemuxerStreamReadUntilCallback::Status value);
+base::Optional<openscreen::cast::DemuxerStreamReadUntilCallback::Status>
 ToProtoDemuxerStreamStatus(DemuxerStream::Status value);
 
 }  // namespace remoting

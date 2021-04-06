@@ -156,21 +156,23 @@ class CourierRendererTest : public testing::Test {
   // Use this function to mimic receiver to handle RPC message for renderer
   // initialization,
   void RpcMessageResponseBot(std::unique_ptr<std::vector<uint8_t>> message) {
-    std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+    std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+        new openscreen::cast::RpcMessage());
     ASSERT_TRUE(rpc->ParseFromArray(message->data(), message->size()));
     switch (rpc->proc()) {
-      case pb::RpcMessage::RPC_ACQUIRE_RENDERER: {
+      case openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER: {
         DCHECK(rpc->has_integer_value());
         sender_renderer_handle_ = rpc->integer_value();
         // Issues RPC_ACQUIRE_RENDERER_DONE RPC message.
-        auto acquire_done = std::make_unique<pb::RpcMessage>();
+        auto acquire_done = std::make_unique<openscreen::cast::RpcMessage>();
         acquire_done->set_handle(sender_renderer_handle_);
-        acquire_done->set_proc(pb::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
+        acquire_done->set_proc(
+            openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
         acquire_done->set_integer_value(receiver_renderer_handle_);
         controller_->GetRpcBroker()->ProcessMessageFromRemote(
             std::move(acquire_done));
       } break;
-      case pb::RpcMessage::RPC_ACQUIRE_DEMUXER: {
+      case openscreen::cast::RpcMessage::RPC_ACQUIRE_DEMUXER: {
         if (!is_backward_compatible_mode_) {
           int acquire_demuxer_handle = RpcBroker::kAcquireDemuxerHandle;
           EXPECT_EQ(rpc->handle(), acquire_demuxer_handle);
@@ -181,9 +183,9 @@ class CourierRendererTest : public testing::Test {
 
           // Issues audio RPC_DS_INITIALIZE RPC message.
           if (sender_audio_demuxer_handle_ != RpcBroker::kInvalidHandle) {
-            auto ds_init = std::make_unique<pb::RpcMessage>();
+            auto ds_init = std::make_unique<openscreen::cast::RpcMessage>();
             ds_init->set_handle(sender_audio_demuxer_handle_);
-            ds_init->set_proc(pb::RpcMessage::RPC_DS_INITIALIZE);
+            ds_init->set_proc(openscreen::cast::RpcMessage::RPC_DS_INITIALIZE);
             ds_init->set_integer_value(receiver_audio_demuxer_callback_handle_);
             controller_->GetRpcBroker()->ProcessMessageFromRemote(
                 std::move(ds_init));
@@ -191,16 +193,16 @@ class CourierRendererTest : public testing::Test {
 
           // Issues video RPC_DS_INITIALIZE RPC message.
           if (sender_video_demuxer_handle_ != RpcBroker::kInvalidHandle) {
-            auto ds_init = std::make_unique<pb::RpcMessage>();
+            auto ds_init = std::make_unique<openscreen::cast::RpcMessage>();
             ds_init->set_handle(sender_video_demuxer_handle_);
-            ds_init->set_proc(pb::RpcMessage::RPC_DS_INITIALIZE);
+            ds_init->set_proc(openscreen::cast::RpcMessage::RPC_DS_INITIALIZE);
             ds_init->set_integer_value(receiver_video_demuxer_callback_handle_);
             controller_->GetRpcBroker()->ProcessMessageFromRemote(
                 std::move(ds_init));
           }
         }
       } break;
-      case pb::RpcMessage::RPC_R_INITIALIZE: {
+      case openscreen::cast::RpcMessage::RPC_R_INITIALIZE: {
         sender_renderer_callback_handle_ =
             rpc->renderer_initialize_rpc().callback_handle();
         sender_client_handle_ = rpc->renderer_initialize_rpc().client_handle();
@@ -215,9 +217,9 @@ class CourierRendererTest : public testing::Test {
 
           // Issues audio RPC_DS_INITIALIZE RPC message.
           if (sender_audio_demuxer_handle_ != RpcBroker::kInvalidHandle) {
-            auto ds_init = std::make_unique<pb::RpcMessage>();
+            auto ds_init = std::make_unique<openscreen::cast::RpcMessage>();
             ds_init->set_handle(sender_audio_demuxer_handle_);
-            ds_init->set_proc(pb::RpcMessage::RPC_DS_INITIALIZE);
+            ds_init->set_proc(openscreen::cast::RpcMessage::RPC_DS_INITIALIZE);
             ds_init->set_integer_value(receiver_audio_demuxer_callback_handle_);
             controller_->GetRpcBroker()->ProcessMessageFromRemote(
                 std::move(ds_init));
@@ -225,9 +227,9 @@ class CourierRendererTest : public testing::Test {
 
           // Issues video RPC_DS_INITIALIZE RPC message.
           if (sender_video_demuxer_handle_ != RpcBroker::kInvalidHandle) {
-            auto ds_init = std::make_unique<pb::RpcMessage>();
+            auto ds_init = std::make_unique<openscreen::cast::RpcMessage>();
             ds_init->set_handle(sender_video_demuxer_handle_);
-            ds_init->set_proc(pb::RpcMessage::RPC_DS_INITIALIZE);
+            ds_init->set_proc(openscreen::cast::RpcMessage::RPC_DS_INITIALIZE);
             ds_init->set_integer_value(receiver_video_demuxer_callback_handle_);
             controller_->GetRpcBroker()->ProcessMessageFromRemote(
                 std::move(ds_init));
@@ -235,15 +237,16 @@ class CourierRendererTest : public testing::Test {
         } else {
           // Issues RPC_R_INITIALIZE_CALLBACK RPC message when receiving
           // RPC_R_INITIALIZE.
-          auto init_cb = std::make_unique<pb::RpcMessage>();
+          auto init_cb = std::make_unique<openscreen::cast::RpcMessage>();
           init_cb->set_handle(sender_renderer_callback_handle_);
-          init_cb->set_proc(pb::RpcMessage::RPC_R_INITIALIZE_CALLBACK);
+          init_cb->set_proc(
+              openscreen::cast::RpcMessage::RPC_R_INITIALIZE_CALLBACK);
           init_cb->set_boolean_value(is_successfully_initialized_);
           controller_->GetRpcBroker()->ProcessMessageFromRemote(
               std::move(init_cb));
         }
       } break;
-      case pb::RpcMessage::RPC_DS_INITIALIZE_CALLBACK: {
+      case openscreen::cast::RpcMessage::RPC_DS_INITIALIZE_CALLBACK: {
         if (rpc->handle() == receiver_audio_demuxer_callback_handle_)
           received_audio_ds_init_cb_ = true;
         if (rpc->handle() == receiver_video_demuxer_callback_handle_)
@@ -260,23 +263,26 @@ class CourierRendererTest : public testing::Test {
         if (is_backward_compatible_mode_ && is_receiver_demuxer_initialized_) {
           // Issues RPC_R_INITIALIZE_CALLBACK RPC message when receiving
           // RPC_DS_INITIALIZE_CALLBACK on available streams.
-          auto init_cb = std::make_unique<pb::RpcMessage>();
+          auto init_cb = std::make_unique<openscreen::cast::RpcMessage>();
           init_cb->set_handle(sender_renderer_callback_handle_);
-          init_cb->set_proc(pb::RpcMessage::RPC_R_INITIALIZE_CALLBACK);
+          init_cb->set_proc(
+              openscreen::cast::RpcMessage::RPC_R_INITIALIZE_CALLBACK);
           init_cb->set_boolean_value(is_successfully_initialized_);
           controller_->GetRpcBroker()->ProcessMessageFromRemote(
               std::move(init_cb));
         }
       } break;
-      case pb::RpcMessage::RPC_R_FLUSHUNTIL: {
+      case openscreen::cast::RpcMessage::RPC_R_FLUSHUNTIL: {
         // Issues RPC_R_FLUSHUNTIL_CALLBACK RPC message.
-        std::unique_ptr<pb::RpcMessage> flush_cb(new pb::RpcMessage());
+        std::unique_ptr<openscreen::cast::RpcMessage> flush_cb(
+            new openscreen::cast::RpcMessage());
         flush_cb->set_handle(rpc->renderer_flushuntil_rpc().callback_handle());
-        flush_cb->set_proc(pb::RpcMessage::RPC_R_FLUSHUNTIL_CALLBACK);
+        flush_cb->set_proc(
+            openscreen::cast::RpcMessage::RPC_R_FLUSHUNTIL_CALLBACK);
         controller_->GetRpcBroker()->ProcessMessageFromRemote(
             std::move(flush_cb));
       } break;
-      case pb::RpcMessage::RPC_R_SETVOLUME:
+      case openscreen::cast::RpcMessage::RPC_R_SETVOLUME:
         // No response needed.
         break;
 
@@ -288,7 +294,8 @@ class CourierRendererTest : public testing::Test {
 
   // Callback from RpcBroker when sending message to remote sink.
   void OnSendMessageToSink(std::unique_ptr<std::vector<uint8_t>> message) {
-    std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+    std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+        new openscreen::cast::RpcMessage());
     ASSERT_TRUE(rpc->ParseFromArray(message->data(), message->size()));
     received_rpc_.push_back(std::move(rpc));
   }
@@ -333,7 +340,7 @@ class CourierRendererTest : public testing::Test {
     return renderer_->state_ == CourierRenderer::STATE_ERROR;
   }
 
-  void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message) {
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message) {
     renderer_->OnReceivedRpc(std::move(message));
   }
 
@@ -360,7 +367,7 @@ class CourierRendererTest : public testing::Test {
   void RunPendingTasks() { base::RunLoop().RunUntilIdle(); }
 
   // Gets first available RpcMessage with specific |proc|.
-  const pb::RpcMessage* PeekRpcMessage(int proc) const {
+  const openscreen::cast::RpcMessage* PeekRpcMessage(int proc) const {
     for (auto& s : received_rpc_) {
       if (proc == s->proc())
         return s.get();
@@ -379,10 +386,10 @@ class CourierRendererTest : public testing::Test {
   // Issues RPC_RC_ONTIMEUPDATE RPC message.
   void IssueTimeUpdateRpc(base::TimeDelta media_time,
                           base::TimeDelta max_media_time) {
-    std::unique_ptr<remoting::pb::RpcMessage> rpc(
-        new remoting::pb::RpcMessage());
+    std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+        new openscreen::cast::RpcMessage());
     rpc->set_handle(5);
-    rpc->set_proc(remoting::pb::RpcMessage::RPC_RC_ONTIMEUPDATE);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_RC_ONTIMEUPDATE);
     auto* time_message = rpc->mutable_rendererclient_ontimeupdate_rpc();
     time_message->set_time_usec(media_time.InMicroseconds());
     time_message->set_max_time_usec(max_media_time.InMicroseconds());
@@ -407,10 +414,10 @@ class CourierRendererTest : public testing::Test {
   void IssueStatisticsUpdateRpc() {
     EXPECT_CALL(*render_client_, OnStatisticsUpdate(_)).Times(1);
     const PipelineStatistics stats = DefaultStats();
-    std::unique_ptr<remoting::pb::RpcMessage> rpc(
-        new remoting::pb::RpcMessage());
+    std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+        new openscreen::cast::RpcMessage());
     rpc->set_handle(5);
-    rpc->set_proc(remoting::pb::RpcMessage::RPC_RC_ONSTATISTICSUPDATE);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_RC_ONSTATISTICSUPDATE);
     auto* message = rpc->mutable_rendererclient_onstatisticsupdate_rpc();
     message->set_audio_bytes_decoded(stats.audio_bytes_decoded);
     message->set_video_bytes_decoded(stats.video_bytes_decoded);
@@ -432,14 +439,15 @@ class CourierRendererTest : public testing::Test {
 
   // Issue RPC_RC_ONBUFFERINGSTATECHANGE RPC message.
   void IssuesBufferingStateRpc(BufferingState state) {
-    base::Optional<pb::RendererClientOnBufferingStateChange::State> pb_state =
-        ToProtoMediaBufferingState(state);
+    base::Optional<
+        openscreen::cast::RendererClientOnBufferingStateChange::State>
+        pb_state = ToProtoMediaBufferingState(state);
     if (!pb_state.has_value())
       return;
-    std::unique_ptr<remoting::pb::RpcMessage> rpc(
-        new remoting::pb::RpcMessage());
+    std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+        new openscreen::cast::RpcMessage());
     rpc->set_handle(5);
-    rpc->set_proc(remoting::pb::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE);
     auto* buffering_state =
         rpc->mutable_rendererclient_onbufferingstatechange_rpc();
     buffering_state->set_state(pb_state.value());
@@ -479,7 +487,7 @@ class CourierRendererTest : public testing::Test {
   bool is_successfully_initialized_ = true;
 
   // Stores RPC messages that are sending to remote sink.
-  std::vector<std::unique_ptr<pb::RpcMessage>> received_rpc_;
+  std::vector<std::unique_ptr<openscreen::cast::RpcMessage>> received_rpc_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CourierRendererTest);
@@ -565,8 +573,8 @@ TEST_F(CourierRendererTest, StartPlayingFrom) {
 
   // Checks if it sends out RPC message with correct value.
   ASSERT_EQ(1, ReceivedRpcMessageCount());
-  const pb::RpcMessage* rpc =
-      PeekRpcMessage(pb::RpcMessage::RPC_R_STARTPLAYINGFROM);
+  const openscreen::cast::RpcMessage* rpc =
+      PeekRpcMessage(openscreen::cast::RpcMessage::RPC_R_STARTPLAYINGFROM);
   ASSERT_TRUE(rpc);
   ASSERT_EQ(rpc->integer64_value(), 100);
 }
@@ -578,13 +586,14 @@ TEST_F(CourierRendererTest, SetVolume) {
   RunPendingTasks();
   ASSERT_EQ(0, ReceivedRpcMessageCount());
 
-  // SetVolume() will send pb::RpcMessage::RPC_R_SETVOLUME RPC.
+  // SetVolume() will send openscreen::cast::RpcMessage::RPC_R_SETVOLUME RPC.
   renderer_->SetVolume(3.0);
   RunPendingTasks();
 
   // Checks if it sends out RPC message with correct value.
   ASSERT_EQ(1, ReceivedRpcMessageCount());
-  const pb::RpcMessage* rpc = PeekRpcMessage(pb::RpcMessage::RPC_R_SETVOLUME);
+  const openscreen::cast::RpcMessage* rpc =
+      PeekRpcMessage(openscreen::cast::RpcMessage::RPC_R_SETVOLUME);
   ASSERT_TRUE(rpc);
   ASSERT_TRUE(rpc->double_value() == 3.0);
 }
@@ -601,8 +610,8 @@ TEST_F(CourierRendererTest, SetPlaybackRate) {
   RunPendingTasks();
   ASSERT_EQ(1, ReceivedRpcMessageCount());
   // Checks if it sends out RPC message with correct value.
-  const pb::RpcMessage* rpc =
-      PeekRpcMessage(pb::RpcMessage::RPC_R_SETPLAYBACKRATE);
+  const openscreen::cast::RpcMessage* rpc =
+      PeekRpcMessage(openscreen::cast::RpcMessage::RPC_R_SETPLAYBACKRATE);
   ASSERT_TRUE(rpc);
   ASSERT_TRUE(rpc->double_value() == 2.5);
 }
@@ -641,12 +650,13 @@ TEST_F(CourierRendererTest, OnAudioConfigChange) {
               OnAudioConfigChange(DecoderConfigEq(kNewAudioConfig)))
       .Times(1);
 
-  std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+  std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+      new openscreen::cast::RpcMessage());
   rpc->set_handle(5);
-  rpc->set_proc(pb::RpcMessage::RPC_RC_ONAUDIOCONFIGCHANGE);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_RC_ONAUDIOCONFIGCHANGE);
   auto* audio_config_change_message =
       rpc->mutable_rendererclient_onaudioconfigchange_rpc();
-  pb::AudioDecoderConfig* proto_audio_config =
+  openscreen::cast::AudioDecoderConfig* proto_audio_config =
       audio_config_change_message->mutable_audio_decoder_config();
   ConvertAudioDecoderConfigToProto(kNewAudioConfig, proto_audio_config);
   OnReceivedRpc(std::move(rpc));
@@ -664,12 +674,13 @@ TEST_F(CourierRendererTest, OnVideoConfigChange) {
               OnVideoConfigChange(DecoderConfigEq(kNewVideoConfig)))
       .Times(1);
 
-  std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+  std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+      new openscreen::cast::RpcMessage());
   rpc->set_handle(5);
-  rpc->set_proc(pb::RpcMessage::RPC_RC_ONVIDEOCONFIGCHANGE);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_RC_ONVIDEOCONFIGCHANGE);
   auto* video_config_change_message =
       rpc->mutable_rendererclient_onvideoconfigchange_rpc();
-  pb::VideoDecoderConfig* proto_video_config =
+  openscreen::cast::VideoDecoderConfig* proto_video_config =
       video_config_change_message->mutable_video_decoder_config();
   ConvertVideoDecoderConfigToProto(kNewVideoConfig, proto_video_config);
   OnReceivedRpc(std::move(rpc));
@@ -686,9 +697,10 @@ TEST_F(CourierRendererTest, OnVideoNaturalSizeChange) {
   // Issues RPC_RC_ONVIDEONATURALSIZECHANGE RPC message.
   EXPECT_CALL(*render_client_, OnVideoNaturalSizeChange(gfx::Size(100, 200)))
       .Times(1);
-  std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+  std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+      new openscreen::cast::RpcMessage());
   rpc->set_handle(5);
-  rpc->set_proc(pb::RpcMessage::RPC_RC_ONVIDEONATURALSIZECHANGE);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_RC_ONVIDEONATURALSIZECHANGE);
   auto* size_message =
       rpc->mutable_rendererclient_onvideonatualsizechange_rpc();
   size_message->set_width(100);
@@ -703,9 +715,10 @@ TEST_F(CourierRendererTest, OnVideoNaturalSizeChangeWithInvalidValue) {
   InitializeRenderer();
   // Issues RPC_RC_ONVIDEONATURALSIZECHANGE RPC message.
   EXPECT_CALL(*render_client_, OnVideoNaturalSizeChange(_)).Times(0);
-  std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+  std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+      new openscreen::cast::RpcMessage());
   rpc->set_handle(5);
-  rpc->set_proc(pb::RpcMessage::RPC_RC_ONVIDEONATURALSIZECHANGE);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_RC_ONVIDEONATURALSIZECHANGE);
   auto* size_message =
       rpc->mutable_rendererclient_onvideonatualsizechange_rpc();
   size_message->set_width(-100);
@@ -719,9 +732,10 @@ TEST_F(CourierRendererTest, OnVideoOpacityChange) {
   ASSERT_FALSE(render_client_->opaque());
   // Issues RPC_RC_ONVIDEOOPACITYCHANGE RPC message.
   EXPECT_CALL(*render_client_, OnVideoOpacityChange(true)).Times(1);
-  std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+  std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+      new openscreen::cast::RpcMessage());
   rpc->set_handle(5);
-  rpc->set_proc(pb::RpcMessage::RPC_RC_ONVIDEOOPACITYCHANGE);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_RC_ONVIDEOOPACITYCHANGE);
   rpc->set_boolean_value(true);
   OnReceivedRpc(std::move(rpc));
   RunPendingTasks();

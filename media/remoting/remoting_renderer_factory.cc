@@ -66,16 +66,16 @@ std::unique_ptr<Renderer> RemotingRendererFactory::CreateRenderer(
 }
 
 void RemotingRendererFactory::OnReceivedRpc(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(message);
-  if (message->proc() == pb::RpcMessage::RPC_ACQUIRE_RENDERER)
+  if (message->proc() == openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER)
     OnAcquireRenderer(std::move(message));
   else
     VLOG(1) << __func__ << ": Unknow RPC message. proc=" << message->proc();
 }
 
 void RemotingRendererFactory::OnAcquireRenderer(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(message->has_integer_value());
   DCHECK(message->integer_value() != RpcBroker::kInvalidHandle);
 
@@ -105,9 +105,9 @@ void RemotingRendererFactory::OnAcquireRendererDone(int receiver_rpc_handle) {
   DVLOG(3) << __func__
            << ": Issues RPC_ACQUIRE_RENDERER_DONE RPC message. remote_handle="
            << remote_renderer_handle_ << " rpc_handle=" << receiver_rpc_handle;
-  auto rpc = std::make_unique<pb::RpcMessage>();
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
   rpc->set_handle(remote_renderer_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
   rpc->set_integer_value(receiver_rpc_handle);
   rpc_broker_->SendMessageToRemote(std::move(rpc));
 

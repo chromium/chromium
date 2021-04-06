@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "media/remoting/media_remoting_rpc.pb.h"
+#include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace media {
 namespace remoting {
@@ -47,8 +47,8 @@ class RpcBroker {
   int GetUniqueHandle();
 
   // TODO(chkuo): Change the parameter to accept const ref of RpcMessage.
-  using ReceiveMessageCallback =
-      base::RepeatingCallback<void(std::unique_ptr<pb::RpcMessage>)>;
+  using ReceiveMessageCallback = base::RepeatingCallback<void(
+      std::unique_ptr<openscreen::cast::RpcMessage>)>;
   // Register a component to receive messages via the given
   // ReceiveMessageCallback. |handle| is a unique handle value provided by a
   // prior call to GetUniqueHandle() and is used to reference the component in
@@ -60,11 +60,13 @@ class RpcBroker {
   void UnregisterMessageReceiverCallback(int handle);
 
   // Allows RpcBroker to distribute incoming RPC message to desired components.
-  void ProcessMessageFromRemote(std::unique_ptr<pb::RpcMessage> message);
+  void ProcessMessageFromRemote(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
   // Sends RPC message to remote end point. The actually sender which sets
   // SendMessageCallback to RpcBrokwer will receive RPC message to do actual
   // data transmission.
-  void SendMessageToRemote(std::unique_ptr<pb::RpcMessage> message);
+  void SendMessageToRemote(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Gets weak pointer of RpcBroker. This allows callers to post tasks to
   // RpcBroker on the main thread.

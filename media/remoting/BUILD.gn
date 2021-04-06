@@ -6,11 +6,6 @@ import("//media/media_options.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("media_remoting_proto") {
-  proto_out_dir = "media/remoting"
-  sources = [ "media_remoting_rpc.proto" ]
-}
-
 # This target is separate from "remoting" because this code is shared by the
 # receiver implementation (currently outside of the Chromium project).
 source_set("rpc") {
@@ -28,7 +23,7 @@ source_set("rpc") {
     "//media",
   ]
 
-  public_deps = [ ":media_remoting_proto" ]
+  public_deps = [ "//third_party/openscreen/src/cast/streaming:remoting_proto" ]
 }
 
 source_set("remoting_sender") {

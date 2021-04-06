@@ -56,19 +56,19 @@ class MockSender {
   MOCK_METHOD(void, OnStatisticsUpdate, (PipelineStatistics));
   MOCK_METHOD(void, OnWaiting, ());
 
-  void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message) {
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message) {
     DCHECK(message);
     switch (message->proc()) {
-      case pb::RpcMessage::RPC_ACQUIRE_RENDERER_DONE:
+      case openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE:
         AcquireRendererDone();
         break;
-      case pb::RpcMessage::RPC_R_INITIALIZE_CALLBACK:
+      case openscreen::cast::RpcMessage::RPC_R_INITIALIZE_CALLBACK:
         InitializeCallback(message->boolean_value());
         break;
-      case pb::RpcMessage::RPC_R_FLUSHUNTIL_CALLBACK:
+      case openscreen::cast::RpcMessage::RPC_R_FLUSHUNTIL_CALLBACK:
         FlushUntilCallback();
         break;
-      case pb::RpcMessage::RPC_RC_ONTIMEUPDATE: {
+      case openscreen::cast::RpcMessage::RPC_RC_ONTIMEUPDATE: {
         DCHECK(message->has_rendererclient_ontimeupdate_rpc());
         const int64_t time_usec =
             message->rendererclient_ontimeupdate_rpc().time_usec();
@@ -77,24 +77,24 @@ class MockSender {
         OnTimeUpdate(time_usec, max_time_usec);
         break;
       }
-      case pb::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE: {
+      case openscreen::cast::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE: {
         base::Optional<BufferingState> state = ToMediaBufferingState(
             message->rendererclient_onbufferingstatechange_rpc().state());
         if (state.has_value())
           OnBufferingStateChange(state.value());
         break;
       }
-      case pb::RpcMessage::RPC_RC_ONENDED:
+      case openscreen::cast::RpcMessage::RPC_RC_ONENDED:
         OnEnded();
         break;
-      case pb::RpcMessage::RPC_RC_ONERROR:
+      case openscreen::cast::RpcMessage::RPC_RC_ONERROR:
         OnFatalError();
         break;
-      case pb::RpcMessage::RPC_RC_ONAUDIOCONFIGCHANGE: {
+      case openscreen::cast::RpcMessage::RPC_RC_ONAUDIOCONFIGCHANGE: {
         DCHECK(message->has_rendererclient_onaudioconfigchange_rpc());
         const auto* audio_config_message =
             message->mutable_rendererclient_onaudioconfigchange_rpc();
-        const pb::AudioDecoderConfig pb_audio_config =
+        const openscreen::cast::AudioDecoderConfig pb_audio_config =
             audio_config_message->audio_decoder_config();
         AudioDecoderConfig out_audio_config;
         ConvertProtoToAudioDecoderConfig(pb_audio_config, &out_audio_config);
@@ -102,11 +102,11 @@ class MockSender {
         OnAudioConfigChange(out_audio_config);
         break;
       }
-      case pb::RpcMessage::RPC_RC_ONVIDEOCONFIGCHANGE: {
+      case openscreen::cast::RpcMessage::RPC_RC_ONVIDEOCONFIGCHANGE: {
         DCHECK(message->has_rendererclient_onvideoconfigchange_rpc());
         const auto* video_config_message =
             message->mutable_rendererclient_onvideoconfigchange_rpc();
-        const pb::VideoDecoderConfig pb_video_config =
+        const openscreen::cast::VideoDecoderConfig pb_video_config =
             video_config_message->video_decoder_config();
         VideoDecoderConfig out_video_config;
         ConvertProtoToVideoDecoderConfig(pb_video_config, &out_video_config);
@@ -115,7 +115,7 @@ class MockSender {
         OnVideoConfigChange(out_video_config);
         break;
       }
-      case pb::RpcMessage::RPC_RC_ONVIDEONATURALSIZECHANGE: {
+      case openscreen::cast::RpcMessage::RPC_RC_ONVIDEONATURALSIZECHANGE: {
         DCHECK(message->has_rendererclient_onvideonatualsizechange_rpc());
 
         gfx::Size size(
@@ -124,10 +124,10 @@ class MockSender {
         OnVideoNaturalSizeChange(size);
         break;
       }
-      case pb::RpcMessage::RPC_RC_ONVIDEOOPACITYCHANGE:
+      case openscreen::cast::RpcMessage::RPC_RC_ONVIDEOOPACITYCHANGE:
         OnVideoOpacityChange(message->boolean_value());
         break;
-      case pb::RpcMessage::RPC_RC_ONSTATISTICSUPDATE: {
+      case openscreen::cast::RpcMessage::RPC_RC_ONSTATISTICSUPDATE: {
         DCHECK(message->has_rendererclient_onstatisticsupdate_rpc());
         auto rpc_message = message->rendererclient_onstatisticsupdate_rpc();
         PipelineStatistics statistics;
@@ -147,33 +147,34 @@ class MockSender {
   }
 
   void SendRpcAcquireRenderer() {
-    auto rpc = std::make_unique<pb::RpcMessage>();
+    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
     rpc->set_handle(RpcBroker::kAcquireRendererHandle);
-    rpc->set_proc(pb::RpcMessage::RPC_ACQUIRE_RENDERER);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER);
     rpc->set_integer_value(rpc_handle_);
     rpc_broker_->SendMessageToRemote(std::move(rpc));
   }
 
   void SendRpcInitialize() {
-    auto rpc = std::make_unique<pb::RpcMessage>();
+    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
     rpc->set_handle(remote_handle_);
-    rpc->set_proc(pb::RpcMessage::RPC_R_INITIALIZE);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_INITIALIZE);
     rpc_broker_->SendMessageToRemote(std::move(rpc));
   }
 
   void SendRpcSetPlaybackRate(double playback_rate) {
-    auto rpc = std::make_unique<pb::RpcMessage>();
+    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
     rpc->set_handle(remote_handle_);
-    rpc->set_proc(pb::RpcMessage::RPC_R_SETPLAYBACKRATE);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_SETPLAYBACKRATE);
     rpc->set_double_value(playback_rate);
     rpc_broker_->SendMessageToRemote(std::move(rpc));
   }
 
   void SendRpcFlushUntil(uint32_t audio_count, uint32_t video_count) {
-    auto rpc = std::make_unique<pb::RpcMessage>();
+    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
     rpc->set_handle(remote_handle_);
-    rpc->set_proc(pb::RpcMessage::RPC_R_FLUSHUNTIL);
-    pb::RendererFlushUntil* message = rpc->mutable_renderer_flushuntil_rpc();
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_FLUSHUNTIL);
+    openscreen::cast::RendererFlushUntil* message =
+        rpc->mutable_renderer_flushuntil_rpc();
     message->set_audio_count(audio_count);
     message->set_video_count(video_count);
     message->set_callback_handle(rpc_handle_);
@@ -181,17 +182,17 @@ class MockSender {
   }
 
   void SendRpcStartPlayingFrom(base::TimeDelta time) {
-    auto rpc = std::make_unique<pb::RpcMessage>();
+    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
     rpc->set_handle(remote_handle_);
-    rpc->set_proc(pb::RpcMessage::RPC_R_STARTPLAYINGFROM);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_STARTPLAYINGFROM);
     rpc->set_integer64_value(time.InMicroseconds());
     rpc_broker_->SendMessageToRemote(std::move(rpc));
   }
 
   void SendRpcSetVolume(float volume) {
-    auto rpc = std::make_unique<pb::RpcMessage>();
+    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
     rpc->set_handle(remote_handle_);
-    rpc->set_proc(pb::RpcMessage::RPC_R_SETVOLUME);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_SETVOLUME);
     rpc->set_double_value(volume);
     rpc_broker_->SendMessageToRemote(std::move(rpc));
   }
@@ -229,15 +230,15 @@ class ReceiverTest : public ::testing::Test {
         RpcBroker::kAcquireRendererHandle);
   }
 
-  void OnReceivedRpc(std::unique_ptr<media::remoting::pb::RpcMessage> message) {
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message) {
     DCHECK(message);
     EXPECT_EQ(message->proc(),
-              media::remoting::pb::RpcMessage::RPC_ACQUIRE_RENDERER);
+              openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER);
     OnAcquireRenderer(std::move(message));
   }
 
   void OnAcquireRenderer(
-      std::unique_ptr<media::remoting::pb::RpcMessage> message) {
+      std::unique_ptr<openscreen::cast::RpcMessage> message) {
     DCHECK(message->has_integer_value());
     DCHECK(message->integer_value() != RpcBroker::kInvalidHandle);
 
@@ -252,9 +253,9 @@ class ReceiverTest : public ::testing::Test {
              << ": Issues RPC_ACQUIRE_RENDERER_DONE RPC message. remote_handle="
              << sender_renderer_handle_
              << " rpc_handle=" << receiver_renderer_handle;
-    auto rpc = std::make_unique<pb::RpcMessage>();
+    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
     rpc->set_handle(sender_renderer_handle_);
-    rpc->set_proc(pb::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
     rpc->set_integer_value(receiver_renderer_handle);
     rpc_broker_->SendMessageToRemote(std::move(rpc));
   }

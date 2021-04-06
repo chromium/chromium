@@ -88,7 +88,8 @@ void ReceiverController::StartDataStreams(
 void ReceiverController::OnMessageFromSource(
     const std::vector<uint8_t>& message) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  auto rpc_message = std::make_unique<pb::RpcMessage>(pb::RpcMessage());
+  auto rpc_message = std::make_unique<openscreen::cast::RpcMessage>(
+      openscreen::cast::RpcMessage());
   if (!rpc_message->ParseFromArray(message.data(), message.size()))
     return;
 

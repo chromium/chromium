@@ -35,8 +35,8 @@ class RemotingRendererFactory : public RendererFactory {
 
  private:
   // Callback function when RPC message is received.
-  void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message);
-  void OnAcquireRenderer(std::unique_ptr<pb::RpcMessage> message);
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnAcquireRenderer(std::unique_ptr<openscreen::cast::RpcMessage> message);
   void OnAcquireRendererDone(int receiver_rpc_handle);
 
   // Indicates whether RPC_ACQUIRE_RENDERER_DONE is sent or not.

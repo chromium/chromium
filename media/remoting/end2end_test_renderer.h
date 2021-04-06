@@ -70,9 +70,8 @@ class End2EndTestRenderer final : public Renderer {
   void CompleteInitialize();
 
   // Callback function when RPC message is received.
-  void OnReceivedRpc(std::unique_ptr<media::remoting::pb::RpcMessage> message);
-  void OnAcquireRenderer(
-      std::unique_ptr<media::remoting::pb::RpcMessage> message);
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnAcquireRenderer(std::unique_ptr<openscreen::cast::RpcMessage> message);
   void OnAcquireRendererDone(int receiver_renderer_handle);
 
   PipelineStatusCallback init_cb_;
