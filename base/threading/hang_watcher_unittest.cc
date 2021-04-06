@@ -190,7 +190,7 @@ class HangWatcherBlockingThreadTest : public HangWatcherTest {
     // HangWatcher::Monitor() happened and was unacounted for.
     // ASSERT_FALSE(monitor_event_.IsSignaled());
 
-    // Triger a monitoring on HangWatcher thread and verify results.
+    // Trigger a monitoring on HangWatcher thread and verify results.
     hang_watcher_.SignalMonitorEventForTesting();
     monitor_event_.Wait();
   }
@@ -220,7 +220,7 @@ TEST_F(
   HangWatchScopeEnabled also_expires_instantly(base::TimeDelta{});
   task_environment_.FastForwardBy(kHangTime);
 
-  // Triger a monitoring on HangWatcher thread and verify results.
+  // Trigger a monitoring on HangWatcher thread and verify results.
   hang_watcher_.SignalMonitorEventForTesting();
   monitor_event_.Wait();
 
@@ -248,7 +248,7 @@ TEST_F(
 
     disabler.emplace();
 
-    // Triger a monitoring on HangWatcher thread and verify results.
+    // Trigger a monitoring on HangWatcher thread and verify results.
     hang_watcher_.SignalMonitorEventForTesting();
     monitor_event_.Wait();
   }
@@ -280,7 +280,7 @@ TEST_F(
 
     disabler.reset();
 
-    // Triger a monitoring on HangWatcher thread and verify results.
+    // Trigger a monitoring on HangWatcher thread and verify results.
     hang_watcher_.SignalMonitorEventForTesting();
     monitor_event_.Wait();
   }
@@ -305,7 +305,7 @@ TEST_F(
     HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
     task_environment_.FastForwardBy(kHangTime);
 
-    // Triger a monitoring on HangWatcher thread and verify results.
+    // Trigger a monitoring on HangWatcher thread and verify results.
     hang_watcher_.SignalMonitorEventForTesting();
     monitor_event_.Wait();
   }
@@ -329,7 +329,7 @@ TEST_F(HangWatcherTest, ScopeCreateTempCreateTempDestroyScopeDestroy) {
       HangWatchScopeDisabled disabler;
     }
 
-    // Triger a monitoring on HangWatcher thread and verify results.
+    // Trigger a monitoring on HangWatcher thread and verify results.
     hang_watcher_.SignalMonitorEventForTesting();
     monitor_event_.Wait();
   }
@@ -353,7 +353,7 @@ TEST_F(
     // De-activate hang watching,
     HangWatchScopeDisabled disabler;
 
-    // Triger a monitoring on HangWatcher thread and verify results.
+    // Trigger a monitoring on HangWatcher thread and verify results.
     hang_watcher_.SignalMonitorEventForTesting();
     monitor_event_.Wait();
   }
@@ -383,7 +383,7 @@ TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
     task_environment_.FastForwardBy(kHangTime);
   }
 
-  // Triger a monitoring on HangWatcher thread and verify results.
+  // Trigger a monitoring on HangWatcher thread and verify results.
   hang_watcher_.SignalMonitorEventForTesting();
   monitor_event_.Wait();
 
@@ -414,7 +414,7 @@ TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
   HangWatchScopeEnabled also_expires_instantly(base::TimeDelta{});
   task_environment_.FastForwardBy(kHangTime);
 
-  // Triger a monitoring on HangWatcher thread and verify results.
+  // Trigger a monitoring on HangWatcher thread and verify results.
   hang_watcher_.SignalMonitorEventForTesting();
   monitor_event_.Wait();
 
