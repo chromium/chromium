@@ -133,13 +133,15 @@ void MultipartUploadRequest::RetryOrFinish(
     base::UmaHistogramMediumTimes(
         "SBMultipartUploader.SuccessfulUploadDuration",
         base::Time::Now() - start_time_);
-    std::move(callback_).Run(/*success=*/true, *response_body.get());
+    std::move(callback_).Run(/*success=*/true, response_code,
+                             *response_body.get());
   } else {
     if (response_code < 500 || retry_count_ >= kMaxRetryAttempts) {
       RecordUploadSuccessHistogram(/*success=*/false);
       base::UmaHistogramMediumTimes("SBMultipartUploader.FailedUploadDuration",
                                     base::Time::Now() - start_time_);
-      std::move(callback_).Run(/*success=*/false, *response_body.get());
+      std::move(callback_).Run(/*success=*/false, response_code,
+                               *response_body.get());
     } else {
       content::GetUIThreadTaskRunner({})->PostDelayedTask(
           FROM_HERE,

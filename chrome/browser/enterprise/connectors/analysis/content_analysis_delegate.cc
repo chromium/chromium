@@ -236,6 +236,7 @@ bool ContentAnalysisDelegate::ResultShouldAllowDataUse(
     case BinaryUploadService::Result::UPLOAD_FAILURE:
     case BinaryUploadService::Result::TIMEOUT:
     case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
+    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
     // UNAUTHORIZED allows data usage since it's a result only obtained if the
     // browser is not authorized to perform deep scanning. It does not make
     // sense to block data in this situation since no actual scanning of the
@@ -447,6 +448,9 @@ void ContentAnalysisDelegate::FileRequestCallback(
     base::FilePath path,
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
+  if (result == BinaryUploadService::Result::TOO_MANY_REQUESTS)
+    throttled_ = true;
+
   // Find the path in the set of files that are being scanned.
   auto it = std::find(data_.paths.begin(), data_.paths.end(), path);
   DCHECK(it != data_.paths.end());
@@ -607,6 +611,14 @@ void ContentAnalysisDelegate::OnGotFileInfo(
   // upload pointless, so the request should finish early.
   if (result != BinaryUploadService::Result::SUCCESS) {
     request->FinishRequest(result,
+                           enterprise_connectors::ContentAnalysisResponse());
+    return;
+  }
+
+  // If |throttled_| is true, then the file shouldn't be upload since the server
+  // is receiving too many requests.
+  if (throttled_) {
+    request->FinishRequest(BinaryUploadService::Result::TOO_MANY_REQUESTS,
                            enterprise_connectors::ContentAnalysisResponse());
     return;
   }

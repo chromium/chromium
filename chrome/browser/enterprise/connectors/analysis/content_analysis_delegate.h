@@ -360,6 +360,10 @@ class ContentAnalysisDelegate {
   // for every file/text. This is read to ensure |this| isn't deleted too early.
   bool data_uploaded_ = false;
 
+  // This is set to true as soon as a TOO_MANY_REQUESTS response is obtained. No
+  // more data should be upload for |this| at that point.
+  bool throttled_ = false;
+
   base::TimeTicks upload_start_time_;
 
   base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};

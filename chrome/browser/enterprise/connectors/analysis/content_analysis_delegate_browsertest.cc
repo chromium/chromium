@@ -511,6 +511,84 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
 }
 
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+  FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
+
+  // Create the files to be opened and scanned.
+  ContentAnalysisDelegate::Data data;
+  CreateFilesForTest({"a.exe", "b.exe", "c.exe"},
+                     {"a content", "b content", "c content"}, &data);
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
+
+  // The malware verdict means an event should be reported.
+  safe_browsing::EventReportValidator validator(client());
+  validator.ExpectUnscannedFileEvents(
+      /*url*/ "about:blank",
+      {
+          created_file_paths()[0].AsUTF8Unsafe(),
+          created_file_paths()[1].AsUTF8Unsafe(),
+          created_file_paths()[2].AsUTF8Unsafe(),
+      },
+      {
+          // printf "a content" | sha256sum | tr '[:lower:]' '[:upper:]'
+          "D2D2ACF640179223BF9E1EB43C5FBF854C4E50FFB6733BC3A9279D3FF7DE9BE1",
+          // printf "b content" | sha256sum | tr '[:lower:]' '[:upper:]'
+          "93CB3641ADD6A9A6619D7E2F304EBCF5160B2DB016B27C6E3D641C5306897224",
+          // printf "c content" | sha256sum | tr '[:lower:]' '[:upper:]'
+          "2E6D1C4A1F39A02562BF1505AD775C0323D7A04C0C37C9B29D25F532B9972080",
+      },
+      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
+      // TODO(crbug.com/1191060): Update this string when the event is supported
+      /*reason*/ "SERVICE_UNAVAILABLE",
+      /*mimetypes*/ ExeMimeTypes(),
+      /*size*/ 9,
+      /*result*/
+      safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
+      /*username*/ kUserName);
+
+  // Only the first file should be uploaded since the other ones will be
+  // throttled.
+  FakeBinaryUploadServiceStorage()->SetResponseForFile(
+      "a.exe", BinaryUploadService::Result::TOO_MANY_REQUESTS,
+      ContentAnalysisResponse());
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [&called](const ContentAnalysisDelegate::Data& data,
+                    const ContentAnalysisDelegate::Result& result) {
+            ASSERT_TRUE(result.text_results.empty());
+            ASSERT_EQ(result.paths_results.size(), 3u);
+            for (bool result : result.paths_results)
+              ASSERT_TRUE(result);
+            called = true;
+          }),
+      safe_browsing::DeepScanAccessPoint::UPLOAD);
+
+  run_loop.Run();
+
+  EXPECT_TRUE(called);
+
+  // There should have been 1 request for the first file and 1 for
+  // authentication.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
+}
+
 // This class tests each of the blocking settings used in Connector policies:
 // - block_until_verdict
 // - block_password_protected
