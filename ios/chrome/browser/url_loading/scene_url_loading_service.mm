@@ -36,7 +36,7 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
     if (params.from_chrome) {
       auto dismiss_completion = ^{
         ApplicationModeForTabOpening mode =
-            IsIncognitoModeForced(browser->GetBrowserState()->GetPrefs())
+            IsIncognitoModeForced(browser_state->GetPrefs())
                 ? ApplicationModeForTabOpening::INCOGNITO
                 : ApplicationModeForTabOpening::NORMAL;
         [delegate_ openSelectedTabInMode:mode
@@ -48,6 +48,18 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
     } else {
       ApplicationMode mode = params.in_incognito ? ApplicationMode::INCOGNITO
                                                  : ApplicationMode::NORMAL;
+
+      PrefService* prefs = browser_state->GetPrefs();
+      // Don't open the url in below situations:
+      // 1. When the url is suppused to be opened in an incognito tab, but the
+      // incognito mode is disabled by policy.
+      // 2. When the url is suppused to be opened in a normal tab, but the
+      // normal mode is disabled by policy.
+      if ((params.in_incognito && IsIncognitoModeDisabled(prefs)) ||
+          (!params.in_incognito && IsIncognitoModeForced(prefs))) {
+        return;
+      }
+
       auto dismiss_completion = ^{
         [delegate_ setCurrentInterfaceForMode:mode];
         UrlLoadingBrowserAgent::FromBrowser(browser)->Load(saved_params);
