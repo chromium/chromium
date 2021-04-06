@@ -646,7 +646,7 @@ TEST_F(CartServiceTest, TestDomainToCartURLMapping) {
   EXPECT_EQ("https://www.amazon.com/gp/cart/view.html",
             getDomainCartURL("amazon.com"));
 
-  EXPECT_EQ("https://cart.payments.ebay.com/", getDomainCartURL("ebay.com"));
+  EXPECT_EQ("https://cart.ebay.com/", getDomainCartURL("ebay.com"));
 
   EXPECT_EQ("", getDomainCartURL("example.com"));
 }
