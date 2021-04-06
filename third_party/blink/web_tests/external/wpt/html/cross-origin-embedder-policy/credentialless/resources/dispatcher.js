@@ -13,33 +13,57 @@ const concurrencyLimiter = (max_concurrency) => {
     pending++;
     if (pending > max_concurrency)
       await new Promise(resolve => waiting.push(resolve));
-    await task();
+    let result = await task();
     pending--;
     waiting.shift()?.();
+    return result;
   };
 }
 
-// The official web-platform-test runner sometimes drop POST requests when
-// too many are requested in parallel. Limiting this document to send only one
-// at a time fixes the issue.
-const sendLimiter = concurrencyLimiter(1);
+// Wait for a random amount of time in the range [50ms,150ms].
+const randomDelay = () => {
+  return new Promise(resolve => setTimeout(resolve, 50 + 100*Math.random()));
+}
+
+// The official web-platform-test runner sometimes drops requests when too many
+// are requested in parallel. Limiting this document to send/receive only one at
+// a time fixes the issue.
+const limiter = concurrencyLimiter(1);
 
 const send = async function(uuid, message) {
-  await sendLimiter(async () => {
-    await fetch(dispatcher_url + `?uuid=${uuid}`, {
-      method: 'POST',
-      body: message
-    });
+  await limiter(async () => {
+    // Requests might be dropped. Retry until getting a confirmation it has been
+    // processed.
+    while(1) {
+      try {
+        let response = await fetch(dispatcher_url + `?uuid=${uuid}`, {
+          method: 'POST',
+          body: message
+        })
+        if (await response.text() == "done")
+          return;
+      } catch (fetch_error) {}
+      await randomDelay();
+    };
   });
 }
 
 const receive = async function(uuid) {
   while(1) {
-    let response = await fetch(dispatcher_url + `?uuid=${uuid}`);
-    let data = await response.text();
-    if (data != 'not ready')
-      return data;
-    await new Promise(r => setTimeout(r, 10 + 100*Math.random()));
+    let data = "not ready";
+    try {
+      data = await limiter(async () => {
+        let response = await fetch(dispatcher_url + `?uuid=${uuid}`);
+        return await response.text();
+      });
+    } catch (fetch_error) {}
+
+    if (data == "not ready") {
+      await randomDelay();
+      continue;
+    }
+
+    return data;
   }
 }
 
