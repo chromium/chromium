@@ -67,28 +67,30 @@ PasswordStoreChangeList RemoveChangeForForm(const PasswordForm& form) {
       1, PasswordStoreChange(PasswordStoreChange::REMOVE, form));
 }
 
-void GenerateExamplePasswordForm(PasswordForm* form) {
-  form->url = GURL("http://accounts.google.com/LoginAuth");
-  form->action = GURL("http://accounts.google.com/Login");
-  form->username_element = u"Email";
-  form->username_value = u"test@gmail.com";
-  form->password_element = u"Passwd";
-  form->password_value = u"test";
-  form->submit_element = u"signIn";
-  form->signon_realm = "http://www.google.com/";
-  form->scheme = PasswordForm::Scheme::kHtml;
-  form->times_used = 1;
-  form->form_data.name = u"form_name";
-  form->date_synced = base::Time::Now();
-  form->date_last_used = base::Time::Now();
-  form->display_name = u"Mr. Smith";
-  form->icon_url = GURL("https://accounts.google.com/Icon");
-  form->federation_origin =
+PasswordForm GenerateExamplePasswordForm() {
+  PasswordForm form;
+  form.url = GURL("http://accounts.google.com/LoginAuth");
+  form.action = GURL("http://accounts.google.com/Login");
+  form.username_element = u"Email";
+  form.username_value = u"test@gmail.com";
+  form.password_element = u"Passwd";
+  form.password_value = u"test";
+  form.submit_element = u"signIn";
+  form.signon_realm = "http://www.google.com/";
+  form.scheme = PasswordForm::Scheme::kHtml;
+  form.times_used = 1;
+  form.form_data.name = u"form_name";
+  form.date_synced = base::Time::Now();
+  form.date_last_used = base::Time::Now();
+  form.display_name = u"Mr. Smith";
+  form.icon_url = GURL("https://accounts.google.com/Icon");
+  form.federation_origin =
       url::Origin::Create(GURL("https://accounts.google.com/"));
-  form->skip_zero_click = true;
-  form->in_store = PasswordForm::Store::kProfileStore;
-  form->moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user1"));
-  form->moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user2"));
+  form.skip_zero_click = true;
+  form.in_store = PasswordForm::Store::kProfileStore;
+  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user1"));
+  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user2"));
+  return form;
 }
 
 // Helper functions to read the value of the first column of an executed
@@ -294,8 +296,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   EXPECT_EQ(0U, key_to_form_map.size());
 
   // Example password form.
-  PasswordForm form;
-  GenerateExamplePasswordForm(&form);
+  PasswordForm form = GenerateExamplePasswordForm();
 
   // Add it and make sure it is there and that all the fields were retrieved
   // correctly.
@@ -411,8 +412,7 @@ TEST_F(LoginDatabaseTest, AddLoginReturnsPrimaryKey) {
   EXPECT_EQ(0U, result.size());
 
   // Example password form.
-  PasswordForm form;
-  GenerateExamplePasswordForm(&form);
+  PasswordForm form = GenerateExamplePasswordForm();
 
   // Add it and make sure the primary key is returned in the
   // PasswordStoreChange.
@@ -430,8 +430,7 @@ TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
   EXPECT_EQ(0U, result.size());
 
   // Example password form.
-  PasswordForm form;
-  GenerateExamplePasswordForm(&form);
+  PasswordForm form = GenerateExamplePasswordForm();
 
   // Add it and make sure it is there and that all the fields were retrieved
   // correctly.
@@ -457,8 +456,7 @@ TEST_F(LoginDatabaseTest, ShouldNotRecyclePrimaryKeys) {
   std::vector<std::unique_ptr<PasswordForm>> result;
 
   // Example password form.
-  PasswordForm form;
-  GenerateExamplePasswordForm(&form);
+  PasswordForm form = GenerateExamplePasswordForm();
 
   // Add the form.
   PasswordStoreChangeList change_list = db().AddLogin(form);
@@ -1987,8 +1985,7 @@ TEST_F(LoginDatabaseTest, FilePermissions) {
 #if !defined(OS_IOS)
 // Test that LoginDatabase encrypts the password values that it stores.
 TEST_F(LoginDatabaseTest, EncryptionEnabled) {
-  PasswordForm password_form;
-  GenerateExamplePasswordForm(&password_form);
+  PasswordForm password_form = GenerateExamplePasswordForm();
   base::FilePath file = temp_dir_.GetPath().AppendASCII("TestUnencryptedDB");
   {
     LoginDatabase db(file, IsAccountStore(false));
@@ -2008,8 +2005,7 @@ TEST_F(LoginDatabaseTest, EncryptionEnabled) {
 // TODO(crbug.com/829857) This is supported only for Linux, while transitioning
 // into LoginDB with full encryption.
 TEST_F(LoginDatabaseTest, EncryptionDisabled) {
-  PasswordForm password_form;
-  GenerateExamplePasswordForm(&password_form);
+  PasswordForm password_form = GenerateExamplePasswordForm();
   base::FilePath file = temp_dir_.GetPath().AppendASCII("TestUnencryptedDB");
   {
     LoginDatabase db(file, IsAccountStore(false));
@@ -2038,17 +2034,14 @@ TEST_F(LoginDatabaseTest, HandleObfuscationMix) {
     LoginDatabase db(file, IsAccountStore(false));
     ASSERT_TRUE(db.Init());
     // Add obfuscated (new) entries.
-    PasswordForm password_form;
-    GenerateExamplePasswordForm(&password_form);
+    PasswordForm password_form = GenerateExamplePasswordForm();
     password_form.password_value = ASCIIToUTF16(k_obfuscated_pw);
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
     // Add plain-text (old) entries.
     db.disable_encryption();
-    GenerateExamplePasswordForm(&password_form);
     password_form.username_value = u"other_username";
     password_form.password_value = ASCIIToUTF16(k_plain_text_pw1);
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
-    GenerateExamplePasswordForm(&password_form);
     password_form.username_value = u"other_username2";
     password_form.password_value = ASCIIToUTF16(k_plain_text_pw2);
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
@@ -2219,8 +2212,7 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
                                              Pointee(IsBasicAuthAccount())));
 
     // Verifies that the final version can save all the appropriate fields.
-    PasswordForm form;
-    GenerateExamplePasswordForm(&form);
+    PasswordForm form = GenerateExamplePasswordForm();
     // Add the same form twice to test the constraints in the database.
     EXPECT_EQ(AddChangeForForm(form), db.AddLogin(form));
     PasswordStoreChangeList list;
@@ -2490,8 +2482,7 @@ TEST_F(LoginDatabaseTest, GetLoginsByPassword) {
   const std::u16string duplicated_password = u"duplicated_password";
 
   // Insert first logins.
-  PasswordForm form1;
-  GenerateExamplePasswordForm(&form1);
+  PasswordForm form1 = GenerateExamplePasswordForm();
   form1.password_value = duplicated_password;
   PasswordStoreChangeList changes = db().AddLogin(form1);
   ASSERT_EQ(AddChangeForForm(form1), changes);
@@ -2502,8 +2493,7 @@ TEST_F(LoginDatabaseTest, GetLoginsByPassword) {
   EXPECT_THAT(forms, UnorderedElementsAre(Pointee(form1)));
 
   // Insert another form with a different password for a different origin.
-  PasswordForm form2;
-  GenerateExamplePasswordForm(&form2);
+  PasswordForm form2 = GenerateExamplePasswordForm();
   form2.url = GURL("https://myrandomsite.com/login.php");
   form2.signon_realm = form2.url.GetOrigin().spec();
   form2.password_value = u"my-unique-random-password";
@@ -2515,8 +2505,7 @@ TEST_F(LoginDatabaseTest, GetLoginsByPassword) {
   EXPECT_THAT(forms, UnorderedElementsAre(Pointee(form1)));
 
   // Insert another form with the target password for a different origin.
-  PasswordForm form3;
-  GenerateExamplePasswordForm(&form3);
+  PasswordForm form3 = GenerateExamplePasswordForm();
   form3.url = GURL("https://myrandomsite1.com/login.php");
   form3.signon_realm = form3.url.GetOrigin().spec();
   form3.password_value = duplicated_password;
@@ -2600,8 +2589,7 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
 }
 
 TEST_F(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {
-  PasswordForm form;
-  GenerateExamplePasswordForm(&form);
+  PasswordForm form = GenerateExamplePasswordForm();
 
   ignore_result(db().AddLogin(form));
   InsecureCredential credential1{form.signon_realm, form.username_value,
@@ -2628,14 +2616,12 @@ TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
   std::u16string username2 = u"username2";
 
   // Insert first login.
-  PasswordForm form1;
-  GenerateExamplePasswordForm(&form1);
+  PasswordForm form1 = GenerateExamplePasswordForm();
   form1.signon_realm = signon_realm;
   form1.username_value = username1;
   ASSERT_EQ(AddChangeForForm(form1), db().AddLogin(form1));
 
-  PasswordForm form2;
-  GenerateExamplePasswordForm(&form2);
+  PasswordForm form2 = GenerateExamplePasswordForm();
   form2.signon_realm = signon_realm;
   form2.username_value = username2;
   ASSERT_EQ(AddChangeForForm(form2), db().AddLogin(form2));
@@ -2649,8 +2635,7 @@ TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
                                    FormPrimaryKey(1), Pointee(form1))));
 
   // Insert another form with the same username as form1.
-  PasswordForm form3;
-  GenerateExamplePasswordForm(&form3);
+  PasswordForm form3 = GenerateExamplePasswordForm();
   form3.signon_realm = signon_realm;
   form3.username_value = username1;
   form3.username_element = u"another_element";
@@ -2664,6 +2649,64 @@ TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
       key_to_form_map,
       testing::ElementsAre(testing::Pair(FormPrimaryKey(1), Pointee(form1)),
                            testing::Pair(FormPrimaryKey(3), Pointee(form3))));
+}
+
+TEST_F(LoginDatabaseTest, UpdatingPasswordRemovesInsecureCredentials) {
+  PasswordForm form = GenerateExamplePasswordForm();
+
+  ignore_result(db().AddLogin(form));
+  InsecureCredential credential1{form.signon_realm, form.username_value,
+                                 base::Time(), InsecureType::kLeaked,
+                                 IsMuted(false)};
+  InsecureCredential credential2 = credential1;
+  credential2.insecure_type = InsecureType::kPhished;
+
+  db().insecure_credentials_table().AddRow(credential1);
+  db().insecure_credentials_table().AddRow(credential2);
+
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+              testing::UnorderedElementsAre(credential1, credential2));
+
+  // Verify that changing other fields doesn't involve insecure credentials
+  // removal.
+  form.times_used = 92;
+  EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false),
+            db().UpdateLogin(form, nullptr));
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+              testing::UnorderedElementsAre(credential1, credential2));
+
+  form.password_value = u"new_password";
+  EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true),
+            db().UpdateLogin(form, nullptr));
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+              testing::IsEmpty());
+}
+
+TEST_F(LoginDatabaseTest,
+       AddLoginWithDifferentPasswordRemovesInsecureCredentials) {
+  PasswordForm form = GenerateExamplePasswordForm();
+
+  ignore_result(db().AddLogin(form));
+  InsecureCredential credential1{form.signon_realm, form.username_value,
+                                 base::Time(), InsecureType::kLeaked,
+                                 IsMuted(false)};
+  InsecureCredential credential2 = credential1;
+  credential2.insecure_type = InsecureType::kPhished;
+
+  db().insecure_credentials_table().AddRow(credential1);
+  db().insecure_credentials_table().AddRow(credential2);
+
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+              testing::UnorderedElementsAre(credential1, credential2));
+
+  form.times_used++;
+
+  PasswordStoreChangeList list;
+  list.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
+  list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
+  EXPECT_EQ(list, db().AddLogin(form));
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+              testing::IsEmpty());
 }
 
 class LoginDatabaseForAccountStoreTest : public testing::Test {
@@ -2688,8 +2731,7 @@ class LoginDatabaseForAccountStoreTest : public testing::Test {
 };
 
 TEST_F(LoginDatabaseForAccountStoreTest, AddLogins) {
-  PasswordForm form;
-  GenerateExamplePasswordForm(&form);
+  PasswordForm form = GenerateExamplePasswordForm();
 
   PasswordStoreChangeList changes = db().AddLogin(form);
   ASSERT_EQ(1U, changes.size());

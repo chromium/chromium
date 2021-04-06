@@ -31,7 +31,6 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/insecure_credentials_consumer.h"
-#include "components/password_manager/core/browser/insecure_credentials_observer.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -769,20 +768,6 @@ void PasswordStore::NotifyLoginsChanged(
 
     if (reuse_detector_)
       reuse_detector_->OnLoginsChanged(changes);
-
-    ProcessLoginsChanged(
-        changes,
-        base::BindRepeating(
-            [](scoped_refptr<PasswordStore> store,
-               const std::string& signon_realm, const std::u16string& username,
-               RemoveInsecureCredentialsReason reason) {
-              auto callback =
-                  base::BindOnce(&PasswordStore::RemoveInsecureCredentialsImpl,
-                                 store, signon_realm, username, reason);
-              store->InvokeAndNotifyAboutInsecureCredentialsChange(
-                  std::move(callback));
-            },
-            scoped_refptr<PasswordStore>(this)));
   }
 }
 

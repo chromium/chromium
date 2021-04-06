@@ -1282,6 +1282,13 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   if (db_.GetLastChangeCount()) {
     bool password_changed =
         form.password_value != old_primary_key_password.decrypted_password;
+
+    if (password_changed) {
+      insecure_credentials_table().RemoveRow(
+          form.signon_realm, form.username_value,
+          RemoveInsecureCredentialsReason::kUpdate);
+    }
+
     PasswordForm form_with_encrypted_password = form;
     form_with_encrypted_password.encrypted_password = encrypted_password;
     FillFormInStore(&form_with_encrypted_password);
