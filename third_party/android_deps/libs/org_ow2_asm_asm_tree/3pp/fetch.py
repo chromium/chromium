@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/7.0/asm-tree-7.0.jar'
-_FILE_NAME = 'asm-tree-7.0.jar'
-_FILE_VERSION = '7.0'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.0/asm-tree-9.0.jar'
+_FILE_NAME = 'asm-tree-9.0.jar'
+_FILE_VERSION = '9.0'
 
 
 def do_latest():
