@@ -5,9 +5,14 @@
 
   #heading {
     color: var(--cr-secondary-text-color);
+    display: flex;
     font-size: 10pt;
-    padding-bottom: 8px;
+    padding-bottom: 4px;
     padding-top: 8px;
+  }
+
+  #heading-left {
+    width: 100%;
   }
 
   #emoji {
@@ -16,9 +21,20 @@
     grid-template-columns: repeat(var(--emoji-per-row), 1fr);
     justify-items: center;
   }
+
+  #show_clear {
+    margin: 0;
+    --cr-icon-button-size: 16px;
+  }
 </style>
 
-<div id="heading" role="heading" aria-level="2" tabindex="0">[[data.group]]</div>
+<div id="heading" role="heading" aria-level="2" tabindex="0">
+<div id="heading-left">[[data.group]]</div>
+<template is = "dom-if" if="[[clearable]]">
+  <cr-icon-button id="show_clear" iron-icon="emoji_picker:more_horizontal">
+  </cr-icon-button>
+  </template>
+</div>
 <div id="emoji">
   <template is="dom-repeat" items="[[data.emoji]]">
     <emoji-button emoji="[[getDisplayEmojiForEmoji(item.base.string)]]"

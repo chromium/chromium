@@ -23,6 +23,8 @@ class EmojiGroupComponent extends PolymerElement {
       data: {type: Object, readonly: true},
       /** @type {Object<string,string>} */
       preferred: {type: Object},
+      /** @type {boolean} */
+      clearable: {type: Boolean, value: false}
     };
   }
 
