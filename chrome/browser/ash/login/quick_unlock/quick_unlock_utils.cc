@@ -125,8 +125,7 @@ bool IsPinEnabled(PrefService* pref_service) {
 // Returns fingerprint location depending on the commandline switch.
 // TODO(rsorokin): Add browser tests for different assets.
 FingerprintLocation GetFingerprintLocation() {
-  const FingerprintLocation default_location =
-      FingerprintLocation::TABLET_POWER_BUTTON;
+  const FingerprintLocation default_location = FingerprintLocation::UNKNOWN;
   const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   if (!cl->HasSwitch(switches::kFingerprintSensorLocation))
     return default_location;
@@ -141,6 +140,10 @@ FingerprintLocation GetFingerprintLocation() {
     return FingerprintLocation::KEYBOARD_BOTTOM_RIGHT;
   if (location_info == "keyboard-top-right")
     return FingerprintLocation::KEYBOARD_TOP_RIGHT;
+  if (location_info == "right-side")
+    return FingerprintLocation::RIGHT_SIDE;
+  if (location_info == "left-side")
+    return FingerprintLocation::LEFT_SIDE;
   NOTREACHED() << "Not handled value: " << location_info;
   return default_location;
 }
@@ -187,6 +190,12 @@ void AddFingerprintResources(content::WebUIDataSource* html_source) {
       break;
     case FingerprintLocation::KEYBOARD_TOP_RIGHT:
       resource_id = IDR_FINGERPRINT_LAPTOP_TOP_RIGHT_ILLUSTRATION_SVG;
+      break;
+    case FingerprintLocation::RIGHT_SIDE:
+    case FingerprintLocation::LEFT_SIDE:
+    case FingerprintLocation::UNKNOWN:
+      is_lottie_animation = true;
+      resource_id = IDR_FINGERPRINT_DEFAULT_ANIMATION;
       break;
   }
   if (is_lottie_animation) {

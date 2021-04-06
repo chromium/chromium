@@ -283,6 +283,7 @@
         <!-- Fingerprint resources. -->
         <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_right.json"/>
         <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_TABLET_ANIMATION" file="resources\chromeos\quick_unlock\fingerprint_tablet.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_DEFAULT_ANIMATION" file="resources\chromeos\quick_unlock\fingerprint_default.json"/>
         <include type="BINDATA" name="IDR_FINGERPRINT_LAPTOP_TOP_RIGHT_ILLUSTRATION_SVG" file="resources\chromeos\quick_unlock\fingerprint_laptop_top_right.svg" />
         <include type="BINDATA" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ILLUSTRATION_SVG" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_left.svg" />
       </if>

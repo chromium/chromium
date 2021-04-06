@@ -37,6 +37,9 @@ enum class FingerprintLocation {
   KEYBOARD_BOTTOM_LEFT = 1,
   KEYBOARD_BOTTOM_RIGHT = 2,
   KEYBOARD_TOP_RIGHT = 3,
+  RIGHT_SIDE = 4,
+  LEFT_SIDE = 5,
+  UNKNOWN = 6,
 };
 
 base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(

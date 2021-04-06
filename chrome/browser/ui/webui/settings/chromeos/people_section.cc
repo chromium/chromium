@@ -548,6 +548,16 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
       aria_label_id =
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_TOP_RIGHT_ARIA_LABEL;
       break;
+    case FingerprintLocation::RIGHT_SIDE:
+    case FingerprintLocation::LEFT_SIDE:
+    case FingerprintLocation::UNKNOWN:
+      instruction_id =
+          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
+
+      // TODO(crbug.com/1195489): Use a general aria label for unhandled
+      // fingerprint locations
+      aria_label_id =
+          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
   }
   html_source->AddLocalizedString(
       "configureFingerprintInstructionLocateScannerStep", instruction_id);

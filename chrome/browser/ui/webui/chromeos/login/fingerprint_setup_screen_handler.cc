@@ -70,6 +70,17 @@ void FingerprintSetupScreenHandler::DeclareLocalizedValues(
       aria_label_id =
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_TOP_RIGHT_ARIA_LABEL;
       break;
+    case quick_unlock::FingerprintLocation::RIGHT_SIDE:
+    case quick_unlock::FingerprintLocation::LEFT_SIDE:
+    case quick_unlock::FingerprintLocation::UNKNOWN:
+      description_id =
+          IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION;
+
+      // TODO(crbug.com/1195489): Use a general aria label for unhandled
+      // fingerprint locations
+      aria_label_id =
+          IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION;
+      break;
   }
   builder->AddF("setupFingerprintScreenDescription", description_id,
                 ui::GetChromeOSDeviceName());
