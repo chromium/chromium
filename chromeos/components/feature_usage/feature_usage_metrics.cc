@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/feature_usage_metrics/feature_usage_metrics.h"
+#include "chromeos/components/feature_usage/feature_usage_metrics.h"
 
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/metrics/daily_event.h"
 
-namespace chromeos {
+namespace feature_usage {
 
 namespace {
 
@@ -107,4 +107,4 @@ void FeatureUsageMetrics::ReportDailyMetrics() const {
   }
 }
 
-}  // namespace chromeos
+}  // namespace feature_usage

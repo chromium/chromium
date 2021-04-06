@@ -7,9 +7,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/feature_usage_metrics/feature_usage_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/dbus/biod/biod_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -54,7 +54,8 @@ class FingerprintMetricsReporter : public device::mojom::FingerprintObserver {
 // static
 void FingerprintStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kQuickUnlockFingerprintRecord, 0);
-  FeatureUsageMetrics::RegisterPref(registry, kFingerprintUMAFeatureName);
+  feature_usage::FeatureUsageMetrics::RegisterPref(registry,
+                                                   kFingerprintUMAFeatureName);
 }
 
 FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
@@ -73,8 +74,9 @@ FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
 
   metrics_reporter_ = std::make_unique<FingerprintMetricsReporter>();
   fp_service_->AddFingerprintObserver(metrics_reporter_->GetRemote());
-  feature_usage_metrics_service_ = std::make_unique<FeatureUsageMetrics>(
-      kFingerprintUMAFeatureName, profile_->GetPrefs(), this);
+  feature_usage_metrics_service_ =
+      std::make_unique<feature_usage::FeatureUsageMetrics>(
+          kFingerprintUMAFeatureName, profile_->GetPrefs(), this);
 }
 
 FingerprintStorage::~FingerprintStorage() {}

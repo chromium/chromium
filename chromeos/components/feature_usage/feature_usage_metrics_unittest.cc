@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/feature_usage_metrics/feature_usage_metrics.h"
+#include "chromeos/components/feature_usage/feature_usage_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -11,7 +11,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace feature_usage {
 
 namespace {
 
@@ -91,4 +91,4 @@ TEST_F(FeatureUsageMetricsTest, DailyMetricsTest) {
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 0);
 }
 
-}  // namespace chromeos
+}  // namespace feature_usage

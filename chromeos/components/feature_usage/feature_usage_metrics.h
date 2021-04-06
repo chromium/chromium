@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_FEATURE_USAGE_METRICS_FEATURE_USAGE_METRICS_H_
-#define CHROME_BROWSER_CHROMEOS_FEATURE_USAGE_METRICS_FEATURE_USAGE_METRICS_H_
+#ifndef CHROMEOS_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_
+#define CHROMEOS_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_
 
 #include <memory>
 
@@ -18,7 +18,7 @@ namespace metrics {
 class DailyEvent;
 }
 
-namespace chromeos {
+namespace feature_usage {
 
 // Helper class to unify tracking features usage by users.
 // It provides unified naming for the tracked events. Which reduces effort on
@@ -85,6 +85,6 @@ class FeatureUsageMetrics {
   std::unique_ptr<base::RepeatingTimer> timer_;
 };
 
-}  // namespace chromeos
+}  // namespace feature_usage
 
-#endif  // CHROME_BROWSER_CHROMEOS_FEATURE_USAGE_METRICS_FEATURE_USAGE_METRICS_H_
+#endif  // CHROMEOS_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_

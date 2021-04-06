@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/feature_usage_metrics/feature_usage_metrics.h"
+#include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 
@@ -38,7 +38,7 @@ enum class FingerprintUnlockResult {
 // `FingerprintStorage` manages fingerprint user preferences. Keeps them in sync
 // with the actual fingerprint records state. The class also reports fingerprint
 // metrics.
-class FingerprintStorage : public FeatureUsageMetrics::Delegate {
+class FingerprintStorage : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
   static const int kMaximumUnlockAttempts = 5;
 
@@ -48,7 +48,7 @@ class FingerprintStorage : public FeatureUsageMetrics::Delegate {
   explicit FingerprintStorage(Profile* profile);
   ~FingerprintStorage() final;
 
-  // FeatureUsageMetrics::Delegate:
+  // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const final;
   bool IsEnabled() const final;
 
@@ -88,7 +88,8 @@ class FingerprintStorage : public FeatureUsageMetrics::Delegate {
   mojo::Remote<device::mojom::Fingerprint> fp_service_;
 
   std::unique_ptr<FingerprintMetricsReporter> metrics_reporter_;
-  std::unique_ptr<FeatureUsageMetrics> feature_usage_metrics_service_;
+  std::unique_ptr<feature_usage::FeatureUsageMetrics>
+      feature_usage_metrics_service_;
 
   base::WeakPtrFactory<FingerprintStorage> weak_factory_{this};
 
