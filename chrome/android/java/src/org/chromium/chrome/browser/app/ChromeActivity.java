@@ -117,6 +117,7 @@ import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFactory;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.media.PictureInPictureController;
@@ -263,6 +264,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Used to access the {@link TabCreatorManager} from {@link WindowAndroid}. */
     private final UnownedUserDataSupplier<TabCreatorManager> mTabCreatorManagerSupplier =
             new TabCreatorManagerSupplier();
+    private final UnownedUserDataSupplier<ManualFillingComponent> mManualFillingComponentSupplier =
+            new ManualFillingComponentSupplier();
 
     protected TabModelSelectorProfileSupplier mTabModelProfileSupplier =
             new TabModelSelectorProfileSupplier(mTabModelSelectorSupplier);
@@ -313,9 +316,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private long mInflateInitialLayoutBeginMs;
     // Timestamp in ms when initial layout inflation ends
     private long mInflateInitialLayoutEndMs;
-
-    private final ManualFillingComponent mManualFillingComponent =
-            ManualFillingComponentFactory.createComponent();
 
     // See enableHardwareAcceleration()
     private boolean mSetWindowHWA;
@@ -370,6 +370,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
+        mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
     }
 
     @Override
@@ -429,6 +430,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mShareDelegateSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mTabModelSelectorSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mTabCreatorManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+        mManualFillingComponentSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
     }
 
     protected RootUiCoordinator createRootUiCoordinator() {
@@ -792,7 +794,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * @return The {@link ManualFillingComponent} that belongs to this activity.
      */
     public ManualFillingComponent getManualFillingComponent() {
-        return mManualFillingComponent;
+        return mManualFillingComponentSupplier.get();
     }
 
     /**
@@ -1411,7 +1413,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mTabContentManagerSupplier = null;
         }
 
-        mManualFillingComponent.destroy();
+        ManualFillingComponent manualFillingComponent = mManualFillingComponentSupplier.get();
+        mManualFillingComponentSupplier.destroy();
+        if (manualFillingComponent != null) manualFillingComponent.destroy();
 
         if (mActivityTabStartupMetricsTracker != null) {
             mActivityTabStartupMetricsTracker.destroy();
@@ -1533,7 +1537,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         super.finishNativeInitialization();
 
-        mManualFillingComponent.initialize(getWindowAndroid(),
+        mManualFillingComponentSupplier.get().initialize(getWindowAndroid(),
                 mRootUiCoordinator.getBottomSheetController(),
                 findViewById(R.id.keyboard_accessory_stub),
                 findViewById(R.id.keyboard_accessory_sheet_stub));
@@ -1603,7 +1607,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public boolean onOptionsItemSelected(int itemId, @Nullable Bundle menuItemData) {
         mMenuItemData = menuItemData;
-        if (mManualFillingComponent != null) mManualFillingComponent.dismiss();
+        if (mManualFillingComponentSupplier.hasValue()) {
+            mManualFillingComponentSupplier.get().dismiss();
+        }
         return onMenuOrKeyboardAction(itemId, true);
     }
 
