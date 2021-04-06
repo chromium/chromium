@@ -202,6 +202,13 @@ Images** tab in the Virtual Device Configuration wizard.
    * To ensure it's there: `adb -s emulator-5554 shell mount` (look for /sdcard)
    * Can often be fixed by editing `~/.android/avd/YOUR_DEVICE/config.ini`.
      * Look for `hw.sdCard=no` and set it to `yes`
+ * The "Google APIs" Android L and M emulator images are configured to expect
+   the "AOSP" WebView package (`com.android.webview`). This does not resemble
+   production devices with GMS, which expect the ["Google WebView"
+   configuration](/android_webview/docs/webview-providers.md#webview-provider-options)
+   (`com.google.android.webview` on L and M). See [Removing preinstalled
+   WebView](/android_webview/docs/build-instructions.md#Removing-preinstalled-WebView)
+   if you need to install a local build or official build.
 
 
 #### Starting an Emulator from the Command Line
