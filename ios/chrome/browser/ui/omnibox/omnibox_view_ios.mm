@@ -202,19 +202,14 @@ void OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch(
     size_t selected_line,
     base::TimeTicks match_selection_timestamp,
     base::Optional<gfx::Image> optional_image) {
-  if (!optional_image) {
-    return;
-  }
-
-  gfx::Image image = std::move(optional_image).value();
-
   ClipboardProvider* clipboard_provider =
       model()->autocomplete_controller()->clipboard_provider();
   clipboard_provider->NewClipboardImageMatch(
-      image, base::BindOnce(&OmniboxViewIOS::OnReceiveImageMatchForOpenMatch,
-                            weak_ptr_factory_.GetWeakPtr(), disposition,
-                            alternate_nav_url, pasted_text, selected_line,
-                            match_selection_timestamp));
+      optional_image,
+      base::BindOnce(&OmniboxViewIOS::OnReceiveImageMatchForOpenMatch,
+                     weak_ptr_factory_.GetWeakPtr(), disposition,
+                     alternate_nav_url, pasted_text, selected_line,
+                     match_selection_timestamp));
 }
 
 void OmniboxViewIOS::OnReceiveImageMatchForOpenMatch(

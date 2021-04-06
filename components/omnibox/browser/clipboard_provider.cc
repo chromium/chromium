@@ -409,15 +409,12 @@ void ClipboardProvider::CreateImageMatchCallback(
     const AutocompleteInput& input,
     const base::TimeDelta clipboard_contents_age,
     base::Optional<gfx::Image> optional_image) {
-  if (!optional_image) {
-    return;
-  }
   NewClipboardImageMatch(
-      optional_image.value(),
-      base::BindOnce(&ClipboardProvider::AddImageMatchCallback,
-                     callback_weak_ptr_factory_.GetWeakPtr(), input,
-                     clipboard_contents_age));
+      optional_image, base::BindOnce(&ClipboardProvider::AddImageMatchCallback,
+                                     callback_weak_ptr_factory_.GetWeakPtr(),
+                                     input, clipboard_contents_age));
 }
+
 void ClipboardProvider::AddImageMatchCallback(
     const AutocompleteInput& input,
     const base::TimeDelta clipboard_contents_age,
@@ -526,16 +523,8 @@ AutocompleteMatch ClipboardProvider::NewBlankImageMatch() {
 }
 
 void ClipboardProvider::NewClipboardImageMatch(
-    gfx::Image image,
+    base::Optional<gfx::Image> optional_image,
     ClipboardImageMatchCallback callback) {
-  clipboard_content_->GetRecentImageFromClipboard(base::BindOnce(
-      &ClipboardProvider::OnReceiveImage,
-      callback_weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ClipboardProvider::OnReceiveImage(
-    ClipboardImageMatchCallback callback,
-    base::Optional<gfx::Image> optional_image) {
   // ImageSkia::ToImageSkia should only be called if the gfx::Image is
   // non-empty. It is unclear when the clipboard returns a non-optional but
   // empty image. See crbug.com/1136759 for more details.

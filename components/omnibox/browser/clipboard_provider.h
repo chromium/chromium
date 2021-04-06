@@ -39,7 +39,7 @@ class ClipboardProvider : public AutocompleteProvider {
   // Returns a new AutocompleteMatch clipboard match that will search for the
   // given copied image. Used to construct a match later when the image is not
   // available at match creation time (e.g. iOS 14).
-  void NewClipboardImageMatch(gfx::Image image,
+  void NewClipboardImageMatch(base::Optional<gfx::Image> optional_image,
                               ClipboardImageMatchCallback callback);
 
   // AutocompleteProvider implementation.
@@ -124,10 +124,6 @@ class ClipboardProvider : public AutocompleteProvider {
   void AddImageMatchCallback(const AutocompleteInput& input,
                              const base::TimeDelta clipboard_contents_age,
                              base::Optional<AutocompleteMatch> match);
-
-  // Called when image data is received from clipboard.
-  void OnReceiveImage(ClipboardImageMatchCallback callback,
-                      base::Optional<gfx::Image> optional_image);
 
   // Resize and encode the image data into bytes. This can take some time if the
   // image is large, so this should happen on a background thread.
