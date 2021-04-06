@@ -824,8 +824,8 @@ void WebController::OnFindElementForGetFormAndFieldData(
   if (!element_status.ok()) {
     VLOG(1) << __func__
             << " Failed to find the element for getting Autofill data.";
-    std::move(callback).Run(FillAutofillErrorStatus(element_status), nullptr,
-                            autofill::FormData(), autofill::FormFieldData());
+    std::move(callback).Run(element_status, nullptr, autofill::FormData(),
+                            autofill::FormFieldData());
     return;
   }
 
@@ -833,18 +833,16 @@ void WebController::OnFindElementForGetFormAndFieldData(
       element_result->container_frame_host);
   if (driver == nullptr) {
     VLOG(1) << __func__ << " Failed to get the autofill driver.";
-    std::move(callback).Run(
-        FillAutofillErrorStatus(UnexpectedErrorStatus(__FILE__, __LINE__)),
-        nullptr, autofill::FormData(), autofill::FormFieldData());
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__), nullptr,
+                            autofill::FormData(), autofill::FormFieldData());
     return;
   }
 
   base::Optional<std::string> css_selector =
       selector.ExtractSingleCssSelectorForAutofill();
   if (!css_selector) {
-    std::move(callback).Run(
-        FillAutofillErrorStatus(ClientStatus(INVALID_SELECTOR)), nullptr,
-        autofill::FormData(), autofill::FormFieldData());
+    std::move(callback).Run(ClientStatus(INVALID_SELECTOR), nullptr,
+                            autofill::FormData(), autofill::FormFieldData());
     return;
   }
 
@@ -863,10 +861,9 @@ void WebController::OnGetFormAndFieldData(
     const autofill::FormData& form_data,
     const autofill::FormFieldData& form_field_data) {
   if (form_data.fields.empty()) {
-    VLOG(1) << __func__ << " Failed to get form data to fill form.";
-    std::move(callback).Run(
-        FillAutofillErrorStatus(UnexpectedErrorStatus(__FILE__, __LINE__)),
-        driver, autofill::FormData(), autofill::FormFieldData());
+    VLOG(1) << __func__ << " Failed to get form data.";
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__), driver,
+                            autofill::FormData(), autofill::FormFieldData());
     return;
   }
   std::move(callback).Run(OkClientStatus(), driver, form_data, form_field_data);

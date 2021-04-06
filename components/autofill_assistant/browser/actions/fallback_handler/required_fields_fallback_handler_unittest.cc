@@ -75,17 +75,54 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       /* required_fields = */ {},
       /* fallback_values = */ {}, &mock_action_delegate_);
 
-  base::OnceCallback<void(const ClientStatus&,
-                          const base::Optional<ClientStatus>&)>
-      callback =
-          base::BindOnce([](const ClientStatus& status,
-                            const base::Optional<ClientStatus>& detail_status) {
-            EXPECT_EQ(status.proto_status(), OTHER_ACTION_STATUS);
-            EXPECT_FALSE(detail_status.has_value());
-          });
-
   fallback_handler.CheckAndFallbackRequiredFields(
-      ClientStatus(OTHER_ACTION_STATUS), std::move(callback));
+      ClientStatus(OTHER_ACTION_STATUS),
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_EQ(status.proto_status(), OTHER_ACTION_STATUS);
+        EXPECT_FALSE(status.details().has_autofill_error_info());
+      }));
+}
+
+TEST_F(RequiredFieldsFallbackHandlerTest, AutofillFailureGetsForwarded) {
+  // Everything is full, no need to do work. Required fields succeed by
+  // default.
+  ON_CALL(mock_web_controller_, GetFieldValue(_, _))
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "value"));
+
+  std::vector<RequiredField> required_fields = {
+      CreateRequiredField("${51}", {"#card_name"})};
+
+  RequiredFieldsFallbackHandler fallback_handler(required_fields, {},
+                                                 &mock_action_delegate_);
+  fallback_handler.CheckAndFallbackRequiredFields(
+      ClientStatus(OTHER_ACTION_STATUS),
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_EQ(status.proto_status(), OTHER_ACTION_STATUS);
+        EXPECT_EQ(
+            status.details().autofill_error_info().autofill_error_status(),
+            OTHER_ACTION_STATUS);
+      }));
+}
+
+TEST_F(RequiredFieldsFallbackHandlerTest,
+       AutofillFailureReturnedOverFallbackError) {
+  // Everything is empty. Required fields fail by default.
+  ON_CALL(mock_web_controller_, GetFieldValue(_, _))
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), std::string()));
+
+  std::vector<RequiredField> required_fields = {
+      CreateRequiredField("${51}", {"#card_name"})};
+
+  RequiredFieldsFallbackHandler fallback_handler(required_fields, {},
+                                                 &mock_action_delegate_);
+  fallback_handler.CheckAndFallbackRequiredFields(
+      ClientStatus(OTHER_ACTION_STATUS),
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_EQ(status.proto_status(), OTHER_ACTION_STATUS);
+        EXPECT_EQ(
+            status.details().autofill_error_info().autofill_error_status(),
+            OTHER_ACTION_STATUS);
+      }));
 }
 
 TEST_F(RequiredFieldsFallbackHandlerTest,
@@ -127,43 +164,31 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
 
-  base::OnceCallback<void(const ClientStatus&,
-                          const base::Optional<ClientStatus>&)>
-      callback =
-          base::BindOnce([](const ClientStatus& status,
-                            const base::Optional<ClientStatus>& detail_status) {
-            EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
-            ASSERT_TRUE(detail_status.has_value());
-            ASSERT_EQ(detail_status.value().proto_status(),
-                      AUTOFILL_INCOMPLETE);
-            ASSERT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error_size(),
-                      2);
-            EXPECT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error(0)
-                          .value_expression(),
-                      "${52}");
-            EXPECT_TRUE(detail_status.value()
-                            .details()
-                            .autofill_error_info()
-                            .autofill_field_error(0)
-                            .no_fallback_value());
-            EXPECT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error(1)
-                          .value_expression(),
-                      "${-3}");
-            EXPECT_TRUE(detail_status.value()
-                            .details()
-                            .autofill_error_info()
-                            .autofill_field_error(1)
-                            .no_fallback_value());
-          });
+  base::OnceCallback<void(const ClientStatus&)> callback =
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
+        ASSERT_EQ(
+            status.details().autofill_error_info().autofill_field_error_size(),
+            2);
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .value_expression(),
+                  "${52}");
+        EXPECT_TRUE(status.details()
+                        .autofill_error_info()
+                        .autofill_field_error(0)
+                        .no_fallback_value());
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(1)
+                      .value_expression(),
+                  "${-3}");
+        EXPECT_TRUE(status.details()
+                        .autofill_error_info()
+                        .autofill_field_error(1)
+                        .no_fallback_value());
+      });
 
   fallback_handler.CheckAndFallbackRequiredFields(OkClientStatus(),
                                                   std::move(callback));
@@ -190,33 +215,23 @@ TEST_F(RequiredFieldsFallbackHandlerTest, AddsFirstFieldFillingError) {
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
 
-  base::OnceCallback<void(const ClientStatus&,
-                          const base::Optional<ClientStatus>&)>
-      callback =
-          base::BindOnce([](const ClientStatus& status,
-                            const base::Optional<ClientStatus>& detail_status) {
-            EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
-            ASSERT_TRUE(detail_status.has_value());
-            ASSERT_EQ(detail_status.value().proto_status(),
-                      AUTOFILL_INCOMPLETE);
-            ASSERT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error_size(),
-                      1);
-            EXPECT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error(0)
-                          .value_expression(),
-                      "${51}");
-            EXPECT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error(0)
-                          .status(),
-                      OTHER_ACTION_STATUS);
-          });
+  base::OnceCallback<void(const ClientStatus&)> callback =
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
+        ASSERT_EQ(
+            status.details().autofill_error_info().autofill_field_error_size(),
+            1);
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .value_expression(),
+                  "${51}");
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .status(),
+                  OTHER_ACTION_STATUS);
+      });
 
   fallback_handler.CheckAndFallbackRequiredFields(OkClientStatus(),
                                                   std::move(callback));
@@ -242,32 +257,22 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
 
-  base::OnceCallback<void(const ClientStatus&,
-                          const base::Optional<ClientStatus>&)>
-      callback =
-          base::BindOnce([](const ClientStatus& status,
-                            const base::Optional<ClientStatus>& detail_status) {
-            EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
-            ASSERT_TRUE(detail_status.has_value());
-            ASSERT_EQ(detail_status.value().proto_status(),
-                      AUTOFILL_INCOMPLETE);
-            ASSERT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error_size(),
-                      1);
-            EXPECT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error(0)
-                          .value_expression(),
-                      "${51}");
-            EXPECT_TRUE(detail_status.value()
-                            .details()
-                            .autofill_error_info()
-                            .autofill_field_error(0)
-                            .empty_after_fallback());
-          });
+  base::OnceCallback<void(const ClientStatus&)> callback =
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
+        ASSERT_EQ(
+            status.details().autofill_error_info().autofill_field_error_size(),
+            1);
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .value_expression(),
+                  "${51}");
+        EXPECT_TRUE(status.details()
+                        .autofill_error_info()
+                        .autofill_field_error(0)
+                        .empty_after_fallback());
+      });
 
   fallback_handler.CheckAndFallbackRequiredFields(OkClientStatus(),
                                                   std::move(callback));
@@ -284,9 +289,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, DoesNotFallbackIfFieldsAreFilled) {
   RequiredFieldsFallbackHandler fallback_handler(required_fields, {},
                                                  &mock_action_delegate_);
   fallback_handler.CheckAndFallbackRequiredFields(
-      OkClientStatus(),
-      base::BindOnce([](const ClientStatus& status,
-                        const base::Optional<ClientStatus>& detail_status) {
+      OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
       }));
 }
@@ -318,9 +321,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FillsEmptyRequiredField) {
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
   fallback_handler.CheckAndFallbackRequiredFields(
-      OkClientStatus(),
-      base::BindOnce([](const ClientStatus& status,
-                        const base::Optional<ClientStatus>& detail_status) {
+      OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
       }));
 }
@@ -348,9 +349,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FallsBackForForcedFilledField) {
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
   fallback_handler.CheckAndFallbackRequiredFields(
-      OkClientStatus(),
-      base::BindOnce([](const ClientStatus& status,
-                        const base::Optional<ClientStatus>& detail_status) {
+      OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
       }));
 }
@@ -367,32 +366,22 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FailsIfForcedFieldDidNotGetFilled) {
   RequiredFieldsFallbackHandler fallback_handler(required_fields, {},
                                                  &mock_action_delegate_);
 
-  base::OnceCallback<void(const ClientStatus&,
-                          const base::Optional<ClientStatus>&)>
-      callback =
-          base::BindOnce([](const ClientStatus& status,
-                            const base::Optional<ClientStatus>& detail_status) {
-            EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
-            ASSERT_TRUE(detail_status.has_value());
-            ASSERT_EQ(detail_status.value().proto_status(),
-                      AUTOFILL_INCOMPLETE);
-            ASSERT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error_size(),
-                      1);
-            EXPECT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error(0)
-                          .value_expression(),
-                      "${51}");
-            EXPECT_TRUE(detail_status.value()
-                            .details()
-                            .autofill_error_info()
-                            .autofill_field_error(0)
-                            .no_fallback_value());
-          });
+  base::OnceCallback<void(const ClientStatus&)> callback =
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
+        ASSERT_EQ(
+            status.details().autofill_error_info().autofill_field_error_size(),
+            1);
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .value_expression(),
+                  "${51}");
+        EXPECT_TRUE(status.details()
+                        .autofill_error_info()
+                        .autofill_field_error(0)
+                        .no_fallback_value());
+      });
 
   fallback_handler.CheckAndFallbackRequiredFields(OkClientStatus(),
                                                   std::move(callback));
@@ -428,9 +417,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FillsFieldWithPattern) {
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
   fallback_handler.CheckAndFallbackRequiredFields(
-      OkClientStatus(),
-      base::BindOnce([](const ClientStatus& status,
-                        const base::Optional<ClientStatus>& detail_status) {
+      OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
       }));
 }
@@ -454,43 +441,31 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
 
-  base::OnceCallback<void(const ClientStatus&,
-                          const base::Optional<ClientStatus>&)>
-      callback =
-          base::BindOnce([](const ClientStatus& status,
-                            const base::Optional<ClientStatus>& detail_status) {
-            EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
-            ASSERT_TRUE(detail_status.has_value());
-            ASSERT_EQ(detail_status.value().proto_status(),
-                      AUTOFILL_INCOMPLETE);
-            ASSERT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error_size(),
-                      2);
-            EXPECT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error(0)
-                          .value_expression(),
-                      "${53}");
-            EXPECT_TRUE(detail_status.value()
-                            .details()
-                            .autofill_error_info()
-                            .autofill_field_error(0)
-                            .no_fallback_value());
-            EXPECT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error(1)
-                          .value_expression(),
-                      "${-3}");
-            EXPECT_TRUE(detail_status.value()
-                            .details()
-                            .autofill_error_info()
-                            .autofill_field_error(1)
-                            .no_fallback_value());
-          });
+  base::OnceCallback<void(const ClientStatus&)> callback =
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
+        ASSERT_EQ(
+            status.details().autofill_error_info().autofill_field_error_size(),
+            2);
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .value_expression(),
+                  "${53}");
+        EXPECT_TRUE(status.details()
+                        .autofill_error_info()
+                        .autofill_field_error(0)
+                        .no_fallback_value());
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(1)
+                      .value_expression(),
+                  "${-3}");
+        EXPECT_TRUE(status.details()
+                        .autofill_error_info()
+                        .autofill_field_error(1)
+                        .no_fallback_value());
+      });
 
   fallback_handler.CheckAndFallbackRequiredFields(OkClientStatus(),
                                                   std::move(callback));
@@ -537,9 +512,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, UsesSelectOptionForDropdowns) {
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
   fallback_handler.CheckAndFallbackRequiredFields(
-      OkClientStatus(),
-      base::BindOnce([](const ClientStatus& status,
-                        const base::Optional<ClientStatus>& detail_status) {
+      OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
       }));
 }
@@ -581,9 +554,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClicksOnCustomDropdown) {
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
   fallback_handler.CheckAndFallbackRequiredFields(
-      OkClientStatus(),
-      base::BindOnce([](const ClientStatus& status,
-                        const base::Optional<ClientStatus>& detail_status) {
+      OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
       }));
 }
@@ -625,9 +596,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, CustomDropdownClicksStopOnError) {
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
   fallback_handler.CheckAndFallbackRequiredFields(
-      OkClientStatus(),
-      base::BindOnce([](const ClientStatus& status,
-                        const base::Optional<ClientStatus>& detail_status) {
+      OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
       }));
 }
@@ -666,9 +635,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClearsFilledField) {
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
   fallback_handler.CheckAndFallbackRequiredFields(
-      OkClientStatus(),
-      base::BindOnce([](const ClientStatus& status,
-                        const base::Optional<ClientStatus>& detail_status) {
+      OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
       }));
 }
@@ -706,9 +673,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, SkipsForcedFieldCheckOnFirstRun) {
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
   fallback_handler.CheckAndFallbackRequiredFields(
-      OkClientStatus(),
-      base::BindOnce([](const ClientStatus& status,
-                        const base::Optional<ClientStatus>& detail_status) {
+      OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
       }));
 }
@@ -748,19 +713,13 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
 
-  base::OnceCallback<void(const ClientStatus&,
-                          const base::Optional<ClientStatus>&)>
-      callback =
-          base::BindOnce([](const ClientStatus& status,
-                            const base::Optional<ClientStatus>& detail_status) {
-            EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
-            ASSERT_TRUE(detail_status.has_value());
-            EXPECT_EQ(detail_status.value()
-                          .details()
-                          .autofill_error_info()
-                          .autofill_field_error_size(),
-                      0);
-          });
+  base::OnceCallback<void(const ClientStatus&)> callback =
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
+        EXPECT_EQ(
+            status.details().autofill_error_info().autofill_field_error_size(),
+            0);
+      });
 
   fallback_handler.CheckAndFallbackRequiredFields(OkClientStatus(),
                                                   std::move(callback));

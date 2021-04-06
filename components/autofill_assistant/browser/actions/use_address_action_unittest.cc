@@ -21,7 +21,6 @@
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
-#include "components/autofill_assistant/browser/web/web_controller_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -477,8 +476,7 @@ TEST_F(UseAddressActionTest,
 
   EXPECT_CALL(mock_action_delegate_,
               OnFillAddressForm(NotNull(), Eq(Selector({kFakeSelector})), _))
-      .WillOnce(RunOnceCallback<2>(
-          FillAutofillErrorStatus(ClientStatus(OTHER_ACTION_STATUS))));
+      .WillOnce(RunOnceCallback<2>(ClientStatus(OTHER_ACTION_STATUS)));
 
   // First validation fails.
   EXPECT_CALL(mock_web_controller_,
@@ -507,8 +505,7 @@ TEST_F(UseAddressActionTest,
   UseAddressAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 
-  EXPECT_EQ(processed_action.status(),
-            ProcessedActionStatusProto::ACTION_APPLIED);
+  EXPECT_EQ(processed_action.status(), OTHER_ACTION_STATUS);
   EXPECT_EQ(processed_action.status_details()
                 .autofill_error_info()
                 .autofill_error_status(),

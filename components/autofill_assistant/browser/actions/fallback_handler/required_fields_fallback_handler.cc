@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
@@ -28,8 +27,6 @@ const char kSelectElementTag[] = "SELECT";
 AutofillErrorInfoProto::AutofillFieldError* AddAutofillError(
     const RequiredField& required_field,
     ClientStatus* client_status) {
-  client_status->set_proto_status(
-      ProcessedActionStatusProto::AUTOFILL_INCOMPLETE);
   auto* field_error = client_status->mutable_details()
                           ->mutable_autofill_error_info()
                           ->add_autofill_field_error();
@@ -64,6 +61,13 @@ void FillStatusDetailsWithNotClearedField(const RequiredField& required_field,
   field_error->set_filled_after_clear(true);
 }
 
+ClientStatus& UpdateClientStatusForIncomplete(ClientStatus& status) {
+  if (status.ok()) {
+    status.set_proto_status(AUTOFILL_INCOMPLETE);
+  }
+  return status;
+}
+
 }  // namespace
 
 RequiredFieldsFallbackHandler::~RequiredFieldsFallbackHandler() = default;
@@ -78,9 +82,7 @@ RequiredFieldsFallbackHandler::RequiredFieldsFallbackHandler(
 
 void RequiredFieldsFallbackHandler::CheckAndFallbackRequiredFields(
     const ClientStatus& initial_autofill_status,
-    base::OnceCallback<void(const ClientStatus&,
-                            const base::Optional<ClientStatus>&)>
-        status_update_callback) {
+    base::OnceCallback<void(const ClientStatus&)> status_update_callback) {
   client_status_ = initial_autofill_status;
   status_update_callback_ = std::move(status_update_callback);
 
@@ -90,9 +92,14 @@ void RequiredFieldsFallbackHandler::CheckAndFallbackRequiredFields(
               << initial_autofill_status.proto_status();
     }
 
-    std::move(status_update_callback_)
-        .Run(initial_autofill_status, base::nullopt);
+    std::move(status_update_callback_).Run(initial_autofill_status);
     return;
+  }
+
+  if (!client_status_.ok()) {
+    client_status_.mutable_details()
+        ->mutable_autofill_error_info()
+        ->set_autofill_error_status(client_status_.proto_status());
   }
 
   CheckAllRequiredFields(/* apply_fallback = */ true);
@@ -164,15 +171,14 @@ void RequiredFieldsFallbackHandler::OnCheckRequiredFieldsDone(
   }
 
   if (!should_fallback) {
-    std::move(status_update_callback_)
-        .Run(ClientStatus(ACTION_APPLIED), client_status_);
+    std::move(status_update_callback_).Run(client_status_);
     return;
   }
 
   if (!apply_fallback) {
     // Validation failed and we don't want to try the fallback.
     std::move(status_update_callback_)
-        .Run(ClientStatus(AUTOFILL_INCOMPLETE), client_status_);
+        .Run(UpdateClientStatusForIncomplete(client_status_));
     return;
   }
 
@@ -200,7 +206,7 @@ void RequiredFieldsFallbackHandler::OnCheckRequiredFieldsDone(
   }
   if (!has_fallbacks || has_empty_value) {
     std::move(status_update_callback_)
-        .Run(ClientStatus(AUTOFILL_INCOMPLETE), client_status_);
+        .Run(UpdateClientStatusForIncomplete(client_status_));
     return;
   }
 
@@ -277,7 +283,7 @@ void RequiredFieldsFallbackHandler::OnFindElement(
 
     // Fallback failed: we stop the script without checking the other fields.
     std::move(status_update_callback_)
-        .Run(ClientStatus(AUTOFILL_INCOMPLETE), client_status_);
+        .Run(UpdateClientStatusForIncomplete(client_status_));
     return;
   }
 
@@ -354,7 +360,7 @@ void RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement(
 
     // Fallback failed: we stop the script without checking the other fields.
     std::move(status_update_callback_)
-        .Run(ClientStatus(AUTOFILL_INCOMPLETE), client_status_);
+        .Run(UpdateClientStatusForIncomplete(client_status_));
     return;
   }
 
@@ -382,7 +388,7 @@ void RequiredFieldsFallbackHandler::OnShortWaitForElement(
 
     // Fallback failed: we stop the script without checking the other fields.
     std::move(status_update_callback_)
-        .Run(ClientStatus(AUTOFILL_INCOMPLETE), client_status_);
+        .Run(UpdateClientStatusForIncomplete(client_status_));
     return;
   }
 
@@ -412,7 +418,7 @@ void RequiredFieldsFallbackHandler::OnSetFallbackFieldValue(
 
     // Fallback failed: we stop the script without checking the other fields.
     std::move(status_update_callback_)
-        .Run(ClientStatus(AUTOFILL_INCOMPLETE), client_status_);
+        .Run(UpdateClientStatusForIncomplete(client_status_));
     return;
   }
 

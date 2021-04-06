@@ -96,17 +96,11 @@ void UseCreditCardAction::InternalProcessAction(
   FillFormWithData();
 }
 
-void UseCreditCardAction::EndAction(
-    const ClientStatus& final_status,
-    const base::Optional<ClientStatus>& optional_details_status) {
+void UseCreditCardAction::EndAction(const ClientStatus& status) {
   if (fallback_handler_)
     action_stopwatch_.TransferToWaitTime(fallback_handler_->TotalWaitTime());
 
-  UpdateProcessedAction(final_status);
-  if (optional_details_status.has_value() && !optional_details_status->ok()) {
-    processed_action_proto_->mutable_status_details()->MergeFrom(
-        optional_details_status->details());
-  }
+  UpdateProcessedAction(status);
   std::move(process_action_callback_).Run(std::move(processed_action_proto_));
 }
 

@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/actions/fallback_handler/required_field.h"
@@ -39,9 +38,7 @@ class RequiredFieldsFallbackHandler {
   // action.
   void CheckAndFallbackRequiredFields(
       const ClientStatus& initial_autofill_status,
-      base::OnceCallback<void(const ClientStatus&,
-                              const base::Optional<ClientStatus>&)>
-          status_update_callback);
+      base::OnceCallback<void(const ClientStatus&)> status_update_callback);
 
   base::TimeDelta TotalWaitTime() { return total_wait_time_; }
 
@@ -102,9 +99,7 @@ class RequiredFieldsFallbackHandler {
 
   std::vector<RequiredField> required_fields_;
   std::map<std::string, std::string> fallback_values_;
-  base::OnceCallback<void(const ClientStatus&,
-                          const base::Optional<ClientStatus>&)>
-      status_update_callback_;
+  base::OnceCallback<void(const ClientStatus&)> status_update_callback_;
   ActionDelegate* action_delegate_;
   std::unique_ptr<BatchElementChecker> batch_element_checker_;
   base::TimeDelta total_wait_time_ = base::TimeDelta::FromSeconds(0);

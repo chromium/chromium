@@ -55,9 +55,6 @@ ClientStatus CheckJavaScriptResult(
   return OkClientStatus();
 }
 
-// Fills a ClientStatus with appropriate details for a Chrome Autofill error.
-ClientStatus FillAutofillErrorStatus(ClientStatus status);
-
 // Fills a ClientStatus with appropriate details from the
 void FillWebControllerErrorInfo(
     WebControllerErrorInfoProto::WebAction failed_web_action,

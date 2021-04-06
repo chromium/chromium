@@ -50,13 +50,6 @@ ClientStatus JavaScriptErrorStatus(
   return status;
 }
 
-ClientStatus FillAutofillErrorStatus(ClientStatus status) {
-  status.mutable_details()
-      ->mutable_autofill_error_info()
-      ->set_autofill_error_status(status.proto_status());
-  return status;
-}
-
 void FillWebControllerErrorInfo(
     WebControllerErrorInfoProto::WebAction failed_web_action,
     ClientStatus* status) {
