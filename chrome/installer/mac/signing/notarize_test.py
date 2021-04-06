@@ -60,6 +60,87 @@ class TestSubmit(unittest.TestCase):
             '--output-format', 'xml', '--asc-provider', '[NOTARY-ASC-PROVIDER]'
         ])
 
+    @mock.patch('signing.commands.run_command_output')
+    def test_fail_once_then_succeed(self, run_command_output):
+        run_command_output.side_effect = [
+            subprocess.CalledProcessError(
+                176, 'altool',
+                'Unable to find requested file(s): metadata.xml (1057)'),
+            _make_plist({
+                'notarization-upload': {
+                    'RequestUUID': '600b24b7-8fa2-4fdb-adf9-dff1f8b7858e'
+                }
+            })
+        ]
+
+        config = test_config.TestConfig()
+        uuid = notarize.submit('/tmp/app.zip', config)
+
+        self.assertEqual('600b24b7-8fa2-4fdb-adf9-dff1f8b7858e', uuid)
+        run_command_output.assert_has_calls(2 * [
+            mock.call([
+                'xcrun', 'altool', '--notarize-app', '--file', '/tmp/app.zip',
+                '--primary-bundle-id', 'test.signing.bundle_id', '--username',
+                '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
+                '--output-format', 'xml'
+            ])
+        ])
+
+    @mock.patch('signing.commands.run_command_output')
+    def test_fail_twice_with_unexpected_code(self, run_command_output):
+        run_command_output.side_effect = [
+            subprocess.CalledProcessError(
+                176, 'altool',
+                'Unable to find requested file(s): metadata.xml (1057)'),
+            subprocess.CalledProcessError(999, 'altool', 'Unexpected error'),
+        ]
+
+        config = test_config.TestConfig()
+
+        with self.assertRaises(subprocess.CalledProcessError) as cm:
+            notarize.submit('/tmp/app.zip', config)
+
+        self.assertEqual(cm.exception.returncode, 999)
+        run_command_output.assert_has_calls(2 * [
+            mock.call([
+                'xcrun', 'altool', '--notarize-app', '--file', '/tmp/app.zip',
+                '--primary-bundle-id', 'test.signing.bundle_id', '--username',
+                '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
+                '--output-format', 'xml'
+            ])
+        ])
+
+    @mock.patch('signing.commands.run_command_output')
+    def test_fail_three_times(self, run_command_output):
+        run_command_output.side_effect = [
+            subprocess.CalledProcessError(
+                176, 'altool',
+                'Unable to find requested file(s): metadata.xml (1057)'),
+            subprocess.CalledProcessError(
+                236, 'altool',
+                'Exception occurred when creating MZContentProviderUpload for provider. (1004)'
+            ),
+            subprocess.CalledProcessError(
+                240, 'altool',
+                'A fatal error has been detected by the Java Runtime Environment'
+            ),
+        ]
+
+        config = test_config.TestConfig()
+
+        with self.assertRaises(subprocess.CalledProcessError) as cm:
+            notarize.submit('/tmp/app.zip', config)
+
+        self.assertEqual(cm.exception.returncode, 240)
+        run_command_output.assert_has_calls(3 * [
+            mock.call([
+                'xcrun', 'altool', '--notarize-app', '--file', '/tmp/app.zip',
+                '--primary-bundle-id', 'test.signing.bundle_id', '--username',
+                '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
+                '--output-format', 'xml'
+            ])
+        ])
+
 
 class TestWaitForResults(unittest.TestCase):
 
@@ -278,4 +359,58 @@ class TestStaple(unittest.TestCase):
                       '/Helpers/Bar.app'),
             mock.call('/work/Foo.app/Contents/Helpers/Helper.app'),
             mock.call('/work/Foo.app')
+        ])
+
+    @mock.patch('signing.commands.run_command')
+    def test_fail_once_then_succeed(self, run_command):
+        run_command.side_effect = [
+            subprocess.CalledProcessError(
+                65, 'stapler',
+                'CloudKit query for [file] ([hash]) failed due to "(null)"'),
+            None
+        ]
+        notarize.staple('/tmp/file.dmg')
+        run_command.assert_has_calls(2 * [
+            mock.call(
+                ['xcrun', 'stapler', 'staple', '--verbose', '/tmp/file.dmg'])
+        ])
+
+    @mock.patch('signing.commands.run_command')
+    def test_fail_twice_with_unexpected_code(self, run_command):
+        run_command.side_effect = [
+            subprocess.CalledProcessError(
+                65, 'stapler',
+                'CloudKit query for /tmp/file.dmg failed due to "(null)"'),
+            subprocess.CalledProcessError(999, 'stapler',
+                                          'An unexpected error.'),
+        ]
+        with self.assertRaises(subprocess.CalledProcessError) as cm:
+            notarize.staple('/tmp/file.dmg')
+
+        self.assertEqual(cm.exception.returncode, 999)
+        run_command.assert_has_calls(2 * [
+            mock.call(
+                ['xcrun', 'stapler', 'staple', '--verbose', '/tmp/file.dmg'])
+        ])
+
+    @mock.patch('signing.commands.run_command')
+    def test_fail_three_times(self, run_command):
+        run_command.side_effect = [
+            subprocess.CalledProcessError(
+                65, 'stapler',
+                'CloudKit query for /tmp/file.dmg failed due to "(null)"'),
+            subprocess.CalledProcessError(
+                65, 'stapler',
+                'CloudKit query for /tmp/file.dmg failed due to "(null)"'),
+            subprocess.CalledProcessError(
+                68, 'stapler',
+                'A server with the specified hostname could not be found.'),
+        ]
+        with self.assertRaises(subprocess.CalledProcessError) as cm:
+            notarize.staple('/tmp/file.dmg')
+
+        self.assertEqual(cm.exception.returncode, 68)
+        run_command.assert_has_calls(3 * [
+            mock.call(
+                ['xcrun', 'stapler', 'staple', '--verbose', '/tmp/file.dmg'])
         ])
