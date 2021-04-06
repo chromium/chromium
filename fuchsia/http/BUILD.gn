@@ -54,6 +54,8 @@ test("http_service_tests") {
     "//testing/gtest",
   ]
   data = [ "testdata/" ]
+  additional_manifest_fragments =
+      [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
 }
 
 if (is_official_build) {

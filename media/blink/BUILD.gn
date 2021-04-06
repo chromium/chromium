@@ -169,4 +169,9 @@ test("media_blink_unittests") {
       deps += [ "//v8:v8_external_startup_data_assets" ]
     }
   }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
+  }
 }

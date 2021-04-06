@@ -33,10 +33,14 @@ https://fuchsia.dev/reference/fidl/fuchsia.web#CreateContextParams and
 https://fuchsia.dev/reference/fidl/fuchsia.web#ContextFeatureFlags.
 Any test-specific exceptions are documented for each file.
 
+#### audio_capabilities.test-cmx
+Corresponds to the `AUDIO` flag. Required for enabling audio input and output.
+
 #### network_capabilities.test-cmx
 Corresponds to the `NETWORK` flag. Required for enabling network access. Note
 that access to the root SSL certificates is not needed if ContextProvider is
-used to launch the `Context`.
+used to launch the `Context`. The `fuchsia.device.NameProvider` dependency comes
+from fdio.
 
 #### present_view_capabilities.test-cmx
 Services that are needed to render web content in a Scenic view and present it.

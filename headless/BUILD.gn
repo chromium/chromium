@@ -843,7 +843,7 @@ if (is_fuchsia) {
   cr_fuchsia_package("headless_shell_pkg") {
     binary = ":headless_shell"
     package_name_override = "headless_shell"
-    manifest = "//build/config/fuchsia/tests.cmx"
+    manifest = "//build/config/fuchsia/test/minimum_capabilities.test-cmx"
   }
 
   fuchsia_package_runner("headless_shell_fuchsia") {

@@ -196,11 +196,14 @@ test("media_unittests") {
   }
 
   if (is_fuchsia) {
-    deps += [
-      "//media/fuchsia/audio:unittests",
-      "//media/fuchsia/cdm/service:unittests",
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/audio_capabilities.test-cmx",
+
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
     ]
-    manifest = "//media/fuchsia/media_unittests.test-cmx"
   }
 
   if (enable_media_remoting) {

@@ -7,6 +7,7 @@
         "fuchsia.web.ContextProvider": "fuchsia-pkg://fuchsia.com/web_engine#meta/context_provider.cmx",
       },
       "system-services": [
+        "fuchsia.device.NameProvider",
         "fuchsia.scheduler.ProfileProvider",
         "fuchsia.sysmem.Allocator"
       ]

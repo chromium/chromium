@@ -260,18 +260,8 @@ template("test") {
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
 
-    # TODO(crbug.com/1019938): make minimum_capabilities.test-cmx the default
-    # and have everything added via additional_manifest_fragments
-    if (!defined(invoker.manifest)) {
-      if (!defined(invoker.additional_manifest_fragments)) {
-        manifest_fragments = [ "//build/config/fuchsia/tests-with-exec.cmx" ]
-      } else {
-        manifest_fragments =
-            [ "//build/config/fuchsia/test/minimum_capabilities.test-cmx" ]
-      }
-    } else {
-      manifest_fragments = [ invoker.manifest ]
-    }
+    manifest_fragments =
+        [ "//build/config/fuchsia/test/minimum_capabilities.test-cmx" ]
 
     if (defined(invoker.additional_manifest_fragments)) {
       manifest_fragments += invoker.additional_manifest_fragments
