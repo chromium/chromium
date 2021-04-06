@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/notreached.h"
+#include "base/logging.h"
 
 namespace arc {
 namespace {
@@ -24,7 +24,7 @@ std::string ArcInstanceModeToString(ArcInstanceMode mode) {
 
   // Some compilers report an error even if all values of an enum-class are
   // covered exhaustively in a switch statement.
-  NOTREACHED() << "Invalid value " << static_cast<int>(mode);
+  LOG(ERROR) << "Invalid value " << static_cast<int>(mode);
   return std::string();
 }
 
