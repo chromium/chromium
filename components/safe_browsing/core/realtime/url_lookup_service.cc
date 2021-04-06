@@ -118,6 +118,15 @@ bool RealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {
   return true;
 }
 
+void RealTimeUrlLookupService::Shutdown() {
+  // Clear state that was potentially bound to the lifetime of other
+  // KeyedServices by the embedder.
+  token_fetcher_.reset();
+  client_token_config_callback_ = ClientConfiguredForTokenFetchesCallback();
+
+  RealTimeUrlLookupServiceBase::Shutdown();
+}
+
 GURL RealTimeUrlLookupService::GetRealTimeLookupUrl() const {
   return GURL(
       "https://safebrowsing.google.com/safebrowsing/clientreport/realtime");

@@ -480,6 +480,9 @@ void RealTimeUrlLookupServiceBase::Shutdown() {
     delete pending.first;
   }
   pending_requests_.clear();
+
+  // Clear references to other KeyedServices.
+  cache_manager_ = nullptr;
 }
 
 }  // namespace safe_browsing

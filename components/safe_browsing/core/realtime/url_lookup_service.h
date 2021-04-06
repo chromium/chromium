@@ -71,6 +71,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool CanPerformFullURLLookup() const override;
   bool CanCheckSubresourceURL() const override;
   bool CanCheckSafeBrowsingDb() const override;
+  void Shutdown() override;
 
  private:
   // RealTimeUrlLookupServiceBase:
