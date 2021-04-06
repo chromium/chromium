@@ -797,8 +797,7 @@ void WebContentsAndroid::OnFinishDownloadImage(
       Java_WebContentsImpl_createBitmapList(env);
   ScopedJavaLocalRef<jobject> jsizes =
       Java_WebContentsImpl_createSizeList(env);
-  ScopedJavaLocalRef<jstring> jurl =
-      base::android::ConvertUTF8ToJavaString(env, url.spec());
+  ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
 
   for (const SkBitmap& bitmap : bitmaps) {
     // WARNING: convering to java bitmaps results in duplicate memory
