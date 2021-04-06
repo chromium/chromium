@@ -1,9 +1,9 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_SYSTEM_PROXY_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_SYSTEM_PROXY_MANAGER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_NET_SYSTEM_PROXY_MANAGER_H_
+#define CHROME_BROWSER_CHROMEOS_NET_SYSTEM_PROXY_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
 #include "chromeos/network/network_state_handler_observer.h"
@@ -48,28 +47,47 @@ class PrefService;
 class PrefChangeRegistrar;
 class Profile;
 
-namespace policy {
+namespace chromeos {
 
-// This class observes the device setting |SystemProxySettings|, and controls
-// the availability of System-proxy service and the configuration of the web
-// proxy credentials for system services connecting through System-proxy. It
-// also listens for the |WorkerActive| dbus signal sent by the System-proxy
+// Starts and stops the system-proxy service and handles the authentication
+// requests coming from system-proxy. Authentication requests are resolved by
+// requesting proxy credentials from the NetworkService or, if the
+// NetworkService doesn't have credentials for the specified proxy, it will
+// prompt a dialog asking the user for credentials.
+// It also listens for the `WorkerActive` dbus signal sent by the System-proxy
 // daemon and stores connection information regarding the active worker
 // processes.
 // TODO(acostinas, https://crbug.com/1145174): Move the logic that tracks
 // managed network changes to another class.
-class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
+class SystemProxyManager : public NetworkStateHandlerObserver {
  public:
-  SystemProxyManager(ash::CrosSettings* cros_settings,
-                     PrefService* local_state);
+  SystemProxyManager(PrefService* local_state);
   SystemProxyManager(const SystemProxyManager&) = delete;
 
   SystemProxyManager& operator=(const SystemProxyManager&) = delete;
 
   ~SystemProxyManager() override;
 
-  // If System-proxy is enabled by policy, it returns the URL of the local proxy
-  // instance that authenticates system services, in PAC format, e.g.
+  // Called by ChromeBrowserMainPartsChromeOS in order to bootstrap the
+  // SystemProxyManager instance after the required global data is
+  // available (local state, and CrosSettings).
+  static void Initialize(PrefService* local_state);
+
+  // Returns the instance of the SystemProxyManager singleton.  May return
+  // nullptr during browser startup and shutdown.  When calling Get(), either
+  // make sure that your code executes after browser startup and before shutdown
+  // or be careful to call Get() every time (instead of holding a pointer) and
+  // check for nullptr to handle cases where you might access
+  // SystemProxyManager during startup or shutdown.
+  static SystemProxyManager* Get();
+
+  // Called by ChromeBrowserMainPartsChromeOS in order to shutdown the
+  // SystemProxyManager instance before the required global data is destroyed
+  // (local state and CrosSettings).
+  static void Shutdown();
+
+  // If System-proxy is enabled, it returns the URL of the local proxy instance
+  // that authenticates system services, in PAC format, e.g.
   //     PROXY localhost:3128
   // otherwise it returns an empty string.
   std::string SystemServicesProxyPacString() const;
@@ -80,6 +98,16 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
   // requests proxy credentials from the browser by sending an
   // |AuthenticationRequired| D-Bus signal.
   void ClearUserCredentials();
+
+  // Enables/disables system-proxy and sets credentials to be used by ChromeOS
+  // system services when connecting to a remote web proxy via system-proxy. The
+  // credentials are only forwarded to system-proxy if the network proxy
+  // configuration is managed via policy. `auth_schemes` allows restricting the
+  // credentials to certain HTTP auth schemes.
+  void SetPolicySettings(bool system_proxy_enabled,
+                         const std::string& system_services_username,
+                         const std::string& system_services_password,
+                         const std::vector<std::string>& auth_schemes);
 
   void SetSystemProxyEnabledForTest(bool enabled);
   void SetSystemServicesProxyUrlForTest(const std::string& local_proxy_url);
@@ -109,7 +137,7 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
 
  private:
   // NetworkStateHandlerObserver implementation
-  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+  void DefaultNetworkChanged(const NetworkState* network) override;
   // Called when the proxy configurations may have changed either by updates to
   // the kProxy policy or updates to the default network.
   void OnProxyConfigChanged();
@@ -158,11 +186,6 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
   void SendEmptyCredentials(
       const system_proxy::ProtectionSpace& protection_space);
 
-  // Once a trusted set of policies is established, this function calls
-  // the System-proxy dbus client to start/shutdown the daemon and, if
-  // necessary, to configure the web proxy credentials for system services.
-  void OnSystemProxySettingsPolicyChanged();
-
   // This function is called when the |WorkerActive| dbus signal is received.
   void OnWorkerActive(const system_proxy::WorkerActiveSignalDetails& details);
 
@@ -196,9 +219,6 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
 
   // Closes the authentication notification or dialog if shown.
   void CloseAuthenticationUI();
-
-  ash::CrosSettings* cros_settings_;
-  base::CallbackListSubscription system_proxy_subscription_;
 
   bool system_proxy_enabled_ = false;
   // The authority URI in the format host:port of the local proxy worker for
@@ -243,6 +263,6 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
   base::WeakPtrFactory<SystemProxyManager> weak_factory_{this};
 };
 
-}  // namespace policy
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_SYSTEM_PROXY_MANAGER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_NET_SYSTEM_PROXY_MANAGER_H_

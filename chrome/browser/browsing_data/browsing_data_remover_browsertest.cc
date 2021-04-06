@@ -102,8 +102,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1433,10 +1433,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 // sends a request to System-proxy to clear the cached user credentials.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        SystemProxyClearsUserCredentials) {
-  g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
-      ->GetSystemProxyManager()
-      ->SetSystemProxyEnabledForTest(true);
+  chromeos::SystemProxyManager::Get()->SetSystemProxyEnabledForTest(true);
   EXPECT_EQ(0, chromeos::SystemProxyClient::Get()
                    ->GetTestInterface()
                    ->GetClearUserCredentialsCount());

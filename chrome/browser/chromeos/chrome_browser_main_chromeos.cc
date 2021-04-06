@@ -110,6 +110,7 @@
 #include "chrome/browser/chromeos/net/network_portal_detector_impl.h"
 #include "chrome/browser/chromeos/net/network_pref_state_observer.h"
 #include "chrome/browser/chromeos/net/network_throttling_observer.h"
+#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/browser/chromeos/network_change_manager_client.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
@@ -661,6 +662,7 @@ int ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
   chromeos::cfm::InitializeCfmServices();
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
+  SystemProxyManager::Initialize(g_browser_process->local_state());
   return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }
 
@@ -1152,6 +1154,7 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
 // shutdown calls and test |pre_profile_init_called_| if necessary. See
 // crbug.com/702403 for details.
 void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
+  SystemProxyManager::Shutdown();
   crostini_unsupported_action_notifier_.reset();
 
   BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded", true);

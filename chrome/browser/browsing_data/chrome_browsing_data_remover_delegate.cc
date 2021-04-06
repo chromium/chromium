@@ -162,8 +162,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
@@ -832,11 +832,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             CreateTaskCompletionClosureForMojo(
                 TracingDataType::kHttpAuthCache));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    policy::SystemProxyManager* system_proxy_manager =
-        g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
-            ->GetSystemProxyManager();
-    if (system_proxy_manager) {
+    if (chromeos::SystemProxyManager::Get()) {
       // Sends a request to the System-proxy daemon to clear the proxy user
       // credentials. System-proxy retrieves proxy username and password from
       // the NetworkService, but not the creation time of the credentials. The
@@ -844,7 +840,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       // credentials. If credentials prior to |delete_begin_| are removed from
       // System-proxy, the daemon will send a D-Bus request to Chrome to fetch
       // them from the NetworkService when needed.
-      system_proxy_manager->ClearUserCredentials();
+      chromeos::SystemProxyManager::Get()->ClearUserCredentials();
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -57,7 +57,7 @@
 #include "chrome/browser/chromeos/policy/remote_commands/affiliated_remote_commands_invalidator.h"
 #include "chrome/browser/chromeos/policy/scheduled_update_checker/device_scheduled_update_checker.h"
 #include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
-#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
+#include "chrome/browser/chromeos/policy/system_proxy_handler.h"
 #include "chrome/browser/chromeos/policy/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/chromeos/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
@@ -301,8 +301,8 @@ void BrowserPolicyConnectorChromeOS::Init(
             policy::DeviceWilcoDtcConfigurationExternalDataHandler>(
             GetPolicyService()));
   }
-  system_proxy_manager_ = std::make_unique<SystemProxyManager>(
-      ash::CrosSettings::Get(), local_state);
+  system_proxy_handler_ =
+      std::make_unique<SystemProxyHandler>(chromeos::CrosSettings::Get());
 
   adb_sideloading_allowance_mode_policy_handler_ =
       std::make_unique<AdbSideloadingAllowanceModePolicyHandler>(
@@ -322,7 +322,7 @@ void BrowserPolicyConnectorChromeOS::PreShutdown() {
 
 void BrowserPolicyConnectorChromeOS::Shutdown() {
   device_cert_provisioning_scheduler_.reset();
-  system_proxy_manager_.reset();
+  system_proxy_handler_.reset();
 
   // NetworkCertLoader may be not initialized in tests.
   if (chromeos::NetworkCertLoader::IsInitialized()) {

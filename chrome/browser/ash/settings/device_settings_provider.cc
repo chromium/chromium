@@ -29,7 +29,7 @@
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/chromeos/policy/device_policy_decoder_chromeos.h"
 #include "chrome/browser/chromeos/policy/off_hours/off_hours_proto_parser.h"
-#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
+#include "chrome/browser/chromeos/policy/system_proxy_handler.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/settings/cros_settings_names.h"

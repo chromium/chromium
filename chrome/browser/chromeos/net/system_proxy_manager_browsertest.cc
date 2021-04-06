@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/notifications/request_system_proxy_credentials_view.h"
+#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -67,7 +67,7 @@
 using testing::_;
 using testing::Return;
 
-namespace policy {
+namespace chromeos {
 
 namespace {
 constexpr char kRealm[] = "My proxy";
@@ -182,17 +182,15 @@ class SystemProxyManagerBrowserTest : public InProcessBrowserTest {
 
  protected:
   SystemProxyManager* GetSystemProxyManager() {
-    return g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
-        ->GetSystemProxyManager();
+    return SystemProxyManager::Get();
   }
 
   ash::RequestSystemProxyCredentialsView* dialog() {
     return GetSystemProxyManager()->GetActiveAuthDialogForTest();
   }
 
-  chromeos::SystemProxyClient::TestInterface* client_test_interface() {
-    return chromeos::SystemProxyClient::Get()->GetTestInterface();
+  SystemProxyClient::TestInterface* client_test_interface() {
+    return SystemProxyClient::Get()->GetTestInterface();
   }
 
   void SendAuthenticationRequest(bool bad_cached_credentials) {
@@ -341,7 +339,7 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
  public:
   SystemProxyManagerPolicyCredentialsBrowserTest() {
     device_state_.SetState(
-        chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
+        DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
     device_state_.set_skip_initial_policy_setup(true);
   }
   SystemProxyManagerPolicyCredentialsBrowserTest(
@@ -351,15 +349,15 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
   ~SystemProxyManagerPolicyCredentialsBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
 
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     const std::string kAffiliationID = "id";
     // Initialize device policy.
     std::set<std::string> device_affiliation_ids;
     device_affiliation_ids.insert(kAffiliationID);
-    auto affiliation_helper = AffiliationTestHelper::CreateForCloud(
-        chromeos::FakeSessionManagerClient::Get());
+    auto affiliation_helper = policy::AffiliationTestHelper::CreateForCloud(
+        FakeSessionManagerClient::Get());
     ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetDeviceAffiliationIDs(
         &policy_helper_, device_affiliation_ids)));
 
@@ -387,11 +385,11 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
     proto.mutable_system_proxy_settings()->set_system_proxy_settings(
         policy_value);
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {chromeos::kSystemProxySettings});
+        {kSystemProxySettings});
     RunUntilIdle();
   }
 
-  void SetOncPolicy(const std::string& policy_json, PolicyScope scope) {
+  void SetOncPolicy(const std::string& policy_json, policy::PolicyScope scope) {
     policy::PolicyMap policy;
     policy.Set(policy::key::kOpenNetworkConfiguration,
                policy::POLICY_LEVEL_MANDATORY, scope,
@@ -401,10 +399,8 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
   }
 
   void DisconnectNetworkService(const std::string& service_path) {
-    chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillServiceClient()
-            ->GetTestInterface();
+    ShillServiceClient::TestInterface* service_test =
+        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
     base::Value value(shill::kStateIdle);
     service_test->SetServiceProperty(service_path, shill::kStateProperty,
                                      value);
@@ -414,10 +410,8 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
   void ConnectWifiNetworkService(const std::string& service_path,
                                  const std::string& guid,
                                  const std::string& ssid) {
-    chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillServiceClient()
-            ->GetTestInterface();
+    ShillServiceClient::TestInterface* service_test =
+        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
 
     service_test->AddService(service_path, guid, ssid, shill::kTypeWifi,
                              shill::kStateOnline, true /* add_to_visible */);
@@ -430,13 +424,12 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
   void SetProxyConfigForNetworkService(const std::string& service_path,
                                        base::Value proxy_config) {
     ProxyConfigDictionary proxy_config_dict(std::move(proxy_config));
-    DCHECK(chromeos::NetworkHandler::IsInitialized());
-    const chromeos::NetworkState* network = chromeos::NetworkHandler::Get()
-                                                ->network_state_handler()
-                                                ->GetNetworkState(service_path);
+    DCHECK(NetworkHandler::IsInitialized());
+    const NetworkState* network =
+        NetworkHandler::Get()->network_state_handler()->GetNetworkState(
+            service_path);
     ASSERT_TRUE(network);
-    chromeos::proxy_config::SetProxyConfigForNetwork(proxy_config_dict,
-                                                     *network);
+    proxy_config::SetProxyConfigForNetwork(proxy_config_dict, *network);
   }
 
   void ExpectSystemCredentialsSent(
@@ -458,20 +451,16 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
     EXPECT_EQ(system_proxy::TrafficOrigin::SYSTEM, request.traffic_type());
   }
 
-  chromeos::SystemProxyClient::TestInterface* client_test_interface() {
-    return chromeos::SystemProxyClient::Get()->GetTestInterface();
+  SystemProxyClient::TestInterface* client_test_interface() {
+    return SystemProxyClient::Get()->GetTestInterface();
   }
 
  private:
   void SetupNetworkEnvironment() {
-    chromeos::ShillProfileClient::TestInterface* profile_test =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillProfileClient()
-            ->GetTestInterface();
-    chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillServiceClient()
-            ->GetTestInterface();
+    ShillProfileClient::TestInterface* profile_test =
+        DBusThreadManager::Get()->GetShillProfileClient()->GetTestInterface();
+    ShillServiceClient::TestInterface* service_test =
+        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
 
     profile_test->AddProfile(kUserProfilePath, "user");
 
@@ -479,12 +468,12 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
     ConnectWifiNetworkService(kDefaultServicePath, kDefaultServiceSsid,
                               kDefaultServiceGuid);
   }
-  chromeos::DeviceStateMixin device_state_{
-      &mixin_host_, chromeos::DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 
-  chromeos::ScopedStubInstallAttributes test_install_attributes_;
-  testing::NiceMock<MockConfigurationPolicyProvider> provider_;
-  DevicePolicyCrosTestHelper policy_helper_;
+  ScopedStubInstallAttributes test_install_attributes_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  policy::DevicePolicyCrosTestHelper policy_helper_;
 };
 
 // Tests that the SystemProxyManager syncs credentials correctly for managed
@@ -582,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
   base::Value proxy_config(base::Value::Type::DICTIONARY);
   proxy_config.SetKey("mode", base::Value(ProxyPrefs::kPacScriptProxyModeName));
   proxy_config.SetKey("pac_url", base::Value("http://proxy"));
-  browser()->profile()->GetPrefs()->Set(proxy_config::prefs::kProxy,
+  browser()->profile()->GetPrefs()->Set(::proxy_config::prefs::kProxy,
                                         proxy_config);
   RunUntilIdle();
   EXPECT_EQ(++set_auth_details_call_count,
@@ -678,7 +667,7 @@ class SystemProxyCredentialsReuseBrowserTest
                         base::Value(ProxyPrefs::kFixedServersProxyModeName));
     proxy_config.SetKey(
         "server", base::Value(proxy_server_->host_port_pair().ToString()));
-    browser()->profile()->GetPrefs()->Set(proxy_config::prefs::kProxy,
+    browser()->profile()->GetPrefs()->Set(::proxy_config::prefs::kProxy,
                                           proxy_config);
     RunUntilIdle();
   }
@@ -737,9 +726,7 @@ class SystemProxyCredentialsReuseBrowserTest
   }
 
   SystemProxyManager* GetSystemProxyManager() {
-    return g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
-        ->GetSystemProxyManager();
+    return SystemProxyManager::Get();
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -760,9 +747,9 @@ IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest, RegularUser) {
 IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
                        PolicyCredentialsUsed) {
   SetManagedProxy();
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LOGGED_IN_ACTIVE,
+      LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
   SetPolicyCredentials(kProxyUsername, kProxyPassword);
   ui_test_utils::NavigateToURL(browser(), GetServerUrl("/simple.html"));
   CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
@@ -773,9 +760,9 @@ IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
 IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
                        BadPolicyCredentials) {
   SetManagedProxy();
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LOGGED_IN_ACTIVE,
+      LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
   SetPolicyCredentials(kBadUsername, kBadPassword);
   LoginWithDialog(kProxyUsername, kProxyPassword);
   CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
@@ -786,12 +773,12 @@ IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
 IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
                        RestrictedPolicyCredentials) {
   SetManagedProxy();
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LOGGED_IN_ACTIVE,
+      LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
   SetPolicyCredentials(kProxyUsername, kProxyPassword, R"("ntlm","digest")");
   LoginWithDialog(kProxyUsername, kProxyPassword);
   CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
 }
 
-}  // namespace policy
+}  // namespace chromeos

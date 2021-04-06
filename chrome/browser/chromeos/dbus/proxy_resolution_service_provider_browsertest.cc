@@ -6,8 +6,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/chromeos/dbus/proxy_resolution_service_provider.h"
+#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -172,10 +172,8 @@ class ProxyResolutionServiceProviderSystemProxyPolicyTest
 
  protected:
   void SetLocalProxyAddress(const std::string& local_proxy_url) {
-    g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
-        ->GetSystemProxyManager()
-        ->SetSystemServicesProxyUrlForTest(local_proxy_url);
+    SystemProxyManager::Get()->SetSystemServicesProxyUrlForTest(
+        local_proxy_url);
   }
 };
 

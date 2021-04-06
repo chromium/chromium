@@ -25,8 +25,8 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/net/delay_network_call.h"
+#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chrome/browser/chromeos/scheduler_configuration_manager.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/common/chrome_switches.h"
@@ -175,9 +175,11 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
           ->Subscribe(base::BindRepeating(
               &BrowserProcessPlatformPart::ShutdownPrimaryProfileServices,
               base::Unretained(this)));
-  browser_policy_connector_chromeos()
-      ->GetSystemProxyManager()
-      ->StartObservingPrimaryProfilePrefs(primary_profile);
+
+  if (chromeos::SystemProxyManager::Get()) {
+    chromeos::SystemProxyManager::Get()->StartObservingPrimaryProfilePrefs(
+        primary_profile);
+  }
 
   auto* manager = arc::data_snapshotd::ArcDataSnapshotdManager::Get();
   if (manager) {
@@ -191,9 +193,8 @@ void BrowserProcessPlatformPart::ShutdownPrimaryProfileServices() {
   if (manager)
     manager->policy_service()->StopObservingPrimaryProfilePrefs();
 
-  browser_policy_connector_chromeos()
-      ->GetSystemProxyManager()
-      ->StopObservingPrimaryProfilePrefs();
+  if (chromeos::SystemProxyManager::Get())
+    chromeos::SystemProxyManager::Get()->StopObservingPrimaryProfilePrefs();
   in_session_password_change_manager_.reset();
 }
 

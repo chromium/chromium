@@ -59,7 +59,7 @@ class ServerBackedStateKeysBroker;
 class TPMAutoUpdateModePolicyHandler;
 class DeviceScheduledUpdateChecker;
 class DeviceCloudExternalDataPolicyHandler;
-class SystemProxyManager;
+class SystemProxyHandler;
 
 // Extends ChromeBrowserPolicyConnector with the setup specific to Chrome OS.
 class BrowserPolicyConnectorChromeOS
@@ -184,8 +184,8 @@ class BrowserPolicyConnectorChromeOS
     return tpm_auto_update_mode_policy_handler_.get();
   }
 
-  SystemProxyManager* GetSystemProxyManager() const {
-    return system_proxy_manager_.get();
+  SystemProxyHandler* GetSystemProxyHandler() const {
+    return system_proxy_handler_.get();
   }
 
   HostnameHandler* GetHostnameHandler() const {
@@ -299,7 +299,7 @@ class BrowserPolicyConnectorChromeOS
       device_scheduled_update_checker_;
   std::vector<std::unique_ptr<policy::DeviceCloudExternalDataPolicyHandler>>
       device_cloud_external_data_policy_handlers_;
-  std::unique_ptr<SystemProxyManager> system_proxy_manager_;
+  std::unique_ptr<SystemProxyHandler> system_proxy_handler_;
   std::unique_ptr<AdbSideloadingAllowanceModePolicyHandler>
       adb_sideloading_allowance_mode_policy_handler_;
 

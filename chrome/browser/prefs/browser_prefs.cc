@@ -181,9 +181,9 @@
 #include "chrome/browser/chromeos/device_name_store.h"
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
+#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
-#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1128,7 +1128,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   policy::ExtensionInstallEventLogManagerWrapper::RegisterProfilePrefs(
       registry);
   policy::StatusCollector::RegisterProfilePrefs(registry);
-  policy::SystemProxyManager::RegisterProfilePrefs(registry);
+  chromeos::SystemProxyManager::RegisterProfilePrefs(registry);
   RegisterChromeLauncherUserPrefs(registry);
   ::onc::RegisterProfilePrefs(registry);
   ash::cert_provisioning::RegisterProfilePrefs(registry);

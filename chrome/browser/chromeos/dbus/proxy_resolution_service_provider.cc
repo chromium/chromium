@@ -13,8 +13,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -94,11 +94,7 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
   // remote proxy server. The availability of this feature is controlled by the
   // |SystemProxySettings| policy.
   void AppendSystemProxyIfActive(std::string* pac_proxy_list) {
-    policy::SystemProxyManager* system_proxy_manager =
-        g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
-            ->GetSystemProxyManager();
-
+    SystemProxyManager* system_proxy_manager = SystemProxyManager::Get();
     // |system_proxy_manager| may be missing in tests.
     if (!system_proxy_manager ||
         system_proxy_manager->SystemServicesProxyPacString().empty()) {

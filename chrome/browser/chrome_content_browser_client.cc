@@ -430,10 +430,10 @@
 #include "chrome/browser/chromeos/fileapi/external_file_url_loader_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/fileapi/mtp_file_system_backend_delegate.h"
+#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
-#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chrome/browser/chromeos/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
@@ -5219,10 +5219,8 @@ ChromeContentBrowserClient::CreateLoginDelegate(
     bool first_auth_attempt,
     LoginAuthRequiredCallback auth_required_callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::SystemProxyManager* system_proxy_manager =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
-          ->GetSystemProxyManager();
+  chromeos::SystemProxyManager* system_proxy_manager =
+      chromeos::SystemProxyManager::Get();
   // For Managed Guest Session and Kiosk devices, the credentials configured
   // via the policy SystemProxySettings may be used for proxy authentication.
   // Note: |system_proxy_manager| may be missing in tests.
