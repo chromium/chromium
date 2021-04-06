@@ -128,7 +128,7 @@ class WebUIWebViewBrowserTest : public WebUIBrowserTest {
 #else
     return GURL(signin::GetEmbeddedPromoURL(
         signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE,
-        signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT, false));
+        signin_metrics::Reason::kForcedSigninPrimaryAccount, false));
 #endif
   }
 

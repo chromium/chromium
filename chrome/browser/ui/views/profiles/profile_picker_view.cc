@@ -187,7 +187,7 @@ void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
   tab_helper->InitializeSigninFlow(
       GetSigninURL(browser_view->GetNativeTheme()->ShouldUseDarkColors()),
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
-      signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
+      signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       GURL(chrome::kChromeUINewTabURL));
 
@@ -399,7 +399,7 @@ void ProfilePickerForceSigninDialog::ShowForceSigninDialog(
 
   GURL url = signin::GetEmbeddedPromoURL(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
-      signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT, true);
+      signin_metrics::Reason::kForcedSigninPrimaryAccount, true);
 
   ProfilePicker::ShowDialog(browser_context, url, profile_path);
 }
@@ -1082,8 +1082,7 @@ void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
   new DiceTurnSyncOnHelper(
       sign_in_->profile, signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
-      account_info.account_id,
+      signin_metrics::Reason::kSigninPrimaryAccount, account_info.account_id,
       DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
       std::make_unique<ProfilePickerViewSyncDelegate>(
           sign_in_->profile,

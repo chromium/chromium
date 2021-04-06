@@ -761,7 +761,7 @@ bool IsHostAllowedInIncognito(const GURL& url) {
     // option is only available on Windows for use with Google Credential
     // Provider for Windows.
     return signin::GetSigninReasonForEmbeddedPromoURL(url) ==
-           signin_metrics::Reason::REASON_FETCH_LST_ONLY;
+           signin_metrics::Reason::kFetchLstOnly;
 #else
     return false;
 #endif  // defined(OS_WIN)

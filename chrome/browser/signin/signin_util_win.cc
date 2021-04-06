@@ -79,7 +79,7 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
     new DiceTurnSyncOnHelper(
         profile, signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-        signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT, account_id,
+        signin_metrics::Reason::kSigninPrimaryAccount, account_id,
         DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
         std::move(*GetDiceTurnSyncOnHelperDelegateForTestingStorage()),
         base::DoNothing());
@@ -91,7 +91,7 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
         profile, browser,
         signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-        signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT, account_id,
+        signin_metrics::Reason::kSigninPrimaryAccount, account_id,
         DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   }
 }

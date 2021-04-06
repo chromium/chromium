@@ -19,14 +19,13 @@ TEST(SigninPromoTest, TestPromoURL) {
   EXPECT_EQ(
       GURL(chrome::kChromeUIChromeSigninURL).ReplaceComponents(replace_query),
       GetEmbeddedPromoURL(signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE,
-                          signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
-                          true));
+                          signin_metrics::Reason::kSigninPrimaryAccount, true));
   replace_query.SetQueryStr("access_point=15&reason=1");
   EXPECT_EQ(
       GURL(chrome::kChromeUIChromeSigninURL).ReplaceComponents(replace_query),
       GetEmbeddedPromoURL(
           signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO,
-          signin_metrics::Reason::REASON_ADD_SECONDARY_ACCOUNT, false));
+          signin_metrics::Reason::kAddSecondaryAccount, false));
 }
 
 TEST(SigninPromoTest, TestReauthURL) {
@@ -39,7 +38,7 @@ TEST(SigninPromoTest, TestReauthURL) {
       GURL(chrome::kChromeUIChromeSigninURL).ReplaceComponents(replace_query),
       GetEmbeddedReauthURLWithEmail(
           signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE,
-          signin_metrics::Reason::REASON_FETCH_LST_ONLY, "example@domain.com"));
+          signin_metrics::Reason::kFetchLstOnly, "example@domain.com"));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

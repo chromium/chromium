@@ -135,8 +135,7 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     return new DiceTurnSyncOnHelper(
         profile(), signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-        signin_metrics::Reason::REASON_REAUTHENTICATION,
-        account_info_.account_id,
+        signin_metrics::Reason::kReauthentication, account_info_.account_id,
         DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
         std::make_unique<TestDiceTurnSyncOnHelperDelegate>(this),
         base::DoNothing());

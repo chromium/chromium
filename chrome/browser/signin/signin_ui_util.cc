@@ -282,8 +282,7 @@ void EnableSyncFromPromo(
                                                        promo_action);
   std::move(create_dice_turn_sync_on_helper_callback)
       .Run(profile, browser, access_point, promo_action,
-           signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
-           account.account_id,
+           signin_metrics::Reason::kSigninPrimaryAccount, account.account_id,
            DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
 }
 }  // namespace internal

@@ -111,8 +111,8 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
   signin_metrics::Reason reason =
       signin::GetSigninReasonForEmbeddedPromoURL(current_url);
 
-  if (reason != signin_metrics::Reason::REASON_REAUTHENTICATION &&
-      reason != signin_metrics::Reason::REASON_ADD_SECONDARY_ACCOUNT) {
+  if (reason != signin_metrics::Reason::kReauthentication &&
+      reason != signin_metrics::Reason::kAddSecondaryAccount) {
     signin_metrics::LogSigninAccessPointStarted(
         access_point,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
@@ -125,8 +125,8 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
 
   Profile* profile = Profile::FromWebUI(web_ui());
   std::string default_email;
-  if (reason == signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT ||
-      reason == signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT) {
+  if (reason == signin_metrics::Reason::kSigninPrimaryAccount ||
+      reason == signin_metrics::Reason::kForcedSigninPrimaryAccount) {
     default_email =
         profile->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
   } else {

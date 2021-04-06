@@ -55,15 +55,14 @@ TEST_F(DiceTabHelperTest, Initialization) {
   // Check default state.
   EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
             dice_tab_helper->signin_access_point());
-  EXPECT_EQ(signin_metrics::Reason::REASON_UNKNOWN_REASON,
+  EXPECT_EQ(signin_metrics::Reason::kUnknownReason,
             dice_tab_helper->signin_reason());
   EXPECT_FALSE(dice_tab_helper->IsChromeSigninPage());
 
   // Initialize the signin flow.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE;
-  signin_metrics::Reason reason =
-      signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT;
+  signin_metrics::Reason reason = signin_metrics::Reason::kSigninPrimaryAccount;
   InitializeDiceTabHelper(dice_tab_helper, access_point, reason);
   EXPECT_EQ(access_point, dice_tab_helper->signin_access_point());
   EXPECT_EQ(reason, dice_tab_helper->signin_reason());
@@ -79,8 +78,7 @@ TEST_F(DiceTabHelperTest, SigninPageStatus) {
   // Load the signin page.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE;
-  signin_metrics::Reason reason =
-      signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT;
+  signin_metrics::Reason reason = signin_metrics::Reason::kSigninPrimaryAccount;
   InitializeDiceTabHelper(dice_tab_helper, access_point, reason);
   EXPECT_TRUE(dice_tab_helper->IsChromeSigninPage());
 
@@ -143,7 +141,7 @@ TEST_F(DiceTabHelperTest, Metrics) {
   simulator->Start();
   dice_tab_helper->InitializeSigninFlow(
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
-      signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
+      signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       GURL::EmptyGURL());
   EXPECT_EQ(1, ua_tester.GetActionCount("Signin_Signin_FromSettings"));
@@ -173,7 +171,7 @@ TEST_F(DiceTabHelperTest, Metrics) {
   simulator->Start();
   dice_tab_helper->InitializeSigninFlow(
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
-      signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
+      signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
       GURL::EmptyGURL());
   EXPECT_EQ(2, ua_tester.GetActionCount("Signin_Signin_FromSettings"));
@@ -195,13 +193,13 @@ TEST_F(DiceTabHelperTest, IsSyncSigninInProgress) {
   // Non-sync signin.
   InitializeDiceTabHelper(dice_tab_helper,
                           signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
-                          signin_metrics::Reason::REASON_ADD_SECONDARY_ACCOUNT);
+                          signin_metrics::Reason::kAddSecondaryAccount);
   EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
 
   // Sync signin
-  InitializeDiceTabHelper(
-      dice_tab_helper, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
-      signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT);
+  InitializeDiceTabHelper(dice_tab_helper,
+                          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
+                          signin_metrics::Reason::kSigninPrimaryAccount);
   EXPECT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
   dice_tab_helper->OnSyncSigninFlowComplete();
   EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());

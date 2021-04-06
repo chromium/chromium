@@ -121,7 +121,7 @@ ACTION(ReturnNewWebUI) {
 GURL GetSigninPromoURL() {
   return signin::GetEmbeddedPromoURL(
       signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE,
-      signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT, false);
+      signin_metrics::Reason::kForcedSigninPrimaryAccount, false);
 }
 
 // Mock the TestChromeWebUIControllerFactory::WebUIProvider to prove that we are
@@ -894,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
                        FetchLstOnlyEndpointForSignin) {
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON;
-  signin_metrics::Reason reason = signin_metrics::Reason::REASON_FETCH_LST_ONLY;
+  signin_metrics::Reason reason = signin_metrics::Reason::kFetchLstOnly;
 
   auto signin_url = signin::GetEmbeddedPromoURL(access_point, reason, false);
   // Set the show_tos parameter so that we can verify if that was passed in
@@ -917,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
                        FetchLstOnlyEndpointForReauth) {
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON;
-  signin_metrics::Reason reason = signin_metrics::Reason::REASON_FETCH_LST_ONLY;
+  signin_metrics::Reason reason = signin_metrics::Reason::kFetchLstOnly;
 
   static const std::string email = "foo@gmail.com";
   auto signin_url =

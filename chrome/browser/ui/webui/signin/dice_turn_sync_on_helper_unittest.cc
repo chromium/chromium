@@ -66,7 +66,7 @@ const signin_metrics::AccessPoint kAccessPoint =
 const signin_metrics::PromoAction kSigninPromoAction =
     signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
 const signin_metrics::Reason kSigninReason =
-    signin_metrics::Reason::REASON_REAUTHENTICATION;
+    signin_metrics::Reason::kReauthentication;
 
 // Builds a testing profile with the right setup for this test.
 std::unique_ptr<TestingProfile> BuildTestingProfile(

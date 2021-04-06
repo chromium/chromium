@@ -101,9 +101,9 @@ HandlerSigninReason GetHandlerSigninReason(const GURL& url) {
   signin_metrics::Reason reason =
       signin::GetSigninReasonForEmbeddedPromoURL(url);
   switch (reason) {
-    case signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT:
+    case signin_metrics::Reason::kForcedSigninPrimaryAccount:
       return HandlerSigninReason::FORCED_SIGNIN_PRIMARY_ACCOUNT;
-    case signin_metrics::Reason::REASON_FETCH_LST_ONLY:
+    case signin_metrics::Reason::kFetchLstOnly:
       return HandlerSigninReason::FETCH_LST_ONLY;
     default:
       NOTREACHED() << "Unexpected signin reason: " << static_cast<int>(reason);

@@ -65,8 +65,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
   signin_metrics::PromoAction promo_action_ =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-  signin_metrics::Reason reason_ =
-      signin_metrics::Reason::REASON_UNKNOWN_REASON;
+  signin_metrics::Reason reason_ = signin_metrics::Reason::kUnknownReason;
   GURL redirect_url_;
   DISALLOW_COPY_AND_ASSIGN(ProcessDiceHeaderDelegateImpl);
 };

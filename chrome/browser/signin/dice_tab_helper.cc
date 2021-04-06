@@ -37,7 +37,7 @@ void DiceTabHelper::InitializeSigninFlow(
   redirect_url_ = redirect_url;
   sync_signin_flow_status_ = SyncSigninFlowStatus::kNotStarted;
 
-  if (reason == signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT) {
+  if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
     sync_signin_flow_status_ = SyncSigninFlowStatus::kStarted;
     signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
     signin_metrics::RecordSigninUserActionForAccessPoint(access_point,

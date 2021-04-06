@@ -45,7 +45,7 @@ GURL GetEmbeddedPromoURL(signin_metrics::AccessPoint access_point,
   CHECK_LE(static_cast<int>(reason),
            static_cast<int>(signin_metrics::Reason::kMaxValue));
   CHECK_NE(static_cast<int>(reason),
-           static_cast<int>(signin_metrics::Reason::REASON_UNKNOWN_REASON));
+           static_cast<int>(signin_metrics::Reason::kUnknownReason));
 
   GURL url(chrome::kChromeUIChromeSigninURL);
   url = net::AppendQueryParameter(
@@ -123,14 +123,14 @@ signin_metrics::AccessPoint GetAccessPointForEmbeddedPromoURL(const GURL& url) {
 signin_metrics::Reason GetSigninReasonForEmbeddedPromoURL(const GURL& url) {
   std::string value;
   if (!net::GetValueForKeyInQuery(url, kSignInPromoQueryKeyReason, &value))
-    return signin_metrics::Reason::REASON_UNKNOWN_REASON;
+    return signin_metrics::Reason::kUnknownReason;
 
   int reason = -1;
   base::StringToInt(value, &reason);
-  if (reason < static_cast<int>(
-                   signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT) ||
+  if (reason <
+          static_cast<int>(signin_metrics::Reason::kSigninPrimaryAccount) ||
       reason > static_cast<int>(signin_metrics::Reason::kMaxValue)) {
-    return signin_metrics::Reason::REASON_UNKNOWN_REASON;
+    return signin_metrics::Reason::kUnknownReason;
   }
 
   return static_cast<signin_metrics::Reason>(reason);

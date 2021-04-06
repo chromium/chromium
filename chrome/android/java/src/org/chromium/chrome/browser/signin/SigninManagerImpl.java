@@ -445,7 +445,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
             RecordHistogram.recordEnumeratedHistogram("Signin.SigninCompletedAccessPoint",
                     mSignInState.getAccessPoint(), SigninAccessPoint.MAX);
             RecordHistogram.recordEnumeratedHistogram("Signin.SigninReason",
-                    SigninReason.REASON_SIGNIN_PRIMARY_ACCOUNT, SigninReason.MAX_VALUE + 1);
+                    SigninReason.SIGNIN_PRIMARY_ACCOUNT, SigninReason.MAX_VALUE + 1);
         }
 
         if (mSignInState.mCallback != null) {

@@ -255,7 +255,7 @@ Polymer({
 
   /**
    * Sends a message 'lstFetchResults'. This is a specific message sent when
-   * the inline signin is loaded with reason REASON_FETCH_LST_ONLY. Handlers of
+   * the inline signin is loaded with reason kFetchLstOnly. Handlers of
    * this message would expect a single argument a base::Dictionary value that
    * contains the values fetched from the gaia sign in endpoint.
    * @param {string} arg The string representation of the json data returned by

@@ -250,20 +250,20 @@ bool IsValidChromeSigninReason(const GURL& url) {
       signin::GetSigninReasonForEmbeddedPromoURL(url);
 
   switch (reason) {
-    case signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT:
+    case signin_metrics::Reason::kForcedSigninPrimaryAccount:
       // Used by the user manager.
       return true;
-    case signin_metrics::Reason::REASON_FETCH_LST_ONLY:
+    case signin_metrics::Reason::kFetchLstOnly:
 #if defined(OS_WIN)
       // Used by the Google Credential Provider for Windows.
       return true;
 #else
       return false;
 #endif
-    case signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT:
-    case signin_metrics::Reason::REASON_ADD_SECONDARY_ACCOUNT:
-    case signin_metrics::Reason::REASON_REAUTHENTICATION:
-    case signin_metrics::Reason::REASON_UNKNOWN_REASON:
+    case signin_metrics::Reason::kSigninPrimaryAccount:
+    case signin_metrics::Reason::kAddSecondaryAccount:
+    case signin_metrics::Reason::kReauthentication:
+    case signin_metrics::Reason::kUnknownReason:
       return false;
   }
   NOTREACHED();
