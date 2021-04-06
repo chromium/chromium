@@ -31752,6 +31752,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3837" label="FeaturePolicyJSAPIFeaturesDocument"/>
   <int value="3838" label="FeaturePolicyJSAPIGetAllowlistIFrame"/>
   <int value="3839" label="FeaturePolicyJSAPIGetAllowlistDocument"/>
+  <int value="3871" label="PaymentRequestCSPViolation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

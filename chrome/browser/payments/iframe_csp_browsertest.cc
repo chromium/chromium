@@ -55,11 +55,7 @@ IN_PROC_BROWSER_TEST_F(IframeCspTest, Show) {
   SetDownloaderAndIgnorePortInOriginComparisonForTestingInFrame(
       {{method_name, &app_server_}}, iframe);
 
-  EXPECT_EQ(
-      "RangeError: Failed to construct 'PaymentRequest': "
-      "https://kylepay.com/webpay payment method identifier violates Content "
-      "Security Policy.",
-      content::EvalJs(iframe, "checkCanMakePayment()"));
+  EXPECT_EQ(true, content::EvalJs(iframe, "checkCanMakePayment()"));
   EXPECT_TRUE(console_observer.messages().empty());
 }
 
