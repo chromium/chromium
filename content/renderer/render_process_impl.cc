@@ -175,8 +175,7 @@ RenderProcessImpl::RenderProcessImpl()
   }
   // SharedArrayBuffer requires feature flags, or site isolation.
   if (enable_shared_array_buffer || cross_origin_isolated) {
-    constexpr char kSABFlag[] = "--harmony-sharedarraybuffer";
-    v8::V8::SetFlagsFromString(kSABFlag, sizeof(kSABFlag));
+    blink::EnableSharedArrayBuffer();
   } else {
     constexpr char kNoSABFlag[] = "--no-harmony-sharedarraybuffer";
     v8::V8::SetFlagsFromString(kNoSABFlag, sizeof(kNoSABFlag));

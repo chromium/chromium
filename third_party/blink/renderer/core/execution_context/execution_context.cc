@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -174,6 +175,13 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
       RuntimeEnabledFeatures::SharedArrayBufferEnabled()) {
     return true;
   }
+
+  // TODO(crbug.com/1184892): Remove once fixed.
+  if (SchemeRegistry::ShouldTreatURLSchemeAsAllowingSharedArrayBuffers(
+          GetSecurityOrigin()->Protocol())) {
+    return true;
+  }
+
 #if defined(OS_ANDROID)
   return false;
 #else

@@ -122,6 +122,11 @@ class PLATFORM_EXPORT SchemeRegistry {
   static void RegisterURLSchemeAsError(const String&);
   static bool ShouldTreatURLSchemeAsError(const String& scheme);
 
+  // Schemes which should always allow access to SharedArrayBuffers.
+  // TODO(crbug.com/1184892): Remove once fixed.
+  static void RegisterURLSchemeAsAllowingSharedArrayBuffers(const String&);
+  static bool ShouldTreatURLSchemeAsAllowingSharedArrayBuffers(const String&);
+
   // Allow resources from some schemes to load on a page, regardless of its
   // Content Security Policy.
   enum PolicyAreas : uint32_t {

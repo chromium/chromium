@@ -103,6 +103,7 @@ class URLSchemesRegistry final {
   URLSchemesSet allowed_in_referrer_schemes;
   URLSchemesSet error_schemes;
   URLSchemesSet wasm_eval_csp_schemes;
+  URLSchemesSet allowing_shared_array_buffer_schemes;
 
  private:
   friend const URLSchemesRegistry& GetURLSchemesRegistry();
@@ -372,6 +373,22 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsError(const String& scheme) {
   if (scheme.IsEmpty())
     return false;
   return GetURLSchemesRegistry().error_schemes.Contains(scheme);
+}
+
+void SchemeRegistry::RegisterURLSchemeAsAllowingSharedArrayBuffers(
+    const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  GetMutableURLSchemesRegistry().allowing_shared_array_buffer_schemes.insert(
+      scheme);
+}
+
+bool SchemeRegistry::ShouldTreatURLSchemeAsAllowingSharedArrayBuffers(
+    const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  if (scheme.IsEmpty())
+    return false;
+  return GetURLSchemesRegistry().allowing_shared_array_buffer_schemes.Contains(
+      scheme);
 }
 
 void SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(

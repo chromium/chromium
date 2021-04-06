@@ -194,6 +194,17 @@ bool IsCrossOriginIsolated() {
   return Agent::IsCrossOriginIsolated();
 }
 
+// Function defined in third_party/blink/public/web/blink.h.
+void EnableSharedArrayBuffer() {
+  static bool shared_array_buffer_enabled = false;
+  if (shared_array_buffer_enabled)
+    return;
+
+  shared_array_buffer_enabled = true;
+  constexpr char kSABFlag[] = "--harmony-sharedarraybuffer";
+  v8::V8::SetFlagsFromString(kSABFlag, sizeof(kSABFlag));
+}
+
 void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
   ModulesInitializer::RegisterInterfaces(binders);
   Thread* main_thread = Thread::MainThread();

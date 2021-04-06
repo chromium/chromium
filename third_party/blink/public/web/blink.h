@@ -114,6 +114,9 @@ BLINK_EXPORT void ForceNextDrawingBufferCreationToFailForTest();
 BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
 BLINK_EXPORT bool IsCrossOriginIsolated();
 
+// Enables SharedArrayBuffer for this process.
+BLINK_EXPORT void EnableSharedArrayBuffer();
+
 }  // namespace blink
 
 #endif

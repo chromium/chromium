@@ -101,6 +101,7 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -257,6 +258,12 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
 
   // Disallow running javascript URLs on the chrome-extension scheme.
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
+      extension_scheme);
+
+  // TODO(crbug.com/1184892): This is a temporary hack to allow
+  // SharedArrayBuffer access in extension processes. Remove once we add support
+  // for extension opt-in into cross-origin isolation.
+  WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
       extension_scheme);
 
   // Initialize host permissions for any extensions that were activated before
@@ -934,6 +941,12 @@ void Dispatcher::ActivateExtension(const std::string& extension_id) {
   // only activated once.
   if (IsExtensionActive(extension_id))
     return;
+
+  // TODO(crbug.com/1184892): This is a temporary hack to allow
+  // SharedArrayBuffer access in extension processes. Remove once we add support
+  // for extension opt-in into cross-origin isolation.
+  if (extension->is_extension())
+    blink::EnableSharedArrayBuffer();
 
   active_extension_ids_.insert(extension_id);
 

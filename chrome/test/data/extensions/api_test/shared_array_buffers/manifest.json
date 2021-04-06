@@ -1,0 +1,10 @@
+{
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "description": "Tests extensions can use SharedArrayBuffers.",
+  "manifest_version": 2,
+  "name": "SharedArrayBuffer",
+  "version": "1.1"
+}
