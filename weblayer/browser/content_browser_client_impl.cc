@@ -61,6 +61,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1133,6 +1134,32 @@ bool ContentBrowserClientImpl::HasErrorPage(int http_status_code) {
   // Use an internal error page, if we have one for the status code.
   return error_page::LocalizedError::HasStrings(
       error_page::Error::kHttpErrorDomain, http_status_code);
+}
+
+bool ContentBrowserClientImpl::IsClipboardPasteAllowed(
+    content::RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host);
+
+  const GURL& url = render_frame_host->GetLastCommittedOrigin().GetURL();
+  content::BrowserContext* browser_context =
+      content::WebContents::FromRenderFrameHost(render_frame_host)
+          ->GetBrowserContext();
+  DCHECK(browser_context);
+
+  content::PermissionController* permission_controller =
+      content::BrowserContext::GetPermissionController(browser_context);
+  blink::mojom::PermissionStatus status =
+      permission_controller->GetPermissionStatusForFrame(
+          content::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host,
+          url);
+
+  if (!render_frame_host->HasTransientUserActivation() &&
+      status != blink::mojom::PermissionStatus::GRANTED) {
+    // Paste requires either user activation, or granted web permission.
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace weblayer

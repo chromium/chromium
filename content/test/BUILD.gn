@@ -195,6 +195,8 @@ static_library("test_support") {
     "../public/test/render_view_test.h",
     "../public/test/scoped_overscroll_modes.cc",
     "../public/test/scoped_overscroll_modes.h",
+    "../public/test/scoped_page_focus_override.cc",
+    "../public/test/scoped_page_focus_override.h",
     "../public/test/service_worker_host_interceptor.cc",
     "../public/test/service_worker_host_interceptor.h",
     "../public/test/service_worker_test_helpers.cc",

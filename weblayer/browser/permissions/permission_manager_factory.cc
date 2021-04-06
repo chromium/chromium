@@ -8,6 +8,8 @@
 #include "components/background_sync/background_sync_permission_context.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/permissions/contexts/clipboard_read_write_permission_context.h"
+#include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
 #include "components/permissions/contexts/payment_handler_permission_context.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
@@ -66,6 +68,12 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   using GeolocationPermissionContext =
       permissions::GeolocationPermissionContext;
 #endif
+  permission_contexts[ContentSettingsType::CLIPBOARD_READ_WRITE] =
+      std::make_unique<permissions::ClipboardReadWritePermissionContext>(
+          browser_context);
+  permission_contexts[ContentSettingsType::CLIPBOARD_SANITIZED_WRITE] =
+      std::make_unique<permissions::ClipboardSanitizedWritePermissionContext>(
+          browser_context);
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<GeolocationPermissionContext>(
           browser_context,

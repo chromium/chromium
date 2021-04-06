@@ -198,6 +198,8 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
   CreateSpeechRecognitionManagerDelegate() override;
   ukm::UkmService* GetUkmService() override;
   bool HasErrorPage(int http_status_code) override;
+  bool IsClipboardPasteAllowed(
+      content::RenderFrameHost* render_frame_host) override;
 
   void CreateFeatureListAndFieldTrials();
 
