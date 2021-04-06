@@ -777,6 +777,9 @@ void ArcDataSnapshotdManager::OnKeyPairGenerated(bool success) {
         SnapshotSessionController::Create(delegate_->CreateAppsTracker());
     session_controller_->AddObserver(this);
 
+    bridge_->ConnectToUiCancelledSignal(base::BindRepeating(
+        &ArcDataSnapshotdManager::OnUiClosed, weak_ptr_factory_.GetWeakPtr()));
+
     // Move last to previous snapshot:
     snapshot_.StartNewSnapshot();
     snapshot_.Sync();
@@ -913,6 +916,33 @@ void ArcDataSnapshotdManager::OnUnexpectedArcDataRemoveRequested() {
 void ArcDataSnapshotdManager::OnUiUpdated(bool success) {
   if (!success)
     LOG(ERROR) << "Failed to update UI progress bar.";
+}
+
+void ArcDataSnapshotdManager::OnUiClosed() {
+  // Stop all ongoing flows.
+  daemon_weak_ptr_factory_.InvalidateWeakPtrs();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  switch (state_) {
+    // If in process of taking a snapshot, stop and restart browser.
+    case State::kBlockedUi:
+    case State::kMgsLaunched:
+    case State::kMgsToLaunch:
+      state_ = State::kStopping;
+      snapshot_.set_blocked_ui_mode(false);
+      if (session_controller_)
+        session_controller_->RemoveObserver(this);
+      session_controller_.reset();
+      reboot_controller_.reset();
+      break;
+    case State::kNone:
+    case State::kLoading:
+    case State::kRestored:
+    case State::kStopping:
+    case State::kRunning:
+      LOG(ERROR) << "Received a signal from UI when not in blocked UI mode.";
+      break;
+  }
+  StopDaemon(std::move(attempt_user_exit_callback_));
 }
 
 std::vector<std::string> ArcDataSnapshotdManager::GetStartEnvVars() {

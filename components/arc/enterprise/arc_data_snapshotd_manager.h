@@ -360,6 +360,9 @@ class ArcDataSnapshotdManager final
   // Called once a progress bar is updated.
   void OnUiUpdated(bool success);
 
+  // Called once user escapes the blocked UI screen.
+  void OnUiClosed();
+
   // Returns the list of daemon enviromnet variables to be passed to upstart of
   // arc-data-snapshotd daemon.
   // Currently, sets RESTART_FRECON=1 if the UI should be blocked.

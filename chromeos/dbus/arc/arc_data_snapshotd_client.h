@@ -52,6 +52,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcDataSnapshotdClient
   // |percent| is a percentage of installed required ARC apps [0..100].
   virtual void Update(int percent, VoidDBusMethodCallback callback) = 0;
 
+  // Connects callbacks to D-Bus signal |UiCancelled| sent by
+  // arc-data-snapshotd.
+  virtual void ConnectToUiCancelledSignal(
+      base::RepeatingClosure signal_callback,
+      base::OnceCallback<void(bool)> on_connected_callback) = 0;
+
   // Registers |callback| to run when the arc-data-snapshotd becomes available.
   // If the service is already available, or if connecting to the name-owner-
   // changed signal fails, |callback| will be run once asynchronously.

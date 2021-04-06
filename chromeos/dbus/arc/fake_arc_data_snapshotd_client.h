@@ -15,12 +15,12 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcDataSnapshotdClient
     : public ArcDataSnapshotdClient {
  public:
-  FakeArcDataSnapshotdClient() = default;
+  FakeArcDataSnapshotdClient();
   FakeArcDataSnapshotdClient(const FakeArcDataSnapshotdClient&) = delete;
   FakeArcDataSnapshotdClient& operator=(const FakeArcDataSnapshotdClient&) =
       delete;
 
-  ~FakeArcDataSnapshotdClient() override = default;
+  ~FakeArcDataSnapshotdClient() override;
 
   // DBusClient override:
   void Init(dbus::Bus* bus) override;
@@ -38,14 +38,22 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcDataSnapshotdClient
 
   void Update(int percent, VoidDBusMethodCallback callback) override;
 
+  void ConnectToUiCancelledSignal(
+      base::RepeatingClosure signal_callback,
+      base::OnceCallback<void(bool)> on_connected_callback) override;
+
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
 
   void set_available(bool is_available) { is_available_ = is_available; }
 
+  base::RepeatingClosure& signal_callback() { return signal_callback_; }
+
  private:
   // True if the D-Bus service is available.
   bool is_available_ = false;
+
+  base::RepeatingClosure signal_callback_;
 };
 
 }  // namespace chromeos

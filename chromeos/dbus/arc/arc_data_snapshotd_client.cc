@@ -121,6 +121,21 @@ class ArcDataSnapshotdClientImpl : public ArcDataSnapshotdClient {
         base::BindOnce(&OnBoolMethodCallback, std::move(callback)));
   }
 
+  void ConnectToUiCancelledSignal(
+      base::RepeatingClosure signal_callback,
+      base::OnceCallback<void(bool)> on_connected_callback) override {
+    signal_callback_ = std::move(signal_callback);
+    proxy_->ConnectToSignal(
+        arc::data_snapshotd::kArcDataSnapshotdServiceInterface,
+        arc::data_snapshotd::kUiCancelled,
+        base::BindRepeating(
+            &ArcDataSnapshotdClientImpl::OnUiCancelledSignalCallback,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(
+            &ArcDataSnapshotdClientImpl::OnUiCancelledSignalConnectedCallback,
+            weak_ptr_factory_.GetWeakPtr(), std::move(on_connected_callback)));
+  }
+
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback)
       override {
@@ -135,8 +150,32 @@ class ArcDataSnapshotdClientImpl : public ArcDataSnapshotdClient {
   }
 
  private:
+  void OnUiCancelledSignalCallback(dbus::Signal* signal) {
+    DCHECK_EQ(signal->GetInterface(),
+              arc::data_snapshotd::kArcDataSnapshotdServiceInterface);
+    DCHECK_EQ(signal->GetMember(), arc::data_snapshotd::kUiCancelled);
+    DCHECK(!signal_callback_.is_null());
+
+    signal_callback_.Run();
+  }
+
+  void OnUiCancelledSignalConnectedCallback(
+      base::OnceCallback<void(bool)> on_connected_callback,
+      const std::string& interface_name,
+      const std::string& signal_name,
+      bool success) {
+    DCHECK_EQ(interface_name,
+              arc::data_snapshotd::kArcDataSnapshotdServiceInterface);
+    DCHECK_EQ(signal_name, arc::data_snapshotd::kUiCancelled);
+
+    std::move(on_connected_callback).Run(success);
+  }
+
   // Owned by the D-Bus implementation, who outlives this class.
   dbus::ObjectProxy* proxy_ = nullptr;
+
+  // Callback passed to |ConnectToUiCancelledSignal| as a |signal_callback|.
+  base::RepeatingClosure signal_callback_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

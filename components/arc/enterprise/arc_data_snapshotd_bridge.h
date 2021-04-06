@@ -46,6 +46,10 @@ class ArcDataSnapshotdBridge {
   // ARC apps [0..100].
   void Update(int percent, base::OnceCallback<void(bool)> callback);
 
+  // Connects to UiCancelled signal of arc-data-snapshotd D-Bus interface.
+  // |signal_callback| is called when a signal is received.
+  void ConnectToUiCancelledSignal(base::RepeatingClosure signal_callback);
+
   bool is_available_for_testing() { return is_available_; }
 
  private:
@@ -57,6 +61,10 @@ class ArcDataSnapshotdBridge {
   // Called once waiting for the D-Bus service, started by WaitForDBusService(),
   // finishes.
   void OnWaitedForDBusService(bool service_is_available);
+
+  // Called once the object proxy is connected to UiCancelled signal or failed
+  // to be connected.
+  void OnUiCancelledSignalConnectedCallback(bool success);
 
   // Callback passed in constructor and called once the D-Bus bridge is set up
   // or the number of max attempts exceeded.
