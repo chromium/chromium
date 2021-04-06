@@ -4,7 +4,7 @@
 //
 [
   ImplementedAs=DeviceService,
-  RuntimeEnabled=DeviceInterface,
+  RuntimeEnabled=ManagedInterface,
   SecureContext
 ] partial interface Navigator {
   [SameObject]

@@ -7,12 +7,18 @@
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/features.h"
 
 // static
 void ManagedConfigurationServiceImpl::Create(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!base::FeatureList::IsEnabled(blink::features::kManagedConfiguration)) {
+    mojo::ReportBadMessage(
+        "Managed configuration access while the feature is not enabled.");
+    return;
+  }
 
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See FrameServiceBase for details.

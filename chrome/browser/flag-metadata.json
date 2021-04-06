@@ -2030,6 +2030,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-managed-configuration-web-api",
+    "owners": [ "apotapchuk" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enable-manual-password-generation",
     "owners": [ "kazinova@google.com" ],
     "expiry_milestone": 93

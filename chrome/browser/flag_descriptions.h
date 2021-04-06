@@ -592,6 +592,9 @@ extern const char kDownloadLaterDebugOnWifiNameDescription[];
 extern const char kEnableLoginDetectionName[];
 extern const char kEnableLoginDetectionDescription[];
 
+extern const char kEnableManagedConfigurationWebApiName[];
+extern const char kEnableManagedConfigurationWebApiDescription[];
+
 extern const char kEnableNewDownloadBackendName[];
 extern const char kEnableNewDownloadBackendDescription[];
 

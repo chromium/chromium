@@ -370,6 +370,7 @@ BLINK_COMMON_EXPORT extern const base::Feature kCLSM90Improvements;
 BLINK_COMMON_EXPORT extern const base::Feature kCompositeAfterPaint;
 
 BLINK_COMMON_EXPORT extern const base::Feature kSanitizerAPI;
+BLINK_COMMON_EXPORT extern const base::Feature kManagedConfiguration;
 
 }  // namespace features
 }  // namespace blink

@@ -7092,6 +7092,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kWasapiRawAudioCapture)},
 #endif  // defined(OS_MAC)
 
+    {"enable-managed-configuration-web-api",
+     flag_descriptions::kEnableManagedConfigurationWebApiName,
+     flag_descriptions::kEnableManagedConfigurationWebApiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(blink::features::kManagedConfiguration)},
+
     {"enable-restricted-web-apis",
      flag_descriptions::kEnableRestrictedWebApisName,
      flag_descriptions::kEnableRestrictedWebApisDescription, kOsCrOS,

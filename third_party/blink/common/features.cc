@@ -906,5 +906,8 @@ const base::Feature kCompositeAfterPaint{"CompositeAfterPaint",
 const base::Feature kSanitizerAPI{"SanitizerAPI",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables a Web API for websites to access admin-provided configuration.
+const base::Feature kManagedConfiguration{"ManagedConfiguration",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink

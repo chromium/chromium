@@ -374,6 +374,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"LayoutNGTable", blink::features::kLayoutNGTable},
           {"LegacyWindowsDWriteFontFallback",
            features::kLegacyWindowsDWriteFontFallback},
+          {"ManagedConfiguration", blink::features::kManagedConfiguration},
           {"OriginPolicy", features::kOriginPolicy},
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
           {"RawClipboard", blink::features::kRawClipboard},

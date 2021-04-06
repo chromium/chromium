@@ -739,7 +739,7 @@
       status: "experimental",
     },
     {
-      name: "DeviceInterface",
+      name: "DeviceAttributes",
       status: "experimental",
     },
     {
@@ -1193,6 +1193,14 @@
     {
       name: "LegacyWindowsDWriteFontFallback",
       // Enabled by features::kLegacyWindowsDWriteFontFallback;
+    },
+    {
+      name: "ManagedConfiguration",
+      status:"experimental",
+    },
+    {
+      name: "ManagedInterface",
+      "implied_by": ["DeviceAttributes", "ManagedConfiguration"],
     },
     {
       name:"ManualSlotting",

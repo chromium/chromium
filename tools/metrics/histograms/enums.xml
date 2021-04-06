@@ -45688,6 +45688,7 @@ from previous Chrome versions.
   <int value="-544629557" label="CSSBackdropFilter:enabled"/>
   <int value="-541764089" label="AudioPlayerJsModules:disabled"/>
   <int value="-541611402" label="OfflinePagesPrefetching:enabled"/>
+  <int value="-540972085" label="ManagedConfiguration:enabled"/>
   <int value="-540150399" label="TapVisualizerApp:enabled"/>
   <int value="-538141684" label="SafetyTip:enabled"/>
   <int value="-536289234" label="ssl-interstitial-v2-colorful"/>
@@ -46390,6 +46391,7 @@ from previous Chrome versions.
   <int value="89785725"
       label="DataReductionProxyEnabledWithNetworkService:disabled"/>
   <int value="90551098" label="UseWallpaperStagingUrl:enabled"/>
+  <int value="91916443" label="ManagedConfiguration:disabled"/>
   <int value="91938915" label="enable-suggestions-service"/>
   <int value="92106937" label="CloseTabSuggestions:disabled"/>
   <int value="92327255" label="DisplayMoveWindowAccels:disabled"/>

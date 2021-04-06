@@ -5,18 +5,19 @@
 [
   ActiveScriptWrappable,
   Exposed=Window,
-  RuntimeEnabled=DeviceInterface,
+  RuntimeEnabled=ManagedInterface,
   SecureContext
 ] interface DeviceService : EventTarget {
   // Managed Configuration API.
-  [CallWith=ScriptState]
+  [CallWith=ScriptState, RuntimeEnabled=ManagedConfiguration]
   Promise<object> getManagedConfiguration(sequence<DOMString> keys);
+  [RuntimeEnabled=ManagedConfiguration]
   attribute EventHandler onmanagedconfigurationchange;
 
   // Device Attributes API.
-  [CallWith=ScriptState] Promise<DOMString> getDirectoryId();
-  [CallWith=ScriptState] Promise<DOMString> getHostname();
-  [CallWith=ScriptState] Promise<DOMString> getSerialNumber();
-  [CallWith=ScriptState] Promise<DOMString> getAnnotatedAssetId();
-  [CallWith=ScriptState] Promise<DOMString> getAnnotatedLocation();
+  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes] Promise<DOMString> getDirectoryId();
+  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes] Promise<DOMString> getHostname();
+  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes] Promise<DOMString> getSerialNumber();
+  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes] Promise<DOMString> getAnnotatedAssetId();
+  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes] Promise<DOMString> getAnnotatedLocation();
 };
