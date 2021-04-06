@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -40,6 +41,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.widget.ChipView;
 import org.chromium.url.GURL;
 
@@ -78,12 +80,15 @@ public final class WebFeedMainMenuItemTest {
                 .when(mWebFeedBridge)
                 .getWebFeedMetadataForPage(any(GURL.class), any(Callback.class));
 
-        mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
-                R.layout.web_feed_main_menu_item, null));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
+                    R.layout.web_feed_main_menu_item, null));
+        });
     }
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void initialize_hasFavicon_displaysFavicon() {
         initializeWebFeedMainMenuItem(ICON);
 
@@ -95,6 +100,7 @@ public final class WebFeedMainMenuItemTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void initialize_noFavicon_hasMonogram() {
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
@@ -106,6 +112,7 @@ public final class WebFeedMainMenuItemTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void initialize_emptyUrl_removesIcon() {
         mWebFeedMainMenuItem.initialize(GURL.emptyGURL(), mAppMenuHandler,
                 new MockLargeIconBridge(null), mSnackBarManager, mWebFeedBridge);
@@ -116,6 +123,7 @@ public final class WebFeedMainMenuItemTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void initialize_displaysCorrectTitle() {
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
@@ -127,6 +135,7 @@ public final class WebFeedMainMenuItemTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void initialize_noMetadata_displaysFollowChip() {
         doAnswer(invocation -> {
             invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(null);
@@ -142,6 +151,7 @@ public final class WebFeedMainMenuItemTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void initialize_notFollowed_displaysFollowChip() {
         WebFeedBridge.WebFeedMetadata webFeedMetadata =
                 createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED);
@@ -160,6 +170,7 @@ public final class WebFeedMainMenuItemTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void initialize_unknownFollowStatus_displaysFollowChip() {
         WebFeedBridge.WebFeedMetadata webFeedMetadata =
                 createWebFeedMetadata(WebFeedSubscriptionStatus.UNKNOWN);
@@ -178,6 +189,7 @@ public final class WebFeedMainMenuItemTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void initialize_followed_displaysFollowingChip() {
         WebFeedBridge.WebFeedMetadata webFeedMetadata =
                 createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBED);
@@ -204,6 +216,7 @@ public final class WebFeedMainMenuItemTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void initialize_unfollowInProgress_displaysLoadingFollowingChip() {
         WebFeedBridge.WebFeedMetadata webFeedMetadata =
                 createWebFeedMetadata(WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS);
@@ -230,6 +243,7 @@ public final class WebFeedMainMenuItemTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void initialize_followInProgress_displaysLoadingFollowChip() {
         WebFeedBridge.WebFeedMetadata webFeedMetadata =
                 createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS);
