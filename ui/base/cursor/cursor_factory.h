@@ -5,6 +5,7 @@
 #ifndef UI_BASE_CURSOR_CURSOR_FACTORY_H_
 #define UI_BASE_CURSOR_CURSOR_FACTORY_H_
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
