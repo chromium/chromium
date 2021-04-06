@@ -26,15 +26,33 @@
     margin: 0;
     --cr-icon-button-size: 16px;
   }
+
+  #clearRecents {
+    border-radius: 4px;
+    box-shadow: var(--cr-elevation-3);
+    display: float;
+    font-size: 12px;
+    margin: auto 0 auto auto;
+    padding: 4px 8px 4px 8px;
+    position: absolute;
+    right: var(--emoji-picker-side-padding);
+    width: fit-content;
+  }
 </style>
 
 <div id="heading" role="heading" aria-level="2" tabindex="0">
 <div id="heading-left">[[data.group]]</div>
-<template is = "dom-if" if="[[clearable]]">
-  <cr-icon-button id="show_clear" iron-icon="emoji_picker:more_horizontal">
+<template is="dom-if" if="[[clearable]]">
+  <cr-icon-button id="show_clear" iron-icon="emoji_picker:more_horizontal"
+    on-click="onClearClick">
   </cr-icon-button>
-  </template>
+</template>
 </div>
+  <template is = "dom-if" if="[[showClearRecents]]">
+  <div id="clearRecents">
+    Clear frequently used emojis
+  </div>
+  </template>
 <div id="emoji">
   <template is="dom-repeat" items="[[data.emoji]]">
     <emoji-button emoji="[[getDisplayEmojiForEmoji(item.base.string)]]"
