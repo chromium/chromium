@@ -204,7 +204,10 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   runtime_data_ =
       std::make_unique<RuntimeData>(ExtensionRegistry::Get(profile_));
 
+  // TODO(https://crbug.com/1125475): Enable Extensions for Ephemeral Guest
+  // profiles.
   bool autoupdate_enabled = !profile_->IsGuestSession() &&
+                            !profile_->IsEphemeralGuestProfile() &&
                             !profile_->IsSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!extensions_enabled ||
