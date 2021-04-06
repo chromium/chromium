@@ -215,8 +215,7 @@ if (is_android || (is_chromeos_ash && is_chromeos_device)) {
 
 assert(!(llvm_force_head_revision && use_goma),
        "can't use goma with trunk clang")
-assert(!(llvm_force_head_revision && use_rbe),
-       "can't use rbe with trunk clang")
+assert(!(llvm_force_head_revision && use_rbe), "can't use rbe with trunk clang")
 
 # default_include_dirs ---------------------------------------------------------
 #
@@ -534,16 +533,6 @@ config("compiler") {
       } else {
         ldflags += [ "-Wl,-mllvm,-instcombine-lower-dbg-declare=0" ]
       }
-    }
-  }
-
-  if (llvm_force_head_revision) {
-    if (is_clang && !is_nacl) {
-      # TODO(https://crbug.com/1194605): Investigate and remove.
-      cflags += [
-        "-Xclang",
-        "-no-round-trip-args",
-      ]
     }
   }
 
