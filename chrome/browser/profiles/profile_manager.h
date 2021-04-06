@@ -85,7 +85,12 @@ class ProfileManager : public content::NotificationObserver,
   // |profile| (normal mode is not available for browsing).
   static bool IsOffTheRecordModeForced(Profile* profile);
 
-  // Same as instance method but provides the default user_data_dir as well.
+  // Get the Profiles which are currently open, i.e. have open browsers or were
+  // open the last time Chrome was running. Profiles that fail to initialize are
+  // skipped. The Profiles appear in the order they were opened. The last used
+  // profile will be on the list if it is initialized successfully, but its
+  // index on the list will depend on when it was opened (it is not necessarily
+  // the last one).
   static std::vector<Profile*> GetLastOpenedProfiles();
 
   // Get the profile for the user which created the current session.
@@ -165,16 +170,6 @@ class ProfileManager : public content::NotificationObserver,
   // TODO(https://crbug.com/1195201): Remove `user_data_dir` parameter since it
   // always must match `user_data_dir_` field.
   base::FilePath GetLastUsedProfileDir(const base::FilePath& user_data_dir);
-
-  // Get the Profiles which are currently open, i.e. have open browsers or were
-  // open the last time Chrome was running. Profiles that fail to initialize are
-  // skipped. The Profiles appear in the order they were opened. The last used
-  // profile will be on the list if it is initialized successfully, but its
-  // index on the list will depend on when it was opened (it is not necessarily
-  // the last one).
-  // TODO(https://crbug.com/1195201): This method is unused. Delete it.
-  std::vector<Profile*> GetLastOpenedProfiles(
-      const base::FilePath& user_data_dir);
 
   // Returns created and fully initialized profiles. Note, profiles order is NOT
   // guaranteed to be related with the creation order.

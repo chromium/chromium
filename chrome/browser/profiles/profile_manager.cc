@@ -518,8 +518,39 @@ bool ProfileManager::IsOffTheRecordModeForced(Profile* profile) {
 // static
 std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  return profile_manager->GetLastOpenedProfiles(
-      profile_manager->user_data_dir_);
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(profile_manager);
+  DCHECK(local_state);
+
+  std::vector<Profile*> to_return;
+  if (local_state->HasPrefPath(prefs::kProfilesLastActive) &&
+      local_state->GetList(prefs::kProfilesLastActive)) {
+    // Make a copy because the list might change in the calls to GetProfile.
+    std::unique_ptr<base::ListValue> profile_list(
+        local_state->GetList(prefs::kProfilesLastActive)->DeepCopy());
+    base::ListValue::const_iterator it;
+    for (it = profile_list->begin(); it != profile_list->end(); ++it) {
+      std::string profile_base_name;
+      if (!it->GetAsString(&profile_base_name) || profile_base_name.empty() ||
+          profile_base_name ==
+              base::FilePath(chrome::kSystemProfileDir).AsUTF8Unsafe()) {
+        LOG(WARNING) << "Invalid entry in " << prefs::kProfilesLastActive;
+        continue;
+      }
+      Profile* profile = profile_manager->GetProfile(
+          profile_manager->user_data_dir().AppendASCII(profile_base_name));
+      if (profile) {
+        // crbug.com/823338 -> CHECK that the profiles aren't guest or
+        // incognito, causing a crash during session restore.
+        CHECK(!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile())
+            << "Guest profiles shouldn't have been saved as active profiles";
+        CHECK(!profile->IsOffTheRecord())
+            << "OTR profiles shouldn't have been saved as active profiles";
+        to_return.push_back(profile);
+      }
+    }
+  }
+  return to_return;
 }
 
 // static
@@ -757,41 +788,6 @@ Profile* ProfileManager::GetLastUsedProfile(
 base::FilePath ProfileManager::GetLastUsedProfileDir(
     const base::FilePath& user_data_dir) {
   return user_data_dir.AppendASCII(GetLastUsedProfileBaseName());
-}
-
-std::vector<Profile*> ProfileManager::GetLastOpenedProfiles(
-    const base::FilePath& user_data_dir) {
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-
-  std::vector<Profile*> to_return;
-  if (local_state->HasPrefPath(prefs::kProfilesLastActive) &&
-      local_state->GetList(prefs::kProfilesLastActive)) {
-    // Make a copy because the list might change in the calls to GetProfile.
-    std::unique_ptr<base::ListValue> profile_list(
-        local_state->GetList(prefs::kProfilesLastActive)->DeepCopy());
-    base::ListValue::const_iterator it;
-    for (it = profile_list->begin(); it != profile_list->end(); ++it) {
-      std::string profile_path;
-      if (!it->GetAsString(&profile_path) || profile_path.empty() ||
-          profile_path ==
-              base::FilePath(chrome::kSystemProfileDir).AsUTF8Unsafe()) {
-        LOG(WARNING) << "Invalid entry in " << prefs::kProfilesLastActive;
-        continue;
-      }
-      Profile* profile = GetProfile(user_data_dir.AppendASCII(profile_path));
-      if (profile) {
-        // crbug.com/823338 -> CHECK that the profiles aren't guest or
-        // incognito, causing a crash during session restore.
-        CHECK(!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile())
-            << "Guest profiles shouldn't have been saved as active profiles";
-        CHECK(!profile->IsOffTheRecord())
-            << "OTR profiles shouldn't have been saved as active profiles";
-        to_return.push_back(profile);
-      }
-    }
-  }
-  return to_return;
 }
 
 std::vector<Profile*> ProfileManager::GetLoadedProfiles() const {
