@@ -17,6 +17,7 @@ source_set("android") {
   ]
   deps = [
     ":jni_headers",
+    "//chrome/common:buildflags",
     "//components/prefs",
     "//components/safety_check",
   ]
