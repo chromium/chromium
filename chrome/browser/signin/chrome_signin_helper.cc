@@ -59,14 +59,18 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif  // defined(OS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/profiles/profile_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
-#endif
+#include "components/signin/public/base/signin_switches.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace signin {
 
@@ -173,7 +177,8 @@ class ManageAccountsHeaderReceivedUserData
 void ProcessMirrorHeader(
     ManageAccountsParams manage_accounts_params,
     const content::WebContents::Getter& web_contents_getter) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    defined(OS_ANDROID)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GAIAServiceType service_type = manage_accounts_params.service_type;
@@ -191,7 +196,10 @@ void ProcessMirrorHeader(
   AccountReconcilor* account_reconcilor =
       AccountReconcilorFactory::GetForProfile(profile);
   account_reconcilor->OnReceivedManageAccountsResponse(service_type);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) ||
+        // defined(OS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       account_reconcilor->GetState());
 
@@ -236,6 +244,8 @@ void ProcessMirrorHeader(
 
   // 2. Displaying a reauthentication window
   if (!manage_accounts_params.email.empty()) {
+    // TODO(https://crbug.com/1177728): enable this for lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Do not display the re-authentication dialog if this event was triggered
     // by supervision being enabled for an account.  In this situation, a
     // complete signout is required.
@@ -244,7 +254,7 @@ void ProcessMirrorHeader(
     if (service && service->signout_required_after_supervision_enabled()) {
       return;
     }
-
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     base::UmaHistogramBoolean("AccountManager.MirrorReauthenticationRequest",
                               true);
 
@@ -292,11 +302,18 @@ void ProcessMirrorHeader(
   }
 
   // 3. Displaying the Account Manager for managing accounts.
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile, chromeos::settings::mojom::kMyAccountsSubpagePath);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile, chromeos::settings::mojom::kMyAccountsSubpagePath);
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  ::GetAccountManagerFacade(profile->GetPath().value())
+      ->ShowManageAccountsSettings();
   return;
 
-#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
+#elif defined(OS_ANDROID)
   if (manage_accounts_params.show_consistency_promo &&
       base::FeatureList::IsEnabled(kMobileIdentityConsistency)) {
     auto* window = web_contents->GetNativeView()->GetWindowAndroid();
@@ -326,8 +343,7 @@ void ProcessMirrorHeader(
       return;
     SigninBridge::OpenAccountManagementScreen(window, service_type);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
