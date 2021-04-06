@@ -65,6 +65,24 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   PrerenderHostRegistry* prerender_host_registry =
       storage_partition_impl->GetPrerenderHostRegistry();
 
+  // Disallow navigation from a prerendering page and cancel prerendering.
+  RenderFrameHostImpl* initiator_render_frame_host_impl =
+      navigation_request->GetInitiatorFrameToken().has_value()
+          ? RenderFrameHostImpl::FromFrameToken(
+                navigation_request->GetInitiatorProcessID(),
+                navigation_request->GetInitiatorFrameToken().value())
+          : nullptr;
+  if (initiator_render_frame_host_impl &&
+      initiator_render_frame_host_impl->frame_tree()->is_prerendering()) {
+    prerender_host_registry->AbandonHostAsync(
+        frame_tree_node->frame_tree_node_id(),
+        PrerenderHost::FinalStatus::kMainFrameNavigation);
+    // TODO(https://crbug.com/1194414): Handle the case the prerendering page
+    // is reserved for activation, and AbandonHostAsync() could not do nothing
+    // here.
+    return CANCEL;
+  }
+
   // Allow only HTTP(S) schemes.
   // https://jeremyroman.github.io/alternate-loading-modes/#no-bad-navs
   GURL prerendering_url = navigation_handle()->GetURL();

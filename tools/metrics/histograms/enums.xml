@@ -62668,6 +62668,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="kInProgressNavigation"/>
   <int value="8" label="kNavigationRequestFailure"/>
   <int value="9" label="kNavigationRequestBlockedByCsp"/>
+  <int value="10" label="kMainFrameNavigation"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">
