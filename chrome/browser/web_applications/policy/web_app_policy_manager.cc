@@ -183,11 +183,12 @@ void WebAppPolicyManager::OnDisableListPolicyChanged() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-std::set<SystemAppType> WebAppPolicyManager::GetDisabledSystemWebApps() const {
+const std::set<SystemAppType>& WebAppPolicyManager::GetDisabledSystemWebApps()
+    const {
   return disabled_system_apps_;
 }
 
-std::set<AppId> WebAppPolicyManager::GetDisabledWebAppsIds() const {
+const std::set<AppId>& WebAppPolicyManager::GetDisabledWebAppsIds() const {
   return disabled_web_apps_;
 }
 

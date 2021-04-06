@@ -493,7 +493,7 @@ void SystemWebAppManager::Start() {
     UpdateLastAttemptedInfo();
   }
 
-  const auto disabled_system_apps =
+  const auto& disabled_system_apps =
       web_app_policy_manager_->GetDisabledSystemWebApps();
 
   for (const auto& app : system_app_infos_) {
