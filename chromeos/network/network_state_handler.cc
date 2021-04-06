@@ -1765,10 +1765,9 @@ void NetworkStateHandler::UpdateGuid(NetworkState* network) {
     // If the network is saved in a profile, remove the entry from the map.
     // Otherwise ensure that the entry matches the specified GUID. (e.g. in
     // case a visible network with a specified guid gets configured with a
-    // new guid). Exception: Ethernet and Cellular expect to have a single
-    // network and a consistent GUID.
-    if (network->type() != shill::kTypeEthernet &&
-        network->type() != shill::kTypeCellular && network->IsInProfile()) {
+    // new guid). Exception: Ethernet expects to have a single network and a
+    // consistent GUID.
+    if (network->type() != shill::kTypeEthernet && network->IsInProfile()) {
       specifier_guid_map_.erase(specifier);
     } else {
       specifier_guid_map_[specifier] = network->guid();

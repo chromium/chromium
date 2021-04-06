@@ -23,8 +23,7 @@ namespace {
 
 class NetworkStateTest : public testing::Test {
  public:
-  NetworkStateTest() : network_state_("test_path") {
-  }
+  NetworkStateTest() : network_state_("test_path") {}
 
  protected:
   bool SetProperty(const std::string& key, std::unique_ptr<base::Value> value) {
@@ -405,6 +404,24 @@ TEST_F(NetworkStateTest, CelularPaymentPortalGet) {
             network_state_.activation_state());
   EXPECT_EQ("http://test-portal.com", network_state_.payment_url());
   EXPECT_EQ("", network_state_.payment_post_data());
+}
+
+TEST_F(NetworkStateTest, CellularSpecifier) {
+  const char kTestCellularNetworkName[] = "cellular1";
+  const char kTestIccid1[] = "1234567890";
+  const char kTestIccid2[] = "0987654321";
+  EXPECT_TRUE(SetStringProperty(shill::kTypeProperty, shill::kTypeCellular));
+  EXPECT_TRUE(
+      SetStringProperty(shill::kNameProperty, kTestCellularNetworkName));
+  network_state_.set_update_received();
+
+  // Verify that cellular network state with same name but different iccid
+  // produce different specifier values.
+  EXPECT_TRUE(SetStringProperty(shill::kIccidProperty, kTestIccid1));
+  std::string specifier1 = network_state_.GetSpecifier();
+  EXPECT_TRUE(SetStringProperty(shill::kIccidProperty, kTestIccid2));
+  std::string specifier2 = network_state_.GetSpecifier();
+  EXPECT_NE(specifier1, specifier2);
 }
 
 }  // namespace chromeos
