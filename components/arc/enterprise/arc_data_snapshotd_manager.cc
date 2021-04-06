@@ -26,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 namespace arc {
@@ -73,6 +74,8 @@ bool IsInHeadlessMode() {
 void EnableHeadlessMode() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(switches::kOzonePlatform, kHeadless);
+  command_line->AppendSwitchASCII(switches::kUseGL,
+                                  gl::kGLImplementationSwiftShaderName);
 }
 
 // Disables D-Bus clients:
