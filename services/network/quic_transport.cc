@@ -69,11 +69,6 @@ class QuicTransport::Stream final {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&Stream::Receive, stream_));
     }
-    void OnFinRead() override {
-      if (stream_) {
-        stream_->OnFinRead();
-      }
-    }
     void OnCanWrite() override {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&Stream::Send, stream_));
@@ -243,48 +238,47 @@ class QuicTransport::Stream final {
   }
 
   void Receive() {
-    while (incoming_ && incoming_->ReadableBytes() > 0) {
-      void* buffer = nullptr;
-      uint32_t available = 0;
-      base::AutoReset<bool> auto_reset(&in_two_phase_write_, true);
-      MojoResult result = writable_->BeginWriteData(
-          &buffer, &available, MOJO_BEGIN_WRITE_DATA_FLAG_NONE);
-      if (result == MOJO_RESULT_SHOULD_WAIT) {
-        writable_watcher_.Arm();
-        return;
+    while (incoming_) {
+      quic::WebTransportStream::ReadResult read_result;
+      if (incoming_->ReadableBytes() > 0) {
+        void* buffer = nullptr;
+        uint32_t available = 0;
+        MojoResult result = writable_->BeginWriteData(
+            &buffer, &available, MOJO_BEGIN_WRITE_DATA_FLAG_NONE);
+        if (result == MOJO_RESULT_SHOULD_WAIT) {
+          writable_watcher_.Arm();
+          return;
+        }
+        if (result == MOJO_RESULT_FAILED_PRECONDITION) {
+          // The client doesn't want further data.
+          writable_watcher_.Cancel();
+          writable_.reset();
+          incoming_ = nullptr;
+          MayDisposeLater();
+          return;
+        }
+        DCHECK_EQ(result, MOJO_RESULT_OK);
+
+        read_result =
+            incoming_->Read(reinterpret_cast<char*>(buffer), available);
+        writable_->EndWriteData(read_result.bytes_read);
+      } else {
+        // Even if ReadableBytes() == 0, we may need to read the FIN at the end
+        // of the stream.
+        read_result = incoming_->Read(nullptr, 0);
+        if (!read_result.fin) {
+          return;
+        }
       }
-      if (result == MOJO_RESULT_FAILED_PRECONDITION) {
-        // The client doesn't want further data.
+      if (read_result.fin) {
+        transport_->client_->OnIncomingStreamClosed(id_, /*fin_received=*/true);
         writable_watcher_.Cancel();
         writable_.reset();
         incoming_ = nullptr;
         MayDisposeLater();
         return;
       }
-      DCHECK_EQ(result, MOJO_RESULT_OK);
-
-      const size_t num_read_bytes =
-          incoming_->Read(reinterpret_cast<char*>(buffer), available);
-      writable_->EndWriteData(num_read_bytes);
-      if (!incoming_) {
-        // |incoming_| can be null here, because OnFinRead can be called in
-        // WebTransportStream::Read.
-        writable_watcher_.Cancel();
-        writable_.reset();
-        MayDisposeLater();
-        return;
-      }
     }
-  }
-
-  void OnFinRead() {
-    incoming_ = nullptr;
-    transport_->client_->OnIncomingStreamClosed(id_, /*fin_received=*/true);
-    if (in_two_phase_write_) {
-      return;
-    }
-    writable_watcher_.Cancel();
-    writable_.reset();
   }
 
   void Dispose() {
@@ -315,7 +309,6 @@ class QuicTransport::Stream final {
   mojo::SimpleWatcher readable_watcher_;
   mojo::SimpleWatcher writable_watcher_;
 
-  bool in_two_phase_write_ = false;
   bool has_seen_end_of_pipe_for_readable_ = false;
   bool has_received_fin_from_client_ = false;
 
