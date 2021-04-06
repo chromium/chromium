@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -106,7 +107,6 @@
 #include "weblayer/browser/weblayer_speech_recognition_manager_delegate.h"
 #include "weblayer/common/features.h"
 #include "weblayer/common/weblayer_paths.h"
-#include "weblayer/public/common/switches.h"
 #include "weblayer/public/fullscreen_delegate.h"
 #include "weblayer/public/main.h"
 
@@ -183,9 +183,9 @@ bool IsSafebrowsingSupported() {
 bool IsNetworkErrorAutoReloadEnabled() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kEnableAutoReload))
+  if (command_line.HasSwitch(embedder_support::kEnableAutoReload))
     return true;
-  if (command_line.HasSwitch(switches::kDisableAutoReload))
+  if (command_line.HasSwitch(embedder_support::kDisableAutoReload))
     return false;
   return true;
 }
@@ -460,6 +460,10 @@ void ContentBrowserClientImpl::ConfigureNetworkContextParams(
     context_params->initial_proxy_config = net::ProxyConfigWithAnnotation(
         proxy_config,
         net::DefineNetworkTrafficAnnotation("undefined", "Nothing here yet."));
+  }
+  if (command_line->HasSwitch(embedder_support::kShortReportingDelay)) {
+    context_params->reporting_delivery_interval =
+        base::TimeDelta::FromMilliseconds(100);
   }
 }
 

@@ -40,6 +40,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -2014,7 +2015,7 @@ class NetworkContextConfigurationReportingAndNelBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kShortReportingDelay);
+    command_line->AppendSwitch(embedder_support::kShortReportingDelay);
     // This switch will cause traffic to *any* port to go to https_server_,
     // regardless of which arbitrary port https_server_ decides to run on.
     // NEL and Reporting policies are only valid for a single origin.

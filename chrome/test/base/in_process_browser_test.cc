@@ -62,6 +62,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/embedder_support/switches.h"
 #include "components/google/core/common/google_util.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -269,8 +270,9 @@ void InProcessBrowserTest::SetUp() {
 
   // Auto-reload breaks many browser tests, which assume error pages won't be
   // reloaded out from under them. Tests that expect or desire this behavior can
-  // append switches::kEnableAutoReload, which will override the disable here.
-  command_line->AppendSwitch(switches::kDisableAutoReload);
+  // append embedder_support::kEnableAutoReload, which will override the disable
+  // here.
+  command_line->AppendSwitch(embedder_support::kDisableAutoReload);
 
   // Allow subclasses to change the command line before running any tests.
   SetUpCommandLine(command_line);

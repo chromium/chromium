@@ -112,6 +112,7 @@ test("weblayer_browsertests") {
     "//components/background_sync",
     "//components/blocked_content",
     "//components/content_settings/core/browser",
+    "//components/embedder_support",
     "//components/error_page/content/browser",
     "//components/favicon/content",
     "//components/heavy_ad_intervention",

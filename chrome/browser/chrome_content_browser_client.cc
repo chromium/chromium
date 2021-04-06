@@ -1261,9 +1261,9 @@ bool IsErrorPageAutoReloadEnabled() {
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kEnableAutomation))
     return false;
-  if (command_line.HasSwitch(switches::kEnableAutoReload))
+  if (command_line.HasSwitch(embedder_support::kEnableAutoReload))
     return true;
-  if (command_line.HasSwitch(switches::kDisableAutoReload))
+  if (command_line.HasSwitch(embedder_support::kDisableAutoReload))
     return false;
   return true;
 }

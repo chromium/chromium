@@ -183,9 +183,6 @@ const char kDiagnosticsFormat[]             = "diagnostics-format";
 // Tells the diagnostics mode to do the requested recovery step(s).
 const char kDiagnosticsRecovery[]           = "diagnostics-recovery";
 
-// Disable auto-reload of error pages.
-const char kDisableAutoReload[] = "disable-auto-reload";
-
 // Disable several subsystems which run network requests in the background.
 // This is for use when doing network performance testing to avoid noise in the
 // measurements.
@@ -254,9 +251,6 @@ const char kDiskCacheSize[]                 = "disk-cache-size";
 // Requests that a running browser process dump its collected histograms to a
 // given file. The file is overwritten if it exists.
 const char kDumpBrowserHistograms[]         = "dump-browser-histograms";
-
-// Enable auto-reload of error pages.
-const char kEnableAutoReload[] = "enable-auto-reload";
 
 // If the WebRTC logging private API is active, enables audio debug recordings.
 const char kEnableAudioDebugRecordingsFromExtension[] =
@@ -483,9 +477,6 @@ const char kRestoreLastSession[]            = "restore-last-session";
 // (with a directory of sub-resources). Enable only saving pages as MHTML.
 // See http://crbug.com/120416 for how to remove this switch.
 const char kSavePageAsMHTML[]               = "save-page-as-mhtml";
-
-// Sets the Reporting API delay to under a second to allow much quicker reports.
-const char kShortReportingDelay[] = "short-reporting-delay";
 
 // Does not show an infobar when an extension attaches to a page using
 // chrome.debugger page. Required to attach to extension background pages.
