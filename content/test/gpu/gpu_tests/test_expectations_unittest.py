@@ -239,10 +239,13 @@ def CheckTestExpectationPatternsForConflicts(expectations, file_name):
 def _FindTestCases():
   test_cases = []
   for start_dir in gpu_project_config.CONFIG.start_dirs:
+    # Note we deliberately only scan the integration tests as a
+    # workaround for http://crbug.com/1195465 .
     modules_to_classes = discover.DiscoverClasses(
         start_dir,
         gpu_project_config.CONFIG.top_level_dir,
-        base_class=gpu_integration_test.GpuIntegrationTest)
+        base_class=gpu_integration_test.GpuIntegrationTest,
+        pattern='*_integration_test.py')
     test_cases.extend(modules_to_classes.values())
   return test_cases
 
