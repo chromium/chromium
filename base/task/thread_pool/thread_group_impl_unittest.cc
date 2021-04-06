@@ -823,8 +823,9 @@ TEST_F(ThreadGroupImplStandbyPolicyTest, InAndOutStandbyThreadIsActive) {
   PlatformThread::Sleep(kReclaimTimeForCleanupTests * 2);
   EXPECT_EQ(2U, thread_group_->NumberOfWorkersForTesting());
 
-  sequenced_task_runner->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() { recurring_task.Stop(); }));
+  sequenced_task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+                                    recurring_task.AbandonAndStop();
+                                  }));
 
   // Stopping the recurring task should let the second worker be reclaimed per
   // not being "the" standby thread for a full reclaim timeout.
@@ -886,8 +887,9 @@ TEST_F(ThreadGroupImplStandbyPolicyTest, OnlyKeepActiveStandbyThreads) {
   EXPECT_EQ(2U, thread_group_->NumberOfWorkersForTesting());
 
   // Stopping the timer should let the number of active threads go down to one.
-  sequenced_task_runner->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() { recurring_task.Stop(); }));
+  sequenced_task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+                                    recurring_task.AbandonAndStop();
+                                  }));
   thread_group_->WaitForWorkersCleanedUpForTesting(1);
   EXPECT_EQ(1U, thread_group_->NumberOfWorkersForTesting());
 }
