@@ -25,6 +25,6 @@ w3c: |
 
     %(code)s
 
-    });
+    }%(attributes)s);
     </script>
     %(scripts)s%(images)s
