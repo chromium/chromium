@@ -76,6 +76,7 @@ TEST_F(PolicyLoaderLacrosTest, BasicTest) {
 TEST_F(PolicyLoaderLacrosTest, UpdateTest) {
   auto init_params = crosapi::mojom::BrowserInitParams::New();
 
+  chromeos::LacrosChromeServiceImpl::DisableCrosapiForTests();
   chromeos::LacrosChromeServiceImpl lacros_chrome_service(/*delegate=*/nullptr);
   lacros_chrome_service.SetInitParamsForTests(std::move(init_params));
 
