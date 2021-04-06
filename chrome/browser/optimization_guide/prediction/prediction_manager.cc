@@ -713,6 +713,11 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
     if (it != optimization_target_prediction_model_map_.end())
       model_info.set_version(it->second.get()->GetVersion());
 
+    auto file_it = optimization_target_prediction_model_file_map_.find(
+        optimization_target_and_metadata.first);
+    if (file_it != optimization_target_prediction_model_file_map_.end())
+      model_info.set_version(file_it->second.get()->GetVersion());
+
     models_info.push_back(model_info);
   }
 
@@ -797,6 +802,10 @@ void PredictionManager::UpdatePredictionModels(
 
       // Skip over models that have a download URL since they will be updated
       // once the download has completed successfully.
+      continue;
+    }
+    if (!model.has_model()) {
+      // We already have this updated model, so don't update in store.
       continue;
     }
 
@@ -991,6 +1000,11 @@ void PredictionManager::OnProcessLoadedModel(
   OptimizationGuideStore::EntryKey model_entry_key;
   if (model_and_features_store_->FindPredictionModelEntryKey(
           model.model_info().optimization_target(), &model_entry_key)) {
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "OptimizationGuide.PredictionModelRemoved." +
+            optimization_guide::GetStringNameForOptimizationTarget(
+                model.model_info().optimization_target()),
+        true);
     model_and_features_store_->RemovePredictionModelFromEntryKey(
         model_entry_key);
   }

@@ -50,9 +50,10 @@ using leveldb_proto::test::FakeDB;
 
 namespace {
 // Retry delay is 16 minutes to allow for kFetchRetryDelaySecs +
-// kFetchRandomMaxDelaySecs to pass.
-constexpr int kTestFetchRetryDelaySecs = 60 * 16;
-constexpr int kUpdateFetchModelAndFeaturesTimeSecs = 24 * 60 * 60;  // 24 hours.
+// some random delay to pass.
+constexpr int kTestFetchRetryDelaySecs = 60 * 16 + 62;
+// 24 hours + random fetch delay.
+constexpr int kUpdateFetchModelAndFeaturesTimeSecs = 24 * 60 * 60 + 62;
 
 }  // namespace
 
@@ -294,6 +295,20 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
               model_info.optimization_target())) {
         return false;
       }
+
+      if (check_expected_version_) {
+        auto version_it =
+            expected_version_.find(model_info.optimization_target());
+        if (model_info.has_version() !=
+            (version_it != expected_version_.end())) {
+          return false;
+        }
+        if (model_info.has_version() &&
+            model_info.version() != version_it->second) {
+          return false;
+        }
+      }
+
       auto it = expected_metadata_.find(model_info.optimization_target());
       if (model_info.has_model_metadata() != (it != expected_metadata_.end()))
         return false;
@@ -316,15 +331,30 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
     expected_metadata_[optimization_target] = model_metadata;
   }
 
+  void SetExpectedVersionForOptimizationTarget(
+      proto::OptimizationTarget optimization_target,
+      int64_t version) {
+    expected_version_[optimization_target] = version;
+  }
+
+  void SetCheckExpectedVersion() { check_expected_version_ = true; }
+
+  void Reset() {
+    models_fetched_ = false;
+    count_hosts_fetched_ = false;
+  }
+
   bool models_fetched() { return models_fetched_; }
   size_t hosts_fetched() { return count_hosts_fetched_; }
 
  private:
   bool models_fetched_ = false;
   size_t count_hosts_fetched_ = 0;
+  bool check_expected_version_ = false;
   // The desired behavior of the TestPredictionModelFetcher.
   PredictionModelFetcherEndState fetch_state_;
   base::flat_map<proto::OptimizationTarget, proto::Any> expected_metadata_;
+  base::flat_map<proto::OptimizationTarget, int64_t> expected_version_;
 };
 
 class TestOptimizationGuideStore : public OptimizationGuideStore {
@@ -390,6 +420,10 @@ class TestOptimizationGuideStore : public OptimizationGuideStore {
       proto::OptimizationTarget optimization_target,
       OptimizationGuideStore::EntryKey* out_prediction_model_entry_key)
       override {
+    if (optimization_target ==
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
+      return false;
+    }
     if (have_models_in_store_) {
       *out_prediction_model_entry_key =
           "4_" + base::NumberToString(static_cast<int>(optimization_target));
@@ -776,6 +810,26 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   EXPECT_EQ(received_model->second.BaseName().value(),
             FILE_PATH_LITERAL("whatever"));
 
+  // Reset fetcher and make sure version is sent in the new request and not
+  // counted as re-loaded or updated.
+  {
+    base::HistogramTester histogram_tester2;
+
+    prediction_model_fetcher()->Reset();
+    prediction_model_fetcher()->SetCheckExpectedVersion();
+    prediction_model_fetcher()->SetExpectedVersionForOptimizationTarget(
+        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, 1);
+    MoveClockForwardBy(
+        base::TimeDelta::FromSeconds(kUpdateFetchModelAndFeaturesTimeSecs));
+    EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+    histogram_tester2.ExpectTotalCount(
+        "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
+    histogram_tester2.ExpectTotalCount(
+        "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
+    histogram_tester2.ExpectTotalCount(
+        "OptimizationGuide.PredictionModelRemoved.PainfulPageLoad", 0);
+  }
+
   // Now remove and reset observer.
   prediction_manager()->RemoveObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer);
@@ -967,6 +1021,8 @@ TEST_F(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelRemoved.PainfulPageLoad", true, 1);
 }
 
 TEST_F(PredictionManagerTest, UpdateModelWithSameVersion) {
