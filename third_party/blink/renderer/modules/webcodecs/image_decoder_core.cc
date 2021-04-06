@@ -143,7 +143,7 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
 
   // Due to implementation limitations YUV support for some formats is only
   // known once all data is received. Animated images are never supported.
-  if (decoder_->CanDecodeToYUV()) {
+  if (decoder_->CanDecodeToYUV() && !have_completed_rgb_decode_) {
     DCHECK_EQ(frame_index, 0u);
     if (!have_completed_yuv_decode_) {
       MaybeDecodeToYuv();
@@ -172,16 +172,18 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
     return result;
   }
 
-  // Only satisfy fully complete decode requests.
-  const bool is_complete = image->GetStatus() == ImageFrame::kFrameComplete;
-  if (!is_complete && complete_frames_only) {
+  // Nothing to do if nothing has been decoded yet.
+  if (image->GetStatus() == ImageFrame::kFrameEmpty ||
+      image->GetStatus() == ImageFrame::kFrameInitialized) {
     result->status = Status::kNoImage;
     return result;
   }
 
-  // Nothing to do if nothing has been decoded yet.
-  if (image->GetStatus() == ImageFrame::kFrameEmpty ||
-      image->GetStatus() == ImageFrame::kFrameInitialized) {
+  have_completed_rgb_decode_ = true;
+
+  // Only satisfy fully complete decode requests.
+  const bool is_complete = image->GetStatus() == ImageFrame::kFrameComplete;
+  if (!is_complete && complete_frames_only) {
     result->status = Status::kNoImage;
     return result;
   }
@@ -260,6 +262,7 @@ void ImageDecoderCore::Clear() {
   decoder_.reset();
   incomplete_frames_.clear();
   yuv_frame_ = nullptr;
+  have_completed_rgb_decode_ = false;
   have_completed_yuv_decode_ = false;
 }
 
@@ -275,6 +278,7 @@ void ImageDecoderCore::Reinitialize(
 }
 
 void ImageDecoderCore::MaybeDecodeToYuv() {
+  DCHECK(!have_completed_rgb_decode_);
   DCHECK(!have_completed_yuv_decode_);
 
   const auto format = YUVSubsamplingToMediaPixelFormat(

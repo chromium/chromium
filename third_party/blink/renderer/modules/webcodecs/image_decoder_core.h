@@ -113,8 +113,9 @@ class MODULES_EXPORT ImageDecoderCore {
   // The true workhorse of this matryoshka doll of "image decoders."
   std::unique_ptr<ImageDecoder> decoder_;
 
-  // The YUV decoders don't like to be called more than once, so store the
-  // decoded frame once we have it.
+  // The YUV decoders don't like to be called more than once or called after a
+  // RGB frame is decoded, so store the decoded frame once we have it.
+  bool have_completed_rgb_decode_ = false;
   bool have_completed_yuv_decode_ = false;
   scoped_refptr<media::VideoFrame> yuv_frame_;
 
