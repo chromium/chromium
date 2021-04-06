@@ -78,8 +78,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                 return;
             }
 
-            boolean isFirstTimeUser =
-                    AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser();
+            boolean isFirstTimeUser = AutofillAssistantPreferencesUtil
+                                              .isAutofillAssistantFirstTimeTriggerScriptUser();
             AutofillAssistantMetrics.recordLiteScriptStarted(webContents,
                     isFirstTimeUser ? LiteScriptStarted.LITE_SCRIPT_FIRST_TIME_USER
                                     : LiteScriptStarted.LITE_SCRIPT_RETURNING_USER);

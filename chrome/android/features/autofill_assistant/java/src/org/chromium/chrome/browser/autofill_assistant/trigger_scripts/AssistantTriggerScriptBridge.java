@@ -161,7 +161,7 @@ public class AssistantTriggerScriptBridge {
     /** Returns whether the user has seen a trigger script before or not. */
     @CalledByNative
     private static boolean isFirstTimeTriggerScriptUser() {
-        return AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser();
+        return AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeTriggerScriptUser();
     }
 
     /**
@@ -188,7 +188,7 @@ public class AssistantTriggerScriptBridge {
 
         // A trigger script was displayed, users are no longer considered first-time users.
         if (shown) {
-            AutofillAssistantPreferencesUtil.setAutofillAssistantReturningLiteScriptUser();
+            AutofillAssistantPreferencesUtil.setAutofillAssistantFirstTimeTriggerScriptUser(false);
         }
         return shown;
     }

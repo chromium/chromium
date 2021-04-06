@@ -2507,6 +2507,8 @@ static_library("browser") {
       "android/autofill_assistant/onboarding_coordinator_bridge.cc",
       "android/autofill_assistant/onboarding_fetcher_factory.cc",
       "android/autofill_assistant/onboarding_fetcher_factory.h",
+      "android/autofill_assistant/starter_android.cc",
+      "android/autofill_assistant/starter_android.h",
       "android/autofill_assistant/trigger_context_android.cc",
       "android/autofill_assistant/trigger_script_bridge_android.cc",
       "android/autofill_assistant/trigger_script_bridge_android.h",

@@ -233,10 +233,10 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         Assert.assertTrue(
-                AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser());
+                AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeTriggerScriptUser());
         waitUntilViewMatchesCondition(withText("First time user"), isCompletelyDisplayed());
         Assert.assertFalse(
-                AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser());
+                AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeTriggerScriptUser());
 
         onView(withText("Not now")).perform(click());
         waitUntilViewMatchesCondition(withText("Returning user"), isCompletelyDisplayed());

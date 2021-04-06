@@ -19,6 +19,7 @@ extern const base::Feature kAutofillAssistantDialogOnboarding;
 extern const base::Feature kAutofillAssistantDirectActions;
 extern const base::Feature kAutofillAssistantDisableOnboardingFlow;
 extern const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB;
+extern const base::Feature kAutofillAssistantInChromeTriggering;
 extern const base::Feature kAutofillAssistantFeedbackChip;
 extern const base::Feature kAutofillAssistantLoadDFMForTriggerScripts;
 extern const base::Feature kAutofillAssistantProactiveHelp;

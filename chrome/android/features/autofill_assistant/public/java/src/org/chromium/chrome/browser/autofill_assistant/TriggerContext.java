@@ -12,8 +12,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -292,11 +290,8 @@ public class TriggerContext {
         long nativeInstance = toNative();
         // TODO(b/179648654): fetch MSBB status directly in native.
         boolean isValid = TriggerContextJni.get().isValid(nativeInstance,
-                UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                        Profile.getLastUsedRegularProfile()),
-                AutofillAssistantPreferencesUtil.isProactiveHelpOn(),
-                (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled()
-                        != null));
+                Starter.getMakeSearchesAndBrowsingBetterSettingEnabled(),
+                Starter.getProactiveHelpSettingEnabled(), Starter.getFeatureModuleInstalled());
         TriggerContextJni.get().destroyNative(nativeInstance);
 
         return isValid;
@@ -320,7 +315,7 @@ public class TriggerContext {
         long createNative(String experimentIds, String[] parameterKeys, String[] parameterValues,
                 boolean isCustomTab, boolean isDirectAction, String initialUrl);
         void destroyNative(long triggerContext);
-        boolean isValid(long triggerContext, boolean msbbSetting, boolean proactiveHelpSetting,
-                boolean featureModuleInstalled);
+        boolean isValid(long triggerContext, boolean isMsbbSettingEnabled,
+                boolean isProactiveHelpSettingEnabled, boolean isFeatureModuleInstalled);
     }
 }

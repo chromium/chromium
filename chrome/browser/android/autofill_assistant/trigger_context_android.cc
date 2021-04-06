@@ -31,11 +31,12 @@ static void JNI_TriggerContext_DestroyNative(JNIEnv* env,
   delete trigger_context;
 }
 
-static jboolean JNI_TriggerContext_IsValid(JNIEnv* env,
-                                           jlong jnative_trigger_context,
-                                           jboolean msbb_setting,
-                                           jboolean proactive_help_setting,
-                                           jboolean feature_module_installed) {
+static jboolean JNI_TriggerContext_IsValid(
+    JNIEnv* env,
+    jlong jnative_trigger_context,
+    jboolean msbb_setting_enabled,
+    jboolean proactive_help_setting_enabled,
+    jboolean feature_module_installed) {
   auto* trigger_context = static_cast<TriggerContext*>(
       reinterpret_cast<void*>(jnative_trigger_context));
   DCHECK(trigger_context);
@@ -44,8 +45,8 @@ static jboolean JNI_TriggerContext_IsValid(JNIEnv* env,
   DCHECK(!trigger_context->GetDirectAction());
 
   switch (StartupUtil().ChooseStartupModeForIntent(
-      *trigger_context,
-      {msbb_setting, proactive_help_setting, feature_module_installed})) {
+      *trigger_context, {msbb_setting_enabled, proactive_help_setting_enabled,
+                         feature_module_installed})) {
     case StartupUtil::StartupMode::FEATURE_DISABLED:
     case StartupUtil::StartupMode::MANDATORY_PARAMETERS_MISSING:
     case StartupUtil::StartupMode::SETTING_DISABLED:

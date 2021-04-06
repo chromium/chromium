@@ -51,16 +51,16 @@ public class AutofillAssistantPreferencesUtil {
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, enabled);
     }
 
-    /** Returns whether the user has seen a lite script before or not. */
-    public static boolean isAutofillAssistantFirstTimeLiteScriptUser() {
+    /** Returns whether the user has seen a trigger script before or not. */
+    public static boolean isAutofillAssistantFirstTimeTriggerScriptUser() {
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, true);
     }
 
-    /** Marks a user as having seen a lite script at least once before. */
-    public static void setAutofillAssistantReturningLiteScriptUser() {
+    /** Marks a user as having seen a trigger script at least once before. */
+    public static void setAutofillAssistantFirstTimeTriggerScriptUser(boolean firstTimeUser) {
         SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, false);
+                ChromePreferenceKeys.AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, firstTimeUser);
     }
 
     /** Returns the number of times a user has explicitly canceled a lite script. */
