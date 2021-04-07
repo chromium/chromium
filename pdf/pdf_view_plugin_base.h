@@ -266,9 +266,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   void set_document_size(const gfx::Size& size) { document_size_ = size; }
 
-  const gfx::Size& plugin_size() const { return plugin_size_; }
-
-  const gfx::Point& plugin_offset() const { return plugin_offset_; }
+  const gfx::Rect& plugin_rect() const { return plugin_rect_; }
 
   void SetBackgroundColor(SkColor background_color) {
     background_color_ = background_color;
@@ -385,14 +383,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // high and there are 10 pages, the height will be 8000).
   gfx::Size document_size_;
 
-  // Size, in pixels, of plugin rectangle.
-  gfx::Size plugin_size_;
-
   // Size, in DIPs, of plugin rectangle.
   gfx::Size plugin_dip_size_;
 
-  // Positional offset, in CSS pixels, of the plugin rectangle.
-  gfx::Point plugin_offset_;
+  // The plugin rectangle in device pixels.
+  gfx::Rect plugin_rect_;
 
   // The background color of the PDF viewer.
   SkColor background_color_ = SK_ColorTRANSPARENT;

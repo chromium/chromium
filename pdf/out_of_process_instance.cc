@@ -1089,7 +1089,7 @@ void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
   engine()->SetGrayscale(dict.Get(pp::Var(kJSPrintPreviewGrayscale)).AsBool());
   engine()->New(GetURL().c_str(), /*headers=*/nullptr);
 
-  paint_manager().InvalidateRect(gfx::Rect(plugin_size()));
+  paint_manager().InvalidateRect(gfx::Rect(plugin_rect().size()));
 }
 
 void OutOfProcessInstance::HandleSaveAttachmentMessage(

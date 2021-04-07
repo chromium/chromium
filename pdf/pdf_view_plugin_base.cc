@@ -307,7 +307,7 @@ void PdfViewPluginBase::DocumentLoadFailed() {
 
   DidStopLoading();
 
-  paint_manager_.InvalidateRect(gfx::Rect(plugin_size_));
+  paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
 }
 
 void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,
@@ -524,26 +524,24 @@ void PdfViewPluginBase::OnGeometryChanged(double old_zoom,
 void PdfViewPluginBase::UpdateGeometryOnViewChanged(
     const gfx::Rect& new_view_rect,
     float new_device_scale) {
-  const gfx::Size view_device_size(new_view_rect.width() * new_device_scale,
-                                   new_view_rect.height() * new_device_scale);
+  const gfx::Rect new_plugin_rect =
+      gfx::ScaleToEnclosingRectSafe(new_view_rect, new_device_scale);
 
-  if (view_device_size == plugin_size_ && new_device_scale == device_scale_ &&
-      new_view_rect.origin() == plugin_offset_) {
+  if (new_device_scale == device_scale_ && new_plugin_rect == plugin_rect_) {
     return;
   }
 
   const float old_device_scale = device_scale_;
   device_scale_ = new_device_scale;
+  plugin_rect_ = new_plugin_rect;
   plugin_dip_size_ = new_view_rect.size();
-  plugin_size_ = view_device_size;
-  plugin_offset_ = new_view_rect.origin();
 
-  paint_manager().SetSize(plugin_size_, device_scale_);
+  paint_manager().SetSize(plugin_rect_.size(), device_scale_);
 
   // Initialize the image data buffer if the context size changes.
   const gfx::Size old_image_size = gfx::SkISizeToSize(image_data_.dimensions());
   const gfx::Size new_image_size =
-      PaintManager::GetNewContextSize(old_image_size, plugin_size_);
+      PaintManager::GetNewContextSize(old_image_size, plugin_rect_.size());
   if (new_image_size != old_image_size) {
     InitImageData(new_image_size);
     first_paint_ = true;
@@ -551,7 +549,7 @@ void PdfViewPluginBase::UpdateGeometryOnViewChanged(
 
   // Skip updating the geometry if the new image data buffer is empty.
   if (image_data_.drawsNothing()) {
-    DCHECK(plugin_size_.IsEmpty());
+    DCHECK(plugin_rect_.IsEmpty());
     return;
   }
 
@@ -567,18 +565,18 @@ void PdfViewPluginBase::RecalculateAreas(double old_zoom,
   if (zoom_ != old_zoom || device_scale_ != old_device_scale)
     engine()->ZoomUpdated(zoom_ * device_scale_);
 
-  available_area_ = gfx::Rect(plugin_size_);
+  available_area_ = gfx::Rect(plugin_rect_.size());
   int doc_width = GetDocumentPixelWidth();
   if (doc_width < available_area_.width()) {
     // Center the document horizontally inside the plugin rectangle.
-    available_area_.Offset((plugin_size_.width() - doc_width) / 2, 0);
+    available_area_.Offset((plugin_rect_.width() - doc_width) / 2, 0);
     available_area_.set_width(doc_width);
   }
 
   // The distance between top of the plugin and the bottom of the document in
   // pixels.
   int bottom_of_document = GetDocumentPixelHeight();
-  if (bottom_of_document < plugin_size_.height())
+  if (bottom_of_document < plugin_rect_.height())
     available_area_.set_height(bottom_of_document);
 
   CalculateBackgroundParts();
@@ -588,15 +586,15 @@ void PdfViewPluginBase::RecalculateAreas(double old_zoom,
 
   if (document_size_.IsEmpty())
     return;
-  paint_manager_.InvalidateRect(gfx::Rect(plugin_size_));
+  paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
 }
 
 void PdfViewPluginBase::CalculateBackgroundParts() {
   background_parts_.clear();
   int left_width = available_area_.x();
   int right_start = available_area_.right();
-  int right_width = std::abs(plugin_size().width() - available_area_.right());
-  int bottom = std::min(available_area_.bottom(), plugin_size().height());
+  int right_width = std::abs(plugin_rect_.width() - available_area_.right());
+  int bottom = std::min(available_area_.bottom(), plugin_rect_.height());
 
   // Note: we assume the display of the PDF document is always centered
   // horizontally, but not necessarily centered vertically.
@@ -611,8 +609,8 @@ void PdfViewPluginBase::CalculateBackgroundParts() {
     background_parts_.push_back(part);
 
   // Add the bottom rectangle.
-  part.location = gfx::Rect(0, bottom, plugin_size().width(),
-                            plugin_size().height() - bottom);
+  part.location = gfx::Rect(0, bottom, plugin_rect_.width(),
+                            plugin_rect_.height() - bottom);
   if (!part.location.IsEmpty())
     background_parts_.push_back(part);
 }
@@ -675,7 +673,8 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
 
 void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
   AccessibilityViewportInfo viewport_info;
-  viewport_info.scroll = gfx::ScaleToFlooredPoint(plugin_offset_, -1);
+  viewport_info.scroll =
+      gfx::ScaleToFlooredPoint(plugin_rect_.origin(), -1 / device_scale_);
   viewport_info.offset = gfx::ScaleToFlooredPoint(available_area_.origin(),
                                                   1 / (device_scale_ * zoom_));
   viewport_info.zoom = zoom_;
@@ -860,7 +859,7 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
     // position on screen of the paint.
     gfx::Vector2d paint_offset;
 
-    if (plugin_size_.width() > GetDocumentPixelWidth() * zoom_ratio) {
+    if (plugin_rect_.width() > GetDocumentPixelWidth() * zoom_ratio) {
       // We want to keep the paint in the middle but it must stay in the same
       // position relative to the scroll bars.
       paint_offset = gfx::Vector2d(0, (1 - zoom_ratio) * pinch_center.y());
@@ -873,10 +872,10 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
     } else if (last_bitmap_smaller_) {
       // When the document width covers the display area's width, we will anchor
       // the scroll bars disregarding where the actual pinch certer is.
-      pinch_center = gfx::Point((plugin_size_.width() / device_scale_) / 2,
-                                (plugin_size_.height() / device_scale_) / 2);
+      pinch_center = gfx::Point((plugin_rect_.width() / device_scale_) / 2,
+                                (plugin_rect_.height() / device_scale_) / 2);
       const double zoom_when_doc_covers_plugin_width =
-          zoom_ * plugin_size_.width() / GetDocumentPixelWidth();
+          zoom_ * plugin_rect_.width() / GetDocumentPixelWidth();
       paint_offset = gfx::Vector2d(
           (1 - new_zoom / zoom_when_doc_covers_plugin_width) * pinch_center.x(),
           (1 - zoom_ratio) * pinch_center.y());
@@ -925,7 +924,7 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                 std::vector<PaintReadyRect>& ready,
                                 std::vector<gfx::Rect>& pending) {
   if (image_data_.drawsNothing()) {
-    DCHECK(plugin_size_.IsEmpty());
+    DCHECK(plugin_rect_.IsEmpty());
     return;
   }
 
@@ -939,7 +938,8 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
   for (const gfx::Rect& paint_rect : paint_rects) {
     // Intersect with plugin area since there could be pending invalidates from
     // when the plugin area was larger.
-    gfx::Rect rect = gfx::IntersectRects(paint_rect, gfx::Rect(plugin_size_));
+    gfx::Rect rect =
+        gfx::IntersectRects(paint_rect, gfx::Rect(plugin_rect_.size()));
     if (rect.IsEmpty())
       continue;
 
@@ -967,7 +967,7 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                         : engine()->GetPageScreenRect(0).y();
     if (rect.y() < first_page_ypos) {
       gfx::Rect region = gfx::IntersectRects(
-          rect, gfx::Rect(gfx::Size(plugin_size_.width(), first_page_ypos)));
+          rect, gfx::Rect(gfx::Size(plugin_rect_.width(), first_page_ypos)));
       ready.push_back(PaintReadyRect(region, GetPluginImageData()));
       image_data_.erase(background_color_, gfx::RectToSkIRect(region));
     }

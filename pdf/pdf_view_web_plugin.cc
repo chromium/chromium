@@ -184,9 +184,9 @@ void PdfViewWebPlugin::UpdateAllLifecyclePhases(
 void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
   // Clip the intersection of the paint rect and the plugin rect, so that
   // painting outside the plugin or the paint rect area can be avoided.
-  gfx::Rect plugin_rect(rect.origin(), plugin_size());
+  const gfx::Rect plugin_area(rect.origin(), plugin_rect().size());
   SkRect invalidate_rect =
-      gfx::RectToSkRect(gfx::IntersectRects(plugin_rect, rect));
+      gfx::RectToSkRect(gfx::IntersectRects(plugin_area, rect));
   cc::PaintCanvasAutoRestore auto_restore(canvas, /*save=*/true);
   canvas->clipRect(invalidate_rect);
 
@@ -364,7 +364,7 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
           .set_image(std::move(snapshot), cc::PaintImage::GetNextContentId())
           .set_id(cc::PaintImage::GetNextId())
           .TakePaintImage();
-  InvalidateRectInPluginContainer(gfx::Rect(plugin_size()));
+  InvalidateRectInPluginContainer(gfx::Rect(plugin_rect().size()));
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
@@ -466,7 +466,7 @@ void PdfViewWebPlugin::InvalidatePluginContainer() {
 void PdfViewWebPlugin::InvalidateRectInPluginContainer(const gfx::Rect& rect) {
   DCHECK(container_);
 
-  if (plugin_size().IsEmpty())
+  if (plugin_rect().IsEmpty())
     return;
 
   container_->InvalidateRect(rect);
