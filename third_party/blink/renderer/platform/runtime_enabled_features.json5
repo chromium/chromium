@@ -2271,8 +2271,8 @@
     },
     {
       name: "WebOTPAssertionFeaturePolicy",
-      status: "experimental",
       depends_on: ["WebOTP"],
+      status: {"default": "experimental", "Android": "stable"},
     },
     {
       name: "WebScheduler",
