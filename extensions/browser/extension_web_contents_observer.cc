@@ -245,6 +245,19 @@ void ExtensionWebContentsObserver::MediaPictureInPictureChanged(
   }
 }
 
+bool ExtensionWebContentsObserver::OnMessageReceived(
+    const IPC::Message& message,
+    content::RenderFrameHost* render_frame_host) {
+  DCHECK(initialized_);
+  bool handled = true;
+  IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(
+      ExtensionWebContentsObserver, message, render_frame_host)
+    IPC_MESSAGE_HANDLER(ExtensionHostMsg_Request, OnRequest)
+    IPC_MESSAGE_UNHANDLED(handled = false)
+  IPC_END_MESSAGE_MAP()
+  return handled;
+}
+
 void ExtensionWebContentsObserver::PepperInstanceCreated() {
   DCHECK(initialized_);
   if (GetViewType(web_contents()) ==
@@ -324,6 +337,14 @@ mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
         remote.BindNewEndpointAndPassReceiver());
   }
   return remote.get();
+}
+
+void ExtensionWebContentsObserver::OnRequest(
+    content::RenderFrameHost* render_frame_host,
+    const mojom::RequestParams& params) {
+  DCHECK(initialized_);
+  dispatcher_.Dispatch(params, render_frame_host,
+                       render_frame_host->GetProcess()->GetID());
 }
 
 }  // namespace extensions

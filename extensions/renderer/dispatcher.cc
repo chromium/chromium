@@ -689,6 +689,13 @@ void Dispatcher::RunScriptsAtDocumentIdle(content::RenderFrame* render_frame) {
   // |frame_helper| and |render_frame| might be dead by now.
 }
 
+void Dispatcher::OnExtensionResponse(int request_id,
+                                     bool success,
+                                     const base::ListValue& response,
+                                     const std::string& error) {
+  bindings_system_->HandleResponse(request_id, success, response, error);
+}
+
 void Dispatcher::DispatchEvent(const std::string& extension_id,
                                const std::string& event_name,
                                const base::ListValue& event_args,

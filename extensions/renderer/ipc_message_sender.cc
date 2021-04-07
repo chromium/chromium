@@ -7,7 +7,6 @@
 #include <map>
 
 #include "base/guid.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "content/public/renderer/render_frame.h"
@@ -18,11 +17,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/frame.mojom.h"
-#include "extensions/renderer/dispatcher.h"
-#include "extensions/renderer/extension_frame_helper.h"
-#include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/message_target.h"
-#include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -42,11 +37,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     if (!frame)
       return;
 
-    int request_id = params->request_id;
-    ExtensionFrameHelper::Get(frame)->GetLocalFrameHost()->Request(
-        std::move(params),
-        base::BindOnce(&MainThreadIPCMessageSender::OnResponse,
-                       weak_ptr_factory_.GetWeakPtr(), request_id));
+    frame->Send(new ExtensionHostMsg_Request(frame->GetRoutingID(), *params));
   }
 
   void SendOnRequestResponseReceivedIPC(int request_id) override {}
@@ -180,20 +171,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
   }
 
  private:
-  void OnResponse(int request_id,
-                  bool success,
-                  base::Value response,
-                  const std::string& error) {
-    ExtensionsRendererClient::Get()
-        ->GetDispatcher()
-        ->bindings_system()
-        ->HandleResponse(request_id, success,
-                         base::Value::AsListValue(response), error);
-  }
-
   content::RenderThread* const render_thread_;
-
-  base::WeakPtrFactory<MainThreadIPCMessageSender> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MainThreadIPCMessageSender);
 };

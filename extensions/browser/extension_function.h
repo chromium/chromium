@@ -105,10 +105,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     BAD_MESSAGE
   };
 
-  // TODO(crbug.com/1196205): Convert the type of |results| to a base::Value.
-  using ResponseCallback = base::OnceCallback<void(ResponseType type,
-                                                   const base::Value& results,
-                                                   const std::string& error)>;
+  using ResponseCallback =
+      base::OnceCallback<void(ResponseType type,
+                              const base::ListValue& results,
+                              const std::string& error)>;
 
   ExtensionFunction();
 

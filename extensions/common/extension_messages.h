@@ -103,7 +103,7 @@ IPC_STRUCT_BEGIN(ExtensionHostMsg_DOMAction_Params)
   IPC_STRUCT_MEMBER(int, call_type)
 IPC_STRUCT_END()
 
-// Parameters structure for ExtensionHostMsg_RequestWorker.
+// Parameters structure for ExtensionHostMsg_Request.
 IPC_STRUCT_TRAITS_BEGIN(extensions::mojom::RequestParams)
   // Message name.
   IPC_STRUCT_TRAITS_MEMBER(name)
@@ -476,6 +476,15 @@ IPC_STRUCT_END()
 
 // Messages sent from the browser to the renderer:
 
+// The browser sends this message in response to all extension api calls. The
+// response data (if any) is one of the base::Value subclasses, wrapped as the
+// first element in a ListValue.
+IPC_MESSAGE_ROUTED4(ExtensionMsg_Response,
+                    int /* request_id */,
+                    bool /* success */,
+                    base::ListValue /* response wrapper (see comment above) */,
+                    std::string /* error */)
+
 // Sent to the renderer to dispatch an event to an extension.
 // Note: |event_args| is separate from the params to avoid having the message
 // take ownership.
@@ -538,6 +547,10 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
                     std::string /* error_message */)
 
 // Messages sent from the renderer to the browser:
+
+// A renderer sends this message when an extension process starts an API
+// request. The browser will always respond with a ExtensionMsg_Response.
+IPC_MESSAGE_ROUTED1(ExtensionHostMsg_Request, extensions::mojom::RequestParams)
 
 // Notify the browser that the given extension added a listener to an event.
 IPC_MESSAGE_CONTROL5(ExtensionHostMsg_AddListener,
