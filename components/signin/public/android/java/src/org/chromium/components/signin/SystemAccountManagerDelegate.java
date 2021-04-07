@@ -127,10 +127,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         Account[] accounts = mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
         long elapsed = SystemClock.elapsedRealtime() - now;
         recordElapsedTimeHistogram("Signin.AndroidGetAccountsTime_AccountManager", elapsed);
-        if (ThreadUtils.runningOnUiThread()) {
-            recordElapsedTimeHistogram(
-                    "Signin.AndroidGetAccountsTimeUiThread_AccountManager", elapsed);
-        }
         return accounts;
     }
 

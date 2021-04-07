@@ -188,7 +188,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidGetAccountIdsTime" units="ms"
-    expires_after="M89">
+    expires_after="M92">
   <owner>alexilin@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
@@ -196,7 +196,7 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.AndroidGetAccountsTime" units="ms" expires_after="M89">
+<histogram name="Signin.AndroidGetAccountsTime" units="ms" expires_after="M92">
   <owner>alexilin@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
@@ -206,6 +206,9 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.AndroidGetAccountsTimeUiThread" units="ms"
     expires_after="M89">
+  <obsolete>
+    Removed 2021-04
+  </obsolete>
   <owner>alexilin@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
