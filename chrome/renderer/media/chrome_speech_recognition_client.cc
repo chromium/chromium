@@ -218,3 +218,8 @@ void ChromeSpeechRecognitionClient::OnRecognizerDisconnected() {
 void ChromeSpeechRecognitionClient::OnCaptionHostDisconnected() {
   is_browser_requesting_transcription_ = false;
 }
+
+void ChromeSpeechRecognitionClient::OnLanguageChanged(
+    const std::string& language) {
+  speech_recognition_recognizer_->OnLanguageChanged(language);
+}

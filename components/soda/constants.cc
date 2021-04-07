@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -49,6 +51,24 @@ const base::FilePath GetSodaLanguagePacksDirectory() {
   return components_dir.empty()
              ? base::FilePath()
              : components_dir.Append(kSodaLanguagePacksRelativePath);
+}
+
+const base::FilePath GetLatestSodaLanguagePackDirectory(
+    const std::string& language) {
+  base::FileEnumerator enumerator(
+      GetSodaLanguagePacksDirectory().AppendASCII(language), false,
+      base::FileEnumerator::DIRECTORIES);
+
+  // Use the lexographical order of the directory names to determine the latest
+  // version. This mirrors the logic in the component updater.
+  base::FilePath latest_version_dir;
+  for (base::FilePath version_dir = enumerator.Next(); !version_dir.empty();
+       version_dir = enumerator.Next()) {
+    latest_version_dir =
+        latest_version_dir < version_dir ? version_dir : latest_version_dir;
+  }
+
+  return latest_version_dir.Append(kSodaLanguagePackDirectoryRelativePath);
 }
 
 const base::FilePath GetLatestSodaDirectory() {

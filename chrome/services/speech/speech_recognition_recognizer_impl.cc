@@ -9,11 +9,13 @@
 
 #include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/services/speech/soda/proto/soda_api.pb.h"
 #include "chrome/services/speech/soda/soda_client.h"
+#include "components/soda/constants.h"
 #include "google_apis/google_api_keys.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_sample_types.h"
@@ -75,7 +77,8 @@ void OnSodaResponse(const char* serialized_proto,
             static_cast<int>(media::mojom::ConfidenceLevel::kHighlyConfident) ||
         event.confidence_level() <
             static_cast<int>(media::mojom::ConfidenceLevel::kUnknown)) {
-      LOG(ERROR) << "Invalid confidence level returned by SODA.";
+      LOG(ERROR) << "Invalid confidence level returned by SODA: "
+                 << event.confidence_level();
       return;
     }
 
@@ -207,8 +210,8 @@ void SpeechRecognitionRecognizerImpl::OnSpeechRecognitionError() {
 void SpeechRecognitionRecognizerImpl::
     SendAudioToSpeechRecognitionServiceInternal(
         media::mojom::AudioDataS16Ptr buffer) {
-  int channel_count = buffer->channel_count;
-  int sample_rate = buffer->sample_rate;
+  channel_count_ = buffer->channel_count;
+  sample_rate_ = buffer->sample_rate;
   size_t buffer_size = 0;
   // Verify and calculate the buffer size.
   if (!base::CheckMul(buffer->data.size(), sizeof(buffer->data[0]))
@@ -221,30 +224,8 @@ void SpeechRecognitionRecognizerImpl::
     DCHECK(soda_client_);
     DCHECK(base::PathExists(config_path_));
     if (!soda_client_->IsInitialized() ||
-        soda_client_->DidAudioPropertyChange(sample_rate, channel_count)) {
-      // Initialize the SODA instance.
-      auto api_key = google_apis::GetSodaAPIKey();
-      std::string language_pack_directory = config_path_.AsUTF8Unsafe();
-
-      // Initialize the SODA instance with the serialized config.
-      soda::chrome::ExtendedSodaConfigMsg config_msg;
-      config_msg.set_channel_count(channel_count);
-      config_msg.set_sample_rate(sample_rate);
-      config_msg.set_api_key(api_key);
-      config_msg.set_language_pack_directory(language_pack_directory);
-      config_msg.set_simulate_realtime_testonly(false);
-      config_msg.set_enable_lang_id(false);
-      // SODA wants to listen as CAPTION.
-      config_msg.set_recognition_mode(
-          soda::chrome::ExtendedSodaConfigMsg::CAPTION);
-      auto serialized = config_msg.SerializeAsString();
-
-      SerializedSodaConfig config;
-      config.soda_config = serialized.c_str();
-      config.soda_config_size = serialized.size();
-      config.callback = &OnSodaResponse;
-      config.callback_handle = this;
-      soda_client_->Reset(config, sample_rate, channel_count);
+        soda_client_->DidAudioPropertyChange(sample_rate_, channel_count_)) {
+      ResetSoda();
     }
 
     soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
@@ -252,11 +233,11 @@ void SpeechRecognitionRecognizerImpl::
   } else {
     DCHECK(cloud_client_);
     if (!cloud_client_->IsInitialized() ||
-        cloud_client_->DidAudioPropertyChange(sample_rate, channel_count)) {
+        cloud_client_->DidAudioPropertyChange(sample_rate_, channel_count_)) {
       // Initialize the stream.
       CloudSpeechConfig config;
-      config.sample_rate = sample_rate;
-      config.channel_count = channel_count;
+      config.sample_rate = sample_rate_;
+      config.channel_count = channel_count_;
       config.language_code = "en-US";
       cloud_client_->Initialize(config);
     }
@@ -275,6 +256,28 @@ void SpeechRecognitionRecognizerImpl::AudioReceivedAfterBubbleClosed(
   caption_bubble_hidden_duration_ += duration;
 }
 
+void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
+    const std::string& language) {
+  base::Optional<speech::SodaLanguagePackComponentConfig>
+      language_component_config = GetLanguageComponentConfig(language);
+  if (!language_component_config.has_value())
+    return;
+
+  // Only reset SODA if the language changed.
+  LanguageCode language_code = language_component_config.value().language_code;
+  if (language_code == language_ || language_code == LanguageCode::kNone)
+    return;
+
+  language_ = language_component_config.value().language_code;
+  base::FilePath config_path = GetLatestSodaLanguagePackDirectory(language);
+  if (base::PathExists(config_path)) {
+    config_path_ = config_path;
+    ResetSoda();
+  } else {
+    NOTREACHED();
+  }
+}
+
 void SpeechRecognitionRecognizerImpl::RecordDuration() {
   if (caption_bubble_visible_duration_ > base::TimeDelta()) {
     base::UmaHistogramMediumTimes(kCaptionBubbleVisibleHistogramName,
@@ -285,6 +288,31 @@ void SpeechRecognitionRecognizerImpl::RecordDuration() {
     base::UmaHistogramMediumTimes(kCaptionBubbleHiddenHistogramName,
                                   caption_bubble_hidden_duration_);
   }
+}
+
+void SpeechRecognitionRecognizerImpl::ResetSoda() {
+  // Initialize the SODA instance.
+  auto api_key = google_apis::GetSodaAPIKey();
+  std::string language_pack_directory = config_path_.AsUTF8Unsafe();
+
+  // Initialize the SODA instance with the serialized config.
+  soda::chrome::ExtendedSodaConfigMsg config_msg;
+  config_msg.set_channel_count(channel_count_);
+  config_msg.set_sample_rate(sample_rate_);
+  config_msg.set_api_key(api_key);
+  config_msg.set_language_pack_directory(language_pack_directory);
+  config_msg.set_simulate_realtime_testonly(false);
+  config_msg.set_enable_lang_id(false);
+  // SODA wants to listen as CAPTION.
+  config_msg.set_recognition_mode(soda::chrome::ExtendedSodaConfigMsg::CAPTION);
+  auto serialized = config_msg.SerializeAsString();
+
+  SerializedSodaConfig config;
+  config.soda_config = serialized.c_str();
+  config.soda_config_size = serialized.size();
+  config.callback = &OnSodaResponse;
+  config.callback_handle = this;
+  soda_client_->Reset(config, sample_rate_, channel_count_);
 }
 
 }  // namespace speech

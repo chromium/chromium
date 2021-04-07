@@ -90,6 +90,8 @@ class ChromeSpeechRecognitionClient
   // Called when the caption host is disconnected. Halts future transcriptions.
   void OnCaptionHostDisconnected();
 
+  void OnLanguageChanged(const std::string& language);
+
   content::RenderFrame* render_frame_;
 
   ChromeSpeechRecognitionClient::InitializeCallback initialize_callback_;

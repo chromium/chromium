@@ -110,6 +110,11 @@ const base::FilePath GetSodaDirectory();
 // Get the absolute path of the SODA directory containing the language packs.
 const base::FilePath GetSodaLanguagePacksDirectory();
 
+// Get the absolute path of the latest SODA language pack for a given language
+// (e.g. en-US).
+const base::FilePath GetLatestSodaLanguagePackDirectory(
+    const std::string& language);
+
 // Get the directory containing the latest version of SODA. In most cases
 // there will only be one version of SODA, but it is possible for there to be
 // multiple versions if a newer version of SODA was recently downloaded before

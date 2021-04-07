@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/services/speech/cloud_speech_recognition_client.h"
+#include "components/soda/constants.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -84,7 +85,13 @@ class SpeechRecognitionRecognizerImpl
   void OnCaptionBubbleClosed() final;
 
   void AudioReceivedAfterBubbleClosed(base::TimeDelta duration) final;
+
+  void OnLanguageChanged(const std::string& language) final;
+
   void RecordDuration();
+
+  // Reset and initialize the SODA client.
+  void ResetSoda();
 
   // The remote endpoint for the mojo pipe used to return transcribed audio from
   // the speech recognition service back to the renderer.
@@ -103,6 +110,9 @@ class SpeechRecognitionRecognizerImpl
   OnLanguageIdentificationEventCallback language_identification_event_callback_;
 
   base::FilePath config_path_;
+  int sample_rate_ = 0;
+  int channel_count_ = 0;
+  LanguageCode language_ = LanguageCode::kNone;
 
   base::TimeDelta caption_bubble_visible_duration_;
   base::TimeDelta caption_bubble_hidden_duration_;

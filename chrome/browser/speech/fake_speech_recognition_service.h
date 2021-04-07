@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SPEECH_FAKE_SPEECH_RECOGNITION_SERVICE_H_
 #define CHROME_BROWSER_SPEECH_FAKE_SPEECH_RECOGNITION_SERVICE_H_
 
+#include <string>
+
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -55,6 +57,7 @@ class FakeSpeechRecognitionService
       media::mojom::AudioDataS16Ptr buffer) override;
   void OnCaptionBubbleClosed() override {}
   void AudioReceivedAfterBubbleClosed(base::TimeDelta duration) override {}
+  void OnLanguageChanged(const std::string& language) override {}
 
   // Methods for testing plumbing to SpeechRecognitionRecognizerClient.
   void SendSpeechRecognitionResult(

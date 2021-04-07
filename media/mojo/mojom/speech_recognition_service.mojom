@@ -102,6 +102,10 @@ interface SpeechRecognitionRecognizer {
   // Notify the speech recognition recognizer that audio was received by the
   // renderer after the caption bubble was closed.
   AudioReceivedAfterBubbleClosed(mojo_base.mojom.TimeDelta duration);
+
+  // Notify the speech recognition recognizer that the language changed. Takes
+  // in the locale string (e.g. "en-US").
+  OnLanguageChanged(string language);
 };
 
 // The interface used to return speech recognition events from the speech
