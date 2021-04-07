@@ -732,7 +732,7 @@ void ClientControlledShellSurface::UpdateCanResize() {
                                           pending_resize_lock_);
   // If resize lock is enabled, the window is explicitly marded as unresizable.
   // Otherwise, the decision is deferred to the parent class.
-  if (pending_resize_lock_) {
+  if (ash::features::IsArcResizeLockEnabled() && pending_resize_lock_) {
     SetCanResize(false);
     return;
   }
