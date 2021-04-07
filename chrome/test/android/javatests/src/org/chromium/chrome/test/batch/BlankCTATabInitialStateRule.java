@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -114,5 +115,6 @@ public class BlankCTATabInitialStateRule implements TestRule {
             sActivity.getTabModelSelector().closeAllTabs();
             sActivity.getTabCreator(false).launchUrl("about:blank", TabLaunchType.FROM_CHROME_UI);
         });
+        ChromeTabUtils.waitForTabPageLoaded(sActivity.getActivityTab(), "about:blank");
     }
 }

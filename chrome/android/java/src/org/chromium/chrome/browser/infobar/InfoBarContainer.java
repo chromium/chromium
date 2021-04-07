@@ -221,6 +221,15 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
+    @VisibleForTesting
+    public static void removeInfoBarContainerForTesting(Tab tab) {
+        InfoBarContainer container = get(tab);
+        if (container != null) {
+            tab.getUserDataHost().removeUserData(USER_DATA_KEY);
+            container.destroy();
+        }
+    }
+
     private InfoBarContainer(Tab tab) {
         tab.addObserver(mTabObserver);
         mTabView = tab.getView();
