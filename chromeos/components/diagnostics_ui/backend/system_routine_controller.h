@@ -160,6 +160,10 @@ class SystemRoutineController : public mojom::SystemRoutineController {
 
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider_;
 
+  // Keeps track of supported routines. Allows us to bypass querying CrosHealthd
+  // on subsequent "GetSupportedRoutines" calls since the list never changes.
+  std::vector<mojom::RoutineType> supported_routines_;
+
   base::WeakPtrFactory<SystemRoutineController> weak_factory_{this};
 };
 

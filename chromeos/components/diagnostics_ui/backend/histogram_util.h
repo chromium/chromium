@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_BACKEND_HISTOGRAM_UTIL_H_
 #define CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_BACKEND_HISTOGRAM_UTIL_H_
 
+#include <stddef.h>
 #include <cstdint>
 
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom.h"

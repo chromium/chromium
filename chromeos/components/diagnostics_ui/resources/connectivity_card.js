@@ -30,11 +30,20 @@ Polymer({
     },
 
     /** @private {!Array<!RoutineType>} */
-    // TODO(michaelcheco): Wire up network routines.
     routines_: {
       type: Array,
       value: [
+        chromeos.diagnostics.mojom.RoutineType.kCaptivePortal,
+        chromeos.diagnostics.mojom.RoutineType.kDnsLatency,
+        chromeos.diagnostics.mojom.RoutineType.kDnsResolution,
+        chromeos.diagnostics.mojom.RoutineType.kDnsResolverPresent,
+        chromeos.diagnostics.mojom.RoutineType.kGatewayCanBePinged,
+        chromeos.diagnostics.mojom.RoutineType.kHasSecureWiFiConnection,
+        chromeos.diagnostics.mojom.RoutineType.kHttpFirewall,
+        chromeos.diagnostics.mojom.RoutineType.kHttpsFirewall,
+        chromeos.diagnostics.mojom.RoutineType.kHttpsLatency,
         chromeos.diagnostics.mojom.RoutineType.kLanConnectivity,
+        chromeos.diagnostics.mojom.RoutineType.kSignalStrength,
       ],
     },
   },

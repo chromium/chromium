@@ -522,22 +522,35 @@ TEST_F(SystemRoutineControllerTest, DischargeRoutineSuccess) {
 }
 
 TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
-  SetAvailableRoutines({healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy,
-                        healthd::DiagnosticRoutineEnum::kMemory,
-                        healthd::DiagnosticRoutineEnum::kPrimeSearch,
-                        healthd::DiagnosticRoutineEnum::kAcPower,
-                        healthd::DiagnosticRoutineEnum::kBatteryCapacity,
-                        healthd::DiagnosticRoutineEnum::kBatteryHealth,
-                        healthd::DiagnosticRoutineEnum::kLanConnectivity});
+  SetAvailableRoutines(
+      {healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy,
+       healthd::DiagnosticRoutineEnum::kMemory,
+       healthd::DiagnosticRoutineEnum::kPrimeSearch,
+       healthd::DiagnosticRoutineEnum::kAcPower,
+       healthd::DiagnosticRoutineEnum::kBatteryCapacity,
+       healthd::DiagnosticRoutineEnum::kBatteryHealth,
+       healthd::DiagnosticRoutineEnum::kCaptivePortal,
+       healthd::DiagnosticRoutineEnum::kDnsLatency,
+       healthd::DiagnosticRoutineEnum::kDnsResolution,
+       healthd::DiagnosticRoutineEnum::kDnsResolverPresent,
+       healthd::DiagnosticRoutineEnum::kGatewayCanBePinged,
+       healthd::DiagnosticRoutineEnum::kHasSecureWiFiConnection,
+       healthd::DiagnosticRoutineEnum::kHttpFirewall,
+       healthd::DiagnosticRoutineEnum::kHttpsFirewall,
+       healthd::DiagnosticRoutineEnum::kHttpsLatency,
+       healthd::DiagnosticRoutineEnum::kLanConnectivity,
+       healthd::DiagnosticRoutineEnum::kSignalStrength});
 
   base::RunLoop run_loop;
   system_routine_controller_->GetSupportedRoutines(base::BindLambdaForTesting(
       [&](const std::vector<mojom::RoutineType>& supported_routines) {
-        EXPECT_EQ(4u, supported_routines.size());
+        EXPECT_EQ(14u, supported_routines.size());
         EXPECT_FALSE(base::Contains(supported_routines,
                                     mojom::RoutineType::kBatteryCharge));
         EXPECT_FALSE(base::Contains(supported_routines,
                                     mojom::RoutineType::kBatteryDischarge));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kCaptivePortal));
         EXPECT_FALSE(
             base::Contains(supported_routines, mojom::RoutineType::kCpuCache));
         EXPECT_FALSE(
@@ -547,9 +560,27 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
         EXPECT_TRUE(
             base::Contains(supported_routines, mojom::RoutineType::kCpuPrime));
         EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kDnsLatency));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kDnsResolution));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kDnsResolverPresent));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kGatewayCanBePinged));
+        EXPECT_TRUE(base::Contains(
+            supported_routines, mojom::RoutineType::kHasSecureWiFiConnection));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kHttpFirewall));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kHttpsFirewall));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kHttpsLatency));
+        EXPECT_TRUE(base::Contains(supported_routines,
                                    mojom::RoutineType::kLanConnectivity));
         EXPECT_TRUE(
             base::Contains(supported_routines, mojom::RoutineType::kMemory));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kSignalStrength));
         run_loop.Quit();
       }));
   run_loop.Run();

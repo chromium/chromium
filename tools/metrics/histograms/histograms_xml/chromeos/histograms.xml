@@ -425,12 +425,22 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="RoutineType">
     <variant name="BatteryCharge"/>
     <variant name="BatteryDischarge"/>
+    <variant name="CaptivePortal"/>
     <variant name="CpuCache"/>
     <variant name="CpuFloatingPoint"/>
     <variant name="CpuPrime"/>
     <variant name="CpuStress"/>
+    <variant name="DnsLatency"/>
+    <variant name="DnsResolution"/>
+    <variant name="DnsResolverPresent"/>
+    <variant name="GatewayCanBePinged"/>
+    <variant name="HasSecureWiFiConnection"/>
+    <variant name="HttpFirewall"/>
+    <variant name="HttpsFirewall"/>
+    <variant name="HttpsLatency"/>
     <variant name="LanConnectivity"/>
     <variant name="Memory"/>
+    <variant name="SignalStrength"/>
   </token>
 </histogram>
 

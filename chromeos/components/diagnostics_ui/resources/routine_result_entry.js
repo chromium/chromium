@@ -21,11 +21,14 @@ import {BadgeType} from './text_badge.js';
  * @return {string}
  */
 export function getRoutineType(routineType) {
+  // TODO(michaelcheco): Replace unlocalized strings.
   switch (routineType) {
     case chromeos.diagnostics.mojom.RoutineType.kBatteryCharge:
       return loadTimeData.getString('batteryChargeRoutineText');
     case chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge:
       return loadTimeData.getString('batteryDischargeRoutineText');
+    case chromeos.diagnostics.mojom.RoutineType.kCaptivePortal:
+      return 'Captive Portal';
     case chromeos.diagnostics.mojom.RoutineType.kCpuCache:
       return loadTimeData.getString('cpuCacheRoutineText');
     case chromeos.diagnostics.mojom.RoutineType.kCpuStress:
@@ -34,11 +37,28 @@ export function getRoutineType(routineType) {
       return loadTimeData.getString('cpuFloatingPointAccuracyRoutineText');
     case chromeos.diagnostics.mojom.RoutineType.kCpuPrime:
       return loadTimeData.getString('cpuPrimeSearchRoutineText');
+    case chromeos.diagnostics.mojom.RoutineType.kDnsLatency:
+      return 'DNS Latency';
+    case chromeos.diagnostics.mojom.RoutineType.kDnsResolution:
+      return 'DNS Resolution';
+    case chromeos.diagnostics.mojom.RoutineType.kDnsResolverPresent:
+      return 'DNS Resolver Present';
+    case chromeos.diagnostics.mojom.RoutineType.kGatewayCanBePinged:
+      return 'Gateway can be Pinged';
+    case chromeos.diagnostics.mojom.RoutineType.kHasSecureWiFiConnection:
+      return 'Secure WiFi Connection';
+    case chromeos.diagnostics.mojom.RoutineType.kHttpFirewall:
+      return 'HTTP Firewall';
+    case chromeos.diagnostics.mojom.RoutineType.kHttpsFirewall:
+      return 'HTTPS Firewall';
+    case chromeos.diagnostics.mojom.RoutineType.kHttpsLatency:
+      return 'HTTPS Latency';
     case chromeos.diagnostics.mojom.RoutineType.kLanConnectivity:
-      // TODO(michaelcheco): Replace with localized string.
       return 'Lan Connectivity';
     case chromeos.diagnostics.mojom.RoutineType.kMemory:
       return loadTimeData.getString('memoryRoutineText');
+    case chromeos.diagnostics.mojom.RoutineType.kSignalStrength:
+      return 'Signal Strength';
     default:
       // Values should always be found in the enum.
       assert(false);

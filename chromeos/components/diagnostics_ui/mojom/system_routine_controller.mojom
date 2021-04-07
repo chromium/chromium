@@ -13,6 +13,16 @@ enum RoutineType {
   kCpuPrime,
   kMemory,
   kLanConnectivity,
+  kSignalStrength,
+  kGatewayCanBePinged,
+  kHasSecureWiFiConnection,
+  kDnsResolverPresent,
+  kDnsLatency,
+  kDnsResolution,
+  kCaptivePortal,
+  kHttpFirewall,
+  kHttpsFirewall,
+  kHttpsLatency,
 };
 
 enum StandardRoutineResult {

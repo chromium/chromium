@@ -5,6 +5,8 @@
 #include "chromeos/components/diagnostics_ui/backend/system_routine_controller.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
@@ -17,6 +19,7 @@
 #include "chromeos/components/diagnostics_ui/backend/cros_healthd_helpers.h"
 #include "chromeos/components/diagnostics_ui/backend/histogram_util.h"
 #include "chromeos/components/diagnostics_ui/backend/routine_log.h"
+#include "chromeos/components/diagnostics_ui/backend/routine_properties.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
@@ -27,15 +30,9 @@ namespace {
 
 namespace healthd = cros_healthd::mojom;
 
+constexpr uint32_t kBatteryDurationInSeconds = 30;
 constexpr uint32_t kBatteryChargeMinimumPercent = 0;
 constexpr uint32_t kBatteryDischargeMaximumPercent = 100;
-constexpr uint32_t kBatteryDurationInSeconds = 30;
-constexpr uint32_t kCpuCacheDurationInSeconds = 60;
-constexpr uint32_t kCpuFloatingPointDurationInSeconds = 60;
-constexpr uint32_t kCpuPrimeDurationInSeconds = 60;
-constexpr uint32_t kCpuStressDurationInSeconds = 60;
-constexpr uint32_t kExpectedMemoryDurationInSeconds = 1000;
-constexpr uint32_t kLanConnectivityDurationInSeconds = 1;
 constexpr uint32_t kRoutineResultRefreshIntervalInSeconds = 1;
 
 constexpr char kChargePercentKey[] = "chargePercent";
@@ -90,27 +87,6 @@ mojom::RoutineResultInfoPtr ConstructPowerRoutineResultInfoPtr(
   return mojom::RoutineResultInfo::New(type, std::move(routine_result));
 }
 
-uint32_t GetExpectedRoutineDurationInSeconds(mojom::RoutineType routine_type) {
-  switch (routine_type) {
-    case mojom::RoutineType::kBatteryCharge:
-      return kBatteryDurationInSeconds;
-    case mojom::RoutineType::kBatteryDischarge:
-      return kBatteryDurationInSeconds;
-    case mojom::RoutineType::kCpuCache:
-      return kCpuCacheDurationInSeconds;
-    case mojom::RoutineType::kCpuFloatingPoint:
-      return kCpuFloatingPointDurationInSeconds;
-    case mojom::RoutineType::kCpuPrime:
-      return kCpuPrimeDurationInSeconds;
-    case mojom::RoutineType::kCpuStress:
-      return kCpuCacheDurationInSeconds;
-    case mojom::RoutineType::kLanConnectivity:
-      return kLanConnectivityDurationInSeconds;
-    case mojom::RoutineType::kMemory:
-      return kExpectedMemoryDurationInSeconds;
-  }
-}
-
 bool IsPowerRoutine(mojom::RoutineType routine_type) {
   return routine_type == mojom::RoutineType::kBatteryCharge ||
          routine_type == mojom::RoutineType::kBatteryDischarge;
@@ -124,84 +100,6 @@ std::string ReadMojoHandleToJsonString(mojo::PlatformHandle handle) {
     return std::string();
   }
   return std::string(contents.begin(), contents.end());
-}
-
-bool IsKnownRoutine(healthd::DiagnosticRoutineEnum routine_enum) {
-  switch (routine_enum) {
-    case healthd::DiagnosticRoutineEnum::kBatteryCharge:
-    case healthd::DiagnosticRoutineEnum::kBatteryDischarge:
-    case healthd::DiagnosticRoutineEnum::kCpuCache:
-    case healthd::DiagnosticRoutineEnum::kCpuStress:
-    case healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy:
-    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
-    case healthd::DiagnosticRoutineEnum::kMemory:
-    case healthd::DiagnosticRoutineEnum::kPrimeSearch:
-      return true;
-    case healthd::DiagnosticRoutineEnum::kAcPower:
-    case healthd::DiagnosticRoutineEnum::kBatteryCapacity:
-    case healthd::DiagnosticRoutineEnum::kBatteryHealth:
-    case healthd::DiagnosticRoutineEnum::kCaptivePortal:
-    case healthd::DiagnosticRoutineEnum::kDiskRead:
-    case healthd::DiagnosticRoutineEnum::kDnsLatency:
-    case healthd::DiagnosticRoutineEnum::kDnsResolution:
-    case healthd::DiagnosticRoutineEnum::kDnsResolverPresent:
-    case healthd::DiagnosticRoutineEnum::kGatewayCanBePinged:
-    case healthd::DiagnosticRoutineEnum::kHasSecureWiFiConnection:
-    case healthd::DiagnosticRoutineEnum::kHttpFirewall:
-    case healthd::DiagnosticRoutineEnum::kHttpsFirewall:
-    case healthd::DiagnosticRoutineEnum::kHttpsLatency:
-    case healthd::DiagnosticRoutineEnum::kNvmeSelfTest:
-    case healthd::DiagnosticRoutineEnum::kNvmeWearLevel:
-    case healthd::DiagnosticRoutineEnum::kSignalStrength:
-    case healthd::DiagnosticRoutineEnum::kSmartctlCheck:
-    case healthd::DiagnosticRoutineEnum::kUrandom:
-    case healthd::DiagnosticRoutineEnum::kVideoConferencing:
-      return false;
-  }
-}
-
-mojom::RoutineType DiagnosticRoutineEnumToRoutineType(
-    healthd::DiagnosticRoutineEnum routine_enum) {
-  switch (routine_enum) {
-    case healthd::DiagnosticRoutineEnum::kBatteryCharge:
-      return mojom::RoutineType::kBatteryCharge;
-    case healthd::DiagnosticRoutineEnum::kBatteryDischarge:
-      return mojom::RoutineType::kBatteryDischarge;
-    case healthd::DiagnosticRoutineEnum::kCpuCache:
-      return mojom::RoutineType::kCpuCache;
-    case healthd::DiagnosticRoutineEnum::kCpuStress:
-      return mojom::RoutineType::kCpuStress;
-    case healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy:
-      return mojom::RoutineType::kCpuFloatingPoint;
-    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
-      return mojom::RoutineType::kLanConnectivity;
-    case healthd::DiagnosticRoutineEnum::kMemory:
-      return mojom::RoutineType::kMemory;
-    case healthd::DiagnosticRoutineEnum::kPrimeSearch:
-      return mojom::RoutineType::kCpuPrime;
-    case healthd::DiagnosticRoutineEnum::kAcPower:
-    case healthd::DiagnosticRoutineEnum::kBatteryCapacity:
-    case healthd::DiagnosticRoutineEnum::kBatteryHealth:
-    case healthd::DiagnosticRoutineEnum::kCaptivePortal:
-    case healthd::DiagnosticRoutineEnum::kDiskRead:
-    case healthd::DiagnosticRoutineEnum::kDnsLatency:
-    case healthd::DiagnosticRoutineEnum::kDnsResolution:
-    case healthd::DiagnosticRoutineEnum::kDnsResolverPresent:
-    case healthd::DiagnosticRoutineEnum::kGatewayCanBePinged:
-    case healthd::DiagnosticRoutineEnum::kHasSecureWiFiConnection:
-    case healthd::DiagnosticRoutineEnum::kHttpFirewall:
-    case healthd::DiagnosticRoutineEnum::kHttpsFirewall:
-    case healthd::DiagnosticRoutineEnum::kHttpsLatency:
-    case healthd::DiagnosticRoutineEnum::kNvmeSelfTest:
-    case healthd::DiagnosticRoutineEnum::kNvmeWearLevel:
-    case healthd::DiagnosticRoutineEnum::kSignalStrength:
-    case healthd::DiagnosticRoutineEnum::kSmartctlCheck:
-    case healthd::DiagnosticRoutineEnum::kUrandom:
-    case healthd::DiagnosticRoutineEnum::kVideoConferencing:
-      NOTREACHED() << "DiagnosticRoutineEnumToRoutineType called with "
-                      "unsupported routine.";
-      return mojom::RoutineType::kBatteryCharge;
-  }
 }
 
 }  // namespace
@@ -258,6 +156,10 @@ void SystemRoutineController::RunRoutine(
 
 void SystemRoutineController::GetSupportedRoutines(
     GetSupportedRoutinesCallback callback) {
+  if (!supported_routines_.empty()) {
+    std::move(callback).Run(supported_routines_);
+    return;
+  }
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
   diagnostics_service_->GetAvailableRoutines(
       base::BindOnce(&SystemRoutineController::OnAvailableRoutinesFetched,
@@ -272,13 +174,15 @@ void SystemRoutineController::BindInterface(
 void SystemRoutineController::OnAvailableRoutinesFetched(
     GetSupportedRoutinesCallback callback,
     const std::vector<healthd::DiagnosticRoutineEnum>& available_routines) {
-  std::vector<mojom::RoutineType> supported_routines;
-  for (const auto& routine : available_routines) {
-    if (IsKnownRoutine(routine)) {
-      supported_routines.push_back(DiagnosticRoutineEnumToRoutineType(routine));
+  base::flat_set<healthd::DiagnosticRoutineEnum> healthd_routines(
+      available_routines);
+  for (size_t i = 0; i < kRoutinePropertiesLength; i++) {
+    const RoutineProperties& routine = kRoutineProperties[i];
+    if (base::Contains(healthd_routines, routine.healthd_type)) {
+      supported_routines_.push_back(routine.type);
     }
   }
-  std::move(callback).Run(supported_routines);
+  std::move(callback).Run(supported_routines_);
 }
 
 void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
@@ -287,39 +191,90 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
   switch (routine_type) {
     case mojom::RoutineType::kBatteryCharge:
       diagnostics_service_->RunBatteryChargeRoutine(
-          kBatteryDurationInSeconds, kBatteryChargeMinimumPercent,
+          GetExpectedRoutineDurationInSeconds(routine_type),
+          kBatteryChargeMinimumPercent,
           base::BindOnce(&SystemRoutineController::OnPowerRoutineStarted,
                          weak_factory_.GetWeakPtr(), routine_type));
 
       break;
     case mojom::RoutineType::kBatteryDischarge:
       diagnostics_service_->RunBatteryDischargeRoutine(
-          kBatteryDurationInSeconds, kBatteryDischargeMaximumPercent,
+          GetExpectedRoutineDurationInSeconds(routine_type),
+          kBatteryDischargeMaximumPercent,
           base::BindOnce(&SystemRoutineController::OnPowerRoutineStarted,
                          weak_factory_.GetWeakPtr(), routine_type));
 
       break;
+    case mojom::RoutineType::kCaptivePortal:
+      diagnostics_service_->RunCaptivePortalRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
     case mojom::RoutineType::kCpuCache:
       diagnostics_service_->RunCpuCacheRoutine(
-          healthd::NullableUint32::New(kCpuCacheDurationInSeconds),
+          healthd::NullableUint32::New(
+              GetExpectedRoutineDurationInSeconds(routine_type)),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          weak_factory_.GetWeakPtr(), routine_type));
       break;
     case mojom::RoutineType::kCpuFloatingPoint:
       diagnostics_service_->RunFloatingPointAccuracyRoutine(
-          healthd::NullableUint32::New(kCpuFloatingPointDurationInSeconds),
+          healthd::NullableUint32::New(
+              GetExpectedRoutineDurationInSeconds(routine_type)),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          weak_factory_.GetWeakPtr(), routine_type));
       break;
     case mojom::RoutineType::kCpuPrime:
       diagnostics_service_->RunPrimeSearchRoutine(
-          healthd::NullableUint32::New(kCpuPrimeDurationInSeconds),
+          healthd::NullableUint32::New(
+              GetExpectedRoutineDurationInSeconds(routine_type)),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          weak_factory_.GetWeakPtr(), routine_type));
       break;
     case mojom::RoutineType::kCpuStress:
       diagnostics_service_->RunCpuStressRoutine(
-          healthd::NullableUint32::New(kCpuStressDurationInSeconds),
+          healthd::NullableUint32::New(
+              GetExpectedRoutineDurationInSeconds(routine_type)),
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+    case mojom::RoutineType::kDnsLatency:
+      diagnostics_service_->RunDnsLatencyRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+    case mojom::RoutineType::kDnsResolution:
+      diagnostics_service_->RunDnsResolutionRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+    case mojom::RoutineType::kDnsResolverPresent:
+      diagnostics_service_->RunDnsResolverPresentRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+    case mojom::RoutineType::kGatewayCanBePinged:
+      diagnostics_service_->RunGatewayCanBePingedRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+    case mojom::RoutineType::kHasSecureWiFiConnection:
+      diagnostics_service_->RunHasSecureWiFiConnectionRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+    case mojom::RoutineType::kHttpFirewall:
+      diagnostics_service_->RunHttpFirewallRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+    case mojom::RoutineType::kHttpsFirewall:
+      diagnostics_service_->RunHttpsFirewallRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+    case mojom::RoutineType::kHttpsLatency:
+      diagnostics_service_->RunHttpsLatencyRoutine(
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          weak_factory_.GetWeakPtr(), routine_type));
       break;
@@ -334,6 +289,11 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          weak_factory_.GetWeakPtr(), routine_type));
       memory_routine_start_timestamp_ = base::Time::Now();
+      break;
+    case mojom::RoutineType::kSignalStrength:
+      diagnostics_service_->RunSignalStrengthRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
       break;
   }
   if (IsLoggingEnabled()) {
