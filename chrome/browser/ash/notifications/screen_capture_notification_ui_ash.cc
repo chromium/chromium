@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/notifications/screen_capture_notification_ui_chromeos.h"
+#include "chrome/browser/ash/notifications/screen_capture_notification_ui_ash.h"
 
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -10,24 +10,24 @@
 
 namespace ash {
 
-ScreenCaptureNotificationUIChromeOS::ScreenCaptureNotificationUIChromeOS(
+ScreenCaptureNotificationUIAsh::ScreenCaptureNotificationUIAsh(
     const std::u16string& text)
     : text_(text) {}
 
-ScreenCaptureNotificationUIChromeOS::~ScreenCaptureNotificationUIChromeOS() {
+ScreenCaptureNotificationUIAsh::~ScreenCaptureNotificationUIAsh() {
   // MediaStreamCaptureIndicator will delete ScreenCaptureNotificationUI object
   // after it stops screen capture.
   stop_callback_.Reset();
   ash::Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
 }
 
-gfx::NativeViewId ScreenCaptureNotificationUIChromeOS::OnStarted(
+gfx::NativeViewId ScreenCaptureNotificationUIAsh::OnStarted(
     base::OnceClosure stop_callback,
     content::MediaStreamUI::SourceCallback source_callback) {
   stop_callback_ = std::move(stop_callback);
   ash::Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
       base::BindRepeating(
-          &ScreenCaptureNotificationUIChromeOS::ProcessStopRequestFromUI,
+          &ScreenCaptureNotificationUIAsh::ProcessStopRequestFromUI,
           base::Unretained(this)),
       source_callback ? base::BindRepeating(std::move(source_callback),
                                             content::DesktopMediaID())
@@ -36,7 +36,7 @@ gfx::NativeViewId ScreenCaptureNotificationUIChromeOS::OnStarted(
   return 0;
 }
 
-void ScreenCaptureNotificationUIChromeOS::ProcessStopRequestFromUI() {
+void ScreenCaptureNotificationUIAsh::ProcessStopRequestFromUI() {
   if (!stop_callback_.is_null()) {
     std::move(stop_callback_).Run();
   }
@@ -47,6 +47,5 @@ void ScreenCaptureNotificationUIChromeOS::ProcessStopRequestFromUI() {
 // static
 std::unique_ptr<ScreenCaptureNotificationUI>
 ScreenCaptureNotificationUI::Create(const std::u16string& text) {
-  return std::unique_ptr<ScreenCaptureNotificationUI>(
-      new ash::ScreenCaptureNotificationUIChromeOS(text));
+  return std::make_unique<ash::ScreenCaptureNotificationUIAsh>(text);
 }
