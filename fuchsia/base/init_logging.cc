@@ -9,6 +9,9 @@
 
 namespace cr_fuchsia {
 
+// These values must match content/public/common/content_switches.cc so that
+// the values will be passed to child processes in projects that Chromium's
+// Content layer.
 constexpr char kEnableLogging[] = "enable-logging";
 constexpr char kLogFile[] = "log-file";
 
@@ -27,6 +30,16 @@ bool InitLoggingFromCommandLine(const base::CommandLine& command_line) {
   logging::SetLogItems(true /* Process ID */, true /* Thread ID */,
                        true /* Timestamp */, false /* Tick count */);
   return logging::InitLogging(settings);
+}
+
+bool InitLoggingFromCommandLineDefaultingToStderrForTest(
+    base::CommandLine* command_line) {
+  // Set logging to stderr if not specified.
+  if (!command_line->HasSwitch(cr_fuchsia::kEnableLogging)) {
+    command_line->AppendSwitchNative(cr_fuchsia::kEnableLogging, "stderr");
+  }
+
+  return InitLoggingFromCommandLine(*command_line);
 }
 
 }  // namespace cr_fuchsia

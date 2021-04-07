@@ -510,6 +510,7 @@ fuchsia_package_runner("web_engine_shell") {
 }
 
 executable("web_engine_shell_exec") {
+  testonly = true
   sources = [ "test/web_engine_shell.cc" ]
 
   data = [ "test/shell_data" ]
@@ -523,6 +524,8 @@ executable("web_engine_shell_exec") {
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//url",
   ]
+
+  visibility = [ ":*" ]
 }
 
 if (is_official_build) {

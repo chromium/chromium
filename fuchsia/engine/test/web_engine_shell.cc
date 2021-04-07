@@ -128,11 +128,8 @@ int main(int argc, char** argv) {
   CHECK(base::CommandLine::Init(argc, argv));
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  // Set logging to stderr if not specified.
-  if (!command_line->HasSwitch(cr_fuchsia::kEnableLogging)) {
-    command_line->AppendSwitchNative(cr_fuchsia::kEnableLogging, "stderr");
-  }
-  CHECK(cr_fuchsia::InitLoggingFromCommandLine(*command_line));
+  CHECK(cr_fuchsia::InitLoggingFromCommandLineDefaultingToStderrForTest(
+      command_line));
 
   base::Optional<uint16_t> remote_debugging_port;
   if (command_line->HasSwitch(kRemoteDebuggingPortSwitch)) {

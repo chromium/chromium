@@ -11,14 +11,15 @@ class CommandLine;
 
 namespace cr_fuchsia {
 
-// These are intended to match those in content_switches.cc.
-extern const char kEnableLogging[];
-extern const char kLogFile[];
-
 // Configures logging for the current process based on the supplied
 // |command_line|. Returns false if a logging output stream could not
 // be created.
 bool InitLoggingFromCommandLine(const base::CommandLine& command_line);
+
+// Same as InitLoggingFromCommandLine but defaults to "stderr" if the logging
+// target is not specified.
+bool InitLoggingFromCommandLineDefaultingToStderrForTest(
+    base::CommandLine* command_line);
 
 }  // namespace cr_fuchsia
 
