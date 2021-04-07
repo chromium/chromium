@@ -28,6 +28,7 @@ extern const base::Feature kNtpLogo;
 extern const base::Feature kNtpShortcuts;
 extern const base::Feature kNtpMiddleSlotPromo;
 extern const base::Feature kModules;
+extern const base::Feature kNtpModulesLoad;
 extern const base::Feature kNtpRecipeTasksModule;
 extern const base::Feature kNtpShoppingTasksModule;
 extern const base::Feature kNtpChromeCartModule;

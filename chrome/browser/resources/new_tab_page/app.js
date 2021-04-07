@@ -548,12 +548,21 @@ class AppElement extends PolymerElement {
 
   /** @private */
   async onLazyRendered_() {
+    // Instantiate modules even if |modulesEnabled| is false to counterfactually
+    // trigger a HaTS survey in a potential control group.
+    if (!loadTimeData.getBoolean('modulesLoadEnabled') &&
+        !loadTimeData.getBoolean('modulesEnabled')) {
+      return;
+    }
+    const descriptors = await ModuleRegistry.getInstance().initializeModules(
+        loadTimeData.getInteger('modulesLoadTimeout'));
+    if (descriptors) {
+      this.pageHandler_.onModulesLoadedWithData();
+    }
     if (!loadTimeData.getBoolean('modulesEnabled')) {
       return;
     }
-    this.moduleDescriptors_ =
-        await ModuleRegistry.getInstance().initializeModules(
-            loadTimeData.getInteger('modulesLoadTimeout'));
+    this.moduleDescriptors_ = descriptors;
   }
 
   /** @private */

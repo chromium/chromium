@@ -30,6 +30,8 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
@@ -649,6 +651,14 @@ void NewTabPageHandler::UpdateDisabledModules() {
   page_->SetDisabledModules(
       !profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible),
       std::move(module_ids));
+}
+
+void NewTabPageHandler::OnModulesLoadedWithData() {
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+  CHECK(hats_service);
+  hats_service->LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerNtpModules,
+                                                  web_contents_, 0);
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {

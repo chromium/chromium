@@ -326,6 +326,8 @@ interface PageHandler {
   SetModuleDisabled(string module_id, bool disabled);
   // Triggers a call to |SetDisabledModules|.
   UpdateDisabledModules();
+  // Called when at least one module has loaded with data.
+  OnModulesLoadedWithData();
 
   // ======= METRICS =======
   // Logs that |tiles| were displayed / updated at |time|. The first instance of

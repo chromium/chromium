@@ -480,6 +480,12 @@ const base::FeatureParam<bool>
 const base::Feature kHappinessTrackingSurveysForDesktopSettingsPrivacy{
     "HappinessTrackingSurveysForDesktopSettingsPrivacy",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables the Happiness Tracking System for Desktop Chrome
+// NTP Modules.
+const base::Feature kHappinessTrackingSurveysForDesktopNtpModules{
+    "HappinessTrackingSurveysForDesktopNtpModules",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

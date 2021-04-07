@@ -34,6 +34,12 @@ suite('NewTabPageAppTest', () => {
   let metrics;
 
   /**
+   * @implements {ModuleRegistry}
+   * @extends {TestBrowserProxy}
+   */
+  let moduleRegistry;
+
+  /**
    * @implements {BackgroundManager}
    * @extends {TestBrowserProxy}
    */
@@ -77,7 +83,7 @@ suite('NewTabPageAppTest', () => {
     backgroundManager.setResultFor(
         'getBackgroundImageLoadTime', Promise.resolve(0));
     BackgroundManager.setInstance(backgroundManager);
-    const moduleRegistry = TestBrowserProxy.fromClass(ModuleRegistry);
+    moduleRegistry = TestBrowserProxy.fromClass(ModuleRegistry);
     moduleResolver = new PromiseResolver();
     moduleRegistry.setResultFor('getDescriptors', []);
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
@@ -457,10 +463,11 @@ suite('NewTabPageAppTest', () => {
     assertTrue(commandExecuted);
   });
 
-  suite('modules', () => {
+  function createModulesSuite(modulesLoadEnabled) {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
+        modulesLoadEnabled,
       });
     });
 
@@ -502,6 +509,7 @@ suite('NewTabPageAppTest', () => {
         assertEquals(
             1, metrics.count('NewTabPage.Modules.VisibleOnNTPLoad', visible));
         assertEquals(1, handler.getCallCount('updateDisabledModules'));
+        assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
       });
     });
 
@@ -633,5 +641,44 @@ suite('NewTabPageAppTest', () => {
           CustomizeDialogPage.MODULES,
           $$(app, 'ntp-customize-dialog').selectedPage);
     });
+  }
+
+  suite('modules load enabled', () => createModulesSuite(true));
+  suite('modules load disabled', () => createModulesSuite(false));
+
+  test('modules loaded but not rendered if counterfactual', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      modulesEnabled: false,
+      modulesLoadEnabled: true,
+    });
+
+    // Act.
+    moduleResolver.resolve([
+      {
+        id: 'foo',
+        element: document.createElement('div'),
+      },
+      {
+        id: 'bar',
+        element: document.createElement('div'),
+      }
+    ]);
+    await flushTasks();
+
+    // TODO(crbug.com/1196355): Need to re-initialize modules because load time
+    // data gets applied racily. We should remove the race condition.
+    moduleRegistry.reset();
+    handler.reset();
+    moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
+    await app.onLazyRendered_();
+
+    $$(app, '#modules').render();
+
+    // Assert.
+    assertEquals(1, moduleRegistry.getCallCount('initializeModules'));
+    assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
+    assertEquals(
+        0, app.shadowRoot.querySelectorAll('ntp-module-wrapper').length);
   });
 });

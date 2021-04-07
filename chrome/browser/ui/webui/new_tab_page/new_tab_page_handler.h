@@ -102,6 +102,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void SetModulesVisible(bool visible) override;
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;
   void UpdateDisabledModules() override;
+  void OnModulesLoadedWithData() override;
   void OnAppRendered(double time) override;
   void OnMostVisitedTilesRendered(
       std::vector<new_tab_page::mojom::MostVisitedTilePtr> tiles,
