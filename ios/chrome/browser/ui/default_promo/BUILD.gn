@@ -27,6 +27,10 @@ source_set("default_promo") {
     "default_browser_promo_view_controller.mm",
     "default_browser_string_util.h",
     "default_browser_string_util.mm",
+    "tailored_promo_coordinator.h",
+    "tailored_promo_coordinator.mm",
+    "tailored_promo_view_controller.h",
+    "tailored_promo_view_controller.mm",
   ]
 
   deps = [
