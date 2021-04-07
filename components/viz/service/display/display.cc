@@ -876,7 +876,10 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
       }
     }
 
-    renderer_->SwapBuffersSkipped();
+    // If we did draw, but not going to swap we need notify DirectRenderer that
+    // swap buffers will be skipped.
+    if (should_draw)
+      renderer_->SwapBuffersSkipped();
 
     TRACE_EVENT_ASYNC_END1("viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
                            swapped_trace_id_, "status", "canceled");
