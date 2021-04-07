@@ -152,8 +152,8 @@ class ResourceCreationProxy : public InterfaceProxy,
   PP_Resource CreateVideoEncoder(PP_Instance instance) override;
   PP_Resource CreateVpnProvider(PP_Instance instance) override;
   PP_Resource CreateWebSocket(PP_Instance instance) override;
-  PP_Resource CreateX509CertificatePrivate(PP_Instance instance) override;
 #if !defined(OS_NACL)
+  PP_Resource CreateX509CertificatePrivate(PP_Instance instance) override;
   PP_Resource CreateAudioInput(PP_Instance instance) override;
   PP_Resource CreateAudioOutput(PP_Instance instance) override;
   PP_Resource CreateBrowserFont(

@@ -9,6 +9,7 @@
 #include "ppapi/proxy/plugin_globals.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/private/ppb_x509_certificate_private_shared.h"
+#include "ppapi/shared_impl/private/ppb_x509_util_shared.h"
 
 namespace ppapi {
 namespace proxy {
@@ -38,10 +39,8 @@ X509CertificatePrivate::~X509CertificatePrivate() {
 
 bool X509CertificatePrivate::ParseDER(const std::vector<char>& der,
                                       PPB_X509Certificate_Fields* result) {
-  bool succeeded = false;
-  SendToBrowser(
-      new PpapiHostMsg_PPBX509Certificate_ParseDER(der, &succeeded, result));
-  return succeeded;
+  return PPB_X509Util_Shared::GetCertificateFields(der.data(), der.size(),
+                                                   result);
 }
 
 void X509CertificatePrivate::SendToBrowser(IPC::Message* msg) {

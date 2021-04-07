@@ -278,8 +278,6 @@ PpapiPluginProcessHost::PpapiPluginProcessHost(
       this, permissions_, info.name, info.path, profile_data_directory,
       false /* in_process */, false /* external_plugin */);
 
-  filter_ = new PepperMessageFilter();
-  process_->AddFilter(filter_.get());
   process_->GetHost()->AddFilter(host_impl_->message_filter().get());
 
   GetContentClient()->browser()->DidCreatePpapiPlugin(host_impl_.get());

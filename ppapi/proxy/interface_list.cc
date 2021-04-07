@@ -177,11 +177,11 @@ InterfaceList::InterfaceList() {
     Permission current_required_permission = PERMISSION_DEV;
     #include "ppapi/thunk/interfaces_ppb_public_dev.h"
   }
+#if !defined(OS_NACL)
   {
     Permission current_required_permission = PERMISSION_PRIVATE;
     #include "ppapi/thunk/interfaces_ppb_private.h"
   }
-#if !defined(OS_NACL)
   {
     Permission current_required_permission = PERMISSION_FLASH;
     #include "ppapi/thunk/interfaces_ppb_private_flash.h"

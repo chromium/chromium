@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "content/browser/renderer_host/pepper/pepper_message_filter.h"
 #include "content/common/pepper_renderer_instance_data.h"
 #include "content/public/common/process_type.h"
 #include "ipc/ipc_message_macros.h"
@@ -32,10 +31,6 @@ BrowserPpapiHost* BrowserPpapiHost::CreateExternalPluginProcess(
                                false /* in_process */,
                                true /* external_plugin */);
   browser_ppapi_host->set_plugin_process(std::move(plugin_child_process));
-
-  scoped_refptr<PepperMessageFilter> pepper_message_filter(
-      new PepperMessageFilter());
-  channel->AddFilter(pepper_message_filter->GetFilter());
   channel->AddFilter(browser_ppapi_host->message_filter().get());
 
   return browser_ppapi_host;

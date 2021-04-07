@@ -375,12 +375,12 @@ PP_Resource ResourceCreationProxy::CreateWebSocket(PP_Instance instance) {
   return (new WebSocketResource(GetConnection(), instance))->GetReference();
 }
 
+#if !defined(OS_NACL)
 PP_Resource ResourceCreationProxy::CreateX509CertificatePrivate(
     PP_Instance instance) {
   return PPB_X509Certificate_Private_Proxy::CreateProxyResource(instance);
 }
 
-#if !defined(OS_NACL)
 PP_Resource ResourceCreationProxy::CreateAudioInput(
     PP_Instance instance) {
   return (new AudioInputResource(GetConnection(), instance))->GetReference();

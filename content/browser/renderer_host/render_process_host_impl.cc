@@ -260,7 +260,6 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/browser/plugin_service_impl.h"
-#include "content/browser/renderer_host/pepper/pepper_message_filter.h"
 #include "content/browser/renderer_host/pepper/pepper_renderer_connection.h"
 #include "ppapi/shared_impl/ppapi_switches.h"  // nogncheck
 #endif

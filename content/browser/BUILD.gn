@@ -2426,8 +2426,6 @@ source_set("browser") {
       "renderer_host/pepper/pepper_host_resolver_message_filter.h",
       "renderer_host/pepper/pepper_internal_file_ref_backend.cc",
       "renderer_host/pepper/pepper_internal_file_ref_backend.h",
-      "renderer_host/pepper/pepper_message_filter.cc",
-      "renderer_host/pepper/pepper_message_filter.h",
       "renderer_host/pepper/pepper_network_monitor_host.cc",
       "renderer_host/pepper/pepper_network_monitor_host.h",
       "renderer_host/pepper/pepper_network_proxy_host.cc",

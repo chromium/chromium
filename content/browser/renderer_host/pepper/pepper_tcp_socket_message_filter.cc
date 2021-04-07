@@ -43,6 +43,7 @@
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/tcp_socket_resource_constants.h"
 #include "ppapi/shared_impl/private/net_address_private_impl.h"
+#include "ppapi/shared_impl/private/ppb_x509_util_shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/network/firewall_hole.h"
@@ -1257,8 +1258,8 @@ void PepperTCPSocketMessageFilter::SendSSLHandshakeReply(
   if (pp_result == PP_OK) {
     DCHECK(ssl_info);
     if (ssl_info->cert.get()) {
-      pepper_socket_utils::GetCertificateFields(*ssl_info->cert,
-                                                &certificate_fields);
+      ppapi::PPB_X509Util_Shared::GetCertificateFields(*ssl_info->cert,
+                                                       &certificate_fields);
     }
   }
   SendReply(reply_context,

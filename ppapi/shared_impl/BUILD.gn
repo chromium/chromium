@@ -136,6 +136,8 @@ component("shared_impl") {
       "ppb_video_decoder_shared.h",
       "private/ppb_char_set_shared.cc",
       "private/ppb_char_set_shared.h",
+      "private/ppb_x509_util_shared.cc",
+      "private/ppb_x509_util_shared.h",
     ]
   }
 

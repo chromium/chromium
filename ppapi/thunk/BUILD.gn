@@ -132,8 +132,6 @@ source_set("thunk") {
     "ppb_vpn_provider_thunk.cc",
     "ppb_websocket_api.h",
     "ppb_websocket_thunk.cc",
-    "ppb_x509_certificate_private_api.h",
-    "ppb_x509_certificate_private_thunk.cc",
     "resource_creation_api.h",
     "thunk.h",
   ]
@@ -151,6 +149,8 @@ source_set("thunk") {
       "ppb_url_util_thunk.cc",
       "ppb_video_capture_thunk.cc",
       "ppb_video_decoder_dev_thunk.cc",
+      "ppb_x509_certificate_private_api.h",
+      "ppb_x509_certificate_private_thunk.cc",
     ]
   }
 

@@ -7,16 +7,16 @@
 
 // no-include-guard-because-multiply-included
 
+#include "build/build_config.h"
 #include "ppapi/thunk/interfaces_preamble.h"
 
 // See interfaces_ppb_private_no_permissions.h for other private interfaces.
 
 PROXIED_API(PPB_X509Certificate_Private)
 
+#if !defined(OS_NACL)
 PROXIED_IFACE(PPB_X509CERTIFICATE_PRIVATE_INTERFACE_0_1,
               PPB_X509Certificate_Private_0_1)
-
-#if !defined(OS_NACL)
 PROXIED_IFACE(PPB_BROWSERFONT_TRUSTED_INTERFACE_1_0,
               PPB_BrowserFont_Trusted_1_0)
 PROXIED_IFACE(PPB_CHARSET_TRUSTED_INTERFACE_1_0,

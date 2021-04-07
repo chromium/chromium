@@ -26,14 +26,6 @@ class FirewallHole;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace net {
-class X509Certificate;
-}
-
-namespace ppapi {
-class PPB_X509Certificate_Fields;
-}
-
 namespace content {
 
 namespace pepper_socket_utils {
@@ -50,17 +42,6 @@ bool CanUseSocketAPIs(bool external_plugin,
                       const SocketPermissionRequest* params,
                       int render_process_id,
                       int render_frame_id);
-
-// Extracts the certificate field data from a net::X509Certificate into
-// PPB_X509Certificate_Fields.
-bool GetCertificateFields(const net::X509Certificate& cert,
-                          ppapi::PPB_X509Certificate_Fields* fields);
-
-// Extracts the certificate field data from the DER representation of a
-// certificate into PPB_X509Certificate_Fields.
-bool GetCertificateFields(const char* der,
-                          uint32_t length,
-                          ppapi::PPB_X509Certificate_Fields* fields);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
