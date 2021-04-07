@@ -15,7 +15,7 @@ class OptimizationGuideDecider;
 
 // Callback to inform the caller that the page content has been annotated.
 using PageContentAnnotatedCallback = base::OnceCallback<void(
-    const base::Optional<history::VisitContentAnnotations>&)>;
+    const base::Optional<history::VisitContentModelAnnotations>&)>;
 
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager {
@@ -45,8 +45,9 @@ class PageContentAnnotationsModelManager {
       const proto::PageTopicsModelMetadata& model_metadata,
       const base::Optional<std::vector<tflite::task::core::Category>>& output);
 
-  // Converts |model_output| into content annotations based on |model_metadata|.
-  history::VisitContentAnnotations GetContentAnnotationsFromModelOutput(
+  // Converts |model_output| into content model annotations based on
+  // |model_metadata|.
+  history::VisitContentModelAnnotations GetContentModelAnnotationsFromOutput(
       const proto::PageTopicsModelMetadata& model_metadata,
       const std::vector<tflite::task::core::Category>& model_output) const;
 

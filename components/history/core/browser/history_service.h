@@ -37,7 +37,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "sql/init_status.h"
 #include "ui/base/page_transition_types.h"
 
@@ -221,12 +220,11 @@ class HistoryService : public KeyedService {
   // and the url. No-op if the page is not found.
   void SetFlocAllowed(ContextID context_id, int nav_entry_id, const GURL& url);
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  // Updates the history database with the content annotations for the visit.
-  void AddContentAnnotationsForVisit(
+  // Updates the history database with the content model annotations for the
+  // visit.
+  void AddContentModelAnnotationsForVisit(
       VisitID visit_id,
-      const VisitContentAnnotations& content_annotations);
-#endif
+      const VisitContentModelAnnotations& model_annotations);
 
   // Querying ------------------------------------------------------------------
 

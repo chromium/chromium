@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/query_parser/snippet.h"
 #include "url/gurl.h"
 
@@ -151,9 +150,30 @@ typedef std::vector<URLRow> URLRows;
 
 // Annotations -----------------------------------------------------------------
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-// A structure containing the annotations made to page content for a visit.
-struct VisitContentAnnotations {
+// A set of binary state related to a page visit. To be used for bit masking
+// operations.
+enum VisitContentAnnotationFlag : uint64_t {
+  kNone = 0,
+
+  // Indicates that the annotated page can be included in FLoC clustering
+  // (https://github.com/WICG/floc) based on a relaxed opt-in condition. A page
+  // visit is eligible for FLoC clustering if all of the conditions hold:
+  // 1. The IP of this visit is publicly routable, i.e. the IP is NOT within
+  // the ranges reserved for "private" internet
+  // (https://tools.ietf.org/html/rfc1918).
+  // 2. The interest-cohort Permissions Policy feature is allowed in the page.
+  // 3. Page opted in / Either one of the following holds:
+  //      - document.interestCohort API is used in the page
+  //      - the page has heuristically detected ad resources
+  kFlocEligibleRelaxed = 1 << 0,
+};
+
+using VisitContentAnnotationFlags = uint64_t;
+
+// A structure containing the annotations made by the ML model to page content
+// for a visit. Be cautious when changing the default values as they may already
+// have been written to the storage.
+struct VisitContentModelAnnotations {
   struct Category {
     Category();
     Category(int id, int weight);
@@ -164,12 +184,12 @@ struct VisitContentAnnotations {
     int weight = 0;
   };
 
-  VisitContentAnnotations();
-  VisitContentAnnotations(float floc_protected_score,
-                          const std::vector<Category>& categories,
-                          int64_t page_topics_model_version);
-  VisitContentAnnotations(const VisitContentAnnotations& other);
-  ~VisitContentAnnotations();
+  VisitContentModelAnnotations();
+  VisitContentModelAnnotations(float floc_protected_score,
+                               const std::vector<Category>& categories,
+                               int64_t page_topics_model_version);
+  VisitContentModelAnnotations(const VisitContentModelAnnotations& other);
+  ~VisitContentModelAnnotations();
 
   // A value from 0 to 1 that represents whether the page content is
   // FLoC-protected.
@@ -181,7 +201,13 @@ struct VisitContentAnnotations {
   // The version of the page topics model that was used to annotate content.
   int64_t page_topics_model_version = -1;
 };
-#endif
+
+// A structure containing the annotations made to page content for a visit.
+struct VisitContentAnnotations {
+  VisitContentAnnotationFlags annotation_flags =
+      VisitContentAnnotationFlag::kNone;
+  VisitContentModelAnnotations model_annotations;
+};
 
 class URLResult : public URLRow {
  public:
@@ -197,18 +223,13 @@ class URLResult : public URLRow {
   base::Time visit_time() const { return visit_time_; }
   void set_visit_time(base::Time visit_time) { visit_time_ = visit_time; }
 
-  bool floc_allowed() const { return floc_allowed_; }
-  void set_floc_allowed(bool floc_allowed) { floc_allowed_ = floc_allowed; }
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  const base::Optional<VisitContentAnnotations>& content_annotations() const {
+  const VisitContentAnnotations& content_annotations() const {
     return content_annotations_;
   }
   void set_content_annotations(
-      const base::Optional<VisitContentAnnotations>& content_annotations) {
+      const VisitContentAnnotations& content_annotations) {
     content_annotations_ = content_annotations;
   }
-#endif
 
   const query_parser::Snippet& snippet() const { return snippet_; }
 
@@ -234,14 +255,8 @@ class URLResult : public URLRow {
   // The time that this result corresponds to.
   base::Time visit_time_;
 
-  // Indicates whether this URL visit can be included in FLoC computation. See
-  // VisitRow::floc_allowed for details.
-  bool floc_allowed_ = false;
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // The annotations made to the page content for this visit.
-  base::Optional<VisitContentAnnotations> content_annotations_;
-#endif
+  VisitContentAnnotations content_annotations_;
 
   // These values are typically set by HistoryBackend.
   query_parser::Snippet snippet_;

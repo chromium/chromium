@@ -97,31 +97,40 @@ class FlocEligibilityBrowserTest
         .ExtractString();
   }
 
-  bool HistoryContainsUrlVisit(const GURL& url) {
-    return QueryUrl(url).success;
-  }
+  // Returns base::nullopt if there's no matching result in the history query.
+  // Otherwise, the returned base::Optional contains a bit representing whether
+  // the entry is eligible in floc computation.
+  base::Optional<bool> QueryFlocEligibleForURL(const GURL& url) {
+    base::Optional<bool> query_result;
 
-  bool IsUrlVisitEligibleToComputeFloc(const GURL& url) {
-    history::QueryURLResult result = QueryUrl(url);
-    EXPECT_EQ(1u, result.visits.size());
-    return result.visits[0].floc_allowed;
-  }
-
-  history::QueryURLResult QueryUrl(const GURL& url) {
-    history::QueryURLResult query_url_result;
+    history::QueryOptions options;
+    options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
     base::RunLoop run_loop;
     base::CancelableTaskTracker tracker;
-    history_service()->QueryURL(
-        url, /*want_visits=*/true,
-        base::BindLambdaForTesting([&](history::QueryURLResult result) {
-          query_url_result = std::move(result);
+
+    history_service()->QueryHistory(
+        std::u16string(), options,
+        base::BindLambdaForTesting([&](history::QueryResults results) {
+          size_t num_matches = 0;
+          const size_t* match_index = results.MatchesForURL(url, &num_matches);
+          if (!num_matches) {
+            run_loop.Quit();
+            return;
+          }
+
+          ASSERT_EQ(1u, num_matches);
+
+          query_result =
+              results[*match_index].content_annotations().annotation_flags &
+              history::VisitContentAnnotationFlag::kFlocEligibleRelaxed;
           run_loop.Quit();
         }),
         &tracker);
+
     run_loop.Run();
 
-    return query_url_result;
+    return query_result;
   }
 
   void DeleteAllHistory() {
@@ -187,10 +196,11 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
   // Three resources in the main frame and one favicon.
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
-  ASSERT_TRUE(HistoryContainsUrlVisit(main_page_url));
-
   // Expect that the navigation history is not eligible for floc computation.
-  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+  base::Optional<bool> query_floc_eligible =
+      QueryFlocEligibleForURL(main_page_url);
+  EXPECT_TRUE(query_floc_eligible);
+  EXPECT_FALSE(query_floc_eligible.value());
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
@@ -208,7 +218,10 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 
   // Expect that the navigation history is eligible for floc computation as the
   // page contains an ad resource.
-  EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+  base::Optional<bool> query_floc_eligible =
+      QueryFlocEligibleForURL(main_page_url);
+  EXPECT_TRUE(query_floc_eligible);
+  EXPECT_TRUE(query_floc_eligible.value());
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
@@ -225,7 +238,11 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
   // an API call.
   EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
             InvokeInterestCohortJsApi(web_contents()));
-  EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+
+  base::Optional<bool> query_floc_eligible =
+      QueryFlocEligibleForURL(main_page_url);
+  EXPECT_TRUE(query_floc_eligible);
+  EXPECT_TRUE(query_floc_eligible.value());
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
@@ -245,7 +262,10 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 
   // Expect that the navigation history is not eligible for floc computation as
   // the permissions policy disallows it.
-  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+  base::Optional<bool> query_floc_eligible =
+      QueryFlocEligibleForURL(main_page_url);
+  EXPECT_TRUE(query_floc_eligible);
+  EXPECT_FALSE(query_floc_eligible.value());
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
@@ -264,7 +284,10 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 
   // Expect that the navigation history is not eligible for floc computation as
   // the permissions policy disallows it.
-  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+  base::Optional<bool> query_floc_eligible =
+      QueryFlocEligibleForURL(main_page_url);
+  EXPECT_TRUE(query_floc_eligible);
+  EXPECT_FALSE(query_floc_eligible.value());
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
@@ -280,9 +303,14 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 
   // Expect that the navigation history is not eligible for floc computation as
   // the IP was not publicly routable.
-  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+  base::Optional<bool> query_floc_eligible =
+      QueryFlocEligibleForURL(main_page_url);
+  EXPECT_TRUE(query_floc_eligible);
+  EXPECT_FALSE(query_floc_eligible.value());
 }
 
+// The history query result doesn't contain any subframe navigation entries
+// (auto & manual).
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
                        NotEligibleForHistorySubframeCommit) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
@@ -295,15 +323,14 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
   // Three resources in the main frame and one favicon.
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
-  ASSERT_TRUE(HistoryContainsUrlVisit(main_page_url));
-  ASSERT_FALSE(HistoryContainsUrlVisit(auto_subframe_url));
+  // The history query result doesn't contain auto subframe navigation entry.
+  EXPECT_FALSE(QueryFlocEligibleForURL(auto_subframe_url));
 
   // Trigger an user-initiated navigation on the iframe, so that it will show up
   // in history.
   GURL manual_subframe_url(https_server_.GetURL("a.test", "/title2.html"));
   content::NavigateIframeToURL(web_contents(),
                                /*iframe_id=*/"test", manual_subframe_url);
-  ASSERT_TRUE(HistoryContainsUrlVisit(manual_subframe_url));
 
   EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
             InvokeInterestCohortJsApi(web_contents()));
@@ -311,10 +338,9 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
             InvokeInterestCohortJsApi(
                 content::ChildFrameAt(web_contents()->GetMainFrame(), 0)));
 
-  // Expect that only the main frame navigation history is eligible for floc
-  // computation.
-  EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));
-  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(manual_subframe_url));
+  // The history query result doesn't contain manual subframe navigation entry
+  // either.
+  EXPECT_FALSE(QueryFlocEligibleForURL(manual_subframe_url));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
@@ -327,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
   // Three resources in the main frame and one favicon.
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
-  ASSERT_TRUE(HistoryContainsUrlVisit(main_page_url));
+  EXPECT_TRUE(QueryFlocEligibleForURL(main_page_url));
 
   DeleteAllHistory();
 
@@ -335,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
   // page visit doesn't exist.
   EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
             InvokeInterestCohortJsApi(web_contents()));
-  ASSERT_FALSE(HistoryContainsUrlVisit(main_page_url));
+  EXPECT_FALSE(QueryFlocEligibleForURL(main_page_url));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest, ApiAllowedByDefault) {
@@ -498,5 +524,8 @@ IN_PROC_BROWSER_TEST_F(
             InvokeInterestCohortJsApi(child));
 
   // Expect that the navigation history is eligible for floc computation.
-  EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+  base::Optional<bool> query_floc_eligible =
+      QueryFlocEligibleForURL(main_page_url);
+  EXPECT_TRUE(query_floc_eligible);
+  EXPECT_TRUE(query_floc_eligible.value());
 }

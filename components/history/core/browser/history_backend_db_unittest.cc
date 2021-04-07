@@ -1742,10 +1742,9 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
   CreateBackendAndDatabase();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 43);
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 44);
 
-  // Confirm that publicly_routable (corresponding to VisitRow::floc_allowed)
-  // column has a default value "false".
+  // Confirm that publicly_routable column has a default value "false".
   {
     sql::Statement s(
         db.GetUniqueStatement("SELECT publicly_routable FROM visits"));
@@ -1755,11 +1754,143 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
     EXPECT_FALSE(s.Step());
   }
 
-  // The VisitRow::floc_allowed should also have the default value "false".
+  // content_annotations should exist.
+  EXPECT_TRUE(db.DoesTableExist("content_annotations"));
+
+  // Confirm that content_annotations table has a annotation_flags column,
+  // but has 0 entry in it because the publicly_routable field in the entry in
+  // the visits table is "false" so is not migrated to the content_annotations
+  // table.
   {
-    VisitRow visit_row;
-    db_->GetRowForVisit(visit_id1, &visit_row);
-    EXPECT_FALSE(visit_row.floc_allowed);
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT annotation_flags FROM content_annotations"));
+    EXPECT_FALSE(s.Step());
+  }
+}
+
+TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(43));
+
+  // Define common uninteresting data for visits.
+  const base::Time visit_time(base::Time::Now());
+
+  // The first visit is publicly routable;
+  const VisitID visit_id1 = 1;
+  const URLID url_id1 = 10;
+  const bool publicly_routable1 = true;
+
+  // The second visit is not publicly routable;
+  const VisitID visit_id2 = 2;
+  const URLID url_id2 = 20;
+  const bool publicly_routable2 = false;
+
+  // The third visit is publicly routable;
+  const VisitID visit_id3 = 3;
+  const URLID url_id3 = 30;
+  const bool publicly_routable3 = true;
+
+  // Open the db for manual manipulation.
+  sql::Database db;
+  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+  const char kInsertVisitStatement[] =
+      "INSERT INTO visits "
+      "(id, url, visit_time, publicly_routable) VALUES (?, ?, ?, ?)";
+
+  const char kInsertAnnotationsStatement[] =
+      "INSERT INTO content_annotations "
+      "(visit_id, floc_protected_score, categories, page_topics_model_version) "
+      "VALUES (?, ?, ?, ?)";
+
+  // Add the three entries to "visits" table.
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+    s.BindInt64(0, visit_id1);
+    s.BindInt64(1, url_id1);
+    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    s.BindBool(3, publicly_routable1);
+    ASSERT_TRUE(s.Run());
+  }
+
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+    s.BindInt64(0, visit_id2);
+    s.BindInt64(1, url_id2);
+    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    s.BindBool(3, publicly_routable2);
+    ASSERT_TRUE(s.Run());
+  }
+
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+    s.BindInt64(0, visit_id3);
+    s.BindInt64(1, url_id3);
+    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    s.BindBool(3, publicly_routable3);
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Add the two entries to "content_annotations" table
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
+    s.BindInt64(0, visit_id1);
+    s.BindDouble(1, -1);
+    s.BindString(2, "");
+    s.BindInt64(3, -1);
+    ASSERT_TRUE(s.Run());
+  }
+
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
+    s.BindInt64(0, visit_id2);
+    s.BindDouble(1, 0.5f);
+    s.BindString(2, "1:1");
+    s.BindInt64(3, 123);
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 44);
+
+  // Confirm that publicly_routable column still exists.
+  ASSERT_TRUE(db.DoesColumnExist("visits", "publicly_routable"));
+
+  // Check the entries in the content_annotations table.
+  {
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT visit_id,floc_protected_score,"
+        "categories,page_topics_model_version,annotation_flags "
+        "FROM content_annotations "
+        "ORDER BY visit_id"));
+
+    EXPECT_TRUE(s.Step());
+    EXPECT_EQ(visit_id1, s.ColumnInt64(0));
+    EXPECT_EQ(-1, s.ColumnDouble(1));
+    EXPECT_EQ("", s.ColumnString(2));
+    EXPECT_EQ(-1, s.ColumnInt64(3));
+    EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+              static_cast<uint64_t>(s.ColumnInt64(4)));
+
+    EXPECT_TRUE(s.Step());
+    EXPECT_EQ(visit_id2, s.ColumnInt64(0));
+    EXPECT_EQ(0.5, s.ColumnDouble(1));
+    EXPECT_EQ("1:1", s.ColumnString(2));
+    EXPECT_EQ(123, s.ColumnInt64(3));
+    EXPECT_EQ(VisitContentAnnotationFlag::kNone,
+              static_cast<uint64_t>(s.ColumnInt64(4)));
+
+    EXPECT_TRUE(s.Step());
+    EXPECT_EQ(visit_id3, s.ColumnInt64(0));
+    EXPECT_EQ(-1, s.ColumnDouble(1));
+    EXPECT_EQ("", s.ColumnString(2));
+    EXPECT_EQ(-1, s.ColumnInt64(3));
+    EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+              static_cast<uint64_t>(s.ColumnInt64(4)));
+
+    EXPECT_FALSE(s.Step());
   }
 }
 

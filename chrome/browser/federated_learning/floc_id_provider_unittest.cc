@@ -271,11 +271,18 @@ class FlocIdProviderUnitTest : public testing::Test {
                                    base::Time time) {
     history::HistoryAddPageArgs add_page_args;
     add_page_args.time = time;
-    add_page_args.floc_allowed = true;
+    add_page_args.context_id = reinterpret_cast<history::ContextID>(1);
 
     for (const std::string& domain : domains) {
+      static int nav_entry_id = 0;
+      ++nav_entry_id;
+
       add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
+      add_page_args.nav_entry_id = nav_entry_id;
+
       history_service_->AddPage(add_page_args);
+      history_service_->SetFlocAllowed(add_page_args.context_id, nav_entry_id,
+                                       add_page_args.url);
     }
   }
 
@@ -766,7 +773,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   GURL url_a = GURL("https://a.test");
 
   history::URLResult url_result(url_a, kTime1);
-  url_result.set_floc_allowed(true);
+  url_result.set_content_annotations(
+      {history::VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+       /*model_annotations=*/{}});
 
   history::QueryResults query_results;
   query_results.SetURLResults({url_result});
@@ -877,10 +886,14 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleHistoryEntries) {
   const base::Time kTime3 = base::Time::FromTimeT(3);
 
   history::URLResult url_result_a(GURL("https://a.test"), kTime1);
-  url_result_a.set_floc_allowed(true);
+  url_result_a.set_content_annotations(
+      {history::VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+       /*model_annotations=*/{}});
 
   history::URLResult url_result_b(GURL("https://b.test"), kTime2);
-  url_result_b.set_floc_allowed(true);
+  url_result_b.set_content_annotations(
+      {history::VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+       /*model_annotations=*/{}});
 
   history::URLResult url_result_c(GURL("https://c.test"), kTime3);
 

@@ -67,14 +67,15 @@ class PageContentAnnotationsService : public KeyedService {
   // Callback invoked when |visit| has been annotated.
   void OnPageContentAnnotated(
       const HistoryVisit& visit,
-      const base::Optional<history::VisitContentAnnotations>&
+      const base::Optional<history::VisitContentModelAnnotations>&
           content_annotations);
 
   // Callback invoked when |history_service| has returned results for the visits
   // to a URL.
-  void OnURLQueried(const HistoryVisit& visit,
-                    const history::VisitContentAnnotations& content_annotations,
-                    history::QueryURLResult url_result);
+  void OnURLQueried(
+      const HistoryVisit& visit,
+      const history::VisitContentModelAnnotations& content_annotations,
+      history::QueryURLResult url_result);
 
   // The history service to write content annotations to. Not owned. Guaranteed
   // to outlive |this|.

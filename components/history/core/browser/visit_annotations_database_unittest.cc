@@ -47,59 +47,82 @@ class VisitAnnotationsDatabaseTest : public testing::Test,
 TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
   // Add content annotations for 1 visit.
   VisitID visit_id = 1;
-  VisitContentAnnotations content_annotations = {
+  VisitContentModelAnnotations model_annotations = {
       0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123};
+  VisitContentAnnotationFlags annotation_flags =
+      VisitContentAnnotationFlag::kFlocEligibleRelaxed;
+  VisitContentAnnotations content_annotations{annotation_flags,
+                                              model_annotations};
   EXPECT_TRUE(AddContentAnnotationsForVisit(visit_id, content_annotations));
 
   // Query for it.
-  base::Optional<VisitContentAnnotations> got_content_annotations =
-      GetContentAnnotationsForVisit(visit_id);
-  ASSERT_TRUE(got_content_annotations.has_value());
-  EXPECT_EQ(0.5f, got_content_annotations->floc_protected_score);
+  VisitContentAnnotations got_content_annotations;
+  ASSERT_TRUE(
+      GetContentAnnotationsForVisit(visit_id, &got_content_annotations));
+
+  EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+            got_content_annotations.annotation_flags);
+  EXPECT_EQ(0.5f,
+            got_content_annotations.model_annotations.floc_protected_score);
   EXPECT_THAT(
-      got_content_annotations->categories,
-      ElementsAre(VisitContentAnnotations::Category(/*id=*/1, /*weight=*/1),
-                  VisitContentAnnotations::Category(/*id=*/2, /*weight=*/1)));
-  EXPECT_EQ(123, got_content_annotations->page_topics_model_version);
+      got_content_annotations.model_annotations.categories,
+      ElementsAre(
+          VisitContentModelAnnotations::Category(/*id=*/1, /*weight=*/1),
+          VisitContentModelAnnotations::Category(/*id=*/2, /*weight=*/1)));
+  EXPECT_EQ(
+      123, got_content_annotations.model_annotations.page_topics_model_version);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   // Add content annotations for 1 visit.
   VisitID visit_id = 1;
-  VisitContentAnnotations original = {
+  VisitContentModelAnnotations model_annotations = {
       0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123};
+  VisitContentAnnotationFlags annotation_flags =
+      VisitContentAnnotationFlag::kFlocEligibleRelaxed;
+  VisitContentAnnotations original{annotation_flags, model_annotations};
   EXPECT_TRUE(AddContentAnnotationsForVisit(visit_id, original));
 
   // Mutate that row.
   VisitContentAnnotations modification(original);
-  modification.floc_protected_score = 0.3f;
+  modification.model_annotations.floc_protected_score = 0.3f;
   EXPECT_TRUE(UpdateContentAnnotationsForVisit(visit_id, modification));
 
   // Check that the mutated version was written.
-  base::Optional<VisitContentAnnotations> final =
-      GetContentAnnotationsForVisit(visit_id);
-  ASSERT_TRUE(final.has_value());
-  EXPECT_EQ(0.3f, final->floc_protected_score);
+  VisitContentAnnotations final;
+  ASSERT_TRUE(GetContentAnnotationsForVisit(visit_id, &final));
+
+  EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+            final.annotation_flags);
+  EXPECT_EQ(0.3f, final.model_annotations.floc_protected_score);
   EXPECT_THAT(
-      final->categories,
-      ElementsAre(VisitContentAnnotations::Category(/*id=*/1, /*weight=*/1),
-                  VisitContentAnnotations::Category(/*id=*/2, /*weight=*/1)));
-  EXPECT_EQ(123, final->page_topics_model_version);
+      final.model_annotations.categories,
+      ElementsAre(
+          VisitContentModelAnnotations::Category(/*id=*/1, /*weight=*/1),
+          VisitContentModelAnnotations::Category(/*id=*/2, /*weight=*/1)));
+  EXPECT_EQ(123, final.model_annotations.page_topics_model_version);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, DeleteContentAnnotationsForVisit) {
   // Add content annotations for 1 visit.
   VisitID visit_id = 1;
-  VisitContentAnnotations content_annotations = {
+  VisitContentModelAnnotations model_annotations = {
       0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123};
+  VisitContentAnnotationFlags annotation_flags =
+      VisitContentAnnotationFlag::kNone;
+  VisitContentAnnotations content_annotations{annotation_flags,
+                                              model_annotations};
   EXPECT_TRUE(AddContentAnnotationsForVisit(visit_id, content_annotations));
 
+  VisitContentAnnotations got_content_annotations;
   // First make sure the annotations are there.
-  EXPECT_TRUE(GetContentAnnotationsForVisit(visit_id).has_value());
+  EXPECT_TRUE(
+      GetContentAnnotationsForVisit(visit_id, &got_content_annotations));
 
   // Delete annotations and make sure we cannot query for it.
   EXPECT_TRUE(DeleteContentAnnotationsForVisit(visit_id));
-  EXPECT_FALSE(GetContentAnnotationsForVisit(visit_id).has_value());
+  EXPECT_FALSE(
+      GetContentAnnotationsForVisit(visit_id, &got_content_annotations));
 }
 
 }  // namespace history

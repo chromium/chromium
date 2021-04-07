@@ -53,26 +53,27 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
   bool IsUrlVisitEligibleToComputeFloc(const GURL& url) {
-    history::QueryURLResult result = QueryUrl(url);
-    EXPECT_EQ(1u, result.visits.size());
-    return result.visits[0].floc_allowed;
-  }
+    bool eligible = false;
 
-  history::QueryURLResult QueryUrl(const GURL& url) {
-    history::QueryURLResult query_url_result;
+    history::QueryOptions options;
+    options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
     base::RunLoop run_loop;
     base::CancelableTaskTracker tracker;
-    history_service()->QueryURL(
-        url, /*want_visits=*/true,
-        base::BindLambdaForTesting([&](history::QueryURLResult result) {
-          query_url_result = std::move(result);
+
+    history_service()->QueryHistory(
+        std::u16string(), options,
+        base::BindLambdaForTesting([&](history::QueryResults results) {
+          ASSERT_EQ(1u, results.size());
+          eligible = results[0].content_annotations().annotation_flags &
+                     history::VisitContentAnnotationFlag::kFlocEligibleRelaxed;
           run_loop.Quit();
         }),
         &tracker);
+
     run_loop.Run();
 
-    return query_url_result;
+    return eligible;
   }
 
   void SimulateResourceDataUseUpdate(bool is_ad_resource) {

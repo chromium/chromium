@@ -38,7 +38,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 43;
+const int kCurrentVersionNumber = 44;
 const int kCompatibleVersionNumber = 16;
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
 
@@ -125,10 +125,8 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
       !InitKeywordSearchTermsTable() || !InitDownloadTable() ||
       !InitSegmentTables() || !InitSyncTable())
     return LogInitFailure(InitStep::CREATE_TABLES);
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!InitVisitAnnotationsTables())
     return LogInitFailure(InitStep::CREATE_TABLES);
-#endif
   CreateMainURLIndex();
 
   // TODO(benjhayden) Remove at some point.
@@ -327,12 +325,10 @@ bool HistoryDatabase::RecreateAllTablesButURL() {
   if (!InitSegmentTables())
     return false;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!DropVisitAnnotationsTables())
     return false;
   if (!InitVisitAnnotationsTables())
     return false;
-#endif
 
   return true;
 }
@@ -638,6 +634,13 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
   if (cur_version == 42) {
     if (!MigrateVisitsWithoutPubliclyRoutableColumn())
       return LogMigrationFailure(42);
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 43) {
+    if (!CanMigrateFlocAllowed() || !MigrateFlocAllowedToAnnotationsTable())
+      return LogMigrationFailure(43);
     cur_version++;
     meta_table_.SetVersionNumber(cur_version);
   }

@@ -91,6 +91,10 @@ bool VisitDatabase::InitVisitTable() {
             // longer used and should NOT be read or written from any longer.
             "visit_duration INTEGER DEFAULT 0 NOT NULL,"
             "incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT NULL,"
+            // "publicly_routable" is no longer used and should NOT be read or
+            // written from any longer.
+            // TODO(yaoxia): during the next migration of visits, we should drop
+            // the "publicly_routable" column.
             "publicly_routable BOOLEAN DEFAULT FALSE NOT NULL)"))
       return false;
   }
@@ -145,7 +149,6 @@ void VisitDatabase::FillVisitRow(const sql::Statement& statement,
   visit->visit_duration =
       base::TimeDelta::FromInternalValue(statement.ColumnInt64(6));
   visit->incremented_omnibox_typed_score = statement.ColumnBool(7);
-  visit->floc_allowed = statement.ColumnBool(8);
 }
 
 // static
@@ -201,8 +204,8 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
       SQL_FROM_HERE,
       "INSERT INTO visits "
       "(url, visit_time, from_visit, transition, segment_id, "
-      "visit_duration, incremented_omnibox_typed_score, publicly_routable) "
-      "VALUES (?,?,?,?,?,?,?,?)"));
+      "visit_duration, incremented_omnibox_typed_score) "
+      "VALUES (?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit->url_id);
   statement.BindInt64(1, visit->visit_time.ToInternalValue());
   statement.BindInt64(2, visit->referring_visit);
@@ -210,7 +213,6 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
   statement.BindInt64(4, visit->segment_id);
   statement.BindInt64(5, visit->visit_duration.ToInternalValue());
   statement.BindBool(6, visit->incremented_omnibox_typed_score);
-  statement.BindBool(7, visit->floc_allowed);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute visit insert statement:  "
@@ -292,7 +294,7 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
       SQL_FROM_HERE,
       "UPDATE visits SET "
       "url=?,visit_time=?,from_visit=?,transition=?,segment_id=?,"
-      "visit_duration=?,incremented_omnibox_typed_score=?,publicly_routable=? "
+      "visit_duration=?,incremented_omnibox_typed_score=? "
       "WHERE id=?"));
   statement.BindInt64(0, visit.url_id);
   statement.BindInt64(1, visit.visit_time.ToInternalValue());
@@ -301,8 +303,7 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   statement.BindInt64(4, visit.segment_id);
   statement.BindInt64(5, visit.visit_duration.ToInternalValue());
   statement.BindBool(6, visit.incremented_omnibox_typed_score);
-  statement.BindBool(7, visit.floc_allowed);
-  statement.BindInt64(8, visit.visit_id);
+  statement.BindInt64(7, visit.visit_id);
 
   return statement.Run();
 }
@@ -927,6 +928,21 @@ bool VisitDatabase::MigrateVisitsWithoutPubliclyRoutableColumn() {
       "ALTER TABLE visits "
       "ADD COLUMN publicly_routable BOOLEAN "
       "DEFAULT FALSE NOT NULL");
+}
+
+bool VisitDatabase::CanMigrateFlocAllowed() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+    return false;
+  }
+
+  if (!GetDB().DoesColumnExist("visits", "publicly_routable")) {
+    NOTREACHED() << " publicly_routable column should exist in the visits "
+                    "table before migration";
+    return false;
+  }
+
+  return true;
 }
 
 bool VisitDatabase::GetAllVisitedURLRowidsForMigrationToVersion40(

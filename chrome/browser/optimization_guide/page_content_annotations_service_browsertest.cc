@@ -86,8 +86,10 @@ class GetContentAnnotationsTask : public history::HistoryDBTask {
     if (visits.empty())
       return true;
 
-    stored_content_annotations_ =
-        db->GetContentAnnotationsForVisit(visits.at(0).visit_id);
+    history::VisitContentAnnotations annotations;
+    if (db->GetContentAnnotationsForVisit(visits.at(0).visit_id, &annotations))
+      stored_content_annotations_ = annotations;
+
     return true;
   }
   void DoneRunOnMainThread() override {
@@ -104,7 +106,6 @@ class GetContentAnnotationsTask : public history::HistoryDBTask {
   // The content annotations that were stored for |url_|.
   base::Optional<history::VisitContentAnnotations> stored_content_annotations_;
 };
-#endif
 
 class PageContentAnnotationsServiceDisabledBrowserTest
     : public InProcessBrowserTest {
@@ -118,6 +119,7 @@ class PageContentAnnotationsServiceDisabledBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+#endif
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceDisabledBrowserTest,
                        KeyedServiceEnabledButFeaturesDisabled) {
@@ -280,9 +282,12 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   base::Optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
-  EXPECT_NE(-1.0, got_content_annotations->floc_protected_score);
-  EXPECT_FALSE(got_content_annotations->categories.empty());
-  EXPECT_EQ(123, got_content_annotations->page_topics_model_version);
+  EXPECT_NE(-1.0,
+            got_content_annotations->model_annotations.floc_protected_score);
+  EXPECT_FALSE(got_content_annotations->model_annotations.categories.empty());
+  EXPECT_EQ(
+      123,
+      got_content_annotations->model_annotations.page_topics_model_version);
 #endif
 }
 

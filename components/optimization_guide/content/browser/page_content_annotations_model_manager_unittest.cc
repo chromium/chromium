@@ -77,10 +77,10 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     return model_manager_.get();
   }
 
-  history::VisitContentAnnotations GetContentAnnotationsFromModelOutput(
+  history::VisitContentModelAnnotations GetContentModelAnnotationsFromOutput(
       const proto::PageTopicsModelMetadata& metadata,
       const std::vector<tflite::task::core::Category>& model_output) const {
-    return model_manager()->GetContentAnnotationsFromModelOutput(metadata,
+    return model_manager()->GetContentModelAnnotationsFromOutput(metadata,
                                                                  model_output);
   }
 
@@ -147,7 +147,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
-       GetContentAnnotationsFromModelOutputFlocProtectedOnly) {
+       GetContentModelAnnotationsFromOutputFlocProtectedOnly) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   model_metadata.mutable_output_postprocessing_params()
@@ -158,8 +158,8 @@ TEST_F(PageContentAnnotationsModelManagerTest,
       {"SOMECATEGORY", 0.5},
       {"-2", 0.3},
   };
-  history::VisitContentAnnotations annotations =
-      GetContentAnnotationsFromModelOutput(model_metadata, model_output);
+  history::VisitContentModelAnnotations annotations =
+      GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_TRUE(annotations.categories.empty());
   EXPECT_EQ(annotations.floc_protected_score, 0.5);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
@@ -167,7 +167,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 
 TEST_F(
     PageContentAnnotationsModelManagerTest,
-    GetContentAnnotationsFromModelOutputFlocProtectedOnlyCategoryNotInOutput) {
+    GetContentModelAnnotationsFromOutputFlocProtectedOnlyCategoryNotInOutput) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   model_metadata.mutable_output_postprocessing_params()
@@ -177,8 +177,8 @@ TEST_F(
   std::vector<tflite::task::core::Category> model_output = {
       {"-2", 0.3},
   };
-  history::VisitContentAnnotations annotations =
-      GetContentAnnotationsFromModelOutput(model_metadata, model_output);
+  history::VisitContentModelAnnotations annotations =
+      GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_TRUE(annotations.categories.empty());
   EXPECT_EQ(annotations.floc_protected_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
@@ -186,7 +186,7 @@ TEST_F(
 
 TEST_F(
     PageContentAnnotationsModelManagerTest,
-    GetContentAnnotationsFromModelOutputNonNumericAndLowWeightCategoriesPruned) {
+    GetContentModelAnnotationsFromOutputNonNumericAndLowWeightCategoriesPruned) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
@@ -199,19 +199,19 @@ TEST_F(
   std::vector<tflite::task::core::Category> model_output = {
       {"0", 0.0001}, {"1", 0.1}, {"SOMECATEGORY", 0.9}, {"2", 0.2}, {"3", 0.3},
   };
-  history::VisitContentAnnotations annotations =
-      GetContentAnnotationsFromModelOutput(model_metadata, model_output);
-  EXPECT_THAT(
-      annotations.categories,
-      UnorderedElementsAre(history::VisitContentAnnotations::Category(1, 10),
-                           history::VisitContentAnnotations::Category(2, 20),
-                           history::VisitContentAnnotations::Category(3, 30)));
+  history::VisitContentModelAnnotations annotations =
+      GetContentModelAnnotationsFromOutput(model_metadata, model_output);
+  EXPECT_THAT(annotations.categories,
+              UnorderedElementsAre(
+                  history::VisitContentModelAnnotations::Category(1, 10),
+                  history::VisitContentModelAnnotations::Category(2, 20),
+                  history::VisitContentModelAnnotations::Category(3, 30)));
   EXPECT_EQ(annotations.floc_protected_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
-       GetContentAnnotationsFromModelOutputNoneWeightTooStrong) {
+       GetContentModelAnnotationsFromOutputNoneWeightTooStrong) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
@@ -226,15 +226,15 @@ TEST_F(PageContentAnnotationsModelManagerTest,
       {"0", 0.3},
       {"1", 0.2},
   };
-  history::VisitContentAnnotations annotations =
-      GetContentAnnotationsFromModelOutput(model_metadata, model_output);
+  history::VisitContentModelAnnotations annotations =
+      GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_TRUE(annotations.categories.empty());
   EXPECT_EQ(annotations.floc_protected_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
-       GetContentAnnotationsFromModelOutputNoneInTopButNotStrongSoPruned) {
+       GetContentModelAnnotationsFromOutputNoneInTopButNotStrongSoPruned) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
@@ -247,19 +247,19 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   std::vector<tflite::task::core::Category> model_output = {
       {"-2", 0.1}, {"0", 0.3}, {"1", 0.2}, {"2", 0.4}, {"3", 0.05},
   };
-  history::VisitContentAnnotations annotations =
-      GetContentAnnotationsFromModelOutput(model_metadata, model_output);
-  EXPECT_THAT(
-      annotations.categories,
-      UnorderedElementsAre(history::VisitContentAnnotations::Category(0, 30),
-                           history::VisitContentAnnotations::Category(1, 20),
-                           history::VisitContentAnnotations::Category(2, 40)));
+  history::VisitContentModelAnnotations annotations =
+      GetContentModelAnnotationsFromOutput(model_metadata, model_output);
+  EXPECT_THAT(annotations.categories,
+              UnorderedElementsAre(
+                  history::VisitContentModelAnnotations::Category(0, 30),
+                  history::VisitContentModelAnnotations::Category(1, 20),
+                  history::VisitContentModelAnnotations::Category(2, 40)));
   EXPECT_EQ(annotations.floc_protected_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
-       GetContentAnnotationsFromModelOutputPrunedAfterNormalization) {
+       GetContentModelAnnotationsFromOutputPrunedAfterNormalization) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
@@ -275,19 +275,19 @@ TEST_F(PageContentAnnotationsModelManagerTest,
       {"2", 0.4},
       {"3", 0.05},
   };
-  history::VisitContentAnnotations annotations =
-      GetContentAnnotationsFromModelOutput(model_metadata, model_output);
-  EXPECT_THAT(
-      annotations.categories,
-      UnorderedElementsAre(history::VisitContentAnnotations::Category(0, 30),
-                           history::VisitContentAnnotations::Category(1, 25),
-                           history::VisitContentAnnotations::Category(2, 40)));
+  history::VisitContentModelAnnotations annotations =
+      GetContentModelAnnotationsFromOutput(model_metadata, model_output);
+  EXPECT_THAT(annotations.categories,
+              UnorderedElementsAre(
+                  history::VisitContentModelAnnotations::Category(0, 30),
+                  history::VisitContentModelAnnotations::Category(1, 25),
+                  history::VisitContentModelAnnotations::Category(2, 40)));
   EXPECT_EQ(annotations.floc_protected_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
-       GetContentAnnotationsFromModelOutputCategoriesAndFlocProtected) {
+       GetContentModelAnnotationsFromOutputCategoriesAndFlocProtected) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
@@ -303,13 +303,13 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   std::vector<tflite::task::core::Category> model_output = {
       {"0", 0.3}, {"1", 0.25}, {"2", 0.4}, {"3", 0.05}, {"SOMECATEGORY", 0.5},
   };
-  history::VisitContentAnnotations annotations =
-      GetContentAnnotationsFromModelOutput(model_metadata, model_output);
-  EXPECT_THAT(
-      annotations.categories,
-      UnorderedElementsAre(history::VisitContentAnnotations::Category(0, 30),
-                           history::VisitContentAnnotations::Category(1, 25),
-                           history::VisitContentAnnotations::Category(2, 40)));
+  history::VisitContentModelAnnotations annotations =
+      GetContentModelAnnotationsFromOutput(model_metadata, model_output);
+  EXPECT_THAT(annotations.categories,
+              UnorderedElementsAre(
+                  history::VisitContentModelAnnotations::Category(0, 30),
+                  history::VisitContentModelAnnotations::Category(1, 25),
+                  history::VisitContentModelAnnotations::Category(2, 40)));
   EXPECT_EQ(annotations.floc_protected_score, 0.5);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
 }

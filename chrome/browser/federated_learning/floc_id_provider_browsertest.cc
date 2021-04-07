@@ -469,9 +469,14 @@ class FlocIdProviderSortingLshUninitializedBrowserTest
     // Before creating the floc id provider, add some initial history.
     history::HistoryAddPageArgs add_page_args;
     add_page_args.time = base::Time::Now();
-    add_page_args.floc_allowed = true;
+    add_page_args.context_id = reinterpret_cast<history::ContextID>(1);
+    add_page_args.nav_entry_id = 1;
+
     add_page_args.url = GURL(base::StrCat({"https://www.initial-history.com"}));
     history_service->AddPage(add_page_args);
+    history_service->SetFlocAllowed(add_page_args.context_id,
+                                    add_page_args.nav_entry_id,
+                                    add_page_args.url);
 
     return std::make_unique<FlocIdProviderImpl>(
         profile->GetPrefs(), privacy_sandbox_settings, history_service,

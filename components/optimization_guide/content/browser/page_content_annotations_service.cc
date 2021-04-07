@@ -60,7 +60,7 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PageContentAnnotationsService::OnPageContentAnnotated(
     const HistoryVisit& visit,
-    const base::Optional<history::VisitContentAnnotations>&
+    const base::Optional<history::VisitContentModelAnnotations>&
         content_annotations) {
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
@@ -83,7 +83,7 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PageContentAnnotationsService::OnURLQueried(
     const HistoryVisit& visit,
-    const history::VisitContentAnnotations& content_annotations,
+    const history::VisitContentModelAnnotations& content_annotations,
     history::QueryURLResult url_result) {
   if (!url_result.success) {
     LogPageContentAnnotationsStorageStatus(
@@ -96,8 +96,8 @@ void PageContentAnnotationsService::OnURLQueried(
     if (visit.nav_entry_timestamp != visit_for_url.visit_time)
       continue;
 
-    history_service_->AddContentAnnotationsForVisit(visit_for_url.visit_id,
-                                                    content_annotations);
+    history_service_->AddContentModelAnnotationsForVisit(visit_for_url.visit_id,
+                                                         content_annotations);
 
     did_store_content_annotations = true;
     break;

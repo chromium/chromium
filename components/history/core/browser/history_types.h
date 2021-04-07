@@ -100,30 +100,6 @@ class VisitRow {
   // Records whether the visit incremented the omnibox typed score.
   bool incremented_omnibox_typed_score = false;
 
-  // Indicates whether this URL visit can be included in FLoC computation. FLoC
-  // (https://github.com/WICG/floc) is an API that intends to provide callers
-  // with coarse-grained information about the user’s browsing interests. The
-  // history URL visits is a main source of computation, but some visits are
-  // ineligible to be included, so we use this bit to represent its eligibility.
-  //
-  // Currently this bit is "true" if the IP of this url visit was publicly
-  // routable, i.e. the IP is NOT within the ranges reserved for "private"
-  // internet (https://tools.ietf.org/html/rfc1918). In the future, the
-  // implication may change and may encapsulate more conditions, e.g. page level
-  // opt-in, opt-out, etc.
-  //
-  // A value of “false” can mean several things: it's not eligible; we have
-  // insufficient knowledge (i.e. not implemented for iOS yet; the visit was
-  // migrated); it's not a visit type we are interested in for FLoC (i.e.
-  // we are only interested in committed navigation).
-  //
-  // Note: Historically this field and the corresponding database column were
-  // named "publicly_routable". Now, this field takes a new meaning, but we left
-  // the schema unchanged to save the migration cost. We'll do the migration
-  // when it's absolutely necessary, or when we finalize what will be needed
-  // long-term.
-  bool floc_allowed = false;
-
   // Compares two visits based on dates, for sorting.
   bool operator<(const VisitRow& other) const {
     return visit_time < other.visit_time;

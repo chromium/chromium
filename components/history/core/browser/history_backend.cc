@@ -466,19 +466,27 @@ void HistoryBackend::SetFlocAllowed(ContextID context_id,
     return;
 
   VisitID visit_id = tracker_.GetLastVisit(context_id, nav_entry_id, url);
+  if (!visit_id)
+    return;
 
-  VisitRow visit_row;
-  if (db_->GetRowForVisit(visit_id, &visit_row)) {
-    visit_row.floc_allowed = true;
-    db_->UpdateVisitRow(visit_row);
-    ScheduleCommit();
+  // Only add to the annotations table if the visit_id exists in the visits
+  // table.
+  VisitContentAnnotations annotations;
+  if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
+    annotations.annotation_flags |=
+        VisitContentAnnotationFlag::kFlocEligibleRelaxed;
+    db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
+  } else {
+    annotations.annotation_flags |=
+        VisitContentAnnotationFlag::kFlocEligibleRelaxed;
+    db_->AddContentAnnotationsForVisit(visit_id, annotations);
   }
+  ScheduleCommit();
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-void HistoryBackend::AddContentAnnotationsForVisit(
+void HistoryBackend::AddContentModelAnnotationsForVisit(
     VisitID visit_id,
-    const VisitContentAnnotations& content_annotations) {
+    const VisitContentModelAnnotations& model_annotations) {
   TRACE_EVENT0("browser", "HistoryBackend::AddContentAnnotationsForVisit");
 
   if (!db_)
@@ -488,11 +496,17 @@ void HistoryBackend::AddContentAnnotationsForVisit(
   // table.
   VisitRow visit_row;
   if (db_->GetRowForVisit(visit_id, &visit_row)) {
-    db_->AddContentAnnotationsForVisit(visit_id, content_annotations);
+    VisitContentAnnotations annotations;
+    if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
+      annotations.model_annotations = model_annotations;
+      db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
+    } else {
+      annotations.model_annotations = model_annotations;
+      db_->AddContentAnnotationsForVisit(visit_id, annotations);
+    }
     ScheduleCommit();
   }
 }
-#endif
 
 void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
   if (!db_)
@@ -1522,12 +1536,10 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
     }
 
     url_result.set_visit_time(visit.visit_time);
-    url_result.set_floc_allowed(visit.floc_allowed);
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    url_result.set_content_annotations(
-        db_->GetContentAnnotationsForVisit(visit.visit_id));
-#endif
+    VisitContentAnnotations content_annotations;
+    db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
+    url_result.set_content_annotations(content_annotations);
 
     // Set whether the visit was blocked for a managed user by looking at the
     // transition type.
@@ -1561,12 +1573,11 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
     for (size_t j = 0; j < visits.size(); j++) {
       URLResult url_result(text_match);
       url_result.set_visit_time(visits[j].visit_time);
-      url_result.set_floc_allowed(visits[j].floc_allowed);
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-      url_result.set_content_annotations(
-          db_->GetContentAnnotationsForVisit(visits[j].visit_id));
-#endif
+      VisitContentAnnotations content_annotations;
+      db_->GetContentAnnotationsForVisit(visits[j].visit_id,
+                                         &content_annotations);
+      url_result.set_content_annotations(content_annotations);
 
       matching_visits.push_back(url_result);
     }

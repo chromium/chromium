@@ -15,9 +15,9 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/sync/typed_url_sync_metadata_database.h"
 #include "components/history/core/browser/url_database.h"
+#include "components/history/core/browser/visit_annotations_database.h"
 #include "components/history/core/browser/visit_database.h"
 #include "components/history/core/browser/visitsegment_database.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
@@ -25,10 +25,6 @@
 #if defined(OS_ANDROID)
 #include "components/history/core/browser/android/android_cache_database.h"
 #include "components/history/core/browser/android/android_urls_database.h"
-#endif
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/history/core/browser/visit_annotations_database.h"
 #endif
 
 namespace base {
@@ -54,9 +50,7 @@ class HistoryDatabase : public DownloadDatabase,
                         public TypedURLSyncMetadataDatabase,
                         public URLDatabase,
                         public VisitDatabase,
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
                         public VisitAnnotationsDatabase,
-#endif
                         public VisitSegmentDatabase {
  public:
   // A simple class for scoping a history database transaction. This does not

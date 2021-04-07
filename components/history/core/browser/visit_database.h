@@ -255,6 +255,11 @@ class VisitDatabase {
   // don't have publicly_routable column yet.
   bool MigrateVisitsWithoutPubliclyRoutableColumn();
 
+  // Called by the derived classes to do early checks before migrating the older
+  // visits table's floc_allowed (for historical reasons named
+  // "publicly_routable" in the schema) column to another table.
+  bool CanMigrateFlocAllowed();
+
   // A subprocedure in the process of migration to version 40.
   bool GetAllVisitedURLRowidsForMigrationToVersion40(
       std::vector<URLID>* visited_url_rowids_sorted);

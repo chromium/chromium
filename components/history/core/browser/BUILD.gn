@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
-
 static_library("browser") {
   sources = [
     "browsing_history_driver.h",
@@ -78,6 +76,8 @@ static_library("browser") {
     "url_row.h",
     "url_utils.cc",
     "url_utils.h",
+    "visit_annotations_database.cc",
+    "visit_annotations_database.h",
     "visit_database.cc",
     "visit_database.h",
     "visit_delegate.cc",
@@ -92,7 +92,6 @@ static_library("browser") {
   ]
 
   public_deps = [
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/sync/protocol",
     "//skia",
   ]
@@ -145,13 +144,6 @@ static_library("browser") {
     ]
   }
 
-  if (build_with_tflite_lib) {
-    sources += [
-      "visit_annotations_database.cc",
-      "visit_annotations_database.h",
-    ]
-  }
-
   configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
@@ -185,6 +177,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/history/history.40.sql",
     "//components/test/data/history/history.41.sql",
     "//components/test/data/history/history.42.sql",
+    "//components/test/data/history/history.43.sql",
     "//components/test/data/history/thumbnail_wild/Favicons.corrupt_meta.disable",
     "//components/test/data/history/thumbnail_wild/Favicons.v2.init.sql",
     "//components/test/data/history/thumbnail_wild/Favicons.v3.init.sql",
@@ -219,6 +212,7 @@ source_set("unit_tests") {
     "top_sites_impl_unittest.cc",
     "url_database_unittest.cc",
     "url_utils_unittest.cc",
+    "visit_annotations_database_unittest.cc",
     "visit_database_unittest.cc",
     "visit_tracker_unittest.cc",
     "web_history_service_unittest.cc",
@@ -247,8 +241,5 @@ source_set("unit_tests") {
   ]
   if (is_android) {
     sources += [ "android/android_history_types_unittest.cc" ]
-  }
-  if (build_with_tflite_lib) {
-    sources += [ "visit_annotations_database_unittest.cc" ]
   }
 }
