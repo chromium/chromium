@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
+#include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/session/connection_observer.h"
@@ -67,7 +68,8 @@ class ArcAppListPrefs : public KeyedService,
                         public arc::mojom::AppHost,
                         public arc::ConnectionObserver<arc::mojom::AppInstance>,
                         public arc::ArcSessionManagerObserver,
-                        public arc::ArcPolicyBridge::Observer {
+                        public arc::ArcPolicyBridge::Observer,
+                        public arc::ArcResizeLockPrefDelegate {
  public:
   struct AppInfo {
     AppInfo(const std::string& name,
@@ -80,6 +82,7 @@ class ArcAppListPrefs : public KeyedService,
             bool sticky,
             bool notifications_enabled,
             arc::mojom::ArcResizeLockState resize_lock_state,
+            bool resize_lock_needs_confirmation,
             bool ready,
             bool suspended,
             bool show_in_launcher,
@@ -101,6 +104,9 @@ class ArcAppListPrefs : public KeyedService,
     bool notifications_enabled;
     // The resize lock state of the app.
     arc::mojom::ArcResizeLockState resize_lock_state;
+    // Whether the confirmation dialog is needed when user requests resize if
+    // the app is in the resize-locked mode.
+    bool resize_lock_needs_confirmation;
     // Whether app is ready. Disabled and removed apps are not ready.
     bool ready;
     // Whether app was suspended by policy. It may have or may not have ready
@@ -355,6 +361,11 @@ class ArcAppListPrefs : public KeyedService,
 
   // arc::ArcPolicyBridge::Observer:
   void OnPolicySent(const std::string& policy) override;
+
+  // arc::ArcResizeLockPrefDelegate:
+  bool GetResizeLockNeedsConfirmation(const std::string& app_id) override;
+  void SetResizeLockNeedsConfirmation(const std::string& app_id,
+                                      bool is_needed) override;
 
   // KeyedService:
   void Shutdown() override;

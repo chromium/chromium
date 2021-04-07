@@ -23,7 +23,7 @@ ArcAppListPrefs::AppInfo CreateAppInfoForPackage(
   return ArcAppListPrefs::AppInfo(package_name, package_name, "", "", "",
                                   base::Time(), base::Time(), true, true,
                                   arc::mojom::ArcResizeLockState::UNDEFINED,
-                                  true, true, true, true, true);
+                                  true, true, true, true, true, true);
 }
 
 class ArcAppLaunchThrottleObserverTest : public testing::Test {

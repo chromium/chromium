@@ -21,6 +21,7 @@ static_library("arc") {
     "clipboard/arc_clipboard_bridge.h",
     "compat_mode/arc_resize_lock_manager.cc",
     "compat_mode/arc_resize_lock_manager.h",
+    "compat_mode/arc_resize_lock_pref_delegate.h",
     "compat_mode/resize_confirmation_dialog.cc",
     "compat_mode/resize_confirmation_dialog.h",
     "crash_collector/arc_crash_collector_bridge.cc",

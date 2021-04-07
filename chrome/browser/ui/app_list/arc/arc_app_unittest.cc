@@ -384,7 +384,8 @@ ArcAppListPrefs::AppInfo GetAppInfoExpectation(const arc::mojom::AppInfo& app,
       app.name, app.package_name, app.activity, std::string() /* intent_uri */,
       std::string() /* icon_resource_id */, base::Time() /* last_launch_time */,
       base::Time() /* install_time */, app.sticky, app.notifications_enabled,
-      arc::mojom::ArcResizeLockState::UNDEFINED, true /* ready */,
+      arc::mojom::ArcResizeLockState::UNDEFINED,
+      true /* resize_lock_needs_confirmation */, true /* ready */,
       false /* suspended */, launchable /* show_in_launcher*/,
       false /* shortcut */, launchable);
 }
