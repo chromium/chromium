@@ -178,7 +178,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidDeviceAccountsNumberWhenEnteringFRE"
-    units="count" expires_after="2021-08-01">
+    units="count" expires_after="2021-10-04">
   <owner>bsazonov@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <summary>
@@ -603,7 +603,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSGaiaCookieStateOnSignedInNavigation"
-    enum="GaiaCookieStateOnSignedInNavigation" expires_after="2021-08-05">
+    enum="GaiaCookieStateOnSignedInNavigation" expires_after="2021-10-04">
   <owner>fernandex@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

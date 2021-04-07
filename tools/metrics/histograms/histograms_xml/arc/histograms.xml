@@ -352,7 +352,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.ContainerLifetimeEvent" enum="ArcContainerLifetimeEvent"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>elijahtaylor@google.com</owner>
   <owner>yusukes@google.com</owner>
   <summary>
@@ -859,7 +859,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.PrintPreview.RendererError" enum="PrintPreviewFailureType"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>

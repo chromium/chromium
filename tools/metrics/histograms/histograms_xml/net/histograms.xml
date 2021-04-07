@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="Net.AlternateProtocolBrokenLocation"
-    enum="BrokenAlternateProtocolLocation" expires_after="2021-07-27">
+    enum="BrokenAlternateProtocolLocation" expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1524,7 +1524,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts" enum="NetErrorPageEvents"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>edwardjung@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1536,7 +1536,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts.SuggestionClicked"
-    enum="NetErrorOfflineSuggestionType" expires_after="2021-08-01">
+    enum="NetErrorOfflineSuggestionType" expires_after="2021-10-04">
   <owner>sclittle@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -1546,7 +1546,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts.SuggestionPresented"
-    enum="NetErrorOfflineSuggestionType" expires_after="2021-08-01">
+    enum="NetErrorOfflineSuggestionType" expires_after="2021-10-04">
   <owner>sclittle@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -1656,7 +1656,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.HasBrokenNEON" enum="BooleanBroken"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>davidben@chromium.org</owner>
   <summary>
     Records, on startup, for ARM devices running Android, whether the CPU is
@@ -2426,7 +2426,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicDroppedPacketReason" enum="QuicDroppedPacketReason"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2436,7 +2436,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicHandshakeNotConfirmedNumPacketsReceived" units="units"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2891,7 +2891,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplication"
-    enum="QuicHttp3ErrorCodes" expires_after="2021-07-27">
+    enum="QuicHttp3ErrorCodes" expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2902,7 +2902,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationGoogle"
-    enum="QuicHttp3ErrorCodes" expires_after="2021-07-27">
+    enum="QuicHttp3ErrorCodes" expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2934,7 +2934,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransport"
-    enum="QuicTransportErrorCodes" expires_after="2021-07-27">
+    enum="QuicTransportErrorCodes" expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2945,7 +2945,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportGoogle"
-    enum="QuicTransportErrorCodes" expires_after="2021-07-27">
+    enum="QuicTransportErrorCodes" expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3013,7 +3013,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionMigration"
-    enum="QuicConnectionMigrationStatus" expires_after="2021-07-27">
+    enum="QuicConnectionMigrationStatus" expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3189,7 +3189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.GoAwayReceivedForConnectionMigration"
-    enum="BooleanReceived" expires_after="2021-07-27">
+    enum="BooleanReceived" expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3210,7 +3210,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.HandshakeStatusOnConnectionMigration"
-    enum="BooleanConfirmed" expires_after="2021-07-27">
+    enum="BooleanConfirmed" expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3410,7 +3410,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicSession.MaxConsecutiveRtoWithForwardProgressAndBlackholeDetected"
-    units="count" expires_after="2021-07-27">
+    units="count" expires_after="2021-10-04">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4828,7 +4828,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SpdySessionErrorDetails_Google2"
-    enum="SpdyProtocolErrorDetails2" expires_after="2021-07-27">
+    enum="SpdyProtocolErrorDetails2" expires_after="2021-10-04">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4961,7 +4961,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SSLHandshakeDetails" enum="SSLHandshakeDetails"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4995,7 +4995,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SSLLegacyCryptoFallback" enum="SSLLegacyCryptoFallback"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5190,7 +5190,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.TrustTokens.IssuanceHelperLocalFulfillResult"
-    enum="FulfillTrustTokenIssuanceAnswerStatus" expires_after="2021-07-30">
+    enum="FulfillTrustTokenIssuanceAnswerStatus" expires_after="2021-10-04">
   <owner>davidvc@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -5203,7 +5203,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.NetErrorForFetchFailure"
-    enum="NetErrorCodes" expires_after="2021-08-01">
+    enum="NetErrorCodes" expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -5218,7 +5218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.NetErrorForTrustTokenOperation"
-    enum="NetErrorCodes" expires_after="2021-08-01">
+    enum="NetErrorCodes" expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -5284,7 +5284,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.RequestHelperFactoryOutcome"
-    enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2021-08-01">
+    enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>

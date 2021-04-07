@@ -142,7 +142,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflineIndicator.ShownDurationV2" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -283,7 +283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.AutoFetch.CompleteNotificationAction"
-    enum="OfflinePagesAutoFetchNotificationAction" expires_after="2021-08-01">
+    enum="OfflinePagesAutoFetchNotificationAction" expires_after="2021-10-04">
   <owner>sclittle@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -293,7 +293,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.AutoFetch.InProgressNotificationAction"
-    enum="OfflinePagesAutoFetchNotificationAction" expires_after="2021-08-01">
+    enum="OfflinePagesAutoFetchNotificationAction" expires_after="2021-10-04">
   <owner>sclittle@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -797,7 +797,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.OfflineUsage.NotOfflineResilient"
-    enum="OfflinePagesOfflineUsage" expires_after="2021-08-01">
+    enum="OfflinePagesOfflineUsage" expires_after="2021-10-04">
   <owner>sclittle@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>

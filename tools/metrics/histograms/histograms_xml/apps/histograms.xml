@@ -138,7 +138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -337,7 +337,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.DriveZeroStateProvider.Latency" units="ms"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -612,7 +612,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.Overall" enum="AppListUserEvent"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
@@ -640,7 +640,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.TypeAbandon" enum="AppListSearchResult"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
@@ -657,7 +657,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.TypeImpression"
-    enum="AppListSearchResult" expires_after="2021-08-01">
+    enum="AppListSearchResult" expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
@@ -680,7 +680,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.TypeLaunch" enum="AppListSearchResult"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
@@ -1161,7 +1161,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchBoxActivated"
-    enum="SearchBoxActivationSource" expires_after="2021-07-27">
+    enum="SearchBoxActivationSource" expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
   <owner>newcomer@chromium.org</owner>
@@ -1243,7 +1243,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchResultOpenTypeV2" enum="AppListSearchResult"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
   <owner>newcomer@chromium.org</owner>
@@ -1672,7 +1672,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LaunchRequestReason"
-    enum="NewLockScreenNoteRequestType" expires_after="2021-08-01">
+    enum="NewLockScreenNoteRequestType" expires_after="2021-10-04">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1705,7 +1705,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.NoteTakingExitReason"
-    enum="LockScreenNoteTakingExitReason" expires_after="2021-08-01">
+    enum="LockScreenNoteTakingExitReason" expires_after="2021-10-04">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1782,7 +1782,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.NumberOfFolders" units="folder(s)"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>

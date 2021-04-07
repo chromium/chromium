@@ -508,7 +508,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.MissingPolicyMitigated"
-    units="BooleanSuccess" expires_after="2021-07-27">
+    units="BooleanSuccess" expires_after="2021-10-04">
   <owner>poromov@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -519,7 +519,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus"
-    enum="DeviceSettingsStatus" expires_after="2021-07-27">
+    enum="DeviceSettingsStatus" expires_after="2021-10-04">
   <owner>poromov@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1084,7 +1084,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.MachineLevelUserCloudPolicyEnrollment.Result"
     enum="MachineLevelUserCloudPolicyEnrollmentResult"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>The result of machine level user cloud policy enrollment.</summary>
@@ -1294,7 +1294,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>marcgrimme@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1918,7 +1918,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.Mac.IsDeviceDomainJoined" enum="Boolean"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>avi@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1958,7 +1958,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.OSType" enum="OsSuite"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>pastarmovj@chromium.org</owner>
   <owner>rogerta@chomium.org</owner>
   <summary>

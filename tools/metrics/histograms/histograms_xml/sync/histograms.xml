@@ -150,7 +150,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.CommitResponse" enum="SyncerErrorValues"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="SyncModelType" -->
 
   <owner>rushans@google.com</owner>
@@ -261,7 +261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Sync.Crypto.CustomPassphraseKeyDerivationMethodOnSuccessfulDecryption"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>vitaliii@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -296,7 +296,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.CryptographerPendingKeys"
-    enum="SyncCryptographerPendingKeysState" expires_after="2021-08-01">
+    enum="SyncCryptographerPendingKeysState" expires_after="2021-10-04">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -478,7 +478,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.Local.Enabled" enum="BooleanEnabled"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>pastarmovj@chromium.org</owner>
   <summary>
     Tracks the number of times the local sync backend was enabled by the user.
@@ -587,7 +587,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeConfigurationTime.Persistent"
-    units="ms" expires_after="2021-08-01">
+    units="ms" expires_after="2021-10-04">
   <owner>jkrcal@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>

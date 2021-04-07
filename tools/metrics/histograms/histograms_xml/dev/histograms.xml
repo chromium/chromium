@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="DevTools.ActionTaken" enum="DevToolsAction"
-    expires_after="2021-07-31">
+    expires_after="2021-10-04">
   <owner>alph@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.ColorPicker.FixedColor"
-    enum="DevToolsColorPickerFixedColor" expires_after="2021-07-27">
+    enum="DevToolsColorPickerFixedColor" expires_after="2021-10-04">
   <owner>yangguo@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
   <owner>alexrudenko@chromium.org</owner>
@@ -202,7 +202,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.ExperimentEnabled" enum="DevtoolsExperiments"
-    expires_after="2021-07-31">
+    expires_after="2021-10-04">
   <owner>yangguo@chromium.org</owner>
   <owner>brgoddar@microsoft.com</owner>
   <owner>shanejc@microsoft.com</owner>
@@ -212,7 +212,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.ExperimentEnabledAtLaunch" enum="DevtoolsExperiments"
-    expires_after="2021-07-31">
+    expires_after="2021-10-04">
   <owner>yangguo@chromium.org</owner>
   <owner>brgoddar@microsoft.com</owner>
   <owner>shanejc@microsoft.com</owner>
@@ -277,7 +277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelOpenedFrom"
-    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2021-08-01">
+    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2021-10-04">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <summary>
@@ -347,7 +347,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.OpenedByAction" enum="DevToolsOpenedByAction"
-    expires_after="2021-07-31">
+    expires_after="2021-10-04">
   <owner>changhaohan@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
@@ -364,7 +364,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.PanelShown" enum="DevToolsPanel"
-    expires_after="2021-07-31">
+    expires_after="2021-10-04">
   <owner>alph@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -380,7 +380,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.SidebarPaneShown" enum="DevToolsSidebarPane"
-    expires_after="2021-07-31">
+    expires_after="2021-10-04">
   <owner>changhaohan@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>

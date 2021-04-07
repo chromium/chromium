@@ -164,7 +164,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.Autoplay.CrossOrigin" enum="WebAudioAutoplayStatus"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>hongchan@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <owner>rtoy@chromium.org</owner>

@@ -246,7 +246,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.Renderer.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2021-08-01">
+    units="microseconds" expires_after="2021-10-04">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu@google.com</owner>
   <summary>
@@ -272,7 +272,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.ScrollingThread" enum="ScrollingThreadStatus"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="ScrollSourceDevice" -->
 
   <owner>bokan@chromium.org</owner>

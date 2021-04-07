@@ -119,7 +119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AdDensity.MaxPercentByArea" units="%"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>justinmron@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
@@ -132,7 +132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AdDensity.MaxPercentByHeight" units="%"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>justinmron@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
@@ -210,7 +210,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.HeavyAds.DisallowedByBlocklist"
-    enum="BooleanBlocked" expires_after="2021-08-01">
+    enum="BooleanBlocked" expires_after="2021-10-04">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -756,7 +756,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.ThirdParty.Origins.CookieRead2" units="Count"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>jkarlin@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <summary>
@@ -766,7 +766,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.ThirdParty.Origins.CookieWrite2"
-    units="Count" expires_after="2021-08-01">
+    units="Count" expires_after="2021-10-04">
   <owner>jkarlin@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <summary>
@@ -973,7 +973,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Experimental.Bytes.Total2" units="KB"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
@@ -1267,7 +1267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Experimental.NavigationTiming.NavigationStartToFirstLoaderCallback"
-    units="ms" expires_after="2021-08-01">
+    units="ms" expires_after="2021-10-04">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1289,7 +1289,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Experimental.NavigationTiming.NavigationStartToFirstResponseStart"
-    units="ms" expires_after="2021-08-01">
+    units="ms" expires_after="2021-10-04">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

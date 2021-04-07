@@ -449,7 +449,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.FreelistSize.Foreground" units="KiB"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -479,7 +479,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.Size.Foreground" units="KiB"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -489,7 +489,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.VirtualSize.Foreground" units="KiB"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -2577,7 +2577,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Total.SystemCommitLimit" units="GB"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

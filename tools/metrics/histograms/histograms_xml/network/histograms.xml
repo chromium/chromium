@@ -2318,7 +2318,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.UpdateOperation.FailureReason"
-    enum="ConnectionFailureReason" expires_after="2021-07-27">
+    enum="ConnectionFailureReason" expires_after="2021-10-04">
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

@@ -132,7 +132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.BlockingPage.ResourceType"
-    enum="ContentResourceType2" expires_after="2021-08-01">
+    enum="ContentResourceType2" expires_after="2021-10-04">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -177,7 +177,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.CheckBrowseUrl.HasLocalMatch"
-    enum="BooleanMatched" expires_after="2021-08-05">
+    enum="BooleanMatched" expires_after="2021-10-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -188,7 +188,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.CheckUrl.Timeout" enum="BooleanTimedOut"
-    expires_after="2021-08-05">
+    expires_after="2021-10-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1190,7 +1190,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.LocalMatch.Result"
-    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2021-08-05">
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2021-10-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1201,7 +1201,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-08-05">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-10-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1211,7 +1211,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Network.Time" units="ms"
-    expires_after="2021-08-05">
+    expires_after="2021-10-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1275,7 +1275,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.ResourceTypes.Checked"
-    enum="ContentResourceType2" expires_after="2021-08-05">
+    enum="ContentResourceType2" expires_after="2021-10-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1290,7 +1290,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.ResourceTypes.Requested"
-    enum="ContentResourceType2" expires_after="2021-08-05">
+    enum="ContentResourceType2" expires_after="2021-10-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1396,7 +1396,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.V4Database.Size" units="KB"
-    expires_after="2021-07-31">
+    expires_after="2021-10-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1455,7 +1455,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.V4GetHash.Network.Time" units="ms"
-    expires_after="2021-07-31">
+    expires_after="2021-10-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1479,7 +1479,7 @@ Safe Browsing lookup mechanism is working as expected -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4GetHash.Result"
-    enum="SafeBrowsingV4OperationResult" expires_after="2021-07-31">
+    enum="SafeBrowsingV4OperationResult" expires_after="2021-10-04">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1514,7 +1514,7 @@ Safe Browsing lookup mechanism is working as expected -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize"
-    units="verdicts" expires_after="2021-07-27">
+    units="verdicts" expires_after="2021-10-04">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

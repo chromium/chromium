@@ -136,7 +136,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.BadMessageTerminated.Chrome"
-    enum="BadMessageReasonChrome" expires_after="2021-07-18">
+    enum="BadMessageReasonChrome" expires_after="2021-10-04">
   <owner>creis@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -532,7 +532,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.MobileSessionAppState" enum="IOSAppState"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

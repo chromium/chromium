@@ -308,7 +308,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ContextLost" enum="ContextLostReason"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>sievers@chromium.org</owner>
   <summary>
     The reason a GPU command buffer context of a given type was lost.
@@ -380,7 +380,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CompositionMode"
-    enum="DxgiFramePresentationMode" expires_after="2021-07-27">
+    enum="DxgiFramePresentationMode" expires_after="2021-10-04">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -400,7 +400,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CreateSwapChainForComposition"
-    enum="Hresult" expires_after="2021-07-27">
+    enum="Hresult" expires_after="2021-10-04">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -419,7 +419,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayer.YUVOverlayCount"
-    units="overlays" expires_after="2021-07-27">
+    units="overlays" expires_after="2021-10-04">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -430,7 +430,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayerResult.Texture"
-    enum="DCLayerResult" expires_after="2021-08-01">
+    enum="DCLayerResult" expires_after="2021-10-04">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -452,7 +452,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DcompDeviceCreateSurface" enum="Hresult"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -520,7 +520,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlayFormatUsed3" enum="DXGI_FORMAT"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -530,7 +530,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlaysSupported"
-    enum="BooleanOverlaySupported" expires_after="2021-08-01">
+    enum="BooleanOverlaySupported" expires_after="2021-10-04">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>True if Chrome will try to use DirectComposition overlays.</summary>
@@ -556,7 +556,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="GPU.DirectComposition.SwapChainCreationResult3"
-    enum="Hresult" expires_after="2021-07-27">
+    enum="Hresult" expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="GPU.ProtectedVideoType" -->
 
   <owner>magchen@chromium.org</owner>
@@ -677,7 +677,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -858,7 +858,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.IntelGpuSeriesType" enum="IntelGpuSeriesType"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -893,7 +893,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.IOSurface.TexImageTime" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>ccameron@chromium.org</owner>
   <summary>
     The time that it took for a call to CGLTexImageIOSurface2D to complete.
@@ -955,7 +955,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2021-07-27">
+<histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2021-10-04">
   <owner>hubbe@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1213,7 +1213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1416,7 +1416,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.ExtraThreadTime" units="# timeouts"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="GPU.WatchdogStage" -->
 
   <owner>magchen@chromium.org</owner>
@@ -1428,7 +1428,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.ExtraThreadTime.NumOfUsers"
-    units="# timeouts" expires_after="2021-07-27">
+    units="# timeouts" expires_after="2021-10-04">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

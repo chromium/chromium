@@ -531,7 +531,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.OverwrittenDownloadRemovedFromHistory"
-    units="downloads" expires_after="2021-08-01">
+    units="downloads" expires_after="2021-10-04">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-downloads@google.com</owner>
   <summary>
@@ -861,7 +861,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Service.Finish.Type"
-    enum="Download.Service.CompletionType" expires_after="2021-07-27">
+    enum="Download.Service.CompletionType" expires_after="2021-10-04">
   <owner>xingliu@chromium.org</owner>
   <summary>The completion type for downloads in download service.</summary>
 </histogram>

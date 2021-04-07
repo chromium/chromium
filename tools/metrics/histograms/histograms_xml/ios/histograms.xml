@@ -450,7 +450,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.LocationPermissions.FirstRunModal.Interaction"
-    enum="LocationPermissionsFirstRunModalIOSEnum" expires_after="2021-08-01">
+    enum="LocationPermissionsFirstRunModalIOSEnum" expires_after="2021-10-04">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -459,7 +459,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.LocationPermissionsUI" enum="LocationPermissionsIOSUI"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -560,7 +560,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.BackgroundTimePerDay" units="ms"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -888,7 +888,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.SiriShortcuts.Count" units="shortcuts"
-    expires_after="2021-07-31">
+    expires_after="2021-10-04">
   <owner>gujen@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <summary>

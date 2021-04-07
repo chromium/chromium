@@ -238,7 +238,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.CpuAffinityExperiments.ProcessAffinityUpdateSuccess"
-    enum="BooleanSuccess" expires_after="2021-08-05">
+    enum="BooleanSuccess" expires_after="2021-10-04">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -286,7 +286,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2021-09-19">
+    expires_after="2021-10-04">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -913,7 +913,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.NumberOfSessionsPerCharge" units="units"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The number of user sessions that occured since the last time that the device
@@ -941,7 +941,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.PowerButtonMenuAction" enum="PowerButtonMenuActionType"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>Actions performed while the power button menu is open.</summary>

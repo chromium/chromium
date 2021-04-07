@@ -86,7 +86,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerDestinationPlatform"
-    enum="ArcIntentHandlerDestinationPlatform" expires_after="2021-07-27">
+    enum="ArcIntentHandlerDestinationPlatform" expires_after="2021-10-04">
   <owner>elijahtaylor@google.com</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>shihuis@google.com</owner>
@@ -615,7 +615,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.KeyPermissionsManager.ArcUsageUpdate"
-    enum="KeyPermissionsManagerArcUsageUpdateStatus" expires_after="2021-08-01">
+    enum="KeyPermissionsManagerArcUsageUpdateStatus" expires_after="2021-10-04">
   <owner>omorsi@google.com</owner>
   <owner>pmarko@google.com</owner>
   <summary>
@@ -625,7 +625,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.KeyPermissionsManager.ArcUsageUpdateTime" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>omorsi@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
@@ -645,7 +645,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.KeyPermissionsManager.MigrationTime" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>omorsi@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
@@ -1022,7 +1022,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Languages.Interaction"
-    enum="SettingsLanguagesPageInteraction" expires_after="2021-08-01">
+    enum="SettingsLanguagesPageInteraction" expires_after="2021-10-04">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1032,7 +1032,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Languages.OfferToTranslateCheckbox"
-    enum="BooleanChecked" expires_after="2021-08-01">
+    enum="BooleanChecked" expires_after="2021-10-04">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1042,7 +1042,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Languages.SupportPageVisits"
-    enum="SettingsLanguagesSupportPage" expires_after="2021-08-01">
+    enum="SettingsLanguagesSupportPage" expires_after="2021-10-04">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1051,7 +1051,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.Languages.Toggle"
-    enum="BooleanToggled" expires_after="2021-08-01">
+    enum="BooleanToggled" expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="SettingsLanguagesPageToggle" -->
 
   <owner>myy@chromium.org</owner>
@@ -1475,7 +1475,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.ShelfPodCount" units="count"
-    expires_after="2021-08-05">
+    expires_after="2021-10-04">
   <owner>tengs@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -1499,7 +1499,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.Tablet.ShelfPodCount" units="count"
-    expires_after="2021-08-05">
+    expires_after="2021-10-04">
   <owner>tengs@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>

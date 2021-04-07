@@ -791,7 +791,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.Category"
-    enum="ContextualSearchQuickActionCategory" expires_after="2021-07-27">
+    enum="ContextualSearchQuickActionCategory" expires_after="2021-10-04">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

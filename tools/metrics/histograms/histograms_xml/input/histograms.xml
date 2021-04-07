@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="InputMethod.ActiveCount" units="units"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -55,7 +55,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Delay" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>jopalmer@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -178,7 +178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.TimeToAccept.PersonalInfo" units="ms"
-    expires_after="2021-07-27">
+    expires_after="2021-10-04">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -219,7 +219,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.UserPref.PersonalInfo"
-    enum="BooleanEnabled" expires_after="2021-07-27">
+    enum="BooleanEnabled" expires_after="2021-10-04">
   <owner>myy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

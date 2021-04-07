@@ -248,7 +248,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ImageFetcher.Events" enum="ImageFetcherEvent"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>

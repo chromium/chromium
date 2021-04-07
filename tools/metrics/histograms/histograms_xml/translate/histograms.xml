@@ -353,7 +353,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.LanguageDeterminedDuration" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>sclittle@chromium.org</owner>
   <owner>megjablon@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -1059,7 +1059,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.Translation.Status" enum="TranslationStatus"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
