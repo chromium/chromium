@@ -81,8 +81,9 @@ bool CastStreamingTestSender::Start(
       base::BindOnce(&CastStreamingTestSender::OnCastChannelClosed,
                      base::Unretained(this)));
   sender_session_ = std::make_unique<openscreen::cast::SenderSession>(
-      openscreen::IPAddress::kV6LoopbackAddress(), this, &environment_,
-      message_port_.get(), kSenderId, kReceiverId);
+      openscreen::cast::SenderSession::Configuration{
+          openscreen::IPAddress::kV6LoopbackAddress(), this, &environment_,
+          message_port_.get(), kSenderId, kReceiverId, true});
 
   std::vector<openscreen::cast::AudioCaptureConfig> audio_configs;
   if (audio_config) {
