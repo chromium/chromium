@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
  */
 public class NightModeUtils {
     private static Boolean sNightModeSupportedForTest;
-    private static Boolean sNightModeDefaultToLightForTesting;
 
     /**
      * @return Whether night mode is supported.
@@ -130,21 +129,9 @@ public class NightModeUtils {
     }
 
     /**
-     * @return Whether or not to default to the light theme when the night mode feature is enabled.
+     * @return Whether or not to default to the light theme.
      */
     public static boolean isNightModeDefaultToLight() {
-        if (sNightModeDefaultToLightForTesting != null) {
-            return sNightModeDefaultToLightForTesting;
-        }
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.Q;
-    }
-
-    /**
-     * Toggles whether the night mode experiment is enabled for testing. Should be reset back to
-     * null after the test has finished.
-     */
-    @VisibleForTesting
-    public static void setNightModeDefaultToLightForTesting(@Nullable Boolean available) {
-        sNightModeDefaultToLightForTesting = available;
     }
 }

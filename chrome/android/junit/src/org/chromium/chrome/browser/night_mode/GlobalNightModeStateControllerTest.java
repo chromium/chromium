@@ -109,13 +109,9 @@ public class GlobalNightModeStateControllerTest {
     @Test
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.P)
     public void testUpdateNightMode_PowerSaveMode_DefaultsToLight() {
-        NightModeUtils.setNightModeDefaultToLightForTesting(true);
-
         // Enable power save mode and verify night mode is not enabled.
         setIsPowerSaveMode(true);
         assertFalse(mGlobalNightModeStateController.isInNightMode());
-
-        NightModeUtils.setNightModeDefaultToLightForTesting(null);
     }
 
     @Test
@@ -136,13 +132,9 @@ public class GlobalNightModeStateControllerTest {
     @Test
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.P)
     public void testUpdateNightMode_SystemNightMode_DefaultsToLight() {
-        NightModeUtils.setNightModeDefaultToLightForTesting(true);
-
         // Enable system night mode and verify night mode is not enabled.
         setSystemNightMode(true);
         assertFalse(mGlobalNightModeStateController.isInNightMode());
-
-        NightModeUtils.setNightModeDefaultToLightForTesting(null);
     }
 
     @Test

@@ -19,50 +19,32 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Tests for ThemeSettingsFragment.
  */
 // clang-format off
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
     // clang-format on
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false).name("DefaultLightDisabled"),
-                    new ParameterSet().value(true).name("DefaultLightEnabled"));
-
     @Rule
     public SettingsActivityTestRule<ThemeSettingsFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(ThemeSettingsFragment.class);
 
-    private boolean mDefaultToLight;
     private ThemeSettingsFragment mFragment;
     private RadioButtonGroupThemePreference mPreference;
-
-    public ThemeSettingsFragmentTest(boolean defaultToLight) {
-        mDefaultToLight = defaultToLight;
-        NightModeUtils.setNightModeDefaultToLightForTesting(defaultToLight);
-    }
 
     @Override
     public void setUpTest() throws Exception {
@@ -82,7 +64,6 @@ public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
             SharedPreferencesManager.getInstance().removeKey(UI_THEME_DARKEN_WEBSITES_ENABLED);
         });
 
-        NightModeUtils.setNightModeDefaultToLightForTesting(null);
         super.tearDownTest();
     }
 
@@ -91,18 +72,16 @@ public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
     @Feature({"Themes"})
     public void testSelectThemes() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Default to light parameter is only applicable pre-Q.
-            if (mDefaultToLight && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            int expectedDefaultTheme = ThemeType.LIGHT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 Assert.assertFalse("Q should not default to light.",
                         NightModeUtils.isNightModeDefaultToLight());
-                return;
+                expectedDefaultTheme = ThemeType.SYSTEM_DEFAULT;
             }
 
-            int expectedDefaultTheme = mDefaultToLight ? ThemeType.LIGHT : ThemeType.SYSTEM_DEFAULT;
             Assert.assertEquals("Incorrect default theme setting.", expectedDefaultTheme,
                     NightModeUtils.getThemeSetting());
-            assertButtonCheckedCorrectly(
-                    mDefaultToLight ? "Light" : "System default", expectedDefaultTheme);
+            assertButtonCheckedCorrectly("Light", expectedDefaultTheme);
 
             // Select System default
             Assert.assertEquals(R.id.system_default, getButton(0).getId());
@@ -136,21 +115,19 @@ public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
     @Features.EnableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
     public void testDarkenWebsiteButton() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Default to light parameter is only applicable pre-Q.
-            if (mDefaultToLight && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            int expectedDefaultTheme = ThemeType.LIGHT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 Assert.assertFalse("Q should not default to light.",
                         NightModeUtils.isNightModeDefaultToLight());
-                return;
+                expectedDefaultTheme = ThemeType.SYSTEM_DEFAULT;
             }
 
             LinearLayout checkboxContainer = mPreference.getCheckboxContainerForTesting();
             RadioButtonWithDescriptionLayout group = mPreference.getGroupForTesting();
 
-            int expectedDefaultTheme = mDefaultToLight ? ThemeType.LIGHT : ThemeType.SYSTEM_DEFAULT;
             Assert.assertEquals("Incorrect default theme setting.", expectedDefaultTheme,
                     NightModeUtils.getThemeSetting());
-            assertButtonCheckedCorrectly(
-                    mDefaultToLight ? "Light" : "System default", expectedDefaultTheme);
+            assertButtonCheckedCorrectly("Light", expectedDefaultTheme);
 
             // Select System default
             selectButton(0);
