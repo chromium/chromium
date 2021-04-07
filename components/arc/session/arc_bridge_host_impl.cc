@@ -428,6 +428,10 @@ void ArcBridgeHostImpl::OnWallpaperInstanceReady(
                   std::move(wallpaper_remote));
 }
 
+size_t ArcBridgeHostImpl::GetNumMojoChannelsForTesting() const {
+  return mojo_channels_.size();
+}
+
 void ArcBridgeHostImpl::OnClosed() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   VLOG(1) << "Mojo connection lost";

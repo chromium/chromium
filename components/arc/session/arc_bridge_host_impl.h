@@ -177,6 +177,8 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   void OnWallpaperInstanceReady(
       mojo::PendingRemote<mojom::WallpaperInstance> wallpaper_remote) override;
 
+  size_t GetNumMojoChannelsForTesting() const;
+
  private:
   // Called when the bridge channel is closed. This typically only happens when
   // the ARC instance crashes.

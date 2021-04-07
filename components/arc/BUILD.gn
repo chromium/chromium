@@ -432,6 +432,7 @@ source_set("unit_tests") {
     "power/arc_power_bridge_unittest.cc",
     "property/arc_property_bridge_unittest.cc",
     "sensor/arc_iio_sensor_bridge_unittest.cc",
+    "session/arc_bridge_host_impl_unittest.cc",
     "session/arc_container_client_adapter_unittest.cc",
     "session/arc_data_remover_unittest.cc",
     "session/arc_instance_mode_unittest.cc",
