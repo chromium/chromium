@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "pdf/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PDF)
@@ -31,12 +32,13 @@ enum class PdfViewerContext {
   kAll,
 };
 
-// Adds all strings used by the PDF Viewer depending on the provided |context|.
+// Adds all strings used by the PDF Viewer depending on the provided `context`.
 void AddStrings(PdfViewerContext context, base::Value* dict);
 
-// Adds additional data used by the PDF Viewer UI in |dict|, for example
+// Adds additional data used by the PDF Viewer UI in `dict`, for example
 // whether certain features are enabled/disabled.
-void AddAdditionalData(base::Value* dict);
+// `enable_annotations` only applies on platforms that supports annotations.
+void AddAdditionalData(bool enable_annotations, base::Value* dict);
 
 }  // namespace pdf_extension_util
 

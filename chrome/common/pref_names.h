@@ -1139,6 +1139,10 @@ extern const char kFetchKeepaliveDurationOnShutdown[];
 
 extern const char kSuppressDifferentOriginSubframeJSDialogs[];
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kPdfAnnotationsEnabled[];
+#endif
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

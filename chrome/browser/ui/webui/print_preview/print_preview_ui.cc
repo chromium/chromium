@@ -394,7 +394,8 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
   base::Value pdf_strings(base::Value::Type::DICTIONARY);
   pdf_extension_util::AddStrings(
       pdf_extension_util::PdfViewerContext::kPrintPreview, &pdf_strings);
-  pdf_extension_util::AddAdditionalData(&pdf_strings);
+  pdf_extension_util::AddAdditionalData(/*enable_annotations=*/false,
+                                        &pdf_strings);
   source->AddLocalizedStrings(base::Value::AsDictionaryValue(pdf_strings));
 }
 

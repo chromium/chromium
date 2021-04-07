@@ -189,7 +189,7 @@ void AddStrings(PdfViewerContext context, base::Value* dict) {
   }
 }
 
-void AddAdditionalData(base::Value* dict) {
+void AddAdditionalData(bool enable_annotations, base::Value* dict) {
   dict->SetKey("documentPropertiesEnabled",
                base::Value(base::FeatureList::IsEnabled(
                    chrome_pdf::features::kPdfViewerDocumentProperties)));
@@ -197,15 +197,15 @@ void AddAdditionalData(base::Value* dict) {
                base::Value(base::FeatureList::IsEnabled(
                    chrome_pdf::features::kPdfViewerPresentationMode)));
 
-  bool enable_printing = true;
-  bool enable_annotations = false;
+  bool printing_enabled = true;
+  bool annotations_enabled = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // For Chrome OS, enable printing only if we are not at OOBE.
-  enable_printing = !chromeos::LoginDisplayHost::default_host();
-  enable_annotations = true;
+  printing_enabled = !chromeos::LoginDisplayHost::default_host();
+  annotations_enabled = enable_annotations;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  dict->SetKey("printingEnabled", base::Value(enable_printing));
-  dict->SetKey("pdfAnnotationsEnabled", base::Value(enable_annotations));
+  dict->SetKey("printingEnabled", base::Value(printing_enabled));
+  dict->SetKey("pdfAnnotationsEnabled", base::Value(annotations_enabled));
 }
 
 }  // namespace pdf_extension_util

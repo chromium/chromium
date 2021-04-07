@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/extensions/api/resources_private.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,6 +20,12 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 // To add a new component to this API, simply:
@@ -35,6 +42,20 @@ void AddStringsForIdentity(base::DictionaryValue* dict) {
   dict->SetString("window-title",
                   l10n_util::GetStringUTF16(IDS_EXTENSION_CONFIRM_PERMISSIONS));
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+bool IsPdfAnnotationsEnabled(content::BrowserContext* context) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  PrefService* prefs =
+      context ? Profile::FromBrowserContext(context)->GetPrefs() : nullptr;
+  if (prefs && prefs->IsManagedPreference(prefs::kPdfAnnotationsEnabled) &&
+      !prefs->GetBoolean(prefs::kPdfAnnotationsEnabled)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 
@@ -59,7 +80,8 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
     case api::resources_private::COMPONENT_PDF: {
       pdf_extension_util::AddStrings(pdf_extension_util::PdfViewerContext::kAll,
                                      dict.get());
-      pdf_extension_util::AddAdditionalData(dict.get());
+      pdf_extension_util::AddAdditionalData(
+          IsPdfAnnotationsEnabled(browser_context()), dict.get());
     } break;
 #endif  // BUILDFLAG(ENABLE_PDF)
     case api::resources_private::COMPONENT_NONE:

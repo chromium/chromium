@@ -1371,6 +1371,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebRtcIPHandling,
     prefs::kWebRTCIPHandlingPolicy,
     base::Value::Type::STRING },
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  { key::kPdfAnnotationsEnabled,
+    prefs::kPdfAnnotationsEnabled,
+    base::Value::Type::BOOLEAN },
+#endif
 };
 // clang-format on
 

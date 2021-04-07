@@ -25302,6 +25302,37 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'caption': '''The IP handling policy of WebRTC''',
       'tags': [],
       'desc': '''This policy allows restricting which IP addresses and interfaces WebRTC uses when attempting to find the best available connection. See RFC 8828 section 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). When unset, defaults to using all available interfaces.''',
+    },
+    {
+      'name': 'PdfAnnotationsEnabled',
+      'owners': ['thestig@chromium.org', 'file://pdf/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:91-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'The PDF viewer can annotate PDFs',
+        },
+        {
+          'value': False,
+          'caption': 'The PDF viewer cannot annotate PDFs',
+        },
+      ],
+      'default': True,
+      'example_value': False,
+      'id': 844,
+      'caption': '''Enable PDF Annotations''',
+      'tags': [],
+      'desc': '''Controls if the PDF viewer in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can annotate PDFs.
+
+      When this policy is not set, or is set to true, then the PDF viewer will be able to annotate PDFs.
+
+      When this policy is set to false, then the PDF viewer will not be able to annotate PDFs.'''
     }
   ],
   'messages': {
@@ -26232,6 +26263,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 843,
+  'highest_id_currently_used': 844,
   'highest_atomic_group_id_currently_used': 40
 }

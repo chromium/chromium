@@ -24099,6 +24099,7 @@ Called by update_document_policy_enum.py.-->
   <int value="841" label="CECPQ2Enabled"/>
   <int value="842" label="HeadlessMode"/>
   <int value="843" label="WebRTCIPHandlingPolicy"/>
+  <int value="844" label="PdfAnnotationsEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

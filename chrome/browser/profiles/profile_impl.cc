@@ -454,6 +454,10 @@ void ProfileImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kShowCastIconInToolbar, false);
 #endif  // !defined(OS_ANDROID)
   registry->RegisterTimePref(prefs::kProfileCreationTime, base::Time());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(prefs::kPdfAnnotationsEnabled, true);
+#endif
 }
 
 ProfileImpl::ProfileImpl(

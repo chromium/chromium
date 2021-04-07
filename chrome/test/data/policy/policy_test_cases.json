@@ -8589,5 +8589,14 @@
         } }
       }
     ]
+  },
+  "PdfAnnotationsEnabled": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "PdfAnnotationsEnabled": true },
+        "prefs": { "pdf.enable_annotations": {} }
+      }
+    ]
   }
 }

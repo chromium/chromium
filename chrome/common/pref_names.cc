@@ -3218,4 +3218,10 @@ const char kFetchKeepaliveDurationOnShutdown[] =
     "fetch_keepalive_duration_on_shutdown";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Boolean pref to control whether to enable annotation mode in the PDF viewer
+// or not.
+const char kPdfAnnotationsEnabled[] = "pdf.enable_annotations";
+#endif
+
 }  // namespace prefs

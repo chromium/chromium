@@ -150,7 +150,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
     base::Value dict(base::Value::Type::DICTIONARY);
     pdf_extension_util::AddStrings(
         pdf_extension_util::PdfViewerContext::kPdfViewer, &dict);
-    pdf_extension_util::AddAdditionalData(&dict);
+    pdf_extension_util::AddAdditionalData(/*enable_annotations=*/true, &dict);
 
     ui::TemplateReplacements pdf_viewer_replacements;
     ui::TemplateReplacementsFromDictionaryValue(
