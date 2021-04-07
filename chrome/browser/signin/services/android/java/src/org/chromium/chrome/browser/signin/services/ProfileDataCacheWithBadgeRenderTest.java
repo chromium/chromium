@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.signin.services;
+
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.app.Activity;
@@ -51,6 +52,8 @@ import java.io.IOException;
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
 @DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase {
+    private static final long NATIVE_IDENTITY_MANAGER = 10002L;
+
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
@@ -68,7 +71,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
     private static final String TEST_ACCOUNT_NAME = "test@example.com";
 
     private final IdentityManager mIdentityManager =
-            new IdentityManager(0 /* nativeIdentityManager */, null /* OAuth2TokenService */);
+            IdentityManager.create(NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
 
     private FrameLayout mContentView;
     private ImageView mImageView;

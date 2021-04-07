@@ -72,7 +72,7 @@ public class SigninManagerImplTest {
     private final ProfileSyncService mProfileSyncService = mock(ProfileSyncService.class);
 
     private final IdentityManager mIdentityManager =
-            new IdentityManager(NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
+            IdentityManager.create(NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
     private SigninManagerImpl mSigninManager;
 
     @Before

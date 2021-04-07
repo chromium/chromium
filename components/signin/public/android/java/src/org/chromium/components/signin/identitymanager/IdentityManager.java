@@ -17,9 +17,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * IdentityManager provides access to native IdentityManager's public API to java components.
  */
@@ -56,26 +53,23 @@ public class IdentityManager {
             extends ProfileOAuth2TokenServiceDelegate.GetAccessTokenCallback {}
 
     private long mNativeIdentityManager;
-    private ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
+    private final ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    // Account id and the corresponding fetch start time, this is only used to record the
-    // account information fetch duration.
-    private final Map<CoreAccountId, Long> mAccountAndFetchStartTimes = new HashMap<>();
 
     /**
      * Called by native to create an instance of IdentityManager.
      */
     @CalledByNative
-    private static IdentityManager create(long nativeIdentityManager,
+    @VisibleForTesting
+    public static IdentityManager create(long nativeIdentityManager,
             ProfileOAuth2TokenServiceDelegate profileOAuth2TokenServiceDelegate) {
-        assert nativeIdentityManager != 0;
         return new IdentityManager(nativeIdentityManager, profileOAuth2TokenServiceDelegate);
     }
 
-    @VisibleForTesting
-    public IdentityManager(long nativeIdentityManager,
+    private IdentityManager(long nativeIdentityManager,
             ProfileOAuth2TokenServiceDelegate profileOAuth2TokenServiceDelegate) {
+        assert nativeIdentityManager != 0;
         mNativeIdentityManager = nativeIdentityManager;
         mProfileOAuth2TokenServiceDelegate = profileOAuth2TokenServiceDelegate;
     }

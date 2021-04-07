@@ -74,6 +74,7 @@ import java.util.List;
 public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     public static final String PROFILE_DATA_BATCH_NAME = "profile_data";
     public static final String ACCOUNT_EMAIL = "test@gmail.com";
+    private static final long NATIVE_IDENTITY_MANAGER = 10002L;
 
     @ClassParameter
     private static final List<ParameterSet> sClassParams =
@@ -107,7 +108,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     private ProfileDataCache.Observer mObserverMock;
 
     private final IdentityManager mIdentityManager =
-            new IdentityManager(0 /* nativeIdentityManager */, null /* OAuth2TokenService */);
+            IdentityManager.create(NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
 
     private final AccountInfo mAccountInfoWithAvatar =
             new AccountInfo(new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test",
