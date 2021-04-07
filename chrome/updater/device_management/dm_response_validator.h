@@ -28,6 +28,11 @@ struct PolicyValueValidationIssue {
                              const std::string& message);
   ~PolicyValueValidationIssue();
 
+  bool operator==(const PolicyValueValidationIssue& other) const {
+    return policy_name == other.policy_name && severity == other.severity &&
+           message == other.message;
+  }
+
   std::string policy_name;
   Severity severity = Severity::kWarning;
   std::string message;
@@ -76,6 +81,12 @@ struct PolicyValidationResult {
     return base::ranges::any_of(issues, [](const auto& issue) {
       return issue.severity == PolicyValueValidationIssue::Severity::kError;
     });
+  }
+
+  bool operator==(const PolicyValidationResult& other) const {
+    return policy_type == other.policy_type &&
+           policy_token == other.policy_token && status == other.status &&
+           issues == other.issues;
   }
 
   std::string policy_type;

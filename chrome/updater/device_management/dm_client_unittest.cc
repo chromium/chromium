@@ -6,10 +6,15 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -25,6 +30,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/update_client/network.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -102,62 +108,6 @@ class DMRequestCallbackHandler
     : public base::RefCountedThreadSafe<DMRequestCallbackHandler> {
  public:
   DMRequestCallbackHandler() = default;
-  void OnRegisterRequestComplete(DMClient::RequestResult result) {
-    EXPECT_EQ(result, expected_result_);
-    if (result == DMClient::RequestResult::kSuccess ||
-        result == DMClient::RequestResult::kAleadyRegistered) {
-      EXPECT_EQ(storage_->GetDmToken(), "test-dm-token");
-    } else {
-      EXPECT_TRUE(storage_->GetDmToken().empty());
-    }
-    PostRequestCompleted();
-  }
-
-  void OnPolicyFetchRequestComplete(DMClient::RequestResult result) {
-    EXPECT_EQ(result, expected_result_);
-    if (expected_http_status_ == net::HTTP_GONE)
-      EXPECT_TRUE(storage_->IsDeviceDeregistered());
-
-    if (expected_http_status_ != net::HTTP_OK) {
-      PostRequestCompleted();
-      return;
-    }
-
-    std::unique_ptr<CachedPolicyInfo> info = storage_->GetCachedPolicyInfo();
-    EXPECT_FALSE(info->public_key().empty());
-    if (expect_new_public_key_)
-      EXPECT_EQ(info->public_key(), GetTestKey2()->GetPublicKeyString());
-    else
-      EXPECT_EQ(info->public_key(), GetTestKey1()->GetPublicKeyString());
-
-    if (result == DMClient::RequestResult::kSuccess) {
-      std::unique_ptr<PolicyManagerInterface> policy_manager =
-          storage_->GetOmahaPolicyManager();
-      EXPECT_NE(policy_manager, nullptr);
-
-      // Sample some of the policy values and check they are expected.
-      EXPECT_TRUE(policy_manager->IsManaged());
-      std::string proxy_mode;
-      EXPECT_TRUE(policy_manager->GetProxyMode(&proxy_mode));
-      EXPECT_EQ(proxy_mode, "pac_script");
-      int update_policy = 0;
-      EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppUpdates(
-          kChromeAppId, &update_policy));
-      EXPECT_EQ(update_policy, kPolicyAutomaticUpdatesOnly);
-      std::string target_version_prefix;
-      EXPECT_TRUE(policy_manager->GetTargetVersionPrefix(
-          kChromeAppId, &target_version_prefix));
-      EXPECT_EQ(target_version_prefix, "81.");
-    }
-
-    PostRequestCompleted();
-  }
-
-  void OnDeregisterRequestComplete(DMClient::RequestResult result) {
-    EXPECT_EQ(result, DMClient::RequestResult::kSuccess);
-    EXPECT_TRUE(storage_->IsDeviceDeregistered());
-    PostRequestCompleted();
-  }
 
   MOCK_METHOD0(PostRequestCompleted, void(void));
 
@@ -199,9 +149,8 @@ class DMRequestCallbackHandler
 
   scoped_refptr<DMStorage> GetStorage() { return storage_; }
 
- private:
-  friend class base::RefCountedThreadSafe<DMRequestCallbackHandler>;
-  ~DMRequestCallbackHandler() = default;
+ protected:
+  virtual ~DMRequestCallbackHandler() = default;
 
   base::ScopedTempDir storage_dir_;
   scoped_refptr<DMStorage> storage_;
@@ -209,6 +158,110 @@ class DMRequestCallbackHandler
   net::HttpStatusCode expected_http_status_ = net::HTTP_OK;
   DMClient::RequestResult expected_result_ = DMClient::RequestResult::kSuccess;
   bool expect_new_public_key_ = false;
+
+ private:
+  friend class base::RefCountedThreadSafe<DMRequestCallbackHandler>;
+};
+
+class DMRegisterRequestCallbackHandler : public DMRequestCallbackHandler {
+ public:
+  explicit DMRegisterRequestCallbackHandler(bool expect_registered)
+      : expect_registered_(expect_registered) {}
+
+  void OnRequestComplete(DMClient::RequestResult result) {
+    if (expect_registered_) {
+      EXPECT_EQ(result, expected_result_);
+      if (result == DMClient::RequestResult::kSuccess ||
+          result == DMClient::RequestResult::kAleadyRegistered) {
+        EXPECT_EQ(storage_->GetDmToken(), "test-dm-token");
+      } else {
+        EXPECT_TRUE(storage_->GetDmToken().empty());
+      }
+    } else {
+      // Device should be unregistered.
+      EXPECT_EQ(result, DMClient::RequestResult::kDeregistered);
+      EXPECT_TRUE(storage_->IsDeviceDeregistered());
+    }
+    PostRequestCompleted();
+  }
+
+ private:
+  ~DMRegisterRequestCallbackHandler() override = default;
+
+  const bool expect_registered_;
+
+  friend class base::RefCountedThreadSafe<DMRegisterRequestCallbackHandler>;
+};
+
+class DMPolicyFetchRequestCallbackHandler : public DMRequestCallbackHandler {
+ public:
+  void AppendExpectedValidationResult(const PolicyValidationResult& result) {
+    expected_validation_results_.push_back(result);
+  }
+
+  void OnRequestComplete(
+      DMClient::RequestResult result,
+      const std::vector<PolicyValidationResult>& validation_results) {
+    EXPECT_EQ(result, expected_result_);
+    if (expected_http_status_ == net::HTTP_GONE)
+      EXPECT_TRUE(storage_->IsDeviceDeregistered());
+
+    if (expected_http_status_ != net::HTTP_OK ||
+        expected_result_ == DMClient::RequestResult::kNoDMToken) {
+      PostRequestCompleted();
+      return;
+    }
+
+    std::unique_ptr<CachedPolicyInfo> info = storage_->GetCachedPolicyInfo();
+    EXPECT_FALSE(info->public_key().empty());
+    if (expect_new_public_key_)
+      EXPECT_EQ(info->public_key(), GetTestKey2()->GetPublicKeyString());
+    else
+      EXPECT_EQ(info->public_key(), GetTestKey1()->GetPublicKeyString());
+
+    if (result == DMClient::RequestResult::kSuccess) {
+      std::unique_ptr<PolicyManagerInterface> policy_manager =
+          storage_->GetOmahaPolicyManager();
+      EXPECT_NE(policy_manager, nullptr);
+
+      // Sample some of the policy values and check they are expected.
+      EXPECT_TRUE(policy_manager->IsManaged());
+      std::string proxy_mode;
+      EXPECT_TRUE(policy_manager->GetProxyMode(&proxy_mode));
+      EXPECT_EQ(proxy_mode, "pac_script");
+      int update_policy = 0;
+      EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppUpdates(
+          kChromeAppId, &update_policy));
+      EXPECT_EQ(update_policy, kPolicyAutomaticUpdatesOnly);
+      std::string target_version_prefix;
+      EXPECT_TRUE(policy_manager->GetTargetVersionPrefix(
+          kChromeAppId, &target_version_prefix));
+      EXPECT_EQ(target_version_prefix, "81.");
+    }
+
+    EXPECT_EQ(expected_validation_results_, validation_results);
+    PostRequestCompleted();
+  }
+
+ private:
+  ~DMPolicyFetchRequestCallbackHandler() override = default;
+  friend class base::RefCountedThreadSafe<DMPolicyFetchRequestCallbackHandler>;
+
+  std::vector<PolicyValidationResult> expected_validation_results_;
+};
+
+class DMValidationReportRequestCallbackHandler
+    : public DMRequestCallbackHandler {
+ public:
+  void OnRequestComplete(DMClient::RequestResult result) {
+    EXPECT_EQ(result, expected_result_);
+    PostRequestCompleted();
+  }
+
+ private:
+  ~DMValidationReportRequestCallbackHandler() override = default;
+  friend class base::RefCountedThreadSafe<
+      DMValidationReportRequestCallbackHandler>;
 };
 
 }  // namespace
@@ -239,19 +292,10 @@ class DMClientTest : public ::testing::Test {
     std::string request_type;
     EXPECT_TRUE(
         net::GetValueForKeyInQuery(request.GetURL(), "request", &request_type));
-    if (request_type == "register_policy_agent") {
-      std::string authorization = request.headers.at("Authorization");
-      EXPECT_EQ(authorization,
-                "GoogleEnrollmentToken token=TestEnrollmentToken");
-    } else if (request_type == "policy") {
-      std::string authorization = request.headers.at("Authorization");
-      EXPECT_EQ(authorization, "GoogleDMToken token=test-dm-token");
-    } else {
-      auto http_response =
-          std::make_unique<net::test_server::BasicHttpResponse>();
-      http_response->set_code(net::HTTP_BAD_REQUEST);
-      return http_response;
-    }
+    EXPECT_EQ(request_type, GetExpectedRequestType());
+
+    EXPECT_EQ(request.headers.at("Authorization"),
+              GetExpectedAuthorizationToken());
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
@@ -270,7 +314,35 @@ class DMClientTest : public ::testing::Test {
     ASSERT_TRUE(test_server_.Start());
   }
 
-  std::string GetDefaultDeviceRegisterResponse() const {
+  virtual std::string GetExpectedRequestType() const = 0;
+  virtual std::string GetExpectedAuthorizationToken() const = 0;
+
+  net::EmbeddedTestServer test_server_;
+  net::HttpStatusCode response_http_status_ = net::HTTP_OK;
+  std::string response_body_;
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+class DMRegisterClientTest : public DMClientTest {
+ public:
+  void PostRequest() {
+    DMClient::RegisterDevice(
+        std::make_unique<TestConfigurator>(test_server_.GetURL("/dm_api")),
+        callback_handler_->GetStorage(),
+        base::BindOnce(&DMRegisterRequestCallbackHandler::OnRequestComplete,
+                       callback_handler_));
+  }
+
+  std::string GetExpectedAuthorizationToken() const override {
+    return "GoogleEnrollmentToken token=TestEnrollmentToken";
+  }
+
+  std::string GetExpectedRequestType() const override {
+    return "register_policy_agent";
+  }
+
+  std::string GetDefaultResponse() const {
     auto dm_response =
         std::make_unique<enterprise_management::DeviceManagementResponse>();
     dm_response->mutable_register_response()->set_device_management_token(
@@ -278,43 +350,70 @@ class DMClientTest : public ::testing::Test {
     return dm_response->SerializeAsString();
   }
 
-  void CreateDMClient() {
-    const GURL url = test_server_.GetURL("/dm_api");
-    auto test_config = std::make_unique<TestConfigurator>(url);
-    client_ = std::make_unique<DMClient>(std::move(test_config),
-                                         callback_handler_->GetStorage());
-  }
-
-  net::EmbeddedTestServer test_server_;
-  net::HttpStatusCode response_http_status_ = net::HTTP_OK;
-  std::string response_body_;
-
-  std::unique_ptr<DMClient> client_;
-  scoped_refptr<DMRequestCallbackHandler> callback_handler_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  scoped_refptr<DMRegisterRequestCallbackHandler> callback_handler_;
 };
 
-TEST_F(DMClientTest, PostRegisterRequest_Success) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+class DMPolicyFetchClientTest : public DMClientTest {
+ public:
+  void PostRequest() {
+    DMClient::FetchPolicy(
+        std::make_unique<TestConfigurator>(test_server_.GetURL("/dm_api")),
+        callback_handler_->GetStorage(),
+        base::BindOnce(&DMPolicyFetchRequestCallbackHandler::OnRequestComplete,
+                       callback_handler_));
+  }
+
+  std::string GetExpectedAuthorizationToken() const override {
+    return "GoogleDMToken token=test-dm-token";
+  }
+
+  std::string GetExpectedRequestType() const override { return "policy"; }
+
+  scoped_refptr<DMPolicyFetchRequestCallbackHandler> callback_handler_;
+};
+
+class DMPolicyValidationReportClientTest : public DMClientTest {
+ public:
+  void PostRequest(const PolicyValidationResult& validation_result) {
+    DMClient::ReportPolicyValidationErrors(
+        std::make_unique<TestConfigurator>(test_server_.GetURL("/dm_api")),
+        callback_handler_->GetStorage(), validation_result,
+        base::BindOnce(
+            &DMValidationReportRequestCallbackHandler::OnRequestComplete,
+            callback_handler_));
+  }
+
+  std::string GetExpectedAuthorizationToken() const override {
+    return "GoogleDMToken token=test-dm-token";
+  }
+
+  std::string GetExpectedRequestType() const override {
+    return "policy_validation_report";
+  }
+
+  scoped_refptr<DMValidationReportRequestCallbackHandler> callback_handler_;
+};
+
+TEST_F(DMRegisterClientTest, Success) {
+  callback_handler_ =
+      base::MakeRefCounted<DMRegisterRequestCallbackHandler>(true);
   callback_handler_->CreateStorage(/*init_dm_token=*/false,
                                    /*init_cache_info=*/false);
   callback_handler_->SetExpectedRequestResult(
       DMClient::RequestResult::kSuccess);
-  StartTestServerWithResponse(net::HTTP_OK, GetDefaultDeviceRegisterResponse());
+  StartTestServerWithResponse(net::HTTP_OK, GetDefaultResponse());
 
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
-
-  CreateDMClient();
-  client_->PostRegisterRequest(base::BindOnce(
-      &DMRequestCallbackHandler::OnRegisterRequestComplete, callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostRegisterRequest_Deregister) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMRegisterClientTest, Deregister) {
+  callback_handler_ =
+      base::MakeRefCounted<DMRegisterRequestCallbackHandler>(false);
   callback_handler_->CreateStorage(/*init_dm_token=*/false,
                                    /*init_cache_info=*/false);
   callback_handler_->SetExpectedRequestResult(
@@ -326,15 +425,13 @@ TEST_F(DMClientTest, PostRegisterRequest_Deregister) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostRegisterRequest(
-      base::BindOnce(&DMRequestCallbackHandler::OnDeregisterRequestComplete,
-                     callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostRegisterRequest_BadRequest) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMRegisterClientTest, BadRequest) {
+  callback_handler_ =
+      base::MakeRefCounted<DMRegisterRequestCallbackHandler>(true);
   callback_handler_->CreateStorage(/*init_dm_token=*/false,
                                    /*init_cache_info=*/false);
   callback_handler_->SetExpectedRequestResult(
@@ -346,33 +443,31 @@ TEST_F(DMClientTest, PostRegisterRequest_BadRequest) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostRegisterRequest(base::BindOnce(
-      &DMRequestCallbackHandler::OnRegisterRequestComplete, callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostRegisterRequest_AlreadyRegistered) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMRegisterClientTest, AlreadyRegistered) {
+  callback_handler_ =
+      base::MakeRefCounted<DMRegisterRequestCallbackHandler>(true);
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/false);
   callback_handler_->SetExpectedRequestResult(
       DMClient::RequestResult::kAleadyRegistered);
-  StartTestServerWithResponse(net::HTTP_OK, GetDefaultDeviceRegisterResponse());
+  StartTestServerWithResponse(net::HTTP_OK, GetDefaultResponse());
 
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostRegisterRequest(base::BindOnce(
-      &DMRequestCallbackHandler::OnRegisterRequestComplete, callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostRegisterRequest_BadResponseData) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMRegisterClientTest, BadResponseData) {
+  callback_handler_ =
+      base::MakeRefCounted<DMRegisterRequestCallbackHandler>(true);
   callback_handler_->CreateStorage(/*init_dm_token=*/false,
                                    /*init_cache_info=*/false);
   callback_handler_->SetExpectedRequestResult(
@@ -384,14 +479,37 @@ TEST_F(DMClientTest, PostRegisterRequest_BadResponseData) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostRegisterRequest(base::BindOnce(
-      &DMRequestCallbackHandler::OnRegisterRequestComplete, callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch_FirstRequest) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMPolicyFetchClientTest, NoDMToken) {
+  callback_handler_ =
+      base::MakeRefCounted<DMPolicyFetchRequestCallbackHandler>();
+  callback_handler_->CreateStorage(/*init_dm_token=*/false,
+                                   /*init_cache_info=*/false);
+  callback_handler_->SetExpectedRequestResult(
+      DMClient::RequestResult::kNoDMToken);
+  callback_handler_->SetExpectNewPublicKey(false);
+
+  std::unique_ptr<::enterprise_management::DeviceManagementResponse>
+      dm_response = GetDefaultTestingPolicyFetchDMResponse(
+          /*first_request=*/true, /*rotate_to_new_key=*/true,
+          DMPolicyBuilderForTesting::SigningOption::kSignNormally);
+  StartTestServerWithResponse(net::HTTP_OK, dm_response->SerializeAsString());
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  EXPECT_CALL(*callback_handler_, PostRequestCompleted())
+      .WillOnce(RunClosure(quit_closure));
+
+  PostRequest();
+  run_loop.Run();
+}
+
+TEST_F(DMPolicyFetchClientTest, FirstRequest) {
+  callback_handler_ =
+      base::MakeRefCounted<DMPolicyFetchRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/false);
   callback_handler_->SetExpectedRequestResult(
@@ -408,15 +526,13 @@ TEST_F(DMClientTest, PostPolicyFetch_FirstRequest) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostPolicyFetchRequest(
-      base::BindOnce(&DMRequestCallbackHandler::OnPolicyFetchRequestComplete,
-                     callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch_NoRotateKey) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMPolicyFetchClientTest, NoRotateKey) {
+  callback_handler_ =
+      base::MakeRefCounted<DMPolicyFetchRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/true);
   callback_handler_->SetExpectedRequestResult(
@@ -433,15 +549,13 @@ TEST_F(DMClientTest, PostPolicyFetch_NoRotateKey) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostPolicyFetchRequest(
-      base::BindOnce(&DMRequestCallbackHandler::OnPolicyFetchRequestComplete,
-                     callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch_RotateKey) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMPolicyFetchClientTest, RotateKey) {
+  callback_handler_ =
+      base::MakeRefCounted<DMPolicyFetchRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/true);
   callback_handler_->SetExpectedRequestResult(
@@ -459,20 +573,23 @@ TEST_F(DMClientTest, PostPolicyFetch_RotateKey) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostPolicyFetchRequest(
-      base::BindOnce(&DMRequestCallbackHandler::OnPolicyFetchRequestComplete,
-                     callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch_RejectKeyWithBadSignature) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMPolicyFetchClientTest, RejectKeyWithBadSignature) {
+  callback_handler_ =
+      base::MakeRefCounted<DMPolicyFetchRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/true);
   callback_handler_->SetExpectedRequestResult(
       DMClient::RequestResult::kUnexpectedResponse);
   callback_handler_->SetExpectNewPublicKey(false);
+
+  PolicyValidationResult expected_validation_result;
+  expected_validation_result.status =
+      PolicyValidationResult::Status::kValidationBadKeyVerificationSignature;
+  callback_handler_->AppendExpectedValidationResult(expected_validation_result);
 
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
@@ -484,20 +601,23 @@ TEST_F(DMClientTest, PostPolicyFetch_RejectKeyWithBadSignature) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostPolicyFetchRequest(
-      base::BindOnce(&DMRequestCallbackHandler::OnPolicyFetchRequestComplete,
-                     callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch_RejectDataWithBadSignature) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMPolicyFetchClientTest, RejectDataWithBadSignature) {
+  callback_handler_ =
+      base::MakeRefCounted<DMPolicyFetchRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/true);
   callback_handler_->SetExpectedRequestResult(
       DMClient::RequestResult::kUnexpectedResponse);
   callback_handler_->SetExpectNewPublicKey(false);
+  PolicyValidationResult expected_validation_result;
+  expected_validation_result.policy_type = "google/machine-level-omaha";
+  expected_validation_result.status =
+      PolicyValidationResult::Status::kValidationBadSignature;
+  callback_handler_->AppendExpectedValidationResult(expected_validation_result);
 
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
@@ -510,19 +630,17 @@ TEST_F(DMClientTest, PostPolicyFetch_RejectDataWithBadSignature) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostPolicyFetchRequest(
-      base::BindOnce(&DMRequestCallbackHandler::OnPolicyFetchRequestComplete,
-                     callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch_Deregister) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMPolicyFetchClientTest, Deregister) {
+  callback_handler_ =
+      base::MakeRefCounted<DMPolicyFetchRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/true);
   callback_handler_->SetExpectedRequestResult(
-      DMClient::RequestResult::kSuccess);
+      DMClient::RequestResult::kDeregistered);
   callback_handler_->SetExpectedHttpStatus(net::HTTP_GONE);
 
   StartTestServerWithResponse(net::HTTP_GONE, "" /* response body */);
@@ -531,15 +649,13 @@ TEST_F(DMClientTest, PostPolicyFetch_Deregister) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostPolicyFetchRequest(
-      base::BindOnce(&DMRequestCallbackHandler::OnPolicyFetchRequestComplete,
-                     callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch_BadResponse) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMPolicyFetchClientTest, BadResponse) {
+  callback_handler_ =
+      base::MakeRefCounted<DMPolicyFetchRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/true);
   callback_handler_->SetExpectedRequestResult(
@@ -551,15 +667,13 @@ TEST_F(DMClientTest, PostPolicyFetch_BadResponse) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostPolicyFetchRequest(
-      base::BindOnce(&DMRequestCallbackHandler::OnPolicyFetchRequestComplete,
-                     callback_handler_));
+  PostRequest();
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch_BadRequest) {
-  callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
+TEST_F(DMPolicyFetchClientTest, BadRequest) {
+  callback_handler_ =
+      base::MakeRefCounted<DMPolicyFetchRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/true);
   callback_handler_->SetExpectedRequestResult(
@@ -571,10 +685,72 @@ TEST_F(DMClientTest, PostPolicyFetch_BadRequest) {
   EXPECT_CALL(*callback_handler_, PostRequestCompleted())
       .WillOnce(RunClosure(quit_closure));
 
-  CreateDMClient();
-  client_->PostPolicyFetchRequest(
-      base::BindOnce(&DMRequestCallbackHandler::OnPolicyFetchRequestComplete,
-                     callback_handler_));
+  PostRequest();
+  run_loop.Run();
+}
+
+TEST_F(DMPolicyValidationReportClientTest, Success) {
+  callback_handler_ =
+      base::MakeRefCounted<DMValidationReportRequestCallbackHandler>();
+  callback_handler_->CreateStorage(/*init_dm_token=*/true,
+                                   /*init_cache_info=*/false);
+  callback_handler_->SetExpectedRequestResult(
+      DMClient::RequestResult::kSuccess);
+  StartTestServerWithResponse(net::HTTP_OK, "" /* response body */);
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  EXPECT_CALL(*callback_handler_, PostRequestCompleted())
+      .WillOnce(RunClosure(quit_closure));
+
+  PolicyValidationResult validation_result;
+  validation_result.policy_type = kGoogleUpdatePolicyType;
+  validation_result.policy_token = "TestPolicyToken";
+  validation_result.issues.emplace_back(
+      "test_policy", PolicyValueValidationIssue::Severity::kError,
+      "Policy value out of range.");
+  PostRequest(validation_result);
+  run_loop.Run();
+}
+
+TEST_F(DMPolicyValidationReportClientTest, NoDMToken) {
+  callback_handler_ =
+      base::MakeRefCounted<DMValidationReportRequestCallbackHandler>();
+  callback_handler_->CreateStorage(/*init_dm_token=*/false,
+                                   /*init_cache_info=*/false);
+  callback_handler_->SetExpectedRequestResult(
+      DMClient::RequestResult::kNoDMToken);
+  StartTestServerWithResponse(net::HTTP_OK, "" /* response body */);
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  EXPECT_CALL(*callback_handler_, PostRequestCompleted())
+      .WillOnce(RunClosure(quit_closure));
+
+  PolicyValidationResult validation_result;
+  validation_result.policy_type = kGoogleUpdatePolicyType;
+  validation_result.policy_token = "TestPolicyToken";
+  validation_result.issues.emplace_back(
+      "test_policy", PolicyValueValidationIssue::Severity::kError,
+      "Policy value out of range.");
+  PostRequest(validation_result);
+  run_loop.Run();
+}
+
+TEST_F(DMPolicyValidationReportClientTest, NoPayload) {
+  callback_handler_ =
+      base::MakeRefCounted<DMValidationReportRequestCallbackHandler>();
+  callback_handler_->CreateStorage(/*init_dm_token=*/true,
+                                   /*init_cache_info=*/false);
+  callback_handler_->SetExpectedRequestResult(
+      DMClient::RequestResult::kNoPayload);
+  StartTestServerWithResponse(net::HTTP_OK, "" /* response body */);
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  EXPECT_CALL(*callback_handler_, PostRequestCompleted())
+      .WillOnce(RunClosure(quit_closure));
+  PostRequest(PolicyValidationResult());
   run_loop.Run();
 }
 

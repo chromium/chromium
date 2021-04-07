@@ -4,9 +4,18 @@
 
 #include "chrome/updater/device_management/dm_client.h"
 
+#include <stdint.h>
+
+#include <memory>
+#include <string>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -51,8 +60,11 @@ constexpr char kRegistrationTokenType[] = "GoogleEnrollmentToken";
 
 // Constants for policy fetch requests.
 constexpr char kPolicyFetchRequestType[] = "policy";
-constexpr char kPolicyFetchTokenType[] = "GoogleDMToken";
+constexpr char kDMTokenType[] = "GoogleDMToken";
 constexpr char kGoogleUpdateMachineLevelApps[] = "google/machine-level-apps";
+
+// Constants for policy validation report requests.
+constexpr char kValidationReportRequestType[] = "policy_validation_report";
 
 constexpr int kHTTPStatusOK = 200;
 constexpr int kHTTPStatusGone = 410;
@@ -99,23 +111,80 @@ std::string DefaultConfigurator::GetPlatformParameter() const {
                             os_version.c_str());
 }
 
-}  // namespace
+// Builds a DM request and sends it via the wrapped network fetcher. Raw fetch
+// result will be translated into DM request result for external callback.
+// Do not reuse this class for multiple requests, as the class maintains the
+// intermediate state of the wrapped network request.
+class DMFetch : public base::RefCountedThreadSafe<DMFetch> {
+ public:
+  enum class TokenType {
+    kEnrollmentToken,
+    kDMToken,
+  };
 
-DMClient::DMClient()
-    : DMClient(std::make_unique<DefaultConfigurator>(), GetDefaultDMStorage()) {
-}
+  using Callback =
+      base::OnceCallback<void(DMClient::RequestResult result,
+                              std::unique_ptr<std::string> response_body)>;
 
-DMClient::DMClient(std::unique_ptr<Configurator> config,
-                   scoped_refptr<DMStorage> storage)
+  DMFetch(std::unique_ptr<DMClient::Configurator> config,
+          scoped_refptr<DMStorage> storage);
+  DMFetch(const DMFetch&) = delete;
+  DMFetch& operator=(const DMFetch&) = delete;
+
+  const DMClient::Configurator* config() const { return config_.get(); }
+
+  // Returns the storage where this client saves the data from DM server.
+  scoped_refptr<DMStorage> storage() const { return storage_; }
+
+  void PostRequest(const std::string& request_type,
+                   TokenType token_type,
+                   const std::string& request_data,
+                   Callback callback);
+
+ private:
+  friend class base::RefCountedThreadSafe<DMFetch>;
+
+  ~DMFetch();
+
+  // Get the authorization token string.
+  std::string BuildTokenString(TokenType type) const;
+
+  // Gets the full request URL to DM server for the given request type.
+  // Additional device specific values, such as device ID, platform etc. will
+  // be appended to the URL as query parameters.
+  GURL BuildURL(const std::string& request_type) const;
+
+  // Callback functions for the URLFetcher.
+  void OnRequestStarted(int response_code, int64_t content_length);
+  void OnRequestProgress(int64_t current);
+  void OnRequestComplete(std::unique_ptr<std::string> response_body,
+                         int net_error,
+                         const std::string& header_etag,
+                         const std::string& header_x_cup_server_proof,
+                         int64_t xheader_retry_after_sec);
+
+  std::unique_ptr<DMClient::Configurator> config_;
+  scoped_refptr<DMStorage> storage_;
+
+  std::unique_ptr<update_client::NetworkFetcher> network_fetcher_;
+  int http_status_code_;
+
+  Callback callback_;
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+DMFetch::DMFetch(std::unique_ptr<DMClient::Configurator> config,
+                 scoped_refptr<DMStorage> storage)
     : config_(std::move(config)),
-      storage_(std::move(storage)),
-      http_status_code_(-1) {}
+      storage_(storage),
+      network_fetcher_(config_->CreateNetworkFetcher()),
+      http_status_code_(0) {}
 
-DMClient::~DMClient() {
+DMFetch::~DMFetch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-GURL DMClient::BuildURL(const std::string& request_type) const {
+GURL DMFetch::BuildURL(const std::string& request_type) const {
   GURL url(config_->GetDMServerUrl());
   url = AppendQueryParameter(url, kParamRequest, request_type);
   url = AppendQueryParameter(url, kParamAppType, kValueAppType);
@@ -125,189 +194,202 @@ GURL DMClient::BuildURL(const std::string& request_type) const {
   return AppendQueryParameter(url, kParamDeviceID, storage_->GetDeviceID());
 }
 
-scoped_refptr<DMStorage> DMClient::GetStorage() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return storage_;
+std::string DMFetch::BuildTokenString(TokenType type) const {
+  switch (type) {
+    case TokenType::kEnrollmentToken:
+      return base::StringPrintf("%s token=%s", kRegistrationTokenType,
+                                storage_->GetEnrollmentToken().c_str());
+
+    case TokenType::kDMToken:
+      return base::StringPrintf("%s token=%s", kDMTokenType,
+                                storage_->GetDmToken().c_str());
+  }
 }
 
-void DMClient::PostRegisterRequest(DMRequestCallback request_callback) {
+void DMFetch::PostRequest(const std::string& request_type,
+                          TokenType token_type,
+                          const std::string& request_data,
+                          Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RequestResult result = RequestResult::kSuccess;
-  const std::string enrollment_token = storage_->GetEnrollmentToken();
-  network_fetcher_ = config_->CreateNetworkFetcher();
-  request_callback_ = std::move(request_callback);
+  callback_ = std::move(callback);
 
+  const bool is_registering = token_type == TokenType::kEnrollmentToken;
+  DMClient::RequestResult result = DMClient::RequestResult::kSuccess;
   if (storage_->IsDeviceDeregistered()) {
-    result = RequestResult::kDeregistered;
-  } else if (!storage_->GetDmToken().empty()) {
-    result = RequestResult::kAleadyRegistered;
-  } else if (enrollment_token.empty()) {
-    result = RequestResult::kNotManaged;
+    result = DMClient::RequestResult::kDeregistered;
   } else if (storage_->GetDeviceID().empty()) {
-    result = RequestResult::kNoDeviceID;
+    result = DMClient::RequestResult::kNoDeviceID;
   } else if (!network_fetcher_) {
-    result = RequestResult::kFetcherError;
+    result = DMClient::RequestResult::kFetcherError;
+  } else if (request_data.empty()) {
+    result = DMClient::RequestResult::kNoPayload;
+  } else if (is_registering) {
+    if (storage_->GetEnrollmentToken().empty()) {
+      result = DMClient::RequestResult::kNotManaged;
+    } else if (!storage_->GetDmToken().empty()) {
+      result = DMClient::RequestResult::kAleadyRegistered;
+    }
+  } else if (storage_->GetDmToken().empty()) {
+    result = DMClient::RequestResult::kNoDMToken;
   }
 
-  if (result != RequestResult::kSuccess) {
-    VLOG(1) << "Device registration skipped with DM error: " << result;
+  if (result != DMClient::RequestResult::kSuccess) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(request_callback_), result));
+        FROM_HERE, base::BindOnce(std::move(callback_), result,
+                                  std::make_unique<std::string>()));
     return;
   }
 
-  const std::string data = GetRegisterBrowserRequestData(
-      policy::GetMachineName(), policy::GetOSPlatform(),
-      policy::GetOSVersion());
-
-  // Authorization token is the enrollment token for device registration.
   const base::flat_map<std::string, std::string> additional_headers = {
-      {kAuthorizationHeader,
-       base::StringPrintf("%s token=%s", kRegistrationTokenType,
-                          enrollment_token.c_str())},
+      {kAuthorizationHeader, BuildTokenString(token_type)},
   };
 
   network_fetcher_->PostRequest(
-      BuildURL(kRegistrationRequestType), data, kDMContentType,
-      additional_headers,
-      base::BindOnce(&DMClient::OnRequestStarted, base::Unretained(this)),
-      base::BindRepeating(&DMClient::OnRequestProgress, base::Unretained(this)),
-      base::BindOnce(&DMClient::OnRegisterRequestComplete,
-                     base::Unretained(this)));
+      BuildURL(request_type), request_data, kDMContentType, additional_headers,
+      base::BindOnce(&DMFetch::OnRequestStarted, base::Unretained(this)),
+      base::BindRepeating(&DMFetch::OnRequestProgress, base::Unretained(this)),
+      base::BindOnce(&DMFetch::OnRequestComplete, base::Unretained(this)));
 }
 
-void DMClient::OnRequestStarted(int response_code, int64_t content_length) {
+void DMFetch::OnRequestStarted(int response_code, int64_t content_length) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "POST request is sent to DM server, status: " << response_code
+  VLOG(1) << "DM request is sent to server, status: " << response_code
           << ". Content length: " << content_length << ".";
   http_status_code_ = response_code;
 }
 
-void DMClient::OnRequestProgress(int64_t current) {
+void DMFetch::OnRequestProgress(int64_t current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "POST request progess made, current bytes: " << current;
+  VLOG(1) << "DM request progress made, current bytes: " << current;
 }
 
-void DMClient::OnRegisterRequestComplete(
-    std::unique_ptr<std::string> response_body,
-    int net_error,
-    const std::string& header_etag,
-    const std::string& header_x_cup_server_proof,
-    int64_t xheader_retry_after_sec) {
+void DMFetch::OnRequestComplete(std::unique_ptr<std::string> response_body,
+                                int net_error,
+                                const std::string& header_etag,
+                                const std::string& header_x_cup_server_proof,
+                                int64_t xheader_retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RequestResult request_result = RequestResult::kSuccess;
 
+  DMClient::RequestResult result = DMClient::RequestResult::kSuccess;
   if (net_error != 0) {
-    VLOG(1) << "DM register failed due to net error: " << net_error;
-    request_result = RequestResult::kNetworkError;
+    VLOG(1) << "DM request failed due to net error: " << net_error;
+    result = DMClient::RequestResult::kNetworkError;
   } else if (http_status_code_ == kHTTPStatusGone) {
     VLOG(1) << "Device is now de-registered.";
     storage_->DeregisterDevice();
+    result = DMClient::RequestResult::kDeregistered;
   } else if (http_status_code_ != kHTTPStatusOK) {
-    VLOG(1) << "DM device registration failed due to http error: "
-            << http_status_code_;
-    request_result = RequestResult::kHttpError;
-  } else {
+    VLOG(1) << "DM request failed due to HTTP error: " << http_status_code_;
+    result = DMClient::RequestResult::kHttpError;
+  }
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback_), result, std::move(response_body)));
+}
+
+void OnDMRegisterRequestComplete(scoped_refptr<DMFetch> dm_fetch,
+                                 DMClient::RegisterCallback callback,
+                                 DMClient::RequestResult result,
+                                 std::unique_ptr<std::string> response_body) {
+  if (result == DMClient::RequestResult::kSuccess) {
     const std::string dm_token =
         ParseDeviceRegistrationResponse(*response_body);
     if (dm_token.empty()) {
       VLOG(1) << "Failed to parse DM token from registration response.";
-      request_result = RequestResult::kUnexpectedResponse;
+      result = DMClient::RequestResult::kUnexpectedResponse;
     } else {
       VLOG(1) << "Register request completed, got DM token: " << dm_token;
-      if (!storage_->StoreDmToken(dm_token))
-        request_result = RequestResult::kSerializationError;
+      if (!dm_fetch->storage()->StoreDmToken(dm_token))
+        result = DMClient::RequestResult::kSerializationError;
     }
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(request_callback_), request_result));
+      FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void DMClient::PostPolicyFetchRequest(DMRequestCallback request_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RequestResult result = RequestResult::kSuccess;
-  const std::string dm_token = storage_->GetDmToken();
-  network_fetcher_ = config_->CreateNetworkFetcher();
-  request_callback_ = std::move(request_callback);
-
-  if (storage_->IsDeviceDeregistered()) {
-    result = RequestResult::kDeregistered;
-  } else if (dm_token.empty()) {
-    result = RequestResult::kNoDMToken;
-  } else if (storage_->GetDeviceID().empty()) {
-    result = RequestResult::kNoDeviceID;
-  } else if (!network_fetcher_) {
-    result = RequestResult::kFetcherError;
-  }
-
-  if (result != RequestResult::kSuccess) {
-    VLOG(1) << "Policy fetch skipped with DM error: " << result;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(request_callback_), result));
-    return;
-  }
-
-  cached_info_ = storage_->GetCachedPolicyInfo();
-  const std::string data =
-      GetPolicyFetchRequestData(kGoogleUpdateMachineLevelApps, *cached_info_);
-
-  // Authorization token is the DM token for policy fetch
-  const base::flat_map<std::string, std::string> additional_headers = {
-      {kAuthorizationHeader,
-       base::StringPrintf("%s token=%s", kPolicyFetchTokenType,
-                          dm_token.c_str())},
-  };
-
-  network_fetcher_->PostRequest(
-      BuildURL(kPolicyFetchRequestType), data, kDMContentType,
-      additional_headers,
-      base::BindOnce(&DMClient::OnRequestStarted, base::Unretained(this)),
-      base::BindRepeating(&DMClient::OnRequestProgress, base::Unretained(this)),
-      base::BindOnce(&DMClient::OnPolicyFetchRequestComplete,
-                     base::Unretained(this)));
-}
-
-void DMClient::OnPolicyFetchRequestComplete(
-    std::unique_ptr<std::string> response_body,
-    int net_error,
-    const std::string& header_etag,
-    const std::string& header_x_cup_server_proof,
-    int64_t xheader_retry_after_sec) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RequestResult request_result = RequestResult::kSuccess;
-
-  if (net_error != 0) {
-    VLOG(1) << "DM policy fetch failed due to net error: " << net_error;
-    request_result = RequestResult::kNetworkError;
-  } else if (http_status_code_ == kHTTPStatusGone) {
-    VLOG(1) << "Device is now de-registered.";
-    storage_->DeregisterDevice();
-  } else if (http_status_code_ != kHTTPStatusOK) {
-    VLOG(1) << "DM policy fetch failed due to http error: "
-            << http_status_code_;
-    request_result = RequestResult::kHttpError;
-  } else {
-    std::vector<PolicyValidationResult> validation_results;
+void OnDMPolicyFetchRequestComplete(
+    scoped_refptr<DMFetch> dm_fetch,
+    DMClient::PolicyFetchCallback callback,
+    std::unique_ptr<CachedPolicyInfo> cached_info,
+    DMClient::RequestResult result,
+    std::unique_ptr<std::string> response_body) {
+  std::vector<PolicyValidationResult> validation_results;
+  scoped_refptr<DMStorage> storage = dm_fetch->storage();
+  if (result == DMClient::RequestResult::kSuccess) {
     DMPolicyMap policies = ParsePolicyFetchResponse(
-        *response_body, *cached_info_, storage_->GetDmToken(),
-        storage_->GetDeviceID(), validation_results);
-
-    // TODO(crbug/1183453): Post `validation_results` back to caller via
-    // the callback. The caller can then send the results back to DM server.
+        *response_body, *cached_info, storage->GetDmToken(),
+        storage->GetDeviceID(), validation_results);
 
     if (policies.empty()) {
-      request_result = RequestResult::kUnexpectedResponse;
+      result = DMClient::RequestResult::kUnexpectedResponse;
     } else {
       VLOG(1) << "Policy fetch request completed, got " << policies.size()
               << " new policies.";
-      if (!storage_->PersistPolicies(policies))
-        request_result = RequestResult::kSerializationError;
+      if (!storage->PersistPolicies(policies))
+        result = DMClient::RequestResult::kSerializationError;
     }
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(request_callback_), request_result));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), result, validation_results));
+}
+
+void OnDMPolicyValidationReportRequestComplete(
+    scoped_refptr<DMFetch> dm_fetch,
+    DMClient::PolicyValidationReportCallback callback,
+    DMClient::RequestResult result,
+    std::unique_ptr<std::string> response_body) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), result));
+}
+
+}  // namespace
+
+void DMClient::RegisterDevice(std::unique_ptr<Configurator> config,
+                              scoped_refptr<DMStorage> storage,
+                              RegisterCallback callback) {
+  auto dm_fetch = base::MakeRefCounted<DMFetch>(std::move(config), storage);
+  dm_fetch->PostRequest(kRegistrationRequestType,
+                        DMFetch::TokenType::kEnrollmentToken,
+                        GetRegisterBrowserRequestData(policy::GetMachineName(),
+                                                      policy::GetOSPlatform(),
+                                                      policy::GetOSVersion()),
+                        base::BindOnce(OnDMRegisterRequestComplete, dm_fetch,
+                                       std::move(callback)));
+}
+
+void DMClient::FetchPolicy(std::unique_ptr<Configurator> config,
+                           scoped_refptr<DMStorage> storage,
+                           PolicyFetchCallback callback) {
+  auto dm_fetch = base::MakeRefCounted<DMFetch>(std::move(config), storage);
+  std::unique_ptr<CachedPolicyInfo> cached_info =
+      dm_fetch->storage()->GetCachedPolicyInfo();
+  const std::string request_data =
+      GetPolicyFetchRequestData(kGoogleUpdateMachineLevelApps, *cached_info);
+  dm_fetch->PostRequest(
+      kPolicyFetchRequestType, DMFetch::TokenType::kDMToken, request_data,
+      base::BindOnce(&OnDMPolicyFetchRequestComplete, dm_fetch,
+                     std::move(callback), std::move(cached_info)));
+}
+
+void DMClient::ReportPolicyValidationErrors(
+    std::unique_ptr<Configurator> config,
+    scoped_refptr<DMStorage> storage,
+    const PolicyValidationResult& validation_result,
+    PolicyValidationReportCallback callback) {
+  auto dm_fetch = base::MakeRefCounted<DMFetch>(std::move(config), storage);
+  dm_fetch->PostRequest(
+      kValidationReportRequestType, DMFetch::TokenType::kDMToken,
+      GetPolicyValidationReportRequestData(validation_result),
+      base::BindOnce(&OnDMPolicyValidationReportRequestComplete, dm_fetch,
+                     std::move(callback)));
+}
+
+std::unique_ptr<DMClient::Configurator> DMClient::CreateDefaultConfigurator() {
+  return std::make_unique<DefaultConfigurator>();
 }
 
 }  // namespace updater

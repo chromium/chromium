@@ -4,10 +4,10 @@
 
 #include "chrome/updater/device_management/dm_message.h"
 
-#include <map>
 #include <memory>
 #include <utility>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -18,46 +18,45 @@ namespace updater {
 constexpr char kGoogleUpdatePolicyType[] = "google/machine-level-omaha";
 
 namespace {
-enterprise_management::PolicyValidationReportRequest::ValidationResultType
-TranslatePolicyValidationResult(PolicyValidationResult::Status status) {
-  using Report = enterprise_management::PolicyValidationReportRequest;
-  static const std::map<PolicyValidationResult::Status,
-                        Report::ValidationResultType>
-      kValidationStatusMap = {
-          {PolicyValidationResult::Status::kValidationOK,
-           Report::VALIDATION_RESULT_TYPE_SUCCESS},
-          {PolicyValidationResult::Status::kValidationBadInitialSignature,
-           Report::VALIDATION_RESULT_TYPE_BAD_INITIAL_SIGNATURE},
-          {PolicyValidationResult::Status::kValidationBadSignature,
-           Report::VALIDATION_RESULT_TYPE_BAD_SIGNATURE},
-          {PolicyValidationResult::Status::kValidationErrorCodePresent,
-           Report::VALIDATION_RESULT_TYPE_ERROR_CODE_PRESENT},
-          {PolicyValidationResult::Status::kValidationPayloadParseError,
-           Report::VALIDATION_RESULT_TYPE_PAYLOAD_PARSE_ERROR},
-          {PolicyValidationResult::Status::kValidationWrongPolicyType,
-           Report::VALIDATION_RESULT_TYPE_WRONG_POLICY_TYPE},
-          {PolicyValidationResult::Status::kValidationWrongSettingsEntityID,
-           Report::VALIDATION_RESULT_TYPE_WRONG_SETTINGS_ENTITY_ID},
-          {PolicyValidationResult::Status::kValidationBadTimestamp,
-           Report::VALIDATION_RESULT_TYPE_BAD_TIMESTAMP},
-          {PolicyValidationResult::Status::kValidationBadDMToken,
-           Report::VALIDATION_RESULT_TYPE_BAD_DM_TOKEN},
-          {PolicyValidationResult::Status::kValidationBadDeviceID,
-           Report::VALIDATION_RESULT_TYPE_BAD_DEVICE_ID},
-          {PolicyValidationResult::Status::kValidationBadUser,
-           Report::VALIDATION_RESULT_TYPE_BAD_USER},
-          {PolicyValidationResult::Status::kValidationPolicyParseError,
-           Report::VALIDATION_RESULT_TYPE_POLICY_PARSE_ERROR},
-          {PolicyValidationResult::Status::
-               kValidationBadKeyVerificationSignature,
-           Report::VALIDATION_RESULT_TYPE_BAD_KEY_VERIFICATION_SIGNATURE},
-          {PolicyValidationResult::Status::kValidationValueWarning,
-           Report::VALIDATION_RESULT_TYPE_VALUE_WARNING},
-          {PolicyValidationResult::Status::kValidationValueError,
-           Report::VALIDATION_RESULT_TYPE_VALUE_ERROR},
-      };
 
-  auto mapped_status = kValidationStatusMap.find(status);
+enterprise_management::PolicyValidationReportRequest::ValidationResultType
+TranslatePolicyValidationResultStatus(PolicyValidationResult::Status status) {
+  using Report = enterprise_management::PolicyValidationReportRequest;
+  static constexpr auto kValidationStatusMap = base::MakeFixedFlatMap<
+      PolicyValidationResult::Status, Report::ValidationResultType>({
+      {PolicyValidationResult::Status::kValidationOK,
+       Report::VALIDATION_RESULT_TYPE_SUCCESS},
+      {PolicyValidationResult::Status::kValidationBadInitialSignature,
+       Report::VALIDATION_RESULT_TYPE_BAD_INITIAL_SIGNATURE},
+      {PolicyValidationResult::Status::kValidationBadSignature,
+       Report::VALIDATION_RESULT_TYPE_BAD_SIGNATURE},
+      {PolicyValidationResult::Status::kValidationErrorCodePresent,
+       Report::VALIDATION_RESULT_TYPE_ERROR_CODE_PRESENT},
+      {PolicyValidationResult::Status::kValidationPayloadParseError,
+       Report::VALIDATION_RESULT_TYPE_PAYLOAD_PARSE_ERROR},
+      {PolicyValidationResult::Status::kValidationWrongPolicyType,
+       Report::VALIDATION_RESULT_TYPE_WRONG_POLICY_TYPE},
+      {PolicyValidationResult::Status::kValidationWrongSettingsEntityID,
+       Report::VALIDATION_RESULT_TYPE_WRONG_SETTINGS_ENTITY_ID},
+      {PolicyValidationResult::Status::kValidationBadTimestamp,
+       Report::VALIDATION_RESULT_TYPE_BAD_TIMESTAMP},
+      {PolicyValidationResult::Status::kValidationBadDMToken,
+       Report::VALIDATION_RESULT_TYPE_BAD_DM_TOKEN},
+      {PolicyValidationResult::Status::kValidationBadDeviceID,
+       Report::VALIDATION_RESULT_TYPE_BAD_DEVICE_ID},
+      {PolicyValidationResult::Status::kValidationBadUser,
+       Report::VALIDATION_RESULT_TYPE_BAD_USER},
+      {PolicyValidationResult::Status::kValidationPolicyParseError,
+       Report::VALIDATION_RESULT_TYPE_POLICY_PARSE_ERROR},
+      {PolicyValidationResult::Status::kValidationBadKeyVerificationSignature,
+       Report::VALIDATION_RESULT_TYPE_BAD_KEY_VERIFICATION_SIGNATURE},
+      {PolicyValidationResult::Status::kValidationValueWarning,
+       Report::VALIDATION_RESULT_TYPE_VALUE_WARNING},
+      {PolicyValidationResult::Status::kValidationValueError,
+       Report::VALIDATION_RESULT_TYPE_VALUE_ERROR},
+  });
+
+  const auto* mapped_status = kValidationStatusMap.find(status);
   return mapped_status == kValidationStatusMap.end()
              ? Report::VALIDATION_RESULT_TYPE_ERROR_UNSPECIFIED
              : mapped_status->second;
@@ -72,8 +71,6 @@ TranslatePolicyValidationResultSeverity(
       return Issue::VALUE_VALIDATION_ISSUE_SEVERITY_WARNING;
     case PolicyValueValidationIssue::Severity::kError:
       return Issue::VALUE_VALIDATION_ISSUE_SEVERITY_ERROR;
-    default:
-      return Issue::VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED;
   }
 }
 
@@ -142,7 +139,7 @@ std::string GetPolicyValidationReportRequestData(
       policy_validation_report_request =
           dm_request.mutable_policy_validation_report_request();
   policy_validation_report_request->set_validation_result_type(
-      TranslatePolicyValidationResult(aggregated_status));
+      TranslatePolicyValidationResultStatus(aggregated_status));
   policy_validation_report_request->set_policy_type(
       validation_result.policy_type);
   policy_validation_report_request->set_policy_token(

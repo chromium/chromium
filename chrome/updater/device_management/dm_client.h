@@ -5,17 +5,12 @@
 #ifndef CHROME_UPDATER_DEVICE_MANAGEMENT_DM_CLIENT_H_
 #define CHROME_UPDATER_DEVICE_MANAGEMENT_DM_CLIENT_H_
 
-#include <stdint.h>
-
 #include <memory>
-#include <ostream>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequence_checker.h"
-
-class GURL;
 
 namespace update_client {
 class NetworkFetcher;
@@ -23,13 +18,9 @@ class NetworkFetcher;
 
 namespace updater {
 
-class CachedPolicyInfo;
 class DMStorage;
+struct PolicyValidationResult;
 
-// This class is responsible for everything related to communication with the
-// device management server.
-// The class maintains the intermediate state of a network request, thus it
-// cannot handle multiple requests in parallel.
 class DMClient {
  public:
   class Configurator {
@@ -82,64 +73,63 @@ class DMClient {
 
     // Got an unexpected response for the request.
     kUnexpectedResponse,
+
+    // No POST data.
+    kNoPayload,
   };
 
-  using DMRequestCallback = base::OnceCallback<void(RequestResult)>;
+  using RegisterCallback = base::OnceCallback<void(RequestResult)>;
 
-  DMClient();
-  DMClient(std::unique_ptr<Configurator> config,
-           scoped_refptr<DMStorage> storage);
-  DMClient(const DMClient&) = delete;
-  DMClient& operator=(const DMClient&) = delete;
-  ~DMClient();
+  using PolicyFetchCallback = base::OnceCallback<void(
+      RequestResult,
+      const std::vector<PolicyValidationResult>& validation_results)>;
 
-  // Returns the storage where this client saves the data from DM server.
-  scoped_refptr<DMStorage> GetStorage() const;
+  using PolicyValidationReportCallback =
+      base::OnceCallback<void(RequestResult)>;
 
-  // Posts a device register request to the server. Upon success, a new DM
-  // token is saved into the storage before |request_callback| is called.
-  void PostRegisterRequest(DMRequestCallback request_callback);
+  // Sends a device registration request to DM server.
+  // Device must complete registration before actual management.
+  // Possible outcome:
+  //   1) Registration is skipped if one of the following is true:
+  //      a) There's no enrollment token.
+  //      b) Device is already registered.
+  //      c) Device is explicitly unregistered by server.
+  //   2) Registration completes successfully and a DM token is saved in
+  //      storage.
+  //   3) Server unregisters the device and the device is marked as such.
+  //   4) Registration fails, device status is not changed.
+  //
+  static void RegisterDevice(std::unique_ptr<Configurator> config,
+                             scoped_refptr<DMStorage> storage,
+                             RegisterCallback callback);
 
-  // Posts a policy fetch request to the server. Upon success, new polices
-  // are saved into the storage before |request_callback| is called.
-  void PostPolicyFetchRequest(DMRequestCallback request_callback);
+  // Fetches policies from the DM server.
+  // Possible outcome:
+  //   1) Policy fetch is skipped when there is no valid DM token.
+  //   2) Policy fetch completes successfully. New policies will be validated
+  //      and saved into storage. Cached info will be updated if the policy
+  //      contains a new public key.
+  //   3) Server unregisters the device, all policies will be cleaned and device
+  //      exits management.
+  //   4) Fetch fails, device status is not changed.
+  //
+  static void FetchPolicy(std::unique_ptr<Configurator> config,
+                          scoped_refptr<DMStorage> storage,
+                          PolicyFetchCallback callback);
 
- private:
-  // Gets the full request URL to DM server for the given request type.
-  // Additional device specific values, such as device ID, platform etc. will
-  // be appended to the URL as query parameters.
-  GURL BuildURL(const std::string& request_type) const;
+  // Posts the policy validation report back to DM server.
+  // The report request is skipped if there's no valid DM token or
+  // `validation_result` has no error to report.
+  // The report is best-effort only. No retry will be attempted if it fails.
+  //
+  static void ReportPolicyValidationErrors(
+      std::unique_ptr<Configurator> config,
+      scoped_refptr<DMStorage> storage,
+      const PolicyValidationResult& validation_result,
+      PolicyValidationReportCallback callback);
 
-  // Callback functions for the URLFetcher.
-  void OnRequestStarted(int response_code, int64_t content_length);
-  void OnRequestProgress(int64_t current);
-  void OnRegisterRequestComplete(std::unique_ptr<std::string> response_body,
-                                 int net_error,
-                                 const std::string& header_etag,
-                                 const std::string& header_x_cup_server_proof,
-                                 int64_t xheader_retry_after_sec);
-  void OnPolicyFetchRequestComplete(
-      std::unique_ptr<std::string> response_body,
-      int net_error,
-      const std::string& header_etag,
-      const std::string& header_x_cup_server_proof,
-      int64_t xheader_retry_after_sec);
-
-  std::unique_ptr<Configurator> config_;
-  scoped_refptr<DMStorage> storage_;
-  std::unique_ptr<CachedPolicyInfo> cached_info_;
-
-  std::unique_ptr<update_client::NetworkFetcher> network_fetcher_;
-  DMRequestCallback request_callback_;
-  int http_status_code_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
+  static std::unique_ptr<Configurator> CreateDefaultConfigurator();
 };
-
-inline std::ostream& operator<<(std::ostream& os,
-                                const DMClient::RequestResult& request_result) {
-  return os << static_cast<int>(request_result);
-}
 
 }  // namespace updater
 
