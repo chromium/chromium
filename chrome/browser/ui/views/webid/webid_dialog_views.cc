@@ -7,9 +7,11 @@
 #include <memory>
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/ui/views/webid/webid_permission_view.h"
 #include "chrome/browser/ui/views/webid/webid_signin_page_view.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "content/public/common/content_features.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -24,7 +26,13 @@ constexpr int kDialogMinWidth = 512;
 constexpr int kDialogHeight = 450;
 
 WebIdDialogViews::WebIdDialogViews(content::WebContents* rp_web_contents)
-    : WebIdDialogViews(rp_web_contents, nullptr) {}
+    : WebIdDialogViews(rp_web_contents, nullptr) {
+  // https://crbug.com/1195781: It appears that there are crashes in this
+  // file without the WebID flag enabled, which should be impossible.
+  if (!base::FeatureList::IsEnabled(features::kWebID)) {
+    base::debug::DumpWithoutCrashing();
+  }
+}
 
 WebIdDialogViews::WebIdDialogViews(content::WebContents* rp_web_contents,
                                    gfx::NativeView parent)
