@@ -242,6 +242,11 @@ class VIEWS_EXPORT Textfield : public View,
     placeholder_text_draw_flags_ = flags;
   }
 
+  bool force_text_directionality() const { return force_text_directionality_; }
+  void set_force_text_directionality(bool force) {
+    force_text_directionality_ = force;
+  }
+
   // Gets/Sets whether to indicate the textfield has invalid content.
   bool GetInvalid() const;
   void SetInvalid(bool invalid);
@@ -767,6 +772,11 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Extra insets, useful to make room for a button for example.
   gfx::Insets extra_insets_ = gfx::Insets();
+
+  // Whether the client forces a specific text directionality for this
+  // textfield, which should inhibit the user's ability to control the
+  // directionality.
+  bool force_text_directionality_ = false;
 
   // Holds the subscription object for the enabled changed callback.
   base::CallbackListSubscription enabled_changed_subscription_ =

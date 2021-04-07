@@ -384,6 +384,7 @@ OmniboxViewViews::OmniboxViewViews(OmniboxEditController* controller,
       friendly_suggestion_text_prefix_length_(0) {
   SetID(VIEW_ID_OMNIBOX);
   SetFontList(font_list);
+  set_force_text_directionality(true);
 
   // Unit tests may use a mock location bar that has no browser,
   // or use no location bar at all.

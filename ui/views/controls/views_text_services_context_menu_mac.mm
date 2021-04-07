@@ -112,11 +112,15 @@ std::u16string ViewsTextServicesContextMenuMac::GetSelectedText() const {
 
 bool ViewsTextServicesContextMenuMac::IsTextDirectionEnabled(
     base::i18n::TextDirection direction) const {
+  if (client()->force_text_directionality())
+    return false;
   return direction != base::i18n::UNKNOWN_DIRECTION;
 }
 
 bool ViewsTextServicesContextMenuMac::IsTextDirectionChecked(
     base::i18n::TextDirection direction) const {
+  if (client()->force_text_directionality())
+    return direction == base::i18n::UNKNOWN_DIRECTION;
   return IsTextDirectionEnabled(direction) &&
          client()->GetTextDirection() == direction;
 }
