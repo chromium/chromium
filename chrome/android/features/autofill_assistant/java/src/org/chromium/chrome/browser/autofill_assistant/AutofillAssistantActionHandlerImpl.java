@@ -93,7 +93,7 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         Map<String, String> argumentMap = toArgumentMap(arguments);
         Callback<BaseOnboardingCoordinator> afterOnboarding = (onboardingCoordinator) -> {
             callback.onResult(client.performDirectAction(
-                    name, experimentIds, argumentMap, onboardingCoordinator));
+                    name, experimentIds, argumentMap, onboardingCoordinator.transferControls()));
         };
 
         if (!AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) {

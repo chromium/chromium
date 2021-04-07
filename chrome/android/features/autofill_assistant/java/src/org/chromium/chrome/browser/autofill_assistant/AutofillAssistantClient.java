@@ -17,7 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
+import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.trigger_scripts.AssistantTriggerScriptBridge;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -100,46 +100,38 @@ public class AutofillAssistantClient {
      * <p>This immediately shows the UI, with a loading message, then fetches scripts
      * from the server and autostarts one of them.
      *
-     * @param initialUrl the original deep link, if known. When started from CCT, this
-     * is the URL included into the intent
-     * @param parameters Autofill Assistant parameters to set during the whole flow
-     * @param experimentIds comma-separated set of experiments to use while running the flow
-     * @param callerEmail the email of the caller, if specified.
-     * @param isChromeCustomTab whether this was started from a {@link CustomTabActivity} or a
-     *         normal Chrome tab.
-     * @param onboardingCoordinator if non-null, reuse existing UI elements, usually created to show
-     *         onboarding.
+     * @param triggerContext the startup parameters and experiment ids.
+     * @param overlayCoordinator The overlay coordinator shown during the onboarding, if any.
      *
      * @return true if the flow was started, false if the controller is in a state where
      * autostarting is not possible, such as can happen if a script is already running. The flow can
      * still fail after this method returns true; the failure will be displayed on the UI.
      */
-    boolean start(String initialUrl, Map<String, String> parameters, String experimentIds,
-            @Nullable String callerEmail, boolean isChromeCustomTab,
-            @Nullable BaseOnboardingCoordinator onboardingCoordinator) {
+    boolean start(TriggerContext triggerContext,
+            @Nullable AssistantOverlayCoordinator overlayCoordinator) {
         if (mNativeClientAndroid == 0) return false;
 
         checkNativeClientIsAliveOrThrow();
-        chooseAccountAsyncIfNecessary(callerEmail);
-        return AutofillAssistantClientJni.get().start(mNativeClientAndroid, this, initialUrl,
-                experimentIds, parameters.keySet().toArray(new String[parameters.size()]),
-                parameters.values().toArray(new String[parameters.size()]), isChromeCustomTab,
-                onboardingCoordinator,
-                /* onboardingShown= */
-                onboardingCoordinator != null && onboardingCoordinator.getOnboardingShown(),
+        chooseAccountAsyncIfNecessary(triggerContext.getCallerEmail());
+        return AutofillAssistantClientJni.get().start(mNativeClientAndroid, this,
+                triggerContext.getStartupUrl(), triggerContext.getExperimentIds(),
+                triggerContext.getParameters().keySet().toArray(new String[0]),
+                triggerContext.getParameters().values().toArray(new String[0]),
+                triggerContext.isCustomTab(), overlayCoordinator,
+                triggerContext.getOnboardingShown(),
                 AutofillAssistantServiceInjector.getServiceToInject(mNativeClientAndroid));
     }
 
-    public void startTriggerScript(AssistantTriggerScriptBridge delegate, String initialUrl,
-            Map<String, String> parameters, String experimentIds) {
+    public void startTriggerScript(
+            TriggerContext triggerContext, AssistantTriggerScriptBridge delegate) {
         if (mNativeClientAndroid == 0) {
             return;
         }
         checkNativeClientIsAliveOrThrow();
         AutofillAssistantClientJni.get().startTriggerScript(mNativeClientAndroid, this, delegate,
-                initialUrl, experimentIds,
-                parameters.keySet().toArray(new String[parameters.size()]),
-                parameters.values().toArray(new String[parameters.size()]),
+                triggerContext.getStartupUrl(), triggerContext.getExperimentIds(),
+                triggerContext.getParameters().keySet().toArray(new String[0]),
+                triggerContext.getParameters().values().toArray(new String[0]),
                 AutofillAssistantServiceInjector.getServiceRequestSenderToInject());
     }
 
@@ -212,14 +204,14 @@ public class AutofillAssistantClient {
      * @param actionId id of the action
      * @param experimentIds comma-separated set of experiments to use while running the flow
      * @param arguments report these as script parameters while performing this specific action
-     * @param onboardingCoordinator if non-null, reuse existing UI elements, usually created to show
+     * @param overlayCoordinator if non-null, reuse existing UI elements, usually created to show
      *         onboarding.
      * @return true if the action was found started, false otherwise. The action can still fail
      * after this method returns true; the failure will be displayed on the UI.
      */
     public boolean performDirectAction(String actionId, String experimentIds,
             Map<String, String> arguments,
-            @Nullable BaseOnboardingCoordinator onboardingCoordinator) {
+            @Nullable AssistantOverlayCoordinator overlayCoordinator) {
         if (mNativeClientAndroid == 0) return false;
 
         // Note that only fetchWebsiteActions can start AA, so only it needs
@@ -227,7 +219,7 @@ public class AutofillAssistantClient {
         return AutofillAssistantClientJni.get().performDirectAction(mNativeClientAndroid,
                 AutofillAssistantClient.this, actionId, experimentIds,
                 arguments.keySet().toArray(new String[arguments.size()]),
-                arguments.values().toArray(new String[arguments.size()]), onboardingCoordinator);
+                arguments.values().toArray(new String[arguments.size()]), overlayCoordinator);
     }
 
     @CalledByNative
@@ -405,9 +397,8 @@ public class AutofillAssistantClient {
         void onOnboardingUiChange(WebContents webContents, boolean shown);
         boolean start(long nativeClientAndroid, AutofillAssistantClient caller, String initialUrl,
                 String experimentIds, String[] parameterNames, String[] parameterValues,
-                boolean isChromeCustomTab,
-                @Nullable BaseOnboardingCoordinator onboardingCoordinator, boolean onboardingShown,
-                long nativeService);
+                boolean isChromeCustomTab, @Nullable AssistantOverlayCoordinator overlayCoordinator,
+                boolean onboardingShown, long nativeService);
         void startTriggerScript(long nativeClientAndroid, AutofillAssistantClient caller,
                 AssistantTriggerScriptBridge delegate, String initialUrl, String experimentIds,
                 String[] parameterNames, String[] parameterValues, long nativeServiceRequestSender);
@@ -427,6 +418,6 @@ public class AutofillAssistantClient {
 
         boolean performDirectAction(long nativeClientAndroid, AutofillAssistantClient caller,
                 String actionId, String experimentId, String[] argumentNames,
-                String[] argumentValues, @Nullable BaseOnboardingCoordinator onboardingCoordinator);
+                String[] argumentValues, @Nullable AssistantOverlayCoordinator overlayCoordinator);
     }
 }

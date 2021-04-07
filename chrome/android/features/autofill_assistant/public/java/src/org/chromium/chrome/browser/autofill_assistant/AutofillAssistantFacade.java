@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FieldTrialList;
@@ -70,6 +71,7 @@ public class AutofillAssistantFacade {
                 TriggerContext.newBuilder()
                         .fromBundle(activity.getInitialIntent().getExtras())
                         .withInitialUrl(activity.getInitialIntent().getDataString())
+                        .withIsCustomTab(activity instanceof CustomTabActivity)
                         .build());
     }
 
@@ -89,6 +91,7 @@ public class AutofillAssistantFacade {
                 TriggerContext.newBuilder()
                         .fromBundle(bundleExtras)
                         .withInitialUrl(initialUrl)
+                        .withIsCustomTab(chromeActivity instanceof CustomTabActivity)
                         .build());
     }
 
@@ -161,15 +164,29 @@ public class AutofillAssistantFacade {
         });
     }
 
-    private static void start(ChromeActivity activity, TriggerContext arguments,
+    private static void start(ChromeActivity activity, TriggerContext triggerContext,
             AutofillAssistantModuleEntry module) {
-        module.start(BottomSheetControllerProvider.from(activity.getWindowAndroid()),
-                activity.getBrowserControlsManager(), activity.getCompositorViewHolder(), activity,
-                activity.getCurrentWebContents(), activity.getWindowAndroid().getKeyboardDelegate(),
-                activity.getWindowAndroid().getApplicationBottomInsetProvider(),
-                activity.getActivityTabProvider(), activity instanceof CustomTabActivity,
-                arguments.getInitialUrl(), arguments.getParameters(), arguments.getExperimentIds(),
-                arguments.getCallerEmail(), arguments.getOriginalDeeplink());
+        module.start(createDependencies(activity, module), triggerContext);
+    }
+
+    /**
+     * Asks the feature module to create a container with the required dependencies.
+     * TODO(b/173103628): move this out of the facade once we inject our dependencies in a better
+     * way.
+     */
+    @VisibleForTesting
+    public static AssistantDependencies createDependencies(
+            Activity activity, AutofillAssistantModuleEntry module) {
+        assert activity instanceof ChromeActivity;
+        ChromeActivity chromeActivity = (ChromeActivity) activity;
+        return module.createDependencies(
+                BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
+                chromeActivity.getBrowserControlsManager(),
+                chromeActivity.getCompositorViewHolder(), chromeActivity,
+                chromeActivity.getCurrentWebContents(),
+                chromeActivity.getWindowAndroid().getKeyboardDelegate(),
+                chromeActivity.getWindowAndroid().getApplicationBottomInsetProvider(),
+                chromeActivity.getActivityTabProvider());
     }
 
     /**

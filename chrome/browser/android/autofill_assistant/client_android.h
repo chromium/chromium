@@ -46,17 +46,16 @@ class ClientAndroid : public Client,
   // Returns the corresponding Java AutofillAssistantClient.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  bool Start(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jstring>& jinitial_url,
-      const base::android::JavaParamRef<jstring>& jexperiment_ids,
-      const base::android::JavaParamRef<jobjectArray>& parameter_names,
-      const base::android::JavaParamRef<jobjectArray>& parameter_values,
-      jboolean jis_cct,
-      const base::android::JavaParamRef<jobject>& jonboarding_coordinator,
-      jboolean jonboarding_shown,
-      jlong jservice);
+  bool Start(JNIEnv* env,
+             const base::android::JavaParamRef<jobject>& jcaller,
+             const base::android::JavaParamRef<jstring>& jinitial_url,
+             const base::android::JavaParamRef<jstring>& jexperiment_ids,
+             const base::android::JavaParamRef<jobjectArray>& parameter_names,
+             const base::android::JavaParamRef<jobjectArray>& parameter_values,
+             jboolean jis_cct,
+             const base::android::JavaParamRef<jobject>& joverlay_coordinator,
+             jboolean jonboarding_shown,
+             jlong jservice);
   void OnJavaDestroyUI(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& jcaller);
   void TransferUITo(
@@ -105,7 +104,7 @@ class ClientAndroid : public Client,
       const base::android::JavaParamRef<jstring>& jexperiment_ids,
       const base::android::JavaParamRef<jobjectArray>& jargument_names,
       const base::android::JavaParamRef<jobjectArray>& jargument_values,
-      const base::android::JavaParamRef<jobject>& jonboarding_coordinator);
+      const base::android::JavaParamRef<jobject>& joverlay_coordinator);
 
   // Overrides Client
   void AttachUI() override;
@@ -140,7 +139,7 @@ class ClientAndroid : public Client,
   void CreateController(std::unique_ptr<Service> service);
   void DestroyController();
   void AttachUI(
-      const base::android::JavaParamRef<jobject>& jonboarding_coordinator);
+      const base::android::JavaParamRef<jobject>& joverlay_coordinator);
   bool NeedsUI();
   void OnFetchWebsiteActions(const base::android::JavaRef<jobject>& jcallback);
   void SafeDestroyControllerAndUI(Metrics::DropOutReason reason);

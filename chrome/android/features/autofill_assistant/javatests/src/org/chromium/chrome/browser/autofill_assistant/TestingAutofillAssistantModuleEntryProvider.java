@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -23,7 +22,6 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Implementation of {@link AutofillAssistantModuleEntryProvider} that can be manipulated to
@@ -66,15 +64,19 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     /** Mock module entry. */
     static class MockAutofillAssistantModuleEntry implements AutofillAssistantModuleEntry {
         @Override
-        public void start(BottomSheetController bottomSheetController,
+        public AssistantDependencies createDependencies(BottomSheetController bottomSheetController,
                 BrowserControlsStateProvider browserControls,
                 CompositorViewHolder compositorViewHolder, Context context,
                 @NonNull WebContents webContents,
                 ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
                 ApplicationViewportInsetSupplier bottomInsetProvider,
-                ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
-                @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
-                @Nullable String callerEmail, @Nullable String originalDeeplink) {}
+                ActivityTabProvider activityTabProvider) {
+            return null;
+        }
+
+        @Override
+        public void start(
+                AssistantDependencies assistantDependencies, TriggerContext triggerContext) {}
 
         @Override
         public AutofillAssistantActionHandler createActionHandler(Context context,

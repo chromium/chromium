@@ -46,7 +46,7 @@ class UiControllerAndroid : public ControllerObserver {
  public:
   static std::unique_ptr<UiControllerAndroid> CreateFromWebContents(
       content::WebContents* web_contents,
-      const base::android::JavaParamRef<jobject>& jonboarding_coordinator);
+      const base::android::JavaParamRef<jobject>& joverlay_coordinator);
 
   // pointers to |web_contents|, |client| must remain valid for the lifetime of
   // this instance.
@@ -56,7 +56,7 @@ class UiControllerAndroid : public ControllerObserver {
   UiControllerAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jactivity,
-      const base::android::JavaParamRef<jobject>& jonboarding_coordinator);
+      const base::android::JavaParamRef<jobject>& joverlay_coordinator);
   ~UiControllerAndroid() override;
 
   // Attaches the UI to the given client, its web contents and delegate.

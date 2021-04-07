@@ -151,6 +151,7 @@ public class TriggerContext {
     private String mInitialUrl;
     private boolean mIsCustomTab;
     private boolean mIsDirectAction;
+    private boolean mOnboardingShown;
 
     private TriggerContext() {
         mScriptParameters = new HashMap<>();
@@ -260,6 +261,13 @@ public class TriggerContext {
         return getStringParameter(PARAMETER_ORIGINAL_DEEPLINK);
     }
 
+    /**
+     * Returns the startup URL to use.
+     */
+    public String getStartupUrl() {
+        return getOriginalDeeplink() != null ? getOriginalDeeplink() : getInitialUrl();
+    }
+
     /** Whether the caller requests the client to fetch trigger scripts from a remote endpoint. */
     public boolean requestsTriggerScript() {
         return getBooleanParameter(PARAMETER_REQUEST_TRIGGER_SCRIPT);
@@ -273,6 +281,20 @@ public class TriggerContext {
     /** Whether the caller requested a trigger script to start in any of the supported ways. */
     public boolean containsTriggerScript() {
         return requestsTriggerScript() || containsBase64TriggerScripts();
+    }
+
+    /** Whether this trigger context was created in a custom tab. */
+    public boolean isCustomTab() {
+        return mIsCustomTab;
+    }
+
+    public void setOnboardingShown(boolean onboardingShown) {
+        mOnboardingShown = onboardingShown;
+    }
+
+    /** Whether the onboarding was shown. TODO(arbesser): move this to native. */
+    public boolean getOnboardingShown() {
+        return mOnboardingShown;
     }
 
     /**
