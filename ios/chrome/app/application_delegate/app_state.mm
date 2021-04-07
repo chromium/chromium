@@ -154,9 +154,15 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 // Agents attached to this app state.
 @property(nonatomic, strong) NSMutableArray<id<AppStateAgent>>* agents;
 
-// Operational blocks to be run by the local runloop that are queued by the
-// init stage agents.
-@property(nonatomic, strong) NSMutableArray* stageQueue;
+// A flag that tracks if the init stage is currently being incremented. Used to
+// prevent reentrant calls to queueTransitionToNextInitStage originating from
+// stage change notifications.
+@property(nonatomic, assign) BOOL isIncrementingInitStage;
+
+// A flag that tracks if another increment of init stage needs to happen after
+// this one is complete. Will be set if queueTransitionToNextInitStage is called
+// while queueTransitionToNextInitStage is already on the call stack.
+@property(nonatomic, assign) BOOL needsIncrementInitStage;
 
 // Redefined internaly as readwrite.
 @property(nonatomic, assign, readwrite) InitStage initStage;
@@ -196,8 +202,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                  object:nil];
       }
     }
-
-    _stageQueue = [NSMutableArray new];
   }
   return self;
 }
@@ -227,6 +231,20 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         (uiBlockerTarget != nil) && (scene != uiBlockerTarget);
     scene.presentingModalOverlay = shouldPresentOverlay;
   }
+}
+
+// Do not use this setter directly, instead use -queueTransitionToInitStage:
+// that provides reentry guards.
+- (void)setInitStage:(InitStage)initStage {
+  DCHECK(initStage >= InitStageStart);
+  DCHECK(initStage <= InitStageFinal);
+  // It's probably a programming error to set the same init stage twice, except
+  // for InitStageStart to kick off the startup.
+  DCHECK(initStage == InitStageStart || _initStage != initStage);
+
+  [self.observers appState:self willTransitionToInitStage:initStage];
+  _initStage = initStage;
+  [self.observers appState:self didTransitionToInitStage:initStage];
 }
 
 #pragma mark - Public methods.
@@ -535,7 +553,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [_browserLauncher setLaunchOptions:launchOptions];
   self.shouldPerformAdditionalDelegateHandling = YES;
 
-  [self startInitStages];
+  [self queueTransitionToFirstInitStage];
 
   if (!stateBackground) {
     [self initializeUI];
@@ -563,10 +581,34 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (void)queueTransitionToNextInitStage {
-  __weak AppState* weakSelf = self;
-  [_stageQueue addObject:(^{
-                 [weakSelf advanceToNextInitStage];
-               })];
+  InitStage nextInitStage = static_cast<InitStage>(self.initStage + 1);
+  DCHECK(nextInitStage <= InitStageFinal);
+  [self queueTransitionToInitStage:nextInitStage];
+}
+
+- (void)queueTransitionToFirstInitStage {
+  [self queueTransitionToInitStage:InitStageStart];
+}
+
+- (void)queueTransitionToInitStage:(InitStage)initStage {
+  if (self.isIncrementingInitStage) {
+    // It is an error to queue more than one transition at once.
+    DCHECK(!self.needsIncrementInitStage);
+
+    // Set a flag to increment after the observers are notified of the current
+    // change.
+    self.needsIncrementInitStage = YES;
+    return;
+  }
+
+  self.isIncrementingInitStage = YES;
+  self.initStage = initStage;
+  self.isIncrementingInitStage = NO;
+
+  if (self.needsIncrementInitStage) {
+    self.needsIncrementInitStage = NO;
+    [self queueTransitionToNextInitStage];
+  }
 }
 
 #pragma mark - Multiwindow-related
@@ -712,40 +754,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
 }
 
-// Advances to the next init stage.
-- (void)advanceToNextInitStage {
-  // The app is done with all init stages, nothing to do.
-  if (self.initStage == InitStageFinal)
-    return;
-
-  InitStage newInitStage = static_cast<InitStage>(self.initStage + 1);
-
-  [self.observers appState:self willTransitionToInitStage:newInitStage];
-  self.initStage = newInitStage;
-  [self.observers appState:self didTransitionToInitStage:self.initStage];
-}
-
-// Starts the transition through init stages.
-- (void)startInitStages {
-  __weak AppState* weakSelf = self;
-  [_stageQueue addObject:(^{
-                 [weakSelf.observers appState:weakSelf
-                     willTransitionToInitStage:InitStageStart];
-                 [weakSelf.observers appState:weakSelf
-                     didTransitionToInitStage:InitStageStart];
-               })];
-  [self executeInitStageQueue];
-}
-
-// Executes the blocks in the init stage queue until the queue is empty. This
-// will also execute the new blocks that are queued on the fly.
-- (void)executeInitStageQueue {
-  while ([_stageQueue count] > 0) {
-    void (^stageBlock)() = [_stageQueue objectAtIndex:0];
-    stageBlock();
-    [_stageQueue removeObjectAtIndex:0];
-  }
-}
 
 #pragma mark - UIBlockerManager
 

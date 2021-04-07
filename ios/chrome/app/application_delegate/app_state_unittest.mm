@@ -137,6 +137,47 @@ class FakeChromeBrowserProvider : public ios::TestChromeBrowserProvider {
 
 }  // namespace
 
+// An app state observer that will call [AppState
+// queueTransitionToNextInitStage] once (when a flag is set) from one of
+// willTransitionToInitStage: and didTransitionToInitStage: Defaults to
+// willTransitioin.
+@interface AppStateTransitioningObserver : NSObject <AppStateObserver>
+// When set, will call queueTransitionToNextInitStage on
+// didTransitionToInitStage; otherwise, on willTransitionToInitStage
+@property(nonatomic, assign) BOOL triggerOnDidTransition;
+// Will do nothing when this is not set.
+// Will call queueTransitionToNextInitStage on correct callback and reset this
+// flag when it's set. The flag is init to YES when the object is created.
+@property(nonatomic, assign) BOOL needsQueueTransition;
+@end
+
+@implementation AppStateTransitioningObserver
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _needsQueueTransition = YES;
+  }
+  return self;
+}
+
+- (void)appState:(AppState*)appState
+    willTransitionToInitStage:(InitStage)initStage {
+  if (self.needsQueueTransition && !self.triggerOnDidTransition) {
+    [appState queueTransitionToNextInitStage];
+    self.needsQueueTransition = NO;
+  }
+}
+
+- (void)appState:(AppState*)appState
+    didTransitionToInitStage:(InitStage)initStage {
+  if (self.needsQueueTransition && self.triggerOnDidTransition) {
+    [appState queueTransitionToNextInitStage];
+    self.needsQueueTransition = NO;
+  }
+}
+@end
+
 class AppStateTest : public BlockCleanupTest {
  protected:
   AppStateTest() {
@@ -961,4 +1002,106 @@ TEST_F(AppStateTest, applicationDidEnterBackgroundStageBackground) {
 
   // Tests.
   EXPECT_EQ(NSUInteger(0), [scopedKeyWindow.Get() subviews].count);
+}
+
+// Tests that -queueTransitionToNextInitStage transitions to the next stage.
+TEST_F(AppStateTest, queueTransitionToNextInitStage) {
+  AppState* appState = getAppStateWithMock();
+  ASSERT_EQ(appState.initStage, InitStageStart);
+  [appState queueTransitionToNextInitStage];
+  ASSERT_EQ(appState.initStage, static_cast<InitStage>(InitStageStart + 1));
+}
+
+// Tests that -queueTransitionToNextInitStage notifies observers.
+TEST_F(AppStateTest, queueTransitionToNextInitStageNotifiesObservers) {
+  // Setup.
+  AppState* appState = getAppStateWithMock();
+  id observer = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
+  InitStage secondStage = static_cast<InitStage>(InitStageStart + 1);
+  [appState addObserver:observer];
+
+  [[observer expect] appState:appState willTransitionToInitStage:secondStage];
+  [[observer expect] appState:appState didTransitionToInitStage:secondStage];
+
+  [appState queueTransitionToNextInitStage];
+  [observer verify];
+}
+
+// Tests that -queueTransitionToNextInitStage, when called from an observer's
+// call, first completes sending previous updates and doesn't change the init
+// stage, then transitions to the next init stage and sends updates.
+TEST_F(AppStateTest,
+       queueTransitionToNextInitStageReentrantFromWillTransitionToInitStage) {
+  // Setup.
+  AppState* appState = getAppStateWithMock();
+  id observer1 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
+  AppStateTransitioningObserver* transitioningObserver =
+      [[AppStateTransitioningObserver alloc] init];
+  id observer2 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
+
+  InitStage secondStage = static_cast<InitStage>(InitStageStart + 1);
+  InitStage thirdStage = static_cast<InitStage>(InitStageStart + 2);
+
+  // The order is important here.
+  [appState addObserver:observer1];
+  [appState addObserver:transitioningObserver];
+  [appState addObserver:observer2];
+
+  // The order is important here. We want to first receive all notifications for
+  // the second stage, then all the notifications for the third stage, despite
+  // transitioningObserver queueing a new transition from one of the callbacks.
+  [[observer1 expect] appState:appState willTransitionToInitStage:secondStage];
+  [[observer1 expect] appState:appState didTransitionToInitStage:secondStage];
+  [[observer2 expect] appState:appState willTransitionToInitStage:secondStage];
+  [[observer2 expect] appState:appState didTransitionToInitStage:secondStage];
+  [[observer1 expect] appState:appState willTransitionToInitStage:thirdStage];
+  [[observer1 expect] appState:appState didTransitionToInitStage:thirdStage];
+  [[observer2 expect] appState:appState willTransitionToInitStage:thirdStage];
+  [[observer2 expect] appState:appState didTransitionToInitStage:thirdStage];
+  [observer1 setExpectationOrderMatters:YES];
+  [observer2 setExpectationOrderMatters:YES];
+
+  [appState queueTransitionToNextInitStage];
+  [observer1 verify];
+  [observer2 verify];
+}
+
+// Tests that -queueTransitionToNextInitStage, when called from an observer's
+// call, first completes sending previous updates and doesn't change the init
+// stage, then transitions to the next init stage and sends updates.
+TEST_F(AppStateTest,
+       queueTransitionToNextInitStageReentrantFromDidTransitionToInitStage) {
+  // Setup.
+  AppState* appState = getAppStateWithMock();
+  id observer1 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
+  AppStateTransitioningObserver* transitioningObserver =
+      [[AppStateTransitioningObserver alloc] init];
+  transitioningObserver.triggerOnDidTransition = YES;
+  id observer2 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
+
+  InitStage secondStage = static_cast<InitStage>(InitStageStart + 1);
+  InitStage thirdStage = static_cast<InitStage>(InitStageStart + 2);
+
+  // The order is important here.
+  [appState addObserver:observer1];
+  [appState addObserver:transitioningObserver];
+  [appState addObserver:observer2];
+
+  // The order is important here. We want to first receive all notifications for
+  // the second stage, then all the notifications for the third stage, despite
+  // transitioningObserver queueing a new transition from one of the callbacks.
+  [[observer1 expect] appState:appState willTransitionToInitStage:secondStage];
+  [[observer1 expect] appState:appState didTransitionToInitStage:secondStage];
+  [[observer2 expect] appState:appState willTransitionToInitStage:secondStage];
+  [[observer2 expect] appState:appState didTransitionToInitStage:secondStage];
+  [[observer1 expect] appState:appState willTransitionToInitStage:thirdStage];
+  [[observer1 expect] appState:appState didTransitionToInitStage:thirdStage];
+  [[observer2 expect] appState:appState willTransitionToInitStage:thirdStage];
+  [[observer2 expect] appState:appState didTransitionToInitStage:thirdStage];
+  [observer1 setExpectationOrderMatters:YES];
+  [observer2 setExpectationOrderMatters:YES];
+
+  [appState queueTransitionToNextInitStage];
+  [observer1 verify];
+  [observer2 verify];
 }

@@ -163,6 +163,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 // Queue the transition to the next app initialization stage. Will stop
 // transitioning when the Final stage is reached.
+// All observers will be notified about each transition until the next
+// transition takes place. If an observer calls this method from a transition
+// notification, the method will return, the observers will be notified of the
+// prior change, and then transition will take place. Then this method will
+// finally return to the runloop. It is an error to queue more than one
+// transition at once.
 - (void)queueTransitionToNextInitStage;
 
 @end
