@@ -82,7 +82,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.AlternativeServiceTypeForRequest"
-    enum="AlternativeServiceType" expires_after="2021-05-11">
+    enum="AlternativeServiceType" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -479,8 +479,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.CountOfQuicServerInfos" units="configs"
-    expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -1840,8 +1839,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.HttpServerProperties.CountOfServers" units="units"
     expires_after="M85">
-  <owner>zhongyi@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     The total number of ServerInfo structs written to the network service's
     prefs file, recorded each time the HttpServerProperties are serialized to
@@ -2003,8 +2002,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.NetworkChangeNotifier.NewConnectionType"
-    enum="NetworkConnectionType" expires_after="2021-08-01">
-  <owner>rockot@google.com</owner>
+    enum="NetworkConnectionType" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     The new network connection type any time a change to the device's active
@@ -2102,7 +2101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.NumQuicSessionsAtShutdown" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2208,7 +2207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicAltSvcFormat" enum="QuicAltSvcFormat"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2248,7 +2247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicClientHelloRejectReasons" enum="QuicRejectReasons"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2268,7 +2267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicConnectivityMonitor.NumActiveDegradingSessions"
     units="sessions" expires_after="2021-09-12">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of active sessions that are degrading on network changes. The
@@ -2285,9 +2284,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicConnectivityMonitor.NumActiveQuicSessionsAtNetworkChange"
-    units="sessions" expires_after="2021-08-01">
-  <owner>zhongyi@chromium.org</owner>
-  <owner>rockot@chromium.org</owner>
+    units="sessions" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of active QUIC sessions when a network change is detected. The
@@ -2302,8 +2300,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicConnectivityMonitor.NumAllDegradedSessions"
-    units="sessions" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    units="sessions" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of all sessions that detectes path degradation until a network
@@ -2320,9 +2318,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicConnectivityMonitor.NumAllSessionsDegradedAtNetworkChange"
-    units="sessions" expires_after="2021-08-01">
-  <owner>zhongyi@chromium.org</owner>
-  <owner>rockot@chromium.org</owner>
+    units="sessions" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The total number of sessions that reports path degradation before a network
@@ -2338,9 +2335,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicConnectivityMonitor.NumSessionsTrackedSinceSpeculativeError"
-    units="sessions" expires_after="2021-08-01">
-  <owner>zhongyi@chromium.org</owner>
-  <owner>rockot@chromium.org</owner>
+    units="sessions" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of total sessions that has been tracked since the first
@@ -2357,9 +2353,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicConnectivityMonitor.NumWriteErrorsSeenBeforeDegradation"
-    units="errors" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
-  <owner>rockot@chromium.org</owner>
+    units="errors" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of total sessions that has been closed due to
@@ -2373,7 +2368,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicConnectivityMonitor.PercentageActiveDegradingSessions"
     units="%" expires_after="2021-09-12">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The percentage of active sessions that are degrading on network changes. The
@@ -2389,8 +2384,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicConnectivityMonitor.PercentageAllDegradedSessions"
-    units="%" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    units="%" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The percentage of all sessions that detectes path degradation until a
@@ -2409,8 +2404,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicConnectivityMonitor.SessionDegradedBeforeWriteError"
     enum="BooleanDetected" expires_after="2021-09-12">
-  <owner>zhongyi@chromium.org</owner>
-  <owner>rockot@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     When a packet write error is detected by the session, if path degradation
@@ -2422,7 +2416,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicDiskCache.FailureReason"
-    enum="QuicDiskCacheFailureReason" expires_after="2021-05-11">
+    enum="QuicDiskCacheFailureReason" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2462,7 +2456,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicHpackCompressionPercentage" units="%"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2472,7 +2466,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicHpackDecoder.IndexedEntryAge" units="ms"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <obsolete>
     Removed in M91. This experiment has concluded, header compression algorithm
     for HTTP/3 has been standardized.
@@ -2488,7 +2482,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicHpackDecompressionPercentage" units="%"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2498,7 +2492,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicHpackEncoder.IndexedEntryAge" units="ms"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <obsolete>
     Removed in M91. This experiment has concluded, header compression algorithm
     for HTTP/3 has been standardized.
@@ -2534,8 +2528,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicNetworkDegradingDurationTillConnected" units="ms"
-    expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Time from when QUIC detects performance degradation on the current network
@@ -2544,8 +2538,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicNetworkDegradingDurationTillDisconnected" units="ms"
-    expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Time from when QUIC detects performance degradation on the current network
@@ -2554,8 +2548,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicNetworkDegradingDurationTillNewNetworkMadeDefault"
-    units="ms" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    units="ms" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The time from QUIC detecting network performance degradation to an
@@ -2564,8 +2558,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicNetworkDisconnectionDuration" units="ms"
-    expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The time from network disconnection to an alternative network becoming
@@ -2581,14 +2575,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicNumServerConfig.UpdateMessagesIgnored"
-    enum="BooleanIgnored" expires_after="2021-05-11">
+    enum="BooleanIgnored" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>The number of times ServerConfigUpdateMessages ignored.</summary>
 </histogram>
 
 <histogram name="Net.QuicServerInfo.DiskCacheState"
-    enum="QuicServerConfigState" expires_after="2021-05-11">
+    enum="QuicServerConfigState" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2633,7 +2627,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ActiveStreamsOnGoAwayAfterPathDegrading"
-    units="Streams" expires_after="2021-05-11">
+    units="Streams" expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2643,7 +2637,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.AsyncRead" enum="Boolean"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2653,7 +2647,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.BlockedFrames.Received" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2663,7 +2657,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.BlockedFrames.Sent" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2683,7 +2677,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.CertVerifierJob.CompleteTime"
-    units="Milliseconds" expires_after="2021-05-11">
+    units="Milliseconds" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2693,7 +2687,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ClientSideMtu" units="bytes"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2703,7 +2697,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.CloseAllSessionsError" enum="NetErrorCodes"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2712,7 +2706,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ClosedByPublicReset" enum="Boolean"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>wub@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2722,7 +2716,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ClosedByRtoAtClient.ReceivedPacketCount"
-    units="packets" expires_after="2021-05-11">
+    units="packets" expires_after="2022-05-11">
   <owner>wub@chromium.org</owner>
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -2733,7 +2727,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ClosedByRtoAtClient.SentPacketCount"
-    units="packets" expires_after="2021-05-11">
+    units="packets" expires_after="2022-05-11">
   <owner>wub@chromium.org</owner>
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -2754,7 +2748,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.CloseSessionOnError" enum="NetErrorCodes"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2763,7 +2757,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.CoalesceStreamFrameStatus"
-    enum="BooleanCoalesced" expires_after="2021-05-11">
+    enum="BooleanCoalesced" expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2773,7 +2767,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.Connect" units="RTTs"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2783,7 +2777,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectAfterBroken" enum="BooleanSuccess"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2795,7 +2789,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicSession.ConnectionClose.HandshakeFailureBlackHole.QuicError"
-    enum="QuicErrorCodes" expires_after="2021-05-11">
+    enum="QuicErrorCodes" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2809,7 +2803,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicSession.ConnectionClose.HandshakeFailureUnknown.QuicError"
-    enum="QuicErrorCodes" expires_after="2021-05-11">
+    enum="QuicErrorCodes" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2822,7 +2816,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionClose.HandshakeNotConfirmed.Reason"
-    enum="QuicHandshakeFailureReason" expires_after="2021-05-11">
+    enum="QuicHandshakeFailureReason" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>The reason a QUIC handshake failed.</summary>
@@ -2830,7 +2824,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicSession.ConnectionClose.NumOpenStreams.HandshakeTimedOut"
-    units="units" expires_after="2021-05-11">
+    units="units" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2839,7 +2833,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionClose.NumOpenStreams.TimedOut"
-    units="units" expires_after="2021-05-11">
+    units="units" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>The number of streams open when a QUIC session timed out.</summary>
@@ -2847,7 +2841,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicSession.ConnectionClose.NumTotalStreams.HandshakeTimedOut"
-    units="units" expires_after="2021-05-11">
+    units="units" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2930,7 +2924,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationGQuicErrorMissingGoogle"
-    enum="QuicHttp3ErrorCodes" expires_after="2021-05-11">
+    enum="QuicHttp3ErrorCodes" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2983,7 +2977,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionDuration" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2993,7 +2987,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionDurationWithPublicReset" units="ms"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>Duration of connections received PUBLIC_RESET.</summary>
@@ -3010,7 +3004,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionIpPooled" enum="Boolean"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3020,7 +3014,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.ConnectionMigration"
     enum="QuicConnectionMigrationStatus" expires_after="2021-07-27">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The result of a QUIC connection migration attempt. The suffix specifies the
@@ -3035,7 +3029,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Net.QuicConnection.PathValidationSuccess.
   </obsolete>
   <owner>fayang@chromium.org</owner>
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The result of connectivity probing according to different migration causes.
@@ -3045,9 +3039,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionStateAfterDNS"
-    enum="ConnectionStateAfterDNS" expires_after="2021-05-11">
+    enum="ConnectionStateAfterDNS" expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Logs the state of the connection from stale host when fresh dns resolution
@@ -3066,14 +3060,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionTypeFromSelf" enum="AddressFamily"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>The IP Address family of this connection, as seen locally.</summary>
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"
-    units="RTTs" expires_after="2021-05-11">
+    units="RTTs" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3085,7 +3079,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.CreationError" enum="QuicSessionErrorCodes"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3113,7 +3107,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.DrainingStreamsOnGoAwayAfterPathDegrading"
-    units="Streams" expires_after="2021-05-11">
+    units="Streams" expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3123,7 +3117,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.DuplicatePacketsReceived" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3144,7 +3138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.FinalTcpCwnd" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3164,7 +3158,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.FinchObsoleteVersion" enum="Boolean"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3174,9 +3168,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.FreshDnsResolutionTime" units="ms"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The time for a fresh DNS resolution from DoResolveHost to having a fresh DNS
@@ -3185,8 +3179,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.GapBetweenWriteErrorAndNetworkDisconnection"
-    units="ms" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    units="ms" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     This measures the time gap between the most recent write error and the
@@ -3196,7 +3190,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.GoAwayReceivedForConnectionMigration"
     enum="BooleanReceived" expires_after="2021-07-27">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Whether QuicGoAwayFrame is received from server for connection migration due
@@ -3217,7 +3211,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.HandshakeStatusOnConnectionMigration"
     enum="BooleanConfirmed" expires_after="2021-07-27">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The handshake status when the session attempts to migrate the connection
@@ -3226,8 +3220,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.HandshakeStatusOnPortMigration"
-    enum="BooleanConfirmed" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="BooleanConfirmed" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The handshake status when the session attempts to port migration on path
@@ -3236,8 +3230,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.HandshakeTimeout.PathDegradingDetected"
-    enum="BooleanDetected" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="BooleanDetected" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Whether path degrading has been detected by the time a QUIC connection is
@@ -3273,7 +3267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.HeaderCompressionRatioQpackSent" units="%"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3282,7 +3276,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.HostResolution.HandshakeConfirmedTime"
-    units="Milliseconds" expires_after="2021-05-11">
+    units="Milliseconds" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3293,7 +3287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.IncorrectConnectionIDsReceived" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3313,7 +3307,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.KeyUpdate.PerConnection" units="count"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <obsolete>
     Replaced 2020-10-22 with Net.QuicSession.KeyUpdate.PerConnection2 that is
     only logged for connections which supported key update.
@@ -3350,14 +3344,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.KeyUpdate.Reason" enum="QuicKeyUpdateReason"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>The reason why each key update occured.</summary>
 </histogram>
 
 <histogram name="Net.QuicSession.KeyUpdate.Success.{Group}"
-    enum="QuicKeyUpdateSuccess" expires_after="2021-05-11">
+    enum="QuicKeyUpdateSuccess" expires_after="2022-05-11">
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3406,7 +3400,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.MaxConsecutiveRtoWithForwardProgress"
-    units="count" expires_after="2021-05-11">
+    units="count" expires_after="2022-05-11">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3435,7 +3429,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.MaxReorderingTime" units="%"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3454,7 +3448,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.MigrateToSocketSuccess" enum="Boolean"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3472,7 +3466,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.MtuProbesSent" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3492,15 +3486,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.NumMigrations" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>The number of successful migrations for a QUIC session.</summary>
 </histogram>
 
 <histogram name="Net.QuicSession.NumMigrationsExercisedBeforePublicReset"
-    units="migrations" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    units="migrations" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Number of connection migrations exercised before the connection receives a
@@ -3509,7 +3503,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.NumOpenStreams" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3558,7 +3552,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.OutOfOrderGapReceived" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3570,7 +3564,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.OutOfOrderLargePacketsReceived" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3581,7 +3575,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.OutOfOrderPacketsReceived" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3591,7 +3585,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.PacketGapReceived" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3602,7 +3596,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.PacketGapReceivedNearPing" units="count"
     expires_after="2021-09-12">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of missing packets between the last received packet before a PING
@@ -3611,7 +3605,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.PacketGapSent" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3642,7 +3636,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.PacketWriteTime" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3673,8 +3667,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.PlatformNotification"
-    enum="QuicPlatformNotification" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="QuicPlatformNotification" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The platform notification received by QUIC when network change happens.
@@ -3683,13 +3677,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.PortMigration"
     enum="QuicConnectionMigrationStatus" expires_after="2021-09-12">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>The result of a QUIC port migration attempt.</summary>
 </histogram>
 
 <histogram name="Net.QuicSession.PreferAesGcm" enum="BooleanPreferred"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3698,8 +3692,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ProbingRetryCountUntilSuccess" units="retries"
-    expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Number of retries to send connectivity probing packet on new path until
@@ -3708,8 +3702,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ProbingTimeInMillisecondsUntilSuccess"
-    units="ms" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    units="ms" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The wait time to receive a matched probing response to mark connectivity
@@ -3718,7 +3712,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.PublicResetAddressMismatch2"
-    enum="QuicAddressMismatch" expires_after="2021-05-11">
+    enum="QuicAddressMismatch" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3749,7 +3743,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.PushedAndUnclaimedBytes" units="count"
     expires_after="2021-09-12">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of bytes that is pushed but not used when the session is closed.
@@ -3758,7 +3752,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.PushedBytes" units="count"
     expires_after="2021-09-12">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of bytes that is pushed when the session is closed.
@@ -3766,7 +3760,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.Qpack.HeaderListCountWhenBlockedStreamLimited"
-    units="count" expires_after="2021-05-11">
+    units="count" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3777,7 +3771,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.Qpack.HeaderListCountWhenInsertionBlocked"
-    units="count" expires_after="2021-05-11">
+    units="count" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3787,7 +3781,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.Qpack.HeaderListCountWhenInsertionNotBlocked"
-    units="count" expires_after="2021-05-11">
+    units="count" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3798,7 +3792,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicSession.Qpack.HeaderListCountWhenNotBlockedStreamLimited"
-    units="count" expires_after="2021-05-11">
+    units="count" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3827,7 +3821,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.ReadError.CurrentNetwork.HandshakeConfirmed"
     enum="NetErrorCodes" expires_after="2021-09-12">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The network error code returned when attempting to read on the current
@@ -3893,7 +3887,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.RejectHasProof" enum="Boolean"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3902,7 +3896,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.RejectLength" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3911,7 +3905,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.RetryAfterWriteErrorCount2" units="retries"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3921,7 +3915,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.RstStreamErrorCodeClient"
-    enum="QuicRstStreamErrorCodes" expires_after="2021-05-11">
+    enum="QuicRstStreamErrorCodes" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3939,7 +3933,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.SecureResourceSecureSession" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3949,8 +3943,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.SelfShloAddressMismatch"
-    enum="QuicAddressMismatch" expires_after="2021-05-11">
-  <owner>zhongyi@google.com</owner>
+    enum="QuicAddressMismatch" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     When a SHLO handshake message is received, whether the client IP address and
@@ -3962,7 +3956,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.SendPacketSize" units="bytes"
     expires_after="2021-08-09">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The size in bytes of an encrypted QUIC packet sent to the peer at the
@@ -3971,7 +3965,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ServerSideMtu" units="bytes"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3990,7 +3984,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.StaleAndFreshHostMatched" enum="Boolean"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3999,9 +3993,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.StaleConnectionTime" units="ms"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
-  <owner>zhongyi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The time a QUIC connection from invalid stale dns result takes to do Crypto
@@ -4010,14 +4003,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.StaleHostRacing" enum="Boolean"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>True if the stale host is used in racing connection.</summary>
 </histogram>
 
 <histogram name="Net.QuicSession.StatelessResetAfterProbingCancelled"
-    enum="BooleanReceived" expires_after="2021-05-11">
+    enum="BooleanReceived" expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4027,7 +4020,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.StatelessResetDuringProbing"
-    enum="BooleanReceived" expires_after="2021-05-11">
+    enum="BooleanReceived" expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4036,14 +4029,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.StopSendingErrorCodeClient"
-    enum="QuicRstStreamErrorCodes" expires_after="2021-05-11">
+    enum="QuicRstStreamErrorCodes" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>The QUIC error code that we sent in a STOP_SENDING frame.</summary>
 </histogram>
 
 <histogram name="Net.QuicSession.StopSendingErrorCodeServer"
-    enum="QuicRstStreamErrorCodes" expires_after="2021-05-11">
+    enum="QuicRstStreamErrorCodes" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4082,7 +4075,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.StreamFrameDuplicatedLongConnection"
-    units="1/10th Percent" expires_after="2021-05-11">
+    units="1/10th Percent" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4093,7 +4086,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.StreamFrameDuplicatedPercentLongConnection"
-    units="units" expires_after="2021-05-11">
+    units="units" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4103,7 +4096,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.StreamFrameDuplicatedPercentShortConnection"
-    units="units" expires_after="2021-05-11">
+    units="units" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4113,7 +4106,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.StreamFrameDuplicatedShortConnection"
-    units="1/10th Percent" expires_after="2021-05-11">
+    units="1/10th Percent" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4124,7 +4117,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.TimedOutWithOpenStreams.ConsecutiveRTOCount"
-    units="units" expires_after="2021-05-11">
+    units="units" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4134,7 +4127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.TimedOutWithOpenStreams.ConsecutiveTLPCount"
-    units="units" expires_after="2021-05-11">
+    units="units" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4154,7 +4147,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.TimedOutWithOpenStreams.LocalPort"
-    units="units" expires_after="2021-05-11">
+    units="units" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4164,7 +4157,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.TimeFromResolveHostToConfirmConnection"
-    units="Milliseconds" expires_after="2021-08-01">
+    units="Milliseconds" expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4174,7 +4167,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.TooManyOpenStreams" enum="BooleanTooMany"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4183,8 +4176,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.TooSmallInitialSentPacket" units="bytes"
-    expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     When a QUIC packet is sent at initial encryption that is smaller than the
@@ -4215,7 +4208,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.UnexpectedNotGoingAway"
-    enum="QuicSessionLocations" expires_after="2021-05-11">
+    enum="QuicSessionLocations" expires_after="2022-05-11">
   <obsolete>
     This histogram was removed in Feb 2021, because the corresponded crash has
     been fixed.
@@ -4229,7 +4222,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.UnexpectedObservers"
-    enum="QuicSessionLocations" expires_after="2021-05-11">
+    enum="QuicSessionLocations" expires_after="2022-05-11">
   <obsolete>
     This histogram was removed in Feb 2021, because the corresponded crash has
     been fixed.
@@ -4243,7 +4236,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.UnexpectedOpenStreams"
-    enum="QuicSessionLocations" expires_after="2021-05-11">
+    enum="QuicSessionLocations" expires_after="2022-05-11">
   <obsolete>
     This histogram was removed in Feb 2021, because the corresponded crash has
     been fixed.
@@ -4257,9 +4250,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ValidConnectionTime" units="ms"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>renjietang@chromium.org</owner>
-  <owner>zhongyi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The time a QUIC connection that will be confirmed takes for Crypto
@@ -4300,8 +4292,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.WriteError.NetworkDisconnected"
-    enum="NetErrorCodes" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="NetErrorCodes" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The most recent network error code when attempting to write to a QUIC
@@ -4310,7 +4302,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.WritePacketNotReusableReason"
-    enum="QuicNotReusableReason" expires_after="2021-05-11">
+    enum="QuicNotReusableReason" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4359,8 +4351,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.AttemptMigrationBeforeHandshake"
-    enum="BooleanAttempted" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="BooleanAttempted" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Records if a new connection on the alternate network is attempted when a
@@ -4370,8 +4362,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicStreamFactory.AttemptMigrationBeforeHandshake.FailedConnectionType"
-    enum="NetworkConnectionType" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="NetworkConnectionType" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Connection type of the default network when the connection fails with
@@ -4380,7 +4372,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.BadPacketLossEvents5"
-    enum="QuicBadPacketLossEvents" expires_after="2021-05-11">
+    enum="QuicBadPacketLossEvents" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4391,8 +4383,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.ConnectionOnNonDefaultNetwork"
-    enum="BooleanSuccess" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Status of the connection on the non-default network when it finishes. A
@@ -4402,8 +4394,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.DefaultNetworkMatch"
-    enum="BooleanMatched" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="BooleanMatched" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Records, for initial socket created for each new QUIC connection, whether
@@ -4412,7 +4404,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.DisabledReasons"
-    enum="QuicDisabledReason" expires_after="2021-05-11">
+    enum="QuicDisabledReason" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4434,8 +4426,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicStreamFactory.MigrationBeforeHandshake.NewConnectionType"
-    enum="NetworkConnectionType" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="NetworkConnectionType" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Connection type of the alternate network when a connection is about to be
@@ -4445,8 +4437,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.MigrationBeforeHandshake2"
-    enum="BooleanSuccess" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Status of the connection which is created for migration before handshake is
@@ -4455,8 +4447,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.MigrationBeforeHandshakeFailedReason"
-    enum="NetErrorCodes" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="NetErrorCodes" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The network error code returned when the retried connection on the alternate
@@ -4466,8 +4458,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicStreamFactory.NetworkChangeDuringMigrationBeforeHandshake"
-    enum="BooleanChanged" expires_after="2021-05-11">
-  <owner>zhongyi@chromium.org</owner>
+    enum="BooleanChanged" expires_after="2022-05-11">
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Captures whether the default network has been changed when the new
@@ -4476,7 +4468,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.PublicResetsPostHandshake"
-    units="resets" expires_after="2021-05-11">
+    units="resets" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4488,7 +4480,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.QuicIsDisabled" enum="Ports"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4499,7 +4491,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.TimeoutsWithOpenStreams"
-    units="timeouts" expires_after="2021-05-11">
+    units="timeouts" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4511,7 +4503,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicTransportClient.ConnectionCloseCodeClient"
-    enum="QuicErrorCodes" expires_after="2021-05-11">
+    enum="QuicErrorCodes" expires_after="2022-05-11">
   <owner>vasilvv@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4521,7 +4513,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicTransportClient.ConnectionCloseCodeServer"
-    enum="QuicErrorCodes" expires_after="2021-05-11">
+    enum="QuicErrorCodes" expires_after="2022-05-11">
   <owner>vasilvv@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4548,7 +4540,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicTransportClient.FailedAtConnectState"
-    enum="QuicTransportClientConnectState" expires_after="2021-05-11">
+    enum="QuicTransportClientConnectState" expires_after="2022-05-11">
   <owner>vasilvv@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4557,7 +4549,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicTransportClient.FailedAtState"
-    enum="QuicTransportClientState" expires_after="2021-05-11">
+    enum="QuicTransportClientState" expires_after="2022-05-11">
   <owner>vasilvv@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4661,7 +4653,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SocketUnchangeableReceiveBuffer" units="Bytes"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4671,7 +4663,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SocketUnchangeableSendBuffer" units="Bytes"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4691,7 +4683,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SpdyHeadersCompressionPercentage" units="%"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4700,7 +4692,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SpdyHpackDecompressionPercentage" units="%"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4709,7 +4701,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SpdyIPPoolDomainMatch" enum="SpdyIPPoolDomainMatch"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4731,7 +4723,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SpdyResponseCode" enum="HttpResponseCode"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4795,7 +4787,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SpdySession.CreateStreamWithSocketConnected"
-    enum="BooleanSuccess" expires_after="2021-05-11">
+    enum="BooleanSuccess" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>Socket connected status in SpdySession::CreateStream.</summary>
@@ -4803,7 +4795,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.SpdySession.PushedAndUnclaimedBytes" units="count"
     expires_after="2021-08-09">
-  <owner>zhongyi@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     The number of bytes that is pushed but not used when the session is closed.
@@ -4812,7 +4804,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.SpdySession.PushedBytes" units="count"
     expires_after="2021-08-09">
-  <owner>zhongyi@chromium.org</owner>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4821,7 +4812,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SpdySession.ServerSupportsWebSocket" units="Boolean"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4850,14 +4841,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SpdySessionGet" enum="SpdySessionGet"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>The type of SPDY Session used when looking up a session.</summary>
 </histogram>
 
 <histogram name="Net.SpdySessionGetPeerAddressNotConnected"
-    enum="BooleanSuccess" expires_after="2021-05-11">
+    enum="BooleanSuccess" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4892,7 +4883,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SpdyStreamsPushedPerSession" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>The number of push streams received over a single session.</summary>
