@@ -356,7 +356,7 @@ NotificationInputContainerMD::NotificationInputContainerMD(
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
-  SetInkDropMode(InkDropMode::ON);
+  SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetInkDropVisibleOpacity(1);
 
   AddChildView(ink_drop_container_);
