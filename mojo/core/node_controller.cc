@@ -76,7 +76,9 @@ ports::ScopedEvent DeserializeEventMessage(
     Channel::MessagePtr channel_message) {
   void* data;
   size_t size;
-  NodeChannel::GetEventMessageData(channel_message.get(), &data, &size);
+  bool valid = NodeChannel::GetEventMessageData(*channel_message, &data, &size);
+  if (!valid)
+    return nullptr;
   auto event = ports::Event::Deserialize(data, size);
   if (!event)
     return nullptr;
