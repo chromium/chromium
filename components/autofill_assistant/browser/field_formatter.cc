@@ -4,7 +4,9 @@
 
 #include "components/autofill_assistant/browser/field_formatter.h"
 
+#include "base/i18n/case_conversion.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -92,16 +94,24 @@ CreateAutofillMappings<autofill::AutofillProfile>(
   auto state = profile.GetInfo(
       autofill::AutofillType(autofill::ADDRESS_HOME_STATE), locale);
   if (!state.empty()) {
-    // TODO(b/159309560): Capitalize first letter of the state name.
-    auto state_name =
-        base::UTF16ToUTF8(autofill::state_names::GetNameForAbbreviation(state));
-    if (state_name.empty()) {
-      mappings[base::NumberToString(
-          static_cast<int>(AutofillFormatProto::ADDRESS_HOME_STATE_NAME))] =
-          base::UTF16ToUTF8(state);
+    std::u16string full_name;
+    std::u16string abbreviation;
+    autofill::state_names::GetNameAndAbbreviation(state, &full_name,
+                                                  &abbreviation);
+    mappings[base::NumberToString(
+        static_cast<int>(AutofillFormatProto::ADDRESS_HOME_STATE_NAME))] =
+        base::UTF16ToUTF8(
+            full_name.length() > 1
+                ? base::StrCat({base::i18n::ToUpper(full_name.substr(0, 1)),
+                                full_name.substr(1)})
+                : base::i18n::ToUpper(full_name));
+    if (abbreviation.empty()) {
+      mappings.erase(
+          base::NumberToString(static_cast<int>(autofill::ADDRESS_HOME_STATE)));
     } else {
-      mappings[base::NumberToString(static_cast<int>(
-          AutofillFormatProto::ADDRESS_HOME_STATE_NAME))] = state_name;
+      mappings[base::NumberToString(
+          static_cast<int>(autofill::ADDRESS_HOME_STATE))] =
+          base::UTF16ToUTF8(base::i18n::ToUpper(abbreviation));
     }
   }
 

@@ -57,10 +57,22 @@ TEST(FieldFormatterTest, AutofillProfile) {
                           CreateAutofillMappings(profile, "en-US")),
             "(+1) (234) 5678901");
 
-  // ADDRESS_HOME_STATE, ADDRESS_HOME_STATE_NAME
-  EXPECT_EQ(
-      *FormatString("${34} - ${-6}", CreateAutofillMappings(profile, "en-US")),
-      "CA - california");
+  // State handling from abbreviation.
+  EXPECT_EQ(*FormatString("${34}", CreateAutofillMappings(profile, "en-US")),
+            "CA");
+  EXPECT_EQ(*FormatString("${-6}", CreateAutofillMappings(profile, "en-US")),
+            "California");
+
+  // State handling from state name.
+  autofill::AutofillProfile state_name_profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
+                                 "", "", "", "California", "", "US", "");
+  EXPECT_EQ(*FormatString("${34}",
+                          CreateAutofillMappings(state_name_profile, "en-US")),
+            "CA");
+  EXPECT_EQ(*FormatString("${-6}",
+                          CreateAutofillMappings(state_name_profile, "en-US")),
+            "California");
 
   // Unknown state.
   autofill::AutofillProfile unknown_state_profile(base::GenerateGUID(),
@@ -69,7 +81,7 @@ TEST(FieldFormatterTest, AutofillProfile) {
                                  "", "", "", "", "XY", "", "US", "");
   EXPECT_EQ(FormatString("${34}", CreateAutofillMappings(unknown_state_profile,
                                                          "en-US")),
-            "XY");
+            base::nullopt);
   EXPECT_EQ(FormatString("${-6}", CreateAutofillMappings(unknown_state_profile,
                                                          "en-US")),
             "XY");
@@ -159,7 +171,39 @@ TEST(FieldFormatterTest, DifferentLocales) {
             "United States");
 }
 
-TEST(FieldFormatterTest, AddsAllProfileFields) {
+TEST(FieldFormatterTest, AddsAllProfileFieldsUsAddress) {
+  std::map<std::string, std::string> expected_values = {
+      {"-6", "California"},
+      {"3", "Alpha"},
+      {"4", "Beta"},
+      {"5", "Gamma"},
+      {"6", "B"},
+      {"7", "Alpha Beta Gamma"},
+      {"9", "alpha@google.com"},
+      {"10", "1234567890"},
+      {"12", "1"},
+      {"13", "1234567890"},
+      {"14", "+11234567890"},
+      {"30", "Amphitheatre Parkway 1600"},
+      {"31", "Google Building 1"},
+      {"33", "Mountain View"},
+      {"34", "CA"},
+      {"35", "94043"},
+      {"36", "United States"},
+      {"60", "Google"},
+      {"77", "Amphitheatre Parkway 1600\nGoogle Building 1"}};
+
+  autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(
+      &profile, "Alpha", "Beta", "Gamma", "alpha@google.com", "Google",
+      "Amphitheatre Parkway 1600", "Google Building 1", "Mountain View", "CA",
+      "94043", "US", "+1 123-456-7890");
+
+  EXPECT_THAT(CreateAutofillMappings(profile, "en-US"),
+              IsSupersetOf(expected_values));
+}
+
+TEST(FieldFormatterTest, AddsAllProfileFieldsForNonUsAddress) {
   std::map<std::string, std::string> expected_values = {
       {"-6", "Canton Zurich"},
       {"3", "Alpha"},
@@ -176,7 +220,6 @@ TEST(FieldFormatterTest, AddsAllProfileFields) {
       {"30", "Brandschenkestrasse 110"},
       {"31", "Google Building 110"},
       {"33", "Zurich"},
-      {"34", "Canton Zurich"},
       {"35", "8002"},
       {"36", "Switzerland"},
       {"60", "Google"},
