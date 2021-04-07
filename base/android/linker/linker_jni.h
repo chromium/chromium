@@ -124,11 +124,6 @@ extern bool InitStaticFieldId(JNIEnv* env,
                               const char* field_sig,
                               jfieldID* field_id);
 
-// Use Android ASLR to create a random library load address.
-// |env| is the current JNI environment handle, and |clazz| a class.
-// Returns the address selected by ASLR.
-extern jlong GetRandomBaseLoadAddress(JNIEnv* env, jclass clazz);
-
 // A class used to model the field IDs of the org.chromium.base.Linker
 // LibInfo inner class, used to communicate data with the Java side
 // of the linker.
@@ -172,18 +167,21 @@ struct LibInfo_class {
     env->SetIntField(library_info_obj, relro_fd_id, relro_fd);
   }
 
-  void GetLoadInfo(JNIEnv* env,
+  bool GetLoadInfo(JNIEnv* env,
                    jobject library_info_obj,
                    uintptr_t* load_address,
                    size_t* load_size) {
     if (load_address) {
-      *load_address = static_cast<uintptr_t>(
-          env->GetLongField(library_info_obj, load_address_id));
+      jlong java_address = env->GetLongField(library_info_obj, load_address_id);
+      if (!IsValidAddress(java_address))
+        return false;
+      *load_address = static_cast<uintptr_t>(java_address);
     }
     if (load_size) {
       *load_size = static_cast<uintptr_t>(
           env->GetLongField(library_info_obj, load_size_id));
     }
+    return true;
   }
 
   void GetRelroInfo(JNIEnv* env,

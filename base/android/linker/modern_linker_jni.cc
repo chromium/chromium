@@ -73,61 +73,6 @@ static JavaVM* s_java_vm = nullptr;
 // Guarded by |sLock| in Linker.java.
 RelroSharingStatus s_relro_sharing_status = RelroSharingStatus::NOT_ATTEMPTED;
 
-// Helper class for anonymous memory mapping.
-class ScopedAnonymousMmap {
- public:
-  static ScopedAnonymousMmap ReserveAtAddress(void* address, size_t size);
-
-  ~ScopedAnonymousMmap() {
-    if (addr_ && owned_)
-      munmap(addr_, size_);
-  }
-
-  ScopedAnonymousMmap(ScopedAnonymousMmap&& o) {
-    addr_ = o.addr_;
-    size_ = o.size_;
-    owned_ = o.owned_;
-    o.Release();
-  }
-
-  void* address() const { return addr_; }
-  size_t size() const { return size_; }
-  void Release() { owned_ = false; }
-
- private:
-  ScopedAnonymousMmap() = default;
-  ScopedAnonymousMmap(void* addr, size_t size) : addr_(addr), size_(size) {}
-
- private:
-  bool owned_ = true;
-  void* addr_ = nullptr;
-  size_t size_ = 0;
-
-  // Move only.
-  ScopedAnonymousMmap(const ScopedAnonymousMmap&) = delete;
-  ScopedAnonymousMmap& operator=(const ScopedAnonymousMmap&) = delete;
-};
-
-// Reserves an address space range, starting at |address|.
-// If successful, returns a valid mapping, otherwise returns an empty one.
-ScopedAnonymousMmap ScopedAnonymousMmap::ReserveAtAddress(void* address,
-                                                          size_t size) {
-  void* actual_address =
-      mmap(address, size, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-  if (actual_address == MAP_FAILED) {
-    PLOG_ERROR("mmap");
-    return {};
-  }
-
-  if (actual_address && actual_address != address) {
-    LOG_ERROR("Failed to obtain fixed address for load");
-    munmap(actual_address, size);
-    return {};
-  }
-
-  return {actual_address, size};
-}
-
 bool MapReadOnlyWithFlags(int fd, size_t size, int flags, void** out_address) {
   void* address = mmap(nullptr, size, PROT_READ, flags, fd, 0);
   if (address == MAP_FAILED) {
@@ -275,58 +220,50 @@ struct SharedMemoryFunctions {
 
 namespace {
 
-// android_dlopen_ext() wrapper.
-// Returns false if no android_dlopen_ext() is available, otherwise true with
-// the return value from android_dlopen_ext() in |status|.
-bool AndroidDlopenExt(const char* filename,
-                      int flag,
-                      const android_dlextinfo& extinfo,
-                      void** status) {
+// Invokes android_dlopen_ext() to load the library into a given address range.
+// Assumes that the address range is already reserved with mmap(2). On success,
+// the |handle| of the loaded library is returned.
+//
+// Returns true iff this operation succeeds.
+bool AndroidDlopenExt(void* mapping_start,
+                      size_t mapping_size,
+                      const char* filename,
+                      void** handle) {
   if (!android_dlopen_ext) {
     LOG_ERROR("android_dlopen_ext is not found");
     return false;
   }
 
+  android_dlextinfo dlextinfo{};
+  dlextinfo.flags = ANDROID_DLEXT_RESERVED_ADDRESS;
+  dlextinfo.reserved_addr = mapping_start;
+  dlextinfo.reserved_size = mapping_size;
+
   LOG_INFO(
       "android_dlopen_ext:"
-      " flags=0x%" PRIx64 ", reserved_addr=%p, reserved_size=%d",
-      static_cast<uint64_t>(extinfo.flags), extinfo.reserved_addr,
-      static_cast<int>(extinfo.reserved_size));
+      " flags=0x%" PRIx64 ", reserved_addr=%p, reserved_size=%zu",
+      dlextinfo.flags, dlextinfo.reserved_addr, dlextinfo.reserved_size);
 
-  *status = android_dlopen_ext(filename, flag, &extinfo);
+  void* rv = android_dlopen_ext(filename, RTLD_NOW, &dlextinfo);
+  if (rv == nullptr) {
+    LOG_ERROR("android_dlopen_ext: %s", dlerror());
+    return false;
+  }
+
+  *handle = rv;
   return true;
 }
 
-// Creates an android_dlextinfo struct so that a library is loaded inside the
-// space referenced by |mapping|.
-std::unique_ptr<android_dlextinfo> MakeAndroidDlextinfo(
-    const ScopedAnonymousMmap& mapping) {
-  auto info = std::make_unique<android_dlextinfo>();
-  memset(info.get(), 0, sizeof(*info));
-  info->flags = ANDROID_DLEXT_RESERVED_ADDRESS;
-  info->reserved_addr = mapping.address();
-  info->reserved_size = mapping.size();
-
-  return info;
-}
-
-// Resizes the address space reservation to the required size.  Failure here is
-// only a warning, since at worst this wastes virtual address space, not
-// physical memory.
-void ResizeMapping(const ScopedAnonymousMmap& mapping, size_t load_size) {
-  // Trim the reservation mapping to match the library's actual size. Failure
-  // to resize is not a fatal error. At worst we lose a portion of virtual
-  // address space that we might otherwise have recovered. Note that trimming
-  // the mapping here requires that we have already released the scoped
-  // mapping.
-  const uintptr_t uintptr_addr = reinterpret_cast<uintptr_t>(mapping.address());
-  if (mapping.size() <= load_size) {
+// With munmap(2) unmaps the tail of the given contiguous range of virtual
+// memory. Ignores errors.
+void TrimMapping(uintptr_t address, size_t old_size, size_t new_size) {
+  if (old_size <= new_size) {
     LOG_ERROR("WARNING: library reservation was too small");
   } else {
     // Unmap the part of the reserved address space that is beyond the end of
     // the loaded library data.
-    const uintptr_t unmap = uintptr_addr + load_size;
-    const size_t length = mapping.size() - load_size;
+    const uintptr_t unmap = address + new_size;
+    const size_t length = old_size - new_size;
     munmap(reinterpret_cast<void*>(unmap), length);
   }
 }
@@ -348,16 +285,21 @@ bool CallJniOnLoad(void* handle) {
     }
   }
 
+  LOG_INFO("Done");
   return true;
 }
 
 }  // namespace
 
 void NativeLibInfo::ExportLoadInfoToJava() const {
+  if (!env_)
+    return;
   s_lib_info_fields.SetLoadInfo(env_, java_object_, load_address_, load_size_);
 }
 
 void NativeLibInfo::ExportRelroInfoToJava() const {
+  if (!env_)
+    return;
   s_lib_info_fields.SetRelroInfo(env_, java_object_, relro_start_, relro_size_,
                                  relro_fd_);
 }
@@ -440,14 +382,14 @@ int NativeLibInfo::VisitLibraryPhdrs(dl_phdr_info* info,
 }
 
 bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
-  LOG_INFO("Called for %zx", load_address_);
+  LOG_INFO("Called for 0x%" PRIxPTR, load_address_);
   if (!dl_iterate_phdr) {
     LOG_ERROR("No dl_iterate_phdr() found");
     return false;
   }
   int status = dl_iterate_phdr(&VisitLibraryPhdrs, this);
   if (!status) {
-    LOG_ERROR("Failed to find library at address %zx", load_address_);
+    LOG_ERROR("Failed to find library at address 0x%" PRIxPTR, load_address_);
     return false;
   }
   return true;
@@ -456,28 +398,25 @@ bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
 bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
   LOG_INFO("Entering");
 
-  // Reserve a region for loading the library, as required by
-  // android_dlopen_ext.
-  auto* address = reinterpret_cast<void*>(load_address_);
-  ScopedAnonymousMmap mapping = ScopedAnonymousMmap::ReserveAtAddress(
-      address, kAddressSpaceReservationSize);
-  if (!mapping.address())
+  // The address range must be reserved during initialization in Linker.java.
+  if (!load_address_) {
+    // TODO(pasko): measure how often this happens.
     return false;
+  }
+
+  // Remember the memory reservation size. Starting from this point load_size_
+  // changes the meaning to reflect the size of the loaded library.
+  size_t reservation_size = load_size_;
+  auto* address = reinterpret_cast<void*>(load_address_);
 
   // Invoke android_dlopen_ext.
-  std::unique_ptr<android_dlextinfo> dlextinfo = MakeAndroidDlextinfo(mapping);
   void* local_handle = nullptr;
-  if (!AndroidDlopenExt(path.c_str(), RTLD_NOW, *dlextinfo, &local_handle)) {
+  if (!AndroidDlopenExt(address, reservation_size, path.c_str(),
+                        &local_handle)) {
     LOG_ERROR("android_dlopen_ext() error");
+    munmap(address, load_size_);
     return false;
   }
-  if (local_handle == nullptr) {
-    LOG_ERROR("android_dlopen_ext: %s", dlerror());
-    return false;
-  }
-
-  // The library successfully loaded. Avoid further automatic unmapping.
-  mapping.Release();
 
   // Find RELRO and trim the unused parts of the memory mapping.
   if (!FindRelroAndLibraryRangesInElf()) {
@@ -488,8 +427,8 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
     return false;
   }
 
-  // Save a little virtual address space.
-  ResizeMapping(mapping, load_size_);
+  // Release the unused parts of the memory reservation.
+  TrimMapping(load_address_, reservation_size, load_size_);
 
   *handle = local_handle;
   return true;
@@ -564,17 +503,24 @@ bool NativeLibInfo::ReplaceRelroWithSharedOne(
     return false;
   }
 
+  LOG_INFO("Replaced RELRO at 0x%" PRIxPTR, relro_start_);
   return true;
 }
 
-NativeLibInfo::NativeLibInfo(size_t address, JNIEnv* env, jobject java_object)
-    : load_address_(address), env_(env), java_object_(java_object) {}
-
 NativeLibInfo::NativeLibInfo(JNIEnv* env, jobject java_object)
-    : env_(env), java_object_(java_object) {
-  s_lib_info_fields.GetLoadInfo(env, java_object, &load_address_, &load_size_);
-  s_lib_info_fields.GetRelroInfo(env, java_object, &relro_start_, &relro_size_,
-                                 &relro_fd_);
+    : env_(env), java_object_(java_object) {}
+
+bool NativeLibInfo::CopyFromJavaObject() {
+  if (!env_)
+    return false;
+
+  if (!s_lib_info_fields.GetLoadInfo(env_, java_object_, &load_address_,
+                                     &load_size_)) {
+    return false;
+  }
+  s_lib_info_fields.GetRelroInfo(env_, java_object_, &relro_start_,
+                                 &relro_size_, &relro_fd_);
+  return true;
 }
 
 bool NativeLibInfo::LoadLibrary(const String& library_path,
@@ -611,7 +557,7 @@ bool NativeLibInfo::LoadLibrary(const String& library_path,
 
   LOG_INFO(
       "Created and converted RELRO to shared memory: relro_fd=%d, "
-      "relro_start=0x%zx",
+      "relro_start=0x%" PRIxPTR,
       relro_fd_, relro_start_);
   ExportRelroInfoToJava();
   return true;
@@ -712,23 +658,18 @@ Java_org_chromium_base_library_1loader_ModernLinker_nativeLoadLibrary(
     JNIEnv* env,
     jclass clazz,
     jstring jdlopen_ext_path,
-    jlong load_address,
     jobject lib_info_obj,
     jboolean spawn_relro_region,
     jboolean use_memfd) {
   LOG_INFO("Entering");
 
-  if (!IsValidAddress(load_address)) {
-    LOG_ERROR("Invalid address 0x%" PRIx64,
-              static_cast<uint64_t>(load_address));
-    return false;
-  }
-  String library_path(env, jdlopen_ext_path);
-  // Create an empty NativeLibInfo. It will gradually get populated as the
-  // library gets loaded, RELRO rets extracted as shared memory, etc.
-  NativeLibInfo lib_info = {static_cast<size_t>(load_address), env,
-                            lib_info_obj};
+  // Copy the contents from the Java-side LibInfo object.
+  NativeLibInfo lib_info = {env, lib_info_obj};
   lib_info.set_use_memfd(use_memfd);
+  if (!lib_info.CopyFromJavaObject())
+    return false;
+
+  String library_path(env, jdlopen_ext_path);
   if (!lib_info.LoadLibrary(library_path, spawn_relro_region)) {
     return false;
   }
@@ -742,21 +683,19 @@ Java_org_chromium_base_library_1loader_ModernLinker_nativeUseRelros(
     jobject lib_info_obj,
     jboolean use_memfd) {
   LOG_INFO("Entering");
-  // Copy all contents from the Java-side LibInfo object.
-  NativeLibInfo incoming_lib_info(env, lib_info_obj);
+  // Copy the contents from the Java-side LibInfo object.
+  NativeLibInfo incoming_lib_info = {env, lib_info_obj};
   incoming_lib_info.set_use_memfd(use_memfd);
+  if (!incoming_lib_info.CopyFromJavaObject())
+    return false;
 
   // Create an empty NativeLibInfo to extract the current information about the
   // loaded library and later compare with the contents of the
   // |incoming_lib_info|.
-  NativeLibInfo lib_info = {incoming_lib_info.load_address(), env,
-                            lib_info_obj};
+  NativeLibInfo lib_info = {nullptr, nullptr};
   lib_info.set_use_memfd(use_memfd);
+  lib_info.set_load_address(incoming_lib_info.load_address());
 
-  if (!IsValidAddress(incoming_lib_info.load_address())) {
-    LOG_ERROR("Invalid address 0x%zx", incoming_lib_info.load_address());
-    return false;
-  }
   if (!lib_info.CompareRelroAndReplaceItBy(incoming_lib_info)) {
     return false;
   }

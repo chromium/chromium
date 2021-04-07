@@ -22,7 +22,6 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @JniIgnoreNatives
 class ModernLinker extends Linker {
-    // Log tag for this class.
     private static final String TAG = "ModernLinker";
 
     // Whether to use memfd_create(2) for creating RELRO FD on supported systems.
@@ -31,17 +30,21 @@ class ModernLinker extends Linker {
 
     ModernLinker() {}
 
+    @Override
+    protected boolean keepMemoryReservationUntilLoad() {
+        return true;
+    }
+
     private static boolean useMemfd() {
         return ALLOW_MEMFD && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R);
     }
 
     @Override
     @GuardedBy("mLock")
-    protected void loadLibraryImplLocked(
-            String library, long loadAddress, @RelroSharingMode int relroMode) {
+    protected void loadLibraryImplLocked(String library, @RelroSharingMode int relroMode) {
         // Only loading monochrome is supported.
         if (!"monochrome".equals(library) || DEBUG) {
-            Log.i(TAG, "loadLibraryImplLocked: %s, %d", library, relroMode);
+            Log.i(TAG, "loadLibraryImplLocked: %s, relroMode=%d", library, relroMode);
         }
         assert mState == State.INITIALIZED; // Only one successful call.
 
@@ -51,30 +54,28 @@ class ModernLinker extends Linker {
             mState = State.DONE;
         } else if (relroMode == RelroSharingMode.PRODUCE) {
             // Create the shared RELRO, and store it.
-            LibInfo libInfo = new LibInfo();
-            libInfo.mLibFilePath = libFilePath;
-            if (nativeLoadLibrary(libFilePath, loadAddress, libInfo, true /* spawnRelroRegion */,
-                        useMemfd())) {
+            mLocalLibInfo.mLibFilePath = libFilePath;
+            if (nativeLoadLibrary(
+                        libFilePath, mLocalLibInfo, true /* spawnRelroRegion */, useMemfd())) {
                 Log.d(TAG, "Successfully spawned RELRO: mLoadAddress=0x%x, mLoadSize=%d",
-                        libInfo.mLoadAddress, libInfo.mLoadSize);
+                        mLocalLibInfo.mLoadAddress, mLocalLibInfo.mLoadSize);
             } else {
                 Log.e(TAG, "Unable to load with ModernLinker, using the system linker instead");
                 // System.loadLibrary() below implements the fallback.
-                libInfo.mRelroFd = -1;
+                mLocalLibInfo.mRelroFd = -1;
             }
-            mLocalLibInfo = libInfo;
             RecordHistogram.recordBooleanHistogram(
-                    "ChromiumAndroidLinker.RelroProvidedSuccessfully", libInfo.mRelroFd != -1);
+                    "ChromiumAndroidLinker.RelroProvidedSuccessfully",
+                    mLocalLibInfo.mRelroFd != -1);
 
             // Next state is still to "provide relro", even if there is none, to indicate that
             // consuming RELRO is not expected with this Linker instance.
             mState = State.DONE_PROVIDE_RELRO;
         } else {
             assert relroMode == RelroSharingMode.CONSUME;
-            mLocalLibInfo = new LibInfo();
             assert libFilePath.equals(mRemoteLibInfo.mLibFilePath);
-            if (!nativeLoadLibrary(libFilePath, loadAddress, mLocalLibInfo,
-                        false /* spawnRelroRegion */, useMemfd())) {
+            if (!nativeLoadLibrary(
+                        libFilePath, mLocalLibInfo, false /* spawnRelroRegion */, useMemfd())) {
                 resetAndThrow(String.format("Unable to load library: %s", libFilePath));
             }
             assert mLocalLibInfo.mRelroFd == -1;
@@ -123,8 +124,8 @@ class ModernLinker extends Linker {
         throw new UnsatisfiedLinkError(message);
     }
 
-    private static native boolean nativeLoadLibrary(String dlopenExtPath, long loadAddress,
-            LibInfo libInfo, boolean spawnRelroRegion, boolean useMemfd);
+    private static native boolean nativeLoadLibrary(
+            String libFilePath, LibInfo libInfo, boolean spawnRelroRegion, boolean useMemfd);
     private static native boolean nativeUseRelros(LibInfo libInfo, boolean useMemfd);
     private static native int nativeGetRelroSharingResult();
 }

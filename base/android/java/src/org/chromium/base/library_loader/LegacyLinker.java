@@ -4,6 +4,8 @@
 
 package org.chromium.base.library_loader;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JniIgnoreNatives;
 
@@ -18,7 +20,6 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @JniIgnoreNatives
 class LegacyLinker extends Linker {
-    // Log tag for this class.
     private static final String TAG = "LegacyLinker";
 
     LegacyLinker() {}
@@ -32,33 +33,38 @@ class LegacyLinker extends Linker {
     }
 
     @Override
+    protected boolean keepMemoryReservationUntilLoad() {
+        // The crazylinker attempts to reserve the address range. There is a feature to load on top
+        // of a reserved memory region, but it has not been tested recently, and looks buggy.
+        return false;
+    }
+
+    @Override
     @GuardedBy("mLock")
-    protected void loadLibraryImplLocked(
-            String library, long loadAddress, @RelroSharingMode int relroMode) {
+    protected void loadLibraryImplLocked(String library, @RelroSharingMode int relroMode) {
         assert mState == State.INITIALIZED; // Only one successful call.
 
         String libFilePath = System.mapLibraryName(library);
-        LibInfo libInfo = new LibInfo();
-        if (!nativeLoadLibrary(libFilePath, loadAddress, libInfo)) {
+        if (!nativeLoadLibrary(libFilePath, mLocalLibInfo.mLoadAddress, mLocalLibInfo)) {
             String errorMessage = "Unable to load library: " + libFilePath;
             Log.e(TAG, errorMessage);
             throw new UnsatisfiedLinkError(errorMessage);
         }
-        libInfo.mLibFilePath = libFilePath;
+        mLocalLibInfo.mLibFilePath = libFilePath;
 
         if (relroMode == RelroSharingMode.PRODUCE || relroMode == RelroSharingMode.NO_SHARING) {
-            if (!nativeCreateSharedRelro(libFilePath, loadAddress, libInfo)) {
-                Log.w(TAG, "Could not create shared RELRO for %s at %x", libFilePath, loadAddress);
-                // Next state is still to provide relro (even though we don't have any), as child
+            if (!nativeCreateSharedRelro(libFilePath, mLocalLibInfo.mLoadAddress, mLocalLibInfo)) {
+                Log.w(TAG, "Could not create shared RELRO for %s at %x", libFilePath,
+                        mLocalLibInfo.mLoadAddress);
+                // Next state is still to provide RELRO (even though there is none), as child
                 // processes would wait for them.
-                libInfo.mRelroFd = -1;
+                mLocalLibInfo.mRelroFd = -1;
             } else {
                 if (DEBUG) {
-                    Log.i(TAG, "Created shared RELRO for %s at %x: %s", libFilePath, loadAddress,
-                            libInfo.toString());
+                    Log.i(TAG, "Created shared RELRO for %s at 0x%x: %s", libFilePath,
+                            mLocalLibInfo.mLoadAddress, mLocalLibInfo.toString());
                 }
             }
-            mLocalLibInfo = libInfo;
             useSharedRelrosLocked(mLocalLibInfo);
             mState = State.DONE_PROVIDE_RELRO;
         } else {
@@ -73,7 +79,7 @@ class LegacyLinker extends Linker {
     }
 
     /**
-     * Use the shared RELRO section from a Bundle received form another process.
+     * Replace the memory mapping under RELRO with the contents of the given shared memory region.
      *
      * @param info Object containing the RELRO FD.
      */
@@ -91,12 +97,12 @@ class LegacyLinker extends Linker {
      *
      * @param library Platform specific library name (e.g. libfoo.so)
      * @param loadAddress Explicit load address, or 0 for randomized one.
-     * @param libInfo If not null, the mLoadAddress and mLoadSize fields
-     * of this LibInfo instance will set on success.
+     * @param libInfo The mLoadAddress and mLoadSize fields
+     * of this LibInfo instance will be set on success.
      * @return true for success, false otherwise.
      */
     private static native boolean nativeLoadLibrary(
-            String library, long loadAddress, LibInfo libInfo);
+            String library, long loadAddress, @NonNull LibInfo libInfo);
 
     /**
      * Native method used to add a zip archive or APK to the search path

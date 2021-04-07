@@ -30,8 +30,8 @@ struct SharedMemoryFunctions;
 
 // Holds address ranges of the loaded native library, its RELRO region, along
 // with the RELRO FD identifying the shared memory region. Carries the same
-// members as the Java-side LibInfo, allowing to internally import/export the
-// member values from/to the Java-side counterpart.
+// members as the Java-side LibInfo (without mLibFilePath), allowing to
+// internally import/export the member values from/to the Java-side counterpart.
 //
 // Does *not* own the RELRO FD as soon as the latter gets exported to Java
 // (as a result of 'spawning' the RELRO region as shared memory.
@@ -39,14 +39,19 @@ struct SharedMemoryFunctions;
 // *Not* threadsafe.
 class NativeLibInfo {
  public:
-  // Constructs an (almost) empty instance. To be later populated from native
-  // code. The |env| and |java_object| will be useful later for exporting the
-  // values to the Java counterpart.
-  NativeLibInfo(uintptr_t address, JNIEnv* env, jobject java_object);
-
-  // Constructs and imports fields from the Java LibInfo. As above, the |env|
-  // and |java_object| are used for exporting.
+  // Constructs an empty instance. The |java_object| indicates the handle to
+  // import and export member fields.
+  //
+  // Having |env| as |nullptr| disables export to java for the lifetime of the
+  // instance. This is useful as a scratch info that is gradually populated for
+  // comparison with another NativeLibInfo, and then discarded.
   NativeLibInfo(JNIEnv* env, jobject java_object);
+
+  // Copies the java-side object state to this native instance. Returns false
+  // iff an imported value is invalid.
+  bool CopyFromJavaObject();
+
+  void set_load_address(uintptr_t a) { load_address_ = a; }
 
   // Whether to use memfd_create(2) when creating shared memory regions.
   void set_use_memfd(bool use_memfd) {
@@ -71,8 +76,6 @@ class NativeLibInfo {
   // provide RELRO FD before it starts processing arbitrary input. For example,
   // an App Zygote can create a RELRO FD in a sufficiently trustworthy way to
   // make the Browser/Privileged processes share the region with it.
-  //
-  // TODO(pasko): Add an option to use an existing memory reservation.
   bool LoadLibrary(const String& library_path, bool spawn_relro_region);
 
   // Finds the RELRO region in the native library identified by
@@ -129,7 +132,7 @@ class NativeLibInfo {
   bool FindRelroAndLibraryRangesInElf();
 
   // Loads and initializes the load address ranges: |load_address_|,
-  // |load_size_|.
+  // |load_size_|. Assumes that the memory range is reserved (in Linker.java).
   bool LoadWithDlopenExt(const String& path, void** handle);
 
   // Initializes |relro_fd_| with a newly created read-only shared memory region
@@ -151,8 +154,8 @@ class NativeLibInfo {
   uintptr_t relro_start_ = 0;
   size_t relro_size_ = 0;
   int relro_fd_ = kInvalidFd;
-  JNIEnv* env_;
-  jobject java_object_;
+  JNIEnv* const env_;
+  const jobject java_object_;
   bool use_memfd_initialized_ = false;
   bool use_memfd_;
 };

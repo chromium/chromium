@@ -14,6 +14,8 @@
 
 #include "base/android/linker/linker_jni.h"
 
+#include <errno.h>
+#include <inttypes.h>
 #include <jni.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +26,6 @@ namespace chromium_android_linker {
 // Variable containing LibInfo for the loaded library.
 LibInfo_class s_lib_info_fields;
 
-// Simple scoped UTF String class constructor.
 String::String(JNIEnv* env, jstring str) {
   size_ = env->GetStringUTFLength(str);
   ptr_ = static_cast<char*>(::malloc(size_ + 1));
@@ -49,7 +50,7 @@ String::String(JNIEnv* env, jstring str) {
   env->ReleaseStringUTFChars(str, bytes);
 }
 
-// Find the jclass JNI reference corresponding to a given |class_name|.
+// Finds the jclass JNI reference corresponding to a given |class_name|.
 // |env| is the current JNI environment handle.
 // On success, return true and set |*clazz|.
 bool InitClassReference(JNIEnv* env, const char* class_name, jclass* clazz) {
@@ -61,7 +62,7 @@ bool InitClassReference(JNIEnv* env, const char* class_name, jclass* clazz) {
   return true;
 }
 
-// Initialize a jfieldID corresponding to the field of a given |clazz|,
+// Initializes a jfieldID corresponding to the field of a given |clazz|,
 // with name |field_name| and signature |field_sig|.
 // |env| is the current JNI environment handle.
 // On success, return true and set |*field_id|.
@@ -79,29 +80,71 @@ bool InitFieldId(JNIEnv* env,
   return true;
 }
 
-// Use Android ASLR to create a random address into which we expect to be
-// able to load libraries. Note that this is probabilistic; we unmap the
-// address we get from mmap and assume we can re-map into it later. This
-// works the majority of the time. If it doesn't, client code backs out and
-// then loads the library normally at any available address.
-// |env| is the current JNI environment handle, and |clazz| a class.
-// Returns the address selected by ASLR, or 0 on error.
-JNI_GENERATOR_EXPORT jlong
-Java_org_chromium_base_library_1loader_Linker_nativeGetRandomBaseLoadAddress(
-    JNIEnv* env,
-    jclass clazz) {
-  size_t bytes = kAddressSpaceReservationSize;
+namespace {
 
-  void* address =
-      mmap(nullptr, bytes, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-  if (address == MAP_FAILED) {
-    LOG_INFO("Random base load address not determinable");
-    return 0;
+// With mmap(2) reserves a range of virtual addresses.
+//
+// The range must start with |hint| and be of size |size|. The |hint==0|
+// indicates that the address of the mapping should be chosen at random,
+// utilizing ASLR built into mmap(2).
+//
+// The start of the resulting region is returned in |address|.
+//
+// The value 0 returned iff the attempt failed (a part of the address range is
+// already reserved by some other subsystem).
+void ReserveAddressWithHint(uintptr_t hint, uintptr_t* address, size_t* size) {
+  void* ptr = reinterpret_cast<void*>(hint);
+  void* new_ptr = mmap(ptr, kAddressSpaceReservationSize, PROT_NONE,
+                       MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  if (new_ptr == MAP_FAILED) {
+    PLOG_ERROR("mmap");
+    *address = 0;
+  } else if ((hint != 0) && (new_ptr != ptr)) {
+    // Something grabbed the address range before the early phase of the
+    // linker had a chance, this should be uncommon.
+    LOG_ERROR("Address range starting at 0x%" PRIxPTR " was not free to use",
+              hint);
+    munmap(new_ptr, kAddressSpaceReservationSize);
+    *address = 0;
+  } else {
+    *address = reinterpret_cast<uintptr_t>(new_ptr);
+    *size = kAddressSpaceReservationSize;
+    LOG_INFO("Reserved region at address: 0x%" PRIxPTR ", size: 0x%zu",
+             *address, *size);
   }
-  munmap(address, bytes);
+}
 
-  LOG_INFO("Random base load address is %p", address);
-  return static_cast<jlong>(reinterpret_cast<uintptr_t>(address));
+}  // namespace
+
+// Performs as described in Linker.java.
+JNI_GENERATOR_EXPORT void
+Java_org_chromium_base_library_1loader_Linker_nativeFindMemoryRegionAtRandomAddress(
+    JNIEnv* env,
+    jclass clazz,
+    jobject lib_info_obj,
+    jboolean keep_reserved) {
+  LOG_INFO("Entering");
+  uintptr_t address;
+  size_t size;
+  ReserveAddressWithHint(0, &address, &size);
+  if (!keep_reserved && address != 0) {
+    munmap(reinterpret_cast<void*>(address), size);
+  }
+  s_lib_info_fields.SetLoadInfo(env, lib_info_obj, address, size);
+}
+
+// Performs as described in Linker.java.
+JNI_GENERATOR_EXPORT void
+Java_org_chromium_base_library_1loader_Linker_nativeReserveMemoryForLibrary(
+    JNIEnv* env,
+    jclass clazz,
+    jobject lib_info_obj) {
+  LOG_INFO("Entering");
+  uintptr_t address;
+  size_t size;
+  s_lib_info_fields.GetLoadInfo(env, lib_info_obj, &address, &size);
+  ReserveAddressWithHint(address, &address, &size);
+  s_lib_info_fields.SetLoadInfo(env, lib_info_obj, address, size);
 }
 
 }  // namespace chromium_android_linker

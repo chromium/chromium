@@ -37,7 +37,7 @@ TEST_F(ModernLinkerTest, CreatedRegionIsSealedAshmem) {
   void* relro_address = mmap(nullptr, kRelroSize, PROT_READ | PROT_WRITE,
                              MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   ASSERT_NE(MAP_FAILED, relro_address);
-  NativeLibInfo lib_info = {0, 0, 0};
+  NativeLibInfo lib_info = {0, 0};
   lib_info.set_use_memfd(false);
   lib_info.set_relro_info_for_testing(
       reinterpret_cast<uintptr_t>(relro_address), kRelroSize);
@@ -90,7 +90,7 @@ TEST_F(ModernLinkerTest, CreatedRegionIsSealedMemfd) {
   void* relro_address = mmap(nullptr, kRelroSize, PROT_READ | PROT_WRITE,
                              MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   ASSERT_NE(MAP_FAILED, relro_address);
-  NativeLibInfo lib_info = {0, 0, 0};
+  NativeLibInfo lib_info = {0, 0};
   lib_info.set_use_memfd(true);
   lib_info.set_relro_info_for_testing(
       reinterpret_cast<uintptr_t>(relro_address), kRelroSize);
