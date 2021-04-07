@@ -1691,9 +1691,7 @@ bool V4L2VideoEncodeAccelerator::InitControls(const Config& config) {
       }
       break;
     case V4L2_PIX_FMT_VP8:
-      if (!InitControlsVP8(config)) {
-        return false;
-      }
+      InitControlsVP8(config);
       break;
     default:
       NOTREACHED() << "Unsupported codec "
@@ -1805,14 +1803,13 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
   return true;
 }
 
-bool V4L2VideoEncodeAccelerator::InitControlsVP8(const Config& config) {
+void V4L2VideoEncodeAccelerator::InitControlsVP8(const Config& config) {
   // Quantization parameter. They are vp8 ac/dc indices and their ranges are
   // 0-127. These values were copied from the VA-API encoder.
   // Ignore return values as these controls are optional.
   device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
                        {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_VPX_MIN_QP, 4),
                         V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_VPX_MAX_QP, 117)});
-  return true;
 }
 
 bool V4L2VideoEncodeAccelerator::CreateInputBuffers() {
