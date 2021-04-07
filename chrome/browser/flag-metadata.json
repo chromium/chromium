@@ -4622,6 +4622,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "screentime",
+    "owners": [ "ellyjones", "chrome-mac-dev@google.com" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "scroll-to-text-ios",
     "owners": [ "tmartino" ],
     "expiry_milestone": 90

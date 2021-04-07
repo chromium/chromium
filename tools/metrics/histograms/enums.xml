@@ -46781,6 +46781,7 @@ from previous Chrome versions.
   <int value="436682243" label="TabGroupsAndroid:disabled"/>
   <int value="436980707" label="ContextualSearchForceCaption:enabled"/>
   <int value="438307192" label="FirstPartySets:disabled"/>
+  <int value="439267320" label="ScreenTime:disabled"/>
   <int value="439525862" label="GlobalMediaControlsForCast:disabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>
   <int value="444754854" label="LegacyTLSWarnings:disabled"/>
@@ -47161,6 +47162,7 @@ from previous Chrome versions.
   <int value="765803208" label="AutofillShowTypePredictions:enabled"/>
   <int value="766898398" label="sampling-heap-profiler"/>
   <int value="767543730" label="DoubleTapToZoomInTabletMode:enabled"/>
+  <int value="767549069" label="ScreenTime:enabled"/>
   <int value="767970385" label="ResamplingScrollEvents:enabled"/>
   <int value="770680432" label="DecodeLossyWebPImagesToYUV:enabled"/>
   <int value="772272625" label="simplify-https-indicator"/>

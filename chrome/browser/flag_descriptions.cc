@@ -3792,6 +3792,10 @@ const char kMetalDescription[] =
     "Use Metal instead of OpenGL for rasterization (if out-of-process "
     "rasterization is enabled) and display (if the Skia renderer is enabled)";
 
+const char kScreenTimeName[] = "Screen Time";
+const char kScreenTimeDescription[] =
+    "Integrate with the macOS Screen Time system.";
+
 #endif
 
 // Chrome OS -------------------------------------------------------------------

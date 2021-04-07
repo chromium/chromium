@@ -2187,6 +2187,9 @@ extern const char kMacSyscallSandboxDescription[];
 extern const char kMetalName[];
 extern const char kMetalDescription[];
 
+extern const char kScreenTimeName[];
+extern const char kScreenTimeDescription[];
+
 #endif  // defined(OS_MAC)
 
 // Chrome OS ------------------------------------------------------------------
