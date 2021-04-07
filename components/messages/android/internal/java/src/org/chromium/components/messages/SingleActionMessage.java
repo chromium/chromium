@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -28,13 +29,13 @@ public class SingleActionMessage implements MessageStateHandler {
         void invoke(PropertyModel messageProperties, int dismissReason);
     }
 
+    @Nullable
     private MessageBannerCoordinator mMessageBanner;
     private MessageBannerView mView;
     private final MessageContainer mContainer;
     private final PropertyModel mModel;
     private final DismissCallback mDismissHandler;
     private final Supplier<Long> mAutodismissDurationMs;
-    private final MessageAutoDismissTimer mAutoDismissTimer;
     private final Supplier<Integer> mMaxTranslationSupplier;
     private final Callback<Animator> mAnimatorStartCallback;
 
@@ -56,7 +57,6 @@ public class SingleActionMessage implements MessageStateHandler {
         mContainer = container;
         mDismissHandler = dismissHandler;
         mAutodismissDurationMs = autodismissDurationMs;
-        mAutoDismissTimer = new MessageAutoDismissTimer();
         mMaxTranslationSupplier = maxTranslationSupplier;
         mAnimatorStartCallback = animatorStartCallback;
 
@@ -73,24 +73,20 @@ public class SingleActionMessage implements MessageStateHandler {
         if (mMessageBanner == null) {
             mView = (MessageBannerView) LayoutInflater.from(mContainer.getContext())
                             .inflate(R.layout.message_banner_view, mContainer, false);
-            mMessageBanner = new MessageBannerCoordinator(
-                    mView, mModel, mMaxTranslationSupplier, mContainer.getResources(), () -> {
-                        mDismissHandler.invoke(mModel, DismissReason.GESTURE);
-                    }, mAnimatorStartCallback);
+            mMessageBanner = new MessageBannerCoordinator(mView, mModel, mMaxTranslationSupplier,
+                    mContainer.getResources(),
+                    // clang-format off
+                    () -> { mDismissHandler.invoke(mModel, DismissReason.GESTURE); },
+                    // clang-format on
+                    mAnimatorStartCallback, mAutodismissDurationMs,
+                    () -> { mDismissHandler.invoke(mModel, DismissReason.TIMER); });
         }
         mContainer.addMessage(mView);
-
-        final Runnable showRunnable = () -> mMessageBanner.show(() -> {
-            mMessageBanner.setOnTouchRunnable(mAutoDismissTimer::resetTimer);
-            mMessageBanner.announceForAccessibility();
-            mAutoDismissTimer.startTimer(mAutodismissDurationMs.get(),
-                    () -> { mDismissHandler.invoke(mModel, DismissReason.TIMER); });
-        });
 
         // Wait until the message and the container are measured before showing the message. This
         // is required in case the animation set-up requires the height of the container, e.g.
         // showing messages without the top controls visible.
-        mContainer.runAfterInitialMessageLayout(showRunnable);
+        mContainer.runAfterInitialMessageLayout(mMessageBanner::show);
     }
 
     /**
@@ -98,8 +94,6 @@ public class SingleActionMessage implements MessageStateHandler {
      */
     @Override
     public void hide(boolean animate, Runnable hiddenCallback) {
-        mAutoDismissTimer.cancelTimer();
-        mMessageBanner.setOnTouchRunnable(null);
         Runnable hiddenRunnable = () -> {
             mContainer.removeMessage(mView);
             if (hiddenCallback != null) hiddenCallback.run();
@@ -113,7 +107,7 @@ public class SingleActionMessage implements MessageStateHandler {
      */
     @Override
     public void dismiss(@DismissReason int dismissReason) {
-        mAutoDismissTimer.cancelTimer();
+        if (mMessageBanner != null) mMessageBanner.dismiss();
         Callback<Integer> onDismissed = mModel.get(MessageBannerProperties.ON_DISMISSED);
         if (onDismissed != null) onDismissed.onResult(dismissReason);
     }

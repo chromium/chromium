@@ -39,6 +39,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     private String mSecondaryButtonMenuText;
     private Runnable mSecondaryActionCallback;
     private SwipeGestureListener mSwipeGestureDetector;
+    private Runnable mOnTitleChanged;
 
     public MessageBannerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -58,6 +59,7 @@ public class MessageBannerView extends BoundedLinearLayout {
 
     void setTitle(String title) {
         mTitle.setText(title);
+        if (mOnTitleChanged != null) mOnTitleChanged.run();
     }
 
     void setDescription(String description) {
@@ -100,6 +102,13 @@ public class MessageBannerView extends BoundedLinearLayout {
         mSwipeGestureDetector = new MessageSwipeGestureListener(getContext(), handler);
     }
 
+    void setOnTitleChanged(Runnable runnable) {
+        mOnTitleChanged = runnable;
+    }
+
+    // TODO(crbug.com/1163302): For the M88 experiment we decided to display single item menu in
+    // response to the tap on secondary button. The code below implements this logic. Past M88 it
+    // will be replaced with modal dialog driven from the feature code.
     void handleSecondaryButtonClick() {
         if (mSecondaryButtonMenuText == null) {
             if (mSecondaryActionCallback != null) {

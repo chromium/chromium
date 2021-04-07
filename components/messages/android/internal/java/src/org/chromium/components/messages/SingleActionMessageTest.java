@@ -4,9 +4,7 @@
 
 package org.chromium.components.messages;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
 import android.animation.Animator;
@@ -80,8 +78,6 @@ public class SingleActionMessageTest {
         SingleActionMessage message = new SingleActionMessage(
                 container, model, mEmptyDismissCallback, () -> 0, () -> 0L, mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
-        doNothing().when(messageBanner).show(any(Runnable.class));
-        doNothing().when(messageBanner).setOnTouchRunnable(any(Runnable.class));
         final MessageBannerView view = new MessageBannerView(sActivity, null);
         view.setId(R.id.message_banner);
         message.setMessageBannerForTesting(messageBanner);
@@ -125,7 +121,6 @@ public class SingleActionMessageTest {
                 container, m1, mEmptyDismissCallback, () -> 0, () -> 0L, mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner1 =
                 Mockito.mock(MessageBannerCoordinator.class);
-        doNothing().when(messageBanner1).show(any(Runnable.class));
         final MessageBannerView view1 = new MessageBannerView(sActivity, null);
         view1.setId(R.id.message_banner);
         message1.setMessageBannerForTesting(messageBanner1);
@@ -134,7 +129,6 @@ public class SingleActionMessageTest {
                 container, m2, mEmptyDismissCallback, () -> 0, () -> 0L, mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner2 =
                 Mockito.mock(MessageBannerCoordinator.class);
-        doNothing().when(messageBanner2).show(any(Runnable.class));
         final MessageBannerView view2 = new MessageBannerView(sActivity, null);
         view2.setId(R.id.message_banner);
         message2.setMessageBannerForTesting(messageBanner2);
