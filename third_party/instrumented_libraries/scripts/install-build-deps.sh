@@ -27,6 +27,7 @@ libavahi-client3 \
 libcairo2 \
 libcap2 \
 libcups2 \
+libcurl3-gnutls \
 libdbus-1-3 \
 libdbus-glib-1-2 \
 libdbusmenu \
@@ -41,8 +42,9 @@ libgnome-keyring0 \
 libgpg-error0 \
 libgtk-3-0 \
 libgtk2.0-bin \
-libido3-0.1-0 \
+libidn11 \
 libindicator3-7 \
+libido3-0.1-0 \
 libjasper1 \
 libjpeg-turbo8 \
 libnspr4 \
@@ -51,8 +53,10 @@ libpci3 \
 libpcre3 \
 libpixman-1-0 \
 libpng12-0 \
+librtmp0 \
+libsasl2-2 \
 libunity9 \
-libwayland-client0\
+libwayland-client0 \
 libx11-6 \
 libxau6 \
 libxcb1 \
@@ -93,6 +97,12 @@ fi
 sudo apt-get install libltdl3-dev libjson0-dev \
          libsndfile1-dev libspeexdsp-dev libjack0 \
          chrpath -y --force-yes  # Chrpath is required by fix_rpaths.sh.
+
+# Needed for libldap-2.4.2. libldap is not included in the above list because
+# one if its dependencies, libgssapi3-heimdal, conflicts with libgssapi-krb5-2,
+# required by libcurl. libgssapi3-heimdal isn't required for this build of
+# libldap.
+sudo apt-get install libsasl2-dev -y --force-yes
 
 sudo apt-get build-dep -y --force-yes $packages
 

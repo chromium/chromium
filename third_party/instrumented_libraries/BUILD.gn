@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/goma.gni")
 
@@ -94,6 +95,7 @@ if (use_locally_built_instrumented_libraries) {
       ":libcairo2",
       ":libcap2",
       ":libcredentialkit_pkcs11",
+      ":libcurl3-gnutls",
       ":libdbus-1-3",
       ":libdbus-glib-1-2",
       ":libdbusmenu",
@@ -107,15 +109,19 @@ if (use_locally_built_instrumented_libraries) {
       ":libgnome-keyring0",
       ":libgpg-error0",
       ":libgtk-3-0",
+      ":libidn11",
       ":libido3-0.1-0",
       ":libindicator3-7",
       ":libjasper1",
       ":libjpeg-turbo8",
+      ":libldap-2.4-2",
       ":libnspr4",
       ":libp11-kit0",
       ":libpci3",
       ":libpcre3",
       ":libpixman-1-0",
+      ":librtmp0",
+      ":libsasl2-2",
       ":libsecret",
       ":libtasn1-6",
       ":libunity9",
@@ -171,7 +177,7 @@ if (use_locally_built_instrumented_libraries) {
   }
 
   template("instrumented_library") {
-    action(target_name) {
+    python2_action(target_name) {
       script = "scripts/download_build_install.py"
       build_method = "destdir"
       if (defined(invoker.build_method)) {
@@ -189,7 +195,7 @@ if (use_locally_built_instrumented_libraries) {
         "-gline-tables-only",
         "-fPIC",
         "-w",
-        "-U_FORITFY_SOURCE",
+        "-U_FORTIFY_SOURCE",
         "-fno-omit-frame-pointer",
       ]
       package_ldflags = []
@@ -419,6 +425,11 @@ if (use_locally_built_instrumented_libraries) {
     pre_build = "scripts/pre-build/libcups2.sh"
   }
 
+  instrumented_library("libcurl3-gnutls") {
+    build_method = "custom_libcurl"
+    patch = "patches/libcurl3-gnutls.diff"
+  }
+
   instrumented_library("libdbus-1-3") {
     extra_configure_flags = [
       "--disable-static",
@@ -596,6 +607,12 @@ if (use_locally_built_instrumented_libraries) {
     pre_build = "scripts/pre-build/autogen.sh"
   }
 
+  instrumented_library("libidn11") {
+    package_ldflags = [ "-Wl,-z,undefs" ]
+    build_method = "debian"
+    pre_build = "scripts/pre-build/libidn.sh"
+  }
+
   instrumented_library("libindicator3-7") {
     extra_configure_flags = [
       "--disable-static",
@@ -621,6 +638,26 @@ if (use_locally_built_instrumented_libraries) {
 
       # From debian/rules.
       "--with-jpeg8",
+    ]
+  }
+
+  instrumented_library("libldap-2.4-2") {
+    extra_configure_flags = [
+      "--disable-slapd",
+
+      # From debian/rules.
+      "--enable-debug",
+      "--enable-dynamic",
+      "--enable-syslog",
+      "--enable-proctitle",
+      "--enable-ipv6",
+      "--enable-local",
+      "--with-subdir=ldap",
+      "--with-cyrus-sasl",
+      "--with-threads",
+      "--with-gssapi",
+      "--with-tls=gnutls",
+      "--with-odbc=unixodbc",
     ]
   }
 
@@ -656,6 +693,18 @@ if (use_locally_built_instrumented_libraries) {
 
     # Required on Trusty due to autoconf version mismatch.
     pre_build = "scripts/pre-build/autoreconf.sh"
+
+    # libp11-kit has an atfork handler, reinitiailize_after_fork(), which causes
+    # deadlocks when used in combination with msan. msan's __fork_interceptor()
+    # will acquire msan locks prior to the fork. reinitialize_after_fork() will
+    # attempt to allocate memory, triggering __malloc_interceptor() which then
+    # blocks forever on msan's locks.
+    #
+    # This patch merges libp11-kit's rev
+    # 16e25b2890927108ec15297aabb1d86a49792741.
+    # which updated the atfork handler to be async-signal-safe.
+    # https://bugs.freedesktop.org/show_bug.cgi?id=84567
+    patch = "patches/libp11-kit0.diff"
   }
 
   instrumented_library("libpci3") {
@@ -688,6 +737,16 @@ if (use_locally_built_instrumented_libraries) {
 
   instrumented_library("libpng12-0") {
     extra_configure_flags = [ "--disable-static" ]
+  }
+
+  instrumented_library("librtmp0") {
+    build_method = "debian"
+  }
+
+  instrumented_library("libsasl2-2") {
+    build_method = "debian"
+    pre_build = "scripts/pre-build/libsasl2-2.sh"
+    package_cflags = [ "-Wno-return-type" ]
   }
 
   instrumented_library("libsecret") {
