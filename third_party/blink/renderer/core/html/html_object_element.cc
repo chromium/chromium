@@ -288,11 +288,11 @@ void HTMLObjectElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLObjectElement::ChildrenChanged(const ChildrenChange& change) {
+  HTMLPlugInElement::ChildrenChanged(change);
   if (isConnected() && !UseFallbackContent()) {
     SetNeedsPluginUpdate(true);
     ReattachOnPluginChangeIfNeeded();
   }
-  HTMLPlugInElement::ChildrenChanged(change);
 }
 
 bool HTMLObjectElement::IsURLAttribute(const Attribute& attribute) const {
