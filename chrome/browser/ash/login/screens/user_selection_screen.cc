@@ -578,9 +578,12 @@ void UserSelectionScreen::Init(const user_manager::UserList& users) {
   if (!ime_state_.get())
     ime_state_ = input_method::InputMethodManager::Get()->GetActiveIMEState();
 
-  if (users.size() > 0) {
-    // Resets observed object in case of re-Init, no-op otherwise.
-    scoped_observation_.Reset();
+  // Resets observed object in case of re-Init, no-op otherwise.
+  scoped_observation_.Reset();
+  // Login screen-only  logic to send users through the online re-auth.
+  // In-session (including the lock screen) is handled by
+  // InSessionPasswordSyncManager.
+  if (users.size() > 0 && display_type_ == DisplayedScreen::SIGN_IN_SCREEN) {
     online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(users);
     scoped_observation_.Observe(online_signin_notifier_.get());
     online_signin_notifier_->CheckForPolicyEnforcedOnlineSignin();
