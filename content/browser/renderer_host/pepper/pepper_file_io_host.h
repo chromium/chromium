@@ -19,6 +19,7 @@
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_platform_file.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/pp_time.h"
 #include "ppapi/host/host_message_context.h"

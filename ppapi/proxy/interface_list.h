@@ -68,7 +68,8 @@ class PPAPI_PROXY_EXPORT InterfaceList {
     // Call this any time the interface is requested. It will log a UMA count
     // only the first time. This is safe to call from any thread, regardless of
     // whether the proxy lock is held.
-    void LogWithUmaOnce(IPC::Sender* sender, const std::string& name);
+    void LogWithUmaOnce(const std::string& name);
+
    private:
     DISALLOW_COPY_AND_ASSIGN(InterfaceInfo);
 

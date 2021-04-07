@@ -632,9 +632,6 @@ IPC_SYNC_MESSAGE_CONTROL1_1(PpapiMsg_SupportsInterface,
                             std::string /* interface_name */,
                             bool /* result */)
 
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_LogInterfaceUsage,
-                     int /* interface_hash */)
-
 #if !defined(OS_NACL) && !defined(NACL_WIN64)
 // Network state notification from the browser for implementing
 // PPP_NetworkState_Dev.
