@@ -218,6 +218,10 @@ void PhoneStatusProcessor::OnFeatureStatusChanged() {
 
 void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
     proto::PhoneStatusSnapshot phone_status_snapshot) {
+  PA_LOG(INFO) << "Received snapshot from phone with Android version "
+               << phone_status_snapshot.properties().android_version()
+               << " and GmsCore version "
+               << phone_status_snapshot.properties().gmscore_version();
   ProcessReceivedNotifications(phone_status_snapshot.notifications());
   SetReceivedPhoneStatusModelStates(phone_status_snapshot.properties());
 }

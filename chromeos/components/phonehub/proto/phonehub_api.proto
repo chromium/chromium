@@ -90,6 +90,11 @@ enum ProfileType {
   WORK_PROFILE = 1;
 }
 
+enum DoNotDisturbCapability {
+  DO_NOT_DISTURB_NORMAL = 0;
+  DO_NOT_DISTURB_NOT_ALLOWED = 1;
+}
+
 enum FindMyDeviceCapability {
   NORMAL = 0;
   NOT_ALLOWED = 1;
@@ -114,6 +119,11 @@ message PhoneProperties {
   ProfileType profile_type = 10;
 
   FindMyDeviceCapability find_my_device_capability = 11;
+
+  DoNotDisturbCapability do_not_disturb_capability = 12;
+
+  int32 android_version = 13;
+  int64 gmscore_version = 14;
 }
 
 message App {
