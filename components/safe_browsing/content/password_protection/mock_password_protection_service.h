@@ -17,7 +17,12 @@ class MockPasswordProtectionService : public PasswordProtectionService {
   MockPasswordProtectionService(
       const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      history::HistoryService* history_service);
+      history::HistoryService* history_service,
+      PrefService* pref_service,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      bool is_off_the_record,
+      signin::IdentityManager* identity_manager,
+      bool try_token_fetch);
   ~MockPasswordProtectionService() override;
 
   // safe_browsing::PasswordProtectionService

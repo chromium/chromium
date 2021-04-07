@@ -135,10 +135,20 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
   TestPasswordProtectionService(
       const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      scoped_refptr<HostContentSettingsMap> content_setting_map)
+      scoped_refptr<HostContentSettingsMap> content_setting_map,
+      PrefService* pref_service,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      bool is_off_the_record,
+      signin::IdentityManager* identity_manager,
+      bool try_token_fetch = true)
       : MockPasswordProtectionService(database_manager,
                                       url_loader_factory,
-                                      nullptr),
+                                      nullptr,
+                                      pref_service,
+                                      std::move(token_fetcher),
+                                      is_off_the_record,
+                                      identity_manager,
+                                      try_token_fetch),
         cache_manager_(
             std::make_unique<VerdictCacheManager>(nullptr,
                                                   content_setting_map.get())) {
@@ -249,7 +259,7 @@ class PasswordProtectionServiceTest : public ::testing::Test {
             database_manager_,
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
-            content_setting_map_);
+            content_setting_map_, nullptr, nullptr, false, nullptr, false);
     web_contents_ =
         base::WrapUnique(content::WebContentsTester::CreateTestWebContents(
             content::WebContents::CreateParams(&browser_context_)));
@@ -339,7 +349,7 @@ class PasswordProtectionServiceBaseTest
             database_manager_,
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
-            content_setting_map_);
+            content_setting_map_, nullptr, nullptr, false, nullptr, false);
     EXPECT_CALL(*password_protection_service_, IsExtendedReporting())
         .WillRepeatedly(Return(GetParam()));
     EXPECT_CALL(*password_protection_service_, IsIncognito())

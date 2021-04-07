@@ -53,6 +53,7 @@
 #include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -230,11 +231,18 @@ std::unique_ptr<UserEventSpecifics> GetUserEventSpecifics(
 ChromePasswordProtectionService::ChromePasswordProtectionService(
     SafeBrowsingService* sb_service,
     Profile* profile)
-    : PasswordProtectionService(sb_service->database_manager(),
-                                sb_service->GetURLLoaderFactory(profile),
-                                HistoryServiceFactory::GetForProfile(
-                                    profile,
-                                    ServiceAccessType::EXPLICIT_ACCESS)),
+    : PasswordProtectionService(
+          sb_service->database_manager(),
+          sb_service->GetURLLoaderFactory(profile),
+          HistoryServiceFactory::GetForProfile(
+              profile,
+              ServiceAccessType::EXPLICIT_ACCESS),
+          profile->GetPrefs(),
+          std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
+              IdentityManagerFactory::GetForProfile(profile)),
+          profile->IsOffTheRecord(),
+          IdentityManagerFactory::GetForProfile(profile),
+          /*try_token_fetch=*/true),
       ui_manager_(sb_service->ui_manager()),
       trigger_manager_(sb_service->trigger_manager()),
       profile_(profile),
@@ -1664,7 +1672,14 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
     scoped_refptr<SafeBrowsingUIManager> ui_manager,
     StringProvider sync_password_hash_provider,
     VerdictCacheManager* cache_manager)
-    : PasswordProtectionService(nullptr, nullptr, nullptr),
+    : PasswordProtectionService(nullptr,
+                                nullptr,
+                                nullptr,
+                                nullptr,
+                                nullptr,
+                                false,
+                                nullptr,
+                                /*try_token_fetch=*/false),
       ui_manager_(ui_manager),
       trigger_manager_(nullptr),
       profile_(profile),

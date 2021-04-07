@@ -45,9 +45,19 @@ const char kPasswordProtectionRequestUrl[] =
 PasswordProtectionServiceBase::PasswordProtectionServiceBase(
     const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    history::HistoryService* history_service)
+    history::HistoryService* history_service,
+    PrefService* pref_service,
+    std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+    bool is_off_the_record,
+    signin::IdentityManager* identity_manager,
+    bool try_token_fetch)
     : database_manager_(database_manager),
-      url_loader_factory_(url_loader_factory) {
+      url_loader_factory_(url_loader_factory),
+      pref_service_(pref_service),
+      token_fetcher_(std::move(token_fetcher)),
+      is_off_the_record_(is_off_the_record),
+      identity_manager_(identity_manager),
+      try_token_fetch_(try_token_fetch) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
   if (history_service)
     history_service_observation_.Observe(history_service);

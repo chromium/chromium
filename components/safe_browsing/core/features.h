@@ -62,6 +62,10 @@ extern const base::Feature kPasswordProtectionReferringAppEnabledAndroid;
 // Enable GAIA password protection for signed-in users.
 extern const base::Feature kPasswordProtectionForSignedInUsers;
 
+// Enables GAIA-keying of password protection requests for Enhanced Safe
+// Browsing users.
+extern const base::Feature kPasswordProtectionWithToken;
+
 // Controls whether Chrome prompts Enhanced Safe Browsing users for deep
 // scanning.
 extern const base::Feature kPromptEsbForDeepScanning;

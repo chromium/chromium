@@ -77,6 +77,10 @@ const base::Feature kPasswordProtectionForSignedInUsers {
 #endif
 };
 
+const base::Feature kPasswordProtectionWithToken{
+    "SafeBrowsingPasswordProtectionRequestWithToken",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kPromptEsbForDeepScanning{
     "SafeBrowsingPromptEsbForDeepScanning", base::FEATURE_DISABLED_BY_DEFAULT};
 

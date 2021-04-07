@@ -134,7 +134,12 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
           sb_service->GetURLLoaderFactory(),
           ios::HistoryServiceFactory::GetForBrowserState(
               browser_state,
-              ServiceAccessType::EXPLICIT_ACCESS)),
+              ServiceAccessType::EXPLICIT_ACCESS),
+          /*pref_service=*/nullptr,
+          /*token_fetcher=*/nullptr,
+          browser_state->IsOffTheRecord(),
+          /*identity_manager=*/nullptr,
+          /*try_token_fetch=*/false),
       browser_state_(browser_state) {}
 
 ChromePasswordProtectionService::~ChromePasswordProtectionService() = default;

@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
@@ -29,6 +30,7 @@
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
@@ -53,10 +55,21 @@ using password_manager::metrics_util::PasswordType;
 // HostContentSettingsMap instance.
 class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
  public:
+  // Creates an instance with various fields set. Needs pref_service to get safe
+  // browsing protection level, is_off_the_record to check for incognito,
+  // identity_manager to verify that the user is signed in, and token_fetcher to
+  // try fetching the token. If try_token_fetch is false, the class will not
+  // attempt to fetch a token, or do any of the checks associated with
+  // pref_service, token_fetcher, and identity_manager.
   PasswordProtectionServiceBase(
       const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      history::HistoryService* history_service);
+      history::HistoryService* history_service,
+      PrefService* pref_service,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      bool is_off_the_record,
+      signin::IdentityManager* identity_manager,
+      bool try_token_fetch);
 
   ~PasswordProtectionServiceBase() override;
 
@@ -345,6 +358,16 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   virtual void MaybeHandleDeferredNavigations(
       PasswordProtectionRequest* request) {}
 
+  PrefService* pref_service() { return pref_service_; }
+
+  SafeBrowsingTokenFetcher* token_fetcher() { return token_fetcher_.get(); }
+
+  bool is_off_the_record() { return is_off_the_record_; }
+
+  signin::IdentityManager* identity_manager() { return identity_manager_; }
+
+  bool try_token_fetch() { return try_token_fetch_; }
+
   // Set of pending PasswordProtectionRequests that are still waiting for
   // verdict.
   std::set<scoped_refptr<PasswordProtectionRequest>> pending_requests_;
@@ -427,6 +450,24 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // Weakptr can only cancel task if it is posted to the same thread. Therefore,
   // we need CancelableTaskTracker to cancel tasks posted to IO thread.
   base::CancelableTaskTracker tracker_;
+
+  // Unowned object used for getting preference settings.
+  PrefService* pref_service_;
+
+  // The token fetcher used for getting access token.
+  std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
+
+  // A boolean indicates whether the profile associated is an
+  // incognito profile.
+  bool is_off_the_record_;
+
+  // Use identity manager to check if account is signed in, before fetching
+  // access token.
+  signin::IdentityManager* identity_manager_;
+
+  // A boolean indicates whether access token fetch should be attempted or not.
+  // Use this to disable token fetches from ios and certain tests.
+  bool try_token_fetch_;
 
   base::WeakPtrFactory<PasswordProtectionServiceBase> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(PasswordProtectionServiceBase);
