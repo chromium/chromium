@@ -72,6 +72,9 @@ struct Config {
   // stale and refetched.
   base::TimeDelta subscribed_feeds_staleness_threshold =
       base::TimeDelta::FromDays(7);
+  // Number of days of history to query when determining whether to show the
+  // follow accelerator.
+  int webfeed_accelerator_recent_visit_history_days = 14;
 
   // Configuration for `PersistentKeyValueStore`.
 

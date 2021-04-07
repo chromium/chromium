@@ -43,16 +43,13 @@ public class WebFeedBridge {
 
     /**
      * Obtains visit information for a website within a limited number of days in the past.
-     * @param url The URL for which the domain will be queried for past visits.
-     * @param pastDaysCount The number of past days to consider for querying visits.
+     * @param url The URL for which the host will be queried for past visits.
      * @param callback The callback to receive the past visits query results.
+     *            Upon failure, VisitCounts is populated with 0 visits.
      */
-    public void getVisitsInRecentDays(GURL url, int pastDaysCount, Callback<VisitCounts> callback) {
-        // TODO(crbug/1152592): replace mock implementation.
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                ()
-                        -> callback.onResult(new VisitCounts(
-                                sRandom.nextInt(100), sRandom.nextInt(pastDaysCount))));
+    public void getVisitCountsToHost(GURL url, Callback<VisitCounts> callback) {
+        WebFeedBridgeJni.get().getRecentVisitCountsToHost(
+                url, (result) -> callback.onResult(new VisitCounts(result[0], result[1])));
     }
 
     /** Container for a Web Feed metadata. */
@@ -266,5 +263,6 @@ public class WebFeedBridge {
                 WebFeedPageInformation pageInfo, Callback<WebFeedMetadata> callback);
         void findWebFeedInfoForWebFeedId(byte[] webFeedId, Callback<WebFeedMetadata> callback);
         void getAllSubscriptions(Callback<Object[]> callback);
+        void getRecentVisitCountsToHost(GURL url, Callback<int[]> callback);
     }
 }

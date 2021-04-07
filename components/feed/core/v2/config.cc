@@ -121,6 +121,11 @@ void OverrideWithFinch(Config* config) {
           kInterestFeedV2, "max_prefetch_image_requests_per_refresh",
           config->max_prefetch_image_requests_per_refresh);
 
+  config->webfeed_accelerator_recent_visit_history_days =
+      base::GetFieldTrialParamByFeatureAsInt(
+          kWebFeed, "webfeed_accelerator_recent_visit_history_days",
+          config->webfeed_accelerator_recent_visit_history_days);
+
   // Erase any capabilities with "enable_CAPABILITY = false" set.
   base::EraseIf(config->experimental_capabilities, CapabilityDisabled);
 }
