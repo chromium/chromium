@@ -8,11 +8,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
@@ -43,8 +45,11 @@ VideoDecoderConfig* MakeVideoDecoderConfig(
 AudioDecoderConfig* MakeAudioDecoderConfig(
     const wc_fuzzer::ConfigureAudioDecoder& proto);
 
-VideoEncoderConfig* MakeEncoderConfig(
+VideoEncoderConfig* MakeVideoEncoderConfig(
     const wc_fuzzer::ConfigureVideoEncoder& proto);
+
+AudioEncoderConfig* MakeAudioEncoderConfig(
+    const wc_fuzzer::ConfigureAudioEncoder& proto);
 
 EncodedVideoChunk* MakeEncodedVideoChunk(
     const wc_fuzzer::EncodedVideoChunk& proto);
@@ -54,6 +59,9 @@ EncodedAudioChunk* MakeEncodedAudioChunk(
 
 VideoFrame* MakeVideoFrame(ScriptState* script_state,
                            const wc_fuzzer::VideoFrameBitmapInit& proto);
+
+AudioFrame* MakeAudioFrame(ScriptState* script_state,
+                           const wc_fuzzer::AudioFrameInit& proto);
 
 VideoEncoderEncodeOptions* MakeEncodeOptions(
     const wc_fuzzer::EncodeVideo_EncodeOptions& proto);

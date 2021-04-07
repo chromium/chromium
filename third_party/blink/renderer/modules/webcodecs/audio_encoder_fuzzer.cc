@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,17 @@
 #include "base/run_loop.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_output_callback.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_encoder.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_utils.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -32,7 +32,7 @@
 namespace blink {
 
 DEFINE_TEXT_PROTO_FUZZER(
-    const wc_fuzzer::VideoEncoderApiInvocationSequence& proto) {
+    const wc_fuzzer::AudioEncoderApiInvocationSequence& proto) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   static DummyPageHolder* page_holder = []() {
     auto page_holder = std::make_unique<DummyPageHolder>();
@@ -66,53 +66,47 @@ DEFINE_TEXT_PROTO_FUZZER(
         V8WebCodecsErrorCallback::Create(error_function->Bind());
     Persistent<FakeFunction> output_function =
         FakeFunction::Create(script_state, "output");
-    Persistent<V8EncodedVideoChunkOutputCallback> output_callback =
-        V8EncodedVideoChunkOutputCallback::Create(output_function->Bind());
+    Persistent<V8EncodedAudioChunkOutputCallback> output_callback =
+        V8EncodedAudioChunkOutputCallback::Create(output_function->Bind());
 
-    Persistent<VideoEncoderInit> video_encoder_init =
-        MakeGarbageCollected<VideoEncoderInit>();
-    video_encoder_init->setError(error_callback);
-    video_encoder_init->setOutput(output_callback);
+    Persistent<AudioEncoderInit> audio_encoder_init =
+        MakeGarbageCollected<AudioEncoderInit>();
+    audio_encoder_init->setError(error_callback);
+    audio_encoder_init->setOutput(output_callback);
 
-    Persistent<VideoEncoder> video_encoder = VideoEncoder::Create(
-        script_state, video_encoder_init, IGNORE_EXCEPTION_FOR_TESTING);
+    Persistent<AudioEncoder> audio_encoder = AudioEncoder::Create(
+        script_state, audio_encoder_init, IGNORE_EXCEPTION_FOR_TESTING);
 
-    if (video_encoder) {
+    if (audio_encoder) {
       for (auto& invocation : proto.invocations()) {
         switch (invocation.Api_case()) {
-          case wc_fuzzer::VideoEncoderApiInvocation::kConfigure:
-            video_encoder->configure(
-                MakeVideoEncoderConfig(invocation.configure()),
+          case wc_fuzzer::AudioEncoderApiInvocation::kConfigure:
+            audio_encoder->configure(
+                MakeAudioEncoderConfig(invocation.configure()),
                 IGNORE_EXCEPTION_FOR_TESTING);
             break;
-          case wc_fuzzer::VideoEncoderApiInvocation::kEncode: {
-            VideoFrame* frame =
-                MakeVideoFrame(script_state, invocation.encode().frame());
-            // Often the fuzzer input will be too crazy to produce a valid frame
-            // (e.g. bitmap width > bitmap length). In these cases, return early
-            // to discourage this sort of fuzzer input. WebIDL doesn't allow
-            // callers to pass null, so this is not a real concern.
+          case wc_fuzzer::AudioEncoderApiInvocation::kEncode: {
+            AudioFrame* frame =
+                MakeAudioFrame(script_state, invocation.encode().frame());
             if (!frame)
               return;
 
-            video_encoder->encode(
-                frame, MakeEncodeOptions(invocation.encode().options()),
-                IGNORE_EXCEPTION_FOR_TESTING);
+            audio_encoder->encode(frame, IGNORE_EXCEPTION_FOR_TESTING);
             break;
           }
-          case wc_fuzzer::VideoEncoderApiInvocation::kFlush: {
+          case wc_fuzzer::AudioEncoderApiInvocation::kFlush: {
             // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
             // of the flush promise.
-            video_encoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
+            audio_encoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
             break;
           }
-          case wc_fuzzer::VideoEncoderApiInvocation::kReset:
-            video_encoder->reset(IGNORE_EXCEPTION_FOR_TESTING);
+          case wc_fuzzer::AudioEncoderApiInvocation::kReset:
+            audio_encoder->reset(IGNORE_EXCEPTION_FOR_TESTING);
             break;
-          case wc_fuzzer::VideoEncoderApiInvocation::kClose:
-            video_encoder->close(IGNORE_EXCEPTION_FOR_TESTING);
+          case wc_fuzzer::AudioEncoderApiInvocation::kClose:
+            audio_encoder->close(IGNORE_EXCEPTION_FOR_TESTING);
             break;
-          case wc_fuzzer::VideoEncoderApiInvocation::API_NOT_SET:
+          case wc_fuzzer::AudioEncoderApiInvocation::API_NOT_SET:
             break;
         }
 

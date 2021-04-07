@@ -33,7 +33,7 @@ specific_include_rules = {
         "+base/run_loop.h",
         "+testing/libfuzzer/proto/lpm_interface.h",
     ],
-    "video_encoder_fuzzer.cc": [
+    ".*_encoder_fuzzer.cc": [
         "+base/at_exit.h",
         "+base/run_loop.h",
         "+testing/libfuzzer/proto/lpm_interface.h",
