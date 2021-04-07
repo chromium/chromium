@@ -113,8 +113,6 @@ const char* AuthStateToString(CryptohomeAuthenticator::AuthState state) {
       return "GUEST_LOGIN";
     case CryptohomeAuthenticator::PUBLIC_ACCOUNT_LOGIN:
       return "PUBLIC_ACCOUNT_LOGIN";
-    case CryptohomeAuthenticator::SUPERVISED_USER_LOGIN_DEPRECATED:
-      return "SUPERVISED_USER_LOGIN_DEPRECATED";
     case CryptohomeAuthenticator::LOGIN_FAILED:
       return "LOGIN_FAILED";
     case CryptohomeAuthenticator::OWNER_REQUIRED:
@@ -947,12 +945,6 @@ void CryptohomeAuthenticator::Resolve() {
           FROM_HERE,
           base::BindOnce(&CryptohomeAuthenticator::OnAuthSuccess, this));
       break;
-    case SUPERVISED_USER_LOGIN_DEPRECATED:
-      current_state_->user_context.SetIsUsingOAuth(false);
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&CryptohomeAuthenticator::OnAuthSuccess, this));
-      break;
     case OWNER_REQUIRED: {
       current_state_->ResetCryptohomeStatus();
       UserDataAuthClient::Get()->Unmount(
@@ -1123,9 +1115,6 @@ CryptohomeAuthenticator::ResolveCryptohomeSuccessState() {
     return PUBLIC_ACCOUNT_LOGIN;
   if (user_type == user_manager::USER_TYPE_KIOSK_APP)
     return KIOSK_ACCOUNT_LOGIN;
-  // TODO(crbug/1155729): If this check is never true, remove the enum field.
-  if (user_type == user_manager::USER_TYPE_SUPERVISED_DEPRECATED)
-    return SUPERVISED_USER_LOGIN_DEPRECATED;
 
   if (!VerifyOwner())
     return CONTINUE;

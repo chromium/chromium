@@ -483,15 +483,9 @@ bool UserSelectionScreen::ShouldForceOnlineSignIn(
 
   const user_manager::User::OAuthTokenStatus token_status =
       user->oauth_token_status();
-  // TODO(crbug/1155729): Check if this bool is ever true. If not, remove it.
-  const bool is_deprecated_supervised_user =
-      user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED;
   const bool is_public_session =
       user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
   const bool has_gaia_account = user->HasGaiaAccount();
-
-  if (is_deprecated_supervised_user)
-    return false;
 
   if (is_public_session)
     return false;

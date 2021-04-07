@@ -67,8 +67,6 @@ ForceInstalledMetrics::UserType ConvertUserType(
       return ForceInstalledMetrics::UserType::USER_TYPE_GUEST;
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return ForceInstalledMetrics::UserType::USER_TYPE_PUBLIC_ACCOUNT;
-    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
-      return ForceInstalledMetrics::UserType::USER_TYPE_SUPERVISED_DEPRECATED;
     case user_manager::USER_TYPE_KIOSK_APP:
       return ForceInstalledMetrics::UserType::USER_TYPE_KIOSK_APP;
     case user_manager::USER_TYPE_CHILD:

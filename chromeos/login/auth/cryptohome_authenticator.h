@@ -79,11 +79,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
                              // but offline succeeded.
     GUEST_LOGIN = 16,        // Logged in guest mode.
     PUBLIC_ACCOUNT_LOGIN = 17,  // Logged into a public account.
-    // TODO(crbug/1155729): Remove this enum.
-    SUPERVISED_USER_LOGIN_DEPRECATED =
-        18,               // Logged in as deprecated legacy supervised user.
-    LOGIN_FAILED = 19,    // Obsolete: Login denied.
-    OWNER_REQUIRED = 20,  // Login is restricted to the owner only.
+    // SUPERVISED_USER_LOGIN_DEPRECATED = 18,
+    LOGIN_FAILED = 19,                // Obsolete: Login denied.
+    OWNER_REQUIRED = 20,              // Login is restricted to the owner only.
     FAILED_USERNAME_HASH = 21,        // Failed GetSanitizedUsername request.
     KIOSK_ACCOUNT_LOGIN = 22,         // Logged into a kiosk account.
     REMOVED_DATA_AFTER_FAILURE = 23,  // Successfully removed the user's

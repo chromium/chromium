@@ -123,7 +123,6 @@ bool LoginState::UserHasNetworkProfile() const {
 bool LoginState::IsUserAuthenticated() const {
   return logged_in_user_type_ == LOGGED_IN_USER_REGULAR ||
          logged_in_user_type_ == LOGGED_IN_USER_OWNER ||
-         logged_in_user_type_ == LOGGED_IN_USER_SUPERVISED_DEPRECATED ||
          logged_in_user_type_ == LOGGED_IN_USER_CHILD;
 }
 
