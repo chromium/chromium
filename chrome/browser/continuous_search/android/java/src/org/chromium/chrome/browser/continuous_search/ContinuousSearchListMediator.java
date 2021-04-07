@@ -32,7 +32,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private final Resources mResources;
     private Tab mCurrentTab;
     private boolean mOnSrp;
-    private ContinuousNavigationUserData mCurrentUserData;
+    private ContinuousNavigationUserDataImpl mCurrentUserData;
     private @PageCategory int mPageCategory;
     private boolean mVisible;
     private boolean mScrolled;
@@ -71,7 +71,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         mCurrentTab = tab;
         if (mCurrentTab == null) return;
 
-        mCurrentUserData = ContinuousNavigationUserData.getOrCreateForTab(mCurrentTab);
+        mCurrentUserData = ContinuousNavigationUserDataImpl.getOrCreateForTab(mCurrentTab);
         mCurrentUserData.addObserver(this);
     }
 

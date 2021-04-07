@@ -214,8 +214,8 @@ public class ContinuousSearchTabHelperTest {
         // Load a SRP URL.
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            ContinuousNavigationUserData continuousNavigationUserData =
-                    ContinuousNavigationUserData.getOrCreateForTab(tab);
+            ContinuousNavigationUserDataImpl continuousNavigationUserData =
+                    ContinuousNavigationUserDataImpl.getOrCreateForTab(tab);
             Assert.assertNotNull(continuousNavigationUserData);
             continuousNavigationUserData.addObserver(observer);
         });
@@ -229,8 +229,8 @@ public class ContinuousSearchTabHelperTest {
         // Check the retuned data.
         Assert.assertEquals("cat dog", observer.mMetadata.getQuery());
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            ContinuousNavigationUserData continuousNavigationUserData =
-                    ContinuousNavigationUserData.getOrCreateForTab(tab);
+            ContinuousNavigationUserDataImpl continuousNavigationUserData =
+                    ContinuousNavigationUserDataImpl.getOrCreateForTab(tab);
             Assert.assertTrue(continuousNavigationUserData.isValid());
             String url = mServer.getURLWithHostName("www.google.com", TEST_URL + "?q=cat+dog");
             Assert.assertTrue(observer.mMetadata.getRootUrl().getSpec().startsWith(url));

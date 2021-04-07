@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/optional.h"
-#include "chrome/browser/continuous_search/internal/page_category.h"
+#include "chrome/browser/continuous_search/page_category.h"
 #include "url/gurl.h"
 
 namespace continuous_search {

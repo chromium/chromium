@@ -46,14 +46,14 @@ public class ContinuousSearchListMediatorTest {
                 mLayoutVisibilityFalse.notifyCalled();
             }
         }, Mockito.mock(ThemeColorProvider.class), Mockito.mock(Resources.class));
-        ContinuousNavigationUserData continuousNavigationUserData =
-                Mockito.mock(ContinuousNavigationUserData.class);
-        ContinuousNavigationUserData.setInstanceForTesting(continuousNavigationUserData);
+        ContinuousNavigationUserDataImpl continuousNavigationUserData =
+                Mockito.mock(ContinuousNavigationUserDataImpl.class);
+        ContinuousNavigationUserDataImpl.setInstanceForTesting(continuousNavigationUserData);
     }
 
     @After
     public void tearDown() {
-        ContinuousNavigationUserData.setInstanceForTesting(null);
+        ContinuousNavigationUserDataImpl.setInstanceForTesting(null);
     }
 
     /**
@@ -120,7 +120,7 @@ public class ContinuousSearchListMediatorTest {
 
     /**
      * Tests that the ModelList is correctly populated on updates from {@link
-     * ContinuousNavigationUserData}.
+     * ContinuousNavigationUserDataImpl}.
      */
     @Test
     public void testModelList() {

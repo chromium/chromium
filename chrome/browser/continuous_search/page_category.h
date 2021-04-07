@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTINUOUS_SEARCH_INTERNAL_PAGE_CATEGORY_H_
-#define CHROME_BROWSER_CONTINUOUS_SEARCH_INTERNAL_PAGE_CATEGORY_H_
+#ifndef CHROME_BROWSER_CONTINUOUS_SEARCH_PAGE_CATEGORY_H_
+#define CHROME_BROWSER_CONTINUOUS_SEARCH_PAGE_CATEGORY_H_
 
 namespace continuous_search {
 
@@ -17,4 +17,4 @@ enum class PageCategory {
 
 }  // namespace continuous_search
 
-#endif  // CHROME_BROWSER_CONTINUOUS_SEARCH_INTERNAL_PAGE_CATEGORY_H_
+#endif  // CHROME_BROWSER_CONTINUOUS_SEARCH_PAGE_CATEGORY_H_

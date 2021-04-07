@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A class that holds the extracted data from a SRP.
+ * A class that holds the data necessary for continuous navigation.
+ * Some example data providers include SRP and Discover/Feeds.
  */
 public class ContinuousNavigationMetadata {
     private final GURL mRootUrl;

@@ -22,15 +22,15 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
 
     @Override
     public void onPageLoadStarted(Tab tab, GURL url) {
-        ContinuousNavigationUserData continuousNavigationUserData =
-                ContinuousNavigationUserData.getOrCreateForTab(tab);
+        ContinuousNavigationUserDataImpl continuousNavigationUserData =
+                ContinuousNavigationUserDataImpl.getOrCreateForTab(tab);
         continuousNavigationUserData.updateCurrentUrl(url);
     }
 
     @Override
     public void onPageLoadFinished(Tab tab, GURL url) {
-        ContinuousNavigationUserData continuousNavigationUserData =
-                ContinuousNavigationUserData.getOrCreateForTab(tab);
+        ContinuousNavigationUserDataImpl continuousNavigationUserData =
+                ContinuousNavigationUserDataImpl.getOrCreateForTab(tab);
         continuousNavigationUserData.updateCurrentUrl(url);
 
         // Cancel any existing requests.
@@ -50,7 +50,7 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     @Override
     public void onCloseContents(Tab tab) {
         resetProducer();
-        ContinuousNavigationUserData.getOrCreateForTab(tab).invalidateData();
+        ContinuousNavigationUserDataImpl.getOrCreateForTab(tab).invalidateData();
     }
 
     @Override
@@ -65,7 +65,8 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         assert metadata != null;
         mProducer = null;
 
-        ContinuousNavigationUserData.getOrCreateForTab(mTab).updateData(metadata, mTab.getUrl());
+        ContinuousNavigationUserDataImpl.getOrCreateForTab(mTab).updateData(
+                metadata, mTab.getUrl());
     }
 
     @Override

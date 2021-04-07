@@ -69,6 +69,8 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
             groups.add(new PageGroup(groupLabel[i], isAdGroup[i], results));
         }
 
+        assert !GURL.isEmptyOrInvalid(url);
+        assert query != null && !query.isEmpty();
         ContinuousNavigationMetadata metadata =
                 new ContinuousNavigationMetadata(url, query, resultCategory, groups);
         mListener.onResult(metadata);

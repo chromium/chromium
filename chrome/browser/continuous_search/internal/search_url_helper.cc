@@ -10,7 +10,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/continuous_search/internal/jni_headers/SearchUrlHelper_jni.h"
-#include "chrome/browser/continuous_search/internal/page_category.h"
+#include "chrome/browser/continuous_search/page_category.h"
 #include "components/google/core/common/google_util.h"
 #include "net/base/url_util.h"
 #include "url/android/gurl_android.h"

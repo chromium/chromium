@@ -6,20 +6,17 @@ package org.chromium.chrome.browser.continuous_search;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.UserData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
 import java.util.HashSet;
 
 /**
- * Per-tab storage of {@link ContinuousNavigationMetadata}.
+ * Implementation of the interface {@link ContinuousNavigationUserData}.
  */
-public class ContinuousNavigationUserData implements UserData {
+public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserData {
     public static final int INVALID_POSITION = -2;
     public static final int ON_SRP = -1;
-    private static final Class<ContinuousNavigationUserData> USER_DATA_KEY =
-            ContinuousNavigationUserData.class;
 
     private ContinuousNavigationMetadata mData;
     private HashSet<GURL> mValidUrls;
@@ -27,18 +24,20 @@ public class ContinuousNavigationUserData implements UserData {
     private GURL mCurrentUrl;
     private int mCurrentPosition = INVALID_POSITION;
 
-    private static ContinuousNavigationUserData sInstanceForTesting;
+    private static ContinuousNavigationUserDataImpl sInstanceForTesting;
 
-    static ContinuousNavigationUserData getOrCreateForTab(Tab tab) {
+    static ContinuousNavigationUserDataImpl getOrCreateForTab(Tab tab) {
         if (sInstanceForTesting != null) return sInstanceForTesting;
 
-        if (tab.getUserDataHost().getUserData(USER_DATA_KEY) == null) {
-            tab.getUserDataHost().setUserData(USER_DATA_KEY, new ContinuousNavigationUserData());
+        ContinuousNavigationUserData userData = getForTab(tab);
+        if (userData == null) {
+            userData = new ContinuousNavigationUserDataImpl();
+            setForTab(tab, userData);
         }
-        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
+        return (ContinuousNavigationUserDataImpl) userData;
     }
 
-    private ContinuousNavigationUserData() {}
+    private ContinuousNavigationUserDataImpl() {}
 
     /**
      * @return Whether this contains valid data.
@@ -59,7 +58,8 @@ public class ContinuousNavigationUserData implements UserData {
         mObservers.remove(observer);
     }
 
-    void updateData(ContinuousNavigationMetadata metadata, GURL currentUrl) {
+    @Override
+    public void updateData(ContinuousNavigationMetadata metadata, GURL currentUrl) {
         mData = metadata;
         mValidUrls = new HashSet<>();
         for (int i = 0; i < mData.getGroups().size(); i++) {
@@ -115,13 +115,15 @@ public class ContinuousNavigationUserData implements UserData {
     }
 
     private boolean isMatchingSrp(GURL url) {
+        if (mData.getQuery() == null || mData.getQuery().isEmpty()) return false;
+
         String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
         return query != null && query.equals(mData.getQuery())
                 && SearchUrlHelper.getSrpPageCategoryFromUrl(url) == mData.getCategory();
     }
 
     @VisibleForTesting
-    static void setInstanceForTesting(ContinuousNavigationUserData instance) {
+    static void setInstanceForTesting(ContinuousNavigationUserDataImpl instance) {
         sInstanceForTesting = instance;
     }
 }

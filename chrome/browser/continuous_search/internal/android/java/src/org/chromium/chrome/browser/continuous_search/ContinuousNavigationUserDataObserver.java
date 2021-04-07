@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.continuous_search;
 import org.chromium.url.GURL;
 
 /**
- * Interface for classes which need to observe a {@link ContinuousNavigationUserData}.
+ * Interface for classes which need to observe a {@link ContinuousNavigationUserDataImpl}.
  */
 public interface ContinuousNavigationUserDataObserver {
     /**
