@@ -80,20 +80,34 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   }
 
   // Mocks creating a widget that is launched from full restore service.
-  views::Widget* CreateTestFullRestoredWidget(int32_t activation_index) {
+  views::Widget* CreateTestFullRestoredWidget(
+      int32_t activation_index,
+      const gfx::Rect& bounds = gfx::Rect(200, 200),
+      aura::Window* root_window = Shell::GetPrimaryRootWindow()) {
     // Full restore widgets are inactive when created as we do not want to take
     // activation from a possible activated window, and we want to stack them in
     // a certain order.
+    DCHECK(root_window->IsRootWindow());
     TestWidgetBuilder widget_builder;
     widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
-        .SetBounds(gfx::Rect(200, 200))
-        .SetContext(Shell::GetPrimaryRootWindow())
+        .SetBounds(bounds)
+        .SetContext(root_window)
         .SetActivatable(false);
     widget_builder.SetWindowProperty(full_restore::kActivationIndexKey,
                                      new int32_t(activation_index));
     views::Widget* widget = widget_builder.BuildOwnedByNativeWidget();
     FullRestoreController::Get()->OnWidgetInitialized(widget);
     return widget;
+  }
+
+  void VerifyStackingOrder(aura::Window* parent,
+                           const std::vector<aura::Window*> expected_windows) {
+    auto children = parent->children();
+    EXPECT_EQ(children.size(), expected_windows.size());
+
+    for (size_t i = 0; i < children.size(); ++i) {
+      EXPECT_EQ(children[i], expected_windows[i]);
+    }
   }
 
   // AshTestBase:
@@ -343,8 +357,6 @@ TEST_F(FullRestoreControllerTest, TestFullRestoredWidget) {
 
 // Tests that widgets are restored to their proper stacking order, even if they
 // are restored out-of-order.
-// TODO(chinsenj): Add another test for stcking with multiple
-// desks/displays/parents.
 TEST_F(FullRestoreControllerTest, Stacking) {
   // Create a window that is a child of the active desk's container.
   auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
@@ -354,50 +366,129 @@ TEST_F(FullRestoreControllerTest, Stacking) {
   EXPECT_EQ(1u, siblings.size());
   EXPECT_EQ(non_restored_sibling.get(), siblings[0]);
 
-  // Simulate restoring windows out-of-order, starting with `widget_4`. Restored
-  // windows should be placed below non-restored windows so `widget_4` should be
+  // Simulate restoring windows out-of-order, starting with `window_4`. Restored
+  // windows should be placed below non-restored windows so `window_4` should be
   // placed at the bottom.
-  auto* widget_4 = CreateTestFullRestoredWidget(4);
-  EXPECT_EQ(desk_container, widget_4->GetNativeWindow()->parent());
+  auto* window_4 = CreateTestFullRestoredWidget(4)->GetNativeWindow();
+  EXPECT_EQ(desk_container, window_4->parent());
   siblings = desk_container->children();
   EXPECT_EQ(2u, siblings.size());
-  EXPECT_EQ(widget_4->GetNativeWindow(), siblings[0]);
+  EXPECT_EQ(window_4, siblings[0]);
 
-  // Restore `widget_2` now. It should be stacked above `widget_4`.
-  auto* widget_2 = CreateTestFullRestoredWidget(2);
-  EXPECT_EQ(desk_container, widget_2->GetNativeWindow()->parent());
+  // Restore `window_2` now. It should be stacked above `window_4`.
+  auto* window_2 = CreateTestFullRestoredWidget(2)->GetNativeWindow();
+  EXPECT_EQ(desk_container, window_2->parent());
   siblings = desk_container->children();
   EXPECT_EQ(3u, siblings.size());
-  EXPECT_EQ(widget_2->GetNativeWindow(), siblings[1]);
+  EXPECT_EQ(window_2, siblings[1]);
 
-  // Restore `widget_3` now. It should be stacked above `widget_4`.
-  auto* widget_3 = CreateTestFullRestoredWidget(3);
-  EXPECT_EQ(desk_container, widget_3->GetNativeWindow()->parent());
+  // Restore `window_3` now. It should be stacked above `window_4`.
+  auto* window_3 = CreateTestFullRestoredWidget(3)->GetNativeWindow();
+  EXPECT_EQ(desk_container, window_3->parent());
   siblings = desk_container->children();
   EXPECT_EQ(4u, siblings.size());
-  EXPECT_EQ(widget_3->GetNativeWindow(), siblings[1]);
+  EXPECT_EQ(window_3, siblings[1]);
 
-  // Restore `widget_1` now. It should be stacked above `widget_2`.
-  auto* widget_1 = CreateTestFullRestoredWidget(1);
-  EXPECT_EQ(desk_container, widget_1->GetNativeWindow()->parent());
+  // Restore `window_1` now. It should be stacked above `window_2`.
+  auto* window_1 = CreateTestFullRestoredWidget(1)->GetNativeWindow();
+  EXPECT_EQ(desk_container, window_1->parent());
   siblings = desk_container->children();
   EXPECT_EQ(5u, siblings.size());
-  EXPECT_EQ(widget_1->GetNativeWindow(), siblings[3]);
+  EXPECT_EQ(window_1, siblings[3]);
 
-  // Restore `widget_5` now.
-  auto* widget_5 = CreateTestFullRestoredWidget(5);
-  EXPECT_EQ(desk_container, widget_5->GetNativeWindow()->parent());
+  // Restore `window_5` now.
+  auto* window_5 = CreateTestFullRestoredWidget(5)->GetNativeWindow();
+  EXPECT_EQ(desk_container, window_5->parent());
   siblings = desk_container->children();
   EXPECT_EQ(6u, siblings.size());
 
   // Check the final order of the siblings.
-  EXPECT_EQ(6u, siblings.size());
-  EXPECT_EQ(non_restored_sibling.get(), siblings[5]);
-  EXPECT_EQ(widget_1->GetNativeWindow(), siblings[4]);
-  EXPECT_EQ(widget_2->GetNativeWindow(), siblings[3]);
-  EXPECT_EQ(widget_3->GetNativeWindow(), siblings[2]);
-  EXPECT_EQ(widget_4->GetNativeWindow(), siblings[1]);
-  EXPECT_EQ(widget_5->GetNativeWindow(), siblings[0]);
+  VerifyStackingOrder(desk_container, {window_5, window_4, window_3, window_2,
+                                       window_1, non_restored_sibling.get()});
+}
+
+// Tests that widgets are restored to their proper stacking order in a
+// multi-display scenario.
+TEST_F(FullRestoreControllerTest, StackingMultiDisplay) {
+  UpdateDisplay("800x800,801+0-800x800,1602+0-800x800");
+
+  auto root_windows = Shell::GetAllRootWindows();
+  auto* root_1 = root_windows[0];
+  auto* root_2 = root_windows[1];
+  auto* root_3 = root_windows[2];
+
+  auto* desk_container_display_1 =
+      desks_util::GetActiveDeskContainerForRoot(root_1);
+  auto* desk_container_display_2 =
+      desks_util::GetActiveDeskContainerForRoot(root_2);
+  auto* desk_container_display_3 =
+      desks_util::GetActiveDeskContainerForRoot(root_3);
+
+  const gfx::Rect display_1_bounds(0, 0, 200, 200);
+  const gfx::Rect display_2_bounds(801, 0, 200, 200);
+  const gfx::Rect display_3_bounds(1602, 0, 200, 200);
+
+  // Start simulating restoring windows out-of-order with the following naming
+  // convention `window_<display>_<relative_stacking_order>`. Restore
+  // `window_3_3` first.
+  auto* window_3_3 = CreateTestFullRestoredWidget(8, display_3_bounds, root_3)
+                         ->GetNativeWindow();
+  EXPECT_EQ(1u, desk_container_display_3->children().size());
+  EXPECT_EQ(desk_container_display_3, window_3_3->parent());
+
+  // Restore `window_2_1`.
+  auto* window_2_1 = CreateTestFullRestoredWidget(2, display_2_bounds, root_2)
+                         ->GetNativeWindow();
+  EXPECT_EQ(1u, desk_container_display_2->children().size());
+  EXPECT_EQ(desk_container_display_2, window_2_1->parent());
+
+  // Restore `window_1_2`.
+  auto* window_1_2 = CreateTestFullRestoredWidget(4, display_1_bounds, root_1)
+                         ->GetNativeWindow();
+  EXPECT_EQ(1u, desk_container_display_1->children().size());
+  EXPECT_EQ(desk_container_display_1, window_1_2->parent());
+
+  // Restore `window_3_2`.
+  auto* window_3_2 = CreateTestFullRestoredWidget(6, display_3_bounds, root_3)
+                         ->GetNativeWindow();
+  EXPECT_EQ(2u, desk_container_display_3->children().size());
+  EXPECT_EQ(desk_container_display_3, window_3_2->parent());
+  EXPECT_EQ(window_3_2, desk_container_display_3->children()[1]);
+
+  // Restore `window_1_3`.
+  auto* window_1_3 = CreateTestFullRestoredWidget(7, display_1_bounds, root_1)
+                         ->GetNativeWindow();
+  EXPECT_EQ(2u, desk_container_display_1->children().size());
+  EXPECT_EQ(desk_container_display_1, window_1_3->parent());
+  EXPECT_EQ(window_1_3, desk_container_display_1->children()[0]);
+
+  // Restore `window_2_2`.
+  auto* window_2_2 = CreateTestFullRestoredWidget(5, display_2_bounds, root_2)
+                         ->GetNativeWindow();
+  EXPECT_EQ(2u, desk_container_display_2->children().size());
+  EXPECT_EQ(desk_container_display_2, window_2_2->parent());
+  EXPECT_EQ(window_2_2, desk_container_display_2->children()[0]);
+
+  // Restore `window_1_1`.
+  auto* window_1_1 = CreateTestFullRestoredWidget(1, display_1_bounds, root_1)
+                         ->GetNativeWindow();
+  EXPECT_EQ(3u, desk_container_display_1->children().size());
+  EXPECT_EQ(desk_container_display_1, window_1_1->parent());
+  EXPECT_EQ(window_1_1, desk_container_display_1->children()[2]);
+
+  // Restore `window_3_1`.
+  auto* window_3_1 = CreateTestFullRestoredWidget(3, display_3_bounds, root_3)
+                         ->GetNativeWindow();
+  EXPECT_EQ(3u, desk_container_display_3->children().size());
+  EXPECT_EQ(desk_container_display_3, window_3_1->parent());
+  EXPECT_EQ(window_3_1, desk_container_display_3->children()[2]);
+
+  // Verify ordering.
+  VerifyStackingOrder(desk_container_display_1,
+                      {window_1_3, window_1_2, window_1_1});
+  VerifyStackingOrder(desk_container_display_2, {window_2_2, window_2_1});
+  VerifyStackingOrder(desk_container_display_3,
+                      {window_3_3, window_3_2, window_3_1});
 }
 
 }  // namespace ash
