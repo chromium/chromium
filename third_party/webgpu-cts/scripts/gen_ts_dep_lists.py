@@ -26,8 +26,9 @@ def get_ts_sources():
         '--listFiles', '--declaration', 'false', '--sourceMap', 'false'
     ])
 
+    lines = [l.decode() for l in stdout.splitlines()]
     return [
-        line[len(src_prefix):].rstrip() for line in stdout.split('\n')
+        line[len(src_prefix):] for line in lines
         if line.startswith(src_prefix + 'src/')
     ]
 
