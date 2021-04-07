@@ -261,6 +261,12 @@ const char kInterestFeedNoticeCardAutoDismissDescription[] =
     "Auto-dismiss the notice card when there are enough clicks or views on the "
     "notice card.";
 
+const char kInterestFeedV2ClickAndViewActionsConditionalUploadName[] =
+    "New Content Suggestions taps/views conditional upload";
+const char kInterestFeedV2ClickAndViewActionsConditionalUploadDescription[] =
+    "Only enable the upload of taps/views after satisfying conditions (e.g., "
+    "user views X cards)";
+
 const char kSigninNotificationInfobarUsernameInTitleName[] =
     "Sign-in notification infobar title";
 const char kSigninNotificationInfobarUsernameInTitleDescription[] =

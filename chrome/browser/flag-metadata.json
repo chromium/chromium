@@ -3284,8 +3284,8 @@
   },
   {
     "name": "interest-feed-v2-clicks-and-views-cond-upload",
-    "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 90
+    "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org", "edchin@chromium.org" ],
+    "expiry_milestone": 95
   },
   {
     "name": "ios-breadcrumbs",
