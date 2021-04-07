@@ -560,6 +560,8 @@ void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
           Shell::Get()->session_controller()->GetActivePrefService(), false);
       break;
     case HoldingSpaceCommandId::kShowPreviews:
+      SetShouldAnimate(true);
+
       holding_space_metrics::RecordPodAction(
           holding_space_metrics::PodAction::kShowPreviews);
 
