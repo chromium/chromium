@@ -5159,6 +5159,15 @@ should be able to be added at any place in this file.
   <description>The user tapped on a card in the Feed.</description>
 </action>
 
+<action name="ContentSuggestions.Feed.CardAction.Open.StartSurface">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <description>
+    The user tapped on a card in the Feed on the start surface.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.CardAction.OpenInNewIncognitoTab">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
@@ -14174,6 +14183,15 @@ should be able to be added at any place in this file.
   <description>User pressed 'New tab' in the app menu.</description>
 </action>
 
+<action name="MobileMenuNewTab.StartSurfaceFinale">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <description>
+    User pressed 'New tab' in the app menu when start surface finale is enabled.
+  </description>
+</action>
+
 <action name="MobileMenuOpenTabs">
   <obsolete>This action was renamed to MobileMenuRecentTabs.</obsolete>
   <owner>aurimas@chromium.org</owner>
@@ -14759,10 +14777,20 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileOmniboxUse.GridTabSwitcher">
+  <obsolete>From 04/2021 use MobileOmniboxUse.StartSurface instead.</obsolete>
   <owner>mattsimmons@chromium.org</owner>
   <owner>memex-team@google.com</owner>
   <description>
     User used the omnibox while it is showing on top of the grid tab switcher.
+  </description>
+</action>
+
+<action name="MobileOmniboxUse.StartSurface">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <description>
+    User used the omnibox while it is showing on the start surface.
   </description>
 </action>
 
@@ -25517,10 +25545,23 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Suggestions.Tile.Tapped.GridTabSwitcher">
+  <obsolete>
+    From 04/2021 use Suggestions.Tile.Tapped.StartSurface instead.
+  </obsolete>
   <owner>mattsimmons@chromium.org</owner>
   <owner>memex-team@google.com</owner>
   <description>
     User tapped on a suggestions tile while viewing the tab switcher.
+    Android-only.
+  </description>
+</action>
+
+<action name="Suggestions.Tile.Tapped.StartSurface">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <description>
+    User tapped on a suggestions tile while viewing the start surface.
     Android-only.
   </description>
 </action>

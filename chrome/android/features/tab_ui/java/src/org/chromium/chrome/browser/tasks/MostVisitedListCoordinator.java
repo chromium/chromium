@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -205,9 +206,9 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
         @Override
         public void onClick(View v) {
-            ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(
-                    mTile.getUrl().getSpec(), PageTransition.AUTO_BOOKMARK, null /*incognito*/,
-                    mParentTabSupplier.get());
+            ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(
+                    new LoadUrlParams(mTile.getUrl().getSpec(), PageTransition.AUTO_BOOKMARK),
+                    null /*incognito*/, mParentTabSupplier.get());
             SuggestionsMetrics.recordTileTapped();
         }
 

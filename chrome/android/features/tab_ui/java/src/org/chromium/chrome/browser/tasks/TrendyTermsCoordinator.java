@@ -25,6 +25,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -86,8 +87,9 @@ public class TrendyTermsCoordinator {
             OnClickListener listener = v -> {
                 RecordUserAction.record("StartSurface.TrendyTerms.TapTerm");
                 String url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(trendyTerm);
-                ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(url,
-                        PageTransition.AUTO_BOOKMARK, null /*incognito*/, mParentTabSupplier.get());
+                ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(
+                        new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK), null /*incognito*/,
+                        mParentTabSupplier.get());
             };
             PropertyModel trendInfo =
                     new PropertyModel.Builder(TrendyTermsProperties.ALL_KEYS)
