@@ -1844,6 +1844,8 @@ crbug.com/1029069 external/wpt/css/css-fonts/standard-font-family-20.html [ Fail
 crbug.com/1058772 external/wpt/css/css-fonts/test-synthetic-italic-2.html [ Failure ]
 crbug.com/1058772 external/wpt/css/css-fonts/test-synthetic-italic-3.html [ Failure ]
 
+crbug.com/1191718 external/wpt/css/css-text-decor/text-decoration-thickness-percent-001.html [ Failure ]
+
 crbug.com/752449 [ Mac10.14 ] external/wpt/css/css-fonts/matching/fixed-stretch-style-over-weight.html [ Failure ]
 crbug.com/752449 [ Mac10.12 ] external/wpt/css/css-fonts/matching/stretch-distance-over-weight-distance.html [ Failure ]
 crbug.com/752449 [ Mac10.12 ] external/wpt/css/css-fonts/matching/style-ranges-over-weight-direction.html [ Failure ]
@@ -2540,7 +2542,6 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-grid/grid-definition/grid-rep
 crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-grid/grid-definition/grid-repeat-max-width-001.html [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/css/css-grid/grid-definition/grid-repeat-max-width-001.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/url/url-origin.any.worker.html [ Failure Crash ]
-crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-thickness-percent-001.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/html/syntax/xmldecl/xmldecl.html [ Failure Crash Timeout ]
 crbug.com/1191547 external/wpt/html/semantics/forms/the-label-element/proxy-modifier-click-to-associated-element.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/websockets/extended-payload-length.html?wpt_flags=h2 [ Timeout ]
