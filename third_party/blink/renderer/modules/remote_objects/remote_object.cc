@@ -312,7 +312,7 @@ RemoteObject::RemoteObject(v8::Isolate* isolate,
 
 RemoteObject::~RemoteObject() {
   if (gateway_) {
-    gateway_->ReleaseObject(object_id_);
+    gateway_->ReleaseObject(object_id_, this);
 
     if (object_)
       object_->NotifyReleasedObject();

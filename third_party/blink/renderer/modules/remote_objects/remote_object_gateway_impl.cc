@@ -112,10 +112,12 @@ void RemoteObjectGatewayImpl::BindRemoteObjectReceiver(
   object_host_->GetObject(object_id, std::move(receiver));
 }
 
-void RemoteObjectGatewayImpl::ReleaseObject(int32_t object_id) {
+void RemoteObjectGatewayImpl::ReleaseObject(int32_t object_id,
+                                            RemoteObject* remote_object) {
   auto iter = remote_objects_.find(object_id);
   DCHECK(iter != remote_objects_.end());
-  remote_objects_.erase(iter);
+  if (iter->value == remote_object)
+    remote_objects_.erase(iter);
   object_host_->ReleaseObject(object_id);
 }
 
