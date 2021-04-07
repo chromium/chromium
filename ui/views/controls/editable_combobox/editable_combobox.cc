@@ -188,7 +188,13 @@ class EditableCombobox::EditableComboboxMenuModel
   int GetItemCount() const override { return items_shown_.size(); }
 
  private:
-  bool HasIcons() const override { return false; }
+  bool HasIcons() const override {
+    for (int i = 0; i < GetItemCount(); ++i) {
+      if (!GetIconAt(i).IsEmpty())
+        return true;
+    }
+    return false;
+  }
 
   ItemType GetTypeAt(int index) const override {
     return UseCheckmarks() ? TYPE_CHECK : TYPE_COMMAND;
@@ -227,7 +233,7 @@ class EditableCombobox::EditableComboboxMenuModel
   int GetGroupIdAt(int index) const override { return -1; }
 
   ui::ImageModel GetIconAt(int index) const override {
-    return ui::ImageModel();
+    return combobox_model_->GetDropDownIconAt(index);
   }
 
   ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
