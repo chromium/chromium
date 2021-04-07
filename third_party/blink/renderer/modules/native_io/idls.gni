@@ -8,6 +8,11 @@ modules_idl_files = [
   "native_io_file_sync.idl",
 ]
 
+modules_dictionary_idl_files = [
+  "native_io_read_result.idl",
+  "native_io_write_result.idl",
+]
+
 modules_dependency_idl_files = [
   "window_native_io.idl",
   "worker_global_scope_native_io.idl",

@@ -10,7 +10,6 @@
 #include "base/files/file.h"
 #include "base/location.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -19,12 +18,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_native_io_read_result.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_native_io_write_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_error.h"
+#include "third_party/blink/renderer/modules/native_io/native_io_file_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -42,16 +44,6 @@
 #endif
 
 namespace blink {
-
-namespace {
-
-// Extracts the read/write operation size from the buffer size.
-int OperationSize(const DOMArrayBufferView& buffer) {
-  // On 32-bit platforms, clamp operation sizes to 2^31-1.
-  return base::saturated_cast<int>(buffer.byteLength());
-}
-
-}  // namespace
 
 struct NativeIOFile::FileState {
   explicit FileState(base::File file) : file(std::move(file)) {}
@@ -248,15 +240,9 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
 }
 
 ScriptPromise NativeIOFile::read(ScriptState* script_state,
-                                 MaybeShared<DOMArrayBufferView> buffer,
+                                 NotShared<DOMArrayBufferView> buffer,
                                  uint64_t file_offset,
                                  ExceptionState& exception_state) {
-  if (!buffer->IsShared()) {
-    exception_state.ThrowTypeError(
-        "The I/O buffer must be backed by a SharedArrayBuffer");
-    return ScriptPromise();
-  }
-
   if (io_pending_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -272,9 +258,17 @@ ScriptPromise NativeIOFile::read(ScriptState* script_state,
   }
   io_pending_ = true;
 
-  int read_size = OperationSize(*buffer);
-  char* read_buffer = static_cast<char*>(buffer->BaseAddressMaybeShared());
-  DOMSharedArrayBuffer* read_buffer_keepalive = buffer->BufferShared();
+  int read_size = NativeIOOperationSize(*buffer);
+
+  DOMArrayBufferView* result_buffer =
+      TransferToNewArrayBufferView(script_state->GetIsolate(), buffer);
+  if (!result_buffer) {
+    exception_state.ThrowTypeError("Could not transfer buffer");
+    return ScriptPromise();
+  }
+  DCHECK(buffer->IsDetached());
+
+  char* result_buffer_data = static_cast<char*>(result_buffer->BaseAddress());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   // The first CrossThreadUnretained() is safe here because the
@@ -283,8 +277,8 @@ ScriptPromise NativeIOFile::read(ScriptState* script_state,
   // FileState instance is guaranteed to remain alive during the task's
   // execution.
   //
-  // The second CrossThreadUnretained() is safe here because the read buffer is
-  // backed by a DOMSharedArrayBuffer that is also passed to the task via
+  // The second CrossThreadUnretained() is safe here because result_buffer_data
+  // is backed by a DOMArrayBufferView that is also passed to the task via
   // WrapCrossThreadPersistent. Therefore, the buffer is guaranteed to remain
   // alive during the task's execution.
   worker_pool::PostTask(
@@ -292,22 +286,16 @@ ScriptPromise NativeIOFile::read(ScriptState* script_state,
       CrossThreadBindOnce(
           &DoRead, WrapCrossThreadPersistent(this),
           WrapCrossThreadPersistent(resolver),
-          WrapCrossThreadPersistent(read_buffer_keepalive),
+          WrapCrossThreadPersistent(result_buffer),
           CrossThreadUnretained(file_state_.get()), resolver_task_runner_,
-          CrossThreadUnretained(read_buffer), file_offset, read_size));
+          CrossThreadUnretained(result_buffer_data), file_offset, read_size));
   return resolver->Promise();
 }
 
 ScriptPromise NativeIOFile::write(ScriptState* script_state,
-                                  MaybeShared<DOMArrayBufferView> buffer,
+                                  NotShared<DOMArrayBufferView> buffer,
                                   uint64_t file_offset,
                                   ExceptionState& exception_state) {
-  if (!buffer->IsShared()) {
-    exception_state.ThrowTypeError(
-        "The I/O buffer must be backed by a SharedArrayBuffer");
-    return ScriptPromise();
-  }
-
   if (io_pending_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -322,7 +310,7 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  int write_size = OperationSize(*buffer);
+  int write_size = NativeIOOperationSize(*buffer);
   int64_t write_end_offset;
   if (!base::CheckAdd(file_offset, write_size)
            .AssignIfValid(&write_end_offset)) {
@@ -356,9 +344,15 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
 
   io_pending_ = true;
 
-  const char* write_data =
-      static_cast<const char*>(buffer->BaseAddressMaybeShared());
-  DOMSharedArrayBuffer* read_buffer_keepalive = buffer->BufferShared();
+  DOMArrayBufferView* result_buffer =
+      TransferToNewArrayBufferView(script_state->GetIsolate(), buffer);
+  if (!result_buffer) {
+    exception_state.ThrowTypeError("Could not transfer buffer");
+    return ScriptPromise();
+  }
+  DCHECK(buffer->IsDetached());
+
+  char* result_buffer_data = static_cast<char*>(result_buffer->BaseAddress());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   // The first CrossThreadUnretained() is safe here because the
@@ -367,8 +361,8 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
   // FileState instance is guaranteed to remain alive during the task's
   // execution.
   //
-  // The second CrossThreadUnretained() is safe here because the write data is
-  // backed by a DOMSharedArrayBuffer that is also passed to the task via
+  // The second CrossThreadUnretained() is safe here because result_buffer_data
+  // is backed by a DOMArrayBufferView that is also passed to the task via
   // WrapCrossThreadPersistent. Therefore, the data is guaranteed to remain
   // alive during the task's execution.
   worker_pool::PostTask(
@@ -376,9 +370,9 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
       CrossThreadBindOnce(
           &DoWrite, WrapCrossThreadPersistent(this),
           WrapCrossThreadPersistent(resolver),
-          WrapCrossThreadPersistent(read_buffer_keepalive),
+          WrapCrossThreadPersistent(result_buffer),
           CrossThreadUnretained(file_state_.get()), resolver_task_runner_,
-          CrossThreadUnretained(write_data), file_offset, write_size));
+          CrossThreadUnretained(result_buffer_data), file_offset, write_size));
   return resolver->Promise();
 }
 
@@ -682,10 +676,10 @@ void NativeIOFile::DidSetLengthIpc(
 void NativeIOFile::DoRead(
     CrossThreadPersistent<NativeIOFile> native_io_file,
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    CrossThreadPersistent<DOMSharedArrayBuffer> read_buffer_keepalive,
+    CrossThreadPersistent<DOMArrayBufferView> result_buffer,
     NativeIOFile::FileState* file_state,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
-    char* read_buffer,
+    char* result_buffer_data,
     uint64_t file_offset,
     int read_size) {
   DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
@@ -696,7 +690,8 @@ void NativeIOFile::DoRead(
     WTF::MutexLocker mutex_locker(file_state->mutex);
     DCHECK(file_state->file.IsValid())
         << "file I/O operation queued after file closed";
-    read_bytes = file_state->file.Read(file_offset, read_buffer, read_size);
+    read_bytes =
+        file_state->file.Read(file_offset, result_buffer_data, read_size);
     read_error = (read_bytes < 0) ? file_state->file.GetLastFileError()
                                   : base::File::FILE_OK;
   }
@@ -704,11 +699,13 @@ void NativeIOFile::DoRead(
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
       CrossThreadBindOnce(&NativeIOFile::DidRead, std::move(native_io_file),
-                          std::move(resolver), read_bytes, read_error));
+                          std::move(resolver), std::move(result_buffer),
+                          read_bytes, read_error));
 }
 
 void NativeIOFile::DidRead(
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    CrossThreadPersistent<DOMArrayBufferView> result_buffer,
     int read_bytes,
     base::File::Error read_error) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -729,17 +726,20 @@ void NativeIOFile::DidRead(
   }
   DCHECK_EQ(read_error, base::File::FILE_OK)
       << "Error set but positive number of bytes read.";
-  resolver->Resolve(read_bytes);
+  NativeIOReadResult* read_result = MakeGarbageCollected<NativeIOReadResult>();
+  read_result->setBuffer(NotShared<DOMArrayBufferView>(result_buffer));
+  read_result->setReadBytes(read_bytes);
+  resolver->Resolve(read_result);
 }
 
 // static
 void NativeIOFile::DoWrite(
     CrossThreadPersistent<NativeIOFile> native_io_file,
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    CrossThreadPersistent<DOMSharedArrayBuffer> write_data_keepalive,
+    CrossThreadPersistent<DOMArrayBufferView> result_buffer,
     NativeIOFile::FileState* file_state,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
-    const char* write_data,
+    const char* result_buffer_data,
     uint64_t file_offset,
     int write_size) {
   DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
@@ -751,7 +751,8 @@ void NativeIOFile::DoWrite(
     WTF::MutexLocker mutex_locker(file_state->mutex);
     DCHECK(file_state->file.IsValid())
         << "file I/O operation queued after file closed";
-    written_bytes = file_state->file.Write(file_offset, write_data, write_size);
+    written_bytes =
+        file_state->file.Write(file_offset, result_buffer_data, write_size);
     write_error = (written_bytes < 0) ? file_state->file.GetLastFileError()
                                       : base::File::FILE_OK;
     if (written_bytes < write_size || write_error != base::File::FILE_OK) {
@@ -766,12 +767,14 @@ void NativeIOFile::DoWrite(
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
       CrossThreadBindOnce(&NativeIOFile::DidWrite, std::move(native_io_file),
-                          std::move(resolver), written_bytes, write_error,
-                          write_size, actual_file_length_on_failure));
+                          std::move(resolver), std::move(result_buffer),
+                          written_bytes, write_error, write_size,
+                          actual_file_length_on_failure));
 }
 
 void NativeIOFile::DidWrite(
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    CrossThreadPersistent<DOMArrayBufferView> result_buffer,
     int written_bytes,
     base::File::Error write_error,
     int write_size,
@@ -816,8 +819,11 @@ void NativeIOFile::DidWrite(
     return;
   }
   DCHECK_EQ(write_error, base::File::FILE_OK);
-
-  resolver->Resolve(written_bytes);
+  NativeIOWriteResult* write_result =
+      MakeGarbageCollected<NativeIOWriteResult>();
+  write_result->setBuffer(NotShared<DOMArrayBufferView>(result_buffer));
+  write_result->setWrittenBytes(written_bytes);
+  resolver->Resolve(write_result);
 }
 
 // static

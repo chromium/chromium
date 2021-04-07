@@ -20,12 +20,12 @@
   ] void setLength(unsigned long long length);
 
   [
-    RaisesException, MeasureAs=StorageFoundationReadSync
-  ] unsigned long long read([AllowShared] ArrayBufferView buffer,
+    CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationReadSync
+  ] NativeIOReadResult read(ArrayBufferView buffer,
                             unsigned long long file_offset);
   [
-    RaisesException, MeasureAs=StorageFoundationWriteSync
-  ] unsigned long long write([AllowShared] ArrayBufferView buffer,
+    CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationWriteSync
+  ] NativeIOWriteResult write(ArrayBufferView buffer,
                              unsigned long long file_offset);
   [
     RaisesException, MeasureAs=StorageFoundationFlushSync

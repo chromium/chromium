@@ -29,7 +29,6 @@ class SequencedTaskRunner;
 
 namespace blink {
 
-class DOMSharedArrayBuffer;
 class ExecutionContext;
 class ScriptPromiseResolver;
 class ScriptState;
@@ -54,11 +53,11 @@ class NativeIOFile final : public ScriptWrappable {
   ScriptPromise getLength(ScriptState*, ExceptionState&);
   ScriptPromise setLength(ScriptState*, uint64_t new_length, ExceptionState&);
   ScriptPromise read(ScriptState*,
-                     MaybeShared<DOMArrayBufferView> buffer,
+                     NotShared<DOMArrayBufferView> buffer,
                      uint64_t file_offset,
                      ExceptionState&);
   ScriptPromise write(ScriptState*,
-                      MaybeShared<DOMArrayBufferView> buffer,
+                      NotShared<DOMArrayBufferView> buffer,
                       uint64_t file_offset,
                       ExceptionState&);
   ScriptPromise flush(ScriptState*, ExceptionState&);
@@ -126,17 +125,17 @@ class NativeIOFile final : public ScriptWrappable {
 #endif  // defined(OS_MAC)
 
   // Performs the file I/O part of read(), off the main thread.
-  static void DoRead(
-      CrossThreadPersistent<NativeIOFile> native_io_file,
-      CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      CrossThreadPersistent<DOMSharedArrayBuffer> read_buffer_keepalive,
-      NativeIOFile::FileState* file_state,
-      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
-      char* read_buffer,
-      uint64_t file_offset,
-      int read_size);
+  static void DoRead(CrossThreadPersistent<NativeIOFile> native_io_file,
+                     CrossThreadPersistent<ScriptPromiseResolver> resolver,
+                     CrossThreadPersistent<DOMArrayBufferView> result_buffer,
+                     NativeIOFile::FileState* file_state,
+                     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+                     char* result_buffer_data,
+                     uint64_t file_offset,
+                     int read_size);
   // Performs the post file I/O part of read(), on the main thread.
   void DidRead(CrossThreadPersistent<ScriptPromiseResolver> resolver,
+               CrossThreadPersistent<DOMArrayBufferView> result_buffer,
                int read_bytes,
                base::File::Error read_error);
 
@@ -144,10 +143,10 @@ class NativeIOFile final : public ScriptWrappable {
   static void DoWrite(
       CrossThreadPersistent<NativeIOFile> native_io_file,
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      CrossThreadPersistent<DOMSharedArrayBuffer> write_data_keepalive,
+      CrossThreadPersistent<DOMArrayBufferView> result_buffer,
       NativeIOFile::FileState* file_state,
       scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
-      const char* write_data,
+      const char* result_buffer_data,
       uint64_t file_offset,
       int write_size);
   // Performs the post file I/O part of write(), on the main thread.
@@ -155,6 +154,7 @@ class NativeIOFile final : public ScriptWrappable {
   // `actual_file_length_on_failure` is negative if the I/O operation was
   // unsuccessful and the correct length of the file could not be determined.
   void DidWrite(CrossThreadPersistent<ScriptPromiseResolver> resolver,
+                CrossThreadPersistent<DOMArrayBufferView> result_buffer,
                 int written_bytes,
                 base::File::Error write_error,
                 int write_size,

@@ -9,6 +9,8 @@
 
 #include "base/files/file.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_native_io_read_result.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_native_io_write_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
@@ -43,12 +45,14 @@ class NativeIOFileSync final : public ScriptWrappable {
   void close();
   uint64_t getLength(ExceptionState&);
   void setLength(uint64_t length, ExceptionState&);
-  uint64_t read(MaybeShared<DOMArrayBufferView> buffer,
-                uint64_t file_offset,
-                ExceptionState&);
-  uint64_t write(MaybeShared<DOMArrayBufferView> buffer,
-                 uint64_t file_offset,
-                 ExceptionState&);
+  NativeIOReadResult* read(ScriptState* script_state,
+                           NotShared<DOMArrayBufferView> buffer,
+                           uint64_t file_offset,
+                           ExceptionState&);
+  NativeIOWriteResult* write(ScriptState* script_state,
+                             NotShared<DOMArrayBufferView> buffer,
+                             uint64_t file_offset,
+                             ExceptionState&);
   void flush(ExceptionState&);
 
   // GarbageCollected

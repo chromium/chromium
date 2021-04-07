@@ -13,9 +13,11 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_error.h"
-#include "third_party/blink/renderer/modules/native_io/native_io_file.h"
+#include "third_party/blink/renderer/modules/native_io/native_io_file_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -27,12 +29,6 @@
 #endif
 
 namespace blink {
-
-// Extracts the read/write operation size from the buffer size.
-int OperationSize(const DOMArrayBufferView& buffer) {
-  // On 32-bit platforms, clamp operation sizes to 2^31-1.
-  return base::saturated_cast<int>(buffer.byteLength());
-}
 
 NativeIOFileSync::NativeIOFileSync(
     base::File backing_file,
@@ -211,37 +207,71 @@ void NativeIOFileSync::setLength(uint64_t new_length,
   }
 }
 
-uint64_t NativeIOFileSync::read(MaybeShared<DOMArrayBufferView> buffer,
-                                uint64_t file_offset,
-                                ExceptionState& exception_state) {
-  int read_size = OperationSize(*buffer);
-  char* read_data = static_cast<char*>(buffer->BaseAddressMaybeShared());
+NativeIOReadResult* NativeIOFileSync::read(ScriptState* script_state,
+                                           NotShared<DOMArrayBufferView> buffer,
+                                           uint64_t file_offset,
+                                           ExceptionState& exception_state) {
+  int read_size = NativeIOOperationSize(*buffer);
+
+  NativeIOReadResult* read_result = MakeGarbageCollected<NativeIOReadResult>();
+  read_result->setReadBytes(0);
+  DOMArrayBufferView* result_buffer =
+      TransferToNewArrayBufferView(script_state->GetIsolate(), buffer);
+  if (!result_buffer) {
+    exception_state.ThrowTypeError("Could not transfer buffer");
+    return read_result;
+  }
+  DCHECK(buffer->IsDetached());
+
+  read_result->setBuffer(NotShared<DOMArrayBufferView>(result_buffer));
+
   if (!backing_file_.IsValid()) {
     ThrowNativeIOWithError(exception_state,
                            mojom::blink::NativeIOError::New(
                                mojom::blink::NativeIOErrorType::kInvalidState,
                                "The file was already closed"));
-    return 0;
+    return read_result;
   }
-  int read_bytes = backing_file_.Read(file_offset, read_data, read_size);
+
+  char* result_buffer_data = static_cast<char*>(result_buffer->BaseAddress());
+  int read_bytes =
+      backing_file_.Read(file_offset, result_buffer_data, read_size);
   if (read_bytes < 0) {
     ThrowNativeIOWithError(exception_state, backing_file_.GetLastFileError());
-    return 0;
+    return read_result;
   }
-  return base::as_unsigned(read_bytes);
+
+  read_result->setReadBytes(read_bytes);
+  return read_result;
 }
 
-uint64_t NativeIOFileSync::write(MaybeShared<DOMArrayBufferView> buffer,
-                                 uint64_t file_offset,
-                                 ExceptionState& exception_state) {
-  int write_size = OperationSize(*buffer);
-  char* write_data = static_cast<char*>(buffer->BaseAddressMaybeShared());
+NativeIOWriteResult* NativeIOFileSync::write(
+    ScriptState* script_state,
+    NotShared<DOMArrayBufferView> buffer,
+    uint64_t file_offset,
+    ExceptionState& exception_state) {
+  int write_size = NativeIOOperationSize(*buffer);
+
+  NativeIOWriteResult* write_result =
+      MakeGarbageCollected<NativeIOWriteResult>();
+  write_result->setWrittenBytes(0);
+
+  DOMArrayBufferView* result_buffer =
+      TransferToNewArrayBufferView(script_state->GetIsolate(), buffer);
+  if (!result_buffer) {
+    exception_state.ThrowTypeError("Could not transfer buffer");
+    return write_result;
+  }
+  DCHECK(buffer->IsDetached());
+
+  write_result->setBuffer(NotShared<DOMArrayBufferView>(result_buffer));
+
   if (!backing_file_.IsValid()) {
     ThrowNativeIOWithError(exception_state,
                            mojom::blink::NativeIOError::New(
                                mojom::blink::NativeIOErrorType::kInvalidState,
                                "The file was already closed"));
-    return 0;
+    return write_result;
   }
 
   int64_t write_end_offset;
@@ -251,7 +281,7 @@ uint64_t NativeIOFileSync::write(MaybeShared<DOMArrayBufferView> buffer,
                            mojom::blink::NativeIOError::New(
                                mojom::blink::NativeIOErrorType::kNoSpace,
                                "No capacity available for this operation"));
-    return 0;
+    return write_result;
   }
 
   DCHECK_GE(write_end_offset, 0);
@@ -270,7 +300,7 @@ uint64_t NativeIOFileSync::write(MaybeShared<DOMArrayBufferView> buffer,
                              mojom::blink::NativeIOError::New(
                                  mojom::blink::NativeIOErrorType::kNoSpace,
                                  "No capacity available for this operation"));
-      return 0;
+      return write_result;
     }
     file_length_ = write_end_offset;
   }
@@ -278,7 +308,9 @@ uint64_t NativeIOFileSync::write(MaybeShared<DOMArrayBufferView> buffer,
   base::File::Error write_error = base::File::FILE_OK;
   int64_t actual_file_length_on_failure = file_length_;
 
-  int written_bytes = backing_file_.Write(file_offset, write_data, write_size);
+  char* result_buffer_data = static_cast<char*>(result_buffer->BaseAddress());
+  int written_bytes =
+      backing_file_.Write(file_offset, result_buffer_data, write_size);
   if (written_bytes < 0) {
     write_error = backing_file_.GetLastFileError();
     actual_file_length_on_failure = backing_file_.GetLength();
@@ -308,10 +340,11 @@ uint64_t NativeIOFileSync::write(MaybeShared<DOMArrayBufferView> buffer,
 
   if (write_error != base::File::FILE_OK) {
     ThrowNativeIOWithError(exception_state, write_error);
-    return 0;
+    return write_result;
   }
 
-  return base::as_unsigned(written_bytes);
+  write_result->setWrittenBytes(written_bytes);
+  return write_result;
 }
 
 void NativeIOFileSync::flush(ExceptionState& exception_state) {

@@ -21,11 +21,11 @@
 
   [
     CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationRead
-  ] Promise<unsigned long long> read([AllowShared] ArrayBufferView buffer,
+  ] Promise<NativeIOReadResult> read(ArrayBufferView buffer,
                                      unsigned long long file_offset);
   [
     CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationWrite
-  ] Promise<unsigned long long> write([AllowShared] ArrayBufferView buffer,
+  ] Promise<NativeIOWriteResult> write(ArrayBufferView buffer,
                                       unsigned long long file_offset);
   [
     CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationFlush

@@ -18,6 +18,8 @@ blink_modules_sources("native_io") {
     "native_io_file_manager.h",
     "native_io_file_sync.cc",
     "native_io_file_sync.h",
+    "native_io_file_utils.cc",
+    "native_io_file_utils.h",
   ]
 
   deps = [ "//third_party/blink/renderer/platform" ]
