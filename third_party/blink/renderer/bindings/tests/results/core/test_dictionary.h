@@ -38,11 +38,11 @@
 
 namespace blink {
 
+class Element;
 class EventTarget;
 class InternalDictionary;
-class TestObject;
 class TestInterfaceImplementation;
-class Element;
+class TestObject;
 
 class CORE_EXPORT TestDictionary : public IDLDictionaryBase {
  public:

@@ -198,6 +198,9 @@ class CodeGeneratorBase(object):
                 assert is_valid_component_dependency(component, dependency)
             includes.add(include_path)
 
+        context['header_forward_decls'] = sorted(
+            context.get('header_forward_decls', set()))
+
         cpp_includes = set(context.get('cpp_includes', []))
         context['cpp_includes'] = normalize_and_sort_includes(cpp_includes
                                                               | includes)
