@@ -13,11 +13,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
@@ -32,10 +34,8 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
-import org.chromium.components.variations.VariationsAssociatedData;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -44,10 +44,11 @@ import java.util.Calendar;
 import java.util.Random;
 
 /**
- * Class that controls if and when to show surveys related to the Chrome Home experiment.
+ * Class that controls if and when to show surveys.
  */
 public class ChromeSurveyController implements InfoBarAnimationListener {
-    private static final String CHROME_SURVEY_TRIAL_NAME = "ChromeSurvey";
+    private static final String TAG = "ChromeSurveyCtrler";
+
     private static final String MAX_NUMBER = "max-number";
     private static final String SITE_ID_PARAM_NAME = "site-id";
     private static final long REQUIRED_VISIBILITY_DURATION_MS = 5000;
@@ -112,6 +113,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
      */
     public static void initialize(TabModelSelector tabModelSelector) {
         assert tabModelSelector != null;
+        if (!isSurveyEnabled() || TextUtils.isEmpty(getTriggerId())) return;
         new StartDownloadIfEligibleTask(new ChromeSurveyController(), tabModelSelector)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -128,28 +130,17 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
 
         SurveyController surveyController = SurveyController.getInstance();
 
-        String siteId = getSiteId();
-        if (TextUtils.isEmpty(siteId)) return;
+        String triggerId = getTriggerId();
 
         Runnable onSuccessRunnable = new Runnable() {
             @Override
             public void run() {
-                onSurveyAvailable(siteId);
+                onSurveyAvailable(triggerId);
             }
         };
 
-        String siteContext = ChromeVersionInfo.getProductVersion() + ",NotHorizontalTabSwitcher";
-        surveyController.downloadSurvey(context, siteId, onSuccessRunnable, siteContext);
-    }
-
-    private String getSiteId() {
-        CommandLine commandLine = CommandLine.getInstance();
-        if (commandLine.hasSwitch(COMMAND_LINE_PARAM_NAME)) {
-            return commandLine.getSwitchValue(COMMAND_LINE_PARAM_NAME);
-        } else {
-            return VariationsAssociatedData.getVariationParamValue(
-                    CHROME_SURVEY_TRIAL_NAME, SITE_ID_PARAM_NAME);
-        }
+        Runnable onFailureRunnable = () -> Log.w(TAG, "Survey does not exists or download failed.");
+        surveyController.downloadSurvey(context, triggerId, onSuccessRunnable, onFailureRunnable);
     }
 
     /** @return Whether the user qualifies for the survey. */
@@ -174,6 +165,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
             }
         };
 
+        // TODO(https://crbug.com/1192719): Remove the observer properly.
         mTabModelSelector.addObserver(mTabModelObserver);
     }
 
@@ -278,12 +270,6 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
         return tab != null && tab.getWebContents() != null && !tab.isIncognito();
     }
 
-    /** @return A new {@link ChromeSurveyController} for testing. */
-    @VisibleForTesting
-    public static ChromeSurveyController createChromeSurveyControllerForTests() {
-        return new ChromeSurveyController();
-    }
-
     @Override
     public void notifyAnimationFinished(int animationType) {}
 
@@ -341,17 +327,11 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
         return new Random().nextInt(max);
     }
 
-    /** @return The max number as stated in the finch config. */
+    /** @return The max number that used to control the rate limit from the finch config. */
     @VisibleForTesting
     int getMaxNumber() {
-        try {
-            String number = VariationsAssociatedData.getVariationParamValue(
-                    CHROME_SURVEY_TRIAL_NAME, MAX_NUMBER);
-            if (TextUtils.isEmpty(number)) return -1;
-            return Integer.parseInt(number);
-        } catch (NumberFormatException e) {
-            return -1;
-        }
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID, MAX_NUMBER, -1);
     }
 
     /** @return The day of the year for today. */
@@ -459,20 +439,13 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
         protected Boolean doInBackground() {
             if (!mController.doesUserQualifyForSurvey()) return false;
 
-            if (SurveyController.getInstance().doesSurveyExist(
-                        mController.getSiteId(), ContextUtils.getApplicationContext())) {
-                mController.recordSurveyFilteringResult(FilteringResult.SURVEY_ALREADY_EXISTS);
-                return true;
-            } else {
-                boolean forceSurveyOn = false;
-                if (CommandLine.getInstance().hasSwitch(
-                            ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)) {
-                    forceSurveyOn = true;
-                    mController.recordSurveyFilteringResult(
-                            FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT);
-                }
-                return mController.isRandomlySelectedForSurvey() || forceSurveyOn;
+            boolean forceSurveyOn = false;
+            if (CommandLine.getInstance().hasSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)) {
+                forceSurveyOn = true;
+                mController.recordSurveyFilteringResult(
+                        FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT);
             }
+            return mController.isRandomlySelectedForSurvey() || forceSurveyOn;
         }
 
         @Override
@@ -485,6 +458,25 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     @VisibleForTesting
     public static void forceIsUMAEnabledForTesting(boolean forcedUMAStatus) {
         sForceUmaEnabledForTesting = forcedUMAStatus;
+    }
+
+    /** @return If the survey is enabled by finch flag or commandline switch. */
+    static boolean isSurveyEnabled() {
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)) {
+            return true;
+        }
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID);
+    }
+
+    /** @return The trigger Id that used to download / display certain survey. */
+    private static String getTriggerId() {
+        CommandLine commandLine = CommandLine.getInstance();
+        if (commandLine.hasSwitch(COMMAND_LINE_PARAM_NAME)) {
+            return commandLine.getSwitchValue(COMMAND_LINE_PARAM_NAME);
+        } else {
+            return ChromeFeatureList.getFieldTrialParamByFeature(
+                    ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID, SITE_ID_PARAM_NAME);
+        }
     }
 
     @VisibleForTesting

@@ -29,16 +29,19 @@ public class SurveyController {
 
     /**
      * Returns if there already exists a downloaded survey from the provided site id.
+     * @deprecated Use {@link #downloadSurvey(Context, String, Runnable, Runnable)} instead.
      * @param siteId The id of the site from where the survey should have been downloaded.
      * @param context The context of the application.
      * @return If the survey with a matching site id exists.
      */
+    @Deprecated
     public boolean doesSurveyExist(String siteId, Context context) {
         return false;
     }
 
     /**
      * Asynchronously downloads the survey using the provided parameters.
+     * @deprecated Replaced with {@link #downloadSurvey(Context, String, Runnable, Runnable)}.
      * @param context The context used to register a broadcast receiver.
      * @param siteId The id of the site from where the survey will be downloaded.
      * @param onSuccessRunnable The runnable to notify when the survey is ready.
@@ -46,8 +49,20 @@ public class SurveyController {
      * @param siteContext Optional parameter to build the download request. Site context can be
      *                    used for adding metadata.
      */
+    @Deprecated
     public void downloadSurvey(
             Context context, String siteId, Runnable onSuccessRunnable, String siteContext) {}
+
+    /**
+     * Asynchronously downloads the survey using the provided parameters.
+     * @param context The context used to create the survey.
+     * @param triggerId  The ID used to fetch the data for the surveys.
+     * @param onSuccessRunnable The runnable to notify when the survey is ready.
+     * @param onFailureRunnable The runnable to notify when downloading the survey failed, or the
+     *                          survey does not exist.
+     */
+    public void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
+            Runnable onFailureRunnable) {}
 
     /**
      * Show the survey.

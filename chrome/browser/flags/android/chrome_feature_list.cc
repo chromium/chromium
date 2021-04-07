@@ -162,6 +162,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kChromeSharingHub,
     &kChromeSharingHubV15,
     &kChromeStartupDelegate,
+    &kChromeSurveyNextAndroid,
     &kCommandLineOnNonRooted,
     &kConditionalTabStripAndroid,
     &kContentSuggestionsScrollToLoad,
@@ -435,6 +436,9 @@ const base::Feature kChromeSharingHubV15{"ChromeSharingHubV15",
 
 const base::Feature kChromeStartupDelegate{"ChromeStartupDelegate",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kChromeSurveyNextAndroid{"ChromeSurveyNextAndroid",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCommandLineOnNonRooted{"CommandLineOnNonRooted",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

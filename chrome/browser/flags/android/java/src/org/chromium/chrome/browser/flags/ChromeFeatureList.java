@@ -339,6 +339,7 @@ public abstract class ChromeFeatureList {
             "FocusOmniboxInIncognitoTabIntents";
     public static final String GRANT_NOTIFICATIONS_TO_DSE = "GrantNotificationsToDSE";
     public static final String HANDLE_MEDIA_INTENTS = "HandleMediaIntents";
+    public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String HIDE_FROM_API_3_TRANSITIONS_FROM_HISTORY =
             "HideFromApi3TransitionsFromHistory";
     public static final String IMMERSIVE_UI_MODE = "ImmersiveUiMode";

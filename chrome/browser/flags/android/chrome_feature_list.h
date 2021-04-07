@@ -49,6 +49,7 @@ extern const base::Feature kChromeShareScreenshot;
 extern const base::Feature kChromeSharingHub;
 extern const base::Feature kChromeSharingHubV15;
 extern const base::Feature kChromeStartupDelegate;
+extern const base::Feature kChromeSurveyNextAndroid;
 extern const base::Feature kCommandLineOnNonRooted;
 extern const base::Feature kConditionalTabStripAndroid;
 extern const base::Feature kContextMenuEnableLensShoppingAllowlist;
