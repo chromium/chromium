@@ -87,7 +87,8 @@ class WaylandEventSource : public PlatformEventSource,
                               DomCode dom_code,
                               bool repeat,
                               base::TimeTicks timestamp,
-                              int device_id) override;
+                              int device_id,
+                              WaylandKeyboard::KeyEventKind kind) override;
 
   // WaylandPointer::Delegate
   void OnPointerFocusChanged(WaylandWindow* window,

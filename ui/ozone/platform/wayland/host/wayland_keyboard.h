@@ -29,6 +29,12 @@ class XkbKeyboardLayoutEngine;
 class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
  public:
   class Delegate;
+  class ZCRExtendedKeyboard;
+
+  enum class KeyEventKind {
+    kPeekKey,  // Originated by extended_keyboard::peek_key.
+    kKey,      // Originated by wl_keyboard::key.
+  };
 
   WaylandKeyboard(wl_keyboard* keyboard,
                   zcr_keyboard_extension_v1* keyboard_extension_v1,
@@ -84,6 +90,23 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
 
   static void SyncCallback(void* data, struct wl_callback* cb, uint32_t time);
 
+  // Callback for wl_keyboard::key and extended_keyboard::peek_key.
+  void OnKey(uint32_t serial,
+             uint32_t time,
+             uint32_t key,
+             uint32_t state,
+             KeyEventKind kind);
+
+  // Dispatches the key event.
+  void DispatchKey(unsigned int key,
+                   unsigned int scan_code,
+                   bool down,
+                   bool repeat,
+                   base::TimeTicks timestamp,
+                   int device_id,
+                   int flags,
+                   KeyEventKind kind);
+
   // EventAutoRepeatHandler::Delegate
   void FlushInput(base::OnceClosure closure) override;
   void DispatchKey(unsigned int key,
@@ -95,7 +118,7 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
                    int flags) override;
 
   wl::Object<wl_keyboard> obj_;
-  wl::Object<zcr_extended_keyboard_v1> extended_keyboard_v1_;
+  std::unique_ptr<ZCRExtendedKeyboard> extended_keyboard_;
   WaylandConnection* const connection_;
   Delegate* const delegate_;
 
@@ -118,7 +141,8 @@ class WaylandKeyboard::Delegate {
                                       DomCode dom_code,
                                       bool repeat,
                                       base::TimeTicks timestamp,
-                                      int device_id) = 0;
+                                      int device_id,
+                                      WaylandKeyboard::KeyEventKind kind) = 0;
 
  protected:
   // Prevent deletion through a WaylandKeyboard::Delegate pointer.

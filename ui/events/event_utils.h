@@ -61,6 +61,9 @@ constexpr char kPropertyKeyboardHwKeyCode[] = "_keyevent_kbd_hw_keycode_";
 constexpr char kPropertyKeyboardImeFlag[] = "_keyevent_kbd_ime_flags_";
 constexpr unsigned int kPropertyKeyboardImeFlagOffset = 24;
 constexpr unsigned int kPropertyKeyboardImeFlagMask = 0x03;
+// Ignored is the 25-th bit.
+constexpr unsigned int kPropertyKeyboardImeIgnoredFlag =
+    1 << (25 - kPropertyKeyboardImeFlagOffset);
 
 // Key used to store mouse event flag telling ET_MOUSE_EXITED must actually be
 // interpreted as "crossing intermediate window" in blink context.

@@ -29,6 +29,48 @@
 
 namespace ui {
 
+class WaylandKeyboard::ZCRExtendedKeyboard {
+ public:
+  // Takes the ownership of |extended_keyboard|.
+  ZCRExtendedKeyboard(WaylandKeyboard* keyboard,
+                      zcr_extended_keyboard_v1* extended_keyboard)
+      : keyboard_(keyboard), obj_(extended_keyboard) {
+    static constexpr zcr_extended_keyboard_v1_listener kListener = {
+        &ZCRExtendedKeyboard::PeekKey,
+    };
+    zcr_extended_keyboard_v1_add_listener(obj_.get(), &kListener, this);
+  }
+  ZCRExtendedKeyboard(const ZCRExtendedKeyboard&) = delete;
+  ZCRExtendedKeyboard& operator=(const ZCRExtendedKeyboard&) = delete;
+  ~ZCRExtendedKeyboard() = default;
+
+  void AckKey(uint32_t serial, bool handled) {
+    zcr_extended_keyboard_v1_ack_key(obj_.get(), serial, handled);
+  }
+
+  // Returns true if connected object will send zcr_extended_keyboard::peek_key.
+  bool IsPeekKeySupported() {
+    return wl::get_version_of_object(obj_.get()) >=
+           ZCR_EXTENDED_KEYBOARD_V1_PEEK_KEY_SINCE_VERSION;
+  }
+
+ private:
+  static void PeekKey(void* data,
+                      zcr_extended_keyboard_v1* obj,
+                      uint32_t serial,
+                      uint32_t time,
+                      uint32_t key,
+                      uint32_t state) {
+    auto* extended_keyboard = static_cast<ZCRExtendedKeyboard*>(data);
+    DCHECK(data);
+    extended_keyboard->keyboard_->OnKey(
+        serial, time, key, state, WaylandKeyboard::KeyEventKind::kPeekKey);
+  }
+
+  WaylandKeyboard* const keyboard_;
+  wl::Object<zcr_extended_keyboard_v1> obj_;
+};
+
 // static
 const wl_callback_listener WaylandKeyboard::callback_listener_ = {
     WaylandKeyboard::SyncCallback,
@@ -54,9 +96,11 @@ WaylandKeyboard::WaylandKeyboard(
   wl_keyboard_add_listener(obj_.get(), &listener, this);
   // TODO(tonikitoo): Default auto-repeat to ON here?
 
-  if (keyboard_extension_v1)
-    extended_keyboard_v1_.reset(zcr_keyboard_extension_v1_get_extended_keyboard(
-        keyboard_extension_v1, obj_.get()));
+  if (keyboard_extension_v1) {
+    extended_keyboard_ = std::make_unique<ZCRExtendedKeyboard>(
+        this, zcr_keyboard_extension_v1_get_extended_keyboard(
+                  keyboard_extension_v1, obj_.get()));
+  }
 }
 
 WaylandKeyboard::~WaylandKeyboard() {
@@ -122,18 +166,7 @@ void WaylandKeyboard::Key(void* data,
                           uint32_t state) {
   WaylandKeyboard* keyboard = static_cast<WaylandKeyboard*>(data);
   DCHECK(keyboard);
-
-  bool down = state == WL_KEYBOARD_KEY_STATE_PRESSED;
-  if (down)
-    keyboard->connection_->set_serial(serial, ET_KEY_PRESSED);
-  int device_id = keyboard->device_id();
-
-  keyboard->auto_repeat_handler_.UpdateKeyRepeat(
-      key, 0 /*scan_code*/, down, false /*suppress_auto_repeat*/, device_id);
-
-  // TODO(tonikitoo,msisov): Handler 'repeat' parameter below.
-  keyboard->DispatchKey(key, 0 /*scan_code*/, down, false /*repeat*/,
-                        EventTimeForNow(), device_id, EF_NONE);
+  keyboard->OnKey(serial, time, key, state, KeyEventKind::kKey);
 }
 
 void WaylandKeyboard::Modifiers(void* data,
@@ -179,27 +212,69 @@ void WaylandKeyboard::FlushInput(base::OnceClosure closure) {
   connection_->ScheduleFlush();
 }
 
-void WaylandKeyboard::DispatchKey(uint32_t key,
-                                  uint32_t scan_code,
+void WaylandKeyboard::DispatchKey(unsigned int key,
+                                  unsigned int scan_code,
                                   bool down,
                                   bool repeat,
                                   base::TimeTicks timestamp,
                                   int device_id,
                                   int flags) {
+  // Key repeat is only triggered by wl_keyboard::key event,
+  // but not by extended_keyboard::peek_key.
+  DispatchKey(key, scan_code, down, repeat, timestamp, device_id, flags,
+              KeyEventKind::kKey);
+}
+
+void WaylandKeyboard::OnKey(uint32_t serial,
+                            uint32_t time,
+                            uint32_t key,
+                            uint32_t state,
+                            KeyEventKind kind) {
+  bool down = state == WL_KEYBOARD_KEY_STATE_PRESSED;
+  if (down)
+    connection_->set_serial(serial, ET_KEY_PRESSED);
+
+  if (kind == KeyEventKind::kKey) {
+    auto_repeat_handler_.UpdateKeyRepeat(key, 0 /*scan_code*/, down,
+                                         false /*suppress_auto_repeat*/,
+                                         device_id());
+  }
+
+  // Block to dispatch RELEASE wl_keyboard::key event, if
+  // zcr_extended_keyboard::peek_key is supported, since the event is
+  // already dispatched.
+  // If not supported, dispatch it for compatibility.
+  if (kind == KeyEventKind::kKey && !down && extended_keyboard_ &&
+      extended_keyboard_->IsPeekKeySupported()) {
+    return;
+  }
+
+  // TODO(tonikitoo,msisov): Handler 'repeat' parameter below.
+  DispatchKey(key, 0 /*scan_code*/, down, false /*repeat*/, EventTimeForNow(),
+              device_id(), EF_NONE, kind);
+}
+
+void WaylandKeyboard::DispatchKey(unsigned int key,
+                                  unsigned int scan_code,
+                                  bool down,
+                                  bool repeat,
+                                  base::TimeTicks timestamp,
+                                  int device_id,
+                                  int flags,
+                                  KeyEventKind kind) {
   DomCode dom_code = KeycodeConverter::EvdevCodeToDomCode(key);
   if (dom_code == ui::DomCode::NONE)
     return;
 
   // Pass empty DomKey and KeyboardCode here so the delegate can pre-process
   // and decode it when needed.
-  uint32_t result =
-      delegate_->OnKeyboardKeyEvent(down ? ET_KEY_PRESSED : ET_KEY_RELEASED,
-                                    dom_code, repeat, timestamp, device_id);
+  uint32_t result = delegate_->OnKeyboardKeyEvent(
+      down ? ET_KEY_PRESSED : ET_KEY_RELEASED, dom_code, repeat, timestamp,
+      device_id, kind);
 
-  if (extended_keyboard_v1_) {
+  if (extended_keyboard_) {
     bool handled = result & POST_DISPATCH_STOP_PROPAGATION;
-    zcr_extended_keyboard_v1_ack_key(extended_keyboard_v1_.get(),
-                                     connection_->serial(), handled);
+    extended_keyboard_->AckKey(connection_->serial(), handled);
   }
 }
 

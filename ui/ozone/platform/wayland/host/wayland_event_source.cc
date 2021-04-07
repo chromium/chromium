@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -98,11 +99,13 @@ void WaylandEventSource::OnKeyboardModifiersChanged(int modifiers) {
   keyboard_modifiers_ = modifiers;
 }
 
-uint32_t WaylandEventSource::OnKeyboardKeyEvent(EventType type,
-                                                DomCode dom_code,
-                                                bool repeat,
-                                                base::TimeTicks timestamp,
-                                                int device_id) {
+uint32_t WaylandEventSource::OnKeyboardKeyEvent(
+    EventType type,
+    DomCode dom_code,
+    bool repeat,
+    base::TimeTicks timestamp,
+    int device_id,
+    WaylandKeyboard::KeyEventKind kind) {
   DCHECK(type == ET_KEY_PRESSED || type == ET_KEY_RELEASED);
 
   DomKey dom_key;
@@ -122,6 +125,13 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(EventType type,
   KeyEvent event(type, key_code, dom_code, keyboard_modifiers_, dom_key,
                  timestamp);
   event.set_source_device_id(device_id);
+  if (kind == WaylandKeyboard::KeyEventKind::kKey) {
+    // Mark that this is the key event which IME did not consume.
+    event.SetProperties({{
+        kPropertyKeyboardImeFlag,
+        std::vector<uint8_t>{kPropertyKeyboardImeIgnoredFlag},
+    }});
+  }
   return DispatchEvent(&event);
 }
 
