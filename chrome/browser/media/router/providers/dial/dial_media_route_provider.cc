@@ -429,14 +429,16 @@ void DialMediaRouteProvider::HandleAppLaunchResult(
     bool success) {
   if (success) {
     logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
-                     "Successfully launched app.", "",
+                     "Successfully launched app.",
+                     MediaRoute::GetSinkIdFromMediaRouteId(route_id),
                      MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
                      MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
     DialMediaRouteProviderMetrics::RecordCreateRouteResult(
         DialCreateRouteResult::kSuccess);
   } else {
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
-                      "Failed to launch app.", "",
+                      "Failed to launch app.",
+                      MediaRoute::GetSinkIdFromMediaRouteId(route_id),
                       MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
                       MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
     DialMediaRouteProviderMetrics::RecordCreateRouteResult(

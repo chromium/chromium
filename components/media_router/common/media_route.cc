@@ -49,6 +49,17 @@ std::string MediaRoute::GetPresentationIdFromMediaRouteId(
 }
 
 // static
+std::string MediaRoute::GetSinkIdFromMediaRouteId(
+    const MediaRoute::Id route_id) {
+  if (!IsValidMediaRouteId(route_id)) {
+    return "";
+  }
+  auto begin = route_id.find("/");
+  auto end = route_id.find("/", begin + 1);
+  return route_id.substr(begin + 1, (end - begin - 1));
+}
+
+// static
 std::string MediaRoute::GetMediaSourceIdFromMediaRouteId(
     const MediaRoute::Id route_id) {
   if (!IsValidMediaRouteId(route_id)) {

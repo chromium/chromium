@@ -57,6 +57,7 @@ TEST(MediaRouteTest, TestEquals) {
 TEST(MediaRouteTest, TestParsingMediaRouteId) {
   // Parse a valid RouteId.
   EXPECT_EQ(MediaRoute::GetPresentationIdFromMediaRouteId(kRouteId1), "1");
+  EXPECT_EQ(MediaRoute::GetSinkIdFromMediaRouteId(kRouteId1), "cast-sink1");
   EXPECT_EQ(MediaRoute::GetMediaSourceIdFromMediaRouteId(kRouteId1),
             "http://foo.com");
 
@@ -64,6 +65,10 @@ TEST(MediaRouteTest, TestParsingMediaRouteId) {
   EXPECT_EQ(MediaRoute::GetPresentationIdFromMediaRouteId("InvalidRouteId"),
             "");
   EXPECT_EQ(MediaRoute::GetPresentationIdFromMediaRouteId(
+                "urn:x-org.chromium:media:route:1/cast-sink1"),
+            "");
+  EXPECT_EQ(MediaRoute::GetSinkIdFromMediaRouteId("InvalidRouteId"), "");
+  EXPECT_EQ(MediaRoute::GetSinkIdFromMediaRouteId(
                 "urn:x-org.chromium:media:route:1/cast-sink1"),
             "");
   EXPECT_EQ(MediaRoute::GetMediaSourceIdFromMediaRouteId("InvalidRouteId"), "");

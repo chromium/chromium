@@ -290,13 +290,12 @@ void MirroringActivity::OnAppMessage(
   DCHECK_EQ(message.protocol_version(),
             cast::channel::CastMessage_ProtocolVersion_CASTV2_1_0);
   if (message.namespace_() == mirroring::mojom::kWebRtcNamespace) {
-    CastSession* session = GetSession();
     logger_->LogInfo(media_router::mojom::LogCategory::kMirroring,
                      kLoggerComponent,
                      base::StrCat({"Relaying app message from receiver:",
                                    message.payload_utf8()}),
                      route().media_sink_id(), route().media_source().id(),
-                     session ? session->session_id() : "");
+                     route().presentation_id());
   }
 
   mirroring::mojom::CastMessagePtr ptr = mirroring::mojom::CastMessage::New();
@@ -316,13 +315,12 @@ void MirroringActivity::OnInternalMessage(
   ptr->message_namespace = message.message_namespace;
   CHECK(base::JSONWriter::Write(message.message, &ptr->json_format_data));
   if (message.message_namespace == mirroring::mojom::kWebRtcNamespace) {
-    CastSession* session = GetSession();
     logger_->LogInfo(
         media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
         base::StrCat({"Relaying internal WebRTC message from receiver: ",
                       ptr->json_format_data}),
         route().media_sink_id(), route().media_source().id(),
-        session ? session->session_id() : "");
+        route().presentation_id());
   }
   channel_to_service_->Send(std::move(ptr));
 }
@@ -343,7 +341,7 @@ void MirroringActivity::HandleParseJsonResult(
         media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
         base::StrCat({"Failed to parse Cast client message:", *result.error}),
         route().media_sink_id(), route().media_source().id(),
-        session->session_id());
+        route().presentation_id());
     return;
   }
 
@@ -354,7 +352,7 @@ void MirroringActivity::HandleParseJsonResult(
                      base::StrCat({"WebRTC message received: ",
                                    GetScrubbedLogMessage(*result.value)}),
                      route().media_sink_id(), route().media_source().id(),
-                     session->session_id());
+                     route().presentation_id());
   }
 
   cast::channel::CastMessage cast_message = cast_channel::CreateCastMessage(
@@ -368,7 +366,7 @@ void MirroringActivity::HandleParseJsonResult(
             "Failed to send Cast message to channel_id: %d, in namespace: %s",
             cast_data_.cast_channel_id, message_namespace.c_str()),
         route().media_sink_id(), route().media_source().id(),
-        session->session_id());
+        route().presentation_id());
   }
 }
 

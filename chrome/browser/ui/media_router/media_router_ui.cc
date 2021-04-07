@@ -444,7 +444,9 @@ bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
 
 void MediaRouterUI::TerminateRoute(const MediaRoute::Id& route_id) {
   logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
-                   "TerminateRoute requested by MediaRouterUI.", "", "",
+                   "TerminateRoute requested by MediaRouterUI.",
+                   MediaRoute::GetSinkIdFromMediaRouteId(route_id),
+                   MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
                    MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
   GetMediaRouter()->TerminateRoute(route_id);
 }
@@ -506,14 +508,19 @@ void MediaRouterUI::AddIssue(const IssueInfo& issue) {
   switch (issue.severity) {
     case IssueInfo::Severity::NOTIFICATION:
       logger_->LogInfo(
-          mojom::LogCategory::kUi, kLoggerComponent, issue.message,
+          mojom::LogCategory::kUi, kLoggerComponent,
+          base::StrCat({"Sink button shows an issue in NOTIFICATION level: ",
+                        issue.title}),
           issue.sink_id,
-          MediaRoute::GetPresentationIdFromMediaRouteId(issue.route_id),
-          MediaRoute::GetMediaSourceIdFromMediaRouteId(issue.route_id));
+          MediaRoute::GetMediaSourceIdFromMediaRouteId(issue.route_id),
+          MediaRoute::GetPresentationIdFromMediaRouteId(issue.route_id));
       break;
     default:
       logger_->LogError(
-          mojom::LogCategory::kUi, kLoggerComponent, issue.message,
+          mojom::LogCategory::kUi, kLoggerComponent,
+          base::StrCat(
+              {"Sink button shows an issue in WARNING or FATAL level: ",
+               issue.title}),
           issue.sink_id,
           MediaRoute::GetMediaSourceIdFromMediaRouteId(issue.route_id),
           MediaRoute::GetPresentationIdFromMediaRouteId(issue.route_id));
@@ -546,7 +553,7 @@ void MediaRouterUI::LogMediaSinkStatus() {
   logger_->LogInfo(
       mojom::LogCategory::kUi, kLoggerComponent,
       base::StrCat(
-          {base::StringPrintf("%zu sinks available on CastDialogView closed: ",
+          {base::StringPrintf("%zu sinks shown on CastDialogView closed: ",
                               sink_ids.size()),
            base::JoinString(sink_ids, ",")}),
       "", "", "");
