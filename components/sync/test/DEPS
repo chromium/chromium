@@ -2,5 +2,6 @@ include_rules = [
   # Test files can include anything from sync.
   "+components/sync",
   "+net",
-  '+services/network/public/cpp',
+  "+services/network/public/cpp",
+  "+ui/gfx/image",
 ]

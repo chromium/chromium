@@ -10,6 +10,7 @@
 
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace fake_server {
@@ -37,6 +38,9 @@ class BookmarkEntityBuilder {
   // Sets the index of the bookmark to be built. If this is not called,
   // the bookmark will be placed at index 0.
   void SetIndex(int index);
+
+  BookmarkEntityBuilder& SetFavicon(const gfx::Image& favicon,
+                                    const GURL& icon_url);
 
   // Builds and returns a LoopbackServerEntity representing a bookmark. Returns
   // null if the entity could not be built.
@@ -73,6 +77,10 @@ class BookmarkEntityBuilder {
       const sync_pb::EntitySpecifics& entity_specifics,
       bool is_folder);
 
+  // Fill in favicon and icon URL in the specifics. |bookmark_specifics| must
+  // not be nullptr.
+  void FillWithFaviconIfNeeded(sync_pb::BookmarkSpecifics* bookmark_specifics);
+
   // The bookmark entity's title. This value is also used as the entity's name.
   const std::string title_;
 
@@ -89,6 +97,10 @@ class BookmarkEntityBuilder {
 
   // The index of the bookmark folder within its siblings.
   int index_ = 0;
+
+  // Information about the favicon of the bookmark.
+  gfx::Image favicon_;
+  GURL icon_url_;
 };
 
 }  // namespace fake_server

@@ -17,11 +17,15 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
+#include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/bookmark_entity_builder.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "components/sync/test/fake_server/fake_server_verifier.h"
@@ -66,6 +70,10 @@ using bookmarks_helper::RemoveAll;
 using bookmarks_helper::SetFavicon;
 using bookmarks_helper::SetTitle;
 using testing::ElementsAre;
+using testing::Eq;
+using testing::NotNull;
+using testing::Pointee;
+using testing::SizeIs;
 
 // All tests in this file utilize a single profile.
 // TODO(pvalenzuela): Standardize this pattern by moving this constant to
@@ -1524,7 +1532,54 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 }
 
-// TODO(rushans): add the same test as before with favicons.
+IN_PROC_BROWSER_TEST_F(
+    SingleClientBookmarksSyncTestWithEnabledReuploadRemoteBookmarks,
+    ShouldReuploadBookmarkWithFaviconOnInitialMerge) {
+  const GURL kIconUrl("http://www.google.com/favicon.ico");
+
+  // Create a bookmark on the server which has a favicon and doesn't have GUID.
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  fake_server::BookmarkEntityBuilder bookmark_builder =
+      entity_builder_factory.NewBookmarkEntityBuilder(kBookmarkTitle);
+  bookmark_builder.SetFavicon(CreateFavicon(SK_ColorRED), kIconUrl);
+  std::unique_ptr<syncer::LoopbackServerEntity> bookmark_entity =
+      bookmark_builder.BuildBookmark(GURL(kBookmarkPageUrl),
+                                     /*is_legacy=*/true);
+  ASSERT_FALSE(bookmark_entity->GetSpecifics().bookmark().has_guid());
+  fake_server_->InjectEntity(std::move(bookmark_entity));
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      BookmarkFaviconLoadedChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl))
+          .Wait());
+  const bookmarks::BookmarkNode* bookmark =
+      bookmarks_helper::GetUniqueNodeByURL(kSingleProfileIndex,
+                                           GURL(kBookmarkPageUrl));
+  ASSERT_THAT(bookmark, NotNull());
+  const gfx::Image& favicon =
+      GetBookmarkModel(kSingleProfileIndex)->GetFavicon(bookmark);
+  ASSERT_FALSE(favicon.IsEmpty());
+  ASSERT_THAT(bookmark->icon_url(), Pointee(Eq(kIconUrl)));
+
+  // BookmarkModelMatchesFakeServerChecker uses GUIDs to verify if the local
+  // model matches the server bookmarks which verifies that the bookmark has
+  // been reuploaded.
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
+                  GetFakeServer())
+                  .Wait());
+  const std::vector<sync_pb::SyncEntity> server_bookmarks =
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
+  ASSERT_THAT(server_bookmarks, SizeIs(1));
+  EXPECT_TRUE(server_bookmarks.front().specifics().bookmark().has_guid());
+
+  EXPECT_EQ(
+      1, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.BOOKMARK",
+                                         /*LOCAL_UPDATE*/ 2));
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   "Sync.BookmarkEntityReuploadNeeded.OnInitialMerge", true));
+}
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksSyncTestWithEnabledReuploadRemoteBookmarks,

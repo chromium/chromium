@@ -39,7 +39,7 @@ BookmarkEntityBuilder::BookmarkEntityBuilder(
 BookmarkEntityBuilder::BookmarkEntityBuilder(
     const BookmarkEntityBuilder& other) = default;
 
-BookmarkEntityBuilder::~BookmarkEntityBuilder() {}
+BookmarkEntityBuilder::~BookmarkEntityBuilder() = default;
 
 void BookmarkEntityBuilder::SetId(const std::string& id) {
   id_ = id;
@@ -53,6 +53,14 @@ void BookmarkEntityBuilder::SetIndex(int index) {
   index_ = index;
 }
 
+BookmarkEntityBuilder& BookmarkEntityBuilder::SetFavicon(
+    const gfx::Image& favicon,
+    const GURL& icon_url) {
+  favicon_ = favicon;
+  icon_url_ = icon_url;
+  return *this;
+}
+
 std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildBookmark(
     const GURL& url,
     bool is_legacy) {
@@ -63,6 +71,7 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildBookmark(
   sync_pb::EntitySpecifics entity_specifics =
       CreateBaseEntitySpecifics(is_legacy);
   entity_specifics.mutable_bookmark()->set_url(url.spec());
+  FillWithFaviconIfNeeded(entity_specifics.mutable_bookmark());
   return Build(entity_specifics, /*is_folder=*/false);
 }
 
@@ -76,6 +85,7 @@ BookmarkEntityBuilder::BuildBookmarkWithoutFullTitle(const GURL& url) {
       CreateBaseEntitySpecifics(/*is_legacy=*/false);
   entity_specifics.mutable_bookmark()->set_url(url.spec());
   entity_specifics.mutable_bookmark()->clear_full_title();
+  FillWithFaviconIfNeeded(entity_specifics.mutable_bookmark());
   return Build(entity_specifics, /*is_folder=*/false);
 }
 
@@ -130,6 +140,21 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
           id_, kUnusedVersion, title_, originator_cache_guid_,
           originator_client_item_id_, /*client_tag_hash=*/"", unique_position,
           entity_specifics, is_folder, parent_id_, kDefaultTime, kDefaultTime));
+}
+
+void BookmarkEntityBuilder::FillWithFaviconIfNeeded(
+    sync_pb::BookmarkSpecifics* bookmark_specifics) {
+  DCHECK(bookmark_specifics);
+  // Both |favicon_| and |icon_url_| must be provided or empty simultaneously.
+  DCHECK(favicon_.IsEmpty() == icon_url_.is_empty());
+  if (favicon_.IsEmpty()) {
+    return;
+  }
+
+  scoped_refptr<base::RefCountedMemory> favicon_bytes = favicon_.As1xPNGBytes();
+  bookmark_specifics->set_favicon(favicon_bytes->front(),
+                                  favicon_bytes->size());
+  bookmark_specifics->set_icon_url(icon_url_.spec());
 }
 
 }  // namespace fake_server
