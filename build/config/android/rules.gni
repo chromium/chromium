@@ -2323,8 +2323,7 @@ if (enable_java_templates) {
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
     assert(_rebased_build_config != "")  # Mark as used.
 
-    _generate_buildconfig_java =
-        build_with_chromium && !defined(invoker.apk_under_test)
+    _generate_buildconfig_java = !defined(invoker.apk_under_test)
     if (defined(invoker.generate_buildconfig_java)) {
       _generate_buildconfig_java = invoker.generate_buildconfig_java
     }
@@ -2332,7 +2331,7 @@ if (enable_java_templates) {
     _generate_productconfig_java = defined(invoker.product_config_java_packages)
 
     # JNI generation usually goes hand-in-hand with buildconfig generation.
-    _generate_final_jni = _generate_buildconfig_java
+    _generate_final_jni = _generate_buildconfig_java && build_with_chromium
     if (defined(invoker.generate_final_jni)) {
       _generate_final_jni = invoker.generate_final_jni
     }
@@ -2743,6 +2742,12 @@ if (enable_java_templates) {
         }
       }
       _srcjar_deps += [ ":${_template_name}__final_jni" ]
+    } else {
+      not_needed(invoker,
+                 [
+                   "enable_native_mocks",
+                   "jni_registration_header",
+                 ])
     }
 
     _java_target = "${_template_name}__java"
