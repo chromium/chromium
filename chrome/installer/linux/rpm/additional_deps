@@ -27,6 +27,7 @@ libvulkan.so.1()(64bit)
 
 # For uploading crash reports with Breakpad.
 wget
+libcurl.so.4()(64bit)
 
 # For OS integration.
 xdg-utils

@@ -16,6 +16,7 @@ libnss3 (>= 3.26)
 
 # For uploading crash reports with Breakpad.
 wget
+libcurl3-gnutls | libcurl3-nss | libcurl4 | libcurl3
 
 # For OS integration.
 xdg-utils (>= 1.0.2)
