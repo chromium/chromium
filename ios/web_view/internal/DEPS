@@ -34,6 +34,7 @@ include_rules = [
   "+components/translate/core",
   "+components/translate/ios",
   "+components/language/ios",
+  "+components/unified_consent",
   "+components/url_formatter",
   "+components/variations/net",
   "+components/version_info",
