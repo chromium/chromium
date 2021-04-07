@@ -106,6 +106,7 @@ public class PriceTrackingDialogTest {
 
     @After
     public void tearDown() {
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(null);
         ActivityUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
@@ -179,6 +180,28 @@ public class PriceTrackingDialogTest {
             intended(hasAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS));
         }
         Intents.release();
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS + "/enable_price_notification/true"})
+    public void testPriceAlertsRowMenuVisibility() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        // The price alerts row menu should be invisible if user doesn't sign in.
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
+        verifyDialogShowing(cta, false);
+
+        pressBack();
+        verifyDialogHiding(cta);
+
+        // When user signs in, the price alerts row menu should be visible.
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
+        verifyDialogShowing(cta, true);
     }
 
     @Test
