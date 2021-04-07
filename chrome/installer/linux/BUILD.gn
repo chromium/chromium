@@ -71,6 +71,7 @@ if (enable_swiftshader) {
   packaging_files_shlibs += [
     "$root_out_dir/swiftshader_libEGL.so",
     "$root_out_dir/swiftshader_libGLESv2.so",
+    "$root_out_dir/libvk_swiftshader.so",
   ]
 }
 
@@ -85,6 +86,7 @@ copy("swiftshader_libs") {
   public_deps = [
     "//third_party/swiftshader/src/OpenGL/libEGL:swiftshader_libEGL",
     "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2",
+    "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
   ]
 }
 
