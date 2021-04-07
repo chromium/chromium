@@ -150,7 +150,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      * Adds an account to the fake AccountManagerFacade.
      */
     public void addAccount(Account account) {
-        AccountHolder accountHolder = AccountHolder.builder(account).alwaysAccept(true).build();
+        AccountHolder accountHolder = AccountHolder.builder(account).build();
         // As this class is accessed both from UI thread and worker threads, we lock the access
         // to account holders to avoid potential race condition.
         synchronized (mLock) {
@@ -163,7 +163,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      * Removes an account from the fake AccountManagerFacade.
      */
     public void removeAccount(Account account) {
-        AccountHolder accountHolder = AccountHolder.builder(account).alwaysAccept(true).build();
+        AccountHolder accountHolder = AccountHolder.builder(account).build();
         synchronized (mLock) {
             if (!mAccountHolders.remove(accountHolder)) {
                 throw new IllegalArgumentException("Cannot find account:" + accountHolder);

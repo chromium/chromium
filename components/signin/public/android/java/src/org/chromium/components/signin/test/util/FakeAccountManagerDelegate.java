@@ -40,9 +40,6 @@ import java.util.UUID;
  *
  * If you want to auto-approve a given authtokentype, use {@link #addAccount} with
  * an AccountHolder you have built with hasBeenAccepted("yourAuthTokenType", true).
- *
- * If you want to auto-approve all auth token types for a given account, use the {@link
- * AccountHolder} builder method alwaysAccept(true).
  */
 public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     private static final String TAG = "FakeAccountManager";
@@ -126,7 +123,6 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
             throw new AuthException(AuthException.NONTRANSIENT,
                     "Cannot get auth token for unknown account '" + account + "'");
         }
-        assert ah.hasBeenAccepted(authTokenScope);
         synchronized (mLock) {
             // Some tests register auth tokens with value null, and those should be preserved.
             if (!ah.hasAuthTokenRegistered(authTokenScope)

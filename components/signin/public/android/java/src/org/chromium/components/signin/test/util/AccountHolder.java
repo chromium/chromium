@@ -26,21 +26,15 @@ import java.util.Set;
 public class AccountHolder {
     private final Account mAccount;
     private final Map<String, String> mAuthTokens;
-    private final Map<String, Boolean> mHasBeenAccepted;
-    private final boolean mAlwaysAccept;
     private final Set<String> mFeatures;
 
-    private AccountHolder(Account account, Map<String, String> authTokens,
-            Map<String, Boolean> hasBeenAccepted, boolean alwaysAccept, Set<String> features) {
+    private AccountHolder(Account account, Map<String, String> authTokens, Set<String> features) {
         assert account != null;
         assert authTokens != null;
-        assert hasBeenAccepted != null;
         assert features != null;
 
         mAccount = account;
         mAuthTokens = authTokens;
-        mHasBeenAccepted = hasBeenAccepted;
-        mAlwaysAccept = alwaysAccept;
         mFeatures = features;
     }
 
@@ -56,12 +50,6 @@ public class AccountHolder {
     AccessTokenData getAuthToken(String authTokenType) {
         String authTokenString = mAuthTokens.get(authTokenType);
         return authTokenString == null ? null : new AccessTokenData(authTokenString);
-    }
-
-    boolean hasBeenAccepted(String authTokenType) {
-        return mAlwaysAccept
-                || mHasBeenAccepted.containsKey(authTokenType)
-                && mHasBeenAccepted.get(authTokenType);
     }
 
     /**
@@ -120,10 +108,7 @@ public class AccountHolder {
     }
 
     private Builder copy() {
-        return builder(mAccount)
-                .authTokens(mAuthTokens)
-                .hasBeenAcceptedMap(mHasBeenAccepted)
-                .alwaysAccept(mAlwaysAccept);
+        return builder(mAccount).authTokens(mAuthTokens);
     }
 
     /**
@@ -132,8 +117,6 @@ public class AccountHolder {
     public static class Builder {
         private final Account mAccount;
         private Map<String, String> mAuthTokens = new HashMap<>();
-        private Map<String, Boolean> mHasBeenAccepted = new HashMap<>();
-        private boolean mAlwaysAccept;
         private final Set<String> mFeatures = new HashSet<>();
 
         Builder(@NonNull Account account) {
@@ -150,16 +133,6 @@ public class AccountHolder {
             return this;
         }
 
-        Builder hasBeenAcceptedMap(@NonNull Map<String, Boolean> hasBeenAcceptedMap) {
-            mHasBeenAccepted = hasBeenAcceptedMap;
-            return this;
-        }
-
-        public Builder alwaysAccept(boolean alwaysAccept) {
-            mAlwaysAccept = alwaysAccept;
-            return this;
-        }
-
         /**
          * Adds features to the set of features for this account.
          */
@@ -169,8 +142,7 @@ public class AccountHolder {
         }
 
         public AccountHolder build() {
-            return new AccountHolder(
-                    mAccount, mAuthTokens, mHasBeenAccepted, mAlwaysAccept, mFeatures);
+            return new AccountHolder(mAccount, mAuthTokens, mFeatures);
         }
     }
 }

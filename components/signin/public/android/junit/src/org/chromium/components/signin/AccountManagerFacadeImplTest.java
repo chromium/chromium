@@ -257,7 +257,6 @@ public class AccountManagerFacadeImplTest {
 
     private Account addTestAccount(String accountEmail, String... features) {
         AccountHolder holder = AccountHolder.builder(accountEmail)
-                                       .alwaysAccept(true)
                                        .addFeatures(features)
                                        .build();
         mDelegate.addAccount(holder);
