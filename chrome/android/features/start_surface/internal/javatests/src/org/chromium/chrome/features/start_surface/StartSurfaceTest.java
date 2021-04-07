@@ -459,7 +459,7 @@ public class StartSurfaceTest {
                 View.GONE);
 
         pressBack();
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
+        onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
 
         OverviewModeBehaviorWatcher hideWatcher =
                 TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
