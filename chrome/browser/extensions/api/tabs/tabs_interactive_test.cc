@@ -158,6 +158,22 @@ IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
       << message_;
 }
 
+// Crashes on Lacros and Linux-ozone-rel. http://crbug.com/1196709
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(USE_OZONE)
+#define MAYBE_TabGetLastFocusedWindow DISABLED_TabGetLastFocusedWindow
+#else
+#define MAYBE_TabGetLastFocusedWindow TabGetLastFocusedWindow
+#endif
+
+// Tests chrome.windows.getLastFocused.
+IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest,
+                       MAYBE_TabGetLastFocusedWindow) {
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "tabs/last_focused_window"},
+      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
+      << message_;
+}
+
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          NonPersistentExtensionTabsTest,
                          ::testing::Values(ContextType::kEventPage));
