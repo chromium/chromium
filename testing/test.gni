@@ -9,6 +9,12 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build_overrides/build.gni")
 
+declare_args() {
+  # For more info about RTS, please see
+  # //docs/testing/regression-test-selection.md
+  use_rts = false
+}
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/extract_unwind_tables.gni")
@@ -45,6 +51,16 @@ if (is_android) {
 #   override_board: (ash, optional) override the 'cros_board' used in
 #      generating the test runner script.
 template("test") {
+  # Ensures the rts file exists and if not, creates a dummy file
+  if (use_rts) {
+    action("${target_name}__rts_filters") {
+      script = "//build/add_rts_filters.py"
+      rts_file = "${root_build_dir}/gen/rts/${target_name}.filter"
+      args = [ rebase_path(rts_file, root_build_dir) ]
+      outputs = [ rts_file ]
+    }
+  }
+
   testonly = true
   if (!is_ios) {
     assert(!defined(invoker.is_xctest) || !invoker.is_xctest,
@@ -223,6 +239,10 @@ template("test") {
       test_name = _output_name
       test_suite = _output_name
       test_type = "gtest"
+
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
 
     # Create a wrapper script rather than using a group() in order to ensure
@@ -252,6 +272,10 @@ template("test") {
         data_deps = []
       }
       data = [ "//testing/location_tags.json" ]
+
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
   } else if (is_fuchsia) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
@@ -291,6 +315,10 @@ template("test") {
 
       data = [ "//testing/location_tags.json" ]
       data_deps = [ "//testing/buildbot/filters:fuchsia_filters" ]
+
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
 
     cr_fuchsia_package(_pkg_target) {
@@ -398,6 +426,10 @@ template("test") {
       # Include the generate_wrapper as part of data_deps
       data_deps += [ ":${_wrapper_output_name}" ]
       write_runtime_deps = _runtime_deps_file
+
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
   } else if (is_chromeos_ash && cros_board != "") {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
@@ -419,6 +451,10 @@ template("test") {
       }
 
       data = [ "//testing/location_tags.json" ]
+
+      if (use_rts) {
+        data_deps = [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
 
     executable(target_name) {
@@ -438,6 +474,13 @@ template("test") {
       write_runtime_deps = _runtime_deps_file
       data += [ _runtime_deps_file ]
       deps += [ ":$_gen_runner_target" ]
+
+      if (use_rts) {
+        if (!defined(data_deps)) {
+          data_deps = []
+        }
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
   } else if (chromeos_is_browser_only) {
     _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
@@ -498,6 +541,10 @@ template("test") {
         "//build/lacros/test_runner.py",
         "//.vpython",
       ]
+
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
 
     executable(target_name) {
@@ -516,6 +563,10 @@ template("test") {
       if (_use_ash_chrome && also_build_ash_chrome) {
         data_deps +=
             [ "//chrome:chrome(//build/toolchain/linux:ash_clang_x64)" ]
+      }
+
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
   } else if (!is_nacl) {
@@ -564,6 +615,10 @@ template("test") {
       }
 
       data += [ "//.vpython" ]
+
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
 
     executable(target_name) {
@@ -595,6 +650,13 @@ template("test") {
       if (!defined(deps)) {
         deps = []
       }
+
+      if (use_rts) {
+        if (!defined(data_deps)) {
+          data_deps = []
+        }
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
   }
 }
@@ -614,6 +676,15 @@ template("test") {
 # the conventions listed in the
 # [test wrapper API](//docs/testing/test_wrapper_api.md).
 template("script_test") {
+  if (use_rts) {
+    action("${target_name}__rts_filters") {
+      script = "//build/add_rts_filters.py"
+      rts_file = "${root_build_dir}/gen/rts/${target_name}.filter"
+      args = [ rebase_path(rts_file, root_build_dir) ]
+      outputs = [ rts_file ]
+    }
+  }
+
   generate_wrapper(target_name) {
     testonly = true
     wrapper_script = "${root_build_dir}/bin/run_${target_name}"
@@ -657,6 +728,10 @@ template("script_test") {
     forward_variables_from(invoker, [ "visibility" ])
 
     write_runtime_deps = "${root_build_dir}/${target_name}.runtime_deps"
+
+    if (use_rts) {
+      data_deps += [ ":${invoker.target_name}__rts_filters" ]
+    }
   }
 }
 

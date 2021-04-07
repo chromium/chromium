@@ -155,6 +155,12 @@ class MetaBuildWrapper(object):
                         help='verbose logging')
       subp.add_argument('--root', help='Path to GN source root')
       subp.add_argument('--dotfile', help='Path to GN dotfile')
+      subp.add_argument('--use-rts',
+                        action='store_true',
+                        default=False,
+                        help='whether or not to use regression test selection'
+                        ' For more info about RTS, please see'
+                        ' //docs/testing/regression-test-selection.md')
 
       # TODO(crbug.com/1060857): Remove this once swarming task templates
       # support command prefixes.
@@ -259,12 +265,6 @@ class MetaBuildWrapper(object):
                            'newline.')
     subp.add_argument('--json-output',
                       help='Write errors to json.output')
-    # For more info about RTS, please see
-    # //docs/testing/regression-test-selection.md
-    subp.add_argument('--use-rts',
-                      action='store_true',
-                      default=False,
-                      help='whether or not to use regression test selection')
     subp.add_argument('--rts-target-change-recall',
                       type=float,
                       help='how much safety is needed when selecting tests. '
@@ -281,11 +281,6 @@ class MetaBuildWrapper(object):
     subp.set_defaults(func=self.CmdIsolateEverything)
     subp.add_argument('path',
                       help='path build was generated into')
-    subp.add_argument('--use-rts',
-                      action='store_true',
-                      default=False,
-                      help='whether or not to use regression test selection')
-
     subp = subps.add_parser('isolate',
                             description='Generate the .isolate files for a '
                                         'given binary.')
@@ -1015,14 +1010,14 @@ class MetaBuildWrapper(object):
   def ConfigFromArgs(self):
     if self.args.config:
       if self.args.builder_group or self.args.builder:
-        raise MBErr('Can not specific both -c/--config and --group '
+        raise MBErr('Can not specific both -c/--config and --builder-group '
                     'or -b/--builder')
 
       return self.args.config
 
     if not self.args.builder_group or not self.args.builder:
       raise MBErr('Must specify either -c/--config or '
-                  '(--group and -b/--builder)')
+                  '(--builder-group and -b/--builder)')
 
     if not self.args.builder_group in self.builder_groups:
       raise MBErr('Builder group name "%s" not found in "%s"' %
@@ -1224,7 +1219,6 @@ class MetaBuildWrapper(object):
         filter_file = target + '.filter'
         filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
         if self.Exists(self.ToAbsPath(build_dir, filter_file_path)):
-          runtime_deps.append(filter_file_path)
           command.append('--test-launcher-filter-file=%s' % filter_file_path)
           self.Print('added rts filter file to isolate: %s' % filter_file)
 
@@ -1506,6 +1500,9 @@ class MetaBuildWrapper(object):
     android_version_name = self.args.android_version_name
     if android_version_name:
       gn_args += ' android_default_version_name="%s"' % android_version_name
+
+    if self.args.use_rts:
+      gn_args += ' use_rts=true'
 
     args_gn_lines = []
     parsed_gn_args = {}
