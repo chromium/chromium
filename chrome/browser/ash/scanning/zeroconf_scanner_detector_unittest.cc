@@ -59,7 +59,7 @@ MATCHER_P(ScannersAreEqual, expected_scanners, "") {
   return true;
 }
 
-// TODO(jschettler): Move these functions and the copies in
+// TODO(b/184743530): Move these functions and the copies in
 // zeroconf_printer_detector_unittest.cc into a shared file.
 // Determine basic scanner attributes deterministically but pseudorandomly based
 // on the scanner name. The exact values returned here are not important. The

@@ -38,7 +38,7 @@ using local_discovery::ServiceDescription;
 using local_discovery::ServiceDiscoveryDeviceLister;
 using local_discovery::ServiceDiscoverySharedClient;
 
-// TODO(jschettler): Update this class once the eSCL specification is released.
+// TODO(b/184746628): Update this class using the eSCL specification.
 // These fields (including the default values) come from the eSCL specification.
 // Not all of these will necessarily be specified for a given scanner. Also,
 // unused fields are excluded here.

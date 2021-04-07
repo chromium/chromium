@@ -121,7 +121,7 @@ interface ScanJobObserver {
 
   // Called when scanning a page is complete. |page_data| contains the page's
   // image data encoded as a PNG.
-  // TODO(jschettler): Send a lower resolution preview.
+  // TODO(b/184747389): Send a lower resolution preview.
   OnPageComplete(array<uint8> page_data);
 
   // Called when the scan is complete. |result| indicates the result of the scan
@@ -146,7 +146,7 @@ interface ScanService {
   GetScanners() => (array<Scanner> scanners);
 
   // Returns the capabilities of the scanner identified by |scanner_id|.
-  // TODO(jschettler): Return a boolean to indicate whether the capabilities
+  // TODO(b/184747756): Return a boolean to indicate whether the capabilities
   // were obtained via a secure protocol.
   GetScannerCapabilities(mojo_base.mojom.UnguessableToken scanner_id)
       => (ScannerCapabilities capabilities);

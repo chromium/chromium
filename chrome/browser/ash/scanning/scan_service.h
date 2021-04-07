@@ -112,8 +112,6 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // Sets the local member variables back to their initial empty state.
   void ClearScanState();
 
-  // TODO(jschettler): Replace this with a generic helper function when one is
-  // available.
   // Determines whether the service supports saving scanned images to
   // |file_path|.
   bool FilePathSupported(const base::FilePath& file_path);
