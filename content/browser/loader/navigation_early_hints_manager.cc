@@ -159,6 +159,15 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
   }
 }
 
+void NavigationEarlyHintsManager::WaitForPreloadsFinishedForTesting(
+    base::OnceCallback<void(PreloadedResources)> callback) {
+  DCHECK(!preloads_completion_callback_for_testing_);
+  if (inflight_preloads_.empty())
+    std::move(callback).Run(preloaded_resources_);
+  else
+    preloads_completion_callback_for_testing_ = std::move(callback);
+}
+
 void NavigationEarlyHintsManager::MaybePreloadHintedResource(
     const network::mojom::LinkHeaderPtr& link,
     const network::ResourceRequest& navigation_request) {
@@ -234,6 +243,12 @@ void NavigationEarlyHintsManager::OnPreloadComplete(
   DCHECK(!base::Contains(preloaded_resources_, url));
   preloaded_resources_[url] = status.error_code;
   inflight_preloads_.erase(url);
+
+  if (inflight_preloads_.empty() && preloads_completion_callback_for_testing_) {
+    std::move(preloads_completion_callback_for_testing_)
+        .Run(preloaded_resources_);
+  }
+
   // TODO(crbug.com/671310): Consider to delete `this` when there is no inflight
   // preloads.
 }

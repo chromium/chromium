@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_LOADER_NAVIGATION_EARLY_HINTS_MANAGER_H_
 #define CONTENT_BROWSER_LOADER_NAVIGATION_EARLY_HINTS_MANAGER_H_
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -34,6 +35,8 @@ class BrowserContext;
 // until inflight preloads finish.
 class CONTENT_EXPORT NavigationEarlyHintsManager {
  public:
+  using PreloadedResources = base::flat_map<GURL, /*error_code*/ int>;
+
   NavigationEarlyHintsManager(
       BrowserContext& browser_context,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
@@ -53,6 +56,9 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   // preloading it if preloading hasn't started for the same URL.
   void HandleEarlyHints(network::mojom::EarlyHintsPtr early_hints,
                         const network::ResourceRequest& navigation_request);
+
+  void WaitForPreloadsFinishedForTesting(
+      base::OnceCallback<void(PreloadedResources)> callback);
 
  private:
   void MaybePreloadHintedResource(
@@ -82,7 +88,10 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   // Early Hints preloads should be requested for critical subresources such as
   // style sheets and fonts.
   base::flat_map<GURL, std::unique_ptr<InflightPreload>> inflight_preloads_;
-  base::flat_map<GURL, /*error_code*/ int> preloaded_resources_;
+  PreloadedResources preloaded_resources_;
+
+  base::OnceCallback<void(PreloadedResources)>
+      preloads_completion_callback_for_testing_;
 };
 
 }  // namespace content
