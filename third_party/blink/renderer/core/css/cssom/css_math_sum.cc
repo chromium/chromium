@@ -57,23 +57,23 @@ CSSMathSum* CSSMathSum::Create(const HeapVector<CSSNumberish>& args,
     return nullptr;
   }
 
-  CSSMathSum* result = Create(CSSNumberishesToNumericValues(args));
-  if (!result) {
-    exception_state.ThrowTypeError("Incompatible types");
-    return nullptr;
-  }
-
-  return result;
+  return Create(CSSNumberishesToNumericValues(args), exception_state);
 }
 
-CSSMathSum* CSSMathSum::Create(CSSNumericValueVector values) {
+CSSMathSum* CSSMathSum::Create(CSSNumericValueVector values,
+                               ExceptionState& exception_state) {
   bool error = false;
   CSSNumericValueType final_type =
       CSSMathVariadic::TypeCheck(values, CSSNumericValueType::Add, error);
-  return error ? nullptr
-               : MakeGarbageCollected<CSSMathSum>(
-                     MakeGarbageCollected<CSSNumericArray>(std::move(values)),
-                     final_type);
+  CSSMathSum* result =
+      error ? nullptr
+            : MakeGarbageCollected<CSSMathSum>(
+                  MakeGarbageCollected<CSSNumericArray>(std::move(values)),
+                  final_type);
+  if (!result)
+    exception_state.ThrowTypeError("Incompatible types");
+
+  return result;
 }
 
 base::Optional<CSSNumericSumValue> CSSMathSum::SumValue() const {

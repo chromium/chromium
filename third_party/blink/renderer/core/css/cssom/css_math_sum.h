@@ -19,7 +19,8 @@ class CORE_EXPORT CSSMathSum final : public CSSMathVariadic {
   static CSSMathSum* Create(const HeapVector<CSSNumberish>& args,
                             ExceptionState&);
   // Blink-internal constructor.
-  static CSSMathSum* Create(CSSNumericValueVector);
+  static CSSMathSum* Create(CSSNumericValueVector,
+                            ExceptionState& = ASSERT_NO_EXCEPTION);
 
   CSSMathSum(CSSNumericArray* values, const CSSNumericValueType& type)
       : CSSMathVariadic(values, type) {}
