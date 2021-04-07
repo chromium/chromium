@@ -8,7 +8,6 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -27,18 +26,9 @@ SodaInstaller::SodaInstaller() = default;
 
 SodaInstaller::~SodaInstaller() = default;
 
-void SodaInstaller::InitForProfileIfAppropriate(Profile* profile) {
+void SodaInstaller::Init(Profile* profile) {
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
     return;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Exclude signin profile because Live Captions can only be used when
-  // signed in with a regular profile.
-  // TODO(crbug.com/1173135): Dictation is available on signin profile, so
-  // we should not return early here when Dictation is enabled.
-  if (ash::ProfileHelper::IsSigninProfile(profile))
-    return;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   PrefService* prefs = profile->GetPrefs();
   if (IsAnyFeatureUsingSodaEnabled(prefs)) {
