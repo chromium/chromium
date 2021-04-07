@@ -16,7 +16,7 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
-import org.chromium.chrome.browser.language.settings.AvailableUiLanguages;
+import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.lang.annotation.Retention;
@@ -94,9 +94,9 @@ public class ChromeLocalizationUtils {
             topAndroidLanguage =
                     LocaleUtils.toLanguage(LocaleList.getDefault().get(0).toLanguageTag());
         }
-        boolean isDefaultLanguageAvailable = AvailableUiLanguages.isAvailable(defaultLanguage);
+        boolean isDefaultLanguageAvailable = LanguageItem.isAvailableUiLanguage(defaultLanguage);
         boolean isTopAndroidLanguageAvailable =
-                AvailableUiLanguages.isAvailable(topAndroidLanguage);
+                LanguageItem.isAvailableUiLanguage(topAndroidLanguage);
 
         // The java and native UI languages can be different if the native language plack is not
         // correctly installed through the Play Store.
