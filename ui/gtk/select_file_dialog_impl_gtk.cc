@@ -28,6 +28,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_delegate.h"
 #include "ui/gtk/gtk_util.h"
@@ -36,14 +37,15 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
+namespace gtk {
+
 namespace {
 
-#if BUILDFLAG(GTK_VERSION) >= 4
 // TODO(https://crbug.com/981309): These getters will be unnecessary after
 // migrating to GtkFileChooserNative.
 const char* GettextPackage() {
   static base::NoDestructor<std::string> gettext_package(
-      "gtk" + base::NumberToString(BUILDFLAG(GTK_VERSION)) + "0");
+      "gtk" + base::NumberToString(GtkVersion().components()[0]) + "0");
   return gettext_package->c_str();
 }
 
@@ -52,34 +54,25 @@ const char* GtkGettext(const char* str) {
 }
 
 const char* GetCancelLabel() {
+  if (!GtkCheckVersion(4))
+    return "gtk-cancel";  // In GTK3, this is GTK_STOCK_CANCEL.
   static const char* cancel = GtkGettext("_Cancel");
   return cancel;
 }
 
 const char* GetOpenLabel() {
+  if (!GtkCheckVersion(4))
+    return "gtk-open";  // In GTK3, this is GTK_STOCK_OPEN.
   static const char* open = GtkGettext("_Open");
   return open;
 }
 
 const char* GetSaveLabel() {
+  if (!GtkCheckVersion(4))
+    return "gtk-save";  // In GTK3, this is GTK_STOCK_SAVE.
   static const char* save = GtkGettext("_Save");
   return save;
 }
-#else
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-const char* GetCancelLabel() {
-  return GTK_STOCK_CANCEL;
-}
-
-const char* GetOpenLabel() {
-  return GTK_STOCK_OPEN;
-}
-
-const char* GetSaveLabel() {
-  return GTK_STOCK_SAVE;
-}
-G_GNUC_END_IGNORE_DEPRECATIONS
-#endif
 
 // Runs DesktopWindowTreeHostLinux::EnableEventListening() when the file-picker
 // is closed.
@@ -88,100 +81,88 @@ void OnFilePickerDestroy(base::OnceClosure* callback_raw) {
   std::move(*callback).Run();
 }
 
-void GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
-                                    const base::FilePath& path) {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  auto file = TakeGObject(g_file_new_for_path(path.value().c_str()));
-  gtk_file_chooser_set_current_folder(dialog, file, nullptr);
-#else
-  gtk_file_chooser_set_current_folder(dialog, path.value().c_str());
-#endif
-}
-
 void GtkFileChooserSetFilename(GtkFileChooser* dialog,
                                const base::FilePath& path) {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  auto file = TakeGObject(g_file_new_for_path(path.value().c_str()));
-  gtk_file_chooser_set_file(dialog, file, nullptr);
-#else
-  gtk_file_chooser_set_filename(dialog, path.value().c_str());
-#endif
+  if (GtkCheckVersion(4)) {
+    auto file = TakeGObject(g_file_new_for_path(path.value().c_str()));
+    gtk_file_chooser_set_file(dialog, file, nullptr);
+  } else {
+    gtk_file_chooser_set_filename(dialog, path.value().c_str());
+  }
 }
 
 int GtkDialogSelectedFilterIndex(GtkWidget* dialog) {
   GtkFileFilter* selected_filter =
       gtk_file_chooser_get_filter(GTK_FILE_CHOOSER(dialog));
-#if BUILDFLAG(GTK_VERSION) >= 4
-  auto filters =
-      TakeGObject(gtk_file_chooser_get_filters(GTK_FILE_CHOOSER(dialog)));
-  int size = g_list_model_get_n_items(filters);
   int idx = -1;
-  for (; idx < size; ++idx) {
-    if (g_list_model_get_item(filters, idx) == selected_filter)
-      break;
+  if (GtkCheckVersion(4)) {
+    auto filters =
+        TakeGObject(gtk_file_chooser_get_filters(GTK_FILE_CHOOSER(dialog)));
+    int size = g_list_model_get_n_items(filters);
+    for (; idx < size; ++idx) {
+      if (g_list_model_get_item(filters, idx) == selected_filter)
+        break;
+    }
+  } else {
+    GSList* filters = gtk_file_chooser_list_filters(GTK_FILE_CHOOSER(dialog));
+    idx = g_slist_index(filters, selected_filter);
+    g_slist_free(filters);
   }
-#else
-  GSList* filters = gtk_file_chooser_list_filters(GTK_FILE_CHOOSER(dialog));
-  int idx = g_slist_index(filters, selected_filter);
-  g_slist_free(filters);
-#endif
   return idx;
 }
 
 std::string GtkFileChooserGetFilename(GtkWidget* dialog) {
   const char* filename = nullptr;
-#if BUILDFLAG(GTK_VERSION) >= 4
-  auto file = TakeGObject(gtk_file_chooser_get_file(GTK_FILE_CHOOSER(dialog)));
-  if (file)
-    filename = g_file_peek_path(file);
-#else
   struct GFreeDeleter {
     void operator()(gchar* ptr) const { g_free(ptr); }
   };
-  std::unique_ptr<gchar, GFreeDeleter> gchar_filename(
-      gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
-  filename = gchar_filename.get();
-#endif
+  std::unique_ptr<gchar, GFreeDeleter> gchar_filename;
+  if (GtkCheckVersion(4)) {
+    if (auto file =
+            TakeGObject(gtk_file_chooser_get_file(GTK_FILE_CHOOSER(dialog)))) {
+      filename = g_file_peek_path(file);
+    }
+  } else {
+    gchar_filename = std::unique_ptr<gchar, GFreeDeleter>(
+        gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
+    filename = gchar_filename.get();
+  }
   return filename ? std::string(filename) : std::string();
 }
 
 std::vector<base::FilePath> GtkFileChooserGetFilenames(GtkWidget* dialog) {
   std::vector<base::FilePath> filenames_fp;
-#if BUILDFLAG(GTK_VERSION) >= 4
-  auto files =
-      TakeGObject(gtk_file_chooser_get_files(GTK_FILE_CHOOSER(dialog)));
-  auto size = g_list_model_get_n_items(files);
-  for (unsigned int i = 0; i < size; ++i) {
-    auto file = TakeGObject(G_FILE(g_list_model_get_object(files, i)));
-    filenames_fp.emplace_back(g_file_peek_path(file));
+  if (GtkCheckVersion(4)) {
+    auto files = Gtk4FileChooserGetFiles(GTK_FILE_CHOOSER(dialog));
+    auto size = g_list_model_get_n_items(files);
+    for (unsigned int i = 0; i < size; ++i) {
+      auto file = TakeGObject(G_FILE(g_list_model_get_object(files, i)));
+      filenames_fp.emplace_back(g_file_peek_path(file));
+    }
+  } else {
+    GSList* filenames =
+        gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(dialog));
+    if (!filenames)
+      return {};
+    for (GSList* iter = filenames; iter != nullptr; iter = g_slist_next(iter)) {
+      base::FilePath path(static_cast<char*>(iter->data));
+      g_free(iter->data);
+      filenames_fp.push_back(path);
+    }
+    g_slist_free(filenames);
   }
-#else
-  GSList* filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(dialog));
-  if (!filenames)
-    return {};
-  for (GSList* iter = filenames; iter != nullptr; iter = g_slist_next(iter)) {
-    base::FilePath path(static_cast<char*>(iter->data));
-    g_free(iter->data);
-    filenames_fp.push_back(path);
-  }
-  g_slist_free(filenames);
-#endif
   return filenames_fp;
 }
 
 }  // namespace
 
-namespace gtk {
-
-#if BUILDFLAG(GTK_VERSION) < 4
 // The size of the preview we display for selected image files. We set height
 // larger than width because generally there is more free space vertically
 // than horiztonally (setting the preview image will always expand the width of
 // the dialog, but usually not the height). The image's aspect ratio will always
-// be preserved.
+// be preserved.  Only used on GTK3.
 static const int kPreviewWidth = 256;
 static const int kPreviewHeight = 512;
-#endif
 
 SelectFileDialogImpl* SelectFileDialogImpl::NewSelectFileDialogImplGTK(
     Listener* listener,
@@ -275,22 +256,22 @@ void SelectFileDialogImplGTK::SelectFileImpl(
       NOTREACHED();
       return;
   }
-#if BUILDFLAG(GTK_VERSION) >= 4
-  gtk_window_set_hide_on_close(GTK_WINDOW(dialog), true);
-#else
-  g_signal_connect(dialog, "delete-event",
-                   G_CALLBACK(gtk_widget_hide_on_delete), nullptr);
-#endif
+  if (GtkCheckVersion(4)) {
+    gtk_window_set_hide_on_close(GTK_WINDOW(dialog), true);
+  } else {
+    g_signal_connect(dialog, "delete-event",
+                     G_CALLBACK(gtk_widget_hide_on_delete), nullptr);
+  }
 
   dialogs_[dialog] = g_signal_connect(
       dialog, "destroy", G_CALLBACK(OnFileChooserDestroyThunk), this);
 
-#if BUILDFLAG(GTK_VERSION) < 4
-  preview_ = gtk_image_new();
-  g_signal_connect(dialog, "update-preview", G_CALLBACK(OnUpdatePreviewThunk),
-                   this);
-  gtk_file_chooser_set_preview_widget(GTK_FILE_CHOOSER(dialog), preview_);
-#endif
+  if (!GtkCheckVersion(4)) {
+    preview_ = gtk_image_new();
+    g_signal_connect(dialog, "update-preview", G_CALLBACK(OnUpdatePreviewThunk),
+                     this);
+    gtk_file_chooser_set_preview_widget(GTK_FILE_CHOOSER(dialog), preview_);
+  }
 
   params_map_[dialog] = params;
 
@@ -316,9 +297,8 @@ void SelectFileDialogImplGTK::SelectFileImpl(
     }
   }
 
-#if BUILDFLAG(GTK_VERSION) < 4
-  gtk_widget_show_all(dialog);
-#endif
+  if (!GtkCheckVersion(4))
+    gtk_widget_show_all(dialog);
   gtk::GtkUi::GetDelegate()->ShowGtkWindow(GTK_WINDOW(dialog));
 }
 
@@ -544,10 +524,10 @@ GtkWidget* SelectFileDialogImplGTK::CreateSaveAsDialog(
   }
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog), FALSE);
   // Overwrite confirmation is always enabled in GTK4.
-#if BUILDFLAG(GTK_VERSION) < 4
-  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog),
-                                                 TRUE);
-#endif
+  if (!GtkCheckVersion(4)) {
+    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog),
+                                                   TRUE);
+  }
   g_signal_connect(dialog, "response",
                    G_CALLBACK(OnSelectSingleFileDialogResponseThunk), this);
   return dialog;
@@ -647,8 +627,8 @@ void SelectFileDialogImplGTK::OnFileChooserDestroy(GtkWidget* dialog) {
   }
 }
 
-#if BUILDFLAG(GTK_VERSION) < 4
 void SelectFileDialogImplGTK::OnUpdatePreview(GtkWidget* chooser) {
+  DCHECK(!GtkCheckVersion(4));
   gchar* filename =
       gtk_file_chooser_get_preview_filename(GTK_FILE_CHOOSER(chooser));
   if (!filename) {
@@ -678,6 +658,5 @@ void SelectFileDialogImplGTK::OnUpdatePreview(GtkWidget* chooser) {
   gtk_file_chooser_set_preview_widget_active(GTK_FILE_CHOOSER(chooser),
                                              pixbuf ? TRUE : FALSE);
 }
-#endif
 
 }  // namespace gtk

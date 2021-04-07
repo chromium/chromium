@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
+#include "base/no_destructor.h"
 #include "ui/gtk/gtk_stubs.h"
 
 namespace gtk {
@@ -33,6 +34,11 @@ void* DlSym(void* library, const char* name) {
 template <typename T>
 auto DlCast(void* symbol) {
   return reinterpret_cast<T*>(symbol);
+}
+
+void* GetLibGio() {
+  static void* libgio = DlOpen("libgio-2.0.so.0");
+  return libgio;
 }
 
 void* GetLibGdkPixbuf() {
@@ -73,6 +79,11 @@ bool LoadGtk(int gtk_version) {
     ui_gtk::InitializeGdk(GetLibGdk3());
     ui_gtk::InitializeGtk(GetLibGtk3());
   } else {
+    // In GTK4 mode, we require some newer gio symbols that aren't available in
+    // Ubuntu Xenial or Debian Stretch.  Fortunately, GTK4 itself depends on a
+    // newer version of glib (which provides gio), so if we're using GTK4, we
+    // can safely assume the system has the required gio symbols.
+    ui_gtk::InitializeGio(GetLibGio());
     // In GTK4, libgtk provides all gdk_*, gsk_*, and gtk_* symbols.
     ui_gtk::InitializeGdk(GetLibGtk4());
     ui_gtk::InitializeGsk(GetLibGtk4());
@@ -81,11 +92,15 @@ bool LoadGtk(int gtk_version) {
   return true;
 }
 
+const base::Version& GtkVersion() {
+  static base::NoDestructor<base::Version> gtk_version(
+      std::vector<uint32_t>{gtk_get_major_version(), gtk_get_minor_version(),
+                            gtk_get_micro_version()});
+  return *gtk_version;
+}
+
 bool GtkCheckVersion(int major, int minor, int micro) {
-  static auto version =
-      std::make_tuple(gtk_get_major_version(), gtk_get_minor_version(),
-                      gtk_get_micro_version());
-  return version >= std::make_tuple(major, minor, micro);
+  return GtkVersion() >= base::Version({major, minor, micro});
 }
 
 DISABLE_CFI_ICALL
@@ -137,6 +152,25 @@ bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event) {
         context, reinterpret_cast<GdkEvent*>(event));
   }
   return DlCast<bool(GtkIMContext*, GdkEventKey*)>(filter)(context, event);
+}
+
+DISABLE_CFI_ICALL
+bool GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
+                                    const base::FilePath& path) {
+  static void* set = DlSym(GetLibGtk(), "gtk_file_chooser_set_current_folder");
+  if (GtkCheckVersion(4)) {
+    auto file = TakeGObject(g_file_new_for_path(path.value().c_str()));
+    return DlCast<bool(GtkFileChooser*, GFile*, GError**)>(set)(dialog, file,
+                                                                nullptr);
+  }
+  return DlCast<bool(GtkFileChooser*, const gchar*)>(set)(dialog,
+                                                          path.value().c_str());
+}
+
+ScopedGObject<GListModel> Gtk4FileChooserGetFiles(GtkFileChooser* dialog) {
+  DCHECK(GtkCheckVersion(4));
+  static void* get = DlSym(GetLibGtk(), "gtk_file_chooser_get_files");
+  return TakeGObject(DlCast<GListModel*(GtkFileChooser*)>(get)(dialog));
 }
 
 void GtkStyleContextGetStyle(GtkStyleContext* context, ...) {

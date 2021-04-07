@@ -5,13 +5,17 @@
 #ifndef UI_GTK_GTK_COMPAT_H_
 #define UI_GTK_GTK_COMPAT_H_
 
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk/gdk.h>
+#include <gio/gio.h>
 #include <gtk/gtk.h>
 
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/files/file_path.h"
+#include "base/version.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gtk/gtk_types.h"
@@ -19,6 +23,7 @@
 extern "C" {
 #include "ui/gtk/gdk.sigs"
 #include "ui/gtk/gdk_pixbuf.sigs"
+#include "ui/gtk/gio.sigs"
 #include "ui/gtk/gsk.sigs"
 #include "ui/gtk/gtk.sigs"
 }
@@ -27,6 +32,8 @@ namespace gtk {
 
 // Loads libgtk and related libraries and returns true on success.
 COMPONENT_EXPORT(GTK) bool LoadGtk(int gtk_version);
+
+const base::Version& GtkVersion();
 
 // Returns true iff the runtime version of Gtk used meets
 // |major|.|minor|.|micro|. LoadGtk() must have been called
@@ -41,6 +48,11 @@ void GtkInit(const std::vector<std::string>& args);
 gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context);
 
 bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event);
+
+bool GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
+                                    const base::FilePath& path);
+
+ScopedGObject<GListModel> Gtk4FileChooserGetFiles(GtkFileChooser* dialog);
 
 ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGicon(GtkIconTheme* theme,
                                                       GIcon* icon,

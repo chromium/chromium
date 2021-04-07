@@ -124,22 +124,19 @@ class SelectFileDialogImplGTK : public SelectFileDialogImpl,
                      OnFileChooserDestroy,
                      GtkWidget*);
 
-#if BUILDFLAG(GTK_VERSION) < 4
-  // Callback for when we update the preview for the selection.
+  // Callback for when we update the preview for the selection. Only used on
+  // GTK3.
   CHROMEG_CALLBACK_0(SelectFileDialogImplGTK,
                      void,
                      OnUpdatePreview,
                      GtkWidget*);
-#endif
 
   // A map from dialog windows to the |params| user data associated with them.
   std::map<GtkWidget*, void*> params_map_;
 
-  // GTK4 provides its own preview.
-#if BUILDFLAG(GTK_VERSION) < 4
+  // Only used on GTK3 since GTK4 provides its own preview.
   // The GtkImage widget for showing previews of selected images.
   GtkWidget* preview_ = nullptr;
-#endif
 
   // Maps from dialogs to signal handler IDs.
   std::map<GtkWidget*, unsigned long> dialogs_;

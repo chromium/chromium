@@ -32,6 +32,7 @@ generate_stubs("gtk_stubs") {
     "gdk.sigs",
     "gsk.sigs",
     "gtk.sigs",
+    "gio.sigs",
   ]
   extra_header = "gtk.fragment"
   output_name = "gtk_stubs"
