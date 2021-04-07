@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/virtual_machines/virtual_machines_util.h"
+#include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/settings/cros_settings_names.h"
