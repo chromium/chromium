@@ -56,10 +56,8 @@ TEST_F(AutofillCreditCardPolicyHandlerTest, Disabled) {
   EXPECT_TRUE(
       prefs.GetValue(autofill::prefs::kAutofillCreditCardEnabled, &value));
   ASSERT_TRUE(value);
-  bool autofill_credt_card_enabled = true;
-  bool result = value->GetAsBoolean(&autofill_credt_card_enabled);
-  ASSERT_TRUE(result);
-  EXPECT_FALSE(autofill_credt_card_enabled);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 }
 
 }  // namespace autofill

@@ -34,8 +34,7 @@ void AutofillPolicyHandler::ApplyPolicySettings(
   }
 
   const base::Value* value = policies.GetValue(policy_name());
-  bool autofill_enabled;
-  if (value && value->GetAsBoolean(&autofill_enabled) && !autofill_enabled) {
+  if (value && value->is_bool() && !value->GetBool()) {
     prefs->SetBoolean(autofill::prefs::kAutofillEnabledDeprecated, false);
     // Disable the fine-grained prefs if the main pref is disabled by policy.
     prefs->SetBoolean(autofill::prefs::kAutofillCreditCardEnabled, false);

@@ -55,10 +55,8 @@ TEST_F(AutofillAddressPolicyHandlerTest, Disabled) {
   const base::Value* value = nullptr;
   EXPECT_TRUE(prefs.GetValue(autofill::prefs::kAutofillProfileEnabled, &value));
   ASSERT_TRUE(value);
-  bool autofill_profile_enabled = true;
-  bool result = value->GetAsBoolean(&autofill_profile_enabled);
-  ASSERT_TRUE(result);
-  EXPECT_FALSE(autofill_profile_enabled);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 }
 
 }  // namespace autofill
