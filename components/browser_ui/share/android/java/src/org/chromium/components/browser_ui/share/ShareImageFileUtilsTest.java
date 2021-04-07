@@ -37,6 +37,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.FileProviderHelper;
+import org.chromium.chrome.browser.share.clipboard.ClipboardImageFileProvider;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
@@ -83,6 +84,7 @@ public class ShareImageFileUtilsTest extends DummyUiActivityTestCase {
         super.setUpTest();
         Looper.prepare();
         ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
+        Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
     }
 
     @Override

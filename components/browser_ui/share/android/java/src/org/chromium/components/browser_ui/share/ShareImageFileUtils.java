@@ -81,7 +81,7 @@ public class ShareImageFileUtils {
      * @return The file name if system clipboard contains a Uri from Chrome, otherwise return null.
      */
     private static String getClipboardCurrentFilepath() throws IOException {
-        Uri clipboardUri = Clipboard.getInstance().getImageUri();
+        Uri clipboardUri = Clipboard.getInstance().getImageUriIfSharedByThisApp();
         if (isUriInDirectory(clipboardUri, getSharedFilesDirectory())) {
             return clipboardUri.getPath();
         }

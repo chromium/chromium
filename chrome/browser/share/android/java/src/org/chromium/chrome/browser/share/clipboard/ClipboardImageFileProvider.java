@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.clipboard;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.CLIPBOARD_SHARED_URI;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.CLIPBOARD_SHARED_URI_TIMESTAMP;
 
 import android.net.Uri;
 import android.text.TextUtils;
@@ -28,21 +29,29 @@ public class ClipboardImageFileProvider implements Clipboard.ImageFileProvider {
     }
 
     @Override
-    public void storeLastCopiedImageUri(@NonNull Uri uri) {
-        SharedPreferencesManager.getInstance().writeString(CLIPBOARD_SHARED_URI, uri.toString());
+    public void storeLastCopiedImageMetadata(@NonNull ClipboardFileMetadata clipboardFileMetadata) {
+        SharedPreferencesManager.getInstance().writeString(
+                CLIPBOARD_SHARED_URI, clipboardFileMetadata.uri.toString());
+        SharedPreferencesManager.getInstance().writeLong(
+                CLIPBOARD_SHARED_URI_TIMESTAMP, clipboardFileMetadata.timestamp);
     }
 
     @Override
-    public @Nullable Uri getLastCopiedImageUri() {
+    public @Nullable ClipboardFileMetadata getLastCopiedImageMetadata() {
         String uriString =
                 SharedPreferencesManager.getInstance().readString(CLIPBOARD_SHARED_URI, null);
         if (TextUtils.isEmpty(uriString)) return null;
 
-        return Uri.parse(uriString);
+        Uri uri = Uri.parse(uriString);
+        long timestamp =
+                SharedPreferencesManager.getInstance().readLong(CLIPBOARD_SHARED_URI_TIMESTAMP);
+
+        return new ClipboardFileMetadata(uri, timestamp);
     }
 
     @Override
-    public void clearLastCopiedImageUri() {
+    public void clearLastCopiedImageMetadata() {
         SharedPreferencesManager.getInstance().removeKey(CLIPBOARD_SHARED_URI);
+        SharedPreferencesManager.getInstance().removeKey(CLIPBOARD_SHARED_URI_TIMESTAMP);
     }
 }

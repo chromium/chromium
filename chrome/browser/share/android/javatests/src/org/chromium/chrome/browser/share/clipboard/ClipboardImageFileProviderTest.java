@@ -94,6 +94,8 @@ public class ClipboardImageFileProviderTest {
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(Clipboard.getInstance().getImageUri(), Matchers.notNullValue());
+            Criteria.checkThat(Clipboard.getInstance().getImageUriIfSharedByThisApp(),
+                    Matchers.is(Clipboard.getInstance().getImageUri()));
         });
 
         // Make sure Clipboard::getImage is call on non UI thread.

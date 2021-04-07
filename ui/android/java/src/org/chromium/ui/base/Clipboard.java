@@ -66,10 +66,22 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
 
     private ImageFileProvider mImageFileProvider;
 
+    private ImageFileProvider.ClipboardFileMetadata mPendingCopiedImageMetadata;
+
     /**
      * Interface to be implemented for sharing image through FileProvider.
      */
     public interface ImageFileProvider {
+        /** The helper class to load Clipboard file metadata. */
+        public class ClipboardFileMetadata {
+            public static final long INVALID_TIMESTAMP = 0;
+            public final Uri uri;
+            public final long timestamp;
+            public ClipboardFileMetadata(Uri uri, long timestamp) {
+                this.uri = uri;
+                this.timestamp = timestamp;
+            }
+        }
         /**
          * Saves the given set of image bytes and provides that URI to a callback for
          * sharing the image.
@@ -82,21 +94,25 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
                 final byte[] imageData, String fileExtension, Callback<Uri> callback);
 
         /**
-         * Store the last image uri we put in the sytstem clipboard, this is special case for
-         * Android O.
+         * Store the last image uri and its timestamp we put in the sytstem clipboard.
+         * On Android O and O_MR1, URI is stored for revoking permissions later.
+         * @param clipboardFileMetadata The metadata needs to be stored.
          */
-        void storeLastCopiedImageUri(@NonNull Uri uri);
+        void storeLastCopiedImageMetadata(@NonNull ClipboardFileMetadata clipboardFileMetadata);
 
         /**
-         * Get stored the last image uri, this is special case for Android O.
+         * Get stored the last image uri and its timestamp.
          */
         @Nullable
-        Uri getLastCopiedImageUri();
+        ClipboardFileMetadata getLastCopiedImageMetadata();
 
         /**
-         * Clear the image uri which stored by |storeLastCopiedImageUri|.
+         * Clear the image uri and its timestamp which are stored by |storeLastCopiedImageMetadata|.
+         * This can be called any time after the system clipboard does not contain the uri we
+         * stored. On Android O and O_MR1, this can be called either after the permission is
+         * revoked.
          */
-        void clearLastCopiedImageUri();
+        void clearLastCopiedImageMetadata();
     }
 
     /**
@@ -251,6 +267,41 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         }
     }
 
+    /**
+     * Return the image URI in the system clipboard if the URI is shared by this app
+     */
+    public @Nullable Uri getImageUriIfSharedByThisApp() {
+        if (mImageFileProvider == null) return null;
+
+        ImageFileProvider.ClipboardFileMetadata imageMetadata =
+                mImageFileProvider.getLastCopiedImageMetadata();
+        if (imageMetadata == null || imageMetadata.uri == null) return null;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            // ClipDescription#getTimestamp() only exist in O+, so we just check if getImageUri()
+            // same as the stored URI.
+            if (!imageMetadata.uri.equals(getImageUri())) {
+                mImageFileProvider.clearLastCopiedImageMetadata();
+                return null;
+            }
+            return imageMetadata.uri;
+        }
+
+        long clipboardTimeStamp = getImageTimestamp();
+        if (clipboardTimeStamp == ImageFileProvider.ClipboardFileMetadata.INVALID_TIMESTAMP
+                || mImageFileProvider == null) {
+            return null;
+        }
+
+        if (clipboardTimeStamp != imageMetadata.timestamp) {
+            // The system clipboard does not contain uri from us, we can clean up the data.
+            mImageFileProvider.clearLastCopiedImageMetadata();
+            return null;
+        }
+
+        return imageMetadata.uri;
+    }
+
     @CalledByNative
     private String getImageUriString() {
         Uri uri = getImageUri();
@@ -290,6 +341,24 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
 
     private static boolean hasImageMimeType(ClipDescription description) {
         return (description != null) && (description.hasMimeType("image/*"));
+    }
+
+    /**
+     * Return the timestamp for the content in the clipboard if the clipboard contains an image.
+     * return 0 on Android Pre O since the ClipDescription#getTimestamp() only exist in O+.
+     */
+    private long getImageTimestamp() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            // ClipDescription#getTimestamp() only exist in O+, so we just return 0.
+            return ImageFileProvider.ClipboardFileMetadata.INVALID_TIMESTAMP;
+        }
+
+        ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+        if (description == null || !description.hasMimeType("image/*")) {
+            return ImageFileProvider.ClipboardFileMetadata.INVALID_TIMESTAMP;
+        }
+
+        return ApiHelperForO.getTimestamp(description);
     }
 
     /**
@@ -342,6 +411,23 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
             @Override
             protected void onPostExecute(ClipData clipData) {
                 setPrimaryClipNoException(clipData);
+
+                // Storing timestamp is for avoiding accessing the system clipboard data, which may
+                // cause the clipboard access notification to show up, when we try to clean up the
+                // image file. There is a small chance that the clipboard image is updated between
+                // |setPrimaryClipNoException| and |getImageTimestamp|, and we will get a wrong
+                // timestamp. But it is okay since the timestamp is for deciding if the image file
+                // need to be deleted. If the timestamp is wrong here, we just keep the image file a
+                // little longer than expected.
+                long imageTimestamp = getImageTimestamp();
+
+                if (mImageFileProvider == null) {
+                    mPendingCopiedImageMetadata =
+                            new ImageFileProvider.ClipboardFileMetadata(uri, imageTimestamp);
+                } else {
+                    mImageFileProvider.storeLastCopiedImageMetadata(
+                            new ImageFileProvider.ClipboardFileMetadata(uri, imageTimestamp));
+                }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -407,6 +493,11 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
      */
     public void setImageFileProvider(ImageFileProvider imageFileProvider) {
         mImageFileProvider = imageFileProvider;
+
+        if (mPendingCopiedImageMetadata != null) {
+            mImageFileProvider.storeLastCopiedImageMetadata(mPendingCopiedImageMetadata);
+            mPendingCopiedImageMetadata = null;
+        }
     }
 
     /**
@@ -481,8 +572,6 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
             return;
         }
 
-        // Cache the Uri for revoking permission later.
-        mImageFileProvider.storeLastCopiedImageUri(uri);
         List<PackageInfo> installedPackages = mContext.getPackageManager().getInstalledPackages(0);
         for (PackageInfo installedPackage : installedPackages) {
             mContext.grantUriPermission(
@@ -511,18 +600,22 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
             return;
         }
 
-        Uri uri = mImageFileProvider.getLastCopiedImageUri();
+        ImageFileProvider.ClipboardFileMetadata imageMetadata =
+                mImageFileProvider.getLastCopiedImageMetadata();
         // Exit early if the URI is empty or event onPrimaryClipChanges was caused by sharing
         // image.
-        if (uri == null || uri.equals(Uri.EMPTY) || uri.equals(getImageUri())) return;
+        if (imageMetadata == null || imageMetadata.uri == null
+                || imageMetadata.uri.equals(Uri.EMPTY) || imageMetadata.uri.equals(getImageUri())) {
+            return;
+        }
 
         // https://developer.android.com/reference/android/content/Context#revokeUriPermission(android.net.Uri,%20int)
         // According to the above link, it is not necessary to enumerate all of the packages like
         // what was done in |grantUriPermission|. Context#revokeUriPermission(Uri, int) will revoke
         // all permissions.
-        mContext.revokeUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        mContext.revokeUriPermission(imageMetadata.uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         // Clear uri to avoid revoke over and over.
-        mImageFileProvider.clearLastCopiedImageUri();
+        mImageFileProvider.clearLastCopiedImageMetadata();
     }
 
     /**

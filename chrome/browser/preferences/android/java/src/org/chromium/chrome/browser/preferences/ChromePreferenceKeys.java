@@ -98,11 +98,12 @@ public final class ChromePreferenceKeys {
      */
     public static final String CHROME_DEFAULT_BROWSER = "applink.chrome_default_browser";
 
-    /**
-     * The URI of Chrome shared to Android system clibpoard, we only need this preference for the
-     * Android O and O_MR1 version.
-     */
+    /** The URI of Chrome shared URI to Android system clibpoard. */
     public static final String CLIPBOARD_SHARED_URI = "Chrome.Clipboard.SharedUri";
+
+    /** The timestamp of Chrome shared URI to Android system clibpoard. */
+    public static final String CLIPBOARD_SHARED_URI_TIMESTAMP =
+            "Chrome.Clipboard.SharedUriTimestamp";
 
     /**
      * Save the timestamp of the last time that chrome-managed commerce subscriptions are
@@ -953,6 +954,7 @@ public final class ChromePreferenceKeys {
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP,
                 APPLICATION_OVERRIDE_LANGUAGE,
                 CLIPBOARD_SHARED_URI,
+                CLIPBOARD_SHARED_URI_TIMESTAMP,
                 COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP,
                 CONDITIONAL_TAB_STRIP_CONTINUOUS_DISMISS_COUNTER,
                 CONDITIONAL_TAB_STRIP_FEATURE_STATUS,
