@@ -944,7 +944,11 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
                                           const ports::NodeName& broker_name,
                                           PlatformHandle broker_channel,
                                           const uint64_t broker_capabilities) {
-  DCHECK(!GetConfiguration().is_broker_process);
+  if (GetConfiguration().is_broker_process) {
+    // The broker should never receive this message from anyone.
+    DropPeer(from_node, nullptr);
+    return;
+  }
 
   // This node should already have an inviter in bootstrap mode.
   ports::NodeName inviter_name;
@@ -955,8 +959,13 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
     inviter = bootstrap_inviter_channel_;
     bootstrap_inviter_channel_ = nullptr;
   }
-  DCHECK(inviter_name == from_node);
-  DCHECK(inviter);
+
+  if (inviter_name != from_node || !inviter ||
+      broker_name == ports::kInvalidNodeName) {
+    // We are not expecting this message. Assume the source is hostile.
+    DropPeer(from_node, nullptr);
+    return;
+  }
 
   base::queue<ports::NodeName> pending_broker_clients;
   std::unordered_map<ports::NodeName, OutgoingMessageQueue>
@@ -967,16 +976,13 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
     std::swap(pending_broker_clients, pending_broker_clients_);
     std::swap(pending_relay_messages, pending_relay_messages_);
   }
-  DCHECK(broker_name != ports::kInvalidNodeName);
 
   // It's now possible to add both the broker and the inviter as peers.
   // Note that the broker and inviter may be the same node.
   scoped_refptr<NodeChannel> broker;
   if (broker_name == inviter_name) {
-    DCHECK(!broker_channel.is_valid());
     broker = inviter;
-  } else {
-    DCHECK(broker_channel.is_valid());
+  } else if (broker_channel.is_valid()) {
     broker = NodeChannel::Create(
         this,
         ConnectionParams(PlatformChannelEndpoint(std::move(broker_channel))),
@@ -984,6 +990,9 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
         ProcessErrorCallback());
     broker->SetRemoteCapabilities(broker_capabilities);
     AddPeer(broker_name, broker, true /* start_channel */);
+  } else {
+    DropPeer(from_node, nullptr);
+    return;
   }
 
   AddPeer(inviter_name, inviter, false /* start_channel */);
