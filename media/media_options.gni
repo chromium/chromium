@@ -11,32 +11,6 @@ import("//media/gpu/args.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libgav1/options.gni")
 
-# Do not expand this list without double-checking with OWNERS, this is a list of
-# all targets which roll up into the //media component. It controls visibility
-# of subcomponent targets and public_deps for //media.
-media_subcomponent_deps = [
-  "//media/audio",
-  "//media/base",
-
-  # TODO(crbug.com/583067): These files should not be in //media/base.
-  "//media/base/android",
-  "//media/capabilities",
-  "//media/cdm",
-  "//media/device_monitors",
-  "//media/filters",
-  "//media/formats",
-  "//media/muxers",
-  "//media/renderers",
-  "//media/video",
-]
-
-if (is_fuchsia) {
-  media_subcomponent_deps += [
-    "//media/fuchsia/cdm",
-    "//media/fuchsia/common",
-  ]
-}
-
 declare_args() {
   # Allows distributions to link pulseaudio directly (DT_NEEDED) instead of
   # using dlopen. This helps with automated detection of ABI mismatches and
@@ -112,10 +86,6 @@ declare_args() {
 # enable_hls_sample_aes can only be true if enable_mse_mpeg2ts_stream_parser is.
 assert(enable_mse_mpeg2ts_stream_parser || !enable_hls_sample_aes)
 
-if (media_use_ffmpeg) {
-  media_subcomponent_deps += [ "//media/ffmpeg" ]
-}
-
 # Use a second declare_args() to pick up possible overrides of |use_cras|.
 declare_args() {
   # Enables runtime selection of PulseAudio library.
@@ -144,8 +114,8 @@ declare_args() {
   }
 }
 
-# Use another declare_args() to pick up possible overrides of media_use_ffmpeg
-# from --args command line flags. See "gn help declare_args".
+# Use another declare_args() to include possible overrides of media_use_ffmpeg
+# from --args command line flags in the evaluation. See "gn help declare_args".
 declare_args() {
   # On Android, FFMpeg is built without video decoders by default.
   # This flag gives the option to override that decision in case there are no
@@ -258,8 +228,36 @@ declare_args() {
   enable_media_remoting_rpc = enable_media_remoting && !is_android
 }
 
-# TODO(ddorwin): Reorder this file so that all media_subcomponent_deps
-# modifications can be together.
+# Do not expand this list without double-checking with OWNERS, this is a list of
+# all targets which roll up into the //media component. It controls visibility
+# of subcomponent targets and public_deps for //media.
+media_subcomponent_deps = [
+  "//media/audio",
+  "//media/base",
+
+  # TODO(crbug.com/583067): These files should not be in //media/base.
+  "//media/base/android",
+  "//media/capabilities",
+  "//media/cdm",
+  "//media/device_monitors",
+  "//media/filters",
+  "//media/formats",
+  "//media/muxers",
+  "//media/renderers",
+  "//media/video",
+]
+
+if (is_fuchsia) {
+  media_subcomponent_deps += [
+    "//media/fuchsia/cdm",
+    "//media/fuchsia/common",
+  ]
+}
+
+if (media_use_ffmpeg) {
+  media_subcomponent_deps += [ "//media/ffmpeg" ]
+}
+
 if (enable_library_cdms) {
   media_subcomponent_deps += [ "//media/cdm:cdm_type_conversion" ]
 }
