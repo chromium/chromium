@@ -4,6 +4,7 @@
 
 package org.chromium.weblayer.test;
 
+import androidx.fragment.app.FragmentManager;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -40,5 +41,48 @@ public class BrowserTest {
             browser.destroyTab(tab);
             Assert.assertTrue(tab.isDestroyed());
         });
+    }
+
+    private boolean isPageVisible() {
+        return mActivityTestRule.executeScriptAndExtractBoolean(
+                "document.visibilityState === 'visible'");
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(91)
+    public void testSetChangeVisibilityOnNextDetach() {
+        String url = mActivityTestRule.getTestDataURL("visibility.html");
+        mActivity = mActivityTestRule.launchShellWithUrl(url);
+        Assert.assertNotNull(mActivity);
+        // Force 'gotHide' to initially be false.
+        mActivityTestRule.executeScriptSync("gotHide = false;", false);
+
+        // Force the page to be visible during detach, detach the Fragment, and ensure the page is
+        // still visible.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivity.getBrowser().setChangeVisibilityOnNextDetach(false);
+            FragmentManager fm = mActivity.getSupportFragmentManager();
+            fm.beginTransaction().detach(mActivityTestRule.getFragment()).commitNow();
+        });
+        Assert.assertFalse(mActivityTestRule.executeScriptAndExtractBoolean("gotHide", false));
+        Assert.assertTrue(isPageVisible());
+
+        // Attach the Fragment, the page should still be visible.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            FragmentManager fm = mActivity.getSupportFragmentManager();
+            fm.beginTransaction().attach(mActivityTestRule.getFragment()).commitNow();
+        });
+        Assert.assertFalse(mActivityTestRule.executeScriptAndExtractBoolean("gotHide", false));
+        Assert.assertTrue(isPageVisible());
+
+        // Detach the Fragment. Because setChangeVisibilityOnNextDetach() was reset as part of
+        // attach, the page should no longer be visible and 'gotHide' should be true.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            FragmentManager fm = mActivity.getSupportFragmentManager();
+            fm.beginTransaction().detach(mActivityTestRule.getFragment()).commitNow();
+        });
+        Assert.assertTrue(mActivityTestRule.executeScriptAndExtractBoolean("gotHide", false));
+        Assert.assertFalse(isPageVisible());
     }
 }
