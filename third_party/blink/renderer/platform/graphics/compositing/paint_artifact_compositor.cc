@@ -1260,22 +1260,6 @@ void PaintArtifactCompositor::DecompositeTransforms() {
   }
 }
 
-void PaintArtifactCompositor::ExpandMaskLayers() {
-  for (auto& pending_layer : pending_layers_) {
-    if (pending_layer.property_tree_state.Effect().BlendMode() !=
-        SkBlendMode::kDstIn)
-      continue;
-    // Expand the mask layer by 1 pixel to ensure it fully covers the masked
-    // layer in case of floating point errors etc.
-    // See problem 2 in https://crbug.com/1171601#c27.
-    pending_layer.bounds.Inflate(1);
-    // Also decomposite the clip to make the expansion take effect.
-    if (auto* parent =
-            pending_layer.property_tree_state.Clip().UnaliasedParent())
-      pending_layer.property_tree_state.SetClip(*parent);
-  }
-}
-
 void PaintArtifactCompositor::Update(
     const Vector<PreCompositedLayerInfo>& pre_composited_layers,
     const ViewportProperties& viewport_properties,
@@ -1306,7 +1290,6 @@ void PaintArtifactCompositor::Update(
   // Make compositing decisions, storing the result in |pending_layers_|.
   CollectPendingLayers(pre_composited_layers);
   DecompositeTransforms();
-  ExpandMaskLayers();
 
   LayerListBuilder layer_list_builder;
   PropertyTreeManager property_tree_manager(*this, *host->property_trees(),
@@ -1357,7 +1340,7 @@ void PaintArtifactCompositor::Update(
     UpdateLayerProperties(*layer, pending_layer, layer_selection,
                           &property_tree_manager);
 
-    layer->SetLayerTreeHost(host);
+    layer->SetLayerTreeHost(root_layer_->layer_tree_host());
 
     int transform_id =
         property_tree_manager.EnsureCompositorTransformNode(transform);
