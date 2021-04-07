@@ -265,7 +265,7 @@ class TastTest(RemoteTest):
     # The CQ passes in '--gtest_filter' when specifying tests to skip. Store it
     # here and parse it later to integrate it into Tast executions.
     self._gtest_style_filter = args.gtest_filter
-    self._conditional = args.conditional
+    self._attr_expr = args.attr_expr
     self._should_strip = args.strip_chrome
     self._deploy_lacros = args.deploy_lacros
 
@@ -332,8 +332,8 @@ class TastTest(RemoteTest):
         # If we're running tests in VMs, tell the test runner to skip tests that
         # aren't compatible.
         local_test_runner_cmd.append('-extrauseflags=tast_vm')
-      if self._conditional:
-        local_test_runner_cmd.append(pipes.quote(self._conditional))
+      if self._attr_expr:
+        local_test_runner_cmd.append(pipes.quote(self._attr_expr))
       else:
         local_test_runner_cmd.extend(self._tests)
       device_test_script_contents.append(' '.join(local_test_runner_cmd))
@@ -361,21 +361,21 @@ class TastTest(RemoteTest):
       # conditional with a long list of "name:test" expressions, one for each
       # test in the filter.
       if self._gtest_style_filter:
-        if self._conditional or self._tests:
+        if self._attr_expr or self._tests:
           logging.warning(
-              'Presence of --gtest_filter will cause the specified Tast '
-              'conditional or test list to be ignored.')
+              'Presence of --gtest_filter will cause the specified Tast expr'
+              ' or test list to be ignored.')
         names = []
         for test in self._gtest_style_filter.split(':'):
           names.append('"name:%s"' % test)
-        self._conditional = '(' + ' || '.join(names) + ')'
+        self._attr_expr = '(' + ' || '.join(names) + ')'
 
-      if self._conditional:
+      if self._attr_expr:
         # Don't use pipes.quote() here. Something funky happens with the arg
         # as it gets passed down from cros_run_test to tast. (Tast picks up the
-        # escaping single quotes and complains that the conditional "must be
-        # within parentheses".)
-        self._test_cmd.append('--tast=%s' % self._conditional)
+        # escaping single quotes and complains that the attribute expression
+        # "must be within parentheses".)
+        self._test_cmd.append('--tast=%s' % self._attr_expr)
       else:
         self._test_cmd.append('--tast')
         self._test_cmd.extend(self._tests)
@@ -925,12 +925,9 @@ def main():
       '--test-launcher-summary-output',
       type=str,
       help='Generates a simple GTest-style JSON result file for the test run.')
-  # TODO(bpastene): Change all uses of "--conditional" to use "--attr-expr".
   tast_test_parser.add_argument(
-      '--conditional',
       '--attr-expr',
       type=str,
-      dest='conditional',
       help='A boolean expression whose matching tests will run '
       '(eg: ("dep:chrome")).')
   tast_test_parser.add_argument(
