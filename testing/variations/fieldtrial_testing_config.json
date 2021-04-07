@@ -19,6 +19,21 @@
             ]
         }
     ],
+    "AccountManagementFlowsV2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccountManagementFlowsV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "ActionableContentSettings": [
         {
             "platforms": [
