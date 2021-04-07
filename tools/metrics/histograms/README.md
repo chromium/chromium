@@ -833,13 +833,15 @@ interpretable and what data will have hidden surprises/gotchas.
 
 ### Sustainability
 
-* Is the CL adding a reasonable number of metrics?
+* Is the CL adding a reasonable number of metrics/buckets?
   * When reviewing a CL that is trying to add many metrics at once, guide the CL
     author toward an appropriate solution for their needs. For example,
     multidimensional metrics can be recorded via UKM, and we are currently
-    building support for structured metrics in UMA. There's no hard rule, but
-    anything above 20 separate histograms should be escalated by being assigned
-    to chromium-metrics-reviews@google.com.
+    building support for structured metrics in UMA.
+  * There's no hard rule, but anything above 20 separate histograms should be
+    escalated by being assigned to chromium-metrics-reviews@google.com.
+  * Similarly, any histogram with more than 100 possible buckets should be
+    escalated by being assigned to chromium-metrics-reviews@google.com.
 
 * Are expiry dates being set
   [appropriately](#How-to-choose-expiry-for-histograms)?

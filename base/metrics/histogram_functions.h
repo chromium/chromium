@@ -31,14 +31,14 @@
 // in those cases.
 namespace base {
 
-// For histograms with linear buckets.
-// Used for capturing integer data with a linear bucketing scheme. This can be
-// used when you want the exact value of some small numeric count, with a max of
-// 100 or less. If you need to capture a range of greater than 100, we recommend
-// the use of the COUNT histograms below.
-// Note that the |value_max| itself is included in the overflow bucket.
-// Therefore, if you want an accurate measure up to kMax itself, then
-// |exclusive_max| should be set to kMax + 1.
+// For numeric measurements where you want exact integer values up to
+// |exclusive_max|. |exclusive_max| itself is included in the overflow bucket.
+// Therefore, if you want an accurate measure up to kMax, then |exclusive_max|
+// should be set to kMax + 1.
+//
+// |exclusive_max| should be 101 or less. If you need to capture a larger range,
+// we recommend the use of the COUNT histograms below.
+//
 // Sample usage:
 //   base::UmaHistogramExactLinear("Histogram.Linear", sample, kMax + 1);
 // In this case, buckets are 1, 2, .., kMax, kMax+1, where the kMax+1 bucket
