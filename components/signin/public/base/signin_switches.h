@@ -33,7 +33,7 @@ extern const base::Feature kForceAccountIdMigration;
 extern const base::Feature kDeprecateMenagerieAPI;
 #endif  // defined(OS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Killswitch for PO2TS migration to AccountManagerFacade.
 extern const base::Feature kUseAccountManagerFacade;
 #endif
