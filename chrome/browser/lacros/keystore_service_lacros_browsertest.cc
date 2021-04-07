@@ -64,14 +64,7 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GetCertificatesEmpty) {
 }
 
 // Tests that generate key works.
-// TODO(https://crbug.com/1134349): After the switch from PlatformKeysService to
-// ExtensionPlatformKeysService the test started to crash on cloud builders. The
-// current theory is that it is because of the added `AddKeyAttribute` call to
-// NSS. In the long term it is not clear if the test should actually try to
-// generate/modify keys in non-test NSS database on builders. But there's no
-// simple way to prevent this at the moment.
-IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
-                       DISABLED_GenerateKeyPKCS) {
+IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GenerateKeyPKCS) {
   crosapi::mojom::KeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
