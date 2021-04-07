@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/video_recording_watcher.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
@@ -22,6 +23,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/bind_post_task.h"
 #include "base/check.h"
@@ -846,10 +848,19 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
     Stop();
 
   DCHECK(!capture_params.bounds.IsEmpty());
+
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  bool was_cursor_originally_blocked = cursor_manager->IsCursorLocked();
+  if (!was_cursor_originally_blocked) {
+    cursor_manager->HideCursor();
+    cursor_manager->LockCursor();
+  }
+
   ui::GrabWindowSnapshotAsyncPNG(
       capture_params.window, capture_params.bounds,
       base::BindOnce(&CaptureModeController::OnImageCaptured,
-                     weak_ptr_factory_.GetWeakPtr(), path));
+                     weak_ptr_factory_.GetWeakPtr(), path,
+                     was_cursor_originally_blocked));
 
   ++num_screenshots_taken_in_last_day_;
   ++num_screenshots_taken_in_last_week_;
@@ -881,7 +892,16 @@ void CaptureModeController::CaptureVideo(const CaptureParams& capture_params) {
 
 void CaptureModeController::OnImageCaptured(
     const base::FilePath& path,
+    bool was_cursor_originally_blocked,
     scoped_refptr<base::RefCountedMemory> png_bytes) {
+  if (!was_cursor_originally_blocked) {
+    auto* shell = Shell::Get();
+    auto* cursor_manager = shell->cursor_manager();
+    if (!shell->tablet_mode_controller()->InTabletMode())
+      cursor_manager->ShowCursor();
+    cursor_manager->UnlockCursor();
+  }
+
   if (!png_bytes || !png_bytes->size()) {
     LOG(ERROR) << "Failed to capture image.";
     ShowFailureNotification();

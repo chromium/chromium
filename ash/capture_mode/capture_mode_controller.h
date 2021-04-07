@@ -216,9 +216,11 @@ class ASH_EXPORT CaptureModeController
 
   // Called back when an image has been captured to trigger an attempt to save
   // the image as a file. |timestamp| is the time at which the capture was
-  // triggered, |png_bytes| is the buffer containing the captured image in a
-  // PNG format.
+  // triggered. |was_cursor_originally_blocked| is whether the cursor was
+  // blocked at the time the screenshot capture request was made. |png_bytes| is
+  // the buffer containing the captured image in a PNG format.
   void OnImageCaptured(const base::FilePath& path,
+                       bool was_cursor_originally_blocked,
                        scoped_refptr<base::RefCountedMemory> png_bytes);
 
   // Called back when an attempt to save the image file has been completed, with
