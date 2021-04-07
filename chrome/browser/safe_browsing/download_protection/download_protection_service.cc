@@ -170,6 +170,12 @@ bool DownloadProtectionService::IsHashManuallyBlocklisted(
 void DownloadProtectionService::CheckClientDownload(
     download::DownloadItem* item,
     CheckDownloadRepeatingCallback callback) {
+  ClientDownloadRequest::DownloadType file_download_type =
+      download_type_util::GetDownloadType(item->GetTargetFilePath());
+  if (file_download_type == ClientDownloadRequest::DOCUMENT) {
+    UMA_HISTOGRAM_MEMORY_KB("SafeBrowsing.Macros.DocumentSize",
+                            item->GetReceivedBytes() / 1024);
+  }
   auto request = std::make_unique<CheckClientDownloadRequest>(
       item, std::move(callback), this, database_manager_,
       binary_feature_extractor_);

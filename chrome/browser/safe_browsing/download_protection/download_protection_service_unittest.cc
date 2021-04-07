@@ -32,6 +32,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -3006,6 +3007,63 @@ TEST_F(DownloadProtectionServiceTest, DoesNotSendPingForCancelledDownloads) {
 
   EXPECT_TRUE(has_result_);
   EXPECT_FALSE(HasClientDownloadRequest());
+}
+
+TEST_F(DownloadProtectionServiceTest, CheckClientDownloadDocumentSizeLogged) {
+  PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
+  base::HistogramTester histograms;
+  NiceMockDownloadItem item;
+  PrepareBasicDownloadItem(&item, {"http://www.evil.test/a.exe"},  // url_chain
+                           "http://www.google.com/",               // referrer
+                           FILE_PATH_LITERAL("a.tmp"),             // tmp_path
+                           FILE_PATH_LITERAL("a.docx"));           // final_path
+
+  EXPECT_CALL(*sb_service_->mock_database_manager(),
+              MatchDownloadAllowlistUrl(_))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
+  EXPECT_CALL(*binary_feature_extractor_.get(),
+              ExtractImageFeatures(
+                  tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+
+  RunLoop run_loop;
+  download_service_->CheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+
+  histograms.ExpectTotalCount("SafeBrowsing.Macros.DocumentSize",
+                              /* expected_count */ 1);
+}
+
+TEST_F(DownloadProtectionServiceTest,
+       CheckClientDownloadDocumentSizeNotLogged) {
+  PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
+  base::HistogramTester histograms;
+  NiceMockDownloadItem item;
+  PrepareBasicDownloadItem(&item, {"http://www.evil.test/a.exe"},  // url_chain
+                           "http://www.google.com/",               // referrer
+                           FILE_PATH_LITERAL("a.tmp"),             // tmp_path
+                           FILE_PATH_LITERAL("a.exe"));            // final_path
+
+  EXPECT_CALL(*sb_service_->mock_database_manager(),
+              MatchDownloadAllowlistUrl(_))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
+  EXPECT_CALL(*binary_feature_extractor_.get(),
+              ExtractImageFeatures(
+                  tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+
+  RunLoop run_loop;
+  download_service_->CheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+
+  histograms.ExpectTotalCount("SafeBrowsing.Macros.DocumentSize",
+                              /* expected_count */ 0);
 }
 
 TEST_P(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {

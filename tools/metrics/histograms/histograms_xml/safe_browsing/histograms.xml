@@ -842,6 +842,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.Macros.DocumentSize" units="KB"
+    expires_after="2022-04-01">
+  <owner>anise@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the size (in KB) of a download if it is a PDF or Office document
+    before Safe Browsing client side checks are started.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.NavigationObserver.AppendRecentNavigationsTime"
     units="ms" expires_after="2021-09-19">
   <owner>xinghuilu@chromium.org</owner>
