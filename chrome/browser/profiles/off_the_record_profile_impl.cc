@@ -120,9 +120,6 @@ using content::HostZoomMap;
 
 namespace {
 
-// Key names for OTR Profile user data.
-constexpr char kVideoDecodePerfHistoryId[] = "video-decode-perf-history";
-
 profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
     const Profile::OTRProfileID* otr_profile_id,
     const Profile* parent_profile) {
@@ -150,6 +147,7 @@ profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
   }
   return profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile;
 }
+
 }  // namespace
 
 OffTheRecordProfileImpl::OffTheRecordProfileImpl(
@@ -511,38 +509,24 @@ OffTheRecordProfileImpl::GetBrowsingDataRemoverDelegate() {
   return ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(this);
 }
 
-media::VideoDecodePerfHistory*
-OffTheRecordProfileImpl::GetVideoDecodePerfHistory() {
-  media::VideoDecodePerfHistory* decode_history =
-      static_cast<media::VideoDecodePerfHistory*>(
-          GetUserData(kVideoDecodePerfHistoryId));
+std::unique_ptr<media::VideoDecodePerfHistory>
+OffTheRecordProfileImpl::CreateVideoDecodePerfHistory() {
+  // Use the original profile's DB to seed the OTR VideoDecodePerfHisotry. The
+  // original DB is treated as read-only, while OTR playbacks will write stats
+  // to the InMemory version (cleared on profile destruction). Guest profiles
+  // don't have a root profile like incognito, meaning they don't have a seed
+  // DB to call on and we can just pass null.
+  media::VideoDecodeStatsDBProvider* seed_db_provider =
+      IsGuestSession() ? nullptr
+                       // Safely passing raw pointer to VideoDecodePerfHistory
+                       // because original profile will outlive this profile.
+                       : GetOriginalProfile()->GetVideoDecodePerfHistory();
 
-  // Lazily created. Note, this does not trigger loading the DB from disk. That
-  // occurs later upon first VideoDecodePerfHistory API request that requires DB
-  // access. DB operations will not block the UI thread.
-  if (!decode_history) {
-    // Use the original profile's DB to seed the OTR VideoDeocdePerfHisotry. The
-    // original DB is treated as read-only, while OTR playbacks will write stats
-    // to the InMemory version (cleared on profile destruction). Guest profiles
-    // don't have a root profile like incognito, meaning they don't have a seed
-    // DB to call on and we can just pass null.
-    media::VideoDecodeStatsDBProvider* seed_db_provider =
-        IsGuestSession() ? nullptr
-                         // Safely passing raw pointer to VideoDecodePerfHistory
-                         // because original profile will outlive this profile.
-                         : GetOriginalProfile()->GetVideoDecodePerfHistory();
-
-    auto stats_db = std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(
-        seed_db_provider);
-    // TODO(liberato): Get the FeatureProviderFactoryCB from BrowserContext.
-    auto new_decode_history = std::make_unique<media::VideoDecodePerfHistory>(
-        std::move(stats_db), media::learning::FeatureProviderFactoryCB());
-    decode_history = new_decode_history.get();
-
-    SetUserData(kVideoDecodePerfHistoryId, std::move(new_decode_history));
-  }
-
-  return decode_history;
+  auto stats_db =
+      std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(seed_db_provider);
+  // TODO(liberato): Get the FeatureProviderFactoryCB from BrowserContext.
+  return std::make_unique<media::VideoDecodePerfHistory>(
+      std::move(stats_db), media::learning::FeatureProviderFactoryCB());
 }
 
 content::FileSystemAccessPermissionContext*

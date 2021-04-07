@@ -12,15 +12,11 @@
 #include "content/browser/background_sync/background_sync_scheduler.h"
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
 #include "content/browser/download/download_manager_impl.h"
-#include "content/browser/media/browser_feature_provider.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/speech/tts_controller_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "media/base/media_switches.h"
-#include "media/capabilities/in_memory_video_decode_stats_db_impl.h"
-#include "media/capabilities/video_decode_stats_db_impl.h"
 #include "media/learning/common/media_learning_tasks.h"
 #include "media/learning/impl/learning_session_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
@@ -51,34 +47,6 @@ void RegisterMediaLearningTask(
   // provides a default argument value for the 2nd parameter
   // (`feature_provider`).
   learning_session->RegisterTask(task);
-}
-
-std::unique_ptr<media::VideoDecodePerfHistory> CreateVideoDecodePerfHistory(
-    BrowserContext* browser_context) {
-  DCHECK(browser_context);
-
-  const char kUseInMemoryDBParamName[] = "db_in_memory";
-  const bool kUseInMemoryDBDefault = false;
-  bool use_in_memory_db = base::GetFieldTrialParamByFeatureAsBool(
-      media::kMediaCapabilitiesWithParameters, kUseInMemoryDBParamName,
-      kUseInMemoryDBDefault);
-
-  std::unique_ptr<media::VideoDecodeStatsDB> stats_db;
-  if (use_in_memory_db) {
-    stats_db = std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(nullptr);
-  } else {
-    auto* db_provider =
-        BrowserContext::GetDefaultStoragePartition(browser_context)
-            ->GetProtoDatabaseProvider();
-
-    stats_db = media::VideoDecodeStatsDBImpl::Create(
-        browser_context->GetPath().Append(
-            FILE_PATH_LITERAL("VideoDecodeStats")),
-        db_provider);
-  }
-
-  return std::make_unique<media::VideoDecodePerfHistory>(
-      std::move(stats_db), BrowserFeatureProvider::GetFactoryCB());
 }
 
 }  // namespace
@@ -220,7 +188,7 @@ BrowserContext::Impl::GetVideoDecodePerfHistory() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!video_decode_perf_history_)
-    video_decode_perf_history_ = CreateVideoDecodePerfHistory(self_);
+    video_decode_perf_history_ = self_->CreateVideoDecodePerfHistory();
 
   return video_decode_perf_history_.get();
 }

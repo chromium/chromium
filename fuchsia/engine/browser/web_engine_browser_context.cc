@@ -186,32 +186,17 @@ WebEngineBrowserContext::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
-media::VideoDecodePerfHistory*
-WebEngineBrowserContext::GetVideoDecodePerfHistory() {
-  if (IsOffTheRecord())
-    return GetInMemoryVideoDecodePerfHistory();
-
-  // Delegate to the base class for stateful VideoDecodePerfHistory DB
-  // creation.
-  return BrowserContext::GetVideoDecodePerfHistory();
-}
-
-media::VideoDecodePerfHistory*
-WebEngineBrowserContext::GetInMemoryVideoDecodePerfHistory() {
-  constexpr char kUserDataKeyName[] = "video-decode-perf-history";
-  auto* decode_history = static_cast<media::VideoDecodePerfHistory*>(
-      GetUserData(kUserDataKeyName));
-
-  // Get, and potentially lazily create, the in-memory VideoDecodePerfHistory
-  // DB.
-  if (!decode_history) {
-    auto owned_decode_history = std::make_unique<media::VideoDecodePerfHistory>(
-        std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(
-            nullptr /* seed_db_provider */),
-        media::learning::FeatureProviderFactoryCB());
-    decode_history = owned_decode_history.get();
-    SetUserData(kUserDataKeyName, std::move(owned_decode_history));
+std::unique_ptr<media::VideoDecodePerfHistory>
+WebEngineBrowserContext::CreateVideoDecodePerfHistory() {
+  if (!IsOffTheRecord()) {
+    // Delegate to the base class for stateful VideoDecodePerfHistory DB
+    // creation.
+    return BrowserContext::CreateVideoDecodePerfHistory();
   }
 
-  return decode_history;
+  // Return in-memory VideoDecodePerfHistory.
+  return std::make_unique<media::VideoDecodePerfHistory>(
+      std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(
+          nullptr /* seed_db_provider */),
+      media::learning::FeatureProviderFactoryCB());
 }

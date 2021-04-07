@@ -260,18 +260,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns a unique string associated with this browser context.
   virtual const std::string& UniqueId();
 
-  // Media service for storing/retrieving video decoding performance stats.
+  // Gets media service for storing/retrieving video decoding performance stats.
   // Exposed here rather than StoragePartition because all SiteInstances should
   // have similar decode performance and stats are not exposed to the web
   // directly, so privacy is not compromised.
-  //
-  // TODO(https://crbug.com/1179776): Split GetVideoDecodePerfHistory method
-  // into 1) CreateVideoDecodePerfHistory (override-able by //content embedders,
-  // although //content will provide default implementation which is currently
-  // in browser_context_impl.cc) and 2) GetVideoDecodePerfHistory (only
-  // implemented in //content, handling lazily creating and storing of the
-  // VideoDecodePerfHistory object).
-  virtual media::VideoDecodePerfHistory* GetVideoDecodePerfHistory();
+  media::VideoDecodePerfHistory* GetVideoDecodePerfHistory();
 
   // Returns a LearningSession associated with |this|. Used as the central
   // source from which to retrieve LearningTaskControllers for media machine
@@ -400,6 +393,13 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns the VariationsClient associated with the context if any, or
   // nullptr if there isn't one.
   virtual variations::VariationsClient* GetVariationsClient();
+
+  // Creates the media service for storing/retrieving video decoding performance
+  // stats.  Exposed here rather than StoragePartition because all SiteInstances
+  // should have similar decode performance and stats are not exposed to the web
+  // directly, so privacy is not compromised.
+  virtual std::unique_ptr<media::VideoDecodePerfHistory>
+  CreateVideoDecodePerfHistory();
 
  private:
   // Please don't add more fields to BrowserContext.

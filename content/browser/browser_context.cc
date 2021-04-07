@@ -36,6 +36,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/media/browser_feature_provider.h"
 #include "content/browser/push_messaging/push_messaging_router.h"
 #include "content/browser/storage_partition_impl_map.h"
 #include "content/common/child_process_host_impl.h"
@@ -50,6 +51,10 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "media/base/media_switches.h"
+#include "media/capabilities/in_memory_video_decode_stats_db_impl.h"
+#include "media/capabilities/video_decode_stats_db_impl.h"
+#include "media/mojo/services/video_decode_perf_history.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -415,6 +420,31 @@ bool BrowserContext::CanUseDiskWhenOffTheRecord() {
 
 variations::VariationsClient* BrowserContext::GetVariationsClient() {
   return nullptr;
+}
+
+std::unique_ptr<media::VideoDecodePerfHistory>
+BrowserContext::CreateVideoDecodePerfHistory() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  const char kUseInMemoryDBParamName[] = "db_in_memory";
+  const bool kUseInMemoryDBDefault = false;
+  bool use_in_memory_db = base::GetFieldTrialParamByFeatureAsBool(
+      media::kMediaCapabilitiesWithParameters, kUseInMemoryDBParamName,
+      kUseInMemoryDBDefault);
+
+  std::unique_ptr<media::VideoDecodeStatsDB> stats_db;
+  if (use_in_memory_db) {
+    stats_db = std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(nullptr);
+  } else {
+    auto* db_provider = BrowserContext::GetDefaultStoragePartition(this)
+                            ->GetProtoDatabaseProvider();
+
+    stats_db = media::VideoDecodeStatsDBImpl::Create(
+        GetPath().Append(FILE_PATH_LITERAL("VideoDecodeStats")), db_provider);
+  }
+
+  return std::make_unique<media::VideoDecodePerfHistory>(
+      std::move(stats_db), BrowserFeatureProvider::GetFactoryCB());
 }
 
 }  // namespace content
