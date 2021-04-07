@@ -33,7 +33,11 @@ namespace {
 // incurred by web contents rendering.
 constexpr gfx::Size kMaxWebContentsSize(2000, 2000);
 
+ClipboardImageModelRequest::TestParams* g_test_params = nullptr;
+
 }  // namespace
+
+// ClipboardImageModelFactory::Params: -----------------------------------------
 
 ClipboardImageModelRequest::Params::Params(const base::UnguessableToken& id,
                                            const std::string& html_markup,
@@ -46,6 +50,16 @@ ClipboardImageModelRequest::Params&
 ClipboardImageModelRequest::Params::operator=(Params&&) = default;
 
 ClipboardImageModelRequest::Params::~Params() = default;
+
+// ClipboardImageModelFactory::TestParams: -------------------------------------
+
+ClipboardImageModelRequest::TestParams::TestParams(RequestStopCallback callback,
+                                                   bool enforce_auto_resize)
+    : callback(callback), enforce_auto_resize(enforce_auto_resize) {}
+
+ClipboardImageModelRequest::TestParams::~TestParams() = default;
+
+// ClipboardImageModelRequest------------- -------------------------------------
 
 ClipboardImageModelRequest::ScopedClipboardModifier::ScopedClipboardModifier(
     const std::string& html_markup) {
@@ -162,6 +176,9 @@ void ClipboardImageModelRequest::Stop(RequestStopReason stop_reason) {
   did_stop_loading_ = false;
 
   on_request_finished_callback_.Run();
+
+  if (g_test_params && g_test_params->callback)
+    g_test_params->callback.Run(ShouldEnableAutoResize());
 }
 
 ClipboardImageModelRequest::Params
@@ -225,6 +242,13 @@ void ClipboardImageModelRequest::RenderViewHostChanged(
       gfx::Size(1, 1), kMaxWebContentsSize);
 }
 
+// static
+void ClipboardImageModelRequest::SetTestParams(TestParams* test_params) {
+  // Supports only setting `g_test_params` or resetting it.
+  DCHECK(!g_test_params || !test_params);
+  g_test_params = test_params;
+}
+
 void ClipboardImageModelRequest::OnVisualStateChangeFinished(bool done) {
   if (!done)
     return;
@@ -281,4 +305,13 @@ void ClipboardImageModelRequest::OnCopyComplete(float device_scale_factor,
 void ClipboardImageModelRequest::OnTimeout() {
   DCHECK(deliver_image_model_callback_);
   Stop(RequestStopReason::kTimeout);
+}
+
+bool ClipboardImageModelRequest::ShouldEnableAutoResize() const {
+  if (g_test_params)
+    return g_test_params->enforce_auto_resize;
+
+  // TODO(1165302): Disable auto resize mode if the selection region bounding
+  // box is available.
+  return true;
 }

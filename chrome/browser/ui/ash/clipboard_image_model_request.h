@@ -58,6 +58,25 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
     ImageModelCallback callback;
   };
 
+  using RequestStopCallback = base::RepeatingCallback<void(bool)>;
+
+  struct TestParams {
+    TestParams() = delete;
+    TestParams(RequestStopCallback callback, bool enforce_auto_resize);
+    TestParams(const TestParams&) = delete;
+    TestParams& operator=(const TestParams&) = delete;
+    ~TestParams();
+
+    // The callback running when the image model request stops. The boolean
+    // value indicates whether the image model request renders web contents
+    // in auto resize mode.
+    RequestStopCallback callback;
+
+    // If true, the image model request must render in auto resize mode;
+    // otherwise, auto resize mode is disabled.
+    bool enforce_auto_resize = false;
+  };
+
   // Places `html_markup` on the clipboard and restores the original clipboard
   // contents when destructed.
   class ScopedClipboardModifier {
@@ -123,6 +142,9 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   void RenderViewHostChanged(content::RenderViewHost* old_host,
                              content::RenderViewHost* new_host) override;
 
+  // Configures test parameter.
+  static void SetTestParams(TestParams* test_params);
+
  private:
   // Called when the results of the paste are painted.
   void OnVisualStateChangeFinished(bool done);
@@ -138,6 +160,9 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
 
   // Called when the running request takes too long to complete.
   void OnTimeout();
+
+  // Returns whether the auto resize mode should be used for rendering.
+  bool ShouldEnableAutoResize() const;
 
   // A Widget that is not shown, but forces |web_view_| to render.
   std::unique_ptr<views::Widget> const widget_;
