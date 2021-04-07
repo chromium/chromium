@@ -5765,6 +5765,30 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CART_CART_MENU_REMOVE_MERCHANT_TOAST_MESSAGE" desc="Text shown in the toast confirming the cart for a specific merchant has been permanently removed. Note that the MERCHANT field can be either merchant name (e.g. Amazon) or domain (e.g. amazon.com).">
         You won't see <ph name="MERCHANT">$1<ex>Amazon</ex></ph> again
       </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CHIP_AMOUNT" desc="Text shown on the chip that indicates there is a discount in the current cart of certain amount off. It can be either in percent (e.g. 15% off) or in dollar amount (e.g. 50$ off).">
+        <ph name="DISCOUNT_AMOUNT">$1<ex>15%</ex></ph> off
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CHIP_UP_TO_AMOUNT" desc="Text shown on the chip that indicates there is a discount in the current cart of up to certain amount off. It can be either in percent (e.g. Up to 15% off) or in dollar amount (e.g. Up to 50$ off).">
+        Up to <ph name="DISCOUNT_UP_TO_AMOUNT">$1<ex>15%</ex></ph> off
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT" desc="Text shown on the consent card for rule-based discount asking if users would like to give their consent to the feature.">
+        Ask Google to find discounts on what you’ve added to your carts?
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT" desc="Text shown on the accept button of the consent card for rule-based discount. By clicking this button, users have chosen to opt in the feature and let Google get discounts for them. See consent request in IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT.">
+        Get discounts
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT_CONFIRMATION" desc="Text shown on snack bar after user has accepted the consent to opt in the feature and allow Google to get discounts for them. See string about accepting consent in IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT.">
+        If Google finds a discount, you will see it on this page
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_REJECT" desc="Text shown on the reject button of the consent card for rule-based discount. By clicking this button, users have chosen to opt out the feature that allows Google get discounts for them. See consent request in IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT.">
+        No thanks
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_REJECT_CONFIRMATION" desc="Text shown on snack bar after user has rejected the consent and opted out the feature that allows Google to get discounts for them. See string about rejecting consent in IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_REJECT.">
+        Discounts are off. You can turn them on in the customize menu
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONFIRMATION_DISMISS" desc="Text shown on snack bar button. Clicking it indicates that users have understood the content of the snack bar.">
+        Got it
+      </message>
       <!-- Extensions NTP Middle Slot Promo -->
       <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">
         Web browsing should be fast. Take a moment to <ph name="BEGIN_LINK">&lt;a href="chrome://extensions"&gt;</ph>check your extensions<ph name="END_LINK">&lt;/a&gt;</ph> now.
