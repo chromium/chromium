@@ -247,6 +247,10 @@ void ImageDecoderExternal::UpdateSelectedTrack() {
   reset(MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                            "Aborted by track change"));
 
+  // Track changes recreate a new decoder under the hood, so don't let stale
+  // metadata updates come in for the newly selected (or no selected) track.
+  weak_factory_.InvalidateWeakPtrs();
+
   // TODO(crbug.com/1073995): We eventually need a formal track selection
   // mechanism. For now we can only select between the still and animated images
   // and must destruct the decoder for changes.
