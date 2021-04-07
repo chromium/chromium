@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/host_frame_sink_client.h"
@@ -39,7 +41,6 @@ class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
       base::OnceClosure on_initialized) override;
   void SurfaceDestroyed() override;
   base::Optional<viz::SurfaceId> GetDOMSurface() override;
-  void ScheduleUpdateDOMSurface() override;
 
  private:
   bool IsOnUiThread() const;
@@ -47,7 +48,8 @@ class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
       viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
       device::DomOverlaySetup dom_setup,
       base::OnceClosure on_initialized);
-  void UpdateDOMSurface();
+  void OnSurfaceIdUpdated(const viz::SurfaceId& surface_id);
+  void ConfigureDOMOverlay();
 
   // viz::HostFrameSinkClient:
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
@@ -64,6 +66,9 @@ class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
 
   base::Optional<viz::SurfaceId> dom_surface_id_;
   base::Lock dom_surface_lock_;
+#if defined(OS_ANDROID)
+  base::CallbackListSubscription surface_id_changed_subscription_;
+#endif
 
   // Must be last so that it will be invalidated before any other members.
   base::WeakPtrFactory<XrFrameSinkClientImpl> weak_ptr_factory_{this};

@@ -27,6 +27,7 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
   void OnFrameTokenChanged(uint32_t frame_token,
                            base::TimeTicks activation_time) override;
   void WasEvicted() override;
+  void OnSurfaceIdChanged() override;
 
   RenderWidgetHostViewAndroid* render_widget_host_view_;
 

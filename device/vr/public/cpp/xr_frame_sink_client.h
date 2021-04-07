@@ -49,18 +49,6 @@ class COMPONENT_EXPORT(VR_PUBLIC_CPP) XrFrameSinkClient {
   // Used to get the SurfaceId of the DOM content to be rendered.
   // May be called from any thread.
   virtual base::Optional<viz::SurfaceId> GetDOMSurface() = 0;
-
-  // Since the DOMSurface can only be queried on the UI thread, this method
-  // (callable from any thread), provides a way to schedule a task to check for
-  // changes to the DOM SurfaceId. Note that it doesn't take a callback to
-  // notify when the update has finished, as we don't want to block frames on
-  // waiting for this update. (It's better to submit a frame on-time with either
-  // outdated or no DOM surface, than it is to delay for the DOM Surface to be
-  // finished getting updated).
-  // TODO(https://crbug.com/1195461): Investigate creating an Observer for the
-  // DOM SurfaceID that we can subscribe to, rather than forcing callers to call
-  // this function.
-  virtual void ScheduleUpdateDOMSurface() = 0;
 };
 
 // This factory must be run on the UI thread, so that the XrFrameSinkClient can

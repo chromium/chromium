@@ -26,4 +26,8 @@ void DelegatedFrameHostClientAndroid::WasEvicted() {
   render_widget_host_view_->WasEvicted();
 }
 
+void DelegatedFrameHostClientAndroid::OnSurfaceIdChanged() {
+  render_widget_host_view_->OnSurfaceIdChanged();
+}
+
 }  // namespace content

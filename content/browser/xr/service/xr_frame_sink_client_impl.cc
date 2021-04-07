@@ -10,11 +10,14 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/compositor/surface_utils.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+
+#if defined(OS_ANDROID)
+#include "content/browser/renderer_host/render_widget_host_view_android.h"
+#endif
 
 namespace content {
 XrFrameSinkClientImpl::XrFrameSinkClientImpl(int32_t render_process_id,
@@ -61,36 +64,6 @@ base::Optional<viz::SurfaceId> XrFrameSinkClientImpl::GetDOMSurface() {
   return dom_surface_id_;
 }
 
-void XrFrameSinkClientImpl::ScheduleUpdateDOMSurface() {
-  ui_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&XrFrameSinkClientImpl::UpdateDOMSurface,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
-
-void XrFrameSinkClientImpl::UpdateDOMSurface() {
-  // The GetView call later will fail if we aren't on the UI thread, so save a
-  // bit of time by just failing now for debugging purposes.
-  DCHECK(IsOnUiThread());
-  base::AutoLock lock(dom_surface_lock_);
-
-  RenderFrameHost* render_frame_host =
-      RenderFrameHost::FromID(render_process_id_, render_frame_id_);
-  if (!render_frame_host) {
-    dom_surface_id_ = base::nullopt;
-    return;
-  }
-
-  RenderWidgetHostViewBase* view =
-      static_cast<RenderWidgetHostViewBase*>(render_frame_host->GetView());
-
-  if (!view) {
-    dom_surface_id_ = base::nullopt;
-    return;
-  }
-
-  dom_surface_id_ = view->GetCurrentSurfaceId();
-}
-
 void XrFrameSinkClientImpl::InitializeRootCompositorFrameSink(
     viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
     device::DomOverlaySetup dom_setup,
@@ -122,15 +95,52 @@ void XrFrameSinkClientImpl::InitializeOnUiThread(
       std::move(root_params));
 
   if (dom_setup != device::DomOverlaySetup::kNone) {
-    UpdateDOMSurface();
-    if (dom_surface_id_ && dom_surface_id_->is_valid()) {
-      GetHostFrameSinkManager()->RegisterFrameSinkHierarchy(
-          root_frame_sink_id_, dom_surface_id_->frame_sink_id());
-    }
+    ConfigureDOMOverlay();
   }
 
   initialized_ = true;
   std::move(on_initialized).Run();
+}
+
+void XrFrameSinkClientImpl::ConfigureDOMOverlay() {
+  DCHECK(IsOnUiThread());
+  base::AutoLock lock(dom_surface_lock_);
+
+  // This is left outside of the OS_ANDROID ifdef to prevent warnings about the
+  // render_process_id and render_frame_id from being unused. Since we check
+  // the render_frame_host for an early return, it is in fact used.
+  RenderFrameHost* render_frame_host =
+      RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+  if (!render_frame_host)
+    return;
+
+// Since we don't have the ability to get updates to the surface id on non-
+// Android OS's, we let it stay null, which callers can use to as a signal that
+// DOMOverlay will not work.
+#if defined(OS_ANDROID)
+  RenderWidgetHostViewAndroid* view =
+      static_cast<RenderWidgetHostViewAndroid*>(render_frame_host->GetView());
+  if (!view)
+    return;
+
+  // The returned CallbackListSubscription manages the lifetime of this callback
+  // and thus makes Unretained safe.
+  surface_id_changed_subscription_ =
+      view->SubscribeToSurfaceIdChanges(base::BindRepeating(
+          &XrFrameSinkClientImpl::OnSurfaceIdUpdated, base::Unretained(this)));
+  dom_surface_id_ = view->GetCurrentSurfaceId();
+#endif
+
+  if (dom_surface_id_ && dom_surface_id_->is_valid()) {
+    GetHostFrameSinkManager()->RegisterFrameSinkHierarchy(
+        root_frame_sink_id_, dom_surface_id_->frame_sink_id());
+  }
+}
+
+void XrFrameSinkClientImpl::OnSurfaceIdUpdated(
+    const viz::SurfaceId& dom_surface_id) {
+  base::AutoLock lock(dom_surface_lock_);
+  dom_surface_id_ = dom_surface_id;
 }
 
 }  // namespace content

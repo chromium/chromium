@@ -14,6 +14,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/i18n/rtl.h"
@@ -94,6 +95,17 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   ui::TouchSelectionController* touch_selection_controller() {
     return touch_selection_controller_.get();
   }
+
+  using SurfaceIdChangedCallbackType = void(const viz::SurfaceId& new_id);
+  using SurfaceIdChangedCallback =
+      base::RepeatingCallback<SurfaceIdChangedCallbackType>;
+  using SurfaceIdChangedCallbackList =
+      base::RepeatingCallbackList<SurfaceIdChangedCallbackType>;
+  base::CallbackListSubscription SubscribeToSurfaceIdChanges(
+      const SurfaceIdChangedCallback& callback) WARN_UNUSED_RESULT;
+
+  // Called by DelegatedFrameHostClientAndroid
+  void OnSurfaceIdChanged();
 
   // RenderWidgetHostView implementation.
   void InitAsChild(gfx::NativeView parent_view) override;
@@ -582,6 +594,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   base::Optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
 
   WebContentsAccessibilityAndroid* web_contents_accessibility_ = nullptr;
+
+  SurfaceIdChangedCallbackList surface_id_changed_callbacks_;
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 

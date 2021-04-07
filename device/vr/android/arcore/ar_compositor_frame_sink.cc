@@ -180,14 +180,6 @@ void ArCompositorFrameSink::RequestBeginFrame(base::TimeDelta interval,
          "requested.";
   DVLOG(3) << __func__;
 
-  // If we should be compositing the DOM content schedule an update for the
-  // surface id now.
-  // TODO(https://crbug.com/1195461): Switch XrFrameSinkClient to an Observer
-  // so that this scheduling becomes unnecessary.
-  if (should_composite_dom_overlay_) {
-    xr_frame_sink_client_->ScheduleUpdateDOMSurface();
-  }
-
   // Note that the Unretained(this) below is okay, since if this is destroyed,
   // the remote will be closed and the callback is guaranteed to not be run.
   frame_controller_remote_->IssueExternalBeginFrame(

@@ -42,6 +42,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     virtual void OnFrameTokenChanged(uint32_t frame_token,
                                      base::TimeTicks activation_time) = 0;
     virtual void WasEvicted() = 0;
+    virtual void OnSurfaceIdChanged() = 0;
   };
 
   DelegatedFrameHostAndroid(ViewAndroid* view,
@@ -146,6 +147,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   void ProcessCopyOutputRequest(
       std::unique_ptr<viz::CopyOutputRequest> request);
+
+  void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
 
   const viz::FrameSinkId frame_sink_id_;
 
