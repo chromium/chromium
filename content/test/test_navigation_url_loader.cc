@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/public/browser/global_request_id.h"
@@ -92,7 +93,8 @@ void TestNavigationURLLoader::CallOnResponseStarted(
       mojo::ScopedDataPipeConsumerHandle(),
       GlobalRequestID::MakeBrowserInitiated(), false,
       blink::NavigationDownloadPolicy(),
-      request_info_->isolation_info.network_isolation_key(), base::nullopt);
+      request_info_->isolation_info.network_isolation_key(), base::nullopt,
+      /*early_hints_manager=*/nullptr);
 }
 
 TestNavigationURLLoader::~TestNavigationURLLoader() {}

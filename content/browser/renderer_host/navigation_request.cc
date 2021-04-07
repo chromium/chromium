@@ -38,6 +38,7 @@
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/cached_navigation_url_loader.h"
+#include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
@@ -2593,7 +2594,8 @@ void NavigationRequest::OnResponseStarted(
     bool is_download,
     blink::NavigationDownloadPolicy download_policy,
     net::NetworkIsolationKey network_isolation_key,
-    base::Optional<SubresourceLoaderParams> subresource_loader_params) {
+    base::Optional<SubresourceLoaderParams> subresource_loader_params,
+    std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager) {
   ScopedNavigationRequestCrashKeys crash_keys(this);
 
   // The |loader_|'s job is finished. It must not call the NavigationRequest
@@ -2615,6 +2617,7 @@ void NavigationRequest::OnResponseStarted(
   response_body_ = std::move(response_body);
   ssl_info_ = response_head_->ssl_info;
   auth_challenge_info_ = response_head_->auth_challenge_info;
+  early_hints_manager_ = std::move(early_hints_manager);
 
   if (IsServedFromBackForwardCache()) {
     response_head_ =
@@ -5988,6 +5991,11 @@ NavigationRequest::EnforceCOEP() {
 std::unique_ptr<PeakGpuMemoryTracker>
 NavigationRequest::TakePeakGpuMemoryTracker() {
   return std::move(loading_mem_tracker_);
+}
+
+std::unique_ptr<NavigationEarlyHintsManager>
+NavigationRequest::TakeEarlyHintsManager() {
+  return std::move(early_hints_manager_);
 }
 
 network::mojom::ClientSecurityStatePtr

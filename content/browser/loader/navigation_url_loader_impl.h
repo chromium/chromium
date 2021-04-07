@@ -32,6 +32,7 @@ struct RedirectInfo;
 namespace content {
 
 class BrowserContext;
+class NavigationEarlyHintsManager;
 class NavigationLoaderInterceptor;
 class PrefetchedSignedExchangeCache;
 class SignedExchangePrefetchMetricRecorder;
@@ -308,6 +309,8 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   // Counts the time overhead of all the hops from the IO to the UI threads.
   base::TimeDelta io_to_ui_time_;
+
+  std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
 
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 

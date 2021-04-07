@@ -208,6 +208,10 @@ const base::Feature kDocumentPolicy{"DocumentPolicy",
 const base::Feature kDocumentPolicyNegotiation{
     "DocumentPolicyNegotiation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable Early Hints subresource preloads for navigation.
+const base::Feature kEarlyHintsPreloadForNavigation{
+    "EarlyHintsPreloadForNavigation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Requires documents embedded via <iframe>, etc, to explicitly opt-into the
 // embedding: https://github.com/mikewest/embedding-requires-opt-in.
 const base::Feature kEmbeddingRequiresOptIn{"EmbeddingRequiresOptIn",

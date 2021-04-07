@@ -28,6 +28,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/file_url_loader_factory.h"
+#include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
@@ -81,6 +82,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -464,6 +466,11 @@ void NavigationURLLoaderImpl::CreateInterceptors(
 }
 
 void NavigationURLLoaderImpl::Restart() {
+  // Cancel all inflight early hints preloads.
+  // TODO(crbug.com/671310): Consider preserving `early_hints_manager_` on
+  // same-origin redirects.
+  early_hints_manager_.reset();
+
   // Clear |url_loader_| if it's not the default one (network). This allows
   // the restarted request to use a new loader, instead of, e.g., reusing the
   // AppCache or service worker loader. For an optimization, we keep and reuse
@@ -753,11 +760,22 @@ void NavigationURLLoaderImpl::FollowRedirectInternal(
 
 void NavigationURLLoaderImpl::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
+  if (!base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
+    return;
+
   // Early Hints should not come after actual response.
   DCHECK(on_receive_response_time_.is_null());
   DCHECK(!received_response_);
 
-  // TODO(crbug.com/671310): Handle preload requests.
+  if (!early_hints_manager_) {
+    early_hints_manager_ = std::make_unique<NavigationEarlyHintsManager>(
+        *browser_context_,
+        storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
+        frame_tree_node_id_);
+  }
+
+  early_hints_manager_->HandleEarlyHints(std::move(early_hints),
+                                         *resource_request_.get());
 }
 
 void NavigationURLLoaderImpl::OnReceiveResponse(
@@ -1289,6 +1307,13 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
   if (is_download)
     download_policy_.RecordHistogram();
 
+  // When the status code of the navigation isn't a success status, drop Early
+  // Hints manager to cancel inflight preloads as soon as possible.
+  if (!response_head || !response_head->headers ||
+      !network::cors::IsOkStatus(response_head->headers->response_code())) {
+    early_hints_manager_.reset();
+  }
+
   // TODO(scottmg): This needs to do more of what
   // NavigationResourceHandler::OnResponseStarted() does.
   delegate_->OnResponseStarted(
@@ -1296,7 +1321,7 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
       std::move(response_body), global_request_id, is_download,
       download_policy_,
       resource_request_->trusted_params->isolation_info.network_isolation_key(),
-      std::move(subresource_loader_params_));
+      std::move(subresource_loader_params_), std::move(early_hints_manager_));
 }
 
 void NavigationURLLoaderImpl::NotifyRequestRedirected(

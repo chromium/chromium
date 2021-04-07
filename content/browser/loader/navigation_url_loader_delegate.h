@@ -27,6 +27,7 @@ struct URLLoaderCompletionStatus;
 
 namespace content {
 
+class NavigationEarlyHintsManager;
 struct GlobalRequestID;
 struct SubresourceLoaderParams;
 
@@ -68,7 +69,8 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
       bool is_download,
       blink::NavigationDownloadPolicy download_policy,
       net::NetworkIsolationKey network_isolation_key,
-      base::Optional<SubresourceLoaderParams> subresource_loader_params) = 0;
+      base::Optional<SubresourceLoaderParams> subresource_loader_params,
+      std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager) = 0;
 
   // Called if the request fails before receving a response. Specific
   // fields which are used: |status.error_code| holds the error code

@@ -1026,6 +1026,8 @@ source_set("browser") {
     "loader/file_url_loader_factory.h",
     "loader/merkle_integrity_source_stream.cc",
     "loader/merkle_integrity_source_stream.h",
+    "loader/navigation_early_hints_manager.cc",
+    "loader/navigation_early_hints_manager.h",
     "loader/navigation_loader_interceptor.cc",
     "loader/navigation_loader_interceptor.h",
     "loader/navigation_url_loader.cc",

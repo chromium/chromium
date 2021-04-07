@@ -390,6 +390,9 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="prefetch_download"/>
       <traffic_annotation unique_id="prefetch_visuals"/>
     </sender>
+    <sender name="Early Hints">
+      <traffic_annotation unique_id="early_hints_preload"/>
+    </sender>
     <sender name="New Tab Page">
       <traffic_annotation unique_id="backdrop_collection_images_download"/>
       <traffic_annotation unique_id="backdrop_collection_names_download"/>

@@ -646,6 +646,8 @@ class CONTENT_EXPORT NavigationRequest
 
   std::unique_ptr<PeakGpuMemoryTracker> TakePeakGpuMemoryTracker();
 
+  std::unique_ptr<NavigationEarlyHintsManager> TakeEarlyHintsManager();
+
   // Returns true for navigation responses to be rendered in a renderer process.
   // This excludes:
   //  - 204/205 navigation responses.
@@ -899,7 +901,8 @@ class CONTENT_EXPORT NavigationRequest
       bool is_download,
       blink::NavigationDownloadPolicy download_policy,
       net::NetworkIsolationKey network_isolation_key,
-      base::Optional<SubresourceLoaderParams> subresource_loader_params)
+      base::Optional<SubresourceLoaderParams> subresource_loader_params,
+      std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager)
       override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
@@ -1367,6 +1370,7 @@ class CONTENT_EXPORT NavigationRequest
   base::Optional<net::AuthChallengeInfo> auth_challenge_info_;
   bool is_download_ = false;
   GlobalRequestID request_id_;
+  std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
 
   // Holds information for the navigation while the WillFailRequest
   // checks are performed by the NavigationHandle.

@@ -66,6 +66,7 @@
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/installedapp/installed_app_provider_impl.h"
 #include "content/browser/loader/file_url_loader_factory.h"
+#include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/log_console_message.h"
@@ -9310,6 +9311,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // Main Frames will create the tracker, which will be triggered after we
   // receive DidStopLoading.
   loading_mem_tracker_ = navigation_request->TakePeakGpuMemoryTracker();
+
+  early_hints_manager_ = navigation_request->TakeEarlyHintsManager();
 
   // Only take some properties if this is not the synchronous initial
   // `about:blank` navigation, because the values set at construction time
