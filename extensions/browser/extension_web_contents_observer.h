@@ -107,6 +107,10 @@ class ExtensionWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
   void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
 
+  // Subclasses should call this first before doing their own message handling.
+  bool OnMessageReceived(const IPC::Message& message,
+                         content::RenderFrameHost* render_frame_host) override;
+
   // Per the documentation in WebContentsObserver, these two methods are invoked
   // when a Pepper plugin instance is attached/detached in the page DOM.
   void PepperInstanceCreated() override;
@@ -118,6 +122,9 @@ class ExtensionWebContentsObserver
       content::RenderFrameHost* render_frame_host) const;
 
  private:
+  void OnRequest(content::RenderFrameHost* render_frame_host,
+                 const mojom::RequestParams& params);
+
   // The BrowserContext associated with the WebContents being observed.
   content::BrowserContext* browser_context_;
 

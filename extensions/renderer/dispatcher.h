@@ -165,6 +165,11 @@ class Dispatcher : public content::RenderThreadObserver,
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame);
   void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame);
 
+  void OnExtensionResponse(int request_id,
+                           bool success,
+                           const base::ListValue& response,
+                           const std::string& error);
+
   // Dispatches the event named |event_name| to all render views.
   void DispatchEvent(const std::string& extension_id,
                      const std::string& event_name,
