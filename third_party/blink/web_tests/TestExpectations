@@ -6360,9 +6360,6 @@ crbug.com/1159445 [ Mac ] paint/invalidation/repaint-overlay/layers-overlay.html
 
 crbug.com/1140329 http/tests/devtools/network/network-filter-service-worker.js [ Pass Timeout Failure ]
 
-crbug.com/1193472 http/tests/devtools/console/console-format-broken-unicode.js [ Pass Failure ]
-crbug.com/1193472 http/tests/devtools/console/console-format.js [ Pass Failure ]
-
 #Sheriff 2020-10-21
 crbug.com/1141206 scrollbars/overflow-scrollbar-combinations.html [ Pass Failure ]
 
