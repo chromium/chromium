@@ -106,6 +106,7 @@ src/webgpu/api/operation/render_pipeline/primitive_topology.spec.ts
 src/webgpu/api/operation/render_pipeline/sample_mask.spec.ts
 src/webgpu/api/operation/rendering/basic.spec.ts
 src/webgpu/api/operation/rendering/blending.spec.ts
+src/webgpu/api/operation/rendering/depth.spec.ts
 src/webgpu/api/operation/rendering/draw.spec.ts
 src/webgpu/api/operation/rendering/indirect_draw.spec.ts
 src/webgpu/api/operation/resource_init/buffer.spec.ts
