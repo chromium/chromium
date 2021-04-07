@@ -43,18 +43,6 @@
 
 namespace blink {
 
-namespace {
-UseCounterImpl::FeatureType ToFeatureType(
-    UseCounterImpl::CSSPropertyType type) {
-  switch (type) {
-    case UseCounterImpl::CSSPropertyType::kDefault:
-      return UseCounterImpl::FeatureType::kCssProperty;
-    case UseCounterImpl::CSSPropertyType::kAnimation:
-      return UseCounterImpl::FeatureType::kAnimatedCssProperty;
-  }
-}
-}  // namespace
-
 UseCounterMuteScope::UseCounterMuteScope(const Element& element)
     : loader_(element.GetDocument().Loader()) {
   if (loader_)
@@ -77,24 +65,23 @@ void UseCounterImpl::UnmuteForInspector() {
   mute_count_--;
 }
 
-void UseCounterImpl::RecordMeasurement(WebFeature web_feature,
+void UseCounterImpl::RecordMeasurement(WebFeature feature,
                                        const LocalFrame& source_frame) {
   if (mute_count_)
     return;
 
   // PageDestruction is reserved as a scaling factor.
-  DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, web_feature);
-  DCHECK_NE(WebFeature::kPageVisits, web_feature);
-  DCHECK_GE(WebFeature::kNumberOfFeatures, web_feature);
+  DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, feature);
+  DCHECK_NE(WebFeature::kPageVisits, feature);
+  DCHECK_GE(WebFeature::kNumberOfFeatures, feature);
 
-  auto feature =
-      Feature{FeatureType::kWebFeature, static_cast<EnumValue>(web_feature)};
-  if (features_recorded_.Contains(feature))
+  int feature_id = static_cast<int>(feature);
+  if (features_recorded_[feature_id])
     return;
   if (commit_state_ >= kCommited)
-    ReportAndTraceMeasurementByFeatureId(web_feature, source_frame);
+    ReportAndTraceMeasurementByFeatureId(feature, source_frame);
 
-  features_recorded_.insert(feature);
+  features_recorded_.set(feature_id);
 }
 
 void UseCounterImpl::ReportAndTraceMeasurementByFeatureId(
@@ -122,13 +109,11 @@ bool UseCounterImpl::IsCounted(WebFeature feature) const {
   DCHECK_NE(WebFeature::kPageVisits, feature);
   DCHECK_GE(WebFeature::kNumberOfFeatures, feature);
 
-  return features_recorded_.Contains(
-      Feature{FeatureType::kWebFeature, static_cast<size_t>(feature)});
+  return features_recorded_[static_cast<size_t>(feature)];
 }
 
 void UseCounterImpl::ClearMeasurementForTesting(WebFeature feature) {
-  features_recorded_.erase(
-      Feature{FeatureType::kWebFeature, static_cast<size_t>(feature)});
+  features_recorded_.reset(static_cast<size_t>(feature));
 }
 
 void UseCounterImpl::Trace(Visitor* visitor) const {
@@ -147,21 +132,19 @@ void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   if (!mute_count_) {
     // If any feature was recorded prior to navigation commits, flush to the
     // browser side.
-    for (const auto& feature : features_recorded_) {
-      switch (feature.first) {
-        case FeatureType::kWebFeature:
-          ReportAndTraceMeasurementByFeatureId(
-              static_cast<WebFeature>(feature.second), *frame);
-          break;
-        case FeatureType::kCssProperty:
-          ReportAndTraceMeasurementByCSSSampleId(feature.second, frame,
-                                                 /* is_animated */ false);
-          break;
-        case FeatureType::kAnimatedCssProperty:
-          ReportAndTraceMeasurementByCSSSampleId(feature.second, frame,
-                                                 /* is_animated */ true);
-          break;
+    for (wtf_size_t feature_id = 0; feature_id < features_recorded_.size();
+         ++feature_id) {
+      if (features_recorded_[feature_id]) {
+        ReportAndTraceMeasurementByFeatureId(
+            static_cast<WebFeature>(feature_id), *frame);
       }
+    }
+    for (wtf_size_t sample_id = 0; sample_id < css_recorded_.size();
+         ++sample_id) {
+      if (css_recorded_[sample_id])
+        ReportAndTraceMeasurementByCSSSampleId(sample_id, frame, false);
+      if (animated_css_recorded_[sample_id])
+        ReportAndTraceMeasurementByCSSSampleId(sample_id, frame, true);
     }
 
     // TODO(loonybear): move extension histogram to the browser side.
@@ -177,7 +160,12 @@ bool UseCounterImpl::IsCounted(CSSPropertyID unresolved_property,
     return false;
   }
   int sample_id = static_cast<int>(GetCSSSampleId(unresolved_property));
-  return features_recorded_.Contains(Feature{ToFeatureType(type), sample_id});
+  switch (type) {
+    case CSSPropertyType::kDefault:
+      return css_recorded_[sample_id];
+    case CSSPropertyType::kAnimation:
+      return animated_css_recorded_[sample_id];
+  }
 }
 
 void UseCounterImpl::AddObserver(Observer* observer) {
@@ -211,17 +199,24 @@ void UseCounterImpl::Count(CSSPropertyID property,
   if (mute_count_)
     return;
 
-  EnumValue sample_id = static_cast<EnumValue>(GetCSSSampleId(property));
-  auto feature = Feature{ToFeatureType(type), sample_id};
+  int sample_id = static_cast<int>(GetCSSSampleId(property));
+  switch (type) {
+    case CSSPropertyType::kDefault:
+      if (css_recorded_[sample_id])
+        return;
+      if (commit_state_ >= kCommited)
+        ReportAndTraceMeasurementByCSSSampleId(sample_id, source_frame, false);
 
-  if (features_recorded_.Contains(feature))
-    return;
-  features_recorded_.insert(feature);
+      css_recorded_.set(sample_id);
+      break;
+    case CSSPropertyType::kAnimation:
+      if (animated_css_recorded_[sample_id])
+        return;
+      if (commit_state_ >= kCommited)
+        ReportAndTraceMeasurementByCSSSampleId(sample_id, source_frame, true);
 
-  if (commit_state_ >= kCommited) {
-    ReportAndTraceMeasurementByCSSSampleId(
-        sample_id, source_frame,
-        /* is_animated */ type == CSSPropertyType::kAnimation);
+      animated_css_recorded_.set(sample_id);
+      break;
   }
 }
 
