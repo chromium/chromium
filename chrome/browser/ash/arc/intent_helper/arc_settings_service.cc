@@ -726,9 +726,8 @@ void ArcSettingsServiceImpl::SyncUse24HourClock() const {
   const PrefService::Preference* pref =
       registrar_.prefs()->FindPreference(::prefs::kUse24HourClock);
   DCHECK(pref);
-  bool use24HourClock = false;
-  bool value_exists = pref->GetValue()->GetAsBoolean(&use24HourClock);
-  DCHECK(value_exists);
+  DCHECK(pref->GetValue()->is_bool());
+  bool use24HourClock = pref->GetValue()->GetBool();
   base::DictionaryValue extras;
   extras.SetBoolean("use24HourClock", use24HourClock);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_USE_24_HOUR_CLOCK",
@@ -779,9 +778,8 @@ void ArcSettingsServiceImpl::SendBoolPrefSettingsBroadcast(
   const PrefService::Preference* pref =
       registrar_.prefs()->FindPreference(pref_name);
   DCHECK(pref);
-  bool enabled = false;
-  bool value_exists = pref->GetValue()->GetAsBoolean(&enabled);
-  DCHECK(value_exists);
+  DCHECK(pref->GetValue()->is_bool());
+  bool enabled = pref->GetValue()->GetBool();
   SendBoolValueSettingsBroadcast(enabled, !pref->IsUserModifiable(), action);
 }
 

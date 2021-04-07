@@ -474,9 +474,8 @@ TEST_F(DeviceSettingsProviderTest, InitializationTest) {
   EXPECT_TRUE(closure);  // Ownership of |closure| was not taken.
   const base::Value* value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(value);
-  bool bool_value;
-  EXPECT_TRUE(value->GetAsBoolean(&bool_value));
-  EXPECT_FALSE(bool_value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 }
 
 TEST_F(DeviceSettingsProviderTest, InitializationTestUnowned) {
@@ -520,9 +519,8 @@ TEST_F(DeviceSettingsProviderTestEnterprise, NoPolicyDefaultsOn) {
   SetMetricsReportingSettings(REMOVE_METRICS_POLICY);
   const base::Value* saved_value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(saved_value);
-  bool bool_value;
-  EXPECT_TRUE(saved_value->GetAsBoolean(&bool_value));
-  EXPECT_TRUE(bool_value);
+  ASSERT_TRUE(saved_value->is_bool());
+  EXPECT_TRUE(saved_value->GetBool());
 }
 
 TEST_F(DeviceSettingsProviderTest, NoPolicyDefaultsOff) {
@@ -531,9 +529,8 @@ TEST_F(DeviceSettingsProviderTest, NoPolicyDefaultsOff) {
   SetMetricsReportingSettings(REMOVE_METRICS_POLICY);
   const base::Value* saved_value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(saved_value);
-  bool bool_value;
-  EXPECT_TRUE(saved_value->GetAsBoolean(&bool_value));
-  EXPECT_FALSE(bool_value);
+  ASSERT_TRUE(saved_value->is_bool());
+  EXPECT_FALSE(saved_value->GetBool());
 }
 
 TEST_F(DeviceSettingsProviderTest, SetPrefFailed) {
@@ -553,9 +550,8 @@ TEST_F(DeviceSettingsProviderTest, SetPrefFailed) {
   // Verify the change has not been applied.
   const base::Value* saved_value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(saved_value);
-  bool bool_value;
-  EXPECT_TRUE(saved_value->GetAsBoolean(&bool_value));
-  EXPECT_FALSE(bool_value);
+  ASSERT_TRUE(saved_value->is_bool());
+  EXPECT_FALSE(saved_value->GetBool());
 }
 
 TEST_F(DeviceSettingsProviderTest, SetPrefSucceed) {
@@ -583,9 +579,8 @@ TEST_F(DeviceSettingsProviderTest, SetPrefSucceed) {
   // Verify the change has been applied.
   const base::Value* saved_value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(saved_value);
-  bool bool_value;
-  EXPECT_TRUE(saved_value->GetAsBoolean(&bool_value));
-  EXPECT_TRUE(bool_value);
+  ASSERT_TRUE(saved_value->is_bool());
+  EXPECT_TRUE(saved_value->GetBool());
 }
 
 TEST_F(DeviceSettingsProviderTest, SetPrefTwice) {

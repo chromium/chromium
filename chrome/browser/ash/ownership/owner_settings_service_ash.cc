@@ -464,24 +464,21 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     enterprise_management::ChromeDeviceSettingsProto& settings) {
   if (path == kAccountsPrefAllowNewUser) {
     em::AllowNewUsersProto* allow = settings.mutable_allow_new_users();
-    bool allow_value;
-    if (value.GetAsBoolean(&allow_value)) {
-      allow->set_allow_new_users(allow_value);
+    if (value.is_bool()) {
+      allow->set_allow_new_users(value.GetBool());
     } else {
       NOTREACHED();
     }
   } else if (path == kAccountsPrefAllowGuest) {
     em::GuestModeEnabledProto* guest = settings.mutable_guest_mode_enabled();
-    bool guest_value;
-    if (value.GetAsBoolean(&guest_value))
-      guest->set_guest_mode_enabled(guest_value);
+    if (value.is_bool())
+      guest->set_guest_mode_enabled(value.GetBool());
     else
       NOTREACHED();
   } else if (path == kAccountsPrefShowUserNamesOnSignIn) {
     em::ShowUserNamesOnSigninProto* show = settings.mutable_show_user_names();
-    bool show_value;
-    if (value.GetAsBoolean(&show_value))
-      show->set_show_user_names(show_value);
+    if (value.is_bool())
+      show->set_show_user_names(value.GetBool());
     else
       NOTREACHED();
   } else if (path == kAccountsPrefDeviceLocalAccounts) {
@@ -546,25 +543,23 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
   } else if (path == kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled) {
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
-    bool enabled;
-    if (value.GetAsBoolean(&enabled))
-      device_local_accounts->set_enable_auto_login_bailout(enabled);
+    if (value.is_bool())
+      device_local_accounts->set_enable_auto_login_bailout(value.GetBool());
     else
       NOTREACHED();
   } else if (path ==
              kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline) {
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
-    bool should_prompt;
-    if (value.GetAsBoolean(&should_prompt))
-      device_local_accounts->set_prompt_for_network_when_offline(should_prompt);
+    if (value.is_bool())
+      device_local_accounts->set_prompt_for_network_when_offline(
+          value.GetBool());
     else
       NOTREACHED();
   } else if (path == kSignedDataRoamingEnabled) {
     em::DataRoamingEnabledProto* roam = settings.mutable_data_roaming_enabled();
-    bool roaming_value = false;
-    if (value.GetAsBoolean(&roaming_value))
-      roam->set_data_roaming_enabled(roaming_value);
+    if (value.is_bool())
+      roam->set_data_roaming_enabled(value.GetBool());
     else
       NOTREACHED();
   } else if (path == kReleaseChannel) {
@@ -577,9 +572,8 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
       NOTREACHED();
   } else if (path == kStatsReportingPref) {
     em::MetricsEnabledProto* metrics = settings.mutable_metrics_enabled();
-    bool metrics_value = false;
-    if (value.GetAsBoolean(&metrics_value))
-      metrics->set_metrics_enabled(metrics_value);
+    if (value.is_bool())
+      metrics->set_metrics_enabled(value.GetBool());
     else
       NOTREACHED();
   } else if (path == kAccountsPrefUsers) {
@@ -602,19 +596,16 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
   } else if (path == kAccountsPrefEphemeralUsersEnabled) {
     em::EphemeralUsersEnabledProto* ephemeral_users_enabled =
         settings.mutable_ephemeral_users_enabled();
-    bool ephemeral_users_enabled_value = false;
-    if (value.GetAsBoolean(&ephemeral_users_enabled_value)) {
-      ephemeral_users_enabled->set_ephemeral_users_enabled(
-          ephemeral_users_enabled_value);
+    if (value.is_bool()) {
+      ephemeral_users_enabled->set_ephemeral_users_enabled(value.GetBool());
     } else {
       NOTREACHED();
     }
   } else if (path == kAllowRedeemChromeOsRegistrationOffers) {
     em::AllowRedeemChromeOsRegistrationOffersProto* allow_redeem_offers =
         settings.mutable_allow_redeem_offers();
-    bool allow_redeem_offers_value;
-    if (value.GetAsBoolean(&allow_redeem_offers_value)) {
-      allow_redeem_offers->set_allow_redeem_offers(allow_redeem_offers_value);
+    if (value.is_bool()) {
+      allow_redeem_offers->set_allow_redeem_offers(value.GetBool());
     } else {
       NOTREACHED();
     }
@@ -631,18 +622,16 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     em::SystemUse24HourClockProto* use_24hour_clock_proto =
         settings.mutable_use_24hour_clock();
     use_24hour_clock_proto->Clear();
-    bool use_24hour_clock_value;
-    if (value.GetAsBoolean(&use_24hour_clock_value)) {
-      use_24hour_clock_proto->set_use_24hour_clock(use_24hour_clock_value);
+    if (value.is_bool()) {
+      use_24hour_clock_proto->set_use_24hour_clock(value.GetBool());
     } else {
       NOTREACHED();
     }
   } else if (path == kAttestationForContentProtectionEnabled) {
     em::AttestationSettingsProto* attestation_settings =
         settings.mutable_attestation_settings();
-    bool setting_enabled;
-    if (value.GetAsBoolean(&setting_enabled)) {
-      attestation_settings->set_content_protection_enabled(setting_enabled);
+    if (value.is_bool()) {
+      attestation_settings->set_content_protection_enabled(value.GetBool());
     } else {
       NOTREACHED();
     }
@@ -650,9 +639,8 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     em::DevicePciPeripheralDataAccessEnabledProto*
         peripheral_data_access_proto =
             settings.mutable_device_pci_peripheral_data_access_enabled();
-    bool enabled;
-    if (value.GetAsBoolean(&enabled)) {
-      peripheral_data_access_proto->set_enabled(enabled);
+    if (value.is_bool()) {
+      peripheral_data_access_proto->set_enabled(value.GetBool());
     } else {
       NOTREACHED();
     }

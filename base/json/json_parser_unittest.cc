@@ -105,9 +105,8 @@ TEST_F(JSONParserTest, ConsumeLiterals) {
   TestLastThree(parser.get());
 
   ASSERT_TRUE(value);
-  bool bool_value = false;
-  EXPECT_TRUE(value->GetAsBoolean(&bool_value));
-  EXPECT_TRUE(bool_value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_TRUE(value->GetBool());
 
   // Literal |false|.
   input = "false,|";
@@ -118,8 +117,8 @@ TEST_F(JSONParserTest, ConsumeLiterals) {
   TestLastThree(parser.get());
 
   ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetAsBoolean(&bool_value));
-  EXPECT_FALSE(bool_value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 
   // Literal |null|.
   input = "null,|";

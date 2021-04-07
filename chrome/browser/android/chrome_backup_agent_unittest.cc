@@ -72,11 +72,11 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_AllDefault) {
   JavaBooleanArrayToBoolVector(env_, result, &values);
   ASSERT_EQ(expected_pref_names_.size(), values.size());
   for (size_t i = 0; i < values.size(); i++) {
-    bool expected_value;
-    ASSERT_TRUE(pref_service_->GetDefaultPrefValue(expected_pref_names_[i])
-                    ->GetAsBoolean(&expected_value));
-    EXPECT_EQ(expected_value, values[i]) << "i = " << i << ", "
-                                         << expected_pref_names_[i];
+    const base::Value* default_pref_value =
+        pref_service_->GetDefaultPrefValue(expected_pref_names_[i]);
+    ASSERT_TRUE(default_pref_value->is_bool());
+    EXPECT_EQ(default_pref_value->GetBool(), values[i])
+        << "i = " << i << ", " << expected_pref_names_[i];
   }
 }
 
@@ -90,11 +90,11 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_IrrelevantChange) {
   JavaBooleanArrayToBoolVector(env_, result, &values);
   ASSERT_EQ(expected_pref_names_.size(), values.size());
   for (size_t i = 0; i < values.size(); i++) {
-    bool expected_value;
-    ASSERT_TRUE(pref_service_->GetDefaultPrefValue(expected_pref_names_[i])
-                    ->GetAsBoolean(&expected_value));
-    EXPECT_EQ(expected_value, values[i]) << "i = " << i << ", "
-                                         << expected_pref_names_[i];
+    const base::Value* default_pref_value =
+        pref_service_->GetDefaultPrefValue(expected_pref_names_[i]);
+    ASSERT_TRUE(default_pref_value->is_bool());
+    EXPECT_EQ(default_pref_value->GetBool(), values[i])
+        << "i = " << i << ", " << expected_pref_names_[i];
   }
 }
 
