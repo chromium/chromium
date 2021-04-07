@@ -944,6 +944,19 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
       .WithData("dst", dst_frame.AsHumanReadableString());
 }
 
+MEDIA_EXPORT VideoPixelFormat
+VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque) {
+  switch (sk_color_type) {
+    case kRGBA_8888_SkColorType:
+      return is_opaque ? media::PIXEL_FORMAT_XBGR : media::PIXEL_FORMAT_ABGR;
+    case kBGRA_8888_SkColorType:
+      return is_opaque ? media::PIXEL_FORMAT_XRGB : media::PIXEL_FORMAT_ARGB;
+    default:
+      // TODO(crbug.com/1073995): Add F16 support.
+      return media::PIXEL_FORMAT_UNKNOWN;
+  }
+}
+
 scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
                                             const gfx::Rect& visible_rect,
                                             const gfx::Size& natural_size,
@@ -955,23 +968,16 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
   if (sk_image->isLazyGenerated())
     sk_image = sk_image->makeRasterImage();
 
-  // TODO(crbug.com/1073995): Add F16 support.
-  auto sk_color_type = sk_image->colorType();
-  if (sk_color_type != kRGBA_8888_SkColorType &&
-      sk_color_type != kBGRA_8888_SkColorType) {
+  const auto format = VideoPixelFormatFromSkColorType(
+      sk_image->colorType(), sk_image->isOpaque() || force_opaque);
+  if (VideoFrameLayout::NumPlanes(format) != 1) {
+    DLOG(ERROR) << "Invalid SkColorType for CreateFromSkImage";
     return nullptr;
   }
 
   SkPixmap pm;
   const bool peek_result = sk_image->peekPixels(&pm);
   DCHECK(peek_result);
-
-  const auto format =
-      (sk_image->isOpaque() || force_opaque)
-          ? (sk_color_type == kRGBA_8888_SkColorType ? PIXEL_FORMAT_XBGR
-                                                     : PIXEL_FORMAT_XRGB)
-          : (sk_color_type == kRGBA_8888_SkColorType ? PIXEL_FORMAT_ABGR
-                                                     : PIXEL_FORMAT_ARGB);
 
   auto coded_size = gfx::Size(sk_image->width(), sk_image->height());
   auto layout = VideoFrameLayout::CreateWithStrides(

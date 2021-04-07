@@ -105,12 +105,8 @@ class MODULES_EXPORT CanvasCaptureHandler {
   void OnReleaseMailbox(scoped_refptr<StaticBitmapImage> image);
 
   scoped_refptr<media::VideoFrame> ConvertToYUVFrame(
-      bool is_opaque,
-      bool flip,
-      const uint8_t* source_ptr,
-      const gfx::Size& image_size,
-      int stride,
-      SkColorType source_color_type);
+      scoped_refptr<media::VideoFrame> argb_video_frame,
+      bool flip);
   void SendFrame(scoped_refptr<media::VideoFrame> video_frame,
                  base::TimeTicks this_frame_ticks,
                  const gfx::ColorSpace& color_space);

@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
+#include "media/base/video_types.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -199,6 +200,11 @@ MEDIA_EXPORT Status ConvertAndScaleFrame(const VideoFrame& src_frame,
                                          VideoFrame& dst_frame,
                                          std::vector<uint8_t>& tmp_buf)
     WARN_UNUSED_RESULT;
+
+// Converts kRGBA_8888_SkColorType and kBGRA_8888_SkColorType to the appropriate
+// ARGB, XRGB, ABGR, or XBGR format.
+MEDIA_EXPORT VideoPixelFormat
+VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque);
 
 // Backs a VideoFrame with a SkImage. The created frame takes a ref on the
 // provided SkImage to make this operation zero copy. Only works with CPU
