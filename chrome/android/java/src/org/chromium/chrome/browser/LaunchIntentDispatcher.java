@@ -428,6 +428,13 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
                     SystemClock.elapsedRealtime() - time);
         }
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+            Uri extraReferrer = mActivity.getReferrer();
+            if (extraReferrer != null) {
+                newIntent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, extraReferrer.toString());
+            }
+        }
+
         String targetActivityClassName = MultiWindowUtils.getInstance()
                                                  .getTabbedActivityForIntent(newIntent, mActivity)
                                                  .getName();

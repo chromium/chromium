@@ -79,6 +79,20 @@ public class SafeBrowsingReferringAppBridgeTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.N_MR1)
+    public void testFromIntentExtraActivityReferrerHighVersion() {
+        String appReferrer = "android-app://app.name/";
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, appReferrer);
+        when(mActivity.getIntent()).thenReturn(intent);
+
+        ReferringAppInfo info = SafeBrowsingReferringAppBridge.getReferringAppInfo(mWindowAndroid);
+
+        Assert.assertEquals(ReferringAppSource.ACTIVITY_REFERRER, info.getSource());
+        Assert.assertEquals(appReferrer, info.getName());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.N_MR1)
     public void testFromActivityReferrerHighVersion() {
         String appReferrer = "android-app://app.name/";
         setAppReferrerIntent(appReferrer);

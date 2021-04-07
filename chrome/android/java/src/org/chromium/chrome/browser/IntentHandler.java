@@ -136,6 +136,12 @@ public class IntentHandler {
     private static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
 
     /**
+     * Intent extra used to deliver the original activity referrer.
+     */
+    public static final String EXTRA_ACTIVITY_REFERRER =
+            "org.chromium.chrome.browser.activity_referrer";
+
+    /**
      * A referrer id used for Chrome to Chrome referrer passing.
      */
     public static final String EXTRA_REFERRER_ID = "org.chromium.chrome.browser.referrer_id";
