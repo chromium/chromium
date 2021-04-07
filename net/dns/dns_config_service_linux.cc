@@ -4,6 +4,7 @@
 
 #include "net/dns/dns_config_service_linux.h"
 
+#include <netdb.h>
 #include <netinet/in.h>
 #include <resolv.h>
 #include <sys/socket.h>
@@ -13,6 +14,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -28,6 +30,7 @@
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/dns_config.h"
+#include "net/dns/nsswitch_reader.h"
 #include "net/dns/serial_worker.h"
 
 namespace net {
@@ -40,154 +43,16 @@ const base::FilePath::CharType kFilePathHosts[] =
     FILE_PATH_LITERAL("/etc/hosts");
 
 #ifndef _PATH_RESCONF  // Normally defined in <resolv.h>
-#define _PATH_RESCONF "/etc/resolv.conf"
+#define _PATH_RESCONF FILE_PATH_LITERAL("/etc/resolv.conf")
 #endif
 
-const base::FilePath::CharType kFilePathConfig[] =
-    FILE_PATH_LITERAL(_PATH_RESCONF);
+constexpr base::FilePath::CharType kFilePathResolv[] = _PATH_RESCONF;
 
-class DnsConfigWatcher {
- public:
-  using CallbackType = base::RepeatingCallback<void(bool succeeded)>;
+#ifndef _PATH_NSSWITCH_CONF  // Normally defined in <netdb.h>
+#define _PATH_NSSWITCH_CONF FILE_PATH_LITERAL("/etc/nsswitch.conf")
+#endif
 
-  bool Watch(const CallbackType& callback) {
-    callback_ = callback;
-    return watcher_.Watch(base::FilePath(kFilePathConfig),
-                          base::FilePathWatcher::Type::kNonRecursive,
-                          base::BindRepeating(&DnsConfigWatcher::OnCallback,
-                                              base::Unretained(this)));
-  }
-
- private:
-  void OnCallback(const base::FilePath& path, bool error) {
-    callback_.Run(!error);
-  }
-
-  base::FilePathWatcher watcher_;
-  CallbackType callback_;
-};
-
-base::Optional<DnsConfig> ReadDnsConfig() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  base::Optional<DnsConfig> dns_config;
-  struct __res_state res;
-  memset(&res, 0, sizeof(res));
-  if (res_ninit(&res) == 0)
-    dns_config = ConvertResStateToDnsConfig(res);
-  res_nclose(&res);
-
-  if (!dns_config.has_value())
-    return dns_config;
-
-  // Override |fallback_period| value to match default setting on Windows.
-  dns_config->fallback_period = kDnsDefaultFallbackPeriod;
-  return dns_config;
-}
-
-}  // namespace
-
-class DnsConfigServiceLinux::Watcher : public DnsConfigService::Watcher {
- public:
-  explicit Watcher(DnsConfigServiceLinux& service)
-      : DnsConfigService::Watcher(service) {}
-  ~Watcher() override = default;
-
-  Watcher(const Watcher&) = delete;
-  Watcher& operator=(const Watcher&) = delete;
-
-  bool Watch() override {
-    CheckOnCorrectSequence();
-
-    bool success = true;
-    if (!config_watcher_.Watch(base::BindRepeating(&Watcher::OnConfigChanged,
-                                                   base::Unretained(this)))) {
-      LOG(ERROR) << "DNS config watch failed to start.";
-      success = false;
-    }
-
-    if (!hosts_watcher_.Watch(
-            base::FilePath(kFilePathHosts),
-            base::FilePathWatcher::Type::kNonRecursive,
-            base::BindRepeating(&Watcher::OnHostsFilePathWatcherChange,
-                                base::Unretained(this)))) {
-      LOG(ERROR) << "DNS hosts watch failed to start.";
-      success = false;
-    }
-    return success;
-  }
-
- private:
-  void OnHostsFilePathWatcherChange(const base::FilePath& path, bool error) {
-    OnHostsChanged(!error);
-  }
-
-  DnsConfigWatcher config_watcher_;
-  base::FilePathWatcher hosts_watcher_;
-};
-
-// A SerialWorker that uses libresolv to initialize res_state and converts
-// it to DnsConfig.
-class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
- public:
-  explicit ConfigReader(DnsConfigServiceLinux& service) : service_(&service) {
-    // Allow execution on another thread; nothing thread-specific about
-    // constructor.
-    DETACH_FROM_SEQUENCE(sequence_checker_);
-  }
-
-  ConfigReader(const ConfigReader&) = delete;
-  ConfigReader& operator=(const ConfigReader&) = delete;
-
-  void DoWork() override { dns_config_ = ReadDnsConfig(); }
-
-  void OnWorkFinished() override {
-    DCHECK(!IsCancelled());
-    if (dns_config_.has_value()) {
-      service_->OnConfigRead(std::move(dns_config_).value());
-    } else {
-      LOG(WARNING) << "Failed to read DnsConfig.";
-    }
-  }
-
- private:
-  ~ConfigReader() override = default;
-
-  // Raw pointer to owning DnsConfigService. This must never be accessed inside
-  // DoWork(), since service may be destroyed while SerialWorker is running
-  // on worker thread.
-  DnsConfigServiceLinux* const service_;
-  // Written in DoWork, read in OnWorkFinished, no locking necessary.
-  base::Optional<DnsConfig> dns_config_;
-};
-
-DnsConfigServiceLinux::DnsConfigServiceLinux()
-    : DnsConfigService(kFilePathHosts) {
-  // Allow constructing on one thread and living on another.
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
-
-DnsConfigServiceLinux::~DnsConfigServiceLinux() {
-  if (config_reader_)
-    config_reader_->Cancel();
-}
-
-void DnsConfigServiceLinux::ReadConfigNow() {
-  config_reader_->WorkNow();
-}
-
-bool DnsConfigServiceLinux::StartWatching() {
-  CreateReader();
-  watcher_ = std::make_unique<Watcher>(*this);
-  return watcher_->Watch();
-}
-
-void DnsConfigServiceLinux::CreateReader() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!config_reader_);
-  config_reader_ = base::MakeRefCounted<ConfigReader>(*this);
-}
+constexpr base::FilePath::CharType kFilePathNsswitch[] = _PATH_NSSWITCH_CONF;
 
 base::Optional<DnsConfig> ConvertResStateToDnsConfig(
     const struct __res_state& res) {
@@ -262,6 +127,187 @@ base::Optional<DnsConfig> ConvertResStateToDnsConfig(
       return base::nullopt;
   }
   return dns_config;
+}
+
+bool IsNsswitchConfigCompatible(
+    const std::vector<NsswitchReader::ServiceSpecification>& nsswitch_hosts) {
+  // TODO(crbug.com/117655): Implement.
+  return true;
+}
+
+}  // namespace
+
+class DnsConfigServiceLinux::Watcher : public DnsConfigService::Watcher {
+ public:
+  explicit Watcher(DnsConfigServiceLinux& service)
+      : DnsConfigService::Watcher(service) {}
+  ~Watcher() override = default;
+
+  Watcher(const Watcher&) = delete;
+  Watcher& operator=(const Watcher&) = delete;
+
+  bool Watch() override {
+    CheckOnCorrectSequence();
+
+    bool success = true;
+    if (!resolv_watcher_.Watch(
+            base::FilePath(kFilePathResolv),
+            base::FilePathWatcher::Type::kNonRecursive,
+            base::BindRepeating(&Watcher::OnConfigFilePathWatcherChange,
+                                base::Unretained(this)))) {
+      LOG(ERROR) << "DNS config (resolv.conf) watch failed to start.";
+      success = false;
+    }
+
+    if (!nsswitch_watcher_.Watch(
+            base::FilePath(kFilePathNsswitch),
+            base::FilePathWatcher::Type::kNonRecursive,
+            base::BindRepeating(&Watcher::OnConfigFilePathWatcherChange,
+                                base::Unretained(this)))) {
+      LOG(ERROR) << "DNS nsswitch.conf watch failed to start.";
+      success = false;
+    }
+
+    if (!hosts_watcher_.Watch(
+            base::FilePath(kFilePathHosts),
+            base::FilePathWatcher::Type::kNonRecursive,
+            base::BindRepeating(&Watcher::OnHostsFilePathWatcherChange,
+                                base::Unretained(this)))) {
+      LOG(ERROR) << "DNS hosts watch failed to start.";
+      success = false;
+    }
+    return success;
+  }
+
+ private:
+  void OnConfigFilePathWatcherChange(const base::FilePath& path, bool error) {
+    OnConfigChanged(!error);
+  }
+
+  void OnHostsFilePathWatcherChange(const base::FilePath& path, bool error) {
+    OnHostsChanged(!error);
+  }
+
+  base::FilePathWatcher resolv_watcher_;
+  base::FilePathWatcher nsswitch_watcher_;
+  base::FilePathWatcher hosts_watcher_;
+};
+
+// A SerialWorker that uses libresolv to initialize res_state and converts
+// it to DnsConfig.
+class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
+ public:
+  explicit ConfigReader(DnsConfigServiceLinux& service,
+                        std::unique_ptr<ResolvReader> resolv_reader,
+                        std::unique_ptr<NsswitchReader> nsswitch_reader)
+      : service_(&service),
+        resolv_reader_(std::move(resolv_reader)),
+        nsswitch_reader_(std::move(nsswitch_reader)) {
+    // Allow execution on another thread; nothing thread-specific about
+    // constructor.
+    DETACH_FROM_SEQUENCE(sequence_checker_);
+
+    DCHECK(resolv_reader_);
+    DCHECK(nsswitch_reader_);
+  }
+
+  ConfigReader(const ConfigReader&) = delete;
+  ConfigReader& operator=(const ConfigReader&) = delete;
+
+  void DoWork() override {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+
+    std::unique_ptr<struct __res_state> res = resolv_reader_->GetResState();
+    if (res) {
+      dns_config_ = ConvertResStateToDnsConfig(*res.get());
+      resolv_reader_->CloseResState(res.get());
+    }
+
+    if (!dns_config_.has_value())
+      return;
+
+    // Override `fallback_period` value to match default setting on Windows.
+    dns_config_->fallback_period = kDnsDefaultFallbackPeriod;
+
+    if (dns_config_ && !dns_config_->unhandled_options) {
+      std::vector<NsswitchReader::ServiceSpecification> nsswitch_hosts =
+          nsswitch_reader_->ReadAndParseHosts();
+      dns_config_->unhandled_options =
+          !IsNsswitchConfigCompatible(nsswitch_hosts);
+    }
+  }
+
+  void OnWorkFinished() override {
+    DCHECK(!IsCancelled());
+    if (dns_config_.has_value()) {
+      service_->OnConfigRead(std::move(dns_config_).value());
+    } else {
+      LOG(WARNING) << "Failed to read DnsConfig.";
+    }
+  }
+
+ private:
+  ~ConfigReader() override = default;
+
+  // Raw pointer to owning DnsConfigService. This must never be accessed inside
+  // DoWork(), since service may be destroyed while SerialWorker is running
+  // on worker thread.
+  DnsConfigServiceLinux* const service_;
+  // Written/accessed in DoWork, read in OnWorkFinished, no locking necessary.
+  base::Optional<DnsConfig> dns_config_;
+  std::unique_ptr<ResolvReader> resolv_reader_;
+  std::unique_ptr<NsswitchReader> nsswitch_reader_;
+};
+
+std::unique_ptr<struct __res_state>
+DnsConfigServiceLinux::ResolvReader::GetResState() {
+  auto res = std::make_unique<struct __res_state>();
+  memset(res.get(), 0, sizeof(struct __res_state));
+
+  if (res_ninit(res.get()) != 0) {
+    CloseResState(res.get());
+    return nullptr;
+  }
+
+  return res;
+}
+
+void DnsConfigServiceLinux::ResolvReader::CloseResState(
+    struct __res_state* res) {
+  res_nclose(res);
+}
+
+DnsConfigServiceLinux::DnsConfigServiceLinux()
+    : DnsConfigService(kFilePathHosts) {
+  // Allow constructing on one thread and living on another.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+DnsConfigServiceLinux::~DnsConfigServiceLinux() {
+  if (config_reader_)
+    config_reader_->Cancel();
+}
+
+void DnsConfigServiceLinux::ReadConfigNow() {
+  if (!config_reader_)
+    CreateReader();
+  config_reader_->WorkNow();
+}
+
+bool DnsConfigServiceLinux::StartWatching() {
+  CreateReader();
+  watcher_ = std::make_unique<Watcher>(*this);
+  return watcher_->Watch();
+}
+
+void DnsConfigServiceLinux::CreateReader() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!config_reader_);
+  DCHECK(resolv_reader_);
+  DCHECK(nsswitch_reader_);
+  config_reader_ = base::MakeRefCounted<ConfigReader>(
+      *this, std::move(resolv_reader_), std::move(nsswitch_reader_));
 }
 
 }  // namespace internal

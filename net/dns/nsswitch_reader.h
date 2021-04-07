@@ -83,7 +83,7 @@ class NET_EXPORT_PRIVATE NsswitchReader {
   using FileReadCall = base::RepeatingCallback<std::string()>;
 
   NsswitchReader();
-  ~NsswitchReader();
+  virtual ~NsswitchReader();
 
   NsswitchReader(const NsswitchReader&) = delete;
   NsswitchReader& operator=(const NsswitchReader&) = delete;
@@ -92,7 +92,7 @@ class NET_EXPORT_PRIVATE NsswitchReader {
   // matching databases, only parses the first. Assumes a basic default
   // configuration if the file cannot be read or a "hosts:" database cannot be
   // found.
-  std::vector<ServiceSpecification> ReadAndParseHosts();
+  virtual std::vector<ServiceSpecification> ReadAndParseHosts();
 
   void set_file_read_call_for_testing(FileReadCall file_read_call) {
     file_read_call_ = std::move(file_read_call);

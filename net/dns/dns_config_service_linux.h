@@ -5,17 +5,19 @@
 #ifndef NET_DNS_DNS_CONFIG_SERVICE_LINUX_H_
 #define NET_DNS_DNS_CONFIG_SERVICE_LINUX_H_
 
-#include <memory>
+#include <arpa/inet.h>
+#include <resolv.h>
 
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config_service.h"
-
-struct __res_state;
+#include "net/dns/nsswitch_reader.h"
 
 namespace net {
-struct DnsConfig;
 
 // Use DnsConfigService::CreateSystemService to use it outside of tests.
 namespace internal {
@@ -27,11 +29,37 @@ namespace internal {
 // it's later called on. WatchConfig() must be called prior to ReadConfig().
 class NET_EXPORT_PRIVATE DnsConfigServiceLinux : public DnsConfigService {
  public:
+  // Test-overridable class to handle the interactions with OS APIs for reading
+  // resolv.conf.
+  class NET_EXPORT_PRIVATE ResolvReader {
+   public:
+    virtual ~ResolvReader() = default;
+
+    // Null` on failure. If not null, result must be cleaned up through a call
+    // to `CloseResState()`.
+    virtual std::unique_ptr<struct __res_state> GetResState();
+    virtual void CloseResState(struct __res_state* res);
+  };
+
   DnsConfigServiceLinux();
   ~DnsConfigServiceLinux() override;
 
   DnsConfigServiceLinux(const DnsConfigServiceLinux&) = delete;
   DnsConfigServiceLinux& operator=(const DnsConfigServiceLinux&) = delete;
+
+  void set_resolv_reader_for_testing(
+      std::unique_ptr<ResolvReader> resolv_reader) {
+    DCHECK(!config_reader_);  // Need to call before first read.
+    DCHECK(resolv_reader);
+    resolv_reader_ = std::move(resolv_reader);
+  }
+
+  void set_nsswitch_reader_for_testing(
+      std::unique_ptr<NsswitchReader> nsswitch_reader) {
+    DCHECK(!config_reader_);  // Need to call before first read.
+    DCHECK(nsswitch_reader);
+    nsswitch_reader_ = std::move(nsswitch_reader);
+  }
 
  protected:
   // DnsConfigService:
@@ -47,13 +75,14 @@ class NET_EXPORT_PRIVATE DnsConfigServiceLinux : public DnsConfigService {
   class Watcher;
   class ConfigReader;
 
+  std::unique_ptr<ResolvReader> resolv_reader_ =
+      std::make_unique<ResolvReader>();
+  std::unique_ptr<NsswitchReader> nsswitch_reader_ =
+      std::make_unique<NsswitchReader>();
+
   std::unique_ptr<Watcher> watcher_;
   scoped_refptr<ConfigReader> config_reader_;
 };
-
-// Returns nullopt iff a valid config could not be determined.
-base::Optional<DnsConfig> NET_EXPORT_PRIVATE
-ConvertResStateToDnsConfig(const struct __res_state& res);
 
 }  // namespace internal
 

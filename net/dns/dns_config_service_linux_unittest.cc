@@ -8,9 +8,12 @@
 #include <resolv.h>
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -22,8 +25,12 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "net/base/ip_address.h"
+#include "net/base/test_completion_callback.h"
 #include "net/dns/dns_config.h"
+#include "net/dns/dns_config_service.h"
+#include "net/dns/nsswitch_reader.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -80,7 +87,8 @@ void InitializeResState(res_state res) {
   for (unsigned i = 0; i < base::size(kNameserversIPv6) && i < MAXNS; ++i) {
     if (!kNameserversIPv6[i])
       continue;
-    // Must use malloc to mimic res_ninit.
+    // Must use malloc to mimic res_ninit. Expect to be freed in
+    // `TestResolvReader::CloseResState()`.
     struct sockaddr_in6* sa6;
     sa6 = static_cast<sockaddr_in6*>(malloc(sizeof(*sa6)));
     sa6->sin6_family = AF_INET6;
@@ -93,16 +101,9 @@ void InitializeResState(res_state res) {
   res->_u._ext.nscount6 = nscount6;
 }
 
-void CloseResState(res_state res) {
-  for (int i = 0; i < res->nscount; ++i) {
-    if (res->_u._ext.nsaddrs[i] != nullptr)
-      free(res->_u._ext.nsaddrs[i]);
-  }
-}
-
 void InitializeExpectedConfig(DnsConfig* config) {
   config->ndots = 2;
-  config->fallback_period = base::TimeDelta::FromSeconds(4);
+  config->fallback_period = kDnsDefaultFallbackPeriod;
   config->attempts = 7;
   config->rotate = true;
   config->append_to_multi_label_name = true;
@@ -126,22 +127,116 @@ void InitializeExpectedConfig(DnsConfig* config) {
   }
 }
 
-TEST(DnsConfigServiceLinuxTest, CreateAndDestroy) {
-  // Regression test to verify crash does not occur if DnsConfigServiceLinux
-  // instance is destroyed without calling WatchConfig()
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
+class CallbackHelper {
+ public:
+  base::Optional<DnsConfig> WaitForResult() {
+    run_loop_.Run();
+    return GetResult();
+  }
 
+  base::Optional<DnsConfig> GetResult() {
+    base::Optional<DnsConfig> result = std::move(config_);
+    return result;
+  }
+
+  DnsConfigService::CallbackType GetCallback() {
+    return base::BindRepeating(&CallbackHelper::OnComplete,
+                               base::Unretained(this));
+  }
+
+ private:
+  void OnComplete(const DnsConfig& config) {
+    config_ = config;
+    run_loop_.Quit();
+  }
+
+  base::Optional<DnsConfig> config_;
+  base::RunLoop run_loop_;
+};
+
+class TestResolvReader : public internal::DnsConfigServiceLinux::ResolvReader {
+ public:
+  void set_value(std::unique_ptr<struct __res_state> value) {
+    value_ = std::move(value);
+    closed_ = false;
+  }
+
+  bool closed() { return closed_; }
+
+  // DnsConfigServiceLinux::ResolvReader:
+  std::unique_ptr<struct __res_state> GetResState() override {
+    return std::move(value_);
+  }
+
+  void CloseResState(struct __res_state* res) override {
+    closed_ = true;
+
+    // Assume `res->_u._ext.nsaddrs` memory allocated via malloc, e.g. by
+    // `InitializeResState()`.
+    for (int i = 0; i < res->nscount; ++i) {
+      if (res->_u._ext.nsaddrs[i] != nullptr)
+        free(res->_u._ext.nsaddrs[i]);
+    }
+  }
+
+ private:
+  std::unique_ptr<struct __res_state> value_;
+  bool closed_ = false;
+};
+
+class TestNsswitchReader : public NsswitchReader {
+ public:
+  void set_value(std::vector<ServiceSpecification> value) {
+    value_ = std::move(value);
+  }
+
+  // NsswitchReader:
+  std::vector<ServiceSpecification> ReadAndParseHosts() override {
+    return value_;
+  }
+
+ private:
+  std::vector<ServiceSpecification> value_;
+};
+
+class DnsConfigServiceLinuxTest : public ::testing::Test,
+                                  public WithTaskEnvironment {
+ public:
+  DnsConfigServiceLinuxTest()
+      : WithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    auto resolv_reader = std::make_unique<TestResolvReader>();
+    resolv_reader_ = resolv_reader.get();
+    service_.set_resolv_reader_for_testing(std::move(resolv_reader));
+
+    auto nsswitch_reader = std::make_unique<TestNsswitchReader>();
+    nsswitch_reader_ = nsswitch_reader.get();
+    service_.set_nsswitch_reader_for_testing(std::move(nsswitch_reader));
+  }
+
+ protected:
+  internal::DnsConfigServiceLinux service_;
+  TestResolvReader* resolv_reader_;
+  TestNsswitchReader* nsswitch_reader_;
+};
+
+// Regression test to verify crash does not occur if DnsConfigServiceLinux
+// instance is destroyed without calling WatchConfig()
+TEST_F(DnsConfigServiceLinuxTest, CreateAndDestroy) {
   auto service = std::make_unique<internal::DnsConfigServiceLinux>();
   service.reset();
-  task_environment.RunUntilIdle();
+  RunUntilIdle();
 }
 
-TEST(DnsConfigServiceLinuxTest, ConvertResStateToDnsConfig) {
-  struct __res_state res;
-  InitializeResState(&res);
-  base::Optional<DnsConfig> config = internal::ConvertResStateToDnsConfig(res);
-  CloseResState(&res);
+TEST_F(DnsConfigServiceLinuxTest, ConvertResStateToDnsConfig) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+
   ASSERT_TRUE(config.has_value());
   EXPECT_TRUE(config->IsValid());
 
@@ -149,50 +244,76 @@ TEST(DnsConfigServiceLinuxTest, ConvertResStateToDnsConfig) {
   EXPECT_FALSE(expected_config.EqualsIgnoreHosts(config.value()));
   InitializeExpectedConfig(&expected_config);
   EXPECT_TRUE(expected_config.EqualsIgnoreHosts(config.value()));
+
+  EXPECT_TRUE(resolv_reader_->closed());
 }
 
-TEST(DnsConfigServiceLinuxTest, RejectEmptyNameserver) {
-  struct __res_state res = {};
-  res.options = RES_INIT | RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
+TEST_F(DnsConfigServiceLinuxTest, RejectEmptyNameserver) {
+  auto res = std::make_unique<struct __res_state>();
+  res->options = RES_INIT | RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
   const char kDnsrch[] = "chromium.org";
-  memcpy(res.defdname, kDnsrch, sizeof(kDnsrch));
-  res.dnsrch[0] = res.defdname;
+  memcpy(res->defdname, kDnsrch, sizeof(kDnsrch));
+  res->dnsrch[0] = res->defdname;
 
   struct sockaddr_in sa = {};
   sa.sin_family = AF_INET;
   sa.sin_port = base::HostToNet16(NS_DEFAULTPORT);
   sa.sin_addr.s_addr = INADDR_ANY;
-  res.nsaddr_list[0] = sa;
+  res->nsaddr_list[0] = sa;
   sa.sin_addr.s_addr = 0xCAFE1337;
-  res.nsaddr_list[1] = sa;
-  res.nscount = 2;
+  res->nsaddr_list[1] = sa;
+  res->nscount = 2;
 
-  EXPECT_FALSE(internal::ConvertResStateToDnsConfig(res));
+  resolv_reader_->set_value(std::move(res));
 
-  sa.sin_addr.s_addr = 0xDEADBEEF;
-  res.nsaddr_list[0] = sa;
-  EXPECT_TRUE(internal::ConvertResStateToDnsConfig(res));
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  RunUntilIdle();
+  base::Optional<DnsConfig> config = callback_helper.GetResult();
+
+  EXPECT_FALSE(config.has_value());
+  EXPECT_TRUE(resolv_reader_->closed());
 }
 
-TEST(DnsConfigServiceLinuxTest, DestroyWhileJobsWorking) {
-  // Regression test to verify crash does not occur if DnsConfigServiceLinux
-  // instance is destroyed while SerialWorker jobs have posted to worker pool.
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+TEST_F(DnsConfigServiceLinuxTest, AcceptNonEmptyNameserver) {
+  auto res = std::make_unique<struct __res_state>();
+  res->options = RES_INIT | RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
+  const char kDnsrch[] = "chromium.org";
+  memcpy(res->defdname, kDnsrch, sizeof(kDnsrch));
+  res->dnsrch[0] = res->defdname;
 
+  struct sockaddr_in sa = {};
+  sa.sin_family = AF_INET;
+  sa.sin_port = base::HostToNet16(NS_DEFAULTPORT);
+  sa.sin_addr.s_addr = 0xDEADBEEF;
+  res->nsaddr_list[0] = sa;
+  sa.sin_addr.s_addr = 0xCAFE1337;
+  res->nsaddr_list[1] = sa;
+  res->nscount = 2;
+
+  resolv_reader_->set_value(std::move(res));
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+
+  EXPECT_TRUE(config.has_value());
+  EXPECT_TRUE(resolv_reader_->closed());
+}
+
+// Regression test to verify crash does not occur if DnsConfigServiceLinux
+// instance is destroyed while SerialWorker jobs have posted to worker pool.
+TEST_F(DnsConfigServiceLinuxTest, DestroyWhileJobsWorking) {
   auto service = std::make_unique<internal::DnsConfigServiceLinux>();
   // Call WatchConfig() which also tests ReadConfig().
   service->WatchConfig(base::BindRepeating(&DummyConfigCallback));
   service.reset();
-  task_environment.FastForwardUntilNoTasksRemain();
+  FastForwardUntilNoTasksRemain();
 }
 
-TEST(DnsConfigServiceLinuxTest, DestroyOnDifferentThread) {
-  // Regression test to verify crash does not occur if DnsConfigServiceLinux
-  // instance is destroyed on another thread.
-  base::test::TaskEnvironment task_environment;
-
+// Regression test to verify crash does not occur if DnsConfigServiceLinux
+// instance is destroyed on another thread.
+TEST_F(DnsConfigServiceLinuxTest, DestroyOnDifferentThread) {
   scoped_refptr<base::SequencedTaskRunner> runner =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   std::unique_ptr<internal::DnsConfigServiceLinux, base::OnTaskRunnerDeleter>
@@ -204,7 +325,7 @@ TEST(DnsConfigServiceLinuxTest, DestroyOnDifferentThread) {
                                   base::Unretained(service.get()),
                                   base::BindRepeating(&DummyConfigCallback)));
   service.reset();
-  task_environment.RunUntilIdle();
+  RunUntilIdle();
 }
 
 }  // namespace
