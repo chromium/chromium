@@ -285,7 +285,7 @@ GtkCssContext::operator GtkStyleContext*() {
 GtkCssContext GtkCssContext::GetParent() {
   if (GtkCheckVersion(4)) {
     return GtkCssContext(WrapGObject(gtk_widget_get_parent(widget_)),
-                         root_ == widget_ ? nullptr : root_);
+                         root_ == widget_ ? ScopedGObject<GtkWidget>() : root_);
   }
   return GtkCssContext(WrapGObject(gtk_style_context_get_parent(context_)));
 }
