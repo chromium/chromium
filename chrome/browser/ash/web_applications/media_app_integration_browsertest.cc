@@ -26,7 +26,6 @@
 #include "chromeos/components/media_app_ui/test/media_app_ui_browsertest.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/entry_info.h"
@@ -71,10 +70,7 @@ constexpr char kDomExceptionScript[] =
 class MediaAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   MediaAppIntegrationTest() {
-    // LoadsInkForImageAnnotation needs SharedArrayBuffer.
-    // TODO(crbug.com/1144104) Migrate the Ink app to be cross-origin isolated.
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kMediaApp, features::kSharedArrayBuffer}, {});
+    scoped_feature_list_.InitWithFeatures({chromeos::features::kMediaApp}, {});
   }
 
  private:
