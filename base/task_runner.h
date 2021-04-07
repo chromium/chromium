@@ -73,14 +73,17 @@ class BASE_EXPORT TaskRunner
                                OnceClosure task,
                                base::TimeDelta delay) = 0;
 
-  // Posts |task| on the current TaskRunner.  On completion, |reply|
-  // is posted to the thread that called PostTaskAndReply().  Both
-  // |task| and |reply| are guaranteed to be deleted on the thread
-  // from which PostTaskAndReply() is invoked.  This allows objects
-  // that must be deleted on the originating thread to be bound into
-  // the |task| and |reply| OnceClosures.  In particular, it can be useful
-  // to use WeakPtr<> in the |reply| OnceClosure so that the reply
-  // operation can be canceled. See the following pseudo-code:
+  // Posts |task| on the current TaskRunner.  On completion, |reply| is posted
+  // to the sequence that called PostTaskAndReply().  On the success case,
+  // |task| is destroyed on the target sequence and |reply| is destroyed on the
+  // originating sequence immediately after their invocation.  If an error
+  // happened on the onward PostTask, both |task| and |reply| are destroyed on
+  // the originating sequence, and on an error on the backward PostTask, |reply|
+  // is leaked rather than being destroyed on the wrong sequence.  This allows
+  // objects that must be deleted on the originating sequence to be bound into
+  // the |reply| Closures.  In particular, it can be useful to use WeakPtr<> in
+  // the |reply| Closure so that the reply operation can be canceled. See the
+  // following pseudo-code:
   //
   // class DataBuffer : public RefCountedThreadSafe<DataBuffer> {
   //  public:
