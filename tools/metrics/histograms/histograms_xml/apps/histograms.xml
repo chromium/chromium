@@ -484,8 +484,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.ScoreNormalizer.L2ErrorDecreased" enum="Boolean"
     expires_after="2022-01-31">
   <owner>adafang@google.com</owner>
-  <owner>wrong@chromium.com</owner>
-  <owner>tby@chromium.com</owner>
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
   <summary>
     Whether or not splitting and merging bins is less than or equal to the old
     L2 error of bin counts. Logged after each search result is recorded.
@@ -495,8 +495,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.ScoreNormalizer.ReadPrefsError"
     enum="BooleanError" expires_after="2022-01-31">
   <owner>adafang@google.com</owner>
-  <owner>wrong@chromium.com</owner>
-  <owner>tby@chromium.com</owner>
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
   <summary>
     Whether or not dividers and/or counts from read prefs is empty. A empty
     dividers or counts means one of the values in the vector was not saved
@@ -508,8 +508,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.ScoreNormalizer.SearchResultsCount" units="count"
     expires_after="2022-01-31">
   <owner>adafang@google.com</owner>
-  <owner>wrong@chromium.com</owner>
-  <owner>tby@chromium.com</owner>
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
   <summary>
     The number of search results which have been normalized. Logged when each
     vector of search results is normalized.
