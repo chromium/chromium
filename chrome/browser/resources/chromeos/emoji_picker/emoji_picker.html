@@ -8,8 +8,8 @@
     --emoji-size: 0;
     --emoji-per-row: 0;
     /* Values set in css only. */
-    --emoji-group-tabs-left: -4px;
-    --emoji-group-button-size: 36px;
+    --emoji-group-tabs-left: 0;
+    --emoji-group-button-size: var(--emoji-size);
     --emoji-divider-color: var(--google-grey-200);
     /* Actual properties of the emoji picker */
 
@@ -43,7 +43,7 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    overflow-y: hidden;
+    overflow-y: clip;
     width: 100%;
   }
 
@@ -89,13 +89,14 @@
   }
 
   #rightChevron {
-    left: calc(var(--emoji-group-button-size) * 8 +
-      var(--emoji-picker-side-padding));
+    left: calc((var(--emoji-picker-width) -
+      2 * var(--emoji-picker-side-padding)) / 9 * 8
+      + var(--emoji-picker-side-padding));
   }
 
   #leftChevron {
     display: none;
-    left: 10px;
+    left: var(--emoji-picker-side-padding);
   }
 
   .divider {
@@ -115,10 +116,13 @@
     border-top-right-radius: 2px;
     flex-shrink: 0;
     height: 2px;
-    margin-inline-start: 2px;
+    /* Left needed so that transition end fires when it changes for the first
+     * time.
+     */
+    left: 0;
     position: relative;
     transition: all 200ms;
-    width: 32px;
+    width:  calc(312px / var(--emoji-per-row));
   }
 </style>
 

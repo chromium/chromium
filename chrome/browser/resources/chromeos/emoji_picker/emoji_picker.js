@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_SIDE_PADDING_PX, EMOJI_PICKER_TOP_PADDING_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, GROUP_ICON_SIZE, GROUP_PER_ROW} from './constants.js';
+import {EMOJI_GROUP_SIZE_PX, EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_SIDE_PADDING_PX, EMOJI_PICKER_TOP_PADDING_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, GROUP_ICON_SIZE, GROUP_PER_ROW} from './constants.js';
 import {EmojiButton} from './emoji_button.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
@@ -255,20 +255,20 @@ export class EmojiPicker extends PolymerElement {
 
   onRightChevronClick() {
     this.shadowRoot.getElementById('tabs').scrollLeft = GROUP_ICON_SIZE * 6;
-    this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 2].groupId);
-    this.shadowRoot.getElementById('bar').style.left = '36px';
+    this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 3].groupId);
     this.highlightBarMoving = true;
+    this.shadowRoot.getElementById('bar').style.left = EMOJI_GROUP_SIZE_PX;
   }
 
   onLeftChevronClick() {
     this.shadowRoot.getElementById('tabs').scrollLeft = 0;
     this.scrollToGroup(GROUP_TABS[0].groupId);
+    this.highlightBarMoving = true;
     if (this.history.emoji.length > 0) {
       this.shadowRoot.getElementById('bar').style.left = '0';
     } else {
       this.shadowRoot.getElementById('bar').style.left = '36px';
     }
-    this.highlightBarMoving = true;
   }
 
   /**
@@ -335,24 +335,25 @@ export class EmojiPicker extends PolymerElement {
       this.set(['emojiGroupTabs', i, 'active'], isActive);
     });
 
-    // Update the scroll position of the emoji groups so that active group is
-    // visible.
-    let tabscrollLeft = Math.round(
-                            this.shadowRoot.getElementById('tabs').scrollLeft /
-                            GROUP_ICON_SIZE) *
-        GROUP_ICON_SIZE;
-    if (tabscrollLeft > GROUP_ICON_SIZE * index) {
-      tabscrollLeft = Math.max(GROUP_ICON_SIZE * (index - 1), 0);
-    }
-    if (tabscrollLeft + GROUP_ICON_SIZE * (GROUP_PER_ROW - 2) <
-        GROUP_ICON_SIZE * (index)) {
-      // 3 = 1 for 1 based index + 2 for chevrons (left and right can display at
-      // the same time).
-      tabscrollLeft = GROUP_ICON_SIZE * (index + 3 - GROUP_PER_ROW);
-    }
-
     // once tab scroll is updated - update the position of the highlight bar.
     if (!this.highlightBarMoving) {
+      // Update the scroll position of the emoji groups so that active group is
+      // visible.
+      let tabscrollLeft =
+          Math.round(
+              this.shadowRoot.getElementById('tabs').scrollLeft /
+              GROUP_ICON_SIZE) *
+          GROUP_ICON_SIZE;
+      if (tabscrollLeft > GROUP_ICON_SIZE * index) {
+        tabscrollLeft = Math.max(GROUP_ICON_SIZE * (index - 1), 0);
+      }
+      if (tabscrollLeft + GROUP_ICON_SIZE * (GROUP_PER_ROW - 2) <
+          GROUP_ICON_SIZE * index) {
+        // 3 = 1 for 1 based index + 2 for chevrons (left and right can display
+        // at the same time).
+        tabscrollLeft = GROUP_ICON_SIZE * (index + 3 - GROUP_PER_ROW);
+      }
+
       this.shadowRoot.getElementById('tabs').scrollLeft = tabscrollLeft;
       this.shadowRoot.getElementById('bar').style.left =
           ((index * GROUP_ICON_SIZE - tabscrollLeft)) + 'px';
