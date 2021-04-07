@@ -4276,7 +4276,7 @@
   {
     "name": "print-with-reduced-rasterization",
     "owners": [ "thestig" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 96
   },
   {
     "name": "printer-status",
