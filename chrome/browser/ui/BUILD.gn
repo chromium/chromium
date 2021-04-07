@@ -2188,8 +2188,6 @@ static_library("ui") {
       "views/profiles/profile_indicator_icon.h",
       "views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.cc",
       "views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.h",
-      "views/relaunch_notification/relaunch_notification_metrics.cc",
-      "views/relaunch_notification/relaunch_notification_metrics.h",
 
       # On chromeos, file manager extension handles the file open/save dialog.
       "views/select_file_dialog_extension.cc",

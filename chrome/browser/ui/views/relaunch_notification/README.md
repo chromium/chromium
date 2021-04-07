@@ -53,14 +53,3 @@ required relaunch is displayed in the title.
 The relaunch notifications on Chrome OS uses `SystemTray` notifications, and
 uses `RelaunchRequiredTimer` to update the title in case the
 `RelaunchNotification` policy is set to required.
-
-
-## Metrics
-
-`relaunch_notification::RecordRecommendedShowResult` is responsible for
-recording UMA metrics of the notification showing result in case the
-notification settings was set to recommended.
-
-`relaunch_notification::RecordRequiredShowResult` is responsible for
-recording UMA metrics of the notification showing result in case the
-notification settings was set to required.
