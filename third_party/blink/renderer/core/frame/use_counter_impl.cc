@@ -113,7 +113,7 @@ void UseCounterImpl::ReportAndTraceMeasurementByFeatureId(
   }
 }
 
-bool UseCounterImpl::HasRecordedMeasurement(WebFeature feature) const {
+bool UseCounterImpl::IsCounted(WebFeature feature) const {
   if (mute_count_)
     return false;
 

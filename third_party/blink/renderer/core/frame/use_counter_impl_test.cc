@@ -77,18 +77,18 @@ TEST_F(UseCounterImplTest, RecordingExtensions) {
   UseCounterImpl use_counter0(context, UseCounterImpl::kCommited);
 
   // Test recording a single (arbitrary) counter
-  EXPECT_FALSE(use_counter0.HasRecordedMeasurement(item));
+  EXPECT_FALSE(use_counter0.IsCounted(item));
   use_counter0.RecordMeasurement(item, *GetFrame());
-  EXPECT_TRUE(use_counter0.HasRecordedMeasurement(item));
+  EXPECT_TRUE(use_counter0.IsCounted(item));
   histogram_tester_.ExpectUniqueSample(histogram, static_cast<int>(item), 1);
   // Test that repeated measurements have no effect
   use_counter0.RecordMeasurement(item, *GetFrame());
   histogram_tester_.ExpectUniqueSample(histogram, static_cast<int>(item), 1);
 
   // Test recording a different sample
-  EXPECT_FALSE(use_counter0.HasRecordedMeasurement(second_item));
+  EXPECT_FALSE(use_counter0.IsCounted(second_item));
   use_counter0.RecordMeasurement(second_item, *GetFrame());
-  EXPECT_TRUE(use_counter0.HasRecordedMeasurement(second_item));
+  EXPECT_TRUE(use_counter0.IsCounted(second_item));
   histogram_tester_.ExpectBucketCount(histogram, static_cast<int>(item), 1);
   histogram_tester_.ExpectBucketCount(histogram, static_cast<int>(second_item),
                                       1);
@@ -106,10 +106,10 @@ TEST_F(UseCounterImplTest, RecordingExtensions) {
   histogram_tester_.ExpectTotalCount(histogram, 3);
 
   // Now a repeat measurement should get recorded again, exactly once
-  EXPECT_FALSE(use_counter1.HasRecordedMeasurement(item));
+  EXPECT_FALSE(use_counter1.IsCounted(item));
   use_counter1.RecordMeasurement(item, *GetFrame());
   use_counter1.RecordMeasurement(item, *GetFrame());
-  EXPECT_TRUE(use_counter1.HasRecordedMeasurement(item));
+  EXPECT_TRUE(use_counter1.IsCounted(item));
   histogram_tester_.ExpectBucketCount(histogram, static_cast<int>(item), 2);
   histogram_tester_.ExpectTotalCount(histogram, 4);
 }
@@ -363,26 +363,26 @@ TEST_F(DeprecationTest, InspectorDisablesDeprecation) {
   Deprecation::WarnOnDeprecatedProperties(GetFrame(), property);
   EXPECT_FALSE(deprecation_.IsSuppressed(property));
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
-  EXPECT_FALSE(use_counter_.HasRecordedMeasurement(feature));
+  EXPECT_FALSE(use_counter_.IsCounted(feature));
 
   deprecation_.MuteForInspector();
   Deprecation::WarnOnDeprecatedProperties(GetFrame(), property);
   EXPECT_FALSE(deprecation_.IsSuppressed(property));
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
-  EXPECT_FALSE(use_counter_.HasRecordedMeasurement(feature));
+  EXPECT_FALSE(use_counter_.IsCounted(feature));
 
   deprecation_.UnmuteForInspector();
   Deprecation::WarnOnDeprecatedProperties(GetFrame(), property);
   EXPECT_FALSE(deprecation_.IsSuppressed(property));
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
-  EXPECT_FALSE(use_counter_.HasRecordedMeasurement(feature));
+  EXPECT_FALSE(use_counter_.IsCounted(feature));
 
   deprecation_.UnmuteForInspector();
   Deprecation::WarnOnDeprecatedProperties(GetFrame(), property);
   // TODO: use the actually deprecated property to get a deprecation message.
   EXPECT_FALSE(deprecation_.IsSuppressed(property));
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
-  EXPECT_TRUE(use_counter_.HasRecordedMeasurement(feature));
+  EXPECT_TRUE(use_counter_.IsCounted(feature));
 }
 
 TEST_F(UseCounterImplTest, CSSUnknownNamespacePrefixInSelector) {

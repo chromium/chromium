@@ -1398,7 +1398,7 @@ TEST_F(DocumentBatterySavingsTest, ChromeClientCalls) {
               BatterySavingsChanged(testing::_, kAllowReducedFrameRate))
       .Times(2);
 
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kBatterySavingsMeta));
 
   SetHtmlInnerHTML(R"HTML(
@@ -1406,7 +1406,7 @@ TEST_F(DocumentBatterySavingsTest, ChromeClientCalls) {
     <meta id="second" name="battery-savings" content="allow-reduced-script-speed">
   )HTML");
 
-  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kBatterySavingsMeta));
 
   // Remove the first meta causing the second to apply.

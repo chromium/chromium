@@ -113,6 +113,10 @@ class CORE_EXPORT UseCounterImpl final {
   void Count(WebFeature, const LocalFrame*);
 
   bool IsCounted(CSSPropertyID unresolved_property, CSSPropertyType) const;
+  // Return whether the feature has been seen since the last page load
+  // (except when muted).  Does include features seen in documents which have
+  // reporting disabled.
+  bool IsCounted(WebFeature) const;
 
   // Retains a reference to the observer to notify of UseCounterImpl changes.
   void AddObserver(Observer*);
@@ -129,11 +133,6 @@ class CORE_EXPORT UseCounterImpl final {
   void ReportAndTraceMeasurementByCSSSampleId(int,
                                               const LocalFrame*,
                                               bool /*is_animated*/);
-
-  // Return whether the feature has been seen since the last page load
-  // (except when muted).  Does include features seen in documents which have
-  // reporting disabled.
-  bool HasRecordedMeasurement(WebFeature) const;
 
   void ClearMeasurementForTesting(WebFeature);
 
