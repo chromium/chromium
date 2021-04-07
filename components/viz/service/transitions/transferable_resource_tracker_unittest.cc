@@ -40,32 +40,32 @@ TEST_F(TransferableResourceTrackerTest, IdInRange) {
   TransferableResourceTracker tracker;
 
   bool resource1_released = false;
-  auto resource1 =
-      tracker.ImportResource(CreateFrameWithResult(base::BindLambdaForTesting(
+  auto frame1 =
+      tracker.ImportResources(CreateFrameWithResult(base::BindLambdaForTesting(
           [&resource1_released](const gpu::SyncToken&, bool) {
             ASSERT_FALSE(resource1_released);
             resource1_released = true;
           })));
 
-  EXPECT_GE(resource1.id, kVizReservedRangeStartId);
+  EXPECT_GE(frame1.root.resource.id, kVizReservedRangeStartId);
 
   bool resource2_released = false;
-  auto resource2 =
-      tracker.ImportResource(CreateFrameWithResult(base::BindLambdaForTesting(
+  auto frame2 =
+      tracker.ImportResources(CreateFrameWithResult(base::BindLambdaForTesting(
           [&resource2_released](const gpu::SyncToken&, bool) {
             ASSERT_FALSE(resource2_released);
             resource2_released = true;
           })));
 
-  EXPECT_GE(resource2.id, resource1.id);
+  EXPECT_GE(frame2.root.resource.id, frame1.root.resource.id);
 
-  tracker.UnrefResource(resource1.id);
+  tracker.ReturnFrame(frame1);
   EXPECT_TRUE(resource1_released);
 
-  tracker.RefResource(resource2.id);
-  tracker.UnrefResource(resource2.id);
+  tracker.RefResource(frame2.root.resource.id);
+  tracker.ReturnFrame(frame2);
   EXPECT_FALSE(resource2_released);
-  tracker.UnrefResource(resource2.id);
+  tracker.UnrefResource(frame2.root.resource.id);
   EXPECT_TRUE(resource2_released);
 }
 
@@ -80,17 +80,17 @@ TEST_F(TransferableResourceTrackerTest, ExhaustedIdLoops) {
   ResourceId last_id = kInvalidResourceId;
   for (int i = 0; i < 10; ++i) {
     bool resource_released = false;
-    auto resource =
-        tracker.ImportResource(CreateFrameWithResult(base::BindLambdaForTesting(
+    auto frame = tracker.ImportResources(
+        CreateFrameWithResult(base::BindLambdaForTesting(
             [&resource_released](const gpu::SyncToken&, bool) {
               ASSERT_FALSE(resource_released);
               resource_released = true;
             })));
 
-    EXPECT_GE(resource.id, kVizReservedRangeStartId);
-    EXPECT_NE(resource.id, last_id);
-    last_id = resource.id;
-    tracker.UnrefResource(resource.id);
+    EXPECT_GE(frame.root.resource.id, kVizReservedRangeStartId);
+    EXPECT_NE(frame.root.resource.id, last_id);
+    last_id = frame.root.resource.id;
+    tracker.ReturnFrame(frame);
     EXPECT_TRUE(resource_released);
   }
 }
@@ -102,9 +102,9 @@ TEST_F(TransferableResourceTrackerTest,
                 "The test only makes sense if ResourceId is uint32_t");
   TransferableResourceTracker tracker;
 
-  auto reserved_resource = tracker.ImportResource(CreateFrameWithResult(
+  auto reserved = tracker.ImportResources(CreateFrameWithResult(
       base::BindOnce([](const gpu::SyncToken&, bool) {})));
-  EXPECT_GE(reserved_resource.id, kVizReservedRangeStartId);
+  EXPECT_GE(reserved.root.resource.id, kVizReservedRangeStartId);
 
   uint32_t next_id = std::numeric_limits<uint32_t>::max() - 3u;
   SetNextId(&tracker, next_id);
@@ -112,18 +112,18 @@ TEST_F(TransferableResourceTrackerTest,
   ResourceId last_id = kInvalidResourceId;
   for (int i = 0; i < 10; ++i) {
     bool resource_released = false;
-    auto resource =
-        tracker.ImportResource(CreateFrameWithResult(base::BindLambdaForTesting(
+    auto frame = tracker.ImportResources(
+        CreateFrameWithResult(base::BindLambdaForTesting(
             [&resource_released](const gpu::SyncToken&, bool) {
               ASSERT_FALSE(resource_released);
               resource_released = true;
             })));
 
-    EXPECT_GE(resource.id, kVizReservedRangeStartId);
-    EXPECT_NE(resource.id, last_id);
-    EXPECT_NE(resource.id, reserved_resource.id);
-    last_id = resource.id;
-    tracker.UnrefResource(resource.id);
+    EXPECT_GE(frame.root.resource.id, kVizReservedRangeStartId);
+    EXPECT_NE(frame.root.resource.id, last_id);
+    EXPECT_NE(frame.root.resource.id, reserved.root.resource.id);
+    last_id = frame.root.resource.id;
+    tracker.ReturnFrame(frame);
     EXPECT_TRUE(resource_released);
   }
 }

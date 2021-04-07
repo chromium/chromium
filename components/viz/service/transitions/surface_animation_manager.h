@@ -118,7 +118,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
 
   TransferableResourceTracker transferable_resource_tracker_;
 
-  base::Optional<TransferableResource> saved_root_texture_;
+  base::Optional<TransferableResourceTracker::ResourceFrame> saved_textures_;
   base::Optional<CompositorFrameTransitionDirective> save_directive_;
   base::Optional<CompositorFrameTransitionDirective> animate_directive_;
 

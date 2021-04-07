@@ -26,18 +26,34 @@ TransferableResourceTracker::TransferableResourceTracker()
 
 TransferableResourceTracker::~TransferableResourceTracker() = default;
 
-TransferableResource TransferableResourceTracker::ImportResource(
+TransferableResourceTracker::ResourceFrame
+TransferableResourceTracker::ImportResources(
     std::unique_ptr<SurfaceSavedFrame> saved_frame) {
   DCHECK(saved_frame);
   // Since we will be dereferencing this blindly, CHECK that the frame is indeed
   // valid.
   CHECK(saved_frame->IsValid());
 
-  // TODO(vmpstr): For now take only the root result. The remainder of the
-  // resources will be released here.
-  SurfaceSavedFrame::OutputCopyResult output_copy =
-      std::move(saved_frame->TakeResult()->root_result);
+  base::Optional<SurfaceSavedFrame::FrameResult> frame_copy =
+      saved_frame->TakeResult();
 
+  ResourceFrame resource_frame;
+  resource_frame.root = ImportResource(std::move(frame_copy->root_result));
+  resource_frame.shared.resize(frame_copy->shared_results.size());
+
+  for (size_t i = 0; i < frame_copy->shared_results.size(); ++i) {
+    auto& shared_result = frame_copy->shared_results[i];
+    if (shared_result.has_value()) {
+      resource_frame.shared[i].emplace(
+          ImportResource(std::move(*shared_result)));
+    }
+  }
+  return resource_frame;
+}
+
+TransferableResourceTracker::PositionedResource
+TransferableResourceTracker::ImportResource(
+    SurfaceSavedFrame::OutputCopyResult output_copy) {
   TransferableResource resource;
   if (output_copy.is_software) {
     // TODO(vmpstr): This needs to be updated and tested in software. For
@@ -57,7 +73,20 @@ TransferableResource TransferableResourceTracker::ImportResource(
   managed_resources_.emplace(
       resource.id, TransferableResourceHolder(
                        resource, std::move(output_copy.release_callback)));
-  return resource;
+
+  PositionedResource result;
+  result.resource = resource;
+  result.rect = output_copy.rect;
+  result.target_transform = output_copy.target_transform;
+  return result;
+}
+
+void TransferableResourceTracker::ReturnFrame(const ResourceFrame& frame) {
+  UnrefResource(frame.root.resource.id);
+  for (const auto& shared : frame.shared) {
+    if (shared.has_value())
+      UnrefResource(shared->resource.id);
+  }
 }
 
 void TransferableResourceTracker::RefResource(ResourceId id) {
@@ -117,5 +146,14 @@ TransferableResourceTracker::TransferableResourceHolder::
 TransferableResourceTracker::TransferableResourceHolder&
 TransferableResourceTracker::TransferableResourceHolder::operator=(
     TransferableResourceHolder&& other) = default;
+
+TransferableResourceTracker::ResourceFrame::ResourceFrame() = default;
+TransferableResourceTracker::ResourceFrame::ResourceFrame(
+    ResourceFrame&& other) = default;
+TransferableResourceTracker::ResourceFrame::~ResourceFrame() = default;
+
+TransferableResourceTracker::ResourceFrame&
+TransferableResourceTracker::ResourceFrame::operator=(ResourceFrame&& other) =
+    default;
 
 }  // namespace viz

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/single_release_callback.h"
@@ -23,6 +24,29 @@ namespace viz {
 // Note that TransferableResourceTracker uses reserved range ResourceIds.
 class VIZ_SERVICE_EXPORT TransferableResourceTracker {
  public:
+  // This represents a resource that is positioned somewhere on screen.
+  struct VIZ_SERVICE_EXPORT PositionedResource {
+    TransferableResource resource;
+    // This is the resource's initial rect.
+    gfx::Rect rect;
+    // This is the transform that takes `rect` into root render pass space.
+    gfx::Transform target_transform;
+  };
+
+  // A resource frame consists of a root PositionedResource and a set of
+  // optional shared PositionedResources. A SurfaceSavedFrame can be converted
+  // to a ResourceFrame via ImportResources.
+  struct VIZ_SERVICE_EXPORT ResourceFrame {
+    ResourceFrame();
+    ResourceFrame(ResourceFrame&& other);
+    ~ResourceFrame();
+
+    ResourceFrame& operator=(ResourceFrame&& other);
+
+    PositionedResource root;
+    std::vector<base::Optional<PositionedResource>> shared;
+  };
+
   TransferableResourceTracker();
   TransferableResourceTracker(const TransferableResourceTracker&) = delete;
   ~TransferableResourceTracker();
@@ -30,9 +54,24 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   TransferableResourceTracker& operator=(const TransferableResourceTracker&) =
       delete;
 
-  TransferableResource ImportResource(
-      std::unique_ptr<SurfaceSavedFrame> saved_frame);
+  // This call converts a SurfaceSavedFrame into a ResourceFrame by converting
+  // each of the resources into a TransferableResource. Note that `this` keeps
+  // a ref on each of the TransferableResources returned in the ResourceFrame.
+  // The ref count can be managed by calls to RefResource and UnrefResource
+  // below. Note that a convenience function, `ReturnFrame`, is also provided
+  // below which will unref every resource in a given ResourceFrame. Using the
+  // convenience function is not a guarantee that the resources will be
+  // released: it only removes one ref from each resource. The resources will
+  // be released when the ref count reaches 0.
+  // TODO(vmpstr): Instead of providing a convenience function, we should
+  // convert ResourceFrame to be RAII so that it can be automatically
+  // "returned".
+  ResourceFrame ImportResources(std::unique_ptr<SurfaceSavedFrame> saved_frame);
 
+  // Return a frame back to the tracker. This unrefs all of the resources.
+  void ReturnFrame(const ResourceFrame& frame);
+
+  // Ref count management for the resources returned by `ImportResources`.
   void RefResource(ResourceId id);
   void UnrefResource(ResourceId id);
 
@@ -42,6 +81,9 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   friend class TransferableResourceTrackerTest;
 
   ResourceId GetNextAvailableResourceId();
+
+  PositionedResource ImportResource(
+      SurfaceSavedFrame::OutputCopyResult output_copy);
 
   static_assert(std::is_same<decltype(kInvalidResourceId.GetUnsafeValue()),
                              uint32_t>::value,
@@ -62,7 +104,7 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
     TransferableResource resource;
     std::unique_ptr<SingleReleaseCallback> release_callback;
-    uint8_t ref_count;
+    uint8_t ref_count = 0u;
   };
 
   std::map<ResourceId, TransferableResourceHolder> managed_resources_;

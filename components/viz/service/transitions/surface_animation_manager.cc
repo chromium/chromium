@@ -143,7 +143,7 @@ bool SurfaceAnimationManager::ProcessAnimateDirective(
     return false;
 
   // Make sure we don't actually have anything saved as a texture.
-  DCHECK(!saved_root_texture_.has_value());
+  DCHECK(!saved_textures_.has_value());
 
   auto saved_frame = storage->TakeSavedFrame();
   // We can't animate if we don't have a saved frame.
@@ -154,11 +154,12 @@ bool SurfaceAnimationManager::ProcessAnimateDirective(
   save_directive_.emplace(saved_frame->directive());
   animate_directive_.emplace(directive);
 
-  // Convert the texture result into a transferable resource.
-  saved_root_texture_.emplace(
-      transferable_resource_tracker_.ImportResource(std::move(saved_frame)));
+  // Import the saved frame, which converts it to a ResourceFrame -- a structure
+  // which has transferable resources.
+  saved_textures_.emplace(
+      transferable_resource_tracker_.ImportResources(std::move(saved_frame)));
 
-  UpdateAnimationCurves(saved_root_texture_->size);
+  UpdateAnimationCurves(saved_textures_->root.rect.size());
   state_ = State::kAnimating;
   return true;
 }
@@ -187,7 +188,7 @@ void SurfaceAnimationManager::NotifyFrameAdvanced(base::TimeTicks new_time) {
 
 void SurfaceAnimationManager::FinishAnimationIfNeeded() {
   DCHECK_EQ(state_, State::kAnimating);
-  DCHECK(saved_root_texture_.has_value());
+  DCHECK(saved_textures_.has_value());
   DCHECK(save_directive_.has_value());
   DCHECK(animate_directive_.has_value());
   if (!animator_.IsAnimating()) {
@@ -198,20 +199,20 @@ void SurfaceAnimationManager::FinishAnimationIfNeeded() {
 
 void SurfaceAnimationManager::FinalizeAndDisposeOfState() {
   DCHECK_EQ(state_, State::kLastFrame);
-  DCHECK(saved_root_texture_.has_value());
+  DCHECK(saved_textures_.has_value());
   // Set state to idle.
   state_ = State::kIdle;
 
   // Ensure to return the texture / unref it.
-  transferable_resource_tracker_.UnrefResource(saved_root_texture_->id);
-  saved_root_texture_.reset();
+  transferable_resource_tracker_.ReturnFrame(*saved_textures_);
+  saved_textures_.reset();
 
   save_directive_.reset();
   animate_directive_.reset();
 }
 
 void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
-  DCHECK(saved_root_texture_);
+  DCHECK(saved_textures_);
   if (state_ == State::kLastFrame) {
     surface->ResetInterpolatedFrame();
     return;
@@ -222,7 +223,7 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
   CompositorFrame interpolated_frame;
   interpolated_frame.metadata = active_frame.metadata.Clone();
   interpolated_frame.resource_list = active_frame.resource_list;
-  interpolated_frame.resource_list.push_back(*saved_root_texture_);
+  interpolated_frame.resource_list.push_back(saved_textures_->root.resource);
   CompositorRenderPassId max_id = CompositorRenderPassId(0);
   for (auto& render_pass : active_frame.render_pass_list) {
     if (render_pass->id > max_id)
@@ -263,7 +264,7 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
   if (src_on_top) {
     CreateAndAppendSrcTextureQuad(animation_pass.get(), output_rect,
                                   src_transform, src_opacity_,
-                                  saved_root_texture_->id);
+                                  saved_textures_->root.resource.id);
   }
 
   auto* dst_quad_state = animation_pass->CreateAndAppendSharedQuadState();
@@ -297,7 +298,7 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
   if (!src_on_top) {
     CreateAndAppendSrcTextureQuad(animation_pass.get(), output_rect,
                                   src_transform, src_opacity_,
-                                  saved_root_texture_->id);
+                                  saved_textures_->root.resource.id);
   }
 
   interpolated_frame.render_pass_list.push_back(std::move(animation_pass));
