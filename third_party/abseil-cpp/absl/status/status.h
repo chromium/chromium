@@ -293,6 +293,8 @@ enum class StatusToStringMode : int {
   kWithPayload = 1 << 0,
   // ToString will include all the extra data this Status has.
   kWithEverything = ~kWithNoExtraData,
+  // Default mode used by ToString. Its exact value might change in the future.
+  kDefault = kWithPayload,
 };
 
 // absl::StatusToStringMode is specified as a bitmask type, which means the
@@ -509,7 +511,7 @@ class Status final {
   // result, and the payloads to be printed use the status payload printer
   // mechanism (which is internal).
   std::string ToString(
-      StatusToStringMode mode = StatusToStringMode::kWithPayload) const;
+      StatusToStringMode mode = StatusToStringMode::kDefault) const;
 
   // Status::IgnoreError()
   //

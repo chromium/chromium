@@ -491,7 +491,7 @@ static bool RepMemoryUsageLeaf(const CordRep* rep, size_t* total_mem_usage) {
 }
 
 void Cord::InlineRep::AssignSlow(const Cord::InlineRep& src) {
-  ClearSlow();
+  UnrefTree();
 
   data_ = src.data_;
   if (is_tree()) {
@@ -501,11 +501,10 @@ void Cord::InlineRep::AssignSlow(const Cord::InlineRep& src) {
   }
 }
 
-void Cord::InlineRep::ClearSlow() {
+void Cord::InlineRep::UnrefTree() {
   if (is_tree()) {
     CordRep::Unref(tree());
   }
-  ResetToEmpty();
 }
 
 // --------------------------------------------------------------------

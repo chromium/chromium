@@ -1548,7 +1548,6 @@ EXPORTS
     ?CityHash64WithSeeds@hash_internal@absl@@YA_KPEBD_K11@Z
     ?Clear@Cord@absl@@QEAAXXZ
     ?ClearCurrentThreadIdentity@base_internal@absl@@YAXXZ
-    ?ClearSlow@InlineRep@Cord@absl@@AEAAXXZ
     ?ClearTimeZoneMapTestOnly@Impl@time_zone@cctz@time_internal@absl@@SAXXZ
     ?CodeToInlinedRep@Status@absl@@CA_KW4StatusCode@2@@Z
     ?CombineContiguousImpl@HashState@hash_internal@absl@@CA_K_KPEBE0U?$integral_constant@H$03@__1@std@@@Z
@@ -2342,6 +2341,7 @@ EXPORTS
     ?Unref@CordRep@cord_internal@absl@@SAXPEAU123@@Z
     ?Unref@Status@absl@@CAX_K@Z
     ?UnrefNonInlined@Status@absl@@CAX_K@Z
+    ?UnrefTree@InlineRep@Cord@absl@@AEAAXXZ
     ?Unregister@HashtablezSampler@container_internal@absl@@QEAAXPEAUHashtablezInfo@23@@Z
     ?UnsampleSlow@container_internal@absl@@YAXPEAUHashtablezInfo@12@@Z
     ?UpdateStackTrace@GraphCycles@synchronization_internal@absl@@QEAAXUGraphId@23@HP6AHPEAPEAXH@Z@Z

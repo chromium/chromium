@@ -36,7 +36,7 @@ namespace hash_internal {
 // integers are hashed into the result.
 //
 // To allow all hashable types (including string_view and Span) to depend on
-// this algoritm, we keep the API low-level, with as few dependencies as
+// this algorithm, we keep the API low-level, with as few dependencies as
 // possible.
 uint64_t Wyhash(const void* data, size_t len, uint64_t seed,
                 const uint64_t salt[5]);

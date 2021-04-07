@@ -717,6 +717,18 @@ TEST(TimeZones, LoadZonesConcurrently) {
 }
 #endif
 
+TEST(TimeZone, UTC) {
+  const time_zone utc = utc_time_zone();
+
+  time_zone loaded_utc;
+  EXPECT_TRUE(load_time_zone("UTC", &loaded_utc));
+  EXPECT_EQ(loaded_utc, utc);
+
+  time_zone loaded_utc0;
+  EXPECT_TRUE(load_time_zone("UTC0", &loaded_utc0));
+  EXPECT_EQ(loaded_utc0, utc);
+}
+
 TEST(TimeZone, NamedTimeZones) {
   const time_zone utc = utc_time_zone();
   EXPECT_EQ("UTC", utc.name());

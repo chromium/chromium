@@ -484,8 +484,8 @@ class btree_node {
                        std::is_same<std::greater<key_type>,
                                     key_compare>::value)>;
 
-  // This class is organized by gtl::Layout as if it had the following
-  // structure:
+  // This class is organized by absl::container_internal::Layout as if it had
+  // the following structure:
   //   // A pointer to the node's parent.
   //   btree_node *parent;
   //

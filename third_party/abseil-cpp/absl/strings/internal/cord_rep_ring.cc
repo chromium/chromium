@@ -400,10 +400,11 @@ CordRepRing* CordRepRing::Mutable(CordRepRing* rep, size_t extra) {
   // Get current number of entries, and check for max capacity.
   size_t entries = rep->entries();
 
-  size_t min_extra = (std::max)(extra, rep->capacity() * 2 - entries);
   if (!rep->refcount.IsOne()) {
-    return Copy(rep, rep->head(), rep->tail(), min_extra);
+    return Copy(rep, rep->head(), rep->tail(), extra);
   } else if (entries + extra > rep->capacity()) {
+    const size_t min_grow = rep->capacity() + rep->capacity() / 2;
+    const size_t min_extra = (std::max)(extra, min_grow - entries);
     CordRepRing* newrep = CordRepRing::New(entries, min_extra);
     newrep->Fill<false>(rep, rep->head(), rep->tail());
     CordRepRing::Delete(rep);

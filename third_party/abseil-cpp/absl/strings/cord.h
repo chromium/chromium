@@ -776,8 +776,8 @@ class Cord {
     friend class Cord;
 
     void AssignSlow(const InlineRep& src);
-    // Unrefs the tree, stops profiling, and zeroes the contents
-    void ClearSlow();
+    // Unrefs the tree and stops profiling.
+    void UnrefTree();
 
     void ResetToEmpty() { data_ = {}; }
 
@@ -966,7 +966,7 @@ inline Cord::InlineRep& Cord::InlineRep::operator=(const Cord::InlineRep& src) {
 inline Cord::InlineRep& Cord::InlineRep::operator=(
     Cord::InlineRep&& src) noexcept {
   if (is_tree()) {
-    ClearSlow();
+    UnrefTree();
   }
   data_ = src.data_;
   src.ResetToEmpty();

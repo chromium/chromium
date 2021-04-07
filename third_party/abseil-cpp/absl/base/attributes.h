@@ -706,4 +706,26 @@
 #define ABSL_ATTRIBUTE_PURE_FUNCTION
 #endif
 
+// ABSL_ATTRIBUTE_LIFETIME_BOUND indicates that a resource owned by a function
+// parameter or implicit object parameter is retained by the return value of the
+// annotated function (or, for a parameter of a constructor, in the value of the
+// constructed object). This attribute causes warnings to be produced if a
+// temporary object does not live long enough.
+//
+// When applied to a reference parameter, the referenced object is assumed to be
+// retained by the return value of the function. When applied to a non-reference
+// parameter (for example, a pointer or a class type), all temporaries
+// referenced by the parameter are assumed to be retained by the return value of
+// the function.
+//
+// See also the upstream documentation:
+// https://clang.llvm.org/docs/AttributeReference.html#lifetimebound
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::lifetimebound)
+#define ABSL_ATTRIBUTE_LIFETIME_BOUND [[clang::lifetimebound]]
+#elif ABSL_HAVE_ATTRIBUTE(lifetimebound)
+#define ABSL_ATTRIBUTE_LIFETIME_BOUND __attribute__((lifetimebound))
+#else
+#define ABSL_ATTRIBUTE_LIFETIME_BOUND
+#endif
+
 #endif  // ABSL_BASE_ATTRIBUTES_H_
