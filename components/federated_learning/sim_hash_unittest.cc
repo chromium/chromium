@@ -15,6 +15,10 @@ namespace federated_learning {
 
 namespace {
 
+// Sparse representation of a 2^64 bit vector. Each number in the set represents
+// the position of a bit that is being set.
+using LargeBitVector = std::set<uint64_t>;
+
 // Roll our own random uint64_t generator as we want deterministic outcome
 // across different test runs.
 uint64_t RandUint64() {
@@ -57,18 +61,17 @@ LargeBitVector RandLargeBitVector(
     size_t number_of_bits_set,
     uint64_t max_bit_position = std::numeric_limits<uint64_t>::max()) {
   LargeBitVector result;
-  while (result.PositionsOfSetBits().size() < number_of_bits_set) {
-    result.SetBit(RandUint64InRange(0ULL, max_bit_position));
+  while (result.size() < number_of_bits_set) {
+    result.insert(RandUint64InRange(0ULL, max_bit_position));
   }
   return result;
 }
 
 float DotProduct(const LargeBitVector& v1, const LargeBitVector& v2) {
   float result = 0;
-  for (uint64_t pos : v1.PositionsOfSetBits()) {
-    if (v2.PositionsOfSetBits().count(pos)) {
+  for (uint64_t pos : v1) {
+    if (v2.count(pos))
       result += 1;
-    }
   }
   return result;
 }
@@ -77,10 +80,18 @@ float Norm(const LargeBitVector& v) {
   return std::sqrt(DotProduct(v, v));
 }
 
+WeightedFeatures ToWeightedFeatures(const LargeBitVector& v) {
+  WeightedFeatures result;
+  for (FeatureEncoding feature : v) {
+    result.emplace(feature, FeatureWeight(1));
+  }
+  return result;
+}
+
 size_t MultipleSimHashGetNumOutputBitsEqual(size_t repeat_times,
-                                            size_t dimensions,
-                                            const LargeBitVector& v1,
-                                            const LargeBitVector& v2) {
+                                            uint8_t dimensions,
+                                            const WeightedFeatures& f1,
+                                            const WeightedFeatures& f2) {
   uint64_t seed1 = 1;
   uint64_t seed2 = 100000;
 
@@ -88,9 +99,9 @@ size_t MultipleSimHashGetNumOutputBitsEqual(size_t repeat_times,
   for (size_t i = 0; i < repeat_times; ++i) {
     SetSeedsForTesting(seed1++, seed2++);
 
-    uint64_t o1 = SimHashBits(v1, dimensions);
-    uint64_t o2 = SimHashBits(v2, dimensions);
-    for (size_t j = 0; j < dimensions; ++j) {
+    uint64_t o1 = SimHashWeightedFeatures(f1, dimensions);
+    uint64_t o2 = SimHashWeightedFeatures(f2, dimensions);
+    for (uint8_t j = 0; j < dimensions; ++j) {
       if ((o1 & 1) == (o2 & 1))
         ++num_output_bits_equal;
       o1 >>= 1;
@@ -101,40 +112,52 @@ size_t MultipleSimHashGetNumOutputBitsEqual(size_t repeat_times,
 }
 
 TEST(SimHashTest, HashValue) {
-  LargeBitVector zero;
-  EXPECT_EQ(SimHashBits(zero, 1u), 0ULL);
-  EXPECT_EQ(SimHashBits(zero, 16u), 0ULL);
+  WeightedFeatures empty;
+  EXPECT_EQ(SimHashWeightedFeatures(empty, 1u), 0ULL);
+  EXPECT_EQ(SimHashWeightedFeatures(empty, 16u), 0ULL);
 
-  LargeBitVector n0;
-  n0.SetBit(0);
-  EXPECT_EQ(SimHashBits(n0, 1u), 0ULL);
-  EXPECT_EQ(SimHashBits(n0, 16u), 8632ULL);
+  WeightedFeatures f0;
+  f0.emplace(FeatureEncoding(0), FeatureWeight(1));
+  EXPECT_EQ(SimHashWeightedFeatures(f0, 1u), 0ULL);
+  EXPECT_EQ(SimHashWeightedFeatures(f0, 16u), 8632ULL);
 
-  LargeBitVector n999999;
-  n999999.SetBit(999999);
-  EXPECT_EQ(SimHashBits(n999999, 1u), 1ULL);
-  EXPECT_EQ(SimHashBits(n999999, 16u), 28603ULL);
+  WeightedFeatures f1;
+  f1.emplace(FeatureEncoding(0), FeatureWeight(123));
+  EXPECT_EQ(SimHashWeightedFeatures(f1, 1u), 0ULL);
+  EXPECT_EQ(SimHashWeightedFeatures(f1, 16u), 8632ULL);
 
-  LargeBitVector n01;
-  n01.SetBit(0);
-  n01.SetBit(1);
-  EXPECT_EQ(SimHashBits(n01, 1u), 0ULL);
-  EXPECT_EQ(SimHashBits(n01, 16u), 10682ULL);
+  WeightedFeatures f2;
+  f2.emplace(FeatureEncoding(999999), FeatureWeight(1));
+  EXPECT_EQ(SimHashWeightedFeatures(f2, 1u), 1ULL);
+  EXPECT_EQ(SimHashWeightedFeatures(f2, 16u), 28603ULL);
+
+  WeightedFeatures f3;
+  f3.emplace(FeatureEncoding(0), FeatureWeight(1));
+  f3.emplace(FeatureEncoding(1), FeatureWeight(1));
+  EXPECT_EQ(SimHashWeightedFeatures(f3, 1u), 0ULL);
+  EXPECT_EQ(SimHashWeightedFeatures(f3, 16u), 10682ULL);
+
+  WeightedFeatures f4;
+  f4.emplace(FeatureEncoding(0), FeatureWeight(2));
+  f4.emplace(FeatureEncoding(1), FeatureWeight(3));
+  EXPECT_EQ(SimHashWeightedFeatures(f4, 1u), 0ULL);
+  EXPECT_EQ(SimHashWeightedFeatures(f4, 16u), 2490ULL);
 }
 
-// Test that given random inputs, the chances of each bit in the SimHash result
-// to be 0 and 1 are equally likely.
+// Test that given random equally weighted input features, the chances of each
+// bit in the SimHash result to be 0 and 1 are equally likely.
 TEST(SimHashTest, ExpectationOnRandomUniformInput) {
-  const size_t dimensions = 16u;
+  const uint8_t dimensions = 16u;
   const size_t repeat_times = 10000u;
 
   uint64_t totals[dimensions] = {0.0};
 
   for (size_t i = 0; i < repeat_times; ++i) {
+    LargeBitVector v = RandLargeBitVector(RandUint64InRange(1u, 10u));
     uint64_t hash_result =
-        SimHashBits(RandLargeBitVector(RandUint64InRange(1u, 10u)), dimensions);
+        SimHashWeightedFeatures(ToWeightedFeatures(v), dimensions);
 
-    for (size_t j = 0; j < dimensions; ++j) {
+    for (uint8_t j = 0; j < dimensions; ++j) {
       totals[j] += (hash_result & 1);
       hash_result >>= 1;
     }
@@ -143,7 +166,7 @@ TEST(SimHashTest, ExpectationOnRandomUniformInput) {
   const double expectation = 0.5;
   const double err_tolerance = 0.03;
 
-  for (size_t j = 0; j < dimensions; ++j) {
+  for (uint8_t j = 0; j < dimensions; ++j) {
     double avg = 1.0 * totals[j] / repeat_times;
     EXPECT_LT(avg, expectation + err_tolerance);
     EXPECT_GT(avg, expectation - err_tolerance);
@@ -153,15 +176,15 @@ TEST(SimHashTest, ExpectationOnRandomUniformInput) {
 // Test that the cosine similarity is preserved.
 TEST(SimHashTest, CosineSimilarity_NonOrthogonalInput) {
   const float kPi = 3.141592653589793;
-  const size_t dimensions = 50u;
+  const uint8_t dimensions = 50u;
   const size_t repeat_times = 100u;
 
   // Generate v1 and v2 that are likely non-orthogonal.
   LargeBitVector v1 = RandLargeBitVector(4000u, 10000);
   LargeBitVector v2 = RandLargeBitVector(5000u, 10000);
 
-  size_t num_output_bits_equal =
-      MultipleSimHashGetNumOutputBitsEqual(repeat_times, dimensions, v1, v2);
+  size_t num_output_bits_equal = MultipleSimHashGetNumOutputBitsEqual(
+      repeat_times, dimensions, ToWeightedFeatures(v1), ToWeightedFeatures(v2));
   float avg = 1.0 * num_output_bits_equal / dimensions / repeat_times;
   float expectation =
       1.0 - std::acos(DotProduct(v1, v2) / (Norm(v1) * Norm(v2))) / kPi;
@@ -181,15 +204,15 @@ TEST(SimHashTest, CosineSimilarity_NonOrthogonalInput) {
 // Test that when input v1 and v2 are orthogonal, SimHash(v1) and SimHash(v2)
 // have approximately half their bits in common.
 TEST(SimHashTest, CosineSimilarity_OrthogonalInput) {
-  const size_t dimensions = 50u;
+  const uint8_t dimensions = 50u;
   const size_t repeat_times = 100u;
 
   // Generate v1 and v2 that are likely orthogonal
   LargeBitVector v1 = RandLargeBitVector(1u);
   LargeBitVector v2 = RandLargeBitVector(1u);
 
-  size_t num_output_bits_equal =
-      MultipleSimHashGetNumOutputBitsEqual(repeat_times, dimensions, v1, v2);
+  size_t num_output_bits_equal = MultipleSimHashGetNumOutputBitsEqual(
+      repeat_times, dimensions, ToWeightedFeatures(v1), ToWeightedFeatures(v2));
   float avg = 1.0 * num_output_bits_equal / dimensions / repeat_times;
   float expectation = 0.5;
 
