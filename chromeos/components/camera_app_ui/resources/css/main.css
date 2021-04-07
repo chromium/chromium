@@ -82,14 +82,16 @@ input[type=checkbox] {
 
 body.tab-navigation button:focus::after,
 body.tab-navigation input:focus::after {
-  border: 2px solid var(--focus-color);
+  --focus-ring-width: 2px;
+
+  border: var(--focus-ring-width) solid var(--focus-color);
   border-radius: 4px;
-  bottom: calc(-1 * var(--focus-ring-size));
   content: '';
-  left: calc(-1 * var(--focus-ring-size));
+  height: calc(100% + var(--focus-ring-size) * 2);
+  left: calc(-1 * var(--focus-ring-size) - var(--focus-ring-width));
   position: absolute;
-  right: calc(-1 * var(--focus-ring-size));
-  top: calc(-1 * var(--focus-ring-size));
+  top: calc(-1 * var(--focus-ring-size) - var(--focus-ring-width));
+  width: calc(100% + var(--focus-ring-size) * 2);
 }
 
 .cancel-animate {
@@ -1314,12 +1316,6 @@ label.menu-item {
   overflow: hidden;
 }
 
-body.tab-navigation button.menu-item:focus::after,
-body.tab-navigation label.menu-item:focus::after {
-  bottom: 0;
-  top: 0;
-}
-
 button.menu-item::before,
 label.menu-item::before {
   background: white;
@@ -1425,8 +1421,7 @@ body.timer-10s .description span[i18n-text=label_timer_10s],
 }
 
 body.tab-navigation button.menu-item:focus::after {
-  left: 2px;
-  right: 2px;
+  --focus-ring-size: -3px;
 }
 
 .menu-header button.icon {
