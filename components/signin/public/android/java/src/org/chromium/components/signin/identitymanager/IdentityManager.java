@@ -17,6 +17,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
+import java.util.List;
 /**
  * IdentityManager provides access to native IdentityManager's public API to java components.
  */
@@ -167,15 +168,13 @@ public class IdentityManager {
 
     /**
      * Forces refreshing extended {@link AccountInfo} with image for the given
-     * {@link CoreAccountId}.
-     *
-     * This method should only be invoked by {@link ProfileDownloader} to fetch account information
-     * while users are signed out.
+     * list of {@link CoreAccountInfo}.
      */
-    public void forceRefreshOfExtendedAccountInfo(CoreAccountId coreAccountId) {
-        assert coreAccountId != null : "coreAccountId shouldn't be null!";
-        IdentityManagerJni.get().forceRefreshOfExtendedAccountInfo(
-                mNativeIdentityManager, coreAccountId);
+    public void forceRefreshOfExtendedAccountInfo(List<CoreAccountInfo> accountInfos) {
+        for (CoreAccountInfo accountInfo : accountInfos) {
+            IdentityManagerJni.get().forceRefreshOfExtendedAccountInfo(
+                    mNativeIdentityManager, accountInfo.getId());
+        }
     }
 
     /**

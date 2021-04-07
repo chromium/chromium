@@ -54,7 +54,8 @@ import java.util.List;
  * <p/>
  * See chrome/browser/android/signin/signin_manager_android.h for more details.
  */
-class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
+class SigninManagerImpl
+        implements IdentityManager.Observer, AccountTrackerService.Observer, SigninManager {
     private static final String TAG = "SigninManager";
 
     /**
@@ -113,10 +114,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
         identityManager.addObserver(signinManager);
         AccountInfoService.init(identityManager);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)) {
-            accountTrackerService.setOnAccountSeededListener(
-                    identityManager::forceRefreshOfExtendedAccountInfo);
-        }
+        accountTrackerService.addObserver(signinManager);
 
         identityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
@@ -149,6 +147,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     @VisibleForTesting
     @CalledByNative
     void destroy() {
+        mAccountTrackerService.removeObserver(this);
         AccountInfoService.get().destroy();
         mIdentityManager.removeObserver(this);
         mNativeSigninManagerAndroid = 0;
@@ -171,6 +170,16 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         // primary account changes when there's no sync consent. Log-out web accounts manually.
         SigninManagerImplJni.get().logOutAllAccountsForMobileIdentityConsistencyRollback(
                 mNativeSigninManagerAndroid);
+    }
+
+    /**
+     * Implements {@link AccountTrackerService.Observer}.
+     */
+    @Override
+    public void onAccountsSeeded(List<CoreAccountInfo> accountInfos) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)) {
+            mIdentityManager.forceRefreshOfExtendedAccountInfo(accountInfos);
+        }
     }
 
     /**

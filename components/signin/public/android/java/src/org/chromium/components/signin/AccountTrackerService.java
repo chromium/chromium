@@ -9,14 +9,14 @@ import android.os.SystemClock;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,6 +33,17 @@ import java.util.Queue;
  * TODO(crbug/1176136): Move this class to components/signin/internal
  */
 public class AccountTrackerService {
+    /**
+     * Observers the account seeding.
+     */
+    public interface Observer {
+        /**
+         * This method is invoked every time the accounts on device are seeded.
+         * @param accountInfos List of all the accounts on device.
+         */
+        void onAccountsSeeded(List<CoreAccountInfo> accountInfos);
+    }
+
     private static final String TAG = "AccountService";
 
     @IntDef({
@@ -50,7 +61,7 @@ public class AccountTrackerService {
     private final long mNativeAccountTrackerService;
     private final Queue<Runnable> mRunnablesWaitingForAccountsSeeding = new ArrayDeque<>();
     private @AccountsSeedingStatus int mAccountsSeedingStatus;
-    private Callback<CoreAccountId> mOnAccountSeededListener;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
     private AccountsChangeObserver mAccountsChangeObserver;
 
     @VisibleForTesting
@@ -61,10 +72,17 @@ public class AccountTrackerService {
     }
 
     /**
-     * Sets a listener that gets executed when an account is seeded.
+     * Adds an observer to observe the accounts seeding changes.
      */
-    public void setOnAccountSeededListener(Callback<CoreAccountId> onAccountSeededListener) {
-        mOnAccountSeededListener = onAccountSeededListener;
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes an observer to observe the accounts seeding changes.
+     */
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
     }
 
     /**
@@ -162,10 +180,13 @@ public class AccountTrackerService {
             runnable.run();
         }
 
-        if (mOnAccountSeededListener != null) {
-            for (String gaiaId : gaiaIds) {
-                mOnAccountSeededListener.onResult(new CoreAccountId(gaiaId));
-            }
+        final List<CoreAccountInfo> accountInfos = new ArrayList<>();
+        for (int i = 0; i < gaiaIds.size(); ++i) {
+            accountInfos.add(
+                    CoreAccountInfo.createFromEmailAndGaiaId(emails.get(i), gaiaIds.get(i)));
+        }
+        for (Observer observer : mObservers) {
+            observer.onAccountsSeeded(accountInfos);
         }
     }
 

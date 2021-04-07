@@ -38,7 +38,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.List;
@@ -71,13 +71,16 @@ public class AccountTrackerServiceTest {
     private Runnable mRunnableMock;
 
     @Mock
-    private Callback<CoreAccountId> mCallbackMock;
+    private AccountTrackerService.Observer mObserverMock;
 
     @Captor
     private ArgumentCaptor<String[]> mGaiaIdsCaptor;
 
     @Captor
     private ArgumentCaptor<String[]> mEmailsCaptor;
+
+    @Captor
+    private ArgumentCaptor<List<CoreAccountInfo>> mAccountInfosCaptor;
 
     private AccountTrackerService mService;
 
@@ -241,15 +244,27 @@ public class AccountTrackerServiceTest {
     }
 
     @Test
-    public void testSeedAccountsWithOnAccountSeededListener() {
-        mService.setOnAccountSeededListener(mCallbackMock);
-        verify(mCallbackMock, never()).onResult(any());
+    public void testSeedAccountsWithObserverAttached() {
+        mService.addObserver(mObserverMock);
+        verify(mObserverMock, never()).onAccountsSeeded(any());
 
         mService.seedAccountsIfNeeded(() -> {});
 
-        final CoreAccountId accountId =
-                new CoreAccountId(mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
-        verify(mCallbackMock).onResult(accountId);
+        verify(mObserverMock).onAccountsSeeded(mAccountInfosCaptor.capture());
+        final CoreAccountInfo account = CoreAccountInfo.createFromEmailAndGaiaId(
+                ACCOUNT_EMAIL, mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
+        Assert.assertArrayEquals(new CoreAccountInfo[] {account},
+                mAccountInfosCaptor.getValue().toArray(new CoreAccountInfo[0]));
+    }
+
+    @Test
+    public void testSeedAccountsWithObserverRemoved() {
+        mService.addObserver(mObserverMock);
+        mService.removeObserver(mObserverMock);
+
+        mService.seedAccountsIfNeeded(() -> {});
+
+        verify(mObserverMock, never()).onAccountsSeeded(any());
     }
 
     private static String toGaiaId(String email) {
