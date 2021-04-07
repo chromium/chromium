@@ -28,7 +28,7 @@ constexpr gfx::Insets kMinMargins{48, 48};
 constexpr gfx::Size kMaxLandscapeDialogSize{1040, 680};
 constexpr gfx::Size kMinLandscapeDialogSize{738, 540};
 constexpr gfx::Size kMaxPortraitDialogSize{680, 1040};
-constexpr gfx::Size kMinPortraitDialogSize{461, 704};
+constexpr gfx::Size kMinPortraitDialogSize{461, 820};
 
 gfx::Size CalculateOobeDialogSizeForWebDialog(const gfx::Rect& host_bounds,
                                               int shelf_height,
