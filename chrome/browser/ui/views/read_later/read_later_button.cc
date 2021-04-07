@@ -157,7 +157,9 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
 
-  if (BrowserView::GetBrowserViewForBrowser(browser_)->side_panel()) {
+  // Note: BrowserView may not exist during tests.
+  if (BrowserView::GetBrowserViewForBrowser(browser_) &&
+      BrowserView::GetBrowserViewForBrowser(browser_)->side_panel()) {
     contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<ReadLaterUI>>(
         GURL(chrome::kChromeUIReadLaterURL), browser_->profile(),
         IDS_READ_LATER_TITLE, true);
