@@ -44,6 +44,62 @@ TEST(TextFragmentsUtilsTest, ExtractTextFragments) {
   EXPECT_EQ(expected, ExtractTextFragments(""));
 }
 
+TEST(TextFragmentsUtilsTest, RemoveTextFragments) {
+  GURL url_with_fragment(
+      "https://www.example.com/#idFrag:~:text=text%201&text=text%202");
+  GURL result = RemoveTextFragments(url_with_fragment);
+  EXPECT_EQ("https://www.example.com/#idFrag", result.spec());
+}
+
+TEST(TextFragmentsUtilsTest, RemoveTextFragmentsAndKeepOtherSelectors) {
+  GURL url_with_fragment(R"(
+      https://www.example.org#:~:text=foo&selector(type=CssSelector,value=img[src$="example.org"]))");
+  GURL url_with_fragment_removed(R"(
+      https://www.example.org#:~:selector(type=CssSelector,value=img[src$="example.org"]))");
+  GURL result = RemoveTextFragments(url_with_fragment);
+  EXPECT_EQ(url_with_fragment_removed.spec(), result.spec());
+
+  url_with_fragment = GURL{
+      R"(https://www.example.org#:~:selector(type=CssSelector,value=img[src$="example.org"]))"};
+  result = RemoveTextFragments(url_with_fragment);
+  EXPECT_EQ(url_with_fragment_removed.spec(), result.spec());
+}
+
+TEST(TextFragmentsUtilsTest, RemoveTextFragmentsWithNoFragments) {
+  GURL url_without_fragment("https://www.example.com/no_fragment");
+  GURL result = RemoveTextFragments(url_without_fragment);
+  EXPECT_EQ("https://www.example.com/no_fragment", result.spec());
+}
+
+TEST(TextFragmentsUtilsTest, RemoveTextFragmentsParameterBeforeDelimiter) {
+  GURL url("https://www.example.com/?text=foo#:~:bar");
+  GURL result = RemoveTextFragments(url);
+  EXPECT_EQ("https://www.example.com/?text=foo#:~:bar", result.spec());
+}
+
+TEST(TextFragmentsUtilsTest, RemoveTextFragmentsParameterIsSubstring) {
+  GURL url("https://www.example.com/#:~:case_insensitive_text=foo");
+  GURL result = RemoveTextFragments(url);
+  EXPECT_EQ("https://www.example.com/#:~:case_insensitive_text=foo",
+            result.spec());
+}
+
+TEST(TextFragmentsUtilsTest, RemoveTextFragmentsWithNonTextFragment) {
+  GURL url("https://example.com/?not_a_frag_directive:~:#no_text_fragments");
+  GURL result = RemoveTextFragments(url);
+  EXPECT_EQ("https://example.com/?not_a_frag_directive:~:#no_text_fragments",
+            result.spec());
+}
+
+TEST(TextFragmentsUtilsTest, RemoveTextFragmentsMultipleDelimiters) {
+  GURL url(
+      "https://example.com/"
+      "?not_a_frag_directive:~:#no_text_fragments:~:text=test,frag");
+  GURL result = RemoveTextFragments(url);
+  EXPECT_EQ("https://example.com/?not_a_frag_directive:~:#no_text_fragments",
+            result.spec());
+}
+
 TEST(TextFragmentsUtilsTest, AppendFragmentDirectivesOneFragment) {
   GURL base_url("https://www.chromium.org");
   TextFragment test_fragment("only start");

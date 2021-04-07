@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -1544,6 +1545,15 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithClick) {
   Compositor().BeginFrame();
   Compositor().BeginFrame();
 
+  KURL url = GetDocument()
+                 .GetFrame()
+                 ->Loader()
+                 .GetDocumentLoader()
+                 ->GetHistoryItem()
+                 ->Url();
+  EXPECT_EQ(
+      "https://example.com/test.html#:~:text=test%20page&text=more%20text",
+      url.GetString());
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
   SimulateClick(100, 100);
@@ -1552,6 +1562,13 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithClick) {
 
   // Ensure the fragment is uninstalled
   EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
+  url = GetDocument()
+            .GetFrame()
+            ->Loader()
+            .GetDocumentLoader()
+            ->GetHistoryItem()
+            ->Url();
+  EXPECT_EQ("https://example.com/test.html", url.GetString());
 }
 
 // Test not dismissing the text highlight with a click, if the
@@ -1637,6 +1654,15 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithTap) {
   Compositor().BeginFrame();
   Compositor().BeginFrame();
 
+  KURL url = GetDocument()
+                 .GetFrame()
+                 ->Loader()
+                 .GetDocumentLoader()
+                 ->GetHistoryItem()
+                 ->Url();
+  EXPECT_EQ(
+      "https://example.com/test.html#:~:text=test%20page&text=more%20text",
+      url.GetString());
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
   SimulateTap(100, 100);
@@ -1645,6 +1671,13 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithTap) {
 
   // Ensure the fragment is uninstalled
   EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
+  url = GetDocument()
+            .GetFrame()
+            ->Loader()
+            .GetDocumentLoader()
+            ->GetHistoryItem()
+            ->Url();
+  EXPECT_EQ("https://example.com/test.html", url.GetString());
 }
 
 // Test not dismissing the text highlight with a tap, if the

@@ -27,6 +27,9 @@ base::Value ParseTextFragments(const GURL& url);
 // Extracts the text fragments, if any, from a ref string.
 std::vector<std::string> ExtractTextFragments(std::string ref_string);
 
+// Remove the text fragment selectors, if any, from url.
+GURL RemoveTextFragments(const GURL& url);
+
 // Appends a set of text |fragments| with the correct format to the given
 // |base_url|. Returns an empty GURL if |base_url| is invalid.
 GURL AppendFragmentDirectives(const GURL& base_url,

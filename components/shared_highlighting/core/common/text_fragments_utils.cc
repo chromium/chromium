@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/optional.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
 #include "components/shared_highlighting/core/common/text_fragments_constants.h"
@@ -58,6 +59,40 @@ std::vector<std::string> ExtractTextFragments(std::string ref_string) {
     ref_string.erase(0, ampersand_pos + 1);
   }
   return fragment_strings;
+}
+
+GURL RemoveTextFragments(const GURL& url) {
+  size_t start_pos = url.ref().find(kFragmentsUrlDelimiter);
+  if (start_pos == std::string::npos)
+    return url;
+
+  // Split url before and after the ":~:" delimiter.
+  std::string fragment_prefix = url.ref().substr(0, start_pos);
+  std::string fragment_directive =
+      url.ref().substr(start_pos + strlen(kFragmentsUrlDelimiter));
+
+  // Split fragment directive on "&" and remove all pieces that start with
+  // "text="
+  std::vector<std::string> fragment_strings;
+  for (const std::string& fragment :
+       base::SplitString(fragment_directive, "&", base::TRIM_WHITESPACE,
+                         base::SPLIT_WANT_ALL)) {
+    if (fragment.substr(0, strlen(kFragmentParameterName)) !=
+        kFragmentParameterName) {
+      fragment_strings.push_back(fragment);
+    }
+  }
+
+  // Join remaining pieces and append to the url.
+  std::string new_fragment = fragment_prefix;
+  if (!fragment_strings.empty()) {
+    new_fragment +=
+        kFragmentsUrlDelimiter + base::JoinString(fragment_strings, "&");
+  }
+
+  GURL::Replacements replacements;
+  replacements.SetRefStr(new_fragment);
+  return url.ReplaceComponents(replacements);
 }
 
 GURL AppendFragmentDirectives(const GURL& base_url,
