@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
+#include "components/sync/invalidations/switches.h"
 
 namespace syncer {
 
@@ -36,8 +39,12 @@ void InterestedDataTypesManager::SetInterestedDataTypes(
       Difference(data_types, data_types_.value_or(ModelTypeSet()));
   data_types_ = data_types;
   if (interested_data_types_handler_) {
+    // Do not send an additional GetUpdates request when invalidations are
+    // disabled.
     interested_data_types_handler_->OnInterestedDataTypesChanged(
-        base::BindOnce(std::move(callback), new_data_types));
+        base::FeatureList::IsEnabled(switches::kUseSyncInvalidations)
+            ? base::BindOnce(std::move(callback), new_data_types)
+            : base::DoNothing());
   }
 }
 

@@ -14,6 +14,8 @@ namespace syncer {
 // callback when the list of data types is sent to the Sync server.
 class InterestedDataTypesHandler {
  public:
+  virtual ~InterestedDataTypesHandler() = default;
+
   // Called on each change of interested data types.
   virtual void OnInterestedDataTypesChanged(base::OnceClosure callback) = 0;
 };
