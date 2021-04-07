@@ -83,9 +83,12 @@ void AutofillOfferManager::UpdateSuggestionsWithOffers(
 }
 
 bool AutofillOfferManager::IsUrlEligible(const GURL& last_committed_url) {
-  GURL last_committed_url_origin = last_committed_url.GetOrigin();
-  return base::ranges::count(eligible_merchant_domains_,
-                             last_committed_url_origin);
+  // Checking set::empty and using set::count to prevent possible crashes (see
+  // crbug.com/1195949).
+  // For most cases this vector will be empty, so add the empty check to avoid
+  // unnecessary calls.
+  return !eligible_merchant_domains_.empty() &&
+         eligible_merchant_domains_.count(last_committed_url.GetOrigin());
 }
 
 std::tuple<std::vector<GURL>, GURL, CreditCard*>
