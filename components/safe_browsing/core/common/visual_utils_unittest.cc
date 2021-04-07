@@ -20,6 +20,31 @@ const unsigned int kRed = 0xff0000ff;
 const unsigned int kGreen = 0xff00ff00;
 const unsigned int kBlue = 0xffff0000;
 
+// Use to add noise to the 5 lower bits of each color component. Use to
+// diversify input in tests that cover function that will only look at the most
+// significant three bits of each component. |i| is used to get different noise
+// that changes in sequence. Any number can be provided. Noise applied can be
+// identical for two different values of |i|.
+unsigned int AddNoiseToLowerBits(unsigned int color, unsigned int i) {
+  // Get a mask between 00000 and 11111 from index.
+  unsigned int mask = i % 0x1f;
+
+  // Apply noise to each color component separately.
+  color &= 0xffffffe0;
+  color |= mask << 0;
+
+  color &= 0xffffe0ff;
+  color |= mask << 8;
+
+  color &= 0xffe0ffff;
+  color |= mask << 16;
+
+  color &= 0xe0ffffff;
+  color |= mask << 24;
+
+  return color;
+}
+
 }  // namespace
 
 using ::testing::FloatEq;
@@ -93,7 +118,9 @@ TEST_F(VisualUtilsTest, GetHistogramForImageWhite) {
   // Draw white over half the image
   for (int x = 0; x < 1000; x++)
     for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kWhite, x + y);
+
+  *bitmap_.getAddr32(10, 10) = 0xffe0ffff;
 
   ASSERT_TRUE(GetHistogramForImage(bitmap_, &histogram));
   ASSERT_EQ(histogram.bins_size(), 1);
@@ -113,12 +140,12 @@ TEST_F(VisualUtilsTest, GetHistogramForImageHalfWhiteHalfBlack) {
   // Draw white over half the image
   for (int x = 0; x < 1000; x++)
     for (int y = 0; y < 500; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kWhite, x + y);
 
   // Draw black over half the image.
   for (int x = 0; x < 1000; x++)
     for (int y = 500; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kBlack;
+      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kBlack, x + y);
 
   ASSERT_TRUE(GetHistogramForImage(bitmap_, &histogram));
   ASSERT_EQ(histogram.bins_size(), 2);
@@ -339,7 +366,7 @@ TEST_F(VisualUtilsTest, IsVisualMatchHashStrideComparison) {
 TEST_F(VisualUtilsTest, IsVisualMatchHistogramOnly) {
   for (int x = 0; x < 1000; x++)
     for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kWhite, x + y);
 
   {
     VisualTarget target;
@@ -400,7 +427,7 @@ TEST_F(VisualUtilsTest, IsVisualMatchHistogramOnly) {
 TEST_F(VisualUtilsTest, IsVisualMatchColorRange) {
   for (int x = 0; x < 1000; x++)
     for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kWhite, x + y);
   *bitmap_.getAddr32(0, 0) = kBlue;
 
   SkScalar hsv[3];
@@ -426,14 +453,14 @@ TEST_F(VisualUtilsTest, IsVisualMatchColorRange) {
   EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
 
   // No blue hue present
-  *bitmap_.getAddr32(0, 0) = kWhite;
+  *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kWhite, 1);
   EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchMultipleColorRanges) {
   for (int x = 0; x < 1000; x++)
     for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kWhite, x + y);
   *bitmap_.getAddr32(0, 0) = kBlue;
   *bitmap_.getAddr32(1, 0) = kGreen;
 
@@ -456,16 +483,16 @@ TEST_F(VisualUtilsTest, IsVisualMatchMultipleColorRanges) {
   EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
 
   // No blue hue present
-  *bitmap_.getAddr32(0, 0) = kWhite;
+  *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kWhite, 1);
   EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
 
   // No green hue present
-  *bitmap_.getAddr32(0, 0) = kBlue;
-  *bitmap_.getAddr32(1, 0) = kWhite;
+  *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kBlue, 1);
+  *bitmap_.getAddr32(1, 0) = AddNoiseToLowerBits(kWhite, 1);
   EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
 
   // Neither hue present
-  *bitmap_.getAddr32(0, 0) = kWhite;
+  *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kWhite, 1);
   EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
 }
 
