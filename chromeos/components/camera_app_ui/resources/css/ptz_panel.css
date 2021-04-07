@@ -31,26 +31,44 @@ body.taking.video #panel-container {
 }
 
 #pan-left {
+  --svg-width: 8px;
+  --svg-height: 10px;
+
   background: url(/images/ptz_pan_left.svg) center no-repeat;
 }
 
 #pan-right {
+  --svg-width: 8px;
+  --svg-height: 10px;
+
   background: url(/images/ptz_pan_right.svg) center no-repeat;
 }
 
 #tilt-up {
+  --svg-width: 12px;
+  --svg-height: 8px;
+
   background: url(/images/ptz_tilt_up.svg) center no-repeat;
 }
 
 #tilt-down {
+  --svg-width: 12px;
+  --svg-height: 8px;
+
   background: url(/images/ptz_tilt_down.svg) center no-repeat;
 }
 
 #zoom-in {
+  --svg-width: 16px;
+  --svg-height: 16px;
+
   background: url(/images/ptz_zoom_in.svg) center no-repeat;
 }
 
 #zoom-out {
+  --svg-width: 16px;
+  --svg-height: 16px;
+
   background: url(/images/ptz_zoom_out.svg) center no-repeat;
 }
 
@@ -180,7 +198,7 @@ body.has-pan-support.has-tilt-support.has-zoom-support #panel-container {
   width: 192px;
 }
 
-/* TODO(b/172881094): Polish focusd, active visual look of clipped button. */
+/* TODO(b/172881094): Polish active visual look of clipped button. */
 
 body.has-pan-support.has-tilt-support.has-zoom-support #panel-container button {
   height: 100%;
@@ -188,8 +206,6 @@ body.has-pan-support.has-tilt-support.has-zoom-support #panel-container button {
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #tilt-down {
-  --svg-width: 12px;
-  --svg-height: 8px;
   --x: calc(calc(192px - var(--svg-width)) / 2);
   --y: calc(48px * 3 + calc(48px - var(--svg-height)) / 2);
 
@@ -198,8 +214,6 @@ body.has-pan-support.has-tilt-support.has-zoom-support #tilt-down {
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #tilt-up {
-  --svg-width: 12px;
-  --svg-height: 8px;
   --x: calc(calc(192px - var(--svg-width)) / 2);
   --y: calc(calc(48px - var(--svg-height)) / 2);
 
@@ -208,8 +222,6 @@ body.has-pan-support.has-tilt-support.has-zoom-support #tilt-up {
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #pan-left {
-  --svg-width: 8px;
-  --svg-height: 10px;
   --x: calc(calc(48px - var(--svg-width)) / 2);
   --y: calc(calc(192px - var(--svg-height)) / 2);
 
@@ -218,8 +230,6 @@ body.has-pan-support.has-tilt-support.has-zoom-support #pan-left {
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #pan-right {
-  --svg-width: 8px;
-  --svg-height: 10px;
   --x: calc(48px * 3 + calc(48px - var(--svg-width)) / 2);
   --y: calc(calc(192px - var(--svg-height)) / 2);
 
@@ -232,8 +242,6 @@ body.has-pan-support.has-tilt-support.has-zoom-support :is(#zoom-in, #zoom-out) 
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #zoom-in {
-  --svg-width: 16px;
-  --svg-height: 16px;
   --x: calc(48px * 2 + 16px);
   --y: calc(calc(192px - var(--svg-height)) / 2);
 
@@ -242,8 +250,6 @@ body.has-pan-support.has-tilt-support.has-zoom-support #zoom-in {
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #zoom-out {
-  --svg-width: 16px;
-  --svg-height: 16px;
   --x: calc(48px * 2 - 16px - var(--svg-width));
   --y: calc(calc(192px - var(--svg-height)) / 2);
 
@@ -251,3 +257,20 @@ body.has-pan-support.has-tilt-support.has-zoom-support #zoom-out {
   clip-path: path('M 96 134 L 96 58 A 38 38 0 0 0 96 134 Z');
 }
 
+/* Focus ring. */
+
+#panel-container button:focus::after {
+  --ring-radius: calc(max(var(--svg-width), var(--svg-height)) / 2 + 4px);
+
+  border-radius: 50%;
+  height: calc(var(--ring-radius) * 2);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(var(--ring-radius) * 2);
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support #panel-container button:focus::after {
+  left: calc(var(--x) + var(--svg-width) / 2);
+  top: calc(var(--y) + var(--svg-height) / 2);
+}
