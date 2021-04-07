@@ -30,8 +30,13 @@
         flex: auto;
       }
 
-      #networkState {
+      .network-state {
         color: var(--cr-secondary-text-color);
+        font-size: inherit;
+      }
+
+      .locked-warning-message {
+        color: var(--google-yellow-800);
         font-size: inherit;
       }
     </style>
@@ -52,7 +57,8 @@
             <div id="networkTitleText">
               [[getTitleText_(activeNetworkState)]]
             </div>
-            <div id="networkState">
+            <div id="networkState"
+                class$="[[getNetworkStateClass_(deviceState, deviceState.*)]]">
               [[getNetworkStateText_(activeNetworkState, deviceState.*)]]
             </div>
           </div>

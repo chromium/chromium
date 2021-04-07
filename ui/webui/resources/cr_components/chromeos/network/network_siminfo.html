@@ -56,11 +56,12 @@
     <!-- SIM locked -->
     <div id="simLocked" class="property-box two-line"
         hidden$="[[!showSimLocked_(deviceState, isActiveSim_)]]">
-      <div class="start layout horizontal center">
+      <div class="start layout horizontal center"
+          hidden="[[isUpdatedCellularUiEnabled_]]">
         <iron-icon icon="cr:sim-lock"></iron-icon>
         <div class="error">[[i18n('networkSimCardLocked')]]</div>
       </div>
-      <div class="separator"></div>
+      <div class="separator" hidden="[[isUpdatedCellularUiEnabled_]]"></div>
       <cr-button id="unlockPinButton"
           on-click="onUnlockPinTap_"
           disabled="[[disabled]]">

@@ -97,6 +97,11 @@ Polymer({
    * @private
    */
   getNetworkStateText_() {
+    // If SIM Locked, show warning message instead of connection state.
+    if (this.shouldShowLockedWarningMessage_(this.deviceState)) {
+      return this.i18n('networkSimLockedSubtitle');
+    }
+
     const stateText =
         this.getConnectionStateText_(this.activeNetworkState, this.deviceState);
     if (stateText) {
@@ -215,12 +220,39 @@ Polymer({
       return false;
     }
 
-    if (this.isUpdatedCellularUiEnabled_) {
-      // Do not show simInfo if |updatedCellularActivationUi| flag is enabled.
+    const {pSimSlots, eSimSlots} = getSimSlotCount(deviceState);
+    if (this.isUpdatedCellularUiEnabled_ && eSimSlots > 0) {
+      // Do not show simInfo if |updatedCellularActivationUi| flag is enabled
+      // and if we are using an eSIM enabled device.
+      return false;
+    }
+    return this.simLockedOrAbsent_(deviceState);
+  },
+
+  /**
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
+   * @return {string}
+   * @private
+   */
+  getNetworkStateClass_(deviceState) {
+    if (this.shouldShowLockedWarningMessage_(deviceState)) {
+      return 'locked-warning-message';
+    }
+    return 'network-state';
+  },
+
+  /**
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
+   * @return {boolean}
+   * @private
+   */
+  shouldShowLockedWarningMessage_(deviceState) {
+    if (!deviceState || deviceState.type !== mojom.NetworkType.kCellular ||
+        !deviceState.simLockStatus || !this.isUpdatedCellularUiEnabled_) {
       return false;
     }
 
-    return this.simLockedOrAbsent_(deviceState);
+    return !!deviceState.simLockStatus.lockType;
   },
 
   /**
