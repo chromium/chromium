@@ -1675,6 +1675,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.EME.MaxCdmProcessCount" units="processes"
     expires_after="2022-05-07">
+  <obsolete>
+    Deprecated as of 2021/04.
+  </obsolete>
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

@@ -134,19 +134,11 @@ std::ostream& operator<<(std::ostream& os, const CdmServiceKey& key) {
 class CdmServiceMap {
  public:
   CdmServiceMap() = default;
-
-  ~CdmServiceMap() {
-    DVLOG(1) << __func__ << ": max_remote_count_=" << max_remote_count_;
-    UMA_HISTOGRAM_COUNTS_100("Media.EME.MaxCdmProcessCount", max_remote_count_);
-  }
+  ~CdmServiceMap() = default;
 
   // Gets or creates a media::mojom::CdmService remote. The returned remote
   // might not be bound, e.g. if it's newly created.
-  auto& GetOrCreateRemote(const CdmServiceKey& key) {
-    auto& remote = remotes_[key];
-    max_remote_count_ = std::max(max_remote_count_, remotes_.size());
-    return remote;
-  }
+  auto& GetOrCreateRemote(const CdmServiceKey& key) { return remotes_[key]; }
 
   void EraseRemote(const CdmServiceKey& key) {
     DCHECK(remotes_.count(key));
@@ -155,7 +147,6 @@ class CdmServiceMap {
 
  private:
   std::map<CdmServiceKey, mojo::Remote<media::mojom::CdmService>> remotes_;
-  size_t max_remote_count_ = 0;
 };
 
 CdmServiceMap& GetCdmServiceMap() {
