@@ -5,6 +5,12 @@
 # This config is applied to targets that depend on libhwy
 config("libhwy_external_config") {
   include_dirs = [ "src" ]
+  defines = []
+  if (is_win) {
+    # Compiling AVX2/3 on Windows produces a warning and disabled those targets.
+    # TODO(deymo): Validate if these targets are actually broken in Windows.
+    defines += [ "HWY_BROKEN_TARGETS=(HWY_AVX2|HWY_AVX3)" ]
+  }
 }
 
 source_set("libhwy") {
