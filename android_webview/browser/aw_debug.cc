@@ -18,19 +18,26 @@ namespace android_webview {
 
 class AwDebugCpuAffinity : public content::RenderProcessHostCreationObserver {
  public:
-  AwDebugCpuAffinity() {
+  AwDebugCpuAffinity(bool enable_idle_throttling = false)
+      : enable_idle_throttling_(enable_idle_throttling) {
     for (RenderProcessHost::iterator i(RenderProcessHost::AllHostsIterator());
          !i.IsAtEnd(); i.Advance()) {
       RenderProcessHost* process_host = i.GetCurrentValue();
       if (process_host) {
-        SetAffinityForProcessHost(process_host);
+        if (enable_idle_throttling_)
+          EnableIdleThrottling(process_host);
+        else
+          SetAffinityForProcessHost(process_host);
       }
     }
   }
 
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(RenderProcessHost* process_host) override {
-    SetAffinityForProcessHost(process_host);
+    if (enable_idle_throttling_)
+      EnableIdleThrottling(process_host);
+    else
+      SetAffinityForProcessHost(process_host);
   }
 
  private:
@@ -40,10 +47,23 @@ class AwDebugCpuAffinity : public content::RenderProcessHostCreationObserver {
         base::Unretained(
             AwRenderProcess::GetInstanceForRenderProcessHost(process_host))));
   }
+
+  void EnableIdleThrottling(RenderProcessHost* process_host) {
+    process_host->PostTaskWhenProcessIsReady(base::BindOnce(
+        &AwRenderProcess::EnableIdleThrottling,
+        base::Unretained(
+            AwRenderProcess::GetInstanceForRenderProcessHost(process_host))));
+  }
+
+  bool enable_idle_throttling_{false};
 };
 
 static void JNI_AwDebug_SetCpuAffinityToLittleCores(JNIEnv* env) {
   static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity;
+}
+
+static void JNI_AwDebug_EnableIdleThrottling(JNIEnv* env) {
+  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity(true);
 }
 
 static void JNI_AwDebug_SetSupportLibraryWebkitVersionCrashKey(

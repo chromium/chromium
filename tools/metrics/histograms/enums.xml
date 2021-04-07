@@ -6531,6 +6531,11 @@ others/histograms.xml -->
   <int value="5" label="Overlay Insecure Non-player-element Fullscreen"/>
 </enum>
 
+<enum name="AwDebugCall">
+  <int value="0" label="setCpuAffinityToLittleCores"/>
+  <int value="1" label="enableIdleThrottling"/>
+</enum>
+
 <enum name="BackForwardCacheActionAfterPagehide">
   <int value="0" label="Navigation"/>
   <int value="1" label="Sent postMessage"/>

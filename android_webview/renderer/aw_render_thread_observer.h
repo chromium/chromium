@@ -31,6 +31,7 @@ class AwRenderThreadObserver : public content::RenderThreadObserver,
   void ClearCache() override;
   void SetJsOnlineProperty(bool network_up) override;
   void SetCpuAffinityToLittleCores() override;
+  void EnableIdleThrottling() override;
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);

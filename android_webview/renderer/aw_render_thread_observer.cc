@@ -50,4 +50,9 @@ void AwRenderThreadObserver::SetCpuAffinityToLittleCores() {
       power_scheduler::SchedulingPolicy::kLittleCoresOnly);
 }
 
+void AwRenderThreadObserver::EnableIdleThrottling() {
+  power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
+      power_scheduler::SchedulingPolicy::kThrottleIdle);
+}
+
 }  // namespace android_webview

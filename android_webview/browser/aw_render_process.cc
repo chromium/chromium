@@ -70,6 +70,10 @@ void AwRenderProcess::SetCpuAffinityToLittleCores() {
   renderer_remote_->SetCpuAffinityToLittleCores();
 }
 
+void AwRenderProcess::EnableIdleThrottling() {
+  renderer_remote_->EnableIdleThrottling();
+}
+
 void AwRenderProcess::Ready() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

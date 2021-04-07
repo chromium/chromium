@@ -4,10 +4,13 @@
 
 package org.chromium.android_webview;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.File;
 
@@ -38,14 +41,33 @@ public class AwDebug {
         AwDebugJni.get().setSupportLibraryWebkitVersionCrashKey(version);
     }
 
+    // Used to record the UMA histogram Android.WebView.AwDebugCall. Since these values are
+    // persisted to logs, they should never be renumbered or reused.
+    @IntDef({AwDebugCall.SET_CPU_AFFINITY_TO_LITTLE_CORES, AwDebugCall.ENABLE_IDLE_THROTTLING})
+    @interface AwDebugCall {
+        int SET_CPU_AFFINITY_TO_LITTLE_CORES = 0;
+        int ENABLE_IDLE_THROTTLING = 1;
+        int COUNT = 2;
+    }
+
     @UsedByReflection("")
     public static void setCpuAffinityToLittleCores() {
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.AwDebugCall",
+                AwDebugCall.SET_CPU_AFFINITY_TO_LITTLE_CORES, AwDebugCall.COUNT);
         AwDebugJni.get().setCpuAffinityToLittleCores();
+    }
+
+    @UsedByReflection("")
+    public static void enableIdleThrottling() {
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.AwDebugCall",
+                AwDebugCall.ENABLE_IDLE_THROTTLING, AwDebugCall.COUNT);
+        AwDebugJni.get().enableIdleThrottling();
     }
 
     @NativeMethods
     interface Natives {
         void setSupportLibraryWebkitVersionCrashKey(String version);
         void setCpuAffinityToLittleCores();
+        void enableIdleThrottling();
     }
 }
