@@ -41,6 +41,7 @@ class JavaRef;
 
 template <typename T>
 class Optional;
+class TimeDelta;
 class UnguessableToken;
 class Value;
 }  // namespace base
@@ -86,6 +87,8 @@ class InterfaceProvider;
 
 namespace ui {
 struct AXActionData;
+struct AXTreeUpdate;
+class AXMode;
 class AXTreeID;
 }  // namespace ui
 
@@ -165,6 +168,16 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns the accessibility tree ID for this RenderFrameHost.
   virtual ui::AXTreeID GetAXTreeID() = 0;
+
+  using AXTreeSnapshotCallback =
+      base::OnceCallback<void(const ui::AXTreeUpdate&)>;
+  // Request a one-time snapshot of the accessibility tree without changing
+  // the accessibility mode.
+  virtual void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
+                                     const ui::AXMode& ax_mode,
+                                     bool exclude_offscreen,
+                                     size_t max_nodes,
+                                     const base::TimeDelta& timeout) = 0;
 
   // Returns the SiteInstance grouping all RenderFrameHosts that have script
   // access to this RenderFrameHost, and must therefore live in the same

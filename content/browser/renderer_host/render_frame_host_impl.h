@@ -271,8 +271,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 #endif  //  BUILDFLAG(ENABLE_PLUGINS)
       public network::mojom::CookieAccessObserver {
  public:
-  using AXTreeSnapshotCallback =
-      base::OnceCallback<void(const ui::AXTreeUpdate&)>;
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
 
@@ -312,6 +310,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const blink::LocalFrameToken& GetFrameToken() override;
 
   ui::AXTreeID GetAXTreeID() override;
+  void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
+                             const ui::AXMode& ax_mode,
+                             bool exclude_offscreen,
+                             size_t max_nodes,
+                             const base::TimeDelta& timeout) override;
   SiteInstanceImpl* GetSiteInstance() override;
   RenderProcessHost* GetProcess() override;
   GlobalFrameRoutingId GetGlobalFrameRoutingId() override;

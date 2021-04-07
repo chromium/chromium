@@ -7383,6 +7383,20 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
 
 void RenderFrameHostImpl::RequestAXTreeSnapshot(
     AXTreeSnapshotCallback callback,
+    const ui::AXMode& ax_mode,
+    bool exclude_offscreen,
+    size_t max_nodes,
+    const base::TimeDelta& timeout) {
+  auto params = mojom::SnapshotAccessibilityTreeParams::New();
+  params->ax_mode = ax_mode.mode();
+  params->exclude_offscreen = exclude_offscreen;
+  params->max_nodes = max_nodes;
+  params->timeout = timeout;
+  RequestAXTreeSnapshot(std::move(callback), std::move(params));
+}
+
+void RenderFrameHostImpl::RequestAXTreeSnapshot(
+    AXTreeSnapshotCallback callback,
     mojom::SnapshotAccessibilityTreeParamsPtr params) {
   // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
   if (!IsRenderFrameCreated())
