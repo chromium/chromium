@@ -16,6 +16,7 @@ import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -122,7 +123,7 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
         MinidumpUploadJobService.scheduleUpload(builder);
     }
 
-    private ApplicationStateListener createApplicationStateListener() {
+    private static ApplicationStateListener createApplicationStateListener() {
         return newState -> {
             SharedPreferencesManager.getInstance().writeInt(
                     ChromePreferenceKeys.LAST_SESSION_APPLICATION_STATE, newState);
@@ -148,6 +149,9 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
             umaSuffix = "Background";
         }
         sharedPrefs.writeInt(ChromePreferenceKeys.LAST_SESSION_BROWSER_PID, Process.myPid());
+        ApplicationStateListener appStateListener = createApplicationStateListener();
+        appStateListener.onApplicationStateChange(ApplicationStatus.getStateForApplication());
+        ApplicationStatus.registerApplicationStateListener(appStateListener);
         if (previousPid != 0) {
             int reason = ProcessExitReasonFromSystem.getExitReason(previousPid);
             ProcessExitReasonFromSystem.recordAsEnumHistogram(
