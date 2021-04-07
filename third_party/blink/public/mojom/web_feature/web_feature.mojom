@@ -3080,6 +3080,8 @@ enum WebFeature {
   kAddressSpaceUnknownSecureContextNavigatedToPrivate = 3771,
   kAddressSpaceUnknownNonSecureContextNavigatedToPrivate = 3772,
   kRTCPeerConnectionSdpSemanticsPlanB = 3773,
+  // The items above roughly this point are available in the M89 branch.
+
   kFetchRespondWithNoResponseWithUsedRequestBody = 3774,
   kV8TCPSocket_Close_Method = 3775,
   kV8TCPSocket_Readable_AttributeGetter = 3776,
@@ -3136,6 +3138,8 @@ enum WebFeature {
   kStorageFoundationFlush = 3827,
   kStorageFoundationFlushSync = 3828,
   kUnrestrictedSharedArrayBuffer = 3829,
+  // The items above roughly this point are available in the M90 branch.
+
   kFeaturePolicyJSAPIAllowsFeatureIFrame = 3830,
   kFeaturePolicyJSAPIAllowsFeatureDocument = 3831,
   kFeaturePolicyJSAPIAllowsFeatureOriginIFrame = 3832,
@@ -3180,6 +3184,7 @@ enum WebFeature {
   kPaymentRequestCSPViolation = 3871,
   kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope = 3872,
   kAuthorizationCoveredByWildcard = 3873,
+  kElementGetInnerHTML = 3874,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -37,7 +37,7 @@ interface ShadowRoot : DocumentFragment {
     [RuntimeEnabled=ManualSlotting] readonly attribute SlotAssignmentMode slotAssignment;
 
     // Declarative Shadow DOM getInnerHTML() function.
-    [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, RuntimeCallStatsCounter=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+    [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
 };
 
 ShadowRoot includes DocumentOrShadowRoot;
