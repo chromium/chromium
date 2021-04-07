@@ -28,9 +28,9 @@ body.taking.video #panel-container {
   opacity: 0.38;
 }
 
-.body:not(.HAS_PAN_SUPPORT) :is(#pan-left, #pan-right),
-.body:not(.HAS_TILT_SUPPORT) :is(#tilt-up, #tilt-down),
-.body:not(.HAS_ZOOM_SUPPORT) :is(#zoom-in, #zoom-out) {
+body:not(.has-pan-support) :is(#pan-left, #pan-right),
+body:not(.has-tilt-support) :is(#tilt-up, #tilt-down),
+body:not(.has-zoom-support) :is(#zoom-in, #zoom-out) {
   display: none;
 }
 
