@@ -13,6 +13,8 @@
 #include "url/url_constants.h"
 
 using blink::mojom::RequestIdTokenStatus;
+using blink::mojom::RequestMode;
+using UserApproval = content::IdentityRequestDialogController::UserApproval;
 
 namespace content {
 
@@ -52,6 +54,7 @@ void FederatedAuthRequestImpl::Create(
 
 void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
                                               const std::string& id_request,
+                                              RequestMode mode,
                                               RequestIdTokenCallback callback) {
   if (callback_) {
     std::move(callback).Run(RequestIdTokenStatus::kErrorTooManyRequests, "");
@@ -61,6 +64,7 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   callback_ = std::move(callback);
   provider_ = provider;
   id_request_ = id_request;
+  mode_ = mode;
 
   network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
@@ -75,15 +79,24 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host());
 
-  request_dialog_controller_->ShowInitialPermissionDialog(
-      web_contents, provider_,
-      base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
-                     weak_ptr_factory_.GetWeakPtr()));
+  switch (mode_) {
+    case RequestMode::kMediated:
+      // Skip permissions for Mediated mode since they are combined with
+      // account selection UX.
+      OnSigninApproved(UserApproval::kApproved);
+      break;
+    case RequestMode::kPermission:
+      request_dialog_controller_->ShowInitialPermissionDialog(
+          web_contents, provider_,
+          base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+  }
 }
 
 void FederatedAuthRequestImpl::OnWellKnownFetched(
     IdpNetworkRequestManager::FetchStatus status,
-    const std::string& idp_endpoint) {
+    IdpNetworkRequestManager::Endpoints endpoints) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kWebIdNotSupported: {
       CompleteRequest(RequestIdTokenStatus::kErrorWebIdNotSupportedByProvider,
@@ -103,22 +116,59 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     }
   }
 
-  const url::Origin& idp_origin = url::Origin::Create(provider_);
-  GURL well_known_url =
-      idp_origin.GetURL().Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
-  idp_endpoint_url_ = well_known_url.Resolve(idp_endpoint);
+  auto ResolveUrl = [&](const std::string& endpoint) {
+    if (endpoint.empty())
+      return GURL();
+    const url::Origin& idp_origin = url::Origin::Create(provider_);
+    GURL well_known_url = idp_origin.GetURL().Resolve(
+        IdpNetworkRequestManager::kWellKnownFilePath);
+    return well_known_url.Resolve(endpoint);
+  };
 
-  // TODO(kenrb): This has to be same-origin with the provider.
-  // https://crbug.com/1141125
-  if (!IdpUrlIsValid(idp_endpoint_url_)) {
-    CompleteRequest(RequestIdTokenStatus::kError, "");
-    return;
+  endpoints_.idp = ResolveUrl(endpoints.idp);
+  endpoints_.token = ResolveUrl(endpoints.token);
+  endpoints_.accounts = ResolveUrl(endpoints.accounts);
+
+  switch (mode_) {
+    case RequestMode::kMediated: {
+      // For Mediated mode we require both accounts and token endpoints.
+      if (endpoints_.token.is_empty() || endpoints_.accounts.is_empty()) {
+        CompleteRequest(RequestIdTokenStatus::kErrorInvalidWellKnown, "");
+        return;
+      }
+      // TODO(kenrb): This has to be same-origin with the provider.
+      // https://crbug.com/1141125
+      if (!IdpUrlIsValid(endpoints_.token) ||
+          !IdpUrlIsValid(endpoints_.accounts)) {
+        CompleteRequest(RequestIdTokenStatus::kError, "");
+        return;
+      }
+      network_manager_->SendAccountsRequest(
+          endpoints_.accounts,
+          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+    }
+    case RequestMode::kPermission: {
+      // For Permission mode we require both accounts and token endpoints.
+      if (endpoints_.idp.is_empty()) {
+        CompleteRequest(RequestIdTokenStatus::kErrorInvalidWellKnown, "");
+        return;
+      }
+      // TODO(kenrb): This has to be same-origin with the provider.
+      // https://crbug.com/1141125
+      if (!IdpUrlIsValid(endpoints_.idp)) {
+        CompleteRequest(RequestIdTokenStatus::kError, "");
+        return;
+      }
+
+      network_manager_->SendSigninRequest(
+          endpoints_.idp, id_request_,
+          base::BindOnce(&FederatedAuthRequestImpl::OnSigninResponseReceived,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+    }
   }
-
-  network_manager_->SendSigninRequest(
-      idp_endpoint_url_, id_request_,
-      base::BindOnce(&FederatedAuthRequestImpl::OnSigninResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::OnSigninApproved(
@@ -135,12 +185,12 @@ void FederatedAuthRequestImpl::OnSigninApproved(
 
 void FederatedAuthRequestImpl::OnSigninResponseReceived(
     IdpNetworkRequestManager::SigninResponse status,
-    const std::string& response) {
-  // |response| is either the URL for the sign-in page or the ID token,
+    const std::string& url_or_token) {
+  // |url_or_token| is either the URL for the sign-in page or the ID token,
   // depending on |status|.
   switch (status) {
     case IdpNetworkRequestManager::SigninResponse::kLoadIdp: {
-      GURL idp_signin_page_url = idp_endpoint_url_.Resolve(response);
+      GURL idp_signin_page_url = endpoints_.idp.Resolve(url_or_token);
       if (!IdpUrlIsValid(idp_signin_page_url)) {
         CompleteRequest(RequestIdTokenStatus::kError, "");
         return;
@@ -150,7 +200,6 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
 
       DCHECK(!idp_web_contents_);
       idp_web_contents_ = CreateIdpWebContents();
-
       request_dialog_controller_->ShowIdProviderWindow(
           rp_web_contents, idp_web_contents_.get(), idp_signin_page_url,
           base::BindOnce(&FederatedAuthRequestImpl::OnIdpPageClosed,
@@ -161,7 +210,7 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
       // TODO(kenrb): Returning success here has to be dependent on whether
       // a WebID flow has succeeded in the past, otherwise jump to
       // the token permission dialog.
-      CompleteRequest(RequestIdTokenStatus::kSuccess, response);
+      CompleteRequest(RequestIdTokenStatus::kSuccess, url_or_token);
       return;
     }
     case IdpNetworkRequestManager::SigninResponse::kSigninError: {
@@ -240,6 +289,67 @@ void FederatedAuthRequestImpl::OnTokenProvisionApproved(
   CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
 }
 
+void FederatedAuthRequestImpl::OnAccountsResponseReceived(
+    IdpNetworkRequestManager::AccountsResponse status,
+    const IdpNetworkRequestManager::AccountList& accounts) {
+  switch (status) {
+    case IdpNetworkRequestManager::AccountsResponse::kNetError: {
+      CompleteRequest(RequestIdTokenStatus::kError, "");
+      return;
+    }
+    case IdpNetworkRequestManager::AccountsResponse::kInvalidResponseError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorInvalidAccountsResponse, "");
+      return;
+    }
+    case IdpNetworkRequestManager::AccountsResponse::kSuccess: {
+      WebContents* rp_web_contents =
+          WebContents::FromRenderFrameHost(render_frame_host());
+      DCHECK(!idp_web_contents_);
+      idp_web_contents_ = CreateIdpWebContents();
+      request_dialog_controller_->ShowAccountsDialog(
+          rp_web_contents, idp_web_contents_.get(), GURL(), accounts,
+          base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+  }
+}
+
+void FederatedAuthRequestImpl::OnAccountSelected(
+    const std::string& account_id) {
+  // This could happen if provider didn't provide any token or user closed the
+  // IdP window before it could.
+  if (account_id.empty()) {
+    CompleteRequest(RequestIdTokenStatus::kError, "");
+    return;
+  }
+
+  network_manager_->SendTokenRequest(
+      endpoints_.token, account_id, id_request_,
+      base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FederatedAuthRequestImpl::OnTokenResponseReceived(
+    IdpNetworkRequestManager::TokenResponse status,
+    const std::string& id_token) {
+  switch (status) {
+    case IdpNetworkRequestManager::TokenResponse::kNetError: {
+      CompleteRequest(RequestIdTokenStatus::kError, "");
+      return;
+    }
+    case IdpNetworkRequestManager::TokenResponse::kInvalidResponseError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorInvalidTokenResponse, "");
+      return;
+    }
+    case IdpNetworkRequestManager::TokenResponse::kSuccess: {
+      id_token_ = id_token;
+      CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
+      return;
+    }
+  }
+}
+
 std::unique_ptr<WebContents> FederatedAuthRequestImpl::CreateIdpWebContents() {
   auto idp_web_contents = content::WebContents::Create(
       WebContents::CreateParams(render_frame_host()->GetBrowserContext()));
@@ -256,6 +366,7 @@ std::unique_ptr<WebContents> FederatedAuthRequestImpl::CreateIdpWebContents() {
 void FederatedAuthRequestImpl::CompleteRequest(
     blink::mojom::RequestIdTokenStatus status,
     const std::string& id_token) {
+  DCHECK(status == RequestIdTokenStatus::kSuccess || id_token.empty());
   request_dialog_controller_.reset();
   network_manager_.reset();
   // Given that |request_dialog_controller_| has reference to this web content

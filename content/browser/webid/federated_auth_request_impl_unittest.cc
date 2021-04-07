@@ -5,11 +5,13 @@
 #include "content/browser/webid/federated_auth_request_impl.h"
 
 #include <memory>
+#include <ostream>
 #include <string>
 #include <utility>
 
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
@@ -22,7 +24,12 @@
 #include "url/gurl.h"
 
 using blink::mojom::RequestIdTokenStatus;
-
+using blink::mojom::RequestMode;
+using AccountsResponse = content::IdpNetworkRequestManager::AccountsResponse;
+using TokenResponse = content::IdpNetworkRequestManager::TokenResponse;
+using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
+using SigninResponse = content::IdpNetworkRequestManager::SigninResponse;
+using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -33,6 +40,8 @@ namespace {
 
 constexpr char kIdpTestOrigin[] = "https://idp.example";
 constexpr char kIdpEndpoint[] = "https://idp.example/webid";
+constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
+constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kSigninUrl[] = "https://idp.example/signin";
 
 // Values will be added here as token introspection is implemented.
@@ -40,10 +49,19 @@ constexpr char kAuthRequest[] = "";
 constexpr char kToken[] = "[not a real token]";
 constexpr char kEmptyToken[] = "";
 
+static const std::initializer_list<IdentityRequestAccount> kAccounts{{
+    "1234",                            // sub
+    "ken@idp.example",                 // email
+    "Ken R. Example",                  // name
+    "Ken",                             // given_name
+    "https://idp.example/profile/567"  // picture
+}};
+
 // Parameters for a call to RequestIdToken.
 typedef struct {
   const char* provider;
   const char* request;
+  RequestMode mode;
 } RequestParameters;
 
 // Expected return values from a call to RequestIdToken.
@@ -54,100 +72,194 @@ typedef struct {
 
 // Mock configuration values for test.
 typedef struct {
-  const char* token;
-  IdentityRequestDialogController::UserApproval initial_permission;
-  base::Optional<IdpNetworkRequestManager::FetchStatus> wellknown_fetch_status;
-  const char* idp_endpoint;
-  base::Optional<IdpNetworkRequestManager::SigninResponse> signin_response;
+  base::Optional<SigninResponse> signin_response;
   const char* signin_url_or_token;
-  base::Optional<IdentityRequestDialogController::UserApproval>
-      token_permission;
+  base::Optional<UserApproval> token_permission;
+} MockPermissionConfiguration;
+
+typedef struct {
+  base::Optional<AccountsResponse> accounts_response;
+  IdpNetworkRequestManager::AccountList accounts;
+  base::Optional<TokenResponse> token_response;
+} MockMediatedConfiguration;
+
+typedef struct {
+  const char* token;
+  base::Optional<UserApproval> initial_permission;
+  base::Optional<FetchStatus> wellknown_fetch_status;
+  const char* idp_endpoint;
+  const char* accounts_endpoint;
+  const char* token_endpoint;
+  MockPermissionConfiguration Permission_conf;
+  MockMediatedConfiguration Mediated_conf;
 } MockConfiguration;
 
 // base::Optional fields should be nullopt to prevent the corresponding
 // methods from having EXPECT_CALL set on the mocks.
 typedef struct {
+  std::string test_name;
   RequestParameters inputs;
   RequestExpectations expected;
   MockConfiguration config;
 } AuthRequestTestCase;
 
-constexpr AuthRequestTestCase kAllTestCases[]{
-    // Successful run with the IdP page loaded.
-    {{kIdpTestOrigin, kAuthRequest},
-     {RequestIdTokenStatus::kSuccess, kToken},
-     {kToken, IdentityRequestDialogController::UserApproval::kApproved,
-      IdpNetworkRequestManager::FetchStatus::kSuccess, kIdpEndpoint,
-      IdpNetworkRequestManager::SigninResponse::kLoadIdp, kSigninUrl,
-      IdentityRequestDialogController::UserApproval::kApproved}},
+std::ostream& operator<<(std::ostream& os,
+                         const AuthRequestTestCase& testcase) {
+  std::string name;
+  base::ReplaceChars(testcase.test_name, " ", "", &name);
+  return os << name;
+}
 
-    // Successful run with a token response from the idp_endpoint.
-    {{kIdpTestOrigin, kAuthRequest},
-     {RequestIdTokenStatus::kSuccess, kToken},
-     {kToken, IdentityRequestDialogController::UserApproval::kApproved,
-      IdpNetworkRequestManager::FetchStatus::kSuccess, kIdpEndpoint,
-      IdpNetworkRequestManager::SigninResponse::kTokenGranted, kToken,
-      base::nullopt}},
+static const MockMediatedConfiguration kMediatedNoop{base::nullopt, kAccounts,
+                                                     base::nullopt};
+static const MockPermissionConfiguration kPermissionNoop{base::nullopt, "",
+                                                         base::nullopt};
 
-    // Initial user permission denied.
-    {{kIdpTestOrigin, kAuthRequest},
+static const AuthRequestTestCase kPermissionTestCases[]{
+    {"Successful run with the IdP page loaded",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {RequestIdTokenStatus::kSuccess, kToken},
+     {kToken,
+      UserApproval::kApproved,
+      FetchStatus::kSuccess,
+      kIdpEndpoint,
+      "",
+      "",
+      {SigninResponse::kLoadIdp, kSigninUrl, UserApproval::kApproved},
+      kMediatedNoop}},
+
+    {"Successful run with a token response from the idp_endpoint",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
+     {RequestIdTokenStatus::kSuccess, kToken},
+     {kToken,
+      UserApproval::kApproved,
+      FetchStatus::kSuccess,
+      kIdpEndpoint,
+      "",
+      "",
+      {SigninResponse::kTokenGranted, kToken, base::nullopt},
+      kMediatedNoop}},
+
+    {"Initial user permission denied",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
      {RequestIdTokenStatus::kApprovalDeclined, kEmptyToken},
-     {kToken, IdentityRequestDialogController::UserApproval::kDenied,
-      base::nullopt, "", base::nullopt, "", base::nullopt}},
+     {kToken, UserApproval::kDenied, base::nullopt, "", "", "", kPermissionNoop,
+      kMediatedNoop}},
 
-    // Well-known file not found.
-    {{kIdpTestOrigin, kAuthRequest},
+    {"Wellknown file not found",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
      {RequestIdTokenStatus::kErrorWebIdNotSupportedByProvider, kEmptyToken},
-     {kToken, IdentityRequestDialogController::UserApproval::kApproved,
-      IdpNetworkRequestManager::FetchStatus::kWebIdNotSupported, "",
-      base::nullopt, "", base::nullopt}},
+     {kToken, UserApproval::kApproved, FetchStatus::kWebIdNotSupported, "", "",
+      "", kPermissionNoop, kMediatedNoop}},
 
-    // Well-known fetch error.
-    {{kIdpTestOrigin, kAuthRequest},
+    {"Wellknown fetch error",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
      {RequestIdTokenStatus::kErrorFetchingWellKnown, kEmptyToken},
-     {kToken, IdentityRequestDialogController::UserApproval::kApproved,
-      IdpNetworkRequestManager::FetchStatus::kFetchError, "", base::nullopt, "",
-      base::nullopt}},
+     {kToken, UserApproval::kApproved, FetchStatus::kFetchError, "", "", "",
+      kPermissionNoop, kMediatedNoop}},
 
-    // Error parsing well-known.
-    {{kIdpTestOrigin, kAuthRequest},
+    {"Error parsing wellknown for Permission mode",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
      {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
-     {kToken, IdentityRequestDialogController::UserApproval::kApproved,
-      IdpNetworkRequestManager::FetchStatus::kInvalidResponseError, "",
-      base::nullopt, "", base::nullopt}},
+     {kToken, UserApproval::kApproved, FetchStatus::kInvalidResponseError, "",
+      kAccountsEndpoint, kTokenEndpoint, kPermissionNoop, kMediatedNoop}},
 
-    // Error reaching the idp_endpoint.
-    {{kIdpTestOrigin, kAuthRequest},
+    {"Error reaching the idpendpoint",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
      {RequestIdTokenStatus::kErrorFetchingSignin, kEmptyToken},
-     {kToken, IdentityRequestDialogController::UserApproval::kApproved,
-      IdpNetworkRequestManager::FetchStatus::kSuccess, kIdpEndpoint,
-      IdpNetworkRequestManager::SigninResponse::kSigninError, "",
-      base::nullopt}},
+     {kToken,
+      UserApproval::kApproved,
+      FetchStatus::kSuccess,
+      kIdpEndpoint,
+      "",
+      "",
+      {SigninResponse::kSigninError, "", base::nullopt},
+      kMediatedNoop}},
 
-    // Error parsing the idp_endpoint response.
-    {{kIdpTestOrigin, kAuthRequest},
+    {"Error parsing the idpendpoint response",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
      {RequestIdTokenStatus::kErrorInvalidSigninResponse, kEmptyToken},
-     {kToken, IdentityRequestDialogController::UserApproval::kApproved,
-      IdpNetworkRequestManager::FetchStatus::kSuccess, kIdpEndpoint,
-      IdpNetworkRequestManager::SigninResponse::kInvalidResponseError, "",
-      base::nullopt}},
+     {kToken,
+      UserApproval::kApproved,
+      FetchStatus::kSuccess,
+      kIdpEndpoint,
+      "",
+      "",
+      {SigninResponse::kInvalidResponseError, "", base::nullopt},
+      kMediatedNoop}},
 
-    // IdP window closed before token provision.
-    {{kIdpTestOrigin, kAuthRequest},
+    {"IdP window closed before token provision",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
      {RequestIdTokenStatus::kError, kEmptyToken},
-     {kEmptyToken, IdentityRequestDialogController::UserApproval::kApproved,
-      IdpNetworkRequestManager::FetchStatus::kSuccess, kIdpEndpoint,
-      IdpNetworkRequestManager::SigninResponse::kLoadIdp, kSigninUrl,
-      base::nullopt}},
+     {kEmptyToken,
+      UserApproval::kApproved,
+      FetchStatus::kSuccess,
+      kIdpEndpoint,
+      "",
+      "",
+      {SigninResponse::kLoadIdp, kSigninUrl, base::nullopt},
+      kMediatedNoop}},
 
-    // Token provision declined by user after IdP window closed.
-    {{kIdpTestOrigin, kAuthRequest},
+    {"Token provision declined by user after IdP window closed",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
      {RequestIdTokenStatus::kApprovalDeclined, kEmptyToken},
-     {kToken, IdentityRequestDialogController::UserApproval::kApproved,
-      IdpNetworkRequestManager::FetchStatus::kSuccess, kIdpEndpoint,
-      IdpNetworkRequestManager::SigninResponse::kLoadIdp, kSigninUrl,
-      IdentityRequestDialogController::UserApproval::kDenied}},
+     {kToken,
+      UserApproval::kApproved,
+      FetchStatus::kSuccess,
+      kIdpEndpoint,
+      "",
+      "",
+      {SigninResponse::kLoadIdp, kSigninUrl, UserApproval::kDenied},
+      kMediatedNoop}}};
 
+static const AuthRequestTestCase kMediatedTestCases[]{
+    {"Error parsing wellknown for Mediated mode missing token endpoint",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
+     {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
+     {kToken, base::nullopt, FetchStatus::kInvalidResponseError, kIdpEndpoint,
+      kAccountsEndpoint, "", kPermissionNoop, kMediatedNoop}},
+
+    {"Error parsing wellknown for Mediated mode missing accounts endpoint",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
+     {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
+     {kToken, base::nullopt, FetchStatus::kInvalidResponseError, kIdpEndpoint,
+      "", kTokenEndpoint, kPermissionNoop, kMediatedNoop}},
+
+    {"Error reaching Accounts endpoint",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
+     {RequestIdTokenStatus::kError, kEmptyToken},
+     {kEmptyToken,
+      base::nullopt,
+      FetchStatus::kSuccess,
+      "",
+      kAccountsEndpoint,
+      kTokenEndpoint,
+      kPermissionNoop,
+      {AccountsResponse::kNetError, kAccounts, base::nullopt}}},
+
+    {"Error parsing Accounts response",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
+     {RequestIdTokenStatus::kErrorInvalidAccountsResponse, kEmptyToken},
+     {kToken,
+      base::nullopt,
+      FetchStatus::kSuccess,
+      "",
+      kAccountsEndpoint,
+      kTokenEndpoint,
+      kPermissionNoop,
+      {AccountsResponse::kInvalidResponseError, kAccounts, base::nullopt}}},
+
+    {"Successful Mediated flow",
+     {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
+     {RequestIdTokenStatus::kSuccess, kToken},
+     {kToken,
+      base::nullopt,
+      FetchStatus::kSuccess,
+      "",
+      kAccountsEndpoint,
+      kTokenEndpoint,
+      kPermissionNoop,
+      {AccountsResponse::kSuccess, kAccounts, TokenResponse::kSuccess}}},
 };
 
 // Helper class for receiving the mojo method callback.
@@ -215,53 +327,37 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   }
 
   std::pair<RequestIdTokenStatus, base::Optional<std::string>>
-  PerformAuthRequest(const std::string& request) {
+  PerformAuthRequest(const std::string& request,
+                     blink::mojom::RequestMode mode) {
     auth_request_impl_->SetNetworkManagerForTests(
         std::move(mock_request_manager_));
     auth_request_impl_->SetDialogControllerForTests(
         std::move(mock_dialog_controller_));
 
     AuthRequestCallbackHelper auth_helper;
-    request_remote_->RequestIdToken(provider_, request, auth_helper.callback());
+    request_remote_->RequestIdToken(provider_, request, mode,
+                                    auth_helper.callback());
     auth_helper.WaitForCallback();
     return std::make_pair(auth_helper.status(), auth_helper.token());
   }
 
-  void SetMockExpectations(const AuthRequestTestCase& test_case) {
-    EXPECT_CALL(*mock_dialog_controller_, ShowInitialPermissionDialog(_, _, _))
-        .WillOnce(
-            Invoke([&](WebContents*, const GURL&,
-                       IdentityRequestDialogController::InitialApprovalCallback
-                           callback) {
-              std::move(callback).Run(test_case.config.initial_permission);
-            }));
-
-    if (test_case.config.wellknown_fetch_status) {
-      EXPECT_CALL(*mock_request_manager_, FetchIdpWellKnown(_))
-          .WillOnce(Invoke(
-              [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
-                std::move(callback).Run(
-                    *test_case.config.wellknown_fetch_status,
-                    test_case.config.idp_endpoint);
-              }));
-    }
-
-    if (test_case.config.signin_response) {
+  void SetPermissionMockExpectations(const MockPermissionConfiguration& conf,
+                                     std::string token) {
+    if (conf.signin_response) {
       EXPECT_CALL(*mock_request_manager_, SendSigninRequest(_, _, _))
           .WillOnce(Invoke(
               [&](const GURL&, const std::string&,
                   IdpNetworkRequestManager::SigninRequestCallback callback) {
-                std::move(callback).Run(*test_case.config.signin_response,
-                                        test_case.config.signin_url_or_token);
+                std::move(callback).Run(*conf.signin_response,
+                                        conf.signin_url_or_token);
               }));
     }
 
     // The IdP dialog only shows when kLoadIdP is the return code from the
     // signin request.
-    if (test_case.config.signin_response ==
-        IdpNetworkRequestManager::SigninResponse::kLoadIdp) {
+    if (conf.signin_response == SigninResponse::kLoadIdp) {
       EXPECT_CALL(*mock_dialog_controller_, ShowIdProviderWindow(_, _, _, _))
-          .WillOnce(Invoke([&](WebContents*, WebContents* idp_web_contents,
+          .WillOnce(Invoke([=](WebContents*, WebContents* idp_web_contents,
                                const GURL&,
                                IdentityRequestDialogController::
                                    IdProviderWindowClosedCallback callback) {
@@ -272,7 +368,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
             auto rp_done_callback = request_callback_data->TakeDoneCallback();
             IdTokenRequestCallbackData::Remove(idp_web_contents);
             EXPECT_TRUE(rp_done_callback);
-            std::move(rp_done_callback).Run(test_case.config.token);
+            std::move(rp_done_callback).Run(token);
           }));
 
       EXPECT_CALL(*mock_dialog_controller_, CloseIdProviderWindow())
@@ -280,16 +376,81 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
               Invoke([&]() { std::move(close_idp_window_callback_).Run(); }));
     }
 
-    if (test_case.config.token_permission) {
+    if (conf.token_permission) {
       EXPECT_CALL(*mock_dialog_controller_,
                   ShowTokenExchangePermissionDialog(_, _, _))
           .WillOnce(Invoke(
               [&](content::WebContents* idp_web_contents, const GURL& idp_url,
                   IdentityRequestDialogController::TokenExchangeApprovalCallback
                       callback) {
-                std::move(callback).Run(*test_case.config.token_permission);
+                std::move(callback).Run(*conf.token_permission);
               }));
     }
+  }
+
+  void SetMediatedMockExpectations(const MockMediatedConfiguration& conf,
+                                   std::string token) {
+    if (conf.accounts_response) {
+      EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _))
+          .WillOnce(Invoke(
+              [&](const GURL&,
+                  IdpNetworkRequestManager::AccountsRequestCallback callback) {
+                std::move(callback).Run(*conf.accounts_response, conf.accounts);
+              }));
+    }
+
+    if (conf.accounts_response == AccountsResponse::kSuccess) {
+      EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _))
+          .WillOnce(Invoke(
+              [&](content::WebContents* rp_web_contents,
+                  content::WebContents* idp_web_contents,
+                  const GURL& idp_signin_url,
+                  IdpNetworkRequestManager::AccountList accounts,
+                  IdentityRequestDialogController::AccountSelectionCallback
+                      on_selected) {
+                std::move(on_selected).Run(accounts[0].sub);
+              }));
+    }
+
+    if (conf.token_response == TokenResponse::kSuccess) {
+      EXPECT_CALL(*mock_request_manager_, SendTokenRequest(_, _, _, _))
+          .WillOnce(Invoke(
+              [=](const GURL& idp_signin_url, const std::string& account_id,
+                  const std::string& request,
+                  IdpNetworkRequestManager::TokenRequestCallback callback) {
+                std::move(callback).Run(*conf.token_response, token);
+              }));
+    }
+  }
+
+  void SetMockExpectations(const AuthRequestTestCase& test_case) {
+    if (test_case.config.initial_permission) {
+      EXPECT_CALL(*mock_dialog_controller_,
+                  ShowInitialPermissionDialog(_, _, _))
+          .WillOnce(Invoke(
+              [&](WebContents*, const GURL&,
+                  IdentityRequestDialogController::InitialApprovalCallback
+                      callback) {
+                std::move(callback).Run(*test_case.config.initial_permission);
+              }));
+    }
+
+    if (test_case.config.wellknown_fetch_status) {
+      EXPECT_CALL(*mock_request_manager_, FetchIdpWellKnown(_))
+          .WillOnce(Invoke(
+              [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+                std::move(callback).Run(
+                    *test_case.config.wellknown_fetch_status,
+                    {test_case.config.idp_endpoint,
+                     test_case.config.accounts_endpoint,
+                     test_case.config.token_endpoint});
+              }));
+    }
+
+    SetPermissionMockExpectations(test_case.config.Permission_conf,
+                                  test_case.config.token);
+    SetMediatedMockExpectations(test_case.config.Mediated_conf,
+                                test_case.config.token);
   }
 
  private:
@@ -309,16 +470,23 @@ class BasicFederatedAuthRequestImplTest
     : public FederatedAuthRequestImplTest,
       public ::testing::WithParamInterface<AuthRequestTestCase> {};
 
-INSTANTIATE_TEST_SUITE_P(FederatedAuthRequestImplTests,
+INSTANTIATE_TEST_SUITE_P(PermissionTests,
                          BasicFederatedAuthRequestImplTest,
-                         ::testing::ValuesIn(kAllTestCases));
+                         ::testing::ValuesIn(kPermissionTestCases),
+                         ::testing::PrintToStringParamName());
 
-// Exercise all configured test cases in kAllTestCases.
+INSTANTIATE_TEST_SUITE_P(MediatedTests,
+                         BasicFederatedAuthRequestImplTest,
+                         ::testing::ValuesIn(kMediatedTestCases),
+                         ::testing::PrintToStringParamName());
+
+// Exercise the auth test case give the configuration.
 TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequests) {
   AuthRequestTestCase test_case = GetParam();
   CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  auto auth_response = PerformAuthRequest(test_case.inputs.request);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.request, test_case.inputs.mode);
   EXPECT_EQ(auth_response.first, test_case.expected.return_status);
   EXPECT_EQ(auth_response.second, test_case.expected.token);
 }

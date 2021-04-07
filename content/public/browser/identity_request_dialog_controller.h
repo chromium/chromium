@@ -13,6 +13,25 @@ class GURL;
 namespace content {
 class WebContents;
 
+// Represents a federated user account which is used when displaying an account
+// selector.
+struct CONTENT_EXPORT IdentityRequestAccount {
+  IdentityRequestAccount(const std::string& sub,
+                         const std::string& email,
+                         const std::string& name,
+                         const std::string& given_name,
+                         const std::string& picture);
+  IdentityRequestAccount(const IdentityRequestAccount&);
+  ~IdentityRequestAccount();
+
+  // sub, short for subject, is the unique identifier.
+  std::string sub;
+  std::string email;
+  std::string name;
+  std::string given_name;
+  std::string picture;
+};
+
 // IdentityRequestDialogController is in interface for control of the UI
 // surfaces that are displayed to intermediate the exchange of ID tokens.
 class CONTENT_EXPORT IdentityRequestDialogController {
@@ -22,9 +41,11 @@ class CONTENT_EXPORT IdentityRequestDialogController {
     kDenied,
   };
 
+  using AccountList = std::vector<content::IdentityRequestAccount>;
   using InitialApprovalCallback = base::OnceCallback<void(UserApproval)>;
   using IdProviderWindowClosedCallback = base::OnceCallback<void()>;
   using TokenExchangeApprovalCallback = base::OnceCallback<void(UserApproval)>;
+  using AccountSelectionCallback = base::OnceCallback<void(const std::string&)>;
 
   IdentityRequestDialogController() = default;
 
@@ -51,6 +72,14 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       WebContents* rp_web_contents,
       const GURL& idp_url,
       InitialApprovalCallback approval_callback);
+
+  // Shows and accounts selections for the given IDP. The |on_selected| callback
+  // is called with the selected account id or empty string otherwise.
+  virtual void ShowAccountsDialog(content::WebContents* rp_web_contents,
+                                  content::WebContents* idp_web_contents,
+                                  const GURL& idp_signin_url,
+                                  AccountList accounts,
+                                  AccountSelectionCallback on_selected) {}
 
   // Shows the identity provider sign-in page at the given URL using the
   // |idp_web_contents| inside a modal window. The |on_closed| callback is

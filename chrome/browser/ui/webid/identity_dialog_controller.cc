@@ -88,3 +88,12 @@ WebIdDialog& IdentityDialogController::GetOrCreateView(
 
   return *view_;
 }
+
+void IdentityDialogController::ShowAccountsDialog(
+    content::WebContents* rp_web_contents,
+    content::WebContents* idp_web_contents,
+    const GURL& idp_signin_url,
+    AccountList accounts,
+    AccountSelectionCallback on_selected) {
+  std::move(on_selected).Run(accounts[0].sub);
+}

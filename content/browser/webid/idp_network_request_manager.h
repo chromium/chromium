@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
@@ -65,12 +66,35 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kInvalidResponseError,
   };
 
+  enum class AccountsResponse {
+    kSuccess,
+    kNetError,
+    kInvalidResponseError,
+  };
+
+  enum class TokenResponse {
+    kSuccess,
+    kNetError,
+    kInvalidResponseError,
+  };
+
+  struct Endpoints {
+    std::string idp;
+    std::string token;
+    std::string accounts;
+  };
+
   static constexpr char kWellKnownFilePath[] = ".well-known/webid";
 
+  using AccountList = std::vector<content::IdentityRequestAccount>;
   using FetchWellKnownCallback =
-      base::OnceCallback<void(FetchStatus, const std::string&)>;
+      base::OnceCallback<void(FetchStatus, Endpoints)>;
   using SigninRequestCallback =
       base::OnceCallback<void(SigninResponse, const std::string&)>;
+  using AccountsRequestCallback =
+      base::OnceCallback<void(AccountsResponse, const AccountList&)>;
+  using TokenRequestCallback =
+      base::OnceCallback<void(TokenResponse, const std::string&)>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
       const GURL& provider,
@@ -91,11 +115,34 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                  const std::string& request,
                                  SigninRequestCallback);
 
+  // Fetch accounts list for this user from the IDP.
+  virtual void SendAccountsRequest(const GURL& accounts_url,
+                                   AccountsRequestCallback);
+
+  // Request a new token for this user account and RP from the IDP.
+  virtual void SendTokenRequest(const GURL& token_url,
+                                const std::string& account,
+                                const std::string& request,
+                                TokenRequestCallback callback);
+
+  // Parses accounts from given Value. Returns true if parse is successful and
+  // adds parsed accounts to the |account_list|.
+  // TODO(majidvp): Make this function private and update tests to test the
+  // actual public interface of this class rather than its implementation
+  // details such as this.
+  static bool ParseAccounts(
+      const base::Value* accounts,
+      IdpNetworkRequestManager::AccountList& account_list);
+
  private:
   void OnWellKnownLoaded(std::unique_ptr<std::string> response_body);
   void OnWellKnownParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnSigninRequestResponse(std::unique_ptr<std::string> response_body);
   void OnSigninRequestParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnAccountsRequestResponse(std::unique_ptr<std::string> response_body);
+  void OnAccountsRequestParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnTokenRequestResponse(std::unique_ptr<std::string> response_body);
+  void OnTokenRequestParsed(data_decoder::DataDecoder::ValueOrError result);
 
   // URL of the Identity Provider.
   GURL provider_;
@@ -104,6 +151,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   FetchWellKnownCallback idp_well_known_callback_;
   SigninRequestCallback signin_request_callback_;
+  AccountsRequestCallback accounts_request_callback_;
+  TokenRequestCallback token_request_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 

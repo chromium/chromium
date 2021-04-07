@@ -25,10 +25,15 @@ namespace {
 
 // Well-known configuration keys.
 constexpr char kIdpEndpointKey[] = "idp_endpoint";
+constexpr char kTokenEndpointKey[] = "idtoken_endpoint";
+constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 
 // Sign-in request response keys.
+// TODO(majidvp): For consistency rename to signin_endpoint and move into
+// `.well-known`.
 constexpr char kSigninUrlKey[] = "signin_url";
 constexpr char kIdTokenKey[] = "id_token";
+constexpr char kAccountsKey[] = "accounts";
 
 constexpr char kAcceptMimeType[] = "application/json";
 
@@ -75,6 +80,49 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
 scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory(
     content::RenderFrameHost* host) {
   return host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess();
+}
+
+std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
+    GURL target_url,
+    url::Origin initiator) {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  auto target_origin = url::Origin::Create(target_url);
+  auto site_for_cookies = net::SiteForCookies::FromOrigin(target_origin);
+  resource_request->request_initiator = initiator;
+  resource_request->url = target_url;
+  resource_request->site_for_cookies = site_for_cookies;
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                                      kAcceptMimeType);
+  // This header is present exclusively for CSRF resistance.
+  // TODO(kenrb): To avoid the value being depended on  set it to a random
+  // value. We can later change it if something more useful e.g., a version is
+  // needed. https://crbug.com/1196371
+  resource_request->headers.SetHeader(kSecWebIdHeader, "1.0");
+  resource_request->credentials_mode =
+      network::mojom::CredentialsMode::kInclude;
+  resource_request->trusted_params = network::ResourceRequest::TrustedParams();
+  resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, target_origin, target_origin,
+      site_for_cookies);
+
+  return resource_request;
+}
+
+base::Optional<content::IdentityRequestAccount> ParseAccount(
+    const base::Value& account) {
+  auto* sub = account.FindStringKey("sub");
+  auto* email = account.FindStringKey("email");
+  auto* name = account.FindStringKey("name");
+  auto* given_name = account.FindStringKey("given_name");
+  auto* picture = account.FindStringKey("picture");
+
+  // required fields
+  if (!(sub && email && name))
+    return base::nullopt;
+
+  return content::IdentityRequestAccount(*sub, *email, *name,
+                                         given_name ? *given_name : "",
+                                         picture ? *picture : "");
 }
 
 }  // namespace
@@ -158,9 +206,6 @@ void IdpNetworkRequestManager::SendSigninRequest(
 
   signin_request_callback_ = std::move(callback);
 
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      CreateTrafficAnnotation();
-
   // TODO(kenrb): A straight URL encoding isn't right. Add proper parsing.
   // https://crbug.com/1141125.
   std::string encoded_request;
@@ -171,27 +216,9 @@ void IdpNetworkRequestManager::SendSigninRequest(
   // TODO: Should this be a POST, rather than a GET using query parameters?
   // https://crbug.com/1141125.
   GURL target_url = GURL(signin_url.spec() + "?" + encoded_request);
-
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  auto target_origin = url::Origin::Create(target_url);
-  auto site_for_cookies = net::SiteForCookies::FromOrigin(target_origin);
-  resource_request->request_initiator =
-      render_frame_host_->GetLastCommittedOrigin();
-  resource_request->url = target_url;
-  resource_request->site_for_cookies = site_for_cookies;
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      kAcceptMimeType);
-  // This header is present mostly for CSRF resistance, but the value could
-  // provide a protocol version. This might change if something more useful
-  // is needed.
-  resource_request->headers.SetHeader(kSecWebIdHeader, "1.0");
-  resource_request->credentials_mode =
-      network::mojom::CredentialsMode::kInclude;
-  resource_request->trusted_params = network::ResourceRequest::TrustedParams();
-  resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, target_origin, target_origin,
-      site_for_cookies);
-
+  auto resource_request = CreateCredentialedResourceRequest(
+      target_url, render_frame_host_->GetLastCommittedOrigin());
+  auto traffic_annotation = CreateTrafficAnnotation();
   // TODO(kenrb): Make this not send cookies. https://crbug.com/1141125.
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
@@ -202,7 +229,77 @@ void IdpNetworkRequestManager::SendSigninRequest(
       loader_factory.get(),
       base::BindOnce(&IdpNetworkRequestManager::OnSigninRequestResponse,
                      weak_ptr_factory_.GetWeakPtr()),
-      1024 * 1024);
+      maxResponseSizeInKiB * 1024);
+}
+
+void IdpNetworkRequestManager::SendAccountsRequest(
+    const GURL& accounts_url,
+    AccountsRequestCallback callback) {
+  DCHECK(!url_loader_);
+  DCHECK(!accounts_request_callback_);
+  accounts_request_callback_ = std::move(callback);
+
+  auto resource_request = CreateCredentialedResourceRequest(
+      accounts_url, render_frame_host_->GetLastCommittedOrigin());
+  // Use ReferrerPolicy::NO_REFERRER for this request so that relying party
+  // identity is not exposed to the Identity provider via referror.
+  resource_request->referrer_policy = net::ReferrerPolicy::NO_REFERRER;
+  auto traffic_annotation = CreateTrafficAnnotation();
+  // TODO(kenrb): Make this not send cookies. https://crbug.com/1141125.
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 traffic_annotation);
+
+  auto loader_factory = GetUrlLoaderFactory(render_frame_host_);
+
+  url_loader_->DownloadToString(
+      loader_factory.get(),
+      base::BindOnce(&IdpNetworkRequestManager::OnAccountsRequestResponse,
+                     weak_ptr_factory_.GetWeakPtr()),
+      maxResponseSizeInKiB * 1024);
+}
+
+void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
+                                                const std::string& account,
+                                                const std::string& request,
+                                                TokenRequestCallback callback) {
+  DCHECK(!url_loader_);
+  DCHECK(!token_request_callback_);
+
+  token_request_callback_ = std::move(callback);
+
+  // TODO(majidvp): Append account and request to the post body.
+  auto resource_request = CreateCredentialedResourceRequest(
+      token_url, render_frame_host_->GetLastCommittedOrigin());
+  auto traffic_annotation = CreateTrafficAnnotation();
+  // TODO(kenrb): Make this not send cookies. https://crbug.com/1141125.
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 traffic_annotation);
+
+  auto loader_factory = GetUrlLoaderFactory(render_frame_host_);
+
+  url_loader_->DownloadToString(
+      loader_factory.get(),
+      base::BindOnce(&IdpNetworkRequestManager::OnTokenRequestResponse,
+                     weak_ptr_factory_.GetWeakPtr()),
+      maxResponseSizeInKiB * 1024);
+}
+
+// static
+bool IdpNetworkRequestManager::ParseAccounts(
+    const base::Value* accounts,
+    IdpNetworkRequestManager::AccountList& account_list) {
+  if (!accounts->is_list())
+    return false;
+
+  for (auto& account : accounts->GetList()) {
+    if (!account.is_dict())
+      return false;
+
+    auto parsed_account = ParseAccount(account);
+    if (parsed_account)
+      account_list.push_back(parsed_account.value());
+  }
+  return true;
 }
 
 void IdpNetworkRequestManager::OnWellKnownLoaded(
@@ -216,13 +313,13 @@ void IdpNetworkRequestManager::OnWellKnownLoaded(
 
   if (response_code == net::HTTP_NOT_FOUND) {
     std::move(idp_well_known_callback_)
-        .Run(FetchStatus::kWebIdNotSupported, std::string());
+        .Run(FetchStatus::kWebIdNotSupported, Endpoints());
     return;
   }
 
   if (!response_body) {
     std::move(idp_well_known_callback_)
-        .Run(FetchStatus::kFetchError, std::string());
+        .Run(FetchStatus::kFetchError, Endpoints());
     return;
   }
 
@@ -234,30 +331,37 @@ void IdpNetworkRequestManager::OnWellKnownLoaded(
 
 void IdpNetworkRequestManager::OnWellKnownParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  auto Fail = [&]() {
     std::move(idp_well_known_callback_)
-        .Run(FetchStatus::kInvalidResponseError, std::string());
+        .Run(FetchStatus::kInvalidResponseError, Endpoints());
+  };
+
+  if (!result.value) {
+    Fail();
     return;
   }
 
   auto& response = *result.value;
-
   if (!response.is_dict()) {
-    std::move(idp_well_known_callback_)
-        .Run(FetchStatus::kInvalidResponseError, std::string());
+    Fail();
     return;
   }
 
-  const base::Value* idp_endpoint = response.FindKey(kIdpEndpointKey);
+  auto ExtractEndpoint = [&](const char* key) {
+    const base::Value* endpoint = response.FindKey(key);
+    if (!endpoint || !endpoint->is_string()) {
+      return std::string();
+    }
+    return endpoint->GetString();
+  };
 
-  if (!idp_endpoint || !idp_endpoint->is_string()) {
-    std::move(idp_well_known_callback_)
-        .Run(FetchStatus::kInvalidResponseError, std::string());
-    return;
-  }
+  auto idp_endpoint = ExtractEndpoint(kIdpEndpointKey);
+  auto token_endpoint = ExtractEndpoint(kTokenEndpointKey);
+  auto accounts_endpoint = ExtractEndpoint(kAccountsEndpointKey);
 
   std::move(idp_well_known_callback_)
-      .Run(FetchStatus::kSuccess, idp_endpoint->GetString());
+      .Run(FetchStatus::kSuccess,
+           {idp_endpoint, token_endpoint, accounts_endpoint});
 }
 
 void IdpNetworkRequestManager::OnSigninRequestResponse(
@@ -305,8 +409,8 @@ void IdpNetworkRequestManager::OnSigninRequestParsed(
   // Only one of the fields should be present.
   bool signin_url_present = signin_url && signin_url->is_string();
   bool token_present = id_token && id_token->is_string();
-  bool both_present = signin_url_present && token_present;
-  if (!(signin_url_present || token_present) || both_present) {
+  bool all_present = signin_url_present && token_present;
+  if (!(signin_url_present || token_present) || all_present) {
     std::move(signin_request_callback_)
         .Run(SigninResponse::kInvalidResponseError, std::string());
     return;
@@ -320,6 +424,103 @@ void IdpNetworkRequestManager::OnSigninRequestParsed(
 
   std::move(signin_request_callback_)
       .Run(SigninResponse::kTokenGranted, id_token->GetString());
+}
+
+void IdpNetworkRequestManager::OnAccountsRequestResponse(
+    std::unique_ptr<std::string> response_body) {
+  int response_code = -1;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
+    response_code = url_loader_->ResponseInfo()->headers->response_code();
+
+  url_loader_.reset();
+
+  if (!response_body) {
+    std::move(accounts_request_callback_)
+        .Run(AccountsResponse::kNetError, AccountList());
+    return;
+  }
+
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *response_body,
+      base::BindOnce(&IdpNetworkRequestManager::OnAccountsRequestParsed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void IdpNetworkRequestManager::OnAccountsRequestParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  auto Fail = [&]() {
+    std::move(accounts_request_callback_)
+        .Run(AccountsResponse::kInvalidResponseError, AccountList());
+  };
+
+  if (!result.value) {
+    Fail();
+    return;
+  }
+
+  auto& response = *result.value;
+  if (!response.is_dict()) {
+    Fail();
+    return;
+  }
+  AccountList account_list;
+  const base::Value* accounts = response.FindKey(kAccountsKey);
+  bool accounts_present = accounts && ParseAccounts(accounts, account_list);
+
+  if (!accounts_present) {
+    Fail();
+    return;
+  }
+  std::move(accounts_request_callback_)
+      .Run(AccountsResponse::kSuccess, account_list);
+}
+
+void IdpNetworkRequestManager::OnTokenRequestResponse(
+    std::unique_ptr<std::string> response_body) {
+  int response_code = -1;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
+    response_code = url_loader_->ResponseInfo()->headers->response_code();
+
+  url_loader_.reset();
+
+  if (!response_body) {
+    std::move(token_request_callback_)
+        .Run(TokenResponse::kNetError, std::string());
+    return;
+  }
+
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *response_body,
+      base::BindOnce(&IdpNetworkRequestManager::OnTokenRequestParsed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void IdpNetworkRequestManager::OnTokenRequestParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  auto Fail = [&]() {
+    std::move(token_request_callback_)
+        .Run(TokenResponse::kInvalidResponseError, std::string());
+  };
+
+  if (!result.value) {
+    Fail();
+    return;
+  }
+
+  auto& response = *result.value;
+  if (!response.is_dict()) {
+    Fail();
+    return;
+  }
+  const base::Value* id_token = response.FindKey(kIdTokenKey);
+  bool token_present = id_token && id_token->is_string();
+
+  if (!token_present) {
+    Fail();
+    return;
+  }
+  std::move(token_request_callback_)
+      .Run(TokenResponse::kSuccess, id_token->GetString());
 }
 
 }  // namespace content

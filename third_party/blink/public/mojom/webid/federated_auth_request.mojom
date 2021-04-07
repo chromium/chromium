@@ -19,7 +19,15 @@ enum RequestIdTokenStatus {
   kErrorInvalidWellKnown,
   kErrorFetchingSignin,
   kErrorInvalidSigninResponse,
+  kErrorInvalidAccountsResponse,
+  kErrorInvalidTokenResponse,
   kError,
+};
+
+
+enum RequestMode {
+  kMediated,
+  kPermission,
 };
 
 // Create a federated sign-in request using the specified provider.
@@ -28,6 +36,5 @@ enum RequestIdTokenStatus {
 interface FederatedAuthRequest {
   // Requests an IdToken to be generated, given an IDP URL and an OAuth request.
   // Returns the raw content of the IdToken.
-  RequestIdToken(url.mojom.Url provider, string id_request) => (RequestIdTokenStatus status, string? id_token);
+  RequestIdToken(url.mojom.Url provider, string id_request, RequestMode mode) => (RequestIdTokenStatus status, string? id_token);
 };
-

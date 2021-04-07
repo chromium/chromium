@@ -23,6 +23,12 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
   MOCK_METHOD1(FetchIdpWellKnown, void(FetchWellKnownCallback));
   MOCK_METHOD3(SendSigninRequest,
                void(const GURL&, const std::string&, SigninRequestCallback));
+  MOCK_METHOD2(SendAccountsRequest, void(const GURL&, AccountsRequestCallback));
+  MOCK_METHOD4(SendTokenRequest,
+               void(const GURL&,
+                    const std::string&,
+                    const std::string&,
+                    TokenRequestCallback));
 };
 
 }  // namespace content

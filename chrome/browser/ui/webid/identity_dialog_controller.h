@@ -37,6 +37,12 @@ class IdentityDialogController
                                    const GURL& idp_url,
                                    InitialApprovalCallback) override;
 
+  void ShowAccountsDialog(content::WebContents* rp_web_contents,
+                          content::WebContents* idp_web_contents,
+                          const GURL& idp_signin_url,
+                          AccountList accounts,
+                          AccountSelectionCallback on_selected) override;
+
   void ShowIdProviderWindow(content::WebContents* rp_web_contents,
                             content::WebContents* idp_web_contents,
                             const GURL& idp_signin_url,
