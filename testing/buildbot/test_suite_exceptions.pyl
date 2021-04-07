@@ -578,6 +578,21 @@
           'shards': 30,
         },
       },
+      'Mac10.15 Tests': {
+        # crbug.com/1042757
+        'swarming': {
+          'dimension_sets': [
+            {
+              # These shards are liable to time out when running on macmini7,1.
+              'cores': '8|12',
+            }
+          ],
+        },
+        # crbug.com/1196416
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
+        ],
+      },
       'Mac10.15 Tests (dbg)': {
         # https://crbug.com/1152770
         'swarming': {
