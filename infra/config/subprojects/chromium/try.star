@@ -1216,8 +1216,8 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-rel-reclient",
     branch_selector = branches.STANDARD_MILESTONE,
-    goma_jobs = goma.jobs.J150,
     main_list_view = "try",
+    reclient_jobs = 150,
     goma_backend = None,
     reclient_instance = "rbe-chromium-gvisor-shadow",
     configure_kitchen = True,
