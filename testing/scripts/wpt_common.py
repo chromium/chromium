@@ -93,6 +93,12 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         # output_json is modified *in place* throughout this function.
         with self.fs.open_text_file_for_reading(self.wpt_output) as f:
             output_json = json.load(f)
+
+        # Wptrunner test names exclude the 'external/wpt' directories, but add
+        # them back in at this point to reflect the actual location of tests in
+        # Chromium.
+        output_json['tests'] = {'external': {'wpt': output_json['tests']}}
+
         results_dir = os.path.dirname(self.wpt_output)
         self._process_test_leaves(results_dir, output_json['path_delimiter'],
                                   output_json['tests'], '')
@@ -249,7 +255,11 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             - second is the text that is written to the file, or empty string if
               there is no expected output for this test.
         """
-        test_file_subpath = self.wpt_manifest.file_path_for_test_url(test_name)
+        # When looking into the WPT manifest, we omit "external/wpt" from the
+        # test name, since that part of the path is only in Chromium.
+        wpt_test_name = test_name.replace("external/wpt/", "")
+        test_file_subpath = self.wpt_manifest.file_path_for_test_url(
+            wpt_test_name)
         if not test_file_subpath:
             # Not all tests in the output have a corresponding test file. This
             # could be print-reftests (which are unsupported by the blinkpy
@@ -369,7 +379,11 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
             screenshot_key = "expected_image"
             file_suffix = test_failures.FILENAME_SUFFIX_EXPECTED
-            if test_name == url:
+            # When comparing the test name to the image URL, we omit
+            # "external/wpt" from the test name, since that part of the path is
+            # only in Chromium.
+            wpt_test_name = test_name.replace("external/wpt/", "")
+            if wpt_test_name == url:
                 screenshot_key = "actual_image"
                 file_suffix = test_failures.FILENAME_SUFFIX_ACTUAL
 
