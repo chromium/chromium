@@ -86,6 +86,16 @@ Polymer({
           managedProperties_.*)`,
     },
 
+    /**
+     * When true, all inputs that allow state to be changed (e.g., toggles,
+     * inputs) are disabled.
+     */
+    disabled_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeDisabled_(deviceState_.*)'
+    },
+
     /** @private */
     isUpdatedCellularUiEnabled_: {
       type: Boolean,
@@ -454,6 +464,9 @@ Polymer({
    * @private
    */
   enableConnectDisconnect_(managedProperties) {
+    if (this.disabled_) {
+      return false;
+    }
     if (!this.showConnectDisconnect_(managedProperties)) {
       return false;
     }
@@ -561,7 +574,8 @@ Polymer({
    */
   hasVisibleFields_(fields) {
     return fields.some((field) => {
-      const value = this.get(field, this.managedProperties_);
+      const key = OncMojo.getManagedPropertyKey(field);
+      const value = this.get(key, this.managedProperties_);
       return value !== undefined && value !== '';
     });
   },
@@ -623,5 +637,23 @@ Polymer({
         OncMojo.managedPropertiesToNetworkState(this.managedProperties_);
     assert(networkState);
     return isActiveSim(networkState, this.deviceState_);
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeDisabled_() {
+    if (!this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+    if (!this.deviceState_ ||
+        this.deviceState_.type !==
+            chromeos.networkConfig.mojom.NetworkType.kCellular) {
+      return false;
+    }
+    // If this is a cellular device and inhibited, state cannot be changed, so
+    // the dialog's inputs should be disabled.
+    return OncMojo.deviceIsInhibited(this.deviceState_);
   }
 });

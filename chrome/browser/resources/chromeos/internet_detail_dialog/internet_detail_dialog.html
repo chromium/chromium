@@ -34,12 +34,14 @@
   </div>
   <template is="dom-if" if="[[showConfigurableSections_]]" restamp>
     <cr-button on-click="onForgetTap_"
-        hidden$="[[!showForget_(managedProperties_)]]">
+        hidden$="[[!showForget_(managedProperties_)]]"
+        disabled="[[disabled_]]">
       $i18n{networkButtonForget}
     </cr-button>
-    <cr-button class="action-button" on-click="onConnectDisconnectClick_"
+    <cr-button id="connectDisconnect"
+        class="action-button" on-click="onConnectDisconnectClick_"
         hidden$="[[!showConnectDisconnect_(managedProperties_)]]"
-        disabled="[[!enableConnectDisconnect_(managedProperties_)]]">
+        disabled="[[!enableConnectDisconnect_(managedProperties_, disabled_)]]">
       [[getConnectDisconnectText_(managedProperties_)]]
     </cr-button>
   </template>
@@ -52,7 +54,8 @@
     <div class="cr-row">
       <network-siminfo class="flex"
           network-state="[[getNetworkState_(managedProperties_)]]"
-          device-state="[[deviceState_]]">
+          device-state="[[deviceState_]]"
+          disabled="[[disabled_]]">
       </network-siminfo>
     </div>
   </template>
@@ -62,7 +65,8 @@
       if="[[showCellularChooseNetwork_(managedProperties_)]]">
     <div class="cr-row">
       <network-choose-mobile class="flex" device-state="[[deviceState_]]"
-          managed-properties="[[managedProperties_]]">
+          managed-properties="[[managedProperties_]]"
+          disabled="[[disabled_]]">
       </network-choose-mobile>
     </div>
   </template>
@@ -71,7 +75,8 @@
   <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
     <div class="cr-row">
       <network-apnlist class="flex" editable on-apn-change="onApnChange_"
-          managed-properties="[[managedProperties_]]">
+          managed-properties="[[managedProperties_]]"
+          disabled="[[disabled_]]">
       </network-apnlist>
     </div>
   </template>
@@ -88,9 +93,10 @@
       </div>
     </template>
     <div class="cr-row continuation">
-      <network-proxy class="flex" editable use-shared-proxies
+      <network-proxy class="flex" use-shared-proxies
           on-proxy-change="onProxyChange_"
-          managed-properties="[[managedProperties_]]">
+          managed-properties="[[managedProperties_]]"
+          editable="[[!disabled_]]">
       </network-proxy>
     </div>
   </div>
@@ -100,7 +106,8 @@
     <div class="cr-row">
       <network-ip-config class="flex"
           editable on-ip-change="onIPConfigChange_"
-          managed-properties="[[managedProperties_]]">
+          managed-properties="[[managedProperties_]]"
+          disabled="[[disabled_]]">
       </network-ip-config>
     </div>
 
@@ -108,7 +115,8 @@
     <div class="cr-row">
       <network-nameservers class="flex" editable
           on-nameservers-change="onIPConfigChange_"
-          managed-properties="[[managedProperties_]]">
+          managed-properties="[[managedProperties_]]"
+          disabled="[[disabled_]]">
       </network-nameservers>
     </div>
   </template>
@@ -127,7 +135,8 @@
     <div class="cr-row continuation">
       <network-property-list-mojo class="flex"
           fields="[[getInfoFields_(managedProperties_)]]"
-          property-dict="[[managedProperties_]]">
+          property-dict="[[managedProperties_]]"
+          disabled="[[disabled_]]">
       </network-property-list-mojo>
     </div>
   </template>

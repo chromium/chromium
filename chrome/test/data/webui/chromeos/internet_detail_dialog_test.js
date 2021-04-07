@@ -77,6 +77,12 @@ suite('internet-detail-dialog', () => {
     const cellularNetwork = getManagedProperties(
         mojom.NetworkType.kCellular, mojom.OncSource.kDevice);
     cellularNetwork.typeProperties.cellular.iccid = test_iccid;
+    // Required for connectDisconnectButton to be rendered.
+    cellularNetwork.connectionState = isPrimary ?
+        mojom.ConnectionStateType.kConnected :
+        mojom.ConnectionStateType.kNotConnected;
+    // Required for networkChooseMobile to be rendered.
+    cellularNetwork.typeProperties.cellular.supportNetworkScan = true;
 
     mojoApi_.setManagedPropertiesForTest(cellularNetwork);
     mojoApi_.setDeviceStateForTest({
@@ -90,6 +96,12 @@ suite('internet-detail-dialog', () => {
         isPrimary: isPrimary,
       }],
     });
+  }
+
+  function getElement(selector) {
+    const element = internetDetailDialog.$$(selector);
+    assertTrue(!!element);
+    return element;
   }
 
   test('Network not on active sim, hide configurations', async () => {
@@ -124,5 +136,76 @@ suite('internet-detail-dialog', () => {
     assertTrue(!!internetDetailDialog.$$('network-siminfo'));
 
     assertTrue(!!internetDetailDialog.$$('cr-button'));
+  });
+
+  test('Dialog disabled when inhibited', async () => {
+    loadTimeData.overrideValues({
+      updatedCellularActivationUi: true,
+    });
+
+    // Start uninhibited.
+    await setupCellularNetwork(/*isPrimary=*/ true, /*isInhibited=*/ false);
+    await init();
+
+    const connectDisconnectButton = getElement('#connectDisconnect');
+    const networkSimInfo = getElement('network-siminfo');
+    const networkChooseMobile = getElement('network-choose-mobile');
+    const networkApnlist = getElement('network-apnlist');
+    const networkProxy = getElement('network-proxy');
+    const networkIpConfig = getElement('network-ip-config');
+    const networkNameservers = getElement('network-nameservers');
+    const infoFields = getElement('network-property-list-mojo');
+
+    assertFalse(connectDisconnectButton.disabled);
+    assertFalse(networkSimInfo.disabled);
+    assertFalse(networkChooseMobile.disabled);
+    assertFalse(networkApnlist.disabled);
+    assertTrue(networkProxy.editable);
+    assertFalse(networkIpConfig.disabled);
+    assertFalse(networkNameservers.disabled);
+    assertFalse(infoFields.disabled);
+
+    // Mock device being inhibited.
+    const mojom = chromeos.networkConfig.mojom;
+    mojoApi_.setDeviceStateForTest({
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kInstallingProfile,
+      simInfos: [{
+        iccid: test_iccid,
+        isPrimary: true,
+      }],
+    });
+    await flushAsync();
+
+    assertTrue(connectDisconnectButton.disabled);
+    assertTrue(networkSimInfo.disabled);
+    assertTrue(networkChooseMobile.disabled);
+    assertTrue(networkApnlist.disabled);
+    assertFalse(networkProxy.editable);
+    assertTrue(networkIpConfig.disabled);
+    assertTrue(networkNameservers.disabled);
+    assertTrue(infoFields.disabled);
+
+    // Uninhibit.
+    mojoApi_.setDeviceStateForTest({
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited,
+      simInfos: [{
+        iccid: test_iccid,
+        isPrimary: true,
+      }],
+    });
+    await flushAsync();
+
+    assertFalse(connectDisconnectButton.disabled);
+    assertFalse(networkSimInfo.disabled);
+    assertFalse(networkChooseMobile.disabled);
+    assertFalse(networkApnlist.disabled);
+    assertTrue(networkProxy.editable);
+    assertFalse(networkIpConfig.disabled);
+    assertFalse(networkNameservers.disabled);
+    assertFalse(infoFields.disabled);
   });
 });
