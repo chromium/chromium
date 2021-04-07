@@ -12,6 +12,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
@@ -24,6 +25,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/ukm_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -266,4 +268,28 @@ TEST_F(ChromeMetricsServiceClientTest, IsWebstoreExtension) {
   EXPECT_TRUE(
       ChromeMetricsServiceClient::IsWebstoreExtension(test_extension_id2));
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(ChromeMetricsServiceClientTest, GetUploadSigningKey_NotEmpty) {
+  std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
+      ChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+  const std::string signed_key =
+      chrome_metrics_service_client->GetUploadSigningKey();
+  // The signed key should never be an empty string for a Chrome-branded build.
+  EXPECT_FALSE(signed_key.empty());
+}
+
+TEST_F(ChromeMetricsServiceClientTest, GetUploadSigningKey_CanSignLogs) {
+  std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
+      ChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+  const std::string signed_key =
+      chrome_metrics_service_client->GetUploadSigningKey();
+
+  std::string signature;
+  // The signing key should be able to sign data for a Chrome-branded build.
+  EXPECT_TRUE(metrics::UnsentLogStore::ComputeHMACForLog(
+      "Test Log Data", signed_key, &signature));
+  EXPECT_FALSE(signature.empty());
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

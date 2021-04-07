@@ -70,13 +70,7 @@ void UnsentLogStore::LogInfo::Init(
 
   hash = base::SHA1HashString(log_data);
 
-  // TODO(crbug.com/906202): Add an actual key for signing.
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  const size_t digest_length = hmac.DigestLength();
-  unsigned char* hmac_data = reinterpret_cast<unsigned char*>(
-      base::WriteInto(&signature, digest_length + 1));
-  if (!hmac.Init(signing_key) ||
-      !hmac.Sign(log_data, hmac_data, digest_length)) {
+  if (!ComputeHMACForLog(log_data, signing_key, &signature)) {
     NOTREACHED() << "HMAC signing failed";
   }
 
@@ -139,6 +133,18 @@ const std::string& UnsentLogStore::staged_log_signature() const {
 const std::string& UnsentLogStore::staged_log_timestamp() const {
   DCHECK(has_staged_log());
   return list_[staged_log_index_]->timestamp;
+}
+
+// static
+bool UnsentLogStore::ComputeHMACForLog(const std::string& log_data,
+                                       const std::string& signing_key,
+                                       std::string* signature) {
+  crypto::HMAC hmac(crypto::HMAC::SHA256);
+  const size_t digest_length = hmac.DigestLength();
+  unsigned char* hmac_data = reinterpret_cast<unsigned char*>(
+      base::WriteInto(signature, digest_length + 1));
+  return hmac.Init(signing_key) &&
+         hmac.Sign(log_data, hmac_data, digest_length);
 }
 
 void UnsentLogStore::StageNextLog() {

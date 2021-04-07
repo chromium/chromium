@@ -92,6 +92,13 @@ class UnsentLogStore : public LogStore {
   // The number of elements currently stored.
   size_t size() const { return list_.size(); }
 
+  // Computes the HMAC for |log_data| using the |signing_key| and returns a bool
+  // indicating whether the signing succeeded. The returned HMAC is written to
+  // the |signature|.
+  static bool ComputeHMACForLog(const std::string& log_data,
+                                const std::string& signing_key,
+                                std::string* signature);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(UnsentLogStoreTest, UnsentLogMetadataMetrics);
 
