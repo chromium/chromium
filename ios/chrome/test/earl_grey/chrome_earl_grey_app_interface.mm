@@ -188,12 +188,6 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
   [chrome_test_util::HandlerForActiveBrowser() closeSettingsUI];
 }
 
-+ (void)disableDefaultBrowserPromo {
-  chrome_test_util::GetMainController().appState.shouldShowDefaultBrowserPromo =
-      NO;
-  LogUserInteractionWithFullscreenPromo();
-}
-
 #pragma mark - Tab Utilities (EG2)
 
 + (void)selectTabAtIndex:(NSUInteger)index {
@@ -528,6 +522,15 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 + (NSUInteger)incognitoTabCountInWindowWithNumber:(int)windowNumber {
   return chrome_test_util::GetIncognitoTabCountForWindowWithNumber(
       windowNumber);
+}
+
+// Disables default browser promo. If a test needs to check a message drop down
+// in a second window, this needs to be disabled or the popup will kill the
+// message.
++ (void)disableDefaultBrowserPromo {
+  chrome_test_util::GetMainController().appState.shouldShowDefaultBrowserPromo =
+      NO;
+  LogUserInteractionWithFullscreenPromo();
 }
 
 #pragma mark - WebState Utilities (EG2)
