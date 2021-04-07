@@ -111,17 +111,19 @@ void WebUIInfoSingleton::ClearClientDownloadResponsesReceived() {
 }
 
 void WebUIInfoSingleton::AddToClientPhishingRequestsSent(
-    std::unique_ptr<ClientPhishingRequest> client_phishing_request) {
+    std::unique_ptr<ClientPhishingRequest> client_phishing_request,
+    std::string token) {
   if (!HasListener())
     return;
+  ClientPhishingRequest request_copy = *client_phishing_request;
+  ClientPhishingRequestAndToken ping = {request_copy, token};
   for (auto* webui_listener : webui_instances_)
-    webui_listener->NotifyClientPhishingRequestJsListener(
-        client_phishing_request.get());
-  client_phishing_requests_sent_.push_back(std::move(client_phishing_request));
+    webui_listener->NotifyClientPhishingRequestJsListener(ping);
+  client_phishing_requests_sent_.push_back(ping);
 }
 
 void WebUIInfoSingleton::ClearClientPhishingRequestsSent() {
-  std::vector<std::unique_ptr<ClientPhishingRequest>>().swap(
+  std::vector<ClientPhishingRequestAndToken>().swap(
       client_phishing_requests_sent_);
 }
 
@@ -800,7 +802,9 @@ std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
   return request_serialized;
 }
 
-std::string SerializeClientPhishingRequest(const ClientPhishingRequest& cpr) {
+std::string SerializeClientPhishingRequest(
+    const ClientPhishingRequestAndToken& cprat) {
+  const ClientPhishingRequest& cpr = cprat.request;
   base::DictionaryValue dict;
   if (cpr.has_url())
     dict.SetString("url", cpr.url());
@@ -855,6 +859,7 @@ std::string SerializeClientPhishingRequest(const ClientPhishingRequest& cpr) {
     vision_matches->Append(std::move(vision_match));
   }
   dict.SetList("vision_match", std::move(vision_matches));
+  dict.SetKey("scoped_oauth_token", base::Value(cprat.token));
 
   base::Value* request_tree = &dict;
   std::string request_serialized;
@@ -1826,13 +1831,13 @@ void SafeBrowsingUIHandler::GetReceivedClientDownloadResponses(
 
 void SafeBrowsingUIHandler::GetSentClientPhishingRequests(
     const base::ListValue* args) {
-  const std::vector<std::unique_ptr<ClientPhishingRequest>>& cprs =
+  const std::vector<ClientPhishingRequestAndToken>& cprs =
       WebUIInfoSingleton::GetInstance()->client_phishing_requests_sent();
 
   base::ListValue cprs_sent;
 
   for (const auto& cpr : cprs) {
-    cprs_sent.Append(base::Value(SerializeClientPhishingRequest(*cpr)));
+    cprs_sent.Append(base::Value(SerializeClientPhishingRequest(cpr)));
   }
 
   AllowJavascript();
@@ -2078,11 +2083,11 @@ void SafeBrowsingUIHandler::NotifyClientDownloadResponseJsListener(
 }
 
 void SafeBrowsingUIHandler::NotifyClientPhishingRequestJsListener(
-    ClientPhishingRequest* client_phishing_request) {
+    const ClientPhishingRequestAndToken& client_phishing_request) {
   AllowJavascript();
   FireWebUIListener(
       "sent-client-phishing-requests-update",
-      base::Value(SerializeClientPhishingRequest(*client_phishing_request)));
+      base::Value(SerializeClientPhishingRequest(client_phishing_request)));
 }
 
 void SafeBrowsingUIHandler::NotifyClientPhishingResponseJsListener(

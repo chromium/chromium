@@ -302,7 +302,7 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&WebUIInfoSingleton::AddToClientPhishingRequestsSent,
                      base::Unretained(WebUIInfoSingleton::GetInstance()),
-                     std::move(request)));
+                     std::move(request), access_token));
 }
 
 void ClientSideDetectionService::HandlePhishingVerdict(

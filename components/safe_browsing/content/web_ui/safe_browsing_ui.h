@@ -61,6 +61,15 @@ struct RTLookupRequestAndToken {
   std::string token;
 };
 
+// The struct to combine a client-side phishing request and the token associated
+// with it. The token is not part of the request proto because it is sent in the
+// header. The token will be displayed along with the request in the safe
+// browsing page.
+struct ClientPhishingRequestAndToken {
+  ClientPhishingRequest request;
+  std::string token;
+};
+
 class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
  public:
   SafeBrowsingUIHandler(content::BrowserContext* context);
@@ -166,10 +175,10 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   void NotifyClientDownloadResponseJsListener(
       ClientDownloadResponse* client_download_response);
 
-  // Called when any new ClientPhishingRequest messages are sent while one or
-  // more WebUI tabs are open.
+  // Called when any new ClientPhishingRequest messages are sent (potentially
+  // with token in header) while one or more WebUI tabs are open.
   void NotifyClientPhishingRequestJsListener(
-      ClientPhishingRequest* client_phishing_request);
+      const ClientPhishingRequestAndToken& client_phishing_request);
 
   // Called when any new ClientPhishingResponse messages are received while one
   // or more WebUI tabs are open.
@@ -274,10 +283,11 @@ class WebUIInfoSingleton {
   // Clear the list of the received ClientDownloadResponse messages.
   void ClearClientDownloadResponsesReceived();
 
-  // Add the new message in |client_phishing_requests_sent_| and send it to all
-  // the open chrome://safe-browsing tabs.
+  // Add the new message and token in |client_phishing_requests_sent_| and send
+  // it to all the open chrome://safe-browsing tabs.
   void AddToClientPhishingRequestsSent(
-      std::unique_ptr<ClientPhishingRequest> report_request);
+      std::unique_ptr<ClientPhishingRequest> client_phishing_request,
+      std::string token);
 
   // Clear the list of the sent ClientPhishingRequest messages.
   void ClearClientPhishingRequestsSent();
@@ -395,9 +405,10 @@ class WebUIInfoSingleton {
     return client_download_responses_received_;
   }
 
-  // Get the list of the sent ClientPhishingRequest that have been collected
-  // since the oldest currently open chrome://safe-browsing tab was opened.
-  const std::vector<std::unique_ptr<ClientPhishingRequest>>&
+  // Get the list of the sent ClientPhishingRequestAndToken that have been
+  // collected (potentially with token in header) since the oldest currently
+  // open chrome://safe-browsing tab was opened.
+  const std::vector<ClientPhishingRequestAndToken>&
   client_phishing_requests_sent() const {
     return client_phishing_requests_sent_;
   }
@@ -516,12 +527,11 @@ class WebUIInfoSingleton {
   std::vector<std::unique_ptr<ClientDownloadResponse>>
       client_download_responses_received_;
 
-  // List of ClientPhishingRequests sent since since the oldest currently open
-  // chrome://safe-browsing tab was opened.
+  // List of ClientPhishingRequests and tokens sent since since the oldest
+  // currently open chrome://safe-browsing tab was opened.
   // "ClientPhishingRequests" cannot be const, due to being used by functions
   // that call AllowJavascript(), which is not marked const.
-  std::vector<std::unique_ptr<ClientPhishingRequest>>
-      client_phishing_requests_sent_;
+  std::vector<ClientPhishingRequestAndToken> client_phishing_requests_sent_;
 
   // List of ClientPhishingResponses received since since the oldest currently
   // open chrome://safe-browsing tab was opened. "ClientPhishingResponse" cannot
