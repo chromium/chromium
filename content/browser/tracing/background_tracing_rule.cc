@@ -169,6 +169,10 @@ class NamedTriggerRule : public BackgroundTracingRule {
       named_rule->set_event_type(MetadataProto::NamedRule::SESSION_RESTORE);
     } else if (named_event_ == "reached-code-config") {
       named_rule->set_event_type(MetadataProto::NamedRule::REACHED_CODE);
+    } else if (named_event_ ==
+               BackgroundTracingManager::kContentTriggerConfig) {
+      named_rule->set_event_type(MetadataProto::NamedRule::CONTENT_TRIGGER);
+      // TODO(chrisha): Set the |content_trigger_name_hash|.
     } else if (named_event_ == "preemptive_test") {
       named_rule->set_event_type(MetadataProto::NamedRule::TEST_RULE);
     }

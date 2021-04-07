@@ -37,21 +37,8 @@ void FireBackgroundTracingTriggerOnUI(
 
   static content::BackgroundTracingManager::TriggerHandle trigger_handle = -1;
   if (trigger_handle == -1) {
-    trigger_handle = manager->RegisterTriggerType(trigger_name.c_str());
-  } else {
-    // We only expect to be configured for a single renderer-initiated
-    // background tracing trigger at a time. So, if we've already had one
-    // registered, then simply check to see if it matches. If it doesn't match,
-    // then ignore this trigger event entirely. This prevents an abusive
-    // renderer from creating arbitrarily many trigger events. It does allow an
-    // abusive renderer to consume the single trigger slot, preventing valid
-    // renderers from firing triggers, but this is not a big deal. Ideally we'd
-    // be able to see if the active scenario is for |trigger_name|, but the
-    // tracing manager doesn't support that functionality right now.
-    const std::string& registered_trigger_name =
-        manager->GetTriggerNameFromHandle(trigger_handle);
-    if (registered_trigger_name != trigger_name)
-      return;
+    trigger_handle = manager->RegisterTriggerType(
+        content::BackgroundTracingManager::kContentTriggerConfig);
   }
 
   // Actually fire the trigger. We don't need to know when the trace is being

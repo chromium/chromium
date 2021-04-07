@@ -55,6 +55,10 @@ const char kBackgroundTracingUploadUrl[] = "upload_url";
 }  // namespace
 
 // static
+const char BackgroundTracingManager::kContentTriggerConfig[] =
+    "content-trigger-config";
+
+// static
 BackgroundTracingManager* BackgroundTracingManager::GetInstance() {
   return BackgroundTracingManagerImpl::GetInstance();
 }

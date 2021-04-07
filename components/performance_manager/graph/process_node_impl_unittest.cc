@@ -280,10 +280,6 @@ class LenientFakeBackgroundTracingManager
               RegisterTriggerType,
               (base::StringPiece trigger_name),
               (override));
-  MOCK_METHOD(std::string,
-              GetTriggerNameFromHandleImpl,
-              (TriggerHandle trigger_handle),
-              ());
   MOCK_METHOD(bool, HasActiveScenario, (), (override));
   MOCK_METHOD(void,
               TriggerNamedEvent,
@@ -291,38 +287,33 @@ class LenientFakeBackgroundTracingManager
                StartedFinalizingCallback started_callback),
               (override));
 
-  // GMOck can't handle return-by-reference, so we indirect through a wrapper.
-  const std::string& GetTriggerNameFromHandle(
-      TriggerHandle trigger_handle) override {
-    static std::string name;
-    name = GetTriggerNameFromHandleImpl(trigger_handle);
-    return name;
-  }
-
   // Functions we don't care about.
-  virtual bool SetActiveScenario(
+  bool SetActiveScenario(
       std::unique_ptr<content::BackgroundTracingConfig> config,
       ReceiveCallback receive_callback,
       DataFiltering data_filtering) override {
     return true;
   }
-  virtual void WhenIdle(IdleCallback idle_callback) override {}
-  virtual bool HasTraceToUpload() override { return false; }
-  virtual std::string GetLatestTraceToUpload() override {
-    return std::string();
+  void WhenIdle(IdleCallback idle_callback) override {}
+  const std::string& GetTriggerNameFromHandle(
+      TriggerHandle trigger_handle) override {
+    static std::string name;
+    return name;
   }
-  virtual std::string GetBackgroundTracingUploadUrl(
+  bool HasTraceToUpload() override { return false; }
+  std::string GetLatestTraceToUpload() override { return std::string(); }
+  std::string GetBackgroundTracingUploadUrl(
       const std::string& trial_name) override {
     return std::string();
   }
-  virtual std::unique_ptr<content::BackgroundTracingConfig>
-  GetBackgroundTracingConfig(const std::string& trial_name) override {
+  std::unique_ptr<content::BackgroundTracingConfig> GetBackgroundTracingConfig(
+      const std::string& trial_name) override {
     return std::unique_ptr<content::BackgroundTracingConfig>();
   }
-  virtual void AbortScenarioForTesting() override {}
-  virtual void SetTraceToUploadForTesting(
+  void AbortScenarioForTesting() override {}
+  void SetTraceToUploadForTesting(
       std::unique_ptr<std::string> trace_data) override {}
-  virtual void SetConfigTextFilterForTesting(
+  void SetConfigTextFilterForTesting(
       ConfigTextFilterForTesting predicate) override {}
 };
 
@@ -357,19 +348,8 @@ TEST_F(ProcessNodeImplTest, FireBackgroundTracingTriggerOnUI) {
   // Now that a trigger is registered, expect the trigger to be validated, and
   // triggered again.
   EXPECT_CALL(manager, HasActiveScenario()).WillOnce(Return(true));
-  EXPECT_CALL(manager, GetTriggerNameFromHandleImpl(kHandle1))
-      .WillOnce(Return(kTrigger1));
   EXPECT_CALL(manager, TriggerNamedEvent(_, _));
   ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1,
-                                                              &manager);
-  testing::Mock::VerifyAndClear(&manager);
-
-  // Now that a trigger is registered, expect a call with another trigger to
-  // be looked up, fail, and the trigger not to be invoked.
-  EXPECT_CALL(manager, HasActiveScenario()).WillOnce(Return(true));
-  EXPECT_CALL(manager, GetTriggerNameFromHandleImpl(kHandle1))
-      .WillOnce(Return(kTrigger1));
-  ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger2,
                                                               &manager);
   testing::Mock::VerifyAndClear(&manager);
 }
