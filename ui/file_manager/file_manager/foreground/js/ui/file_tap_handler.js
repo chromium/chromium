@@ -33,18 +33,6 @@
     this.longTapDetectorTimerId_ = -1;
 
     /**
-     * The absolute sum of all touch y deltas.
-     * @private {number}
-     */
-    this.totalMoveY_ = 0;
-
-    /**
-     * The absolute sum of all touch x deltas.
-     * @private {number}
-     */
-    this.totalMoveX_ = 0;
-
-    /**
      * If defined, the identifier of the single touch that is active.  Note that
      * 0 is a valid touch identifier - it should not be treated equivalently to
      * undefined.
@@ -53,29 +41,35 @@
     this.activeTouchId_ = undefined;
 
     /**
-     * The index of the item which is being touched by the active touch. This is
-     * valid only when |activeTouchId_| is defined.
+     * The index of the item which is being touched by the active touch. Valid
+     * only when |activeTouchId_| is defined.
      * @private {number}
      */
     this.activeItemIndex_ = -1;
 
-    /** @private {?number} */
-    this.lastMoveX_ = null;
+    /**
+     * Last touch X position in client co-ords.
+     * @private {number}
+     */
+    this.lastTouchX_ = 0;
 
-    /** @private {?number} */
-    this.lastMoveY_ = null;
+    /**
+     * Last touch Y position in client co-ords.
+     * @private {number}
+     */
+    this.lastTouchY_ = 0;
 
-    /** @private {?number} */
-    this.lastTouchX_ = null;
+    /**
+     * The absolute sum of all touch X deltas.
+     * @private {number}
+     */
+    this.totalMoveX_ = 0;
 
-    /** @private {?number} */
-    this.lastTouchY_ = null;
-
-    /** @private {?number} */
-    this.startTouchX_ = null;
-
-    /** @private {?number} */
-    this.startTouchY_ = null;
+    /**
+     * The absolute sum of all touch Y deltas.
+     * @private {number}
+     */
+    this.totalMoveY_ = 0;
   }
 
   /**
@@ -112,15 +106,12 @@
         //   return;
         const touch = event.targetTouches[0];
         this.activeTouchId_ = touch.identifier;
-        this.startTouchX_ = this.lastTouchX_ = touch.clientX;
-        this.startTouchY_ = this.lastTouchY_ = touch.clientY;
-        this.totalMoveX_ = 0;
-        this.totalMoveY_ = 0;
-
         this.tapStarted_ = true;
+
         this.activeItemIndex_ = index;
         this.isLongTap_ = false;
         this.isTwoFingerTap_ = false;
+
         this.hasLongPressProcessed_ = false;
         this.longTapDetectorTimerId_ = setTimeout(() => {
           this.longTapDetectorTimerId_ = -1;
@@ -132,6 +123,11 @@
             this.hasLongPressProcessed_ = true;
           }
         }, FileTapHandler.LONG_PRESS_THRESHOLD_MILLISECONDS);
+
+        this.lastTouchX_ = touch.clientX;
+        this.lastTouchY_ = touch.clientY;
+        this.totalMoveX_ = 0;
+        this.totalMoveY_ = 0;
       } break;
 
       case 'touchmove': {
@@ -161,8 +157,6 @@
           // If the pointer is slided, it is a drag. It is no longer a tap.
           this.tapStarted_ = false;
         }
-        this.lastMoveX_ = moveX;
-        this.lastMoveY_ = moveY;
       } break;
 
       case 'touchend':
