@@ -172,15 +172,15 @@
   handleTouchEvents_(event) {
     // We only need to know that a tap happens somewhere in the list.
     // Also the 2nd parameter of handleTouchEvents is just passed back to the
-    // callback. Therefore we can pass a dummy value to it.
-    // TODO(yamaguchi): Revise TapHandler.handleTouchEvents to delete the param.
+    // callback. Therefore we can pass a dummy value -1.
     this.tapHandler_.handleTouchEvents(event, -1, (e, index, eventType) => {
       if (eventType == FileTapHandler.TapEvent.TAP) {
-        if (e.target.classList.contains('detail-checkmark')) {
-          // Tap on the checkmark should only toggle select the item just like a
-          // mouse click on it.
+        // Taps on the checkmark should only toggle select the item.
+        if (event.target.classList.contains('detail-checkmark') ||
+            event.target.classList.contains('detail-icon')) {
           return false;
         }
+
         // The selection model has the single selection at this point.
         // When using touchscreen, the selection should be cleared because
         // we don't want show the file selected when not in check-select
