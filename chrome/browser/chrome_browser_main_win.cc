@@ -44,7 +44,6 @@
 #include "base/win/wrapped_window_proc.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/about_flags.h"
-#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -699,14 +698,16 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
       FROM_HERE, base::BindOnce(&DetectFaultTolerantHeap),
       base::TimeDelta::FromMinutes(1));
 
-  // Record Processor Metrics. This is a very low priority, hence posting to
-  // start after Chrome startup has completed. This metric is only available
-  // starting Windows 10.
+  // Record Processor Metrics. This is very low priority, hence posting as
+  // BEST_EFFORT to start after Chrome startup has completed. This metric is
+  // only available starting Windows 10.
   if (base::win::OSInfo::GetInstance()->version() >=
       base::win::Version::WIN10) {
-    AfterStartupTaskUtils::PostTask(
-        FROM_HERE, base::ThreadPool::CreateSequencedTaskRunner({}),
-        base::BindOnce(&DelayedRecordProcessorMetrics));
+    scoped_refptr<base::SequencedTaskRunner> task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce(&DelayedRecordProcessorMetrics));
   }
 
   // Write current executable path to the User Data directory to inform
