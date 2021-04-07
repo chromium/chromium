@@ -7,13 +7,15 @@
 
 #include <memory>
 
+#include "base/component_export.h"
+
 namespace chromeos {
 
 class LacrosChromeServiceImpl;
 
 // Helper for teststo instantiate LacrosChromeServiceImpl. This should only be
 // used for unit tests, not browser tests.
-class ScopedLacrosChromeServiceTestHelper {
+class COMPONENT_EXPORT(CHROMEOS_LACROS) ScopedLacrosChromeServiceTestHelper {
  public:
   ScopedLacrosChromeServiceTestHelper();
   virtual ~ScopedLacrosChromeServiceTestHelper();
