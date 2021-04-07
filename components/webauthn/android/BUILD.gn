@@ -41,6 +41,18 @@ android_library("java") {
   ]
 }
 
+android_library("test_support_java") {
+  testonly = true
+  sources =
+      [ "java/src/org/chromium/components/webauthn/MockFido2ApiHandler.java" ]
+  deps = [
+    ":java",
+    "//content/public/android:content_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//url:origin_java",
+  ]
+}
+
 source_set("android") {
   sources = [ "fido2helper_native_android.cc" ]
   deps = [

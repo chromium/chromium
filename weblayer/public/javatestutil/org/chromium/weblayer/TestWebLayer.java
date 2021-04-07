@@ -195,4 +195,8 @@ public final class TestWebLayer {
     public void expediteDownloadService() throws RemoteException {
         mITestWebLayer.expediteDownloadService();
     }
+
+    public void setMockWebAuthnEnabled(boolean enabled) throws RemoteException {
+        mITestWebLayer.setMockWebAuthnEnabled(enabled);
+    }
 }

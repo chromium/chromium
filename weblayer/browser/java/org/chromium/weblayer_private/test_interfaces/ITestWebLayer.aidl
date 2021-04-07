@@ -92,4 +92,7 @@ interface ITestWebLayer {
 
   // Speeds up download service initialization.
   void expediteDownloadService() = 27;
+
+  // Mocks the GMSCore Fido calls used by WebAuthn.
+  void setMockWebAuthnEnabled(in boolean enabled) = 28;
 }

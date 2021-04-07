@@ -262,8 +262,8 @@ test("weblayer_browsertests") {
       # Needed for WebLayerImpl.
       "//weblayer/browser/java",
 
-      # default upstream safebrowsing related classes
-      "//weblayer/browser/java:gms_bridge_upstream_impl_java",
+      # default upstream classes
+      "//weblayer/browser/java:upstream_java",
     ]
 
     android_manifest =

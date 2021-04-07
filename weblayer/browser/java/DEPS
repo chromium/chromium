@@ -11,6 +11,7 @@ include_rules = [
   "+components/page_info/android/java",
   "+components/payments/content/android",
   "+components/webapk/android/libs",
+  "+components/webauthn/android",
   "+services/device/public/java/src/org/chromium/device/geolocation",
 
   # WebLayerNotificationWrapperBuilder should be used for all notifications.

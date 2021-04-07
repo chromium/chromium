@@ -152,8 +152,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
 
   std::vector<base::Feature> enabled_features = {};
   std::vector<base::Feature> disabled_features = {
-    // TODO(crbug.com/1025627): make webauth work with WebLayer.
-    ::features::kWebAuth,
     // TODO(crbug.com/1177948): enable WebAR.
     ::features::kWebXr,
     ::features::kWebXrArModule,

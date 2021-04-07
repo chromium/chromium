@@ -716,6 +716,7 @@ source_set("weblayer_lib_base") {
       "//components/subresource_filter/android",
       "//components/translate/content/android",
       "//components/version_info/android:channel_getter",
+      "//components/webauthn/android",
       "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
       "//ui/android",
       "//url:gurl_android",

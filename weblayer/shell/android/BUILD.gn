@@ -244,8 +244,8 @@ android_apk("weblayer_support_apk") {
     "//net/android:net_java",
   ]
 
-  # default upstream safebrowsing related classes
-  deps += [ "//weblayer/browser/java:gms_bridge_upstream_impl_java" ]
+  # default upstream classes
+  deps += [ "//weblayer/browser/java:upstream_java" ]
 
   # Add the Chromium linker for WebView compatibility support on L-M.
   deps += [ "//base/android/linker:chromium_android_linker" ]

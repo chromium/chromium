@@ -265,6 +265,7 @@ android_library("java") {
     "//components/variations/android:variations_java",
     "//components/version_info/android:version_constants_java",
     "//components/webapps/browser/android:java",
+    "//components/webauthn/android:java",
     "//components/webrtc/android:java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",
@@ -300,6 +301,13 @@ android_library("java") {
   # Needed for android.webkit.WebView(Delegate|Factory)
   alternative_android_sdk_dep =
       "//third_party/android_sdk:public_framework_system_java"
+}
+
+java_group("upstream_java") {
+  deps = [
+    ":gms_bridge_upstream_impl_java",
+    "//components/externalauth/android:google_delegate_public_impl_java",
+  ]
 }
 
 generate_jni_registration("weblayer_jni_registration") {
@@ -338,12 +346,16 @@ android_library("test_java") {
     "//components/media_router/browser/android:java",
     "//components/media_router/browser/android:test_support_java",
     "//components/permissions/android:java",
+    "//components/webauthn/android:java",
+    "//components/webauthn/android:test_support_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java",
     "//services/device/public/java:geolocation_java",
     "//services/device/public/java:geolocation_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_full_java",
+    "//url:origin_java",
   ]
   srcjar_deps = [ ":test_aidl" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

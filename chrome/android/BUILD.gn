@@ -1323,6 +1323,7 @@ android_library("chrome_test_java") {
     "//components/webapk/android/libs/client:java",
     "//components/webapps/browser/android:java",
     "//components/webauthn/android:java",
+    "//components/webauthn/android:test_support_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//media/base/android:java_switches",
@@ -2499,7 +2500,7 @@ template("monochrome_public_apk_or_module_tmpl") {
         deps += [ ":monochrome_java" ]
       }
       if (webview_includes_weblayer) {
-        deps += [ "//weblayer/browser/java:gms_bridge_upstream_impl_java" ]
+        deps += [ "//weblayer/browser/java:upstream_java" ]
       }
     }
   }
@@ -2703,7 +2704,7 @@ template("monochrome_test_apk_tmpl") {
            ]
 
     if (webview_includes_weblayer) {
-      deps += [ "//weblayer/browser/java:gms_bridge_upstream_impl_java" ]
+      deps += [ "//weblayer/browser/java:upstream_java" ]
     }
 
     additional_apks = [ "//net/android:net_test_support_apk" ]

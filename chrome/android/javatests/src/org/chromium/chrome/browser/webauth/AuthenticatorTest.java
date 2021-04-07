@@ -19,24 +19,16 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.blink.mojom.AuthenticatorStatus;
-import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
-import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.webauthn.Fido2ApiHandler;
-import org.chromium.components.webauthn.FidoErrorResponseCallback;
-import org.chromium.components.webauthn.GetAssertionResponseCallback;
-import org.chromium.components.webauthn.IsUvpaaResponseCallback;
-import org.chromium.components.webauthn.MakeCredentialResponseCallback;
-import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.components.webauthn.MockFido2ApiHandler;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.url.Origin;
 
 /** Test suite for navigator.credentials functionality. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -54,28 +46,6 @@ public class AuthenticatorTest {
     private Tab mTab;
     private AuthenticatorUpdateWaiter mUpdateWaiter;
     private MockFido2ApiHandler mMockHandler;
-
-    private class MockFido2ApiHandler extends Fido2ApiHandler {
-        @Override
-        protected void makeCredential(PublicKeyCredentialCreationOptions options,
-                RenderFrameHost frameHost, Origin origin, MakeCredentialResponseCallback callback,
-                FidoErrorResponseCallback errorCallback) {
-            errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
-        }
-
-        @Override
-        protected void getAssertion(PublicKeyCredentialRequestOptions options,
-                RenderFrameHost frameHost, Origin origin, GetAssertionResponseCallback callback,
-                FidoErrorResponseCallback errorCallback) {
-            errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
-        }
-
-        @Override
-        protected void isUserVerifyingPlatformAuthenticatorAvailable(
-                RenderFrameHost frameHost, IsUvpaaResponseCallback callback) {
-            callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(false);
-        }
-    }
 
     /** Waits until the JavaScript code supplies a result. */
     private class AuthenticatorUpdateWaiter extends EmptyTabObserver {
