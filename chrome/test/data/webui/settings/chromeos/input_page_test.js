@@ -424,12 +424,17 @@ suite('input page', () => {
     });
   });
 
-  suite('spell check', () => {
+  suite('spell check v1', () => {
     let spellCheckToggle;
     let spellCheckListContainer;
     let spellCheckList;
 
     setup(() => {
+      // Disable Update 2.
+      // We use the property directly instead of loadTimeData, as overriding
+      // loadTimeData does not work as the property is set using a value().
+      inputPage.languageSettingsV2Update2Enabled_ = false;
+      Polymer.dom.flush();
       // spell check is initially on
       spellCheckToggle = inputPage.$.enableSpellcheckingToggle;
       assertTrue(!!spellCheckToggle);
@@ -727,6 +732,424 @@ suite('input page', () => {
       assertEquals(
           router.getCurrentRoute().getAbsolutePath(),
           'chrome://os-settings/osLanguages/editDictionary');
+    });
+  });
+
+  suite('spell check v2', () => {
+    let spellCheckToggle;
+    let spellCheckListContainer;
+    // This list is not dynamically updated.
+    let spellCheckList;
+
+    setup(() => {
+      // Enable Update 2.
+      // We use the property directly instead of loadTimeData, as overriding
+      // loadTimeData does not work as the property is set using a value().
+      inputPage.languageSettingsV2Update2Enabled_ = true;
+      Polymer.dom.flush();
+
+      // Spell check is initially on.
+      spellCheckToggle = inputPage.$.enableSpellcheckingToggle;
+      assertTrue(!!spellCheckToggle);
+      assertTrue(spellCheckToggle.checked);
+
+      spellCheckListContainer = inputPage.$$('#spellCheckLanguagesListV2');
+      assertTrue(!!spellCheckListContainer);
+
+      // The spell check list should only have en-US (excluding the "add
+      // languages" button).
+      spellCheckList = spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(1 + 1, spellCheckList.length);
+      assertTrue(
+          spellCheckList[0].textContent.includes('English (United States)'));
+      assertTrue(spellCheckList[1].textContent.includes('Add languages'));
+    });
+
+    test('can remove enabled language from spell check list', () => {
+      assertDeepEquals(
+          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+      // Get remove button for en-US.
+      const spellCheckLanguageToggle =
+          spellCheckList[0].querySelector('cr-icon-button');
+
+      // Remove the language.
+      spellCheckLanguageToggle.click();
+      Polymer.dom.flush();
+
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      // The spell check list should just have "add languages".
+      assertEquals(0 + 1, newSpellCheckList.length);
+
+      assertDeepEquals([], languageHelper.prefs.spellcheck.dictionaries.value);
+    });
+
+    test('can remove non-enabled language from spell check list', () => {
+      // Add a new non-enabled language to spellcheck.dictionaries.
+      languageHelper.setPrefValue('spellcheck.dictionaries', ['en-US', 'nb']);
+      Polymer.dom.flush();
+
+      let newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+
+      // The spell check list should have en-US, nb and "add languages".
+      assertEquals(2 + 1, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertTrue(newSpellCheckList[1].textContent.includes('Norwegian Bokmål'));
+
+      // Remove nb.
+      newSpellCheckList[1].querySelector('cr-icon-button').click();
+      Polymer.dom.flush();
+      newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+
+      // The spell check list should have en-US and "add languages".
+      assertEquals(1 + 1, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+
+      assertDeepEquals(
+          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+    });
+
+    test('shows force-on spell check language turned on by user', () => {
+      // Force-enable a spell check language originally set by the user.
+      languageHelper.setPrefValue('spellcheck.forced_dictionaries', ['en-US']);
+      Polymer.dom.flush();
+
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+
+      // The spell check list should have en-US and "add languages".
+      assertEquals(1 + 1, newSpellCheckList.length);
+
+      const forceEnabledEnUSLanguageRow = newSpellCheckList[0];
+      assertTrue(forceEnabledEnUSLanguageRow.textContent.includes(
+          'English (United States)'));
+      assertTrue(!!forceEnabledEnUSLanguageRow.querySelector(
+          'cr-policy-pref-indicator'));
+      // Polymer sometimes hides the old enabled element by using a
+      // display: none, so we use the managed-button class to get a reference to
+      // the new disabled button.
+      const managedButton =
+          forceEnabledEnUSLanguageRow.querySelector('.managed-button');
+      assertTrue(managedButton.disabled);
+    });
+
+    test('shows force-on enabled spell check language', () => {
+      // Force-enable an enabled language via policy.
+      languageHelper.setPrefValue('spellcheck.forced_dictionaries', ['sw']);
+      Polymer.dom.flush();
+
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+
+      // The spell check list should have en-US, sw and "add languages".
+      assertEquals(2 + 1, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+
+      const forceEnabledSwLanguageRow = newSpellCheckList[1];
+      assertTrue(forceEnabledSwLanguageRow.textContent.includes('Swahili'));
+      assertTrue(!!forceEnabledSwLanguageRow.querySelector(
+          'cr-policy-pref-indicator'));
+      const managedButton =
+          forceEnabledSwLanguageRow.querySelector('.managed-button');
+      assertTrue(managedButton.disabled);
+    });
+
+    test('shows force-on non-enabled spell check language', () => {
+      // Force-enable a non-enabled language via policy.
+      languageHelper.setPrefValue('spellcheck.forced_dictionaries', ['nb']);
+      Polymer.dom.flush();
+
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+
+      // The spell check list should have en-US, nb and "add languages".
+      assertEquals(2 + 1, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+
+      const forceEnabledNbLanguageRow = newSpellCheckList[1];
+      assertTrue(
+          forceEnabledNbLanguageRow.textContent.includes('Norwegian Bokmål'));
+      assertTrue(!!forceEnabledNbLanguageRow.querySelector(
+          'cr-policy-pref-indicator'));
+      const managedButton =
+          forceEnabledNbLanguageRow.querySelector('.managed-button');
+      assertTrue(managedButton.disabled);
+    });
+
+    test('does not show force-off spell check language enabled by user', () => {
+      // Force-disable a spell check language originally set by the user.
+      languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['en-US']);
+      Polymer.dom.flush();
+
+      // The spell check list should just have "add languages".
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(0 + 1, newSpellCheckList.length);
+    });
+
+    test('does not show force-off enabled spell check language', () => {
+      // Force-disable an enabled language via policy.
+      languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['sw']);
+      Polymer.dom.flush();
+
+      // The spell check list should be the same (en-US, "add languages").
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(1 + 1, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+    });
+
+    test('does not show force-off non-enabled spell check language', () => {
+      // Force-disable a non-enabled language via policy.
+      languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['nb']);
+      Polymer.dom.flush();
+
+      // The spell check list should be the same (en-US, "add languages").
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(1 + 1, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+    });
+
+    test('toggle off disables buttons', () => {
+      assertTrue(spellCheckToggle.checked);
+      assertFalse(spellCheckList[0].querySelector('cr-icon-button').disabled);
+      // "Add languages" uses a cr-button instead of a cr-icon-button.
+      assertFalse(spellCheckList[1].querySelector('cr-button').disabled);
+
+      spellCheckToggle.click();
+
+      assertFalse(spellCheckToggle.checked);
+      assertTrue(spellCheckList[0].querySelector('cr-icon-button').disabled);
+      assertTrue(spellCheckList[1].querySelector('cr-button').disabled);
+    });
+
+    test('languages are in sorted order', () => {
+      languageHelper.setPrefValue(
+          'spellcheck.dictionaries', ['sw', 'en-US', 'nb', 'en-CA']);
+      Polymer.dom.flush();
+      // The spell check list should be sorted by display name:
+      // English (Canada), English (United States), Norwegian Bokmål, then
+      // Swahili.
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(4 + 1, newSpellCheckList.length);
+      assertTrue(newSpellCheckList[0].textContent.includes('English (Canada)'));
+      assertTrue(
+          newSpellCheckList[1].textContent.includes('English (United States)'));
+      assertTrue(newSpellCheckList[2].textContent.includes('Norwegian Bokmål'));
+      assertTrue(newSpellCheckList[3].textContent.includes('Swahili'));
+    });
+
+    test('error handling', () => {
+      // Enable Swahili so we have two languages for testing.
+      languageHelper.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);
+      Polymer.dom.flush();
+      const checkAllHidden = nodes => {
+        assertTrue(nodes.every(node => node.hidden));
+      };
+
+      const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
+      const errorDivs = Array.from(
+          spellCheckListContainer.querySelectorAll('.name-with-error div'));
+      assertEquals(2, errorDivs.length);
+      checkAllHidden(errorDivs);
+
+      const retryButtons = Array.from(spellCheckListContainer.querySelectorAll(
+          'cr-button:not(#addSpellcheckLanguages)'));
+      assertEquals(2, retryButtons.length);
+
+      const languageCode = inputPage.get('languages.enabled.0.language.code');
+      languageSettingsPrivate.onSpellcheckDictionariesChanged.callListeners([
+        {languageCode, isReady: false, downloadFailed: true},
+      ]);
+
+      Polymer.dom.flush();
+      assertFalse(errorDivs[0].hidden);
+      assertFalse(retryButtons[0].hidden);
+      assertFalse(retryButtons[0].disabled);
+
+      // turns off spell check disable retry button.
+      spellCheckToggle.click();
+      assertTrue(retryButtons[0].disabled);
+
+      // turns spell check back on and enable download.
+      spellCheckToggle.click();
+      languageSettingsPrivate.onSpellcheckDictionariesChanged.callListeners([
+        {languageCode, isReady: true, downloadFailed: false},
+      ]);
+
+      Polymer.dom.flush();
+      assertTrue(errorDivs[0].hidden);
+      assertTrue(retryButtons[0].hidden);
+    });
+
+    test('toggle off disables enhanced spell check', () => {
+      const enhancedSpellCheckToggle =
+          inputPage.$$('#enhancedSpellCheckToggle');
+      assertFalse(enhancedSpellCheckToggle.disabled);
+      spellCheckToggle.click();
+
+      assertTrue(enhancedSpellCheckToggle.disabled);
+    });
+
+    test('toggle off disables edit dictionary', () => {
+      const editDictionarySubpageTrigger =
+          inputPage.$$('#editDictionarySubpageTrigger');
+      assertFalse(editDictionarySubpageTrigger.disabled);
+      spellCheckToggle.click();
+
+      assertTrue(editDictionarySubpageTrigger.disabled);
+    });
+
+    test('opens edit dictionary page', () => {
+      const editDictionarySubpageTrigger =
+          inputPage.$$('#editDictionarySubpageTrigger');
+      editDictionarySubpageTrigger.click();
+      const router = settings.Router.getInstance();
+      assertEquals(
+          router.getCurrentRoute().getAbsolutePath(),
+          'chrome://os-settings/osLanguages/editDictionary');
+    });
+  });
+
+  suite('add spell check languages dialog', () => {
+    let dialog;
+    let cancelButton;
+    let actionButton;
+
+    setup(() => {
+      // Enable Update 2.
+      // We use the property directly instead of loadTimeData, as overriding
+      // loadTimeData does not work as the property is set using a value().
+      inputPage.languageSettingsV2Update2Enabled_ = true;
+      Polymer.dom.flush();
+
+      assertFalse(
+          !!inputPage.$$('os-settings-add-spellcheck-languages-dialog'));
+      inputPage.$$('#addSpellcheckLanguages').click();
+      Polymer.dom.flush();
+
+      dialog = inputPage.$$('os-settings-add-spellcheck-languages-dialog');
+      assertTrue(!!dialog);
+      assertTrue(dialog.$.dialog.open);
+
+      actionButton = dialog.$$('.action-button');
+      assertTrue(!!actionButton);
+      cancelButton = dialog.$$('.cancel-button');
+      assertTrue(!!cancelButton);
+    });
+
+    test('action button is enabled and disabled when necessary', () => {
+      // Mimic $$, but with a querySelectorAll instead of querySelector.
+      const checkboxes = dialog.root.querySelectorAll('cr-checkbox');
+
+      // By default, no languages have been selected so the action button is
+      // disabled.
+      assertTrue(actionButton.disabled);
+
+      // Selecting a language enables the action button.
+      checkboxes[0].click();
+      assertFalse(actionButton.disabled);
+
+      // Selecting the same language again disables the action button.
+      checkboxes[0].click();
+      assertTrue(actionButton.disabled);
+    });
+
+    test('cancel button is never disabled', () => {
+      assertFalse(cancelButton.disabled);
+    });
+
+    test('initial expected layout', () => {
+      // There are four languages with spell check enabled in
+      // fake_language_settings_private.js: en-US, en-CA, sw, nb.
+      // en-US shouldn't be displayed as it is already enabled.
+      const listItems = dialog.root.querySelectorAll('.list-item');
+      assertTrue(listItems[0].textContent.includes('English (Canada)'));
+      assertTrue(listItems[1].textContent.includes('Swahili'));
+      assertTrue(listItems[2].textContent.includes('Norwegian Bokmål'));
+
+      // By default, all checkboxes should not be disabled, and should not be
+      // checked.
+      const checkboxes =
+          [...listItems].map(listItem => listItem.querySelector('cr-checkbox'));
+      assertTrue(checkboxes.every(checkbox => !checkbox.disabled));
+      assertTrue(checkboxes.every(checkbox => !checkbox.checked));
+    });
+
+    test('can add single language and uncheck language', () => {
+      const checkboxes = dialog.root.querySelectorAll('cr-checkbox');
+      const swCheckbox = checkboxes[1];
+      const nbCheckbox = checkboxes[2];
+
+      // By default, en-US should be the only enabled spell check dictionary.
+      assertDeepEquals(
+          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+
+      swCheckbox.click();
+      assertTrue(swCheckbox.checked);
+
+      // Check and uncheck nb to ensure that it gets "ignored".
+      nbCheckbox.click();
+      assertTrue(nbCheckbox.checked);
+
+      nbCheckbox.click();
+      assertFalse(nbCheckbox.checked);
+
+      actionButton.click();
+      assertDeepEquals(
+          ['en-US', 'sw'], languageHelper.prefs.spellcheck.dictionaries.value);
+      assertFalse(dialog.$.dialog.open);
+    });
+
+    test('can add multiple languages', () => {
+      const checkboxes = dialog.root.querySelectorAll('cr-checkbox');
+
+      assertDeepEquals(
+          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+
+      // Click en-CA and nb.
+      checkboxes[0].click();
+      assertTrue(checkboxes[0].checked);
+      checkboxes[2].click();
+      assertTrue(checkboxes[2].checked);
+
+      actionButton.click();
+      // The two possible results are en-US, en-CA, nb OR en-US, nb, en-CA.
+      // We do not care about the ordering of the last two, but the first one
+      // should still be en-US.
+      assertEquals(
+          'en-US', languageHelper.prefs.spellcheck.dictionaries.value[0]);
+      // Note that .sort() mutates the array, but as this is the end of the test
+      // the prefs will be reset after this anyway.
+      assertDeepEquals(
+          ['en-CA', 'en-US', 'nb'],
+          languageHelper.prefs.spellcheck.dictionaries.value.sort());
+      assertFalse(dialog.$.dialog.open);
+    });
+
+    test('policy disabled languages cannot be selected and show icon', () => {
+      // Force-disable sw.
+      languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['sw']);
+      Polymer.dom.flush();
+
+      const listItems = dialog.root.querySelectorAll('.list-item');
+      const swListItem = listItems[1];
+      const swCheckbox = swListItem.querySelector('cr-checkbox');
+      const swPolicyIcon = swListItem.querySelector('iron-icon');
+
+      assertTrue(swCheckbox.disabled);
+      assertFalse(swCheckbox.checked);
+      assertTrue(!!swPolicyIcon);
     });
   });
 });

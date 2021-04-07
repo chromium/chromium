@@ -360,6 +360,15 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGES_LIST_DESCRIPTION" desc="Description for the list of languages that support spell check, from which users can enable or disable spell check for.">
     Languages for spell check are based on your language preference
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_ADD_SPELL_CHECK_LANGUAGES_TITLE" translateable="false" desc="Title for the dialog that allows users to select new languages to add to their list of spell check languages.">
+    Add spell check languages
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGE_NOT_ALLOWED" translateable="false" desc="Tooltip for policy icon when a spell check language is not allowed.">
+    Your administrator doesn't allow this spell check language
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_REMOVE_SPELL_CHECK_LANGUAGE_TOOLTIP" translateable="false" desc="Tooltip of the button that lets the user remove a given spell check language.">
+    Remove <ph name="LANGUAGE_NAME">$1<ex>English (United States)</ex></ph>
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED" desc="Error message when spell check dictionary download fails.">
     Couldn’t download spell check dictionary
   </message>

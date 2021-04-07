@@ -12,6 +12,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":add_input_methods_dialog.m",
+    ":add_spellcheck_languages_dialog",
     ":change_device_language_dialog.m",
     ":input_method_options_page.m",
     ":input_method_util.m",
@@ -30,6 +31,20 @@ js_type_check("closure_compile_module") {
 js_library("add_input_methods_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/add_input_methods_dialog.m.js" ]
   extra_deps = [ ":add_input_methods_dialog_module" ]
+}
+
+js_library("add_spellcheck_languages_dialog") {
+  deps = [
+    "..:metrics_recorder.m",
+    "../../languages_page:languages_types",
+    "../../prefs:prefs_behavior",
+    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
 }
 
 js_library("change_device_language_dialog.m") {
@@ -64,6 +79,7 @@ js_library("input_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/input_page.m.js" ]
   deps = [
     ":add_input_methods_dialog.m",
+    ":add_spellcheck_languages_dialog",
     ":input_method_util.m",
     ":languages_metrics_proxy.m",
     ":os_edit_dictionary_page.m",
@@ -197,6 +213,7 @@ js_library("smart_inputs_page.m") {
 group("polymer3_elements") {
   public_deps = [
     ":add_input_methods_dialog_module",
+    ":add_spellcheck_languages_dialog_module",
     ":change_device_language_dialog_module",
     ":input_method_options_page_module",
     ":input_page_module",
@@ -220,6 +237,12 @@ polymer_modulizer("add_input_methods_dialog") {
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("add_spellcheck_languages_dialog") {
+  js_file = "add_spellcheck_languages_dialog.js"
+  html_file = "add_spellcheck_languages_dialog.html"
+  html_type = "v3-ready"
 }
 
 polymer_modulizer("change_device_language_dialog") {

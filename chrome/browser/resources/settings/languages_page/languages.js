@@ -868,11 +868,21 @@ Polymer({
     }
 
     // Remove the language from spell check.
+    // <if expr="not chromeos">
     this.deletePrefListItem('spellcheck.dictionaries', languageCode);
+    // </if>
+
+    // <if expr="chromeos">
+    // For CrOS language settings V2 update 2, languages and spell check are
+    // decoupled so there's no need to remove the language from spell check.
+    if (!this.isChromeOSLanguageSettingsV2Update2_()) {
+      this.deletePrefListItem('spellcheck.dictionaries', languageCode);
+    }
 
     // For language settings V2, languages and input methods are decoupled
     // so there's no need to remove related input methods.
-    if (isChromeOS && !this.isChromeOSLanguageSettingsV2_()) {
+    // TODO(crbug.com/1097328): Remove this as LSV2 has launched to 100%.
+    if (!this.isChromeOSLanguageSettingsV2_()) {
       // Remove input methods that don't support any other enabled language.
       const inputMethods = this.languageInputMethods_.get(languageCode) || [];
       for (const inputMethod of inputMethods) {
@@ -884,12 +894,14 @@ Polymer({
         }
       }
     }
+    // </if>
 
     // Remove the language from preferred languages.
     this.languageSettingsPrivate_.disableLanguage(languageCode);
   },
 
   /**
+   * @return {boolean}
    * @private
    */
   isChromeOSLanguageSettingsV2_() {
@@ -899,6 +911,18 @@ Polymer({
     return loadTimeData.valueExists('enableLanguageSettingsV2') &&
         loadTimeData.getBoolean('enableLanguageSettingsV2');
   },
+
+  // <if expr="chromeos">
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isChromeOSLanguageSettingsV2Update2_() {
+    return this.isChromeOSLanguageSettingsV2_() &&
+        loadTimeData.valueExists('enableLanguageSettingsV2Update2') &&
+        loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
+  },
+  // </if>
 
   /**
    * @param {!LanguageState} languageState

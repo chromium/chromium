@@ -100,6 +100,11 @@ const std::vector<SearchConcept>& GetEditDictionarySearchConceptsV2() {
   return *tags;
 }
 
+bool IsLanguageSettingsV2Update2Enabled() {
+  return base::FeatureList::IsEnabled(
+      ::chromeos::features::kLanguageSettingsUpdate2);
+}
+
 const std::vector<SearchConcept>& GetSmartInputsSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_SUGGESTIONS,
@@ -285,6 +290,12 @@ void AddInputPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGES_LIST_TITLE},
       {"spellCheckLanguagesListDescription",
        IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGES_LIST_DESCRIPTION},
+      {"addSpellCheckLanguagesTitle",
+       IDS_OS_SETTINGS_LANGUAGES_ADD_SPELL_CHECK_LANGUAGES_TITLE},
+      {"spellCheckLanguageNotAllowed",
+       IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGE_NOT_ALLOWED},
+      {"removeSpellCheckLanguageTooltip",
+       IDS_OS_SETTINGS_LANGUAGES_REMOVE_SPELL_CHECK_LANGUAGE_TOOLTIP},
       {"languagesDictionaryDownloadError",
        IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED},
       {"languagesDictionaryDownloadRetryLabel",
@@ -387,6 +398,8 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                               ::chromeos::features::kImeOptionsInSettings));
   // TODO(crbug.com/1097328): Delete this.
   html_source->AddBoolean("enableLanguageSettingsV2", true);
+  html_source->AddBoolean("enableLanguageSettingsV2Update2",
+                          IsLanguageSettingsV2Update2Enabled());
 }
 
 void LanguagesSection::AddHandlers(content::WebUI* web_ui) {

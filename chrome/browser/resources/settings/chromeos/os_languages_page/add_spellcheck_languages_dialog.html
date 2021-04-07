@@ -1,0 +1,62 @@
+<style include="settings-shared iron-flex shared-style">
+  #dialogBody {
+    display: flex;
+    flex-direction: column;
+    height: 336px;
+    overflow: auto;
+  }
+
+  cr-search-field {
+    margin-bottom: 8px;
+  }
+
+  .label {
+    padding-bottom: 4px;
+    padding-top: 8px;
+  }
+
+  .list-item {
+    color: var(--cros-text-color-primary);
+    min-height: 36px;
+  }
+
+  cr-checkbox::part(label-container) {
+    white-space: nowrap;
+  }
+</style>
+
+<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+  <div slot="title">$i18n{addSpellCheckLanguagesTitle}</div>
+  <div id="dialogBody" slot="body" scrollable>
+    <iron-list items="[[languages.spellCheckOffLanguages]]">
+      <template>
+        <div class="list-item no-outline">
+          <cr-checkbox class="flex"
+              checked="[[willAdd_(item.language.code,
+                  languageCodesToAdd_.size)]]" disabled="[[item.isManaged]]"
+              on-change="onCheckboxChange_" tab-index="[[tabIndex]]">
+            [[item.language.displayName]]
+          </cr-checkbox>
+          <template is="dom-if" if="[[item.isManaged]]">
+            <iron-icon id="policy[[index]]" class="policy" icon="cr20:domain"
+                describedby="tooltip[[index]]">
+            </iron-icon>
+            <paper-tooltip for="policy[[index]]" id="tooltip[[index]]"
+                role="tooltip" tabindex="-1" position="left">
+              $i18n{spellCheckLanguageNotAllowed}
+            </paper-tooltip>
+          </template>
+        </div>
+      </template>
+    </iron-list>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onActionButtonClick_"
+        disabled="[[disableActionButton_]]">
+      $i18n{add}
+    </cr-button>
+  </div>
+</cr-dialog>

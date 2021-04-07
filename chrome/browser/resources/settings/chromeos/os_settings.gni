@@ -289,6 +289,7 @@ os_settings_migrated_imports = [
   "chrome/browser/resources/settings/a11y_page/captions_subpage.html",
   "chrome/browser/resources/settings/about_page/about_page_browser_proxy.html",
   "chrome/browser/resources/settings/appearance_page/fonts_browser_proxy.html",
+  "chrome/browser/resources/settings/chromeos/os_languages_page/add_spellcheck_languages_dialog.html",
   "chrome/browser/resources/settings/controls/controlled_button.html",
   "chrome/browser/resources/settings/controls/controlled_radio_button.html",
   "chrome/browser/resources/settings/controls/extension_controlled_indicator.html",
