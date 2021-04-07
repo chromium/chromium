@@ -6205,6 +6205,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
           No thanks
         </message>
       </if>
+      <message name="IDS_PASSWORD_MANAGER_USERNAME_LABEL" desc="Label for the username field in a prompt to store new credential">
+        Username
+      </message>
+      <message name="IDS_PASSWORD_MANAGER_PASSWORD_LABEL" desc="Label for the password field in a prompt to store new credential">
+        Password
+      </message>
       <if expr="not is_android">
         <message name="IDS_PASSWORD_MANAGER_UPDATED_BUBBLE_TITLE" desc="Title of the bubble notifying the user that the password was updated.">
           Password updated
@@ -6284,12 +6290,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_PASSWORD_MANAGER_EXPORT_DIALOG_TITLE" desc="The title of the file selection dialog for exporting passwords">
           Export Passwords From Chrome
         </message>
-        <message name="IDS_PASSWORD_MANAGER_USERNAME_LABEL" desc="Label for the username field in a prompt to store new credential">
-          Username
-        </message>
-        <message name="IDS_PASSWORD_MANAGER_PASSWORD_LABEL" desc="Label for the password field in a prompt to store new credential">
-          Password
-        </message>
         <message name="IDS_PASSWORD_MANAGER_MOVE_TITLE" desc="The title of the 'move password to account' bubble">
           Move to Google Account?
         </message>
@@ -6342,6 +6342,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_GENERATE_PASSWORD_BUTTON_TITLE" desc="Text for the button used to generate a password.">
           Suggest strong password
+        </message>
+        <message name="IDS_UPDATE_PASSWORD_DIALOG_TITLE" desc="The title of the update password dialog.">
+          Update password for <ph name="ORIGIN">$1<ex>example.com</ex></ph>
+        </message>
+        <message name="IDS_UPDATE_PASSWORD_DIALOG_SIGNED_IN_DESCRIPTION" desc="The description at the bottom of update password dialog when the user is signed in.">
+          Password will be updated in your Google Account, <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>
         </message>
       </if>
 
