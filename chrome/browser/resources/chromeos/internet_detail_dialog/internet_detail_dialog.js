@@ -27,6 +27,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {InternetDetailDialogBrowserProxy, InternetDetailDialogBrowserProxyImpl} from './internet_detail_dialog_browser_proxy.js';
 
 /**
  * @fileoverview
@@ -110,6 +111,9 @@ Polymer({
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   networkConfig_: null,
 
+  /** @private {?InternetDetailDialogBrowserProxy} */
+  browserProxy_: null,
+
   /** @override */
   created() {
     this.networkConfig_ =
@@ -118,7 +122,8 @@ Polymer({
 
   /** @override */
   attached() {
-    const dialogArgs = chrome.getVariableValue('dialogArguments');
+    this.browserProxy_ = InternetDetailDialogBrowserProxyImpl.getInstance();
+    const dialogArgs = this.browserProxy_.getDialogArguments();
     let type, name;
     if (dialogArgs) {
       const args = JSON.parse(dialogArgs);
@@ -163,7 +168,7 @@ Polymer({
 
   /** @private */
   close_() {
-    chrome.send('dialogClose');
+    this.browserProxy_.closeDialog();
   },
 
   /**

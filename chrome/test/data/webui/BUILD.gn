@@ -136,6 +136,7 @@ if (include_js_tests) {
         "chromeos/edu_login/edu_login_browsertest.js",
         "chromeos/emoji_picker/emoji_picker_browsertest.js",
         "chromeos/gaia_action_buttons/gaia_action_buttons_browsertest.js",
+        "chromeos/internet_detail_dialog_browsertest.js",
         "cr_components/chromeos/cr_components_chromeos_browsertest.js",
         "cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
         "set_time_dialog_browsertest.js",
