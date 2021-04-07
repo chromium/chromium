@@ -115,9 +115,27 @@ yourself (executing `run_weblayer_shell` will do that).
 To run against clank:
 
 ```
+    $ export WPT_TEST= test you want to run, relative to wpt directory.
     $ autoninja -C out/Default monochrome_public_apk
     $ out/Default/bin/monochrome_public_apk install
     $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product chrome_android --chrome-package-name org.chromium.chrome --isolated-script-test-output /tmp/clank_out.json --include $WPT_TEST
+```
+
+To run against linux with wptrunner (same runner we use on android, which runs normal chrome):
+
+```
+    $ export WPT_TEST= test you want to run, relative to wpt directory.
+    $ autoninja -C out/Default wpt_tests_isolate
+    $ cd testing/scripts
+    $ ./run_wpt_tests.py -t Default $WPT_TEST
+````
+
+To run against linux with run_web_tests (same runner we use on CI, which runs content_shell):
+
+```
+    $ export WPT_TEST= test you want to run, relative to wpt directory.
+    $ autoninja -C out/Default blink_tests
+    $ ./third_party/blink/tools/run_web_tests.py -t Default external/wpt/$WPT_TEST
 ```
 
 Passing in `-vvvv` may be useful if you want to see loads of information about
