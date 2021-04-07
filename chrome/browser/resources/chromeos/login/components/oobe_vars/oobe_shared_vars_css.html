@@ -15,6 +15,10 @@
         calc(var(--oobe-adaptive-dialog-height) * 0.035), 40px);
       --oobe-adaptive-dialog-back-button-vertical-padding:
         var(--oobe-adaptive-dialog-buttons-vertical-padding);
+      /* 16px is a distance from border of button to icon. Once oobe-dialog is
+         deleted this could be calculated from button vars. */
+      --oobe-adaptive-dialog-back-button-horizontal-padding:
+        calc(var(--oobe-adaptive-dialog-buttons-horizontal-padding) - 16px);
       --oobe-adaptive-dialog-content-padding: 40px;
       --oobe-adaptive-dialog-header-top-padding:
             var(--oobe-adaptive-dialog-content-padding);
