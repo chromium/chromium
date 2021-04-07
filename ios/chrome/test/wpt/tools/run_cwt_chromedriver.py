@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -34,7 +34,7 @@ parser.add_argument('--build-dir', default=GetDefaultBuildDir(),
     help='Chrome build directory')
 parser.add_argument('--out-dir', default='/tmp/cwt_chromedriver',
     help='Output directory for CWTChromeDriver\'s dummy test case')
-parser.add_argument('--os', default='14.3', help='iOS version')
+parser.add_argument('--os', default='14.4', help='iOS version')
 parser.add_argument('--device', default='iPhone 11 Pro', help='Device type')
 parser.add_argument('--asan-build', help='Use ASan-related libraries',
     dest='asan_build', action='store_true')

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 
+#include <signal.h>
+
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
@@ -310,6 +312,12 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
 
 + (void)stopLoggingStderr {
   CWTStderrLogger::GetInstance()->StopRedirectingToFile();
+}
+
++ (void)installCleanExitHandlerForAbortSignal {
+  struct sigaction sa {};
+  sa.sa_handler = [](int) { exit(0); };
+  sigaction(SIGABRT, &sa, nullptr);
 }
 
 @end

@@ -6,6 +6,7 @@
 #define IOS_CHROME_TEST_WPT_CWT_REQUEST_HANDLER_H_
 
 #import <Foundation/Foundation.h>
+#import <XCTest/XCTest.h>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -138,6 +139,9 @@ class CWTRequestHandler {
 
   // The directory used for test files for crash tests.
   base::FilePath test_case_directory_;
+
+  // The instance of Chrome that's being tested.
+  XCUIApplication* application_;
 
   DISALLOW_COPY_AND_ASSIGN(CWTRequestHandler);
 };

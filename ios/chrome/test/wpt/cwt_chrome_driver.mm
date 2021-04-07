@@ -48,9 +48,6 @@ const int kDefaultPort = 8123;
                                           << "CWTChromeDriver is running.";
                                     }];
 
-  XCUIApplication* application = [[XCUIApplication alloc] init];
-  [application launch];
-
   int port = kDefaultPort;
 
   NSArray* arguments = NSProcessInfo.processInfo.arguments;

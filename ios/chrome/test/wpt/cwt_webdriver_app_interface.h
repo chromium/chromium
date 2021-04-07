@@ -61,6 +61,13 @@
 // Stops redirecting stderr output to a file.
 + (void)stopLoggingStderr;
 
+// Handles SIGABRT by exiting cleanly. This is used to catch abort() calls made
+// by ASan, and prevent them from being detected as crashes by XCTest. When
+// XCTest detects a crash, it terminates the test process. But CWTChromeDriver
+// automatically re-launches the app after a crash during fuzzing, and XCTest's
+// crash detection logic interferes with this.
++ (void)installCleanExitHandlerForAbortSignal;
+
 @end
 
 #endif  // IOS_CHROME_TEST_WPT_CWT_WEBDRIVER_APP_INTERFACE_H_

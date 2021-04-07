@@ -157,6 +157,8 @@ CWTRequestHandler::CWTRequestHandler(ProceduralBlock session_completion_handler)
     : session_completion_handler_(session_completion_handler),
       script_timeout_(kDefaultScriptTimeout),
       page_load_timeout_(kDefaultPageLoadTimeout) {
+  application_ = [[XCUIApplication alloc] init];
+  [application_ launch];
   base::CreateNewTempDirectory(base::FilePath::StringType(),
                                &test_case_directory_);
   test_case_server_.ServeFilesFromDirectory(test_case_directory_);
@@ -371,6 +373,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
   base::CreateTemporaryFile(&log_file);
   [CWTWebDriverAppInterface
       logStderrToFilePath:base::SysUTF8ToNSString(log_file.value())];
+  [CWTWebDriverAppInterface installCleanExitHandlerForAbortSignal];
 
   // Once the test page is loaded, the app might crash at any time until the
   // tab is closed. Re-launch the app if it crashes.
@@ -401,7 +404,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
     [CWTWebDriverAppInterface stopLoggingStderr];
   } @catch (NSException* exception) {
     dispatch_sync(dispatch_get_main_queue(), ^{
-      [[[XCUIApplication alloc] init] launch];
+      [application_ launch];
     });
     target_tab_id_ =
         base::SysNSStringToUTF8([CWTWebDriverAppInterface currentTabID]);
