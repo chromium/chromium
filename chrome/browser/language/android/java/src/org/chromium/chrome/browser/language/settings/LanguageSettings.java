@@ -346,9 +346,6 @@ public class LanguageSettings extends PreferenceFragmentCompat
         CharSequence summary = TextUtils.concat(nativeName, " - ", downloadFailedMessage);
         appLanguagePreference.setSummary(summary);
         appLanguagePreference.setEnabled(true);
-
-        // Start a deferred install of the language split on failure.
-        LanguageSplitInstaller.getInstance().deferredLanguageInstall(appLanguageItem.getCode());
     }
 
     /**

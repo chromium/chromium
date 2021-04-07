@@ -71,11 +71,10 @@ public class LanguageSplitInstaller {
 
         mInstallListener = listener;
         mSplitInstallManager.registerListener(mStateUpdateListener);
+        Locale installLocale = Locale.forLanguageTag(languageName);
 
         SplitInstallRequest installRequest =
-                SplitInstallRequest.newBuilder()
-                        .addLanguage(Locale.forLanguageTag(languageName))
-                        .build();
+                SplitInstallRequest.newBuilder().addLanguage(installLocale).build();
 
         mSplitInstallManager.startInstall(installRequest)
                 .addOnSuccessListener(sessionId -> { mInstallSessionId = sessionId; })
@@ -83,18 +82,11 @@ public class LanguageSplitInstaller {
                     Log.i(TAG, "Language Split Failure:", exception);
                     listener.onComplete(false);
                 });
-    }
 
-    /**
-     * Start a deferred background install of |languageName|. When called, the Play Store tries to
-     * eventually install the language. It is not possible to provide a callback for a deferred
-     * install.
-     * @param languageName String BCP-47 code for language to be installed.
-     */
-    public void deferredLanguageInstall(String languageName) {
-        Log.i(TAG, "Deferred Language Install: %s", languageName);
-        mSplitInstallManager.deferredLanguageInstall(
-                Arrays.asList(Locale.forLanguageTag(languageName)));
+        // Schedule a deferred install if the live install fails the play store will install the
+        // language split in the background at the next hygiene run. If the install succeeds the
+        // deferred install is ignored at the next hygiene run.
+        mSplitInstallManager.deferredLanguageInstall(Arrays.asList(installLocale));
     }
 
     /**
