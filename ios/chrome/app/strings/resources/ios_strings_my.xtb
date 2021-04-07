@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">စကားဝှက်ကို ပြသရန်</translation>
 <translation id="1872096359983322073">ဓာတ်မီး</translation>
 <translation id="1911619930368729126">Google Drive သို့အပ်လုဒ်လုပ်မည်</translation>
+<translation id="1919130412786645364">Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့် ပေးပါ</translation>
 <translation id="1923342640370224680">နောက်ဆုံး နာရီ</translation>
 <translation id="1941314575388338491">ကူးယူရန် နှစ်ချက်တို့ပါ။</translation>
 <translation id="1952172573699511566">ပြနိုင်သည့်အခါတွင် ဝဘ်ဆိုက်များက သင်ပိုမိုနှစ်သက်သည့် ဘာသာစကားဖြင့် စာသားများကို ပြသပါမည်။</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို ပိတ်ခြင်း</translation>
 <translation id="2969979262385602596">လက်မှတ်ထိုးဝင်ရောက်ခြင်းမအောင်မြင်ပါ။ ကျေးဇူးပြု၍ နောက်မှ ထပ်မံကြိုးစားပါ။</translation>
 <translation id="2975121486251958312">'ရုပ်ဖျက်မုဒ်' သာ အသုံးပြုနိုင်သည်</translation>
-<translation id="2981323609054805194">d အကြာက</translation>
 <translation id="2982481275546140226">ဒေတာ ဖယ်ရှားရန်</translation>
 <translation id="298306318844797842">ငွေပေးချေနည်းလမ်း ထည့်ရန်...</translation>
 <translation id="2989805286512600854">တဲဘ်အသစ်တွင် ဖွင့်မည်</translation>
@@ -283,6 +283,7 @@
 <translation id="3928666092801078803">ကျွန်ုပ်၏ ဒေတာများကို ပေါင်းပါ</translation>
 <translation id="3929457972718048006">လိပ်စာများ</translation>
 <translation id="3943492037546055397">စကားဝှက်များ</translation>
+<translation id="3943557322767080599">သင်၏ Google Account သို့ လက်မှတ်ထိုးဝင်သည့်အခါ Chrome လက်မှတ်ထိုးဝင်ရန် အတည်ပြုခြင်းစနစ်များကို ပြသည်</translation>
 <translation id="3967266340354872733">ပုဂ္ဂိုလ်ရေးဆိုင်ရာ၊ လုံခြုံရေး၊ ဒေတာစုဆောင်းမှုတို့နှင့် ဆက်စပ်နေသည့် နောက်ထပ်ဆက်တင်များအတွက် <ph name="BEGIN_LINK" />စင့်ခ်လုပ်ခြင်း<ph name="END_LINK" /> နှင့် <ph name="BEGIN_LINK" />Google ဝန်ဆောင်မှုများ<ph name="END_LINK" /> ကို ကြည့်ပါ။</translation>
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3968505803272650567">စိတ်ဝင်စားမှုများ စီမံရန်</translation>
@@ -558,7 +559,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6710079714193676716">သင်၏ 'အဖွဲ့အစည်း' က စီမံခန့်ခွဲထားသည်။ ဝန်ဆောင်မှုအချို့ မရနိုင်ပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">စကားဝှက်များကို တင်ပို့၍မရပါ</translation>
-<translation id="6739790015462537309">h အကြာက</translation>
 <translation id="6748108480210050150">မှ</translation>
 <translation id="6760509555861141183">‘လတ်တလောတဘ်’ သို့ ပြန်သွားပါ</translation>
 <translation id="6780034285637185932">စာတိုက် ကုဒ်</translation>
@@ -706,6 +706,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8225985093977202398">ကက်ရှ်ပြုလုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8281781826761538115">မူရင်း − <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">သတ်မှတ်ရန်…</translation>
 <translation id="8299417921174340354">စကားဝှက်များသုံးရန် သင့်စက်တွင် လျှို့ဝှက်ကုဒ်တစ်ခုကို ဦးစွာ သတ်မှတ်ရပါမည်။</translation>
 <translation id="8319076807703933069">ရှာဖွေမှု အသစ်</translation>
 <translation id="8323906514956095947">နောက်ထပ် တဘ်ရွေးချယ်စရာများအတွက် တို့၍ဖိထားပါ</translation>

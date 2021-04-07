@@ -45,6 +45,7 @@
 <translation id="4999538639245140991">Sie melden sich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden Ihre Chromium-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann Ihre Passwörter prüfen, wenn Sie sie speichern.</translation>
 <translation id="5308226104666789935">Chromium kann nicht nach Aktualisierungen suchen</translation>
+<translation id="5396916991083608703">Chromium als Standardbrowser festlegen?</translation>
 <translation id="5521125884468363740">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Tabs überall dort aufzurufen, wo Sie Chromium verwenden</translation>
 <translation id="5573014823074921752">Chromium-Tipp: Wenn Sie weitere Tab-Optionen sehen möchten, berühren und halten Sie die Schaltfläche "Tabs anzeigen" in der Symbolleiste. Diese befindet sich unten oder oben auf dem Bildschirm.</translation>
 <translation id="5700709190537129682">Chromium kann Ihre Passwörter nicht prüfen</translation>
@@ -78,6 +79,7 @@
 <translation id="7763454117143368771">Wenn Sie Chromium als Standardbrowser verwenden, sind Sie bestmöglich vor gefährlichen Websites geschützt und können auch Ihre Passwörter besser schützen</translation>
 <translation id="786327964234957808">Sie stellen die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Ihre bestehenden Chromium-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden Ihre Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
 <translation id="7890287942691234100">Jetzt Chromium-Scanner verwenden</translation>
+<translation id="7928628054454574139">Chromium immer öffnen, wenn Sie auf Links in anderen Apps tippen</translation>
 <translation id="7931842119211730154">Inkognitotabs sperren, wenn Chromium geschlossen wird</translation>
 <translation id="7980860476903281594">Chromium teilt Ihren Standort mit Websites, für die Sie das zulassen.</translation>
 <translation id="8013573822802650211">Melden Sie sich auf allen Ihren Geräten an, um Ihre Tabs überall dort aufzurufen, wo Sie Chromium verwenden</translation>

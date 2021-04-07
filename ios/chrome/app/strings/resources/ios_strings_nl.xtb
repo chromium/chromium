@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Wachtwoord tonen</translation>
 <translation id="1872096359983322073">Zaklamp</translation>
 <translation id="1911619930368729126">Uploaden naar Google Drive</translation>
+<translation id="1919130412786645364">Inloggen bij Chrome toestaan</translation>
 <translation id="1923342640370224680">Afgelopen uur</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopiëren.</translation>
 <translation id="1952172573699511566">Websites worden indien mogelijk getoond in je voorkeurstaal.</translation>
@@ -193,7 +194,6 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2964349545761222050">Cookies van derden blokkeren</translation>
 <translation id="2969979262385602596">Kan niet inloggen. Probeer het later opnieuw.</translation>
 <translation id="2975121486251958312">Alleen de incognitomodus is beschikbaar</translation>
-<translation id="2981323609054805194">d geleden</translation>
 <translation id="2982481275546140226">Gegevens wissen</translation>
 <translation id="298306318844797842">Betaalmethode toevoegen…</translation>
 <translation id="2989805286512600854">Openen op nieuw tabblad</translation>
@@ -214,6 +214,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 
 Als je de incognitomodus gebruikt, mogen sites geen cookies gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren.</translation>
 <translation id="3207960819495026254">Toegevoegd aan 'Bookmarks'</translation>
+<translation id="3222343486469566063">Niet aangemeld</translation>
 <translation id="3224641773458703735">Als je wachtwoorden wilt exporteren, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="3240426699337459095">Link gekopieerd</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@ Volg de onderstaande stappen:</translation>
 <translation id="3928666092801078803">Mijn gegevens combineren</translation>
 <translation id="3929457972718048006">Adressen</translation>
 <translation id="3943492037546055397">Wachtwoorden</translation>
+<translation id="3943557322767080599">Chrome-inlogprompts tonen als je inlogt op je Google-account</translation>
 <translation id="3967266340354872733">Bekijk <ph name="BEGIN_LINK" />Synchronisatie<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen over privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3968505803272650567">Interesses beheren</translation>
@@ -559,7 +561,6 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6710079714193676716">Beheerd door je organisatie. Sommige functies zijn mogelijk niet beschikbaar. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Wachtwoorden kunnen niet worden geëxporteerd</translation>
-<translation id="6739790015462537309">u geleden</translation>
 <translation id="6748108480210050150">Van</translation>
 <translation id="6760509555861141183">Terug naar recent tabblad</translation>
 <translation id="6780034285637185932">Postcode</translation>

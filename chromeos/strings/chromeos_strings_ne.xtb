@@ -119,7 +119,7 @@
 <translation id="3820172043799983114">अमान्य PIN।</translation>
 <translation id="3838338534323494292">नयाँ पासवर्ड</translation>
 <translation id="3865414814144988605">रिजोलुसन</translation>
-<translation id="387301095347517405">तपाईंको यन्त्रको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
+<translation id="387301095347517405">तपाईंको डिभाइसको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
 <translation id="3941014780699102620">होस्टको समस्या समाधान गर्न सकिएन</translation>
 <translation id="3942420633017001071">निदान</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
@@ -294,7 +294,7 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्क्यान गरिसकियो। एउटा पेज स्क्यान गरियो}other{स्क्यान गरिसकियो। {NUMBER_OF_PAGES} पेज स्क्यान गरिए}}</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
 <translation id="7487067081878637334">प्रविधि</translation>
-<translation id="7490813197707563893">MAC ठेगाना</translation>
+<translation id="7490813197707563893">MAC एड्रेस</translation>
 <translation id="7497215489070763236">सर्भरको CA को प्रमाणपत्र</translation>
 <translation id="7502658306369382406">IPv6 ठेगाना</translation>
 <translation id="7550715992156305117">डायग्नोस्टिक रुटिनहरू</translation>
@@ -338,7 +338,7 @@
 <translation id="8461329675984532579">गृह प्रदायकको नाम</translation>
 <translation id="8475690821716466388">WiFi नेटवर्क WEP PSK नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="8477551185774834963">DNS को विलम्बता तोकिएको समयसीमाभन्दा थोरै बढी छ</translation>
-<translation id="8483248364096924578">IP ठेगाना</translation>
+<translation id="8483248364096924578">IP एड्रेस</translation>
 <translation id="8503813439785031346">एक-पटके पाठ सन्देश</translation>
 <translation id="8503836310948963452">थप केही मिनेट मात्र पर्खनुहोस्…</translation>
 <translation id="8575298406870537639">तपाईंको मोबाइल सेवा प्रदायकले सो सेवा प्रदायकको नेटवर्कमा कनेक्ट गर्न सकोस् भन्नाका खातिर तपाईंले यो विकल्प अन गर्नु पर्ने हुन सक्छ। यससम्बन्धी थप जानकारी प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>

@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Passwort einblenden</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
+<translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
 <translation id="1923342640370224680">Letzte Stunde</translation>
 <translation id="1941314575388338491">Tippen Sie zum Kopieren hier doppelt.</translation>
 <translation id="1952172573699511566">Sofern dies möglich ist, wird Text auf Websites in Ihrer bevorzugten Sprache angezeigt.</translation>
@@ -193,7 +194,6 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="2964349545761222050">Drittanbieter-Cookies blockieren</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
 <translation id="2975121486251958312">Nur der Inkognitomodus ist verfügbar</translation>
-<translation id="2981323609054805194">Tag(e)</translation>
 <translation id="2982481275546140226">Daten löschen</translation>
 <translation id="298306318844797842">Zahlungsmethode hinzufügen…</translation>
 <translation id="2989805286512600854">In neuem Tab öffnen</translation>
@@ -214,6 +214,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 
 Wenn der Inkognitomodus aktiviert ist, können Websites Cookies nicht verwenden, um Ihre Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
+<translation id="3222343486469566063">Nicht angemeldet</translation>
 <translation id="3224641773458703735">Um Passwörter zu exportieren, müssen Sie zuerst einen Passcode auf Ihrem Gerät einrichten.</translation>
 <translation id="3240426699337459095">Link wurde kopiert.</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@ Gehen Sie so vor:</translation>
 <translation id="3928666092801078803">Daten zusammenführen</translation>
 <translation id="3929457972718048006">Adressen</translation>
 <translation id="3943492037546055397">Passwörter</translation>
+<translation id="3943557322767080599">Aufforderung zur Anmeldung in Chrome anzeigen, wenn Sie sich in Ihrem Google-Konto anmelden</translation>
 <translation id="3967266340354872733">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten finden Sie unter <ph name="BEGIN_LINK" />Synchronisierung<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3968505803272650567">Interessen verwalten</translation>
@@ -559,7 +561,6 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6710079714193676716">Von Ihrer Organisation verwaltet. Einige Funktionen sind möglicherweise nicht verfügbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Passwörter können nicht exportiert werden</translation>
-<translation id="6739790015462537309">Stunden</translation>
 <translation id="6748108480210050150">Von</translation>
 <translation id="6760509555861141183">Zurück zum Tab „Zuletzt geöffnet“</translation>
 <translation id="6780034285637185932">Postleitzahl</translation>
@@ -707,6 +708,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8225985093977202398">Bilder &amp; Dateien im Cache</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8281781826761538115">Standard: <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Festlegen…</translation>
 <translation id="8299417921174340354">Sie müssen zuerst einen Sicherheitscode auf Ihrem Gerät einrichten, um Passwörter zu verwenden.</translation>
 <translation id="8319076807703933069">Neue Suche</translation>
 <translation id="8323906514956095947">Für weitere Tab-Optionen berühren und halten</translation>

@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Zbulo fjalëkalimin</translation>
 <translation id="1872096359983322073">Elektriku</translation>
 <translation id="1911619930368729126">Ngarko në "Diskun e Google"</translation>
+<translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
 <translation id="1923342640370224680">Ora e fundit</translation>
 <translation id="1941314575388338491">Trokit dy herë për të kopjuar.</translation>
 <translation id="1952172573699511566">Sajtet e uebit do ta shfaqin tekstin në gjuhën tënde të preferuar, kur është e mundur.</translation>
@@ -193,7 +194,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2964349545761222050">Blloko kukit e palëve të treta</translation>
 <translation id="2969979262385602596">Nuk mund të identifikohej. Provo përsëri.</translation>
 <translation id="2975121486251958312">Ofrohet vetëm modaliteti "i fshehtë"</translation>
-<translation id="2981323609054805194">ditë më parë</translation>
 <translation id="2982481275546140226">Pastro të dhënat</translation>
 <translation id="298306318844797842">Shto mënyrën e pagesës...</translation>
 <translation id="2989805286512600854">Hape në skedë të re</translation>
@@ -283,6 +283,7 @@ Ndiq hapat më poshtë:</translation>
 <translation id="3928666092801078803">Ndërthur të dhënat e mia</translation>
 <translation id="3929457972718048006">Adresat</translation>
 <translation id="3943492037546055397">Fjalëkalimet</translation>
+<translation id="3943557322767080599">Shfaq kërkesat e identifikimit të Chrome kur të identifikohesh në "Llogarinë tënde të Google"</translation>
 <translation id="3967266340354872733">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK" />Sinkronizimi<ph name="END_LINK" /> dhe <ph name="BEGIN_LINK" />shërbimet e Google<ph name="END_LINK" /></translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="3968505803272650567">Menaxho interesat</translation>
@@ -559,7 +560,6 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="6710079714193676716">Menaxhohet nga organizata jote. Disa veçori mund të jenë të padisponueshme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Apl. Google</translation>
 <translation id="6730682669179532099">Fjalëkalimet nuk mund të eksportohen</translation>
-<translation id="6739790015462537309">orë më parë</translation>
 <translation id="6748108480210050150">Nga</translation>
 <translation id="6760509555861141183">Kthehu te skeda "Të fundit"</translation>
 <translation id="6780034285637185932">Kodi postar</translation>
@@ -707,6 +707,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8225985093977202398">Imazhet dhe skedarët në memorien specifike</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8281781826761538115">Parazgjedhja - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Cakto…</translation>
 <translation id="8299417921174340354">Për të përdorur fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="8319076807703933069">Kërkim i ri</translation>
 <translation id="8323906514956095947">Prek dhe mbaj të shtypur për opsione të tjera të skedës</translation>

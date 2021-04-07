@@ -651,6 +651,7 @@
 <translation id="3428151540071562330">DnsOverHttpsTemplates серверінің бір немесе бірнеше URI үлгісі жарамсыз және пайдаланылмайды.</translation>
 <translation id="3431636764301398940">Карта мәліметтерін осы құрылғыда сақтау</translation>
 <translation id="3432601291244612633">Бетті жабу</translation>
+<translation id="3435896845095436175">Қосу</translation>
 <translation id="3438829137925142401">Google есептік жазбасында сақталған құпия сөздерді пайдалану</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Бұл құрылғының иесі динозаврлар ойынын өшірді.</translation>
@@ -1260,7 +1261,7 @@
 <translation id="5684874026226664614">Бұл бетті аудару мүмкін емес.</translation>
 <translation id="5685654322157854305">Жөнелту мекенжайын енгізу</translation>
 <translation id="5689199277474810259">JSON форматында экспорттау</translation>
-<translation id="5689516760719285838">Орналасу</translation>
+<translation id="5689516760719285838">Локация</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates мәні сәйкес емес және DnsOverHttpsMode саясаты <ph name="SECURE_DNS_MODE_AUTOMATIC" /> немесе <ph name="SECURE_DNS_MODE_SECURE" /> мәніне орнатылмайынша, ол пайдаланылмайды.</translation>
 <translation id="5695542892312572833">Сатып алуды растау және аяқтау үшін Windows Hello пайдаланылсын ба?</translation>
 <translation id="5701381305118179107">Ортаға</translation>

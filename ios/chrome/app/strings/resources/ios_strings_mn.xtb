@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Нууц үгийг харуулах</translation>
 <translation id="1872096359983322073">Чийдэн</translation>
 <translation id="1911619930368729126">Google Drive руу татаж оруул</translation>
+<translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="1923342640370224680">Сүүлийн цаг</translation>
 <translation id="1941314575388338491">Хуулахын тулд хоёр удаа товшино уу.</translation>
 <translation id="1952172573699511566">Вебсайт текстийг таны сонгосон хэлээр (хэрэв тухайн хэл боломжтой бол) харуулна.</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">Гуравдагч талын күүкиг блоклох</translation>
 <translation id="2969979262385602596">Нэвтэрч чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2975121486251958312">Зөвхөн Нууцлалын горим боломжтой байна</translation>
-<translation id="2981323609054805194">өдрийн өмнө</translation>
 <translation id="2982481275546140226">Өгөгдлийг устгах</translation>
 <translation id="298306318844797842">Төлбөрийн хэрэгсэл нэмэх...</translation>
 <translation id="2989805286512600854">Шинэ цонхонд нээ</translation>
@@ -283,6 +283,7 @@
 <translation id="3928666092801078803">Миний өгөгдлийг нэгтгэх</translation>
 <translation id="3929457972718048006">Хаягууд</translation>
 <translation id="3943492037546055397">Нууц үг</translation>
+<translation id="3943557322767080599">Таныг Google Бүртгэлдээ нэвтрэх үед Chrome-н нэвтрэх сануулгыг харуулна</translation>
 <translation id="3967266340354872733">Нууцлал, аюулгүй байдал болон өгөгдөл цуглуулахтай холбоотой бусад тохиргоог <ph name="BEGIN_LINK" />Синк хийх<ph name="END_LINK" /> ба <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" />-ээс харна уу.</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3968505803272650567">Сонирхлыг удирдах</translation>
@@ -558,7 +559,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6710079714193676716">Танай байгууллагаас удирддаг. Зарим онцлог боломжгүй байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Апп</translation>
 <translation id="6730682669179532099">Нууц үгийг экспортлох боломжгүй</translation>
-<translation id="6739790015462537309">цагийн өмнө</translation>
 <translation id="6748108480210050150">Хэнээс</translation>
 <translation id="6760509555861141183">Сүүлийн таб руу буцах</translation>
 <translation id="6780034285637185932">Зип код</translation>

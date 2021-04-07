@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Wys wagwoord</translation>
 <translation id="1872096359983322073">Flits</translation>
 <translation id="1911619930368729126">Laai op na Google Drive</translation>
+<translation id="1919130412786645364">Laat Chrome-aanmelding toe</translation>
 <translation id="1923342640370224680">Afgelope uur</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopieer.</translation>
 <translation id="1952172573699511566">Webwerwe sal, indien moontlik, teks in jou voorkeurtaal vertoon.</translation>
@@ -193,7 +194,6 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2964349545761222050">Blokkeer derdepartywebkoekies</translation>
 <translation id="2969979262385602596">Kon nie aanmeld nie. Probeer asseblief later weer.</translation>
 <translation id="2975121486251958312">Slegs Incognitomodus is beskikbaar</translation>
-<translation id="2981323609054805194">d. gelede</translation>
 <translation id="2982481275546140226">Vee data uit</translation>
 <translation id="298306318844797842">Voeg betaalmetode by …</translation>
 <translation id="2989805286512600854">Maak in 'n nuwe oortjie oop</translation>
@@ -283,6 +283,7 @@ Volg die stappe hieronder:</translation>
 <translation id="3928666092801078803">Kombineer my data</translation>
 <translation id="3929457972718048006">Adresse</translation>
 <translation id="3943492037546055397">Wagwoorde</translation>
+<translation id="3943557322767080599">Wys Chrome-aanmeldporboodskappe wanneer jy by jou Google-rekening aanmeld</translation>
 <translation id="3967266340354872733">Raadpleeg <ph name="BEGIN_LINK" />Sinkronisering<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat met privaatheid, sekuriteit en data-insameling verband hou.</translation>
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="3968505803272650567">Bestuur belangstellings</translation>
@@ -559,7 +560,6 @@ Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="6710079714193676716">Bestuur deur jou organisasie. Sommige kenmerke kan dalk onbeskikbaar wees. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Kan nie wagwoorde uitvoer nie</translation>
-<translation id="6739790015462537309">uur gelede</translation>
 <translation id="6748108480210050150">Vanaf</translation>
 <translation id="6760509555861141183">Keer terug na onlangse oortjie</translation>
 <translation id="6780034285637185932">Poskode</translation>
@@ -707,6 +707,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8225985093977202398">Gekaste prente en lêers</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="8281781826761538115">Verstek – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Stel …</translation>
 <translation id="8299417921174340354">Om wagwoorde te gebruik, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="8319076807703933069">Nuwe soektog</translation>
 <translation id="8323906514956095947">Raak en hou vir meer oortjieopsies</translation>

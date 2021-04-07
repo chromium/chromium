@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Прикажете ја лозинката</translation>
 <translation id="1872096359983322073">Светилка</translation>
 <translation id="1911619930368729126">Постави во Диск на Google</translation>
+<translation id="1919130412786645364">Дозволете најавување на Chrome</translation>
 <translation id="1923342640370224680">Минатиот час</translation>
 <translation id="1941314575388338491">Допрете двапати за да копирате.</translation>
 <translation id="1952172573699511566">Кога е можно, веб-сајтовите ќе прикажуваат текст на вашиот претпочитан јазик.</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">Блокирај колачиња од трети страни</translation>
 <translation id="2969979262385602596">Најавувањето не успеа. Обидете се повторно подоцна.</translation>
 <translation id="2975121486251958312">Достапен е само режимот „Инкогнито“</translation>
-<translation id="2981323609054805194">д. претходно</translation>
 <translation id="2982481275546140226">Избриши податоци</translation>
 <translation id="298306318844797842">Додајте начин на плаќање…</translation>
 <translation id="2989805286512600854">Отвори во нова картичка</translation>
@@ -283,6 +283,7 @@
 <translation id="3928666092801078803">Комбинирај ги моите податоци</translation>
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3943492037546055397">Лозинки</translation>
+<translation id="3943557322767080599">Прикажувај потсетници за најавување на Chrome при најавување на сметката на Google</translation>
 <translation id="3967266340354872733">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Синхронизација<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
 <translation id="3968505803272650567">Управувајте со интересите</translation>
@@ -559,7 +560,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6710079714193676716">Управувано од вашата организација. Некои функции можеби се недостапни. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Апликации на Google</translation>
 <translation id="6730682669179532099">Не може да се извезат лозинките</translation>
-<translation id="6739790015462537309">ч. претходно</translation>
 <translation id="6748108480210050150">Од</translation>
 <translation id="6760509555861141183">Вратете се на картичката „Неодамнешни“</translation>
 <translation id="6780034285637185932">Поштенски број</translation>
@@ -707,6 +707,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8225985093977202398">Кеш: слики, датотеки</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8281781826761538115">Стандардно - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Постави…</translation>
 <translation id="8299417921174340354">За да ги користите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="8319076807703933069">Ново пребарување</translation>
 <translation id="8323906514956095947">Допрете и задржете за повеќе опции за картичката</translation>

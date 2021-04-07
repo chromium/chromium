@@ -40,6 +40,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1252999807265626933">Laddar från <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Vad är det för väder?</translation>
 <translation id="1267032506238418139">Kortkommandot har ändrats</translation>
+<translation id="1269405891096105529">Kringutrustningen stöds inte i gästläget</translation>
 <translation id="1270290102613614947">Skärmen på tangentbordet har inaktiverats</translation>
 <translation id="1272079795634619415">Stopp</translation>
 <translation id="1275285675049378717">Laddar <ph name="POWER_SOURCE" /></translation>
@@ -322,6 +323,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
 <translation id="3665889125180354336">Spela in via mikrofon</translation>
 <translation id="36813544980941320">Wi-Fi-nätverk delas mellan telefonen och <ph name="DEVICE_NAME" /></translation>
+<translation id="3702809606464356667">Visar fönster från det aktuella skrivbordet, tryck på uppåtpilen för att visa fönster från alla skrivbord</translation>
 <translation id="3702846122927433391">Befolkning i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Läser in...</translation>
@@ -630,6 +632,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6297287540776456956">Markera ett område med e-pennan</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> byttes till <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Mikrofon</translation>
+<translation id="6330012934079202188">Visar fönster från alla skrivbord, tryck på uppåtpilen för att visa fönster från det aktuella skrivbordet</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> är en hanterad session som hanteras av <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth är aktiverat</translation>
 <translation id="6381109794406942707">Lås upp enheten genom att ange pinkoden.</translation>

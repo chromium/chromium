@@ -648,6 +648,7 @@
 <translation id="3428151540071562330">DnsOverHttpsTemplates സെർവർ ടെംപ്ലേറ്റ് URI-കളിൽ ഒന്നോ അതിലധികമോ അസാധുവാണ്, അവ ഉപയോഗിക്കില്ല.</translation>
 <translation id="3431636764301398940">ഈ ഉപകരണത്തിലേക്ക് ഈ കാർഡ് സംരക്ഷിക്കുക</translation>
 <translation id="3432601291244612633">പേജ് അടയ്ക്കുക</translation>
+<translation id="3435896845095436175">തയ്യാറാക്കുക</translation>
 <translation id="3438829137925142401">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചിട്ടുള്ള പാസ്‌വേഡുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="3443726618221119081">ജുറോ-കു-കായ്</translation>
 <translation id="3447661539832366887">ഈ ഉപകരണത്തിന്റെ ഉടമ ദിനോസർ ഗെയിം ഓഫാക്കി.</translation>
@@ -761,6 +762,7 @@
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" />അധിക ഫംഗ്ഷനുകൾക്കുള്ള വിപുലീകരണങ്ങൾ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്നു. വിപുലീകരണങ്ങൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
 <translation id="3832522519263485449">ഇടതുവശത്ത് ഒന്നിലധികം പഞ്ച് ചെയ്യുക</translation>
 <translation id="3835233591525155343">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉപയോഗം</translation>
+<translation id="3841184659773414994">ഫയൽ കൈകാര്യം ചെയ്യുന്ന സംവിധാനം</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3858027520442213535">തീയതിയും സമയവും അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="3884278016824448484">വിരുദ്ധ ഉപകരണ ഐഡന്റിഫയർ</translation>
@@ -1794,6 +1796,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ആപ്പ് (<ph name="EXAMPLE_APP_1" />)}=2{2 ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785549533363645510">എന്നിരുന്നാലും നിങ്ങൾ അദൃശ്യനല്ല. ആൾമാറാട്ടത്തിലേയ്‌ക്ക് പോകുന്നത്, നിങ്ങളുടെ തൊഴിൽ ദാതാവിൽ നിന്നോ ഇന്റർനെറ്റ് സേവന ദാതാവിൽ നിന്നോ നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്‌സൈറ്റുകളിൽ നിന്നോ ഉള്ള ബ്രൗസിംഗിനെ മറയ്‌ക്കില്ല.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="7858035578849836010">ഫയൽ തര അസോസിയേഷനുകൾ ഉള്ള ഫയലുകൾ തുറക്കുക.</translation>
 <translation id="7862185352068345852">സൈറ്റ് വിടണോ?</translation>
 <translation id="7865448901209910068">ഏറ്റവും മികച്ച വേഗത</translation>
 <translation id="7874263914261512992">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, കൂടാതെ നിങ്ങൾ ഇപ്പോൾ ഈ പാസ്‌വേഡ് ഉപയോഗിക്കുന്ന മറ്റ് സൈറ്റുകൾ എന്നിവയ്‌ക്കായി നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ Chrome നിർദ്ദേശിക്കുന്നു.</translation>

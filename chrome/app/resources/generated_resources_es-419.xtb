@@ -2944,7 +2944,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4244238649050961491">Encontrar más apps para la pluma stylus</translation>
 <translation id="424726838611654458">Abrir siempre en Adobe Reader</translation>
 <translation id="4247901771970415646">No se puede sincronizar con <ph name="USERNAME" /></translation>
-<translation id="4248098802131000011">Mantén protegidas tus contraseñas ante violaciones de la seguridad de los datos y otros problemas de seguridad</translation>
+<translation id="4248098802131000011">Mantén protegidas tus contraseñas ante violaciones de la seguridad de los datos y otros problemas de seguridad.</translation>
 <translation id="4249248555939881673">Esperando la conexión de red...</translation>
 <translation id="4249373718504745892">Se bloqueó el acceso de esta página a la cámara y el micrófono.</translation>
 <translation id="424963718355121712">Las apps deben proceder del host al que afecten</translation>
@@ -5935,7 +5935,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7659584679870740384">No tienes autorización para utilizar este dispositivo. Para obtener permiso de acceso, comunícate con el administrador.</translation>
 <translation id="7661259717474717992">Permitir que los sitios guarden y lean datos de cookies</translation>
 <translation id="7661451191293163002">No se pudo obtener un certificado de registro.</translation>
-<translation id="7661762353058813968">El administrador gestiona las actualizaciones.</translation>
 <translation id="7662283695561029522">Presiona para configurar</translation>
 <translation id="7663719505383602579">Receptor: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Dispositivo Bluetooth no compatible: "<ph name="DEVICE_NAME" />"</translation>

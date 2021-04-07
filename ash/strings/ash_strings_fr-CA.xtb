@@ -40,6 +40,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1252999807265626933">Recharge à partir de <ph name="POWER_SOURCE" /> en cours</translation>
 <translation id="1255033239764210633">Quel temps fait-il?</translation>
 <translation id="1267032506238418139">Modification du raccourci</translation>
+<translation id="1269405891096105529">Le mode Invité ne prend pas en charge votre périphérique</translation>
 <translation id="1270290102613614947">Clavier à l'écran désactivé</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1275285675049378717">Alimente cet appareil : <ph name="POWER_SOURCE" /></translation>
@@ -132,6 +133,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2012624427112548395">Ctrl+Recherche+H</translation>
 <translation id="2016340657076538683">Rédiger un message</translation>
 <translation id="2018630726571919839">Raconte-moi une blague</translation>
+<translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
 <translation id="2049240716062114887">Le bureau a été renommé : <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
@@ -321,6 +323,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="366222428570480733">Utilisateur géré : <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Enregistrement avec le microphone</translation>
 <translation id="36813544980941320">Les réseaux Wi-Fi seront partagés entre votre téléphone et votre <ph name="DEVICE_NAME" /></translation>
+<translation id="3702809606464356667">Affichage des fenêtres du bureau actuel. Appuyez sur la flèche vers le haut pour afficher les fenêtres de tous les bureaux.</translation>
 <translation id="3702846122927433391">Quelle est la population du Nigéria?</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="370665806235115550">Chargement en cours...</translation>
@@ -408,10 +411,12 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4421231901400348175">Partage du contrôle de votre écran avec <ph name="HELPER_NAME" /> au moyen de l’assistance à distance.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4445159312344259901">Connectez-vous pour le déverrouiller</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notification importante}one{# notification importante}other{# notifications importantes}}</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
 <translation id="445864333228800152">Bonsoir,</translation>
 <translation id="4458688154122353284">Arrêter l'enregistrement de l'écran</translation>
+<translation id="4467143075433126295">Maintenez la touche [Échapp.] enfoncée pour quitter le mode plein écran</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4477350412780666475">Chanson suivante</translation>
 <translation id="4477892968187500306">Cet appareil pourrait contenir des applications qui n'ont pas été vérifiées par Google.</translation>
@@ -626,6 +631,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6297287540776456956">Utilisez un stylet pour sélectionner une zone</translation>
 <translation id="6310121235600822547">L'écran <ph name="DISPLAY_NAME" /> a été pivoté de <ph name="ROTATION" />.</translation>
 <translation id="6315170314923504164">Voix</translation>
+<translation id="6330012934079202188">Affichage des fenêtres de tous les bureaux. Appuyez sur la flèche vers le haut pour afficher les fenêtres du bureau actuel.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> est une session gérée par <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Le Bluetooth est activé</translation>
 <translation id="6381109794406942707">Pour déverrouiller l'appareil, entrez votre NIP.</translation>

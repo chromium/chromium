@@ -647,6 +647,7 @@
 <translation id="3428151540071562330">ஒன்று அல்லது அதற்கு மேற்பட்ட DnsOverHttpsTemplates சேவையக டெம்ப்ளேட் URIகள் தவறாக உள்ளன. அவை பயன்படுத்தப்படாது.</translation>
 <translation id="3431636764301398940">இந்தச் சாதனத்தில் கார்டைச் சேமி</translation>
 <translation id="3432601291244612633">பக்கத்தை மூடுக</translation>
+<translation id="3435896845095436175">இயக்கு</translation>
 <translation id="3438829137925142401">உங்கள் Google கணக்கில் சேமித்த கடவுச்சொற்களைப் பயன்படுத்தவும்</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">சாதனத்தின் உரிமையாளர் டைனோசர் கேமை முடக்கியுள்ளார்.</translation>
@@ -759,6 +760,7 @@
 <translation id="3831915413245941253">கூடுதல் செயல்பாடுகளுக்காக <ph name="ENROLLMENT_DOMAIN" /> நீட்டிப்புகளை நிறுவியுள்ளது. உங்கள் தரவில் சிலவற்றை இந்த நீட்டிப்புகள் அணுகும்.</translation>
 <translation id="3832522519263485449">மல்டிப்பில் பஞ்ச் லெஃப்ட்</translation>
 <translation id="3835233591525155343">உங்கள் சாதன உபயோகம்</translation>
+<translation id="3841184659773414994">ஃபைல் ஹேண்ட்லர்கள்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3858027520442213535">தேதியையும் நேரத்தையும் புதுப்பி</translation>
 <translation id="3884278016824448484">முரண்பாடான சாதன அடையாளங்காட்டி</translation>
@@ -1795,6 +1797,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{எதுவுமில்லை}=1{1 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />)}=2{2 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785549533363645510">இருப்பினும், நீங்கள் மறைந்திருக்கமாட்டீர்கள். மறைநிலைக்குச் செல்வது பணிக்கமர்த்தும் நிறுவனம், இணையச் சேவை வழங்குநர் அல்லது நீங்கள் செல்லும் இணையதளங்களிடம் உங்கள் உலாவலை மறைக்காது.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="7858035578849836010">கோப்பு வகையுடன் தொடர்புடைய கோப்புகளைத் திறத்தல்.</translation>
 <translation id="7862185352068345852">தளத்திலிருந்து வெளியேறவா?</translation>
 <translation id="7865448901209910068">சிறந்த வேகம்</translation>
 <translation id="7874263914261512992">மோசடி செய்யும் தளத்தில் உங்கள் கடவுச்சொல்லை உள்ளிட்டுள்ளீர்கள். இந்தக் கடவுச்சொல்லைப் பயன்படுத்தும் <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> மற்றும் பிற தளங்களுக்குச் சென்று அங்கு சேமித்துள்ள கடவுச்சொற்களைச் சரிபார்க்கும்படி Chrome பரிந்துரைக்கிறது.</translation>

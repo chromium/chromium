@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">הצגת הסיסמה</translation>
 <translation id="1872096359983322073">פנס</translation>
 <translation id="1911619930368729126">‏העלאה אל Google Drive</translation>
+<translation id="1919130412786645364">‏התרת כניסה אל Chrome</translation>
 <translation id="1923342640370224680">בשעה האחרונה</translation>
 <translation id="1941314575388338491">כדי להעתיק, לוחצים פעמיים.</translation>
 <translation id="1952172573699511566">אתרים יציגו טקסט בשפה המועדפת שלך, כשזה אפשרי.</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">‏חסימה של קובצי cookie מצדדים שלישיים</translation>
 <translation id="2969979262385602596">לא ניתן היה להיכנס לחשבון. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="2975121486251958312">רק מצב אנונימי זמין</translation>
-<translation id="2981323609054805194">י' כבר עברו</translation>
 <translation id="2982481275546140226">ניקוי נתונים</translation>
 <translation id="298306318844797842">הוספת אמצעי תשלום...</translation>
 <translation id="2989805286512600854">פתיחה בכרטיסייה חדשה</translation>
@@ -214,6 +214,7 @@
 
 במצב אנונימי אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים שונים – למשל כדי להציג מודעות מותאמות.</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
+<translation id="3222343486469566063">לא מחובר</translation>
 <translation id="3224641773458703735">כדי שניתן יהיה לייצא את הסיסמאות, יש להגדיר קוד גישה במכשיר.</translation>
 <translation id="3240426699337459095">הקישור הועתק</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@
 <translation id="3928666092801078803">שילוב הנתונים שלי</translation>
 <translation id="3929457972718048006">כתובות</translation>
 <translation id="3943492037546055397">סיסמאות</translation>
+<translation id="3943557322767080599">‏הצגה של הודעות כניסה ל-Chrome לאחר כניסה לחשבון Google</translation>
 <translation id="3967266340354872733">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים במסכים <ph name="BEGIN_LINK" />סנכרון<ph name="END_LINK" /> ו<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3968505803272650567">ניהול תחומי עניין</translation>
@@ -559,7 +561,6 @@
 <translation id="6710079714193676716">מנוהל על-ידי הארגון שלך. ייתכן שחלק מהתכונות לא יהיו זמינות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">אי אפשר לייצא סיסמאות</translation>
-<translation id="6739790015462537309">שע' כבר עברו</translation>
 <translation id="6748108480210050150">מאת</translation>
 <translation id="6760509555861141183">חזרה לכרטיסייה הקודמת</translation>
 <translation id="6780034285637185932">מיקוד</translation>
@@ -707,6 +708,7 @@
 <translation id="8225985093977202398">תמונות וקבצים במטמון</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8281781826761538115">ברירת מחדל - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">להגדרה…</translation>
 <translation id="8299417921174340354">כדי שניתן יהיה להשתמש בסיסמאות, יש להגדיר תחילה קוד גישה במכשיר.</translation>
 <translation id="8319076807703933069">חיפוש חדש</translation>
 <translation id="8323906514956095947">לחיצה ארוכה תציג אפשרויות נוספות של כרטיסיות</translation>

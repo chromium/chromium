@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">මුරපදය අනාවරණ කරන්න</translation>
 <translation id="1872096359983322073">පන්දම</translation>
 <translation id="1911619930368729126">Google Drive වෙත උඩුගත කරන්න</translation>
+<translation id="1919130412786645364">Chrome පුරනයට ඉඩ දෙන්න</translation>
 <translation id="1923342640370224680">අවසන් පැයේ</translation>
 <translation id="1941314575388338491">පිටපත් කිරීමට දෙවරක් තට්ටු කරන්න.</translation>
 <translation id="1952172573699511566">හැකි විට, වෙබ් අඩවි ඔබේ කැමතිම භාෂාවෙන් පෙළ පෙන්වනු ඇත.</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
 <translation id="2969979262385602596">පුරනය අසාර්ථක විය, කරුණාකර පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="2975121486251958312">අප්‍රසිද්ධ ප්‍රකාරය පමණක් ලබා ගත හැකිය</translation>
-<translation id="2981323609054805194">දින කට පෙර</translation>
 <translation id="2982481275546140226">දත්ත හිස් කිරීම</translation>
 <translation id="298306318844797842">ගෙවීමේ ක්‍රමය එක් කරන්න...</translation>
 <translation id="2989805286512600854">නව පටිත්තක විවෘත කරන්න</translation>
@@ -283,6 +283,7 @@
 <translation id="3928666092801078803">මගේ දත්ත ඒකාබද්ධ කරන්න</translation>
 <translation id="3929457972718048006">ලිපින</translation>
 <translation id="3943492037546055397">මුරපද</translation>
+<translation id="3943557322767080599">ඔබ ඔබගේ Google ගිණුමට පුරන විට Chrome පිරීමේ ප්‍රේරණ පෙන්වන්න</translation>
 <translation id="3967266340354872733">රහස්‍යතාව, ආරක්ෂාව සහ දත්ත රැස් කිරීමට අදාළ තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />සමමුහුර්තකරණය<ph name="END_LINK" /> සහ <ph name="BEGIN_LINK" />Google ‍සේවා<ph name="END_LINK" /> බලන්න.</translation>
 <translation id="3967822245660637423">බාගැනීම සම්පූර්ණයි</translation>
 <translation id="3968505803272650567">රුචිකත්ව කළමනාකරණය කරන්න</translation>
@@ -559,7 +560,6 @@
 <translation id="6710079714193676716">ඔබගේ ආයතනය විසින් කළමනාකරණය කෙරේ. සමහර විශේෂාංග ලබා ගත නොහැකි විය හැකිය. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google යෙදුම්</translation>
 <translation id="6730682669179532099">මුරපද නිර්යාත කළ නොහැක</translation>
-<translation id="6739790015462537309">පැය කට පෙර</translation>
 <translation id="6748108480210050150">වෙතින්</translation>
 <translation id="6760509555861141183">මෑත ටැබය වෙත ආපසු යන්න</translation>
 <translation id="6780034285637185932">ZIP කේතය</translation>
@@ -707,6 +707,7 @@
 <translation id="8225985093977202398">හැඹිලිගත අනුරූ සහ ගොනු</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="8281781826761538115">පෙරනිමි - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">සකසන්න…</translation>
 <translation id="8299417921174340354">මුරපද භාවිත කිරීමට, ඔබ පළමුව ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
 <translation id="8319076807703933069">අලුත් සෙවීම</translation>
 <translation id="8323906514956095947">තවත් පටිති විකල්ප සඳහා ස්පර්ශ කරගෙන සිටින්න</translation>

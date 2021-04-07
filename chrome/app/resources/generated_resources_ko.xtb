@@ -865,7 +865,7 @@
 <translation id="1909880997794698664">이 기기를 영구적으로 키오스크 모드로 유지하시겠습니까?</translation>
 <translation id="1910721550319506122">반갑습니다!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1915307458270490472">통화 종료</translation>
+<translation id="1915307458270490472">종료</translation>
 <translation id="1916502483199172559">기본 빨간색 아바타</translation>
 <translation id="1918141783557917887">작게(&amp;S)</translation>
 <translation id="1919345977826869612">광고</translation>
@@ -5936,7 +5936,6 @@
 <translation id="7659584679870740384">더 이상 이 기기를 사용할 권한이 없습니다. 관리자에게 로그인 권한에 대해 문의하세요.</translation>
 <translation id="7661259717474717992">사이트에서 쿠키 데이터 저장 및 읽기 허용</translation>
 <translation id="7661451191293163002">등록 인증서를 확인할 수 없습니다.</translation>
-<translation id="7661762353058813968">업데이트는 관리자가 관리합니다</translation>
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
 <translation id="7663719505383602579">수신기: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">지원되지 않는 블루투스 기기(<ph name="DEVICE_NAME" />)입니다.</translation>

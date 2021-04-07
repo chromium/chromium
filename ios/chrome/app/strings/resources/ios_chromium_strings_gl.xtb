@@ -46,6 +46,7 @@
 <translation id="4999538639245140991">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chromium deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
 <translation id="5224391634244552924">Non hai contrasinais gardados. Chromium pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="5308226104666789935">Chromium non puido buscar actualizacións</translation>
+<translation id="5396916991083608703">Queres definir Chromium como navegador predeterminado?</translation>
 <translation id="5521125884468363740">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión e activa a sincronización</translation>
 <translation id="5573014823074921752">Consello sobre Chromium: Para ver máis opcións relacionadas coas pestanas, mantén premido o botón Mostrar pestanas. Atoparalo na barra de ferramentas, situada na parte inferior ou superior da pantalla.</translation>
 <translation id="5700709190537129682">Chromium non puido comprobar os teus contrasinais</translation>
@@ -79,6 +80,7 @@
 <translation id="7763454117143368771">Usa Chromium como navegador predeterminado para protexer a túa seguranza contra sitios perigosos e manter a salvo os teus contrasinais</translation>
 <translation id="786327964234957808">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chromium actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Comeza a utilizar o escáner de Chromium</translation>
+<translation id="7928628054454574139">Abre Chromium cada vez que toques ligazóns noutras aplicacións</translation>
 <translation id="7931842119211730154">Bloquear pestanas do modo de incógnito ao pechar Chromium</translation>
 <translation id="7980860476903281594">Chromium comparte a localización cos sitios que queiras.</translation>
 <translation id="8013573822802650211">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión en todos eles</translation>

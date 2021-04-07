@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Αποκάλυψη κωδικού πρόσβασης</translation>
 <translation id="1872096359983322073">Φακός</translation>
 <translation id="1911619930368729126">Μεταφόρ.στο Google Drive</translation>
+<translation id="1919130412786645364">Να επιτρέπεται η σύνδεση στο Chrome</translation>
 <translation id="1923342640370224680">Τελευταία ώρα</translation>
 <translation id="1941314575388338491">Πατήστε δύο φορές για αντιγραφή.</translation>
 <translation id="1952172573699511566">Οι ιστότοποι θα εμφανίζουν κείμενο στην προτιμώμενη γλώσσα σας όταν υπάρχει αυτή η δυνατότητα.</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">Αποκλεισμός cookie τρίτου μέρους</translation>
 <translation id="2969979262385602596">Αποτυχία σύνδεσης. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="2975121486251958312">Μόνο η Κατάσταση ανώνυμης περιήγησης είναι διαθέσιμη</translation>
-<translation id="2981323609054805194">ημ. πριν</translation>
 <translation id="2982481275546140226">Διαγραφή δεδομένων</translation>
 <translation id="298306318844797842">Προσθήκη τρόπου πληρωμής…</translation>
 <translation id="2989805286512600854">Άνοιγμα σε Νέα Καρτέλα</translation>
@@ -214,6 +214,7 @@
 
 Ενώ βρίσκεστε σε κατάσταση ανώνυμης περιήγησης, οι ιστότοποι δεν μπορούν να χρησιμοποιούν τα cookie για να βλέπουν τη δραστηριότητα περιήγησής σας μεταξύ διαφορετικών ιστοτόπων όπως, για παράδειγμα, για την εξατομίκευση των διαφημίσεων.</translation>
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
+<translation id="3222343486469566063">Δεν είναι συνδεδεμένος</translation>
 <translation id="3224641773458703735">Για να εξαγάγετε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης στη συσκευή σας.</translation>
 <translation id="3240426699337459095">Ο σύνδεσμος αντιγράφηκε</translation>
 <translation id="3244271242291266297">ΜΜ</translation>
@@ -283,6 +284,7 @@
 <translation id="3928666092801078803">Συνδυασμός των δεδομένων μου</translation>
 <translation id="3929457972718048006">Διευθύνσεις</translation>
 <translation id="3943492037546055397">Κωδικοί πρόσβασης</translation>
+<translation id="3943557322767080599">Εμφάνιση μηνυμάτων προτροπής σύνδεσης Chrome όταν συνδέεστε στον Λογαριασμό σας Google.</translation>
 <translation id="3967266340354872733">Για περισσότερες ρυθμίσεις που σχετίζονται με το απόρρητο, την ασφάλεια και τη συλλογή δεδομένων, ανατρέξτε στην ενότητα <ph name="BEGIN_LINK" />Συγχρονισμός<ph name="END_LINK" /> και <ph name="BEGIN_LINK" />Υπηρεσίες Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
 <translation id="3968505803272650567">Διαχείριση Ενδιαφερόντων</translation>
@@ -560,7 +562,6 @@
 <translation id="6710079714193676716">Διαχειριζόμενο από τον οργανισμό σας. Ορισμένες λειτουργίες ενδέχεται να μην είναι διαθέσιμες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Δεν είναι δυνατή η εξαγωγή κωδικών πρόσβασης</translation>
-<translation id="6739790015462537309">ώ. πριν</translation>
 <translation id="6748108480210050150">Από</translation>
 <translation id="6760509555861141183">Επιστροφή στην καρτέλα Πρόσφατα</translation>
 <translation id="6780034285637185932">Ταχυδρομικός κώδικας</translation>
@@ -708,6 +709,7 @@
 <translation id="8225985093977202398">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8281781826761538115">Προεπιλογή - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Ορισμός…</translation>
 <translation id="8299417921174340354">Για τη χρήση κωδικών πρόσβασης, πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης στη συσκευή σας.</translation>
 <translation id="8319076807703933069">Νέα αναζήτηση</translation>
 <translation id="8323906514956095947">Αγγίξτε παρατεταμένα για περισσότερες επιλογές καρτελών</translation>

@@ -46,6 +46,7 @@
 <translation id="4999538639245140991">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="5308226104666789935">Chromium no pot cercar actualitzacions</translation>
+<translation id="5396916991083608703">Vols establir Chromium com a predeterminat?</translation>
 <translation id="5521125884468363740">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió i activa la sincronització</translation>
 <translation id="5573014823074921752">Consell de Chromium. Per accedir a més opcions de pestanyes, mantén premut el botó Mostra pestanyes a la barra d'eines, que és a la part inferior o superior de la pantalla.</translation>
 <translation id="5700709190537129682">Chromium no pot comprovar les teves contrasenyes</translation>
@@ -79,6 +80,7 @@
 <translation id="7763454117143368771">Utilitza Chromium com a navegador predeterminat per protegir-te de llocs web perillosos i mantenir les teves contrasenyes segures</translation>
 <translation id="786327964234957808">Estàs canviant el compte de sincronització de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> gestiona les teves dades de Chromium. Se suprimiran les teves dades d'aquest dispositiu, però continuaran estant disponibles a <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Comença a utilitzar l'escàner de Chromium</translation>
+<translation id="7928628054454574139">Obre Chromium cada vegada que toquis enllaços en altres aplicacions</translation>
 <translation id="7931842119211730154">Bloqueja les pestanyes d'incògnit després de tancar Chromium</translation>
 <translation id="7980860476903281594">Chromium comparteix la teva ubicació amb els llocs web que autoritzis.</translation>
 <translation id="8013573822802650211">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió en tots els dispositius</translation>

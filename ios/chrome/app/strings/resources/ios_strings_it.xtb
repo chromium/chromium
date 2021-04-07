@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Mostra password</translation>
 <translation id="1872096359983322073">Torcia</translation>
 <translation id="1911619930368729126">Carica su Google Drive</translation>
+<translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
 <translation id="1923342640370224680">Ultima ora</translation>
 <translation id="1941314575388338491">Tocca due volte per copiare.</translation>
 <translation id="1952172573699511566">Se possibile, il testo dei siti web verrà mostrato nella tua lingua preferita.</translation>
@@ -193,7 +194,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2964349545761222050">Blocca cookie di terze parti</translation>
 <translation id="2969979262385602596">Impossibile accedere. Riprova più tardi.</translation>
 <translation id="2975121486251958312">Disponibile solo la modalità in incognito</translation>
-<translation id="2981323609054805194">g fa</translation>
 <translation id="2982481275546140226">Cancella dati</translation>
 <translation id="298306318844797842">Aggiungi il metodo di pagamento…</translation>
 <translation id="2989805286512600854">Apri in un'altra scheda</translation>
@@ -214,6 +214,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 
 In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci.</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
+<translation id="3222343486469566063">Accesso non eseguito</translation>
 <translation id="3224641773458703735">Per esportare le password devi innanzitutto impostare un passcode sul dispositivo.</translation>
 <translation id="3240426699337459095">Link copiato</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="3928666092801078803">Unisci i miei dati</translation>
 <translation id="3929457972718048006">Indirizzi</translation>
 <translation id="3943492037546055397">Password</translation>
+<translation id="3943557322767080599">Mostra suggerimenti per l'accesso a Chrome quando accedi al tuo Account Google</translation>
 <translation id="3967266340354872733">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, apri le sezioni <ph name="BEGIN_LINK" />Sincronizzazione<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Download completato</translation>
 <translation id="3968505803272650567">Gestisci interessi</translation>
@@ -559,7 +561,6 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6710079714193676716">Gestito dalla tua organizzazione. Alcune funzionalità potrebbero non essere disponibili. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Impossibile esportare le password</translation>
-<translation id="6739790015462537309">h fa</translation>
 <translation id="6748108480210050150">Da</translation>
 <translation id="6760509555861141183">Torna alla scheda recente</translation>
 <translation id="6780034285637185932">Codice postale</translation>
@@ -707,6 +708,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8225985093977202398">Immagini e file memorizzati nella cache</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8281781826761538115">Predefinita - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Imposta…</translation>
 <translation id="8299417921174340354">Per utilizzare le password, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="8319076807703933069">Nuova ricerca</translation>
 <translation id="8323906514956095947">Tocca e tieni premuto per vedere maggiori opzioni sulla scheda</translation>

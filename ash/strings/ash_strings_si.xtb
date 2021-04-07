@@ -40,6 +40,7 @@
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> වෙතින් ආරෝපණය වෙමින්</translation>
 <translation id="1255033239764210633">කාලගුණය කෙසේද?</translation>
 <translation id="1267032506238418139">කෙටිමඟ වෙනස් කිරීම</translation>
+<translation id="1269405891096105529">උපාංගය ආගන්තුක ප්‍රකාරය තුළ සහාය නොදක්වයි</translation>
 <translation id="1270290102613614947">තිරය මත යතුරු පුවරුව අබල කර ඇත</translation>
 <translation id="1272079795634619415">නවතන්න</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> බල ගැන්වීම</translation>
@@ -322,6 +323,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> කළමනා කරන පරිශීලකයා</translation>
 <translation id="3665889125180354336">මයික්‍රෆෝනය පටිගත කරන්න</translation>
 <translation id="36813544980941320">Wi-Fi ජාල ඔබගේ දුරකථනය සහ <ph name="DEVICE_NAME" /> අතර බෙදා ගනු ඇත</translation>
+<translation id="3702809606464356667">වත්මන් මේසයෙන් කවුළු පෙන්වමින්, සියලු මේසවලින් කවුළු පෙන්වීමට ඉහළට ඊතලය යතුර ඔබන්න</translation>
 <translation id="3702846122927433391">නයිජීරියාවේ ජනගහනය</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">පූරණය වේ...</translation>
@@ -630,6 +632,7 @@
 <translation id="6297287540776456956">කලාපයක් තේරීමට පන්හිඳ භාවිතා කරන්න</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" />  <ph name="ROTATION" /> වෙත භ්‍රමණය විය</translation>
 <translation id="6315170314923504164">හඬ</translation>
+<translation id="6330012934079202188">සියලු මේසවලින් කවුළු පෙන්වමින්, වත්මන් මේසයෙන් කවුළු පෙන්වීමට ඉහළට ඊතලය යතුර ඔබන්න</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> යනු <ph name="MANAGER" /> විසින් කළමනාකරණය කරනු ලබන කළමනාකරණය කළ සැසියකි</translation>
 <translation id="6376931439017688372">බ්ලූටූත් ක්‍රියාත්මකයි</translation>
 <translation id="6381109794406942707">උපාංගය අගුලු ඇරීමට, ඔබේ රහස් අංකය ඇතුළත් කරන්න.</translation>

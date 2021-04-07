@@ -93,6 +93,7 @@
 <translation id="1641113438599504367">பாதுகாப்பாக உலாவுதல்</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" /> அன்றைக்கான இந்தப் பக்கத்தின் ஆஃப்லைன் நகலைப் பார்க்கிறீர்கள்</translation>
 <translation id="1644574205037202324">வரலாறு</translation>
+<translation id="1668122540633280551">Chrome முகப்புப்பக்கத்தில் வீடியோ மாதிரிக்காட்சிகள் தானாகவே எவ்வாறு பிளேயாக வேண்டும் என்பதைத் தேர்வுசெய்யவும்.</translation>
 <translation id="1670399744444387456">அடிப்படை</translation>
 <translation id="1671236975893690980">பதிவிறக்கம் நிலுவையில் உள்ளது…</translation>
 <translation id="1672586136351118594">மீண்டும் காட்டாதே</translation>
@@ -237,6 +238,8 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> வரலாற்று உள்ளடக்கங்கள் நீக்கப்பட்டன</translation>
 <translation id="2536728043171574184">இந்தப் பக்கத்தின் ஆஃப்லைன் நகலைப் பார்க்கிறீர்கள்</translation>
 <translation id="2546283357679194313">குக்கீகளும் தள தரவும்</translation>
+<translation id="2549341709325358884">வைஃபையிலும் மொபைல் டேட்டாவிலும் மட்டும்</translation>
+<translation id="2561519700418191927">வீடியோ மாதிரிகாட்சிகள்</translation>
 <translation id="2567385386134582609">படம்</translation>
 <translation id="2571711316400087311">வேறு மொழியிலுள்ள பக்கங்களை Google Translateடிற்கு அனுப்ப அனுமதி</translation>
 <translation id="2581165646603367611">முக்கியமில்லை என்று Chrome கருதும் குக்கீகள், தற்காலிகச் சேமிப்பு, தளங்களின் பிற தரவு ஆகியவற்றை இது அழிக்கும்.</translation>
@@ -415,6 +418,7 @@
 <translation id="3773856050682458546">அடிப்படைத் தரவும் நீங்கள் பார்வையிடும் இணையதளங்கள், பயன்படுத்தும் ஆப்ஸ் ஆகியவற்றைப் பற்றிய தகவல்களும்</translation>
 <translation id="3775705724665058594">உங்கள் சாதனங்களுக்கு அனுப்புதல்</translation>
 <translation id="3778956594442850293">முகப்புத் திரையில் சேர்க்கப்பட்டது</translation>
+<translation id="3803784507854318295">தானாகப் பிளேயாகும் ஊட்டத்தை நிர்வகிக்கலாம்</translation>
 <translation id="3810838688059735925">வீடியோ</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> பதிவிறக்கங்கள் உள்ளன</translation>

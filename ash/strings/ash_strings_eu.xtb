@@ -40,6 +40,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> gailutik kargatzen</translation>
 <translation id="1255033239764210633">Zer eguraldi dago?</translation>
 <translation id="1267032506238418139">Aldatu egin da lasterbidea</translation>
+<translation id="1269405891096105529">Gailu periferikoa ez da onartzen gonbidatu moduan</translation>
 <translation id="1270290102613614947">Pantailako teklatua desgaitu egin da</translation>
 <translation id="1272079795634619415">Gelditu</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> gailuari energia ematen</translation>
@@ -322,6 +323,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, erabiltzaile kudeatua</translation>
 <translation id="3665889125180354336">Mikrofono bidezko grabaketa</translation>
 <translation id="36813544980941320">Wifi-sareak telefonoaren eta <ph name="DEVICE_NAME" /> gailuaren artean partekatuko dira</translation>
+<translation id="3702809606464356667">Une honetako lan-eremuko leihoak daude ikusgai. Lan-eremu guztietako leihoak egon daitezen ikusgai, sakatu gora egiteko gezi-tekla.</translation>
 <translation id="3702846122927433391">Zenbat biztanle ditu Nigeriak</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Kargatzen…</translation>
@@ -631,6 +633,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6297287540776456956">Erabili arkatza eremu bat hautatzeko</translation>
 <translation id="6310121235600822547">Biraketa <ph name="ROTATION" /> ezarri da <ph name="DISPLAY_NAME" /> pantailan</translation>
 <translation id="6315170314923504164">Ahotsa</translation>
+<translation id="6330012934079202188">Lan-eremu guztietako leihoak daude ikusgai. Une honetako lan-eremuko leihoak egon daitezen ikusgai, sakatu gora egiteko gezi-tekla.</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> domeinuak kudeatutako saio kudeatua da <ph name="DISPLAY_NAME" /></translation>
 <translation id="6376931439017688372">Aktibatuta dago Bluetooth-a</translation>
 <translation id="6381109794406942707">Gailua desblokeatzeko, idatzi PIN kodea.</translation>

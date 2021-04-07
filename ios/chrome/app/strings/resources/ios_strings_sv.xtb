@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Visa lösenord</translation>
 <translation id="1872096359983322073">Ficklampa</translation>
 <translation id="1911619930368729126">Ladda upp till Google Drive</translation>
+<translation id="1919130412786645364">Tillåt inloggning i Chrome</translation>
 <translation id="1923342640370224680">Senaste timmen</translation>
 <translation id="1941314575388338491">Tryck snabbt två gånger om du vill kopiera informationen.</translation>
 <translation id="1952172573699511566">När det är möjligt visas text på webbplatser på önskat språk.</translation>
@@ -193,7 +194,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2964349545761222050">Blockera cookies från tredje part</translation>
 <translation id="2969979262385602596">Det gick inte att logga in. Försök igen senare.</translation>
 <translation id="2975121486251958312">Endast inkognitoläge tillgängligt</translation>
-<translation id="2981323609054805194">d sedan</translation>
 <translation id="2982481275546140226">Rensa data</translation>
 <translation id="298306318844797842">Lägg till betalningsmetod …</translation>
 <translation id="2989805286512600854">Öppna i ny flik</translation>
@@ -214,6 +214,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 
 I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser.</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
+<translation id="3222343486469566063">Inte inloggad</translation>
 <translation id="3224641773458703735">Du måste ställa in ett lösenord på enheten om du vill kunna exportera lösenord.</translation>
 <translation id="3240426699337459095">Länken har kopierats</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@ Följ stegen nedan:</translation>
 <translation id="3928666092801078803">Slå ihop data</translation>
 <translation id="3929457972718048006">Adresser</translation>
 <translation id="3943492037546055397">Lösenord</translation>
+<translation id="3943557322767080599">Visa inloggningsmeddelanden i Chrome när du loggar in på ditt Google-konto</translation>
 <translation id="3967266340354872733">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Synk<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="3968505803272650567">Hantera intressen</translation>
@@ -559,7 +561,6 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6710079714193676716">Hanteras av organisationen. Vissa funktioner kanske inte är tillgängliga. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Det gick inte att exportera lösenord</translation>
-<translation id="6739790015462537309">tim sedan</translation>
 <translation id="6748108480210050150">Från</translation>
 <translation id="6760509555861141183">Återgå till den senaste fliken</translation>
 <translation id="6780034285637185932">Postnummer</translation>
@@ -707,6 +708,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8225985093977202398">Cachelagrade bilder och filer</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Ange …</translation>
 <translation id="8299417921174340354">Du måste ställa in ett lösenord på enheten innan du kan använda lösenord här.</translation>
 <translation id="8319076807703933069">Ny sökning</translation>
 <translation id="8323906514956095947">Tryck länge för fler flikalternatv</translation>

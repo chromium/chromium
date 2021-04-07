@@ -40,6 +40,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1252999807265626933">S'està carregant amb: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Quin temps fa?</translation>
 <translation id="1267032506238418139">Canvi de drecera</translation>
+<translation id="1269405891096105529">Aquest perifèric no s'admet en mode de convidat</translation>
 <translation id="1270290102613614947">Teclat en pantalla desactivat</translation>
 <translation id="1272079795634619415">Atura</translation>
 <translation id="1275285675049378717">S'està alimentant el <ph name="POWER_SOURCE" /></translation>
@@ -322,6 +323,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3665889125180354336">Grava el micròfon</translation>
 <translation id="36813544980941320">Les xarxes Wi-Fi es compartiran entre el teu telèfon i el dispositiu <ph name="DEVICE_NAME" /></translation>
+<translation id="3702809606464356667">S'estan mostrant les finestres de l'escriptori actual. Prem la tecla de fletxa amunt per mostrar les finestres de tots els escriptoris.</translation>
 <translation id="3702846122927433391">Quants habitants té Nigèria?</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">S'està carregant...</translation>
@@ -630,6 +632,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6297287540776456956">Utilitza el llapis òptic per seleccionar una part</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> s'ha canviat a <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Veu</translation>
+<translation id="6330012934079202188">S'estan mostrant les finestres de tots els escriptoris. Prem la tecla de fletxa amunt per mostrar les finestres de l'escriptori actual.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> és una sessió gestionada per <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">El Bluetooth està activat</translation>
 <translation id="6381109794406942707">Per desbloquejar el dispositiu, introdueix el PIN.</translation>

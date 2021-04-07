@@ -4689,7 +4689,7 @@
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Система: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="624789221780392884">Актуализацията е готова</translation>
-<translation id="6248988683584659830">Търсене в Настройки</translation>
+<translation id="6248988683584659830">Търсене в „Настройки“</translation>
 <translation id="6249200942125593849">Управление на настройките за достъпност</translation>
 <translation id="6251870443722440887">Манипулатори за GDI обекти</translation>
 <translation id="625369703868467034">Състояние на мрежата</translation>
@@ -5937,7 +5937,6 @@
 <translation id="7659584679870740384">Не сте упълномощени да използвате това устройство. За разрешение за вход се свържете с администратора.</translation>
 <translation id="7661259717474717992">Разрешаване на сайтовете да запазват и четат данни в „бисквитки“</translation>
 <translation id="7661451191293163002">Не можа да бъде получен регистрационен сертификат.</translation>
-<translation id="7661762353058813968">Актуализациите се управляват от администратора ви.</translation>
 <translation id="7662283695561029522">Докоснете, за да конфигурирате</translation>
 <translation id="7663719505383602579">Приемник: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Неподдържано устройство с Bluetooth: <ph name="DEVICE_NAME" />.</translation>

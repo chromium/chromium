@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Прикажите лозинку</translation>
 <translation id="1872096359983322073">Блиц</translation>
 <translation id="1911619930368729126">Отпреми у Google диск</translation>
+<translation id="1919130412786645364">Дозволи пријављивање у Chrome</translation>
 <translation id="1923342640370224680">Претходни сат</translation>
 <translation id="1941314575388338491">Додирните двапут да бисте копирали.</translation>
 <translation id="1952172573699511566">Веб-сајтови ће приказивати текст на жељеном језику када је то могуће.</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">Блокирај колачиће треће стране</translation>
 <translation id="2969979262385602596">Пријављивање није успело. Пробајте поново касније.</translation>
 <translation id="2975121486251958312">Доступан је само режим без архивирања</translation>
-<translation id="2981323609054805194">пре д</translation>
 <translation id="2982481275546140226">Обриши податке</translation>
 <translation id="298306318844797842">Додајте начин плаћања...</translation>
 <translation id="2989805286512600854">Отвори на новој картици</translation>
@@ -214,6 +214,7 @@
 
 Када сте у режиму без архивирања, сајтови не могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа.</translation>
 <translation id="3207960819495026254">Обележено</translation>
+<translation id="3222343486469566063">Нисте пријављени</translation>
 <translation id="3224641773458703735">Да бисте извозили лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="3240426699337459095">Линк је копиран</translation>
 <translation id="3244271242291266297">ММ</translation>
@@ -283,6 +284,7 @@
 <translation id="3928666092801078803">Комбинуј податке</translation>
 <translation id="3929457972718048006">Адресе</translation>
 <translation id="3943492037546055397">Лозинке</translation>
+<translation id="3943557322767080599">Прикажи Chrome упите за пријављивање при пријављивању на Google налог</translation>
 <translation id="3967266340354872733">Више подешавања у вези са приватношћу, безбедношћу и прикупљањем података потражите у одељцима <ph name="BEGIN_LINK" />Синхронизација<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
 <translation id="3968505803272650567">Управљајте интересовањима</translation>
@@ -559,7 +561,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6710079714193676716">Овим управља организација. Неке функције можда нису доступне. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Извоз лозинки није успео</translation>
-<translation id="6739790015462537309">пре с</translation>
 <translation id="6748108480210050150">Од</translation>
 <translation id="6760509555861141183">Назад на недавну картицу</translation>
 <translation id="6780034285637185932">Поштански број</translation>
@@ -707,6 +708,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8225985093977202398">Кеширане слике и датотеке</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8281781826761538115">Подразумевано – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Подеси…</translation>
 <translation id="8299417921174340354">Да бисте користили лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="8319076807703933069">Нова претрага</translation>
 <translation id="8323906514956095947">Додирните и задржите ако желите више опција за картице</translation>

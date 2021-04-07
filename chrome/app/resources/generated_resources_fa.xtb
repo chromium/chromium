@@ -274,7 +274,7 @@
 <translation id="1293264513303784526">‏دستگاه USB-C (درگاه سمت چپ)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294807885394205587">این پردازش ممکن است چند دقیقه طول بکشد. راه‌اندازی مدیر محتوی.</translation>
-<translation id="1296911687402551044">پین کردن برگه انتخاب‌شده</translation>
+<translation id="1296911687402551044">سنجاق کردن برگه انتخاب‌شده</translation>
 <translation id="1297175357211070620">مقصد</translation>
 <translation id="129770436432446029">ارسال بازخورد برای <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="1300806585489372370">برای تغییر این تنظیم، ابتدا <ph name="BEGIN_LINK" />شناسه‌ها را روشن کنید<ph name="END_LINK" /></translation>
@@ -3726,7 +3726,7 @@
 <translation id="5153234146675181447">فراموش کردن تلفن</translation>
 <translation id="5154108062446123722">تنظیمات پیشرفته برای <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">موضوع</translation>
-<translation id="5157635116769074044">پین کردن این صفحه به صفحه شروع…</translation>
+<translation id="5157635116769074044">سنجاق کردن این صفحه به صفحه شروع…</translation>
 <translation id="5158983316805876233">استفاده از پراکسی یکسان برای همه پروتکل ها</translation>
 <translation id="5159094275429367735">‏راه‌اندازی Crostini</translation>
 <translation id="5159419673777902220">ولی شما اجازه‌های افزونه را غیرفعال کرده است</translation>
@@ -3917,7 +3917,7 @@
 <translation id="5369694795837229225">‏راه‌اندازی محیط برنامه‌نویسی Linux</translation>
 <translation id="5370819323174483825">&amp;تازه‌سازی</translation>
 <translation id="5372529912055771682">حالت ثبت‌نام ارائه شده توسط این نسخه از سیستم‌عامل پشتیبانی نمی‌شود. لطفاً مطمئن شوید که جدیدترین نسخه را اجرا می‌کنید و دوباره امتحان کنید.</translation>
-<translation id="5372579129492968947">برداشتن پین افزونه</translation>
+<translation id="5372579129492968947">برداشتن سنجاق افزونه</translation>
 <translation id="5372632722660566343">ادامه بدون حساب</translation>
 <translation id="5375318608039113175">‏برای استفاده از «هم‌رسانی با اطراف» با این مخاطبین، نشانی ایمیل پیوندشده با «حساب Google» آن‌ها را به مخاطبین خود اضافه کنید.</translation>
 <translation id="5376169624176189338">برای برگشت به عقب کلیک کنید، برای دیدن سابقه نگه دارید</translation>
@@ -4575,7 +4575,7 @@
 <translation id="6113434369102685411">‏تنظیم موتور جستجوی پیش‌فرض برای مرورگر Chrome و «راه‌انداز <ph name="DEVICE_TYPE" />»</translation>
 <translation id="6113942107547980621">‏برای استفاده از Smart Lock، به نمایه کاربر اصلی در تلفن جابه‌جا شوید</translation>
 <translation id="6116921718742659598">تغییر تنظیمات زبان و ورودی</translation>
-<translation id="6120205520491252677">پین کردن این صفحه به صفحه شروع…</translation>
+<translation id="6120205520491252677">سنجاق کردن این صفحه به صفحه شروع…</translation>
 <translation id="6122081475643980456">اتصال اینترنت شما کنترل می‌شود</translation>
 <translation id="6122095009389448667">دسترسی این سایت به بریده‌دان همچنان مسدود باشد</translation>
 <translation id="6122600716821516697">با این دستگاه هم‌رسانی شود؟</translation>
@@ -5836,7 +5836,7 @@
 <translation id="7548856833046333824">لیموناد</translation>
 <translation id="7550830279652415241">bookmarks<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> بارگیری نشد</translation>
-<translation id="7551643184018910560">پین کردن به فقسه</translation>
+<translation id="7551643184018910560">سنجاق کردن به فقسه</translation>
 <translation id="7552846755917812628">نکته‌های زیر را امتحان کنید:</translation>
 <translation id="7553012839257224005">‏درحال بررسی محتوی Linux</translation>
 <translation id="7553242001898162573">گذرواژه‌تان را وارد کنید</translation>
@@ -5936,7 +5936,6 @@
 <translation id="7659584679870740384">مجاز به استفاده از این دستگاه نیستید. لطفاً برای دریافت اجازه ورود به سیستم با سرپرست تماس بگیرید.</translation>
 <translation id="7661259717474717992">اجازه به سایت‌ها برای ذخیره کردن و خواندن داده‌های کوکی</translation>
 <translation id="7661451191293163002">گواهینامه ثبت بدست نیامد.</translation>
-<translation id="7661762353058813968">سرپرستتان به‌روزرسانی‌ها را مدیریت می‌کند.</translation>
 <translation id="7662283695561029522">برای پیکربندی ضربه بزنید</translation>
 <translation id="7663719505383602579">گیرنده: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">دستگاه بلوتوث پشتیبانی نشده: «<ph name="DEVICE_NAME" />».</translation>
@@ -6995,7 +6994,7 @@
 <translation id="8823704566850948458">پیشنهاد گذرواژه…</translation>
 <translation id="8824701697284169214">افزودن &amp;صفحه...</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> و <ph name="COUNT" /> اجازه دیگر مسدود شده‌اند</translation>
-<translation id="8827289157496676362">پین کردن افزونه</translation>
+<translation id="8827289157496676362">سنجاق کردن افزونه</translation>
 <translation id="8827752199525959199">عملکردهای بیشتر، گذرواژه برای <ph name="USERNAME" /> در <ph name="DOMAIN" /></translation>
 <translation id="882854468542856424">به هیچ سایتی اجازه نداده نشود دستگاه‌های بلوتوث اطراف را پیدا کند</translation>
 <translation id="8828933418460119530">‏نام DNS</translation>

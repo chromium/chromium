@@ -132,6 +132,7 @@
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">پیغام ٹائپ کریں</translation>
 <translation id="2018630726571919839">مجھے کوئی لطیفہ سنائيں</translation>
+<translation id="2021864487439853900">غیر مقفل کرنے کے لیے کلک کریں</translation>
 <translation id="2049240716062114887">ڈیسک کا نام تبدیل کر کے <ph name="DESK_NAME" /> کر دیا گیا۔</translation>
 <translation id="2050339315714019657">پورٹریٹ</translation>
 <translation id="2067602449040652523">کی بورڈ کی چمک</translation>
@@ -409,10 +410,12 @@
 <translation id="4421231901400348175">ریموٹ اسسٹنس کے ذریعے <ph name="HELPER_NAME" /> کے ساتھ آپ کی اسکرین کے کنٹرول کا اشتراک کیا جا رہا ہے۔</translation>
 <translation id="4424159417645388645">ڈیسک 5</translation>
 <translation id="4430019312045809116">والیوم</translation>
+<translation id="4445159312344259901">غیر مقفل کیلئے سائن ان کریں</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 اہم اطلاع}other{# اہم اطلاعات}}</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
 <translation id="445864333228800152">شام بخیر،</translation>
 <translation id="4458688154122353284">اسکرین ریکارڈنگ روکیں</translation>
+<translation id="4467143075433126295">‏فُل اسکرین سے باہر نکلنے کے لیے [Esc] کو چھوئیں اور دبائے رکھیں</translation>
 <translation id="4472575034687746823">شروع کریں</translation>
 <translation id="4477350412780666475">اگلا ٹریک</translation>
 <translation id="4477892968187500306">‏یہ آلہ ایسی ایپس پر مشتمل ہو سکتا ہے جو Google کے ذریعے تصدیق شدہ نہیں ہیں۔</translation>

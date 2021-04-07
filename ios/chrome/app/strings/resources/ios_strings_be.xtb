@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Паказаць пароль</translation>
 <translation id="1872096359983322073">Ліхтарык</translation>
 <translation id="1911619930368729126">Запампаваць на Google Дыск</translation>
+<translation id="1919130412786645364">Дазволіць уваход ва ўліковы запіс Chrome</translation>
 <translation id="1923342640370224680">За апошнюю гадзіну</translation>
 <translation id="1941314575388338491">Каб скапіраваць, націсніце двойчы.</translation>
 <translation id="1952172573699511566">Тэкст на вэб-сайтах будзе паказвацца на мове, выбранай вамі ў якасці прыярытэтнай, калі гэта магчыма.</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">Блакіраваць староннія файлы cookie</translation>
 <translation id="2969979262385602596">Не ўдалося ўвайсці. Паўтарыце спробу пазней.</translation>
 <translation id="2975121486251958312">Даступны толькі рэжым інкогніта</translation>
-<translation id="2981323609054805194">сут таму</translation>
 <translation id="2982481275546140226">Выдаліць даныя</translation>
 <translation id="298306318844797842">Дадаць спосаб аплаты...</translation>
 <translation id="2989805286512600854">Адкрыць у новай укладцы</translation>
@@ -283,6 +283,7 @@
 <translation id="3928666092801078803">Аб'яднаць мае даныя</translation>
 <translation id="3929457972718048006">Адрасы</translation>
 <translation id="3943492037546055397">Паролі</translation>
+<translation id="3943557322767080599">Паказваць запыт уваходу ў Chrome пры ўваходзе ва Уліковы запіс Google</translation>
 <translation id="3967266340354872733">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце ў раздзелах <ph name="BEGIN_LINK" />Сінхранізацыя<ph name="END_LINK" /> і <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Спампоўка завершана</translation>
 <translation id="3968505803272650567">Кіраваць інтарэсамі</translation>
@@ -559,7 +560,6 @@
 <translation id="6710079714193676716">Пад кіраваннем вашай арганізацыі. Некаторыя функцыі могуць быць недаступныя. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Праграмы Google</translation>
 <translation id="6730682669179532099">Не ўдалося экспартаваць паролі</translation>
-<translation id="6739790015462537309">гадз таму</translation>
 <translation id="6748108480210050150">З</translation>
 <translation id="6760509555861141183">Вярнуцца да апошняй укладкі</translation>
 <translation id="6780034285637185932">Паштовы індэкс</translation>
@@ -707,6 +707,7 @@
 <translation id="8225985093977202398">Відарысы і файлы ў кэшы</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8281781826761538115">Стандартная мова: <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Так…</translation>
 <translation id="8299417921174340354">Каб выкарыстоўваць паролі, на прыладзе трэба спачатку наладзіць блакіроўку экрана.</translation>
 <translation id="8319076807703933069">Новы пошук</translation>
 <translation id="8323906514956095947">Каб адкрыць дадатковыя параметры ўкладкі, націсніце і ўтрымлівайце гэту кнопку</translation>

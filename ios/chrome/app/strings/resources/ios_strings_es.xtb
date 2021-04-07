@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Mostrar contraseña</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1911619930368729126">Subir a Google Drive</translation>
+<translation id="1919130412786645364">Permitir el inicio de sesión en Chrome</translation>
 <translation id="1923342640370224680">Última hora</translation>
 <translation id="1941314575388338491">Toca dos veces para copiar.</translation>
 <translation id="1952172573699511566">Si es posible, los sitios web muestran texto en tu idioma preferido.</translation>
@@ -193,7 +194,6 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2964349545761222050">Bloquear cookies de terceros</translation>
 <translation id="2969979262385602596">Error al iniciar sesión. Inténtalo más tarde.</translation>
 <translation id="2975121486251958312">Solo está disponible el modo de incógnito</translation>
-<translation id="2981323609054805194">d</translation>
 <translation id="2982481275546140226">Borrar datos</translation>
 <translation id="298306318844797842">Añadir método de pago...</translation>
 <translation id="2989805286512600854">Abrir en una pestaña nueva</translation>
@@ -214,6 +214,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 
 Mientras estás en modo de incógnito, los sitios no pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar tus anuncios.</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
+<translation id="3222343486469566063">No has iniciado sesión</translation>
 <translation id="3224641773458703735">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder exportar las contraseñas.</translation>
 <translation id="3240426699337459095">Enlace copiado</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="3928666092801078803">Combinar mis datos</translation>
 <translation id="3929457972718048006">Direcciones</translation>
 <translation id="3943492037546055397">Contraseñas</translation>
+<translation id="3943557322767080599">Muestra mensajes de inicio de sesión en Chrome cuando inicias sesión con tu cuenta de Google</translation>
 <translation id="3967266340354872733">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968505803272650567">Gestionar intereses</translation>
@@ -559,7 +561,6 @@ Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="6710079714193676716">Gestionado por tu organización. Es posible que algunas funciones no estén disponibles. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Aplicaciones de Google</translation>
 <translation id="6730682669179532099">No se pueden exportar las contraseñas</translation>
-<translation id="6739790015462537309">h</translation>
 <translation id="6748108480210050150">De</translation>
 <translation id="6760509555861141183">Volver a la pestaña reciente</translation>
 <translation id="6780034285637185932">Código postal</translation>
@@ -707,6 +708,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8225985093977202398">Archivos e imágenes en caché</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8281781826761538115">Predeterminada: <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Establecer…</translation>
 <translation id="8299417921174340354">Para usar las contraseñas, primero debes establecer una contraseña en tu dispositivo.</translation>
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="8323906514956095947">Mantén pulsado el botón para ver más opciones de pestañas</translation>

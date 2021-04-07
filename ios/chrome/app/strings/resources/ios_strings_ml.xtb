@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">പാസ്‌വേഡ് വെളിപ്പെടുത്തുക</translation>
 <translation id="1872096359983322073">ടോർച്ച്</translation>
 <translation id="1911619930368729126">Google ഡ്രൈവിലേക്ക് അപ്‌ലോഡ് ചെയ്യുക</translation>
+<translation id="1919130412786645364">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
 <translation id="1923342640370224680">കഴിഞ്ഞ മണിക്കൂർ</translation>
 <translation id="1941314575388338491">പകർത്താൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1952172573699511566">വെബ്സൈറ്റുകൾ, സാധ്യമാകുന്നിടത്തെല്ലാം, നിങ്ങൾ തിരഞ്ഞെടുത്ത ഭാഷയിൽ ടെക്‌സ്‌റ്റ് കാണിക്കും.</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="2969979262385602596">സൈൻ ഇൻ ചെയ്യുന്നത് പരാജയപ്പെട്ടു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2975121486251958312">അദൃശ്യ മോഡ് മാത്രമേ ലഭ്യമാകൂ</translation>
-<translation id="2981323609054805194">ദിവസം മുമ്പ്</translation>
 <translation id="2982481275546140226">ഡാറ്റ മായ്‌ക്കുക</translation>
 <translation id="298306318844797842">പേയ്‌മെന്റ് രീതി ചേർക്കുക...</translation>
 <translation id="2989805286512600854">പുതിയ ടാബില്‍ തുറക്കുക</translation>
@@ -214,6 +214,7 @@
 
 അദൃശ്യ മോഡിലായിരിക്കുമ്പോൾ, വ്യത്യസ്‌ത സൈറ്റുകളിലുടനീളമുള്ള നിങ്ങളുടെ ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി കാണാൻ സൈറ്റുകൾക്ക് കുക്കികൾ ഉപയോഗിക്കാനാവില്ല, ഉദാഹരണത്തിന്, പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ.</translation>
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
+<translation id="3222343486469566063">പ്രവേശിച്ചിട്ടില്ല</translation>
 <translation id="3224641773458703735">പാസ്‍വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="3240426699337459095">ലിങ്ക് പകർത്തി</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@
 <translation id="3928666092801078803">എന്റെ വിവരങ്ങൾ സംയോജിപ്പിക്കുക</translation>
 <translation id="3929457972718048006">വിലാസങ്ങള്‍</translation>
 <translation id="3943492037546055397">പാസ്‌വേഡുകൾ</translation>
+<translation id="3943557322767080599">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്യുമ്പോൾ Chrome സൈൻ ഇൻ നിർദ്ദേശങ്ങൾ കാണിക്കുക</translation>
 <translation id="3967266340354872733">സ്വകാര്യത, സുരക്ഷ, ഡാറ്റാ ശേഖരണം എന്നിവയുമായി ബന്ധപ്പെട്ട കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK" />സമന്വയവും<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Google സേവനങ്ങളും<ph name="END_LINK" />കാണുക.</translation>
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3968505803272650567">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
@@ -559,7 +561,6 @@
 <translation id="6710079714193676716">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്. ചില ഫീച്ചറുകൾ ലഭ്യമായേക്കില്ല. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google അപ്ലിക്കേഷനുകൾ</translation>
 <translation id="6730682669179532099">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാനാവുന്നില്ല</translation>
-<translation id="6739790015462537309">മണിക്കൂർ മുമ്പ്</translation>
 <translation id="6748108480210050150">പ്രേഷിതന്‍</translation>
 <translation id="6760509555861141183">ഏറ്റവും അവസാനം തുറന്ന ടാബിലേക്ക് മടങ്ങുക</translation>
 <translation id="6780034285637185932">തപാൽ കോഡ്</translation>
@@ -707,6 +708,7 @@
 <translation id="8225985093977202398">കാഷെ ചെയ്‌ത ചിത്രങ്ങളും ഫയലുകളും</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
 <translation id="8281781826761538115">ഡിഫോൾട്ട് - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">സജ്ജീകരിക്കുക…</translation>
 <translation id="8299417921174340354">പാസ്‍വേഡുകൾ ഉപയോഗിക്കാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="8319076807703933069">പുതിയ തിരയൽ</translation>
 <translation id="8323906514956095947">കൂടുതൽ ടാബ് ഓപ്‌ഷനുകൾക്കായി സ്‌പർശിച്ച് പിടിക്കുക</translation>

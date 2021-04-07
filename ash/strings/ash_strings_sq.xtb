@@ -40,6 +40,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1252999807265626933">Po karikohet nga <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Si është moti?</translation>
 <translation id="1267032506238418139">Ndryshim në shkurtore</translation>
+<translation id="1269405891096105529">Pajisja periferike nuk mbështetet në modalitetin "vizitor"</translation>
 <translation id="1270290102613614947">Tastiera në ekran u çaktivizua</translation>
 <translation id="1272079795634619415">Ndalo</translation>
 <translation id="1275285675049378717">Po furnizon me energji <ph name="POWER_SOURCE" /></translation>
@@ -132,6 +133,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2012624427112548395">Ctrl+Kërko+H</translation>
 <translation id="2016340657076538683">Shkruaj një mesazh</translation>
 <translation id="2018630726571919839">Më trego një barsoletë</translation>
+<translation id="2021864487439853900">Kliko për ta shkyçur</translation>
 <translation id="2049240716062114887">Emri i tryezës u ndryshua në "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
 <translation id="2067602449040652523">Ndriçimi i tastierës</translation>
@@ -321,6 +323,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="366222428570480733">Përdorues i menaxhuar (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3665889125180354336">Regjistro me mikrofonin</translation>
 <translation id="36813544980941320">Rrjetet Wi-Fi do të ndahen mes telefonit tënd dhe <ph name="DEVICE_NAME" /></translation>
+<translation id="3702809606464356667">Po shfaqen dritaret nga tavolina aktuale e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga të gjitha tavolinat e punës</translation>
 <translation id="3702846122927433391">Popullsia në Nigeri</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
@@ -409,10 +412,12 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4421231901400348175">Po ndan kontrollin e ekranit me <ph name="HELPER_NAME" /> përmes "Ndihmës në distancë".</translation>
 <translation id="4424159417645388645">Tavolina e punës 5</translation>
 <translation id="4430019312045809116">Volumi</translation>
+<translation id="4445159312344259901">Identifikohu për ta shkyçur</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 njoftim i rëndësishëm}other{# njoftime të rëndësishme}}</translation>
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
 <translation id="445864333228800152">Mirëmbrëma,</translation>
 <translation id="4458688154122353284">Ndalo regjistrimin e ekranit</translation>
+<translation id="4467143075433126295">Shtyp dhe mbaj shtypur [Esc] për të dalë nga ekrani i plotë</translation>
 <translation id="4472575034687746823">Fillo</translation>
 <translation id="4477350412780666475">Kënga tjetër</translation>
 <translation id="4477892968187500306">Kjo pajisje mund të përmbajë aplikacione që nuk janë verifikuar nga Google.</translation>
@@ -627,6 +632,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6297287540776456956">Përdor stilolapsin për të zgjedhur një sektorin</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> u rrotullua në <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voice</translation>
+<translation id="6330012934079202188">Po shfaqen dritaret nga të gjitha tavolinat e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga tavolina aktuale e punës</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> është sesion i menaxhuar që menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth-i është aktiv</translation>
 <translation id="6381109794406942707">Për të shkyçur pajisjen, fut kodin PIN.</translation>

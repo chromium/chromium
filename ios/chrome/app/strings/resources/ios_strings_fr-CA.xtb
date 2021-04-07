@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe de poche</translation>
 <translation id="1911619930368729126">Télév. vers Google Disque</translation>
+<translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>
 <translation id="1923342640370224680">Dernière heure</translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
 <translation id="1952172573699511566">Les sites Web affichent du texte dans votre langue préférée lorsque cela est possible.</translation>
@@ -193,7 +194,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2964349545761222050">Bloquer les témoins tiers</translation>
 <translation id="2969979262385602596">Échec de connexion. Veuillez réessayer plus tard.</translation>
 <translation id="2975121486251958312">Seul le mode de navigation privée est proposé</translation>
-<translation id="2981323609054805194">il y a  j</translation>
 <translation id="2982481275546140226">Effacer les données</translation>
 <translation id="298306318844797842">Ajouter un mode de paiement…</translation>
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
@@ -283,6 +283,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
 <translation id="3929457972718048006">Adresses</translation>
 <translation id="3943492037546055397">Mots de passe</translation>
+<translation id="3943557322767080599">Afficher les invites de connexion de Chrome lorsque vous vous connectez à votre compte Google</translation>
 <translation id="3967266340354872733">Pour voir plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, reportez-vous aux rubriques <ph name="BEGIN_LINK" />Synchronisation<ph name="END_LINK" /> et <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3968505803272650567">Gérer les centres d'intérêt</translation>
@@ -558,7 +559,6 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent ne pas être accessibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Impossible d'exporter les mots de passe</translation>
-<translation id="6739790015462537309">il y a  h</translation>
 <translation id="6748108480210050150">De</translation>
 <translation id="6760509555861141183">Revenir au dernier onglet</translation>
 <translation id="6780034285637185932">Code postal</translation>
@@ -706,6 +706,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8225985093977202398">Images/fich. en cache</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8281781826761538115">Paramètres régionaux par défaut - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Définir…</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Maintenez le doigt sur le bouton pour afficher plus d'options d'onglets</translation>

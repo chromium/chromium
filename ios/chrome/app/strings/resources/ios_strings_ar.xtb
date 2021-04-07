@@ -82,7 +82,7 @@
 <translation id="1687475363370981210">وضع العلامة كمقروءة على الكل</translation>
 <translation id="1689333818294560261">اللقب</translation>
 <translation id="1690731385917361335">لا توجد عناصر</translation>
-<translation id="1692118695553449118">المزامنة ممكنة</translation>
+<translation id="1692118695553449118">المزامنة مفعَّلة</translation>
 <translation id="1700629756560807968">تم اختيار <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">انقر مرّتين للتثبيت.</translation>
 <translation id="1746815479209538200">لتصفُّح الويب، يمكنك إضافة علامة تبويب جديدة.</translation>
@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">الكشف عن كلمة المرور</translation>
 <translation id="1872096359983322073">الكشاف</translation>
 <translation id="1911619930368729126">‏التحميل إلى Google Drive</translation>
+<translation id="1919130412786645364">‏السماح بتسجيل الدخول إلى Chrome</translation>
 <translation id="1923342640370224680">الساعة الأخيرة</translation>
 <translation id="1941314575388338491">انقر مرّتين للنسخ.</translation>
 <translation id="1952172573699511566">ستعرض المواقع الإلكترونية النص بلغتك المفضّلة إن أمكن.</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2969979262385602596">تعذّر تسجيل الدخول. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2975121486251958312">لا يتوفّر سوى "وضع التصفُّح المتخفي"</translation>
-<translation id="2981323609054805194">يوم مضى</translation>
 <translation id="2982481275546140226">محو البيانات</translation>
 <translation id="298306318844797842">إضافة طريقة الدفع...</translation>
 <translation id="2989805286512600854">فتح في علامة تبويب جديدة</translation>
@@ -214,6 +214,7 @@
 
 في وضع التصفُّح المتخفي، لا يُسمح للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفّح على المواقع الإلكترونية المختلفة لتقديم إعلانات مخصّصة لك مثلاً.</translation>
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
+<translation id="3222343486469566063">لم يتم تسجييل الدخول</translation>
 <translation id="3224641773458703735">لتصدير كلمات المرور، يلزمك أولاً تعيين رمز مرور على جهازك.</translation>
 <translation id="3240426699337459095">تم نسخ الرابط</translation>
 <translation id="3244271242291266297">الشهر</translation>
@@ -283,6 +284,7 @@
 <translation id="3928666092801078803">جمع البيانات التابعة لي</translation>
 <translation id="3929457972718048006">العناوين</translation>
 <translation id="3943492037546055397">كلمات المرور</translation>
+<translation id="3943557322767080599">‏عرض تعليمات تسجيل الدخول إلى متصفِّح Chrome عند تسجيل الدخول إلى حسابك في Google</translation>
 <translation id="3967266340354872733">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على <ph name="BEGIN_LINK" />المزامنة<ph name="END_LINK" /> و<ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3968505803272650567">إدارة الاهتمامات</translation>
@@ -559,7 +561,6 @@
 <translation id="6710079714193676716">تتم إدارة المتصفِّح من خلال مؤسستك. وقد تكون بعض الميزات غير متوفِّرة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">يتعذّر تصدير كلمات المرور</translation>
-<translation id="6739790015462537309">ساعة مضت</translation>
 <translation id="6748108480210050150">من</translation>
 <translation id="6760509555861141183">العودة إلى أحدث علامة تبويب</translation>
 <translation id="6780034285637185932">الرمز البريدي</translation>
@@ -707,6 +708,7 @@
 <translation id="8225985093977202398">الصور والملفات المُخزنة مؤقتًا</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8281781826761538115">التلقائي - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">ضبط…</translation>
 <translation id="8299417921174340354">لاستخدام كلمات المرور، عليك أولاً إعداد رمز مرور على جهازك.</translation>
 <translation id="8319076807703933069">بحث جديد</translation>
 <translation id="8323906514956095947">النقر مع الاستمرار لعرض المزيد من خيارات علامات التبويب</translation>

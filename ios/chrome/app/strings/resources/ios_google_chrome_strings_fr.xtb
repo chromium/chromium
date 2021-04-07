@@ -52,6 +52,7 @@
 <translation id="5642200033778930880">Google Chrome ne peut pas utiliser votre appareil photo en mode Vue fractionnée</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Chrome ne parvient pas à rechercher les mises à jour, car vous êtes hors connexion</translation>
+<translation id="5716154293141027663">Chrome s'ouvrira chaque fois que vous appuierez sur des liens dans d'autres applis</translation>
 <translation id="5854621639439811139">Astuce Chrome. Certains boutons figurent désormais en bas de l'écran. C'est le cas, par exemple, des boutons Arrière, Avant et Rechercher.</translation>
 <translation id="5876773482963502140">Si vous l'autorisez à connaître votre position, Chrome la communique à tous les sites que vous autorisez. Certains sites peuvent demander votre position lorsqu'ils souhaitent vous montrer des informations locales, comme des magasins à proximité ou des actualités.</translation>
 <translation id="6036420186814142909">Google Chrome dispose de fonctionnalités qui vous permettent de gérer vos données Internet et la vitesse de chargement des pages Web.
@@ -94,4 +95,5 @@
   3. Sélectionnez "Chrome".</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Restez protégé avec Google Chrome</translation>
+<translation id="9112744793181547300">Définir Chrome en tant que navigateur par défaut ?</translation>
 </translationbundle>

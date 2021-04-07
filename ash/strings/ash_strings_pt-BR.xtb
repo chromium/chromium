@@ -40,6 +40,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1252999807265626933">Carregando a partir de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Como está o tempo?</translation>
 <translation id="1267032506238418139">Mudança de atalho</translation>
+<translation id="1269405891096105529">O periférico não é compatível com o modo visitante</translation>
 <translation id="1270290102613614947">Teclado na tela desativado</translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1275285675049378717">Conectando <ph name="POWER_SOURCE" /></translation>
@@ -322,6 +323,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="366222428570480733">Usuário gerenciado <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Gravar microfone</translation>
 <translation id="36813544980941320">Redes Wi-Fi serão compartilhadas entre seu smartphone e o <ph name="DEVICE_NAME" /></translation>
+<translation id="3702809606464356667">Mostrando janelas do espaço de trabalho atual. Pressione a tecla de seta para cima para mostrar as de todos os espaços de trabalho</translation>
 <translation id="3702846122927433391">População da Nigéria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Carregando...</translation>
@@ -630,6 +632,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6297287540776456956">Use a stylus para selecionar uma região</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> foi substituída por <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voz</translation>
+<translation id="6330012934079202188">Mostrando janelas de todos os espaços de trabalho. Pressione a tecla de seta para cima para mostrar as do espaço de trabalho atual</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> é uma sessão gerenciada por <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth ativado</translation>
 <translation id="6381109794406942707">Para desbloquear o dispositivo, digite o PIN.</translation>

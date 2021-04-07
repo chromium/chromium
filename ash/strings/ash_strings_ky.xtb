@@ -40,6 +40,7 @@
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> аркылуу кубатталууда</translation>
 <translation id="1255033239764210633">Аба ырайы кандай?</translation>
 <translation id="1267032506238418139">Кыска жол өзгөртүлдү</translation>
+<translation id="1269405891096105529">Сырткы түзмөктөр Конок режиминде колдоого алынбайт</translation>
 <translation id="1270290102613614947">Экрандагы баскычтоп өчүрүлдү</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> түзмөгүн кубаттоодо</translation>
@@ -322,6 +323,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Башкарылган колдонуучу</translation>
 <translation id="3665889125180354336">Аудиону жаздыруу</translation>
 <translation id="36813544980941320">Wi-Fi тармактары телефонуңуз жана <ph name="DEVICE_NAME" /> түзмөгүңүз менен бөлүшүлөт</translation>
+<translation id="3702809606464356667">Учурдагы иш тактадагы терезелер көрсөтүлүп жатат. Бардык иш такталардагы терезелерди көрүү үчүн өйдө жебени басыңыз</translation>
 <translation id="3702846122927433391">Нигерия калкынын саны</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Жүктөлүүдө…</translation>
@@ -630,6 +632,7 @@
 <translation id="6297287540776456956">Тандалган бөлүктө стилусту колдонуу</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> буга <ph name="ROTATION" /> айланды</translation>
 <translation id="6315170314923504164">Үн</translation>
+<translation id="6330012934079202188">Бардык иш такталардагы терезелер көрсөтүлүп жатат. Учурдагы иш тактадагы терезелерди көрүү үчүн өйдө жебени басыңыз</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> тарабынан башкарылган сеанс</translation>
 <translation id="6376931439017688372">Bluetooth күйүк</translation>
 <translation id="6381109794406942707">Түзмөктүн кулпусун ачуу үчүн PIN кодуңузду киргизиңиз.</translation>

@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Mostrar palavra-passe</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1911619930368729126">Carregar p/ Google Drive</translation>
+<translation id="1919130412786645364">Permitir o início de sessão no Chrome</translation>
 <translation id="1923342640370224680">Última Hora</translation>
 <translation id="1941314575388338491">Toque duas vezes para copiar.</translation>
 <translation id="1952172573699511566">Quando possível, os Websites apresentam o texto no seu idioma preferido.</translation>
@@ -193,7 +194,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Falha ao iniciar sessão. Tente nov. mais tarde.</translation>
 <translation id="2975121486251958312">Só está disponível o Modo de navegação anónima</translation>
-<translation id="2981323609054805194">d atrás</translation>
 <translation id="2982481275546140226">Limpar dados</translation>
 <translation id="298306318844797842">Adicionar método de pagamento…</translation>
 <translation id="2989805286512600854">Abrir num Novo Separador</translation>
@@ -214,6 +214,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 
 Quando estiver na Navegação anónima, os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
+<translation id="3222343486469566063">Não tem Sessão Iniciada</translation>
 <translation id="3224641773458703735">Para exportar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@ Siga os passos abaixo:</translation>
 <translation id="3928666092801078803">Combinar os meus dados</translation>
 <translation id="3929457972718048006">Endereços</translation>
 <translation id="3943492037546055397">Palavras-passe</translation>
+<translation id="3943557322767080599">Apresentar pedidos de início de sessão do Chrome quando inicia sessão na sua Conta Google.</translation>
 <translation id="3967266340354872733">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Sincronização<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="3968505803272650567">Gerir interesses</translation>
@@ -559,7 +561,6 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6710079714193676716">Gerido pela sua entidade. Algumas funcionalidades podem estar indisponíveis. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Não é possível exportar palavras-passe</translation>
-<translation id="6739790015462537309">h atrás</translation>
 <translation id="6748108480210050150">De</translation>
 <translation id="6760509555861141183">Volte ao separador Recentes</translation>
 <translation id="6780034285637185932">Código postal</translation>
@@ -707,6 +708,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8225985093977202398">Imagens e ficheiros em cache</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8281781826761538115">Predefinição – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Definir…</translation>
 <translation id="8299417921174340354">Para utilizar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8323906514956095947">Toque sem soltar para obter mais opções de separadores.</translation>

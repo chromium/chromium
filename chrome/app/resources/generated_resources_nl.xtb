@@ -3229,7 +3229,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4563880231729913339">Vinger 3</translation>
 <translation id="4565377596337484307">Wachtwoord verbergen</translation>
 <translation id="4565917129334815774">Systeemlogboeken opslaan</translation>
-<translation id="4566417217121906555">Microfoon dempen</translation>
+<translation id="4566417217121906555">Microfoon uitzetten</translation>
 <translation id="456717285308019641">Paginataal om te vertalen</translation>
 <translation id="4567533462991917415">Je kunt na het instellen altijd meer mensen toevoegen. Elke persoon kan zijn of haar account personaliseren en gegevens privé houden.</translation>
 <translation id="4567772783389002344">Woord toevoegen</translation>
@@ -5938,7 +5938,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7659584679870740384">Je beschikt niet over de rechten om dit apparaat te gebruiken. Neem contact op met de beheerder voor toestemming om in te loggen.</translation>
 <translation id="7661259717474717992">Sites toestaan cookiegegevens op te slaan en te lezen</translation>
 <translation id="7661451191293163002">Er kan geen registratiecertificaat worden opgehaald.</translation>
-<translation id="7661762353058813968">Updates worden beheerd door je beheerder.</translation>
 <translation id="7662283695561029522">Tik om te configureren</translation>
 <translation id="7663719505383602579">Ontvanger: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Niet-ondersteund Bluetooth-apparaat: '<ph name="DEVICE_NAME" />'.</translation>
@@ -6692,7 +6691,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="8497219075884839166">Windows-hulpprogramma's</translation>
 <translation id="8498214519255567734">Hiermee kun je je scherm beter zien en lezen bij weinig licht</translation>
 <translation id="8498395510292172881">Verder lezen in Chrome</translation>
-<translation id="8499083585497694743">Dempen van microfoon opheffen</translation>
+<translation id="8499083585497694743">Microfoon aanzetten</translation>
 <translation id="8502536196501630039">Als je apps van Google Play wilt gebruiken, moet je eerst je apps herstellen. Sommige gegevens zijn mogelijk verloren gegaan.</translation>
 <translation id="850314194061055138">camera opnieuw gebruiken</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>

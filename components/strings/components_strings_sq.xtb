@@ -649,6 +649,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3428151540071562330">Një ose disa nga URI-të e shablloneve të serverit DnsOverHttpsTemplates janë të pavlefshme dhe nuk do të përdoren.</translation>
 <translation id="3431636764301398940">Ruaje këtë kartë në këtë pajisje</translation>
 <translation id="3432601291244612633">Mbyll faqen</translation>
+<translation id="3435896845095436175">Aktivizo</translation>
 <translation id="3438829137925142401">Përdor fjalëkalimet e ruajtura në "Llogarinë tënde të Google"</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Zotëruesi i kësaj pajisjeje ka çaktivizuar lojën me dinozaurë.</translation>
@@ -762,6 +763,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ka instaluar shtesa për funksione shtesë. Shtesat kanë qasje te disa prej të dhënave të tua.</translation>
 <translation id="3832522519263485449">Shumë shpime majtas</translation>
 <translation id="3835233591525155343">Përdorimi i pajisjes sate</translation>
+<translation id="3841184659773414994">Përpunuesit e skedarëve</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3858027520442213535">Përditëso datën dhe kohën</translation>
 <translation id="3884278016824448484">Identifikuesi i pajisjes bie në konflikt</translation>
@@ -1796,6 +1798,7 @@ Detaje shtesë:
 <translation id="7844689747373518809">{COUNT,plural, =0{Asnjë}=1{1 aplikacion (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785549533363645510">Sidoqoftë, ti nuk je i padukshëm. Kalimi në modalitetin "e fshehtë" nuk e fsheh shfletimin tënd nga punëdhënësi yt, ofruesi i shërbimit të internetit apo sajtet e uebit që viziton.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="7858035578849836010">Të hapë skedarët me lidhjet e llojeve të skedarëve.</translation>
 <translation id="7862185352068345852">Dëshiron të largohesh nga sajti?</translation>
 <translation id="7865448901209910068">Shpejtësia më e mirë</translation>
 <translation id="7874263914261512992">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chrome të rekomandon të kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>

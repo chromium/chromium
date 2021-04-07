@@ -426,7 +426,7 @@
 <translation id="146000042969587795">Ramen blockerades eftersom den innehåller icke-säkert innehåll.</translation>
 <translation id="146219525117638703">ONC-tillstånd</translation>
 <translation id="146220085323579959">Internet har kopplats från. Kontrollera Internetanslutningen och försök igen.</translation>
-<translation id="1463051728820430132">Fråga när en webbapp vill öppna olika filtyper på enheten</translation>
+<translation id="1463051728820430132">Fråga när en webbapp vill öppna vissa filtyper på enheten</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> blockerades av Avancerat skydd.</translation>
 <translation id="1464044141348608623">Tillåt inte att webbplatser vet om du använder din enhet aktivt</translation>
 <translation id="1464258312790801189">Dina konton</translation>
@@ -1091,7 +1091,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2163470535490402084">Anslut till internet om du vill logga in på din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> och 1 till brytare</translation>
 <translation id="2165421703844373933">Starta assistenten när du säger ”Ok Google”. Batteriet räcker längre om du väljer På (rekommenderas). Assistenten svarar bara när enheten är ansluten till ett vägguttag eller laddas.</translation>
-<translation id="2166269335975661317">Webbappar kan fråga om du vill öppna olika filtyper från enheten</translation>
+<translation id="2166269335975661317">Webbappar kan fråga om du vill öppna vissa filtyper från enheten</translation>
 <translation id="2166369534954157698">Den snabba röda räven hoppar över den lata hunden</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Logga in ändå</translation>
@@ -2237,7 +2237,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3449393517661170867">Nytt fönster med flikar</translation>
 <translation id="3449839693241009168">Tryck på <ph name="SEARCH_KEY" /> om du vill skicka kommandon till <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Kapacitetsprocentsats för inaktivitet</translation>
-<translation id="3451753556629288767">Får öppna olika filtyper</translation>
+<translation id="3451753556629288767">Får öppna vissa filtyper</translation>
 <translation id="3453612417627951340">Auktorisering behövs</translation>
 <translation id="3454157711543303649">Aktiveringen har slutförts</translation>
 <translation id="3454213325559396544">Detta är den sista automatiska programvaru- och säkerhetsuppdateringen för <ph name="DEVICE_TYPE" />. Uppgradera till en nyare modell om du vill få uppdateringar i framtiden.</translation>
@@ -4464,7 +4464,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5990266201903445068">Endast Wi-Fi</translation>
 <translation id="5990386583461751448">Översatt</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Be administratören att ta bort den här appen så att du kan fortsätta att surfa på internet.}other{Be administratören att ta bort de här apparna så att du kan fortsätta att surfa på internet.}}</translation>
-<translation id="5992175324932183568">Tillåt inte att webbappar öppnar olika filtyper från enheten</translation>
+<translation id="5992175324932183568">Tillåt inte att webbappar öppnar vissa filtyper från enheten</translation>
 <translation id="5997337190805127100">Läs mer om webbplatsåtkomst</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultat för <ph name="SEARCH_TEXT" /></translation>
 <translation id="6002210667729577411">Flytta gruppen till ett nytt fönster</translation>
@@ -5429,7 +5429,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7067396782363924830">Omgivningsfärger</translation>
 <translation id="7067725467529581407">Visa aldrig detta igen.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> kan kräva en nyare säkerhetsnyckel eller en annan typ av säkerhetsnyckel</translation>
-<translation id="7070269827082111569">Får inte öppna olika filtyper</translation>
+<translation id="7070269827082111569">Får inte öppna vissa filtyper</translation>
 <translation id="7070484045139057854">Kan läsa och ändra webbplatsdata</translation>
 <translation id="7072010813301522126">Namn på genvägen</translation>
 <translation id="707392107419594760">Välj tangentbord:</translation>
@@ -5938,7 +5938,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7659584679870740384">Du har inte behörighet att använda den här enheten. Kontakta administratören om du vill ha behörighet att logga in.</translation>
 <translation id="7661259717474717992">Tillåt att webbplatser sparar och läser data i cookies</translation>
 <translation id="7661451191293163002">Ett registreringscertifikat gick inte att erhålla.</translation>
-<translation id="7661762353058813968">Uppdateringar hanteras av administratören.</translation>
 <translation id="7662283695561029522">Tryck om du vill konfigurera</translation>
 <translation id="7663719505383602579">Mottagare: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Bluetooth-enhet som inte stöds: <ph name="DEVICE_NAME" />.</translation>
@@ -7401,7 +7400,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="975893173032473675">Språk att översätta till</translation>
 <translation id="976499800099896273">Dialogrutan för att ångra en autokorrigering visas för <ph name="TYPED_WORD" />, som rättades till <ph name="CORRECTED_WORD" />.  Tryck på uppåtpilen för att komma åt ordet och på Esc för att ignorera.</translation>
 <translation id="978146274692397928">Den ursprungliga punktbredden är full</translation>
-<translation id="97883469867914488">Blockera webbappar från att öppna olika filtyper på enheten</translation>
+<translation id="97883469867914488">Blockera webbappar från att öppna vissa filtyper på enheten</translation>
 <translation id="97905529126098460">Det här fönstret stängs när installationen har avbrutits.</translation>
 <translation id="980731642137034229">Knapp för åtgärdsmeny</translation>
 <translation id="981121421437150478">Offline</translation>

@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Erakutsi pasahitza</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1911619930368729126">Kargatu Google Drive-ra</translation>
+<translation id="1919130412786645364">Baimendu Chrome-n saioa hastea</translation>
 <translation id="1923342640370224680">Azken ordukoak</translation>
 <translation id="1941314575388338491">Kopiatzeko, sakatu birritan.</translation>
 <translation id="1952172573699511566">Ahal den heinean, webguneek testua hizkuntza hobetsian erakutsiko dute.</translation>
@@ -193,7 +194,6 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2964349545761222050">Blokeatu hirugarrenen cookieak</translation>
 <translation id="2969979262385602596">Ezin izan da hasi saioa. Saiatu berriro geroago.</translation>
 <translation id="2975121486251958312">Ezkutuko modua baino ez dago erabilgarri</translation>
-<translation id="2981323609054805194">Duela  egun</translation>
 <translation id="2982481275546140226">Garbitu datuak</translation>
 <translation id="298306318844797842">Gehitu ordainketa-metodoa…</translation>
 <translation id="2989805286512600854">Ireki fitxa berri batean</translation>
@@ -283,6 +283,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="3928666092801078803">Bateratu nire datuak</translation>
 <translation id="3929457972718048006">Helbideak</translation>
 <translation id="3943492037546055397">Pasahitzak</translation>
+<translation id="3943557322767080599">Erakutsi saioa hasteko Chrome-ren onarpen-mezuak Google-ko kontuan saioa hasten duzunean</translation>
 <translation id="3967266340354872733">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Sinkronizazioa<ph name="END_LINK" /> eta <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> ataletara.</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="3968505803272650567">Kudeatu interesak</translation>
@@ -323,7 +324,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4378154925671717803">Telefonoa</translation>
 <translation id="4389019817280890563">Sakatu hau hizkuntza aldatzeko.</translation>
 <translation id="441868831736628555">Pribatutasun-oharra</translation>
-<translation id="4454246407045105932">Gehitu hizkuntza</translation>
+<translation id="4454246407045105932">Gehitu hizkuntza bat</translation>
 <translation id="4469418912670346607">Jarraitu konfiguratzen</translation>
 <translation id="4476574785019001431">Ezarpenak</translation>
 <translation id="4496373720959965247">Gehitu fitxak eta aldatu orri batetik bestera</translation>
@@ -559,7 +560,6 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="6710079714193676716">Erakundeak kudeatzen du. Baliteke eginbide batzuk erabilgarri ez egotea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Ezin dira esportatu pasahitzak</translation>
-<translation id="6739790015462537309">Duela  ordu</translation>
 <translation id="6748108480210050150">Igorlea</translation>
 <translation id="6760509555861141183">Itzuli aurreko fitxara</translation>
 <translation id="6780034285637185932">Posta-kodea</translation>
@@ -707,6 +707,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8225985093977202398">Cachean gordetakoak</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8281781826761538115">Lehenetsia - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Ezarri…</translation>
 <translation id="8299417921174340354">Pasahitzak erabiltzeko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="8319076807703933069">Bilaketa berria</translation>
 <translation id="8323906514956095947">Eduki sakatuta fitxetako aukera gehiago ikusteko</translation>

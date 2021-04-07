@@ -93,6 +93,7 @@
 <translation id="1641113438599504367">സുരക്ഷിത ബ്രൗസിംഗ്</translation>
 <translation id="164269334534774161">നിങ്ങൾ ഈ പേജിന്റെ <ph name="CREATION_TIME" /> മുതലുള്ള ഓഫ്‌ലൈൻ പകർപ്പാണ് കാണുന്നത്</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
+<translation id="1668122540633280551">Chrome ഹോംപേജിൽ വീഡിയോ പ്രിവ്യൂകൾ എങ്ങനെ സ്വയമേവ പ്ലേ ചെയ്യുമെന്ന് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="1670399744444387456">അടിസ്ഥാനം</translation>
 <translation id="1671236975893690980">ഡൗൺലോഡ് തീർച്ചപ്പെടുത്തിയിട്ടില്ല...</translation>
 <translation id="1672586136351118594">വീണ്ടും കാണിക്കരുത്</translation>
@@ -237,6 +238,8 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കി</translation>
 <translation id="2536728043171574184">ഈ പേജിന്റെ ഒരു ഓഫ്‌ലൈൻ പതിപ്പ് കാണുന്നു</translation>
 <translation id="2546283357679194313">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
+<translation id="2549341709325358884">വൈഫൈയും മൊബൈൽ ഡാറ്റയും മാത്രം</translation>
+<translation id="2561519700418191927">വീഡിയോ പ്രിവ്യൂകൾ</translation>
 <translation id="2567385386134582609">ചിത്രം</translation>
 <translation id="2571711316400087311">മറ്റ് ഭാഷകളിലുള്ള പേജുകൾ Google Translate-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="2581165646603367611">ഇത്, Chrome പ്രധാനമായി കണക്കാക്കാത്ത സൈറ്റുകളുടെ കുക്കികളും കാഷെയും മറ്റ് വിവരങ്ങളും മായ്‌ക്കും.</translation>
@@ -415,6 +418,7 @@
 <translation id="3773856050682458546">അടിസ്ഥാന ഡാറ്റയും നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്സൈറ്റുകളെയും ഉപയോഗിക്കുന്ന ആപ്പുകളെയും കുറിച്ചുള്ള വിവരങ്ങളും</translation>
 <translation id="3775705724665058594">നിങ്ങളുടെ ഉപകരണങ്ങളിലേക്ക് അയയ്‌ക്കുക</translation>
 <translation id="3778956594442850293">ഹോം സ്‌ക്രീനിലേക്ക് ചേർത്തു</translation>
+<translation id="3803784507854318295">സ്വയമേവ പ്ലേ ചെയ്യൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="3810838688059735925">വീഡിയോ</translation>
 <translation id="3810973564298564668">മാനേജ് ചെയ്യുക</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ഡൗൺലോഡുകൾ ഇല്ലാതാക്കി</translation>

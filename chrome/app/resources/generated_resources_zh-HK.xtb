@@ -426,7 +426,7 @@
 <translation id="146000042969587795">此頁框由於包含不安全的內容，已被封鎖。</translation>
 <translation id="146219525117638703">ONC 狀態</translation>
 <translation id="146220085323579959">互聯網已中斷連線。請檢查互聯網連線，然後再試一次。</translation>
-<translation id="1463051728820430132">網頁應用程式必須先詢問你，才能開啟開啟裝置上特定類型的檔案</translation>
+<translation id="1463051728820430132">在網絡應用程式要求開啟裝置上特定類型的檔案時詢問您</translation>
 <translation id="1463112138205428654">「進階保護功能」已封鎖 <ph name="FILE_NAME" />。</translation>
 <translation id="1464044141348608623">不允許網站偵測您使用裝置的時間</translation>
 <translation id="1464258312790801189">您的帳戶</translation>
@@ -615,7 +615,7 @@
 <translation id="1651008383952180276">您必須輸入兩次相同的密碼短語</translation>
 <translation id="1652326691684645429">啟用「咫尺共享」功能</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{將打印機新增至「Google 雲端打印」，即可隨時隨地列印。}other{將 # 部打印機新增至「Google 雲端打印」，即可隨時隨地列印。}}</translation>
-<translation id="1653631694606464309">網頁應用程式通常會要求開啟裝置上特定類型的檔案，讓你能夠以適當方式處理這些檔案，例如在偏好的文書處理工具中開啟文件</translation>
+<translation id="1653631694606464309">網絡應用程式通常會要求開啟特定類型的檔案，讓您以適當方式處理這些檔案，例如在偏好的文書處理工具中開啟文件</translation>
 <translation id="1656528038316521561">背景透明度</translation>
 <translation id="1657406563541664238">將使用統計資料及當機報告自動傳送給 Google，助我們一臂之力，讓 <ph name="PRODUCT_NAME" /> 更臻完美</translation>
 <translation id="1657937299377480641">您需要獲得家長的許可，才能再次登入帳戶並存取教育資源</translation>
@@ -865,7 +865,7 @@
 <translation id="1909880997794698664">您確定要讓這部裝置永久使用 Kiosk 模式嗎？</translation>
 <translation id="1910721550319506122">歡迎！</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1915307458270490472">掛斷</translation>
+<translation id="1915307458270490472">結束通話</translation>
 <translation id="1916502483199172559">預設紅色圖示</translation>
 <translation id="1918141783557917887">縮小(&amp;S)</translation>
 <translation id="1919345977826869612">廣告</translation>
@@ -1091,7 +1091,7 @@
 <translation id="2163470535490402084">請連接互聯網，才能登入 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 個按鈕裝置</translation>
 <translation id="2165421703844373933">只要說出「Ok Google」，就能存取「Google 助理」。如要節省電力，請選擇「啟用 (建議設定)」。這樣，「Google 助理」只會在裝置連接電源或充電時才會回應。</translation>
-<translation id="2166269335975661317">網頁應用程式可以要求開啟裝置上特定類型的檔案</translation>
+<translation id="2166269335975661317">網絡應用程式可以要求開啟裝置上特定類型的檔案</translation>
 <translation id="2166369534954157698">繁體中文字體範例 The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">繼續登入</translation>
@@ -1574,7 +1574,7 @@
 <translation id="2710101514844343743">使用情況和診斷資料</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2712173769900027643">要求權限</translation>
-<translation id="2713106313042589954">關閉攝影機</translation>
+<translation id="2713106313042589954">關閉攝錄機</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714393097308983682">Google Play 商店</translation>
 <translation id="2715640894224696481">安全密鑰要求</translation>
@@ -2236,7 +2236,7 @@
 <translation id="3449393517661170867">新分頁視窗</translation>
 <translation id="3449839693241009168">按下「<ph name="SEARCH_KEY" />」即可將指令傳送給 <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">閒置狀態占用率</translation>
-<translation id="3451753556629288767">可以開啟的檔案類型</translation>
+<translation id="3451753556629288767">已允許開啟的檔案類型</translation>
 <translation id="3453612417627951340">需要授權</translation>
 <translation id="3454157711543303649">啟用完成</translation>
 <translation id="3454213325559396544">這是此 <ph name="DEVICE_TYPE" /> 最後一次自動更新軟件和安全性。如要取得後續更新，請升級為較新的型號。</translation>
@@ -2400,7 +2400,7 @@
 <translation id="3630995161997703415">將此網站加到捷徑列，即可隨時使用</translation>
 <translation id="3633309367764744750">從頁面預先擷取資料 (包括您仍未瀏覽的頁面)。擷取的資料可能包括 Cookie (如您允許 Cookie)。</translation>
 <translation id="3634507049637220048">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，由管理員管理，詳情</translation>
-<translation id="3634652306074934350">權限要求已到期</translation>
+<translation id="3634652306074934350">權限要求已過期</translation>
 <translation id="3635353578505343390">傳送意見給 Google</translation>
 <translation id="3635960017746711110">Crostini 的 USB 偏好設定</translation>
 <translation id="3636766455281737684">電力剩餘 <ph name="PERCENTAGE" />% - <ph name="TIME" /></translation>
@@ -3228,7 +3228,7 @@
 <translation id="4563880231729913339">手指 3</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4565917129334815774">儲存系統記錄</translation>
-<translation id="4566417217121906555">將麥克風設為靜音</translation>
+<translation id="4566417217121906555">將麥克風設定為靜音</translation>
 <translation id="456717285308019641">要翻譯的網頁語言</translation>
 <translation id="4567533462991917415">您可在設定後隨時新增更多使用者。每位使用者都可將帳戶個人化，以確保資料私隱。</translation>
 <translation id="4567772783389002344">新增字詞</translation>
@@ -3787,7 +3787,7 @@
 <translation id="52232769093306234">無法封裝。</translation>
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
 <translation id="52254442782792731">目前嘅分享設定仲未設定</translation>
-<translation id="5225463052809312700">開啟攝影機</translation>
+<translation id="5225463052809312700">開啟攝錄機</translation>
 <translation id="5227679487546032910">預設藍綠色圖片</translation>
 <translation id="5228579091201413441">啟用同步功能</translation>
 <translation id="5229189185761556138">管理輸入法</translation>
@@ -4463,7 +4463,7 @@
 <translation id="5990266201903445068">只限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保您可以繼續瀏覽網絡，請要求您的管理員移除此應用程式。}other{為確保您可以繼續瀏覽網絡，請要求您的管理員移除這些應用程式。}}</translation>
-<translation id="5992175324932183568">禁止網頁應用程式開啟裝置上特定類型的檔案</translation>
+<translation id="5992175324932183568">不允許網絡應用程式開啟裝置上特定類型的檔案</translation>
 <translation id="5997337190805127100">瞭解詳情網站存取權</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
 <translation id="6002210667729577411">將群組移至新視窗</translation>
@@ -5428,7 +5428,7 @@
 <translation id="7067396782363924830">氛圍顏色</translation>
 <translation id="7067725467529581407">不再顯示此訊息。</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> 可能需要新的或不同種類的安全密鑰</translation>
-<translation id="7070269827082111569">不得開啟的檔案類型</translation>
+<translation id="7070269827082111569">不允許開啟的檔案類型</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
 <translation id="7072010813301522126">捷徑名稱</translation>
 <translation id="707392107419594760">選取鍵盤：</translation>
@@ -5522,7 +5522,7 @@
 <translation id="7187428571767585875">系統將移除或變更以下的登錄項目：</translation>
 <translation id="7189234443051076392">確保您的裝置上有足夠的儲存空間</translation>
 <translation id="7189451821249468368">您沒有足夠升級，無法註冊這部裝置。如要購買更多升級，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
-<translation id="7189965711416741966">已新增指紋。</translation>
+<translation id="7189965711416741966">已加入指紋。</translation>
 <translation id="7191159667348037">不明打印機 (USB)</translation>
 <translation id="7193051357671784796">此應用程式由您的機構新增。重新啟動應用程式即可完成安裝。</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> 沒有密碼可供儲存</translation>
@@ -5937,7 +5937,6 @@
 <translation id="7659584679870740384">您無權使用這部裝置。如需登入權限，請與管理員聯絡。</translation>
 <translation id="7661259717474717992">允許網站儲存及讀取 Cookie 資料</translation>
 <translation id="7661451191293163002">無法取得註冊憑證。</translation>
-<translation id="7661762353058813968">更新由您的管理員管理。</translation>
 <translation id="7662283695561029522">輕觸即可設定</translation>
 <translation id="7663719505383602579">接收端：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">不支援的藍牙裝置：「<ph name="DEVICE_NAME" />」。</translation>
@@ -6882,7 +6881,7 @@
 <translation id="8720816553731218127">安裝時間屬性的初始化已逾時。</translation>
 <translation id="8722912030556880711">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料將有助改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="8724405322205516354">看到此圖示時，請使用您的指紋識別身份或核准購物交易。</translation>
-<translation id="8724409975248965964">已新增指紋</translation>
+<translation id="8724409975248965964">已力入指紋</translation>
 <translation id="8724859055372736596">在資料夾中顯示(&amp;S)</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8725178340343806893">我的最愛/書籤</translation>
@@ -7398,7 +7397,7 @@
 <translation id="975893173032473675">翻譯目標語言</translation>
 <translation id="976499800099896273">針對「<ph name="TYPED_WORD" />」更正做「<ph name="CORRECTED_WORD" />」，顯示復原自動更正內容對話框。㩒向上箭咀就可以存取，㩒 Esc 掣就可以忽略。</translation>
 <translation id="978146274692397928">初始標點符號寬度為全形</translation>
-<translation id="97883469867914488">禁止網頁應用程式開啟裝置上特定類型的檔案</translation>
+<translation id="97883469867914488">禁止網絡應用程式開啟裝置上特定類型的檔案</translation>
 <translation id="97905529126098460">此視窗將在取消完成後關閉。</translation>
 <translation id="980731642137034229">操作選單按鈕</translation>
 <translation id="981121421437150478">離線</translation>

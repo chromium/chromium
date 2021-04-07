@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Показати пароль</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
 <translation id="1911619930368729126">Завантажити на Google Диск</translation>
+<translation id="1919130412786645364">Дозволити вхід у Chrome</translation>
 <translation id="1923342640370224680">Остання година</translation>
 <translation id="1941314575388338491">Двічі торкніться, щоб скопіювати.</translation>
 <translation id="1952172573699511566">Якщо можливо, текст на веб-сайтах відображатиметься вибраною мовою.</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">Блокувати файли cookie третіх сторін</translation>
 <translation id="2969979262385602596">Не вдалося ввійти. Спробуйте пізніше.</translation>
 <translation id="2975121486251958312">Доступний лише режим анонімного перегляду</translation>
-<translation id="2981323609054805194">дн. тому</translation>
 <translation id="2982481275546140226">Очистити дані</translation>
 <translation id="298306318844797842">Додати спосіб оплати…</translation>
 <translation id="2989805286512600854">Відкрити в новій вкладці</translation>
@@ -214,6 +214,7 @@
 
 В анонімному режимі сайти не можуть використовувати ці файли для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу.</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
+<translation id="3222343486469566063">Без входу в систему</translation>
 <translation id="3224641773458703735">Щоб експортувати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="3240426699337459095">Посилання скопійовано</translation>
 <translation id="3244271242291266297">ММ</translation>
@@ -283,6 +284,7 @@
 <translation id="3928666092801078803">Об’єднати мої дані</translation>
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3943492037546055397">Паролі</translation>
+<translation id="3943557322767080599">Показувати сповіщення про вхід у Chrome під час входу в обліковий запис Google</translation>
 <translation id="3967266340354872733">Інші налаштування конфіденційності, безпеки й збору даних доступні в розділах <ph name="BEGIN_LINK" />Синхронізація<ph name="END_LINK" /> та <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Завантажено</translation>
 <translation id="3968505803272650567">Керувати інтересами</translation>
@@ -559,7 +561,6 @@
 <translation id="6710079714193676716">Веб-переглядачем керує ваша організація. Деякі функції можуть бути недоступними. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Не вдалось експортувати паролі</translation>
-<translation id="6739790015462537309">год тому</translation>
 <translation id="6748108480210050150">З</translation>
 <translation id="6760509555861141183">Повернутися на останню вкладку</translation>
 <translation id="6780034285637185932">Поштовий індекс</translation>
@@ -707,6 +708,7 @@
 <translation id="8225985093977202398">Кешовані зображення й файли</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8281781826761538115">За умовчанням – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Так…</translation>
 <translation id="8299417921174340354">Щоб використовувати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="8319076807703933069">Новий пошук</translation>
 <translation id="8323906514956095947">Натисніть і утримуйте, щоб відкрити більше параметрів вкладок</translation>

@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Mostrar senha</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1911619930368729126">Enviar para o Google Drive</translation>
+<translation id="1919130412786645364">Permitir login no Chrome</translation>
 <translation id="1923342640370224680">Última hora</translation>
 <translation id="1941314575388338491">Toque duas vezes para copiar.</translation>
 <translation id="1952172573699511566">Os sites exibirão textos no idioma de sua preferência, quando for possível.</translation>
@@ -193,7 +194,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
 <translation id="2975121486251958312">Apenas o modo de navegação anônima está disponível</translation>
-<translation id="2981323609054805194">d atrás</translation>
 <translation id="2982481275546140226">Limpar dados</translation>
 <translation id="298306318844797842">Adicionar forma de pagamento…</translation>
 <translation id="2989805286512600854">Abrir em uma nova guia</translation>
@@ -214,6 +214,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 
 Na navegação anônima, os sites não podem usar cookies para ver suas atividades de navegação em sites diferentes, por exemplo, para personalizar anúncios.</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
+<translation id="3222343486469566063">Você não fez login</translation>
 <translation id="3224641773458703735">Para exportar senhas, defina uma no dispositivo primeiro.</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@ Siga estas etapas:</translation>
 <translation id="3928666092801078803">Integrar meus dados</translation>
 <translation id="3929457972718048006">Endereços</translation>
 <translation id="3943492037546055397">Senhas</translation>
+<translation id="3943557322767080599">Mostrar solicitações de login do Chrome quando você fizer login na sua Conta do Google</translation>
 <translation id="3967266340354872733">Para ver mais opções relacionadas à privacidade, segurança e coleta de dados, acesse as configurações de <ph name="BEGIN_LINK" />sincronização<ph name="END_LINK" /> e as dos <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="3967822245660637423">Download concluído</translation>
 <translation id="3968505803272650567">Gerenciar interesses</translation>
@@ -559,7 +561,6 @@ Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="6710079714193676716">Gerenciado pela sua organização. Talvez alguns recursos estejam indisponíveis. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Não é possível exportar as senhas</translation>
-<translation id="6739790015462537309">h atrás</translation>
 <translation id="6748108480210050150">De</translation>
 <translation id="6760509555861141183">Voltar à guia recente</translation>
 <translation id="6780034285637185932">CEP</translation>
@@ -707,6 +708,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8225985093977202398">Imagens e arquivos armazenados em cache</translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8281781826761538115">Padrão: <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Definir…</translation>
 <translation id="8299417921174340354">Para usar senhas, defina uma no dispositivo primeiro.</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8323906514956095947">Toque no botão e mantenha-o pressionado para ver mais opções da guia</translation>

@@ -95,6 +95,7 @@
 <translation id="3226405216343213872">Recherche de scanners…</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront supprimées</translation>
 <translation id="3268178239013324452">Échec – Capot de l'imprimante ouvert</translation>
+<translation id="3283504360622356314">{0,plural, =1{Modifier le fichier}one{Modifier le fichier}other{Modifier les fichiers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Seuil de latence autorisé largement dépassé par le DNS</translation>
 <translation id="3328783797891415197">Test en cours</translation>

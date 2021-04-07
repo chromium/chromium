@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
 <translation id="1911619930368729126">上傳至 Google 雲端硬碟</translation>
+<translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1923342640370224680">前一個小時</translation>
 <translation id="1941314575388338491">輕按兩下即可複製。</translation>
 <translation id="1952172573699511566">網站將盡可能以您偏好的語言顯示文字。</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">封鎖第三方 Cookie</translation>
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
 <translation id="2975121486251958312">只能使用無痕模式</translation>
-<translation id="2981323609054805194">天前</translation>
 <translation id="2982481275546140226">清除資料</translation>
 <translation id="298306318844797842">新增付款方法…</translation>
 <translation id="2989805286512600854">在新分頁中開啟</translation>
@@ -214,6 +214,7 @@
 
 在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
+<translation id="3222343486469566063">未登入</translation>
 <translation id="3224641773458703735">如要匯出密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="3240426699337459095">連結已複製</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@
 <translation id="3928666092801078803">合併我的資料</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3943492037546055397">密碼</translation>
+<translation id="3943557322767080599">登入 Google 帳戶時顯示 Chrome 登入提示</translation>
 <translation id="3967266340354872733">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK" />同步處理<ph name="END_LINK" />和 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣</translation>
@@ -557,7 +559,6 @@
 <translation id="6710079714193676716">由您的機構管理。部分功能可能無法使用。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">無法匯出密碼</translation>
-<translation id="6739790015462537309">小時前</translation>
 <translation id="6748108480210050150">來源</translation>
 <translation id="6760509555861141183">返回「最近」分頁</translation>
 <translation id="6780034285637185932">郵遞區號</translation>

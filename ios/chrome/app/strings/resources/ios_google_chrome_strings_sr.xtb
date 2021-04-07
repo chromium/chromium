@@ -52,6 +52,7 @@
 <translation id="5642200033778930880">Google Chrome не може да користи камеру у режиму подељеног приказа</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Офлајн сте. Chrome не може да тражи ажурирања.</translation>
+<translation id="5716154293141027663">Отвара Chrome сваки пут када додирнете линкове у другим апликацијама</translation>
 <translation id="5854621639439811139">Савет за Chrome. Нека дугмад се сада налазе у дну екрана, попут дугмади Назад, Напред и Претражи.</translation>
 <translation id="5876773482963502140">Ако дозволите да Chrome сазна локацију, Chrome је шаље свим сајтовима за које дозволите. Сајтови могу да затраже локацију када имају да вам прикажу локалне информације, попут радњи или вести у близини.</translation>
 <translation id="6036420186814142909">Google Chrome има функције које вам помажу да управљате интернет подацима и брзином учитавања веб-страница.
@@ -94,4 +95,5 @@
   3. Изаберите Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Останите безбедни уз Google Chrome</translation>
+<translation id="9112744793181547300">Желите да подесите Chrome као подразумевани?</translation>
 </translationbundle>

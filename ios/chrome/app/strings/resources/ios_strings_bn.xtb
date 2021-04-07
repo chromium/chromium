@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">পাসওয়ার্ড দেখুন</translation>
 <translation id="1872096359983322073">টর্চ</translation>
 <translation id="1911619930368729126">Google ড্রাইভে আপলোড করুন</translation>
+<translation id="1919130412786645364">Chrome-এ সাইন-ইন করতে দিন</translation>
 <translation id="1923342640370224680">শেষ ঘণ্টা</translation>
 <translation id="1941314575388338491">কপি করতে দুবার আলতো চাপুন।</translation>
 <translation id="1952172573699511566">যখন সম্ভব হবে ওয়েবসাইট আপনার পছন্দের ভাষায় টেক্সট দেখাবে।</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="2969979262385602596">সাইন-ইন করা যায়নি৷ অনুগ্রহ করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="2975121486251958312">শুধুমাত্র 'ছদ্মবেশী মোড' উপলভ্য রয়েছে</translation>
-<translation id="2981323609054805194">দিন আগে</translation>
 <translation id="2982481275546140226">ডেটা মুছুন</translation>
 <translation id="298306318844797842">পেমেন্টের পদ্ধতি যোগ করুন...</translation>
 <translation id="2989805286512600854">নতুন ট্যাবে খুলুন</translation>
@@ -214,6 +214,7 @@
 
 ছদ্মবেশী মোড চালু করা থাকলে, আপনার জন্য পছন্দমতো বিজ্ঞাপন বেছে নেওয়ার মতো বিভিন্ন ওয়েবসাইট জুড়ে আপনার ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য সাইট কুকি ব্যবহার করতে পারবে না।</translation>
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
+<translation id="3222343486469566063">প্রবেশ করুন করেননি</translation>
 <translation id="3224641773458703735">পাসওয়ার্ড এক্সপোর্ট করার জন্য আপনার ডিভাইসে আপনাকে অবশ্যই একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="3240426699337459095">লিঙ্ক কপি করা হয়েছে</translation>
 <translation id="3244271242291266297">মিমি</translation>
@@ -283,6 +284,7 @@
 <translation id="3928666092801078803">আমার ডেটা একত্রিত করুন</translation>
 <translation id="3929457972718048006">ঠিকানা</translation>
 <translation id="3943492037546055397">পাসওয়ার্ড</translation>
+<translation id="3943557322767080599">আপনার Google অ্যাকাউন্টে সাইন-ইন করলে Chrome সাইন-ইন প্রম্পট দেখুন</translation>
 <translation id="3967266340354872733">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />সিঙ্ক<ph name="END_LINK" /> এবং <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
 <translation id="3968505803272650567">আপনার পছন্দ ম্যানেজ করুন</translation>
@@ -560,7 +562,6 @@
 <translation id="6710079714193676716">আপনার সংস্থা এটি ম্যানেজ করে। কিছু ফিচার হয়ত উপলভ্য নয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google অ্যাপ্লিকেশানগুলি</translation>
 <translation id="6730682669179532099">পাসওয়ার্ড এক্সপোর্ট করা যাচ্ছে না</translation>
-<translation id="6739790015462537309">ঘঃ আগে</translation>
 <translation id="6748108480210050150">থেকে</translation>
 <translation id="6760509555861141183">সাম্প্রতিক ট্যাবে ফিরে যান</translation>
 <translation id="6780034285637185932">পিন কোড</translation>

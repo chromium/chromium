@@ -40,6 +40,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1252999807265626933">Uzlādes avots: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kādi ir laikapstākļi?</translation>
 <translation id="1267032506238418139">Īsinājumtaustiņš mainīts</translation>
+<translation id="1269405891096105529">Perifērā ierīce netiek atbalstīta viesa režīmā.</translation>
 <translation id="1270290102613614947">Ekrāna tastatūra atspējota</translation>
 <translation id="1272079795634619415">Apturēt</translation>
 <translation id="1275285675049378717">Savienojums, izmantojot <ph name="POWER_SOURCE" /></translation>
@@ -322,6 +323,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="366222428570480733">Pārvaldīts lietotājs <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Ierakstīt mikrofona skaņu</translation>
 <translation id="36813544980941320">Wi-Fi tīkli tiks kopīgoti jūsu tālrunī un <ph name="DEVICE_NAME" /> ierīcē.</translation>
+<translation id="3702809606464356667">Tiek rādīti pašreizējās darbvietas logi. Nospiediet augšupvērsto bulttaustiņu, lai tiktu rādīti visu darbvietu logi.</translation>
 <translation id="3702846122927433391">Nigērijas iedzīvotāju skaits</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Notiek ielāde...</translation>
@@ -630,6 +632,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6297287540776456956">Izmantojiet skārienekrāna pildspalvu, lai atlasītu ekrāna daļu.</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> tika pagriezts šādi: <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Balss</translation>
+<translation id="6330012934079202188">Tiek rādīti visu darbvietu logi. Nospiediet augšupvērsto bulttaustiņu, lai tiktu rādīti pašreizējās darbvietas logi.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ir pārvaldīta sesija, ko pārvalda <ph name="MANAGER" />.</translation>
 <translation id="6376931439017688372">Bluetooth ir ieslēgts</translation>
 <translation id="6381109794406942707">Lai atbloķētu ierīci, ievadiet PIN.</translation>

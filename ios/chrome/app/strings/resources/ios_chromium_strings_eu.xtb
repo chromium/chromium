@@ -46,6 +46,7 @@
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> domeinuak kudeatutako kontu baten saioa amaituko duzunez, Chromium-en dituzun datuak ezabatu egingo dira gailu honetatik. Hala ere, datu horiek Google-ko kontuan egoten jarraituko dute.</translation>
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
 <translation id="5308226104666789935">Chromium-ek ezin ditu bilatu eguneratzeak</translation>
+<translation id="5396916991083608703">Arakatzaile lehenetsi gisa ezarri nahi duzu Chromium?</translation>
 <translation id="5521125884468363740">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="5573014823074921752">Chromium-i buruzko aholkua: fitxetako aukera gehiago ikusteko, eduki sakatuta tresna-barrako Erakutsi fitxak botoia. Pantailaren goiko edo beheko aldean aurkituko duzu.</translation>
 <translation id="5700709190537129682">Chromium-ek ezin ditu egiaztatu pasahitzak</translation>
@@ -79,6 +80,7 @@
 <translation id="7763454117143368771">Erabili Chromium arakatzaile lehenetsi gisa webgune arriskutsuen aurka babestuta egoteko eta pasahitzak seguru mantentzeko</translation>
 <translation id="786327964234957808"><ph name="USER_EMAIL1" /> kontuaren ordez <ph name="USER_EMAIL2" /> kontua erabiliko duzu sinkronizatzeko. <ph name="DOMAIN" /> da zure orain arteko Chromium datuen kudeatzailea. Aurrera eginez gero, datuak ezabatu egingo dira gailu honetatik, baina <ph name="USER_EMAIL1" /> kontuan egoten jarraituko dute.</translation>
 <translation id="7890287942691234100">Hasi Chromium-en eskanerra erabiltzen</translation>
+<translation id="7928628054454574139">Ireki Chromium beste aplikazioetako estekak sakatzen dituzunean</translation>
 <translation id="7931842119211730154">Blokeatu ezkutuko moduko fitxak Chromium ixten duzunean</translation>
 <translation id="7980860476903281594">Onartzen dituzun webguneekin partekatuko du kokapena Chromium-ek.</translation>
 <translation id="8013573822802650211">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>

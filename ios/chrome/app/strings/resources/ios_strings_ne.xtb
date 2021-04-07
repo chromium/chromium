@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">पासवर्ड देखाउनुहोस्</translation>
 <translation id="1872096359983322073">टर्च</translation>
 <translation id="1911619930368729126">Google ड्राइभमा अपलोड गर्नुहोस्</translation>
+<translation id="1919130412786645364">Chrome मा साइन इन गर्ने अनुमति दिनुहोस्</translation>
 <translation id="1923342640370224680">बितेको घन्टा</translation>
 <translation id="1941314575388338491">प्रतिलिपि बनाउन डबल ट्याप गर्नुहोस्।</translation>
 <translation id="1952172573699511566">सम्भव भए सम्म वेबसाइटहरूले तपाईंको रुचाइएको भाषामा पाठ देखाउनेछ।</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
 <translation id="2969979262385602596">भित्र जान असफल भयो। कृपया पछि पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="2975121486251958312">इन्कोग्निटो मोड मात्र उपलब्ध छ</translation>
-<translation id="2981323609054805194">दिनअघि</translation>
 <translation id="2982481275546140226">डेटा खाली गर्नुहोस्</translation>
 <translation id="298306318844797842">भुक्तानी विधि थप्नुहोस्...</translation>
 <translation id="2989805286512600854">नयाँ ट्याबमा खोल्नुहोस्</translation>
@@ -283,6 +283,7 @@
 <translation id="3928666092801078803">मेरो डेटालाई संयोजन गर्नुहोस्</translation>
 <translation id="3929457972718048006">ठेगानाहरू</translation>
 <translation id="3943492037546055397">पासवर्डहरू</translation>
+<translation id="3943557322767080599">मैले आफ्नो Google खातामा साइन इन गर्दा Chrome मा साइन इन गर्ने सुझाव दिइयोस्</translation>
 <translation id="3967266340354872733">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />सिंक<ph name="END_LINK" /> तथा <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्।</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3968505803272650567">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -390,7 +391,7 @@
 <translation id="5090832849094901128">तपाईंले यो पासवर्ड मेटाउनुभयो भने <ph name="WEBSITE" /> मा रहेको तपाईंको खाता मेटिने छैन।</translation>
 <translation id="5094827893301452931">ट्विट पूरा भयो।</translation>
 <translation id="5118764316110575523">निष्क्रिय छ</translation>
-<translation id="5127805178023152808">सिंक बन्द छ</translation>
+<translation id="5127805178023152808">सिंक अफ छ</translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
 <translation id="5140288047769711648">Chrome ले तपाईंका लागि यो पासवर्ड याद राख्ने छ। तपाईंले आफ्नो पासवर्ड सम्झिराख्नु पर्दैन।</translation>
 <translation id="5150492518600715772">आफ्ना यन्त्रमा पठाउनुहोस्</translation>
@@ -458,8 +459,8 @@
 <translation id="5899314093904173337">वरपर रहेका मान्छेहरूसँग सेयर गर्न उनीहरूलाई क्यामेरा वा QR स्क्यान गर्ने एप प्रयोग गरी यो QR कोड स्क्यान गर्न लगाउनुहोस्</translation>
 <translation id="5911030830365207728">Google अनुवादक</translation>
 <translation id="5913600720976431809">यो पृष्ठ अनुवाद गर्ने विकल्पहरू</translation>
-<translation id="5938160824633642847">तपाईंको यन्त्रको भण्डारण स्थान लगभग भरिएको छ। भण्डारण स्थान खाली गरी फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="5948291296578561264">यो अनुप्रयोगले तपाईंलाई आफ्नो तस्बिरको लाइब्रेरीमा तस्बिरहरू सुरक्षित गर्न दिन्छ।</translation>
+<translation id="5938160824633642847">तपाईंको डिभाइसको भण्डारण स्थान लगभग भरिएको छ। भण्डारण स्थान खाली गरी फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="5948291296578561264">यो एपले तपाईंलाई आफ्नो तस्बिरको लाइब्रेरीमा तस्बिरहरू सुरक्षित गर्न दिन्छ।</translation>
 <translation id="5955891643922670672">अफलाइन संस्करण हेरिँदै</translation>
 <translation id="5957613098218939406">थप विकल्पहरू</translation>
 <translation id="5963939892571022323">हाइलाइट गरिएको पाठको लिंक सिर्जना गर्न सकिएन।</translation>
@@ -559,7 +560,6 @@
 <translation id="6710079714193676716">तपाईंको सङ्गठनले यो ब्राउजर व्यवस्थापन गर्छ। केही सुविधाहरू उपलब्ध नहुन सक्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google एपहरू</translation>
 <translation id="6730682669179532099">पासवर्डहरू निर्यात गर्न सकिएन</translation>
-<translation id="6739790015462537309">घन्टाअघि</translation>
 <translation id="6748108480210050150">बाट</translation>
 <translation id="6760509555861141183">भर्खरै खोलिएको ट्याबमा जानुहोस्</translation>
 <translation id="6780034285637185932">जिप कोड</translation>

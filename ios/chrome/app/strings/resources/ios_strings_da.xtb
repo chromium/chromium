@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">Vis adgangskode</translation>
 <translation id="1872096359983322073">Lommelygte</translation>
 <translation id="1911619930368729126">Upload til Google Drev</translation>
+<translation id="1919130412786645364">Tillad login i Chrome</translation>
 <translation id="1923342640370224680">Den seneste time</translation>
 <translation id="1941314575388338491">Tryk to gange for at kopiere.</translation>
 <translation id="1952172573699511566">Websites viser tekst på dit foretrukne sprog, når det er muligt.</translation>
@@ -193,7 +194,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2964349545761222050">Bloker cookies fra tredjeparter</translation>
 <translation id="2969979262385602596">Login mislykkedes. Prøv igen senere.</translation>
 <translation id="2975121486251958312">Kun inkognitotilstand er tilgængelig</translation>
-<translation id="2981323609054805194">d. siden</translation>
 <translation id="2982481275546140226">Ryd data</translation>
 <translation id="298306318844797842">Tilføj betalingsmetode...</translation>
 <translation id="2989805286512600854">Åbn på ny fane</translation>
@@ -214,6 +214,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 
 Når du er i inkognito, kan websites ikke bruge cookies til at se din browserhistorik på forskellige websites for f.eks. at tilpasse annoncer.</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
+<translation id="3222343486469566063">Ikke logget ind</translation>
 <translation id="3224641773458703735">Angiv en adgangskode på din enhed, før du kan eksportere adgangskoder.</translation>
 <translation id="3240426699337459095">Linket er kopieret</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -283,6 +284,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="3928666092801078803">Kombiner mine data</translation>
 <translation id="3929457972718048006">Adresser</translation>
 <translation id="3943492037546055397">Adgangskoder</translation>
+<translation id="3943557322767080599">Vis Chrome-loginbeskeder, når du logger ind på din Google-konto</translation>
 <translation id="3967266340354872733">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Synkronisering<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /></translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3968505803272650567">Administrer interesser</translation>
@@ -559,7 +561,6 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6710079714193676716">Administreret af din organisation. Nogle funktioner er muligvis ikke tilgængelige. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Der kan ikke eksporteres adgangskoder</translation>
-<translation id="6739790015462537309">t. siden</translation>
 <translation id="6748108480210050150">Fra</translation>
 <translation id="6760509555861141183">Gå tilbage til den seneste fane</translation>
 <translation id="6780034285637185932">Postnummer</translation>
@@ -707,6 +708,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8225985093977202398">Billeder og filer, der er gemt i cache</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8281781826761538115">Standardsprog – <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">Angiv…</translation>
 <translation id="8299417921174340354">Før du kan bruge adgangskoder, skal du angive en adgangskode på din enhed.</translation>
 <translation id="8319076807703933069">Ny søgning</translation>
 <translation id="8323906514956095947">Tryk og hold nede for at se flere faneindstillinger</translation>

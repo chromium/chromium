@@ -96,6 +96,7 @@
 <translation id="1870148520156231997">পাছৱর্ড দেখুৱাওক</translation>
 <translation id="1872096359983322073">টৰ্চ</translation>
 <translation id="1911619930368729126">Google Driveলৈ আপল’ড কৰক</translation>
+<translation id="1919130412786645364">Chromeত ছাইন ইন কৰিব দিয়ক</translation>
 <translation id="1923342640370224680">যোৱা ১ঘণ্টাৰ</translation>
 <translation id="1941314575388338491">প্ৰতিলিপি কৰিবলৈ দুবাৰ টিপক।</translation>
 <translation id="1952172573699511566">ৱেবছাইটবোৰে যেতিয়া সম্ভৱ হয় তেতিয়া আপুনি অগ্ৰাধিকাৰ দিয়া ভাষাত পাঠবোৰ দেখুৱাব।</translation>
@@ -193,7 +194,6 @@
 <translation id="2964349545761222050">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="2969979262385602596">ছাইন ইন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2975121486251958312">কেৱল ইনক’গনিট’টো ম’ড উপলব্ধ</translation>
-<translation id="2981323609054805194">দিন আগতে</translation>
 <translation id="2982481275546140226">ডেটা মচক</translation>
 <translation id="298306318844797842">পৰিশোধৰ পদ্ধতি যোগ কৰক...</translation>
 <translation id="2989805286512600854">নতুন টেবত খোলক</translation>
@@ -283,6 +283,7 @@
 <translation id="3928666092801078803">মোৰ ডেটা সংযুক্ত কৰক</translation>
 <translation id="3929457972718048006">ঠিকনা</translation>
 <translation id="3943492037546055397">পাছৱৰ্ড</translation>
+<translation id="3943557322767080599">আপোনাৰ Google একাউণ্টত ছাইন ইন কৰোঁতে Chromeৰ ছাইন-ইন প্ৰম্পট্‌ দেখুৱাওক</translation>
 <translation id="3967266340354872733">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহ সম্পৰ্কীয় অধিক ছেটিঙৰ বাবে <ph name="BEGIN_LINK" />ছিংক<ph name="END_LINK" /> আৰু <ph name="BEGIN_LINK" />Google সেৱাসমূহ<ph name="END_LINK" /> চাওক।</translation>
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
 <translation id="3968505803272650567">আগ্ৰহসমূহ পৰিচালনা কৰক</translation>
@@ -559,7 +560,6 @@
 <translation id="6710079714193676716">আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰে। কিছুমান সুবিধা উপলব্ধ নহ’বও পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google এপ্‌</translation>
 <translation id="6730682669179532099">পাছৱর্ড ৰপ্তানি কৰিব নোৱাৰি</translation>
-<translation id="6739790015462537309">ঘণ্টা আগতে</translation>
 <translation id="6748108480210050150">প্ৰেৰক</translation>
 <translation id="6760509555861141183">শেহতীয়া টেবলৈ উভতি যাওক</translation>
 <translation id="6780034285637185932">পিন ক’ড</translation>
