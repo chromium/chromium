@@ -100,7 +100,10 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       bool had_redirect,
       network::mojom::SourceLocationPtr source_location) override;
   void ActivateForPrerendering() override;
-
+#if defined(OS_ANDROID)
+  void ExtractSmartClipData(const gfx::Rect& rect,
+                            ExtractSmartClipDataCallback callback) override;
+#endif
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
 

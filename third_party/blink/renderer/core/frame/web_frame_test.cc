@@ -5927,18 +5927,19 @@ TEST_F(WebFrameTest, SmartClipData) {
       "0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: "
       "initial; text-decoration-style: initial; text-decoration-color: "
       "initial;\">Price 10,000,000won</div>";
-  WebString clip_text;
-  WebString clip_html;
+  String clip_text;
+  String clip_html;
   gfx::Rect clip_rect;
   RegisterMockedHttpURLLoad("Ahem.ttf");
   RegisterMockedHttpURLLoad("smartclip.html");
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "smartclip.html");
-  WebLocalFrame* frame = web_view_helper.LocalMainFrame();
+  WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   web_view_helper.Resize(gfx::Size(500, 500));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   gfx::Rect crop_rect(300, 125, 152, 50);
-  frame->ExtractSmartClipData(crop_rect, clip_text, clip_html, clip_rect);
+  frame->GetFrame()->ExtractSmartClipDataInternal(crop_rect, clip_text,
+                                                  clip_html, clip_rect);
   EXPECT_EQ(kExpectedClipText, clip_text);
   EXPECT_EQ(kExpectedClipHtml, clip_html);
 }
@@ -5964,58 +5965,61 @@ TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
       "0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: "
       "initial; text-decoration-style: initial; text-decoration-color: "
       "initial;\">Price 10,000,000won</div>";
-  WebString clip_text;
-  WebString clip_html;
+  String clip_text;
+  String clip_html;
   gfx::Rect clip_rect;
   RegisterMockedHttpURLLoad("Ahem.ttf");
   RegisterMockedHttpURLLoad("smartclip.html");
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "smartclip.html");
-  WebLocalFrame* frame = web_view_helper.LocalMainFrame();
+  WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   web_view_helper.Resize(gfx::Size(500, 500));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   web_view_helper.GetWebView()->SetPageScaleFactor(1.5);
   web_view_helper.GetWebView()->SetVisualViewportOffset(gfx::PointF(167, 100));
   gfx::Rect crop_rect(200, 38, 228, 75);
-  frame->ExtractSmartClipData(crop_rect, clip_text, clip_html, clip_rect);
+  frame->GetFrame()->ExtractSmartClipDataInternal(crop_rect, clip_text,
+                                                  clip_html, clip_rect);
   EXPECT_EQ(kExpectedClipText, clip_text);
   EXPECT_EQ(kExpectedClipHtml, clip_html);
 }
 
 TEST_F(WebFrameTest, SmartClipReturnsEmptyStringsWhenUserSelectIsNone) {
-  WebString clip_text;
-  WebString clip_html;
+  String clip_text;
+  String clip_html;
   gfx::Rect clip_rect;
   RegisterMockedHttpURLLoad("Ahem.ttf");
   RegisterMockedHttpURLLoad("smartclip_user_select_none.html");
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ +
                                     "smartclip_user_select_none.html");
-  WebLocalFrame* frame = web_view_helper.LocalMainFrame();
+  WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   web_view_helper.Resize(gfx::Size(500, 500));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   gfx::Rect crop_rect(0, 0, 100, 100);
-  frame->ExtractSmartClipData(crop_rect, clip_text, clip_html, clip_rect);
+  frame->GetFrame()->ExtractSmartClipDataInternal(crop_rect, clip_text,
+                                                  clip_html, clip_rect);
   EXPECT_STREQ("", clip_text.Utf8().c_str());
   EXPECT_STREQ("", clip_html.Utf8().c_str());
 }
 
 TEST_F(WebFrameTest, SmartClipDoesNotCrashPositionReversed) {
-  WebString clip_text;
-  WebString clip_html;
+  String clip_text;
+  String clip_html;
   gfx::Rect clip_rect;
   RegisterMockedHttpURLLoad("Ahem.ttf");
   RegisterMockedHttpURLLoad("smartclip_reversed_positions.html");
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ +
                                     "smartclip_reversed_positions.html");
-  WebLocalFrame* frame = web_view_helper.LocalMainFrame();
+  WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   web_view_helper.Resize(gfx::Size(500, 500));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   // Left upper corner of the rect will be end position in the DOM hierarchy.
   gfx::Rect crop_rect(30, 110, 400, 250);
   // This should not still crash. See crbug.com/589082 for more details.
-  frame->ExtractSmartClipData(crop_rect, clip_text, clip_html, clip_rect);
+  frame->GetFrame()->ExtractSmartClipDataInternal(crop_rect, clip_text,
+                                                  clip_html, clip_rect);
 }
 
 static int ComputeOffset(LayoutObject* layout_object, int x, int y) {

@@ -689,6 +689,10 @@ class CORE_EXPORT LocalFrame final
       bool had_redirect,
       network::mojom::blink::SourceLocationPtr source_location) final;
   void ActivateForPrerendering() final;
+#if defined(OS_ANDROID)
+  void ExtractSmartClipData(const gfx::Rect& rect,
+                            ExtractSmartClipDataCallback callback) final;
+#endif
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,
@@ -789,6 +793,11 @@ class CORE_EXPORT LocalFrame final
  private:
   friend class FrameNavigationDisabler;
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);
+  FRIEND_TEST_ALL_PREFIXES(WebFrameTest, SmartClipData);
+  FRIEND_TEST_ALL_PREFIXES(WebFrameTest, SmartClipDataWithPinchZoom);
+  FRIEND_TEST_ALL_PREFIXES(WebFrameTest,
+                           SmartClipReturnsEmptyStringsWhenUserSelectIsNone);
+  FRIEND_TEST_ALL_PREFIXES(WebFrameTest, SmartClipDoesNotCrashPositionReversed);
 
   // Frame protected overrides:
   bool DetachImpl(FrameDetachType) override;
@@ -852,6 +861,11 @@ class CORE_EXPORT LocalFrame final
   // Returns the `Frame` for which `provisional_frame_ == this`. May only be
   // called on a provisional frame.
   Frame* GetProvisionalOwnerFrame();
+
+  void ExtractSmartClipDataInternal(const gfx::Rect& rect_in_viewport,
+                                    String& clip_text,
+                                    String& clip_html,
+                                    gfx::Rect& clip_rect);
 
   static void BindToReceiver(
       blink::LocalFrame* frame,

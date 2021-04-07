@@ -746,6 +746,13 @@ interface LocalFrame {
   // The document in the frame updates `document.prerendering` and dispatches
   // the prerenderingchange event.
   ActivateForPrerendering();
+
+  // Samsung Galaxy Note-specific "smart clip" stylus text getter.
+  // Extracts the data at the given rect.
+  [EnableIf=is_android]
+  ExtractSmartClipData(gfx.mojom.Rect rect)
+      => (mojo_base.mojom.String16 text, mojo_base.mojom.String16 html,
+              gfx.mojom.Rect clip_rect);
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

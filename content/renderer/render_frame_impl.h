@@ -413,12 +413,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void Clone(mojo::PendingReceiver<blink::mojom::ResourceLoadInfoNotifier>
                  pending_resource_load_info_notifier) override;
 
-#if defined(OS_ANDROID)
-  void ExtractSmartClipData(
-      const gfx::Rect& rect,
-      const ExtractSmartClipDataCallback callback) override;
-#endif
-
   // mojom::FrameBindingsControl implementation:
   void AllowBindings(int32_t enabled_bindings_flags) override;
   void EnableMojoJsBindings() override;

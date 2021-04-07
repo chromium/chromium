@@ -131,6 +131,14 @@ void FakeLocalFrame::MixedContentFound(
 
 void FakeLocalFrame::ActivateForPrerendering() {}
 
+#if defined(OS_ANDROID)
+void FakeLocalFrame::ExtractSmartClipData(
+    const gfx::Rect& rect,
+    ExtractSmartClipDataCallback callback) {
+  std::move(callback).Run(std::u16string(), std::u16string(), gfx::Rect());
+}
+#endif
+
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::LocalFrame>(

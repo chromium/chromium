@@ -89,10 +89,12 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
+#include "third_party/blink/renderer/core/editing/serializers/create_markup_options.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 #include "third_party/blink/renderer/core/editing/surrounding_text.h"
+#include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -117,6 +119,7 @@
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 #include "third_party/blink/renderer/core/frame/savable_resources.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/smart_clip.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/frame/virtual_keyboard_overlay_changed_observer.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -3569,6 +3572,17 @@ void LocalFrame::ActivateForPrerendering() {
                                       WrapPersistent(GetDocument())));
 }
 
+#if defined(OS_ANDROID)
+void LocalFrame::ExtractSmartClipData(const gfx::Rect& rect,
+                                      ExtractSmartClipDataCallback callback) {
+  String clip_text;
+  String clip_html;
+  gfx::Rect clip_rect;
+  ExtractSmartClipDataInternal(rect, clip_text, clip_html, clip_rect);
+  std::move(callback).Run(clip_text, clip_html, clip_rect);
+}
+#endif  // defined(OS_ANDROID)
+
 bool LocalFrame::ShouldThrottleDownload() {
   const auto now = base::TimeTicks::Now();
   if (num_burst_download_requests_ == 0) {
@@ -3601,6 +3615,55 @@ Frame* LocalFrame::GetProvisionalOwnerFrame() {
     return Owner()->ContentFrame();
   }
   return GetPage()->MainFrame();
+}
+
+namespace {
+
+// TODO(editing-dev): We should move |CreateMarkupInRect()| to
+// "core/editing/serializers/Serialization.cpp".
+String CreateMarkupInRect(LocalFrame* frame,
+                          const IntPoint& start_point,
+                          const IntPoint& end_point) {
+  VisiblePosition start_visible_position = CreateVisiblePosition(
+      PositionForContentsPointRespectingEditingBoundary(start_point, frame));
+  VisiblePosition end_visible_position = CreateVisiblePosition(
+      PositionForContentsPointRespectingEditingBoundary(end_point, frame));
+
+  Position start_position = start_visible_position.DeepEquivalent();
+  Position end_position = end_visible_position.DeepEquivalent();
+
+  // document() will return null if -webkit-user-select is set to none.
+  if (!start_position.GetDocument() || !end_position.GetDocument())
+    return String();
+
+  const CreateMarkupOptions create_markup_options =
+      CreateMarkupOptions::Builder()
+          .SetShouldAnnotateForInterchange(true)
+          .SetShouldResolveURLs(kResolveNonLocalURLs)
+          .Build();
+  if (start_position.CompareTo(end_position) <= 0) {
+    return CreateMarkup(start_position, end_position, create_markup_options);
+  }
+  return CreateMarkup(end_position, start_position, create_markup_options);
+}
+
+}  // namespace
+
+void LocalFrame::ExtractSmartClipDataInternal(const gfx::Rect& rect_in_viewport,
+                                              String& clip_text,
+                                              String& clip_html,
+                                              gfx::Rect& clip_rect) {
+  // TODO(mahesh.ma): Check clip_data even after use-zoom-for-dsf is enabled.
+  SmartClipData clip_data =
+      SmartClip(this).DataForRect(IntRect(rect_in_viewport));
+  clip_text = clip_data.ClipData();
+  clip_rect = clip_data.RectInViewport();
+
+  IntPoint start_point(rect_in_viewport.x(), rect_in_viewport.y());
+  IntPoint end_point(rect_in_viewport.x() + rect_in_viewport.width(),
+                     rect_in_viewport.y() + rect_in_viewport.height());
+  clip_html = CreateMarkupInRect(this, View()->ViewportToFrame(start_point),
+                                 View()->ViewportToFrame(end_point));
 }
 
 void LocalFrame::BindToReceiver(

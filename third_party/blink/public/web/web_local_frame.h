@@ -540,11 +540,6 @@ class WebLocalFrame : public WebFrame {
   // pairs in the requested range.
   virtual void DeleteSurroundingTextInCodePoints(int before, int after) = 0;
 
-  virtual void ExtractSmartClipData(const gfx::Rect& rect_in_viewport,
-                                    WebString& clip_text,
-                                    WebString& clip_html,
-                                    gfx::Rect& clip_rect) = 0;
-
   // Spell-checking support -------------------------------------------------
   virtual void SetTextCheckClient(WebTextCheckClient*) = 0;
   virtual void SetSpellCheckPanelHostClient(WebSpellCheckPanelHostClient*) = 0;

@@ -2571,18 +2571,6 @@ void RenderFrameImpl::SetWantErrorMessageStackTrace() {
   v8::Isolate::GetCurrent()->SetCaptureStackTraceForUncaughtExceptions(true);
 }
 
-#if defined(OS_ANDROID)
-void RenderFrameImpl::ExtractSmartClipData(
-    const gfx::Rect& rect,
-    ExtractSmartClipDataCallback callback) {
-  blink::WebString clip_text;
-  blink::WebString clip_html;
-  gfx::Rect clip_rect;
-  GetWebFrame()->ExtractSmartClipData(rect, clip_text, clip_html, clip_rect);
-  std::move(callback).Run(clip_text.Utf16(), clip_html.Utf16(), clip_rect);
-}
-#endif  // defined(OS_ANDROID)
-
 void RenderFrameImpl::NotifyObserversOfFailedProvisionalLoad() {
   for (auto& observer : observers_)
     observer.DidFailProvisionalLoad();
