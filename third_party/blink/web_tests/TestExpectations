@@ -3480,6 +3480,7 @@ crbug.com/1053825 external/wpt/css/css-grid/grid-model/grid-overflow-padding-002
 crbug.com/1053825 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-001.html [ Failure ]
 crbug.com/1053825 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-002.html [ Failure ]
 crbug.com/1053825 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-003.html [ Failure ]
+crbug.com/1045599 fast/css-grid-layout/maximize-tracks-definite-indefinite-height.html [ Failure ]
 
 # Bad stretching of svgs without aspect-ratio.
 crbug.com/1114013 external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-5.html [ Failure ]
@@ -3567,6 +3568,7 @@ virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowi
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-overflow-padding-001.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-overflow-padding-002.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-002.html [ Pass ]
+virtual/layout-ng-grid/fast/css-grid-layout/maximize-tracks-definite-indefinite-height.html [ Pass ]
 
 ### Tests failing with LayoutNGGrid enabled:
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/absolute-positioning-grid-container-parent-001.html [ Failure ]
@@ -3641,7 +3643,6 @@ crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-track-sizing-
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-track-sizing-with-percentages-and-orthogonal-flows.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/implicit-position-dynamic-change.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/implicit-tracks-before-explicit.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/maximize-tracks-definite-indefinite-height.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/min-width-margin-box.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/minmax-max-content-resolution-rows.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/minmax-min-content-column-resolution-rows.html [ Failure ]
