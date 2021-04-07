@@ -182,15 +182,15 @@ constexpr int kMaxRangeWords = 10;
 constexpr int kMaxIterationCountToRecord = 10;
 constexpr int kMinWordCount_ = 3;
 
-void TextFragmentSelectorGenerator::UpdateSelection(
-    LocalFrame* selection_frame,
-    const EphemeralRangeInFlatTree& selection_range) {
-  DCHECK(selection_frame);
-
+TextFragmentSelectorGenerator::TextFragmentSelectorGenerator(
+    LocalFrame* main_frame)
+    : selection_frame_(main_frame) {
   // Scroll-to-text doesn't support iframes.
-  DCHECK(selection_frame->IsMainFrame());
+  DCHECK(main_frame->IsMainFrame());
+}
 
-  selection_frame_ = selection_frame;
+void TextFragmentSelectorGenerator::UpdateSelection(
+    const EphemeralRangeInFlatTree& selection_range) {
   selection_range_ = MakeGarbageCollected<Range>(
       selection_range.GetDocument(),
       ToPositionInDOMTree(selection_range.StartPosition()),
@@ -200,17 +200,6 @@ void TextFragmentSelectorGenerator::UpdateSelection(
     Reset();
     GenerateSelector();
   }
-}
-
-void TextFragmentSelectorGenerator::BindTextFragmentSelectorProducer(
-    mojo::PendingReceiver<mojom::blink::TextFragmentSelectorProducer>
-        producer) {
-  DCHECK(selection_frame_);
-
-  selector_producer_.reset();
-  selector_producer_.Bind(
-      std::move(producer),
-      selection_frame_->GetTaskRunner(blink::TaskType::kInternalDefault));
 }
 
 void TextFragmentSelectorGenerator::AdjustSelection() {
@@ -437,14 +426,16 @@ void TextFragmentSelectorGenerator::ClearSelection() {
   if (selection_range_) {
     selection_range_->Dispose();
     selection_range_ = nullptr;
-    selection_frame_ = nullptr;
   }
+}
+
+void TextFragmentSelectorGenerator::Detach() {
+  selection_frame_ = nullptr;
 }
 
 void TextFragmentSelectorGenerator::Trace(Visitor* visitor) const {
   visitor->Trace(selection_frame_);
   visitor->Trace(selection_range_);
-  visitor->Trace(selector_producer_);
   visitor->Trace(finder_);
 }
 

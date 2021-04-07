@@ -94,6 +94,8 @@ blink_core_sources_page = [
   "scrolling/text_fragment_selector.h",
   "scrolling/text_fragment_selector_generator.cc",
   "scrolling/text_fragment_selector_generator.h",
+  "scrolling/text_fragment_handler.cc",
+  "scrolling/text_fragment_handler.h",
   "scrolling/top_document_root_scroller_controller.cc",
   "scrolling/top_document_root_scroller_controller.h",
   "scrolling/viewport_scroll_callback.cc",

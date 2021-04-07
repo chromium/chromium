@@ -112,7 +112,7 @@ class CORE_EXPORT ContextMenuController final
 
   Node* GetContextMenuNodeWithImageContents(const bool report_histograms);
 
-  void UpdateTextFragmentSelectorGenerator(LocalFrame*);
+  void UpdateTextFragmentHandler(LocalFrame*);
 
   HeapMojoAssociatedReceiver<mojom::blink::ContextMenuClient,
                              ContextMenuController>

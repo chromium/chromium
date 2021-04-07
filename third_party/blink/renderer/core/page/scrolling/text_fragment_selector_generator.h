@@ -15,6 +15,8 @@
 
 namespace blink {
 
+using RequestSelectorCallback = base::OnceCallback<void(const WTF::String&)>;
+
 class LocalFrame;
 
 // TextFragmentSelectorGenerator is responsible for generating text fragment
@@ -30,18 +32,12 @@ class LocalFrame;
 // match is uniquely identified or no new context/range can be added.
 class CORE_EXPORT TextFragmentSelectorGenerator final
     : public GarbageCollected<TextFragmentSelectorGenerator>,
-      public TextFragmentFinder::Client,
-      public blink::mojom::blink::TextFragmentSelectorProducer {
+      public TextFragmentFinder::Client {
  public:
-  explicit TextFragmentSelectorGenerator() = default;
-
-  void BindTextFragmentSelectorProducer(
-      mojo::PendingReceiver<mojom::blink::TextFragmentSelectorProducer>
-          producer);
+  explicit TextFragmentSelectorGenerator(LocalFrame* main_frame);
 
   // Sets the frame and range of the current selection.
-  void UpdateSelection(LocalFrame* selection_frame,
-                       const EphemeralRangeInFlatTree& selection_range);
+  void UpdateSelection(const EphemeralRangeInFlatTree& selection_range);
 
   // Adjust the selection start/end to a valid position. That includes skipping
   // non text start/end nodes and extending selection from start and end to
@@ -49,10 +45,10 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   void AdjustSelection();
 
   // blink::mojom::blink::TextFragmentSelectorProducer interface
-  void Cancel() override;
+  void Cancel();
 
   // Requests selector for current selection.
-  void RequestSelector(RequestSelectorCallback callback) override;
+  void RequestSelector(RequestSelectorCallback callback);
 
   // TextFragmentFinder::Client interface
   void DidFindMatch(const EphemeralRangeInFlatTree& match,
@@ -75,7 +71,11 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   // Releases members if necessary.
   void ClearSelection();
 
+  void Detach();
+
   void Trace(Visitor*) const;
+
+  LocalFrame* GetFrame() { return selection_frame_; }
 
  private:
   // Used for determining the next step of selector generation.
@@ -136,11 +136,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   Member<Range> selection_range_;
   std::unique_ptr<TextFragmentSelector> selector_;
 
-  // Used for communication between |TextFragmentSelectorGenerator| in renderer
-  // and |TextFragmentSelectorClientImpl| in browser.
-  HeapMojoReceiver<blink::mojom::blink::TextFragmentSelectorProducer,
-                   TextFragmentSelectorGenerator>
-      selector_producer_{this, nullptr};
   RequestSelectorCallback pending_generate_selector_callback_;
 
   GenerationStep step_ = kExact;

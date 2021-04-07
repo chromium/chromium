@@ -81,7 +81,7 @@
 #include "third_party/blink/renderer/core/page/context_menu_provider.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 
@@ -621,9 +621,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
                .ComputeVisibleSelectionInDOMTreeDeprecated();
 
     // Store text selection when it happens as it might be cleared when the
-    // browser will request |TextFragmentSelectorGenerator| to generate
+    // browser will request |TextFragmentHandler| to generate
     // selector.
-    UpdateTextFragmentSelectorGenerator(selected_frame);
+    UpdateTextFragmentHandler(selected_frame);
   }
 
   // If there is a text fragment at the same location as the click indicate that
@@ -768,16 +768,16 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   return true;
 }
 
-void ContextMenuController::UpdateTextFragmentSelectorGenerator(
+void ContextMenuController::UpdateTextFragmentHandler(
     LocalFrame* selected_frame) {
-  if (!selected_frame->GetTextFragmentSelectorGenerator())
+  if (!selected_frame->GetTextFragmentHandler())
     return;
 
   VisibleSelectionInFlatTree selection =
       selected_frame->Selection().ComputeVisibleSelectionInFlatTree();
   EphemeralRangeInFlatTree selection_range(selection.Start(), selection.End());
   selected_frame->GetTextFragmentSelectorGenerator()->UpdateSelection(
-      selected_frame, selection_range);
+      selection_range);
 }
 
 }  // namespace blink

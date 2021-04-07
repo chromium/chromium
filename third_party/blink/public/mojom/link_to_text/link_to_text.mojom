@@ -5,13 +5,18 @@
 [JavaPackage="org.chromium.blink.mojom"]
 module blink.mojom;
 
-// TextFragmentSelectorProducer is used for requesting renderer to generate
-// text fragment selector for the latest text selection. Implemented in renderer.
-interface TextFragmentSelectorProducer {
+// TextFragmentReceiver is used for requesting renderer to perform text fragment
+// operations on the main frame, mainly generating and removing fragments.
+// Implemented in renderer.
+interface TextFragmentReceiver {
   // Cancel text fragment generation if any active.
   Cancel();
 
   // Request text fragment selector according to
   // https://github.com/WICG/scroll-to-text-fragment#proposed-solution.
   RequestSelector() => (string selector);
+
+  // Dismiss all text fragments from the current main frame at the time the
+  // context menu was invoked.
+  RemoveFragments();
 };

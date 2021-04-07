@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
@@ -688,7 +689,7 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
 
   mouse_down_ = event.Event();
 
-  if (frame_->View())
+  if (frame_->View() && TextFragmentAnchor::ShouldDismissOnScrollOrClick())
     frame_->View()->DismissFragmentAnchor();
 
   if (frame_->GetDocument()->IsSVGDocument() &&

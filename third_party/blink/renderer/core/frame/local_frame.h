@@ -137,6 +137,7 @@ class PerformanceMonitor;
 class PluginData;
 class SmoothScrollSequencer;
 class SpellChecker;
+class TextFragmentHandler;
 class TextFragmentSelectorGenerator;
 class TextSuggestionController;
 class VirtualKeyboardOverlayChangedObserver;
@@ -767,9 +768,13 @@ class CORE_EXPORT LocalFrame final
     return GetFrameToken().GetAs<LocalFrameToken>();
   }
 
-  TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() const {
-    return text_fragment_selector_generator_;
+  TextFragmentHandler* GetTextFragmentHandler() const {
+    // |text_fragment_handler_| is always set on the main frame, and null
+    // otherwise.
+    return text_fragment_handler_;
   }
+
+  TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() const;
 
   WebURLLoader::DeferType GetLoadDeferType();
   bool IsLoadDeferred();
@@ -878,9 +883,8 @@ class CORE_EXPORT LocalFrame final
   void BindFullscreenVideoElementReceiver(
       mojo::PendingAssociatedReceiver<
           mojom::blink::FullscreenVideoElementHandler> receiver);
-  void BindTextFragmentSelectorProducer(
-      mojo::PendingReceiver<mojom::blink::TextFragmentSelectorProducer>
-          receiver);
+  void BindTextFragmentReceiver(
+      mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
 
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 
@@ -1024,7 +1028,8 @@ class CORE_EXPORT LocalFrame final
 
   mojom::blink::BlinkOptimizationGuideHintsPtr optimization_guide_hints_;
 
-  Member<TextFragmentSelectorGenerator> text_fragment_selector_generator_;
+  // Always non-null for the main frame; null otherwise.
+  Member<TextFragmentHandler> text_fragment_handler_;
 
   // Manages a transient affordance for this frame to enter fullscreen.
   TransientAllowFullscreen transient_allow_fullscreen_;

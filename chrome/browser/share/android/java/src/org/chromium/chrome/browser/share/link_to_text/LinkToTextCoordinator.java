@@ -11,7 +11,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
-import org.chromium.blink.mojom.TextFragmentSelectorProducer;
+import org.chromium.blink.mojom.TextFragmentReceiver;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -50,7 +50,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private final long mRequestSelectorStartTime;
 
     private ShareParams mShareLinkParams;
-    private TextFragmentSelectorProducer mProducer;
+    private TextFragmentReceiver mProducer;
     private boolean mCancelRequest;
 
     public LinkToTextCoordinator(Context context, Tab tab,
@@ -163,8 +163,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
 
         mProducer = mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
-                TextFragmentSelectorProducer.MANAGER);
-        mProducer.requestSelector(new TextFragmentSelectorProducer.RequestSelectorResponse() {
+                TextFragmentReceiver.MANAGER);
+        mProducer.requestSelector(new TextFragmentReceiver.RequestSelectorResponse() {
             @Override
             public void call(String selector) {
                 onSelectorReady(selector);

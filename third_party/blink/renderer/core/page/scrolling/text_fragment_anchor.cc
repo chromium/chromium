@@ -287,7 +287,8 @@ void TextFragmentAnchor::DidScroll(mojom::blink::ScrollType type) {
     return;
   }
 
-  Dismiss();
+  if (ShouldDismissOnScrollOrClick())
+    Dismiss();
   user_scrolled_ = true;
 
   if (did_non_zero_scroll_ &&
@@ -454,10 +455,6 @@ void TextFragmentAnchor::DidFinishSearch() {
 }
 
 bool TextFragmentAnchor::Dismiss() {
-  if (base::FeatureList::IsEnabled(
-          shared_highlighting::kSharedHighlightingV2)) {
-    return false;
-  }
   // To decrease the likelihood of the user dismissing the highlight before
   // seeing it, we only dismiss the anchor after search_finished_, at which
   // point we've scrolled it into view or the user has started scrolling the
@@ -513,6 +510,11 @@ bool TextFragmentAnchor::HasSearchEngineSource() {
     return false;
 
   return IsKnownSearchEngine(referrer);
+}
+
+bool TextFragmentAnchor::ShouldDismissOnScrollOrClick() {
+  return !base::FeatureList::IsEnabled(
+      shared_highlighting::kSharedHighlightingV2);
 }
 
 }  // namespace blink

@@ -60,7 +60,10 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   // Cancels link generation if we are still waiting for it.
   void Timeout();
 
-  mojo::Remote<blink::mojom::TextFragmentSelectorProducer> remote_;
+  // Returns |remote_|, binding it if not already bound.
+  mojo::Remote<blink::mojom::TextFragmentReceiver>& GetRemote();
+
+  mojo::Remote<blink::mojom::TextFragmentReceiver> remote_;
   RenderViewContextMenuProxy* proxy_;
   GURL url_;
   GURL raw_url_;

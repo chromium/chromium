@@ -172,9 +172,7 @@ void LinkToTextMenuObserver::RequestLinkGeneration() {
   // the selected text and any context around the text to distinguish it from
   // the rest of the contents. Get will call a callback with
   // the generated string if it succeeds or an empty string if it fails.
-  main_frame->GetRemoteInterfaces()->GetInterface(
-      remote_.BindNewPipeAndPassReceiver());
-  remote_->RequestSelector(
+  GetRemote()->RequestSelector(
       base::BindOnce(&LinkToTextMenuObserver::OnRequestLinkGenerationCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -199,7 +197,6 @@ void LinkToTextMenuObserver::CopyLinkToClipboard() {
 }
 
 void LinkToTextMenuObserver::Timeout() {
-  DCHECK(ShouldPreemptivelyGenerateLink());
   DCHECK(remote_.is_bound());
   DCHECK(remote_.is_connected());
   if (generated_link_.has_value())
@@ -225,4 +222,17 @@ void LinkToTextMenuObserver::CopyPageURLToClipboard() {
       base::UTF8ToUTF16(raw_url_.is_empty() ? std::string() : raw_url_.spec()));
 }
 
-void LinkToTextMenuObserver::RemoveHighlight() {}
+void LinkToTextMenuObserver::RemoveHighlight() {
+  GetRemote()->RemoveFragments();
+}
+
+mojo::Remote<blink::mojom::TextFragmentReceiver>&
+LinkToTextMenuObserver::GetRemote() {
+  if (!remote_.is_bound()) {
+    content::RenderFrameHost* main_frame =
+        proxy_->GetWebContents()->GetMainFrame();
+    main_frame->GetRemoteInterfaces()->GetInterface(
+        remote_.BindNewPipeAndPassReceiver());
+  }
+  return remote_;
+}

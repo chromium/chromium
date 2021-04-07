@@ -162,7 +162,7 @@
 #include "third_party/blink/renderer/core/page/plugin_script_forbidden_scope.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -461,9 +461,8 @@ void LocalFrame::Init(Frame* opener,
                          WrapWeakPersistent(this)));
 
   if (IsMainFrame()) {
-    GetInterfaceRegistry()->AddInterface(
-        WTF::BindRepeating(&LocalFrame::BindTextFragmentSelectorProducer,
-                           WrapWeakPersistent(this)));
+    GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+        &LocalFrame::BindTextFragmentReceiver, WrapWeakPersistent(this)));
   }
 
   SetOpenerDoNotNotify(opener);
@@ -564,7 +563,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(main_frame_receiver_);
   visitor->Trace(high_priority_frame_receiver_);
   visitor->Trace(fullscreen_video_receiver_);
-  visitor->Trace(text_fragment_selector_generator_);
+  visitor->Trace(text_fragment_handler_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
   Frame::Trace(visitor);
@@ -711,6 +710,10 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   if (content_capture_manager_) {
     content_capture_manager_->Shutdown();
     content_capture_manager_ = nullptr;
+  }
+
+  if (text_fragment_handler_) {
+    text_fragment_handler_->GetTextFragmentSelectorGenerator()->Detach();
   }
 
   GetBackForwardCacheBufferLimitTracker().DidRemoveFrameFromBackForwardCache(
@@ -1616,8 +1619,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
   if (IsMainFrame()) {
-    text_fragment_selector_generator_ =
-        MakeGarbageCollected<TextFragmentSelectorGenerator>();
+    text_fragment_handler_ = MakeGarbageCollected<TextFragmentHandler>(this);
   }
 
   Initialize();
@@ -3717,14 +3719,12 @@ void LocalFrame::BindFullscreenVideoElementReceiver(
       std::make_unique<ActiveURLMessageFilter>(this));
 }
 
-void LocalFrame::BindTextFragmentSelectorProducer(
-    mojo::PendingReceiver<mojom::blink::TextFragmentSelectorProducer>
-        receiver) {
-  if (IsDetached() || !text_fragment_selector_generator_)
+void LocalFrame::BindTextFragmentReceiver(
+    mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver) {
+  if (IsDetached() || !text_fragment_handler_)
     return;
 
-  text_fragment_selector_generator_->BindTextFragmentSelectorProducer(
-      std::move(receiver));
+  text_fragment_handler_->BindTextFragmentReceiver(std::move(receiver));
 }
 
 SpellChecker& LocalFrame::GetSpellChecker() const {
@@ -3740,6 +3740,13 @@ InputMethodController& LocalFrame::GetInputMethodController() const {
 TextSuggestionController& LocalFrame::GetTextSuggestionController() const {
   DCHECK(DomWindow());
   return DomWindow()->GetTextSuggestionController();
+}
+
+TextFragmentSelectorGenerator* LocalFrame::GetTextFragmentSelectorGenerator()
+    const {
+  if (!text_fragment_handler_)
+    return nullptr;
+  return text_fragment_handler_->GetTextFragmentSelectorGenerator();
 }
 
 }  // namespace blink

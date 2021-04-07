@@ -98,9 +98,8 @@ class TextFragmentSelectorGeneratorTest
     GetDocument()
         .GetFrame()
         ->GetTextFragmentSelectorGenerator()
-        ->UpdateSelection(GetDocument().GetFrame(),
-                          ToEphemeralRangeInFlatTree(
-                              EphemeralRange(selected_start, selected_end)));
+        ->UpdateSelection(ToEphemeralRangeInFlatTree(
+            EphemeralRange(selected_start, selected_end)));
 
     bool callback_called = false;
     String selector;
@@ -1250,7 +1249,6 @@ TEST_P(TextFragmentSelectorGeneratorTest, SecondGenerationCrash) {
 
   // This shouldn't crash.
   GetDocument().GetFrame()->GetTextFragmentSelectorGenerator()->UpdateSelection(
-      GetDocument().GetFrame(),
       ToEphemeralRangeInFlatTree(EphemeralRange(start, end)));
   base::RunLoop().RunUntilIdle();
 }
