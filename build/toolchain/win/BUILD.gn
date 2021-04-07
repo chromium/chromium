@@ -51,13 +51,15 @@ if (current_toolchain == default_toolchain) {
   } else {
     configuration_name = "Release"
   }
-  exec_script("../../vs_toolchain.py",
+  exec_script("//build/vs_toolchain.py",
               [
                 "copy_dlls",
                 rebase_path(root_build_dir),
                 configuration_name,
                 target_cpu,
-              ])
+              ],
+              "",
+              [ "//build/win_toolchain.json" ])
 }
 
 if (host_os == "win") {
