@@ -120,6 +120,20 @@ void SearchMetricsObserver::OnLaunch(ash::AppListNotifier::Location location,
                                      const std::u16string& query) {
   LogTypeAction("Apps.AppList.UserEvent.TypeLaunch", location, query, launched);
   LogOverallAction(location, query, Action::kLaunch);
+
+  int launched_index = -1;
+  for (int i = 0; i < shown.size(); ++i) {
+    if (shown[i].id == launched.id) {
+      launched_index = i;
+      break;
+    }
+  }
+  const std::string histogram_name =
+      base::StrCat({"Apps.AppList.UserEvent.LaunchIndex.",
+                    GetHistogramSuffix(location, query)});
+  // We currently show at most 7 results in the launcher, but this is likely to
+  // increase in future. Set the max value to 20 for future proofing.
+  base::UmaHistogramExactLinear(histogram_name, launched_index, 20);
 }
 
 void SearchMetricsObserver::OnIgnore(ash::AppListNotifier::Location location,

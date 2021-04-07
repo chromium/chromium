@@ -334,8 +334,6 @@ void SearchResultRanker::Train(const AppLaunchData& app_launch_data) {
   } else if (model == Model::APPS && app_ranker_) {
     app_ranker_->Record(NormalizeAppId(app_launch_data.id));
   }
-
-  LogChipUsageMetrics(app_launch_data);
 }
 
 void SearchResultRanker::ZeroStateResultsDisplayed(

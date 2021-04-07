@@ -8385,6 +8385,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Chip" label="Suggestion chips"/>
   <suffix name="ListSearch" label="Results list search"/>
   <suffix name="ListZeroState" label="Results list zero-state"/>
+  <affected-histogram name="Apps.AppList.UserEvent.LaunchIndex"/>
   <affected-histogram name="Apps.AppList.UserEvent.Overall"/>
   <affected-histogram name="Apps.AppList.UserEvent.TypeAbandon"/>
   <affected-histogram name="Apps.AppList.UserEvent.TypeImpression"/>

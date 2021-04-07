@@ -561,6 +561,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.SuggestedFiles.LaunchIndex" units="index"
     expires_after="2021-08-15">
+  <obsolete>
+    Removed April 2021. Use the more general Apps.AppList.UserEvent.LaunchIndex
+    instead.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -589,6 +593,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records error when processing user events into Apps.AppList.UserEvent.*
     metrics. These are expected to be rare and bucket proportion is not
     meaningful.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.UserEvent.LaunchIndex" units="index"
+    expires_after="2021-08-01">
+<!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
+
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Emitted on a usage of the launcher, and records overall impressions,
+    launches, and abandons for a launcher UI view. The bucket proportion is not
+    meaningful for this metric, because impressions are a superset of launches
+    and abandons. Instead, the ratio between buckets can be used to calculate
+    accurate overall CTR.
   </summary>
 </histogram>
 

@@ -74,16 +74,4 @@ void LogZeroStateLaunchType(RankingItemType ranking_item_type) {
                             zero_state_type);
 }
 
-void LogChipUsageMetrics(const AppLaunchData& launch) {
-  // Filter launches that aren't from the chips.
-  if (launch.launched_from !=
-      ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip)
-    return;
-
-  // Launch index. At most 5 chips are shown and indices are 0-based, so the
-  // maximum index is 4.
-  UMA_HISTOGRAM_EXACT_LINEAR("Apps.AppList.SuggestedFiles.LaunchIndex",
-                             launch.suggestion_index, 4);
-}
-
 }  // namespace app_list

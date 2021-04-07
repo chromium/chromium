@@ -96,8 +96,6 @@ void LogJsonConfigConversionStatus(const std::string& suffix,
 
 void LogZeroStateLaunchType(RankingItemType type);
 
-void LogChipUsageMetrics(const AppLaunchData& app_launch_data);
-
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_RESULT_RANKER_HISTOGRAM_UTIL_H_
