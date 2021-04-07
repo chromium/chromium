@@ -42,6 +42,8 @@ class SodaInstallerImpl : public SodaInstaller,
   void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
   bool IsSodaInstalled() const override;
+  bool IsLanguageInstalled(
+      const std::string& locale_or_language) const override;
 
  private:
   // SodaInstaller:

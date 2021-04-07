@@ -31,7 +31,7 @@ class CrosSpeechRecognitionServiceFactory
 
  private:
   friend class base::NoDestructor<CrosSpeechRecognitionServiceFactory>;
-  friend class OnDeviceSpeechRecognizerBrowsertest;
+  friend class OnDeviceSpeechRecognizerTest;
   friend class ::ash::DictationTest;
   static CrosSpeechRecognitionServiceFactory* GetInstance();
 

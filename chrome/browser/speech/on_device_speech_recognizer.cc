@@ -57,23 +57,30 @@ media::AudioParameters GetAudioParameters(
 
 }  // namespace
 
-bool OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable() {
+bool OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
+    std::string language_or_locale) {
   // IsSodaInstalled will DCHECK if kUseSodaForLiveCaption is disabled.
   // kUseSodaForLiveCaption is used to track SODA availability on-device.
-  return base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
-         speech::SodaInstaller::GetInstance()->IsSodaInstalled();
+  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
+    return false;
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  return soda_installer->IsSodaInstalled() &&
+         soda_installer->IsLanguageInstalled(language_or_locale);
 }
 
 OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(
     const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
-    Profile* profile)
+    Profile* profile,
+    std::string language_or_locale)
     : SpeechRecognizer(delegate),
       state_(SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF),
       is_multichannel_supported_(false),
+      language_or_locale_(language_or_locale),
       waiting_for_params_(false) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Connect the SpeechRecognitionContext.
+  // TODO(crbug.com/1195916): Use language_or_locale_ when starting recognition.
   mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
       speech_recognition_context_receiver =
           speech_recognition_context_.BindNewPipeAndPassReceiver();

@@ -10,10 +10,16 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
 
+namespace {
+// On-device speech recognition is only available in US English.
+const char kEnglishLanguageCode[] = "en-US";
+}  // namespace
+
 ProjectorClientImpl::ProjectorClientImpl() {
   ash::ProjectorController::Get()->SetClient(this);
   bool soda_available =
-      OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable();
+      OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
+          kEnglishLanguageCode);
 
   ash::ProjectorController::Get()->OnSpeechRecognitionAvailable(soda_available);
   if (!soda_available) {
@@ -26,10 +32,13 @@ ProjectorClientImpl::~ProjectorClientImpl() = default;
 void ProjectorClientImpl::StartSpeechRecognition() {
   // ProjectorController should only request for speech recognition after it
   // has been informed that recognition is available.
-  DCHECK(OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable());
+  // TODO(crbug.com/1165437): Dynamically determine language code.
+  DCHECK(OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
+      kEnglishLanguageCode));
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-      weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetPrimaryUserProfile());
+      weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetPrimaryUserProfile(),
+      kEnglishLanguageCode);
   speech_recognizer_->Start();
 }
 
@@ -56,6 +65,7 @@ void ProjectorClientImpl::OnSpeechRecognitionStateChanged(
 
 void ProjectorClientImpl::OnSodaInstalled() {
   // OnDevice has been installed! Notify ProjectorController in ash.
-  DCHECK(OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable());
+  DCHECK(OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
+      kEnglishLanguageCode));
   ash::ProjectorController::Get()->OnSpeechRecognitionAvailable(true);
 }

@@ -25,6 +25,7 @@
 #include "components/soda/constants.h"
 #include "components/update_client/crx_update_item.h"
 #include "media/base/media_switches.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -109,6 +110,14 @@ void SodaInstallerImpl::InstallLanguage(PrefService* prefs) {
 bool SodaInstallerImpl::IsSodaInstalled() const {
   DCHECK(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
   return soda_binary_installed_ && language_installed_;
+}
+
+bool SodaInstallerImpl::IsLanguageInstalled(
+    const std::string& locale_or_language) const {
+  // TODO(crbug.com/1161569): SODA is only available for en-US right now.
+  // Update this to check installation of language pack when available.
+  return l10n_util::GetLanguage(locale_or_language) == "en" &&
+         language_installed_;
 }
 
 void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {

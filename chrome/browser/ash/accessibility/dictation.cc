@@ -79,12 +79,13 @@ bool Dictation::OnToggleDictation() {
     return false;
   }
   has_committed_text_ = false;
-  if (OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable() &&
-      switches::IsExperimentalAccessibilityDictationOfflineEnabled()) {
+  std::string language = GetUserLanguage(profile_);
+  if (switches::IsExperimentalAccessibilityDictationOfflineEnabled() &&
+      OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(language)) {
     // On-device recognition is behind a flag and then only available if
     // SODA is installed on-device.
     speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-        weak_ptr_factory_.GetWeakPtr(), profile_);
+        weak_ptr_factory_.GetWeakPtr(), profile_, language);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               true);
   } else {
@@ -93,7 +94,7 @@ bool Dictation::OnToggleDictation() {
         content::BrowserContext::GetDefaultStoragePartition(profile_)
             ->GetURLLoaderFactoryForBrowserProcessIOThread(),
         profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages),
-        GetUserLanguage(profile_));
+        language);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               false);
   }

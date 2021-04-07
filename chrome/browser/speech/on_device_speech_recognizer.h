@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SPEECH_ON_DEVICE_SPEECH_RECOGNIZER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/speech/speech_recognizer.h"
@@ -27,15 +28,13 @@ class OnDeviceSpeechRecognizer
  public:
   // Returns true if on-device speech recognition is available and installed
   // on-device.
-  // TODO(crbug.com/1173135): Language pack availability is based on the current
-  // profile language settings, and currently based on kLiveCaptionLanguageCode
-  // which is hard-coded to en-us. IsOnDeviceSpeechRecognizerAvailable should
-  // take a language code to check.
-  static bool IsOnDeviceSpeechRecognizerAvailable();
+  static bool IsOnDeviceSpeechRecognizerAvailable(
+      std::string language_or_locale);
 
   OnDeviceSpeechRecognizer(
       const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
-      Profile* profile);
+      Profile* profile,
+      std::string language_or_locale);
   ~OnDeviceSpeechRecognizer() override;
   OnDeviceSpeechRecognizer(const OnDeviceSpeechRecognizer&) = delete;
   OnDeviceSpeechRecognizer& operator=(const OnDeviceSpeechRecognizer&) = delete;
@@ -53,7 +52,7 @@ class OnDeviceSpeechRecognizer
       media::mojom::LanguageIdentificationEventPtr event) override;
 
  private:
-  friend class OnDeviceSpeechRecognizerBrowsertest;
+  friend class OnDeviceSpeechRecognizerTest;
 
   void OnRecognizerBound(bool success);
   void OnRecognizerDisconnected();
@@ -66,6 +65,7 @@ class OnDeviceSpeechRecognizer
 
   SpeechRecognizerStatus state_;
   bool is_multichannel_supported_;
+  std::string language_or_locale_;
 
   // Whether we are waiting for the AudioParameters callback to return. Used
   // to ensure Start doesn't keep starting if Stop or Error were called

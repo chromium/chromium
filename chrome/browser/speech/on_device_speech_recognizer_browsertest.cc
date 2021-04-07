@@ -6,6 +6,8 @@
 
 #include <map>
 
+#include "chrome/browser/accessibility/soda_installer.h"
+#include "chrome/browser/ash/accessibility/soda_installer_impl_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
@@ -86,25 +88,28 @@ class MockAudioSystem : public media::AudioSystem {
 
 // Tests OnDeviceSpeechRecognizer plumbing with a fake SpeechRecognitionService.
 // Does not do end-to-end audio fetching or test SODA on device.
-class OnDeviceSpeechRecognizerBrowsertest : public InProcessBrowserTest {
+class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
  public:
-  OnDeviceSpeechRecognizerBrowsertest() = default;
-  ~OnDeviceSpeechRecognizerBrowsertest() override = default;
-  OnDeviceSpeechRecognizerBrowsertest(
-      const OnDeviceSpeechRecognizerBrowsertest&) = delete;
-  OnDeviceSpeechRecognizerBrowsertest& operator=(
-      const OnDeviceSpeechRecognizerBrowsertest&) = delete;
+  OnDeviceSpeechRecognizerTest() = default;
+  ~OnDeviceSpeechRecognizerTest() override = default;
+  OnDeviceSpeechRecognizerTest(const OnDeviceSpeechRecognizerTest&) = delete;
+  OnDeviceSpeechRecognizerTest& operator=(const OnDeviceSpeechRecognizerTest&) =
+      delete;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     // Replaces normal CrosSpeechRecognitionService with a fake one.
     CrosSpeechRecognitionServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         browser()->profile(),
-        base::BindRepeating(&OnDeviceSpeechRecognizerBrowsertest::
-                                CreateTestSpeechRecognitionService,
-                            base::Unretained(this)));
+        base::BindRepeating(
+            &OnDeviceSpeechRecognizerTest::CreateTestSpeechRecognitionService,
+            base::Unretained(this)));
     mock_speech_delegate_.reset(
         new testing::StrictMock<MockSpeechRecognizerDelegate>());
+    // Fake that SODA is installed.
+    static_cast<speech::SodaInstallerImplChromeOS*>(
+        speech::SodaInstaller::GetInstance())
+        ->soda_installed_for_test_ = true;
   }
 
   void TearDownOnMainThread() override {
@@ -126,7 +131,7 @@ class OnDeviceSpeechRecognizerBrowsertest : public InProcessBrowserTest {
         .WillOnce(InvokeWithoutArgs(&loop, &base::RunLoop::Quit))
         .RetiresOnSaturation();
     recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-        mock_speech_delegate_->GetWeakPtr(), browser()->profile());
+        mock_speech_delegate_->GetWeakPtr(), browser()->profile(), "en-US");
     loop.Run();
   }
 
@@ -158,13 +163,11 @@ class OnDeviceSpeechRecognizerBrowsertest : public InProcessBrowserTest {
   speech::FakeSpeechRecognitionService* fake_service_;
 };
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
-                       SetsUpServiceConnection) {
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, SetsUpServiceConnection) {
   ConstructRecognizerAndWaitForReady();
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
-                       StartsCapturingAudio) {
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, StartsCapturingAudio) {
   testing::InSequence seq;
   ConstructRecognizerAndWaitForReady();
   EXPECT_FALSE(fake_service_->is_capturing_audio());
@@ -184,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
                        ReceivesRecognitionEvents) {
   testing::InSequence seq;
   ConstructRecognizerAndWaitForReady();
@@ -217,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest, ReceivesErrors) {
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, ReceivesErrors) {
   testing::InSequence seq;
   ConstructRecognizerAndWaitForReady();
 
@@ -229,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest, ReceivesErrors) {
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
                        UsesReturnedParametersIfFramesPerBufferIsSlowEnough) {
   fake_service_->set_multichannel_supported(true);
   int sample_rate = 10000;
@@ -246,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
   EXPECT_TRUE(fake_service_->audio_parameters()->Equals(params));
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
                        SlowerPollingIfFramesPerBufferIsTooShort) {
   fake_service_->set_multichannel_supported(true);
   int sample_rate = 20000;
@@ -268,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
             fake_service_->audio_parameters()->frames_per_buffer());
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
                        SetsToSingleChannelIfMultichannelNotSupported) {
   fake_service_->set_multichannel_supported(false);
   int sample_rate = 20000;
@@ -286,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
             fake_service_->audio_parameters()->channel_layout());
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest, DefaultParameters) {
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, DefaultParameters) {
   fake_service_->set_multichannel_supported(true);
   ConstructRecognizerAndWaitForReady();
   StartListeningWithAudioParams(base::nullopt);

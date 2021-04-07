@@ -78,6 +78,11 @@ class SodaInstaller {
   // asynchronously returned an answer.
   virtual bool IsSodaInstalled() const = 0;
 
+  // Returns whether or not the language pack for a given language or locale
+  // code is installed.
+  virtual bool IsLanguageInstalled(
+      const std::string& locale_or_language) const = 0;
+
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
 

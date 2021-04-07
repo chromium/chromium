@@ -10,6 +10,7 @@
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
 class PrefService;
+class OnDeviceSpeechRecognizerTest;
 
 namespace ash {
 class DictationTest;
@@ -39,9 +40,13 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
   void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
   bool IsSodaInstalled() const override;
+  bool IsLanguageInstalled(
+      const std::string& locale_or_language) const override;
 
  private:
   friend class ::ash::DictationTest;
+  friend class ::OnDeviceSpeechRecognizerTest;
+
   // SodaInstaller:
   // Here "uninstall" is used in the DLC sense of the term: Uninstallation will
   // disable a DLC but not immediately remove it from disk.

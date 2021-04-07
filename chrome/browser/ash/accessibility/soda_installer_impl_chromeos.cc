@@ -12,6 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/soda/pref_names.h"
 #include "media/base/media_switches.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -89,6 +90,15 @@ void SodaInstallerImplChromeOS::InstallLanguage(PrefService* prefs) {
 bool SodaInstallerImplChromeOS::IsSodaInstalled() const {
   DCHECK(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
   return (soda_binary_installed_ && language_installed_) ||
+         soda_installed_for_test_;
+}
+
+bool SodaInstallerImplChromeOS::IsLanguageInstalled(
+    const std::string& locale_or_language) const {
+  // TODO(crbug.com/1161569): SODA is only available for English right now.
+  // Update this to check installation of language pack when available.
+  return (l10n_util::GetLanguage(locale_or_language) == "en" &&
+          language_installed_) ||
          soda_installed_for_test_;
 }
 
