@@ -429,7 +429,7 @@ void HoldingSpaceTray::Layout() {
   // The `drop_target_overlay_` should always fill this view's bounds as they
   // are perceived by the user. Note that the user perceives the bounds of this
   // view to be its background bounds, not its local bounds.
-  drop_target_overlay_->SetBoundsRect(GetBackgroundBounds());
+  drop_target_overlay_->SetBoundsRect(GetMirroredRect(GetBackgroundBounds()));
 }
 
 void HoldingSpaceTray::VisibilityChanged(views::View* starting_from,
