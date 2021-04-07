@@ -134,11 +134,8 @@ std::vector<std::string> GetSortedComponentIMEs(
       }
     }
   }
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kLanguageSettingsUpdate)) {
-    for (const auto& input_method_id : available_component_imes) {
-      component_ime_list.push_back(input_method_id);
-    }
+  for (const auto& input_method_id : available_component_imes) {
+    component_ime_list.push_back(input_method_id);
   }
 
   return component_ime_list;

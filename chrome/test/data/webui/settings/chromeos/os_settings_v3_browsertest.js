@@ -41,14 +41,6 @@ var OSSettingsOsLanguagesPageV3Test = class extends OSSettingsV3BrowserTest {
   get browsePreload() {
     return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_languages_page_tests.m.js';
   }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled,
-      disabled: ['chromeos::features::kLanguageSettingsUpdate']
-    };
-  }
 };
 
 TEST_F('OSSettingsOsLanguagesPageV3Test', 'All', () => mocha.run());

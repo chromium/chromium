@@ -268,13 +268,9 @@ bool ChromeVirtualKeyboardDelegate::ShowLanguageSettings() {
 
   base::RecordAction(
       base::UserMetricsAction("VirtualKeyboard.OpenLanguageSettings"));
-  const std::string path =
-      base::FeatureList::IsEnabled(
-          ::chromeos::features::kLanguageSettingsUpdate)
-          ? chromeos::settings::mojom::kInputSubpagePath
-          : chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath;
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(), path);
+      ProfileManager::GetActiveUserProfile(),
+      chromeos::settings::mojom::kInputSubpagePath);
   return true;
 }
 
@@ -561,10 +557,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       GenerateFeatureFlag("systemlatinphysicaltyping",
                           base::FeatureList::IsEnabled(
                               chromeos::features::kSystemLatinPhysicalTyping)));
-  features->AppendString(
-      GenerateFeatureFlag("languagesettingsupdate",
-                          base::FeatureList::IsEnabled(
-                              chromeos::features::kLanguageSettingsUpdate)));
   features->AppendString(GenerateFeatureFlag(
       "multilingualtyping",
       base::FeatureList::IsEnabled(chromeos::features::kMultilingualTyping)));

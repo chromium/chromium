@@ -351,12 +351,8 @@ void SystemTrayClient::ShowChromeSlow() {
 
 void SystemTrayClient::ShowIMESettings() {
   base::RecordAction(base::UserMetricsAction("OpenLanguageOptionsDialog"));
-  const std::string path =
-      base::FeatureList::IsEnabled(
-          ::chromeos::features::kLanguageSettingsUpdate)
-          ? chromeos::settings::mojom::kInputSubpagePath
-          : chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath;
-  ShowSettingsSubPageForActiveUser(path);
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kInputSubpagePath);
 }
 
 void SystemTrayClient::ShowConnectedDevicesSettings() {

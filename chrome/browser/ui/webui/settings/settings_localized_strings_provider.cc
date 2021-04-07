@@ -748,9 +748,8 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
   html_source->AddString(
       "chromeOSLanguagesSettingsPath",
       chromeos::settings::mojom::kLanguagesAndInputSectionPath);
-  html_source->AddBoolean("isChromeOSLanguagesSettingsUpdate",
-                          base::FeatureList::IsEnabled(
-                              chromeos::features::kLanguageSettingsUpdate));
+  // TODO(crbug.com/1097328): Delete this.
+  html_source->AddBoolean("isChromeOSLanguagesSettingsUpdate", true);
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

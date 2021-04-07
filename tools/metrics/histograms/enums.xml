@@ -46155,7 +46155,6 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRef:disabled"/>
   <int value="-127666141" label="TabGroups:disabled"/>
   <int value="-127231994" label="VrBrowsingNativeAndroidUi:disabled"/>
-  <int value="-124604792" label="LanguageSettingsUpdate:enabled"/>
   <int value="-122492389" label="enable-browser-task-scheduler"/>
   <int value="-120521482" label="DirectManipulationStylus:enabled"/>
   <int value="-120091289" label="CrostiniAppSearch:enabled"/>
@@ -47848,7 +47847,6 @@ from previous Chrome versions.
   <int value="1397053154" label="ContextualSearchLiteralSearchTap:enabled"/>
   <int value="1397069250" label="NetworkService:disabled"/>
   <int value="1398049903" label="WebUIDarkMode:disabled"/>
-  <int value="1398148960" label="LanguageSettingsUpdate:disabled"/>
   <int value="1398333721" label="ForceEnableDevicesPage:disabled"/>
   <int value="1399950951" label="AutofillTokenPrefixMatching:disabled"/>
   <int value="1403195370" label="ArcCupsApi:enabled"/>

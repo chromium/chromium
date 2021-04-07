@@ -1562,11 +1562,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enable-cros-language-settings-update",
-    "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-cros-language-settings-update-2",
     "owners": [ "cros-borders@google.com" ],
     "expiry_milestone": 96

@@ -26,38 +26,6 @@ namespace chromeos {
 namespace settings {
 namespace {
 
-const std::vector<SearchConcept>& GetLanguagesSearchConceptsV1() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT,
-       mojom::kLanguagesAndInputDetailsSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kLanguagesAndInputDetails}},
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_METHODS,
-       mojom::kManageInputMethodsSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kManageInputMethods}},
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_ADD_LANGUAGE,
-       mojom::kLanguagesAndInputDetailsSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAddLanguage}},
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_INPUT_OPTIONS_SHELF,
-       mojom::kLanguagesAndInputDetailsSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowInputOptionsInShelf},
-       {IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_INPUT_OPTIONS_SHELF_ALT1,
-        SearchConcept::kAltTagEnd}},
-  });
-  return *tags;
-}
-
 const std::vector<SearchConcept>& GetLanguagesPageSearchConceptsV2() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES,
@@ -130,11 +98,6 @@ const std::vector<SearchConcept>& GetEditDictionarySearchConceptsV2() {
        {.subpage = mojom::Subpage::kEditDictionary}},
   });
   return *tags;
-}
-
-bool IsLanguageSettingsV2Enabled() {
-  return base::FeatureList::IsEnabled(
-      ::chromeos::features::kLanguageSettingsUpdate);
 }
 
 const std::vector<SearchConcept>& GetSmartInputsSearchConcepts() {
@@ -353,19 +316,15 @@ LanguagesSection::LanguagesSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry),
       pref_service_(pref_service) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  if (IsLanguageSettingsV2Enabled()) {
-    pref_change_registrar_.Init(pref_service_);
-    pref_change_registrar_.Add(
-        spellcheck::prefs::kSpellCheckEnable,
-        base::BindRepeating(&LanguagesSection::UpdateSpellCheckSearchTags,
-                            base::Unretained(this)));
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      spellcheck::prefs::kSpellCheckEnable,
+      base::BindRepeating(&LanguagesSection::UpdateSpellCheckSearchTags,
+                          base::Unretained(this)));
 
-    updater.AddSearchTags(GetLanguagesPageSearchConceptsV2());
-    updater.AddSearchTags(GetInputPageSearchConceptsV2());
-    UpdateSpellCheckSearchTags();
-  } else {
-    updater.AddSearchTags(GetLanguagesSearchConceptsV1());
-  }
+  updater.AddSearchTags(GetLanguagesPageSearchConceptsV2());
+  updater.AddSearchTags(GetInputPageSearchConceptsV2());
+  UpdateSpellCheckSearchTags();
 
   if (IsAssistivePersonalInfoAllowed() || IsEmojiSuggestionAllowed()) {
     updater.AddSearchTags(GetSmartInputsSearchConcepts());
@@ -426,8 +385,8 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("imeOptionsInSettings",
                           base::FeatureList::IsEnabled(
                               ::chromeos::features::kImeOptionsInSettings));
-  html_source->AddBoolean("enableLanguageSettingsV2",
-                          IsLanguageSettingsV2Enabled());
+  // TODO(crbug.com/1097328): Delete this.
+  html_source->AddBoolean("enableLanguageSettingsV2", true);
 }
 
 void LanguagesSection::AddHandlers(content::WebUI* web_ui) {
@@ -496,37 +455,17 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
       mojom::kLanguagesAndInputDetailsSubpagePath);
 
-  // Shared settings between existing pages and the updated pages.
-  if (IsLanguageSettingsV2Enabled()) {
-    generator->RegisterNestedSetting(mojom::Setting::kAddLanguage,
-                                     mojom::Subpage::kLanguages);
-    generator->RegisterNestedSetting(mojom::Setting::kShowInputOptionsInShelf,
-                                     mojom::Subpage::kInput);
+  generator->RegisterNestedSetting(mojom::Setting::kAddLanguage,
+                                   mojom::Subpage::kLanguages);
+  generator->RegisterNestedSetting(mojom::Setting::kShowInputOptionsInShelf,
+                                   mojom::Subpage::kInput);
 
-    // Input method options.
-    generator->RegisterNestedSubpage(
-        IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
-        mojom::Subpage::kInputMethodOptions, mojom::Subpage::kInput,
-        mojom::SearchResultIcon::kGlobe,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::kInputMethodOptionsSubpagePath);
-  } else {
-    static constexpr mojom::Setting kLanguagesAndInputDetailsSettings[] = {
-        mojom::Setting::kAddLanguage,
-        mojom::Setting::kShowInputOptionsInShelf,
-    };
-    RegisterNestedSettingBulk(mojom::Subpage::kLanguagesAndInputDetails,
-                              kLanguagesAndInputDetailsSettings, generator);
-
-    // Input method options.
-    generator->RegisterNestedSubpage(
-        IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
-        mojom::Subpage::kInputMethodOptions,
-        mojom::Subpage::kLanguagesAndInputDetails,
-        mojom::SearchResultIcon::kGlobe,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::kInputMethodOptionsSubpagePath);
-  }
+  // Input method options.
+  generator->RegisterNestedSubpage(
+      IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
+      mojom::Subpage::kInputMethodOptions, mojom::Subpage::kInput,
+      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kInputMethodOptionsSubpagePath);
 
   // Manage input methods.
   generator->RegisterNestedSubpage(

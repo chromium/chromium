@@ -17,6 +17,7 @@
 // #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
+// TODO(crbug/1109431): Remove these tests.
 cr.define('os_languages_page_tests', function() {
   /** @enum {string} */
   const TestNames = {
@@ -352,39 +353,11 @@ cr.define('os_languages_page_tests', function() {
       });
     });
 
-    suite(TestNames.DetailsPage, function() {
-      test('Deep link to show input options in shelf', async () => {
-        loadTimeData.overrideValues({
-          isDeepLinkingEnabled: true,
-        });
-
-        const params = new URLSearchParams;
-        params.append('settingId', '1201');
-        settings.Router.getInstance().navigateTo(
-            settings.routes.OS_LANGUAGES_DETAILS, params);
-
-        Polymer.dom.flush();
-
-        const deepLinkElement =
-            languagesPage.$$('#showImeMenu').$$('cr-toggle');
-        await test_util.waitAfterNextRender(deepLinkElement);
-        assertEquals(
-            deepLinkElement, getDeepActiveElement(),
-            'Show input options toggle should be focused for settingId=1201.');
-      });
-    });
-
     suite(TestNames.RecordMetrics, function() {
       test('when adding languages', async () => {
         languagesPage.$$('#addLanguages').click();
         Polymer.dom.flush();
         await metricsProxy.whenCalled('recordAddLanguages');
-      });
-
-      test('when managing input methods', async () => {
-        languagesPage.$$('#manageInputMethods').click();
-        Polymer.dom.flush();
-        await metricsProxy.whenCalled('recordManageInputMethods');
       });
 
       test('when deactivating show ime menu', async () => {

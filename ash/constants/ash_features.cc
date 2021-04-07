@@ -458,10 +458,6 @@ const base::Feature kLacrosPrimary{"LacrosPrimary",
 const base::Feature kLacrosSupport{"LacrosSupport",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables language settings update.
-const base::Feature kLanguageSettingsUpdate{"LanguageSettingsUpdate",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables the second language settings update.
 const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

@@ -3960,10 +3960,6 @@ const char kCroshSWADescription[] =
     "When enabled, crosh (Chrome OS Shell) will run as a tabbed System Web App "
     "rather than a normal browser tab.";
 
-const char kCrosLanguageSettingsUpdateName[] = "Language Settings Update";
-const char kCrosLanguageSettingsUpdateDescription[] =
-    "Enable this flag to see the new language settings update.";
-
 const char kCrosLanguageSettingsUpdate2Name[] = "Language Settings Update 2";
 const char kCrosLanguageSettingsUpdate2Description[] =
     "Enables the second language settings update. Requires "
