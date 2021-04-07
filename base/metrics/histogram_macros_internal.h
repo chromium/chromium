@@ -73,7 +73,7 @@ struct EnumSizeTraits<
     base::HistogramBase* histogram_pointer(                              \
         reinterpret_cast<base::HistogramBase*>(                          \
             atomic_histogram_pointer->load(std::memory_order_acquire))); \
-    if (UNLIKELY(!histogram_pointer)) {                                  \
+    if (!histogram_pointer) {                                            \
       /*                                                                 \
        * This is the slow path, which will construct OR find the         \
        * matching histogram. |histogram_factory_get_invocation| includes \
