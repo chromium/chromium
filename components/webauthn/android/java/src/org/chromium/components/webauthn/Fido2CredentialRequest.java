@@ -5,8 +5,8 @@
 package org.chromium.components.webauthn;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.net.Uri;
 import android.os.SystemClock;
 
@@ -14,7 +14,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.fido.Fido;
-import com.google.android.gms.fido.fido2.Fido2PendingIntent;
 import com.google.android.gms.fido.fido2.Fido2PrivilegedApiClient;
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse;
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse;
@@ -24,10 +23,8 @@ import com.google.android.gms.fido.fido2.api.common.BrowserPublicKeyCredentialCr
 import com.google.android.gms.fido.fido2.api.common.BrowserPublicKeyCredentialRequestOptions;
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential;
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialCreationOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -86,58 +83,6 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
         mMakeCredentialCallback = null;
     }
 
-    // Listens for a Fido2PendingIntent.
-    private OnSuccessListener<Fido2PendingIntent> mIntentListener = new OnSuccessListener<
-            Fido2PendingIntent>() {
-        @Override
-        public void onSuccess(Fido2PendingIntent fido2PendingIntent) {
-            if (!fido2PendingIntent.hasPendingIntent()) {
-                Log.e(TAG, "Didn't receive a pending intent.");
-                returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                return;
-            }
-
-            if (mWindow == null) {
-                mWindow = mWebContents.getTopLevelNativeWindow();
-                if (mWindow == null) {
-                    Log.e(TAG, "Couldn't get ActivityWindowAndroid.");
-                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                    return;
-                }
-            }
-
-            final Activity activity = mWindow.getActivity().get();
-            if (activity == null) {
-                Log.e(TAG, "Null activity.");
-                returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                return;
-            }
-
-            Callback<Integer> mIntentTrigger = (Integer result) -> {
-                try {
-                    fido2PendingIntent.launchPendingIntent(activity, result);
-                } catch (IntentSender.SendIntentException e) {
-                    Log.e(TAG, "Failed to send Fido2 register request to Google Play Services.");
-                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                }
-            };
-
-            // Record starting time that will be used to establish a timeout that will
-            // be activated when we receive a response that cannot be returned to the
-            // relying party prior to timeout.
-            mStartTimeMs = SystemClock.elapsedRealtime();
-            int requestCode =
-                    mWindow.showCancelableIntent(mIntentTrigger, Fido2CredentialRequest.this, null);
-
-            if (requestCode == WindowAndroid.START_INTENT_FAILURE) {
-                Log.e(TAG, "Failed to send Fido2 request to Google Play Services.");
-                returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-            } else {
-                Log.e(TAG, "Sent a Fido2 request to Google Play Services.");
-            }
-        }
-    };
-
     public void handleMakeCredentialRequest(
             org.chromium.blink.mojom.PublicKeyCredentialCreationOptions options,
             RenderFrameHost frameHost, Origin origin, MakeCredentialResponseCallback callback,
@@ -178,8 +123,9 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
                         .setOrigin(Uri.parse(convertOriginToString(origin)))
                         .build();
 
-        Task<Fido2PendingIntent> result = mFido2ApiClient.getRegisterIntent(browserRequestOptions);
-        result.addOnSuccessListener(mIntentListener);
+        Task<PendingIntent> result =
+                mFido2ApiClient.getRegisterPendingIntent(browserRequestOptions);
+        result.addOnSuccessListener(this::onGotPendingIntent);
     }
 
     public void handleGetAssertionRequest(PublicKeyCredentialRequestOptions options,
@@ -221,8 +167,8 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
                         .setOrigin(Uri.parse(convertOriginToString(origin)))
                         .build();
 
-        Task<Fido2PendingIntent> result = mFido2ApiClient.getSignIntent(browserRequestOptions);
-        result.addOnSuccessListener(mIntentListener);
+        Task<PendingIntent> result = mFido2ApiClient.getSignPendingIntent(browserRequestOptions);
+        result.addOnSuccessListener(this::onGotPendingIntent);
     }
 
     public void handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
@@ -265,14 +211,42 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
         return true;
     }
 
-    @VisibleForTesting
-    public void setWindowForTesting(WindowAndroid window) {
-        mWindow = window;
-    }
+    // Handles a PendingIntent from the GMSCore Fido library.
+    private void onGotPendingIntent(PendingIntent pendingIntent) {
+        if (pendingIntent == null) {
+            Log.e(TAG, "Didn't receive a pending intent.");
+            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            return;
+        }
 
-    @VisibleForTesting
-    public void setWebContentsForTesting(WebContents webContents) {
-        mWebContents = webContents;
+        if (mWindow == null) {
+            mWindow = mWebContents.getTopLevelNativeWindow();
+            if (mWindow == null) {
+                Log.e(TAG, "Couldn't get ActivityWindowAndroid.");
+                returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                return;
+            }
+        }
+
+        final Activity activity = mWindow.getActivity().get();
+        if (activity == null) {
+            Log.e(TAG, "Null activity.");
+            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            return;
+        }
+
+        // Record starting time that will be used to establish a timeout that will
+        // be activated when we receive a response that cannot be returned to the
+        // relying party prior to timeout.
+        mStartTimeMs = SystemClock.elapsedRealtime();
+        int requestCode = mWindow.showCancelableIntent(pendingIntent, this, null);
+
+        if (requestCode == WindowAndroid.START_INTENT_FAILURE) {
+            Log.e(TAG, "Failed to send Fido2 request to Google Play Services.");
+            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+        } else {
+            Log.e(TAG, "Sent a Fido2 request to Google Play Services.");
+        }
     }
 
     // Handles the result.
@@ -382,5 +356,15 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
         // Wrapping with GURLUtils.getOrigin() in order to trim default ports.
         return GURLUtils.getOrigin(
                 origin.getScheme() + "://" + origin.getHost() + ":" + origin.getPort());
+    }
+
+    @VisibleForTesting
+    public void setWindowForTesting(WindowAndroid window) {
+        mWindow = window;
+    }
+
+    @VisibleForTesting
+    public void setWebContentsForTesting(WebContents webContents) {
+        mWebContents = webContents;
     }
 }
