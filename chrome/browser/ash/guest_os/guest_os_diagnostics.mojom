@@ -1,0 +1,27 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module guest_os.mojom;
+
+struct DiagnosticEntry {
+  enum Status {
+    kPass,
+    kFail,
+    kNotApplicable,
+  };
+
+  string requirement;
+  Status status;
+  string? explanation;
+};
+
+struct DiagnosticTopError {
+  string message;
+  string? learn_more_link;
+};
+
+struct Diagnostics {
+  array<DiagnosticEntry> entries;
+  DiagnosticTopError? top_error;
+};

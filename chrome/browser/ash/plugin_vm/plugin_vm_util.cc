@@ -38,17 +38,17 @@ const char kChromeOSBaseDirectoryDisplayText[] = "Network \u203a ChromeOS";
 
 namespace {
 
-static std::string& GetFakeLicenseKey() {
+std::string& GetFakeLicenseKey() {
   static base::NoDestructor<std::string> license_key;
   return *license_key;
 }
 
-static base::RepeatingClosureList& GetFakeLicenceKeyListeners() {
+base::RepeatingClosureList& GetFakeLicenceKeyListeners() {
   static base::NoDestructor<base::RepeatingClosureList> instance;
   return *instance;
 }
 
-static std::string& GetFakeUserId() {
+std::string& GetFakeUserId() {
   static base::NoDestructor<std::string> user_id;
   return *user_id;
 }
