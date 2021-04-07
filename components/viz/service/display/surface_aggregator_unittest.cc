@@ -45,6 +45,7 @@
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "components/viz/test/fake_surface_observer.h"
+#include "components/viz/test/test_surface_id_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -1731,12 +1732,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
       nullptr, &manager_, kArbitraryFrameSinkId1, kChildIsRoot);
   auto parent_support = std::make_unique<CompositorFrameSinkSupport>(
       nullptr, &manager_, kArbitraryFrameSinkId2, kRootIsRoot);
-  ParentLocalSurfaceIdAllocator child_allocator;
-  child_allocator.GenerateId();
-  LocalSurfaceId embedded_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceId();
-  SurfaceId embedded_surface_id(embedded_support->frame_sink_id(),
-                                embedded_local_surface_id);
+  TestSurfaceIdAllocator embedded_surface_id(embedded_support->frame_sink_id());
   root_allocator_.GenerateId();
   SurfaceId nonexistent_surface_id(root_sink_->frame_sink_id(),
                                    root_allocator_.GetCurrentLocalSurfaceId());
@@ -1747,11 +1743,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
 
   constexpr float device_scale_factor = 1.0f;
   SubmitCompositorFrame(embedded_support.get(), embedded_passes,
-                        embedded_local_surface_id, device_scale_factor);
+                        embedded_surface_id.local_surface_id(),
+                        device_scale_factor);
   auto copy_request(CopyOutputRequest::CreateStubForTesting());
   auto* copy_request_ptr = copy_request.get();
-  embedded_support->RequestCopyOfOutput(
-      {embedded_local_surface_id, SubtreeCaptureId(), std::move(copy_request)});
+  embedded_support->RequestCopyOfOutput({embedded_surface_id.local_surface_id(),
+                                         SubtreeCaptureId(),
+                                         std::move(copy_request)});
 
   ParentLocalSurfaceIdAllocator parent_allocator;
   parent_allocator.GenerateId();
@@ -1830,12 +1828,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
 
 // This tests referencing a surface that has multiple render passes.
 TEST_F(SurfaceAggregatorValidSurfaceTest, MultiPassSurfaceReference) {
-  ParentLocalSurfaceIdAllocator child_allocator;
-  child_allocator.GenerateId();
-  LocalSurfaceId embedded_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceId();
-  SurfaceId embedded_surface_id(child_sink_->frame_sink_id(),
-                                embedded_local_surface_id);
+  TestSurfaceIdAllocator embedded_surface_id(child_sink_->frame_sink_id());
 
   CompositorRenderPassId pass_ids[] = {CompositorRenderPassId{1},
                                        CompositorRenderPassId{2},
@@ -1855,7 +1848,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, MultiPassSurfaceReference) {
 
   constexpr float device_scale_factor = 1.0f;
   SubmitCompositorFrame(child_sink_.get(), embedded_passes,
-                        embedded_local_surface_id, device_scale_factor);
+                        embedded_surface_id.local_surface_id(),
+                        device_scale_factor);
 
   std::vector<Quad> root_quads[3] = {
       {Quad::SolidColorQuad(5, gfx::Rect(5, 5)),

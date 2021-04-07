@@ -81,6 +81,8 @@ viz_static_library("test_support") {
     "test_output_surface_provider.h",
     "test_shared_bitmap_manager.cc",
     "test_shared_bitmap_manager.h",
+    "test_surface_id_allocator.cc",
+    "test_surface_id_allocator.h",
     "test_types.cc",
     "test_types.h",
   ]
