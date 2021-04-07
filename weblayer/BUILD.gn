@@ -771,6 +771,7 @@ if (is_android) {
     deps = [
       ":weblayer_lib_base",
       "//base",
+      "//base/test:test_support",
       "//components/infobars/android",
       "//components/infobars/core",
       "//components/translate/core/browser",

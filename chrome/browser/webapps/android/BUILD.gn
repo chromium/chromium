@@ -83,6 +83,7 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
   ]
   deps = [
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/webapk/android/libs/common:splash_resources",
   ]

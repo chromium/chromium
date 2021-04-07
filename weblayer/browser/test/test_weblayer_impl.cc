@@ -7,6 +7,9 @@
 #include <utility>
 
 #include "base/android/callback_android.h"
+#include "base/no_destructor.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/download/public/background_service/features.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_test_utils.h"
 #include "weblayer/browser/tab_impl.h"
@@ -54,6 +57,12 @@ static void JNI_TestWebLayerImpl_SetIgnoreMissingKeyForTranslateManager(
     JNIEnv* env,
     jboolean ignore) {
   translate::TranslateManager::SetIgnoreMissingKeyForTesting(ignore);
+}
+
+static void JNI_TestWebLayerImpl_ExpediteDownloadService(JNIEnv* env) {
+  static base::NoDestructor<base::test::ScopedFeatureList> feature_list;
+  feature_list->InitAndEnableFeatureWithParameters(
+      download::kDownloadServiceFeature, {{"start_up_delay_ms", "0"}});
 }
 
 }  // namespace weblayer

@@ -187,4 +187,12 @@ public final class TestWebLayer {
         mITestWebLayer.notifyOfAutofillEvents(browser.getIBrowser(), ObjectWrapper.wrap(onNewEvent),
                 ObjectWrapper.wrap(eventsObserved));
     }
+
+    public void activateBackgroundFetchNotification(int id) throws RemoteException {
+        mITestWebLayer.activateBackgroundFetchNotification(id);
+    }
+
+    public void expediteDownloadService() throws RemoteException {
+        mITestWebLayer.expediteDownloadService();
+    }
 }

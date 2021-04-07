@@ -75,6 +75,7 @@ android_library("weblayer_private_java_tests") {
   testonly = true
   sources = [
     "src/org/chromium/weblayer/test/AutofillTest.java",
+    "src/org/chromium/weblayer/test/BackgroundFetchTest.java",
     "src/org/chromium/weblayer/test/BrowserControlsOffsetCallbackTest.java",
     "src/org/chromium/weblayer/test/BrowserControlsTest.java",
     "src/org/chromium/weblayer/test/ContentCaptureTest.java",

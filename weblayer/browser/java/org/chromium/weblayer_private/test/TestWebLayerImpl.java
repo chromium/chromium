@@ -31,6 +31,7 @@ import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.weblayer_private.BrowserImpl;
+import org.chromium.weblayer_private.DownloadImpl;
 import org.chromium.weblayer_private.InfoBarContainer;
 import org.chromium.weblayer_private.ProfileImpl;
 import org.chromium.weblayer_private.TabImpl;
@@ -171,13 +172,6 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
                 () -> { NetworkChangeNotifier.forceConnectivityState(true); });
     }
 
-    @NativeMethods
-    interface Natives {
-        void waitForBrowserControlsMetadataState(
-                long tabImpl, int top, int bottom, Runnable runnable);
-        void setIgnoreMissingKeyForTranslateManager(boolean ignore);
-    }
-
     @Override
     public boolean canInfoBarContainerScroll(ITab tab) {
         return ((TabImpl) tab).canInfoBarContainerScrollForTesting();
@@ -305,5 +299,24 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
                     new TestAutofillManagerWrapper(browserImpl.getContext(), unwrappedOnNewEvents,
                             unwrappedEventsObserved));
         });
+    }
+
+    @Override
+    public void activateBackgroundFetchNotification(int id) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> DownloadImpl.activateNotificationForTesting(id));
+    }
+
+    @Override
+    public void expediteDownloadService() {
+        TestWebLayerImplJni.get().expediteDownloadService();
+    }
+
+    @NativeMethods
+    interface Natives {
+        void waitForBrowserControlsMetadataState(
+                long tabImpl, int top, int bottom, Runnable runnable);
+        void setIgnoreMissingKeyForTranslateManager(boolean ignore);
+        void expediteDownloadService();
     }
 }
