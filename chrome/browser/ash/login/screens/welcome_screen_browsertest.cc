@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -786,6 +787,15 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, SkipToLoginForTesting) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 
   EXPECT_TRUE(IdleDetectionCancelledForTesting());
+}
+
+// Verifies that the ChromeVox idle detector is cancelled when the status tray
+// is shown.
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, StatusTray) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  ASSERT_FALSE(IdleDetectionCancelledForTesting());
+  ash::SystemTrayTestApi::Create()->ShowBubble();
+  ASSERT_TRUE(IdleDetectionCancelledForTesting());
 }
 
 class WelcomeScreenInternationalChromeVoxHintTest
