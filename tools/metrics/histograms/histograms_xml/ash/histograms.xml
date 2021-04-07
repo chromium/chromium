@@ -864,6 +864,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.WeeklyActiveDesks" units="active desks"
+    expires_after="2022-03-24">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    The number of unique weekly active desks a user has interacted with in a
+    week. A desk is considered interacted with if a window is moved to it, it is
+    created, its name is changed, or it is activated and stayed on for at least
+    3s. This metric is persisted across multiple sessions and restarts. I.e. if
+    a user logs out and logs back in. This metric is reported a week after it
+    begins counting. If a session is restored and more than a week has elapsed
+    since counting has begun, the restored data will be emitted as an entry and
+    this metric will be reset.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desktop.TimeBetweenNavigateToTaskSwitches" units="seconds"
     expires_after="2021-03-15">
   <owner>tbuckley@chromium.org</owner>

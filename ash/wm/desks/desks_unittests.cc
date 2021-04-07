@@ -351,6 +351,8 @@ class DesksTest : public AshTestBase,
                   public ::testing::WithParamInterface<bool> {
  public:
   DesksTest() = default;
+  explicit DesksTest(base::test::TaskEnvironment::TimeSource time)
+      : AshTestBase(time) {}
   ~DesksTest() override = default;
 
   views::LabelButton* GetNewDeskButton(const DesksBarView* bar_view) {
@@ -5252,6 +5254,109 @@ TEST_F(DesksBentoTest, DragNewDeskWhileSnappingBack) {
   EXPECT_EQ(desks_bar_view->GetDragDeskMiniViewForTesting(), mini_view_2);
   StartDragDeskPreview(mini_view_1, event_generator);
   EXPECT_EQ(desks_bar_view->GetDragDeskMiniViewForTesting(), mini_view_1);
+}
+
+// A test class that uses a mock time test environment.
+class DesksMockTimeTest : public DesksTest {
+ public:
+  DesksMockTimeTest()
+      : DesksTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  DesksMockTimeTest(const DesksMockTimeTest&) = delete;
+  DesksMockTimeTest& operator=(const DesksMockTimeTest&) = delete;
+  ~DesksMockTimeTest() override = default;
+};
+
+// Tests that the weekly active desks metric is properly recorded.
+TEST_F(DesksMockTimeTest, WeeklyActiveDesks) {
+  constexpr char kWeeklyActiveDesksHistogram[] = "Ash.Desks.WeeklyActiveDesks";
+  base::HistogramTester histogram_tester;
+
+  // Create three new desks.
+  NewDesk();
+  NewDesk();
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(4u, controller->desks().size());
+  const Desk* desk_1 = controller->desks()[0].get();
+  const Desk* desk_2 = controller->desks()[1].get();
+  Desk* desk_3 = controller->desks()[2].get();
+  Desk* desk_4 = controller->desks()[3].get();
+
+  // Let a week elapse. There should be a new entry for four since there were
+  // three created desks and the initial active desk.
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(7));
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 4, 1);
+  EXPECT_EQ(1u,
+            histogram_tester.GetAllSamples(kWeeklyActiveDesksHistogram).size());
+
+  // Activate the second desk and quickly activate the first desk. Let a week
+  // elapse. There should be a new entry for one since we shouldn't count a desk
+  // that was briefly visited.
+  EXPECT_EQ(1, Desk::GetWeeklyActiveDesks());
+  ActivateDesk(desk_2);
+  ActivateDesk(desk_1);
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(7));
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 1, 1);
+  EXPECT_EQ(2u,
+            histogram_tester.GetAllSamples(kWeeklyActiveDesksHistogram).size());
+
+  // Activate the second desk and wait on it. Activate the first desk and wait
+  // on it. Activate the second desk again. Let a week elapse. There should be a
+  // new entry for two since we shouldn't count activating the second desk
+  // twice.
+  EXPECT_EQ(1, Desk::GetWeeklyActiveDesks());
+  ActivateDesk(desk_2);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  ActivateDesk(desk_1);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  ActivateDesk(desk_2);
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(7));
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 2, 1);
+  EXPECT_EQ(3u,
+            histogram_tester.GetAllSamples(kWeeklyActiveDesksHistogram).size());
+
+  // Rename the third desk twice and move two windows to the fourth desk. Let a
+  // week elapse. There should be a new entry for three.
+  EXPECT_EQ(1, Desk::GetWeeklyActiveDesks());
+  desk_3->SetName(u"foo", /*set_by_user=*/true);
+  desk_3->SetName(u"bar", /*set_by_user=*/true);
+
+  auto win1 = CreateAppWindow();
+  auto win2 = CreateAppWindow();
+  controller->MoveWindowFromActiveDeskTo(
+      win1.get(), desk_4, win1->GetRootWindow(),
+      DesksMoveWindowFromActiveDeskSource::kSendToDesk);
+  controller->MoveWindowFromActiveDeskTo(
+      win2.get(), desk_4, win2->GetRootWindow(),
+      DesksMoveWindowFromActiveDeskSource::kSendToDesk);
+
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(7));
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 3, 1);
+  EXPECT_EQ(4u,
+            histogram_tester.GetAllSamples(kWeeklyActiveDesksHistogram).size());
+
+  // Wait six days on the current desk. Since a week hasn't elapsed relative to
+  // the previous report, this should not report anything. Currently the weekly
+  // active desks count should be one, so check the "one-count" bucket to make
+  // sure it matches its previous number of entries.
+  EXPECT_EQ(1, Desk::GetWeeklyActiveDesks());
+  const int number_of_one_bucket_entries =
+      histogram_tester.GetBucketCount(kWeeklyActiveDesksHistogram, 1);
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(6));
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 1,
+                                     number_of_one_bucket_entries);
+
+  // Wait one more day and it should now report an entry for one, accounting for
+  // the current active desk.
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  task_environment()->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(kWeeklyActiveDesksHistogram, 1,
+                                     number_of_one_bucket_entries + 1);
 }
 
 // TODO(afakhry): Add more tests:

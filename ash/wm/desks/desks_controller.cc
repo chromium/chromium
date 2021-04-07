@@ -53,6 +53,8 @@ constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";
 // histogram obsolete when Bento is fully launched.
 constexpr char kDesksCountHistogramName[] = "Ash.Desks.DesksCount2";
 constexpr char kBentoDesksCountHistogramName[] = "Ash.Desks.DesksCount3";
+constexpr char kWeeklyActiveDesksHistogramName[] =
+    "Ash.Desks.WeeklyActiveDesks";
 constexpr char kRemoveDeskHistogramName[] = "Ash.Desks.RemoveDesk";
 constexpr char kDeskSwitchHistogramName[] = "Ash.Desks.DesksSwitch";
 constexpr char kMoveWindowFromActiveDeskHistogramName[] =
@@ -243,6 +245,10 @@ DesksController::DesksController()
   NewDesk(DesksCreationRemovalSource::kButton);
   active_desk_ = desks_.back().get();
   active_desk_->Activate(/*update_window_activation=*/true);
+
+  weekly_active_desks_scheduler_.Start(
+      FROM_HERE, base::TimeDelta::FromDays(7), this,
+      &DesksController::RecordAndResetNumberOfWeeklyActiveDesks);
 }
 
 DesksController::~DesksController() {
@@ -350,7 +356,9 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
   // should it trigger any UMA stats reports.
   const bool is_first_ever_desk = desks_.empty();
 
-  desks_.push_back(std::make_unique<Desk>(available_container_ids_.front()));
+  desks_.push_back(std::make_unique<Desk>(
+      available_container_ids_.front(),
+      source == DesksCreationRemovalSource::kDesksRestore));
   available_container_ids_.pop();
   Desk* new_desk = desks_.back().get();
 
@@ -702,6 +710,38 @@ void DesksController::RestoreVisitedMetricsOfDeskAtIndex(int first_day_visited,
   target_desk->set_last_day_visited(last_day_visited);
   if (!target_desk->IsConsecutiveDailyVisit())
     target_desk->RecordAndResetConsecutiveDailyVisits(/*being_removed=*/false);
+}
+
+void DesksController::RestoreWeeklyInteractionMetricOfDeskAtIndex(
+    bool interacted_with_this_week,
+    size_t index) {
+  DCHECK_LT(index, desks_.size());
+
+  desks_[index]->set_interacted_with_this_week(interacted_with_this_week);
+}
+
+void DesksController::RestoreWeeklyActiveDesksMetrics(int weekly_active_desks,
+                                                      base::Time report_time) {
+  DCHECK_GE(weekly_active_desks, 0);
+
+  Desk::SetWeeklyActiveDesks(weekly_active_desks);
+
+  base::TimeDelta report_time_delta(report_time - base::Time::Now());
+  if (report_time_delta.InMinutes() < 0) {
+    // The scheduled report time has passed so log the restored metrics and
+    // reset related metrics.
+    RecordAndResetNumberOfWeeklyActiveDesks();
+  } else {
+    // The scheduled report time has not passed so reset the existing timer to
+    // go off at the scheduled report time.
+    weekly_active_desks_scheduler_.Start(
+        FROM_HERE, report_time_delta, this,
+        &DesksController::RecordAndResetNumberOfWeeklyActiveDesks);
+  }
+}
+
+base::Time DesksController::GetWeeklyActiveReportTime() const {
+  return base::Time::Now() + weekly_active_desks_scheduler_.GetCurrentDelay();
 }
 
 void DesksController::OnRootWindowAdded(aura::Window* root_window) {
@@ -1180,6 +1220,19 @@ void DesksController::ReportDesksCountHistogram() const {
                                  ? kBentoDesksCountHistogramName
                                  : kDesksCountHistogramName,
                              desks_.size(), desks_util::GetMaxNumberOfDesks());
+}
+
+void DesksController::RecordAndResetNumberOfWeeklyActiveDesks() {
+  base::UmaHistogramCounts1000(kWeeklyActiveDesksHistogramName,
+                               Desk::GetWeeklyActiveDesks());
+
+  for (const auto& desk : desks_)
+    desk->set_interacted_with_this_week(desk.get() == active_desk_);
+  Desk::SetWeeklyActiveDesks(1);
+
+  weekly_active_desks_scheduler_.Start(
+      FROM_HERE, base::TimeDelta::FromDays(7), this,
+      &DesksController::RecordAndResetNumberOfWeeklyActiveDesks);
 }
 
 }  // namespace ash

@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -49,8 +50,11 @@ class ASH_EXPORT Desk {
     virtual void OnDeskNameChanged(const std::u16string& new_name) = 0;
   };
 
-  explicit Desk(int associated_container_id);
+  explicit Desk(int associated_container_id, bool desk_being_restored = false);
   ~Desk();
+
+  static void SetWeeklyActiveDesks(int weekly_active_desks);
+  static int GetWeeklyActiveDesks();
 
   int container_id() const { return container_id_; }
 
@@ -81,6 +85,11 @@ class ASH_EXPORT Desk {
   int last_day_visited() const { return last_day_visited_; }
   void set_last_day_visited(int last_day_visited) {
     last_day_visited_ = last_day_visited;
+  }
+
+  bool interacted_with_this_week() const { return interacted_with_this_week_; }
+  void set_interacted_with_this_week(bool interacted_with_this_week) {
+    interacted_with_this_week_ = interacted_with_this_week;
   }
 
   void AddObserver(Observer* observer);
@@ -186,6 +195,10 @@ class ASH_EXPORT Desk {
   // false.
   bool MaybeResetContainersOpacities();
 
+  // If |this| has not been interacted with yet this week, increment
+  // |g_weekly_active_desks| and set |this| to interacted with.
+  void MaybeIncrementWeeklyActiveDesks();
+
   // The associated container ID with this desk.
   const int container_id_;
 
@@ -238,6 +251,14 @@ class ASH_EXPORT Desk {
   int last_day_visited_ = -1;
 
   base::Clock* override_clock_ = nullptr;
+
+  // Tracks whether |this| has been interacted with this week. This value is
+  // reset by the DesksController.
+  bool interacted_with_this_week_ = false;
+
+  // A timer for marking |this| as interacted with only if the user remains on
+  // |this| for a brief period of time.
+  base::OneShotTimer active_desk_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(Desk);
 };

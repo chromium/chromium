@@ -33,9 +33,23 @@ namespace {
 // local epoch (Jan 1, 2010).
 // |kLastDayVisitedKey| : an int which represents the number of days since
 // local epoch (Jan 1, 2010).
+// |kInteractedWithThisWeekKey| : a boolean tracking whether this desk has been
+// interacted with in the last week.
 constexpr char kCreationTimeKey[] = "creation_time";
 constexpr char kFirstDayVisitedKey[] = "first_day";
 constexpr char kLastDayVisitedKey[] = "last_day";
+constexpr char kInteractedWithThisWeekKey[] = "interacted_week";
+
+// |kDesksWeeklyActiveDesksMetrics| stores a dictionary with the following key
+// value pairs (<key> : <entry>):
+// |kWeeklyActiveDesksKey| : an int representing the number of weekly active
+// desks.
+// |kReportTimeKey| : an int respresenting the time a user's weekly active desks
+// metric is scheduled to go off at. The value is the time left on the
+// scheduler + the user's current time stored as the number of minutes for
+// base::Time::FromDeltaSinceWindowsEpoch().
+constexpr char kWeeklyActiveDesksKey[] = "weekly_active_desks";
+constexpr char kReportTimeKey[] = "report_time";
 
 // While restore is in progress, changes are being made to the desks and their
 // names. Those changes should not trigger an update to the prefs.
@@ -59,6 +73,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   constexpr int kDefaultActiveDeskIndex = 0;
   registry->RegisterListPref(prefs::kDesksNamesList);
   registry->RegisterListPref(prefs::kDesksMetricsList);
+  registry->RegisterDictionaryPref(prefs::kDesksWeeklyActiveDesksMetrics);
   if (features::IsBentoEnabled()) {
     registry->RegisterIntegerPref(prefs::kDesksActiveDesk,
                                   kDefaultActiveDeskIndex);
@@ -138,6 +153,16 @@ void RestorePrimaryUserDesks() {
       desks_controller->RestoreVisitedMetricsOfDeskAtIndex(
           first_day_visited, last_day_visited, index);
     }
+
+    // Restore weekly active desks metrics.
+    const auto& interacted_with_this_week_entry =
+        desks_metrics_dict.FindBoolPath(kInteractedWithThisWeekKey);
+    const bool interacted_with_this_week =
+        interacted_with_this_week_entry.value_or(false);
+    if (interacted_with_this_week) {
+      desks_controller->RestoreWeeklyInteractionMetricOfDeskAtIndex(
+          interacted_with_this_week, index);
+    }
   }
 
   // Restore an active desk for the primary user.
@@ -151,6 +176,25 @@ void RestorePrimaryUserDesks() {
       return;
 
     desks_controller->RestorePrimaryUserActiveDeskIndex(active_desk_index);
+  }
+
+  // Restore weekly active desks metrics.
+  auto* weekly_active_desks_dict =
+      primary_user_prefs->GetDictionary(prefs::kDesksWeeklyActiveDesksMetrics);
+  if (weekly_active_desks_dict) {
+    const int report_time =
+        weekly_active_desks_dict->FindIntPath(kReportTimeKey).value_or(-1);
+    const int num_weekly_active_desks =
+        weekly_active_desks_dict->FindIntPath(kWeeklyActiveDesksKey)
+            .value_or(-1);
+
+    // Discard stored metrics if either are corrupted.
+    if (report_time != -1 && num_weekly_active_desks != -1) {
+      desks_controller->RestoreWeeklyActiveDesksMetrics(
+          num_weekly_active_desks,
+          base::Time::FromDeltaSinceWindowsEpoch(
+              base::TimeDelta::FromMinutes(report_time)));
+    }
   }
 }
 
@@ -191,11 +235,13 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
     return;
   }
 
+  // Save per-desk metrics.
   ListPrefUpdate metrics_update(primary_user_prefs, prefs::kDesksMetricsList);
   base::ListValue* metrics_pref_data = metrics_update.Get();
   metrics_pref_data->Clear();
 
-  const auto& desks = DesksController::Get()->desks();
+  auto* desks_controller = DesksController::Get();
+  const auto& desks = desks_controller->desks();
   for (const auto& desk : desks) {
     base::DictionaryValue metrics_dict;
     metrics_dict.SetInteger(
@@ -203,10 +249,22 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
         desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes());
     metrics_dict.SetInteger(kFirstDayVisitedKey, desk->first_day_visited());
     metrics_dict.SetInteger(kLastDayVisitedKey, desk->last_day_visited());
+    metrics_dict.SetBoolean(kInteractedWithThisWeekKey,
+                            desk->interacted_with_this_week());
     metrics_pref_data->Append(std::move(metrics_dict));
   }
 
   DCHECK_EQ(metrics_pref_data->GetSize(), desks.size());
+
+  // Save weekly active report time.
+  DictionaryPrefUpdate weekly_active_desks_update(
+      primary_user_prefs, prefs::kDesksWeeklyActiveDesksMetrics);
+  weekly_active_desks_update->SetIntPath(
+      kReportTimeKey, desks_controller->GetWeeklyActiveReportTime()
+                          .ToDeltaSinceWindowsEpoch()
+                          .InMinutes());
+  weekly_active_desks_update->SetIntPath(kWeeklyActiveDesksKey,
+                                         Desk::GetWeeklyActiveDesks());
 }
 
 void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index) {

@@ -173,6 +173,8 @@ const char kDesksNamesList[] = "ash.desks.desks_names_list";
 // list stores entries in the same order of the desks in the overview desks bar.
 // Values are stored as dictionaries.
 const char kDesksMetricsList[] = "ash.desks.desks_metrics_list";
+// A dict pref storing the metrics related to the weekly active desks of a user.
+const char kDesksWeeklyActiveDesksMetrics[] = "ash.desks.weekly_active_desks";
 // An integer index of a user's active desk.
 const char kDesksActiveDesk[] = "ash.desks.active_desk";
 

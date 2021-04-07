@@ -206,6 +206,20 @@ class ASH_EXPORT DesksController : public DesksHelper,
                                           int last_day_visited,
                                           size_t index);
 
+  // Restores the |interacted_with_this_week_| field of the desk at |index|.
+  void RestoreWeeklyInteractionMetricOfDeskAtIndex(
+      bool interacted_with_this_week,
+      size_t index);
+
+  // Restores the metrics related to tracking a user's weekly active desks.
+  // Records and resets these metrics if the current time is past |report_time|.
+  void RestoreWeeklyActiveDesksMetrics(int weekly_active_desks,
+                                       base::Time report_time);
+
+  // Returns the time when |weekly_active_desks_scheduler_| is scheduled to go
+  // off.
+  base::Time GetWeeklyActiveReportTime() const;
+
   // Called explicitly by the RootWindowController when a root window has been
   // added or about to be removed in order to update all the available desks.
   void OnRootWindowAdded(aura::Window* root_window);
@@ -287,6 +301,11 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   void ReportDesksCountHistogram() const;
 
+  // Records the Desk class' global |g_weekly_active_desks| and also resets it
+  // to 1, accounting for the current active desk. Also resets the
+  // |interacted_with_this_week_| field for each inactive desk in |desks_|.
+  void RecordAndResetNumberOfWeeklyActiveDesks();
+
   std::vector<std::unique_ptr<Desk>> desks_;
 
   Desk* active_desk_ = nullptr;
@@ -321,6 +340,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
   std::unique_ptr<DeskTraversalsMetricsHelper> metrics_helper_;
 
   base::ObserverList<Observer>::Unchecked observers_;
+
+  // Scheduler for reporting the weekly active desks metric.
+  base::OneShotTimer weekly_active_desks_scheduler_;
 
   DISALLOW_COPY_AND_ASSIGN(DesksController);
 };

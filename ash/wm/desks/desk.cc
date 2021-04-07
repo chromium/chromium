@@ -46,6 +46,18 @@ constexpr char kConsecutiveDailyVisitsHistogramName[] =
 // Prefix for the desks lifetime histogram.
 constexpr char kDeskLifetimeHistogramNamePrefix[] = "Ash.Desks.DeskLifetime_";
 
+// The amount of time a user has to stay on a recently activated desk for it to
+// be considered interacted with. Used for tracking weekly active desks metric.
+constexpr base::TimeDelta kDeskInteractedWithTime =
+    base::TimeDelta::FromSeconds(3);
+
+// A counter for tracking the number of desks interacted with this week. A
+// desk is considered interacted with if a window is moved to it, it is
+// created, its name is changed or it is activated and stayed on for a brief
+// period of time. This value can go beyond the max number of desks as it
+// counts deleted desks that have been previously interacted with.
+int g_weekly_active_desks = 0;
+
 void UpdateBackdropController(aura::Window* desk_container) {
   auto* workspace_controller = GetWorkspaceController(desk_container);
   // Work might have already been cleared when the display is removed. See
@@ -199,7 +211,7 @@ class DeskContainerObserver : public aura::WindowObserver {
 // -----------------------------------------------------------------------------
 // Desk:
 
-Desk::Desk(int associated_container_id)
+Desk::Desk(int associated_container_id, bool desk_being_restored)
     : container_id_(associated_container_id),
       creation_time_(base::Time::Now()) {
   // For the very first default desk added during initialization, there won't be
@@ -207,6 +219,9 @@ Desk::Desk(int associated_container_id)
   // explicitly by the RootWindowController when they're initialized.
   for (aura::Window* root : Shell::GetAllRootWindows())
     OnRootWindowAdded(root);
+
+  if (!desk_being_restored)
+    MaybeIncrementWeeklyActiveDesks();
 }
 
 Desk::~Desk() {
@@ -222,6 +237,16 @@ Desk::~Desk() {
     observers_.RemoveObserver(&observer);
     observer.OnDeskDestroyed(this);
   }
+}
+
+// static
+void Desk::SetWeeklyActiveDesks(int weekly_active_desks) {
+  g_weekly_active_desks = weekly_active_desks;
+}
+
+// static
+int Desk::GetWeeklyActiveDesks() {
+  return g_weekly_active_desks;
 }
 
 void Desk::AddObserver(Observer* observer) {
@@ -281,6 +306,8 @@ void Desk::AddWindowToDesk(aura::Window* window) {
     window->SetProperty(aura::client::kWindowWorkspaceKey,
                         desks_controller->GetDeskIndex(this));
   }
+
+  MaybeIncrementWeeklyActiveDesks();
 }
 
 void Desk::RemoveWindowFromDesk(aura::Window* window) {
@@ -310,6 +337,9 @@ void Desk::SetName(std::u16string new_name, bool set_by_user) {
 
   name_ = std::move(new_name);
   is_name_set_by_user_ = set_by_user;
+
+  if (set_by_user)
+    MaybeIncrementWeeklyActiveDesks();
 
   for (auto& observer : observers_)
     observer.OnDeskNameChanged(name_);
@@ -347,6 +377,11 @@ void Desk::Activate(bool update_window_activation) {
   }
   last_day_visited_ = current_date;
 
+  active_desk_timer_.Start(
+      FROM_HERE, kDeskInteractedWithTime,
+      base::BindOnce(&Desk::MaybeIncrementWeeklyActiveDesks,
+                     base::Unretained(this)));
+
   if (!update_window_activation || windows_.empty())
     return;
 
@@ -377,6 +412,8 @@ void Desk::Deactivate(bool update_window_activation) {
 
   is_active_ = false;
   last_day_visited_ = GetDaysFromLocalEpoch();
+
+  active_desk_timer_.Stop();
 
   if (!update_window_activation)
     return;
@@ -613,6 +650,13 @@ bool Desk::MaybeResetContainersOpacities() {
   }
   started_activation_animation_ = false;
   return true;
+}
+
+void Desk::MaybeIncrementWeeklyActiveDesks() {
+  if (interacted_with_this_week_)
+    return;
+  interacted_with_this_week_ = true;
+  ++g_weekly_active_desks;
 }
 
 }  // namespace ash
