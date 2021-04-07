@@ -61,6 +61,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -69,7 +70,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
-#include "components/signin/public/base/signin_switches.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace signin {
@@ -302,15 +302,15 @@ void ProcessMirrorHeader(
   }
 
   // 3. Displaying the Account Manager for managing accounts.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile, chromeos::settings::mojom::kMyAccountsSubpagePath);
+  if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
+    ::GetAccountManagerFacade(profile->GetPath().value())
+        ->ShowManageAccountsSettings();
     return;
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile, chromeos::settings::mojom::kMyAccountsSubpagePath);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  ::GetAccountManagerFacade(profile->GetPath().value())
-      ->ShowManageAccountsSettings();
   return;
 
 #elif defined(OS_ANDROID)
