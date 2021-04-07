@@ -259,6 +259,8 @@ HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeTimerSuspend,
 
 HEADLESS_PROTOCOL_TEST(Geolocation, "emulation/geolocation-crash.js")
 
+HEADLESS_PROTOCOL_TEST(DragStarted, "input/dragIntercepted.js")
+
 HEADLESS_PROTOCOL_TEST(HeadlessSessionBasicsTest,
                        "sessions/headless-session-basics.js")
 

@@ -14,6 +14,7 @@
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/emulation_handler.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
+#include "content/browser/devtools/protocol/input_handler.h"
 #include "content/browser/devtools/protocol/log_handler.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
@@ -715,6 +716,15 @@ void PortalDetached(RenderFrameHostImpl* render_frame_host_impl) {
 void PortalActivated(RenderFrameHostImpl* render_frame_host_impl) {
   DispatchToAgents(render_frame_host_impl->frame_tree_node(),
                    &protocol::TargetHandler::UpdatePortals);
+}
+
+void WillStartDragging(FrameTreeNode* main_frame_tree_node,
+                       const blink::mojom::DragDataPtr drag_data,
+                       blink::DragOperationsMask drag_operations_mask,
+                       bool* intercepted) {
+  DCHECK(main_frame_tree_node->frame_tree()->root() == main_frame_tree_node);
+  DispatchToAgents(main_frame_tree_node, &protocol::InputHandler::StartDragging,
+                   *drag_data, drag_operations_mask, intercepted);
 }
 
 namespace {

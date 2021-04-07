@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -557,6 +558,7 @@ void InputHandler::SetRenderer(int process_host_id,
 }
 
 void InputHandler::Wire(UberDispatcher* dispatcher) {
+  frontend_ = std::make_unique<Input::Frontend>(dispatcher->channel());
   Input::Dispatcher::wire(dispatcher, this);
 }
 
@@ -904,6 +906,7 @@ void InputHandler::OnWidgetForDispatchDragEvent(
             std::move(target), point));
 
   } else if (event_type == Input::DispatchDragEvent::TypeEnum::DragCancel) {
+    widget_host->DragSourceSystemDragEnded();
     widget_host->DragSourceEndedAt(
         point, point, ui::mojom::DragOperation::kNone,
         base::BindOnce(
@@ -915,6 +918,39 @@ void InputHandler::OnWidgetForDispatchDragEvent(
     callback->sendFailure(Response::InvalidParams(
         base::StringPrintf("Unexpected event type '%s'", event_type.c_str())));
   }
+}
+void InputHandler::StartDragging(const blink::mojom::DragData& drag_data,
+                                 blink::DragOperationsMask drag_operations_mask,
+                                 bool* intercepted) {
+  if (!intercept_drags_ || *intercepted)
+    return;
+  *intercepted = true;
+  auto items =
+      std::make_unique<protocol::Array<protocol::Input::DragDataItem>>();
+  for (const auto& item : drag_data.items) {
+    if (!item->is_string())
+      continue;
+    const auto& string_item = item->get_string();
+    auto protocol_item =
+        protocol::Input::DragDataItem::Create()
+            .SetMimeType(string_item->string_type)
+            .SetData(base::UTF16ToUTF8(string_item->string_data))
+            .Build();
+    if (string_item->base_url.has_value())
+      protocol_item->SetBaseURL(string_item->base_url->spec());
+    if (string_item->title.has_value())
+      protocol_item->SetTitle(base::UTF16ToUTF8(string_item->title.value()));
+    items->push_back(std::move(protocol_item));
+  }
+  frontend_->DragIntercepted(protocol::Input::DragData::Create()
+                                 .SetDragOperationsMask(drag_operations_mask)
+                                 .SetItems(std::move(items))
+                                 .Build());
+}
+
+Response InputHandler::SetInterceptDrags(bool enabled) {
+  intercept_drags_ = enabled;
+  return Response::Success();
 }
 
 void InputHandler::OnWidgetForDispatchMouseEvent(

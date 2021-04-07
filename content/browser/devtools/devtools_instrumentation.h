@@ -19,6 +19,8 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
+#include "third_party/blink/public/mojom/page/widget.mojom.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 class GURL;
 
@@ -149,6 +151,11 @@ std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
     NavigationHandle* navigation_handle);
 
 bool ShouldWaitForDebuggerInWindowOpen();
+
+void WillStartDragging(FrameTreeNode* main_frame_tree_node,
+                       const blink::mojom::DragDataPtr drag_data,
+                       blink::DragOperationsMask drag_operations_mask,
+                       bool* intercepted);
 
 // Asks any interested agents to handle the given certificate error. Returns
 // |true| if the error was handled, |false| otherwise.

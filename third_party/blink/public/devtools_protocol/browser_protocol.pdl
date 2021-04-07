@@ -3986,6 +3986,12 @@ domain Input
       # Ignores input events processing when set to true.
       boolean ignore
 
+  # Prevents default drag and drop behavior and instead emits `Input.dragIntercepted` events.
+  # Drag and drop behavior can be directly controlled via `Input.dispatchDragEvent`.
+  experimental command setInterceptDrags
+    parameters
+      boolean enabled
+
   # Synthesizes a pinch gesture over a time period by issuing appropriate touch events.
   experimental command synthesizePinchGesture
     parameters
@@ -4046,6 +4052,12 @@ domain Input
       # Which type of input events to be generated (default: 'default', which queries the platform
       # for the preferred input type).
       optional GestureSourceType gestureSourceType
+
+  # Emitted only when `Input.setInterceptDrags` is enabled. Use this data with `Input.dispatchDragEvent` to
+  # restore normal drag and drop behavior.
+  experimental event dragIntercepted
+    parameters
+      DragData data
 
 experimental domain Inspector
 
