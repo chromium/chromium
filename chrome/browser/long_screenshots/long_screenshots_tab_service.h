@@ -104,12 +104,10 @@ class LongScreenshotsTabService
                           int clipHeight,
                           const base::Optional<base::FilePath>& file_path);
 
-  void OnCaptured(int tab_id,
-                  const paint_preview::DirectoryKey& key,
-                  int frame_tree_node_id,
-                  paint_preview::PaintPreviewBaseService::CaptureStatus status,
+  void OnCaptured(paint_preview::PaintPreviewBaseService::CaptureStatus status,
                   std::unique_ptr<paint_preview::CaptureResult> result);
 
+  base::ScopedClosureRunner capture_handle_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   base::WeakPtrFactory<LongScreenshotsTabService> weak_ptr_factory_{this};
 };

@@ -390,9 +390,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   const std::string& GetEncoding() override;
   bool WasDiscarded() override;
   void SetWasDiscarded(bool was_discarded) override;
-  void IncrementCapturerCount(const gfx::Size& capture_size,
-                              bool stay_hidden) override;
-  void DecrementCapturerCount(bool stay_hidden) override;
+  base::ScopedClosureRunner IncrementCapturerCount(
+      const gfx::Size& capture_size,
+      bool stay_hidden,
+      bool stay_awake) override WARN_UNUSED_RESULT;
   bool IsBeingCaptured() override;
   bool IsBeingVisiblyCaptured() override;
   bool IsAudioMuted() override;
@@ -1705,6 +1706,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // shown in the address bar), as opposed to one in for example a Prerender.
   bool IsPrimaryFrameTree(const FrameTree& frame_tree) const;
 
+  // Called when the base::ScopedClosureRunner returned by
+  // IncrementCapturerCount() is destructed.
+  void DecrementCapturerCount(bool stay_hidden, bool stay_awake);
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
@@ -1827,8 +1832,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // should not be told it is hidden. If |visible_capturer_count_| > 0,
   // the underlying Page is set to fully visible. Otherwise, it is set
   // to be hidden but still paint.
-  int visible_capturer_count_;
-  int hidden_capturer_count_;
+  int visible_capturer_count_ = 0;
+  int hidden_capturer_count_ = 0;
+
+  // When > 0, |capture_wake_lock_| will be held to prevent display sleep.
+  int stay_awake_capturer_count_ = 0;
+
+  // WakeLock held to ensure screen capture keeps the display on. E.g., for
+  // presenting through tab capture APIs.
   mojo::Remote<device::mojom::WakeLock> capture_wake_lock_;
 
   // The visibility of the WebContents. Initialized from

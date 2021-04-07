@@ -64,28 +64,26 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
   // TODO(crbug/1064253): Consider moving to client so that this always happens.
   // Although, it is harder to get this right in the client due to its
   // lifecycle.
-  web_contents->IncrementCapturerCount(gfx::Size(), true);
+  auto capture_handle =
+      web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                           /*stay_awake=*/true);
 
   auto start_time = base::TimeTicks::Now();
   client->CapturePaintPreview(
       params, render_frame_host,
       base::BindOnce(&PaintPreviewBaseService::OnCaptured,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     web_contents->GetMainFrame()->GetFrameTreeNodeId(),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(capture_handle),
                      start_time, std::move(callback)));
 }
 
 void PaintPreviewBaseService::OnCaptured(
-    int frame_tree_node_id,
+    base::ScopedClosureRunner capture_handle,
     base::TimeTicks start_time,
     OnCapturedCallback callback,
     base::UnguessableToken guid,
     mojom::PaintPreviewStatus status,
     std::unique_ptr<CaptureResult> result) {
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (web_contents)
-    web_contents->DecrementCapturerCount(true);
+  capture_handle.RunAndReset();
 
   if (!(status == mojom::PaintPreviewStatus::kOk ||
         status == mojom::PaintPreviewStatus::kPartialSuccess) ||

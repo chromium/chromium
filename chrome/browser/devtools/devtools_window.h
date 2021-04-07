@@ -473,6 +473,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   PrefChangeRegistrar pref_change_registrar_;
 
+  base::ScopedClosureRunner capture_handle_;
+
   friend class DevToolsEventForwarder;
   DISALLOW_COPY_AND_ASSIGN(DevToolsWindow);
 };

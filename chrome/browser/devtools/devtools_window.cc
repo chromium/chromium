@@ -457,6 +457,7 @@ DevToolsWindow::~DevToolsWindow() {
   UpdateBrowserWindow();
   UpdateBrowserToolbar();
 
+  capture_handle_.RunAndReset();
   owned_toolbox_web_contents_.reset();
 
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
@@ -1274,6 +1275,7 @@ void DevToolsWindow::WebContentsCreated(WebContents* source_contents,
     CHECK(can_dock_);
 
     // Ownership will be passed in DevToolsWindow::AddNewContents.
+    capture_handle_.RunAndReset();
     if (owned_toolbox_web_contents_)
       owned_toolbox_web_contents_.reset();
     toolbox_web_contents_ = new_contents;
@@ -1288,8 +1290,10 @@ void DevToolsWindow::WebContentsCreated(WebContents* source_contents,
     // is resized when the frame is rendered. Force rendering of the toolbox at
     // all times, to make sure that a frame can be rendered even when the
     // inspected WebContents fully covers the toolbox. https://crbug.com/828307
-    toolbox_web_contents_->IncrementCapturerCount(gfx::Size(),
-                                                  /* stay_hidden */ false);
+    capture_handle_ =
+        toolbox_web_contents_->IncrementCapturerCount(gfx::Size(),
+                                                      /*stay_hidden=*/false,
+                                                      /*stay_awake=*/false);
   }
 }
 

@@ -71,7 +71,9 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
   // Mark |contents| as being captured so that the renderer doesn't go away
   // until the capture is finished. This is done even before a file is created
   // to ensure the renderer doesn't go away while that happens.
-  contents->IncrementCapturerCount(gfx::Size(), true);
+  capture_handle_ =
+      contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                       /*stay_awake=*/true);
 
   auto file_manager = GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(tab_id);
@@ -129,20 +131,13 @@ void LongScreenshotsTabService::CaptureTabInternal(
   capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
   CapturePaintPreview(capture_params,
                       base::BindOnce(&LongScreenshotsTabService::OnCaptured,
-                                     weak_ptr_factory_.GetWeakPtr(), tab_id,
-                                     key, frame_tree_node_id));
+                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LongScreenshotsTabService::OnCaptured(
-    int tab_id,
-    const paint_preview::DirectoryKey& key,
-    int frame_tree_node_id,
     paint_preview::PaintPreviewBaseService::CaptureStatus status,
     std::unique_ptr<paint_preview::CaptureResult> result) {
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (web_contents)
-    web_contents->DecrementCapturerCount(true);
+  capture_handle_.RunAndReset();
 
   JNIEnv* env = base::android::AttachCurrentThread();
 

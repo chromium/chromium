@@ -833,8 +833,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       upload_size_(0),
       upload_position_(0),
       is_resume_pending_(false),
-      visible_capturer_count_(0),
-      hidden_capturer_count_(0),
       is_being_destroyed_(false),
       notify_disconnection_(false),
       dialog_manager_(nullptr),
@@ -1756,8 +1754,10 @@ void WebContentsImpl::SetWasDiscarded(bool was_discarded) {
   GetFrameTree()->root()->set_was_discarded();
 }
 
-void WebContentsImpl::IncrementCapturerCount(const gfx::Size& capture_size,
-                                             bool stay_hidden) {
+base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
+    const gfx::Size& capture_size,
+    bool stay_hidden,
+    bool stay_awake) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::IncrementCapturerCount");
   DCHECK(!is_being_destroyed_);
   if (stay_hidden) {
@@ -1769,6 +1769,9 @@ void WebContentsImpl::IncrementCapturerCount(const gfx::Size& capture_size,
     ++visible_capturer_count_;
   }
 
+  if (stay_awake)
+    ++stay_awake_capturer_count_;
+
   // Note: This provides a hint to upstream code to size the views optimally
   // for quality (e.g., to avoid scaling).
   if (!capture_size.IsEmpty() && preferred_size_for_capture_.IsEmpty()) {
@@ -1776,7 +1779,7 @@ void WebContentsImpl::IncrementCapturerCount(const gfx::Size& capture_size,
     OnPreferredSizeChanged(preferred_size_);
   }
 
-  if (!capture_wake_lock_) {
+  if (!capture_wake_lock_ && stay_awake_capturer_count_) {
     if (auto* wake_lock_context = GetWakeLockContext()) {
       auto receiver = capture_wake_lock_.BindNewPipeAndPassReceiver();
       wake_lock_context->GetWakeLock(
@@ -1790,29 +1793,10 @@ void WebContentsImpl::IncrementCapturerCount(const gfx::Size& capture_size,
     capture_wake_lock_->RequestWakeLock();
 
   UpdateVisibilityAndNotifyPageAndView(GetVisibility());
-}
 
-void WebContentsImpl::DecrementCapturerCount(bool stay_hidden) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DecrementCapturerCount");
-  if (stay_hidden)
-    --hidden_capturer_count_;
-  else
-    --visible_capturer_count_;
-  DCHECK_GE(hidden_capturer_count_, 0);
-  DCHECK_GE(visible_capturer_count_, 0);
-
-  if (is_being_destroyed_)
-    return;
-
-  if (!IsBeingCaptured()) {
-    const gfx::Size old_size = preferred_size_for_capture_;
-    preferred_size_for_capture_ = gfx::Size();
-    OnPreferredSizeChanged(old_size);
-    if (capture_wake_lock_)
-      capture_wake_lock_->CancelWakeLock();
-  }
-
-  UpdateVisibilityAndNotifyPageAndView(GetVisibility());
+  return base::ScopedClosureRunner(
+      base::BindOnce(&WebContentsImpl::DecrementCapturerCount,
+                     weak_factory_.GetWeakPtr(), stay_hidden, stay_awake));
 }
 
 bool WebContentsImpl::IsBeingCaptured() {
@@ -8618,6 +8602,35 @@ void WebContentsImpl::RenderFrameHostStateChanged(
 
 bool WebContentsImpl::IsPrimaryFrameTree(const FrameTree& frame_tree) const {
   return !frame_tree.is_prerendering();
+}
+
+void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
+                                             bool stay_awake) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DecrementCapturerCount");
+  if (stay_hidden)
+    --hidden_capturer_count_;
+  else
+    --visible_capturer_count_;
+  if (stay_awake)
+    --stay_awake_capturer_count_;
+  DCHECK_GE(hidden_capturer_count_, 0);
+  DCHECK_GE(visible_capturer_count_, 0);
+  DCHECK_GE(stay_awake_capturer_count_, 0);
+
+  if (is_being_destroyed_)
+    return;
+
+  const bool is_being_captured = IsBeingCaptured();
+  if (!is_being_captured) {
+    const gfx::Size old_size = preferred_size_for_capture_;
+    preferred_size_for_capture_ = gfx::Size();
+    OnPreferredSizeChanged(old_size);
+  }
+
+  if (capture_wake_lock_ && (!is_being_captured || !stay_awake_capturer_count_))
+    capture_wake_lock_->CancelWakeLock();
+
+  UpdateVisibilityAndNotifyPageAndView(GetVisibility());
 }
 
 }  // namespace content

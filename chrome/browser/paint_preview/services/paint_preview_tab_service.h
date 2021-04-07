@@ -108,7 +108,8 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
     TabServiceTask(int tab_id,
                    const DirectoryKey& key,
                    int frame_tree_node_id,
-                   content::GlobalFrameRoutingId frame_routing_id);
+                   content::GlobalFrameRoutingId frame_routing_id,
+                   base::ScopedClosureRunner capture_handle);
     ~TabServiceTask();
 
     TabServiceTask(const TabServiceTask& other) = delete;
@@ -145,6 +146,8 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
       return weak_ptr_factory_.GetWeakPtr();
     }
 
+    void ReleaseCaptureHandle() { capture_handle_.RunAndReset(); }
+
    private:
     int tab_id_;
     DirectoryKey key_;
@@ -153,6 +156,8 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
 
     bool wait_for_accessibility_{false};
     Status status_{kInvalid};
+
+    base::ScopedClosureRunner capture_handle_;
 
     FinishedCallback finished_callback_;
     base::WeakPtrFactory<TabServiceTask> weak_ptr_factory_{this};

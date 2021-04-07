@@ -125,7 +125,7 @@ class PaintPreviewBaseService : public KeyedService {
                            OnCapturedCallback callback);
 
  private:
-  void OnCaptured(int frame_tree_node_id,
+  void OnCaptured(base::ScopedClosureRunner capture_handle,
                   base::TimeTicks start_time,
                   OnCapturedCallback callback,
                   base::UnguessableToken guid,

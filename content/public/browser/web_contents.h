@@ -541,6 +541,9 @@ class WebContents : public PageNavigator,
   // the side-effects from using or changing these APIs, both upstream and
   // downstream of this API layer.
   //
+  // Callers must hold onto the returned base::ScopedClosureRunner until they
+  // are done capturing.
+  //
   // |capture_size| is only used in the case of mirroring (i.e., screen capture
   // video); otherwise, an empty gfx::Size should be provided. This specifies
   // the capturer's target video resolution, but can be empty to mean
@@ -553,9 +556,12 @@ class WebContents : public PageNavigator,
   // true, the show/hide state of the WebContents will be passed to the
   // renderers, like normal. If false, the renderers will always be told they
   // are user-visible while being captured.
-  virtual void IncrementCapturerCount(const gfx::Size& capture_size,
-                                      bool stay_hidden) = 0;
-  virtual void DecrementCapturerCount(bool stay_hidden) = 0;
+  //
+  // |stay_awake| will cause a WakeLock to be held which prevents system sleep.
+  virtual base::ScopedClosureRunner IncrementCapturerCount(
+      const gfx::Size& capture_size,
+      bool stay_hidden,
+      bool stay_awake) WARN_UNUSED_RESULT = 0;
 
   // Returns true if audio/screenshot/video is being captured by the embedder,
   // as indicated by calls to IncrementCapturerCount().

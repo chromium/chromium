@@ -214,6 +214,8 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
   std::unique_ptr<Core> core_;
   bool is_muted_ = false;
 
+  base::ScopedClosureRunner capture_handle_;
+
   base::WeakPtrFactory<ForwardingAudioStreamFactory> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ForwardingAudioStreamFactory);

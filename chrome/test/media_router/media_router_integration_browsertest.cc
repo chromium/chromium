@@ -496,7 +496,9 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
   // Increment web contents capturer count so it thinks capture has started.
   // This will allow the file tab to go fullscreen.
   content::WebContents* web_contents = GetActiveWebContents();
-  web_contents->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ false);
+  auto capture_handle =
+      web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                           /*stay_awake=*/true);
 
   // Wait for capture poll timer to pick up change.
   Wait(base::TimeDelta::FromSeconds(3));

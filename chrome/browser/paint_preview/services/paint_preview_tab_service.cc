@@ -58,11 +58,13 @@ PaintPreviewTabService::TabServiceTask::TabServiceTask(
     int tab_id,
     const DirectoryKey& key,
     int frame_tree_node_id,
-    content::GlobalFrameRoutingId frame_routing_id)
+    content::GlobalFrameRoutingId frame_routing_id,
+    base::ScopedClosureRunner capture_handle)
     : tab_id_(tab_id),
       key_(key),
       frame_tree_node_id_(frame_tree_node_id),
-      frame_routing_id_(frame_routing_id) {}
+      frame_routing_id_(frame_routing_id),
+      capture_handle_(std::move(capture_handle)) {}
 
 PaintPreviewTabService::TabServiceTask::~TabServiceTask() = default;
 
@@ -122,7 +124,9 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
   // Mark |contents| as being captured so that the renderer doesn't go away
   // until the capture is finished. This is done even before a file is created
   // to ensure the renderer doesn't go away while that happens.
-  contents->IncrementCapturerCount(gfx::Size(), true);
+  auto capture_handle =
+      contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                       /*stay_awake=*/true);
 
   auto file_manager = GetFileMixin()->GetFileManager();
 
@@ -130,7 +134,8 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
   auto it = tasks_.emplace(
       tab_id, std::make_unique<TabServiceTask>(
                   tab_id, key, contents->GetMainFrame()->GetFrameTreeNodeId(),
-                  contents->GetMainFrame()->GetGlobalFrameRoutingId()));
+                  contents->GetMainFrame()->GetGlobalFrameRoutingId(),
+                  std::move(capture_handle)));
   if (!it.second) {
     std::move(callback).Run(Status::kCaptureInProgress);
     return;
@@ -319,11 +324,7 @@ void PaintPreviewTabService::OnCaptured(
     return;
   }
 
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(task->frame_tree_node_id());
-  if (web_contents)
-    web_contents->DecrementCapturerCount(true);
-
+  task->ReleaseCaptureHandle();
   if (status != PaintPreviewBaseService::CaptureStatus::kOk ||
       !result->capture_success) {
     task->OnCaptured(Status::kCaptureFailed);

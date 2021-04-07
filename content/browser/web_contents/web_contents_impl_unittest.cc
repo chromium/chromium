@@ -1666,24 +1666,39 @@ TEST_F(WebContentsImplTest, CaptureHoldsWakeLock) {
     run_loop.Run();
   };
 
+  // Add capturer which doesn't care to stay awake.
+  auto handle1 =
+      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                         /*stay_awake=*/false);
+  EXPECT_TRUE(contents()->IsBeingCaptured());
+  ASSERT_FALSE(contents()->capture_wake_lock_);
+
   // Add capturer and ensure wake lock is held.
-  contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false);
+  auto handle2 =
+      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                         /*stay_awake=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   ASSERT_TRUE(contents()->capture_wake_lock_);
   expect_wake_lock(true);
 
   // Add another capturer and ensure the wake lock is still held.
-  contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true);
+  auto handle3 =
+      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                         /*stay_awake=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   expect_wake_lock(true);
 
   // Remove one capturer, but one remains so wake lock should still be held.
-  contents()->DecrementCapturerCount(/*stay_hidden=*/true);
+  handle3.RunAndReset();
   EXPECT_TRUE(contents()->IsBeingCaptured());
   expect_wake_lock(true);
 
-  // Remove the last capturer and ensure the wake lock is released.
-  contents()->DecrementCapturerCount(/*stay_hidden=*/false);
+  // Remove the last stay_awake capturer and ensure the wake lock is released.
+  handle2.RunAndReset();
+  EXPECT_TRUE(contents()->IsBeingCaptured());
+  expect_wake_lock(false);
+
+  handle1.RunAndReset();
   EXPECT_FALSE(contents()->IsBeingCaptured());
   expect_wake_lock(false);
 }
@@ -1699,35 +1714,40 @@ TEST_F(WebContentsImplTest, CapturerOverridesPreferredSize) {
 
   // Increment capturer count, but without specifying a capture size.  Expect
   // a "not set" preferred size.
-  contents()->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ false);
+  auto handle1 =
+      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                         /*stay_awake=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   EXPECT_EQ(gfx::Size(), contents()->GetPreferredSize());
 
   // Increment capturer count again, but with an overriding capture size.
   // Expect preferred size to now be overridden to the capture size.
   const gfx::Size capture_size(1280, 720);
-  contents()->IncrementCapturerCount(capture_size, /* stay_hidden */ false);
+  auto handle2 =
+      contents()->IncrementCapturerCount(capture_size, /*stay_hidden=*/false,
+                                         /*stay_awake=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   EXPECT_EQ(capture_size, contents()->GetPreferredSize());
 
   // Increment capturer count a third time, but the expect that the preferred
   // size is still the first capture size.
   const gfx::Size another_capture_size(720, 480);
-  contents()->IncrementCapturerCount(another_capture_size,
-                                     /* stay_hidden */ false);
+  auto handle3 = contents()->IncrementCapturerCount(another_capture_size,
+                                                    /*stay_hidden=*/false,
+                                                    /*stay_awake=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   EXPECT_EQ(capture_size, contents()->GetPreferredSize());
 
   // Decrement capturer count twice, but expect the preferred size to still be
   // overridden.
-  contents()->DecrementCapturerCount(/* stay_hidden */ false);
-  contents()->DecrementCapturerCount(/* stay_hidden */ false);
+  handle1.RunAndReset();
+  handle2.RunAndReset();
   EXPECT_TRUE(contents()->IsBeingCaptured());
   EXPECT_EQ(capture_size, contents()->GetPreferredSize());
 
   // Decrement capturer count, and since the count has dropped to zero, the
   // original preferred size should be restored.
-  contents()->DecrementCapturerCount(/* stay_hidden */ false);
+  handle3.RunAndReset();
   EXPECT_FALSE(contents()->IsBeingCaptured());
   EXPECT_EQ(original_preferred_size, contents()->GetPreferredSize());
 }
@@ -1799,7 +1819,9 @@ void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
 
   // Add a capturer when the contents is visible and then hide the contents.
   // |view| should remain visible.
-  contents->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ false);
+  auto handle1 =
+      contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                       /*stay_awake=*/true);
   contents->UpdateWebContentsVisibility(hidden_or_occluded);
   EXPECT_TRUE(view->is_showing());
   EXPECT_FALSE(view->is_occluded());
@@ -1807,7 +1829,7 @@ void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
 
   // Remove the capturer when the contents is hidden/occluded. |view| should be
   // hidden/occluded.
-  contents->DecrementCapturerCount(/* stay_hidden */ false);
+  handle1.RunAndReset();
   if (hidden_or_occluded == Visibility::HIDDEN) {
     EXPECT_FALSE(view->is_showing());
   } else {
@@ -1816,7 +1838,9 @@ void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
   }
 
   // Add a capturer when the contents is hidden. |view| should be unoccluded.
-  contents->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ false);
+  auto handle2 =
+      contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                       /*stay_awake=*/true);
   EXPECT_FALSE(view->is_occluded());
 
   // Show the contents. The view should be visible.
@@ -1827,7 +1851,7 @@ void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
 
   // Remove the capturer when the contents is visible. The view should remain
   // visible.
-  contents->DecrementCapturerCount(/* stay_hidden */ false);
+  handle2.RunAndReset();
   EXPECT_TRUE(view->is_showing());
   EXPECT_FALSE(view->is_occluded());
 }
@@ -1850,16 +1874,20 @@ TEST_F(WebContentsImplTest, HiddenCapture) {
   contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
   EXPECT_EQ(Visibility::HIDDEN, contents()->GetVisibility());
 
-  contents()->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ true);
+  auto handle1 =
+      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                         /*stay_awake=*/true);
   EXPECT_TRUE(rwhv->is_showing());
 
-  contents()->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ false);
+  auto handle2 =
+      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                         /*stay_awake=*/true);
   EXPECT_TRUE(rwhv->is_showing());
 
-  contents()->DecrementCapturerCount(/* stay_hidden */ true);
+  handle1.RunAndReset();
   EXPECT_TRUE(rwhv->is_showing());
 
-  contents()->DecrementCapturerCount(/* stay_hidden */ false);
+  handle2.RunAndReset();
   EXPECT_FALSE(rwhv->is_showing());
 }
 

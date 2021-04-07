@@ -243,12 +243,14 @@ ForwardingAudioStreamFactory::~ForwardingAudioStreamFactory() {
 
 void ForwardingAudioStreamFactory::LoopbackStreamStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents()->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ false);
+  capture_handle_ =
+      web_contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                             /*stay_awake=*/true);
 }
 
 void ForwardingAudioStreamFactory::LoopbackStreamStopped() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents()->DecrementCapturerCount(/* stay_hidden */ false);
+  capture_handle_.RunAndReset();
 }
 
 void ForwardingAudioStreamFactory::SetMuted(bool muted) {

@@ -62,12 +62,12 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
   }
 
   void IncrementCapturerCount(const gfx::Size& capture_size) override {
-    contents_->IncrementCapturerCount(capture_size, /* stay_hidden */ false);
+    capture_handle_ =
+        contents_->IncrementCapturerCount(capture_size, /*stay_hidden=*/false,
+                                          /*stay_awake=*/true);
   }
 
-  void DecrementCapturerCount() override {
-    contents_->DecrementCapturerCount(/* stay_hidden */ false);
-  }
+  void DecrementCapturerCount() override { capture_handle_.RunAndReset(); }
 
  private:
   RenderWidgetHostViewBase* GetCurrentView() const {
@@ -81,6 +81,8 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
     // Inside content, down-casting from the public interface class is safe.
     return static_cast<RenderWidgetHostViewBase*>(view);
   }
+
+  base::ScopedClosureRunner capture_handle_;
 
   // The backing web contents.
   WebContents* contents_;
