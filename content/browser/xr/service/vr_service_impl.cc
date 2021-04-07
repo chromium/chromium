@@ -676,8 +676,15 @@ void VRServiceImpl::OnExitPresent() {
 
   GetSessionMetricsHelper()->StopAndRecordImmersiveSession();
 
-  for (auto& client : session_clients_)
+  for (auto& client : session_clients_) {
+    // https://crbug.com/1160940 has a fairly generic callstack, in mojom
+    // generated code, which appears to aggregate a few different actual crashes
+    // into the same bug. For the crashes that appear to be our fault, the
+    // common "start" is this call. By causing a CHECK here instead of in the
+    // mojom generated code, we can isolate our crashes.
+    CHECK(client);
     client->OnExitPresent();
+  }
 
   // Ensure that the client list is erased to avoid "Cannot issue Interface
   // method calls on an unbound Remote" errors: https://crbug.com/991747

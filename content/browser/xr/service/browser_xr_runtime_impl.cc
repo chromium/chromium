@@ -350,7 +350,15 @@ void BrowserXRRuntimeImpl::OnServiceRemoved(VRServiceImpl* service) {
   DCHECK(service);
   services_.erase(service);
   if (service == presenting_service_) {
-    ExitPresent(service, base::DoNothing());
+    presenting_service_ = nullptr;
+    // Note that we replicate the logic in ExitPresent because we need to clear
+    // our presenting_service_ as it is no longer valid. However, the Runtime
+    // may still need to be notified to terminate its session. ExitPresent may
+    // be called when the service *is* still valid and would need to be notified
+    // of this shutdown.
+    runtime_->ShutdownSession(base::BindOnce(
+        &BrowserXRRuntimeImpl::StopImmersiveSession,
+        weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
   }
 }
 
