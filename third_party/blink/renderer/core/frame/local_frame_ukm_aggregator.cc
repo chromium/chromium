@@ -7,6 +7,7 @@
 #include "base/format_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/record_replay.h"
 #include "base/time/default_tick_clock.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -24,7 +25,9 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
     : aggregator_(aggregator),
       metric_index_(metric_index),
       clock_(clock),
-      start_time_(clock_->NowTicks()) {}
+      start_time_(clock_->NowTicks()) {
+  recordreplay::Assert("ScopedUkmHierarchicalTimer #1");
+}
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
     ScopedUkmHierarchicalTimer&& other)
@@ -32,12 +35,14 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
       metric_index_(other.metric_index_),
       clock_(other.clock_),
       start_time_(other.start_time_) {
+  recordreplay::Assert("ScopedUkmHierarchicalTimer #2");
   other.aggregator_ = nullptr;
 }
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::
     ~ScopedUkmHierarchicalTimer() {
   if (aggregator_ && base::TimeTicks::IsHighResolution()) {
+    recordreplay::Assert("~ScopedUkmHierarchicalTimer #1");
     aggregator_->RecordSample(metric_index_, start_time_, clock_->NowTicks());
   }
 }

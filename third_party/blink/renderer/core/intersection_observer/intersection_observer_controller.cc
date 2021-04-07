@@ -25,7 +25,7 @@ IntersectionObserverController::IntersectionObserverController(
 IntersectionObserverController::~IntersectionObserverController() = default;
 
 void IntersectionObserverController::PostTaskToDeliverNotifications() {
-  recordreplay::Assert("IntersectionObserverController::PostTaskToDeliverNotifications");
+  recordreplay::Assert("IntersectionObserverController::PostTaskToDeliverNotifications Start");
   DCHECK(GetExecutionContext());
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kInternalIntersectionObserver)
@@ -34,6 +34,7 @@ void IntersectionObserverController::PostTaskToDeliverNotifications() {
           WTF::Bind(&IntersectionObserverController::DeliverNotifications,
                     WrapWeakPersistent(this),
                     IntersectionObserver::kPostTaskToDeliver));
+  recordreplay::Assert("IntersectionObserverController::PostTaskToDeliverNotifications Done");
 }
 
 void IntersectionObserverController::ScheduleIntersectionObserverForDelivery(
@@ -62,6 +63,19 @@ void IntersectionObserverController::DeliverNotifications(
   }
 }
 
+struct RecordReplayCompareMemberByPointerId {
+  template <typename T>
+  bool operator()(const T& a, const T& b) const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId(a.Get());
+      int idb = recordreplay::PointerId(b.Get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
 bool IntersectionObserverController::ComputeIntersections(
     unsigned flags,
     LocalFrameUkmAggregator& ukm_aggregator) {
@@ -73,20 +87,28 @@ bool IntersectionObserverController::ComputeIntersections(
                  "computeIntersections");
     HeapVector<Member<IntersectionObserver>> observers_to_process;
     CopyToVector(tracked_explicit_root_observers_, observers_to_process);
+    std::sort(observers_to_process.begin(), observers_to_process.end(),
+              RecordReplayCompareMemberByPointerId());
     for (auto& observer : observers_to_process) {
       if (observer->HasObservations()) {
         SCOPED_UMA_AND_UKM_TIMER(ukm_aggregator, observer->GetUkmMetricId());
+        recordreplay::Assert("IntersectionObserverController::ComputeIntersections #1");
         needs_occlusion_tracking_ |= observer->ComputeIntersections(flags);
+        recordreplay::Assert("IntersectionObserverController::ComputeIntersections #2");
       } else {
         tracked_explicit_root_observers_.erase(observer);
       }
     }
     HeapVector<Member<IntersectionObservation>> observations_to_process;
     CopyToVector(tracked_implicit_root_observations_, observations_to_process);
+    std::sort(observations_to_process.begin(), observations_to_process.end(),
+              RecordReplayCompareMemberByPointerId());
     for (auto& observation : observations_to_process) {
       SCOPED_UMA_AND_UKM_TIMER(ukm_aggregator,
                                observation->Observer()->GetUkmMetricId());
+      recordreplay::Assert("IntersectionObserverController::ComputeIntersections #3");
       observation->ComputeIntersection(flags);
+      recordreplay::Assert("IntersectionObserverController::ComputeIntersections #4");
       needs_occlusion_tracking_ |= observation->Observer()->trackVisibility();
     }
   }

@@ -122,6 +122,8 @@ void ProxyMain::DidCompletePageScaleAnimation() {
 
 void ProxyMain::BeginMainFrame(
     std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state) {
+  recordreplay::Assert("ProxyMain::BeginMainFrame Start");
+
   DCHECK(IsMainThread());
   DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
 
@@ -166,6 +168,7 @@ void ProxyMain::BeginMainFrame(
                                   CommitEarlyOutReason::ABORTED_NOT_VISIBLE,
                                   begin_main_frame_start_time,
                                   std::move(empty_swap_promises)));
+    recordreplay::Assert("ProxyMain::BeginMainFrame #1");
     return;
   }
 
@@ -205,6 +208,7 @@ void ProxyMain::BeginMainFrame(
     // previously requested pipeline stages.
     deferred_final_pipeline_stage_ =
         std::max(final_pipeline_stage_, deferred_final_pipeline_stage_);
+    recordreplay::Assert("ProxyMain::BeginMainFrame #2");
     return;
   }
 
@@ -292,6 +296,7 @@ void ProxyMain::BeginMainFrame(
     // When we stop deferring commits, we should resume any previously requested
     // pipeline stages.
     deferred_final_pipeline_stage_ = final_pipeline_stage_;
+    recordreplay::Assert("ProxyMain::BeginMainFrame #3");
     return;
   }
 
@@ -348,6 +353,7 @@ void ProxyMain::BeginMainFrame(
     layer_tree_host_->RecordEndOfFrameMetrics(
         begin_main_frame_start_time,
         begin_main_frame_state->active_sequence_trackers);
+    recordreplay::Assert("ProxyMain::BeginMainFrame #4");
     return;
   }
 
@@ -389,6 +395,8 @@ void ProxyMain::BeginMainFrame(
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,
       begin_main_frame_state->active_sequence_trackers);
+
+  recordreplay::Assert("ProxyMain::BeginMainFrame Done");
 }
 
 void ProxyMain::DidPresentCompositorFrame(

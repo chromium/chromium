@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/record_replay.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequence_manager/lazy_now.h"
@@ -203,6 +204,7 @@ FrameSchedulerImpl::FrameSchedulerImpl(
       loading_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Loading")) {
+  recordreplay::RegisterPointer(this);
   frame_task_queue_controller_.reset(
       new FrameTaskQueueController(main_thread_scheduler_, this, this));
 }
@@ -227,6 +229,7 @@ void CleanUpQueue(MainThreadTaskQueue* queue) {
 }  // namespace
 
 FrameSchedulerImpl::~FrameSchedulerImpl() {
+  recordreplay::UnregisterPointer(this);
   weak_factory_.InvalidateWeakPtrs();
 
   for (const auto& task_queue_and_voter :

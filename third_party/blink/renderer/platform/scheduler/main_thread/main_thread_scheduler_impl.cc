@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
+#include "base/record_replay.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
@@ -2709,6 +2710,9 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
     const base::sequence_manager::Task& task,
     TaskQueue::TaskTiming* task_timing,
     base::sequence_manager::LazyNow* lazy_now) {
+  recordreplay::Assert("MainThreadSchedulerImpl::OnTaskCompleted %lu",
+                       recordreplay::PointerId(queue ? queue->GetFrameScheduler() : nullptr));
+
   // Microtasks may detach the task queue and invalidate |queue|.
   PerformMicrotaskCheckpoint();
 
@@ -2783,6 +2787,9 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
     const TaskQueue::TaskTiming& task_timing,
     FrameSchedulerImpl* frame_scheduler,
     bool precise_attribution) {
+  recordreplay::Assert("MainThreadSchedulerImpl::RecordTaskUkmImpl %lu",
+                       recordreplay::PointerId(frame_scheduler));
+
   // Skip tasks which have deleted the frame or the page scheduler.
   if (!frame_scheduler)
     return UkmRecordingStatus::kErrorMissingFrame;

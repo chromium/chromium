@@ -145,6 +145,7 @@ void MainThreadTaskQueue::OnTaskCompleted(
     const base::sequence_manager::Task& task,
     TaskQueue::TaskTiming* task_timing,
     base::sequence_manager::LazyNow* lazy_now) {
+  recordreplay::Assert("MainThreadTaskQueue::OnTaskCompleted %lu", recordreplay::PointerId(this));
   if (main_thread_scheduler_) {
     main_thread_scheduler_->OnTaskCompleted(weak_ptr_factory_.GetWeakPtr(),
                                             task, task_timing, lazy_now);

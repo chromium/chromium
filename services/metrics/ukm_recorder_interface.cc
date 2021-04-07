@@ -5,6 +5,7 @@
 #include "services/metrics/ukm_recorder_interface.h"
 
 #include "base/atomic_sequence_num.h"
+#include "base/record_replay.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -13,9 +14,13 @@
 namespace metrics {
 
 UkmRecorderInterface::UkmRecorderInterface(ukm::UkmRecorder* ukm_recorder)
-    : ukm_recorder_(ukm_recorder) {}
+    : ukm_recorder_(ukm_recorder) {
+  recordreplay::RegisterPointer(this);
+}
 
-UkmRecorderInterface::~UkmRecorderInterface() = default;
+UkmRecorderInterface::~UkmRecorderInterface() {
+  recordreplay::UnregisterPointer(this);
+}
 
 // static
 void UkmRecorderInterface::Create(
@@ -27,6 +32,7 @@ void UkmRecorderInterface::Create(
 }
 
 void UkmRecorderInterface::AddEntry(ukm::mojom::UkmEntryPtr ukm_entry) {
+  recordreplay::Assert("UkmRecorderInterface::AddEntry %lu", recordreplay::PointerId(this));
   ukm_recorder_->AddEntry(std::move(ukm_entry));
 }
 
