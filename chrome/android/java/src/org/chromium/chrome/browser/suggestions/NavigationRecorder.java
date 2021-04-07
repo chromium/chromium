@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
@@ -57,7 +58,7 @@ public class NavigationRecorder extends EmptyTabObserver {
             int startStackIndex = navController.getLastCommittedEntryIndex();
             mWebContentsObserver = new WebContentsObserver() {
                 @Override
-                public void navigationEntryCommitted() {
+                public void navigationEntryCommitted(LoadCommittedDetails details) {
                     if (startStackIndex != navController.getLastCommittedEntryIndex()) return;
                     endRecording(tab, tab.getUrlString());
                 }

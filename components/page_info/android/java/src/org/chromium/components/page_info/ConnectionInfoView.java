@@ -23,6 +23,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -277,7 +278,7 @@ public class ConnectionInfoView implements OnClickListener {
             mWebContents = webContents;
             mWebContentsObserver = new WebContentsObserver(mWebContents) {
                 @Override
-                public void navigationEntryCommitted() {
+                public void navigationEntryCommitted(LoadCommittedDetails details) {
                     // If a navigation is committed (e.g. from in-page redirect), the data we're
                     // showing is stale so dismiss the dialog.
                     dismiss(DialogDismissalCause.UNKNOWN);
