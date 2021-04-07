@@ -81,6 +81,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
  private:
   friend class CellularMetricsLoggerTest;
+  FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
+                           DuplicateCellularServiceGuids);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest, CellularConnectResult);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularESimProfileStatusAtLoginTest);
@@ -95,7 +97,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
                            CellularTimeToConnectedTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularDisconnectionsTest);
-
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, RequirePin);
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, EnterPin);
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, UnblockPin);

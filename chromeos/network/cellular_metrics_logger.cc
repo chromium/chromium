@@ -236,6 +236,7 @@ void CellularMetricsLogger::NetworkListChanged() {
     if (old_connection_info_map_iter != old_connection_info_map.end()) {
       guid_to_connection_info_map_.insert_or_assign(
           guid, std::move(old_connection_info_map_iter->second));
+      old_connection_info_map.erase(old_connection_info_map_iter);
       continue;
     }
 
