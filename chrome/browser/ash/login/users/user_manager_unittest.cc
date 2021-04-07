@@ -177,8 +177,6 @@ class UserManagerTest : public testing::Test {
     settings_helper_.SetBoolean(kAccountsPrefEphemeralUsersEnabled,
                                 ephemeral_users_enabled);
     settings_helper_.SetString(kDeviceOwner, owner);
-    settings_helper_.SetBoolean(kAccountsPrefSupervisedUsersEnabled,
-                                supervised_users_enabled);
   }
 
   void RetrieveTrustedDevicePolicies() {

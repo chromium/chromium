@@ -648,7 +648,6 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     // The remaining settings don't support Set(), since they are not
     // intended to be customizable by the user:
     //   kAccountsPrefFamilyLinkAccountsAllowed
-    //   kAccountsPrefSupervisedUsersEnabled
     //   kAccountsPrefTransferSAMLCookies
     //   kDeviceAttestationEnabled
     //   kDeviceOwner

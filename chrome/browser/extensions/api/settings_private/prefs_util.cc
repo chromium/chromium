@@ -433,8 +433,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Accounts / Users / People.
   (*s_allowlist)[chromeos::kAccountsPrefAllowGuest] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::kAccountsPrefSupervisedUsersEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[chromeos::kAccountsPrefShowUserNamesOnSignIn] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[chromeos::kAccountsPrefAllowNewUser] =

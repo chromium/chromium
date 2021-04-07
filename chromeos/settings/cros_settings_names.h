@@ -52,8 +52,6 @@ extern const char kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
-extern const char kAccountsPrefSupervisedUsersEnabled[];
-COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kAccountsPrefTransferSAMLCookies[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kAccountsPrefLoginScreenDomainAutoComplete[];
@@ -317,7 +315,6 @@ using ::chromeos::kAccountsPrefEphemeralUsersEnabled;
 using ::chromeos::kAccountsPrefFamilyLinkAccountsAllowed;
 using ::chromeos::kAccountsPrefLoginScreenDomainAutoComplete;
 using ::chromeos::kAccountsPrefShowUserNamesOnSignIn;
-using ::chromeos::kAccountsPrefSupervisedUsersEnabled;
 using ::chromeos::kAccountsPrefTransferSAMLCookies;
 using ::chromeos::kAccountsPrefUsers;
 using ::chromeos::kAllowBluetooth;
