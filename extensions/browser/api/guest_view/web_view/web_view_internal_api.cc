@@ -1017,12 +1017,11 @@ uint32_t WebViewInternalClearDataFunction::GetRemovalMask() {
   uint32_t remove_mask = 0;
   for (base::DictionaryValue::Iterator i(*data_to_remove); !i.IsAtEnd();
        i.Advance()) {
-    bool selected = false;
-    if (!i.value().GetAsBoolean(&selected)) {
+    if (!i.value().is_bool()) {
       bad_message_ = true;
       return 0;
     }
-    if (selected)
+    if (i.value().GetBool())
       remove_mask |= MaskForKey(i.key().c_str());
   }
 

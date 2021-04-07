@@ -475,9 +475,8 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ShowNativeTouchCalibration) {
           show_native_calibration.get(), "[\"" + id + "\"]",
           browser_context()));
 
-  bool callback_result;
-  ASSERT_TRUE(result->GetAsBoolean(&callback_result));
-  ASSERT_TRUE(callback_result);
+  ASSERT_TRUE(result->is_bool());
+  EXPECT_TRUE(result->GetBool());
 }
 
 IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {

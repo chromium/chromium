@@ -48,14 +48,13 @@ DeclarativeContentIsBookmarkedPredicate::Create(
     const Extension* extension,
     const base::Value& value,
     std::string* error) {
-  bool is_bookmarked = false;
-  if (value.GetAsBoolean(&is_bookmarked)) {
+  if (value.is_bool()) {
     if (!HasBookmarkAPIPermission(extension)) {
       *error = kIsBookmarkedRequiresBookmarkPermission;
       return std::unique_ptr<DeclarativeContentIsBookmarkedPredicate>();
     } else {
       return base::WrapUnique(new DeclarativeContentIsBookmarkedPredicate(
-          evaluator, extension, is_bookmarked));
+          evaluator, extension, value.GetBool() /* is_bookmarked */));
     }
   } else {
     *error = base::StringPrintf(kIsBookmarkedInvalidTypeOfParameter,
