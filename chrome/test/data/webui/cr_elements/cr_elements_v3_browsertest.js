@@ -182,6 +182,19 @@ TEST_F('CrElementsRadioButtonV3Test', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var CrElementsCardRadioButtonV3Test = class extends CrElementsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_card_radio_button_test.js';
+  }
+};
+
+TEST_F('CrElementsCardRadioButtonV3Test', 'All', function() {
+  mocha.run();
+});
+
+
+// eslint-disable-next-line no-var
 var CrElementsRadioGroupV3Test = class extends CrElementsV3BrowserTest {
   /** @override */
   get browsePreload() {

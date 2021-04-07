@@ -17,6 +17,7 @@ js_type_check("closure_compile") {
   deps = [
     ":cr_action_menu_test",
     ":cr_button_tests",
+    ":cr_card_radio_button_test",
     ":cr_checkbox_test",
     ":cr_container_shadow_behavior_test",
     ":cr_dialog_test",
@@ -248,6 +249,14 @@ js_library("cr_radio_button_test") {
   deps = [
     "..:chai_assert",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("cr_card_radio_button_test") {
+  deps = [
+    "..:chai_assert",
+    "//ui/webui/resources/cr_elements/cr_radio_button:cr_card_radio_button.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
