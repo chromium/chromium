@@ -58,6 +58,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinBase
                            const std::vector<MSG>* char_msgs,
                            bool is_handled);
 
+  // Return false if |this| is destroyed during |PeekMessage| call.
+  bool HandlePeekMessage(HWND hwnd,
+                         UINT msg_filter_min,
+                         UINT msg_filter_max,
+                         std::vector<MSG>* char_msgs);
+
   ui::EventDispatchDetails ProcessUnhandledKeyEvent(
       ui::KeyEvent* event,
       const std::vector<MSG>* char_msgs);

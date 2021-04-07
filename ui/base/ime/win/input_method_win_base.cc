@@ -198,18 +198,14 @@ ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
   // the WM_KEY*.
   // Chrome never handles dead chars so it is safe to remove/ignore
   // WM_*DEADCHAR messages.
-  MSG msg;
-  while (::PeekMessage(&msg, native_key_event.hwnd, WM_CHAR, WM_DEADCHAR,
-                       PM_REMOVE)) {
-    if (msg.message == WM_CHAR)
-      char_msgs.push_back(msg);
+  if (!HandlePeekMessage(native_key_event.hwnd, WM_CHAR, WM_DEADCHAR,
+                         &char_msgs)) {
+    return DispatcherDestroyedDetails();
   }
-  while (::PeekMessage(&msg, native_key_event.hwnd, WM_SYSCHAR, WM_SYSDEADCHAR,
-                       PM_REMOVE)) {
-    if (msg.message == WM_SYSCHAR)
-      char_msgs.push_back(msg);
+  if (!HandlePeekMessage(native_key_event.hwnd, WM_SYSCHAR, WM_SYSDEADCHAR,
+                         &char_msgs)) {
+    return DispatcherDestroyedDetails();
   }
-
   // Handles ctrl-shift key to change text direction and layout alignment.
   if (IsRTLKeyboardLayoutInstalled() && !IsTextInputTypeNone()) {
     ui::KeyboardCode code = event->key_code();
@@ -236,6 +232,26 @@ ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
     event->set_character(char16_t{char_msgs[0].wParam});
 
   return ProcessUnhandledKeyEvent(event, &char_msgs);
+}
+
+bool InputMethodWinBase::HandlePeekMessage(HWND hwnd,
+                                           UINT msg_filter_min,
+                                           UINT msg_filter_max,
+                                           std::vector<MSG>* char_msgs) {
+  auto ref = weak_ptr_factory_.GetWeakPtr();
+  while (true) {
+    MSG msg;
+    const bool result =
+        !!::PeekMessage(&msg, hwnd, msg_filter_min, msg_filter_max, PM_REMOVE);
+    // PeekMessage may result in WM_NCDESTROY which will cause deletion of
+    // |this|. We should use WeakPtr to check whether |this| is destroyed.
+    if (!ref)
+      return false;
+    if (msg.message == msg_filter_min)
+      char_msgs->push_back(msg);
+    if (!result)
+      return true;
+  }
 }
 
 bool InputMethodWinBase::IsWindowFocused(const TextInputClient* client) const {
