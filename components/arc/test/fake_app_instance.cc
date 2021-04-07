@@ -551,6 +551,8 @@ void FakeAppInstance::LaunchIntentWithWindowInfo(
   launch_intents_.push_back(intent_uri);
 }
 
+void FakeAppInstance::UpdateWindowInfo(arc::mojom::WindowInfoPtr window_info) {}
+
 void FakeAppInstance::RequestShortcutIcon(
     const std::string& icon_resource_id,
     int dimension,

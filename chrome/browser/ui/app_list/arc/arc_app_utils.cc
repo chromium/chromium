@@ -431,6 +431,16 @@ bool LaunchAppShortcutItem(content::BrowserContext* context,
   return true;
 }
 
+void UpdateWindowInfo(arc::mojom::WindowInfoPtr window_info) {
+  arc::mojom::AppInstance* app_instance = GET_APP_INSTANCE(UpdateWindowInfo);
+  if (!app_instance) {
+    LOG(ERROR) << "Cannot find a mojo instance, ARC is unreachable or mojom"
+               << " version mismatch.";
+    return;
+  }
+  app_instance->UpdateWindowInfo(std::move(window_info));
+}
+
 void SetTaskActive(int task_id) {
   arc::mojom::AppInstance* app_instance = GET_APP_INSTANCE(SetTaskActive);
   if (!app_instance)

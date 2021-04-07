@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 49
+// Next MinVersion: 50
 
 module arc.mojom;
 
@@ -456,6 +456,9 @@ interface AppInstance {
   // info.
   [MinVersion=47] LaunchIntentWithWindowInfo@39(string intent_uri,
                                                 WindowInfo window_info);
+
+  // Updates ghost window info to ARC.
+  [MinVersion=49] UpdateWindowInfo@40(WindowInfo window_info);
 
   // Sends a request for the ARC icon of a given resource id and
   // |pixel_size|. This is deprecated and will soon be replaced by GetAppIcon().

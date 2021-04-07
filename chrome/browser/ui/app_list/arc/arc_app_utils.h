@@ -135,6 +135,9 @@ bool LaunchAppShortcutItem(content::BrowserContext* context,
                            const std::string& shortcut_id,
                            int64_t display_id);
 
+// Updates pre-launched window info to ARC.
+void UpdateWindowInfo(arc::mojom::WindowInfoPtr window_info);
+
 // Sets task active.
 void SetTaskActive(int task_id);
 

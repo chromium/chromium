@@ -119,6 +119,7 @@ class FakeAppInstance : public mojom::AppInstance {
   void LaunchIntentWithWindowInfo(
       const std::string& intent_uri,
       arc::mojom::WindowInfoPtr window_info) override;
+  void UpdateWindowInfo(arc::mojom::WindowInfoPtr window_info) override;
   void RequestShortcutIcon(const std::string& icon_resource_id,
                            int dimension,
                            RequestShortcutIconCallback callback) override;
