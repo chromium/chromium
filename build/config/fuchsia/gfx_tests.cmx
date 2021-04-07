@@ -23,8 +23,6 @@
       "fuchsia.sys.Loader",
       "fuchsia.sysmem.Allocator",
       "fuchsia.tracing.provider.Registry",
-      "fuchsia.ui.input.ImeService",
-      "fuchsia.ui.input.ImeVisibilityService",
       "fuchsia.ui.policy.Presenter",
       "fuchsia.ui.scenic.Scenic",
       "fuchsia.vulkan.loader.Loader"

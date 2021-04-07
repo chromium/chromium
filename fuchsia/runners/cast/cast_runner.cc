@@ -39,6 +39,7 @@ static constexpr const char* kServices[] = {
     "fuchsia.accessibility.semantics.SemanticsManager",
     "fuchsia.device.NameProvider",
     "fuchsia.fonts.Provider",
+    "fuchsia.input.virtualkeyboard.ControllerCreator",
     "fuchsia.intl.PropertyProvider",
     "fuchsia.logger.LogSink",
     "fuchsia.media.SessionAudioConsumerFactory",
@@ -52,8 +53,7 @@ static constexpr const char* kServices[] = {
     "fuchsia.process.Launcher",
     "fuchsia.settings.Display",
     "fuchsia.sysmem.Allocator",
-    "fuchsia.ui.input.ImeService",
-    "fuchsia.ui.input.ImeVisibilityService",
+    "fuchsia.ui.input3.Keyboard",
     "fuchsia.ui.scenic.Scenic",
     "fuchsia.vulkan.loader.Loader",
 
