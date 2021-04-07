@@ -1197,7 +1197,7 @@
     },
     {
       name: "ManagedConfiguration",
-      status:"experimental",
+      status: "stable",
     },
     {
       name: "ManagedInterface",
