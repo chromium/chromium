@@ -190,6 +190,9 @@ vars = {
   # By default, do not check out the re-client binaries.
   'checkout_reclient': False,
 
+  # Make Dawn skip its standalone dependencies
+  'dawn_standalone': False,
+
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.26.0.b455196',
 
@@ -362,10 +365,6 @@ vars = {
   # the commit queue can handle CLs rolling ukey2
   # and whatever else without interference from each other.
   'ukey2_revision': '0275885d8e6038c39b8a8ca55e75d1d4d1727f47',
-  # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling feed
-  # and whatever else without interference from each other.
-  'tint_revision': '09356cc3dc41abea88f1dd5039dc09bc076cd6d1',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -842,9 +841,6 @@ deps = {
 
   'src/third_party/dawn':
     Var('dawn_git') + '/dawn.git' + '@' +  Var('dawn_revision'),
-
-  'src/third_party/tint/src':
-    Var('dawn_git') + '/tint.git' + '@' +  Var('tint_revision'),
 
   'src/third_party/libjxl/src':
     Var('chromium_git') + '/external/gitlab.com/wg1/jpeg-xl.git' + '@' + Var('libjxl_revision'),
@@ -4423,6 +4419,8 @@ hooks = [
 recursedeps = [
   # ANGLE manages DEPS that it also owns the build files for, such as dEQP.
   'src/third_party/angle',
+  # Dawn and Tint's revision are linked
+  'src/third_party/dawn',
   'src/third_party/openscreen/src',
   'src/third_party/vulkan-deps',
   # src-internal has its own DEPS file to pull additional internal repos
