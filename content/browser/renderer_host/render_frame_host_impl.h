@@ -2761,6 +2761,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost LifecycleStateImpl.
   void SetLifecycleState(LifecycleStateImpl state);
 
+  // Converts a content-internal RenderFrameHostImpl::LifecycleStateImpl into a
+  // coarser-grained RenderFrameHost::LifecycleState which can be exposed
+  // outside of content.
+  static RenderFrameHost::LifecycleState GetLifecycleStateFromImpl(
+      LifecycleStateImpl state);
+
   void BindReportingObserver(
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           reporting_observer_receiver);

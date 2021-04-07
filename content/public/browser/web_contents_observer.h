@@ -112,6 +112,39 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // made the current host for a frame.
   virtual void FrameDeleted(int frame_tree_node_id) {}
 
+  // This method is invoked whenever one of the frames of a WebContents changes
+  // its |RenderFrameHost::GetLifecycleState()| i.e., when RenderFrameHost
+  // LifecycleState changes from |old_state| to |new_state|. The old
+  // LifecycleState that is being changed is |old_state| and the LifecycleState
+  // that it changes to is |new_state|. |old_state| and |new_state| are always
+  // different, i.e., a frame can't transition to the same state.
+  //
+  // This method allows code to react to RenderFrameHost LifecycleState changes.
+  // For example, to detect changes in the currently active document and perform
+  // different actions accordingly, like closing UI/resetting states,
+  // RenderFrameHostStateChanged is preferred instead of DidFinishNavigation.
+  // DidFinishNavigation does not guarantee that the old document will go away.
+  // Instead, it could enter the BackForwardCache and then become kActive later.
+  // Features that need to handle transitions like these should monitor
+  // LifecycleState changes instead.
+  //
+  // A particular document may change its LifecycleState and trigger
+  // RenderFrameHostStateChanged as part of being committed in a navigation,
+  // when another document replaces it by navigating in the same frame, in
+  // response to being detached from the DOM, or (with MPArch) as part of
+  // activating a prerendered page.
+  //
+  // When committing a cross-document, cross-RenderFrameHost navigation,
+  // navigation-related callbacks are dispatched in the following order:
+  // - RenderFrameHostStateChanged(new_frame, old_state, new_state)
+  // - RenderFrameHostChanged(old_frame, new_frame)
+  // - RenderFrameHostStateChanged(old_frame, old_state, new_state)
+  // - DidFinishNavigation(navigation_handle)
+  virtual void RenderFrameHostStateChanged(
+      RenderFrameHost* render_frame_host,
+      RenderFrameHost::LifecycleState old_state,
+      RenderFrameHost::LifecycleState new_state) {}
+
   // This method is invoked when the RenderView of the current RenderViewHost
   // is ready, e.g. because we recreated it after a crash.
   virtual void RenderViewReady() {}
@@ -394,13 +427,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // Invoked when a frame changes size.
   virtual void FrameSizeChanged(RenderFrameHost* render_frame_host,
                                 const gfx::Size& frame_size) {}
-
-  // Invoked when the state of `RenderFrameHost::IsInBackForwardCache()`
-  // changes.
-  // TODO(crbug.com/1113357): replace this with
-  // RenderFrameHostStateChanged when it's available.
-  virtual void FrameBackForwardCacheStateChanged(
-      RenderFrameHost* render_frame_host) {}
 
   // This method is invoked when the title of the WebContents is set. Note that
   // |entry| may be null if the web page whose title changed has not yet had a

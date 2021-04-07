@@ -771,9 +771,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const std::vector<blink::mojom::SavableSubframePtr>& subframes) override;
   void SavableResourceLinksError(RenderFrameHostImpl* source) override;
   void RenderFrameHostStateChanged(
-      RenderFrameHostImpl* render_frame_host,
-      RenderFrameHostImpl::LifecycleStateImpl old_state,
-      RenderFrameHostImpl::LifecycleStateImpl new_state) override;
+      RenderFrameHost* render_frame_host,
+      RenderFrameHost::LifecycleState old_state,
+      RenderFrameHost::LifecycleState new_state) override;
   void SetWindowRect(const gfx::Rect& new_bounds) override;
   std::vector<RenderFrameHostImpl*>
   GetActiveTopLevelDocumentsInBrowsingContextGroup(

@@ -625,13 +625,13 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // links.
   virtual void SavableResourceLinksError(RenderFrameHostImpl* source) {}
 
-  // Called when |RenderFrameHostImpl::lifecycle_state()| changes i.e.,
-  // when RenderFrameHost LifecycleStateImpl changes from old_state to
+  // Called when |RenderFrameHost::GetLifecycleState()| changes i.e.,
+  // when RenderFrameHost LifecycleState changes from old_state to
   // new_state.
   virtual void RenderFrameHostStateChanged(
-      RenderFrameHostImpl* host,
-      RenderFrameHostImpl::LifecycleStateImpl old_state,
-      RenderFrameHostImpl::LifecycleStateImpl new_state) {}
+      RenderFrameHost* host,
+      RenderFrameHost::LifecycleState old_state,
+      RenderFrameHost::LifecycleState new_state) {}
 
   // The page is trying to move the main frame's representation in the client.
   virtual void SetWindowRect(const gfx::Rect& new_bounds) {}

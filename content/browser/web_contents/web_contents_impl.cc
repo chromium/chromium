@@ -219,7 +219,7 @@ constexpr auto kUpdateLoadStatesInterval =
 
 const int kMinimumDelayBetweenLoadingUpdatesMS = 100;
 
-using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
+using LifecycleState = RenderFrameHost::LifecycleState;
 
 // TODO(crbug.com/1059903): Clean up after the initial investigation.
 constexpr base::Feature kCheckWebContentsAccessFromNonCurrentFrame{
@@ -8585,9 +8585,10 @@ WebContentsImpl::GetRenderViewHostsIncludingBackForwardCached() {
 }
 
 void WebContentsImpl::RenderFrameHostStateChanged(
-    RenderFrameHostImpl* render_frame_host,
-    LifecycleStateImpl old_state,
-    LifecycleStateImpl new_state) {
+    RenderFrameHost* render_frame_host,
+    LifecycleState old_state,
+    LifecycleState new_state) {
+  DCHECK_NE(old_state, new_state);
   OPTIONAL_TRACE_EVENT2("content",
                         "WebContentsImpl::RenderFrameHostStateChanged",
                         "render_frame_host", render_frame_host, "states",
@@ -8599,26 +8600,20 @@ void WebContentsImpl::RenderFrameHostStateChanged(
                           dict.Add("old", old_state);
                           dict.Add("new", new_state);
                         });
-  const bool was_in_back_forward_cache =
-      old_state == LifecycleStateImpl::kInBackForwardCache;
-  const bool is_in_back_forward_cache =
-      new_state == LifecycleStateImpl::kInBackForwardCache;
-  if (was_in_back_forward_cache != is_in_back_forward_cache) {
-    observers_.NotifyObservers(
-        &WebContentsObserver::FrameBackForwardCacheStateChanged,
-        render_frame_host);
-  }
   if (render_frame_host->GetParent())
     return;
 
-  if (old_state == LifecycleStateImpl::kActive &&
-      new_state != LifecycleStateImpl::kActive) {
+  if (old_state == LifecycleState::kActive &&
+      new_state != LifecycleState::kActive) {
     // TODO(sreejakshetty): Remove this reset when ColorChooser becomes
     // per-frame.
     // Close the color chooser popup when RenderFrameHost changes state from
     // kActive.
     color_chooser_.reset();
   }
+
+  observers_.NotifyObservers(&WebContentsObserver::RenderFrameHostStateChanged,
+                             render_frame_host, old_state, new_state);
 }
 
 bool WebContentsImpl::IsPrimaryFrameTree(const FrameTree& frame_tree) const {
