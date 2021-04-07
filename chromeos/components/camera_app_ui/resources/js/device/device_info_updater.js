@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '../chrome_util.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
+import * as toast from '../toast.js';
 // eslint-disable-next-line no-unused-vars
 import {ResolutionList, VideoConfig} from '../type.js';
 
@@ -12,6 +14,20 @@ import {
   PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
   VideoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
 } from './constraints_preferrer.js';
+
+/**
+ * Thrown for no camera available on the device.
+ */
+export class NoCameraError extends Error {
+  /**
+   * @param {string=} message
+   * @public
+   */
+  constructor(message = 'No camera available on the device') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
 
 /**
  * Contains information of all cameras on the device and will updates its value
@@ -90,6 +106,47 @@ export class DeviceInfoUpdater {
 
     navigator.mediaDevices.addEventListener(
         'devicechange', this.update_.bind(this));
+
+    this.initCameraChangeAnnouncer_();
+  }
+
+  /**
+   * Initializes announcer announcing all camera change events.
+   * TODO(b/151047537): Moves it into StreamManager whose update won't be
+   * blocked by update lock.
+   */
+  async initCameraChangeAnnouncer_() {
+    const queryCameras = async () => {
+      try {
+        return await this.enumerateDevices_();
+      } catch (e) {
+        assert(e instanceof NoCameraError);
+        return [];
+      }
+    };
+
+    /**
+     * Computes |devices| - |devices2|.
+     * @param {!Array<!MediaDeviceInfo>} devices
+     * @param {!Array<!MediaDeviceInfo>} devices2
+     * @return {!Array<!MediaDeviceInfo>}
+     */
+    const getDifference = (devices, devices2) => {
+      const ids = new Set(devices2.map(({deviceId}) => deviceId));
+      return devices.filter(({deviceId}) => !ids.has(deviceId));
+    };
+
+    let announcedDevices = await queryCameras();
+    navigator.mediaDevices.addEventListener('devicechange', async () => {
+      const devices = await queryCameras();
+      for (const added of getDifference(devices, announcedDevices)) {
+        toast.speak('status_msg_camera_plugged', added.label);
+      }
+      for (const removed of getDifference(announcedDevices, devices)) {
+        toast.speak('status_msg_camera_unplugged', removed.label);
+      }
+      announcedDevices = devices;
+    });
   }
 
   /**
@@ -152,7 +209,7 @@ export class DeviceInfoUpdater {
     const devices = (await navigator.mediaDevices.enumerateDevices())
                         .filter((device) => device.kind === 'videoinput');
     if (devices.length === 0) {
-      throw new Error('Device list empty.');
+      throw new NoCameraError();
     }
     return devices;
   }

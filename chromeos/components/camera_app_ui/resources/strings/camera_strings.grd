@@ -371,6 +371,12 @@
       <message desc="Status message for spoken feedback when switching over to another camera." name="IDS_STATUS_MSG_CAMERA_SWITCHED">
         <ph name="camera">$1<ex>USB WebCam (12ab:5678) User-facing</ex></ph> active
       </message>
+      <message desc="Message for spoken feedback when an external camera plug into the device." name="IDS_STATUS_MSG_CAMERA_PLUGGED">
+        <ph name="camera">$1<ex>USB WebCam (12ab:5678)</ex></ph> is plugged in.
+      </message>
+      <message desc="Message for spoken feedback when an external camera unplug from the device." name="IDS_STATUS_MSG_CAMERA_UNPLUGGED">
+        <ph name="camera">$1<ex>USB WebCam (12ab:5678)</ex></ph> is unplugged.
+      </message>
       <message desc="Name of the Camera App." name="IDS_NAME">
         Camera
       </message>

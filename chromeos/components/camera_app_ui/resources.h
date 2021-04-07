@@ -86,6 +86,8 @@ const struct {
     {"gallery_images", IDS_GALLERY_IMAGES},
     {"error_msg_gallery_export_failed", IDS_ERROR_MSG_GALLERY_EXPORT_FAILED},
     {"status_msg_camera_switched", IDS_STATUS_MSG_CAMERA_SWITCHED},
+    {"status_msg_camera_plugged", IDS_STATUS_MSG_CAMERA_PLUGGED},
+    {"status_msg_camera_unplugged", IDS_STATUS_MSG_CAMERA_UNPLUGGED},
     {"name", IDS_NAME},
     {"error_msg_file_system_failed", IDS_ERROR_MSG_FILE_SYSTEM_FAILED},
     {"settings_button", IDS_SETTINGS_BUTTON},
