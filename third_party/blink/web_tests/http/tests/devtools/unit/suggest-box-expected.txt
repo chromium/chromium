@@ -3,6 +3,9 @@ This tests if the SuggestBox works properly.
 Testing that the first item is selected.
 Intermediate Suggestion Applied: First
 
+Testing that controller element is expanded.
+aria-expanded: true
+
 Testing that no item is selected.
 No item selected.
 
@@ -19,6 +22,9 @@ Intermediate Suggestion Applied: Hello
 Testing that enter can be used to accept a suggestion.
 Suggestion Applied: Hello
 Suggestion accepted
+
+Testing that controller element is collapsed.
+aria-expanded: false
 
 Testing that highest priority item is selected.
 No item selected.

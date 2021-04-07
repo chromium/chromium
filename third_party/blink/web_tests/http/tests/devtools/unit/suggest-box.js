@@ -1,6 +1,9 @@
 (async function() {
   TestRunner.addResult("This tests if the SuggestBox works properly.");
 
+  var div = document.createElement("div");
+  UI.inspectorView.element.appendChild(div);
+
   var delegate = {
       applySuggestion: function(suggestion, isIntermediateSuggestion) {
           if (!suggestion)
@@ -10,10 +13,12 @@
       },
       acceptSuggestion: function() {
           TestRunner.addResult("Suggestion accepted");
+      },
+      ariaControlledBy: function() {
+        return div;
       }
   };
-  var div = document.createElement("div");
-  UI.inspectorView.element.appendChild(div);
+
   var suggestBox = new UI.SuggestBox(delegate);
 
   TestRunner.addResult("");
@@ -22,6 +27,10 @@
       {text: "First"},
       {text: "Hello"},
       {text: "The best suggestion"}], true, true, "e");
+
+  TestRunner.addResult("");
+  TestRunner.addResult("Testing that controller element is expanded.");
+  TestRunner.addResult(`aria-expanded: ${div.getAttribute('aria-expanded')}`);
 
   TestRunner.addResult("");
   TestRunner.addResult("Testing that no item is selected.");
@@ -48,6 +57,10 @@
   TestRunner.addResult("");
   TestRunner.addResult("Testing that enter can be used to accept a suggestion.");
   suggestBox.keyPressed(TestRunner.createKeyEvent("Enter"));
+
+  TestRunner.addResult("");
+  TestRunner.addResult("Testing that controller element is collapsed.");
+  TestRunner.addResult(`aria-expanded: ${div.getAttribute('aria-expanded')}`);
 
   TestRunner.addResult("");
   TestRunner.addResult("Testing that highest priority item is selected.");
