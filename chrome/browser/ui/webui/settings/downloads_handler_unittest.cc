@@ -65,9 +65,8 @@ class DownloadsHandlerTest : public testing::Test {
     std::string event;
     ASSERT_TRUE(data.arg1()->GetAsString(&event));
     EXPECT_EQ("auto-open-downloads-changed", event);
-    bool auto_open_downloads = false;
-    ASSERT_TRUE(data.arg2()->GetAsBoolean(&auto_open_downloads));
-    EXPECT_FALSE(auto_open_downloads);
+    ASSERT_TRUE(data.arg2()->is_bool());
+    EXPECT_FALSE(data.arg2()->GetBool());
   }
 
   Profile* profile() { return &profile_; }

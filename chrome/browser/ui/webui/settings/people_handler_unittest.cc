@@ -292,9 +292,8 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
     std::string callback_id;
     ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
     EXPECT_EQ(kTestCallbackId, callback_id);
-    bool success = false;
-    ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-    EXPECT_TRUE(success);
+    ASSERT_TRUE(data.arg2()->is_bool());
+    EXPECT_TRUE(data.arg2()->GetBool());
     std::string status;
     ASSERT_TRUE(data.arg3()->GetAsString(&status));
     EXPECT_EQ(expected_status, status);

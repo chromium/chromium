@@ -127,9 +127,8 @@ TEST_F(ProfileInfoHandlerTest, GetProfileInfo) {
   ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
   EXPECT_EQ("get-profile-info-callback-id", callback_id);
 
-  bool success = false;
-  ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-  EXPECT_TRUE(success);
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
 
   VerifyProfileInfo(data.arg3());
 }

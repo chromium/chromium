@@ -22,10 +22,8 @@ bool DefaultBrowserIsDisabledByPolicy() {
       g_browser_process->local_state()->FindPreference(
           prefs::kDefaultBrowserSettingEnabled);
   DCHECK(pref);
-  bool may_set_default_browser;
-  bool success = pref->GetValue()->GetAsBoolean(&may_set_default_browser);
-  DCHECK(success);
-  return pref->IsManaged() && !may_set_default_browser;
+  DCHECK(pref->GetValue()->is_bool());
+  return pref->IsManaged() && !pref->GetValue()->GetBool();
 }
 
 }  // namespace
