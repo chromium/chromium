@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.view.Menu;
@@ -481,17 +482,18 @@ public class CustomTabActivityIncognitoTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
-    public void ensureHiddenTabIsBlockedForIncognitoWithExtraInConnection() throws Exception {
-        // Creation of hidden tab should be blocked for incognito mode for the same setup as regular
-        // mode above. Currently hidden tabs are created always with regular profile, so we
-        // should block the hidden tab creation. Need to update the test if the hidden tabs are
-        // allowed in incognito. (crbug.com/1190971)
+    public void ensureMayLaunchUrlIsBlockedForIncognitoWithExtraInConnection() throws Exception {
+        // mayLaunchUrl should be blocked for incognito mode since it runs with always regular
+        // profile. Need to update the test if the mayLaunchUrl is ever
+        // allowed in incognito. (crbug.com/1106757)
         Intent intent = createMinimalIncognitoCustomTabIntent();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         // Passes the launch intent to the connection.
-        mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, intent, token, mTestPage);
+        mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, token);
+        Assert.assertFalse(
+                connection.mayLaunchUrl(token, Uri.parse(mTestPage), intent.getExtras(), null));
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat("Tab was created", connection.getSpeculationParamsForTesting(),
                     Matchers.nullValue());
@@ -513,7 +515,8 @@ public class CustomTabActivityIncognitoTest {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         // Passes null intent here to mimic not having incognito extra in intent at the connection.
-        mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, null, token, mTestPage);
+        mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, token);
+        Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(mTestPage), null, null));
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat("Tab was not created", connection.getSpeculationParamsForTesting(),
                     Matchers.notNullValue());

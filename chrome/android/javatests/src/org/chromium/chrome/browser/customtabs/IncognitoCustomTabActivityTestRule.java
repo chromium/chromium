@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
@@ -84,14 +82,12 @@ public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRul
         mCustomSessionInitiatedForIntent = true;
     }
 
-    public void buildSessionWithHiddenTab(CustomTabsConnection connection, Intent intent,
-            CustomTabsSessionToken token, String url) {
+    public void buildSessionWithHiddenTab(
+            CustomTabsConnection connection, CustomTabsSessionToken token) {
         Assert.assertTrue(connection.newSession(token));
         // Need to set params to reach |CustomTabsConnection#doMayLaunchUrlOnUiThread|.
         connection.mClientManager.setHideDomainForSession(token, true);
         connection.setCanUseHiddenTabForSession(token, true);
-        Bundle extras = intent == null ? null : intent.getExtras();
-        Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(url), extras, null));
     }
 
     @Override

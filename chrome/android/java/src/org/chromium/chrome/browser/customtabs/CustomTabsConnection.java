@@ -546,6 +546,11 @@ public class CustomTabsConnection {
 
     private boolean mayLaunchUrlInternal(final CustomTabsSessionToken session, final Uri url,
             final Bundle extras, final List<Bundle> otherLikelyBundles) {
+        // mayLaunchUrl should not be executed for Incognito CCT since all setup is created with
+        // regular profile. If we need to enable mayLaunchUrl for off-the-record profiles, we need
+        // to update the profile used. Please see crbug.com/1106757.
+        if (IncognitoUtils.hasAnyIncognitoExtra(extras)) return false;
+
         final boolean lowConfidence =
                 (url == null || TextUtils.isEmpty(url.toString())) && otherLikelyBundles != null;
         final String urlString = isValid(url) ? url.toString() : null;
