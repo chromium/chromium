@@ -186,6 +186,8 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
          ANDROID_DISABLED_TESTS,
          '--use-subtest-results',
     ]
+    if self.options.ignore_default_expectations:
+        metadata_builder_cmd += [ '--ignore-default-expectations' ]
     metadata_builder_cmd.extend(self._extra_metadata_builder_args())
     return common.run_command(metadata_builder_cmd)
 
@@ -234,6 +236,9 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--additional-expectations',
                         action='append', default=[],
                         help='Paths to additional test expectations files.')
+    parser.add_argument('--ignore-default-expectations', action='store_true',
+                        help='Do not use the default set of'
+                        ' TestExpectations files.')
     parser.add_argument('--ignore-browser-specific-expectations',
                         action='store_true', default=False,
                         help='Ignore browser specific expectation files.')

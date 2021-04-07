@@ -106,7 +106,7 @@ To run WPT on android against weblayer do the following:
     $ export WPT_TEST= test you want to run, relative to wpt directory.
     $ autoninja -C out/Default run_weblayer_shell weblayer_shell_wpt
     $ out/Default/bin/run_weblayer_shell
-    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product android_weblayer --isolated-script-test-output /tmp/weblayer_out.json --include $WPT_TEST
+    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product android_weblayer --isolated-script-test-output /tmp/weblayer_out.json --include $WPT_TEST --ignore-browser-specific-expectations --ignore-default-expectations
 ```
 
 `run_android_wpt.py` does not install `weblayer-shell`, you need to do that
@@ -118,8 +118,12 @@ To run against clank:
     $ export WPT_TEST= test you want to run, relative to wpt directory.
     $ autoninja -C out/Default monochrome_public_apk
     $ out/Default/bin/monochrome_public_apk install
-    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product chrome_android --chrome-package-name org.chromium.chrome --isolated-script-test-output /tmp/clank_out.json --include $WPT_TEST
+    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product chrome_android --chrome-package-name org.chromium.chrome --isolated-script-test-output /tmp/clank_out.json --include $WPT_TEST --ignore-browser-specific-expectations --ignore-default-expectations
 ```
+
+The `--ignore-browser-specific-expectations --ignore-default-expectations` flags will prevent
+\*Expectations files from being loaded, which helps with error messages on test failures.
+Once a test is fixed, rerun it without those flags to ensure the Expectations files are correct.
 
 To run against linux with wptrunner (same runner we use on android, which runs normal chrome):
 
