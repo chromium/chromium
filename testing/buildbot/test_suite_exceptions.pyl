@@ -2056,6 +2056,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter',
         ],
       },
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 14,
+        },
+      },
       'linux-blink-heap-concurrent-marking-tsan-rel': {
         'swarming': {
           'shards': 4,
