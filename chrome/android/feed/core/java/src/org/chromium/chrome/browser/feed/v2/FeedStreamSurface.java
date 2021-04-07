@@ -487,9 +487,23 @@ public class FeedStreamSurface
 
     /**
      * Attempts to load more content if it can be triggered.
+     *
+     * <p>This method uses the default or Finch configured load more lookahead trigger.
+     *
      * @return true if loading more content can be triggered.
      */
     boolean maybeLoadMore() {
+        return maybeLoadMore(mLoadMoreTriggerLookahead);
+    }
+
+    /**
+     * Attempts to load more content if it can be triggered.
+     * @param lookaheadTrigger The threshold of off-screen cards below which the feed should attempt
+     *         to load more content. I.e., if there are fewer than |lookaheadTrigger| cards left to
+     *         show the user, then the feed should load more cards.
+     * @return true if loading more content can be triggered.
+     */
+    private boolean maybeLoadMore(int lookaheadTrigger) {
         // Checks if loading more can be triggered.
         boolean canLoadMore = false;
         LinearLayoutManager layoutManager = (LinearLayoutManager) mRootView.getLayoutManager();
@@ -498,7 +512,7 @@ public class FeedStreamSurface
         }
         int totalItemCount = layoutManager.getItemCount();
         int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
-        if (totalItemCount - lastVisibleItem > mLoadMoreTriggerLookahead) {
+        if (totalItemCount - lastVisibleItem > lookaheadTrigger) {
             return false;
         }
 
@@ -569,6 +583,11 @@ public class FeedStreamSurface
         }
 
         updateContentsInPlace(newContentList);
+
+        // If all of the cards fit on the screen, load more content. The view
+        // may not be scrollable, preventing the user from otherwise triggering
+        // load more.
+        maybeLoadMore(/*lookaheadTrigger=*/0);
     }
 
     @CalledByNative
