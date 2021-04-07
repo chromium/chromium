@@ -89,6 +89,12 @@ Here's how it works:
   that relayout happens when style or children change. Eventually we need to
   rethink this part as we transition away from legacy layout.
 
+### Block fragmentation ###
+
+Design doc [here](https://docs.google.com/document/d/1EJOdFesZKspvrU7uWtGl-8ab2jIrzRF6NKJhwYOs6hU/).
+
+Tutorial [here](block-fragmentation-tutorial.md).
+
 ### Code coverage ###
 
 The latest code coverage (from Feb 14 2017) can be found [here](https://glebl.users.x20web.corp.google.com/www/layout_ng_code_coverage/index.html).
