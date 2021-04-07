@@ -645,8 +645,6 @@ void ChannelLinux::Write(MessagePtr message) {
   }
 
   //  The write with shared memory was successful.
-  UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.Linux.SharedMemWriteBytes",
-                              message->data_num_bytes());
   write_notifier_->Notify();
 }
 
@@ -794,9 +792,6 @@ void ChannelLinux::SharedMemReadReady() {
       if (bytes_read == 0) {
         break;
       }
-
-      UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.Linux.SharedMemReadBytes",
-                                  bytes_read);
 
       // Now dispatch the message, we KNOW it's at least one full message
       // because we checked the message size before putting it into the
