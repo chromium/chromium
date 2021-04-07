@@ -872,10 +872,8 @@ def main():
       action='store_true',
       help='Deploy a lacros-chrome instead of ash-chrome.')
 
-  # GTest args.
-  # TODO(bpastene): Rename 'vm-test' arg to 'gtest'.
   gtest_parser = subparsers.add_parser(
-      'vm-test', help='Runs a device-side gtest.')
+      'gtest', help='Runs a device-side gtest.')
   gtest_parser.set_defaults(func=device_test)
   gtest_parser.add_argument(
       '--test-exe',

@@ -226,7 +226,7 @@ class GTestTest(TestRunnerTest):
 
     args = [
         'script_name',
-        'vm-test',
+        'gtest',
         '--test-exe=out_eve/Release/base_unittests',
         '--board=eve',
         '--path-to-outdir=out_eve/Release',

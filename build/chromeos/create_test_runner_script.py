@@ -69,7 +69,7 @@ def main(args):
   vm_test_args = []
   if args.test_exe:
     vm_test_args.extend([
-        'vm-test',
+        'gtest',
         '--test-exe',
         args.test_exe,
     ])
