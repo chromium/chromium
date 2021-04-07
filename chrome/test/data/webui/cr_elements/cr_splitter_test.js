@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
+import {CrSplitterElement} from 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 

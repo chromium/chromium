@@ -2,41 +2,57 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'cr-splitter',
+export class CrSplitterElement extends PolymerElement {
+  static get is() {
+    return 'cr-splitter';
+  }
 
-  _template: null,
+  static get template() {
+    return null;
+  }
 
-  properties: {
-    resizeNextElement: {
-      type: Boolean,
-      value: false,
-    },
-  },
+  static get properties() {
+    return {
+      resizeNextElement: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  listeners: {
-    'mousedown': 'onMouseDown_',
-    'touchstart': 'onTouchStart_',
-  },
+  constructor() {
+    super();
 
-  /** @private {?Map<string, !Function>} */
-  handlers_: null,
+    /** @private {?Map<string, !Function>} */
+    this.handlers_ = null;
 
-  /** @private {number} */
-  startX_: 0,
+    /** @private {number} */
+    this.startX_ = 0;
+
+    /** @private {number} */
+    this.startWidth_ = -1;
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('mousedown', e => this.onMouseDown_(e));
+    this.addEventListener('touchstart', e => this.onTouchStart_(e));
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.handlers_ = new Map();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     this.removeAllHandlers_();
     this.handlers_ = null;
-  },
+  }
 
   /**
    * Starts the dragging of the splitter. Adds listeners for mouse or touch
@@ -74,7 +90,7 @@ Polymer({
 
     this.startX_ = clientX;
     this.handleSplitterDragStart_();
-  },
+  }
 
   /** @private */
   removeAllHandlers_() {
@@ -86,7 +102,7 @@ Polymer({
           /** @type {Function} */ (handler), true);
     }
     this.handlers_.clear();
-  },
+  }
 
   /**
    * Ends the dragging of the splitter. Removes listeners set in startDrag
@@ -96,7 +112,7 @@ Polymer({
   endDrag_() {
     this.removeAllHandlers_();
     this.handleSplitterDragEnd_();
-  },
+  }
 
   /**
    * @return {Element}
@@ -105,7 +121,7 @@ Polymer({
   getResizeTarget_() {
     return this.resizeNextElement ? this.nextElementSibling :
                                     this.previousElementSibling;
-  },
+  }
 
   /**
    * Calculate width to resize target element.
@@ -115,7 +131,7 @@ Polymer({
    */
   calcDeltaX_(deltaX) {
     return this.resizeNextElement ? -deltaX : deltaX;
-  },
+  }
 
   /**
    * Handles the mousedown event which starts the dragging of the splitter.
@@ -130,7 +146,7 @@ Polymer({
     this.startDrag(e.clientX, false);
     // Default action is to start selection and to move focus.
     e.preventDefault();
-  },
+  }
 
   /**
    * Handles the touchstart event which starts the dragging of the splitter.
@@ -143,7 +159,7 @@ Polymer({
       this.startDrag(e.touches[0].clientX, true);
       e.preventDefault();
     }
-  },
+  }
 
   /**
    * Handles the mousemove event which moves the splitter as the user moves
@@ -153,7 +169,7 @@ Polymer({
    */
   handleMouseMove_(e) {
     this.handleMove_(e.clientX);
-  },
+  }
 
   /**
    * Handles the touch move event.
@@ -163,7 +179,7 @@ Polymer({
     if (e.touches.length === 1) {
       this.handleMove_(e.touches[0].clientX);
     }
-  },
+  }
 
   /**
    * Common part of handling mousemove and touchmove. Calls splitter drag
@@ -176,7 +192,7 @@ Polymer({
         this.startX_ - clientX :
         clientX - this.startX_;
     this.handleSplitterDragMove_(deltaX);
-  },
+  }
 
   /**
    * Handles the mouse up event which ends the dragging of the splitter.
@@ -185,7 +201,7 @@ Polymer({
    */
   handleMouseUp_(e) {
     this.endDrag_();
-  },
+  }
 
   /**
    * Handles start of the splitter dragging. Saves current width of the
@@ -203,7 +219,7 @@ Polymer({
         targetElement.offsetWidth - targetElement.clientWidth;
 
     this.classList.add('splitter-active');
-  },
+  }
 
   /**
    * Handles splitter moves. Updates width of the element being resized.
@@ -215,7 +231,7 @@ Polymer({
     const newWidth = this.startWidth_ + this.calcDeltaX_(deltaX);
     targetElement.style.width = newWidth + 'px';
     this.dispatchEvent(new CustomEvent('dragmove'));
-  },
+  }
 
   /**
    * Handles end of the splitter dragging. This fires a 'resize' event if the
@@ -233,5 +249,7 @@ Polymer({
     }
 
     this.classList.remove('splitter-active');
-  },
-});
+  }
+}
+
+customElements.define(CrSplitterElement.is, CrSplitterElement);
