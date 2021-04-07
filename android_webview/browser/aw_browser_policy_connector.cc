@@ -22,10 +22,6 @@ namespace android_webview {
 
 namespace {
 
-// Callback only used in ChromeOS. No-op here.
-void PopulatePolicyHandlerParameters(
-    policy::PolicyHandlerParameters* parameters) {}
-
 // Factory for the handlers that will be responsible for converting the policies
 // to the associated preferences.
 std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildHandlerList(
@@ -33,10 +29,9 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildHandlerList(
   version_info::Channel channel = version_info::android::GetChannel();
   std::unique_ptr<policy::ConfigurationPolicyHandlerList> handlers(
       new policy::ConfigurationPolicyHandlerList(
-          base::BindRepeating(&PopulatePolicyHandlerParameters),
-          // Used to check if a policy is deprecated. Currently bypasses that
-          // check.
-          policy::GetChromePolicyDetailsCallback(),
+          policy::ConfigurationPolicyHandlerList::
+              PopulatePolicyHandlerParametersCallback(),
+          base::BindRepeating(&policy::GetChromePolicyDetails),
           channel != version_info::Channel::STABLE &&
               channel != version_info::Channel::BETA));
 
