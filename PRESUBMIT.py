@@ -343,7 +343,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^base/callback.h',  # Intentional.
   '^base/cancelable_callback.h',  # Intentional.
   "^chrome/browser/ash/accessibility/",
-  '^chrome/browser/media_galleries/',
   "^chrome/browser/metrics/",
   "^chrome/browser/prefetch/no_state_prefetch/",
   '^chrome/browser/previews/',
