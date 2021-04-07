@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Variations.AppSeedFreshness" units="minutes"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>rmcelrath@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>

@@ -623,7 +623,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.PersistedSizeInKB" units="KB"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -635,7 +635,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.SentCount" units="samples"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -646,7 +646,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.UnsentCount" units="samples"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -657,7 +657,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.UnsentPercentage" units="%"
-    expires_after="2021-08-01">
+    expires_after="2021-10-04">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
