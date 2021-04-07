@@ -252,6 +252,21 @@ class CaptionBubbleLabel : public views::Label {
  public:
   METADATA_HEADER(CaptionBubbleLabel);
   CaptionBubbleLabel() {
+    // TODO(crbug.com/1191091): Override GetAccessibleNodeData and set the role
+    // of the CaptionBubbleLabel to be kDocument, rather than adding a kDocument
+    // as a virtual view. This is a temporary fix to ensure that the kDocument
+    // node appears in the accessibility tree.
+    // Views are not supposed to be documents (see
+    // `ViewAccessibility::IsValidRoleForViews` for more information) but we
+    // make an exception here. The CaptionBubbleLabel is designed to be
+    // interacted with by a braille display in virtual buffer mode. In order to
+    // activate the virtual buffer in NVDA, we set the top-level virtual view in
+    // CaptionBubbleLabel to be a readonly document.
+    auto ax_document = std::make_unique<views::AXVirtualView>();
+    ax_document->GetCustomData().role = ax::mojom::Role::kDocument;
+    ax_document->GetCustomData().SetRestriction(
+        ax::mojom::Restriction::kReadOnly);
+
     // The CaptionBubbleLabel accessibility tree contains one paragraph with
     // many staticText nodes inside. The paragraph groups the static text nodes.
     // Without a paragraph, VoiceOver intersperses the close button with the
@@ -260,28 +275,19 @@ class CaptionBubbleLabel : public views::Label {
     // ensures that lines 1-8 are read together.
     auto ax_paragraph = std::make_unique<views::AXVirtualView>();
     ax_paragraph->GetCustomData().role = ax::mojom::Role::kParagraph;
-    GetViewAccessibility().AddVirtualChildView(std::move(ax_paragraph));
+    ax_document->AddChildView(std::move(ax_paragraph));
+    GetViewAccessibility().AddVirtualChildView(std::move(ax_document));
   }
 
   ~CaptionBubbleLabel() override = default;
   CaptionBubbleLabel(const CaptionBubbleLabel&) = delete;
   CaptionBubbleLabel& operator=(const CaptionBubbleLabel&) = delete;
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    // Views are not supposed to be documents (see
-    // `ViewAccessibility::IsValidRoleForViews` for more information) but we
-    // make an exception here. The CaptionBubbleLabel is designed to be
-    // interacted with by a braille display in virtual buffer mode. In order to
-    // activate the virtual buffer in NVDA, we set the CaptionBubbleLabel to be
-    // a readonly document.
-    node_data->role = ax::mojom::Role::kDocument;
-    node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
-  }
-
   void SetText(const std::u16string& text) override {
     views::Label::SetText(text);
 
-    auto& ax_paragraph = GetViewAccessibility().virtual_children()[0];
+    auto& ax_document = GetViewAccessibility().virtual_children()[0];
+    auto& ax_paragraph = ax_document->children()[0];
     auto& ax_lines = ax_paragraph->children();
     if (text.empty() && !ax_lines.empty()) {
       ax_paragraph->RemoveAllChildViews();
@@ -314,7 +320,8 @@ class CaptionBubbleLabel : public views::Label {
   void UpdateAXLine(const std::u16string& line_text,
                     const size_t line_index,
                     const gfx::Range& text_range) {
-    auto& ax_paragraph = GetViewAccessibility().virtual_children()[0];
+    auto& ax_document = GetViewAccessibility().virtual_children()[0];
+    auto& ax_paragraph = ax_document->children()[0];
     auto& ax_lines = ax_paragraph->children();
 
     // Add a new virtual child for a new line of text.

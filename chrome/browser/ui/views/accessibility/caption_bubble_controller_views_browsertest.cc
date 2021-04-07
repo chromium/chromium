@@ -184,13 +184,26 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     GetController()->OnAudioStreamEnd(GetCaptionHostImpl());
   }
 
-  size_t GetNumberAXParagraphNodes() {
+  size_t GetNumberAXDocumentNodes() {
     return GetLabel()->GetViewAccessibility().virtual_children().size();
   }
 
-  ui::AXNodeData GetAXParagraphNodeData() {
-    auto& ax_paragraph =
+  ui::AXNodeData GetAXDocumentNodeData() {
+    auto& ax_document =
         GetLabel()->GetViewAccessibility().virtual_children()[0];
+    return ax_document->GetCustomData();
+  }
+
+  size_t GetNumberAXParagraphNodes() {
+    auto& ax_document =
+        GetLabel()->GetViewAccessibility().virtual_children()[0];
+    return ax_document->children().size();
+  }
+
+  ui::AXNodeData GetAXParagraphNodeData() {
+    auto& ax_document =
+        GetLabel()->GetViewAccessibility().virtual_children()[0];
+    auto& ax_paragraph = ax_document->children()[0];
     return ax_paragraph->GetCustomData();
   }
 
@@ -199,7 +212,9 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     views::Label* label = GetLabel();
     if (!label)
       return node_datas;
-    auto& ax_paragraph = label->GetViewAccessibility().virtual_children()[0];
+    auto& ax_document =
+        GetLabel()->GetViewAccessibility().virtual_children()[0];
+    auto& ax_paragraph = ax_document->children()[0];
     auto& ax_lines = ax_paragraph->children();
     for (auto& ax_line : ax_lines) {
       node_datas.push_back(ax_line->GetCustomData());
@@ -1043,13 +1058,13 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleTextSetUp) {
   OnPartialTranscription("Capybaras are the world's largest rodents.");
 
-  // The label is a readonly document.
-  ui::AXNodeData node_data;
-  GetLabel()->GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(ax::mojom::Role::kDocument, node_data.role);
-  EXPECT_EQ(ax::mojom::Restriction::kReadOnly, node_data.GetRestriction());
+  // There is 1 readonly document in the label.
+  EXPECT_EQ(1u, GetNumberAXDocumentNodes());
+  EXPECT_EQ(ax::mojom::Role::kDocument, GetAXDocumentNodeData().role);
+  EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
+            GetAXDocumentNodeData().GetRestriction());
 
-  // There is 1 paragraph node in the label.
+  // There is 1 paragraph node in the paragraph.
   EXPECT_EQ(1u, GetNumberAXParagraphNodes());
   EXPECT_EQ(ax::mojom::Role::kParagraph, GetAXParagraphNodeData().role);
 
