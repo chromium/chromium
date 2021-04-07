@@ -30,7 +30,6 @@
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/effective_connection_type_observer.h"
 #include "net/nqe/event_creator.h"
-#include "net/nqe/network_congestion_analyzer.h"
 #include "net/nqe/network_id.h"
 #include "net/nqe/network_quality.h"
 #include "net/nqe/network_quality_estimator_params.h"
@@ -395,12 +394,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // a null value if the signal strength was recently obtained.
   virtual base::Optional<int32_t> GetCurrentSignalStrengthWithThrottling();
 
-  // Computes the recent network queueing delay. It updates the recent
-  // per-packet queueing delay introduced by the packet queue in the mobile
-  // edge. Also, it tracks the recent downlink throughput and computes the
-  // packet queue length. Results are kept in |network_congestion_analyzer_|.
-  void ComputeNetworkQueueingDelay();
-
   // Forces computation of effective connection type, and notifies observers
   // if there is a change in its value.
   void ComputeEffectiveConnectionType();
@@ -451,8 +444,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
                            ObservationDiscardedIfCachedEstimateAvailable);
   FRIEND_TEST_ALL_PREFIXES(NetworkQualityEstimatorTest,
                            TestRttThroughputObservers);
-  FRIEND_TEST_ALL_PREFIXES(NetworkQualityEstimatorTest,
-                           TestComputingNetworkQueueingDelay);
 
   // Returns the RTT value to be used when the valid RTT is unavailable. Readers
   // should discard RTT if it is set to the value returned by |InvalidRTT()|.
@@ -480,9 +471,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   // Returns true only if the |request| can be used for RTT estimation.
   bool RequestProvidesRTTObservation(const URLRequest& request) const;
-
-  // Returns true if the network queueing delay should be evaluated.
-  bool ShouldComputeNetworkQueueingDelay() const;
 
   // Returns true if ECT should be recomputed.
   bool ShouldComputeEffectiveConnectionType() const;
@@ -616,13 +604,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // estimating the throughput.
   std::unique_ptr<nqe::internal::ThroughputAnalyzer> throughput_analyzer_;
 
-  // Minimum duration between two consecutive attampts of computing the network
-  // queueing delay.
-  const base::TimeDelta queueing_delay_update_interval_;
-
-  // Time when the computation of network queueing delay was last attempted.
-  base::TimeTicks last_queueing_delay_computation_;
-
   // Minimum duration between two consecutive computations of effective
   // connection type. Set to non-zero value as a performance optimization.
   const base::TimeDelta effective_connection_type_recomputation_interval_;
@@ -649,10 +630,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // Current estimate of the network quality.
   nqe::internal::NetworkQuality network_quality_;
   base::Optional<base::TimeDelta> end_to_end_rtt_;
-
-  // Recent network congestion status cache. It has methods to update
-  // information related to network congestion.
-  nqe::internal::NetworkCongestionAnalyzer network_congestion_analyzer_;
 
   // Current effective connection type. It is updated on connection change
   // events. It is also updated every time there is network traffic (provided

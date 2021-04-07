@@ -172,7 +172,6 @@ NetworkQualityEstimator::NetworkQualityEstimator(
               params_->weight_multiplier_per_signal_strength_level())},
       effective_connection_type_at_last_main_frame_(
           EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
-      queueing_delay_update_interval_(base::TimeDelta::FromMilliseconds(2000)),
       effective_connection_type_recomputation_interval_(
           base::TimeDelta::FromSeconds(10)),
       rtt_observations_size_at_last_ect_computation_(0),
@@ -180,7 +179,6 @@ NetworkQualityEstimator::NetworkQualityEstimator(
       transport_rtt_observation_count_last_ect_computation_(0),
       new_rtt_observations_since_last_ect_computation_(0),
       new_throughput_observations_since_last_ect_computation_(0),
-      network_congestion_analyzer_(this, tick_clock_),
       effective_connection_type_(EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
       cached_estimate_applied_(false),
       net_log_(NetLogWithSource::Make(
@@ -191,7 +189,6 @@ NetworkQualityEstimator::NetworkQualityEstimator(
   DCHECK_EQ(nqe::internal::OBSERVATION_CATEGORY_COUNT,
             base::size(rtt_ms_observations_));
 
-  AddEffectiveConnectionTypeObserver(&network_congestion_analyzer_);
   network_quality_store_ =
       std::make_unique<nqe::internal::NetworkQualityStore>();
   NetworkChangeNotifier::AddConnectionTypeObserver(this);
@@ -270,7 +267,6 @@ void NetworkQualityEstimator::AddDefaultEstimates() {
 NetworkQualityEstimator::~NetworkQualityEstimator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NetworkChangeNotifier::RemoveConnectionTypeObserver(this);
-  RemoveEffectiveConnectionTypeObserver(&network_congestion_analyzer_);
 }
 
 void NetworkQualityEstimator::NotifyStartTransaction(
@@ -294,7 +290,6 @@ void NetworkQualityEstimator::NotifyStartTransaction(
     MaybeComputeEffectiveConnectionType();
   }
   throughput_analyzer_->NotifyStartTransaction(request);
-  network_congestion_analyzer_.NotifyStartTransaction(request);
   connectivity_monitor_->TrackNewRequest(request);
 }
 
@@ -416,7 +411,6 @@ void NetworkQualityEstimator::NotifyRequestCompleted(
     return;
 
   throughput_analyzer_->NotifyRequestCompleted(request);
-  network_congestion_analyzer_.NotifyRequestCompleted(request);
   connectivity_monitor_->NotifyRequestCompleted(request);
 }
 
@@ -758,73 +752,6 @@ void NetworkQualityEstimator::RecordMetricsOnMainFrameRequest() const {
   LOCAL_HISTOGRAM_ENUMERATION("NQE.MainFrame.EffectiveConnectionType",
                               effective_connection_type_at_last_main_frame_,
                               EFFECTIVE_CONNECTION_TYPE_LAST);
-}
-
-bool NetworkQualityEstimator::ShouldComputeNetworkQueueingDelay() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::TimeTicks now = tick_clock_->NowTicks();
-  // Recomputes the queueing delay estimate if |queueing_delay_update_interval_|
-  // has passed.
-  return (now - last_queueing_delay_computation_ >=
-          queueing_delay_update_interval_);
-}
-
-void NetworkQualityEstimator::ComputeNetworkQueueingDelay() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!ShouldComputeNetworkQueueingDelay())
-    return;
-
-  const base::TimeTicks now = tick_clock_->NowTicks();
-  last_queueing_delay_computation_ = now;
-  // The time after which observations are considered as recent data.
-  const base::TimeTicks recent_start_time =
-      now - base::TimeDelta::FromMilliseconds(1000);
-  // The time after which observations are considered as historical data.
-  const base::TimeTicks historical_start_time =
-      now - base::TimeDelta::FromMilliseconds(30000);
-
-  // Checks if a valid downlink throughput estimation is available.
-  int32_t downlink_kbps = 0;
-  if (!GetRecentDownlinkThroughputKbps(recent_start_time, &downlink_kbps))
-    downlink_kbps = nqe::internal::INVALID_RTT_THROUGHPUT;
-
-  // Gets recent RTT statistic values.
-  std::map<nqe::internal::IPHash, nqe::internal::CanonicalStats>
-      recent_rtt_stats =
-          rtt_ms_observations_[nqe::internal::OBSERVATION_CATEGORY_TRANSPORT]
-              .GetCanonicalStatsKeyedByHosts(recent_start_time,
-                                             std::set<nqe::internal::IPHash>());
-
-  if (recent_rtt_stats.empty())
-    return;
-
-  // Gets the set of active hosts. Only computes the historical stats for recent
-  // active hosts.
-  std::set<nqe::internal::IPHash> active_hosts;
-  for (const auto& host_stat : recent_rtt_stats)
-    active_hosts.insert(host_stat.first);
-
-  std::map<nqe::internal::IPHash, nqe::internal::CanonicalStats>
-      historical_rtt_stats =
-          rtt_ms_observations_[nqe::internal::OBSERVATION_CATEGORY_TRANSPORT]
-              .GetCanonicalStatsKeyedByHosts(historical_start_time,
-                                             active_hosts);
-
-  network_congestion_analyzer_.ComputeRecentQueueingDelay(
-      recent_rtt_stats, historical_rtt_stats, downlink_kbps);
-
-  // Gets the total number of inflight requests including hanging GETs. The app
-  // cannot determine whether a request is hanging or is still in the wire.
-  size_t count_inflight_requests =
-      throughput_analyzer_->CountTotalInFlightRequests();
-
-  // Tracks the mapping between the peak observed queueing delay to the peak
-  // count of in-flight requests.
-  network_congestion_analyzer_.UpdatePeakDelayMapping(
-      network_congestion_analyzer_.recent_queueing_delay(),
-      count_inflight_requests);
 }
 
 void NetworkQualityEstimator::ComputeEffectiveConnectionType() {
@@ -1469,8 +1396,6 @@ void NetworkQualityEstimator::OnUpdatedTransportRTTAvailable(
                           current_network_id_.signal_strength,
                           ProtocolSourceToObservationSource(protocol), host);
   AddAndNotifyObserversOfRTT(observation);
-
-  ComputeNetworkQueueingDelay();
 }
 
 void NetworkQualityEstimator::AddAndNotifyObserversOfRTT(
