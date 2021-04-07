@@ -1032,6 +1032,7 @@ source_set("browser") {
     "loader/navigation_loader_interceptor.h",
     "loader/navigation_url_loader.cc",
     "loader/navigation_url_loader.h",
+    "loader/navigation_url_loader_delegate.cc",
     "loader/navigation_url_loader_delegate.h",
     "loader/navigation_url_loader_factory.h",
     "loader/navigation_url_loader_impl.cc",

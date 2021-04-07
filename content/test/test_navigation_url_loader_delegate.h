@@ -67,8 +67,7 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
       blink::NavigationDownloadPolicy download_policy,
       net::NetworkIsolationKey network_isolation_key,
       base::Optional<SubresourceLoaderParams> subresource_loader_params,
-      std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager)
-      override;
+      EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
 

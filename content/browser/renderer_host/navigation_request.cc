@@ -2595,7 +2595,7 @@ void NavigationRequest::OnResponseStarted(
     blink::NavigationDownloadPolicy download_policy,
     net::NetworkIsolationKey network_isolation_key,
     base::Optional<SubresourceLoaderParams> subresource_loader_params,
-    std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager) {
+    EarlyHints early_hints) {
   ScopedNavigationRequestCrashKeys crash_keys(this);
 
   // The |loader_|'s job is finished. It must not call the NavigationRequest
@@ -2617,7 +2617,9 @@ void NavigationRequest::OnResponseStarted(
   response_body_ = std::move(response_body);
   ssl_info_ = response_head_->ssl_info;
   auth_challenge_info_ = response_head_->auth_challenge_info;
-  early_hints_manager_ = std::move(early_hints_manager);
+  was_early_hints_preload_link_header_received_ =
+      early_hints.was_preload_link_header_received;
+  early_hints_manager_ = std::move(early_hints.manager);
 
   if (IsServedFromBackForwardCache()) {
     response_head_ =
@@ -5243,6 +5245,10 @@ NavigationRequest::TakeAppCacheHandle() {
 
 bool NavigationRequest::IsWaitingToCommit() {
   return state_ == READY_TO_COMMIT;
+}
+
+bool NavigationRequest::WasEarlyHintsPreloadLinkHeaderReceived() {
+  return was_early_hints_preload_link_header_received_;
 }
 
 // static

@@ -760,9 +760,6 @@ void NavigationURLLoaderImpl::FollowRedirectInternal(
 
 void NavigationURLLoaderImpl::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  if (!base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
-    return;
-
   // Early Hints should not come after actual response.
   DCHECK(on_receive_response_time_.is_null());
   DCHECK(!received_response_);
@@ -1307,11 +1304,17 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
   if (is_download)
     download_policy_.RecordHistogram();
 
-  // When the status code of the navigation isn't a success status, drop Early
-  // Hints manager to cancel inflight preloads as soon as possible.
-  if (!response_head || !response_head->headers ||
-      !network::cors::IsOkStatus(response_head->headers->response_code())) {
-    early_hints_manager_.reset();
+  NavigationURLLoaderDelegate::EarlyHints early_hints;
+  if (early_hints_manager_) {
+    early_hints.was_preload_link_header_received =
+        early_hints_manager_->WasPreloadLinkHeaderReceived();
+
+    // Make Early Hints manager outlive this loader only when the final response
+    // succeeds. Dropping the manager cancels inflight preloads.
+    if (response_head && response_head->headers &&
+        network::cors::IsOkStatus(response_head->headers->response_code())) {
+      early_hints.manager = std::move(early_hints_manager_);
+    }
   }
 
   // TODO(scottmg): This needs to do more of what
@@ -1321,7 +1324,7 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
       std::move(response_body), global_request_id, is_download,
       download_policy_,
       resource_request_->trusted_params->isolation_info.network_isolation_key(),
-      std::move(subresource_loader_params_), std::move(early_hints_manager_));
+      std::move(subresource_loader_params_), std::move(early_hints));
 }
 
 void NavigationURLLoaderImpl::NotifyRequestRedirected(

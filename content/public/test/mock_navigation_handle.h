@@ -160,6 +160,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(void, SetSilentlyIgnoreErrors, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsToCommit, ());
   MOCK_METHOD(bool, IsWaitingToCommit, ());
+  MOCK_METHOD(bool, WasEarlyHintsPreloadLinkHeaderReceived, ());
   void WriteIntoTracedValue(perfetto::TracedValue context) override {
     auto dict = std::move(context).WriteDictionary();
   }

@@ -57,6 +57,10 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   void HandleEarlyHints(network::mojom::EarlyHintsPtr early_hints,
                         const network::ResourceRequest& navigation_request);
 
+  // True when at least one preload Link header was received via Early Hints
+  // responses for main frame navigation.
+  bool WasPreloadLinkHeaderReceived() const;
+
   void WaitForPreloadsFinishedForTesting(
       base::OnceCallback<void(PreloadedResources)> callback);
 
@@ -88,7 +92,10 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   // Early Hints preloads should be requested for critical subresources such as
   // style sheets and fonts.
   base::flat_map<GURL, std::unique_ptr<InflightPreload>> inflight_preloads_;
+
   PreloadedResources preloaded_resources_;
+
+  bool was_preload_link_header_received_ = false;
 
   base::OnceCallback<void(PreloadedResources)>
       preloads_completion_callback_for_testing_;

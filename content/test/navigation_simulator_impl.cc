@@ -521,6 +521,14 @@ void NavigationSimulatorImpl::ReadyToCommit() {
   response_headers_->SetHeader("Content-Type", contents_mime_type_);
   PrepareCompleteCallbackOnRequest();
   if (frame_tree_node_->navigation_request()) {
+    NavigationRequest* request = frame_tree_node_->navigation_request();
+    if (early_hints_preload_link_header_received_) {
+      TestNavigationURLLoader* url_loader =
+          static_cast<TestNavigationURLLoader*>(request->loader_for_testing());
+      CHECK(url_loader);
+      url_loader->SimulateEarlyHintsPreloadLinkHeaderReceived();
+    }
+
     static_cast<TestRenderFrameHost*>(frame_tree_node_->current_frame_host())
         ->PrepareForCommitDeprecatedForNavigationSimulator(
             remote_endpoint_, was_fetched_via_cache_,
@@ -956,6 +964,11 @@ void NavigationSimulatorImpl::SetSSLInfo(const net::SSLInfo& ssl_info) {
 void NavigationSimulatorImpl::SetResponseDnsAliases(
     std::vector<std::string> aliases) {
   response_dns_aliases_ = std::move(aliases);
+}
+
+void NavigationSimulatorImpl::SetEarlyHintsPreloadLinkHeaderReceived(
+    bool received) {
+  early_hints_preload_link_header_received_ = received;
 }
 
 NavigationThrottle::ThrottleCheckResult

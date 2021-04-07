@@ -5,10 +5,12 @@
 #include "content/browser/loader/navigation_early_hints_manager.h"
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
 #include "net/base/schemeful_site.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -159,6 +161,10 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
   }
 }
 
+bool NavigationEarlyHintsManager::WasPreloadLinkHeaderReceived() const {
+  return was_preload_link_header_received_;
+}
+
 void NavigationEarlyHintsManager::WaitForPreloadsFinishedForTesting(
     base::OnceCallback<void(PreloadedResources)> callback) {
   DCHECK(!preloads_completion_callback_for_testing_);
@@ -171,15 +177,20 @@ void NavigationEarlyHintsManager::WaitForPreloadsFinishedForTesting(
 void NavigationEarlyHintsManager::MaybePreloadHintedResource(
     const network::mojom::LinkHeaderPtr& link,
     const network::ResourceRequest& navigation_request) {
-  if (base::Contains(inflight_preloads_, link->href) ||
-      base::Contains(preloaded_resources_, link->href)) {
-    return;
-  }
-
   // Subframes aren't supported. To support subframes, this needs to know the
   // origin of the top frame to create an appropriate IsolationInfo.
   if (!navigation_request.is_main_frame)
     return;
+
+  was_preload_link_header_received_ = true;
+
+  if (!base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
+    return;
+
+  if (inflight_preloads_.contains(link->href) ||
+      preloaded_resources_.contains(link->href)) {
+    return;
+  }
 
   DCHECK(navigation_request.url.SchemeIsHTTPOrHTTPS());
   auto top_frame_origin = url::Origin::Create(navigation_request.url);

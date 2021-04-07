@@ -353,6 +353,7 @@ class CONTENT_EXPORT NavigationRequest
   void SetSilentlyIgnoreErrors() override;
   network::mojom::WebSandboxFlags SandboxFlagsToCommit() override;
   bool IsWaitingToCommit() override;
+  bool WasEarlyHintsPreloadLinkHeaderReceived() override;
   void WriteIntoTracedValue(perfetto::TracedValue context) override;
 
   // Called on the UI thread by the Navigator to start the navigation.
@@ -902,8 +903,7 @@ class CONTENT_EXPORT NavigationRequest
       blink::NavigationDownloadPolicy download_policy,
       net::NetworkIsolationKey network_isolation_key,
       base::Optional<SubresourceLoaderParams> subresource_loader_params,
-      std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager)
-      override;
+      EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
 
@@ -1645,6 +1645,10 @@ class CONTENT_EXPORT NavigationRequest
   // archive (see `is_mhtml_subframe_loaded_from_achive` in the NeedsUrlLoader
   // method).
   bool is_mhtml_or_subframe_ = false;
+
+  // True when at least one preload Link header was received via an Early Hints
+  // response. This is set only for a main frame navigation.
+  bool was_early_hints_preload_link_header_received_ = false;
 
   // Observers listening to cookie access notifications for the network requests
   // made by this navigation.

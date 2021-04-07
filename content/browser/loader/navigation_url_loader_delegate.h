@@ -34,6 +34,24 @@ struct SubresourceLoaderParams;
 // The delegate interface to NavigationURLLoader.
 class CONTENT_EXPORT NavigationURLLoaderDelegate {
  public:
+  // Conveys information related to Early Hints responses.
+  struct CONTENT_EXPORT EarlyHints {
+    EarlyHints();
+    ~EarlyHints();
+
+    EarlyHints(EarlyHints&& other);
+    EarlyHints& operator=(EarlyHints&& other);
+
+    EarlyHints(const EarlyHints& other) = delete;
+    EarlyHints& operator=(const EarlyHints& other) = delete;
+
+    // True when at least one preload Link header was received during a
+    // main frame navigation.
+    bool was_preload_link_header_received = false;
+    // Non-null when at least one preload is actually requested.
+    std::unique_ptr<NavigationEarlyHintsManager> manager;
+  };
+
   // Called when the request is redirected. Call FollowRedirect to continue
   // processing the request.
   //
@@ -70,7 +88,7 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
       blink::NavigationDownloadPolicy download_policy,
       net::NetworkIsolationKey network_isolation_key,
       base::Optional<SubresourceLoaderParams> subresource_loader_params,
-      std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager) = 0;
+      EarlyHints early_hints) = 0;
 
   // Called if the request fails before receving a response. Specific
   // fields which are used: |status.error_code| holds the error code

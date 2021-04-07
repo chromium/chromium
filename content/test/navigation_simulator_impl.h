@@ -97,6 +97,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       const net::ResolveErrorInfo& resolve_error_info) override;
   void SetSSLInfo(const net::SSLInfo& ssl_info) override;
   void SetResponseDnsAliases(std::vector<std::string> aliases) override;
+  void SetEarlyHintsPreloadLinkHeaderReceived(bool received) override;
 
   NavigationThrottle::ThrottleCheckResult GetLastThrottleCheckResult() override;
   NavigationRequest* GetNavigationHandle() override;
@@ -323,6 +324,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   bool should_replace_current_entry_ = false;
   base::Optional<bool> did_create_new_entry_;
   bool was_aborted_prior_to_ready_to_commit_ = false;
+
+  bool early_hints_preload_link_header_received_ = false;
 
   // These are used to sanity check the content/public/ API calls emitted as
   // part of the navigation.

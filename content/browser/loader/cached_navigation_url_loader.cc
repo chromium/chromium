@@ -43,7 +43,7 @@ void CachedNavigationURLLoader::OnResponseStarted() {
       /*response_body=*/mojo::ScopedDataPipeConsumerHandle(), global_id,
       /*is_download=*/false, blink::NavigationDownloadPolicy(),
       request_info_->isolation_info.network_isolation_key(), base::nullopt,
-      /*early_hints_manager=*/nullptr);
+      /*early_hints=*/{});
 }
 CachedNavigationURLLoader::~CachedNavigationURLLoader() {}
 

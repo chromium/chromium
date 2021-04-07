@@ -311,6 +311,10 @@ class NavigationSimulator {
   // name) through to query name. This method should be called before Commit().
   virtual void SetResponseDnsAliases(std::vector<std::string> aliases) = 0;
 
+  // Sets whether preload Link headers were received via Early Hints responses
+  // during the navigation.
+  virtual void SetEarlyHintsPreloadLinkHeaderReceived(bool received) = 0;
+
   // --------------------------------------------------------------------------
 
   // Gets the last throttle check result computed by the navigation throttles.
