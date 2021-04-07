@@ -8569,8 +8569,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerDefaultProcessTest,
       web_contents->GetMainFrame()->GetProcess();
   EXPECT_EQ(original_process, web_contents->GetMainFrame()
                                   ->GetSiteInstance()
-                                  ->GetDefaultProcessIfUsable());
-
+                                  ->GetSiteInstanceGroupProcessIfAvailable());
   // This test expect a cross-site navigation to be same BrowsingInstance. With
   // ProactivelySwapBrowsingInstance, it won't be the case. Opening a popup
   // prevent the BrowsingInstance to change.

@@ -739,10 +739,12 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // about the current BrowsingInstance.
   const IsolationContext& GetIsolationContext();
 
-  // If this SiteInstance doesn't require a dedicated process, this will return
-  // the BrowsingInstance's default process if it is suitable for this
-  // SiteInstance.
-  RenderProcessHost* GetDefaultProcessIfUsable();
+  // Returns a process suitable for this SiteInstance if the
+  // SiteInstanceGroupManager has one available. A null pointer will be returned
+  // if this SiteInstance's group does not have a process yet or the
+  // SiteInstanceGroupManager does not have a default process that can be reused
+  // by this SiteInstance.
+  RenderProcessHost* GetSiteInstanceGroupProcessIfAvailable();
 
   // Returns true if this object was constructed as a default site instance.
   bool IsDefaultSiteInstance() const;

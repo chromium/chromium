@@ -793,18 +793,9 @@ const IsolationContext& SiteInstanceImpl::GetIsolationContext() {
   return browsing_instance_->isolation_context();
 }
 
-RenderProcessHost* SiteInstanceImpl::GetDefaultProcessIfUsable() {
-  if (!base::FeatureList::IsEnabled(
-          features::kProcessSharingWithStrictSiteInstances) ||
-      !browsing_instance_->default_process()) {
-    return nullptr;
-  }
-  if (RequiresDedicatedProcess() ||
-      !RenderProcessHostImpl::MayReuseAndIsSuitable(
-          browsing_instance_->default_process(), this)) {
-    return nullptr;
-  }
-  return browsing_instance_->default_process();
+RenderProcessHost* SiteInstanceImpl::GetSiteInstanceGroupProcessIfAvailable() {
+  return browsing_instance_->site_instance_group_manager()
+      .GetExistingGroupProcess(this);
 }
 
 bool SiteInstanceImpl::IsDefaultSiteInstance() const {
@@ -819,28 +810,6 @@ void SiteInstanceImpl::AddSiteInfoToDefault(const SiteInfo& site_info) {
 bool SiteInstanceImpl::IsSiteInDefaultSiteInstance(const GURL& site_url) const {
   DCHECK(IsDefaultSiteInstance());
   return default_site_instance_state_->ContainsSite(site_url);
-}
-
-void SiteInstanceImpl::MaybeSetBrowsingInstanceDefaultProcess() {
-  if (!base::FeatureList::IsEnabled(
-          features::kProcessSharingWithStrictSiteInstances)) {
-    return;
-  }
-  // Wait until this SiteInstance both has a site and a process
-  // assigned, so that we can be sure that RequiresDedicatedProcess()
-  // is accurate and we actually have a process to set.
-  if (!process_ || !has_site_ || RequiresDedicatedProcess())
-    return;
-  if (browsing_instance_->default_process()) {
-    if (RenderProcessHostImpl::MayReuseAndIsSuitable(
-            browsing_instance_->default_process(), this)) {
-      // Make sure the default process was actually used if it is appropriate
-      // for this SiteInstance.
-      DCHECK_EQ(process_, browsing_instance_->default_process());
-    }
-    return;
-  }
-  browsing_instance_->SetDefaultProcess(process_);
 }
 
 // static
@@ -947,7 +916,7 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   agent_scheduling_group_ =
       AgentSchedulingGroupHost::GetOrCreate(*this, *process_);
 
-  MaybeSetBrowsingInstanceDefaultProcess();
+  LockProcessIfNeeded();
 
   // If we are using process-per-site, we need to register this process
   // for the current site so that we can find it again.  (If no site is set
@@ -961,7 +930,10 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
                id_, "process id", process_->GetID());
   GetContentClient()->browser()->SiteInstanceGotProcess(this);
 
-  LockProcessIfNeeded();
+  // Notify SiteInstanceGroupManager that the process was set on this
+  // SiteInstance. This must be called after LockProcessIfNeeded() because
+  // the SiteInstanceGroupManager does suitability checks that use the lock.
+  browsing_instance_->site_instance_group_manager().OnProcessSet(this);
 }
 
 bool SiteInstanceImpl::CanAssociateWithSpareProcess() {
@@ -1080,9 +1052,13 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     // Ensure the process is registered for this site if necessary.
     if (should_use_process_per_site)
       RenderProcessHostImpl::RegisterSoleProcessHostForSite(process_, this);
-
-    MaybeSetBrowsingInstanceDefaultProcess();
   }
+
+  // Notify SiteInstanceGroupManager that the SiteInfo was set on this
+  // SiteInstance. This must be called after LockProcessIfNeeded() because
+  // the SiteInstanceGroupManager does suitability checks that use the lock.
+  browsing_instance_->site_instance_group_manager().OnSiteInfoSet(
+      this, process_ != nullptr);
 }
 
 void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {

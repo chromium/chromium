@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/isolation_context.h"
+#include "content/browser/site_instance_group_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -24,7 +25,6 @@
 class GURL;
 
 namespace content {
-class RenderProcessHost;
 class SiteInfo;
 class SiteInstanceImpl;
 struct UrlInfo;
@@ -68,8 +68,7 @@ struct UrlInfo;
 //
 ///////////////////////////////////////////////////////////////////////////////
 class CONTENT_EXPORT BrowsingInstance final
-    : public base::RefCounted<BrowsingInstance>,
-      public RenderProcessHostObserver {
+    : public base::RefCounted<BrowsingInstance> {
  private:
   friend class base::RefCounted<BrowsingInstance>;
   friend class SiteInstanceImpl;
@@ -94,10 +93,7 @@ class CONTENT_EXPORT BrowsingInstance final
       BrowserContext* context,
       const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
 
-  ~BrowsingInstance() final;
-
-  // RenderProcessHostObserver implementation.
-  void RenderProcessHostDestroyed(RenderProcessHost* host) final;
+  ~BrowsingInstance();
 
   // Get the browser context to which this BrowsingInstance belongs.
   BrowserContext* GetBrowserContext() const;
@@ -106,6 +102,12 @@ class CONTENT_EXPORT BrowsingInstance final
   // be used to track this BrowsingInstance in other areas of the code, along
   // with any other state needed to make isolation decisions.
   const IsolationContext& isolation_context() { return isolation_context_; }
+
+  // Get the SiteInstanceGroupManager that controls all of the SiteInstance
+  // groups associated with this BrowsingInstance.
+  SiteInstanceGroupManager& site_instance_group_manager() {
+    return site_instance_group_manager_;
+  }
 
   // Returns whether this BrowsingInstance has registered a SiteInstance for
   // the site of |site_info|.
@@ -167,11 +169,6 @@ class CONTENT_EXPORT BrowsingInstance final
     active_contents_count_--;
   }
 
-  // Stores the process that should be used if a SiteInstance doesn't need
-  // a dedicated process.
-  void SetDefaultProcess(RenderProcessHost* default_process);
-  RenderProcessHost* default_process() const { return default_process_; }
-
   bool HasDefaultSiteInstance() const {
     return default_site_instance_ != nullptr;
   }
@@ -205,6 +202,9 @@ class CONTENT_EXPORT BrowsingInstance final
   // BrowsingInstance must belong.
   const IsolationContext isolation_context_;
 
+  // Manages all SiteInstance groups for this BrowsingInstance.
+  SiteInstanceGroupManager site_instance_group_manager_;
+
   // Map of site to SiteInstance, to ensure we only have one SiteInstance per
   // site.  The site string should be the possibly_invalid_spec() of a GURL
   // obtained with SiteInstanceImpl::GetSiteForURL.  Note that this map may not
@@ -219,10 +219,6 @@ class CONTENT_EXPORT BrowsingInstance final
 
   // Number of WebContentses currently using this BrowsingInstance.
   size_t active_contents_count_;
-
-  // The process to use for any SiteInstance in this BrowsingInstance that
-  // doesn't require a dedicated process.
-  RenderProcessHost* default_process_;
 
   // SiteInstance to use if a URL does not correspond to an instance in
   // |site_instance_map_| and it does not require a dedicated process.
