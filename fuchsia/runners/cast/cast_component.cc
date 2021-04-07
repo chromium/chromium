@@ -96,6 +96,38 @@ void CastComponent::SetOnDestroyedCallback(base::OnceClosure on_destroyed) {
   on_destroyed_ = std::move(on_destroyed);
 }
 
+void CastComponent::ConnectMetricsRecorder(
+    fidl::InterfaceRequest<fuchsia::legacymetrics::MetricsRecorder> request) {
+  startup_context()->svc()->Connect(std::move(request));
+}
+
+void CastComponent::ConnectAudio(
+    fidl::InterfaceRequest<fuchsia::media::Audio> request) {
+  agent_manager_->ConnectToAgentService(application_config_.agent_url(),
+                                        std::move(request));
+}
+
+void CastComponent::ConnectDeviceWatcher(
+    fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
+  agent_manager_->ConnectToAgentService(application_config_.agent_url(),
+                                        std::move(request));
+}
+
+bool CastComponent::HasWebPermission(
+    fuchsia::web::PermissionType permission_type) const {
+  if (!application_config_.has_permissions()) {
+    return false;
+  }
+
+  for (auto& permission : application_config_.permissions()) {
+    if (permission.has_type() && permission.type() == permission_type) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void CastComponent::StartComponent() {
   if (application_config_.has_enable_remote_debugging() &&
       application_config_.enable_remote_debugging()) {

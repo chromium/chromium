@@ -5,8 +5,13 @@
 #ifndef FUCHSIA_RUNNERS_CAST_CAST_COMPONENT_H_
 #define FUCHSIA_RUNNERS_CAST_CAST_COMPONENT_H_
 
+#include <fuchsia/camera3/cpp/fidl.h>
+#include <fuchsia/legacymetrics/cpp/fidl.h>
+#include <fuchsia/media/cpp/fidl.h>
+#include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -72,16 +77,22 @@ class CastComponent : public WebComponent,
 
   void SetOnDestroyedCallback(base::OnceClosure on_destroyed);
 
+  void ConnectMetricsRecorder(
+      fidl::InterfaceRequest<fuchsia::legacymetrics::MetricsRecorder> request);
+  void ConnectAudio(fidl::InterfaceRequest<fuchsia::media::Audio> request);
+  void ConnectDeviceWatcher(
+      fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request);
+
+  bool HasWebPermission(fuchsia::web::PermissionType permission_type) const;
+
+  const std::string& agent_url() const {
+    return application_config_.agent_url();
+  }
+
   // WebComponent overrides.
   void StartComponent() final;
   void DestroyComponent(int64_t termination_exit_code,
                         fuchsia::sys::TerminationReason reason) final;
-
-  const chromium::cast::ApplicationConfig& application_config() {
-    return application_config_;
-  }
-
-  cr_fuchsia::AgentManager* agent_manager() { return agent_manager_.get(); }
 
  private:
   void OnRewriteRulesReceived(

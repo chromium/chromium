@@ -63,18 +63,6 @@ static constexpr const char* kServices[] = {
     // * fuchsia.media.Audio
 };
 
-bool IsPermissionGrantedInAppConfig(
-    const chromium::cast::ApplicationConfig& application_config,
-    fuchsia::web::PermissionType permission_type) {
-  if (application_config.has_permissions()) {
-    for (auto& permission : application_config.permissions()) {
-      if (permission.has_type() && permission.type() == permission_type)
-        return true;
-    }
-  }
-  return false;
-}
-
 // Names used to partition the Runner's persistent storage for different uses.
 constexpr char kCdmDataSubdirectoryName[] = "cdm_data";
 constexpr char kProfileSubdirectoryName[] = "web_profile";
@@ -460,34 +448,32 @@ void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
     // been created as a side-effect of |CastComponent::StartComponent()|.
     DCHECK(was_cache_sentinel_created_);
 
-    const auto& application_config = cast_component->application_config();
-
     // If this component has the microphone permission then use it to route
     // Audio service requests through.
-    if (IsPermissionGrantedInAppConfig(
-            application_config, fuchsia::web::PermissionType::MICROPHONE)) {
+    if (cast_component->HasWebPermission(
+            fuchsia::web::PermissionType::MICROPHONE)) {
       if (first_audio_capturer_agent_url_.empty()) {
-        first_audio_capturer_agent_url_ = application_config.agent_url();
+        first_audio_capturer_agent_url_ = cast_component->agent_url();
       } else {
-        LOG_IF(WARNING, first_audio_capturer_agent_url_ !=
-                            application_config.agent_url())
+        LOG_IF(WARNING,
+               first_audio_capturer_agent_url_ != cast_component->agent_url())
             << "Audio capturer already in use for different agent. "
                "Current agent: "
-            << application_config.agent_url();
+            << cast_component->agent_url();
       }
       audio_capturer_components_.emplace(cast_component.get());
     }
 
-    if (IsPermissionGrantedInAppConfig(application_config,
-                                       fuchsia::web::PermissionType::CAMERA)) {
+    if (cast_component->HasWebPermission(
+            fuchsia::web::PermissionType::CAMERA)) {
       if (first_video_capturer_agent_url_.empty()) {
-        first_video_capturer_agent_url_ = application_config.agent_url();
+        first_video_capturer_agent_url_ = cast_component->agent_url();
       } else {
-        LOG_IF(WARNING, first_video_capturer_agent_url_ !=
-                            application_config.agent_url())
+        LOG_IF(WARNING,
+               first_video_capturer_agent_url_ != cast_component->agent_url())
             << "Video capturer already in use for different agent. "
                "Current agent: "
-            << application_config.agent_url();
+            << cast_component->agent_url();
       }
       video_capturer_components_.emplace(cast_component.get());
     }
@@ -651,9 +637,7 @@ void CastRunner::OnAudioServiceRequest(
   // fuchsia.media.Audio requests to the corresponding agent.
   if (!audio_capturer_components_.empty()) {
     CastComponent* capturer_component = *audio_capturer_components_.begin();
-    capturer_component->agent_manager()->ConnectToAgentService(
-        capturer_component->application_config().agent_url(),
-        std::move(request));
+    capturer_component->ConnectAudio(std::move(request));
     return;
   }
 
@@ -669,9 +653,7 @@ void CastRunner::OnCameraServiceRequest(
   // fuchsia.camera3.DeviceWatcher requests to the corresponding agent.
   if (!video_capturer_components_.empty()) {
     CastComponent* capturer_component = *video_capturer_components_.begin();
-    capturer_component->agent_manager()->ConnectToAgentService(
-        capturer_component->application_config().agent_url(),
-        std::move(request));
+    capturer_component->ConnectDeviceWatcher(std::move(request));
     return;
   }
 
@@ -692,7 +674,7 @@ void CastRunner::OnMetricsRecorderServiceRequest(
   if (any_component) {
     VLOG(1) << "Connecting MetricsRecorder via CastComponent.";
     CastComponent* component = reinterpret_cast<CastComponent*>(any_component);
-    component->startup_context()->svc()->Connect(std::move(request));
+    component->ConnectMetricsRecorder(std::move(request));
     return;
   }
 

@@ -65,13 +65,13 @@ class WebComponent : public fuchsia::sys::ComponentController,
 
   WebContentRunner* runner() const { return runner_; }
 
+ protected:
   // Returns the component's startup context (e.g. incoming services, public
   // service directory, etc).
   base::StartupContext* startup_context() const {
     return startup_context_.get();
   }
 
- protected:
   // fuchsia::sys::ComponentController implementation.
   void Kill() override;
   void Detach() override;
