@@ -350,7 +350,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>thestig@chromium.org</owner>
   <summary>
     Records instances in which print preview encounters an unknown PPD color
-    model. Recorded after print settings are received from print preview.
+    model. Recorded after print settings are received from print preview. Note
+    that this this histogram expired on 2021-02-01 and was extended on
+    2021-03-30.
   </summary>
 </histogram>
 
