@@ -1029,7 +1029,6 @@ if (!is_ios) {
         "//chrome/test/chromedriver/server/server.py",
         "//chrome/test/chromedriver/test/run_webdriver_tests.py",
         "//chrome/test/chromedriver/util.py",
-        "//testing/xvfb.py",
         "//third_party/blink/tools/blinkpy/",
         "//third_party/blink/web_tests/external/wpt/webdriver/",
         "//third_party/blink/web_tests/VirtualTestSuites",
@@ -1040,6 +1039,7 @@ if (!is_ios) {
       data_deps = [
         "//chrome:chrome",
         "//chrome/test/chromedriver",
+        "//testing:test_scripts_shared",
         "//third_party/catapult/third_party/typ",
       ]
       if (is_win) {

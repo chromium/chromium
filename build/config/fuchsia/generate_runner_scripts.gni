@@ -83,12 +83,13 @@ template("fuchsia_package_runner") {
       data = [
         _runner_script,
         "//.vpython",
-        "//testing/test_env.py",
       ]
+      data_deps = [ "//testing:test_scripts_shared" ]
     } else {
       executable = rebase_path(_runner_script)
       executable_args = []
       data = []
+      data_deps = []
     }
 
     if (defined(invoker.data)) {
@@ -97,7 +98,7 @@ template("fuchsia_package_runner") {
 
     wrapper_script = generated_run_pkg_script_path
 
-    data_deps = [
+    data_deps += [
       invoker.package,
 
       # Runner scripts require access to "ids.txt" for symbolization, and to

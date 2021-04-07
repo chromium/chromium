@@ -89,7 +89,7 @@ template("ios_test_runner_wrapper") {
       "${shards}",
     ]
 
-    data_deps = []
+    data_deps = [ "//testing:test_scripts_shared" ]
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }
@@ -131,7 +131,6 @@ template("ios_test_runner_wrapper") {
       data += invoker.data
     }
     data += [
-      "//testing/test_env.py",
       "//.vpython",
       "//ios/build/bots/scripts/",
       "//testing/test_env.py",

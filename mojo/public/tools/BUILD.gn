@@ -8,11 +8,11 @@
 group("mojo_python_unittests") {
   data = [
     "run_all_python_unittests.py",
-    "//testing/scripts/common.py",
     "//testing/scripts/run_isolated_script_test.py",
-    "//testing/test_env.py",
-    "//testing/xvfb.py",
   ]
   deps = [ "//mojo/public/tools/mojom/mojom:tests" ]
-  data_deps = [ "//third_party/catapult/third_party/typ/" ]
+  data_deps = [
+    "//testing:test_scripts_shared",
+    "//third_party/catapult/third_party/typ/",
+  ]
 }

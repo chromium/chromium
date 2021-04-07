@@ -208,7 +208,6 @@ template("generate_runner_script") {
 
     data = [
       "//.vpython",
-      "//testing/test_env.py",
 
       # We use android test-runner's results libs to construct gtest output
       # json.
@@ -232,8 +231,10 @@ template("generate_runner_script") {
       data += invoker.data
     }
 
+    data_deps = [ "//testing:test_scripts_shared" ]
+
     if (defined(invoker.data_deps)) {
-      data_deps = invoker.data_deps
+      data_deps += invoker.data_deps
     }
 
     # Required arguments used at build time by the runner script generator.

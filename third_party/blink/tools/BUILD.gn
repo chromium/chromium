@@ -6,9 +6,7 @@
 group("wpt_tests_isolate") {
   testonly = true
   data = [
-    "//testing/scripts/common.py",
     "//testing/scripts/wpt_common.py",
-    "//testing/xvfb.py",
 
     # WPT tooling
     "//third_party/wpt_tools/",
@@ -41,7 +39,10 @@ group("wpt_tests_isolate") {
     "//third_party/blink/web_tests/VirtualTestSuites",
     "//third_party/blink/web_tests/WPTOverrideExpectations",
   ]
-  data_deps = [ ":wpt_tests_mojo_bindings" ]
+  data_deps = [
+    ":wpt_tests_mojo_bindings",
+    "//testing:test_scripts_shared",
+  ]
   if (is_win) {
     data_deps += [ "//build/win:copy_cdb_to_output" ]
   }

@@ -14,6 +14,7 @@ group("test_scripts_shared") {
   data = [
     "//testing/test_env.py",
     "//testing/xvfb.py",
+    "//testing/scripts/common.py",
   ]
 }
 

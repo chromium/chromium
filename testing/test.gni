@@ -461,12 +461,12 @@ template("test") {
       wrapper_script = "$root_build_dir/bin/run_" + _executable
 
       data = []
+      data_deps = [ "//testing:test_scripts_shared" ]
+
       if (_use_xvfb) {
         executable = "//testing/xvfb.py"
-        data += [ "//testing/xvfb.py" ]
       } else {
         executable = "//testing/test_env.py"
-        data += [ "//testing/test_env.py" ]
       }
       data += [ "//testing/location_tags.json" ]
 
@@ -537,12 +537,12 @@ template("test") {
       wrapper_script = "$root_build_dir/bin/run_" + _executable
 
       data = []
+      data_deps = [ "//testing:test_scripts_shared" ]
+
       if (_use_xvfb) {
         executable = "//testing/xvfb.py"
-        data += [ "//testing/xvfb.py" ]
       } else {
         executable = "//testing/test_env.py"
-        data += [ "//testing/test_env.py" ]
       }
       data += [ "//testing/location_tags.json" ]
 
@@ -626,16 +626,7 @@ template("script_test") {
       executable_args += invoker.args
     }
 
-    data = [
-      "//testing/test_env.py",
-
-      # These aren't needed by *every* test, but they're likely needed often
-      # enough to just make it easier to declare them here.
-      "//testing/xvfb.py",
-      "//testing/scripts/common.py",
-
-      invoker.script,
-    ]
+    data = [ invoker.script ]
 
     if (defined(invoker.run_under_python2) && invoker.run_under_python2) {
       use_vpython3 = false
@@ -650,7 +641,7 @@ template("script_test") {
     }
     data += [ "//testing/location_tags.json" ]
 
-    data_deps = []
+    data_deps = [ "//testing:test_scripts_shared" ]
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }

@@ -340,11 +340,12 @@ python_library("chromedriver_py_tests") {
     "//chrome/test/data/chromedriver/",
     "//chrome/test/chromedriver/js/",
     "//testing/scripts/run_chromedriver_tests.py",
-    "//testing/scripts/common.py",
-    "//testing/xvfb.py",
   ]
 
-  data_deps = [ "//chrome/test/chromedriver" ]
+  data_deps = [
+    "//chrome/test/chromedriver",
+    "//testing:test_scripts_shared",
+  ]
   if (is_component_build && is_mac) {
     data_deps += [ "//chrome:chrome_framework" ]
   }
@@ -358,6 +359,8 @@ python_library("chromedriver_py_tests") {
 python_library("chromedriver_replay_unittests") {
   testonly = true
   deps = [ ":chromedriver" ]
+
+  data_deps = [ "//testing:test_scripts_shared" ]
 
   pydeps_file = "log_replay/client_replay_unittest.pydeps"
 }

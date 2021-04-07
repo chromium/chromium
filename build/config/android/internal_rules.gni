@@ -744,11 +744,14 @@ template("test_runner_script") {
     if (defined(invoker.deps)) {
       deps = invoker.deps
     }
-    data_deps = [ "//build/android:test_runner_py" ]
+    data_deps = [
+      "//build/android:test_runner_py",
+      "//testing:test_scripts_shared",
+    ]
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }
-    data = [ "//testing/test_env.py" ]
+    data = []
     if (defined(invoker.data)) {
       data += invoker.data
     }

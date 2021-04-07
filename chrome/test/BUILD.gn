@@ -910,6 +910,7 @@ if (!is_android) {
       "//chrome/test/data:web_ui_test_mojom_js_module",
       "//chrome/test/data/webui:modulize",
       "//components/policy/proto",
+      "//testing:test_scripts_shared",
       "//third_party/private_membership:private_membership_proto",
       "//third_party/shell-encryption:serialization_proto",
 
@@ -956,7 +957,6 @@ if (!is_android) {
       "//ppapi/tests/test_case.html.mock-http-headers",
       "//ppapi/tests/test_page.css",
       "//ppapi/tests/test_page.css.mock-http-headers",
-      "//testing/test_env.py",
       "//third_party/mocha/mocha.js",
       "//third_party/polymer/v1_0/components-chromium/iron-test-helpers/mock-interactions.js",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
@@ -3332,8 +3332,6 @@ group("telemetry_perf_unittests") {
 
   data = [
     # For isolate contract.
-    "//testing/scripts/common.py",
-    "//testing/xvfb.py",
     "//testing/scripts/run_telemetry_as_googletest.py",
 
     # For smoke testing run_performance_tests.py
@@ -3346,16 +3344,17 @@ group("telemetry_perf_unittests") {
     # For representative perf testing run_rendering_benchmark_with_gated_performance.py
     "//testing/scripts/run_rendering_benchmark_with_gated_performance.py",
   ]
+
+  data_deps = [ "//testing:test_scripts_shared" ]
 }
 
 group("telemetry_perf_tests") {
   testonly = true
   deps = [ "//tools/perf/:perf" ]
 
-  data = [
+  data_deps = [
     # Needed for isolate script to execute.
-    "//testing/scripts/common.py",
-    "//testing/xvfb.py",
+    "//testing:test_scripts_shared",
   ]
 }
 
@@ -7255,7 +7254,6 @@ if (!is_fuchsia && !is_android) {
       "//net/tools/testserver/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/tlslite/",
-      "//testing/xvfb.py",
     ]
 
     # TODO(phajdan.jr): Only temporary, to make transition easier.
@@ -7284,6 +7282,7 @@ if (!is_fuchsia && !is_android) {
     ]
 
     data_deps = [
+      "//testing:test_scripts_shared",
       "//testing/buildbot/filters:sync_integration_tests_filters",
       "//third_party/mesa_headers",
     ]
@@ -7536,11 +7535,12 @@ if (!is_fuchsia && !is_android) {
     data = [
       "//third_party/catapult/telemetry/telemetry/internal/bin/",
       "//tools/perf/run_telemetry_tests",
-
-      # For isolate contract.
-      "//testing/scripts/common.py",
-      "//testing/xvfb.py",
       "//testing/scripts/run_telemetry_as_googletest.py",
+    ]
+
+    data_deps = [
+      # For isolate contract.
+      "//testing:test_scripts_shared",
     ]
   }
 
@@ -7570,13 +7570,13 @@ if (!is_fuchsia && !is_android) {
       # From telemetry_gpu_unittests.isolate
       "//third_party/pylint/",
       "//third_party/logilab/",
-      "//testing/scripts/common.py",
-      "//testing/xvfb.py",
       "//testing/scripts/run_telemetry_as_googletest.py",
 
       # For Skia Gold code, which has some GPU-specific unittests.
       "//build/skia_gold_common/",
     ]
+
+    data_deps = [ "//testing:test_scripts_shared" ]
   }
 }
 
@@ -7671,11 +7671,10 @@ if (is_mac || is_win || is_android) {
       "//chrome/test/data/perf",
       "//components/variations/service/generate_ui_string_overrider.py",
       "//testing/scripts",
-      "//testing/test_env.py",
-      "//testing/xvfb.py",
       "//third_party/catapult",
       "//tools",
     ]
+    data_deps = [ "//testing:test_scripts_shared" ]
   }
 }
 
