@@ -22,7 +22,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
-#include "ash/public/cpp/system_tray_focus_observer.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -65,7 +65,7 @@ enum class TrayActionState;
 class ASH_EXPORT LockContentsView
     : public NonAccessibleView,
       public LoginDataDispatcher::Observer,
-      public SystemTrayFocusObserver,
+      public SystemTrayObserver,
       public display::DisplayObserver,
       public KeyboardControllerObserver,
       public chromeos::PowerManagerClient::Observer {
@@ -208,7 +208,7 @@ class ASH_EXPORT LockContentsView
   void MaybeUpdateExpandedView(const AccountId& account_id,
                                const LoginUserInfo& user_info);
 
-  // SystemTrayFocusObserver:
+  // SystemTrayObserver:
   void OnFocusLeavingSystemTray(bool reverse) override;
 
   // display::DisplayObserver:

@@ -75,14 +75,14 @@ void LoginScreenClient::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-void LoginScreenClient::AddSystemTrayFocusObserver(
-    ash::SystemTrayFocusObserver* observer) {
-  system_tray_focus_observers_.AddObserver(observer);
+void LoginScreenClient::AddSystemTrayObserver(
+    ash::SystemTrayObserver* observer) {
+  system_tray_observers_.AddObserver(observer);
 }
 
-void LoginScreenClient::RemoveSystemTrayFocusObserver(
-    ash::SystemTrayFocusObserver* observer) {
-  system_tray_focus_observers_.RemoveObserver(observer);
+void LoginScreenClient::RemoveSystemTrayObserver(
+    ash::SystemTrayObserver* observer) {
+  system_tray_observers_.RemoveObserver(observer);
 }
 
 void LoginScreenClient::AddLoginScreenShownObserver(
@@ -252,8 +252,13 @@ void LoginScreenClient::ShowLockScreenNotificationSettings() {
 }
 
 void LoginScreenClient::OnFocusLeavingSystemTray(bool reverse) {
-  for (ash::SystemTrayFocusObserver& observer : system_tray_focus_observers_)
+  for (ash::SystemTrayObserver& observer : system_tray_observers_)
     observer.OnFocusLeavingSystemTray(reverse);
+}
+
+void LoginScreenClient::OnSystemTrayBubbleShown() {
+  for (ash::SystemTrayObserver& observer : system_tray_observers_)
+    observer.OnSystemTrayBubbleShown();
 }
 
 void LoginScreenClient::OnLoginScreenShown() {

@@ -22,6 +22,7 @@
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
+#include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/unified/camera_mic_tray_item_view.h"
@@ -367,8 +368,10 @@ void UnifiedSystemTray::SetTargetNotification(
 
 void UnifiedSystemTray::ShowBubble() {
   // ShowBubbleInternal will be called from UiDelegate.
-  if (!bubble_)
+  if (!bubble_) {
     ui_delegate_->ui_controller()->ShowMessageCenterBubble();
+    Shell::Get()->system_tray_notifier()->NotifySystemTrayBubbleShown();
+  }
 }
 
 void UnifiedSystemTray::CloseBubble() {

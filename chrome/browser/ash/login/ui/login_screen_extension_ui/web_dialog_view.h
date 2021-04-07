@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/system_tray_focus_observer.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/macros.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -28,7 +28,7 @@ class DialogDelegate;
 // A WebDialogView used by chrome.loginScreenUi API calls. It hides the close
 // button if `DialogDelegate::CanCloseDialog()` is false.
 class WebDialogView : public views::WebDialogView,
-                      public ash::SystemTrayFocusObserver {
+                      public ash::SystemTrayObserver {
  public:
   METADATA_HEADER(WebDialogView);
   explicit WebDialogView(
@@ -43,7 +43,7 @@ class WebDialogView : public views::WebDialogView,
   // views::WebDialogView
   bool TakeFocus(content::WebContents* source, bool reverse) override;
 
-  // ash::SystemTrayFocusObserver
+  // ash::SystemTrayObserver
   void OnFocusLeavingSystemTray(bool reverse) override;
 
  private:

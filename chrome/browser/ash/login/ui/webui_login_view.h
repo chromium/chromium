@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/login_accelerators.h"
-#include "ash/public/cpp/system_tray_focus_observer.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
@@ -48,7 +48,7 @@ class WebUILoginView : public views::View,
                        public content::NotificationObserver,
                        public ChromeWebModalDialogManagerDelegate,
                        public web_modal::WebContentsModalDialogHost,
-                       public ash::SystemTrayFocusObserver {
+                       public ash::SystemTrayObserver {
  public:
   METADATA_HEADER(WebUILoginView);
 
@@ -157,8 +157,9 @@ class WebUILoginView : public views::View,
   bool PreHandleGestureEvent(content::WebContents* source,
                              const blink::WebGestureEvent& event) override;
 
-  // Overridden from ash::SystemTrayFocusObserver.
+  // Overridden from ash::SystemTrayObserver.
   void OnFocusLeavingSystemTray(bool reverse) override;
+  void OnSystemTrayBubbleShown() override;
 
   // Performs series of actions when login prompt is considered
   // to be ready and visible.

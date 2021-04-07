@@ -7,7 +7,7 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_client.h"
-#include "ash/public/cpp/system_tray_focus_observer.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -79,8 +79,8 @@ class LoginScreenClient : public ash::LoginScreenClient {
 
   chromeos::LoginAuthRecorder* auth_recorder();
 
-  void AddSystemTrayFocusObserver(ash::SystemTrayFocusObserver* observer);
-  void RemoveSystemTrayFocusObserver(ash::SystemTrayFocusObserver* observer);
+  void AddSystemTrayObserver(ash::SystemTrayObserver* observer);
+  void RemoveSystemTrayObserver(ash::SystemTrayObserver* observer);
 
   void AddLoginScreenShownObserver(LoginScreenShownObserver* observer);
   void RemoveLoginScreenShownObserver(LoginScreenShownObserver* observer);
@@ -122,6 +122,7 @@ class LoginScreenClient : public ash::LoginScreenClient {
   void ShowParentAccessHelpApp(gfx::NativeWindow parent_window) override;
   void ShowLockScreenNotificationSettings() override;
   void OnFocusLeavingSystemTray(bool reverse) override;
+  void OnSystemTrayBubbleShown() override;
   void OnLoginScreenShown() override;
   void OnUserActivity() override;
 
@@ -143,8 +144,7 @@ class LoginScreenClient : public ash::LoginScreenClient {
   // Captures authentication related user metrics for login screen.
   std::unique_ptr<chromeos::LoginAuthRecorder> auth_recorder_;
 
-  base::ObserverList<ash::SystemTrayFocusObserver>::Unchecked
-      system_tray_focus_observers_;
+  base::ObserverList<ash::SystemTrayObserver>::Unchecked system_tray_observers_;
 
   base::ObserverList<LoginScreenShownObserver> login_screen_shown_observers_;
 

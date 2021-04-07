@@ -110,6 +110,7 @@ class MockLoginScreenClient : public LoginScreenClient {
   MOCK_METHOD(void, OnFocusLeavingSystemTray, (bool reverse), (override));
   MOCK_METHOD(void, OnUserActivity, (), (override));
   MOCK_METHOD(void, OnLoginScreenShown, (), (override));
+  MOCK_METHOD(void, OnSystemTrayBubbleShown, (), (override));
 
  private:
   bool authenticate_user_callback_result_ = true;

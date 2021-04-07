@@ -898,6 +898,11 @@ void OobeUI::SetLoginUserCount(int user_count) {
   core_handler_->SetLoginUserCount(user_count);
 }
 
+void OobeUI::OnSystemTrayBubbleShown() {
+  if (current_screen_ == WelcomeView::kScreenId)
+    GetHandler<WelcomeScreenHandler>()->CancelChromeVoxHintIdleDetection();
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(OobeUI)
 
 }  // namespace chromeos

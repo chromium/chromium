@@ -124,6 +124,8 @@ class OobeUI : public ui::MojoWebUIController {
   // Notify WebUI of the user count on the views login screen.
   void SetLoginUserCount(int user_count);
 
+  void OnSystemTrayBubbleShown();
+
   // Find a *View instance provided by a given *Handler type.
   //
   // This is the same as GetHandler() except the return type is limited to the

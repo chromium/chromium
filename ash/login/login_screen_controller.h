@@ -13,7 +13,7 @@
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
-#include "ash/public/cpp/system_tray_focus_observer.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -34,7 +34,7 @@ enum class SupervisedAction;
 // LoginScreen interface.
 class ASH_EXPORT LoginScreenController : public LoginScreen,
                                          public KioskAppMenu,
-                                         public SystemTrayFocusObserver {
+                                         public SystemTrayObserver {
  public:
   // The current authentication stage. Used to get more verbose logging.
   enum class AuthenticationStage {
@@ -151,8 +151,9 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   // Common code that is called when the login/lock screen is shown.
   void OnShow();
 
-  // SystemTrayFocusObserver:
+  // SystemTrayObserver:
   void OnFocusLeavingSystemTray(bool reverse) override;
+  void OnSystemTrayBubbleShown() override;
 
   LoginDataDispatcher login_data_dispatcher_;
 

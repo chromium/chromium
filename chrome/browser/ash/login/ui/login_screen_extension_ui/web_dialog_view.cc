@@ -24,13 +24,13 @@ WebDialogView::WebDialogView(
   views::WidgetDelegate::SetShowTitle(!delegate_ ||
                                       delegate_->ShouldCenterDialogTitleText());
   if (LoginScreenClient::HasInstance()) {
-    LoginScreenClient::Get()->AddSystemTrayFocusObserver(this);
+    LoginScreenClient::Get()->AddSystemTrayObserver(this);
   }
 }
 
 WebDialogView::~WebDialogView() {
   if (LoginScreenClient::HasInstance()) {
-    LoginScreenClient::Get()->RemoveSystemTrayFocusObserver(this);
+    LoginScreenClient::Get()->RemoveSystemTrayObserver(this);
   }
 }
 
