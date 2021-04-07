@@ -4178,16 +4178,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "pdf-form-save",
-    "owners": [ "thestig" ],
-    "expiry_milestone": 89
-  },
-  {
-    "name": "pdf-honor-js-content-settings",
-    "owners": [ "dhoss", "tsepez" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "pdf-viewer-document-properties",
     "owners": [ "dhoss", "dpapad" ],
     "expiry_milestone": 92
@@ -4202,7 +4192,6 @@
     "owners": [ "carlosil", "tsepez" ],
     "expiry_milestone": 94
   },
-
   {
     "name": "percent-based-scrolling",
     "owners": [ "arakeri@microsoft.com", "gerchiko@microsoft.com" ],
