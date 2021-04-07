@@ -55,11 +55,6 @@ bool TestToolbarActionViewController::IsEnabled(
   return is_enabled_;
 }
 
-bool TestToolbarActionViewController::HasPopup(
-    content::WebContents* web_contents) const {
-  return true;
-}
-
 bool TestToolbarActionViewController::IsShowingPopup() const {
   return popup_showing_;
 }

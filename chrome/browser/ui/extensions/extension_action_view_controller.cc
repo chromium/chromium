@@ -77,7 +77,6 @@ void ExtensionActionViewController::SetDelegate(
   DCHECK((delegate == nullptr) ^ (view_delegate_ == nullptr));
   if (delegate) {
     view_delegate_ = delegate;
-    platform_delegate_->OnDelegateSet();
   } else {
     HidePopup();
     platform_delegate_.reset();
@@ -158,15 +157,6 @@ bool ExtensionActionViewController::IsEnabled(
              sessions::SessionTabHelper::IdForTab(web_contents).id()) ||
          GetPageInteractionStatus(web_contents) ==
              PageInteractionStatus::kPending;
-}
-
-bool ExtensionActionViewController::HasPopup(
-    content::WebContents* web_contents) const {
-  if (!ExtensionIsValid())
-    return false;
-
-  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
-  return tab_id.is_valid() ? extension_action_->HasPopup(tab_id.id()) : false;
 }
 
 bool ExtensionActionViewController::IsShowingPopup() const {
