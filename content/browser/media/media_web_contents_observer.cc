@@ -546,7 +546,8 @@ void MediaWebContentsObserver::LockAudio() {
 }
 
 void MediaWebContentsObserver::CancelAudioLock() {
-  GetAudioWakeLock()->CancelWakeLock();
+  if (audio_wake_lock_)
+    GetAudioWakeLock()->CancelWakeLock();
   has_audio_wake_lock_for_testing_ = false;
 }
 
