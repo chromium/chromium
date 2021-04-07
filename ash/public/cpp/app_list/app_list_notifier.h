@@ -65,6 +65,9 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
                           const Result& launched,
                           const std::vector<Result>& shown,
                           const std::u16string& query) {}
+
+    // Called immediately when the search |query| changes.
+    virtual void OnQueryChanged(const std::u16string& query) {}
   };
 
   virtual ~AppListNotifier() = default;

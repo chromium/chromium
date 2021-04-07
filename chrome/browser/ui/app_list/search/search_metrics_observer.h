@@ -41,10 +41,14 @@ class SearchMetricsObserver : ash::AppListNotifier::Observer {
   void OnIgnore(ash::AppListNotifier::Location location,
                 const std::vector<Result>& results,
                 const std::u16string& query) override;
+  void OnQueryChanged(const std::u16string& query) override;
 
  private:
   ScopedObserver<ash::AppListNotifier, ash::AppListNotifier::Observer>
       observer_{this};
+
+  // Whether the search box currently contains an empty query.
+  bool last_query_empty_ = true;
 };
 
 }  // namespace app_list

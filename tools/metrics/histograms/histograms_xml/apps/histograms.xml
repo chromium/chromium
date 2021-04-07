@@ -607,6 +607,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.UserEvent.Query" enum="Boolean"
+    expires_after="2021-08-01">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Emits true when the user enters a query into the Chrome OS launcher search
+    box. Entering any number of characters is considered only one query, but
+    deleting the contents of the search box and starting again is recorded as a
+    new query.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.UserEvent.TypeAbandon" enum="AppListSearchResult"
     expires_after="2021-08-01">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->

@@ -74,6 +74,10 @@ void AppListNotifierImpl::NotifySearchQueryChanged(
   // an abandon triggered by the query change correctly uses the pre-abandon
   // query.
   query_ = query;
+
+  for (auto& observer : observers_) {
+    observer.OnQueryChanged(query);
+  }
 }
 
 void AppListNotifierImpl::NotifyUIStateChanged(ash::AppListViewState view) {

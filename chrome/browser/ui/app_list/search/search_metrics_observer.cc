@@ -128,4 +128,12 @@ void SearchMetricsObserver::OnIgnore(ash::AppListNotifier::Location location,
   LogOverallAction(location, query, Action::kIgnore);
 }
 
+void SearchMetricsObserver::OnQueryChanged(const std::u16string& query) {
+  const bool new_query_empty = query.empty();
+  if (last_query_empty_ && !new_query_empty) {
+    base::UmaHistogramBoolean("Apps.AppList.UserEvent.Query", true);
+  }
+  last_query_empty_ = new_query_empty;
+}
+
 }  // namespace app_list
