@@ -59218,6 +59218,20 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="PartnerTypeMetric">
+  <int value="0" label="Other"/>
+  <int value="1" label="Thunderbolt + DisplayPort Alt Mode Hub"/>
+  <int value="2" label="Thunderbolt + DisplayPort Alt Mode Peripheral"/>
+  <int value="3" label="Thunderbolt Hub"/>
+  <int value="4" label="Thunderbolt Peripheral"/>
+  <int value="5" label="USB4 Hub"/>
+  <int value="6" label="USB4 Peripheral"/>
+  <int value="7" label="DisplayPort Alt Mode Hub"/>
+  <int value="8" label="DisplayPort Alt Mode Peripheral"/>
+  <int value="9" label="USB Hub"/>
+  <int value="10" label="USB Peripheral"/>
+</enum>
+
 <enum name="PassiveForcedListenerResultType">
   <int value="0" label="PreventDefaultNotCalled"/>
   <int value="1" label="DocumentLevelTouchPreventDefaultCalled"/>
