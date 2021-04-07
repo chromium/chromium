@@ -7,8 +7,10 @@
 
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace v8 {
@@ -23,7 +25,9 @@ class WritableStreamDefaultController;
 
 // Helper class to write to a mojo producer handle
 class MODULES_EXPORT TCPWritableStreamWrapper final
-    : public GarbageCollected<TCPWritableStreamWrapper> {
+    : public GarbageCollected<TCPWritableStreamWrapper>,
+      public ActiveScriptWrappable<TCPWritableStreamWrapper>,
+      public ExecutionContextClient {
   USING_PRE_FINALIZER(TCPWritableStreamWrapper, Dispose);
 
  public:
@@ -36,7 +40,7 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
   TCPWritableStreamWrapper(ScriptState*,
                            base::OnceClosure on_abort,
                            mojo::ScopedDataPipeProducerHandle);
-  ~TCPWritableStreamWrapper();
+  ~TCPWritableStreamWrapper() override;
 
   WritableStream* Writable() const {
     DVLOG(1) << "TCPWritableStreamWrapper::writable() called";
@@ -50,7 +54,9 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
 
   State GetState() const { return state_; }
 
-  void Trace(Visitor*) const;
+  bool HasPendingActivity() const;
+
+  void Trace(Visitor*) const override;
 
  private:
   class UnderlyingSink;

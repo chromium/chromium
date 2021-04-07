@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -106,7 +107,8 @@ TCPWritableStreamWrapper::TCPWritableStreamWrapper(
     ScriptState* script_state,
     base::OnceClosure on_abort,
     mojo::ScopedDataPipeProducerHandle handle)
-    : script_state_(script_state),
+    : ExecutionContextClient(ExecutionContext::From(script_state)),
+      script_state_(script_state),
       on_abort_(std::move(on_abort)),
       data_pipe_(std::move(handle)),
       write_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
@@ -140,11 +142,17 @@ void TCPWritableStreamWrapper::Reset() {
   ErrorStreamAbortAndReset();
 }
 
+bool TCPWritableStreamWrapper::HasPendingActivity() const {
+  return !!write_promise_resolver_;
+}
+
 void TCPWritableStreamWrapper::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(writable_);
   visitor->Trace(controller_);
   visitor->Trace(write_promise_resolver_);
+  ActiveScriptWrappable::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 void TCPWritableStreamWrapper::OnHandleReady(MojoResult result,
