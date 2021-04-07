@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 
-class ChromeBrowserState;
 @class ChromeIdentity;
 @protocol ChromeIdentityBrowserOpener;
 @class ChromeIdentityInteractionManager;
@@ -147,16 +146,6 @@ class ChromeIdentityService {
   PresentWebAndAppSettingDetailsController(ChromeIdentity* identity,
                                            UIViewController* view_controller,
                                            BOOL animated);
-
-  // Returns a new ChromeIdentityInteractionManager with |delegate| as its
-  // delegate.
-  // DEPRECATED, please use:
-  // CreateChromeIdentityInteractionManager(
-  // id<ChromeIdentityInteractionManagerDelegate>).
-  virtual ChromeIdentityInteractionManager*
-  CreateChromeIdentityInteractionManager(
-      ChromeBrowserState* browser_state,
-      id<ChromeIdentityInteractionManagerDelegate> delegate) const;
 
   // Returns a new ChromeIdentityInteractionManager with |delegate| as its
   // delegate.

@@ -70,7 +70,7 @@ class AddAccountSigninManagerTest : public PlatformTest {
     FakeChromeIdentityInteractionManager* identity_interaction_manager =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
             ->CreateFakeChromeIdentityInteractionManager(
-                browser_state_.get(), identity_interaction_manager_delegate_);
+                identity_interaction_manager_delegate_);
     fake_identity_ = [FakeChromeIdentity
         identityWithEmail:[NSString stringWithUTF8String:kTestEmail]
                    gaiaID:[NSString stringWithUTF8String:kTestGaiaID]
