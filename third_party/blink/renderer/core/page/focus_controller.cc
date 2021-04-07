@@ -140,9 +140,11 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     // the slot node have assigned nodes.
 
     Element* owner = nullptr;
+    HTMLSlotElement* parent_slot =
+        DynamicTo<HTMLSlotElement>(node.parentNode());
     if (node.AssignedSlot())
       owner = node.AssignedSlot();
-    else if (IsA<HTMLSlotElement>(node.parentNode()))
+    else if (parent_slot && parent_slot->SupportsAssignment())
       owner = node.ParentOrShadowHostElement();
     else if (&node == node.ContainingTreeScope().RootNode())
       owner = TreeOwner(&node);
@@ -435,14 +437,18 @@ inline bool IsKeyboardFocusableShadowHost(const Element& element) {
 }
 
 inline bool IsNonFocusableFocusScopeOwner(Element& element) {
-  return IsNonKeyboardFocusableShadowHost(element) ||
-         IsA<HTMLSlotElement>(element);
+  if (IsNonKeyboardFocusableShadowHost(element))
+    return true;
+
+  HTMLSlotElement* slot = DynamicTo<HTMLSlotElement>(&element);
+  return slot && slot->SupportsAssignment();
 }
 
 inline int AdjustedTabIndex(Element& element) {
   if (IsNonKeyboardFocusableShadowHost(element))
     return 0;
-  if (element.DelegatesFocus() || IsA<HTMLSlotElement>(element)) {
+  HTMLSlotElement* slot = DynamicTo<HTMLSlotElement>(&element);
+  if (element.DelegatesFocus() || (slot && slot->SupportsAssignment())) {
     // We can't use Element::tabIndex(), which returns -1 for invalid or
     // missing values.
     return element.GetIntegralAttribute(html_names::kTabindexAttr, 0);
