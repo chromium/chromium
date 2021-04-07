@@ -110,6 +110,18 @@ fyi_goma_rbe_canary_builder(
     os = os.MAC_DEFAULT,
 )
 
+fyi_goma_rbe_canary_builder(
+    name = "Win Builder (dbg) Goma RBE Canary",
+    goma_enable_ats = True,
+    os = os.WINDOWS_DEFAULT,
+)
+
+fyi_goma_rbe_canary_builder(
+    name = "Win Builder Goma RBE Canary",
+    goma_enable_ats = True,
+    os = os.WINDOWS_DEFAULT,
+)
+
 def fyi_goma_rbe_latest_client_builder(
         *,
         name,
