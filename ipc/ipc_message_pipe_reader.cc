@@ -30,6 +30,7 @@ MessagePipeReader::MessagePipeReader(
     : delegate_(delegate),
       sender_(std::move(sender)),
       receiver_(this, std::move(receiver)) {
+  recordreplay::RegisterPointer(this);
   sender_.set_disconnect_handler(
       base::BindOnce(&MessagePipeReader::OnPipeError, base::Unretained(this),
                      MOJO_RESULT_FAILED_PRECONDITION));
@@ -39,6 +40,7 @@ MessagePipeReader::MessagePipeReader(
 }
 
 MessagePipeReader::~MessagePipeReader() {
+  recordreplay::UnregisterPointer(this);
   DCHECK(thread_checker_.CalledOnValidThread());
   // The pipe should be closed before deletion.
 }
@@ -85,6 +87,7 @@ void MessagePipeReader::SetPeerPid(int32_t peer_pid) {
 }
 
 void MessagePipeReader::Receive(MessageView message_view) {
+  recordreplay::Assert("MessagePipeReader::Receive %lu", recordreplay::PointerId(this));
   if (message_view.bytes().empty()) {
     delegate_->OnBrokenDataReceived();
     return;

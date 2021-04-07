@@ -1496,21 +1496,30 @@ LayoutBox* Element::GetLayoutBoxForScrolling() const {
 }
 
 double Element::scrollLeft() {
-  if (!InActiveDocument())
+  recordreplay::Assert("Element::scrollLeft Start");
+
+  if (!InActiveDocument()) {
+    recordreplay::Assert("Element::scrollLeft #1");
     return 0;
+  }
 
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
   if (GetDocument().ScrollingElementNoLayout() == this) {
-    if (GetDocument().domWindow())
+    if (GetDocument().domWindow()) {
+      recordreplay::Assert("Element::scrollLeft #2");
       return GetDocument().domWindow()->scrollX();
+    }
+    recordreplay::Assert("Element::scrollLeft #3");
     return 0;
   }
 
   LayoutBox* box = GetLayoutBoxForScrolling();
-  if (!box)
+  if (!box) {
+    recordreplay::Assert("Element::scrollLeft #4");
     return 0;
+  }
   if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
     DCHECK(GetLayoutBox());
 
@@ -1525,6 +1534,7 @@ double Element::scrollLeft() {
         scrollable_area->GetScrollOffset().Width(), *GetLayoutBox());
   }
 
+  recordreplay::Assert("Element::scrollLeft Done");
   return 0;
 }
 

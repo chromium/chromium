@@ -204,6 +204,7 @@ FrameSchedulerImpl::FrameSchedulerImpl(
       loading_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Loading")) {
+  // Pointer registration is needed for sorting in PageSchedulerImpl.
   recordreplay::RegisterPointer(this);
   frame_task_queue_controller_.reset(
       new FrameTaskQueueController(main_thread_scheduler_, this, this));
@@ -854,6 +855,8 @@ void FrameSchedulerImpl::SetPageKeepActiveForTracing(bool keep_active) {
 }
 
 void FrameSchedulerImpl::UpdatePolicy() {
+  recordreplay::Assert("FrameSchedulerImpl::UpdatePolicy Start %lu", recordreplay::PointerId(this));
+
   bool task_queues_were_throttled = task_queues_throttled_;
   task_queues_throttled_ = ShouldThrottleTaskQueues();
 
@@ -877,6 +880,8 @@ void FrameSchedulerImpl::UpdatePolicy() {
 void FrameSchedulerImpl::UpdateQueuePolicy(
     MainThreadTaskQueue* queue,
     TaskQueue::QueueEnabledVoter* voter) {
+  recordreplay::Assert("FrameSchedulerImpl::UpdateQueuePolicy Start %lu %lu",
+                       recordreplay::PointerId(this), recordreplay::PointerId(queue));
   DCHECK(queue);
   UpdatePriority(queue);
   if (!voter)

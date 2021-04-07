@@ -258,6 +258,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       any_thread_(this),
       policy_may_need_update_(&any_thread_lock_),
       notify_agent_strategy_task_posted_(&any_thread_lock_) {
+  recordreplay::RegisterPointer(this);
   helper_.AttachToCurrentThread();
 
   // Compositor task queue and default task queue should be managed by
@@ -347,6 +348,8 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 }
 
 MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
+  recordreplay::UnregisterPointer(this);
+
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), "MainThreadScheduler",
       this);
@@ -1104,7 +1107,15 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
 
 void MainThreadSchedulerImpl::SetSchedulerKeepActive(bool keep_active) {
   main_thread_only().keep_active_fetch_or_worker = keep_active;
+
+  std::vector<PageSchedulerImpl*> page_schedulers;
   for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
+    page_schedulers.push_back(page_scheduler);
+  }
+  std::sort(page_schedulers.begin(), page_schedulers.end(),
+            recordreplay::CompareByPointerId());
+
+  for (PageSchedulerImpl* page_scheduler : page_schedulers) {
     page_scheduler->SetKeepActive(keep_active);
   }
 }
@@ -2710,7 +2721,8 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
     const base::sequence_manager::Task& task,
     TaskQueue::TaskTiming* task_timing,
     base::sequence_manager::LazyNow* lazy_now) {
-  recordreplay::Assert("MainThreadSchedulerImpl::OnTaskCompleted %lu",
+  recordreplay::Assert("MainThreadSchedulerImpl::OnTaskCompleted %lu %lu",
+                       recordreplay::PointerId(this),
                        recordreplay::PointerId(queue ? queue->GetFrameScheduler() : nullptr));
 
   // Microtasks may detach the task queue and invalidate |queue|.
@@ -2746,6 +2758,9 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   // Unset the state of |task_priority_for_tracing|.
   main_thread_only().task_priority_for_tracing = base::nullopt;
 
+  recordreplay::Assert("MainThreadSchedulerImpl::OnTaskCompleted #1 %lu",
+                       recordreplay::PointerId(queue ? queue->GetFrameScheduler() : nullptr));
+
   RecordTaskUkm(queue.get(), task, *task_timing);
 
   main_thread_only().compositor_priority_experiments.OnTaskCompleted(
@@ -2759,6 +2774,9 @@ void MainThreadSchedulerImpl::RecordTaskUkm(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
+  recordreplay::Assert("MainThreadSchedulerImpl::RecordTaskUkm %lu %lu",
+                       recordreplay::PointerId(this),
+                       recordreplay::PointerId(queue ? queue->GetFrameScheduler() : nullptr));
   if (!helper_.ShouldRecordTaskUkm(task_timing.has_thread_time()))
     return;
 
@@ -2771,7 +2789,14 @@ void MainThreadSchedulerImpl::RecordTaskUkm(
     return;
   }
 
+  std::vector<PageSchedulerImpl*> page_schedulers;
   for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
+    page_schedulers.push_back(page_scheduler);
+  }
+  std::sort(page_schedulers.begin(), page_schedulers.end(),
+            recordreplay::CompareByPointerId());
+
+  for (PageSchedulerImpl* page_scheduler : page_schedulers) {
     auto status = RecordTaskUkmImpl(
         queue, task, task_timing,
         page_scheduler->SelectFrameForUkmAttribution(), false);

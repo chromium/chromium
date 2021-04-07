@@ -1241,14 +1241,10 @@ std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
   if (parent_frame) {
     frame_object->setParentId(IdentifiersFactory::FrameId(parent_frame));
     AtomicString name = frame->Tree().GetName();
-    recordreplay::Assert("InspectorPageAgent::BuildObjectForFrame #5 %s",
-                         name.Utf8().c_str());
     if (name.IsEmpty() && frame->DeprecatedLocalOwner()) {
       name =
           frame->DeprecatedLocalOwner()->FastGetAttribute(html_names::kIdAttr);
     }
-    recordreplay::Assert("InspectorPageAgent::BuildObjectForFrame #6 %s",
-                         name.Utf8().c_str());
     frame_object->setName(name);
   }
   if (loader && !loader->UnreachableURL().IsEmpty())

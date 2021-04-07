@@ -855,6 +855,7 @@ void HTMLDocumentParser::DiscardSpeculationsAndResumeFrom(
       last_chunk_before_script->preload_scanner_checkpoint;
   checkpoint->unparsed_input = input_.Current().ToString().IsolatedCopy();
   // FIXME: This should be passed in instead of cleared.
+  recordreplay::Assert("HTMLDocumentParser::DiscardSpeculationsAndResumeFrom");
   input_.Current().Clear();
 
   DCHECK(checkpoint->unparsed_input.IsSafeToSendToAnotherThread());
@@ -1062,6 +1063,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
       RUNTIME_CALL_TIMER_SCOPE(
           V8PerIsolateData::MainThreadIsolate(),
           RuntimeCallStats::CounterId::kHTMLTokenizerNextToken);
+      recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #1 %u",
+                           input_.Current().length());
       if (!tokenizer_->NextToken(input_.Current(), Token()))
         break;
       budget--;
@@ -1094,6 +1097,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
         preload_scanner_ = CreatePreloadScanner(
             TokenPreloadScanner::ScannerType::kMainDocument);
         preload_scanner_->AppendToEnd(input_.Current());
+        recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #2 %u",
+                             input_.Current().length());
       }
       ScanAndPreload(preload_scanner_.get());
     }
@@ -1197,7 +1202,25 @@ bool HTMLDocumentParser::HasInsertionPoint() {
          (WasCreatedByScript() && !input_.HaveSeenEndOfFile());
 }
 
-void HTMLDocumentParser::insert(const String& source) {
+void HTMLDocumentParser::insert(const String& sourceArg) {
+  // Temporary fix to make sure that all parsed sources match up when replaying.
+  String source = sourceArg;
+  if (recordreplay::IsRecordingOrReplaying()) {
+    size_t length = recordreplay::RecordReplayValue("HTMLDocumentParser::insert", source.length());
+    UChar* chars = new UChar[length];
+    if (recordreplay::IsRecording()) {
+      for (size_t i = 0; i < length; i++) {
+        chars[i] = source[i];
+      }
+    }
+    recordreplay::RecordReplayBytes("HTMLDocumentParser::insert",
+                                    chars, length * sizeof(UChar));
+    source = String(chars, length);
+    delete[] chars;
+  }
+
+  recordreplay::Assert("HTMLDocumentParser::insert Start %u %d", source.length(), source.Is8Bit());
+
   if (IsStopped())
     return;
 
@@ -1214,6 +1237,9 @@ void HTMLDocumentParser::insert(const String& source) {
   SegmentedString excluded_line_number_source(source);
   excluded_line_number_source.SetExcludeLineNumbers();
   input_.InsertAtCurrentInsertionPoint(excluded_line_number_source);
+
+  recordreplay::Assert("HTMLDocumentParser::insert #1 %u",
+                        input_.Current().length());
 
   // Pump the the tokenizer to build the document from the given insert point.
   // Should process everything available and not defer anything.
@@ -1350,6 +1376,9 @@ void HTMLDocumentParser::Append(const String& input_source) {
   }
 
   input_.AppendToEnd(source);
+  recordreplay::Assert("HTMLDocumentParser::Append #1 %u",
+                        input_.Current().length());
+
   task_runner_state_->SetHaveSeenFirstByte();
 
   if (InPumpSession()) {

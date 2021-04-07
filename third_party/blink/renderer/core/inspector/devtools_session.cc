@@ -378,8 +378,17 @@ blink::mojom::blink::DevToolsMessagePtr DevToolsSession::FinalizeMessage(
     crdtp::Status status =
         crdtp::json::ConvertCBORToJSON(crdtp::SpanFrom(message_to_send), &json);
     CHECK(status.ok()) << status.ToASCIIString();
-    std::string json_string((char*)&json[0], json.size());
-    recordreplay::Assert("DevToolsSession::FinalizeMessage JSON %s", json_string.c_str());
+
+    // Devtools message contents can vary when replaying due to different
+    // behavior handling messages from the record/replay driver using the
+    // devtools protocol. We don't want this to influence Mojo, so force
+    // the message contents to match up.
+    if (recordreplay::IsRecordingOrReplaying()) {
+      size_t nbytes = recordreplay::RecordReplayValue("DevToolsSession::FinalizeMessage", json.size());
+      json.resize(nbytes);
+      recordreplay::RecordReplayBytes("DevToolsSession::FinalizeMessage", &json[0], json.size());
+    }
+
     message_to_send = std::move(json);
     recordreplay::Assert("DevToolsSession::FinalizeMessage #2 %lu", message_to_send.size());
   }

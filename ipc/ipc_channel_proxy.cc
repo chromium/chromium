@@ -40,6 +40,7 @@ ChannelProxy::Context::Context(
       channel_connected_called_(false),
       message_filter_router_(new MessageFilterRouter()),
       peer_pid_(base::kNullProcessId) {
+  recordreplay::RegisterPointer(this);
   DCHECK(ipc_task_runner_.get());
   // The Listener thread where Messages are handled must be a separate thread
   // to avoid oversubscribing the IO thread. If you trigger this error, you
@@ -51,7 +52,9 @@ ChannelProxy::Context::Context(
          (ipc_task_runner_.get() != default_listener_task_runner_.get()));
 }
 
-ChannelProxy::Context::~Context() = default;
+ChannelProxy::Context::~Context() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void ChannelProxy::Context::ClearIPCTaskRunner() {
   ipc_task_runner_.reset();
@@ -120,6 +123,8 @@ void ChannelProxy::Context::FlushChannel() {
 // Called on the IPC::Channel thread
 bool ChannelProxy::Context::OnMessageReceived(const Message& message) {
   // First give a chance to the filters to process this message.
+  recordreplay::Assert("ChannelProxy::Context::OnMessageReceived %lu %d",
+                       recordreplay::PointerId(this), message.routing_id());
   if (!TryFilters(message))
     OnMessageReceivedNoFilter(message);
   return true;

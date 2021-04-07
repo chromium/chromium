@@ -194,6 +194,8 @@ PageSchedulerImpl::PageSchedulerImpl(
           blink::features::kFreezeBackgroundTabOnNetworkIdle)),
       delay_for_background_and_network_idle_tab_freezing_(
           GetDelayForBackgroundAndNetworkIdleTabFreezing()) {
+  // Pointer registration is needed for sorting in MainThreadSchedulerImpl.
+  recordreplay::RegisterPointer(this);
   page_lifecycle_state_tracker_.reset(new PageLifecycleStateTracker(
       this, kDefaultPageVisibility == PageVisibilityState::kVisible
                 ? PageLifecycleState::kActive
@@ -213,6 +215,8 @@ PageSchedulerImpl::PageSchedulerImpl(
 }
 
 PageSchedulerImpl::~PageSchedulerImpl() {
+  recordreplay::UnregisterPointer(this);
+
   // TODO(alexclarke): Find out why we can't rely on the web view outliving the
   // frame.
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
@@ -880,7 +884,15 @@ void PageSchedulerImpl::UpdateWakeUpBudgetPools(
 }
 
 void PageSchedulerImpl::NotifyFrames() {
+  recordreplay::Assert("PageSchedulerImpl::NotifyFrames %lu", recordreplay::PointerId(this));
+  std::vector<FrameSchedulerImpl*> frame_scheduler_vector;
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
+    frame_scheduler_vector.push_back(frame_scheduler);
+  }
+  std::sort(frame_scheduler_vector.begin(), frame_scheduler_vector.end(),
+            recordreplay::CompareByPointerId());
+
+  for (FrameSchedulerImpl* frame_scheduler : frame_scheduler_vector) {
     frame_scheduler->UpdatePolicy();
   }
 }
@@ -1049,9 +1061,20 @@ PageSchedulerImpl::PageLifecycleStateTracker::
 }
 
 FrameSchedulerImpl* PageSchedulerImpl::SelectFrameForUkmAttribution() {
+  recordreplay::Assert("PageSchedulerImpl::SelectFrameForUkmAttribution %lu", recordreplay::PointerId(this));
+  std::vector<FrameSchedulerImpl*> frame_scheduler_vector;
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
-    if (frame_scheduler->GetUkmRecorder())
+    frame_scheduler_vector.push_back(frame_scheduler);
+  }
+  std::sort(frame_scheduler_vector.begin(), frame_scheduler_vector.end(),
+            recordreplay::CompareByPointerId());
+
+  for (FrameSchedulerImpl* frame_scheduler : frame_scheduler_vector) {
+    if (frame_scheduler->GetUkmRecorder()) {
+      recordreplay::Assert("PageSchedulerImpl::SelectFrameForUkmAttribution %lu",
+                           recordreplay::PointerId(frame_scheduler));
       return frame_scheduler;
+    }
   }
   return nullptr;
 }

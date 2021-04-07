@@ -71,10 +71,13 @@ static inline bool VectorEqualsString(const Vector<LChar, 32>& vector,
 
 HTMLTokenizer::HTMLTokenizer(const HTMLParserOptions& options)
     : input_stream_preprocessor_(this), options_(options) {
+  recordreplay::RegisterPointer(this);
   Reset();
 }
 
-HTMLTokenizer::~HTMLTokenizer() = default;
+HTMLTokenizer::~HTMLTokenizer() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void HTMLTokenizer::Reset() {
   state_ = HTMLTokenizer::kDataState;
@@ -133,7 +136,8 @@ bool HTMLTokenizer::FlushEmitAndResumeIn(SegmentedString& source,
 }
 
 bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
-  recordreplay::Assert("HTMLTokenizer::NextToken Start %u %u",
+  recordreplay::Assert("HTMLTokenizer::NextToken Start %lu %u %u",
+                       recordreplay::PointerId(this),
                        source.length(), source.length() ? source.CurrentChar() : 0);
 
   // If we have a token in progress, then we're supposed to be called back
