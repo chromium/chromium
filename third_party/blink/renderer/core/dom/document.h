@@ -64,7 +64,6 @@
 #include "third_party/blink/renderer/core/frame/fragment_directive.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/loader/font_preload_manager.h"
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
@@ -106,6 +105,7 @@ class ChromeClient;
 class Comment;
 class CompositorAnimationTimeline;
 class ComputedAccessibleNode;
+class DOMWrapperWorld;
 class DisplayLockDocumentState;
 class DocumentData;
 class ElementIntersectionObserverData;
@@ -1910,8 +1910,9 @@ class CORE_EXPORT Document : public ContainerNode,
   struct PendingJavascriptUrl {
    public:
     PendingJavascriptUrl(const KURL& input_url,
-                         scoped_refptr<const DOMWrapperWorld> world)
-        : url(input_url), world(std::move(world)) {}
+                         scoped_refptr<const DOMWrapperWorld> world);
+    ~PendingJavascriptUrl();
+
     KURL url;
 
     // The world in which the navigation to |url| initiated. Non-null.
