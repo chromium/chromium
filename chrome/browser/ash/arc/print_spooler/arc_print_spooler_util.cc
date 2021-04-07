@@ -35,8 +35,6 @@ base::FilePath SavePrintDocument(mojo::ScopedHandle scoped_handle) {
     return base::FilePath();
   }
 
-  // TODO(jschettler): Determine a more secure location to save the print
-  // document.
   base::FilePath temp_path;
   if (!base::CreateTemporaryFile(&temp_path)) {
     PLOG(ERROR) << "Failed to create file.";

@@ -243,7 +243,7 @@ PrintSessionImpl::PrintSessionImpl(
   custom_tab_->Attach(window);
   window->Show();
 
-  // TODO(jschettler): Handle this correctly once crbug.com/636642 is
+  // TODO(http://crbug.com/636642): Handle this correctly once the bug is
   // resolved. Until then, give the PDF plugin time to load.
   VLOG(1) << "Waiting for PDF plugin to load.";
   StartPrintAfterPluginIsLoaded();
