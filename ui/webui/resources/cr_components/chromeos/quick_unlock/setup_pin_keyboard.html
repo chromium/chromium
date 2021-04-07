@@ -2,7 +2,6 @@
 
 <link rel="import" href="lock_screen_constants.html">
 <link rel="import" href="../../../cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="../../../cr_elements/icons.html">
 <link rel="import" href="../../../cr_elements/shared_vars_css.html">
 <link rel="import" href="../../../html/assert.html">
 <link rel="import" href="../../../html/i18n_behavior.html">
@@ -44,19 +43,8 @@ Where:
 <dom-module id="setup-pin-keyboard">
   <template>
     <style include="settings-shared">
-      #errorIcon {
-        --iron-icon-height: 20px;
-        --iron-icon-width: 20px;
-        display: none;
-        padding-inline-end: 8px;
-      }
-
       .error {
         color: var(--google-red-600);
-      }
-
-      .error #errorIcon {
-        --iron-icon-fill-color: var(--google-red-600);
         display: inline-block;
       }
 
@@ -88,7 +76,6 @@ Where:
       <!-- Warning/error; only shown if title is hidden. -->
       <div id="problemDiv" class$="[[problemClass_]]"
           invisible$="[[!problemMessageId_]]" problem>
-        <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
         <span>
           [[formatProblemMessage_(locale, problemMessageId_,
                 problemMessageParameters_)]]
