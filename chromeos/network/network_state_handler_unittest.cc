@@ -31,6 +31,7 @@
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/network_ui_data.h"
 #include "chromeos/network/tether_constants.h"
 #include "dbus/object_path.h"
@@ -307,6 +308,60 @@ class TestTetherSortDelegate : public NetworkStateHandler::TetherSortDelegate {
   DISALLOW_COPY_AND_ASSIGN(TestTetherSortDelegate);
 };
 
+// A Test Stub cellular network provider that adds a single stub cellular
+// network.
+class TestStubCellularNetworksProvider
+    : public NetworkStateHandler::StubCellularNetworksProvider {
+ public:
+  TestStubCellularNetworksProvider() = default;
+  TestStubCellularNetworksProvider(const TestStubCellularNetworksProvider&) =
+      delete;
+  TestStubCellularNetworksProvider& operator=(
+      const TestStubCellularNetworksProvider&) = delete;
+  ~TestStubCellularNetworksProvider() = default;
+
+  // NetworkStateHandler::StubCellularNetworksProvider:
+  bool AddOrRemoveStubCellularNetworks(
+      NetworkStateHandler::ManagedStateList& network_list,
+      NetworkStateHandler::ManagedStateList& new_stub_networks,
+      const DeviceState* device) override {
+    if (delete_stub_networks_) {
+      for (auto iter = network_list.begin(); iter != network_list.end();) {
+        NetworkState* network = (*iter)->AsNetworkState();
+        if (network->IsNonShillCellularNetwork()) {
+          iter = network_list.erase(iter);
+        } else {
+          iter++;
+        }
+      }
+      delete_stub_networks_ = false;
+      return true;
+    }
+
+    if (!stub_cellular_iccid_)
+      return false;
+
+    new_stub_networks.push_back(NetworkState::CreateNonShillCellularNetwork(
+        *stub_cellular_iccid_, /*eid=*/std::string(), device));
+    stub_cellular_iccid_ = base::nullopt;
+    return true;
+  }
+
+  // Schedules a new stub cellular network with given |iccid| to be added on the
+  // next AddOrRemoveStubCellularNetworks call.
+  void AddStubCellularNetwork(const std::string& iccid) {
+    stub_cellular_iccid_ = iccid;
+  }
+
+  // Schedules all stub cellular networks to be removed in the next
+  // AddOrRemoveStubCellularNetworks call.
+  void SetDeleteStubNetworks() { delete_stub_networks_ = true; }
+
+ private:
+  bool delete_stub_networks_ = false;
+  base::Optional<std::string> stub_cellular_iccid_;
+};
+
 }  // namespace
 
 class NetworkStateHandlerTest : public testing::Test {
@@ -327,6 +382,8 @@ class NetworkStateHandlerTest : public testing::Test {
     test_observer_.reset(new TestObserver(network_state_handler_.get()));
     network_state_handler_->AddObserver(test_observer_.get(), FROM_HERE);
     network_state_handler_->InitShillPropertyHandler();
+    network_state_handler_->set_stub_cellular_networks_provider(
+        &test_stub_cellular_networks_provider_);
     base::RunLoop().RunUntilIdle();
     test_observer_->reset_change_counts();
   }
@@ -395,6 +452,17 @@ class NetworkStateHandlerTest : public testing::Test {
         base::BindOnce(&ErrorCallbackFunction));
   }
 
+  void SetDeviceProperty(const std::string& device_path,
+                         const std::string& key,
+                         const base::Value& value) {
+    device_test_->SetDeviceProperty(device_path, key, value,
+                                    /*notify_changed=*/true);
+  }
+
+  void RemoveDevice(const std::string& device_path) {
+    device_test_->RemoveDevice(device_path);
+  }
+
   void SetProperties(NetworkState* network, const base::Value& properties) {
     // UpdateNetworkStateProperties expects 'Type' and 'WiFi.HexSSID' to always
     // be set.
@@ -417,6 +485,7 @@ class NetworkStateHandlerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<TestObserver> test_observer_;
+  TestStubCellularNetworksProvider test_stub_cellular_networks_provider_;
   ShillDeviceClient::TestInterface* device_test_;
   ShillManagerClient::TestInterface* manager_test_;
   ShillProfileClient::TestInterface* profile_test_;
@@ -2119,6 +2188,114 @@ TEST_F(NetworkStateHandlerTest, UpdateGuid) {
       kShillManagerClientStubDefaultWifi);
   ASSERT_TRUE(wifi1);
   EXPECT_EQ("wifi1_guid", wifi1->guid());
+}
+
+TEST_F(NetworkStateHandlerTest, SyncStubCellularNetworks) {
+  const char kStubCellularIccid[] = "test_iccid";
+  // Clear existing cellular networks.
+  service_test_->RemoveService(kShillManagerClientStubCellular);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      network_state_handler_->GetNetworkState(kShillManagerClientStubCellular));
+
+  test_observer_->reset_change_counts();
+  test_stub_cellular_networks_provider_.AddStubCellularNetwork(
+      kStubCellularIccid);
+
+  // Verify that stub cellular network was added and notified.
+  network_state_handler_->SyncStubCellularNetworks();
+  const NetworkState* cellular = network_state_handler_->FirstNetworkByType(
+      NetworkTypePattern::Cellular());
+  ASSERT_TRUE(cellular);
+  EXPECT_FALSE(cellular->guid().empty());
+  EXPECT_TRUE(cellular->IsNonShillCellularNetwork());
+  EXPECT_EQ(kStubCellularIccid, cellular->iccid());
+  EXPECT_EQ(1u, test_observer_->network_list_changed_count());
+
+  // Verify that StubCellularNetworksProvider can remove existing
+  // networks.
+  test_observer_->reset_change_counts();
+  test_stub_cellular_networks_provider_.SetDeleteStubNetworks();
+  network_state_handler_->SyncStubCellularNetworks();
+  NetworkStateHandler::NetworkStateList network_list;
+  network_state_handler_->GetNetworkListByType(
+      NetworkTypePattern::Cellular(), /*configured_only=*/false,
+      /*visible_only=*/false, /*limit=*/0, &network_list);
+  EXPECT_EQ(0u, network_list.size());
+  EXPECT_EQ(1u, test_observer_->network_list_changed_count());
+}
+
+TEST_F(NetworkStateHandlerTest,
+       SyncStubCellularNetworks_ManagedStateListChange) {
+  const char kStubCellularIccid[] = "stub_iccid";
+  const char kTestCellularServicePath[] = "test_cellular_service_path";
+  const char kTestCellularServiceGuid[] = "test_cellular_guid";
+  const char kTestCellularServiceName[] = "test_cellular";
+  const char kTestCellularServiceIccid[] = "test_cellular_iccid";
+
+  // Clear existing cellular networks.
+  service_test_->RemoveService(kShillManagerClientStubCellular);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      network_state_handler_->GetNetworkState(kShillManagerClientStubCellular));
+
+  test_observer_->reset_change_counts();
+  test_stub_cellular_networks_provider_.AddStubCellularNetwork(
+      kStubCellularIccid);
+
+  // Verify that change in network list causes stub cellular networks to be
+  // synced.
+  AddService(kTestCellularServicePath, kTestCellularServiceGuid,
+             kTestCellularServiceName, shill::kTypeCellular, shill::kStateIdle);
+  SetServiceProperty(kTestCellularServicePath, shill::kIccidProperty,
+                     base::Value(kTestCellularServiceIccid));
+  base::RunLoop().RunUntilIdle();
+  NetworkStateHandler::NetworkStateList network_list;
+  network_state_handler_->GetNetworkListByType(
+      NetworkTypePattern::Cellular(), /*configured_only=*/false,
+      /*visible_only=*/false, /*limit=*/0, &network_list);
+  EXPECT_EQ(2u, network_list.size());
+  EXPECT_EQ(1u, test_observer_->network_list_changed_count());
+
+  test_observer_->reset_change_counts();
+  test_stub_cellular_networks_provider_.SetDeleteStubNetworks();
+
+  // Verify that change in device list causes stub cellular networks to be
+  // synced.
+  RemoveDevice(kShillManagerClientStubWifiDevice);
+  base::RunLoop().RunUntilIdle();
+  network_state_handler_->GetNetworkListByType(
+      NetworkTypePattern::Cellular(), /*configured_only=*/false,
+      /*visible_only=*/false, /*limit=*/0, &network_list);
+  EXPECT_EQ(1u, network_list.size());
+  EXPECT_EQ(1u, test_observer_->network_list_changed_count());
+}
+
+TEST_F(NetworkStateHandlerTest, SyncStubCellularNetworks_SimInfoChange) {
+  const char kStubCellularIccid[] = "test_iccid";
+  // Clear existing cellular networks.
+  service_test_->RemoveService(kShillManagerClientStubCellular);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      network_state_handler_->GetNetworkState(kShillManagerClientStubCellular));
+
+  test_observer_->reset_change_counts();
+  test_stub_cellular_networks_provider_.AddStubCellularNetwork(
+      kStubCellularIccid);
+
+  // Verify that change in SIM slot info causes stub networks to be synced.
+  SetDeviceProperty(kShillManagerClientStubCellularDevice,
+                    shill::kSIMSlotInfoProperty,
+                    base::Value(base::Value::Type::LIST));
+  base::RunLoop().RunUntilIdle();
+  NetworkStateHandler::NetworkStateList network_list;
+  network_state_handler_->GetNetworkListByType(
+      NetworkTypePattern::Cellular(), /*configured_only=*/false,
+      /*visible_only=*/false, /*limit=*/0, &network_list);
+  EXPECT_EQ(1u, network_list.size());
+  EXPECT_EQ(kStubCellularIccid, network_list[0]->iccid());
+  EXPECT_TRUE(network_list[0]->IsNonShillCellularNetwork());
+  EXPECT_EQ(1u, test_observer_->network_list_changed_count());
 }
 
 TEST_F(NetworkStateHandlerTest, BlockedByPolicyBlocked) {

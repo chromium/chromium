@@ -74,6 +74,26 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
         ManagedStateList* tether_networks) const = 0;
   };
 
+  // Cellular networks may not have an associated Shill Service (e.g. when the
+  // SIM is locked, a mobile network is not available or Shill is not able to
+  // see eSIM profiles through MM). StubCellularNetworksProvider adds stub
+  // cellular networks if necessary and removes previously created stub networks
+  // that are no longer required. If a StubCellularNetworksProvider instance is
+  // set, then |AddOrRemoveStubCellularNetworks| is called before sorting
+  // networks list.
+  class StubCellularNetworksProvider {
+   public:
+    // Checks |network_list| to add or remove stub cellular networks. New
+    // stub networks will be addeded to |new_stub_networks| list. Stub networks
+    // that are not required anymore are removed from |network_list|. Returns
+    // true if networks were removed from |network_list| or |new_stub_networks|
+    // is non empty.
+    virtual bool AddOrRemoveStubCellularNetworks(
+        ManagedStateList& network_list,
+        ManagedStateList& new_stub_networks,
+        const DeviceState* device) = 0;
+  };
+
   enum TechnologyState {
     TECHNOLOGY_UNAVAILABLE,
     TECHNOLOGY_AVAILABLE,
@@ -411,8 +431,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // there is a managed wifi network available.
   bool OnlyManagedWifiNetworksAllowed() const;
 
+  // Calls AddOrRemoveStubCellularNetworks on CellularStubServiceProvider if
+  // set, sorts network list and notifies network list change if required.
+  void SyncStubCellularNetworks();
+
   bool default_network_is_metered() const {
     return default_network_is_metered_;
+  }
+
+  void set_stub_cellular_networks_provider(
+      StubCellularNetworksProvider* stub_cellular_networks_provider) {
+    stub_cellular_networks_provider_ = stub_cellular_networks_provider;
   }
 
   // Constructs and initializes an instance for testing.
@@ -517,6 +546,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // Update networkState properties from the associated DeviceState.
   void UpdateCellularStateFromDevice(NetworkState* network);
+
+  // Calls AddOrRemoveStubCellularNetworks on StubCellularNetworksProvider if
+  // set and updates GUID for newly added networks as needed. Returns true if
+  // network_list was modified.
+  bool AddOrRemoveStubCellularNetworks();
 
   // Sends NetworkListChanged() to observers and logs an event.
   void NotifyNetworkListChanged();
@@ -683,6 +717,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // the Tether component.
   TechnologyState tether_technology_state_ =
       TechnologyState::TECHNOLOGY_UNAVAILABLE;
+
+  // Provides stub cellular networks. Not owned by this instance.
+  StubCellularNetworksProvider* stub_cellular_networks_provider_ = nullptr;
 
   // Not owned by this instance.
   const TetherSortDelegate* tether_sort_delegate_ = nullptr;

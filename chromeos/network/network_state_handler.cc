@@ -209,6 +209,14 @@ bool NetworkStateHandler::OnlyManagedWifiNetworksAllowed() const {
           GetAvailableManagedWifiNetwork());
 }
 
+void NetworkStateHandler::SyncStubCellularNetworks() {
+  bool network_list_changed = AddOrRemoveStubCellularNetworks();
+  if (!network_list_changed)
+    return;
+  SortNetworkList();
+  NotifyNetworkListChanged();
+}
+
 // static
 std::unique_ptr<NetworkStateHandler> NetworkStateHandler::InitializeForTest() {
   auto handler = base::WrapUnique(new NetworkStateHandler());
@@ -1468,9 +1476,12 @@ void NetworkStateHandler::UpdateNetworkServiceProperty(
   if (notify_active)
     NotifyIfActiveNetworksChanged();
   NotifyNetworkPropertiesUpdated(network);
-  // TODO(azeemarshad): Add or remove non-shill cellular networks.
-  if (sort_networks)
+  if (sort_networks) {
+    bool network_list_changed = AddOrRemoveStubCellularNetworks();
     SortNetworkList();
+    if (network_list_changed)
+      NotifyNetworkListChanged();
+  }
 }
 
 void NetworkStateHandler::UpdateDeviceProperty(const std::string& device_path,
@@ -1515,6 +1526,10 @@ void NetworkStateHandler::UpdateDeviceProperty(const std::string& device_path,
       }
       RequestUpdateForNetwork(ethernet_service->path());
     }
+  }
+  if (key == shill::kSIMSlotInfoProperty) {
+    // Change in SIM Slot info can result in changes to stub cellular services.
+    SyncStubCellularNetworks();
   }
 }
 
@@ -1573,7 +1588,7 @@ void NetworkStateHandler::ManagedStateListChanged(
   SCOPED_NET_LOG_IF_SLOW();
   switch (type) {
     case ManagedState::MANAGED_TYPE_NETWORK:
-      // TODO(azeemarshad) Add or remove non-shill cellular networks.
+      AddOrRemoveStubCellularNetworks();
       SortNetworkList();
       UpdateNetworkStats();
       NotifyIfActiveNetworksChanged();
@@ -1593,9 +1608,9 @@ void NetworkStateHandler::ManagedStateListChanged(
         devices += (*iter)->name();
       }
       NET_LOG(EVENT) << "DeviceList: " << devices;
-      // TODO(azeemarshad): A change to the device list may affect non-shill
-      // Cellular networks, so add or remove cellular network here.
       NotifyDeviceListChanged();
+      // A change to the device list may affect the default Cellular network.
+      SyncStubCellularNetworks();
       return;
   }
   NOTREACHED();
@@ -1768,6 +1783,33 @@ void NetworkStateHandler::UpdateCellularStateFromDevice(NetworkState* network) {
   if (!device)
     return;
   network->provider_requires_roaming_ = device->provider_requires_roaming();
+}
+
+bool NetworkStateHandler::AddOrRemoveStubCellularNetworks() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!notifying_network_observers_);
+  if (!stub_cellular_networks_provider_)
+    return false;
+
+  const DeviceState* device_state =
+      GetDeviceStateByType(NetworkTypePattern::Cellular());
+  ManagedStateList new_stub_networks;
+  bool network_list_changed =
+      stub_cellular_networks_provider_->AddOrRemoveStubCellularNetworks(
+          network_list_, new_stub_networks, device_state);
+  if (!new_stub_networks.size()) {
+    return network_list_changed;
+  }
+
+  // Newly created stub cellular networks will not have a GUID. Assign GUIDs for
+  // these new networks and add to network_list_.
+  for (std::unique_ptr<ManagedState>& managed_state : new_stub_networks) {
+    NetworkState* network = managed_state->AsNetworkState();
+    UpdateGuid(network);
+  }
+  std::move(new_stub_networks.begin(), new_stub_networks.end(),
+            std::back_inserter(network_list_));
+  return true;
 }
 
 void NetworkStateHandler::NotifyNetworkListChanged() {
