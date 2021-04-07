@@ -12,6 +12,8 @@ component("x") {
   output_name = "ui_base_x"
 
   sources = [
+    "selection_requestor.cc",
+    "selection_requestor.h",
     "selection_utils.cc",
     "selection_utils.h",
     "x11_cursor.cc",
@@ -142,14 +144,17 @@ source_set("test_support") {
 source_set("unittests") {
   testonly = true
   sources = [
+    "selection_requestor_unittest.cc",
     "x11_cursor_factory_unittest.cc",
     "x11_cursor_loader_unittest.cc",
   ]
   deps = [
     ":x",
     "//base",
+    "//base/test:test_support",
     "//skia",
     "//testing/gtest",
     "//ui/gfx/geometry",
+    "//ui/gfx/x",
   ]
 }

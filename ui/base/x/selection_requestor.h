@@ -23,7 +23,7 @@ class SelectionData;
 // drop. This class interprets messages from the stateful selection request
 // API. SelectionRequestor should only deal with the X11 details; it does not
 // implement per-component fast-paths.
-class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
+class COMPONENT_EXPORT(UI_BASE_X) SelectionRequestor {
  public:
   explicit SelectionRequestor(x11::Window xwindow);
   SelectionRequestor(const SelectionRequestor&) = delete;

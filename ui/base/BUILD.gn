@@ -494,23 +494,16 @@ component("base") {
     }
   }
 
-  if (use_x11 && use_aura) {
+  if (use_x11 && use_aura && is_linux) {
+    # These Aura X11 files aren't used on ChromeOS.
     sources += [
-      "x/selection_requestor.cc",
-      "x/selection_requestor.h",
+      "dragdrop/os_exchange_data_provider_x11.cc",
+      "dragdrop/os_exchange_data_provider_x11.h",
     ]
     deps += [
       "//ui/events/platform/x11",
       "//ui/gfx/x",
     ]
-
-    if (!is_chromeos_ash) {
-      # These Aura X11 files aren't used on ChromeOS.
-      sources += [
-        "dragdrop/os_exchange_data_provider_x11.cc",
-        "dragdrop/os_exchange_data_provider_x11.h",
-      ]
-    }
   }
 
   if (use_aura && (is_linux || is_chromeos)) {
@@ -1129,7 +1122,6 @@ test("ui_base_unittests") {
   # TODO(crbug.com/980371): Implement OSExchangeDataProvider for Fuchsia.
   if ((use_aura || toolkit_views) && !is_fuchsia) {
     sources += [ "dragdrop/os_exchange_data_unittest.cc" ]
-
     deps += [
       "//ui/events",
       "//ui/events/platform",
@@ -1137,10 +1129,7 @@ test("ui_base_unittests") {
   }
 
   if (use_x11) {
-    sources += [
-      "dragdrop/os_exchange_data_provider_x11_unittest.cc",
-      "x/selection_requestor_unittest.cc",
-    ]
+    sources += [ "dragdrop/os_exchange_data_provider_x11_unittest.cc" ]
     deps += [ "//ui/gfx/x:unit_test" ]
   }
 

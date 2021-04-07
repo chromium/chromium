@@ -16,7 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/x11_atom_cache.h"
@@ -53,15 +52,11 @@ class SelectionRequestorTest : public testing::Test {
   void SetUp() override {
     // Create a window for the selection requestor to use.
     x_window_ = x11::CreateDummyWindow();
-
-    event_source_ = PlatformEventSource::CreateDefault();
-    CHECK(PlatformEventSource::GetInstance());
     requestor_ = std::make_unique<SelectionRequestor>(x_window_);
   }
 
   void TearDown() override {
     requestor_.reset();
-    event_source_.reset();
     connection_->DestroyWindow({x_window_});
   }
 
@@ -70,7 +65,6 @@ class SelectionRequestorTest : public testing::Test {
   // |requestor_|'s window.
   x11::Window x_window_ = x11::Window::None;
 
-  std::unique_ptr<PlatformEventSource> event_source_;
   std::unique_ptr<SelectionRequestor> requestor_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
