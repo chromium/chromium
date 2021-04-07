@@ -502,9 +502,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // * Visible non-wifi networks
   // * Visible wifi networks
   // * Hidden (wifi) networks
-  // If |ensure_cellular| is true, call EnsureCellularNetwork (which may
-  // remove a network from the list).
-  void SortNetworkList(bool ensure_cellular);
+  void SortNetworkList();
 
   // Updates UMA stats. Called once after all requested networks are updated.
   void UpdateNetworkStats();
@@ -519,15 +517,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // Update networkState properties from the associated DeviceState.
   void UpdateCellularStateFromDevice(NetworkState* network);
-
-  // Cellular networks may not have an associated Shill Service (e.g. when the
-  // SIM is locked or a mobile network is not available). This returns a new
-  // default cellular network if necessary.
-  std::unique_ptr<NetworkState> MaybeCreateDefaultCellularNetwork();
-
-  // Removes the default Cellular network if it exists. Called when there is
-  // more than one Cellular network in the list.
-  void RemoveDefaultCellularNetwork();
 
   // Sends NetworkListChanged() to observers and logs an event.
   void NotifyNetworkListChanged();

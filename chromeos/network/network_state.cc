@@ -11,7 +11,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/network/device_state.h"
@@ -30,7 +32,7 @@
 
 namespace {
 
-const char kDefaultCellularNetworkPath[] = "/cellular";
+const char kNonShillCellularNetworkPathPrefix[] = "/non-shill-cellular/";
 
 // TODO(tbarzic): Add payment portal method values to shill/dbus-constants.
 constexpr char kPaymentPortalMethodPost[] = "POST";
@@ -451,7 +453,7 @@ bool NetworkState::IsInProfile() const {
 }
 
 bool NetworkState::IsNonProfileType() const {
-  return type() == kTypeTether || IsDefaultCellular();
+  return type() == kTypeTether || IsNonShillCellularNetwork();
 }
 
 bool NetworkState::IsPrivate() const {
@@ -459,9 +461,9 @@ bool NetworkState::IsPrivate() const {
          profile_path_ != NetworkProfileHandler::GetSharedProfilePath();
 }
 
-bool NetworkState::IsDefaultCellular() const {
+bool NetworkState::IsNonShillCellularNetwork() const {
   return type() == shill::kTypeCellular &&
-         path() == kDefaultCellularNetworkPath;
+         base::StartsWith(path(), kNonShillCellularNetworkPathPrefix);
 }
 
 bool NetworkState::IsShillCaptivePortal() const {
@@ -534,7 +536,7 @@ void NetworkState::SetGuid(const std::string& guid) {
 network_config::mojom::ActivationStateType
 NetworkState::GetMojoActivationState() const {
   using network_config::mojom::ActivationStateType;
-  if (IsDefaultCellular())
+  if (IsNonShillCellularNetwork())
     return ActivationStateType::kNoService;
   if (activation_state_.empty())
     return ActivationStateType::kUnknown;
@@ -613,24 +615,18 @@ bool NetworkState::ErrorIsValid(const std::string& error) {
 }
 
 // static
-std::unique_ptr<NetworkState> NetworkState::CreateDefaultCellular(
+std::unique_ptr<NetworkState> NetworkState::CreateNonShillCellularNetwork(
+    const std::string& iccid,
+    const std::string& eid,
     const DeviceState* cellular_device) {
-  auto new_state = std::make_unique<NetworkState>(kDefaultCellularNetworkPath);
+  std::string path = base::StrCat({kNonShillCellularNetworkPathPrefix, iccid});
+  auto new_state = std::make_unique<NetworkState>(path);
   new_state->set_type(shill::kTypeCellular);
   new_state->set_update_received();
   new_state->set_visible(true);
   new_state->device_path_ = cellular_device->path();
-  new_state->iccid_ = cellular_device->iccid();
-
-  // The default cellular service corresponds to the primary SIM slot. Copy the
-  // EID value from that SIM to the service.
-  for (const CellularSIMSlotInfo& sim : cellular_device->sim_slot_infos()) {
-    if (sim.primary) {
-      new_state->eid_ = sim.eid;
-      break;
-    }
-  }
-
+  new_state->iccid_ = iccid;
+  new_state->eid_ = eid;
   return new_state;
 }
 

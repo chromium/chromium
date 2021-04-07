@@ -603,24 +603,6 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
   EXPECT_TRUE(RunNetworkingSubtest("getPropertiesCellular")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
-                       GetCellularPropertiesDefault) {
-  SetupCellular();
-  const chromeos::NetworkState* cellular =
-      chromeos::NetworkHandler::Get()
-          ->network_state_handler()
-          ->FirstNetworkByType(chromeos::NetworkTypePattern::Cellular());
-  ASSERT_TRUE(cellular);
-  // Remove the Cellular service. This should create a default Cellular network.
-  service_test_->RemoveService(kCellular1ServicePath);
-  content::RunAllPendingInMessageLoop();
-  cellular = chromeos::NetworkHandler::Get()
-                 ->network_state_handler()
-                 ->FirstNetworkByType(chromeos::NetworkTypePattern::Cellular());
-  ASSERT_TRUE(cellular);
-  EXPECT_TRUE(RunNetworkingSubtest("getPropertiesCellularDefault")) << message_;
-}
-
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, GetState) {
   EXPECT_TRUE(RunNetworkingSubtest("getState")) << message_;
 }

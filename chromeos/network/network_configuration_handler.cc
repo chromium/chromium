@@ -261,7 +261,7 @@ void NetworkConfigurationHandler::GetShillProperties(
       network_state_handler_->GetNetworkState(service_path);
   if (network_state &&
       (NetworkTypePattern::Tether().MatchesType(network_state->type()) ||
-       network_state->IsDefaultCellular())) {
+       network_state->IsNonShillCellularNetwork())) {
     // This is a Tether network or a Cellular network with no Service.
     // Provide properties from NetworkState.
     base::Value dictionary(base::Value::Type::DICTIONARY);

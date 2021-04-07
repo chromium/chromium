@@ -211,9 +211,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // Returns true if the network properties are stored in a user profile.
   bool IsPrivate() const;
 
-  // Returns true if the network is a default Cellular network (see
-  // NetworkStateHandler::EnsureCellularNetwork()).
-  bool IsDefaultCellular() const;
+  // Returns true if the network is a Cellular network not backed by Shill
+  // service.
+  bool IsNonShillCellularNetwork() const;
 
   // Returns true if Shill has detected a captive portal state.
   bool IsShillCaptivePortal() const;
@@ -275,7 +275,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   static bool StateIsConnecting(const std::string& connection_state);
   static bool StateIsPortalled(const std::string& connection_state);
   static bool ErrorIsValid(const std::string& error);
-  static std::unique_ptr<NetworkState> CreateDefaultCellular(
+  static std::unique_ptr<NetworkState> CreateNonShillCellularNetwork(
+      const std::string& iccid,
+      const std::string& eid,
       const DeviceState* cellular_device);
 
   // Ignore changes to signal strength less than this value.

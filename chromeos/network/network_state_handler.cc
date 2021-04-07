@@ -454,7 +454,7 @@ const NetworkState* NetworkStateHandler::FirstNetworkByType(
     const NetworkTypePattern& type) {
   // Sort to ensure visible networks are listed first.
   if (!network_list_sorted_)
-    SortNetworkList(false /* ensure_cellular */);
+    SortNetworkList();
 
   const NetworkState* first_network = nullptr;
   for (auto iter = network_list_.begin(); iter != network_list_.end(); ++iter) {
@@ -592,7 +592,7 @@ void NetworkStateHandler::GetNetworkListByTypeImpl(
     limit = std::numeric_limits<size_t>::max();
 
   if (!network_list_sorted_)
-    SortNetworkList(false /* ensure_cellular */);
+    SortNetworkList();
 
   // First, add active Tether networks.
   if (type.MatchesPattern(NetworkTypePattern::Tether()))
@@ -1468,8 +1468,9 @@ void NetworkStateHandler::UpdateNetworkServiceProperty(
   if (notify_active)
     NotifyIfActiveNetworksChanged();
   NotifyNetworkPropertiesUpdated(network);
+  // TODO(azeemarshad): Add or remove non-shill cellular networks.
   if (sort_networks)
-    SortNetworkList(true /* ensure_cellular */);
+    SortNetworkList();
 }
 
 void NetworkStateHandler::UpdateDeviceProperty(const std::string& device_path,
@@ -1572,7 +1573,8 @@ void NetworkStateHandler::ManagedStateListChanged(
   SCOPED_NET_LOG_IF_SLOW();
   switch (type) {
     case ManagedState::MANAGED_TYPE_NETWORK:
-      SortNetworkList(true /* ensure_cellular */);
+      // TODO(azeemarshad) Add or remove non-shill cellular networks.
+      SortNetworkList();
       UpdateNetworkStats();
       NotifyIfActiveNetworksChanged();
       NotifyNetworkListChanged();
@@ -1591,16 +1593,15 @@ void NetworkStateHandler::ManagedStateListChanged(
         devices += (*iter)->name();
       }
       NET_LOG(EVENT) << "DeviceList: " << devices;
-      // A change to the device list may affect the default Cellular network, so
-      // call SortNetworkList here.
-      SortNetworkList(true /* ensure_cellular */);
+      // TODO(azeemarshad): A change to the device list may affect non-shill
+      // Cellular networks, so add or remove cellular network here.
       NotifyDeviceListChanged();
       return;
   }
   NOTREACHED();
 }
 
-void NetworkStateHandler::SortNetworkList(bool ensure_cellular) {
+void NetworkStateHandler::SortNetworkList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (tether_sort_delegate_)
     tether_sort_delegate_->SortTetherNetworkList(&tether_network_list_);
@@ -1610,8 +1611,6 @@ void NetworkStateHandler::SortNetworkList(bool ensure_cellular) {
   // transition to idle before the list is updated). Also separate inactive
   // Mobile and VPN networks (see below).
   ManagedStateList active, non_wifi_visible, wifi_visible, hidden, new_networks;
-  int cellular_count = 0;
-  bool have_default_cellular = false;
   for (ManagedStateList::iterator iter = network_list_.begin();
        iter != network_list_.end(); ++iter) {
     NetworkState* network = (*iter)->AsNetworkState();
@@ -1620,11 +1619,6 @@ void NetworkStateHandler::SortNetworkList(bool ensure_cellular) {
     if (!network->update_received()) {
       new_networks.push_back(std::move(*iter));
       continue;
-    }
-    if (NetworkTypePattern::Cellular().MatchesType(network->type())) {
-      ++cellular_count;
-      if ((*iter)->AsNetworkState()->IsDefaultCellular())
-        have_default_cellular = true;
     }
     if (network->IsActive()) {
       active.push_back(std::move(*iter));
@@ -1643,14 +1637,6 @@ void NetworkStateHandler::SortNetworkList(bool ensure_cellular) {
   // List active networks first (will always include Ethernet).
   network_list_ = std::move(active);
 
-  // If a default Cellular network is required, add it next.
-  if (ensure_cellular && cellular_count == 0) {
-    std::unique_ptr<NetworkState> default_cellular =
-        MaybeCreateDefaultCellularNetwork();
-    if (default_cellular)
-      network_list_.push_back(std::move(default_cellular));
-  }
-
   // List non wifi visible networks next (Mobile and VPN).
   std::move(non_wifi_visible.begin(), non_wifi_visible.end(),
             std::back_inserter(network_list_));
@@ -1663,15 +1649,6 @@ void NetworkStateHandler::SortNetworkList(bool ensure_cellular) {
   std::move(new_networks.begin(), new_networks.end(),
             std::back_inserter(network_list_));
   network_list_sorted_ = true;
-
-  if (ensure_cellular && have_default_cellular) {
-    // If we have created a default Cellular NetworkState, and we have > 1
-    // Cellular NetworkState or no Cellular device, remove it.
-    if (cellular_count > 1 ||
-        !GetDeviceStateByType(NetworkTypePattern::Cellular())) {
-      RemoveDefaultCellularNetwork();
-    }
-  }
 }
 
 void NetworkStateHandler::UpdateNetworkStats() {
@@ -1791,35 +1768,6 @@ void NetworkStateHandler::UpdateCellularStateFromDevice(NetworkState* network) {
   if (!device)
     return;
   network->provider_requires_roaming_ = device->provider_requires_roaming();
-}
-
-std::unique_ptr<NetworkState>
-NetworkStateHandler::MaybeCreateDefaultCellularNetwork() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!notifying_network_observers_);
-  const DeviceState* device =
-      GetDeviceStateByType(NetworkTypePattern::Cellular());
-  // If no SIM is present there will not be useful user facing Device
-  // information, so do not create a default Cellular network.
-  if (!device || device->IsSimAbsent())
-    return nullptr;
-  // Create a default Cellular network. Properties from the associated Device
-  // will be provided to the UI. Note that the network's name is left empty; UI
-  // surfaces which attempt to show the network name will fall back to showing
-  // the network type (i.e., "Cellular") instead.
-  std::unique_ptr<NetworkState> network =
-      NetworkState::CreateDefaultCellular(device);
-  UpdateGuid(network.get());
-  return network;
-}
-
-void NetworkStateHandler::RemoveDefaultCellularNetwork() {
-  for (auto iter = network_list_.begin(); iter != network_list_.end(); ++iter) {
-    if ((*iter)->AsNetworkState()->IsDefaultCellular()) {
-      network_list_.erase(iter);
-      return;  // There will only ever be one default Cellular network.
-    }
-  }
 }
 
 void NetworkStateHandler::NotifyNetworkListChanged() {
