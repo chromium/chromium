@@ -141,6 +141,16 @@ void DumpAccessibilityTreeTestWithIgnoredNodes::ChooseFeatures(
                                             disabled_features);
 }
 
+class DumpAccessibilityTreeWithoutLayoutNGTest
+    : public DumpAccessibilityTreeTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DumpAccessibilityTreeTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
+                                    "LayoutNG");
+  }
+};
+
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(
@@ -158,6 +168,12 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTestWithIgnoredNodes,
+    ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
+    DumpAccessibilityTreeTestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityTreeWithoutLayoutNGTest,
     ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
@@ -1551,18 +1567,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br.html"));
 }
 
-// Flaky failure-on-exit: crbug.com/1187620
-#if defined(THREAD_SANITIZER)
-#define MAYBE_AccessibilityContenteditableBrDisableNGLayout \
-  DISABLED_AccessibilityContenteditableBrDisableNGLayout
-#else
-#define MAYBE_AccessibilityContenteditableBrDisableNGLayout \
-  AccessibilityContenteditableBrDisableNGLayout
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityContenteditableBrDisableNGLayout) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kDisableBlinkFeatures, "LayoutNG");
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
+                       AccessibilityContenteditableBrDisableNGLayout) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br-disable-ng-layout.html"));
 }
 
@@ -1587,18 +1593,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
-// Flaky failure-on-exit: crbug.com/1187620
-#if defined(THREAD_SANITIZER)
-#define MAYBE_AccessibilityContenteditableDocsLiDisableNGLayout \
-  DISABLED_AccessibilityContenteditableDocsLiDisableNGLayout
-#else
-#define MAYBE_AccessibilityContenteditableDocsLiDisableNGLayout \
-  AccessibilityContenteditableDocsLiDisableNGLayout
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityContenteditableDocsLiDisableNGLayout) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kDisableBlinkFeatures, "LayoutNG");
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
+                       AccessibilityContenteditableDocsLi) {
   RunHtmlTest(
       FILE_PATH_LITERAL("contenteditable-docs-li-disable-ng-layout.html"));
 }
@@ -1610,20 +1606,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(
       FILE_PATH_LITERAL("contenteditable-li-contains-presentation.html"));
 }
-
-// Flaky failure-on-exit: crbug.com/1187620
-#if defined(THREAD_SANITIZER)
-#define MAYBE_AccessibilityContenteditableLiContainsPresentationDisableNGLayout \
-  DISABLED_AccessibilityContenteditableLiContainsPresentationDisableNGLayout
-#else
-#define MAYBE_AccessibilityContenteditableLiContainsPresentationDisableNGLayout \
-  AccessibilityContenteditableLiContainsPresentationDisableNGLayout
-#endif
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    AccessibilityContenteditableLiContainsPresentationDisableNGLayout) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kDisableBlinkFeatures, "LayoutNG");
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
+                       AccessibilityContenteditableLiContainsPresentation) {
   RunHtmlTest(FILE_PATH_LITERAL(
       "contenteditable-li-contains-presentation-disable-ng-layout.html"));
 }
@@ -1635,18 +1619,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-spans.html"));
 }
 
-// Flaky failure-on-exit: crbug.com/1187620
-#if defined(THREAD_SANITIZER)
-#define MAYBE_AccessibilityContenteditableSpansDisableNGLayout \
-  DISABLED_AccessibilityContenteditableSpansDisableNGLayout
-#else
-#define MAYBE_AccessibilityContenteditableSpansDisableNGLayout \
-  AccessibilityContenteditableSpansDisableNGLayout
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
                        AccessibilityContenteditableSpansDisableNGLayout) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kDisableBlinkFeatures, "LayoutNG");
   RunHtmlTest(
       FILE_PATH_LITERAL("contenteditable-spans-disable-ng-layout.html"));
 }
