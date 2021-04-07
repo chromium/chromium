@@ -286,8 +286,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      */
     @Override
     public void signin(CoreAccountInfo accountInfo, @Nullable SignInCallback callback) {
-        signinInternal(SignInState.createForSignin(
-                CoreAccountInfo.getAndroidAccountFrom(accountInfo), callback));
+        mAccountTrackerService.seedAccountsIfNeeded(
+                () -> { signinInternal(SignInState.createForSignin(accountInfo, callback)); });
     }
 
     /**
@@ -309,9 +309,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     @Override
     public void signinAndEnableSync(@SigninAccessPoint int accessPoint, CoreAccountInfo accountInfo,
             @Nullable SignInCallback callback) {
-        assert accountInfo != null;
-        signinAndEnableSync(
-                accessPoint, CoreAccountInfo.getAndroidAccountFrom(accountInfo), callback);
+        mAccountTrackerService.seedAccountsIfNeeded(() -> {
+            signinInternal(
+                    SignInState.createForSigninAndEnableSync(accessPoint, accountInfo, callback));
+        });
     }
 
     /**
@@ -336,18 +337,19 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     @Deprecated
     public void signinAndEnableSync(@SigninAccessPoint int accessPoint, Account account,
             @Nullable SignInCallback callback) {
-        signinInternal(SignInState.createForSigninAndEnableSync(accessPoint, account, callback));
+        mAccountTrackerService.seedAccountsIfNeeded(() -> {
+            final CoreAccountInfo accountInfo =
+                    mIdentityManager
+                            .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                                    account.name);
+            signinInternal(
+                    SignInState.createForSigninAndEnableSync(accessPoint, accountInfo, callback));
+        });
     }
 
     private void signinInternal(SignInState signinState) {
         assert isSignInAllowed() : "Sign-in isn't allowed!";
-
-        // TODO(bsazonov): Replace this with an assert in the SigninState ctor
-        if (signinState.mAccount == null) {
-            Log.w(TAG, "Ignoring sign-in request due to null account.");
-            if (signinState.mCallback != null) signinState.mCallback.onSignInAborted();
-            return;
-        }
+        assert signinState != null : "SigninState shouldn't be null!";
 
         if (mSignInState != null) {
             Log.w(TAG, "Ignoring sign-in request as another sign-in request is pending.");
@@ -363,25 +365,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
         mSignInState = signinState;
         notifySignInAllowedChanged();
-        mAccountTrackerService.seedAccountsIfNeeded(this::progressSignInFlowCheckPolicy);
-    }
-
-    /**
-     * Continues the signin flow by checking if there is a policy that the account is subject to.
-     */
-    private void progressSignInFlowCheckPolicy() {
-        if (mSignInState == null) {
-            Log.w(TAG, "Ignoring sign in progress request as no pending sign in.");
-            return;
-        }
-        // TODO(crbug.com/1002056) When changing SignIn signature to use CoreAccountInfo, change the
-        // following line to use it instead of retrieving from IdentityManager.
-        mSignInState.mCoreAccountInfo =
-                mIdentityManager.findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                        mSignInState.mAccount.name);
-
-        assert mSignInState.mCoreAccountInfo
-                != null : "CoreAccountInfo must be set and valid to progress.";
 
         if (mSignInState.shouldTurnSyncOn()) {
             Log.d(TAG, "Checking if account has policy management enabled");
@@ -399,11 +382,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      */
     @VisibleForTesting
     void finishSignInAfterPolicyEnforced() {
-        // This method should be called at most once per sign-in flow.
-        assert mSignInState != null && mSignInState.mCoreAccountInfo != null;
-
-        // The user should not be already signed in
-        assert !mIdentityManager.hasPrimaryAccount();
+        assert mSignInState != null : "SigninState shouldn't be null!";
+        assert !mIdentityManager.hasPrimaryAccount() : "The user should not be already signed in";
 
         // Setting the primary account triggers observers which query accounts from IdentityManager.
         // Reloading before setting the primary ensures they don't get an empty list of accounts.
@@ -691,42 +671,43 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      */
     private static class SignInState {
         private final @SigninAccessPoint Integer mAccessPoint;
-        final Account mAccount;
         final SignInCallback mCallback;
 
         /**
          * Contains the full Core account info, which can be retrieved only once account seeding is
          * complete
          */
-        CoreAccountInfo mCoreAccountInfo;
+        final CoreAccountInfo mCoreAccountInfo;
 
         /**
          * State for the sign-in flow that doesn't enable sync.
          *
-         * @param account The account to sign in to.
+         * @param accountInfo The account to sign in to.
          * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
          */
-        static SignInState createForSignin(Account account, @Nullable SignInCallback callback) {
-            return new SignInState(null, account, callback);
+        static SignInState createForSignin(
+                CoreAccountInfo accountInfo, @Nullable SignInCallback callback) {
+            return new SignInState(null, accountInfo, callback);
         }
 
         /**
          * State for the sync consent flow.
          *
          * @param accessPoint {@link SigninAccessPoint} that has initiated the sign-in.
-         * @param account The account to sign in to.
+         * @param accountInfo The account to sign in to.
          * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
          */
         static SignInState createForSigninAndEnableSync(@SigninAccessPoint int accessPoint,
-                Account account, @Nullable SignInCallback callback) {
-            return new SignInState(accessPoint, account, callback);
+                CoreAccountInfo accountInfo, @Nullable SignInCallback callback) {
+            return new SignInState(accessPoint, accountInfo, callback);
         }
 
-        private SignInState(@SigninAccessPoint Integer accessPoint, Account account,
+        private SignInState(@SigninAccessPoint Integer accessPoint, CoreAccountInfo accountInfo,
                 @Nullable SignInCallback callback) {
+            assert accountInfo != null : "CoreAccountInfo must be set and valid to progress.";
             mAccessPoint = accessPoint;
-            this.mAccount = account;
-            this.mCallback = callback;
+            mCoreAccountInfo = accountInfo;
+            mCallback = callback;
         }
 
         /**
