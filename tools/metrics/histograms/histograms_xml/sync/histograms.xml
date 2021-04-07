@@ -693,7 +693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeTimeUntilEncryptionKeyFound"
-    units="GetUpdatesResponses" expires_after="2021-05-18">
+    units="GetUpdatesResponses" expires_after="2021-10-06">
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -707,7 +707,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Sync.ModelTypeTimeUntilEncryptionKeyFound.Bookmarks"
-    units="GetUpdatesResponses" expires_after="2021-05-04">
+    units="GetUpdatesResponses" expires_after="2021-04-06">
+  <obsolete>
+    Removed on 04/2021.
+  </obsolete>
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -719,7 +722,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Sync.ModelTypeTimeUntilEncryptionKeyFound.Passwords"
-    units="GetUpdatesResponses" expires_after="2021-05-04">
+    units="GetUpdatesResponses" expires_after="2021-04-06">
+  <obsolete>
+    Removed on 04/2021.
+  </obsolete>
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -731,7 +737,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Sync.ModelTypeTimeUntilEncryptionKeyFound.Sessions"
-    units="GetUpdatesResponses" expires_after="2021-05-04">
+    units="GetUpdatesResponses" expires_after="2021-04-06">
+  <obsolete>
+    Removed on 04/2021.
+  </obsolete>
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -742,7 +751,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeUndecryptablePendingUpdatesDropped"
-    units="SyncEntity" expires_after="2021-06-05">
+    units="SyncEntity" expires_after="2021-10-06">
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
