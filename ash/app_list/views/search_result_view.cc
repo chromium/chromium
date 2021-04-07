@@ -33,6 +33,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/image_model_utils.h"
 
 namespace ash {
 
@@ -436,10 +437,7 @@ void SearchResultView::OnMetadataChanged() {
   if (result() && !result()->badge_icon().IsEmpty()) {
     const ui::ImageModel& badge_icon = result()->badge_icon();
     gfx::ImageSkia badge_icon_skia =
-        badge_icon.IsVectorIcon()
-            ? ui::ThemedVectorIcon(badge_icon.GetVectorIcon())
-                  .GetImageSkia(GetNativeTheme())
-            : badge_icon.GetImage().AsImageSkia();
+        views::GetImageSkiaFromImageModel(badge_icon, GetNativeTheme());
 
     if (result()->use_badge_icon_background())
       badge_icon_skia =

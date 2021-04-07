@@ -40,6 +40,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/image_model_utils.h"
 
 namespace ash {
 
@@ -424,10 +425,7 @@ void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
   }
 
   gfx::ImageSkia badge_icon_skia =
-      badge_icon.IsVectorIcon()
-          ? ui::ThemedVectorIcon(badge_icon.GetVectorIcon())
-                .GetImageSkia(GetNativeTheme())
-          : badge_icon.GetImage().AsImageSkia();
+      views::GetImageSkiaFromImageModel(badge_icon, GetNativeTheme());
 
   if (use_badge_icon_background) {
     badge_icon_skia =

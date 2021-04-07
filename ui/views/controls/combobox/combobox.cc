@@ -37,6 +37,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/prefix_selector.h"
+#include "ui/views/image_model_utils.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/mouse_constants.h"
@@ -54,15 +55,6 @@ constexpr int kNoSelection = -1;
 SkColor GetTextColorForEnableState(const Combobox& combobox, bool enabled) {
   const int style = enabled ? style::STYLE_PRIMARY : style::STYLE_DISABLED;
   return style::GetColor(combobox, style::CONTEXT_TEXTFIELD, style);
-}
-
-gfx::ImageSkia GetImageSkiaFromImageModel(const ui::ImageModel* model,
-                                          const ui::NativeTheme* native_theme) {
-  DCHECK(model);
-  DCHECK(!model->IsEmpty());
-  return model->IsImage() ? model->GetImage().AsImageSkia()
-                          : ui::ThemedVectorIcon(model->GetVectorIcon())
-                                .GetImageSkia(native_theme);
 }
 
 // The transparent button which holds a button state but is not rendered.
@@ -607,7 +599,7 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   ui::ImageModel icon = GetModel()->GetIconAt(selected_index_);
   if (!icon.IsEmpty()) {
     gfx::ImageSkia icon_skia =
-        GetImageSkiaFromImageModel(&icon, GetNativeTheme());
+        GetImageSkiaFromImageModel(icon, GetNativeTheme());
     int icon_y = y + (contents_height - icon_skia.height()) / 2;
     gfx::Rect icon_bounds(x, icon_y, icon_skia.width(), icon_skia.height());
     AdjustBoundsForRTLUI(&icon_bounds);
@@ -711,7 +703,7 @@ gfx::Size Combobox::GetContentSize() const {
       ui::ImageModel icon = GetModel()->GetIconAt(i);
       if (!icon.IsEmpty()) {
         gfx::ImageSkia icon_skia =
-            GetImageSkiaFromImageModel(&icon, GetNativeTheme());
+            GetImageSkiaFromImageModel(icon, GetNativeTheme());
         item_width +=
             icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
                                     DISTANCE_RELATED_LABEL_HORIZONTAL);

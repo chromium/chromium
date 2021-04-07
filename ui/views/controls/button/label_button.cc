@@ -24,6 +24,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
+#include "ui/views/image_model_utils.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
@@ -59,17 +60,8 @@ LabelButton::~LabelButton() = default;
 
 gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {
   for_state = ImageStateForState(for_state);
-
-  const auto& image_model = button_state_image_models_[for_state];
-  if (image_model.IsImage())
-    return image_model.GetImage().AsImageSkia();
-
-  if (image_model.IsVectorIcon()) {
-    return ui::ThemedVectorIcon(image_model.GetVectorIcon())
-        .GetImageSkia(GetNativeTheme());
-  }
-
-  return gfx::ImageSkia();
+  return GetImageSkiaFromImageModel(button_state_image_models_[for_state],
+                                    GetNativeTheme());
 }
 
 void LabelButton::SetImage(ButtonState for_state, const gfx::ImageSkia& image) {
