@@ -91,7 +91,7 @@ def main():
     # the entrypoint name.
     command = 'dumpbin.exe /nopdb /headers "%s"' % pe_path
     try:
-      for line in subprocess.check_output(command).splitlines():
+      for line in subprocess.check_output(command).decode().splitlines():
         if line.startswith('SECTION HEADER #'):
           sections = []
         elif type(sections) == type([]):
