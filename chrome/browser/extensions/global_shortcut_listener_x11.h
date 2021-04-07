@@ -5,18 +5,9 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_X11_H_
 #define CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_X11_H_
 
-#include <stdint.h>
-
-#include <set>
-
-#include "base/macros.h"
 #include "chrome/browser/extensions/global_shortcut_listener.h"
-#include "ui/events/platform/platform_event_dispatcher.h"
-#include "ui/gfx/x/connection.h"
-
-namespace ui {
-class KeyEvent;
-}
+#include "ui/base/x/x11_global_shortcut_listener.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace extensions {
 
@@ -24,14 +15,13 @@ namespace extensions {
 // listens for global shortcuts. Handles basic keyboard intercepting and
 // forwards its output to the base class for processing.
 class GlobalShortcutListenerX11 : public GlobalShortcutListener,
-                                  public ui::PlatformEventDispatcher {
+                                  public ui::XGlobalShortcutListener {
  public:
   GlobalShortcutListenerX11();
+  GlobalShortcutListenerX11(const GlobalShortcutListenerX11&) = delete;
+  GlobalShortcutListenerX11& operator=(const GlobalShortcutListenerX11&) =
+      delete;
   ~GlobalShortcutListenerX11() override;
-
-  // ui::PlatformEventDispatcher implementation.
-  bool CanDispatchEvent(const ui::PlatformEvent& event) override;
-  uint32_t DispatchEvent(const ui::PlatformEvent& event) override;
 
  private:
   // GlobalShortcutListener implementation.
@@ -40,21 +30,13 @@ class GlobalShortcutListenerX11 : public GlobalShortcutListener,
   bool RegisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
   void UnregisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
 
-  // Invoked when a global shortcut is pressed.
-  void OnKeyPressEvent(const ui::KeyEvent& event);
+  // ui::XGlobalShortcutListener:
+  void OnKeyPressed(ui::KeyboardCode key_code,
+                    bool is_alt_down,
+                    bool is_ctrl_down,
+                    bool is_shift_down) override;
 
-  // Whether this object is listening for global shortcuts.
-  bool is_listening_;
-
-  // The x11 default display and the native root window.
-  x11::Connection* connection_;
-  x11::Window x_root_window_;
-
-  // A set of registered accelerators.
-  typedef std::set<ui::Accelerator> RegisteredHotKeys;
-  RegisteredHotKeys registered_hot_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalShortcutListenerX11);
+  std::set<ui::Accelerator> registered_hot_keys_;
 };
 
 }  // namespace extensions

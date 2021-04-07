@@ -94,6 +94,8 @@ component("ozone_base") {
     "public/platform_clipboard.h",
     "public/platform_gl_egl_utility.cc",
     "public/platform_gl_egl_utility.h",
+    "public/platform_global_shortcut_listener.cc",
+    "public/platform_global_shortcut_listener.h",
     "public/platform_menu_utils.cc",
     "public/platform_menu_utils.h",
     "public/platform_screen.cc",

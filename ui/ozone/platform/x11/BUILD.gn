@@ -27,6 +27,8 @@ source_set("x11") {
     "x11_canvas_surface.h",
     "x11_clipboard_ozone.cc",
     "x11_clipboard_ozone.h",
+    "x11_global_shortcut_listener_ozone.cc",
+    "x11_global_shortcut_listener_ozone.h",
     "x11_menu_utils.cc",
     "x11_menu_utils.h",
     "x11_screen_ozone.cc",

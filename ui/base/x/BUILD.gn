@@ -26,6 +26,8 @@ component("x") {
     "x11_display_manager.h",
     "x11_display_util.cc",
     "x11_display_util.h",
+    "x11_global_shortcut_listener.cc",
+    "x11_global_shortcut_listener.h",
     "x11_idle_query.cc",
     "x11_idle_query.h",
     "x11_menu_list.cc",

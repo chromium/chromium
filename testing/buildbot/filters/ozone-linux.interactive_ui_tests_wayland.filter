@@ -1,3 +1,6 @@
+# TODO(crbug.com/1195712): implement the feature for Wayland.
+-GlobalCommandsApiTest.GlobalCommand
+
 # Failing interactive ui tests
 -AppWindowTest.InitAlwaysOnTopToFullscreen
 -AppWindowTest.InitFullscreenAndAlwaysOnTop

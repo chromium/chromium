@@ -31,10 +31,12 @@ class InputController;
 class OverlayManagerOzone;
 class PlatformClipboard;
 class PlatformGLEGLUtility;
-class PlatformUtils;
+class PlatformGlobalShortcutListener;
+class PlatformGlobalShortcutListenerDelegate;
 class PlatformMenuUtils;
 class PlatformScreen;
 class PlatformUserInputMonitor;
+class PlatformUtils;
 class SurfaceFactoryOzone;
 class SystemInputInjector;
 
@@ -222,6 +224,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   virtual PlatformGLEGLUtility* GetPlatformGLEGLUtility();
   virtual PlatformMenuUtils* GetPlatformMenuUtils();
   virtual PlatformUtils* GetPlatformUtils();
+  virtual PlatformGlobalShortcutListener* GetPlatformGlobalShortcutListener(
+      PlatformGlobalShortcutListenerDelegate* delegate);
 
   // Returns true if the specified buffer format is supported.
   virtual bool IsNativePixmapConfigSupported(gfx::BufferFormat format,

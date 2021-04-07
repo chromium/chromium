@@ -35,6 +35,7 @@
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
 #include "ui/ozone/platform/x11/x11_clipboard_ozone.h"
+#include "ui/ozone/platform/x11/x11_global_shortcut_listener_ozone.h"
 #include "ui/ozone/platform/x11/x11_menu_utils.h"
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
 #include "ui/ozone/platform/x11/x11_surface_factory.h"
@@ -156,6 +157,15 @@ class OzonePlatformX11 : public OzonePlatform,
   }
 
   PlatformUtils* GetPlatformUtils() override { return x11_utils_.get(); }
+
+  PlatformGlobalShortcutListener* GetPlatformGlobalShortcutListener(
+      PlatformGlobalShortcutListenerDelegate* delegate) override {
+    if (!global_shortcut_listener_) {
+      global_shortcut_listener_ =
+          std::make_unique<X11GlobalShortcutListenerOzone>(delegate);
+    }
+    return global_shortcut_listener_.get();
+  }
 
   std::unique_ptr<OSExchangeDataProvider> CreateProvider() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -312,6 +322,7 @@ class OzonePlatformX11 : public OzonePlatform,
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
   std::unique_ptr<X11MenuUtils> menu_utils_;
   std::unique_ptr<X11Utils> x11_utils_;
+  std::unique_ptr<PlatformGlobalShortcutListener> global_shortcut_listener_;
 
   // Objects in the GPU process.
   std::unique_ptr<X11SurfaceFactory> surface_factory_ozone_;
