@@ -371,6 +371,7 @@ source_set("tests") {
     "data_pipe_to_source_stream_unittest.cc",
     "default_credentials_mojom_traits_unittest.cc",
     "digitally_signed_mojom_traits_unittest.cc",
+    "empty_url_loader_client_unittest.cc",
     "header_util_unittest.cc",
     "host_resolver_mojom_traits_unittest.cc",
     "initiator_lock_compatibility_unittest.cc",
