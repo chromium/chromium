@@ -341,8 +341,14 @@ AssistiveType EmojiSuggester::GetProposeActionType() {
   return AssistiveType::kEmoji;
 }
 
-bool EmojiSuggester::GetSuggestionShownForTesting() const {
+bool EmojiSuggester::HasSuggestions() {
   return suggestion_shown_;
+}
+
+std::vector<std::u16string> EmojiSuggester::GetSuggestions() {
+  if (HasSuggestions())
+    return candidates_;
+  return {};
 }
 
 size_t EmojiSuggester::GetCandidatesSizeForTesting() const {

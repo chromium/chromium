@@ -439,4 +439,10 @@ bool AssistiveSuggester::IsSuggestionShown() {
   return current_suggester_ != nullptr;
 }
 
+std::vector<std::u16string> AssistiveSuggester::GetSuggestions() {
+  if (IsSuggestionShown())
+    return current_suggester_->GetSuggestions();
+  return {};
+}
+
 }  // namespace chromeos

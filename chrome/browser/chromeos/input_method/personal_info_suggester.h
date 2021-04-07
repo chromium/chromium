@@ -57,6 +57,8 @@ class PersonalInfoSuggester : public Suggester {
   bool AcceptSuggestion(size_t index = 0) override;
   void DismissSuggestion() override;
   AssistiveType GetProposeActionType() override;
+  bool HasSuggestions() override;
+  std::vector<std::u16string> GetSuggestions() override;
 
  private:
   // Get the suggestion according to |text|.

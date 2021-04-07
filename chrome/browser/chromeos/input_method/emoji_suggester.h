@@ -35,11 +35,12 @@ class EmojiSuggester : public Suggester {
   bool AcceptSuggestion(size_t index) override;
   void DismissSuggestion() override;
   AssistiveType GetProposeActionType() override;
+  bool HasSuggestions() override;
+  std::vector<std::u16string> GetSuggestions() override;
 
   bool ShouldShowSuggestion(const std::u16string& text);
 
   void LoadEmojiMapForTesting(const std::string& emoji_data);
-  bool GetSuggestionShownForTesting() const;
   size_t GetCandidatesSizeForTesting() const;
 
  private:

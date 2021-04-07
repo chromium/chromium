@@ -395,6 +395,16 @@ AssistiveType PersonalInfoSuggester::GetProposeActionType() {
   return proposed_action_type_;
 }
 
+bool PersonalInfoSuggester::HasSuggestions() {
+  return suggestion_shown_;
+}
+
+std::vector<std::u16string> PersonalInfoSuggester::GetSuggestions() {
+  if (HasSuggestions())
+    return {suggestion_};
+  return {};
+}
+
 bool PersonalInfoSuggester::AcceptSuggestion(size_t index) {
   std::string error;
   suggestion_handler_->AcceptSuggestion(context_id_, &error);

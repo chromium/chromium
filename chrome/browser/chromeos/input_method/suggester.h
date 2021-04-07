@@ -41,6 +41,12 @@ class Suggester {
 
   // Return the propose assistive action type.
   virtual AssistiveType GetProposeActionType() = 0;
+
+  // Is the suggester currently suggesting a candidate to the user?
+  virtual bool HasSuggestions() = 0;
+
+  // Returns any candidates currently suggested by the suggester.
+  virtual std::vector<std::u16string> GetSuggestions() = 0;
 };
 
 }  // namespace chromeos

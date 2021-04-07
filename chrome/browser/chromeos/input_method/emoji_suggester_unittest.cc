@@ -161,7 +161,7 @@ TEST_F(EmojiSuggesterTest, DoNotSuggestWhenWordNotInMap) {
 TEST_F(EmojiSuggesterTest, DoNotShowSuggestionWhenVirtualKeyboardEnabled) {
   chrome_keyboard_controller_client_->set_keyboard_visible_for_test(true);
   EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
-  EXPECT_FALSE(emoji_suggester_->GetSuggestionShownForTesting());
+  EXPECT_FALSE(emoji_suggester_->HasSuggestions());
 }
 
 TEST_F(EmojiSuggesterTest, ReturnkBrowsingWhenPressingDown) {
@@ -353,6 +353,27 @@ TEST_F(EmojiSuggesterTest, RecordsTimeToDismiss) {
   Press(ui::DomCode::ESCAPE);
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToDismiss.Emoji",
                                     1);
+}
+
+TEST_F(EmojiSuggesterTest, IsShowingSuggestionTrueWhenCandidatesAvailable) {
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->HasSuggestions());
+}
+
+TEST_F(EmojiSuggesterTest, IsShowingSuggestionFalseWhenCandidatesUnavailable) {
+  EXPECT_FALSE(emoji_suggester_->Suggest(u"hapy"));
+  EXPECT_FALSE(emoji_suggester_->HasSuggestions());
+}
+
+TEST_F(EmojiSuggesterTest, GetSuggestionReturnsCandidatesWhenAvailable) {
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_FALSE(emoji_suggester_->GetSuggestions().empty());
+}
+
+TEST_F(EmojiSuggesterTest,
+       GetSuggestionDoesNotReturnCandidatesWhenUnavailable) {
+  EXPECT_FALSE(emoji_suggester_->Suggest(u"hapy"));
+  EXPECT_TRUE(emoji_suggester_->GetSuggestions().empty());
 }
 
 }  // namespace chromeos

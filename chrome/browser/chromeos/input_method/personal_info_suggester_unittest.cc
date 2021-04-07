@@ -792,4 +792,60 @@ TEST_F(PersonalInfoSuggesterTest, RecordsTimeToDismiss) {
       "InputMethod.Assistive.TimeToDismiss.PersonalInfo", 1);
 }
 
+TEST_F(PersonalInfoSuggesterTest,
+       HasSuggestionsReturnsTrueWhenCandidatesAvailable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
+  profile_->set_profile_name(base::UTF16ToUTF8(email_));
+
+  suggester_->Suggest(u"my email is ");
+  suggestion_handler_->VerifySuggestion(email_, 0);
+  EXPECT_TRUE(suggester_->HasSuggestions());
+}
+
+TEST_F(PersonalInfoSuggesterTest,
+       HasSuggestionsReturnsFalseWhenCandidatesUnavailable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
+  profile_->set_profile_name(base::UTF16ToUTF8(email_));
+
+  suggester_->Suggest(u"");
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+  EXPECT_FALSE(suggester_->HasSuggestions());
+}
+
+TEST_F(PersonalInfoSuggesterTest,
+       GetSuggestionsReturnsCandidatesWhenAvailable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
+  profile_->set_profile_name(base::UTF16ToUTF8(email_));
+
+  suggester_->Suggest(u"my email is ");
+  suggestion_handler_->VerifySuggestion(email_, 0);
+  EXPECT_FALSE(suggester_->GetSuggestions().empty());
+}
+
+TEST_F(PersonalInfoSuggesterTest,
+       GetSuggestionsReturnsZeroCandidatesWhenCandidatesUnavailable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
+  profile_->set_profile_name(base::UTF16ToUTF8(email_));
+
+  suggester_->Suggest(u"");
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+  EXPECT_TRUE(suggester_->GetSuggestions().empty());
+}
+
 }  // namespace chromeos
