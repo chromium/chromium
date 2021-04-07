@@ -192,7 +192,9 @@ void PresentationRequestNotificationProducer::DeleteItemForPresentationRequest(
           blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
           message));
     }
+    const auto id{item_->id()};
     item_.reset();
+    notification_service_->RemoveItem(id);
   }
 }
 
