@@ -801,7 +801,12 @@ base::Value ProfilePickerHandler::GetProfilesList() {
 void ProfilePickerHandler::AddProfileToList(
     const base::FilePath& profile_path) {
   size_t number_of_profiles = profiles_order_.size();
-  profiles_order_[profile_path] = number_of_profiles;
+  auto it_and_whether_inserted =
+      profiles_order_.insert({profile_path, number_of_profiles});
+  // We shouldn't add the same profile to the list more than once. Use
+  // `insert()` to not corrput the map in case this happens.
+  // https://crbug.com/1195784
+  DCHECK(it_and_whether_inserted.second);
 }
 
 bool ProfilePickerHandler::RemoveProfileFromList(

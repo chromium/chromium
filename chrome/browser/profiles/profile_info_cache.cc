@@ -162,12 +162,15 @@ void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
   cache->SetWithoutPathExpansion(key, std::move(info));
   InitEntryWithKey(key);
 
+  // `OnProfileAdded()` must be the first observer method being called right
+  // after a new profile is added to cache.
+  for (auto& observer : observer_list_)
+    observer.OnProfileAdded(profile_path);
+
   if (!disable_avatar_download_for_testing_)
     DownloadHighResAvatarIfNeeded(icon_index, profile_path);
 
   NotifyIfProfileNamesHaveChanged();
-  for (auto& observer : observer_list_)
-    observer.OnProfileAdded(profile_path);
 }
 
 void ProfileInfoCache::DisableProfileMetricsForTesting() {
@@ -231,10 +234,13 @@ void ProfileInfoCache::DeleteProfileFromCache(
   keys_.erase(std::find(keys_.begin(), keys_.end(), key));
   profile_attributes_entries_.erase(profile_path.value());
 
-  NotifyIfProfileNamesHaveChanged();
+  // `OnProfileWasRemoved()` must be the first observer method being called
+  // right after a profile was removed from cache.
   for (auto& observer : observer_list_) {
     observer.OnProfileWasRemoved(profile_path, name);
   }
+
+  NotifyIfProfileNamesHaveChanged();
 }
 
 size_t ProfileInfoCache::GetNumberOfProfiles(bool include_guest_profile) const {
