@@ -811,9 +811,6 @@ if (!is_android) {
       "//chrome/browser/web_applications:browser_tests",
       "//chrome/browser/webaudio:browser_tests",
       "//chrome/renderer",
-      "//chrome/services/machine_learning/public/cpp",
-      "//chrome/services/machine_learning/public/cpp:test_support",
-      "//chrome/services/machine_learning/public/mojom",
       "//chrome/services/removable_storage_writer:lib",
       "//chrome/test/data:webui_test_resources",
       "//components/autofill/content/browser:risk_proto",
@@ -1226,7 +1223,6 @@ if (!is_android) {
       "../browser/optimization_guide/optimization_guide_keyed_service_browsertest.cc",
       "../browser/optimization_guide/page_content_annotations_service_browsertest.cc",
       "../browser/optimization_guide/page_text_observer_browsertest.cc",
-      "../browser/optimization_guide/prediction/machine_learning_service_browsertest.cc",
       "../browser/optimization_guide/prediction/prediction_manager_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ad_density_intervention_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ads_page_load_metrics_observer_browsertest.cc",
@@ -1691,12 +1687,6 @@ if (!is_android) {
         "../browser/ui/views/chrome_cleaner_reboot_dialog_browsertest_win.cc",
         "../browser/ui/views/try_chrome_dialog_win/try_chrome_dialog_browsertest.cc",
       ]
-    }
-
-    if (build_with_tflite_lib) {
-      sources += [ "../browser/tflite_experiment/tflite_experiment_keyed_service_browsertest.cc" ]
-    }
-    if (is_win) {
       data += [ "$root_out_dir/chrome_200_percent.pak" ]
       deps += [ "//chrome/app:chrome_dll_resources" ]
     }
@@ -4238,8 +4228,6 @@ test("unit_tests") {
     "//chrome/common:test_support",
     "//chrome/common/privacy_budget:unit_tests",
     "//chrome/common/profiler:unit_tests",
-    "//chrome/services/machine_learning:unit_tests",
-    "//chrome/services/machine_learning/public/cpp:test_support",
     "//components/account_id",
     "//components/autofill/content/renderer:test_support",
     "//components/browsing_data/content:test_support",
@@ -5189,7 +5177,6 @@ test("unit_tests") {
       "//chrome/services/sharing/nearby/platform:unit_tests",
       "//chromeos/assistant:buildflags",
       "//chromeos/dbus/u2f",
-      "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/nearby/public/cpp:test_support",
       "//components/arc:arc_test_support",
       "//components/full_restore:unit_tests",

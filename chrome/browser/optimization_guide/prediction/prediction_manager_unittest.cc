@@ -20,8 +20,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
-#include "chrome/services/machine_learning/public/cpp/test_support/fake_service_connection.h"
-#include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"

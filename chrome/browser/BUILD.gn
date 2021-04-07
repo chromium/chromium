@@ -1978,8 +1978,6 @@ static_library("browser") {
     "//chrome/common/performance_manager/mojom",
     "//chrome/common/printing:printing",
     "//chrome/installer/util:with_no_strings",
-    "//chrome/services/machine_learning/public/cpp",
-    "//chrome/services/machine_learning/public/mojom",
     "//components/assist_ranker",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
@@ -2436,21 +2434,6 @@ static_library("browser") {
       "//ui/events/ozone",
       "//ui/ozone",
     ]
-  }
-
-  if (build_with_tflite_lib) {
-    sources += [
-      "tflite_experiment/tflite_experiment_keyed_service.cc",
-      "tflite_experiment/tflite_experiment_keyed_service.h",
-      "tflite_experiment/tflite_experiment_keyed_service_factory.cc",
-      "tflite_experiment/tflite_experiment_keyed_service_factory.h",
-      "tflite_experiment/tflite_experiment_observer.cc",
-      "tflite_experiment/tflite_experiment_observer.h",
-      "tflite_experiment/tflite_experiment_switches.cc",
-      "tflite_experiment/tflite_experiment_switches.h",
-    ]
-
-    public_deps += [ "//chrome/services/machine_learning" ]
   }
 
   # Platforms that have a network diagnostics dialog. All others fall through

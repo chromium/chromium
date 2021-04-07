@@ -342,7 +342,6 @@ static_library("ui") {
   # browser, then we can clean up these dependencies.
   public_deps = [
     "//components/dom_distiller/core",
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/paint_preview/buildflags",
     "//components/safe_browsing:buildflags",
     "//components/sync",
