@@ -433,11 +433,11 @@ static bool IsSubmitImage(Node* node) {
          html_input_element->type() == input_type_names::kImage;
 }
 
-bool EventHandler::UseHandCursor(Node* node, bool is_over_link) {
+bool EventHandler::UsesHandCursor(Node* node) {
   if (!node)
     return false;
 
-  return ((is_over_link || IsSubmitImage(node)) && !HasEditableStyle(*node));
+  return ((node->IsLink() || IsSubmitImage(node)) && !HasEditableStyle(*node));
 }
 
 void EventHandler::CursorUpdateTimerFired(TimerBase*) {

@@ -775,13 +775,12 @@ void WebViewImpl::ComputeScaleAndScrollForBlockRect(
       GetPage()->GetVisualViewport().ClampDocumentOffsetAtScale(scroll, scale);
 }
 
-static Node* FindCursorDefiningAncestor(Node* node, LocalFrame* frame) {
+static Node* FindCursorDefiningAncestor(Node* node) {
   // Go up the tree to find the node that defines a mouse cursor style
   while (node) {
     if (node->GetLayoutObject()) {
       ECursor cursor = node->GetLayoutObject()->Style()->Cursor();
-      if (cursor != ECursor::kAuto ||
-          frame->GetEventHandler().UseHandCursor(node, node->IsLink()))
+      if (cursor != ECursor::kAuto || EventHandler::UsesHandCursor(node))
         break;
     }
     node = LayoutTreeBuilderTraversal::Parent(*node);
@@ -790,14 +789,13 @@ static Node* FindCursorDefiningAncestor(Node* node, LocalFrame* frame) {
   return node;
 }
 
-static bool ShowsHandCursor(Node* node, LocalFrame* frame) {
+static bool ShowsHandCursor(Node* node) {
   if (!node || !node->GetLayoutObject())
     return false;
 
   ECursor cursor = node->GetLayoutObject()->Style()->Cursor();
   return cursor == ECursor::kPointer ||
-         (cursor == ECursor::kAuto &&
-          frame->GetEventHandler().UseHandCursor(node, node->IsLink()));
+         (cursor == ECursor::kAuto && EventHandler::UsesHandCursor(node));
 }
 
 // This is for tap (link) highlight and is tested in
@@ -826,12 +824,9 @@ Node* WebViewImpl::BestTapNode(
   if (HasEditableStyle(*best_touch_node))
     return nullptr;
 
-  Node* cursor_defining_ancestor = FindCursorDefiningAncestor(
-      best_touch_node, page->DeprecatedLocalMainFrame());
+  Node* cursor_defining_ancestor = FindCursorDefiningAncestor(best_touch_node);
   // We show a highlight on tap only when the current node shows a hand cursor
-  if (!cursor_defining_ancestor ||
-      !ShowsHandCursor(cursor_defining_ancestor,
-                       page->DeprecatedLocalMainFrame())) {
+  if (!cursor_defining_ancestor || !ShowsHandCursor(cursor_defining_ancestor)) {
     return nullptr;
   }
 
@@ -843,11 +838,9 @@ Node* WebViewImpl::BestTapNode(
   do {
     best_touch_node = cursor_defining_ancestor;
     cursor_defining_ancestor = FindCursorDefiningAncestor(
-        LayoutTreeBuilderTraversal::Parent(*best_touch_node),
-        page->DeprecatedLocalMainFrame());
+        LayoutTreeBuilderTraversal::Parent(*best_touch_node));
   } while (cursor_defining_ancestor &&
-           ShowsHandCursor(cursor_defining_ancestor,
-                           page->DeprecatedLocalMainFrame()));
+           ShowsHandCursor(cursor_defining_ancestor));
 
   // This happens in cases like:
   // <div style="display: contents; cursor: pointer">Text</div>.
