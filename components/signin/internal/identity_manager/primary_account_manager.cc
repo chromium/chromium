@@ -125,8 +125,13 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
   // It is important to only load credentials after starting to observe the
   // token service.
   token_service_->AddObserver(this);
-  token_service_->LoadCredentials(
-      GetPrimaryAccountId(signin::ConsentLevel::kSync));
+  signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(https://crbug.com/1196596): Use kSignin on all platforms.
+  if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade))
+    consent_level = signin::ConsentLevel::kSignin;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  token_service_->LoadCredentials(GetPrimaryAccountId(consent_level));
 }
 
 bool PrimaryAccountManager::IsInitialized() const {
@@ -398,8 +403,13 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
   if (token_service_->HasLoadCredentialsFinishedWithNoErrors()) {
     std::vector<AccountInfo> accounts_in_tracker_service =
         account_tracker_service_->GetAccounts();
-    const CoreAccountId sync_account_id =
-        GetPrimaryAccountId(signin::ConsentLevel::kSync);
+    signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(https://crbug.com/1196596): Use kSignin on all platforms.
+    if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade))
+      consent_level = signin::ConsentLevel::kSignin;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    const CoreAccountId sync_account_id = GetPrimaryAccountId(consent_level);
     for (const auto& account : accounts_in_tracker_service) {
       if (sync_account_id != account.account_id &&
           !token_service_->RefreshTokenIsAvailable(account.account_id)) {
