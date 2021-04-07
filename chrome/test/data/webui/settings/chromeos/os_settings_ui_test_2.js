@@ -215,7 +215,9 @@ suite('os-settings-ui', () => {
       isKioskModeActive: true,
     });
 
+    ui.remove();
     settings.Router.getInstance().resetRouteForTesting();
+    PolymerTest.clearBody();
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
     Polymer.dom.flush();
