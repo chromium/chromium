@@ -182,12 +182,19 @@
         }
 
         // The selection model has the single selection at this point.
+        // TODO(noel): not true; multiple selection is possible here too and
+        // handleOpenDefault_ contains code to deal with selection modes.
         // When using touchscreen, the selection should be cleared because
         // we don't want show the file selected when not in check-select
         // mode.
-        return this.handleOpenDefault(
+        // TODO(noel): remove clearSelectionAfterLaunch. No explaination on
+        // bug 742784 was it was needed needed to fix that bug, and it made
+        // touch interaction oddly different from touch-pad and mouse event
+        // interaction when calling handleOpenDefault_.
+        return this.handleOpenDefault_(
             event, true /* clearSelectionAfterLaunch */);
       }
+
       return false;
     });
   }
@@ -229,7 +236,7 @@
    * @private
    */
   onDoubleClick_(event) {
-    this.handleOpenDefault(event, false);
+    this.handleOpenDefault_(event, false);
   }
 
   /**
@@ -242,7 +249,7 @@
    * @return {boolean} true if successfully opened the item.
    * @private
    */
-  handleOpenDefault(event, clearSelectionAfterLaunch) {
+  handleOpenDefault_(event, clearSelectionAfterLaunch) {
     if (this.namingController_.isRenamingInProgress()) {
       // Don't pay attention to clicks during a rename.
       return false;
