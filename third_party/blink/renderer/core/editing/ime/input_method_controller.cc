@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/events/composition_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -61,7 +60,6 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/geometry/double_rect.h"
 
 namespace blink {
 
@@ -1513,12 +1511,7 @@ void InputMethodController::GetLayoutBounds(gfx::Rect* control_bounds,
   // Selection bounds are currently populated only for EditContext.
   // For editable elements we use GetCompositionCharacterBounds to fetch the
   // selection bounds.
-  const DOMRect* editable_rect = element->getBoundingClientRect();
-  const DoubleRect editable_rect_double(editable_rect->x(), editable_rect->y(),
-                                        editable_rect->width(),
-                                        editable_rect->height());
-  // Return the IntRect containing the given DOMRect.
-  *control_bounds = EnclosingIntRect(editable_rect_double);
+  *control_bounds = element->BoundsInViewport();
 }
 
 void InputMethodController::DidLayoutSubtree(

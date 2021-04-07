@@ -1801,6 +1801,46 @@ TEST_F(RenderViewImplTextInputStateChanged,
   EXPECT_EQ(1u, updated_states().size());
 }
 
+TEST_F(RenderViewImplTextInputStateChanged,
+       ActiveElementLayoutBoundsUpdatesDuringBrowserZoom) {
+  // Load an HTML page consisting of one input fields.
+  LoadHTML(R"HTML(
+      <input id='test' type='text'></input>
+    )HTML");
+  ClearState();
+  // Create an EditContext with control and selection bounds and set input
+  // panel policy to auto.
+  ExecuteJavaScriptForTests("document.getElementById('test').focus();");
+  // This RunLoop is waiting for focus to be processed for the active element.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop.QuitClosure());
+  run_loop.Run();
+  double zoom_level = blink::PageZoomFactorToZoomLevel(1.25);
+  // Change the zoom level to 125% and check if the view gets the change.
+  main_frame_widget()->SetZoomLevelForTesting(zoom_level);
+  // Update the IME status and verify if our IME backend sends an IPC message
+  // to notify layout bounds of the EditContext.
+  main_frame_widget()->UpdateTextInputState();
+  // This RunLoop is to flush the TextInputState update message.
+  base::RunLoop run_loop2;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop2.QuitClosure());
+  run_loop2.Run();
+  EXPECT_EQ(1u, updated_states().size());
+  blink::WebInputMethodController* controller =
+      frame()->GetWebFrame()->GetInputMethodController();
+  gfx::Rect expected_control_bounds;
+  gfx::Rect temp_selection_bounds;
+  controller->GetLayoutBounds(&expected_control_bounds, &temp_selection_bounds);
+  gfx::Rect expected_control_bounds_in_dips =
+      main_frame_widget()->BlinkSpaceToEnclosedDIPs(expected_control_bounds);
+  gfx::Rect actual_active_element_control_bounds(
+      updated_states()[0]->edit_context_control_bounds.value());
+  EXPECT_EQ(actual_active_element_control_bounds,
+            expected_control_bounds_in_dips);
+}
+
 TEST_F(RenderViewImplTextInputStateChanged, VirtualKeyboardPolicyAuto) {
   // Load an HTML page consisting of one input field.
   LoadHTML(

@@ -423,7 +423,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Stores the current control and selection bounds of |webwidget_|
   // that are used to position the candidate window during IME composition.
   // These are stored in DIPs if use-zoom-for-dsf is disabled and are relative
-  // to the widget
+  // to the root frame.
   gfx::Rect frame_control_bounds_;
   gfx::Rect frame_selection_bounds_;
 
