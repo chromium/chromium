@@ -24,6 +24,15 @@ namespace blink {
 namespace {
 
 class ImageDecoderTest : public testing::Test {
+ public:
+  ~ImageDecoderTest() override {
+    // Force GC before exiting since ImageDecoderExternal will create objects
+    // on background threads that will race with the next test's startup. See
+    // https://crbug.com/1196376
+    ThreadState::Current()->CollectAllGarbageForTesting();
+    base::RunLoop().RunUntilIdle();
+  }
+
  protected:
   ImageDecoderExternal* CreateDecoder(V8TestingScope* v8_scope,
                                       const char* file_name,
