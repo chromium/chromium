@@ -21,12 +21,6 @@ public interface SurfaceScopeDependencyProvider {
         return null;
     }
 
-    /** Returns the application context. */
-    @Nullable
-    default Context getApplicationContext() {
-        return null;
-    }
-
     /** Returns the activity context hosting the surface. */
     @Nullable
     default Context getActivityContext() {
@@ -83,9 +77,26 @@ public interface SurfaceScopeDependencyProvider {
         return AutoplayPreference.AUTOPLAY_DISABLED;
     }
 
-    /** Returns the video player to play a specific video. */
-    @Nullable
-    default WebVideoPlayer createWebVideoPlayer(String videoId, String webPlayerUrl) {
-        return null;
+    /** Events that are triggered during the video auto-play. */
+    public enum AutoplayEvent {
+        /**
+         * Auto-play is triggered, but not started yet. This occurs when the video card becomes
+         * fully visible.
+         */
+        AUTOPLAY_REQUESTED,
+        /** The player starts to auto-play the video. */
+        AUTOPLAY_STARTED,
+        /**
+         * Auto-play stops before reaching the end. This occurs when the video card becomes
+         * partially visible or invisible.
+         */
+        AUTOPLAY_STOPPED,
+        /** Auto-play reaches the end. */
+        AUTOPLAY_ENDED,
+        /** User clicks on the auto-play video. */
+        AUTOPLAY_CLICKED,
     }
+
+    /** Reports the event related to video auto-play. */
+    default void reportAutoplayEvent(AutoplayEvent event) {}
 }

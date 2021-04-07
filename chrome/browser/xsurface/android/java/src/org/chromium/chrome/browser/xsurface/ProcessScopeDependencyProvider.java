@@ -89,4 +89,8 @@ public interface ProcessScopeDependencyProvider {
     default boolean isXsurfaceUsageAndCrashReportingEnabled() {
         return false;
     }
+
+    default boolean isStableChannel() {
+        return false;
+    }
 }
