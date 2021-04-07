@@ -58,6 +58,7 @@ source_set("incognito_reauth_scene_agent") {
     ":incognito_reauth_ui",
     ":incognito_reauth_util",
     "//base",
+    "//base/ios",
     "//components/pref_registry",
     "//components/prefs",
     "//ios/chrome/app/strings:ios_strings_grit",

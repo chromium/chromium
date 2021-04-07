@@ -1219,8 +1219,6 @@ component("base") {
     sources += [
       "critical_closure_internal_ios.mm",
       "ios/block_types.h",
-      "ios/crb_protocol_observers.h",
-      "ios/crb_protocol_observers.mm",
       "ios/device_util.h",
       "ios/device_util.mm",
       "ios/ios_util.h",
@@ -2765,10 +2763,15 @@ if (build_base_unittests) {
   if (is_apple) {
     source_set("base_unittests_arc") {
       testonly = true
-      sources = [ "mac/bind_objc_block_unittest_arc.mm" ]
+      sources = [
+        "ios/crb_protocol_observers_unittest.mm",
+        "mac/bind_objc_block_unittest_arc.mm",
+      ]
       configs += [ "//build/config/compiler:enable_arc" ]
       deps = [
         ":base",
+        "//base/ios",
+        "//base/test:test_support",
         "//testing/gtest",
       ]
     }
@@ -3366,7 +3369,6 @@ if (build_base_unittests) {
 
     if (is_ios) {
       sources += [
-        "ios/crb_protocol_observers_unittest.mm",
         "ios/device_util_unittest.mm",
         "ios/weak_nsobject_unittest.mm",
         "message_loop/message_pump_io_ios_unittest.cc",

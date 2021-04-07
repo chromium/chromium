@@ -60,6 +60,7 @@ source_set("eg_test_support+eg2") {
 
   deps = [
     "//base",
+    "//base/ios",
     "//components/variations",
     "//ios/third_party/earl_grey2:test_lib",
     "//ios/third_party/edo",

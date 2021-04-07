@@ -83,6 +83,7 @@ source_set("scene") {
     ":observing_scene_agent",
     ":scene_testing",
     "//base",
+    "//base/ios",
     "//components/infobars/core",
     "//components/previous_session_info",
     "//components/signin/public/identity_manager",

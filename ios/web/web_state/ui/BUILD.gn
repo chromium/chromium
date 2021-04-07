@@ -10,6 +10,7 @@ source_set("ui") {
     ":crw_web_view_navigation_proxy",
     ":web_view_handler",
     "//base",
+    "//base/ios",
     "//ios/net",
     "//ios/third_party/webkit",
     "//ios/web:core",
