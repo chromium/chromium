@@ -14,7 +14,7 @@ import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/
 import {EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_SIDE_PADDING_PX, EMOJI_PICKER_TOP_PADDING_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, GROUP_ICON_SIZE, GROUP_PER_ROW} from './constants.js';
 import {EmojiButton} from './emoji_button.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
-import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
+import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
 import {RecentEmojiStore} from './store.js';
 import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants} from './types.js';
 
@@ -158,7 +158,8 @@ export class EmojiPicker extends PolymerElement {
         EMOJI_BUTTON_CLICK,
         ev => this.insertEmoji(
             ev.detail.emoji, ev.detail.isVariant, ev.detail.baseEmoji));
-
+    this.addEventListener(
+        EMOJI_CLEAR_RECENTS_CLICK, ev => this.clearRecentEmoji());
     // variant popup related handlers
     this.addEventListener(
         EMOJI_VARIANTS_SHOWN,
@@ -222,6 +223,11 @@ export class EmojiPicker extends PolymerElement {
           makeRecentlyUsed(this.recentEmojiStore.data.history));
     }
     this.apiProxy_.insertEmoji(emoji, isVariant);
+  }
+
+  clearRecentEmoji() {
+    this.set(['history', 'emoji'], makeRecentlyUsed([]));
+    this.recentEmojiStore.clearRecents();
   }
 
   /**

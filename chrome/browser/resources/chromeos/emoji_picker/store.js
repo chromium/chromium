@@ -50,6 +50,11 @@ export class RecentEmojiStore {
     return this.data.preference;
   }
 
+  clearRecents() {
+    this.data.history = [];
+    save(this.data);
+  }
+
   /**
    * Moves the given emoji to the front of the MRU list, inserting it if
    * it did not previously exist.

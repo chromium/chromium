@@ -6,6 +6,7 @@ import './emoji_button.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK} from './events.js';
 import {EmojiGroup} from './types.js';
 
 class EmojiGroupComponent extends PolymerElement {
@@ -41,6 +42,13 @@ class EmojiGroupComponent extends PolymerElement {
   onClearClick(ev) {
     ev.preventDefault();
     this.showClearRecents = true;
+    console.error('clear clicked');
+  }
+
+  onClearRecentsClick(ev) {
+    ev.preventDefault();
+    this.showClearRecents = false;
+    this.dispatchEvent(createCustomEvent(EMOJI_CLEAR_RECENTS_CLICK, {}));
   }
 }
 

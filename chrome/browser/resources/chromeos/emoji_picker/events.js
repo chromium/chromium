@@ -31,6 +31,13 @@ export let EmojiDataLoadedEvent;
 export const EMOJI_DATA_LOADED = 'emoji-data-loaded';
 
 /**
+ * @typedef {!CustomEvent}
+ */
+export let EmojiClearRecentClickEvent;
+
+export const EMOJI_CLEAR_RECENTS_CLICK = 'emoji-clear-recents-click';
+
+/**
  * Constructs a CustomEvent with the given event type and details.
  * The event will bubble up through elements and components.
  *
