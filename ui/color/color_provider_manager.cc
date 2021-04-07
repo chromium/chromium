@@ -42,7 +42,10 @@ base::Optional<GlobalManager>& GetGlobalManager() {
 
 }  // namespace
 
-ColorProviderManager::ColorProviderManager() = default;
+ColorProviderManager::ColorProviderManager() {
+  ResetColorProviderInitializerList();
+}
+
 ColorProviderManager::~ColorProviderManager() = default;
 
 // static
@@ -51,7 +54,7 @@ ColorProviderManager& ColorProviderManager::Get() {
   if (!manager.has_value()) {
     manager.emplace();
 #if !defined(OS_ANDROID)
-    manager.value().SetColorProviderInitializer(base::BindRepeating(
+    manager.value().AppendColorProviderInitializer(base::BindRepeating(
         [](ColorProvider* provider, ColorProviderManager::ColorMode color_mode,
            ColorProviderManager::ContrastMode contrast_mode) {
           const bool dark_mode =
@@ -83,24 +86,35 @@ void ColorProviderManager::ResetForTesting() {
   GetGlobalManager().reset();
 }
 
-void ColorProviderManager::SetColorProviderInitializer(
-    ColorProviderInitializer initializer) {
-  DCHECK(initializer_.is_null());
-  DCHECK(color_providers_.empty());
-  initializer_ = std::move(initializer);
+void ColorProviderManager::ResetColorProviderInitializerList() {
+  if (!color_providers_.empty())
+    color_providers_.clear();
+  initializer_list_ = std::make_unique<ColorProviderInitializerList>();
+  initializer_subscriptions_.clear();
+}
+
+void ColorProviderManager::AppendColorProviderInitializer(
+    ColorProviderInitializerList::CallbackType initializer) {
+  DCHECK(initializer_list_);
+  if (!color_providers_.empty())
+    color_providers_.clear();
+
+  initializer_subscriptions_.push_back(
+      initializer_list_->Add(std::move(initializer)));
 }
 
 ColorProvider* ColorProviderManager::GetColorProviderFor(ColorProviderKey key) {
   auto iter = color_providers_.find(key);
   if (iter == color_providers_.end()) {
     auto provider = std::make_unique<ColorProvider>();
-    if (!initializer_.is_null()) {
+    DCHECK(initializer_list_);
+    if (!initializer_list_->empty()) {
       DVLOG(2) << "ColorProviderManager: Initializing Color Provider"
                << " - ColorMode: " << ColorModeName(std::get<ColorMode>(key))
                << " - ContrastMode: "
                << ContrastModeName(std::get<ContrastMode>(key));
-      initializer_.Run(provider.get(), std::get<ColorMode>(key),
-                       std::get<ContrastMode>(key));
+      initializer_list_->Notify(provider.get(), std::get<ColorMode>(key),
+                                std::get<ContrastMode>(key));
     }
 
     iter = color_providers_.emplace(key, std::move(provider)).first;

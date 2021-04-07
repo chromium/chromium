@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "ui/base/glib/scoped_gobject.h"
+#include "ui/color/color_id.h"
 #include "ui/gtk/gtk_buildflags.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/native_theme/native_theme.h"
@@ -31,6 +32,10 @@ class KeyEvent;
 }
 
 namespace gtk {
+
+extern const char kGtkCSSMenu[];
+extern const char kGtkCSSMenuItem[];
+extern const char kGtkCSSMenuScrollbar[];
 
 COMPONENT_EXPORT(GTK)
 void GtkInitFromCommandLine(const base::CommandLine& command_line);
@@ -242,6 +247,9 @@ float GetDeviceScaleFactor();
 
 // This should only be called on Gtk4.
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
+
+// Gets the GTK theme color for a given `color_id`.
+base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id);
 
 }  // namespace gtk
 

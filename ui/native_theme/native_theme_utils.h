@@ -6,6 +6,7 @@
 #define UI_NATIVE_THEME_NATIVE_THEME_UTILS_H_
 
 #include "base/strings/string_piece.h"
+#include "ui/color/color_id.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_export.h"
 
@@ -22,6 +23,10 @@ NativeThemeColorIdName(NativeTheme::ColorId color_id);
 // Converts NativeTheme::ColorScheme.
 base::StringPiece NATIVE_THEME_EXPORT
 NativeThemeColorSchemeName(NativeTheme::ColorScheme color_scheme);
+
+// Converts a NativeTheme::ColorId to a ColorPipeline ColorId.
+base::Optional<ColorId> NATIVE_THEME_EXPORT
+NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id);
 
 }  // namespace ui
 

@@ -171,6 +171,8 @@
   E(kColorTabForegroundSelected, \
     NativeTheme::kColorId_TabTitleColorActive) \
   E(kColorTableBackground, NativeTheme::kColorId_TableBackground) \
+  E(kColorTableBackgroundAlternate, \
+    NativeTheme::kColorId_TableBackgroundAlternate) \
   E(kColorTableBackgroundSelectedFocused, \
     NativeTheme::kColorId_TableSelectionBackgroundFocused) \
   E(kColorTableBackgroundSelectedUnfocused, \
@@ -256,20 +258,10 @@
   E(kColorNativeWindowText, COLOR_WINDOWTEXT)
 #endif
 
-#if defined(OS_APPLE)
-#define MACOSX_COLOR_IDS \
-  E(kColorTableBackgroundAlternate, \
-    NativeTheme::kColorId_TableBackgroundAlternate)
-#endif
-
 #if defined(OS_WIN)
 #define COLOR_IDS \
   CROSS_PLATFORM_COLOR_IDS \
   WIN_COLOR_IDS
-#elif defined(OS_APPLE)
-#define COLOR_IDS \
-  CROSS_PLATFORM_COLOR_IDS \
-  MACOSX_COLOR_IDS
 #else
 #define COLOR_IDS CROSS_PLATFORM_COLOR_IDS
 #endif
