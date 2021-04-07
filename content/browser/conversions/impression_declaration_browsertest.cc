@@ -593,49 +593,6 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_EQ(1UL, second_impression_observer.Wait().impression_data);
 }
 
-IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
-                       WindowOpenImpression_ImpressionReceived) {
-  ImpressionObserver impression_observer(web_contents());
-  GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  // Navigate the page using window.open and set an impression.
-  EXPECT_TRUE(ExecJs(web_contents(), R"(
-    window.open("https://a.com", "_top", "",
-               {impressionData: "1", conversionDestination: "https://a.com",
-                reportingOrigin: "https://report.com", impressionExpiry: 1000});)"));
-
-  // Wait for the impression to be seen by the observer.
-  blink::Impression last_impression = impression_observer.Wait();
-
-  // Verify the attributes of the impression are set as expected.
-  EXPECT_EQ(1UL, last_impression.impression_data);
-  EXPECT_EQ(url::Origin::Create(GURL("https://a.com")),
-            last_impression.conversion_destination);
-  EXPECT_EQ(url::Origin::Create(GURL("https://report.com")),
-            last_impression.reporting_origin);
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000), *last_impression.expiry);
-}
-
-IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
-                       WindowOpenNoUserGesture_NoImpression) {
-  ImpressionObserver impression_observer(web_contents());
-  GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  // Navigate the page using window.open and set an impression, but do not give
-  // a user gesture.
-  EXPECT_TRUE(ExecJs(web_contents(), R"(
-    window.open("https://a.com", "_top", "",
-               {impressionData: "1", conversionDestination: "https://a.com",
-                reportingOrigin: "https://report.com", impressionExpiry: 1000});)",
-                     EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  EXPECT_TRUE(impression_observer.WaitForNavigationWithNoImpression());
-}
-
 IN_PROC_BROWSER_TEST_F(
     ImpressionDeclarationBrowserTest,
     ImpressionTagNavigatesCurrentFrame_ImpressionPageMetrics) {

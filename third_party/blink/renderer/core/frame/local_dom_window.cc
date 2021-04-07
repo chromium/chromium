@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_impression_params.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
@@ -1923,15 +1922,6 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
                                 const String& url_string,
                                 const AtomicString& target,
                                 const String& features,
-                                ExceptionState& exception_state) {
-  return open(isolate, url_string, target, features,
-              nullptr /* impression_params */, exception_state);
-}
-
-DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
-                                const String& url_string,
-                                const AtomicString& target,
-                                const String& features,
                                 bool unused,
                                 ExceptionState& exception_state) {
   UseCounter::Count(this, WebFeature::kWindowOpenWithAdditionalBoolParameter);
@@ -1942,24 +1932,14 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
       "exception in a future release.");
 
   // Ignore the unused bool argument.
-  return open(isolate, url_string, target, features,
-              nullptr /* impression_params */, exception_state);
+  return open(isolate, url_string, target, features, exception_state);
 }
 
 DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
                                 const String& url_string,
                                 const AtomicString& target,
                                 const String& features,
-                                const ImpressionParams* impression_params,
                                 ExceptionState& exception_state) {
-  if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(this)) {
-    // The usage of `impression_params` is gated on a runtime enabled feature
-    // in the implementation rather than in the IDL definition, because the
-    // RuntimeEnabled extended attribute cannot be used with an operation
-    // overload.
-    impression_params = nullptr;
-  }
-
   LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
   LocalDOMWindow* entered_window = EnteredDOMWindow(isolate);
 
@@ -2018,13 +1998,6 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   bool has_user_gesture = LocalFrame::HasTransientUserActivation(GetFrame());
   frame_request.GetResourceRequest().SetHasUserGesture(has_user_gesture);
   GetFrame()->MaybeLogAdClickNavigation();
-
-  if (has_user_gesture && impression_params) {
-    base::Optional<WebImpression> impression =
-        GetImpressionForParams(incumbent_window, impression_params);
-    if (impression)
-      frame_request.SetImpression(*impression);
-  }
 
   FrameTree::FindResult result =
       GetFrame()->Tree().FindOrCreateFrameForNavigation(

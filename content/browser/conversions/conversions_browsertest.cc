@@ -191,7 +191,15 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
       ExecJs(web_contents(), JsReplace("registerConversionForOrigin(7, $1)",
                                        url::Origin::Create(impression_url))));
 
-  EXPECT_EQ(expected_report.expected_url, expected_report.WaitForRequestUrl());
+  // TODO(johnidel): This API surface was removed due to
+  // https://crbug.com/1187881. This test should be updated to verify the
+  // behavior with the new surface.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(),
+      base::TimeDelta::FromMilliseconds(100));
+  run_loop.Run();
+  EXPECT_FALSE(expected_report.HasRequest());
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
