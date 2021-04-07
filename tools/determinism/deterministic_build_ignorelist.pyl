@@ -19,14 +19,9 @@
   ],
 
   'fuchsia': [
-    # crbug.com/1190355
-    'gen/content/shell/content_shell/ids.txt',
-    'gen/third_party/devtools-frontend/src/front_end/legacy_test_runner/legacy_test_runner-source-tsconfig.json.tsbuildinfo',
   ],
 
   'linux': [
-    # crbug.com/1190355
-    'gen/third_party/devtools-frontend/src/front_end/legacy_test_runner/legacy_test_runner-source-tsconfig.json.tsbuildinfo',
 
     # https://crbug.com/1047205
     'nacl_test_data/extension_vcache_test/glibc/extension_validation_cache_libs/lib64/libppapi_cpp_lib.so',
@@ -77,9 +72,6 @@
   ],
 
   'linux_component': [
-    # crbug.com/1190355
-    'gen/third_party/devtools-frontend/src/front_end/legacy_test_runner/legacy_test_runner-source-tsconfig.json.tsbuildinfo',
-
     # https://crbug.com/954056
     'nacl_test_data/nonsfi/irt_exception_test_pnacl_newlib_x32_nonsfi.nexe',
     'nacl_test_data/nonsfi/irt_manifest_file_pnacl_newlib_x32_nonsfi.nexe',
@@ -135,9 +127,6 @@
 
   # https://crbug.com/330260
   'win': [
-    # crbug.com/1190355
-    'gen/third_party/devtools-frontend/src/front_end/legacy_test_runner/legacy_test_runner-source-tsconfig.json.tsbuildinfo',
-
     # https://crbug.com/1008035
     'ppapi_nacl_tests_pnacl_newlib_x32.nexe',
     'ppapi_nacl_tests_pnacl_newlib_x64.nexe',
