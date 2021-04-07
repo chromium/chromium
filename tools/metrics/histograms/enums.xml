@@ -74744,6 +74744,24 @@ would be helpful to identify which type is being sent.
   <int value="4" label="Launch incognito"/>
   <int value="5" label="Translate"/>
   <int value="6" label="Update Chrome"/>
+  <int value="7" label="Run Chrome safety check"/>
+  <int value="8" label="Manage security settings"/>
+  <int value="9" label="Manage cookies"/>
+  <int value="10" label="Manage addresses"/>
+  <int value="11" label="Manage sync"/>
+  <int value="12" label="Manage site settings"/>
+  <int value="13" label="Create Google doc"/>
+  <int value="14" label="Create Google sheet"/>
+  <int value="15" label="Create Google slide"/>
+  <int value="16" label="Create Google calendar event"/>
+  <int value="17" label="Create Google site"/>
+  <int value="18" label="Create Google keep note"/>
+  <int value="19" label="Create Google form"/>
+  <int value="20" label="Compose email in Gmail"/>
+  <int value="21" label="See Chrome tips"/>
+  <int value="22" label="Manage Google account"/>
+  <int value="23" label="Clear YouTube history"/>
+  <int value="24" label="Change Google password"/>
 </enum>
 
 <enum name="SuggestionsResponseState">

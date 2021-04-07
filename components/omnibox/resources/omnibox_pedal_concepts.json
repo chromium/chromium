@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-04-07T18:10:31.198Z",
+  "time_generated": "2021-04-07T21:50:47.168Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -6671,7 +6671,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "google chrome",
@@ -6717,24 +6717,16 @@
           "groups": [
             {
               "required": true,
-              "single": true,
-              "synonyms": [
-                "browsing",
-                "manage",
-                "browse",
-                "change",
-                "alter",
-                "use"
-              ]
-            },
-            {
-              "required": false,
-              "single": true,
+              "single": false,
               "synonyms": [
                 "google chrome",
+                "browsing",
                 "browser",
                 "chrome",
-                "google"
+                "google",
+                "browse",
+                "change",
+                "manage"
               ]
             },
             {
@@ -6748,8 +6740,15 @@
                 "certificates",
                 "secure dns",
                 "securely",
-                "safely",
-                "safe"
+                "safely"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "alter",
+                "use"
               ]
             }
           ],
@@ -6772,32 +6771,26 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "allow all",
-                "disallow",
-                "control",
-                "manage",
-                "block",
-                "allow",
-                "alter",
-                "use"
-              ]
-            },
-            {
-              "required": true,
-              "single": true,
-              "synonyms": [
+                "cookie settings",
                 "do not track",
                 "cookies"
               ]
             },
             {
-              "required": false,
-              "single": true,
+              "required": true,
+              "single": false,
               "synonyms": [
                 "google chrome",
+                "disallow",
                 "browser",
+                "control",
                 "google",
-                "chrome"
+                "chrome",
+                "manage",
+                "block",
+                "allow",
+                "alter",
+                "use"
               ]
             },
             {
@@ -6811,7 +6804,9 @@
           ],
           "cover_cases": [
             "manage cookies",
-            "disallow all third-party cookies"
+            "disallow all third-party cookies",
+            "manage cookie settings",
+            "chrome cookie settings"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -6843,6 +6838,7 @@
               "required": true,
               "single": true,
               "synonyms": [
+                "shipping addresses",
                 "shipping address",
                 "new address",
                 "addresses",
@@ -6879,36 +6875,33 @@
               "required": true,
               "single": true,
               "synonyms": [
+                "sync settings",
+                "sync"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "google chrome",
                 "customize",
+                "browser",
                 "control",
                 "disable",
+                "chrome",
+                "google",
                 "manage",
                 "adjust",
                 "change",
                 "edit",
                 "add"
               ]
-            },
-            {
-              "required": true,
-              "single": true,
-              "synonyms": [
-                "sync"
-              ]
-            },
-            {
-              "required": false,
-              "single": true,
-              "synonyms": [
-                "google chrome",
-                "browser",
-                "chrome",
-                "google"
-              ]
             }
           ],
           "cover_cases": [
-            "manage sync"
+            "manage sync",
+            "edit sync settings",
+            "change chrome browser sync settings"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7407,10 +7400,7 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "control google account",
-                "manage google account",
-                "adjust google account",
-                "fix google account"
+                "google account"
               ]
             },
             {
@@ -7419,6 +7409,16 @@
               "synonyms": [
                 "browser",
                 "chrome"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "control",
+                "manage",
+                "adjust",
+                "fix"
               ]
             }
           ],
@@ -7475,11 +7475,10 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "account password change",
-                "change google password",
-                "change gmail password",
-                "google reset password",
-                "gmail reset password"
+                "google account password",
+                "gmail account password",
+                "google password",
+                "gmail password"
               ]
             },
             {
@@ -7490,9 +7489,20 @@
                 "chrome",
                 "google"
               ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "change",
+                "reset"
+              ]
             }
           ],
-          "cover_cases": [],
+          "cover_cases": [
+            "google password change",
+            "reset gmail account password"
+          ],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Change Google password",
