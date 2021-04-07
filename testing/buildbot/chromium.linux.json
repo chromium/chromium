@@ -3006,6 +3006,9 @@
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_browsertests/"
       },
       {
+        "args": [
+          "--child-arg=--vmodule=test_navigation_listener=1"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4198,6 +4201,9 @@
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_browsertests/"
       },
       {
+        "args": [
+          "--child-arg=--vmodule=test_navigation_listener=1"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

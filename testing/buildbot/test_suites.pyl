@@ -1730,7 +1730,11 @@
       'web_engine_browsertests': {
         'mixins': ['fuchsia_runner_logs'],
       },
-      'web_engine_integration_tests': {},
+      'web_engine_integration_tests': {
+        'args': [
+          '--child-arg=--vmodule=test_navigation_listener=1',
+        ],
+      },
       'web_engine_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
