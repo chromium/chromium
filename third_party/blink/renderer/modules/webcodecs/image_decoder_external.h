@@ -83,6 +83,8 @@ class MODULES_EXPORT ImageDecoderExternal final
   void DecodeMetadata();
   void OnMetadata(ImageDecoderCore::ImageMetadata metadata);
 
+  void SetFailed();
+
   Member<ScriptState> script_state_;
 
   // Used when a ReadableStream is provided.

@@ -440,9 +440,7 @@ void ImageDecoderExternal::OnDecodeReady(
   --num_submitted_decodes_;
 
   if (result->status == ImageDecoderCore::Status::kDecodeError || failed_) {
-    failed_ = true;
-    decode_weak_factory_.InvalidateWeakPtrs();
-    MaybeSatisfyPendingDecodes();
+    SetFailed();
     return;
   }
 
@@ -504,8 +502,7 @@ void ImageDecoderExternal::OnMetadata(
 
   data_complete_ = metadata.data_complete;
   if (metadata.failed || failed_) {
-    failed_ = true;
-    MaybeSatisfyPendingMetadataDecodes();
+    SetFailed();
     return;
   }
 
@@ -542,6 +539,14 @@ void ImageDecoderExternal::OnMetadata(
   }
 
   MaybeSatisfyPendingMetadataDecodes();
+}
+
+void ImageDecoderExternal::SetFailed() {
+  DVLOG(1) << __func__;
+  failed_ = true;
+  decode_weak_factory_.InvalidateWeakPtrs();
+  MaybeSatisfyPendingMetadataDecodes();
+  MaybeSatisfyPendingDecodes();
 }
 
 }  // namespace blink
