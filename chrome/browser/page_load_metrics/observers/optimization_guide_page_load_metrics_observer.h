@@ -18,8 +18,6 @@ class OptimizationGuidePageLoadMetricsObserver
   ~OptimizationGuidePageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
-  void OnFirstContentfulPaintInPage(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnHidden(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnComplete(

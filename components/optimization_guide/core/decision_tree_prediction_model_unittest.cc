@@ -76,9 +76,6 @@ TEST(DecisionTreePredictionModel, ValidDecisionTreeModel) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -109,9 +106,6 @@ TEST(DecisionTreePredictionModel, InequalityLessThan) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -142,9 +136,6 @@ TEST(DecisionTreePredictionModel, InequalityGreaterOrEqual) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -175,9 +166,6 @@ TEST(DecisionTreePredictionModel, InequalityGreaterThan) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -208,9 +196,6 @@ TEST(DecisionTreePredictionModel, MissingInequalityTest) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -228,9 +213,6 @@ TEST(DecisionTreePredictionModel, NoDecisionTreeThreshold) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -248,9 +230,6 @@ TEST(DecisionTreePredictionModel, EmptyTree) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -268,9 +247,6 @@ TEST(DecisionTreePredictionModel, ModelFeatureNotInFeatureMap) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -292,9 +268,6 @@ TEST(DecisionTreePredictionModel, DecisionTreeMissingLeaf) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -317,9 +290,6 @@ TEST(DecisionTreePredictionModel, DecisionTreeLeftChildIndexInvalid) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -342,9 +312,6 @@ TEST(DecisionTreePredictionModel, DecisionTreeRightChildIndexInvalid) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -381,9 +348,6 @@ TEST(DecisionTreePredictionModel, DecisionTreeWithLoopOnLeftChild) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -420,9 +384,6 @@ TEST(DecisionTreePredictionModel, DecisionTreeWithLoopOnRightChild) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -437,9 +398,6 @@ TEST(DecisionTreePredictionModel, ValidEnsembleModel) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
@@ -466,9 +424,6 @@ TEST(DecisionTreePredictionModel, EnsembleWithNoMembers) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =

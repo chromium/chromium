@@ -10232,6 +10232,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="PainfulPageLoadModelPredictionScore">
+    <obsolete>
+      Obsolete as of 04/2021.
+    </obsolete>
     <summary>
       The score output after evaluating the painful page load model. If
       populated, this is 100x the fractional value output by the model
@@ -10239,30 +10242,45 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="PainfulPageLoadModelVersion">
+    <obsolete>
+      Obsolete as of 04/2021.
+    </obsolete>
     <summary>
       The server-generated version of the painful page load model that was
       evaluated for the page load.
     </summary>
   </metric>
   <metric name="PredictionModelFeatureEffectiveConnectionType">
+    <obsolete>
+      Obsolete as of 04/2021.
+    </obsolete>
     <summary>
       The |net::EffectiveConnectionType| at the time a prediction was requested.
       Recorded once per page load.
     </summary>
   </metric>
   <metric name="PredictionModelFeatureIsSameOriginNavigation">
+    <obsolete>
+      Obsolete as of 04/2021.
+    </obsolete>
     <summary>
       Whether the current navigatation is the same origin as the previous one at
       the time a prediction was requested. Recorded once per page load.
     </summary>
   </metric>
   <metric name="PredictionModelFeatureNavigationToFCPSessionMean">
+    <obsolete>
+      Obsolete as of 04/2021.
+    </obsolete>
     <summary>
       The average navigation to first contentful paint for the current session
       at the time a prediction was requested. Recorded once per page load.
     </summary>
   </metric>
   <metric name="PredictionModelFeatureNavigationToFCPSessionStdDev">
+    <obsolete>
+      Obsolete as of 04/2021.
+    </obsolete>
     <summary>
       The standard deviation of navigation to first contentful paint for page
       loads in the current session at the time a prediction was requested.
@@ -10270,18 +10288,27 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="PredictionModelFeaturePageTransition">
+    <obsolete>
+      Obsolete as of 04/2021.
+    </obsolete>
     <summary>
       The |ui::PageTransition| of the current navigation at the time a
       prediction was requested. Recorded once per page load.
     </summary>
   </metric>
   <metric name="PredictionModelFeaturePreviousPageLoadNavigationToFCP">
+    <obsolete>
+      Obsolete as of 04/2021.
+    </obsolete>
     <summary>
       The navigation to to first contentful paint for the previous page load at
       the time a prediction was requested. Recorded once per page load.
     </summary>
   </metric>
   <metric name="PredictionModelFeatureSiteEngagementScore">
+    <obsolete>
+      Obsolete as of 04/2021.
+    </obsolete>
     <summary>
       The site engagement score of the host of the current navigation at the
       time a prediction was requested. Recorded once per page load.

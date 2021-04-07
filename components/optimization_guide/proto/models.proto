@@ -193,18 +193,12 @@ message PredictionModel {
 
 //  Metadata for a prediction model for a specific optimization target.
 message ModelInfo {
+  reserved 3;
+
   // The optimization target for which the model predicts.
   optional OptimizationTarget optimization_target = 1;
   // The version of the model, which is specific to the optimization target.
   optional int64 version = 2;
-  // The set of model features that are supported by the model.
-  //
-  // If in the request, this represents the set of features that the client
-  // understands how to evaluate. If in the response, this represents the set
-  // of features referenced by the model.
-  //
-  // New use cases should use the model_metadata field instead.
-  repeated ClientModelFeature supported_model_features = 3 [deprecated = true];
   // The set of model types the requesting client can use to make predictions.
   repeated ModelType supported_model_types = 4;
   // The set of host model features that are referenced by the model.
@@ -230,30 +224,6 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_LANGUAGE_DETECTION = 2;
   // Target for determining topics present on a page.
   OPTIMIZATION_TARGET_PAGE_TOPICS = 3;
-}
-
-// The features that only the client can compute during prediction and also
-// knows how to evaluate.
-enum ClientModelFeature {
-  CLIENT_MODEL_FEATURE_UNKNOWN = 0;
-  // The effective connection type for the page load.
-  CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE = 1;
-  // How the current page load transitioned from the previous one.
-  CLIENT_MODEL_FEATURE_PAGE_TRANSITION = 2;
-  // The site engagement score of the main frame host for the page load.
-  CLIENT_MODEL_FEATURE_SITE_ENGAGEMENT_SCORE = 3;
-  // Whether the origin for the page load matches the origin of the previous
-  // page load.
-  CLIENT_MODEL_FEATURE_SAME_ORIGIN_NAVIGATION = 4;
-  // The mean of the duration from navigation to first contentful paint for the
-  // session.
-  CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_SESSION_MEAN = 5;
-  // The standard deviation of the duration from navigation to first
-  // contentful paint for the session.
-  CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_SESSION_STANDARD_DEVIATION = 6;
-  // The duration from navigation to first contentful paint for the previous
-  // page load, if applicable.
-  CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_PREVIOUS_PAGE_LOAD = 7;
 }
 
 // The types of models that can be evaluated.

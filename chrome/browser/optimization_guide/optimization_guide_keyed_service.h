@@ -62,8 +62,6 @@ class OptimizationGuideKeyedService
   void ShouldTargetNavigationAsync(
       content::NavigationHandle* navigation_handle,
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const base::flat_map<optimization_guide::proto::ClientModelFeature,
-                           float>& client_model_feature_values,
       optimization_guide::OptimizationGuideTargetDecisionCallback callback)
       override;
   void AddObserverForOptimizationTargetModel(
@@ -135,9 +133,6 @@ class OptimizationGuideKeyedService
 
   // Clears data specific to the user.
   void ClearData();
-
-  // Updates |prediction_manager_| with the provided fcp value.
-  void UpdateSessionFCP(base::TimeDelta fcp);
 
   // KeyedService implementation:
   void Shutdown() override;

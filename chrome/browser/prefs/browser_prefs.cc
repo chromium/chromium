@@ -533,6 +533,12 @@ const char kPinnedExtensionsMigrationComplete[] =
 const char kRunAllFlashInAllowMode[] = "plugins.run_all_flash_in_allow_mode";
 #endif
 
+// Deprecated 04/2021.
+const char kSessionStatisticFCPMean[] =
+    "optimization_guide.session_statistic.fcp_mean";
+const char kSessionStatisticFCPStdDev[] =
+    "optimization_guide.session_statistic.fcp_std_dev";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -644,6 +650,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(prefs::kMediaFeedsSafeSearchEnabled, false);
   registry->RegisterBooleanPref(prefs::kMediaFeedsAutoSelectEnabled, false);
 #endif
+
+  registry->RegisterDoublePref(kSessionStatisticFCPStdDev, -1.0f);
+  registry->RegisterDoublePref(kSessionStatisticFCPMean, -1.0f);
 }
 
 }  // namespace
@@ -1327,6 +1336,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(prefs::kMediaFeedsSafeSearchEnabled);
   profile_prefs->ClearPref(prefs::kMediaFeedsAutoSelectEnabled);
 #endif
+  // Added 04/2021.
+  profile_prefs->ClearPref(kSessionStatisticFCPMean);
+  profile_prefs->ClearPref(kSessionStatisticFCPStdDev);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

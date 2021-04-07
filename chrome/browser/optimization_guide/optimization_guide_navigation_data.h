@@ -68,46 +68,6 @@ class OptimizationGuideNavigationData {
     registered_optimization_targets_ = registered_optimization_targets;
   }
 
-  // Returns the latest decision made for |optimmization_target|.
-  base::Optional<optimization_guide::OptimizationTargetDecision>
-  GetDecisionForOptimizationTarget(
-      optimization_guide::proto::OptimizationTarget optimization_target) const;
-  // Sets the |decision| for |optimization_target|.
-  void SetDecisionForOptimizationTarget(
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      optimization_guide::OptimizationTargetDecision decision);
-
-  // Returns the version of the model evaluated for |optimization_target|.
-  base::Optional<int64_t> GetModelVersionForOptimizationTarget(
-      optimization_guide::proto::OptimizationTarget optimization_target) const;
-  // Sets the |model_version| for |optimization_target|.
-  void SetModelVersionForOptimizationTarget(
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      int64_t model_version);
-
-  // Returns the prediction score of the model evaluated for
-  // |optimization_target|.
-  base::Optional<double> GetModelPredictionScoreForOptimizationTarget(
-      optimization_guide::proto::OptimizationTarget optimization_target) const;
-  // Sets the |model_prediction_score| for |optimization_target|.
-  void SetModelPredictionScoreForOptimizationTarget(
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      double model_prediction_score);
-
-  // Returns the value of the model feature if it has been provided.
-  base::Optional<float> GetValueForModelFeatureForTesting(
-      optimization_guide::proto::ClientModelFeature model_feature);
-  // Sets the value provided to the model for a particular model feature.
-  void SetValueForModelFeature(
-      optimization_guide::proto::ClientModelFeature model_feature,
-      float value);
-
-  // Whether the initiation of the navigation was from a same origin URL or not.
-  bool is_same_origin_navigation() const { return is_same_origin_navigation_; }
-  void set_is_same_origin_navigation(bool is_same_origin_navigation) {
-    is_same_origin_navigation_ = is_same_origin_navigation;
-  }
-
   // The duration between the fetch for a hint for the navigation going out to
   // when it was received by the client if a fetch was initiated for the
   // navigation.
@@ -157,32 +117,9 @@ class OptimizationGuideNavigationData {
                  optimization_guide::OptimizationTypeDecision>
       optimization_type_decisions_;
 
-  // The map from optimization target to the last decision made for that target.
-  base::flat_map<optimization_guide::proto::OptimizationTarget,
-                 optimization_guide::OptimizationTargetDecision>
-      optimization_target_decisions_;
-
-  // The version of the painful page load model that was evaluated for the
-  // page load.
-  base::flat_map<optimization_guide::proto::OptimizationTarget, int64_t>
-      optimization_target_model_versions_;
-
-  // The score output after evaluating the painful page load model. If
-  // populated, this is 100x the fractional value output by the model
-  // evaluation.
-  base::flat_map<optimization_guide::proto::OptimizationTarget, double>
-      optimization_target_model_prediction_scores_;
-
-  // The features used to make a prediction for any target.
-  base::flat_map<optimization_guide::proto::ClientModelFeature, float>
-      prediction_model_features_;
-
   // The page hint for the navigation.
   base::Optional<std::unique_ptr<optimization_guide::proto::PageHint>>
       page_hint_;
-
-  // Whether the initiation of the navigation was from a same origin URL or not.
-  bool is_same_origin_navigation_ = false;
 
   // The time that the hints fetch for this navigation started. Is only present
   // if a fetch was initiated for this navigation.

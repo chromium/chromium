@@ -249,15 +249,13 @@ void OptimizationGuideKeyedService::RegisterOptimizationTargets(
 void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
     content::NavigationHandle* navigation_handle,
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const base::flat_map<optimization_guide::proto::ClientModelFeature, float>&
-        client_model_feature_values,
     optimization_guide::OptimizationGuideTargetDecisionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(navigation_handle->IsInMainFrame());
 
   optimization_guide::OptimizationTargetDecision target_decision =
-      prediction_manager_->ShouldTargetNavigation(
-          navigation_handle, optimization_target, client_model_feature_values);
+      prediction_manager_->ShouldTargetNavigation(navigation_handle,
+                                                  optimization_target);
   LogOptimizationTargetDecisionAndPassOptimizationGuideDecision(
       optimization_target, std::move(callback), target_decision);
 }
@@ -330,10 +328,6 @@ void OptimizationGuideKeyedService::ClearData() {
 
 void OptimizationGuideKeyedService::Shutdown() {
   hints_manager_->Shutdown();
-}
-
-void OptimizationGuideKeyedService::UpdateSessionFCP(base::TimeDelta fcp) {
-    prediction_manager_->UpdateFCPSessionStatistics(fcp);
 }
 
 void OptimizationGuideKeyedService::OverrideTargetModelFileForTesting(

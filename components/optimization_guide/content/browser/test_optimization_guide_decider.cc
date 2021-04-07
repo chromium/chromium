@@ -17,8 +17,6 @@ void TestOptimizationGuideDecider::RegisterOptimizationTargets(
 void TestOptimizationGuideDecider::ShouldTargetNavigationAsync(
     content::NavigationHandle* navigation_handle,
     proto::OptimizationTarget optimization_target,
-    const base::flat_map<proto::ClientModelFeature, float>&
-        client_model_feature_values,
     OptimizationGuideTargetDecisionCallback callback) {
   std::move(callback).Run(OptimizationGuideDecision::kFalse);
 }

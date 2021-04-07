@@ -13,7 +13,6 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -65,12 +64,6 @@ void OptimizationGuideWebContentsObserver::DidStartNavigation(
   if (!IsValidOptimizationGuideNavigation(navigation_handle))
     return;
 
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
-  bool is_same_origin =
-      web_contents &&
-      web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS() &&
-      url::IsSameOriginWith(navigation_handle->GetURL(),
-                            web_contents->GetLastCommittedURL());
   OptimizationGuideTopHostProvider::MaybeUpdateTopHostBlocklist(
       navigation_handle);
 
@@ -79,9 +72,6 @@ void OptimizationGuideWebContentsObserver::DidStartNavigation(
 
   optimization_guide_keyed_service_->OnNavigationStartOrRedirect(
       navigation_handle);
-  OptimizationGuideNavigationData* nav_data =
-      GetOrCreateOptimizationGuideNavigationData(navigation_handle);
-  nav_data->set_is_same_origin_navigation(is_same_origin);
 }
 
 void OptimizationGuideWebContentsObserver::DidRedirectNavigation(
@@ -139,16 +129,6 @@ void OptimizationGuideWebContentsObserver::NotifyNavigationFinish(
   // before commit, if at all).
   last_navigation_data_ = std::move(nav_data_iter->second);
   inflight_optimization_guide_navigation_datas_.erase(navigation_id);
-}
-
-void OptimizationGuideWebContentsObserver::UpdateSessionTimingStatistics(
-    const page_load_metrics::mojom::PageLoadTiming& timing) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!optimization_guide_keyed_service_)
-    return;
-
-  optimization_guide_keyed_service_->UpdateSessionFCP(
-      timing.paint_timing->first_contentful_paint.value());
 }
 
 void OptimizationGuideWebContentsObserver::FlushLastNavigationData() {

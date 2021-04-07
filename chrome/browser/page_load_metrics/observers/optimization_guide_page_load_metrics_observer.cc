@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/page_load_metrics/observers/optimization_guide_page_load_metrics_observer.h"
+
 #include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
 
@@ -49,12 +50,4 @@ OptimizationGuidePageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   if (optimization_guide_web_contents_observer_)
     optimization_guide_web_contents_observer_->FlushLastNavigationData();
   return STOP_OBSERVING;
-}
-
-void OptimizationGuidePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
-    const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!optimization_guide_web_contents_observer_)
-    return;
-  optimization_guide_web_contents_observer_->UpdateSessionTimingStatistics(
-      timing);
 }

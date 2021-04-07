@@ -40,15 +40,6 @@ std::unique_ptr<PredictionModel> PredictionModel::Create(
     return nullptr;
   }
 
-  // Check that the client supports the model features for |prediction model|.
-  for (const auto& model_feature :
-       prediction_model.model_info().supported_model_features()) {
-    if (!proto::ClientModelFeature_IsValid(model_feature) ||
-        model_feature ==
-            proto::ClientModelFeature::CLIENT_MODEL_FEATURE_UNKNOWN)
-      return nullptr;
-  }
-
   std::unique_ptr<PredictionModel> model;
   // The Decision Tree model type is currently the only supported model type.
   if (prediction_model.model_info().supported_model_types(0) !=
@@ -70,13 +61,7 @@ namespace {
 std::vector<std::string> ComputeModelFeatures(
     const proto::ModelInfo& model_info) {
   std::vector<std::string> features;
-  features.reserve(model_info.supported_model_features_size() +
-                   model_info.supported_host_model_features_size());
-  // Insert all the client model features for the owned |model_|.
-  for (const auto& client_model_feature :
-       model_info.supported_model_features()) {
-    features.push_back(proto::ClientModelFeature_Name(client_model_feature));
-  }
+  features.reserve(model_info.supported_host_model_features_size());
   // Insert all the host model features for the owned |model_|.
   for (const auto& host_model_feature :
        model_info.supported_host_model_features()) {

@@ -20,9 +20,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
-#include "components/optimization_guide/core/optimization_guide_session_statistic.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "services/network/public/cpp/network_quality_tracker.h"
 #include "url/origin.h"
 
 namespace base {
@@ -63,9 +61,7 @@ using PostModelLoadCallback =
 // A PredictionManager supported by the optimization guide that makes an
 // OptimizationTargetDecision by evaluating the corresponding prediction model
 // for an OptimizationTarget.
-class PredictionManager
-    : public network::NetworkQualityTracker::EffectiveConnectionTypeObserver,
-      public PredictionModelDownloadObserver {
+class PredictionManager : public PredictionModelDownloadObserver {
  public:
   PredictionManager(
       OptimizationGuideStore* model_and_features_store,
@@ -114,21 +110,7 @@ class PredictionManager
   // evaluation.
   OptimizationTargetDecision ShouldTargetNavigation(
       content::NavigationHandle* navigation_handle,
-      proto::OptimizationTarget optimization_target,
-      const base::flat_map<proto::ClientModelFeature, float>&
-          override_client_model_feature_values);
-
-  // Update |session_fcp_| and |previous_fcp_| with |fcp|.
-  void UpdateFCPSessionStatistics(base::TimeDelta fcp);
-
-  OptimizationGuideSessionStatistic* GetFCPSessionStatisticsForTesting() const {
-    return const_cast<OptimizationGuideSessionStatistic*>(&session_fcp_);
-  }
-
-  // network::NetworkQualityTracker::EffectiveConnectionTypeObserver
-  // implementation:
-  void OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType type) override;
+      proto::OptimizationTarget optimization_target);
 
   // Set the prediction model fetcher for testing.
   void SetPredictionModelFetcherForTesting(
@@ -218,21 +200,7 @@ class PredictionManager
   // based on if host model features were used.
   base::flat_map<std::string, float> BuildFeatureMap(
       content::NavigationHandle* navigation_handle,
-      const base::flat_set<std::string>& model_features,
-      const base::flat_map<proto::ClientModelFeature, float>&
-          override_client_model_feature_values);
-
-  // Calculate and return the current value for the client feature specified
-  // by |model_feature|. If |model_feature| is in
-  // |override_client_model_feature_values|, the value from
-  // |client_model_feature_values| will be used. Otherwise, the client will
-  // calculate the value or return nullopt if the client does not support the
-  // model feature.
-  base::Optional<float> GetValueForClientFeature(
-      const std::string& model_feature,
-      content::NavigationHandle* navigation_handle,
-      const base::flat_map<proto::ClientModelFeature, float>&
-          override_client_model_feature_values) const;
+      const base::flat_set<std::string>& model_features);
 
   // Called to make a request to fetch models and host model features from the
   // remote Optimization Guide Service. Used to fetch models for the registered
@@ -372,14 +340,6 @@ class PredictionManager
   // A MRU cache of host to host model features known to the prediction manager.
   HostModelFeaturesMRUCache host_model_features_cache_;
 
-  // The current session's FCP statistics for HTTP/HTTPS navigations.
-  OptimizationGuideSessionStatistic session_fcp_;
-
-  // A float representation of the time to FCP of the previous HTTP/HTTPS page
-  // load. This is nullopt when no previous page load exists (the first page
-  // load of a session).
-  base::Optional<float> previous_load_fcp_ms_;
-
   // The fetcher that handles making requests to update the models and host
   // model features from the remote Optimization Guide Service.
   std::unique_ptr<PredictionModelFetcher> prediction_model_fetcher_;
@@ -404,10 +364,6 @@ class PredictionManager
   // The URL loader factory used for fetching model and host feature updates
   // from the remote Optimization Guide Service.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // The current estimate of the EffectiveConnectionType.
-  net::EffectiveConnectionType current_effective_connection_type_ =
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
   // A reference to the PrefService for this profile. Not owned.
   PrefService* pref_service_ = nullptr;

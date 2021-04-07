@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
-#include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -35,12 +34,6 @@ class OptimizationGuideWebContentsObserver
   // it.
   OptimizationGuideNavigationData* GetOrCreateOptimizationGuideNavigationData(
       content::NavigationHandle* navigation_handle);
-
-  // Captures the timing information at the time of FCP for the current
-  // navigation to be used by the Optimization Guide to make decisions. Other
-  // timing metric information may be missing (e.g., LCP, FMP).
-  void UpdateSessionTimingStatistics(
-      const page_load_metrics::mojom::PageLoadTiming& timing);
 
   // Notifies |this| to flush |last_navigation_data| so metrics are recorded.
   void FlushLastNavigationData();

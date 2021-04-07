@@ -20,8 +20,6 @@ extern const char kTimeHintsFetcherTopHostBlocklistLastInitialized[];
 extern const char kHintsFetcherTopHostBlocklistMinimumEngagementScore[];
 extern const char kHintsFetcherHostsSuccessfullyFetched[];
 extern const char kPendingHintsProcessingVersion[];
-extern const char kSessionStatisticFCPMean[];
-extern const char kSessionStatisticFCPStdDev[];
 extern const char kPreviouslyRegisteredOptimizationTypes[];
 
 // State of |HintsFetcherTopHostsBlocklist|. The blocklist begins in

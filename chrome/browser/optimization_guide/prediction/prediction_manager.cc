@@ -23,7 +23,6 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_service_factory.h"
-#include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -51,25 +50,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
-
-// Returns true if |optimization_target_decision| reflects that the model had
-// already been evaluated.
-bool ShouldUseCurrentOptimizationTargetDecision(
-    optimization_guide::OptimizationTargetDecision
-        optimization_target_decision) {
-  switch (optimization_target_decision) {
-    case optimization_guide::OptimizationTargetDecision::kPageLoadMatches:
-    case optimization_guide::OptimizationTargetDecision::kPageLoadDoesNotMatch:
-    case optimization_guide::OptimizationTargetDecision::
-        kModelPredictionHoldback:
-      return true;
-    case optimization_guide::OptimizationTargetDecision::
-        kModelNotAvailableOnClient:
-    case optimization_guide::OptimizationTargetDecision::kUnknown:
-    case optimization_guide::OptimizationTargetDecision::kDeciderNotInitialized:
-      return false;
-  }
-}
 
 // Delay between retries on failed fetch and store of prediction models and
 // host model features from the remote Optimization Guide Service.
@@ -220,14 +200,11 @@ BuildPredictionModelFromCommandLineForOptimizationTarget(
 namespace optimization_guide {
 
 struct PredictionDecisionParams {
-  PredictionDecisionParams(
-      base::WeakPtr<OptimizationGuideNavigationData> navigation_data,
-      proto::OptimizationTarget optimization_target,
-      OptimizationTargetDecisionCallback callback,
-      int64_t version,
-      base::TimeTicks model_evaluation_start_time)
-      : navigation_data(navigation_data),
-        optimization_target(optimization_target),
+  PredictionDecisionParams(proto::OptimizationTarget optimization_target,
+                           OptimizationTargetDecisionCallback callback,
+                           int64_t version,
+                           base::TimeTicks model_evaluation_start_time)
+      : optimization_target(optimization_target),
         callback(std::move(callback)),
         version(version),
         model_evaluation_start_time(model_evaluation_start_time) {}
@@ -237,8 +214,6 @@ struct PredictionDecisionParams {
   PredictionDecisionParams(const PredictionDecisionParams&) = delete;
   PredictionDecisionParams& operator=(const PredictionDecisionParams&) = delete;
 
-  // Will store relevant prediction results, if not null.
-  base::WeakPtr<OptimizationGuideNavigationData> navigation_data;
   // Target of the prediction.
   proto::OptimizationTarget optimization_target;
   // Callback to be invoked once a OptimizationTargetDecision is made.
@@ -272,26 +247,13 @@ PredictionManager::PredictionManager(
 PredictionManager::~PredictionManager() {
   if (prediction_model_download_manager_)
     prediction_model_download_manager_->RemoveObserver(this);
-  g_browser_process->network_quality_tracker()
-      ->RemoveEffectiveConnectionTypeObserver(this);
 }
 
 void PredictionManager::Initialize() {
-  g_browser_process->network_quality_tracker()
-      ->AddEffectiveConnectionTypeObserver(this);
   model_and_features_store_->Initialize(
       switches::ShouldPurgeModelAndFeaturesStoreOnStartup(),
       base::BindOnce(&PredictionManager::OnStoreInitialized,
                      ui_weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PredictionManager::UpdateFCPSessionStatistics(base::TimeDelta fcp) {
-  previous_load_fcp_ms_ = fcp.InMillisecondsF();
-  session_fcp_.AddSample(*previous_load_fcp_ms_);
-  pref_service_->SetDouble(prefs::kSessionStatisticFCPMean,
-                           session_fcp_.GetMean());
-  pref_service_->SetDouble(prefs::kSessionStatisticFCPStdDev,
-                           session_fcp_.GetStdDev());
 }
 
 void PredictionManager::RegisterOptimizationTargets(
@@ -389,100 +351,9 @@ void PredictionManager::RemoveObserverForOptimizationTargetModel(
   observers_it->second.RemoveObserver(observer);
 }
 
-base::Optional<float> PredictionManager::GetValueForClientFeature(
-    const std::string& model_feature,
-    content::NavigationHandle* navigation_handle,
-    const base::flat_map<proto::ClientModelFeature, float>&
-        override_client_model_feature_values) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  proto::ClientModelFeature client_model_feature;
-  if (!proto::ClientModelFeature_Parse(model_feature, &client_model_feature))
-    return base::nullopt;
-
-  auto cmf_value_it =
-      override_client_model_feature_values.find(client_model_feature);
-  if (cmf_value_it != override_client_model_feature_values.end())
-    return cmf_value_it->second;
-
-  base::Optional<float> value;
-
-  switch (client_model_feature) {
-    case proto::CLIENT_MODEL_FEATURE_UNKNOWN: {
-      return base::nullopt;
-    }
-    case proto::CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE: {
-      value = static_cast<float>(current_effective_connection_type_);
-      break;
-    }
-    case proto::CLIENT_MODEL_FEATURE_PAGE_TRANSITION: {
-      value = static_cast<float>(navigation_handle->GetPageTransition());
-      break;
-    }
-    case proto::CLIENT_MODEL_FEATURE_SITE_ENGAGEMENT_SCORE: {
-      Profile* profile = Profile::FromBrowserContext(
-          navigation_handle->GetWebContents()->GetBrowserContext());
-      site_engagement::SiteEngagementService* engagement_service =
-          site_engagement::SiteEngagementService::Get(profile);
-      // Precision loss is acceptable/expected for prediction models.
-      value = static_cast<float>(
-          engagement_service->GetScore(navigation_handle->GetURL()));
-      break;
-    }
-    case proto::CLIENT_MODEL_FEATURE_SAME_ORIGIN_NAVIGATION: {
-      OptimizationGuideNavigationData* nav_data =
-          OptimizationGuideNavigationData::GetFromNavigationHandle(
-              navigation_handle);
-
-      bool is_same_origin = nav_data && nav_data->is_same_origin_navigation();
-
-      LOCAL_HISTOGRAM_BOOLEAN(
-          "OptimizationGuide.PredictionManager.IsSameOrigin", is_same_origin);
-
-      value = static_cast<float>(is_same_origin);
-      break;
-    }
-    case proto::CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_SESSION_MEAN: {
-      value = session_fcp_.GetNumberOfSamples() == 0
-                  ? static_cast<float>(pref_service_->GetDouble(
-                        prefs::kSessionStatisticFCPMean))
-                  : session_fcp_.GetMean();
-      break;
-    }
-    case proto::
-        CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_SESSION_STANDARD_DEVIATION: {
-      value = session_fcp_.GetNumberOfSamples() == 0
-                  ? static_cast<float>(pref_service_->GetDouble(
-                        prefs::kSessionStatisticFCPStdDev))
-                  : session_fcp_.GetStdDev();
-      break;
-    }
-    case proto::
-        CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_PREVIOUS_PAGE_LOAD: {
-      value = previous_load_fcp_ms_.value_or(static_cast<float>(
-          pref_service_->GetDouble(prefs::kSessionStatisticFCPMean)));
-      break;
-    }
-    default: {
-      return base::nullopt;
-    }
-  }
-
-  OptimizationGuideNavigationData* navigation_data =
-      OptimizationGuideNavigationData::GetFromNavigationHandle(
-          navigation_handle);
-  if (value && navigation_data) {
-    navigation_data->SetValueForModelFeature(client_model_feature, *value);
-    return value;
-  }
-  return base::nullopt;
-}
-
 base::flat_map<std::string, float> PredictionManager::BuildFeatureMap(
     content::NavigationHandle* navigation_handle,
-    const base::flat_set<std::string>& model_features,
-    const base::flat_map<proto::ClientModelFeature, float>&
-        override_client_model_feature_values) {
+    const base::flat_set<std::string>& model_features) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (model_features.empty())
     return {};
@@ -505,9 +376,8 @@ base::flat_map<std::string, float> PredictionManager::BuildFeatureMap(
   std::vector<std::pair<std::string, float>> feature_map;
   feature_map.reserve(model_features.size());
   for (const auto& model_feature : model_features) {
-    base::Optional<float> value = GetValueForClientFeature(
-        model_feature, navigation_handle, override_client_model_feature_values);
-    if (!value && host_model_features) {
+    base::Optional<float> value;
+    if (host_model_features) {
       const auto it = host_model_features->find(model_feature);
       if (it != host_model_features->end())
         value = it->second;
@@ -519,26 +389,10 @@ base::flat_map<std::string, float> PredictionManager::BuildFeatureMap(
 
 OptimizationTargetDecision PredictionManager::ShouldTargetNavigation(
     content::NavigationHandle* navigation_handle,
-    proto::OptimizationTarget optimization_target,
-    const base::flat_map<proto::ClientModelFeature, float>&
-        override_client_model_feature_values) {
+    proto::OptimizationTarget optimization_target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(navigation_handle->GetURL().SchemeIsHTTPOrHTTPS());
 
-  OptimizationGuideNavigationData* navigation_data =
-      OptimizationGuideNavigationData::GetFromNavigationHandle(
-          navigation_handle);
-  if (navigation_data) {
-    base::Optional<optimization_guide::OptimizationTargetDecision>
-        optimization_target_decision =
-            navigation_data->GetDecisionForOptimizationTarget(
-                optimization_target);
-    if (optimization_target_decision.has_value() &&
-        ShouldUseCurrentOptimizationTargetDecision(
-            *optimization_target_decision)) {
-      return *optimization_target_decision;
-    }
-  }
   if (!registered_optimization_targets_and_metadata_.contains(
           optimization_target)) {
     return OptimizationTargetDecision::kUnknown;
@@ -569,8 +423,7 @@ OptimizationTargetDecision PredictionManager::ShouldTargetNavigation(
   PredictionModel* prediction_model = it->second.get();
 
   base::flat_map<std::string, float> feature_map =
-      BuildFeatureMap(navigation_handle, prediction_model->GetModelFeatures(),
-                      override_client_model_feature_values);
+      BuildFeatureMap(navigation_handle, prediction_model->GetModelFeatures());
 
   base::TimeTicks model_evaluation_start_time = base::TimeTicks::Now();
   double prediction_score = 0.0;
@@ -584,13 +437,6 @@ OptimizationTargetDecision PredictionManager::ShouldTargetNavigation(
         base::TimeTicks::Now() - model_evaluation_start_time);
   }
 
-  if (navigation_data) {
-    navigation_data->SetModelVersionForOptimizationTarget(
-        optimization_target, prediction_model->GetVersion());
-    navigation_data->SetModelPredictionScoreForOptimizationTarget(
-        optimization_target, prediction_score);
-  }
-
   if (optimization_guide::features::
           ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
               optimization_target)) {
@@ -599,12 +445,6 @@ OptimizationTargetDecision PredictionManager::ShouldTargetNavigation(
   }
 
   return target_decision;
-}
-
-void PredictionManager::OnEffectiveConnectionTypeChanged(
-    net::EffectiveConnectionType effective_connection_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  current_effective_connection_type_ = effective_connection_type;
 }
 
 base::flat_set<proto::OptimizationTarget>
@@ -714,14 +554,6 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
   std::vector<proto::ModelInfo> models_info = std::vector<proto::ModelInfo>();
 
   proto::ModelInfo base_model_info;
-  for (auto client_model_feature = proto::ClientModelFeature_MIN + 1;
-       client_model_feature <= proto::ClientModelFeature_MAX;
-       client_model_feature++) {
-    if (proto::ClientModelFeature_IsValid(client_model_feature)) {
-      base_model_info.add_supported_model_features(
-          static_cast<proto::ClientModelFeature>(client_model_feature));
-    }
-  }
   base_model_info.add_supported_model_types(proto::MODEL_TYPE_DECISION_TREE);
   if (features::IsModelDownloadingEnabled())
     base_model_info.add_supported_model_types(proto::MODEL_TYPE_TFLITE_2_3_0);

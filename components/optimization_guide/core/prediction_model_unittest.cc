@@ -52,19 +52,14 @@ TEST(PredictionModelTest, ValidPredictionModel) {
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::
-          CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE);
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
       PredictionModel::Create(prediction_model);
 
   EXPECT_EQ(1, model->GetVersion());
-  EXPECT_EQ(2u, model->GetModelFeatures().size());
+  EXPECT_EQ(1u, model->GetModelFeatures().size());
   EXPECT_TRUE(model->GetModelFeatures().count("agg1"));
-  EXPECT_TRUE(model->GetModelFeatures().count(
-      "CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE"));
 }
 
 TEST(PredictionModelTest, NoModel) {
@@ -130,26 +125,6 @@ TEST(PredictionModelTest, MultipleModelTypes) {
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
   model_info->add_supported_model_types(proto::ModelType::MODEL_TYPE_UNKNOWN);
-
-  std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(prediction_model);
-  EXPECT_FALSE(model);
-}
-
-TEST(PredictionModelTest, UnknownModelClientFeature) {
-  proto::PredictionModel prediction_model;
-
-  proto::DecisionTree* decision_tree_model =
-      prediction_model.mutable_model()->mutable_decision_tree();
-  decision_tree_model->set_weight(2.0);
-
-  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
-  model_info->set_version(1);
-  model_info->add_supported_model_types(
-      proto::ModelType::MODEL_TYPE_DECISION_TREE);
-
-  model_info->add_supported_model_features(
-      proto::ClientModelFeature::CLIENT_MODEL_FEATURE_UNKNOWN);
 
   std::unique_ptr<PredictionModel> model =
       PredictionModel::Create(prediction_model);

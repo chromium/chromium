@@ -65,8 +65,6 @@ class OptimizationGuideDecider {
   virtual void ShouldTargetNavigationAsync(
       content::NavigationHandle* navigation_handle,
       proto::OptimizationTarget optimization_target,
-      const base::flat_map<proto::ClientModelFeature, float>&
-          client_model_feature_values,
       OptimizationGuideTargetDecisionCallback callback) = 0;
 
   // Adds an observer for updates to the model for |optimization_target|.
