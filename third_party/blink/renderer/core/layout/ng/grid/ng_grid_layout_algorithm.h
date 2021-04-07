@@ -249,7 +249,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridGeometry& grid_geometry,
       const GridItemData& grid_item,
       GridTrackSizingDirection track_direction,
-      GridItemContributionType contribution_type) const;
+      GridItemContributionType contribution_type,
+      bool* needs_additional_pass) const;
 
   wtf_size_t ComputeAutomaticRepetitions(
       GridTrackSizingDirection track_direction) const;
@@ -291,14 +292,16 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       SizingConstraint sizing_constraint,
       const GridGeometry& grid_geometry,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
-      GridItems* grid_items) const;
+      GridItems* grid_items,
+      bool* needs_additional_pass) const;
 
   // These methods implement the steps of the algorithm for intrinsic track size
   // resolution defined in https://drafts.csswg.org/css-grid-2/#algo-content.
   void ResolveIntrinsicTrackSizes(
       const GridGeometry& grid_geometry,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
-      GridItems* grid_items) const;
+      GridItems* grid_items,
+      bool* needs_additional_pass) const;
 
   void IncreaseTrackSizesToAccommodateGridItems(
       const GridGeometry& grid_geometry,
@@ -306,21 +309,23 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridItems::Iterator group_end,
       const bool is_group_spanning_flex_track,
       GridItemContributionType contribution_type,
-      NGGridLayoutAlgorithmTrackCollection* track_collection) const;
+      NGGridLayoutAlgorithmTrackCollection* track_collection,
+      bool* needs_additional_pass) const;
 
   void MaximizeTracks(
       SizingConstraint sizing_constraint,
       NGGridLayoutAlgorithmTrackCollection* track_collection) const;
 
-  void StretchAutoTracks(
-      SizingConstraint sizing_constraint,
-      NGGridLayoutAlgorithmTrackCollection* track_collection) const;
+  void StretchAutoTracks(SizingConstraint sizing_constraint,
+                         NGGridLayoutAlgorithmTrackCollection* track_collection,
+                         bool* needs_additional_pass) const;
 
   void ExpandFlexibleTracks(
       SizingConstraint sizing_constraint,
       const GridGeometry& grid_geometry,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
-      GridItems* grid_items) const;
+      GridItems* grid_items,
+      bool* needs_additional_pass) const;
 
   SetGeometry ComputeSetGeometry(
       const NGGridLayoutAlgorithmTrackCollection& track_collection) const;
@@ -338,7 +343,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridItemData& grid_item,
       NGCacheSlot cache_slot,
       LogicalRect* rect,
-      bool adjust_inline_size_if_needed = true) const;
+      const LayoutUnit* opt_fixed_size = nullptr) const;
 
   // Layout the |grid_items| based on the offsets provided.
   void PlaceGridItems(const GridItems& grid_items,

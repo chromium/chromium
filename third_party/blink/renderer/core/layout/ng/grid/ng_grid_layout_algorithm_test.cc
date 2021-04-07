@@ -83,13 +83,14 @@ class NGGridLayoutAlgorithmTest
                       algorithm.InitializeTrackSizes(&row_track_collection_)};
 
     // Resolve inline size.
+    bool unused;
     algorithm.ComputeUsedTrackSizes(
         NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        &column_track_collection_, &grid_items_);
+        &column_track_collection_, &grid_items_, &unused);
     // Resolve block size.
     algorithm.ComputeUsedTrackSizes(
         NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        &row_track_collection_, &grid_items_);
+        &row_track_collection_, &grid_items_, &unused);
   }
 
   NGGridLayoutAlgorithmTrackCollection& TrackCollection(
