@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-03-29T23:30:19.680Z",
+  "time_generated": "2021-04-07T18:10:31.198Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -56,7 +56,7 @@
       "id": 7,
       "name": "RUN_CHROME_SAFETY_CHECK",
       "enabled": true,
-      "url": "chrome://settings/safetyCheck?activate",
+      "url": "chrome://settings/safetyCheck?activateSafetyCheck",
       "description": "Run a Safety Check in Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT\nIDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK",
       "tags": ""
     },
@@ -6685,6 +6685,7 @@
               "single": true,
               "synonyms": [
                 "checkup",
+                "checks",
                 "check"
               ]
             },
@@ -6925,36 +6926,31 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "customize",
-                "control",
-                "manage",
-                "adjust",
-                "change",
-                "edit"
-              ]
-            },
-            {
-              "required": true,
-              "single": true,
-              "synonyms": [
                 "site permissions",
                 "site settings",
                 "permissions"
               ]
             },
             {
-              "required": false,
-              "single": true,
+              "required": true,
+              "single": false,
               "synonyms": [
                 "google chrome",
+                "customize",
                 "browser",
+                "control",
                 "chrome",
-                "google"
+                "google",
+                "manage",
+                "adjust",
+                "change",
+                "edit"
               ]
             }
           ],
           "cover_cases": [
-            "manage site settings"
+            "manage site settings",
+            "site settings chrome"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -7046,6 +7042,7 @@
               "single": true,
               "synonyms": [
                 "spreadsheet",
+                "sheets",
                 "sheet",
                 "trix"
               ]
@@ -7082,6 +7079,7 @@
               "single": true,
               "synonyms": [
                 "presentation",
+                "slides",
                 "slide",
                 "preso",
                 "deck"
@@ -7239,6 +7237,7 @@
               "required": true,
               "single": true,
               "synonyms": [
+                "notes",
                 "note"
               ]
             }
@@ -7286,7 +7285,9 @@
               "single": true,
               "synonyms": [
                 "survey",
-                "form"
+                "forms",
+                "form",
+                "quiz"
               ]
             }
           ],
@@ -7357,7 +7358,7 @@
           "id": 21,
           "groups": [
             {
-              "required": true,
+              "required": false,
               "single": true,
               "synonyms": [
                 "make the most of",
