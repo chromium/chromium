@@ -14,6 +14,8 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -188,22 +190,36 @@ void LoginFeedback::Request(const std::string& description,
 }
 
 void LoginFeedback::EnsureFeedbackUI() {
+  bool useWebUIFeedback =
+      base::FeatureList::IsEnabled(features::kWebUIFeedback);
   // Bail if any feedback app window is opened.
-  if (feedback_window_handler_->HasFeedbackAppWindow())
+  if (!useWebUIFeedback && feedback_window_handler_->HasFeedbackAppWindow())
     return;
 
   extensions::FeedbackPrivateAPI* api =
       extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(profile_);
-  api->RequestFeedbackForFlow(
-      description_, std::string(), "Login", std::string(), GURL(),
-      extensions::api::feedback_private::FeedbackFlow::FEEDBACK_FLOW_LOGIN);
 
-  // Make sure there is a feedback app window opened.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&LoginFeedback::EnsureFeedbackUI,
-                     weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(1));
+  if (useWebUIFeedback) {
+    auto info = api->CreateFeedbackInfo(
+        description_, std::string(), "Login", std::string(), GURL(),
+        extensions::api::feedback_private::FeedbackFlow::FEEDBACK_FLOW_LOGIN,
+        /*from_assistant=*/false,
+        /*include_bluetooth_logs=*/false,
+        /*from_chrome_labs_or_kaleidoscope=*/false);
+
+    FeedbackDialog::CreateOrShow(*info);
+  } else {
+    api->RequestFeedbackForFlow(
+        description_, std::string(), "Login", std::string(), GURL(),
+        extensions::api::feedback_private::FeedbackFlow::FEEDBACK_FLOW_LOGIN);
+
+    // Make sure there is a feedback app window opened.
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&LoginFeedback::EnsureFeedbackUI,
+                       weak_factory_.GetWeakPtr()),
+        base::TimeDelta::FromSeconds(1));
+  }
 }
 
 void LoginFeedback::OnFeedbackFinished() {

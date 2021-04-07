@@ -110,6 +110,11 @@ class FeedbackHelper {
   showDialog() {
     chrome.send('showDialog');
   }
+
+  // Send a message to close the WebDialog
+  closeDialog() {
+    chrome.send('dialogClose');
+  }
 }
 
 /**
@@ -398,8 +403,7 @@ function sendReport() {
 
   // Request sending the report, show the landing page (if allowed)
   feedbackHelper.sendFeedbackReport(useSystemInfo);
-  // TODO(crbug.com/1167223): Implement this.
-  // scheduleWindowClose();
+  scheduleWindowClose();
   return true;
 }
 
@@ -444,7 +448,7 @@ function resizeAppWindow() {
  */
 function scheduleWindowClose() {
   setTimeout(function() {
-    window.close();
+    feedbackHelper.closeDialog();
   }, 100);
 }
 
@@ -539,13 +543,11 @@ function initialize() {
       $('attach-file').hidden = true;
     }
 
-    // No URL, file attachment, or window minimizing for login screen
-    // feedback.
+    // No URL, file attachment for login screen feedback.
     if (feedbackInfo.flow == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
       $('page-url').hidden = true;
       $('attach-file-container').hidden = true;
       $('attach-file-note').hidden = true;
-      $('minimize-button').hidden = true;
     }
 
     // <if expr="chromeos">

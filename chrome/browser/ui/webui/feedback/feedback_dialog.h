@@ -52,8 +52,8 @@ class FeedbackDialog : public ui::WebDialogDelegate {
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override;
 
-  std::unique_ptr<base::DictionaryValue> feedbackInfo_;
-  extensions::api::feedback_private::FeedbackFlow feedbackFlow_;
+  std::unique_ptr<base::DictionaryValue> feedback_info_;
+  extensions::api::feedback_private::FeedbackFlow feedback_flow_;
   // Widget for the Feedback WebUI.
   views::Widget* widget_;
   static FeedbackDialog* current_instance_;
