@@ -63,8 +63,9 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
                                  views::Widget* parent_widget);
   ~AutofillPopupBaseView() override;
 
-  // Show this popup. Idempotent.
-  void DoShow();
+  // Show this popup. Idempotent. Returns |true| if popup is shown, |false|
+  // otherwise.
+  bool DoShow();
 
   // Hide the widget and delete |this|.
   void DoHide();

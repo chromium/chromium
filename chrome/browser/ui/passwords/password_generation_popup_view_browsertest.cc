@@ -24,11 +24,14 @@ namespace autofill {
 class TestPasswordGenerationPopupController
     : public PasswordGenerationPopupControllerImpl {
  public:
+  // |vertical_offset| specifies the vertical offset of the popup relative to
+  // the web contents container.
   explicit TestPasswordGenerationPopupController(
-      content::WebContents* web_contents)
+      content::WebContents* web_contents,
+      int vertical_offset = 0)
       : PasswordGenerationPopupControllerImpl(
             gfx::RectF(web_contents->GetContainerBounds().x(),
-                       web_contents->GetContainerBounds().y(),
+                       web_contents->GetContainerBounds().y() + vertical_offset,
                        10,
                        10),
             autofill::password_generation::PasswordGenerationUIData(
@@ -75,7 +78,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        MouseMovementInEditingPopup) {
   controller_ =
       new autofill::TestPasswordGenerationPopupController(GetWebContents());
-  controller_->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
+  EXPECT_TRUE(controller_->Show(
+      PasswordGenerationPopupController::kEditGeneratedPassword));
 
   GetViewTester()->SimulateMouseMovementAt(
       gfx::Point(GetWebContents()->GetContainerBounds().x() + 1,
@@ -90,9 +94,20 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        CloseWebContentsWithVisiblePopup) {
   controller_ =
       new autofill::TestPasswordGenerationPopupController(GetWebContents());
-  controller_->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
+  EXPECT_TRUE(controller_->Show(
+      PasswordGenerationPopupController::kEditGeneratedPassword));
 
   GetWebContents()->Close();
+}
+
+// Verify that controller is not crashed in case of insufficient vertical space
+// for showing popup.
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
+                       DoNotCrashInCaseOfInsuffucientVertialSpace) {
+  controller_ = new autofill::TestPasswordGenerationPopupController(
+      GetWebContents(), /*vertical_offset=*/-20);
+  EXPECT_FALSE(controller_->Show(
+      PasswordGenerationPopupController::kEditGeneratedPassword));
 }
 
 }  // namespace autofill

@@ -206,7 +206,7 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
     weak_this->HideImpl();
 }
 
-void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
+bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   // When switching from editing to generation state, regenerate the password.
   if (state == kOfferGeneration &&
       (state_ != state || current_password_.empty())) {
@@ -223,7 +223,7 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
     // Treat popup as being hidden if creation fails.
     if (!view_) {
       HideImpl();
-      return;
+      return false;
     }
     key_press_handler_manager_->RegisterKeyPressHandler(base::BindRepeating(
         [](base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_this,
@@ -231,14 +231,22 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
           return weak_this && weak_this->HandleKeyPressEvent(event);
         },
         GetWeakPtr()));
-    view_->Show();
+    if (!view_->Show()) {
+      // The instance is deleted after this point.
+      return false;
+    }
   } else {
     view_->UpdateState();
-    view_->UpdateBoundsAndRedrawPopup();
+    if (!view_->UpdateBoundsAndRedrawPopup()) {
+      // The instance is deleted after this point.
+      return false;
+    }
   }
 
   if (observer_)
     observer_->OnPopupShown(state_);
+
+  return true;
 }
 
 void PasswordGenerationPopupControllerImpl::UpdatePassword(

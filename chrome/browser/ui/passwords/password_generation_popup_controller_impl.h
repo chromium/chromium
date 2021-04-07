@@ -81,7 +81,8 @@ class PasswordGenerationPopupControllerImpl
   ~PasswordGenerationPopupControllerImpl() override;
 
   // Create a PasswordGenerationPopupView if one doesn't already exist.
-  void Show(GenerationUIState state);
+  // Returns |true| in case of success, |false| otherwise.
+  bool Show(GenerationUIState state);
 
   // Update the password to be displayed in the UI.
   void UpdatePassword(std::u16string new_password);

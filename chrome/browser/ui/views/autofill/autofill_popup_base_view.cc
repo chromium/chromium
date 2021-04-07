@@ -89,7 +89,7 @@ AutofillPopupBaseView::~AutofillPopupBaseView() {
   CHECK(!IsInObserverList());
 }
 
-void AutofillPopupBaseView::DoShow() {
+bool AutofillPopupBaseView::DoShow() {
   const bool initialize_widget = !GetWidget();
   if (initialize_widget) {
     // On Mac Cocoa browser, |parent_widget_| is null (the parent is not a
@@ -123,13 +123,15 @@ void AutofillPopupBaseView::DoShow() {
   // If there is insufficient height, DoUpdateBoundsAndRedrawPopup() hides and
   // thus deletes |this|. Hence, there is nothing else to do.
   if (!enough_height)
-    return;
+    return false;
   GetWidget()->Show();
 
   // Showing the widget can change native focus (which would result in an
   // immediate hiding of the popup). Only start observing after shown.
   if (initialize_widget)
     views::WidgetFocusManager::GetInstance()->AddFocusChangeListener(this);
+
+  return true;
 }
 
 void AutofillPopupBaseView::DoHide() {

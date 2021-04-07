@@ -23,11 +23,11 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
       views::Widget* parent_widget);
 
   // PasswordGenerationPopupView implementation
-  void Show() override;
+  bool Show() override WARN_UNUSED_RESULT;
   void Hide() override;
   void UpdateState() override;
   void UpdatePasswordValue() override;
-  void UpdateBoundsAndRedrawPopup() override;
+  bool UpdateBoundsAndRedrawPopup() override WARN_UNUSED_RESULT;
   void PasswordSelectionUpdated() override;
 
  private:

@@ -173,8 +173,8 @@ PasswordGenerationPopupViewViews::PasswordGenerationPopupViewViews(
 
 PasswordGenerationPopupViewViews::~PasswordGenerationPopupViewViews() = default;
 
-void PasswordGenerationPopupViewViews::Show() {
-  DoShow();
+bool PasswordGenerationPopupViewViews::Show() {
+  return DoShow();
 }
 
 void PasswordGenerationPopupViewViews::Hide() {
@@ -197,8 +197,8 @@ void PasswordGenerationPopupViewViews::UpdatePasswordValue() {
   Layout();
 }
 
-void PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {
-  DoUpdateBoundsAndRedrawPopup();
+bool PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {
+  return DoUpdateBoundsAndRedrawPopup();
 }
 
 void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
