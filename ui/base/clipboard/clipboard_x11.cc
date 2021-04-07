@@ -267,7 +267,7 @@ ClipboardX11::X11Details::X11Details()
     : connection_(x11::Connection::Get()),
       x_root_window_(ui::GetX11RootWindow()),
       x_window_(x11::CreateDummyWindow("Chromium Clipboard Window")),
-      selection_requestor_(x_window_, this),
+      selection_requestor_(x_window_),
       clipboard_owner_(connection_, x_window_, x11::GetAtom(kClipboard)),
       primary_owner_(connection_, x_window_, x11::Atom::PRIMARY) {
   x11::SetStringProperty(x_window_, x11::Atom::WM_NAME, x11::Atom::STRING,

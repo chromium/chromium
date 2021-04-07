@@ -56,7 +56,7 @@ class SelectionRequestorTest : public testing::Test {
 
     event_source_ = PlatformEventSource::CreateDefault();
     CHECK(PlatformEventSource::GetInstance());
-    requestor_ = std::make_unique<SelectionRequestor>(x_window_, nullptr);
+    requestor_ = std::make_unique<SelectionRequestor>(x_window_);
   }
 
   void TearDown() override {
