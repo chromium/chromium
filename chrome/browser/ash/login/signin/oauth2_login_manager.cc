@@ -75,12 +75,14 @@ void OAuth2LoginManager::RestoreSessionFromSavedTokens() {
     // and OnRefreshTokenAvailable is not called. Flagging it here would
     // cause user to go through Gaia in next login to obtain a new refresh
     // token.
-    user_manager::UserManager::Get()->SaveUserOAuthStatus(
-        AccountId::FromUserEmail(
-            identity_manager
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                .email),
-        user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN);
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    if (!account_info.IsEmpty()) {
+      // Primary account is empty when Active Directory accounts are used.
+      user_manager::UserManager::Get()->SaveUserOAuthStatus(
+          AccountIdFromAccountInfo(account_info),
+          user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN);
+    }
   }
 }
 
