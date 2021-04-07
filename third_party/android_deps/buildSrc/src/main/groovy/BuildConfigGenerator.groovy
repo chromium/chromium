@@ -42,6 +42,10 @@ class BuildConfigGenerator extends DefaultTask {
             "${DEPS_TOKEN_START}(.*)${DEPS_TOKEN_END}",
             Pattern.DOTALL)
     private static final DOWNLOAD_DIRECTORY_NAME = "libs"
+    // The 3pp bot now adds an epoch to the version tag, this needs to be kept
+    // in sync with 3pp epoch at:
+    // https://source.chromium.org/chromium/infra/infra/+/master:recipes/recipe_modules/support_3pp/resolved_spec.py?q=symbol:PACKAGE_EPOCH&ss=chromium
+    private static final THREEPP_EPOCH = "2"
 
     // Some libraries are hosted in Chromium's //third_party directory. This is a mapping between
     // them so they can be used instead of android_deps pulling in its own copy.
@@ -698,7 +702,7 @@ class BuildConfigGenerator extends DefaultTask {
             |      'packages': [
             |          {
             |              'package': '${cipdPath}',
-            |              'version': 'version:${dependency.version}.${dependency.cipdSuffix}',
+            |              'version': 'version:${THREEPP_EPOCH}@${dependency.version}.${dependency.cipdSuffix}',
             |          },
             |      ],
             |      'condition': 'checkout_android',
@@ -815,7 +819,7 @@ class BuildConfigGenerator extends DefaultTask {
 
     static String makeCipdYaml(ChromiumDepGraph.DependencyDescription dependency, String cipdBucket,
                                String repoPath) {
-        def cipdVersion = "${dependency.version}-${dependency.cipdSuffix}"
+        def cipdVersion = "${THREEPP_EPOCH}@${dependency.version}.${dependency.cipdSuffix}"
         def cipdPath = "${cipdBucket}/${repoPath}"
         // CIPD does not allow uppercase in names.
         cipdPath += "/${DOWNLOAD_DIRECTORY_NAME}/" + dependency.directoryName
