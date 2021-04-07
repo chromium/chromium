@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -291,6 +292,7 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   params.SetStringKey("deviceId", GetDeviceIdForActiveUserProfile());
 
   params.SetDoubleKey("signinTime", GetSigninTime().ToJsTimeIgnoringNull());
+  params.SetBoolKey("newOobeLayoutEnabled", features::IsNewOobeLayoutEnabled());
 
   // If the secondary edu account is being reauthenticated, the email address
   // will be provided via the url of the webcontent. Example

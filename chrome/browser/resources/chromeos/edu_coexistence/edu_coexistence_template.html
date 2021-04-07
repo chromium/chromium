@@ -9,13 +9,13 @@
         rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
   }
 </style>
-<div class="template-container oobe-format">
-  <div class ="content-container oobe-format">
+<div class="template-container">
+  <div class ="content-container">
     <div class="main" scrollable>
       <slot name="main"></slot>
     </div>
-    <div class="footer">
-      <slot name="buttons"></slot>
-    </div>
+  </div>
+  <div class="footer">
+    <slot name="buttons"></slot>
   </div>
 </div>

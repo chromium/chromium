@@ -20,6 +20,11 @@ Polymer({
     'go-action': 'closeDialog_',
   },
 
+  /** @override */
+  ready() {
+    this.$$('edu-coexistence-button').newOobeStyleEnabled = true;
+  },
+
   /**
    * Attempts to close the dialog.  In OOBE, this will move on
    * to the next screen of OOBE (not the next screen of this flow).

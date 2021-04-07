@@ -34,11 +34,30 @@ Polymer({
       type: String,
       value: ButtonTypes.ACTION,
     },
+
+    /**
+     * Button class list string.
+     * @type {!ButtonTypes}
+     */
+    buttonClasses: {
+      type: String,
+      computed: 'getClass_(buttonType, newOobeStyleEnabled)',
+    },
+
     /**
      * 'disabled' button attribute.
      * @type {Boolean}
      */
     disabled: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Whether to use new OOBE style for the button.
+     * @type {Boolean}
+     */
+    newOobeStyleEnabled: {
       type: Boolean,
       value: false,
     },
@@ -59,16 +78,21 @@ Polymer({
 
   /**
    * @param {!ButtonTypes} buttonType
-   * @return {string} CSS class name
+   * @param {boolean} newOobeStyleEnabled
+   * @return {string} CSS class names
    * @private
    */
-  getClass_(buttonType) {
+  getClass_(buttonType, newOobeStyleEnabled) {
     this.assertButtonType_(buttonType);
+
+    // Disable the border if necessary.
+    let cssClassses = newOobeStyleEnabled ? 'no-border button-radius' : '';
+
     if (buttonType === ButtonTypes.BACK) {
-      return '';
+      return cssClassses;
     }
 
-    return 'action-button';
+    return 'action-button ' + cssClassses;
   },
 
   /**

@@ -189,6 +189,9 @@
       <include name="IDR_WEBSTORE_MANIFEST" file="resources\webstore_app\manifest.json" type="BINDATA" />
       <include name="IDR_CRYPTOTOKEN_MANIFEST" file="resources\cryptotoken\manifest.json" type="BINDATA" />
       <if expr="chromeos">
+        <!-- Shared images for ChromeOS WebUIs -->
+        <include name="IDR_CHROME_OS_AN_ERROR_OCCURRED_SVG" file="resources\chromeos\images\an_error_occurred.svg" type="BINDATA" />
+        <include name="IDR_CHROME_OS_NO_NETWORK_SVG" file="resources\chromeos\images\no_network.svg" type="BINDATA" />
         <!-- Edu account login resources -->
         <include name="IDR_EDU_LOGIN_EDU_LOGIN_HTML" file="resources\chromeos\edu_login\edu_login.html" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_EDU_LOGIN_EDU_LOGIN_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\app.js" use_base_dir="false" type="BINDATA" />

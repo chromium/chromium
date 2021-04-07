@@ -170,6 +170,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"edu_coexistence_template.js",
      IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_TEMPLATE_JS},
     {"edu_coexistence_css.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CSS_JS},
+    {"an_error_occurred.svg", IDR_CHROME_OS_AN_ERROR_OCCURRED_SVG},
+    {"no_network.svg", IDR_CHROME_OS_NO_NETWORK_SVG},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"account_manager_welcome_1x.png", IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG},
