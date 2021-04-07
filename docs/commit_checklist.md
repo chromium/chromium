@@ -161,7 +161,7 @@ Run `git cl upload`. Some useful options include:
     good idea to run try jobs for each new patchset with significant changes.
 *   `-r <chromium_username>` will add reviewers.
 *   `-b <bug_number>` automatically populates the bug reference line of the
-    commit message. Use `-b None` is there is no relevant crbug.
+    commit message. Use `-b None` if there is no relevant crbug.
 *   `--edit-description` will let you update the commit message. Using square
     brackets in the commit message title, like [hashtag], will add a hashtag to
     your CL. This feature is useful for grouping related CLs together.
