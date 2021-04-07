@@ -739,6 +739,7 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
 
     source->AddResourcePath("welcome_screen_animation.json",
                             IDR_LOGIN_WELCOME_SCREEN_ANIMATION);
+    source->AddResourcePath("spinner.json", IDR_LOGIN_SPINNER_ANIMATION);
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::WorkerSrc,
         "worker-src blob: 'self';");

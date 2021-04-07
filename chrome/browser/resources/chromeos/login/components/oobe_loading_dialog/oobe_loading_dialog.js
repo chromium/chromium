@@ -11,5 +11,29 @@ Polymer({
     textKey: {
       type: String,
     },
+
+    isNewLayout_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('newLayoutEnabled') &&
+            loadTimeData.getBoolean('newLayoutEnabled');
+      },
+      readOnly: true,
+    }
+  },
+
+  onBeforeShow() {
+    if (this.isNewLayout_) {
+      this.$.dialog.onBeforeShow();
+      this.$.spinner.setPlay(true);
+    } else {
+      this.$.dialogOld.onBeforeShow();
+    }
+  },
+
+  onBeforeHide() {
+    if (this.isNewLayout_) {
+      this.$.spinner.setPlay(false);
+    }
   },
 });
