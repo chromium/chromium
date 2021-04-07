@@ -180,7 +180,9 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
   // one notification, in the following priority order:
   // 1. A cast session associated with |contents|.
   // 2. A local media session associated with |contents|.
-  // 3. A supplemental notification.
+  // 3. A supplemental notification populated using the PresentationRequest.
+  base::WeakPtr<media_message_center::MediaNotificationItem> item;
+  std::string item_id;
 
   // Find the cast notification item associated with |contents|.
   auto routes = media_router::WebContentsPresentationManager::Get(contents)
@@ -188,37 +190,28 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
   if (!routes.empty()) {
     // It is possible for a sender page to connect to two routes. For the
     // sake of the Zenith dialog, only one notification is needed.
-    const std::string& route_id = routes.begin()->media_route_id();
-    auto cast_item = cast_notification_producer_->GetNotificationItem(route_id);
-    DCHECK(cast_item);
-    dialog_delegate_->ShowMediaSession(route_id, cast_item);
-    return;
+    item_id = routes.begin()->media_route_id();
+    item = cast_notification_producer_->GetNotificationItem(item_id);
+  } else if (media_session_notification_producer_
+                 ->HasActiveControllableSessionForWebContents(contents)) {
+    item_id = media_session_notification_producer_
+                  ->GetActiveControllableSessionForWebContents(contents);
+    item = GetNotificationItem(item_id);
+  } else {
+    auto presentation_item =
+        presentation_request_notification_producer_->GetNotificationItem();
+    item_id = presentation_item->id();
+    item = presentation_item;
+    DCHECK(presentation_request_notification_producer_->GetWebContents() ==
+           contents);
   }
 
-  // Show the local media notification if any.
-  if (media_session_notification_producer_
-          ->HasActiveControllableSessionForWebContents(contents)) {
-    std::string notification_id =
-        media_session_notification_producer_
-            ->GetActiveControllableSessionForWebContents(contents);
-    base::WeakPtr<media_message_center::MediaNotificationItem> item =
-        GetNotificationItem(notification_id);
-    MediaNotificationContainerImpl* container =
-        dialog_delegate_->ShowMediaSession(notification_id, item);
-    auto* notification_producer = GetNotificationProducer(notification_id);
-    if (notification_producer)
-      notification_producer->OnItemShown(notification_id, container);
-    return;
-  }
-
-  // Show a supplemental notification, e.g. to start a presentation from the web
-  // page's PresentationRequest.
-  auto item =
-      presentation_request_notification_producer_->GetNotificationItem();
   DCHECK(item);
-  DCHECK(presentation_request_notification_producer_->GetWebContents() ==
-         contents);
-  dialog_delegate_->ShowMediaSession(item->id(), item);
+  MediaNotificationContainerImpl* container =
+      dialog_delegate_->ShowMediaSession(item_id, item);
+  auto* notification_producer = GetNotificationProducer(item_id);
+  if (notification_producer)
+    notification_producer->OnItemShown(item_id, container);
 }
 
 std::set<std::string>

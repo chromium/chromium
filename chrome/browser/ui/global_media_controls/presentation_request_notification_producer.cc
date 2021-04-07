@@ -46,7 +46,8 @@ content::WebContents* GetWebContentsFromPresentationRequest(
 PresentationRequestNotificationProducer::
     PresentationRequestNotificationProducer(
         MediaNotificationService* notification_service)
-    : notification_service_(notification_service) {
+    : notification_service_(notification_service),
+      container_observer_set_(this) {
   notification_service_->AddObserver(this);
 }
 
@@ -70,6 +71,23 @@ PresentationRequestNotificationProducer::GetActiveControllableNotificationIds()
     const {
   return (item_ && !should_hide_) ? std::set<std::string>({item_->id()})
                                   : std::set<std::string>();
+}
+
+void PresentationRequestNotificationProducer::OnItemShown(
+    const std::string& id,
+    MediaNotificationContainerImpl* container) {
+  if (container) {
+    container_observer_set_.Observe(id, container);
+  }
+}
+
+void PresentationRequestNotificationProducer::OnContainerDismissed(
+    const std::string& id) {
+  auto item = GetNotificationItem(id);
+  if (item) {
+    item->Dismiss();
+    DeleteItemForPresentationRequest("Dialog closed.");
+  }
 }
 
 void PresentationRequestNotificationProducer::OnStartPresentationContextCreated(

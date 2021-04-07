@@ -11,6 +11,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_container_observer_set.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
@@ -42,7 +44,8 @@
 class PresentationRequestNotificationProducer final
     : public MediaNotificationProducer,
       public media_router::WebContentsPresentationManager::Observer,
-      public MediaNotificationServiceObserver {
+      public MediaNotificationServiceObserver,
+      public MediaNotificationContainerObserver {
  public:
   explicit PresentationRequestNotificationProducer(
       MediaNotificationService* notification_service);
@@ -57,6 +60,11 @@ class PresentationRequestNotificationProducer final
   GetNotificationItem(const std::string& id) override;
   // Returns the supplemental notification's id if it should be shown.
   std::set<std::string> GetActiveControllableNotificationIds() const override;
+  void OnItemShown(const std::string& id,
+                   MediaNotificationContainerImpl* container) override;
+
+  // MediaNotificationContainerObserver:
+  void OnContainerDismissed(const std::string& id) override;
 
   void OnStartPresentationContextCreated(
       std::unique_ptr<media_router::StartPresentationContext> context);
@@ -117,6 +125,8 @@ class PresentationRequestNotificationProducer final
   // True if |notification_service_| should hide |item_| because there are
   // active notifications on WebContents managed by this producer.
   bool should_hide_ = true;
+
+  MediaNotificationContainerObserverSet container_observer_set_;
 
   base::WeakPtrFactory<PresentationRequestNotificationProducer> weak_factory_{
       this};

@@ -98,3 +98,12 @@ TEST_F(PresentationRequestNotificationProducerTest,
   EXPECT_FALSE(notification_service_->HasOpenDialog());
   task_environment()->RunUntilIdle();
 }
+
+TEST_F(PresentationRequestNotificationProducerTest, DismissNotification) {
+  SimulateStartPresentationContextCreated();
+  auto item = notification_producer_->GetNotificationItem();
+  ASSERT_TRUE(item);
+
+  notification_producer_->OnContainerDismissed(item->id());
+  EXPECT_FALSE(notification_producer_->GetNotificationItem());
+}
