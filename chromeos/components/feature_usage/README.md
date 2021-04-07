@@ -63,12 +63,13 @@ FeatureUsageMetrics::RegisterPref(registry, "YourFeature");
 ```
 
 ### Creating component object
-`FeatureUsageMetrics` object requiers prefs object which must correspond to the
+`FeatureUsageMetrics` object requires a prefs object which must correspond to the
 pref registry used in the previous step.
 
 You also need to implement `FeatureUsageMetrics::Delegate` and pass it to the
 `FeatureUsageMetrics`. Delegate is called to report daily events (eligible,
-enabled).
+enabled). Note that if an object of this type is destroyed and created in the
+same day, metrics eligibility and enablement will only be reported once.
 
 ```c++
 class MyDelegate : public FeatureUsageMetrics::Delegate {

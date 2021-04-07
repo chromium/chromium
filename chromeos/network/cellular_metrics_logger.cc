@@ -6,15 +6,23 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
+#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
+#include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
+
 namespace {
+
+const char kESimUMAFeatureName[] = "ESim";
 
 // Checks whether the current logged in user type is an owner or regular.
 bool IsLoggedInUserOwnerOrRegular() {
@@ -25,6 +33,10 @@ bool IsLoggedInUserOwnerOrRegular() {
       LoginState::Get()->GetLoggedInUserType();
   return user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER ||
          user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR;
+}
+
+SimType GetSimType(const NetworkState* network) {
+  return network->eid().empty() ? SimType::kPSim : SimType::kESim;
 }
 
 }  // namespace
@@ -99,10 +111,56 @@ void CellularMetricsLogger::RecordSimPinOperationResult(
   }
 }
 
-CellularMetricsLogger::SimType CellularMetricsLogger::GetSimType(
-    const NetworkState* network) {
-  return network->eid().empty() ? SimType::kPSim : SimType::kESim;
+// static
+void CellularMetricsLogger::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  feature_usage::FeatureUsageMetrics::RegisterPref(registry,
+                                                   kESimUMAFeatureName);
 }
+
+// Reports daily ESim Standard Feature Usage Logging metrics. Note that
+// if an object of this type is destroyed and created in the same day,
+// metrics eligibility and enablement will only be reported once. Registers
+// to local state prefs instead of profile prefs as cellular network is
+// available to anyone using the device, as opposed to per profile basis.
+class ESimFeatureUsageMetrics
+    : public feature_usage::FeatureUsageMetrics::Delegate {
+ public:
+  explicit ESimFeatureUsageMetrics(PrefService* device_prefs) {
+    DCHECK(device_prefs);
+    feature_usage_metrics_ =
+        std::make_unique<feature_usage::FeatureUsageMetrics>(
+            kESimUMAFeatureName, device_prefs, this);
+  }
+
+  ~ESimFeatureUsageMetrics() override = default;
+
+  // feature_usage::FeatureUsageMetrics::Delegate:
+  bool IsEligible() const final {
+    // If the device is eligible to use ESim.
+    return HermesManagerClient::Get()->GetAvailableEuiccs().size() != 0;
+  }
+
+  // feature_usage::FeatureUsageMetrics::Delegate:
+  bool IsEnabled() const final {
+    // If there are installed ESim profiles.
+    for (const auto& profile : GenerateProfilesFromHermes()) {
+      if (profile.state() == CellularESimProfile::State::kActive ||
+          profile.state() == CellularESimProfile::State::kInactive) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Should be called after an attempt to connect to an ESim profile.
+  void RecordUsage(bool success) const {
+    feature_usage_metrics_->RecordUsage(success);
+  }
+
+ private:
+  std::unique_ptr<feature_usage::FeatureUsageMetrics> feature_usage_metrics_;
+};
 
 CellularMetricsLogger::ConnectResult
 CellularMetricsLogger::NetworkConnectionErrorToConnectResult(
@@ -136,13 +194,22 @@ CellularMetricsLogger::NetworkConnectionErrorToConnectResult(
 
 void CellularMetricsLogger::LogCellularConnectionSuccessHistogram(
     CellularMetricsLogger::ConnectResult start_connect_result,
-    CellularMetricsLogger::SimType sim_type) {
+    SimType sim_type) {
   if (sim_type == SimType::kPSim) {
     UMA_HISTOGRAM_ENUMERATION("Network.Cellular.PSim.ConnectionSuccess",
                               start_connect_result);
   } else {
     UMA_HISTOGRAM_ENUMERATION("Network.Cellular.ESim.ConnectionSuccess",
                               start_connect_result);
+
+    // |esim_feature_usage_metrics_| may not have been created yet.
+    if (!esim_feature_usage_metrics_.get())
+      return;
+
+    esim_feature_usage_metrics_
+        ->RecordUsage(/*success=*/
+                      start_connect_result ==
+                      CellularMetricsLogger::ConnectResult::kSuccess);
   }
 }
 
@@ -292,6 +359,13 @@ void CellularMetricsLogger::NetworkConnectionStateChanged(
   CheckForConnectionStateMetric(network);
 }
 
+void CellularMetricsLogger::SetDevicePrefs(PrefService* device_prefs) {
+  if (!device_prefs)
+    return;
+  esim_feature_usage_metrics_ =
+      std::make_unique<ESimFeatureUsageMetrics>(device_prefs);
+}
+
 void CellularMetricsLogger::CheckForTimeToConnectedMetric(
     const NetworkState* network) {
   if (network->activation_state() != shill::kActivationStateActivated)
@@ -381,7 +455,7 @@ CellularMetricsLogger::PSimActivationStateToEnum(const std::string& state) {
 
 void CellularMetricsLogger::LogCellularDisconnectionsHistogram(
     ConnectionState connection_state,
-    CellularMetricsLogger::SimType sim_type) {
+    SimType sim_type) {
   if (sim_type == SimType::kPSim) {
     UMA_HISTOGRAM_ENUMERATION("Network.Cellular.PSim.Disconnections",
                               connection_state);
@@ -506,7 +580,7 @@ void CellularMetricsLogger::CheckForPSimActivationStateMetric() {
 
   base::Optional<std::string> psim_activation_state;
   for (const auto* network : network_list) {
-    if (network->eid().empty())
+    if (GetSimType(network) == SimType::kPSim)
       psim_activation_state = network->activation_state();
   }
 
@@ -579,9 +653,7 @@ void CellularMetricsLogger::CheckForCellularUsageMetrics() {
     usage = is_non_cellular_connected
                 ? CellularUsage::kConnectedWithOtherNetwork
                 : CellularUsage::kConnectedAndOnlyNetwork;
-    sim_type = connected_cellular_network.value()->eid().empty()
-                   ? SimType::kPSim
-                   : SimType::kESim;
+    sim_type = GetSimType(connected_cellular_network.value());
   } else {
     usage = CellularUsage::kNotConnected;
   }
@@ -640,6 +712,7 @@ CellularMetricsLogger::GetConnectionInfoForCellularNetwork(
 void CellularMetricsLogger::OnShuttingDown() {
   network_state_handler_->RemoveObserver(this, FROM_HERE);
   network_state_handler_ = nullptr;
+  esim_feature_usage_metrics_.reset();
 }
 
 }  // namespace chromeos

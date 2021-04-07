@@ -15,13 +15,23 @@
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
+class PrefService;
+class PrefRegistrySimple;
+
 namespace chromeos {
 
 class CellularESimProfileHandler;
 class CellularMetricsLoggerTest;
+class ESimFeatureUsageMetrics;
 class NetworkConnectionHandler;
 class NetworkState;
 class NetworkStateHandler;
+
+// Cellular network SIM types.
+enum class SimType {
+  kPSim,
+  kESim,
+};
 
 // Class for tracking cellular network related metrics.
 //
@@ -58,6 +68,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       const SimPinOperation& pin_operation,
       const base::Optional<std::string>& shill_error_name = base::nullopt);
 
+  // Registers device preferences used by this class in the provided
+  // |registry|.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
   CellularMetricsLogger();
   ~CellularMetricsLogger() override;
 
@@ -78,6 +92,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   void ConnectFailed(const std::string& service_path,
                      const std::string& error_name) override;
   void DisconnectRequested(const std::string& service_path) override;
+
+  void SetDevicePrefs(PrefService* device_prefs);
 
  private:
   friend class CellularMetricsLoggerTest;
@@ -112,7 +128,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   // Stores connection related information for a cellular network.
   struct ConnectionInfo {
-    ConnectionInfo(const std::string& network_guid);
+    explicit ConnectionInfo(const std::string& network_guid);
     ConnectionInfo(const std::string& network_guid,
                    bool is_connected,
                    bool is_connecting);
@@ -122,12 +138,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     base::Optional<bool> is_connecting;
     base::Optional<base::TimeTicks> last_disconnect_request_time;
     base::Optional<base::TimeTicks> last_connect_start_time;
-  };
-
-  // Cellular network SIM types.
-  enum class SimType {
-    kPSim,
-    kESim,
   };
 
   // Usage type for cellular network. These values are persisted to logs.
@@ -205,8 +215,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kMaxValue = kSuccess
   };
 
-  SimType GetSimType(const NetworkState* network);
-
   // Convert shill error name string to SimPinOperationResult enum.
   static SimPinOperationResult GetSimPinOperationResultForShillError(
       const std::string& shill_error_name);
@@ -219,13 +227,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       const std::string& error_name);
 
   // Helper method to save cellular disconnections histogram.
-  void LogCellularDisconnectionsHistogram(
-      ConnectionState connection_state,
-      CellularMetricsLogger::SimType sim_type);
+  void LogCellularDisconnectionsHistogram(ConnectionState connection_state,
+                                          SimType sim_type);
 
-  void LogCellularConnectionSuccessHistogram(
-      ConnectResult start_connect_result,
-      CellularMetricsLogger::SimType sim_type);
+  void LogCellularConnectionSuccessHistogram(ConnectResult start_connect_result,
+                                             SimType sim_type);
 
   void OnInitializationTimeout();
 
@@ -305,6 +311,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       guid_to_connection_info_map_;
 
   bool initialized_ = false;
+
+  // Tracks ESim feature usage for the Standard Feature Usage Logging Framework.
+  std::unique_ptr<ESimFeatureUsageMetrics> esim_feature_usage_metrics_;
 
   DISALLOW_COPY_AND_ASSIGN(CellularMetricsLogger);
 };
