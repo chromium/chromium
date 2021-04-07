@@ -180,6 +180,10 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
     VisitRow visit;
     FillVisitRow(statement, &visit);
 
+    // Skip transitions that aren't user-visible.
+    if (!TransitionIsVisible(visit.transition))
+      continue;
+
     if (options.duplicate_policy != QueryOptions::KEEP_ALL_DUPLICATES) {
       if (options.duplicate_policy == QueryOptions::REMOVE_DUPLICATES_PER_DAY &&
           found_urls_midnight != visit.visit_time.LocalMidnight()) {
@@ -329,20 +333,10 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
       "SELECT" HISTORY_VISIT_ROW_FIELDS
       "FROM visits "
       "WHERE url=? AND visit_time >= ? AND visit_time < ? "
-      "AND (transition & ?) != 0 "              // CHAIN_END
-      "AND (transition & ?) == 0 "              // FROM_API_3
-      "AND (transition & ?) NOT IN (?, ?, ?) "  // NO SUBFRAME or
-                                                // KEYWORD_GENERATED
       "ORDER BY visit_time DESC"));
   statement.BindInt64(0, url_id);
   statement.BindInt64(1, options.EffectiveBeginTime());
   statement.BindInt64(2, options.EffectiveEndTime());
-  statement.BindInt64(3, ui::PAGE_TRANSITION_CHAIN_END);
-  statement.BindInt64(4, FromApi3QualifierForQuery());
-  statement.BindInt64(5, ui::PAGE_TRANSITION_CORE_MASK);
-  statement.BindInt64(6, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  statement.BindInt64(7, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
-  statement.BindInt64(8, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 
   return FillVisitVectorWithOptions(statement, options, visits);
 }
@@ -437,20 +431,10 @@ bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
       "SELECT" HISTORY_VISIT_ROW_FIELDS
       "FROM visits "
       "WHERE visit_time >= ? AND visit_time < ? "
-      "AND (transition & ?) != 0 "              // CHAIN_END
-      "AND (transition & ?) == 0 "              // FROM_API_3
-      "AND (transition & ?) NOT IN (?, ?, ?) "  // NO SUBFRAME or
-                                                // KEYWORD_GENERATED
       "ORDER BY visit_time DESC, id DESC"));
 
   statement.BindInt64(0, options.EffectiveBeginTime());
   statement.BindInt64(1, options.EffectiveEndTime());
-  statement.BindInt64(2, ui::PAGE_TRANSITION_CHAIN_END);
-  statement.BindInt64(3, FromApi3QualifierForQuery());
-  statement.BindInt64(4, ui::PAGE_TRANSITION_CORE_MASK);
-  statement.BindInt64(5, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  statement.BindInt64(6, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
-  statement.BindInt64(7, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 
   return FillVisitVectorWithOptions(statement, options, visits);
 }
@@ -563,71 +547,59 @@ bool VisitDatabase::GetVisibleVisitCountToHost(const GURL& url,
   // in the middle of redirect chains, hence the transition checks.
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT MIN(v.visit_time), COUNT(*) "
+      "SELECT v.visit_time,transition "
       "FROM visits v INNER JOIN urls u ON v.url = u.id "
-      "WHERE u.url >= ? AND u.url < ? "
-      "AND (transition & ?) != 0 "
-      "AND (transition & ?) == 0 "
-      "AND (transition & ?) NOT IN (?, ?, ?)"));
+      "WHERE u.url >= ? AND u.url < ?"));
   statement.BindString(0, host_query_min);
   statement.BindString(
       1, host_query_min.substr(0, host_query_min.size() - 1) + '0');
-  statement.BindInt64(2, ui::PAGE_TRANSITION_CHAIN_END);
-  statement.BindInt64(3, FromApi3QualifierForQuery());
-  statement.BindInt64(4, ui::PAGE_TRANSITION_CORE_MASK);
-  statement.BindInt64(5, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  statement.BindInt64(6, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
-  statement.BindInt64(7, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 
-  if (!statement.Step()) {
-    // We've never been to this page before.
-    *count = 0;
-    return true;
+  int visit_count = 0;
+  base::Time min_visit_time = base::Time::Max();
+  while (statement.Step()) {
+    if (!TransitionIsVisible(statement.ColumnInt(1)))
+      continue;
+    ++visit_count;
+    min_visit_time =
+        std::min(base::Time::FromInternalValue(statement.ColumnInt64(0)),
+                 min_visit_time);
   }
 
   if (!statement.Succeeded())
     return false;
 
-  *first_visit = base::Time::FromInternalValue(statement.ColumnInt64(0));
-  *count = statement.ColumnInt(1);
+  *count = visit_count;
+  if (visit_count > 0)
+    *first_visit = min_visit_time;
+
   return true;
 }
 
 bool VisitDatabase::GetHistoryCount(const base::Time& begin_time,
                                     const base::Time& end_time,
                                     int* count) {
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT COUNT(*) FROM ("
-      "SELECT DISTINCT url, "
-      // Convert unit of timestamp from the numbers of microseconds since
-      // Windows Epoch to the number of seconds from Unix Epoch. Leap seconds
-      // are not handled in both timestamp units, so a linear conversion is
-      // valid here.
-      "DATE((visit_time - ?) / ?, 'unixepoch', 'localtime')"
-      "FROM visits "
-      "WHERE (transition & ?) != 0 "            // CHAIN_END
-      "AND (transition & ?) == 0 "              // FROM_API_3
-      "AND (transition & ?) NOT IN (?, ?, ?) "  // NO SUBFRAME or
-                                                // KEYWORD_GENERATED
-      "AND visit_time >= ? AND visit_time < ?"
-      ")"));
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "SELECT url,"
+                                 "visit_time,"
+                                 "transition "
+                                 "FROM visits "
+                                 "WHERE visit_time >= ? AND visit_time < ?"));
 
-  statement.BindInt64(0, base::Time::kTimeTToMicrosecondsOffset);
-  statement.BindInt64(1, base::Time::kMicrosecondsPerSecond);
-  statement.BindInt64(2, ui::PAGE_TRANSITION_CHAIN_END);
-  statement.BindInt64(3, FromApi3QualifierForQuery());
-  statement.BindInt64(4, ui::PAGE_TRANSITION_CORE_MASK);
-  statement.BindInt64(5, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  statement.BindInt64(6, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
-  statement.BindInt64(7, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
-  statement.BindInt64(8, begin_time.ToInternalValue());
-  statement.BindInt64(9, end_time.ToInternalValue());
+  statement.BindInt64(0, begin_time.ToInternalValue());
+  statement.BindInt64(1, end_time.ToInternalValue());
 
-  if (!statement.Step())
-    return false;
+  // Set of (date, url) pairs.
+  std::set<std::pair<base::Time, std::string>> url_days;
+  while (statement.Step()) {
+    if (!TransitionIsVisible(statement.ColumnInt(2)))
+      continue;
+    url_days.emplace(
+        base::Time::FromInternalValue(statement.ColumnInt64(1)).LocalMidnight(),
+        statement.ColumnString(0));
+  }
 
-  *count = statement.ColumnInt(0);
+  *count = url_days.size();
   return true;
 }
 
