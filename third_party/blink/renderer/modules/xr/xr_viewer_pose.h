@@ -18,7 +18,9 @@ class XRViewerPose final : public XRPose {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRViewerPose(XRFrame*, const TransformationMatrix&);
+  explicit XRViewerPose(XRFrame*,
+                        const TransformationMatrix&,
+                        bool emulated_position);
   ~XRViewerPose() override = default;
 
   const HeapVector<Member<XRView>>& views() const { return views_; }

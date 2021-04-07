@@ -19,7 +19,7 @@ class XRPose : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRPose(const TransformationMatrix&, bool);
+  XRPose(const TransformationMatrix&, bool emulated_position);
   ~XRPose() override = default;
 
   XRRigidTransform* transform() const { return transform_; }

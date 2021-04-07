@@ -62,8 +62,11 @@ XRFrame::XRFrame(XRSession* session, bool is_animation_frame)
 
 XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
                                      ExceptionState& exception_state) {
+  DCHECK(reference_space);
+
   DVLOG(3) << __func__ << ": is_active_=" << is_active_
-           << ", is_animation_frame_=" << is_animation_frame_;
+           << ", is_animation_frame_=" << is_animation_frame_
+           << ", reference_space->ToString()=" << reference_space->ToString();
 
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -74,11 +77,6 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
   if (!is_animation_frame_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kNonAnimationFrame);
-    return nullptr;
-  }
-
-  if (!reference_space) {
-    DVLOG(1) << __func__ << ": reference space not present, returning null";
     return nullptr;
   }
 
@@ -96,6 +94,7 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
 
   session_->LogGetPose();
 
+  device::mojom::blink::XRReferenceSpaceType type = reference_space->GetType();
   base::Optional<TransformationMatrix> offset_space_from_viewer =
       reference_space->OffsetFromViewer();
 
@@ -108,7 +107,13 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
     return nullptr;
   }
 
-  return MakeGarbageCollected<XRViewerPose>(this, *offset_space_from_viewer);
+  // If the |reference_space| type is kViewer, we know that the pose is not
+  // emulated. Otherwise, ask the session if the poses are emulated or not.
+  return MakeGarbageCollected<XRViewerPose>(
+      this, *offset_space_from_viewer,
+      (type == device::mojom::blink::XRReferenceSpaceType::kViewer)
+          ? false
+          : session_->EmulatedPosition());
 }
 
 XRAnchorSet* XRFrame::trackedAnchors() const {
@@ -208,17 +213,16 @@ XRCPUDepthInformation* XRFrame::getDepthInformation(
 XRPose* XRFrame::getPose(XRSpace* space,
                          XRSpace* basespace,
                          ExceptionState& exception_state) {
-  DVLOG(2) << __func__;
+  DCHECK(space);
+  DCHECK(basespace);
+
+  DVLOG(2) << __func__ << ": is_active=" << is_active_
+           << ", space->ToString()=" << space->ToString()
+           << ", basespace->ToString()=" << basespace->ToString();
 
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveFrame);
-    return nullptr;
-  }
-
-  if (!space || !basespace) {
-    DVLOG(2) << __func__ << " : space or basespace is null, space =" << space
-             << ", basespace = " << basespace;
     return nullptr;
   }
 
@@ -237,6 +241,26 @@ XRPose* XRFrame::getPose(XRSpace* space,
   if (!session_->CanReportPoses()) {
     exception_state.ThrowSecurityError(kCannotReportPoses);
     return nullptr;
+  }
+
+  // If the addresses match, the pose between the spaces is definitely an
+  // identity & we can skip the rest of the logic. The pose is not emulated.
+  if (space == basespace) {
+    DVLOG(3) << __func__ << ": addresses match, returning identity";
+    return MakeGarbageCollected<XRPose>(TransformationMatrix{}, false);
+  }
+
+  // If the native origins match, the pose between the spaces is fixed and
+  // depends only on their offsets from the same native origin - we can compute
+  // it here and skip the rest of the logic. The pose is not emulated.
+  if (space->NativeOrigin() == basespace->NativeOrigin()) {
+    DVLOG(3) << __func__
+             << ": native origins match, returning a pose based on offesets";
+    auto basespace_from_native_origin = basespace->OffsetFromNativeMatrix();
+    auto native_origin_from_space = space->NativeFromOffsetMatrix();
+
+    return MakeGarbageCollected<XRPose>(
+        basespace_from_native_origin * native_origin_from_space, false);
   }
 
   return space->getPose(basespace);

@@ -12,8 +12,9 @@
 namespace blink {
 
 XRViewerPose::XRViewerPose(XRFrame* frame,
-                           const TransformationMatrix& pose_model_matrix)
-    : XRPose(pose_model_matrix, frame->session()->EmulatedPosition()) {
+                           const TransformationMatrix& pose_model_matrix,
+                           bool emulated_position)
+    : XRPose(pose_model_matrix, emulated_position) {
   DVLOG(3) << __func__ << ": emulatedPosition()=" << emulatedPosition();
 
   const HeapVector<Member<XRViewData>>& view_data = frame->session()->views();

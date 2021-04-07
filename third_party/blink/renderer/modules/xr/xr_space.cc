@@ -68,7 +68,8 @@ bool XRSpace::EmulatedPosition() const {
 }
 
 XRPose* XRSpace::getPose(XRSpace* other_space) {
-  DVLOG(2) << __func__;
+  DVLOG(2) << __func__ << ": ToString()=" << ToString()
+           << ", other_space->ToString()=" << other_space->ToString();
 
   // Named mojo_from_offset because that is what we will leave it as, though it
   // starts mojo_from_native.
