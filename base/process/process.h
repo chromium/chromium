@@ -127,7 +127,7 @@ class BASE_EXPORT Process {
   // be the exit code of the process. If |wait| is true, this method will wait
   // for up to one minute for the process to actually terminate.
   // Returns true if the process terminates within the allowed time.
-  // NOTE: On POSIX |exit_code| is ignored.
+  // NOTE: |exit_code| is only used on OS_WIN.
   bool Terminate(int exit_code, bool wait) const;
 
 #if defined(OS_WIN)
