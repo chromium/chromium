@@ -1465,11 +1465,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     }
 
     @CalledByNative
-    protected void handleDialogModalOpened(int virtualViewId) {
-        // Requires P or higher.
-    }
-
-    @CalledByNative
     private void announceLiveRegionText(String text) {
         if (isAccessibilityEnabled()) {
             AccessibilityEvent event =
@@ -1813,7 +1808,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         if (rect.bottom > viewportRectBottom) rect.bottom = viewportRectBottom;
     }
 
-    protected void requestSendAccessibilityEvent(AccessibilityEvent event) {
+    private void requestSendAccessibilityEvent(AccessibilityEvent event) {
         // If there is no parent, then the event can be ignored. In general the parent is only
         // transiently null (such as during teardown, switching tabs...). Also ensure that
         // accessibility is still enabled, throttling may result in events sent late.

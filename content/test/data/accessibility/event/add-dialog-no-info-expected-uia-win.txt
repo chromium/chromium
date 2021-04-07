@@ -1,8 +1,0 @@
-AriaProperties changed on role=dialog
-AriaProperties changed on role=textbox
-IsDataValidForForm changed on role=textbox
-StructureChanged/ChildAdded on role=dialog
-StructureChanged/ChildrenReordered on role=dialog
-StructureChanged/ChildrenReordered on role=document
-Text_TextChanged on role=textbox
-ValueValue changed on role=textbox

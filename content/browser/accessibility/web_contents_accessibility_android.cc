@@ -545,17 +545,6 @@ void WebContentsAccessibilityAndroid::HandleScrolledToAnchor(
   Java_WebContentsAccessibilityImpl_handleScrolledToAnchor(env, obj, unique_id);
 }
 
-void WebContentsAccessibilityAndroid::HandleDialogModalOpened(
-    int32_t unique_id) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
-    return;
-
-  Java_WebContentsAccessibilityImpl_handleDialogModalOpened(env, obj,
-                                                            unique_id);
-}
-
 void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
     const std::u16string& text) {
   JNIEnv* env = AttachCurrentThread();
@@ -960,8 +949,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   if (ui::IsDialog(node->GetRole())) {
     Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoPaneTitle(
         env, obj, info,
-        base::android::ConvertUTF16ToJavaString(
-            env, node->GetDialogModalMessageText()));
+        base::android::ConvertUTF16ToJavaString(env, node->GetInnerText()));
   }
 
   if (node->IsTextField()) {

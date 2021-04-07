@@ -700,21 +700,6 @@ std::u16string BrowserAccessibilityAndroid::GetHint() const {
   return base::JoinString(strings, u" ");
 }
 
-std::u16string BrowserAccessibilityAndroid::GetDialogModalMessageText() const {
-  // For a dialog/modal, first check for a name, and then a description. If
-  // both are empty, fallback to a default "dialog opened." text.
-  if (HasStringAttribute(ax::mojom::StringAttribute::kName)) {
-    return GetString16Attribute(ax::mojom::StringAttribute::kName);
-  }
-
-  if (HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
-    return GetString16Attribute(ax::mojom::StringAttribute::kDescription);
-  }
-
-  content::ContentClient* content_client = content::GetContentClient();
-  return content_client->GetLocalizedString(IDS_AX_DIALOG_MODAL_OPENED);
-}
-
 std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
   std::vector<std::u16string> state_descs;
 

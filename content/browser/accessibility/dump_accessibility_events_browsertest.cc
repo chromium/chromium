@@ -495,21 +495,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAddDialog) {
-  RunEventTest(FILE_PATH_LITERAL("add-dialog.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAddDialogDescribedBy) {
-  RunEventTest(FILE_PATH_LITERAL("add-dialog-described-by.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAddDialogNoInfo) {
-  RunEventTest(FILE_PATH_LITERAL("add-dialog-no-info.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAddHiddenAttribute) {
   RunEventTest(FILE_PATH_LITERAL("add-hidden-attribute.html"));
 }
