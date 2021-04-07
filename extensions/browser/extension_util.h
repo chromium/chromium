@@ -96,6 +96,11 @@ void ResetCorsOriginAccessListForExtension(
     content::BrowserContext* browser_context,
     const Extension& extension);
 
+// Returns whether the |extension| should be loaded in the given
+// |browser_context|.
+bool IsExtensionVisibleToContext(const Extension& extension,
+                                 content::BrowserContext* browser_context);
+
 }  // namespace util
 }  // namespace extensions
 

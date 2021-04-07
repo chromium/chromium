@@ -258,5 +258,22 @@ void ResetCorsOriginAccessListForExtension(
                                             {}, base::DoNothing::Once());
 }
 
+// Returns whether the |extension| should be loaded in the given
+// |browser_context|.
+bool IsExtensionVisibleToContext(const Extension& extension,
+                                 content::BrowserContext* browser_context) {
+  // Renderers don't need to know about themes.
+  if (extension.is_theme())
+    return false;
+
+  // Only extensions enabled in incognito mode should be loaded in an incognito
+  // renderer. However extensions which can't be enabled in the incognito mode
+  // (e.g. platform apps) should also be loaded in an incognito renderer to
+  // ensure connections from incognito tabs to such extensions work.
+  return !browser_context->IsOffTheRecord() ||
+         !CanBeIncognitoEnabled(&extension) ||
+         IsIncognitoEnabled(extension.id(), browser_context);
+}
+
 }  // namespace util
 }  // namespace extensions

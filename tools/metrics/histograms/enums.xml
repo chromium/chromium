@@ -27219,6 +27219,16 @@ Called by update_extension_histograms.py.-->
   <int value="4" label="Requested but not supported"/>
 </enum>
 
+<enum name="ExtensionNavigationPermissions">
+  <int value="0" label="Total Navigations"/>
+  <int value="1" label="Content Script Access"/>
+  <int value="2" label="Page Access"/>
+  <int value="3" label="Web Navigation"/>
+  <int value="4" label="Web Request"/>
+  <int value="5" label="Declarative Net Request"/>
+  <int value="6" label="History"/>
+</enum>
+
 <enum name="ExtensionNotificationType">
   <int value="0" label="NOTIFICATION_TYPE_SIMPLE"/>
   <int value="1" label="NOTIFICATION_TYPE_BASE_FORMAT"/>

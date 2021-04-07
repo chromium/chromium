@@ -2830,6 +2830,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Extensions.Navigation.Permissions"
+    enum="ExtensionNavigationPermissions" expires_after="M95">
+  <owner>dtapuska@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Reports a subset of the permissions that are granted to enabled extensions
+    running in the associated browser context at the time a navigation
+    completes. Upon the main frame navigation completing each unique permission
+    observed from all enabled extensions and a kTotal bucket will be recorded.
+    For example, the kWebNavigation bucket divided by kTotal will yield the
+    percentage of main frame navigations that had the kWebNavigation permission.
+    This will be used to evaluate potential impact for BFCache.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.NetworkDelay" units="ms" expires_after="2021-11-20">
   <owner>battre@chromium.org</owner>
   <owner>karandeepb@chromium.org</owner>

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -48,6 +49,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
@@ -57,6 +59,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
+#include "extensions/common/permissions/api_permission.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/url_constants.h"
@@ -71,6 +74,80 @@ using content::NavigationEntry;
 using content::WebContents;
 
 namespace extensions {
+
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ExtensionPermissionsOnLoad {
+  kTotal,
+  kContentScriptAccess,
+  kPageAccess,
+  kWebNavigation,
+  kWebRequest,
+  kDeclarativeNetRequest,
+  kHistory,
+  kMaxValue = kHistory
+};
+
+void RecordPermission(ExtensionPermissionsOnLoad permission) {
+  UMA_HISTOGRAM_ENUMERATION("Extensions.Navigation.Permissions", permission);
+}
+
+// Record permissions for features that may be influence by BFCache shipping.
+// Details in
+// https://docs.google.com/document/d/11rdAEFyS1DEky_LRE_SfthHZHZa2DtC156U-ZK1zyQk/edit#heading=h.h3agt9njihgd
+void RecordExtensionPermissionsPerNavigation(
+    const ExtensionSet& enabled_extensions,
+    content::BrowserContext* context,
+    int tab_id,
+    const GURL& url) {
+  // This is just the set of permissions we want to look for.
+  const std::pair<mojom::APIPermissionID, ExtensionPermissionsOnLoad>
+      kPermissions[] = {{mojom::APIPermissionID::kWebNavigation,
+                         ExtensionPermissionsOnLoad::kWebNavigation},
+                        {mojom::APIPermissionID::kHistory,
+                         ExtensionPermissionsOnLoad::kHistory},
+                        {mojom::APIPermissionID::kWebRequest,
+                         ExtensionPermissionsOnLoad::kWebRequest},
+                        {mojom::APIPermissionID::kWebRequestBlocking,
+                         ExtensionPermissionsOnLoad::kWebRequest},
+                        {mojom::APIPermissionID::kDeclarativeNetRequest,
+                         ExtensionPermissionsOnLoad::kDeclarativeNetRequest}};
+
+  // We put the values into a set so we only will count them once for a set of
+  // extensions per navigation.
+  std::set<ExtensionPermissionsOnLoad> permissions_discovered;
+
+  for (const auto& extension : enabled_extensions) {
+    if (util::IsExtensionVisibleToContext(*extension, context)) {
+      // Determine if the extension can access the page.
+      if (extension->permissions_data()->GetContentScriptAccess(
+              url, tab_id, nullptr) == PermissionsData::PageAccess::kAllowed) {
+        permissions_discovered.insert(
+            ExtensionPermissionsOnLoad::kContentScriptAccess);
+      }
+      if (extension->permissions_data()->GetPageAccess(url, tab_id, nullptr) ==
+          PermissionsData::PageAccess::kAllowed) {
+        permissions_discovered.insert(ExtensionPermissionsOnLoad::kPageAccess);
+      }
+
+      for (auto permission : kPermissions) {
+        if (extension->permissions_data()->HasAPIPermission(permission.first)) {
+          permissions_discovered.insert(permission.second);
+        }
+      }
+    }
+  }
+
+  for (auto permission : permissions_discovered) {
+    RecordPermission(permission);
+  }
+  // kTotal is used as the total navigations denominator.
+  RecordPermission(ExtensionPermissionsOnLoad::kTotal);
+}
+
+}  // namespace
 
 TabHelper::~TabHelper() = default;
 
@@ -199,6 +276,11 @@ void TabHelper::DidFinishNavigation(
   content::BrowserContext* context = web_contents()->GetBrowserContext();
   ExtensionRegistry* registry = ExtensionRegistry::Get(context);
   const ExtensionSet& enabled_extensions = registry->enabled_extensions();
+
+  RecordExtensionPermissionsPerNavigation(
+      enabled_extensions, context,
+      sessions::SessionTabHelper::IdForTab(web_contents()).id(),
+      navigation_handle->GetURL());
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   if (browser && browser->deprecated_is_app()) {
