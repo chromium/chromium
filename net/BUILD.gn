@@ -4322,7 +4322,6 @@ test("net_unittests") {
     "quic/mock_quic_data.h",
     "quic/network_connection_unittest.cc",
     "quic/platform/impl/quic_chromium_clock_test.cc",
-    "quic/platform/impl/quic_uint128_impl_unittest.cc",
     "quic/properties_based_quic_server_info_test.cc",
     "quic/quic_address_mismatch_test.cc",
     "quic/quic_chromium_alarm_factory_test.cc",

@@ -200,7 +200,7 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     return true;
   }
   void OnPacketComplete() override { *output_ << "OnPacketComplete\n"; }
-  bool IsValidStatelessResetToken(QuicUint128 token) const override {
+  bool IsValidStatelessResetToken(absl::uint128 token) const override {
     *output_ << "IsValidStatelessResetToken\n";
     return false;
   }
