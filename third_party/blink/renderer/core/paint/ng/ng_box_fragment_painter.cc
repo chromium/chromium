@@ -1499,14 +1499,15 @@ void NGBoxFragmentPainter::PaintBoxItem(
     const PhysicalOffset& paint_offset) {
   DCHECK_EQ(item.Type(), NGFragmentItem::kBox);
   DCHECK_EQ(&item, cursor.Current().Item());
-  DCHECK_EQ(item.BoxFragment(), &child_fragment);
+  DCHECK_EQ(item.PostLayoutBoxFragment(), &child_fragment);
   DCHECK(!child_fragment.IsHiddenForPaint());
   if (child_fragment.HasSelfPaintingLayer() || child_fragment.IsFloating())
     return;
 
   // Skip if this child does not intersect with CullRect.
   if (!paint_info.IntersectsCullRect(
-          item.InkOverflow(), paint_offset + item.OffsetInContainerFragment()))
+          child_fragment.InkOverflow(),
+          paint_offset + item.OffsetInContainerFragment()))
     return;
 
   if (child_fragment.IsAtomicInline() || child_fragment.IsListMarker()) {
@@ -1539,7 +1540,9 @@ void NGBoxFragmentPainter::PaintBoxItem(const NGFragmentItem& item,
   DCHECK_EQ(&item, cursor.Current().Item());
 
   if (const NGPhysicalBoxFragment* child_fragment = item.BoxFragment()) {
-    PaintBoxItem(item, *child_fragment, cursor, paint_info, paint_offset);
+    child_fragment = child_fragment->PostLayout();
+    if (child_fragment)
+      PaintBoxItem(item, *child_fragment, cursor, paint_info, paint_offset);
     return;
   }
 
