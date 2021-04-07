@@ -37,7 +37,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.DummyUiActivity;
@@ -240,29 +239,35 @@ public class RadioButtonWithEditTextTest {
     public void testFocusChange() {
         Assert.assertFalse(mRadioButtonWithEditText.hasFocus());
         TestThreadUtils.runOnUiThreadBlocking(() -> { mRadioButtonWithEditText.setChecked(true); });
-        Assert.assertFalse("Edit text should not gain focus when radio button is checked",
+        Assert.assertFalse("Edit text should not gain focus when radio button is checked.",
                 mEditText.hasFocus());
         waitForCursorVisibility(false);
 
-        // Test requesting focus on the EditText
+        // Test requesting focus on the EditText.
         TestThreadUtils.runOnUiThreadBlocking(() -> { mEditText.requestFocus(); });
         waitForCursorVisibility(true);
 
-        // Requesting focus elsewhere
+        // Requesting focus elsewhere.
         TestThreadUtils.runOnUiThreadBlocking(() -> { mDummyButton.requestFocus(); });
         waitForCursorVisibility(false);
         waitForKeyboardVisibility(false);
 
-        // Click EditText to show keyboard and checked the radio button.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mRadioButtonWithEditText.setChecked(false); });
-        TouchCommon.singleClickView(mEditText);
+        // Uncheck the radio button, then click EditText to show keyboard and checked the radio
+        // button.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mRadioButtonWithEditText.setChecked(false);
+
+            // Request focus on EditText and show keyboard as if it is clicked.
+            // See https://crbug.com/1177183.
+            mEditText.requestFocus();
+            KeyboardVisibilityDelegate.getInstance().showKeyboard(mEditText);
+        });
         waitForCursorVisibility(true);
         waitForKeyboardVisibility(true);
         Assert.assertTrue("RadioButton should be checked after EditText gains focus.",
                 mRadioButtonWithEditText.isChecked());
 
-        // Test editor action
+        // Test editor action.
         InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
         waitForCursorVisibility(false);
         waitForKeyboardVisibility(false);
