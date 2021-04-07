@@ -242,6 +242,11 @@ IN_PROC_BROWSER_TEST_P(CapturedSitesPasswordManagerBrowserTest, Recipe) {
     ADD_FAILURE() << "Full execution was unable to complete.";
 }
 
+// This test is called with a dynamic list and may be empty during the Autofill
+// run instance, so adding GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST a la
+// crbug/1192206
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    CapturedSitesPasswordManagerBrowserTest);
 INSTANTIATE_TEST_SUITE_P(
     All,
     CapturedSitesPasswordManagerBrowserTest,

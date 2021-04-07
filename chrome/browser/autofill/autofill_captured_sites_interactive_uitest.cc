@@ -341,6 +341,12 @@ IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesInteractiveTest, Recipe) {
     }
   }
 }
+
+// This test is called with a dynamic list and will be empty during the Password
+// run instance, so adding GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST a la
+// crbug/1192206
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    AutofillCapturedSitesInteractiveTest);
 INSTANTIATE_TEST_SUITE_P(
     All,
     AutofillCapturedSitesInteractiveTest,
