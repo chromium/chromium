@@ -296,6 +296,8 @@ message SetInsetsRequest {
 
 message GetUserAgentRequest {}
 
+message FocusRequest {}
+
 message GetUserAgentResponse {
   string user_agent = 1;
 }
@@ -348,6 +350,7 @@ message WebviewRequest {
     ClearCookiesRequest clear_cookies = 22;
     SetInsetsRequest set_insets = 23;
     GetUserAgentRequest get_user_agent = 24;
+    FocusRequest focus = 25;
   }
 }
 

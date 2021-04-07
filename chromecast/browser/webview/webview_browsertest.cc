@@ -11,6 +11,7 @@
 #include "chromecast/browser/extensions/cast_extension_system_factory.h"
 #include "chromecast/browser/webview/webview_browser_context.h"
 #include "chromecast/browser/webview/webview_controller.h"
+#include "chromecast/graphics/cast_window_manager_aura.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -28,6 +29,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/focus_client.h"
+#include "ui/aura/window_tree_host.h"
 
 using testing::_;
 using testing::Truly;
@@ -413,6 +416,41 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, UserDataOverride) {
   webview::WebviewRequest update_settings;
   update_settings.mutable_update_settings()->set_javascript_enabled(true);
   SubmitWebviewRequest(&webview, update_settings);
+
+  webview::WebviewRequest navigate;
+  navigate.mutable_navigate()->set_url(test_url.spec());
+  SubmitWebviewRequest(&webview, navigate);
+
+  RunMessageLoop();
+}
+
+IN_PROC_BROWSER_TEST_F(WebviewTest, Focus) {
+  // Webview creation sends messages to the client (eg: accessibility ID).
+  EXPECT_CALL(client_, EnqueueSend(_)).Times(testing::AnyNumber());
+
+  WebviewController webview(context_.get(), &client_, true);
+  GURL test_url = embedded_test_server()->GetURL("foo.com", "/test");
+  webview.GetWebContents()->GetNativeView()->Show();
+  CastWindowManagerAura window_manager(false);
+  window_manager.Setup();
+  window_manager.AddWindow(webview.GetWebContents()->GetNativeView());
+
+  auto check = [](const std::unique_ptr<webview::WebviewResponse>& response) {
+    return response->has_page_event() &&
+           response->page_event().current_page_state() ==
+               webview::AsyncPageEvent_State_LOADED;
+  };
+  EXPECT_CALL(client_, EnqueueSend(Truly(check)))
+      .Times(testing::AtLeast(1))
+      .WillOnce(
+          [this, &webview](std::unique_ptr<webview::WebviewResponse> response) {
+            webview::WebviewRequest request;
+            request.mutable_focus();
+            webview.ProcessRequest(request);
+            EXPECT_TRUE(webview.GetWebContents()->GetNativeView()->HasFocus());
+
+            Quit();
+          });
 
   webview::WebviewRequest navigate;
   navigate.mutable_navigate()->set_url(test_url.spec());

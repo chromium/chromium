@@ -66,6 +66,7 @@ class WebviewController : public CastWebContents::Delegate,
   void OnNavigationThrottleDestroyed(WebviewNavigationThrottle* throttle);
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(WebviewTest, Focus);
   FRIEND_TEST_ALL_PREFIXES(WebviewTest, SetInsets);
   FRIEND_TEST_ALL_PREFIXES(WebviewTest, UserDataOverrideOnFirstRequest);
   FRIEND_TEST_ALL_PREFIXES(WebviewTest, UserDataOverride);

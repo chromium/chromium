@@ -100,6 +100,7 @@ class WebviewClient : public exo::wayland::clients::ClientBase {
   void HandleFillSurfaceColor(const std::vector<std::string>& tokens);
   void SendKeyRequest(const std::vector<std::string>& tokens);
   void HandleSetInsets(const std::vector<std::string>& tokens);
+  void HandleFocus(const std::vector<std::string>& tokens);
 
   void SendTouchInput(const Webview* webview,
                       int x,

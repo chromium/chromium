@@ -189,6 +189,10 @@ void WebContentController::ProcessRequest(
       HandleGetUserAgent(request.id());
       break;
 
+    case webview::WebviewRequest::kFocus:
+      contents->GetNativeView()->Focus();
+      break;
+
     default:
       client_->OnError("Unknown request code");
       break;

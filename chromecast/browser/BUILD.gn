@@ -617,6 +617,7 @@ cast_source_set("browsertests") {
     "//chromecast/base",
     "//chromecast/base:chromecast_switches",
     "//chromecast/base/metrics",
+    "//chromecast/graphics:graphics",
     "//components/keyed_service/content",
     "//components/prefs",
     "//content/public/browser",
@@ -626,6 +627,10 @@ cast_source_set("browsertests") {
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
   ]
+
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
 
   data = [
     "//chromecast/browser/test/data/",
