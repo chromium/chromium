@@ -15,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -161,7 +160,7 @@ FieldCandidatesMap FormField::ParseFormFields(
 
 // static
 bool FormField::ParseField(AutofillScanner* scanner,
-                           const std::u16string& pattern,
+                           base::StringPiece16 pattern,
                            AutofillField** match,
                            const RegExLogging& logging) {
   return ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT, match, logging);
@@ -175,7 +174,7 @@ bool FormField::ParseField(AutofillScanner* scanner,
 }
 
 bool FormField::ParseField(AutofillScanner* scanner,
-                           const std::u16string& pattern,
+                           base::StringPiece16 pattern,
                            const std::vector<MatchingPattern>& patterns,
                            AutofillField** match,
                            const RegExLogging& logging) {
@@ -190,7 +189,7 @@ bool FormField::ParseField(AutofillScanner* scanner,
 }
 
 bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
-                                    const std::u16string& pattern,
+                                    base::StringPiece16 pattern,
                                     int match_field_attributes,
                                     int match_field_input_types,
                                     AutofillField** match,
@@ -228,7 +227,7 @@ bool FormField::ParseFieldSpecifics(
     if (base::FeatureList::IsEnabled(
             features::kAutofillParsingPatternsNegativeMatching)) {
       if (!pattern.negative_pattern.empty() &&
-          FormField::Match(field, base::UTF8ToUTF16(pattern.negative_pattern),
+          FormField::Match(field, pattern.negative_pattern,
                            pattern.match_field_attributes,
                            pattern.match_field_input_types, logging)) {
         continue;
@@ -236,7 +235,7 @@ bool FormField::ParseFieldSpecifics(
     }
 
     if (!pattern.positive_pattern.empty() &&
-        MatchAndAdvance(scanner, base::UTF8ToUTF16(pattern.positive_pattern),
+        MatchAndAdvance(scanner, pattern.positive_pattern,
                         pattern.match_field_attributes,
                         pattern.match_field_input_types, match, logging)) {
       return true;
@@ -247,7 +246,7 @@ bool FormField::ParseFieldSpecifics(
 
 // static
 bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
-                                    const std::u16string& pattern,
+                                    base::StringPiece16 pattern,
                                     int match_type,
                                     AutofillField** match,
                                     const RegExLogging& logging) {
@@ -260,7 +259,7 @@ bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
 
 bool FormField::ParseFieldSpecifics(
     AutofillScanner* scanner,
-    const std::u16string& pattern,
+    base::StringPiece16 pattern,
     int match_type,
     const std::vector<MatchingPattern>& patterns,
     AutofillField** match,
@@ -308,7 +307,7 @@ void FormField::AddClassification(const AutofillField* field,
 }
 
 bool FormField::MatchAndAdvance(AutofillScanner* scanner,
-                                const std::u16string& pattern,
+                                base::StringPiece16 pattern,
                                 int match_field_attributes,
                                 int match_field_input_types,
                                 AutofillField** match,
@@ -327,7 +326,7 @@ bool FormField::MatchAndAdvance(AutofillScanner* scanner,
 
 // static
 bool FormField::MatchAndAdvance(AutofillScanner* scanner,
-                                const std::u16string& pattern,
+                                base::StringPiece16 pattern,
                                 int match_type,
                                 AutofillField** match,
                                 const RegExLogging& logging) {
@@ -339,7 +338,7 @@ bool FormField::MatchAndAdvance(AutofillScanner* scanner,
 }
 
 bool FormField::Match(const AutofillField* field,
-                      const std::u16string& pattern,
+                      base::StringPiece16 pattern,
                       int match_field_attributes,
                       int match_field_input_types,
                       const RegExLogging& logging) {
@@ -387,7 +386,7 @@ bool FormField::Match(const AutofillField* field,
 
 // static
 bool FormField::Match(const AutofillField* field,
-                      const std::u16string& pattern,
+                      base::StringPiece16 pattern,
                       int match_type,
                       const RegExLogging& logging) {
   int match_field_attributes = match_type & 0b11;

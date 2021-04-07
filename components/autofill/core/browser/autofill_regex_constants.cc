@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file contains UTF8 strings that we want as char arrays.  To avoid
-// different compilers, we use a script to convert the UTF8 strings into
-// numeric literals (\x##).
+// This file contains UTF16 strings that we want as char16_t arrays.
 
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 
@@ -13,233 +11,233 @@ namespace autofill {
 /////////////////////////////////////////////////////////////////////////////
 // address_field.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kAttentionIgnoredRe[] = "attention|attn";
-const char kRegionIgnoredRe[] =
-    "province|region|other"
-    "|provincia"       // es
-    "|bairro|suburb";  // pt-BR, pt-PT
-const char kAddressNameIgnoredRe[] =
-    "address.*nickname|address.*label"
-    "|adres ([İi]sim|başlığı|adı)"  // tr
-    "|identificação do endereço"    // pt-BR, pt-PT
-    "|(label|judul|nama) alamat";   // id
-const char kCompanyRe[] =
-    "company|business|organization|organisation"
-    "|(?<!con)firma|firmenname"  // de-DE
-    "|empresa"                   // es
-    "|societe|société"           // fr-FR
-    "|ragione.?sociale"          // it-IT
-    "|会社"                      // ja-JP
-    "|название.?компании"        // ru
-    "|单位|公司"                 // zh-CN
-    "|شرکت"                      // fa
-    "|회사|직장"                 // ko-KR
-    "|(nama.?)?perusahaan";      // id
-const char kStreetNameRe[] =
-    "stra(ss|ß)e"              // de
-    "|street"                  // en
-    "|улица|название.?улицы"   // ru
-    "|rua|avenida"             // pt-PT, pt-BR
-    "|((?<!do |de )endereço)"  // pt-BR
-    "|calle";                  // es-MX
-const char kHouseNumberRe[] =
-    "(house.?|street.?|^)number"              // en
-    "|(haus|^)nummer"                         // de
-    "|^\\*?.?número(.?\\*?$| da residência)"  // pt-BR, pt-PT
-    "|дом|номер.?дома"                        // ru
-    "|exterior";                              // es-MX
-const char kApartmentNumberRe[] =
-    "apartment"                      // en
-    "|interior"                      // es-MX
-    "|n(u|ú)mero.*app?art(a|e)ment"  // es,fr,it
-    "|Wohnung"                       // de
-    "|квартир";                      // ru
-const char kAddressLine1Re[] =
-    "^address$|address[_-]?line(one)?|address1|addr1|street"
-    "|(?:shipping|billing)address$"
-    "|strasse|straße|hausnummer|housenumber"  // de-DE
-    "|house.?name"                            // en-GB
-    "|direccion|dirección"                    // es
-    "|adresse"                                // fr-FR
-    "|indirizzo"                              // it-IT
-    "|^住所$|住所1"                           // ja-JP
-    "|morada|((?<!do |de )endereço)"          // pt-BR, pt-PT
-    "|Адрес"                                  // ru
-    "|地址"                                   // zh-CN
-    "|(\\b|_)adres(?! tarifi)(\\b|_)"         // tr
-    "|^주소.?$|주소.?1"                       // ko-KR
-    "|^alamat";                               // id
-const char kAddressLine1LabelRe[] =
-    "(^\\W*address)"
-    "|(address\\W*$)"
-    "|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|"
-    "recipient|home|work|office|school|business|mail)[\\s\\-]+address"
-    "|address\\s+(of|for|to|from)"
-    "|adresse"                         // fr-FR
-    "|indirizzo"                       // it-IT
-    "|住所"                            // ja-JP
-    "|地址"                            // zh-CN
-    "|(\\b|_)adres(?! tarifi)(\\b|_)"  // tr
-    "|주소"                            // ko-KR
-    "|^alamat"                         // id
+const char16_t kAttentionIgnoredRe[] = u"attention|attn";
+const char16_t kRegionIgnoredRe[] =
+    u"province|region|other"
+    u"|provincia"       // es
+    u"|bairro|suburb";  // pt-BR, pt-PT
+const char16_t kAddressNameIgnoredRe[] =
+    u"address.*nickname|address.*label"
+    u"|adres ([İi]sim|başlığı|adı)"  // tr
+    u"|identificação do endereço"    // pt-BR, pt-PT
+    u"|(label|judul|nama) alamat";   // id
+const char16_t kCompanyRe[] =
+    u"company|business|organization|organisation"
+    u"|(?<!con)firma|firmenname"  // de-DE
+    u"|empresa"                   // es
+    u"|societe|société"           // fr-FR
+    u"|ragione.?sociale"          // it-IT
+    u"|会社"                      // ja-JP
+    u"|название.?компании"        // ru
+    u"|单位|公司"                 // zh-CN
+    u"|شرکت"                      // fa
+    u"|회사|직장"                 // ko-KR
+    u"|(nama.?)?perusahaan";      // id
+const char16_t kStreetNameRe[] =
+    u"stra(ss|ß)e"              // de
+    u"|street"                  // en
+    u"|улица|название.?улицы"   // ru
+    u"|rua|avenida"             // pt-PT, pt-BR
+    u"|((?<!do |de )endereço)"  // pt-BR
+    u"|calle";                  // es-MX
+const char16_t kHouseNumberRe[] =
+    u"(house.?|street.?|^)number"              // en
+    u"|(haus|^)nummer"                         // de
+    u"|^\\*?.?número(.?\\*?$| da residência)"  // pt-BR, pt-PT
+    u"|дом|номер.?дома"                        // ru
+    u"|exterior";                              // es-MX
+const char16_t kApartmentNumberRe[] =
+    u"apartment"                      // en
+    u"|interior"                      // es-MX
+    u"|n(u|ú)mero.*app?art(a|e)ment"  // es,fr,it
+    u"|Wohnung"                       // de
+    u"|квартир";                      // ru
+const char16_t kAddressLine1Re[] =
+    u"^address$|address[_-]?line(one)?|address1|addr1|street"
+    u"|(?:shipping|billing)address$"
+    u"|strasse|straße|hausnummer|housenumber"  // de-DE
+    u"|house.?name"                            // en-GB
+    u"|direccion|dirección"                    // es
+    u"|adresse"                                // fr-FR
+    u"|indirizzo"                              // it-IT
+    u"|^住所$|住所1"                           // ja-JP
+    u"|morada|((?<!do |de )endereço)"          // pt-BR, pt-PT
+    u"|Адрес"                                  // ru
+    u"|地址"                                   // zh-CN
+    u"|(\\b|_)adres(?! tarifi)(\\b|_)"         // tr
+    u"|^주소.?$|주소.?1"                       // ko-KR
+    u"|^alamat";                               // id
+const char16_t kAddressLine1LabelRe[] =
+    u"(^\\W*address)"
+    u"|(address\\W*$)"
+    u"|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|"
+    u"recipient|home|work|office|school|business|mail)[\\s\\-]+address"
+    u"|address\\s+(of|for|to|from)"
+    u"|adresse"                         // fr-FR
+    u"|indirizzo"                       // it-IT
+    u"|住所"                            // ja-JP
+    u"|地址"                            // zh-CN
+    u"|(\\b|_)adres(?! tarifi)(\\b|_)"  // tr
+    u"|주소"                            // ko-KR
+    u"|^alamat"                         // id
     // Should contain street and any other address component, in any order
-    "|street.*(house|building|apartment|floor)"  // en
-    "|(house|building|apartment|floor).*street"
-    "|(sokak|cadde).*(apartman|bina|daire|mahalle)"  // tr
-    "|(apartman|bina|daire|mahalle).*(sokak|cadde)"
-    "|улиц.*(дом|корпус|квартир|этаж)|(дом|корпус|квартир|этаж).*улиц";  // ru
-const char kAddressLine2Re[] =
-    "address[_-]?line(2|two)|address2|addr2|street|suite|unit"
-    "|adresszusatz|ergänzende.?angaben"        // de-DE
-    "|direccion2|colonia|adicional"            // es
-    "|addresssuppl|complementnom|appartement"  // fr-FR
-    "|indirizzo2"                              // it-IT
-    "|住所2"                                   // ja-JP
-    "|complemento|addrcomplement"              // pt-BR, pt-PT
-    "|Улица"                                   // ru
-    "|地址2"                                   // zh-CN
-    "|주소.?2";                                // ko-KR
-const char kAddressLine2LabelRe[] =
-    "address|line"
-    "|adresse"    // fr-FR
-    "|indirizzo"  // it-IT
-    "|地址"       // zh-CN
-    "|주소";      // ko-KR
-const char kAddressLinesExtraRe[] =
-    "address.*line[3-9]|address[3-9]|addr[3-9]|street|line[3-9]"
-    "|municipio"           // es
-    "|batiment|residence"  // fr-FR
-    "|indirizzo[3-9]";     // it-IT
-const char kAddressLookupRe[] = "lookup";
-const char kCountryRe[] =
-    "country|countries"
-    "|país|pais"                         // es
-    "|(\\b|_)land(\\b|_)(?!.*(mark.*))"  // de-DE landmark is a type in india.
-    "|(?<!(入|出))国"                    // ja-JP
-    "|国家"                              // zh-CN
-    "|국가|나라"                         // ko-KR
-    "|(\\b|_)(ülke|ulce|ulke)(\\b|_)"    // tr
-    "|کشور"                              // fa
-    "|negara";                           // id
-const char kCountryLocationRe[] = "location";
-const char kZipCodeRe[] =
-    "zip|postal|post.*code|pcode"
-    "|pin.?code"                    // en-IN
-    "|postleitzahl"                 // de-DE
-    "|\\bcp\\b"                     // es
-    "|\\bcdp\\b"                    // fr-FR
-    "|\\bcap\\b"                    // it-IT
-    "|郵便番号"                     // ja-JP
-    "|codigo|codpos|\\bcep\\b"      // pt-BR, pt-PT
-    "|Почтовый.?Индекс"             // ru
-    "|पिन.?कोड"                     // hi
-    "|പിന്‍കോഡ്"  // ml
-    "|邮政编码|邮编"                // zh-CN
-    "|郵遞區號"                     // zh-TW
-    "|(\\b|_)posta kodu(\\b|_)"     // tr
-    "|우편.?번호"                   // ko-KR
-    "|kode.?pos";                   // id
-const char kZip4Re[] =
-    "zip|^-$|post2"
-    "|codpos2";  // pt-BR, pt-PT
-const char kDependentLocalityRe[] =
-    "neighbo(u)?rhood"  // en
-    "|bairro"           // pt-BR, pt-PT
-    "|mahalle|köy"      // tr
-    "|kecamatan";       // id
-const char kCityRe[] =
-    "city|town"
-    "|\\bort\\b|stadt"                                  // de-DE
-    "|suburb"                                           // en-AU
-    "|ciudad|provincia|localidad|poblacion"             // es
-    "|ville|commune"                                    // fr-FR
-    "|localita"                                         // it-IT
-    "|市区町村"                                         // ja-JP
-    "|cidade|município"                                 // pt-BR, pt-PT
-    "|Город|Насел(е|ё)нный.?пункт"                      // ru
-    "|市"                                               // zh-CN
-    "|分區"                                             // zh-TW
-    "|شهر"                                              // fa
-    "|शहर"                                              // hi for city
-    "|ग्राम|गाँव"                                         // hi for village
-    "|നഗരം|ഗ്രാമം"                                       // ml for town|village
-    "|((\\b|_|\\*)([İii̇]l[cç]e(miz|niz)?)(\\b|_|\\*))"  // tr
-    "|^시[^도·・]|시[·・]?군[·・]?구"                   // ko-KR
-    "|kota|kabupaten";                                  // id
-const char kStateRe[] =
-    "(?<!(united|hist|history).?)state|county|region|province"
-    "|county|principality"  // en-UK
-    "|都道府県"             // ja-JP
-    "|estado|provincia"     // pt-BR, pt-PT
-    "|область"              // ru
-    "|省"                   // zh-CN
-    "|地區"                 // zh-TW
-    "|സംസ്ഥാനം"              // ml
-    "|استان"                // fa
-    "|राज्य"                 // hi
-    "|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]l(imiz)?|kent)(\\b|_|\\*))"  // tr
-    "|^시[·・]?도"                                                   // ko-KR
-    "|provinci";                                                     // id
+    u"|street.*(house|building|apartment|floor)"  // en
+    u"|(house|building|apartment|floor).*street"
+    u"|(sokak|cadde).*(apartman|bina|daire|mahalle)"  // tr
+    u"|(apartman|bina|daire|mahalle).*(sokak|cadde)"
+    u"|улиц.*(дом|корпус|квартир|этаж)|(дом|корпус|квартир|этаж).*улиц";  // ru
+const char16_t kAddressLine2Re[] =
+    u"address[_-]?line(2|two)|address2|addr2|street|suite|unit"
+    u"|adresszusatz|ergänzende.?angaben"        // de-DE
+    u"|direccion2|colonia|adicional"            // es
+    u"|addresssuppl|complementnom|appartement"  // fr-FR
+    u"|indirizzo2"                              // it-IT
+    u"|住所2"                                   // ja-JP
+    u"|complemento|addrcomplement"              // pt-BR, pt-PT
+    u"|Улица"                                   // ru
+    u"|地址2"                                   // zh-CN
+    u"|주소.?2";                                // ko-KR
+const char16_t kAddressLine2LabelRe[] =
+    u"address|line"
+    u"|adresse"    // fr-FR
+    u"|indirizzo"  // it-IT
+    u"|地址"       // zh-CN
+    u"|주소";      // ko-KR
+const char16_t kAddressLinesExtraRe[] =
+    u"address.*line[3-9]|address[3-9]|addr[3-9]|street|line[3-9]"
+    u"|municipio"           // es
+    u"|batiment|residence"  // fr-FR
+    u"|indirizzo[3-9]";     // it-IT
+const char16_t kAddressLookupRe[] = u"lookup";
+const char16_t kCountryRe[] =
+    u"country|countries"
+    u"|país|pais"                         // es
+    u"|(\\b|_)land(\\b|_)(?!.*(mark.*))"  // de-DE landmark is a type in india.
+    u"|(?<!(入|出))国"                    // ja-JP
+    u"|国家"                              // zh-CN
+    u"|국가|나라"                         // ko-KR
+    u"|(\\b|_)(ülke|ulce|ulke)(\\b|_)"    // tr
+    u"|کشور"                              // fa
+    u"|negara";                           // id
+const char16_t kCountryLocationRe[] = u"location";
+const char16_t kZipCodeRe[] =
+    u"zip|postal|post.*code|pcode"
+    u"|pin.?code"                    // en-IN
+    u"|postleitzahl"                 // de-DE
+    u"|\\bcp\\b"                     // es
+    u"|\\bcdp\\b"                    // fr-FR
+    u"|\\bcap\\b"                    // it-IT
+    u"|郵便番号"                     // ja-JP
+    u"|codigo|codpos|\\bcep\\b"      // pt-BR, pt-PT
+    u"|Почтовый.?Индекс"             // ru
+    u"|पिन.?कोड"                     // hi
+    u"|പിന്‍കോഡ്"  // ml
+    u"|邮政编码|邮编"                // zh-CN
+    u"|郵遞區號"                     // zh-TW
+    u"|(\\b|_)posta kodu(\\b|_)"     // tr
+    u"|우편.?번호"                   // ko-KR
+    u"|kode.?pos";                   // id
+const char16_t kZip4Re[] =
+    u"zip|^-$|post2"
+    u"|codpos2";  // pt-BR, pt-PT
+const char16_t kDependentLocalityRe[] =
+    u"neighbo(u)?rhood"  // en
+    u"|bairro"           // pt-BR, pt-PT
+    u"|mahalle|köy"      // tr
+    u"|kecamatan";       // id
+const char16_t kCityRe[] =
+    u"city|town"
+    u"|\\bort\\b|stadt"                                  // de-DE
+    u"|suburb"                                           // en-AU
+    u"|ciudad|provincia|localidad|poblacion"             // es
+    u"|ville|commune"                                    // fr-FR
+    u"|localita"                                         // it-IT
+    u"|市区町村"                                         // ja-JP
+    u"|cidade|município"                                 // pt-BR, pt-PT
+    u"|Город|Насел(е|ё)нный.?пункт"                      // ru
+    u"|市"                                               // zh-CN
+    u"|分區"                                             // zh-TW
+    u"|شهر"                                              // fa
+    u"|शहर"                                              // hi for city
+    u"|ग्राम|गाँव"                                         // hi for village
+    u"|നഗരം|ഗ്രാമം"                                       // ml for town|village
+    u"|((\\b|_|\\*)([İii̇]l[cç]e(miz|niz)?)(\\b|_|\\*))"  // tr
+    u"|^시[^도·・]|시[·・]?군[·・]?구"                   // ko-KR
+    u"|kota|kabupaten";                                  // id
+const char16_t kStateRe[] =
+    u"(?<!(united|hist|history).?)state|county|region|province"
+    u"|county|principality"  // en-UK
+    u"|都道府県"             // ja-JP
+    u"|estado|provincia"     // pt-BR, pt-PT
+    u"|область"              // ru
+    u"|省"                   // zh-CN
+    u"|地區"                 // zh-TW
+    u"|സംസ്ഥാനം"              // ml
+    u"|استان"                // fa
+    u"|राज्य"                 // hi
+    u"|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]l(imiz)?|kent)(\\b|_|\\*))"  // tr
+    u"|^시[·・]?도"                                                   // ko-KR
+    u"|provinci";                                                     // id
 
 /////////////////////////////////////////////////////////////////////////////
 // search_field.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kSearchTermRe[] =
-    "^q$"
-    "|search"
-    "|query"
-    "|qry"
-    "|suche.*"              // de-DE
-    "|搜索"                 // zh-CN zh-TW
-    "|探す|検索"            // ja-JP to search
-    "|recherch.*"           // fr-FR
-    "|busca"                // pt-BR, pt-PT
-    "|جستجو"                // fa
-    "|искать|найти|поиск";  // ru
+const char16_t kSearchTermRe[] =
+    u"^q$"
+    u"|search"
+    u"|query"
+    u"|qry"
+    u"|suche.*"              // de-DE
+    u"|搜索"                 // zh-CN zh-TW
+    u"|探す|検索"            // ja-JP to search
+    u"|recherch.*"           // fr-FR
+    u"|busca"                // pt-BR, pt-PT
+    u"|جستجو"                // fa
+    u"|искать|найти|поиск";  // ru
 
 /////////////////////////////////////////////////////////////////////////////
 // field_price.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kPriceRe[] =
-    "\\bprice\\b|\\brate\\b|\\bcost\\b"
-    "|قیمة‎|سعر‎"                          // ar
-    "|قیمت"                                           // fa
-    "|\\bprix\\b|\\bcoût\\b|\\bcout\\b|\\btarif\\b";  // fr-CA
+const char16_t kPriceRe[] =
+    u"\\bprice\\b|\\brate\\b|\\bcost\\b"
+    u"|قیمة‎|سعر‎"                          // ar
+    u"|قیمت"                                           // fa
+    u"|\\bprix\\b|\\bcoût\\b|\\bcout\\b|\\btarif\\b";  // fr-CA
 
 /////////////////////////////////////////////////////////////////////////////
 // credit_card_field.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kNameOnCardRe[] =
-    "card.?(?:holder|owner)|name.*(\\b)?on(\\b)?.*card"
-    "|(?:card|cc).?name|cc.?full.?name"
-    "|karteninhaber"                   // de-DE
-    "|nombre.*tarjeta"                 // es
-    "|nom.*carte"                      // fr-FR
-    "|nome.*cart"                      // it-IT
-    "|名前"                            // ja-JP
-    "|Имя.*карты"                      // ru
-    "|nama.*kartu"                     // id
-    "|信用卡开户名|开户名|持卡人姓名"  // zh-CN
-    "|持卡人姓名";                     // zh-TW
-const char kNameOnCardContextualRe[] = "name";
-const char kCardNumberRe[] =
-    "(add)?(?:card|cc|acct).?(?:number|#|no|num|field)"
-    "|(?<!telefon|haus|person|fødsels)nummer"  // de-DE, sv-SE, no
-    "|カード番号"                              // ja-JP
-    "|Номер.*карты"                            // ru
-    "|no.*kartu"                               // id
-    "|信用卡号|信用卡号码"                     // zh-CN
-    "|信用卡卡號"                              // zh-TW
-    "|카드"                                    // ko-KR
+const char16_t kNameOnCardRe[] =
+    u"card.?(?:holder|owner)|name.*(\\b)?on(\\b)?.*card"
+    u"|(?:card|cc).?name|cc.?full.?name"
+    u"|karteninhaber"                   // de-DE
+    u"|nombre.*tarjeta"                 // es
+    u"|nom.*carte"                      // fr-FR
+    u"|nome.*cart"                      // it-IT
+    u"|名前"                            // ja-JP
+    u"|Имя.*карты"                      // ru
+    u"|nama.*kartu"                     // id
+    u"|信用卡开户名|开户名|持卡人姓名"  // zh-CN
+    u"|持卡人姓名";                     // zh-TW
+const char16_t kNameOnCardContextualRe[] = u"name";
+const char16_t kCardNumberRe[] =
+    u"(add)?(?:card|cc|acct).?(?:number|#|no|num|field)"
+    u"|(?<!telefon|haus|person|fødsels)nummer"  // de-DE, sv-SE, no
+    u"|カード番号"                              // ja-JP
+    u"|Номер.*карты"                            // ru
+    u"|no.*kartu"                               // id
+    u"|信用卡号|信用卡号码"                     // zh-CN
+    u"|信用卡卡號"                              // zh-TW
+    u"|카드"                                    // ko-KR
     // es/pt/fr
-    "|(numero|número|numéro)(?!.*(document|fono|phone|réservation))";
+    u"|(numero|número|numéro)(?!.*(document|fono|phone|réservation))";
 
-const char kCardCvcRe[] =
-    "verification|card.?identification|security.?code|card.?code"
-    "|security.?value"
-    "|security.?number|card.?pin|c-v-v"
-    "|(cvn|cvv|cvc|csc|cvd|cid|ccv)(field)?"
-    "|\\bcid\\b";
+const char16_t kCardCvcRe[] =
+    u"verification|card.?identification|security.?code|card.?code"
+    u"|security.?value"
+    u"|security.?number|card.?pin|c-v-v"
+    u"|(cvn|cvv|cvc|csc|cvd|cid|ccv)(field)?"
+    u"|\\bcid\\b";
 
 // "Expiration date" is the most common label here, but some pages have
 // "Expires", "exp. date" or "exp. month" and "exp. year".  We also look
@@ -253,27 +251,27 @@ const char kCardCvcRe[] =
 // Toolbar Bug 51451: indeed, simply matching "month" is too general for
 //   https://rps.fidelity.com/ftgw/rps/RtlCust/CreatePIN/Init.
 // Instead, we match only words beginning with "month".
-const char kExpirationMonthRe[] =
-    "expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth"
-    "|gueltig|gültig|monat"         // de-DE
-    "|fecha"                        // es
-    "|date.*exp"                    // fr-FR
-    "|scadenza"                     // it-IT
-    "|有効期限"                     // ja-JP
-    "|validade"                     // pt-BR, pt-PT
-    "|Срок действия карты"          // ru
-    "|masa berlaku|berlaku hingga"  // id
-    "|月";                          // zh-CN
-const char kExpirationYearRe[] =
-    "exp|^/|(add)?year"
-    "|ablaufdatum|gueltig|gültig|jahr"  // de-DE
-    "|fecha"                            // es
-    "|scadenza"                         // it-IT
-    "|有効期限"                         // ja-JP
-    "|validade"                         // pt-BR, pt-PT
-    "|Срок действия карты"              // ru
-    "|masa berlaku|berlaku hingga"      // id
-    "|年|有效期";                       // zh-CN
+const char16_t kExpirationMonthRe[] =
+    u"expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth"
+    u"|gueltig|gültig|monat"         // de-DE
+    u"|fecha"                        // es
+    u"|date.*exp"                    // fr-FR
+    u"|scadenza"                     // it-IT
+    u"|有効期限"                     // ja-JP
+    u"|validade"                     // pt-BR, pt-PT
+    u"|Срок действия карты"          // ru
+    u"|masa berlaku|berlaku hingga"  // id
+    u"|月";                          // zh-CN
+const char16_t kExpirationYearRe[] =
+    u"exp|^/|(add)?year"
+    u"|ablaufdatum|gueltig|gültig|jahr"  // de-DE
+    u"|fecha"                            // es
+    u"|scadenza"                         // it-IT
+    u"|有効期限"                         // ja-JP
+    u"|validade"                         // pt-BR, pt-PT
+    u"|Срок действия карты"              // ru
+    u"|masa berlaku|berlaku hingga"      // id
+    u"|年|有效期";                       // zh-CN
 
 // Used to match a expiration date field with a two digit year.
 // The following conditions must be met:
@@ -282,324 +280,325 @@ const char kExpirationYearRe[] =
 //    - (optional) Separated by white-space and/or a dash or slash.
 //  - (optional) Prepended with some text similar to "Expiration Date".
 // Tested in components/autofill/core/browser/autofill_regexes_unittest.cc
-const char kExpirationDate2DigitYearRe[] =
-    "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yy(?:[^y]|$)";
+const char16_t kExpirationDate2DigitYearRe[] =
+    u"(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yy(?:[^y]|$)";
 // Used to match a expiration date field with a four digit year.
 // Same requirements as |kExpirationDate2DigitYearRe| except:
 //  - Exactly four adjacent y's.
 // Tested in components/autofill/core/browser/autofill_regexes_unittest.cc
-const char kExpirationDate4DigitYearRe[] =
-    "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yyyy(?:[^y]|$)";
+const char16_t kExpirationDate4DigitYearRe[] =
+    u"(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yyyy(?:[^y]|$)";
 // Used to match expiration date fields that do not specify a year length.
-const char kExpirationDateRe[] =
-    "expir|exp.*date|^expfield$"
-    "|gueltig|gültig"        // de-DE
-    "|fecha"                 // es
-    "|date.*exp"             // fr-FR
-    "|scadenza"              // it-IT
-    "|有効期限"              // ja-JP
-    "|validade"              // pt-BR, pt-PT
-    "|Срок действия карты";  // ru
-const char kGiftCardRe[] = "gift.?(card|cert)";
-const char kDebitGiftCardRe[] =
-    "(?:visa|mastercard|discover|amex|american express).*gift.?card";
-const char kDebitCardRe[] = "debit.*card";
-const char kDayRe[] = "day";
+const char16_t kExpirationDateRe[] =
+    u"expir|exp.*date|^expfield$"
+    u"|gueltig|gültig"        // de-DE
+    u"|fecha"                 // es
+    u"|date.*exp"             // fr-FR
+    u"|scadenza"              // it-IT
+    u"|有効期限"              // ja-JP
+    u"|validade"              // pt-BR, pt-PT
+    u"|Срок действия карты";  // ru
+const char16_t kGiftCardRe[] = u"gift.?(card|cert)";
+const char16_t kDebitGiftCardRe[] =
+    u"(?:visa|mastercard|discover|amex|american express).*gift.?card";
+const char16_t kDebitCardRe[] = u"debit.*card";
+const char16_t kDayRe[] = u"day";
 
 /////////////////////////////////////////////////////////////////////////////
 // email_field.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kEmailRe[] =
-    "e.?mail"
-    "|courriel"                     // fr
-    "|correo.*electr(o|ó)nico"      // es-ES
-    "|メールアドレス"               // ja-JP
-    "|Электронн(ая|ой).?Почт(а|ы)"  // ru
-    "|邮件|邮箱"                    // zh-CN
-    "|電郵地址"                     // zh-TW
-    "|ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?"
-    "മെയിൽ"                                        // ml
-    "|ایمیل|پست.*الکترونیک"                        // fa
-    "|ईमेल|इलॅक्ट्रॉनिक.?मेल"                           // hi
-    "|(\\b|_)eposta(\\b|_)"                        // tr
-    "|(?:이메일|전자.?우편|[Ee]-?mail)(.?주소)?";  // ko-KR
+const char16_t kEmailRe[] =
+    u"e.?mail"
+    u"|courriel"                     // fr
+    u"|correo.*electr(o|ó)nico"      // es-ES
+    u"|メールアドレス"               // ja-JP
+    u"|Электронн(ая|ой).?Почт(а|ы)"  // ru
+    u"|邮件|邮箱"                    // zh-CN
+    u"|電郵地址"                     // zh-TW
+    u"|ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?"
+    u"മെയിൽ"                                        // ml
+    u"|ایمیل|پست.*الکترونیک"                        // fa
+    u"|ईमेल|इलॅक्ट्रॉनिक.?मेल"                           // hi
+    u"|(\\b|_)eposta(\\b|_)"                        // tr
+    u"|(?:이메일|전자.?우편|[Ee]-?mail)(.?주소)?";  // ko-KR
 
 /////////////////////////////////////////////////////////////////////////////
 // name_field.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kNameIgnoredRe[] =
-    "user.?name|user.?id|nickname|maiden name|title|prefix|suffix"
-    "|vollständiger.?name"              // de-DE
-    "|用户名"                           // zh-CN
-    "|(?:사용자.?)?아이디|사용자.?ID";  // ko-KR
-const char kNameRe[] =
-    "^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name"
-    "|name.*first.*last|firstandlastname|contact.?(name|person)"
-    "|nombre.*y.*apellidos"                    // es
-    "|^nom(?![a-zA-Z])"                        // fr-FR
-    "|お名前|氏名"                             // ja-JP
-    "|^nome"                                   // pt-BR, pt-PT
-    "|نام.*نام.*خانوادگی"                      // fa
-    "|姓名"                                    // zh-CN
-    "|контактное.?лицо"                        // ru
-    "|(\\b|_|\\*)ad[ı]? soyad[ı]?(\\b|_|\\*)"  // tr
-    "|성명"                                    // ko-KR
-    "|nama.?(lengkap|penerima|kamu)";          // id
-const char kNameSpecificRe[] =
-    "^name"
-    "|^nom"    // fr-FR
-    "|^nome";  // pt-BR, pt-PT
-const char kFirstNameRe[] =
-    "first.*name|initials|fname|first$|given.*name"
-    "|vorname"                                             // de-DE
-    "|nombre"                                              // es
-    "|forename|prénom|prenom"                              // fr-FR
-    "|名"                                                  // ja-JP
-    "|nome"                                                // pt-BR, pt-PT
-    "|Имя"                                                 // ru
-    "|نام"                                                 // fa
-    "|이름"                                                // ko-KR
-    "|പേര്"                                                 // ml
-    "|(\\b|_|\\*)(isim|ad|ad(i|ı|iniz|ınız)?)(\\b|_|\\*)"  // tr
-    "|नाम"                                                 // hi
-    "|nama depan";                                         // id
-const char kMiddleInitialRe[] = "middle.*initial|m\\.i\\.|mi$|\\bmi\\b";
-const char kMiddleNameRe[] = "middle.*name|mname|middle$";
-const char kLastNameRe[] =
-    "last.*name|lname|surname(?!\\d)|last$|secondname|family.*name"
-    "|nachname"                                               // de-DE
-    "|apellidos?"                                             // es
-    "|famille|^nom(?![a-zA-Z])"                               // fr-FR
-    "|cognome"                                                // it-IT
-    "|姓"                                                     // ja-JP
-    "|apelidos|surename|sobrenome"                            // pt-BR, pt-PT
-    "|Фамилия"                                                // ru
-    "|نام.*خانوادگی"                                          // fa
-    "|उपनाम"                                                  // hi
-    "|മറുപേര്"                                                  // ml
-    "|(\\b|_|\\*)(soyisim|soyad(i|ı|iniz|ınız)?)(\\b|_|\\*)"  // tr
-    "|\\b성(?:[^명]|\\b)"                                     // ko-KR
-    "|nama belakang";                                         // id
-const char kNameLastFirstRe[] =
-    "(primer.*apellido)"                 // es
-    "|(apellido1)"                       // es
-    "|(apellido.*paterno)"               // es
-    "|surname_?1|first(\\s|_)?surname";  // es
-const char kNameLastSecondRe[] =
-    "(segund.*apellido)"                  // es
-    "|(apellido2)"                        // es
-    "|(apellido.*materno)"                // es
-    "|surname_?2|second(\\s|_)?surname";  // es
-const char kHonorificPrefixRe[] =
-    "anrede|titel"                 // de-DE
-    "|tratamiento|encabezamiento"  // es
-    "|^title:?$"  // Matched only if there is no prefix or suffix.
-    "|(salutation(?! and given name))"  // en
-    "|titolo"                           // it-IT
-    "|titre"                            // fr-FR
-    "|обращение|звание"                 // ru
-    "|προσφώνηση"                       // el
-    "|hitap";                           // tr
+const char16_t kNameIgnoredRe[] =
+    u"user.?name|user.?id|nickname|maiden name|title|prefix|suffix"
+    u"|vollständiger.?name"              // de-DE
+    u"|用户名"                           // zh-CN
+    u"|(?:사용자.?)?아이디|사용자.?ID";  // ko-KR
+const char16_t kNameRe[] =
+    u"^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name"
+    u"|name.*first.*last|firstandlastname|contact.?(name|person)"
+    u"|nombre.*y.*apellidos"                    // es
+    u"|^nom(?![a-zA-Z])"                        // fr-FR
+    u"|お名前|氏名"                             // ja-JP
+    u"|^nome"                                   // pt-BR, pt-PT
+    u"|نام.*نام.*خانوادگی"                      // fa
+    u"|姓名"                                    // zh-CN
+    u"|контактное.?лицо"                        // ru
+    u"|(\\b|_|\\*)ad[ı]? soyad[ı]?(\\b|_|\\*)"  // tr
+    u"|성명"                                    // ko-KR
+    u"|nama.?(lengkap|penerima|kamu)";          // id
+const char16_t kNameSpecificRe[] =
+    u"^name"
+    u"|^nom"    // fr-FR
+    u"|^nome";  // pt-BR, pt-PT
+const char16_t kFirstNameRe[] =
+    u"first.*name|initials|fname|first$|given.*name"
+    u"|vorname"                                             // de-DE
+    u"|nombre"                                              // es
+    u"|forename|prénom|prenom"                              // fr-FR
+    u"|名"                                                  // ja-JP
+    u"|nome"                                                // pt-BR, pt-PT
+    u"|Имя"                                                 // ru
+    u"|نام"                                                 // fa
+    u"|이름"                                                // ko-KR
+    u"|പേര്"                                                 // ml
+    u"|(\\b|_|\\*)(isim|ad|ad(i|ı|iniz|ınız)?)(\\b|_|\\*)"  // tr
+    u"|नाम"                                                 // hi
+    u"|nama depan";                                         // id
+const char16_t kMiddleInitialRe[] = u"middle.*initial|m\\.i\\.|mi$|\\bmi\\b";
+const char16_t kMiddleNameRe[] = u"middle.*name|mname|middle$";
+const char16_t kLastNameRe[] =
+    u"last.*name|lname|surname(?!\\d)|last$|secondname|family.*name"
+    u"|nachname"                                               // de-DE
+    u"|apellidos?"                                             // es
+    u"|famille|^nom(?![a-zA-Z])"                               // fr-FR
+    u"|cognome"                                                // it-IT
+    u"|姓"                                                     // ja-JP
+    u"|apelidos|surename|sobrenome"                            // pt-BR, pt-PT
+    u"|Фамилия"                                                // ru
+    u"|نام.*خانوادگی"                                          // fa
+    u"|उपनाम"                                                  // hi
+    u"|മറുപേര്"                                                  // ml
+    u"|(\\b|_|\\*)(soyisim|soyad(i|ı|iniz|ınız)?)(\\b|_|\\*)"  // tr
+    u"|\\b성(?:[^명]|\\b)"                                     // ko-KR
+    u"|nama belakang";                                         // id
+const char16_t kNameLastFirstRe[] =
+    u"(primer.*apellido)"                 // es
+    u"|(apellido1)"                       // es
+    u"|(apellido.*paterno)"               // es
+    u"|surname_?1|first(\\s|_)?surname";  // es
+const char16_t kNameLastSecondRe[] =
+    u"(segund.*apellido)"                  // es
+    u"|(apellido2)"                        // es
+    u"|(apellido.*materno)"                // es
+    u"|surname_?2|second(\\s|_)?surname";  // es
+const char16_t kHonorificPrefixRe[] =
+    u"anrede|titel"                 // de-DE
+    u"|tratamiento|encabezamiento"  // es
+    u"|^title:?$"  // Matched only if there is no prefix or suffix.
+    u"|(salutation(?! and given name))"  // en
+    u"|titolo"                           // it-IT
+    u"|titre"                            // fr-FR
+    u"|обращение|звание"                 // ru
+    u"|προσφώνηση"                       // el
+    u"|hitap";                           // tr
 /////////////////////////////////////////////////////////////////////////////
 // phone_field.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kPhoneRe[] =
-    "phone|mobile|contact.?number"
-    "|telefonnummer"                                   // de-DE
-    "|telefono|teléfono"                               // es
-    "|telfixe"                                         // fr-FR
-    "|電話"                                            // ja-JP
-    "|telefone|telemovel"                              // pt-BR, pt-PT
-    "|телефон"                                         // ru
-    "|मोबाइल"                                          // hi for mobile
-    "|(\\b|_|\\*)telefon(\\b|_|\\*)"                   // tr
-    "|电话"                                            // zh-CN
-    "|മൊബൈല്‍"                           // ml for mobile
-    "|(?:전화|핸드폰|휴대폰|휴대전화)(?:.?번호)?"      // ko-KR
-    "|telepon|ponsel|(nomor|no\\.?).?(hp|handphone)";  // id
-const char kAugmentedPhoneCountryCodeRe[] =
-    "^[^0-9+]*(?:\\+|00)\\s*([1-9]\\d{0,3})\\D*$";
-const char kCountryCodeRe[] =
-    "country.*code|ccode|_cc|phone.*code|user.*phone.*code";
-const char kAreaCodeNotextRe[] = "^\\($";
-const char kAreaCodeRe[] =
-    "area.*code|acode|area"
-    "|지역.?번호";  // ko-KR
-const char kPhonePrefixSeparatorRe[] = "^-$|^\\)$";
-const char kPhoneSuffixSeparatorRe[] = "^-$";
-const char kPhonePrefixRe[] =
-    "prefix|exchange"
-    "|preselection"  // fr-FR
-    "|ddd";          // pt-BR, pt-PT
-const char kPhoneSuffixRe[] = "suffix";
-const char kPhoneExtensionRe[] =
-    "\\bext|ext\\b|extension"
-    "|ramal";  // pt-BR, pt-PT
+const char16_t kPhoneRe[] =
+    u"phone|mobile|contact.?number"
+    u"|telefonnummer"                                   // de-DE
+    u"|telefono|teléfono"                               // es
+    u"|telfixe"                                         // fr-FR
+    u"|電話"                                            // ja-JP
+    u"|telefone|telemovel"                              // pt-BR, pt-PT
+    u"|телефон"                                         // ru
+    u"|मोबाइल"                                          // hi for mobile
+    u"|(\\b|_|\\*)telefon(\\b|_|\\*)"                   // tr
+    u"|电话"                                            // zh-CN
+    u"|മൊബൈല്‍"                           // ml for mobile
+    u"|(?:전화|핸드폰|휴대폰|휴대전화)(?:.?번호)?"      // ko-KR
+    u"|telepon|ponsel|(nomor|no\\.?).?(hp|handphone)";  // id
+const char16_t kAugmentedPhoneCountryCodeRe[] =
+    u"^[^0-9+]*(?:\\+|00)\\s*([1-9]\\d{0,3})\\D*$";
+const char16_t kCountryCodeRe[] =
+    u"country.*code|ccode|_cc|phone.*code|user.*phone.*code";
+const char16_t kAreaCodeNotextRe[] = u"^\\($";
+const char16_t kAreaCodeRe[] =
+    u"area.*code|acode|area"
+    u"|지역.?번호";  // ko-KR
+const char16_t kPhonePrefixSeparatorRe[] = u"^-$|^\\)$";
+const char16_t kPhoneSuffixSeparatorRe[] = u"^-$";
+const char16_t kPhonePrefixRe[] =
+    u"prefix|exchange"
+    u"|preselection"  // fr-FR
+    u"|ddd";          // pt-BR, pt-PT
+const char16_t kPhoneSuffixRe[] = u"suffix";
+const char16_t kPhoneExtensionRe[] =
+    u"\\bext|ext\\b|extension"
+    u"|ramal";  // pt-BR, pt-PT
 
 /////////////////////////////////////////////////////////////////////////////
 // travel_field.cc
 /////////////////////////////////////////////////////////////////////////////
 
-const char kPassportRe[] =
-    "document.*number|passport"     // en-US
-    "|passeport"                    // fr-FR
-    "|numero.*documento|pasaporte"  // es-ES
-    "|書類";                        // ja-JP
-const char kTravelOriginRe[] =
-    "point.*of.*entry|arrival"                // en-US
-    "|punto.*internaci(o|ó)n|fecha.*llegada"  // es-ES
-    "|入国";                                  // ja-JP
-const char kTravelDestinationRe[] =
-    "departure"               // en-US
-    "|fecha.*salida|destino"  // es-ES
-    "|出国";                  // ja-JP
-const char kFlightRe[] =
-    "airline|flight"                    // en-US
-    "|aerol(i|í)nea|n(u|ú)mero.*vuelo"  // es-ES
-    "|便名|航空会社";                   // ja-JP
+const char16_t kPassportRe[] =
+    u"document.*number|passport"     // en-US
+    u"|passeport"                    // fr-FR
+    u"|numero.*documento|pasaporte"  // es-ES
+    u"|書類";                        // ja-JP
+const char16_t kTravelOriginRe[] =
+    u"point.*of.*entry|arrival"                // en-US
+    u"|punto.*internaci(o|ó)n|fecha.*llegada"  // es-ES
+    u"|入国";                                  // ja-JP
+const char16_t kTravelDestinationRe[] =
+    u"departure"               // en-US
+    u"|fecha.*salida|destino"  // es-ES
+    u"|出国";                  // ja-JP
+const char16_t kFlightRe[] =
+    u"airline|flight"                    // en-US
+    u"|aerol(i|í)nea|n(u|ú)mero.*vuelo"  // es-ES
+    u"|便名|航空会社";                   // ja-JP
 
 /////////////////////////////////////////////////////////////////////////////
 // validation.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kUPIVirtualPaymentAddressRe[] =
-    "^[\\w.+-_]+@("        // eg user@
-    "\\w+\\.ifsc\\.npci|"  // IFSC code
-    "aadhaar\\.npci|"      // Aadhaar number
-    "mobile\\.npci|"       // Mobile number
-    "rupay\\.npci|"        // RuPay card number
-    "airtel|"  // List of banks https://www.npci.org.in/upi-live-members
-    "airtelpaymentsbank|"
-    "albk|"
-    "allahabadbank|"
-    "allbank|"
-    "andb|"
-    "apb|"
-    "apl|"
-    "axis|"
-    "axisbank|"
-    "axisgo|"
-    "bandhan|"
-    "barodampay|"
-    "birla|"
-    "boi|"
-    "cbin|"
-    "cboi|"
-    "centralbank|"
-    "cmsidfc|"
-    "cnrb|"
-    "csbcash|"
-    "csbpay|"
-    "cub|"
-    "dbs|"
-    "dcb|"
-    "dcbbank|"
-    "denabank|"
-    "dlb|"
-    "eazypay|"
-    "equitas|"
-    "ezeepay|"
-    "fbl|"
-    "federal|"
-    "finobank|"
-    "hdfcbank|"
-    "hsbc|"
-    "icici|"
-    "idbi|"
-    "idbibank|"
-    "idfc|"
-    "idfcbank|"
-    "idfcnetc|"
-    "ikwik|"
-    "imobile|"
-    "indbank|"
-    "indianbank|"
-    "indianbk|"
-    "indus|"
-    "iob|"
-    "jkb|"
-    "jsb|"
-    "jsbp|"
-    "karb|"
-    "karurvysyabank|"
-    "kaypay|"
-    "kbl|"
-    "kbl052|"
-    "kmb|"
-    "kmbl|"
-    "kotak|"
-    "kvb|"
-    "kvbank|"
-    "lime|"
-    "lvb|"
-    "lvbank|"
-    "mahb|"
-    "obc|"
-    "okaxis|"
-    "okbizaxis|"
-    "okhdfcbank|"
-    "okicici|"
-    "oksbi|"
-    "paytm|"
-    "payzapp|"
-    "pingpay|"
-    "pnb|"
-    "pockets|"
-    "psb|"
-    "purz|"
-    "rajgovhdfcbank|"
-    "rbl|"
-    "sbi|"
-    "sc|"
-    "scb|"
-    "scbl|"
-    "scmobile|"
-    "sib|"
-    "srcb|"
-    "synd|"
-    "syndbank|"
-    "syndicate|"
-    "tjsb|"
-    "tjsp|"
-    "ubi|"
-    "uboi|"
-    "uco|"
-    "unionbank|"
-    "unionbankofindia|"
-    "united|"
-    "upi|"
-    "utbi|"
-    "vijayabank|"
-    "vijb|"
-    "vjb|"
-    "ybl|"
-    "yesbank|"
-    "yesbankltd"
-    ")$";
+const char16_t kUPIVirtualPaymentAddressRe[] =
+    u"^[\\w.+-_]+@("        // eg user@
+    u"\\w+\\.ifsc\\.npci|"  // IFSC code
+    u"aadhaar\\.npci|"      // Aadhaar number
+    u"mobile\\.npci|"       // Mobile number
+    u"rupay\\.npci|"        // RuPay card number
+    u"airtel|"  // List of banks https://www.npci.org.in/upi-live-members
+    u"airtelpaymentsbank|"
+    u"albk|"
+    u"allahabadbank|"
+    u"allbank|"
+    u"andb|"
+    u"apb|"
+    u"apl|"
+    u"axis|"
+    u"axisbank|"
+    u"axisgo|"
+    u"bandhan|"
+    u"barodampay|"
+    u"birla|"
+    u"boi|"
+    u"cbin|"
+    u"cboi|"
+    u"centralbank|"
+    u"cmsidfc|"
+    u"cnrb|"
+    u"csbcash|"
+    u"csbpay|"
+    u"cub|"
+    u"dbs|"
+    u"dcb|"
+    u"dcbbank|"
+    u"denabank|"
+    u"dlb|"
+    u"eazypay|"
+    u"equitas|"
+    u"ezeepay|"
+    u"fbl|"
+    u"federal|"
+    u"finobank|"
+    u"hdfcbank|"
+    u"hsbc|"
+    u"icici|"
+    u"idbi|"
+    u"idbibank|"
+    u"idfc|"
+    u"idfcbank|"
+    u"idfcnetc|"
+    u"ikwik|"
+    u"imobile|"
+    u"indbank|"
+    u"indianbank|"
+    u"indianbk|"
+    u"indus|"
+    u"iob|"
+    u"jkb|"
+    u"jsb|"
+    u"jsbp|"
+    u"karb|"
+    u"karurvysyabank|"
+    u"kaypay|"
+    u"kbl|"
+    u"kbl052|"
+    u"kmb|"
+    u"kmbl|"
+    u"kotak|"
+    u"kvb|"
+    u"kvbank|"
+    u"lime|"
+    u"lvb|"
+    u"lvbank|"
+    u"mahb|"
+    u"obc|"
+    u"okaxis|"
+    u"okbizaxis|"
+    u"okhdfcbank|"
+    u"okicici|"
+    u"oksbi|"
+    u"paytm|"
+    u"payzapp|"
+    u"pingpay|"
+    u"pnb|"
+    u"pockets|"
+    u"psb|"
+    u"purz|"
+    u"rajgovhdfcbank|"
+    u"rbl|"
+    u"sbi|"
+    u"sc|"
+    u"scb|"
+    u"scbl|"
+    u"scmobile|"
+    u"sib|"
+    u"srcb|"
+    u"synd|"
+    u"syndbank|"
+    u"syndicate|"
+    u"tjsb|"
+    u"tjsp|"
+    u"ubi|"
+    u"uboi|"
+    u"uco|"
+    u"unionbank|"
+    u"unionbankofindia|"
+    u"united|"
+    u"upi|"
+    u"utbi|"
+    u"vijayabank|"
+    u"vijb|"
+    u"vjb|"
+    u"ybl|"
+    u"yesbank|"
+    u"yesbankltd"
+    u")$";
 
-const char kInternationalBankAccountNumberRe[] =
-    "^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$";
+const char16_t kInternationalBankAccountNumberRe[] =
+    u"^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$";
 
 // Matches all 3 and 4 digit numbers.
-const char kCreditCardCVCPattern[] = "^\\d{3,4}$";
+const char16_t kCreditCardCVCPattern[] = u"^\\d{3,4}$";
 
 // Matches numbers in the range [2010-2099].
-const char kCreditCard4DigitExpYearPattern[] = "^[2][0][1-9][0-9]$";
+const char16_t kCreditCard4DigitExpYearPattern[] = u"^[2][0][1-9][0-9]$";
 
 /////////////////////////////////////////////////////////////////////////////
 // form_structure.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kUrlSearchActionRe[] = "/search(/|((\\w*\\.\\w+)?$))";
+const char16_t kUrlSearchActionRe[] = u"/search(/|((\\w*\\.\\w+)?$))";
 
 /////////////////////////////////////////////////////////////////////////////
 // form_parser.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kSocialSecurityRe[] = "ssn|social.?security.?(num(ber)?|#)*";
-const char kOneTimePwdRe[] = "one.?time|sms.?(code|token|password|pwd|pass)";
+const char16_t kSocialSecurityRe[] = u"ssn|social.?security.?(num(ber)?|#)*";
+const char16_t kOneTimePwdRe[] =
+    u"one.?time|sms.?(code|token|password|pwd|pass)";
 
 /////////////////////////////////////////////////////////////////////////////
 // merchant_promo_code_field.cc
 /////////////////////////////////////////////////////////////////////////////
-const char kMerchantPromoCodeRe[] =
-    "\\bpromo code\\b|\\bcoupon code\\b|\\bgift code\\b";
+const char16_t kMerchantPromoCodeRe[] =
+    u"\\bpromo code\\b|\\bcoupon code\\b|\\bgift code\\b";
 
 }  // namespace autofill

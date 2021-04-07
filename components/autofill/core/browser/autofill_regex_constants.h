@@ -7,88 +7,88 @@
 
 namespace autofill {
 
-extern const char kAttentionIgnoredRe[];
-extern const char kRegionIgnoredRe[];
-extern const char kAddressNameIgnoredRe[];
-extern const char kCompanyRe[];
-extern const char kHouseNumberRe[];
-extern const char kApartmentNumberRe[];
-extern const char kStreetNameRe[];
-extern const char kAddressLine1Re[];
-extern const char kAddressLine1LabelRe[];
-extern const char kAddressLine2Re[];
-extern const char kAddressLine2LabelRe[];
-extern const char kAddressLinesExtraRe[];
-extern const char kAddressLookupRe[];
-extern const char kCountryRe[];
-extern const char kDependentLocality[];
-extern const char kCountryLocationRe[];
-extern const char kZipCodeRe[];
-extern const char kZip4Re[];
-extern const char kDependentLocalityRe[];
-extern const char kCityRe[];
-extern const char kStateRe[];
-extern const char kNameOnCardRe[];
-extern const char kNameOnCardContextualRe[];
-extern const char kCardNumberRe[];
-extern const char kCardCvcRe[];
-extern const char kCardTypeRe[];
-extern const char kExpirationMonthRe[];
-extern const char kExpirationYearRe[];
-extern const char kExpirationDate2DigitYearRe[];
-extern const char kExpirationDate4DigitYearRe[];
-extern const char kExpirationDateRe[];
-extern const char kCardIgnoredRe[];
-extern const char kGiftCardRe[];
-extern const char kDebitGiftCardRe[];
-extern const char kDebitCardRe[];
-extern const char kDayRe[];
-extern const char kEmailRe[];
-extern const char kNameIgnoredRe[];
-extern const char kNameRe[];
-extern const char kNameSpecificRe[];
-extern const char kFirstNameRe[];
-extern const char kMiddleInitialRe[];
-extern const char kMiddleNameRe[];
-extern const char kLastNameRe[];
-extern const char kHonorificPrefixRe[];
-extern const char kNameLastFirstRe[];
-extern const char kNameLastSecondRe[];
-extern const char kPhoneRe[];
-extern const char kAugmentedPhoneCountryCodeRe[];
-extern const char kCountryCodeRe[];
-extern const char kAreaCodeNotextRe[];
-extern const char kAreaCodeRe[];
-extern const char kFaxRe[];
-extern const char kPhonePrefixSeparatorRe[];
-extern const char kPhoneSuffixSeparatorRe[];
-extern const char kPhonePrefixRe[];
-extern const char kPhoneSuffixRe[];
-extern const char kPhoneExtensionRe[];
-extern const char kSearchTermRe[];
-extern const char kPassportRe[];
-extern const char kTravelOriginRe[];
-extern const char kTravelDestinationRe[];
-extern const char kFlightRe[];
-extern const char kPriceRe[];
-extern const char kCreditCardCVCPattern[];
-extern const char kCreditCard4DigitExpYearPattern[];
-extern const char kSocialSecurityRe[];
-extern const char kOneTimePwdRe[];
-extern const char kMerchantPromoCodeRe[];
+extern const char16_t kAttentionIgnoredRe[];
+extern const char16_t kRegionIgnoredRe[];
+extern const char16_t kAddressNameIgnoredRe[];
+extern const char16_t kCompanyRe[];
+extern const char16_t kHouseNumberRe[];
+extern const char16_t kApartmentNumberRe[];
+extern const char16_t kStreetNameRe[];
+extern const char16_t kAddressLine1Re[];
+extern const char16_t kAddressLine1LabelRe[];
+extern const char16_t kAddressLine2Re[];
+extern const char16_t kAddressLine2LabelRe[];
+extern const char16_t kAddressLinesExtraRe[];
+extern const char16_t kAddressLookupRe[];
+extern const char16_t kCountryRe[];
+extern const char16_t kDependentLocality[];
+extern const char16_t kCountryLocationRe[];
+extern const char16_t kZipCodeRe[];
+extern const char16_t kZip4Re[];
+extern const char16_t kDependentLocalityRe[];
+extern const char16_t kCityRe[];
+extern const char16_t kStateRe[];
+extern const char16_t kNameOnCardRe[];
+extern const char16_t kNameOnCardContextualRe[];
+extern const char16_t kCardNumberRe[];
+extern const char16_t kCardCvcRe[];
+extern const char16_t kCardTypeRe[];
+extern const char16_t kExpirationMonthRe[];
+extern const char16_t kExpirationYearRe[];
+extern const char16_t kExpirationDate2DigitYearRe[];
+extern const char16_t kExpirationDate4DigitYearRe[];
+extern const char16_t kExpirationDateRe[];
+extern const char16_t kCardIgnoredRe[];
+extern const char16_t kGiftCardRe[];
+extern const char16_t kDebitGiftCardRe[];
+extern const char16_t kDebitCardRe[];
+extern const char16_t kDayRe[];
+extern const char16_t kEmailRe[];
+extern const char16_t kNameIgnoredRe[];
+extern const char16_t kNameRe[];
+extern const char16_t kNameSpecificRe[];
+extern const char16_t kFirstNameRe[];
+extern const char16_t kMiddleInitialRe[];
+extern const char16_t kMiddleNameRe[];
+extern const char16_t kLastNameRe[];
+extern const char16_t kHonorificPrefixRe[];
+extern const char16_t kNameLastFirstRe[];
+extern const char16_t kNameLastSecondRe[];
+extern const char16_t kPhoneRe[];
+extern const char16_t kAugmentedPhoneCountryCodeRe[];
+extern const char16_t kCountryCodeRe[];
+extern const char16_t kAreaCodeNotextRe[];
+extern const char16_t kAreaCodeRe[];
+extern const char16_t kFaxRe[];
+extern const char16_t kPhonePrefixSeparatorRe[];
+extern const char16_t kPhoneSuffixSeparatorRe[];
+extern const char16_t kPhonePrefixRe[];
+extern const char16_t kPhoneSuffixRe[];
+extern const char16_t kPhoneExtensionRe[];
+extern const char16_t kSearchTermRe[];
+extern const char16_t kPassportRe[];
+extern const char16_t kTravelOriginRe[];
+extern const char16_t kTravelDestinationRe[];
+extern const char16_t kFlightRe[];
+extern const char16_t kPriceRe[];
+extern const char16_t kCreditCardCVCPattern[];
+extern const char16_t kCreditCard4DigitExpYearPattern[];
+extern const char16_t kSocialSecurityRe[];
+extern const char16_t kOneTimePwdRe[];
+extern const char16_t kMerchantPromoCodeRe[];
 
 // Used to match field data that might be a UPI Virtual Payment Address.
 // See:
 //   - http://crbug.com/702220
 //   - https://upipayments.co.in/virtual-payment-address-vpa/
-extern const char kUPIVirtualPaymentAddressRe[];
+extern const char16_t kUPIVirtualPaymentAddressRe[];
 
 // Used to match field data that might be an International Bank Account Number.
 // TODO(crbug.com/977377): The regex doesn't match IBANs for Saint Lucia (LC),
 // Kazakhstan (KZ) and Romania (RO). Consider replace the regex with something
 // like "(?:IT|SM)\d{2}[A-Z]\d{22}|CY\d{2}[A-Z]\d{23}...". For reference:
 //    - https://www.swift.com/resource/iban-registry-pdf
-extern const char kInternationalBankAccountNumberRe[];
+extern const char16_t kInternationalBankAccountNumberRe[];
 
 // Match the path values for form actions that look like generic search:
 //  e.g. /search
@@ -96,7 +96,7 @@ extern const char kInternationalBankAccountNumberRe[];
 //       /search/products...
 //       /products/search/
 //       /blah/search_all.jsp
-extern const char kUrlSearchActionRe[];
+extern const char16_t kUrlSearchActionRe[];
 
 }  // namespace autofill
 

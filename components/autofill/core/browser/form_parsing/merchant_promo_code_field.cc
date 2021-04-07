@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -27,10 +26,10 @@ std::unique_ptr<FormField> MerchantPromoCodeField::Parse(
       PatternProvider::GetInstance().GetMatchPatterns("MERCHANT_PROMO_CODE",
                                                       page_language);
 
-  if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kMerchantPromoCodeRe),
+  if (ParseFieldSpecifics(scanner, kMerchantPromoCodeRe,
                           MATCH_DEFAULT | MATCH_NUMBER | MATCH_TEXT_AREA,
                           merchant_promo_code_patterns, &field,
-                          {log_manager, kMerchantPromoCodeRe})) {
+                          {log_manager, "kMerchantPromoCodeRe"})) {
     return std::make_unique<MerchantPromoCodeField>(field);
   }
 

@@ -28,12 +28,12 @@ def build_cpp_map_population(input):
         match_field_attributes = pattern['match_field_attributes']
         match_field_input_types = pattern['match_field_input_types']
 
-        positive_pattern = to_string_literal(positive_pattern)
+        positive_pattern = 'u' + to_string_literal(positive_pattern)
 
         if negative_pattern is None:
           negative_pattern = 'nullptr';
         else:
-          negative_pattern = to_string_literal(negative_pattern)
+          negative_pattern = 'u' + to_string_literal(negative_pattern)
 
         # Shift to the right to match the MatchFieldTypes enum, which
         # temporarily starts at 1<<2 instead of 1<<0.
@@ -76,8 +76,8 @@ def build_cpp_function(cpp, output_handle):
   output('  struct JsonPattern {\n')
   output('    const char* name;\n')
   output('    const char* language;\n')
-  output('    const char* positive_pattern;\n')
-  output('    const char* negative_pattern;\n')
+  output('    const char16_t* positive_pattern;\n')
+  output('    const char16_t* negative_pattern;\n')
   output('    float positive_score;\n')
   output('    uint8_t match_field_attributes;\n')
   output('    uint16_t match_field_input_types;\n')
@@ -94,7 +94,7 @@ def build_cpp_function(cpp, output_handle):
   output('    mp.language = LanguageCode(p.language);\n')
   output('    mp.positive_pattern = p.positive_pattern;\n')
   output('    mp.negative_pattern = '
-               'p.negative_pattern ? p.negative_pattern : "";\n')
+               'p.negative_pattern ? p.negative_pattern : u"";\n')
   output('    mp.positive_score = p.positive_score;\n')
   output('    mp.match_field_input_types = p.match_field_input_types;\n')
   output('    mp.match_field_attributes = p.match_field_attributes;\n')

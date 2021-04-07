@@ -7,15 +7,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
-
-using base::ASCIIToUTF16;
 
 namespace autofill {
 
@@ -166,38 +163,34 @@ TEST_F(NameFieldTest, MiddleInitialAtEnd) {
 
 // Test the coverage of all found strings for first and second last names.
 TEST_F(NameFieldTest, HispanicLastNameRegexConverage) {
-  std::vector<std::string> first_last_name_strings = {
-      "Primer apellido", "apellidoPaterno", "apellido_paterno",
-      "first_surname",   "first surname",   "apellido1"};
+  std::vector<std::u16string> first_last_name_strings = {
+      u"Primer apellido", u"apellidoPaterno", u"apellido_paterno",
+      u"first_surname",   u"first surname",   u"apellido1"};
 
-  std::vector<std::string> second_last_name_strings = {
-      "Segundo apellido", "apellidoMaterno", "apellido_materno",
-      "apellido2",        "second_surname",  "second surname",
+  std::vector<std::u16string> second_last_name_strings = {
+      u"Segundo apellido", u"apellidoMaterno", u"apellido_materno",
+      u"apellido2",        u"second_surname",  u"second surname",
   };
 
-  std::vector<std::string> neither_first_or_second_last_name_strings = {
-      "apellido",
-      "apellidos",
+  std::vector<std::u16string> neither_first_or_second_last_name_strings = {
+      u"apellido",
+      u"apellidos",
   };
 
   for (const auto& string : first_last_name_strings) {
     SCOPED_TRACE(string);
-    EXPECT_TRUE(MatchesPattern(ASCIIToUTF16(string),
-                               ASCIIToUTF16(kNameLastFirstRe), nullptr));
+    EXPECT_TRUE(MatchesPattern(string, kNameLastFirstRe, nullptr));
   }
 
   for (const auto& string : second_last_name_strings) {
     SCOPED_TRACE(string);
-    EXPECT_TRUE(MatchesPattern(ASCIIToUTF16(string),
-                               ASCIIToUTF16(kNameLastSecondRe), nullptr));
+    EXPECT_TRUE(MatchesPattern(string, kNameLastSecondRe, nullptr));
   }
 
   for (const auto& string : neither_first_or_second_last_name_strings) {
     SCOPED_TRACE(string);
-    EXPECT_FALSE(MatchesPattern(ASCIIToUTF16(string),
-                                ASCIIToUTF16(kNameLastFirstRe), nullptr));
-    EXPECT_FALSE(MatchesPattern(ASCIIToUTF16(string),
-                                ASCIIToUTF16(kNameLastSecondRe), nullptr));
+    EXPECT_FALSE(MatchesPattern(string, kNameLastFirstRe, nullptr));
+    EXPECT_FALSE(MatchesPattern(string, kNameLastSecondRe, nullptr));
   }
 }
 

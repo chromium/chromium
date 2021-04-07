@@ -34,9 +34,9 @@ LanguageCode kLanguageEn("en");
 
 MatchingPattern GetCompanyPatternEn() {
   autofill::MatchingPattern m_p;
-  m_p.positive_pattern = "company|business|organization|organisation";
+  m_p.positive_pattern = u"company|business|organization|organisation";
   m_p.positive_score = 1.1;
-  m_p.negative_pattern = "";
+  m_p.negative_pattern = u"";
   m_p.match_field_attributes = MATCH_NAME;
   m_p.match_field_input_types = MATCH_TEXT;
   m_p.language = kLanguageEn;
@@ -45,9 +45,9 @@ MatchingPattern GetCompanyPatternEn() {
 
 MatchingPattern GetCompanyPatternDe() {
   autofill::MatchingPattern m_p;
-  m_p.positive_pattern = "|(?<!con)firma|firmenname";
+  m_p.positive_pattern = u"|(?<!con)firma|firmenname";
   m_p.positive_score = 1.1;
-  m_p.negative_pattern = "";
+  m_p.negative_pattern = u"";
   m_p.match_field_attributes = MATCH_LABEL | MATCH_NAME;
   m_p.match_field_input_types = MATCH_TEXT;
   m_p.language = kLanguageDe;

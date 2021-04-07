@@ -13,8 +13,8 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
@@ -45,11 +45,8 @@ constexpr int kMinCandidatePercentageForCountryCode = 90;
 constexpr int kHeuristicThresholdForCountryCode = 10;
 
 // This string includes all area code separators, including NoText.
-std::string GetAreaRegex() {
-  std::string area_code = kAreaCodeRe;
-  area_code.append("|");  // Regexp separator.
-  area_code.append(kAreaCodeNotextRe);
-  return area_code;
+std::u16string GetAreaRegex() {
+  return base::StrCat({kAreaCodeRe, u"|", kAreaCodeNotextRe});
 }
 
 }  // namespace
@@ -183,8 +180,7 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
   int total_positive_options = 0;
 
   for (const auto& option : field->option_contents) {
-    if (MatchesPattern(option,
-                       base::ASCIIToUTF16(kAugmentedPhoneCountryCodeRe)))
+    if (MatchesPattern(option, kAugmentedPhoneCountryCodeRe))
       total_positive_options++;
   }
 
@@ -365,7 +361,7 @@ PhoneField::PhoneField() {
 }
 
 // static
-std::string PhoneField::GetRegExp(RegexType regex_id) {
+std::u16string PhoneField::GetRegExp(RegexType regex_id) {
   switch (regex_id) {
     case REGEX_COUNTRY:
       return kCountryCodeRe;
@@ -389,7 +385,7 @@ std::string PhoneField::GetRegExp(RegexType regex_id) {
       NOTREACHED();
       break;
   }
-  return std::string();
+  return std::u16string();
 }
 
 // static
@@ -451,7 +447,7 @@ std::string PhoneField::GetJSONFieldType(RegexType phonetype_id) {
 
 // static
 bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
-                                 const std::string& regex,
+                                 base::StringPiece16 regex,
                                  AutofillField** field,
                                  const RegExLogging& logging,
                                  const bool is_country_code_field,
@@ -466,8 +462,8 @@ bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
       PatternProvider::GetInstance().GetMatchPatterns(json_field_type,
                                                       page_language);
 
-  return ParseFieldSpecifics(scanner, base::UTF8ToUTF16(regex), match_type,
-                             patterns, field, logging);
+  return ParseFieldSpecifics(scanner, regex, match_type, patterns, field,
+                             logging);
 }
 
 }  // namespace autofill

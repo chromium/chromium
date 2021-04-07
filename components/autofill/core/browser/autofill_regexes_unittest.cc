@@ -9,17 +9,14 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using base::ASCIIToUTF16;
 
 namespace autofill {
 
 struct InputPatternTestCase {
-  const char* const input;
-  const char* const pattern;
+  const char16_t* const input;
+  const char16_t* const pattern;
 };
 
 class PositiveSampleTest : public testing::TestWithParam<InputPatternTestCase> {
@@ -29,27 +26,26 @@ TEST_P(PositiveSampleTest, SampleRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
   SCOPED_TRACE(test_case.pattern);
-  EXPECT_TRUE(MatchesPattern(ASCIIToUTF16(test_case.input),
-                             ASCIIToUTF16(test_case.pattern)));
+  EXPECT_TRUE(MatchesPattern(test_case.input, test_case.pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
                          PositiveSampleTest,
                          testing::Values(
                              // Empty pattern
-                             InputPatternTestCase{"", ""},
+                             InputPatternTestCase{u"", u""},
                              InputPatternTestCase{
-                                 "Look, ma' -- a non-empty string!", ""},
+                                 u"Look, ma' -- a non-empty string!", u""},
                              // Substring
-                             InputPatternTestCase{"string", "tri"},
+                             InputPatternTestCase{u"string", u"tri"},
                              // Substring at beginning
-                             InputPatternTestCase{"string", "str"},
-                             InputPatternTestCase{"string", "^str"},
+                             InputPatternTestCase{u"string", u"str"},
+                             InputPatternTestCase{u"string", u"^str"},
                              // Substring at end
-                             InputPatternTestCase{"string", "ring"},
-                             InputPatternTestCase{"string", "ring$"},
+                             InputPatternTestCase{u"string", u"ring"},
+                             InputPatternTestCase{u"string", u"ring$"},
                              // Case-insensitive
-                             InputPatternTestCase{"StRiNg", "string"}));
+                             InputPatternTestCase{u"StRiNg", u"string"}));
 
 class NegativeSampleTest : public testing::TestWithParam<InputPatternTestCase> {
 };
@@ -58,8 +54,7 @@ TEST_P(NegativeSampleTest, SampleRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
   SCOPED_TRACE(test_case.pattern);
-  EXPECT_FALSE(MatchesPattern(ASCIIToUTF16(test_case.input),
-                              ASCIIToUTF16(test_case.pattern)));
+  EXPECT_FALSE(MatchesPattern(test_case.input, test_case.pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
@@ -67,18 +62,18 @@ INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
                          testing::Values(
                              // Empty string
                              InputPatternTestCase{
-                                 "", "Look, ma' -- a non-empty pattern!"},
+                                 u"", u"Look, ma' -- a non-empty pattern!"},
                              // Substring
-                             InputPatternTestCase{"string", "trn"},
+                             InputPatternTestCase{u"string", u"trn"},
                              // Substring at beginning
-                             InputPatternTestCase{"string", " str"},
-                             InputPatternTestCase{"string", "^tri"},
+                             InputPatternTestCase{u"string", u" str"},
+                             InputPatternTestCase{u"string", u"^tri"},
                              // Substring at end
-                             InputPatternTestCase{"string", "ring "},
-                             InputPatternTestCase{"string", "rin$"}));
+                             InputPatternTestCase{u"string", u"ring "},
+                             InputPatternTestCase{u"string", u"rin$"}));
 
 struct InputTestCase {
-  const char* const input;
+  const char16_t* const input;
 };
 
 class ExpirationDate2DigitYearPositive
@@ -87,33 +82,33 @@ class ExpirationDate2DigitYearPositive
 TEST_P(ExpirationDate2DigitYearPositive, ExpirationDate2DigitYearRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
-  const std::u16string pattern = ASCIIToUTF16(kExpirationDate2DigitYearRe);
-  EXPECT_TRUE(MatchesPattern(ASCIIToUTF16(test_case.input), pattern));
+  const std::u16string pattern = kExpirationDate2DigitYearRe;
+  EXPECT_TRUE(MatchesPattern(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     AutofillRegexes,
     ExpirationDate2DigitYearPositive,
-    testing::Values(InputTestCase{"mm / yy"},
-                    InputTestCase{"mm/ yy"},
-                    InputTestCase{"mm /yy"},
-                    InputTestCase{"mm/yy"},
-                    InputTestCase{"mm - yy"},
-                    InputTestCase{"mm- yy"},
-                    InputTestCase{"mm -yy"},
-                    InputTestCase{"mm-yy"},
-                    InputTestCase{"mmyy"},
+    testing::Values(InputTestCase{u"mm / yy"},
+                    InputTestCase{u"mm/ yy"},
+                    InputTestCase{u"mm /yy"},
+                    InputTestCase{u"mm/yy"},
+                    InputTestCase{u"mm - yy"},
+                    InputTestCase{u"mm- yy"},
+                    InputTestCase{u"mm -yy"},
+                    InputTestCase{u"mm-yy"},
+                    InputTestCase{u"mmyy"},
                     // Complex two year cases
-                    InputTestCase{"Expiration Date (MM / YY)"},
-                    InputTestCase{"Expiration Date (MM/YY)"},
-                    InputTestCase{"Expiration Date (MM - YY)"},
-                    InputTestCase{"Expiration Date (MM-YY)"},
-                    InputTestCase{"Expiration Date MM / YY"},
-                    InputTestCase{"Expiration Date MM/YY"},
-                    InputTestCase{"Expiration Date MM - YY"},
-                    InputTestCase{"Expiration Date MM-YY"},
-                    InputTestCase{"expiration date yy"},
-                    InputTestCase{"Exp Date     (MM / YY)"}));
+                    InputTestCase{u"Expiration Date (MM / YY)"},
+                    InputTestCase{u"Expiration Date (MM/YY)"},
+                    InputTestCase{u"Expiration Date (MM - YY)"},
+                    InputTestCase{u"Expiration Date (MM-YY)"},
+                    InputTestCase{u"Expiration Date MM / YY"},
+                    InputTestCase{u"Expiration Date MM/YY"},
+                    InputTestCase{u"Expiration Date MM - YY"},
+                    InputTestCase{u"Expiration Date MM-YY"},
+                    InputTestCase{u"expiration date yy"},
+                    InputTestCase{u"Exp Date     (MM / YY)"}));
 
 class ExpirationDate2DigitYearNegative
     : public testing::TestWithParam<InputTestCase> {};
@@ -121,113 +116,113 @@ class ExpirationDate2DigitYearNegative
 TEST_P(ExpirationDate2DigitYearNegative, ExpirationDate2DigitYearRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
-  const std::u16string pattern = ASCIIToUTF16(kExpirationDate2DigitYearRe);
-  EXPECT_FALSE(MatchesPattern(ASCIIToUTF16(test_case.input), pattern));
+  const std::u16string pattern = kExpirationDate2DigitYearRe;
+  EXPECT_FALSE(MatchesPattern(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     AutofillRegexes,
     ExpirationDate2DigitYearNegative,
-    testing::Values(InputTestCase{""},
-                    InputTestCase{"Look, ma' -- an invalid string!"},
-                    InputTestCase{"mmfavouritewordyy"},
-                    InputTestCase{"mm a yy"},
-                    InputTestCase{"mm a yyyy"},
+    testing::Values(InputTestCase{u""},
+                    InputTestCase{u"Look, ma' -- an invalid string!"},
+                    InputTestCase{u"mmfavouritewordyy"},
+                    InputTestCase{u"mm a yy"},
+                    InputTestCase{u"mm a yyyy"},
                     // Simple four year cases
-                    InputTestCase{"mm / yyyy"},
-                    InputTestCase{"mm/ yyyy"},
-                    InputTestCase{"mm /yyyy"},
-                    InputTestCase{"mm/yyyy"},
-                    InputTestCase{"mm - yyyy"},
-                    InputTestCase{"mm- yyyy"},
-                    InputTestCase{"mm -yyyy"},
-                    InputTestCase{"mm-yyyy"},
-                    InputTestCase{"mmyyyy"},
+                    InputTestCase{u"mm / yyyy"},
+                    InputTestCase{u"mm/ yyyy"},
+                    InputTestCase{u"mm /yyyy"},
+                    InputTestCase{u"mm/yyyy"},
+                    InputTestCase{u"mm - yyyy"},
+                    InputTestCase{u"mm- yyyy"},
+                    InputTestCase{u"mm -yyyy"},
+                    InputTestCase{u"mm-yyyy"},
+                    InputTestCase{u"mmyyyy"},
                     // Complex four year cases
-                    InputTestCase{"Expiration Date (MM / YYYY)"},
-                    InputTestCase{"Expiration Date (MM/YYYY)"},
-                    InputTestCase{"Expiration Date (MM - YYYY)"},
-                    InputTestCase{"Expiration Date (MM-YYYY)"},
-                    InputTestCase{"Expiration Date MM / YYYY"},
-                    InputTestCase{"Expiration Date MM/YYYY"},
-                    InputTestCase{"Expiration Date MM - YYYY"},
-                    InputTestCase{"Expiration Date MM-YYYY"},
-                    InputTestCase{"expiration date yyyy"},
-                    InputTestCase{"Exp Date     (MM / YYYY)"}));
+                    InputTestCase{u"Expiration Date (MM / YYYY)"},
+                    InputTestCase{u"Expiration Date (MM/YYYY)"},
+                    InputTestCase{u"Expiration Date (MM - YYYY)"},
+                    InputTestCase{u"Expiration Date (MM-YYYY)"},
+                    InputTestCase{u"Expiration Date MM / YYYY"},
+                    InputTestCase{u"Expiration Date MM/YYYY"},
+                    InputTestCase{u"Expiration Date MM - YYYY"},
+                    InputTestCase{u"Expiration Date MM-YYYY"},
+                    InputTestCase{u"expiration date yyyy"},
+                    InputTestCase{u"Exp Date     (MM / YYYY)"}));
 
 class ExpirationDate4DigitYearPositive
     : public testing::TestWithParam<InputTestCase> {};
 
 TEST_P(ExpirationDate4DigitYearPositive, ExpirationDate4DigitYearRegexes) {
   auto test_case = GetParam();
-  const std::u16string pattern = ASCIIToUTF16(kExpirationDate4DigitYearRe);
+  const std::u16string pattern = kExpirationDate4DigitYearRe;
   SCOPED_TRACE(test_case.input);
-  EXPECT_TRUE(MatchesPattern(ASCIIToUTF16(test_case.input), pattern));
+  EXPECT_TRUE(MatchesPattern(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
                          ExpirationDate4DigitYearPositive,
                          testing::Values(
                              // Simple four year cases
-                             InputTestCase{"mm / yyyy"},
-                             InputTestCase{"mm/ yyyy"},
-                             InputTestCase{"mm /yyyy"},
-                             InputTestCase{"mm/yyyy"},
-                             InputTestCase{"mm - yyyy"},
-                             InputTestCase{"mm- yyyy"},
-                             InputTestCase{"mm -yyyy"},
-                             InputTestCase{"mm-yyyy"},
-                             InputTestCase{"mmyyyy"},
+                             InputTestCase{u"mm / yyyy"},
+                             InputTestCase{u"mm/ yyyy"},
+                             InputTestCase{u"mm /yyyy"},
+                             InputTestCase{u"mm/yyyy"},
+                             InputTestCase{u"mm - yyyy"},
+                             InputTestCase{u"mm- yyyy"},
+                             InputTestCase{u"mm -yyyy"},
+                             InputTestCase{u"mm-yyyy"},
+                             InputTestCase{u"mmyyyy"},
                              // Complex four year cases
-                             InputTestCase{"Expiration Date (MM / YYYY)"},
-                             InputTestCase{"Expiration Date (MM/YYYY)"},
-                             InputTestCase{"Expiration Date (MM - YYYY)"},
-                             InputTestCase{"Expiration Date (MM-YYYY)"},
-                             InputTestCase{"Expiration Date MM / YYYY"},
-                             InputTestCase{"Expiration Date MM/YYYY"},
-                             InputTestCase{"Expiration Date MM - YYYY"},
-                             InputTestCase{"Expiration Date MM-YYYY"},
-                             InputTestCase{"expiration date yyyy"},
-                             InputTestCase{"Exp Date     (MM / YYYY)"}));
+                             InputTestCase{u"Expiration Date (MM / YYYY)"},
+                             InputTestCase{u"Expiration Date (MM/YYYY)"},
+                             InputTestCase{u"Expiration Date (MM - YYYY)"},
+                             InputTestCase{u"Expiration Date (MM-YYYY)"},
+                             InputTestCase{u"Expiration Date MM / YYYY"},
+                             InputTestCase{u"Expiration Date MM/YYYY"},
+                             InputTestCase{u"Expiration Date MM - YYYY"},
+                             InputTestCase{u"Expiration Date MM-YYYY"},
+                             InputTestCase{u"expiration date yyyy"},
+                             InputTestCase{u"Exp Date     (MM / YYYY)"}));
 
 class ExpirationDate4DigitYearNegative
     : public testing::TestWithParam<InputTestCase> {};
 
 TEST_P(ExpirationDate4DigitYearNegative, ExpirationDate4DigitYearRegexes) {
   auto test_case = GetParam();
-  const std::u16string pattern = ASCIIToUTF16(kExpirationDate4DigitYearRe);
+  const std::u16string pattern = kExpirationDate4DigitYearRe;
   SCOPED_TRACE(test_case.input);
-  EXPECT_FALSE(MatchesPattern(ASCIIToUTF16(test_case.input), pattern));
+  EXPECT_FALSE(MatchesPattern(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     AutofillRegexes,
     ExpirationDate4DigitYearNegative,
-    testing::Values(InputTestCase{""},
-                    InputTestCase{"Look, ma' -- an invalid string!"},
-                    InputTestCase{"mmfavouritewordyy"},
-                    InputTestCase{"mm a yy"},
-                    InputTestCase{"mm a yyyy"},
+    testing::Values(InputTestCase{u""},
+                    InputTestCase{u"Look, ma' -- an invalid string!"},
+                    InputTestCase{u"mmfavouritewordyy"},
+                    InputTestCase{u"mm a yy"},
+                    InputTestCase{u"mm a yyyy"},
                     // Simple two year cases
-                    InputTestCase{"mm / yy"},
-                    InputTestCase{"mm/ yy"},
-                    InputTestCase{"mm /yy"},
-                    InputTestCase{"mm/yy"},
-                    InputTestCase{"mm - yy"},
-                    InputTestCase{"mm- yy"},
-                    InputTestCase{"mm -yy"},
-                    InputTestCase{"mm-yy"},
-                    InputTestCase{"mmyy"},
+                    InputTestCase{u"mm / yy"},
+                    InputTestCase{u"mm/ yy"},
+                    InputTestCase{u"mm /yy"},
+                    InputTestCase{u"mm/yy"},
+                    InputTestCase{u"mm - yy"},
+                    InputTestCase{u"mm- yy"},
+                    InputTestCase{u"mm -yy"},
+                    InputTestCase{u"mm-yy"},
+                    InputTestCase{u"mmyy"},
                     // Complex two year cases
-                    InputTestCase{"Expiration Date (MM / YY)"},
-                    InputTestCase{"Expiration Date (MM/YY)"},
-                    InputTestCase{"Expiration Date (MM - YY)"},
-                    InputTestCase{"Expiration Date (MM-YY)"},
-                    InputTestCase{"Expiration Date MM / YY"},
-                    InputTestCase{"Expiration Date MM/YY"},
-                    InputTestCase{"Expiration Date MM - YY"},
-                    InputTestCase{"Expiration Date MM-YY"},
-                    InputTestCase{"expiration date yy"},
-                    InputTestCase{"Exp Date     (MM / YY)"}));
+                    InputTestCase{u"Expiration Date (MM / YY)"},
+                    InputTestCase{u"Expiration Date (MM/YY)"},
+                    InputTestCase{u"Expiration Date (MM - YY)"},
+                    InputTestCase{u"Expiration Date (MM-YY)"},
+                    InputTestCase{u"Expiration Date MM / YY"},
+                    InputTestCase{u"Expiration Date MM/YY"},
+                    InputTestCase{u"Expiration Date MM - YY"},
+                    InputTestCase{u"Expiration Date MM-YY"},
+                    InputTestCase{u"expiration date yy"},
+                    InputTestCase{u"Exp Date     (MM / YY)"}));
 
 }  // namespace autofill

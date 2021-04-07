@@ -16,12 +16,10 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
@@ -81,26 +79,17 @@ AutocompleteFlag ExtractAutocompleteFlag(const std::string& attribute) {
 
 // Returns true if the |str| contains words related to CVC fields.
 bool StringMatchesCVC(const std::u16string& str) {
-  static const base::NoDestructor<std::u16string> kCardCvcReCached(
-      base::UTF8ToUTF16(autofill::kCardCvcRe));
-
-  return autofill::MatchesPattern(str, *kCardCvcReCached);
+  return autofill::MatchesPattern(str, autofill::kCardCvcRe);
 }
 
 // Returns true if the |str| contains words related to SSN fields.
 bool StringMatchesSSN(const std::u16string& str) {
-  static const base::NoDestructor<std::u16string> kSSNReCached(
-      base::UTF8ToUTF16(autofill::kSocialSecurityRe));
-
-  return autofill::MatchesPattern(str, *kSSNReCached);
+  return autofill::MatchesPattern(str, autofill::kSocialSecurityRe);
 }
 
 // Returns true if the |str| contains words related to one time password fields.
 bool StringMatchesOTP(const std::u16string& str) {
-  static const base::NoDestructor<std::u16string> kOTPReCached(
-      base::UTF8ToUTF16(autofill::kOneTimePwdRe));
-
-  return autofill::MatchesPattern(str, *kOTPReCached);
+  return autofill::MatchesPattern(str, autofill::kOneTimePwdRe);
 }
 
 // TODO(crbug.com/860700): Remove name and attribute checking once server-side

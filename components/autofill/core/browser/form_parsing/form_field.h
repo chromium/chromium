@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
@@ -73,7 +74,7 @@ class FormField {
   // Attempts to parse a form field with the given pattern.  Returns true on
   // success and fills |match| with a pointer to the field.
   static bool ParseField(AutofillScanner* scanner,
-                         const std::u16string& pattern,
+                         base::StringPiece16 pattern,
                          AutofillField** match,
                          const RegExLogging& logging = {});
 
@@ -83,7 +84,7 @@ class FormField {
                          const RegExLogging& logging = {});
 
   static bool ParseField(AutofillScanner* scanner,
-                         const std::u16string& pattern,
+                         base::StringPiece16 pattern,
                          const std::vector<MatchingPattern>& patterns,
                          AutofillField** match,
                          const RegExLogging& logging = {});
@@ -94,7 +95,7 @@ class FormField {
   // field, and the scanner would advance by one step. A |true| result is
   // returned in the case of a successful match, false otherwise.
   static bool ParseFieldSpecifics(AutofillScanner* scanner,
-                                  const std::u16string& pattern,
+                                  base::StringPiece16 pattern,
                                   int match_type,
                                   AutofillField** match,
                                   const RegExLogging& logging = {});
@@ -107,7 +108,7 @@ class FormField {
   // The same as ParseFieldSpecifics but with splitted match_types into
   // MatchAttributes and MatchFieldTypes.
   static bool ParseFieldSpecifics(AutofillScanner* scanner,
-                                  const std::u16string& pattern,
+                                  base::StringPiece16 pattern,
                                   int match_field_attributes,
                                   int match_field_input_types,
                                   AutofillField** match,
@@ -119,7 +120,7 @@ class FormField {
   };
 
   static bool ParseFieldSpecifics(AutofillScanner* scanner,
-                                  const std::u16string& pattern,
+                                  base::StringPiece16 pattern,
                                   int match_type,
                                   const std::vector<MatchingPattern>& patterns,
                                   AutofillField** match,
@@ -166,7 +167,7 @@ class FormField {
   // Returns |true| if a match is found according to |match_type|, and |false|
   // otherwise.
   static bool MatchAndAdvance(AutofillScanner* scanner,
-                              const std::u16string& pattern,
+                              base::StringPiece16 pattern,
                               int match_type,
                               AutofillField** match,
                               const RegExLogging& logging = {});
@@ -174,7 +175,7 @@ class FormField {
   // The same as MatchAndAdvance but with splitted match_types into
   // MatchAttributes and MatchFieldTypes.
   static bool MatchAndAdvance(AutofillScanner* scanner,
-                              const std::u16string& pattern,
+                              base::StringPiece16 pattern,
                               int match_field_attributes,
                               int match_field_input_types,
                               AutofillField** match,
@@ -183,14 +184,14 @@ class FormField {
   // Matches the regular expression |pattern| against the components of
   // |field| as specified in the |match_type| bit field (see |MatchType|).
   static bool Match(const AutofillField* field,
-                    const std::u16string& pattern,
+                    base::StringPiece16 pattern,
                     int match_type,
                     const RegExLogging& logging = {});
 
   // The same as Match but with splitted match_types into MatchAttributes
   // and MatchFieldTypes.
   static bool Match(const AutofillField* field,
-                    const std::u16string& pattern,
+                    base::StringPiece16 pattern,
                     int match_field_attributes,
                     int match_field_input_types,
                     const RegExLogging& logging = {});

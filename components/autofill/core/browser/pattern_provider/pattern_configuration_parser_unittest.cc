@@ -90,8 +90,8 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
   // Test one |MatchingPattern| to check that they are parsed correctly.
   MatchingPattern* pattern = &patterns["FULL_NAME"][LanguageCode("fr")][0];
 
-  ASSERT_EQ("nom|prenom", pattern->positive_pattern);
-  ASSERT_EQ("compagne", pattern->negative_pattern);
+  ASSERT_EQ(u"nom|prenom", pattern->positive_pattern);
+  ASSERT_EQ(u"compagne", pattern->negative_pattern);
   ASSERT_EQ(LanguageCode("fr"), pattern->language);
   ASSERT_NEAR(2.0, pattern->positive_score, 1e-6);
   ASSERT_EQ(2, pattern->match_field_attributes);

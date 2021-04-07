@@ -151,9 +151,8 @@ bool IsValidCreditCardNumberForBasicCardNetworks(
 
 bool IsValidEmailAddress(const std::u16string& text) {
   // E-Mail pattern as defined by the WhatWG. (4.10.7.1.5 E-Mail state)
-  const std::u16string kEmailPattern = base::ASCIIToUTF16(
-      "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@"
-      "[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$");
+  static constexpr char16_t kEmailPattern[] =
+      u"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
   return MatchesPattern(text, kEmailPattern);
 }
 
@@ -168,7 +167,7 @@ bool IsPossiblePhoneNumber(const std::u16string& text,
 }
 
 bool IsValidZip(const std::u16string& text) {
-  const std::u16string kZipPattern = u"^\\d{5}(-\\d{4})?$";
+  static constexpr char16_t kZipPattern[] = u"^\\d{5}(-\\d{4})?$";
   return MatchesPattern(text, kZipPattern);
 }
 
@@ -343,22 +342,20 @@ size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network) {
 }
 
 bool IsUPIVirtualPaymentAddress(const std::u16string& value) {
-  return MatchesPattern(value, base::ASCIIToUTF16(kUPIVirtualPaymentAddressRe));
+  return MatchesPattern(value, kUPIVirtualPaymentAddressRe);
 }
 
 bool IsInternationalBankAccountNumber(const std::u16string& value) {
   std::u16string no_spaces;
   base::RemoveChars(value, u" ", &no_spaces);
-  return MatchesPattern(no_spaces,
-                        base::ASCIIToUTF16(kInternationalBankAccountNumberRe));
+  return MatchesPattern(no_spaces, kInternationalBankAccountNumberRe);
 }
 
 bool IsPlausibleCreditCardCVCNumber(const std::u16string& value) {
-  return MatchesPattern(value, base::ASCIIToUTF16(kCreditCardCVCPattern));
+  return MatchesPattern(value, kCreditCardCVCPattern);
 }
 
 bool IsPlausible4DigitExpirationYear(const std::u16string& value) {
-  return MatchesPattern(value,
-                        base::ASCIIToUTF16(kCreditCard4DigitExpYearPattern));
+  return MatchesPattern(value, kCreditCard4DigitExpYearPattern);
 }
 }  // namespace autofill

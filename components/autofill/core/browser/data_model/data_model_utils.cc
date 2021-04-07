@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
@@ -147,8 +146,7 @@ std::u16string FindPossiblePhoneCountryCode(const std::u16string& text) {
   std::u16string candidate;
   if (text.find(u"00") != std::u16string::npos ||
       text.find('+') != std::u16string::npos) {
-    if (MatchesPattern(text, base::ASCIIToUTF16(kAugmentedPhoneCountryCodeRe),
-                       &candidate, 1))
+    if (MatchesPattern(text, kAugmentedPhoneCountryCodeRe, &candidate, 1))
       return candidate;
   }
 

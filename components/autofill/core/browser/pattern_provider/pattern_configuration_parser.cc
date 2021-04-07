@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -53,12 +54,12 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
     return false;
 
   autofill::MatchingPattern new_pattern;
-  new_pattern.positive_pattern = *positive_pattern;
+  new_pattern.positive_pattern = base::UTF8ToUTF16(*positive_pattern);
   new_pattern.positive_score = *positive_score;
   if (negative_pattern != nullptr) {
-    new_pattern.negative_pattern = *negative_pattern;
+    new_pattern.negative_pattern = base::UTF8ToUTF16(*negative_pattern);
   } else {
-    new_pattern.negative_pattern = "";
+    new_pattern.negative_pattern = u"";
   }
   new_pattern.match_field_attributes = match_field_attributes.value();
   new_pattern.match_field_input_types = match_field_input_types.value();

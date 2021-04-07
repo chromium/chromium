@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/form_parsing/price_field.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -19,10 +18,10 @@ std::unique_ptr<FormField> PriceField::Parse(AutofillScanner* scanner,
   const std::vector<MatchingPattern>& price_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("PRICE", page_language);
 
-  if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kPriceRe),
+  if (ParseFieldSpecifics(scanner, kPriceRe,
                           MATCH_DEFAULT | MATCH_NUMBER | MATCH_SELECT |
                               MATCH_TEXT_AREA | MATCH_SEARCH,
-                          price_patterns, &field, {log_manager, kPriceRe})) {
+                          price_patterns, &field, {log_manager, "kPriceRe"})) {
     return std::make_unique<PriceField>(field);
   }
 

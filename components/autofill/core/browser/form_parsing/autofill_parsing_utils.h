@@ -54,8 +54,8 @@ struct MatchingPattern {
   ~MatchingPattern();
 
   LanguageCode language;
-  std::string positive_pattern;
-  std::string negative_pattern;
+  std::u16string positive_pattern;
+  std::u16string negative_pattern;
   float positive_score = 1.1;
   uint8_t match_field_attributes;
   uint16_t match_field_input_types;

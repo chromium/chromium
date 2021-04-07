@@ -1046,10 +1046,8 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
   }
 
   // Rule out search forms.
-  static const std::u16string kUrlSearchActionPattern =
-      base::UTF8ToUTF16(kUrlSearchActionRe);
   if (MatchesPattern(base::UTF8ToUTF16(target_url_.path_piece()),
-                     kUrlSearchActionPattern)) {
+                     kUrlSearchActionRe)) {
     if (log_manager) {
       log_manager->Log() << LoggingScope::kAbortParsing
                          << LogMessage::kAbortParsingUrlMatchesSearchRegex
