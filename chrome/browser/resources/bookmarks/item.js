@@ -118,6 +118,7 @@ Polymer({
       x: e.clientX,
       y: e.clientY,
       source: MenuSource.ITEM,
+      targetId: this.itemId,
     });
   },
 
@@ -137,6 +138,7 @@ Polymer({
     this.fire('open-command-menu', {
       targetElement: e.target,
       source: MenuSource.ITEM,
+      targetId: this.itemId,
     });
   },
 

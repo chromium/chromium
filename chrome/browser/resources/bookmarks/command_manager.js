@@ -867,7 +867,9 @@ export const CommandManager = Polymer({
    * @private
    */
   onOpenCommandMenu_: async function(e) {
-    await this.updateCanPaste_(e.detail.source);
+    if (e.detail.targetId) {
+      await this.updateCanPaste_(e.detail.targetId);
+    }
     if (e.detail.targetElement) {
       this.openCommandMenuAtElement(e.detail.targetElement, e.detail.source);
     } else {
