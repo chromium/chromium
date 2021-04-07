@@ -463,6 +463,7 @@ TEST_F(NetworkMetadataStoreTest, FixSyncedHiddenNetworks) {
   ASSERT_TRUE(
       network_state_handler()->GetNetworkStateFromGuid(kGuid1)->hidden_ssid());
 
+  base::HistogramTester tester;
   ResetStore();
   metadata_store()->NetworkListChanged();
   base::RunLoop().RunUntilIdle();
@@ -470,6 +471,8 @@ TEST_F(NetworkMetadataStoreTest, FixSyncedHiddenNetworks) {
       network_state_handler()->GetNetworkStateFromGuid(kGuid)->hidden_ssid());
   ASSERT_TRUE(
       network_state_handler()->GetNetworkStateFromGuid(kGuid1)->hidden_ssid());
+  tester.ExpectBucketCount("Network.Wifi.Synced.Hidden.Fixed",
+                           /*sample=*/1, /*expected_count=*/1);
 }
 
 TEST_F(NetworkMetadataStoreTest, LogHiddenNetworks) {

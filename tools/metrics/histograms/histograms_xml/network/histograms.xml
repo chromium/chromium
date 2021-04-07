@@ -2274,6 +2274,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Wifi.Synced.Hidden.Fixed" units="networks"
+    expires_after="2022-04-01">
+  <owner>jonmann@chromium.org</owner>
+  <owner>tnagel@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <owner>cros-privacy-core@google.com</owner>
+  <summary>
+    Chrome OS network metric tracking the count of synced networks that were
+    fixed after getting saved to the device when out of range and marked as
+    hidden. See b/178089463 for more details.
+  </summary>
+</histogram>
+
 <histogram name="Network.Wifi.Synced.ManualConnection.FailureReason"
     enum="ConnectionFailureReason" expires_after="2021-04-22">
   <owner>jonmann@chromium.org</owner>

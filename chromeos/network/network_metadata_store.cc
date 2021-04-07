@@ -166,6 +166,7 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
       /*visible_only=*/false, /*limit=*/0, &networks);
 
   NET_LOG(EVENT) << "Updating networks from sync to disable HiddenSSID.";
+  int total_count = 0;
   for (const chromeos::NetworkState* network : networks) {
     if (!network->hidden_ssid()) {
       continue;
@@ -174,6 +175,7 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
       continue;
     }
 
+    total_count++;
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetBoolKey(shill::kWifiHiddenSsid, false);
     network_configuration_handler_->SetShillProperties(
@@ -183,6 +185,7 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
                        weak_ptr_factory_.GetWeakPtr()));
   }
   profile_pref_service_->SetBoolean(kHasFixedHiddenNetworks, true);
+  base::UmaHistogramCounts1000("Network.Wifi.Synced.Hidden.Fixed", total_count);
 }
 
 void NetworkMetadataStore::LogHiddenNetworkAge() {
