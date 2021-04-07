@@ -252,6 +252,26 @@ Polymer({
       type: Number,
       value: 0,
     },
+
+    /**
+     * Indicates the result of the scan job. Set to kSuccess when the scan job
+     * succeeds.
+     * @private {!ash.scanning.mojom.ScanResult}
+     */
+    scanResult_: {
+      type: Number,
+      value: ash.scanning.mojom.ScanResult.kSuccess,
+    },
+
+    /**
+     * The key to retrieve the appropriate string to display in an error dialog
+     * when a scan job fails.
+     * @private {string}
+     */
+    scanFailedDialogTextKey_: {
+      type: String,
+      computed: 'computeScanFailedDialogTextKey_(scanResult_)',
+    },
   },
 
   observers:
@@ -321,11 +341,13 @@ Polymer({
 
   /**
    * Overrides ash.scanning.mojom.ScanJobObserverInterface.
-   * @param {boolean} success
+   * @param {!ash.scanning.mojom.ScanResult} result
    * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
    */
-  onScanComplete(success, scannedFilePaths) {
-    if (!success || this.objectUrls_.length == 0) {
+  onScanComplete(result, scannedFilePaths) {
+    this.scanResult_ = result;
+    if (this.scanResult_ !== ash.scanning.mojom.ScanResult.kSuccess ||
+        this.objectUrls_.length == 0) {
       this.$.scanFailedDialog.showModal();
       return;
     }
@@ -682,5 +704,26 @@ Polymer({
     }
 
     ++this.numScanSettingChanges_;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeScanFailedDialogTextKey_() {
+    switch (this.scanResult_) {
+      case (ash.scanning.mojom.ScanResult.kDeviceBusy):
+        return 'scanFailedDialogDeviceBusyText';
+      case (ash.scanning.mojom.ScanResult.kAdfJammed):
+        return 'scanFailedDialogAdfJammedText';
+      case (ash.scanning.mojom.ScanResult.kAdfEmpty):
+        return 'scanFailedDialogAdfEmptyText';
+      case (ash.scanning.mojom.ScanResult.kFlatbedOpen):
+        return 'scanFailedDialogFlatbedOpenText';
+      case (ash.scanning.mojom.ScanResult.kIoError):
+        return 'scanFailedDialogIoErrorText';
+      default:
+        return 'scanFailedDialogUnknownErrorText';
+    }
   },
 });

@@ -156,9 +156,9 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
   }
 
   void OnScanComplete(
-      bool success,
+      mojo_ipc::ScanResult result,
       const std::vector<base::FilePath>& scanned_file_paths) override {
-    scan_success_ = success;
+    scan_result_ = result;
     scanned_file_paths_ = scanned_file_paths;
   }
 
@@ -179,11 +179,15 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
 
   // Returns true if the scan completed successfully.
   bool scan_success() const {
-    return progress_ == 100 && page_complete_ && scan_success_;
+    return progress_ == 100 && page_complete_ &&
+           scan_result_ == mojo_ipc::ScanResult::kSuccess;
   }
 
   // Returns true if the cancel scan request completed successfully.
   bool cancel_scan_success() const { return cancel_scan_success_; }
+
+  // Returns the result of the scan job.
+  mojo_ipc::ScanResult scan_result() const { return scan_result_; }
 
   // Returns file paths of the saved scan files.
   std::vector<base::FilePath> scanned_file_paths() const {
@@ -193,7 +197,7 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
  private:
   uint32_t progress_ = 0;
   bool page_complete_ = false;
-  bool scan_success_ = false;
+  mojo_ipc::ScanResult scan_result_ = mojo_ipc::ScanResult::kUnknownError;
   bool cancel_scan_success_ = false;
   std::vector<base::FilePath> scanned_file_paths_;
   mojo::Receiver<mojo_ipc::ScanJobObserver> receiver_{this};
@@ -398,6 +402,8 @@ TEST_F(ScanServiceTest, Scan) {
       EXPECT_TRUE(base::PathExists(saved_scan_path));
 
     EXPECT_TRUE(fake_scan_job_observer_.scan_success());
+    EXPECT_EQ(mojo_ipc::ScanResult::kSuccess,
+              fake_scan_job_observer_.scan_result());
     EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
   }
 }
@@ -425,6 +431,8 @@ TEST_F(ScanServiceTest, PdfScan) {
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_TRUE(base::PathExists(saved_scan_path));
   EXPECT_TRUE(fake_scan_job_observer_.scan_success());
+  EXPECT_EQ(mojo_ipc::ScanResult::kSuccess,
+            fake_scan_job_observer_.scan_result());
   const std::vector<base::FilePath> scanned_file_paths =
       fake_scan_job_observer_.scanned_file_paths();
   EXPECT_EQ(1u, scanned_file_paths.size());
@@ -477,6 +485,8 @@ TEST_F(ScanServiceTest, ScanFails) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
+  EXPECT_EQ(mojo_ipc::ScanResult::kDeviceBusy,
+            fake_scan_job_observer_.scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 }
 
@@ -497,6 +507,8 @@ TEST_F(ScanServiceTest, PageSaveFails) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
+  EXPECT_EQ(mojo_ipc::ScanResult::kUnknownError,
+            fake_scan_job_observer_.scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 }
 
@@ -515,6 +527,8 @@ TEST_F(ScanServiceTest, ScanAfterFailedScan) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
+  EXPECT_EQ(mojo_ipc::ScanResult::kDeviceBusy,
+            fake_scan_job_observer_.scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 
   // Set scan data so next scan is successful.
@@ -535,6 +549,8 @@ TEST_F(ScanServiceTest, ScanAfterFailedScan) {
     EXPECT_TRUE(base::PathExists(saved_scan_path));
 
   EXPECT_TRUE(fake_scan_job_observer_.scan_success());
+  EXPECT_EQ(mojo_ipc::ScanResult::kSuccess,
+            fake_scan_job_observer_.scan_result());
   EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
 }
 
@@ -566,6 +582,8 @@ TEST_F(ScanServiceTest, FailedScanAfterSuccessfulScan) {
     EXPECT_TRUE(base::PathExists(saved_scan_path));
 
   EXPECT_TRUE(fake_scan_job_observer_.scan_success());
+  EXPECT_EQ(mojo_ipc::ScanResult::kSuccess,
+            fake_scan_job_observer_.scan_result());
   EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
 
   // Remove the scan data from FakeLorgnetteScannerManager so the scan will
@@ -574,6 +592,8 @@ TEST_F(ScanServiceTest, FailedScanAfterSuccessfulScan) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
+  EXPECT_EQ(mojo_ipc::ScanResult::kDeviceBusy,
+            fake_scan_job_observer_.scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 }
 

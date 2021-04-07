@@ -196,4 +196,30 @@ INSTANTIATE_TEST_SUITE_P(
                                            lorgnette::MODE_COLOR,
                                            mojo_ipc::PageSize::kMax, 0, 0}));
 
+// Test that each lorgnette::ScanFailureMode is converted into the correct
+// mojo_ipc::ScanResult.
+TEST(ScanResultTest, Convert) {
+  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
+                lorgnette::SCAN_FAILURE_MODE_NO_FAILURE),
+            mojo_ipc::ScanResult::kSuccess);
+  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
+                lorgnette::SCAN_FAILURE_MODE_UNKNOWN),
+            mojo_ipc::ScanResult::kUnknownError);
+  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
+                lorgnette::SCAN_FAILURE_MODE_DEVICE_BUSY),
+            mojo_ipc::ScanResult::kDeviceBusy);
+  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
+                lorgnette::SCAN_FAILURE_MODE_ADF_JAMMED),
+            mojo_ipc::ScanResult::kAdfJammed);
+  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
+                lorgnette::SCAN_FAILURE_MODE_ADF_EMPTY),
+            mojo_ipc::ScanResult::kAdfEmpty);
+  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
+                lorgnette::SCAN_FAILURE_MODE_FLATBED_OPEN),
+            mojo_ipc::ScanResult::kFlatbedOpen);
+  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
+                lorgnette::SCAN_FAILURE_MODE_IO_ERROR),
+            mojo_ipc::ScanResult::kIoError);
+}
+
 }  // namespace ash

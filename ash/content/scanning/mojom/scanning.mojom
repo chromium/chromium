@@ -93,6 +93,24 @@ struct Scanner {
   mojo_base.mojom.String16 display_name;
 };
 
+// The result of a scan job.
+enum ScanResult {
+  // The scan completed successfully.
+  kSuccess,
+  // An unknown or generic error occurred.
+  kUnknownError,
+  // The device is busy.
+  kDeviceBusy,
+  // The document feeder is jammed.
+  kAdfJammed,
+  // The document feeder is empty.
+  kAdfEmpty,
+  // The flatbed cover is open.
+  kFlatbedOpen,
+  // An error occurred while communicating with the device.
+  kIoError,
+};
+
 // Observer interface used to send remote updates about an in-progress scan job
 // to the Scan app (chrome://scanning) receiver. When the corresponding scan job
 // is complete, the remote and receiver are disconnected.
@@ -106,11 +124,11 @@ interface ScanJobObserver {
   // TODO(jschettler): Send a lower resolution preview.
   OnPageComplete(array<uint8> page_data);
 
-  // Called when the scan is complete. |success| indicates whether the scan
-  // completed successfully. |scanned_file_paths| contains all the file paths of
-  // the pages scanned in a scan job. |scanned_file_paths| is an empty array for
-  // failed scans.
-  OnScanComplete(bool success,
+  // Called when the scan is complete. |result| indicates the result of the scan
+  // and is set to kSuccess when the scan completes successfully.
+  // |scanned_file_paths| contains all the file paths of the pages scanned in a
+  // scan job. |scanned_file_paths| is an empty array for failed scans.
+  OnScanComplete(ScanResult result,
       array<mojo_base.mojom.FilePath> scanned_file_paths);
 
   // Called when canceling the current scan job is complete. |success|

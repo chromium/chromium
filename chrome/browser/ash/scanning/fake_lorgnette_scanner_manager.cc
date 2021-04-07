@@ -56,7 +56,7 @@ void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
       base::BindOnce(std::move(completion_callback), scan_data_.has_value(),
                      scan_data_.has_value()
                          ? lorgnette::SCAN_FAILURE_MODE_NO_FAILURE
-                         : lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
+                         : lorgnette::SCAN_FAILURE_MODE_DEVICE_BUSY));
 }
 
 void FakeLorgnetteScannerManager::CancelScan(CancelCallback cancel_callback) {

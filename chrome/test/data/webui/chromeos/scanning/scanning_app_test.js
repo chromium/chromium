@@ -4,6 +4,7 @@
 
 import 'chrome://scanning/scanning_app.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
@@ -178,12 +179,12 @@ class FakeScanService {
   }
 
   /**
-   * @param {boolean} success
+   * @param {!ash.scanning.mojom.ScanResult} result
    * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
    * @return {!Promise}
    */
-  simulateScanComplete(success, scannedFilePaths) {
-    this.scanJobObserverRemote_.onScanComplete(success, scannedFilePaths);
+  simulateScanComplete(result, scannedFilePaths) {
+    this.scanJobObserverRemote_.onScanComplete(result, scannedFilePaths);
     return flushTasks();
   }
 
@@ -524,7 +525,8 @@ export function scanningAppTest() {
         })
         .then(() => {
           // Complete the scan.
-          return fakeScanService_.simulateScanComplete(true, scannedFilePaths);
+          return fakeScanService_.simulateScanComplete(
+              ash.scanning.mojom.ScanResult.kSuccess, scannedFilePaths);
         })
         .then(() => {
           assertTrue(isVisible(/** @type {!HTMLElement} */ (scannedImages)));
@@ -581,7 +583,8 @@ export function scanningAppTest() {
         })
         .then(() => {
           // Simulate the scan failing.
-          return fakeScanService_.simulateScanComplete(false, []);
+          return fakeScanService_.simulateScanComplete(
+              ash.scanning.mojom.ScanResult.kIoError, []);
         })
         .then(() => {
           // The scan failed dialog should open.
@@ -595,6 +598,99 @@ export function scanningAppTest() {
           assertFalse(scanningApp.$$('#scanFailedDialog').open);
           assertFalse(scanButton.disabled);
           assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
+        });
+  });
+
+  test('ScanResults', () => {
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return fakeScanService_.whenCalled('getScannerCapabilities');
+        })
+        .then(() => {
+          scanButton =
+              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulateScanComplete(
+              ash.scanning.mojom.ScanResult.kUnknownError, []);
+        })
+        .then(() => {
+          assertEquals(
+              loadTimeData.getString('scanFailedDialogUnknownErrorText'),
+              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+          return clickOkButton();
+        })
+        .then(() => {
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulateScanComplete(
+              ash.scanning.mojom.ScanResult.kDeviceBusy, []);
+        })
+        .then(() => {
+          assertEquals(
+              loadTimeData.getString('scanFailedDialogDeviceBusyText'),
+              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+          return clickOkButton();
+        })
+        .then(() => {
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulateScanComplete(
+              ash.scanning.mojom.ScanResult.kAdfJammed, []);
+        })
+        .then(() => {
+          assertEquals(
+              loadTimeData.getString('scanFailedDialogAdfJammedText'),
+              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+          return clickOkButton();
+        })
+        .then(() => {
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulateScanComplete(
+              ash.scanning.mojom.ScanResult.kAdfEmpty, []);
+        })
+        .then(() => {
+          assertEquals(
+              loadTimeData.getString('scanFailedDialogAdfEmptyText'),
+              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+          return clickOkButton();
+        })
+        .then(() => {
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulateScanComplete(
+              ash.scanning.mojom.ScanResult.kFlatbedOpen, []);
+        })
+        .then(() => {
+          assertEquals(
+              loadTimeData.getString('scanFailedDialogFlatbedOpenText'),
+              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+          return clickOkButton();
+        })
+        .then(() => {
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulateScanComplete(
+              ash.scanning.mojom.ScanResult.kIoError, []);
+        })
+        .then(() => {
+          assertEquals(
+              loadTimeData.getString('scanFailedDialogIoErrorText'),
+              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+          return clickOkButton();
         });
   });
 

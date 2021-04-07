@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
 
 #include "base/notreached.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 
 namespace mojo {
 
@@ -136,6 +135,34 @@ struct TypeConverter<lorgnette::ColorMode, mojo_ipc::ColorMode> {
     }
   }
 };
+
+// static
+mojo_ipc::ScanResult
+TypeConverter<mojo_ipc::ScanResult, lorgnette::ScanFailureMode>::Convert(
+    const lorgnette::ScanFailureMode lorgnette_failure_mode) {
+  switch (lorgnette_failure_mode) {
+    case lorgnette::SCAN_FAILURE_MODE_NO_FAILURE:
+      return mojo_ipc::ScanResult::kSuccess;
+    case lorgnette::SCAN_FAILURE_MODE_UNKNOWN:
+      return mojo_ipc::ScanResult::kUnknownError;
+    case lorgnette::SCAN_FAILURE_MODE_DEVICE_BUSY:
+      return mojo_ipc::ScanResult::kDeviceBusy;
+    case lorgnette::SCAN_FAILURE_MODE_ADF_JAMMED:
+      return mojo_ipc::ScanResult::kAdfJammed;
+    case lorgnette::SCAN_FAILURE_MODE_ADF_EMPTY:
+      return mojo_ipc::ScanResult::kAdfEmpty;
+    case lorgnette::SCAN_FAILURE_MODE_FLATBED_OPEN:
+      return mojo_ipc::ScanResult::kFlatbedOpen;
+    case lorgnette::SCAN_FAILURE_MODE_IO_ERROR:
+      return mojo_ipc::ScanResult::kIoError;
+    case lorgnette::ScanFailureMode_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case lorgnette::ScanFailureMode_INT_MAX_SENTINEL_DO_NOT_USE_:
+      break;
+  }
+
+  NOTREACHED();
+  return mojo_ipc::ScanResult::kUnknownError;
+}
 
 // static
 mojo_ipc::ScannerCapabilitiesPtr TypeConverter<mojo_ipc::ScannerCapabilitiesPtr,
