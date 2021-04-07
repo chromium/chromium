@@ -39,6 +39,7 @@ class MemoriesService : public KeyedService {
   // Gets or creates an incomplete visit.
   MemoriesVisit& GetOrCreateIncompleteVisit(int64_t nav_id);
   // Returns whether an incomplete visit exists.
+  // TODO(manukh): Merge |HasIncompleteVisit()| and |GetIncompleteVisit()|.
   bool HasIncompleteVisit(int64_t nav_id);
   // Completes the visit if the expected metrics have been recorded. Incomplete
   // visit references retrieved prior will no longer be valid.

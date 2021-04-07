@@ -116,9 +116,11 @@ HistoryClustersTabHelper::~HistoryClustersTabHelper() = default;
 
 void HistoryClustersTabHelper::OnOmniboxUrlCopied() {
   DCHECK(!navigation_ids_.empty());
-  if (!navigation_ids_.empty()) {
-    GetMemoriesService()
-        ->GetIncompleteVisit(navigation_ids_.back())
+  auto* memories_service = GetMemoriesService();
+  // It's possible that the last navigation is complete if the tab crashed and a
+  // new navigation hasn't began.
+  if (memories_service->HasIncompleteVisit(navigation_ids_.back())) {
+    memories_service->GetIncompleteVisit(navigation_ids_.back())
         .context_signals.omnibox_url_copied = true;
   }
 }
