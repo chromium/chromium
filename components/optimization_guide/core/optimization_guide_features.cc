@@ -80,6 +80,11 @@ const base::Feature kPageContentAnnotations{"PageContentAnnotations",
 const base::Feature kPageTextExtraction{
     "OptimizationGuidePageContentExtraction", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the model file to be loaded for each execution, then unloaded on
+// completion.
+const base::Feature kLoadModelFileForEachExecution{
+    "LoadModelFileForEachExecution", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -376,6 +381,10 @@ uint64_t MaxSizeForPageContentTextDump() {
 bool ShouldWriteContentAnnotationsToHistoryService() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kPageContentAnnotations, "write_to_history_service", true);
+}
+
+bool LoadModelFileForEachExecution() {
+  return base::FeatureList::IsEnabled(kLoadModelFileForEachExecution);
 }
 
 }  // namespace features

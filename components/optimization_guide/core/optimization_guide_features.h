@@ -28,6 +28,7 @@ extern const base::Feature kOptimizationTargetPrediction;
 extern const base::Feature kOptimizationGuideModelDownloading;
 extern const base::Feature kPageContentAnnotations;
 extern const base::Feature kPageTextExtraction;
+extern const base::Feature kLoadModelFileForEachExecution;
 
 // The grace period duration for how long to give outstanding page text dump
 // requests to respond after DidFinishLoad.
@@ -193,6 +194,10 @@ uint64_t MaxSizeForPageContentTextDump();
 
 // Whether we should write content annotations to History Service.
 bool ShouldWriteContentAnnotationsToHistoryService();
+
+// Whether the model files that use |OptimizationTargetModelExecutor| should be
+// loaded for each execution, and then unloaded once complete.
+bool LoadModelFileForEachExecution();
 
 }  // namespace features
 }  // namespace optimization_guide

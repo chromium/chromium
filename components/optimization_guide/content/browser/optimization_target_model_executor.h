@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "content/public/browser/browser_thread.h"
@@ -126,12 +127,21 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
     if (optimization_target_ != optimization_target)
       return;
 
+    model_metadata_to_load_ = model_metadata;
+    file_path_to_load_ = file_path;
+
+    if (features::LoadModelFileForEachExecution()) {
+      // Wait for an actual execution before the model gets loaded.
+      return;
+    }
+
     // base::Unretained is safe here since model loading will not run if
     // |model_execution_task_runner_| gets destructed.
     model_execution_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&OptimizationTargetModelExecutor::LoadModelFile,
-                       base::Unretained(this), model_metadata, file_path));
+        base::BindOnce(
+            base::IgnoreResult(&OptimizationTargetModelExecutor::LoadModelFile),
+            base::Unretained(this)));
   }
 
   // Returns whether a model is currently loaded.
@@ -164,37 +174,56 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
       base::MemoryMappedFile* model_file) = 0;
 
  private:
+  void ResetLoadedModel() {
+    DCHECK(model_execution_task_runner_->RunsTasksInCurrentSequence());
+    loaded_model_.reset();
+    model_fb_.reset();
+    supported_features_for_loaded_model_ = base::nullopt;
+  }
+
   // Callback invoked when a model file for |optimization_target| has been
-  // loaded.
-  void LoadModelFile(const base::Optional<proto::Any>& model_metadata,
-                     const base::FilePath& file_path) {
+  // loaded. A true return value indicates the model was loaded successfully,
+  // false otherwise.
+  bool LoadModelFile() {
     DCHECK(model_execution_task_runner_->RunsTasksInCurrentSequence());
     ScopedModelExecutorLoadingResultRecorder scoped_model_loading_recorder(
         optimization_target_, ModelExecutorLoadingState::kModelFileInvalid);
 
     // We received a new model file. Reset any loaded models.
-    loaded_model_.reset();
-    model_fb_.reset();
-    supported_features_for_loaded_model_ = base::nullopt;
+    ResetLoadedModel();
+
+    if (!file_path_to_load_)
+      return false;
 
     std::unique_ptr<base::MemoryMappedFile> model_fb =
         std::make_unique<base::MemoryMappedFile>();
-    if (!model_fb->Initialize(file_path))
-      return;
+    if (!model_fb->Initialize(*file_path_to_load_))
+      return false;
     model_fb_ = std::move(model_fb);
 
-    supported_features_for_loaded_model_ = model_metadata;
+    supported_features_for_loaded_model_ = model_metadata_to_load_;
 
     loaded_model_ = BuildModelExecutionTask(model_fb_.get());
-    if (loaded_model_)
+    if (loaded_model_) {
       scoped_model_loading_recorder.set_model_loading_state(
           ModelExecutorLoadingState::kModelFileValidAndMemoryMapped);
+    }
+
+    return !!loaded_model_;
   }
 
   base::Optional<OutputType> SendForExecution(InputTypes... args) {
     DCHECK(model_execution_task_runner_->RunsTasksInCurrentSequence());
 
-    if (!loaded_model_)
+    // If there's no model to be loaded, no model can be loaded.
+    if (!file_path_to_load_) {
+      DCHECK(!loaded_model_);
+      return base::nullopt;
+    }
+
+    // Attempt to load the model file if it isn't loaded yet, fail if loading is
+    // unsuccessful.
+    if (!loaded_model_ && !LoadModelFile())
       return base::nullopt;
 
     run_count_++;
@@ -207,6 +236,8 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
           base::TimeTicks::Now() - *last_execution_time_);
     }
     last_execution_time_ = base::TimeTicks::Now();
+
+    DCHECK(loaded_model_);
     return Execute(loaded_model_.get(), args...);
   }
 
@@ -214,6 +245,20 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
                             base::TimeTicks model_execute_start_time,
                             base::Optional<OutputType> output) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // If the model file should only be loaded for execution, then unload it
+    // from memory. This should be done in a PostTask since it may take a while
+    // for big models and the metrics below shouldn't be skewed, and
+    // |loaded_model_| should only be accessed by
+    // |model_execution_task_runner_|.
+    if (features::LoadModelFileForEachExecution()) {
+      model_execution_task_runner_->PostTask(
+          FROM_HERE,
+          // base::Unretained is safe here since |model_execution_task_runner_|
+          // is owned by |this|.
+          base::BindOnce(&OptimizationTargetModelExecutor::ResetLoadedModel,
+                         base::Unretained(this)));
+    }
 
     if (!output) {
       std::move(callback).Run(output);
@@ -246,8 +291,29 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
 
   scoped_refptr<base::SequencedTaskRunner> model_execution_task_runner_;
 
+  // When the model file is updated, the server may pass this metadata that
+  // accompanies the model. This can be nullopt even after a model file update
+  // occurs since.
+  base::Optional<proto::Any> model_metadata_to_load_;
+
+  // The model file path to be loaded. May be nullopt if no model has been
+  // downloaded yet.
+  base::Optional<base::FilePath> file_path_to_load_;
+
+  // Note on lifetimes: |model_fb_|, |loaded_model_|, and
+  // |supported_features_for_loaded_model_| all share the same lifetime, being
+  // set in |LoadModelFile()| and being destroyed in |ResetModelFile()|.
+
+  // This will only be non-null when |file_path_to_load_| is set, and while the
+  // model is loaded which is manged by a feature flag. See also the above note
+  // regarding lifetime.
   std::unique_ptr<base::MemoryMappedFile> model_fb_;
+
+  // |loaded_model_| should only be accessed on |model_execution_task_runner_|.
+  // See also the above note regarding lifetime.
   std::unique_ptr<ModelExecutionTask> loaded_model_;
+
+  // See the above note regarding lifetime.
   base::Optional<proto::Any> supported_features_for_loaded_model_;
 
   base::WeakPtrFactory<OptimizationTargetModelExecutor> weak_ptr_factory_{this};
