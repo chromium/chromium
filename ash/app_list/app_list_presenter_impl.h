@@ -26,6 +26,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash {
+class AppListControllerImpl;
 class AppListView;
 enum class AppListViewState;
 
@@ -44,8 +45,9 @@ class ASH_EXPORT AppListPresenterImpl
   using UpdateHomeLauncherAnimationSettingsCallback =
       base::RepeatingCallback<void(ui::ScopedLayerAnimationSettings* settings)>;
 
-  explicit AppListPresenterImpl(
-      std::unique_ptr<AppListPresenterDelegate> delegate);
+  // |controller| must outlive |this|.
+  AppListPresenterImpl(AppListControllerImpl* controller,
+                       std::unique_ptr<AppListPresenterDelegate> delegate);
   ~AppListPresenterImpl() override;
 
   // Returns app list window or nullptr if it is not visible.
@@ -162,6 +164,9 @@ class ASH_EXPORT AppListPresenterImpl
   // to the screen.
   void RequestPresentationTime(int64_t display_id,
                                base::TimeTicks event_time_stamp);
+
+  // Owns |this|.
+  AppListControllerImpl* const controller_;
 
   // Responsible for laying out the app list UI.
   std::unique_ptr<AppListPresenterDelegate> delegate_;

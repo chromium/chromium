@@ -26,7 +26,6 @@ namespace ash {
 class AppListControllerImpl;
 class AppListPresenterImpl;
 class AppListView;
-class AppListViewDelegate;
 enum class AppListViewState;
 
 // Responsible for laying out the app list UI as well as updating the Shelf
@@ -43,16 +42,11 @@ class ASH_EXPORT AppListPresenterDelegateImpl : public AppListPresenterDelegate,
 
   // AppListPresenterDelegate:
   void SetPresenter(AppListPresenterImpl* presenter) override;
-  void Init(AppListView* view, int64_t display_id) override;
+  void SetView(AppListView* view) override;
   void ShowForDisplay(AppListViewState preferred_state,
                       int64_t display_id) override;
   void OnClosing() override;
   void OnClosed() override;
-  AppListViewDelegate* GetAppListViewDelegate() override;
-  bool GetOnScreenKeyboardShown() override;
-  void OnVisibilityChanged(bool visible, int64_t display_id) override;
-  void OnVisibilityWillChange(bool visible, int64_t display_id) override;
-  bool IsVisible(const base::Optional<int64_t>& display_id) override;
 
   // DisplayObserver overrides:
   void OnDisplayMetricsChanged(const display::Display& display,

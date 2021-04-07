@@ -94,14 +94,16 @@ void AppListPresenterDelegateImpl::SetPresenter(
   presenter_ = presenter;
 }
 
-void AppListPresenterDelegateImpl::Init(AppListView* view, int64_t display_id) {
+void AppListPresenterDelegateImpl::SetView(AppListView* view) {
+  DCHECK(view);
   view_ = view;
-  view->InitView(controller_->GetContainerForDisplayId(display_id));
 }
 
 void AppListPresenterDelegateImpl::ShowForDisplay(
     AppListViewState preferred_state,
     int64_t display_id) {
+  DCHECK(view_);
+
   is_visible_ = true;
 
   controller_->UpdateLauncherContainer(display_id);
@@ -145,29 +147,6 @@ void AppListPresenterDelegateImpl::OnClosed() {
   if (!is_visible_)
     shelf_observation_.RemoveAllObservations();
   controller_->ViewClosed();
-}
-
-AppListViewDelegate* AppListPresenterDelegateImpl::GetAppListViewDelegate() {
-  return controller_;
-}
-
-bool AppListPresenterDelegateImpl::GetOnScreenKeyboardShown() {
-  return controller_->onscreen_keyboard_shown();
-}
-
-void AppListPresenterDelegateImpl::OnVisibilityChanged(bool visible,
-                                                       int64_t display_id) {
-  controller_->OnVisibilityChanged(visible, display_id);
-}
-
-void AppListPresenterDelegateImpl::OnVisibilityWillChange(bool visible,
-                                                          int64_t display_id) {
-  controller_->OnVisibilityWillChange(visible, display_id);
-}
-
-bool AppListPresenterDelegateImpl::IsVisible(
-    const base::Optional<int64_t>& display_id) {
-  return controller_->IsVisible(display_id);
 }
 
 void AppListPresenterDelegateImpl::OnDisplayMetricsChanged(
@@ -319,7 +298,7 @@ void AppListPresenterDelegateImpl::OnKeyEvent(ui::KeyEvent* event) {
     return;
 
   // If the home launcher is not shown in tablet mode, ignore events.
-  if (Shell::Get()->IsInTabletMode() && !IsVisible(base::nullopt))
+  if (Shell::Get()->IsInTabletMode() && !controller_->IsVisible(base::nullopt))
     return;
 
   // Don't absorb the first event for the search box while it is open

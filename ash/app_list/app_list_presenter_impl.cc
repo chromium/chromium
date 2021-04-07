@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -93,8 +94,10 @@ class CallbackRunnerLayerAnimationObserver
 }  // namespace
 
 AppListPresenterImpl::AppListPresenterImpl(
+    AppListControllerImpl* controller,
     std::unique_ptr<AppListPresenterDelegate> delegate)
-    : delegate_(std::move(delegate)) {
+    : controller_(controller), delegate_(std::move(delegate)) {
+  DCHECK(controller_);
   DCHECK(delegate_);
   delegate_->SetPresenter(this);
 }
@@ -139,9 +142,9 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   RequestPresentationTime(display_id, event_time_stamp);
 
   if (!view_) {
-    // Note |delegate_| outlives the AppListView.
-    AppListView* view = new AppListView(delegate_->GetAppListViewDelegate());
-    delegate_->Init(view, display_id);
+    AppListView* view = new AppListView(controller_);
+    delegate_->SetView(view);
+    view->InitView(controller_->GetContainerForDisplayId(display_id));
     SetView(view);
     view_->GetWidget()->GetNativeWindow()->TrackOcclusionState();
   }
@@ -235,7 +238,7 @@ ShelfAction AppListPresenterImpl::ToggleAppList(
 }
 
 bool AppListPresenterImpl::IsVisibleDeprecated() const {
-  return delegate_->IsVisible(GetDisplayId());
+  return controller_->IsVisible(GetDisplayId());
 }
 
 bool AppListPresenterImpl::IsAtLeastPartiallyVisible() const {
@@ -367,7 +370,7 @@ void AppListPresenterImpl::SetView(AppListView* view) {
 
   // Sync the |onscreen_keyboard_shown_| in case |view_| is not initiated when
   // the on-screen is shown.
-  view_->set_onscreen_keyboard_shown(delegate_->GetOnScreenKeyboardShown());
+  view_->set_onscreen_keyboard_shown(controller_->onscreen_keyboard_shown());
 }
 
 void AppListPresenterImpl::ResetView() {
@@ -395,12 +398,12 @@ int64_t AppListPresenterImpl::GetDisplayId() const {
 
 void AppListPresenterImpl::OnVisibilityChanged(bool visible,
                                                int64_t display_id) {
-  delegate_->OnVisibilityChanged(visible, display_id);
+  controller_->OnVisibilityChanged(visible, display_id);
 }
 
 void AppListPresenterImpl::OnVisibilityWillChange(bool visible,
                                                   int64_t display_id) {
-  delegate_->OnVisibilityWillChange(visible, display_id);
+  controller_->OnVisibilityWillChange(visible, display_id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -441,7 +444,7 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
                        (IsAtLeastPartiallyVisible() && !app_list_lost_focus);
 
   if (Shell::Get()->IsInTabletMode()) {
-    if (visible != delegate_->IsVisible(GetDisplayId())) {
+    if (visible != controller_->IsVisible(GetDisplayId())) {
       if (app_list_gained_focus)
         view_->OnHomeLauncherGainingFocusWithoutAnimation();
 
