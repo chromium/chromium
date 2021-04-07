@@ -32,6 +32,12 @@
         },
         "tab_search:top50:loading:2020": {
             "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "webui_tab_strip:top10:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "webui_tab_strip:top10:loading:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         }
     },
     "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",
