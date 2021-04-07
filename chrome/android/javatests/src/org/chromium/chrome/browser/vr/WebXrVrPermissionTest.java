@@ -24,6 +24,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
@@ -128,8 +129,8 @@ public class WebXrVrPermissionTest {
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    public void
-    testPermissionPersistsAfterReload() {
+    @DisabledTest(message = "Flaky on multiple bots. See http://crbug.com/1192004.")
+    public void testPermissionPersistsAfterReload() {
         mWebXrVrPermissionTestFramework.loadFileAndAwaitInitialization(
                 "generic_webxr_page", PAGE_LOAD_TIMEOUT_S);
 
