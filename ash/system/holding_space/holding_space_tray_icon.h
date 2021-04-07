@@ -35,6 +35,12 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   HoldingSpaceTrayIcon& operator=(const HoldingSpaceTrayIcon&) = delete;
   ~HoldingSpaceTrayIcon() override;
 
+  // Updates whether or not this holding space icon is in drop target state.
+  // If `did_drop_to_pin` is true, the user has just performed a drag-and-drop
+  // to pin action. Otherwise a drag may still be in progress or the user action
+  // did not result in an item being pinned to holding space.
+  void UpdateDropTargetState(bool is_drop_target, bool did_drop_to_pin);
+
   // Updates the list of previews shown in the icon. The icon will be changed to
   // show previews for holding space items in `items`. The order of previews in
   // the icon will match the order in `items`.
@@ -95,8 +101,16 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   std::vector<PreviewAnimationParams> CalculateAnimateShiftParams();
   std::vector<PreviewAnimationParams> CalculateAnimateInParams();
 
+  // Ensures that preview layers are stacked to match ordering in `item_ids_`.
+  void EnsurePreviewLayerStackingOrder();
+
   // The shelf associated with this holding space tray icon.
   Shelf* const shelf_;
+
+  // Whether or not this holding space tray icon is currently in drop target
+  // state. When in drop target state, preview indices are offset from their
+  // standard positions by a fixed amount.
+  bool is_drop_target_ = false;
 
   // True if updates should be animated, false otherwise. Generally speaking,
   // updates are animated only if they occur mid-session. Updates that occur

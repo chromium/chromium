@@ -418,6 +418,8 @@ DragOperation HoldingSpaceTray::OnPerformDrop(
       holding_space_metrics::PodAction::kDragAndDropToPin);
 
   HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
+  did_drop_to_pin_ = true;
+
   return DragOperation::kCopy;
 }
 
@@ -527,6 +529,16 @@ void HoldingSpaceTray::OnHoldingSpaceItemsAdded(
 
 void HoldingSpaceTray::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
+  // If a finalized holding space item is removed from the model mid-session,
+  // the holding space tray should animate updates.
+  if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    const bool has_finalized_item = std::any_of(
+        items.begin(), items.end(),
+        [](const HoldingSpaceItem* item) { return item->IsFinalized(); });
+    if (has_finalized_item)
+      SetShouldAnimate(true);
+  }
+
   UpdateVisibility();
   UpdatePreviewsState();
 }
@@ -723,7 +735,6 @@ bool HoldingSpaceTray::PreviewsShown() const {
   return previews_tray_icon_ && previews_tray_icon_->GetVisible();
 }
 
-// TODO(crbug.com/1171059): Animate translation of tray icons.
 void HoldingSpaceTray::UpdateDropTargetState(const ui::DropTargetEvent* event) {
   bool is_drop_target = false;
 
@@ -746,6 +757,9 @@ void HoldingSpaceTray::UpdateDropTargetState(const ui::DropTargetEvent* event) {
   AnimateToTargetOpacity(drop_target_overlay_, is_drop_target ? 1.f : 0.f);
   AnimateToTargetOpacity(default_tray_icon_, is_drop_target ? 0.f : 1.f);
   AnimateToTargetOpacity(previews_tray_icon_, is_drop_target ? 0.f : 1.f);
+
+  previews_tray_icon_->UpdateDropTargetState(is_drop_target, did_drop_to_pin_);
+  did_drop_to_pin_ = false;
 
   const views::InkDropState target_ink_drop_state =
       is_drop_target ? views::InkDropState::ACTION_PENDING

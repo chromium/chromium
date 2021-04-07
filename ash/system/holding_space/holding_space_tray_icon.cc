@@ -32,7 +32,11 @@ namespace ash {
 
 namespace {
 
-// The preview are animated in and shifted with a delay that increases
+// When in drop target state, previews are shifted to indices which are offset
+// from their standard positions by this fixed amount.
+constexpr int kPreviewIndexOffsetForDropTarget = 3;
+
+// The previews are animated in and shifted with a delay that increases
 // incrementally. This is the delay increment.
 constexpr base::TimeDelta kPreviewItemUpdateDelayIncrement =
     base::TimeDelta::FromMilliseconds(50);
@@ -191,12 +195,58 @@ void HoldingSpaceTrayIcon::InitLayout() {
   previews_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 }
 
+void HoldingSpaceTrayIcon::UpdateDropTargetState(bool is_drop_target,
+                                                 bool did_drop_to_pin) {
+  if (is_drop_target_ == is_drop_target)
+    return;
+
+  is_drop_target_ = is_drop_target;
+
+  // If the user performed a drag-and-drop to pin action, no handling is needed
+  // to transition the holding space tray icon out of drop target state. When
+  // the model updates, an `UpdatePreviews()` event will follow which will
+  // restore standard indexing to the new and existing previews.
+  if (!is_drop_target_ && did_drop_to_pin)
+    return;
+
+  DCHECK(!did_drop_to_pin);
+
+  for (size_t i = 0; i < item_ids_.size(); ++i) {
+    auto* preview = previews_by_id_.find(item_ids_[i])->second.get();
+
+    DCHECK(preview->index());
+    DCHECK(!preview->pending_index());
+
+    size_t pending_index = i;
+    base::TimeDelta delay;
+
+    if (is_drop_target_) {
+      // When in drop target state, preview indices are offset from their
+      // standard positions by a fixed amount.
+      pending_index += kPreviewIndexOffsetForDropTarget;
+    } else {
+      // When transitioning into drop target state, all previews shift out in
+      // sync. When transitioning out of drop target state, previews shift in
+      // with incremental `delay`.
+      delay = i * kPreviewItemUpdateDelayIncrement;
+    }
+
+    preview->set_pending_index(pending_index);
+    preview->AnimateShift(delay);
+  }
+
+  EnsurePreviewLayerStackingOrder();
+}
+
 void HoldingSpaceTrayIcon::UpdatePreviews(
     const std::vector<const HoldingSpaceItem*> items) {
   // Cancel any in progress updates.
   previews_update_weak_factory_.InvalidateWeakPtrs();
 
   item_ids_.clear();
+
+  // When in drop target state, indices are offset from their standard position.
+  const int offset = is_drop_target_ ? kPreviewIndexOffsetForDropTarget : 0;
 
   // Go over the new item list, create previews for new items, and assign new
   // indices to existing items.
@@ -210,13 +260,13 @@ void HoldingSpaceTrayIcon::UpdatePreviews(
 
     auto preview_it = previews_by_id_.find(item->id());
     if (preview_it != previews_by_id_.end()) {
-      preview_it->second->set_pending_index(index);
+      preview_it->second->set_pending_index(index + offset);
       continue;
     }
 
     auto preview = std::make_unique<HoldingSpaceTrayIconPreview>(
         shelf_, previews_container_, item);
-    preview->set_pending_index(index);
+    preview->set_pending_index(index + offset);
     previews_by_id_.emplace(item->id(), std::move(preview));
   }
 
@@ -358,13 +408,7 @@ void HoldingSpaceTrayIcon::OnOldItemsRemoved() {
       params.preview->layer()->GetAnimator()->StopAnimating();
   }
 
-  // Ensure that preview layers stacking matches their order in the item list.
-  for (auto& item_id : item_ids_) {
-    auto preview_it = previews_by_id_.find(item_id);
-    HoldingSpaceTrayIconPreview* preview_ptr = preview_it->second.get();
-    if (preview_ptr->layer())
-      previews_container_->layer()->StackAtBottom(preview_ptr->layer());
-  }
+  EnsurePreviewLayerStackingOrder();
 }
 
 std::vector<HoldingSpaceTrayIcon::PreviewAnimationParams>
@@ -452,6 +496,14 @@ HoldingSpaceTrayIcon::CalculateAnimateInParams() {
   }
 
   return animation_params;
+}
+
+void HoldingSpaceTrayIcon::EnsurePreviewLayerStackingOrder() {
+  for (const auto& item_id : item_ids_) {
+    auto* preview = previews_by_id_.find(item_id)->second.get();
+    if (preview->layer())
+      previews_container_->layer()->StackAtBottom(preview->layer());
+  }
 }
 
 BEGIN_METADATA(HoldingSpaceTrayIcon, views::View)

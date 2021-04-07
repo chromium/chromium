@@ -194,6 +194,11 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // forward tray icon.
   bool use_zero_previews_update_delay_ = false;
 
+  // Whether the user performed a drag-and-drop to pin action. Note that this
+  // flag is set only within the scope of a drop release event sequence. It is
+  // otherwise always set to `false`.
+  bool did_drop_to_pin_ = false;
+
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
       controller_observer_{this};

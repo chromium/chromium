@@ -546,6 +546,33 @@ class HoldingSpaceUiDragAndDropBrowserTest
               is_drop_target ? 0.f : 1.f);
     EXPECT_EQ(GetPreviewsTrayIcon()->layer()->GetTargetOpacity(),
               is_drop_target ? 0.f : 1.f);
+
+    // Cache a reference to preview layers.
+    const ui::Layer* previews_container_layer =
+        GetPreviewsTrayIcon()->layer()->children()[0];
+    const std::vector<ui::Layer*>& preview_layers =
+        previews_container_layer->children();
+
+    // Iterate over the layers for each preview.
+    for (size_t i = 0; i < preview_layers.size(); ++i) {
+      const ui::Layer* preview_layer = preview_layers[i];
+      const float preview_width = preview_layer->size().width();
+
+      // Previews layers are expected to be translated w/ incremental offset.
+      gfx::Vector2dF expected_translation(i * preview_width / 2.f, 0.f);
+
+      // When the holding space tray is a drop target, preview layers are
+      // expected to be translated by a fixed amount in addition to the standard
+      // incremental offset.
+      if (is_drop_target) {
+        constexpr int kPreviewIndexOffsetForDropTarget = 3;
+        expected_translation += gfx::Vector2dF(
+            kPreviewIndexOffsetForDropTarget * preview_width / 2.f, 0.f);
+      }
+
+      EXPECT_EQ(preview_layer->transform().To2dTranslation(),
+                expected_translation);
+    }
   }
 
   // Returns true if `screen_location` is within sufficient range of the holding
