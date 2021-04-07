@@ -102,6 +102,9 @@ class Profile : public content::BrowserContext {
     EXIT_CRASHED,
   };
 
+  // The use of this class to create non-primary OTR profiles in Desktop
+  // platforms is restricted exclusively for cases where extensions should not
+  // be applicable to run. Please see crbug.com/1098697#c3 for more details.
   class OTRProfileID {
    public:
     // Creates an OTR profile ID from |profile_id|.
