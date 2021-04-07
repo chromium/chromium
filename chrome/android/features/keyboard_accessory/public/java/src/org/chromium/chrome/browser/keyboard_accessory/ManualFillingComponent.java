@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
+
+import androidx.annotation.Px;
 
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
@@ -29,17 +33,58 @@ public interface ManualFillingComponent {
     }
 
     /**
+     * Since the ManualFillingComponent is considered part of the keyboard when using the regular
+     * {@link org.chromium.ui.KeyboardVisibilityDelegate}, it needs direct access to the system
+     * keyboard (but still reuse a form of {@link org.chromium.ui.KeyboardVisibilityDelegate}).
+     * The "soft keyboard" describes the system's onscreen keyboard that covers part of the device
+     * screen. It is hidden by default if the phone uses any physical keyboard.
+     */
+    interface SoftKeyboardDelegate {
+        /**
+         * Hide only Android's soft keyboard. Keeps eventual keyboard replacements and extensions
+         * untouched.
+         * @param view A focused {@link View}.
+         * @return True if the keyboard was visible before this call.
+         */
+        boolean hideSoftKeyboardOnly(View view);
+
+        /**
+         * Returns whether Android soft keyboard is showing and ignores all extensions/replacements.
+         * @param context A {@link Context} instance.
+         * @param view    A {@link View}.
+         * @return Returns true if Android's soft keyboard is visible. Ignores
+         *         extensions/replacements.
+         */
+        boolean isSoftKeyboardShowing(Context context, View view);
+
+        /**
+         * Requests Android's soft keyboard.
+         * @param contentView A {@link ViewGroup} used as target for the keyboard.
+         */
+        void showSoftKeyboard(ViewGroup contentView);
+
+        /**
+         * Returns the height of the bare soft keyboard (excluding extensions like accessories).
+         * @param rootView A root {@link View} that allows size estimation based on display size.
+         * @return The soft keyboard size in pixels.
+         */
+        @Px
+        int calculateSoftKeyboardHeight(View rootView);
+    }
+
+    /**
      * Initializes the manual filling component. Calls to this class are NoOps until this method
      * is called.
      * @param windowAndroid The window needed to listen to the keyboard and to connect to
      *         activity.
      * @param sheetController A {@link BottomSheetController} to show the UI in.
+     * @param keyboardDelegate A {@link SoftKeyboardDelegate} to control only the system keyboard.
      * @param barStub The {@link ViewStub} used to inflate the keyboard accessory bar.
      * @param sheetStub The {@link ViewStub} used to inflate the keyboard accessory bottom
      *         sheet.
      */
     void initialize(WindowAndroid windowAndroid, BottomSheetController sheetController,
-            ViewStub barStub, ViewStub sheetStub);
+            SoftKeyboardDelegate keyboardDelegate, ViewStub barStub, ViewStub sheetStub);
 
     /**
      * Cleans up the manual UI by destroying the accessory bar and its bottom sheet.

@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
-import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -31,7 +30,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
      */
     @VisibleForTesting
     public interface KeyboardVisibilityDelegateFactory {
-        ActivityKeyboardVisibilityDelegate create(WeakReference<Activity> activity);
+        ChromeKeyboardVisibilityDelegate create(WeakReference<Activity> activity);
     }
     private static KeyboardVisibilityDelegateFactory sKeyboardVisibilityDelegateFactory =
             ChromeKeyboardVisibilityDelegate::new;
@@ -44,7 +43,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
      * Creates Chrome specific ActivityWindowAndroid.
      * @param activity The activity that owns the ChromeWindow.
      * @param activityTabProvider Provides the current activity's {@link Tab}.
-     * @param compositorViewHolderSupplier Supplies the {@link CompostiorViewHolder}.
+     * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      */
     public ChromeWindow(@NonNull Activity activity,
@@ -71,7 +70,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
     }
 
     @Override
-    protected ActivityKeyboardVisibilityDelegate createKeyboardVisibilityDelegate() {
+    protected ChromeKeyboardVisibilityDelegate createKeyboardVisibilityDelegate() {
         return sKeyboardVisibilityDelegateFactory.create(getActivity());
     }
 

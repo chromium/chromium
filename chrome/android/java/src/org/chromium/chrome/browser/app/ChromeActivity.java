@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
+import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
@@ -1539,6 +1540,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         mManualFillingComponentSupplier.get().initialize(getWindowAndroid(),
                 mRootUiCoordinator.getBottomSheetController(),
+                (ChromeKeyboardVisibilityDelegate) getWindowAndroid().getKeyboardDelegate(),
                 findViewById(R.id.keyboard_accessory_stub),
                 findViewById(R.id.keyboard_accessory_sheet_stub));
 

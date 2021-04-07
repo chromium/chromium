@@ -28,8 +28,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
-import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
@@ -94,6 +92,7 @@ class ManualFillingMediator extends EmptyTabObserver
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private DropdownPopupWindow mPopup;
     private BottomSheetController mBottomSheetController;
+    private ManualFillingComponent.SoftKeyboardDelegate mSoftKeyboardDelegate;
     private ConfirmationDialogHelper mConfirmationHelper;
 
     private final TabObserver mTabObserver = new EmptyTabObserver() {
@@ -132,13 +131,16 @@ class ManualFillingMediator extends EmptyTabObserver
 
     void initialize(KeyboardAccessoryCoordinator keyboardAccessory,
             AccessorySheetCoordinator accessorySheet, WindowAndroid windowAndroid,
-            BottomSheetController sheetController, ConfirmationDialogHelper confirmationHelper) {
+            BottomSheetController sheetController,
+            ManualFillingComponent.SoftKeyboardDelegate keyboardDelegate,
+            ConfirmationDialogHelper confirmationHelper) {
         mActivity = (ChromeActivity) windowAndroid.getActivity().get();
         assert mActivity != null;
         mWindowAndroid = windowAndroid;
         mWindowAndroid.getApplicationBottomInsetProvider().addSupplier(mViewportInsetSupplier);
         mKeyboardAccessory = keyboardAccessory;
         mBottomSheetController = sheetController;
+        mSoftKeyboardDelegate = keyboardDelegate;
         mConfirmationHelper = confirmationHelper;
         mModel.set(PORTRAIT_ORIENTATION, hasPortraitOrientation());
         mModel.addObserver(this::onPropertyChanged);
@@ -265,7 +267,7 @@ class ManualFillingMediator extends EmptyTabObserver
         if (!isInitialized()) return;
         pause();
         ViewGroup contentView = getContentView();
-        if (contentView != null) getKeyboard().hideSoftKeyboardOnly(contentView);
+        if (contentView != null) mSoftKeyboardDelegate.hideSoftKeyboardOnly(contentView);
     }
 
     void notifyPopupOpened(DropdownPopupWindow popup) {
@@ -431,7 +433,7 @@ class ManualFillingMediator extends EmptyTabObserver
             // the REPLACING state transitions into FLOATING_SHEET which triggers the keyboard which
             // transitions into the EXTENDING state as soon as the keyboard appeared.
             ViewGroup contentView = getContentView();
-            if (contentView != null) getKeyboard().showKeyboard(contentView);
+            if (contentView != null) mSoftKeyboardDelegate.showSoftKeyboard(contentView);
         } else if (extensionState == WAITING_TO_REPLACE) {
             // In order to give the keyboard time to disappear, hide the keyboard and enter the
             // REPLACING state.
@@ -446,7 +448,7 @@ class ManualFillingMediator extends EmptyTabObserver
         View rootView = contentView.getRootView();
         if (rootView == null) return;
         mAccessorySheet.setHeight(calculateAccessorySheetHeight(rootView));
-        getKeyboard().hideSoftKeyboardOnly(rootView);
+        mSoftKeyboardDelegate.hideSoftKeyboardOnly(rootView);
     }
 
     /**
@@ -552,14 +554,8 @@ class ManualFillingMediator extends EmptyTabObserver
         tab.addObserver(mTabObserver);
     }
 
-    private ChromeKeyboardVisibilityDelegate getKeyboard() {
-        assert mWindowAndroid instanceof ChromeWindow;
-        assert mWindowAndroid.getKeyboardDelegate() instanceof ChromeKeyboardVisibilityDelegate;
-        return (ChromeKeyboardVisibilityDelegate) mWindowAndroid.getKeyboardDelegate();
-    }
-
     private boolean isSoftKeyboardShowing(@Nullable View view) {
-        return view != null && getKeyboard().isSoftKeyboardShowing(mActivity, view);
+        return view != null && mSoftKeyboardDelegate.isSoftKeyboardShowing(mActivity, view);
     }
 
     /**
@@ -575,7 +571,7 @@ class ManualFillingMediator extends EmptyTabObserver
                         R.dimen.keyboard_accessory_suggestion_height);
         int newSheetHeight = insetObserver != null
                 ? insetObserver.getSystemWindowInsetsBottom()
-                : getKeyboard().calculateKeyboardHeight(rootView);
+                : mSoftKeyboardDelegate.calculateSoftKeyboardHeight(rootView);
         newSheetHeight = Math.max(minimalSheetHeight, newSheetHeight);
         return newSheetHeight;
     }

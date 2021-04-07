@@ -44,6 +44,16 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
     }
 
     @Override
+    public boolean hideSoftKeyboardOnly(View view) {
+        return hideAndroidSoftKeyboard(view);
+    }
+
+    @Override
+    public boolean isSoftKeyboardShowing(Context context, View view) {
+        return mIsShowing;
+    }
+
+    @Override
     protected boolean isAndroidSoftKeyboardShowing(Context context, View view) {
         return mIsShowing;
     }
