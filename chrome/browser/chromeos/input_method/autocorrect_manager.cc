@@ -77,15 +77,18 @@ AutocorrectManager::AutocorrectManager(
     SuggestionHandlerInterface* suggestion_handler)
     : suggestion_handler_(suggestion_handler) {}
 
-void AutocorrectManager::HandleAutocorrect(
-    const gfx::Range autocorrect_range,
-    const std::u16string& original_text) {
+void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
+                                           const std::u16string& original_text,
+                                           const std::u16string& current_text) {
   // TODO(crbug/1111135): call setAutocorrectTime() (for metrics)
   // TODO(crbug/1111135): record metric (coverage)
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
+
+  // TODO(crbug/1159297): Record diacritics-related metrics for multilingual
+  // experiment, based on `current_text` and `original_text`.
 
   original_text_ = original_text;
   key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
@@ -203,6 +206,10 @@ void AutocorrectManager::UndoAutocorrect() {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   const gfx::Range range = input_context->GetAutocorrectRange();
+
+  // NOTE: GetSurroundingTextInfo() could return a stale cache that no longer
+  // reflects reality, due to async-ness between IMF and TextInputClient.
+  // TODO(crbug/1194424): Work around the issue or fix GetSurroundingTextInfo().
   const ui::SurroundingTextInfo surrounding_text =
       input_context->GetSurroundingTextInfo();
 

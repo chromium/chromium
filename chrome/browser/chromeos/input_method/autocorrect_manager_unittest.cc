@@ -76,7 +76,7 @@ TEST(AutocorrectManagerTest, HandleAutocorrectSetsAutocorrectRange) {
   MockSuggestionHandler mock_suggestion_handler;
   AutocorrectManager manager(&mock_suggestion_handler);
 
-  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh");
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   EXPECT_EQ(mock_ime_input_context_handler.GetAutocorrectRange(),
             gfx::Range(0, 3));
@@ -88,7 +88,7 @@ TEST(AutocorrectManagerTest, OnKeyEventHidesUnderlineAfterEnoughKeyPresses) {
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
   MockSuggestionHandler mock_suggestion_handler;
   AutocorrectManager manager(&mock_suggestion_handler);
-  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh");
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   const auto key_event =
       CreateKeyEvent(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A);
@@ -109,7 +109,7 @@ TEST(AutocorrectManagerTest, MovingCursorInsideRangeShowsAssistiveWindow) {
   AutocorrectManager manager(&mock_suggestion_handler);
   manager.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
                                    /*anchor_pos=*/4);
-  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh");
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   AssistiveWindowProperties properties;
   properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
@@ -131,7 +131,7 @@ TEST(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
   AutocorrectManager manager(&mock_suggestion_handler);
   manager.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
                                    /*anchor_pos=*/4);
-  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh");
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   {
     ::testing::InSequence seq;

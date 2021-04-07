@@ -141,11 +141,21 @@ enum CommitTextCursorBehavior {
 };
 
 struct AutocorrectSpan {
-  // The range to set the autocorrect span to.
+  // The range to set the autocorrect span to, currently having `current_text`.
   gfx.mojom.Range autocorrect_range;
 
   // The original text that was replaced by autocorrect.
   string original_text;
+
+  // The current text that replaced `original_text` and is now located at
+  // `autocorrect_range` in the text field.
+  // NOTE: Technically redundant to require client to supply `current_text` as
+  // it can be retrieved from current text editing state known to IMF. However,
+  // due to async situation between browser-process IMF and render-process
+  // TextInputClient, it may just be a stale value if obtained that way.
+  // TODO(crbug/1194424): Remove technically redundant `current_text` param to
+  // avoid situation with multiple conflicting sources of truth.
+  string current_text;
 };
 
 // Proposed candidate for completing some text.

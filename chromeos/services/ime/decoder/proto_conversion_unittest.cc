@@ -122,10 +122,12 @@ TEST(ProtoConversionTest, ProtoToAutocorrectSpan) {
   autocorrect_span.mutable_autocorrect_range()->set_start(1);
   autocorrect_span.mutable_autocorrect_range()->set_end(2);
   autocorrect_span.set_original_text("hello");
+  autocorrect_span.set_current_text("world");
 
   mojom::AutocorrectSpanPtr result = ProtoToAutocorrectSpan(autocorrect_span);
 
-  EXPECT_EQ(result, mojom::AutocorrectSpan::New(gfx::Range(1, 2), "hello"));
+  EXPECT_EQ(result,
+            mojom::AutocorrectSpan::New(gfx::Range(1, 2), "hello", "world"));
 }
 
 }  // namespace ime

@@ -145,6 +145,7 @@ mojom::AutocorrectSpanPtr ProtoToAutocorrectSpan(
       gfx::Range(autocorrect_span.autocorrect_range().start(),
                  autocorrect_span.autocorrect_range().end());
   mojo_autocorrect_span->original_text = autocorrect_span.original_text();
+  mojo_autocorrect_span->current_text = autocorrect_span.current_text();
   return mojo_autocorrect_span;
 }
 

@@ -439,7 +439,7 @@
       }, {
         "name": "getSurroundingText",
         "type": "function",
-        "description": "Gets the surrounding text of the current selection",
+        "description": "Gets the surrounding text of the current selection. WARNING: This could return a stale cache that doesn't reflect reality, due to async between IMF and TextInputClient.",
         "parameters": [
           {
             "name": "beforeLength",
@@ -768,7 +768,7 @@
                 },
                 "correctedWord": {
                     "type": "string",
-                    "description": "Needed to know the length of the autocorrected text to show the correct length of underline."
+                    "description": "Needed primarily to know the length of the autocorrected text to show the correct length of underline. String content technically redundant; required however, as what IMF knows may be stale due to async."
                 },
                 "startIndex": {
                     "type": "integer",

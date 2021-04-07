@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -281,7 +281,9 @@ chrome.inputMethodPrivate.openOptionsPage = function(inputMethodId) {};
 chrome.inputMethodPrivate.getCompositionBounds = function(callback) {};
 
 /**
- * Gets the surrounding text of the current selection
+ * Gets the surrounding text of the current selection. WARNING: This could
+ * return a stale cache that doesn't reflect reality, due to async between IMF
+ * and TextInputClient.
  * @param {number} beforeLength The number of characters before the current
  *     selection.
  * @param {number} afterLength The number of characters after the current
@@ -352,7 +354,8 @@ chrome.inputMethodPrivate.setCompositionRange = function(parameters, callback) {
 chrome.inputMethodPrivate.setComposingRange = function(parameters, callback) {};
 
 /**
- * Get the autocorrected word's bounds.
+ * Get the autocorrected word's bounds. Returns an empty range if there is no
+ * autocorrected word.
  * @param {{
  *   contextID: number
  * }} parameters
@@ -401,11 +404,11 @@ chrome.inputMethodPrivate.reset = function() {};
 
 /**
  * Called after a word has been autocorrected to show some UI for autocorrect.
- * @param{{
- *  contextID: number,
- *  typedWord: string,
- *  correctedWord: string,
- *  startIndex: number
+ * @param {{
+ *   contextID: number,
+ *   typedWord: string,
+ *   correctedWord: string,
+ *   startIndex: number
  * }} parameters
  */
 chrome.inputMethodPrivate.onAutocorrect = function(parameters) {};

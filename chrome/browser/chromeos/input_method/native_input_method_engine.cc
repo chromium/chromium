@@ -205,7 +205,7 @@ void NativeInputMethodEngine::OnAutocorrect(
     int start_index) {
   autocorrect_manager_->HandleAutocorrect(
       gfx::Range(start_index, start_index + corrected_word.length()),
-      typed_word);
+      typed_word, corrected_word);
 }
 
 NativeInputMethodEngine::ImeObserver*
@@ -540,7 +540,8 @@ void NativeInputMethodEngine::ImeObserver::HandleAutocorrect(
     ime::mojom::AutocorrectSpanPtr autocorrect_span) {
   autocorrect_manager_->HandleAutocorrect(
       autocorrect_span->autocorrect_range,
-      base::UTF8ToUTF16(autocorrect_span->original_text));
+      base::UTF8ToUTF16(autocorrect_span->original_text),
+      base::UTF8ToUTF16(autocorrect_span->current_text));
 }
 
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {

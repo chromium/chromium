@@ -61,6 +61,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
   virtual void DeleteSurroundingText(int32_t offset, uint32_t length) = 0;
 
   // Called from the extension API.
+  // WARNING: This could return a stale cache that doesn't reflect reality, due
+  // to async-ness between browser-process IMF and render-process
+  // TextInputClient.
+  // TODO(crbug/1194424): Ensure this always returns accurate result.
   virtual SurroundingTextInfo GetSurroundingTextInfo() = 0;
 
   // Called when the engine sends a key event.

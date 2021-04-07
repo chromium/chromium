@@ -150,6 +150,7 @@ message Range {
 message AutocorrectSpan {
   optional Range autocorrect_range = 1;
   optional string original_text = 2;
+  optional string current_text = 3;
 };
 
 // Protobuf version of InputEngine::OnSurroundingTextChanged in

@@ -62,6 +62,12 @@ class NativeInputMethodEngine
   }
 
   // Used to show special UI to user for interacting with autocorrected text.
+  // NOTE: Technically redundant to require client to supply `corrected_word` as
+  // it can be retrieved from current text editing state known to IMF. However,
+  // due to async situation between browser-process IMF and render-process
+  // TextInputClient, it may just be a stale value if obtained that way.
+  // TODO(crbug/1194424): Remove technically redundant `corrected_word` param to
+  // avoid situation with multiple conflicting sources of truth.
   void OnAutocorrect(const std::u16string& typed_word,
                      const std::u16string& corrected_word,
                      int start_index);
