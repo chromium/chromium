@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.tab.Tab;
@@ -86,10 +87,18 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
         }
     }
 
-    boolean isUrlInResults(GURL url) {
-        if (!isValid()) return false;
+    @Nullable
+    GURL maybeGetUrlInResults(GURL url) {
+        if (!isValid()) return null;
 
-        return mValidUrls.contains(url);
+        for (GURL validUrl : mValidUrls) {
+            // Match the origin and path ignoring query and ref.
+            if (validUrl.getOrigin().equals(url.getOrigin())
+                    && validUrl.getPath().equals(url.getPath())) {
+                return validUrl;
+            }
+        }
+        return null;
     }
 
     void updateCurrentUrl(GURL url) {
@@ -99,10 +108,14 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
     private void updateCurrentUrlInternal(GURL url, boolean notify) {
         if (!isValid()) return;
 
-        mCurrentUrl = url;
-        boolean urlInResults = isUrlInResults(mCurrentUrl);
+        GURL urlFromResults = maybeGetUrlInResults(url);
+        if (urlFromResults == null) {
+            mCurrentUrl = url;
+        } else {
+            mCurrentUrl = urlFromResults;
+        }
         boolean onSrp = isMatchingSrp(url);
-        if (!urlInResults && !onSrp) {
+        if (urlFromResults == null && !onSrp) {
             invalidateData();
             return;
         }
