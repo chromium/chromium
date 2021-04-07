@@ -509,7 +509,7 @@
     Cashback linked
   </message>
   <message name="IDS_AUTOFILL_OFFERS_REMINDER_TITLE" desc="Title of the bubble/infobar shown on the merchant website when an offer is available to use.">
-    Google Pay offer available
+    Reminder: saved offer available
   </message>
   <message name="IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL" desc="Label for the positive button for the bubble/infobar shown on the merchant website when an offer is available to use.">
     Got it
