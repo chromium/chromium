@@ -6674,11 +6674,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIncognitoBrandConsistencyForDesktop)},
 
-    {"incognito-dark-mode-enforced-for-desktop",
-     flag_descriptions::kIncognitoDarkModeEnforcedForDesktopName,
-     flag_descriptions::kIncognitoDarkModeEnforcedForDesktopDescription,
+    {"inherit-native-theme-from-parent-widget",
+     flag_descriptions::kInheritNativeThemeFromParentWidgetName,
+     flag_descriptions::kInheritNativeThemeFromParentWidgetDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kIncognitoDarkModeEnforcedForDesktop)},
+     FEATURE_VALUE_TYPE(views::features::kInheritNativeThemeFromParentWidget)},
 #endif
 
     {"content-settings-redesign",

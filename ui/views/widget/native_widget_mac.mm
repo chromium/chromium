@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
@@ -35,6 +36,7 @@
 #import "ui/views/cocoa/drag_drop_client_mac.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/cocoa/text_input_host.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/widget_aura_utils.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -938,6 +940,12 @@ void Widget::CloseAllSecondaryWidgets() {
 }
 
 const ui::NativeTheme* Widget::GetNativeTheme() const {
+  if (base::FeatureList::IsEnabled(
+          features::kInheritNativeThemeFromParentWidget) &&
+      parent_) {
+    return parent_->GetNativeTheme();
+  }
+
   return ui::NativeTheme::GetInstanceForNativeUi();
 }
 

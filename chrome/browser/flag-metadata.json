@@ -3205,11 +3205,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "incognito-dark-mode-enforced-for-desktop",
-    "owners": [ "roagarwal", "rhalavati", "chrome-incognito@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "incognito-screenshot",
     "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
     "expiry_milestone": 97
@@ -3228,6 +3223,11 @@
     "name": "infobar-ui-reboot-only-ios13",
     "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 84
+  },
+  {
+    "name": "inherit-native-theme-from-parent-widget",
+    "owners": [ "roagarwal", "rhalavati", "chrome-incognito@google.com" ],
+    "expiry_milestone": 95
   },
   {
     "name": "insert-key-toggle-mode",

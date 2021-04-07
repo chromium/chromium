@@ -354,9 +354,6 @@ extern const base::Feature kIncompatibleApplicationsWarning;
     defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kIncognitoBrandConsistencyForDesktop;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kIncognitoDarkModeEnforcedForDesktop;
 #endif
 
 #if !defined(OS_ANDROID)

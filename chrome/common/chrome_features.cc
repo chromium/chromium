@@ -533,11 +533,6 @@ const base::Feature kIncompatibleApplicationsWarning{
 // on the Incognito UI.
 const base::Feature kIncognitoBrandConsistencyForDesktop{
     "IncognitoBrandConsistencyForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// When enabled, enforces dark mode on Incognito UI and ignores any OS light
-// mode customization.
-const base::Feature kIncognitoDarkModeEnforcedForDesktop{
-    "IncognitoDarkModeEnforcedForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if !defined(OS_ANDROID)

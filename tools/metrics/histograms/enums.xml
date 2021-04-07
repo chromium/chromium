@@ -44514,7 +44514,6 @@ from previous Chrome versions.
   <int value="-1575375861" label="enable-captive-portal-random-url"/>
   <int value="-1575131701" label="AppServiceAsh:disabled"/>
   <int value="-1573468162" label="ClientStorageAccessContextAuditing:enabled"/>
-  <int value="-1572898796" label="IncognitoDarkModeEnforcedForDesktop:enabled"/>
   <int value="-1572010356" label="enable-privet-v3"/>
   <int value="-1571841513" label="enable-devtools-experiments"/>
   <int value="-1571525676" label="FilesSWA:disabled"/>
@@ -44978,6 +44977,7 @@ from previous Chrome versions.
   <int value="-1212273428" label="enable-experimental-app-list"/>
   <int value="-1212167260" label="disable-app-window-cycling"/>
   <int value="-1208501269" label="AutofillScanThemeDialog:enabled"/>
+  <int value="-1208044478" label="InheritNativeThemeFromParentWidget:enabled"/>
   <int value="-1206875404" label="EnableIncognitoWindowCounter:enabled"/>
   <int value="-1206698676" label="MacV2Sandbox:disabled"/>
   <int value="-1206524306" label="EnableAuraTooltipsOnWindows:disabled"/>
@@ -45844,6 +45844,7 @@ from previous Chrome versions.
   <int value="-424701311" label="SignedHTTPExchange:disabled"/>
   <int value="-424584720" label="ClipboardFilenames:enabled"/>
   <int value="-424134004" label="WebPaymentsExperimentalFeatures:disabled"/>
+  <int value="-421428607" label="InheritNativeThemeFromParentWidget:disabled"/>
   <int value="-420347911" label="MobileIdentityConsistencyFRE:disabled"/>
   <int value="-419733676" label="IsolatePrerendersMustProbeOrigin:disabled"/>
   <int value="-418868128" label="enable-experimental-web-platform-features"/>
@@ -46817,7 +46818,6 @@ from previous Chrome versions.
       label="enable-non-validating-reload-on-refresh-content"/>
   <int value="469999350" label="NotificationScheduleService:disabled"/>
   <int value="470011024" label="NonValidatingReloadOnNormalReload:enabled"/>
-  <int value="470708618" label="IncognitoDarkModeEnforcedForDesktop:disabled"/>
   <int value="471224152" label="WinUseHybridSpellChecker:enabled"/>
   <int value="471519375" label="NewOsSettingsSearch:disabled"/>
   <int value="471560693" label="webview-verbose-logging"/>

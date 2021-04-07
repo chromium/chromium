@@ -1376,16 +1376,16 @@ const char kIncognitoBrandConsistencyForDesktopDescription[] =
     "When enabled, removes any theme or background customization done by the "
     "user on the Incognito UI.";
 
-const char kIncognitoDarkModeEnforcedForDesktopName[] =
-    "Enforces dark mode on Incognito UI in desktop.";
-const char kIncognitoDarkModeEnforcedForDesktopDescription[] =
-    "When enabled, enforces dark mode on Incognito UI and ignores any OS light "
-    "mode customization.";
-
 const char kIncognitoScreenshotName[] = "Incognito Screenshot";
 const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
     "thumbnails visible.";
+
+const char kInheritNativeThemeFromParentWidgetName[] =
+    "Allow widgets to inherit native theme from its parent widget.";
+const char kInheritNativeThemeFromParentWidgetDescription[] =
+    "When enabled, secondary UI like menu, dialog etc would be in dark mode "
+    "when Incognito mode is open.";
 
 const char kInProductHelpDemoModeChoiceName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeChoiceDescription[] =

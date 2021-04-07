@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,6 +42,7 @@
 #include "ui/views/buildflags.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/focus_manager_event_handler.h"
 #include "ui/views/widget/native_widget_delegate.h"
@@ -1159,6 +1161,12 @@ void Widget::CloseAllSecondaryWidgets() {
 }
 
 const ui::NativeTheme* Widget::GetNativeTheme() const {
+  if (base::FeatureList::IsEnabled(
+          features::kInheritNativeThemeFromParentWidget) &&
+      parent_) {
+    return parent_->GetNativeTheme();
+  }
+
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) && \
     (defined(OS_LINUX) || defined(OS_CHROMEOS))
   const LinuxUI* linux_ui = LinuxUI::instance();

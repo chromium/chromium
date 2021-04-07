@@ -809,11 +809,11 @@ extern const char kImpulseScrollAnimationsDescription[];
 extern const char kIncognitoBrandConsistencyForDesktopName[];
 extern const char kIncognitoBrandConsistencyForDesktopDescription[];
 
-extern const char kIncognitoDarkModeEnforcedForDesktopName[];
-extern const char kIncognitoDarkModeEnforcedForDesktopDescription[];
-
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
+
+extern const char kInheritNativeThemeFromParentWidgetName[];
+extern const char kInheritNativeThemeFromParentWidgetDescription[];
 
 extern const char kInProductHelpDemoModeChoiceName[];
 extern const char kInProductHelpDemoModeChoiceDescription[];
