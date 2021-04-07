@@ -72,6 +72,9 @@ ScopedImageUploadTask::~ScopedImageUploadTask() {
   auto duration = base::TimeTicks::Now() - start_time_;
   const char* histogram_name = nullptr;
   switch (image_type_) {
+    case ImageType::kJxl:
+      histogram_name = "Renderer4.ImageUploadTaskDurationUs.Jxl";
+      break;
     case ImageType::kAvif:
       histogram_name = "Renderer4.ImageUploadTaskDurationUs.Avif";
       break;
@@ -121,6 +124,9 @@ ScopedImageDecodeTask::~ScopedImageDecodeTask() {
   auto duration = base::TimeTicks::Now() - start_time_;
   const char* histogram_name = nullptr;
   switch (image_type_) {
+    case ImageType::kJxl:
+      histogram_name = "Renderer4.ImageUploadTaskDurationUs.Jxl";
+      break;
     case ImageType::kAvif:
       histogram_name = "Renderer4.ImageDecodeTaskDurationUs.Avif";
       break;

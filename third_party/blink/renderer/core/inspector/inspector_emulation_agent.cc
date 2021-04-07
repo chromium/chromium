@@ -454,13 +454,13 @@ void InspectorEmulationAgent::FrameStartedLoading(LocalFrame*) {
 
 AtomicString InspectorEmulationAgent::OverrideAcceptImageHeader(
     const HashSet<String>* disabled_image_types) {
-  String header(kImageAcceptHeader);
+  String header(ImageAcceptHeader());
   for (String type : *disabled_image_types) {
     // The header string is expected to be like
-    // `image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8` and is
-    // expected to be always ending with `image/*,*/*;q=xxx`, therefore, to
-    // remove a type we replace `image/x,` with empty string. Only webp and avif
-    // types can be disabled.
+    // `image/jxl,image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8`
+    // and is expected to be always ending with `image/*,*/*;q=xxx`, therefore,
+    // to remove a type we replace `image/x,` with empty string. Only webp, avif
+    // and jxl types can be disabled.
     header.Replace(String(type + ","), "");
   }
   return AtomicString(header);

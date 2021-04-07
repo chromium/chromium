@@ -17,7 +17,7 @@ struct ResourceRequest;
 
 namespace blink {
 
-PLATFORM_EXPORT extern const char kImageAcceptHeader[];
+PLATFORM_EXPORT const char* ImageAcceptHeader();
 
 class ResourceRequestHead;
 class ResourceRequestBody;

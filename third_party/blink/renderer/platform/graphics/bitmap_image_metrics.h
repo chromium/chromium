@@ -31,7 +31,8 @@ class PLATFORM_EXPORT BitmapImageMetrics {
     kICO = 5,
     kBMP = 6,
     kAVIF = 7,
-    kMaxValue = kAVIF,
+    kJXL = 8,
+    kMaxValue = kJXL,
   };
 
   // Categories for the JPEG color space histogram. Synced with 'JpegColorSpace'

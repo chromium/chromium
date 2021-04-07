@@ -20,6 +20,7 @@
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/common/buildflags.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/allocator/buildflags.h"
@@ -2953,6 +2954,11 @@ extern const char kUseOzonePlatformDescription[];
 extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
+
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+extern const char kEnableJXLName[];
+extern const char kEnableJXLDescription[];
+#endif  // BUILDFLAG(ENABLE_JXL_DECODER)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 extern const char kDiceWebSigninInterceptionName[];

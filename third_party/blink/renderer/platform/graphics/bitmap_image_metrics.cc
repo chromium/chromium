@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/media_buildflags.h"
+#include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
@@ -37,6 +38,10 @@ BitmapImageMetrics::DecodedImageType StringToDecodedImageType(
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   if (type == "avif")
     return BitmapImageMetrics::DecodedImageType::kAVIF;
+#endif
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  if (type == "jxl")
+    return BitmapImageMetrics::DecodedImageType::kJXL;
 #endif
   return BitmapImageMetrics::DecodedImageType::kUnknown;
 }

@@ -11,8 +11,27 @@
 #include "content/public/test/browser_test_utils.h"
 #include "media/media_buildflags.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 
 using ChromeAcceptHeaderTest = InProcessBrowserTest;
+
+#if BUILDFLAG(ENABLE_AV1_DECODER) || BUILDFLAG(ENABLE_JXL_DECODER)
+namespace {
+std::string GetOptionalImageCodecs() {
+  std::string result;
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  if (base::FeatureList::IsEnabled(blink::features::kJXL)) {
+    result.append("image/jxl,");
+  }
+#endif
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  result.append("image/avif,");
+#endif
+  return result;
+}
+}  // namespace
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER) || BUILDFLAG(ENABLE_JXL_DECODER)
 
 IN_PROC_BROWSER_TEST_F(ChromeAcceptHeaderTest, Check) {
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTP);
@@ -42,23 +61,23 @@ IN_PROC_BROWSER_TEST_F(ChromeAcceptHeaderTest, Check) {
 
   // With MimeHandlerViewInCrossProcessFrame, embedded PDF will go through the
   // navigation code path and behaves similarly to PDF loaded inside <iframe>.
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-  const char* expected_plugin_accept_header =
-      "text/html,application/xhtml+xml,application/xml;q=0.9,"
-      "image/avif,image/webp,image/apng,*/*;q=0.8,"
-      "application/signed-exchange;v=b3;q=0.9";
-#else
-  const char* expected_plugin_accept_header =
+  std::string expected_plugin_accept_header =
       "text/html,application/xhtml+xml,application/xml;q=0.9,image/"
       "webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
+#if BUILDFLAG(ENABLE_AV1_DECODER) || BUILDFLAG(ENABLE_JXL_DECODER)
+  expected_plugin_accept_header =
+      "text/html,application/xhtml+xml,application/xml;q=0.9," +
+      GetOptionalImageCodecs() +
+      "image/webp,image/apng,*/*;q=0.8,"
+      "application/signed-exchange;v=b3;q=0.9";
 #endif
   ASSERT_EQ(expected_plugin_accept_header, plugin_accept_header);
 
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-  const char* expected_favicon_accept_header =
-      "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-#else
-  const char* expected_favicon_accept_header =
+  std::string expected_favicon_accept_header =
+      "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
+#if BUILDFLAG(ENABLE_AV1_DECODER) || BUILDFLAG(ENABLE_JXL_DECODER)
+  expected_favicon_accept_header =
+      GetOptionalImageCodecs() +
       "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
 #endif
   ASSERT_EQ(expected_favicon_accept_header, favicon_accept_header);

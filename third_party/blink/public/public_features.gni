@@ -24,6 +24,11 @@ declare_args() {
   enable_additional_blink_object_names = enable_blink_heap_verification
 }
 
+declare_args() {
+  # If true, adds support for JPEG XL image decoding.
+  enable_jxl_decoder = !is_android && !is_ios
+}
+
 # Unhandled Tap enable means Contextual Search aka Touch to Search.
 # TODO(donnd): remove all unhandled-tap handling after the Long-press experiment
 #              is fully launched.

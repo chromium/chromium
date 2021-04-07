@@ -166,6 +166,7 @@ group("blink_platform_public_deps") {
     "//third_party:jpeg",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common",
+    "//third_party/blink/public/common:buildflags",
     "//third_party/blink/public/common:font_enumeration_table_proto",
     "//third_party/blink/public/mojom:mojom_platform_blink",
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_blink",
@@ -1778,6 +1779,15 @@ component("platform") {
     deps += [ "//third_party/libavif" ]
   }
 
+  if (enable_jxl_decoder) {
+    sources += [
+      "image-decoders/jxl/jxl_image_decoder.cc",
+      "image-decoders/jxl/jxl_image_decoder.h",
+    ]
+
+    deps += [ "//third_party/libjxl:libjxl" ]
+  }
+
   if (current_cpu == "x86" || current_cpu == "x64") {
     deps += [ ":blink_x86_avx" ]
     sources += [ "audio/cpu/x86/audio_delay_dsp_kernel_sse2.cc" ]
@@ -2190,6 +2200,10 @@ source_set("blink_platform_unittests_sources") {
     sources += [ "image-decoders/avif/avif_image_decoder_test.cc" ]
   }
 
+  if (enable_jxl_decoder) {
+    sources += [ "image-decoders/jxl/jxl_image_decoder_test.cc" ]
+  }
+
   sources += [ "testing/run_all_tests.cc" ]
 
   configs += [
@@ -2228,6 +2242,7 @@ source_set("blink_platform_unittests_sources") {
     "//third_party/blink/renderer/platform/scheduler:unit_tests",
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/libavif:libavif",
+    "//third_party/libjxl:libjxl",
     "//third_party/libyuv",
     "//third_party/webrtc/api/task_queue:task_queue_test",
     "//third_party/webrtc_overrides:webrtc_component",

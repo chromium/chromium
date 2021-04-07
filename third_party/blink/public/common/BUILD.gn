@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//testing/test.gni")
+import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
 
@@ -33,7 +34,10 @@ component("common") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "RTC_USE_H264=$rtc_use_h264" ]
+  flags = [
+    "RTC_USE_H264=$rtc_use_h264",
+    "ENABLE_JXL_DECODER=$enable_jxl_decoder",
+  ]
 }
 
 source_set("common_export") {

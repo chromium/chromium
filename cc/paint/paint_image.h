@@ -33,7 +33,17 @@ class PaintWorkletInput;
 class TextureBacking;
 using PaintRecord = PaintOpBuffer;
 
-enum class ImageType { kPNG, kJPEG, kWEBP, kGIF, kICO, kBMP, kAVIF, kInvalid };
+enum class ImageType {
+  kPNG,
+  kJPEG,
+  kWEBP,
+  kGIF,
+  kICO,
+  kBMP,
+  kAVIF,
+  kJXL,
+  kInvalid
+};
 
 enum class YUVSubsampling { k410, k411, k420, k422, k440, k444, kUnknown };
 

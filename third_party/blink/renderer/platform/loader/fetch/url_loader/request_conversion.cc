@@ -21,6 +21,8 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -37,14 +39,26 @@
 
 namespace blink {
 
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-constexpr char kImageAcceptHeader[] =
-    "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
+const char* ImageAcceptHeader() {
+#if BUILDFLAG(ENABLE_JXL_DECODER) && BUILDFLAG(ENABLE_AV1_DECODER)
+  if (base::FeatureList::IsEnabled(blink::features::kJXL)) {
+    return "image/jxl,image/avif,image/webp,image/apng,image/svg+xml,image/*,*/"
+           "*;q=0.8";
+  } else {
+    return "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
+  }
+#elif BUILDFLAG(ENABLE_JXL_DECODER)
+  if (base::FeatureList::IsEnabled(blink::features::kJXL)) {
+    return "image/jxl,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
+  } else {
+    return "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
+  }
+#elif BUILDFLAG(ENABLE_AV1_DECODER)
+  return "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
 #else
-constexpr char kImageAcceptHeader[] =
-    "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
+  return "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
 #endif
-
+}
 namespace {
 
 constexpr char kStylesheetAcceptHeader[] = "text/css,*/*;q=0.1";
@@ -395,7 +409,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   } else if (request_destination ==
              network::mojom::RequestDestination::kImage) {
     dest->headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
-                                     kImageAcceptHeader);
+                                     ImageAcceptHeader());
   } else {
     // Calling SetHeaderIfMissing() instead of SetHeader() because JS can
     // manually set an accept header on an XHR.

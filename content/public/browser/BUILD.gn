@@ -475,6 +475,7 @@ source_set("browser_sources") {
     "//ppapi/c",
     "//services/device/public/cpp/geolocation",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//third_party/blink/public/common:buildflags",
     "//ui/accessibility",
     "//ui/base",
     "//ui/base/clipboard",

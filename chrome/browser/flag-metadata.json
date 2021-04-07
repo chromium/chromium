@@ -1959,6 +1959,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-jxl",
+    "owners": [ "deymo", "firsching", "lode" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "enable-kerberos-settings-section",
     "owners": [ "fsandrade" ],
     // Enables the Kerberos Section in ChromeOS settings. When disabled,

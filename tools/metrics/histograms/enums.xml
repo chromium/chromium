@@ -17418,6 +17418,7 @@ Called by update_debug_scenarios.py.-->
   <int value="5" label="kImageICO"/>
   <int value="6" label="kImageBMP"/>
   <int value="7" label="kImageAVIF"/>
+  <int value="8" label="kImageJXL"/>
 </enum>
 
 <enum name="DecodeSwapChainNotUsedReason">
@@ -45330,6 +45331,7 @@ from previous Chrome versions.
   <int value="-893673593" label="BentoOffline:disabled"/>
   <int value="-892428689" label="ManualPasswordGenerationAndroid:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
+  <int value="-890517779" label="JXL:enabled"/>
   <int value="-889670978" label="AssistantRoutines:disabled"/>
   <int value="-887094098" label="ForcedColors:enabled"/>
   <int value="-886912558" label="ChromeHomePromo:enabled"/>
@@ -46504,6 +46506,7 @@ from previous Chrome versions.
   <int value="188610022" label="NewMessageListView:enabled"/>
   <int value="189728101" label="FasterLocationReload:disabled"/>
   <int value="189777537" label="DisableInitialMostVisitedFadeIn:enabled"/>
+  <int value="190282969" label="JXL:disabled"/>
   <int value="191737931" label="enable-mark-http-as"/>
   <int value="192167036" label="LogJsConsoleMessages:disabled"/>
   <int value="192320180" label="ignore-gpu-blocklist"/>

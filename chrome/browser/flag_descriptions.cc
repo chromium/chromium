@@ -5056,6 +5056,12 @@ const char kDcheckIsFatalDescription[] =
     "rather than crashing. If enabled, DCHECKs will crash the calling process.";
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+const char kEnableJXLName[] = "Enable JXL image format";
+const char kEnableJXLDescription[] =
+    "Adds image decoding support for the JPEG XL image format.";
+#endif  // BUILDFLAG(ENABLE_JXL_DECODER)
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kDiceWebSigninInterceptionName[] = "Dice Web-Signin Interception";
 const char kDiceWebSigninInterceptionDescription[] =
