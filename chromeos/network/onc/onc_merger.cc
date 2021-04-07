@@ -312,7 +312,7 @@ class MergeToEffective : public MergeSettingsAndPolicies {
     }
     if (result)
       return base::WrapUnique(result->DeepCopy());
-    return std::unique_ptr<base::Value>();
+    return nullptr;
   }
 
   // MergeSettingsAndPolicies override.

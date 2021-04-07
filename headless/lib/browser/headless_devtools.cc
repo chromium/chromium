@@ -53,7 +53,7 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
       return socket;
     if (socket->ListenWithAddressAndPort("::1", port, kBackLog) == net::OK)
       return socket;
-    return std::unique_ptr<net::ServerSocket>();
+    return nullptr;
   }
 
   // content::DevToolsSocketFactory.
@@ -65,7 +65,7 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
     if (socket->ListenWithAddressAndPort(endpoint_.host(), endpoint_.port(),
                                          kBackLog) == net::OK)
       return socket;
-    return std::unique_ptr<net::ServerSocket>();
+    return nullptr;
   }
 
   std::unique_ptr<net::ServerSocket> CreateForTethering(
@@ -91,7 +91,7 @@ class TCPAdoptServerSocketFactory : public content::DevToolsSocketFactory {
         new net::TCPServerSocket(nullptr, net::NetLogSource()));
     if (tsock->AdoptSocket(socket_fd_) != net::OK) {
       LOG(ERROR) << "Failed to adopt open socket";
-      return std::unique_ptr<net::ServerSocket>();
+      return nullptr;
     }
     // Note that we assume that the socket is already listening, so unlike
     // TCPEndpointServerSocketFactory, we don't call Listen.

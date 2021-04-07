@@ -165,7 +165,7 @@ void HeadlessBrowserContextImpl::InitWhileIOAllowed() {
 std::unique_ptr<content::ZoomLevelDelegate>
 HeadlessBrowserContextImpl::CreateZoomLevelDelegate(
     const base::FilePath& partition_path) {
-  return std::unique_ptr<content::ZoomLevelDelegate>();
+  return nullptr;
 }
 
 base::FilePath HeadlessBrowserContextImpl::GetPath() {

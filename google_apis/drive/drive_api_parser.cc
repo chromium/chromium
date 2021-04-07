@@ -244,7 +244,7 @@ std::unique_ptr<AboutResource> AboutResource::CreateFrom(
   std::unique_ptr<AboutResource> resource(new AboutResource());
   if (!IsResourceKindExpected(value, kAboutKind) || !resource->Parse(value)) {
     LOG(ERROR) << "Unable to create: Invalid About resource JSON!";
-    return std::unique_ptr<AboutResource>();
+    return nullptr;
   }
   return resource;
 }
@@ -339,7 +339,7 @@ std::unique_ptr<TeamDriveResource> TeamDriveResource::CreateFrom(
   if (!IsResourceKindExpected(value, kTeamDriveKind) ||
       !resource->Parse(value)) {
     LOG(ERROR) << "Unable to create: Invalid Team Drive resource JSON!";
-    return std::unique_ptr<TeamDriveResource>();
+    return nullptr;
   }
   return resource;
 }
@@ -389,7 +389,7 @@ std::unique_ptr<TeamDriveList> TeamDriveList::CreateFrom(
   std::unique_ptr<TeamDriveList> resource(new TeamDriveList());
   if (!HasTeamDriveListKind(value) || !resource->Parse(value)) {
     LOG(ERROR) << "Unable to create: Invalid TeamDriveList JSON!";
-    return std::unique_ptr<TeamDriveList>();
+    return nullptr;
   }
   return resource;
 }
@@ -423,7 +423,7 @@ std::unique_ptr<ParentReference> ParentReference::CreateFrom(
   if (!IsResourceKindExpected(value, kParentReferenceKind) ||
       !reference->Parse(value)) {
     LOG(ERROR) << "Unable to create: Invalid ParentRefernce JSON!";
-    return std::unique_ptr<ParentReference>();
+    return nullptr;
   }
   return reference;
 }
@@ -570,7 +570,7 @@ std::unique_ptr<FileResource> FileResource::CreateFrom(
   std::unique_ptr<FileResource> resource(new FileResource());
   if (!IsResourceKindExpected(value, kFileKind) || !resource->Parse(value)) {
     LOG(ERROR) << "Unable to create: Invalid FileResource JSON!";
-    return std::unique_ptr<FileResource>();
+    return nullptr;
   }
   return resource;
 }
@@ -621,7 +621,7 @@ std::unique_ptr<FileList> FileList::CreateFrom(const base::Value& value) {
   std::unique_ptr<FileList> resource(new FileList());
   if (!HasFileListKind(value) || !resource->Parse(value)) {
     LOG(ERROR) << "Unable to create: Invalid FileList JSON!";
-    return std::unique_ptr<FileList>();
+    return nullptr;
   }
   return resource;
 }
@@ -668,7 +668,7 @@ std::unique_ptr<ChangeResource> ChangeResource::CreateFrom(
   std::unique_ptr<ChangeResource> resource(new ChangeResource());
   if (!IsResourceKindExpected(value, kChangeKind) || !resource->Parse(value)) {
     LOG(ERROR) << "Unable to create: Invalid ChangeResource JSON!";
-    return std::unique_ptr<ChangeResource>();
+    return nullptr;
   }
   return resource;
 }
@@ -726,7 +726,7 @@ std::unique_ptr<ChangeList> ChangeList::CreateFrom(const base::Value& value) {
   std::unique_ptr<ChangeList> resource(new ChangeList());
   if (!HasChangeListKind(value) || !resource->Parse(value)) {
     LOG(ERROR) << "Unable to create: Invalid ChangeList JSON!";
-    return std::unique_ptr<ChangeList>();
+    return nullptr;
   }
   return resource;
 }
@@ -762,7 +762,7 @@ std::unique_ptr<FileLabels> FileLabels::CreateFrom(const base::Value& value) {
   std::unique_ptr<FileLabels> resource(new FileLabels());
   if (!resource->Parse(value)) {
     LOG(ERROR) << "Unable to create: Invalid FileLabels JSON!";
-    return std::unique_ptr<FileLabels>();
+    return nullptr;
   }
   return resource;
 }
@@ -803,7 +803,7 @@ std::unique_ptr<ImageMediaMetadata> ImageMediaMetadata::CreateFrom(
   std::unique_ptr<ImageMediaMetadata> resource(new ImageMediaMetadata());
   if (!resource->Parse(value)) {
     LOG(ERROR) << "Unable to create: Invalid ImageMediaMetadata JSON!";
-    return std::unique_ptr<ImageMediaMetadata>();
+    return nullptr;
   }
   return resource;
 }

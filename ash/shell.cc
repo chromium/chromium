@@ -1410,7 +1410,7 @@ ui::EventTarget* Shell::GetParentTarget() {
 }
 
 std::unique_ptr<ui::EventTargetIterator> Shell::GetChildIterator() const {
-  return std::unique_ptr<ui::EventTargetIterator>();
+  return nullptr;
 }
 
 ui::EventTargeter* Shell::GetEventTargeter() {

@@ -395,14 +395,13 @@ std::unique_ptr<net::test_server::HttpResponse> FakeGaia::HandleRequest(
     // components, like the ReAuth API.
     iter = FindHandlerByPathPrefix(request_path);
   }
-  if (iter != request_handlers_.end()) {
-    LOG(WARNING) << "Serving request " << request_path;
-    iter->second.Run(request, http_response.get());
-  } else {
+  if (iter == request_handlers_.end()) {
     LOG(ERROR) << "Unhandled request " << request_path;
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   }
 
+  LOG(WARNING) << "Serving request " << request_path;
+  iter->second.Run(request, http_response.get());
   return std::move(http_response);
 }
 

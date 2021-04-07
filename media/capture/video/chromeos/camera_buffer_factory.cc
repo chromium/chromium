@@ -21,7 +21,7 @@ CameraBufferFactory::CreateGpuMemoryBuffer(const gfx::Size& size,
       VideoCaptureDeviceFactoryChromeOS::GetBufferManager();
   if (!buf_manager) {
     LOG(ERROR) << "GpuMemoryBufferManager not set";
-    return std::unique_ptr<gfx::GpuMemoryBuffer>();
+    return nullptr;
   }
   return buf_manager->CreateGpuMemoryBuffer(size, format, usage,
                                             gpu::kNullSurfaceHandle);

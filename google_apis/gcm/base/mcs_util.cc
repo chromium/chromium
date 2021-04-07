@@ -139,7 +139,7 @@ std::unique_ptr<google::protobuf::MessageLite> BuildProtobufFromTag(
       return std::unique_ptr<google::protobuf::MessageLite>(
           new mcs_proto::StreamErrorStanza());
     default:
-      return std::unique_ptr<google::protobuf::MessageLite>();
+      return nullptr;
   }
 }
 

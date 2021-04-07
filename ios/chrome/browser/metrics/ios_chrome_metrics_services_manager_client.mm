@@ -35,7 +35,7 @@ namespace {
 void PostStoreMetricsClientInfo(const metrics::ClientInfo& client_info) {}
 
 std::unique_ptr<metrics::ClientInfo> LoadMetricsClientInfo() {
-  return std::unique_ptr<metrics::ClientInfo>();
+  return nullptr;
 }
 
 }  // namespace

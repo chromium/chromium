@@ -108,7 +108,7 @@ std::unique_ptr<base::Value> Validator::MapValue(
         << "', but type '" << base::Value::GetTypeName(signature.onc_type)
         << "' is required.";
     AddValidationIssue(true /* is_error */, msg.str());
-    return std::unique_ptr<base::Value>();
+    return nullptr;
   }
 
   std::unique_ptr<base::Value> repaired =
@@ -179,7 +179,7 @@ std::unique_ptr<base::DictionaryValue> Validator::MapObject(
 
   DCHECK(!validation_issues_.empty());
   *error = true;
-  return std::unique_ptr<base::DictionaryValue>();
+  return nullptr;
 }
 
 std::unique_ptr<base::Value> Validator::MapField(

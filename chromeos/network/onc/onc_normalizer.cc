@@ -41,7 +41,7 @@ std::unique_ptr<base::DictionaryValue> Normalizer::MapObject(
       Mapper::MapObject(signature, onc_object, error);
 
   if (normalized.get() == nullptr)
-    return std::unique_ptr<base::DictionaryValue>();
+    return nullptr;
 
   if (remove_recommended_fields_)
     normalized->RemoveKey(::onc::kRecommended);

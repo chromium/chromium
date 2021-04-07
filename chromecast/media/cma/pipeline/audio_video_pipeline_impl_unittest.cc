@@ -78,9 +78,8 @@ class CastCdmContextForTest : public CastCdmContext {
     if (license_installed_) {
       return std::unique_ptr<DecryptContextImpl>(
           new DecryptContextImpl(KEY_SYSTEM_CLEAR_KEY));
-    } else {
-      return std::unique_ptr<DecryptContextImpl>();
     }
+    return nullptr;
   }
 
   void SetKeyStatus(const std::string& key_id,

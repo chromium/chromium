@@ -278,7 +278,7 @@ class DriveApiRequestsTest : public testing::Test {
         request.relative_url.find("/children/") == std::string::npos) {
       // The request is not the "Children: delete" request. Delegate the
       // processing to the next handler.
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     http_request_ = request;
@@ -299,7 +299,7 @@ class DriveApiRequestsTest : public testing::Test {
     if (expected_data_file_path_.empty()) {
       // The file is not specified. Delegate the processing to the next
       // handler.
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     http_request_ = request;
@@ -316,7 +316,7 @@ class DriveApiRequestsTest : public testing::Test {
         request.relative_url.find("/files/") == std::string::npos) {
       // The file is not file deletion request. Delegate the processing to the
       // next handler.
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     http_request_ = request;
@@ -337,7 +337,7 @@ class DriveApiRequestsTest : public testing::Test {
       const net::test_server::HttpRequest& request) {
     if (expected_precondition_failed_file_path_.empty()) {
       // The file is not specified. Delegate the process to the next handler.
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     http_request_ = request;
@@ -367,7 +367,7 @@ class DriveApiRequestsTest : public testing::Test {
         expected_upload_path_.empty()) {
       // The request is for resume uploading or the expected upload url is not
       // set. Delegate the processing to the next handler.
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     http_request_ = request;
@@ -380,7 +380,7 @@ class DriveApiRequestsTest : public testing::Test {
     auto found = request.headers.find("X-Upload-Content-Length");
     if (found == request.headers.end() ||
         !base::StringToInt64(found->second, &content_length_)) {
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
     received_bytes_ = 0;
 
@@ -396,7 +396,7 @@ class DriveApiRequestsTest : public testing::Test {
     if (request.relative_url != expected_upload_path_) {
       // The request path is different from the expected path for uploading.
       // Delegate the processing to the next handler.
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     http_request_ = request;
@@ -405,7 +405,7 @@ class DriveApiRequestsTest : public testing::Test {
       auto iter = request.headers.find("Content-Range");
       if (iter == request.headers.end()) {
         // The range must be set.
-        return std::unique_ptr<net::test_server::HttpResponse>();
+        return nullptr;
       }
 
       int64_t length = 0;
@@ -414,7 +414,7 @@ class DriveApiRequestsTest : public testing::Test {
       if (!test_util::ParseContentRangeHeader(
               iter->second, &start_position, &end_position, &length)) {
         // Invalid "Content-Range" value.
-        return std::unique_ptr<net::test_server::HttpResponse>();
+        return nullptr;
       }
 
       EXPECT_EQ(start_position, received_bytes_);
@@ -463,7 +463,7 @@ class DriveApiRequestsTest : public testing::Test {
     if (expected_content_type_.empty() || expected_content_.empty()) {
       // Expected content is not set. Delegate the processing to the next
       // handler.
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     http_request_ = request;
@@ -486,7 +486,7 @@ class DriveApiRequestsTest : public testing::Test {
     if (!test_util::RemovePrefix(
           absolute_url.path(), kTestDownloadPathPrefix, &id) ||
         absolute_url.query() != kTestDownloadFileQuery) {
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     // For testing, returns a text with |id| repeated 3 times.
@@ -505,7 +505,7 @@ class DriveApiRequestsTest : public testing::Test {
     const GURL absolute_url = test_server_.GetURL(request.relative_url);
     std::string id;
     if (absolute_url.path() != "/upload/drive")
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
 
     std::unique_ptr<net::test_server::BasicHttpResponse> response(
         new net::test_server::BasicHttpResponse);

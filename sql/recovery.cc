@@ -151,7 +151,7 @@ std::unique_ptr<Recovery> Recovery::Begin(Database* database,
     // Warn about API mis-use.
     DCHECK(database->poisoned(InternalApiToken()))
         << "Illegal to recover with closed Database";
-    return std::unique_ptr<Recovery>();
+    return nullptr;
   }
 
   // Using `new` to access a non-public constructor
@@ -159,7 +159,7 @@ std::unique_ptr<Recovery> Recovery::Begin(Database* database,
   if (!recovery->Init(db_path)) {
     // TODO(shess): Should Init() failure result in Raze()?
     recovery->Shutdown(POISON);
-    return std::unique_ptr<Recovery>();
+    return nullptr;
   }
 
   return recovery;

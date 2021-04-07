@@ -100,11 +100,10 @@ std::unique_ptr<base::Value> Mapper::MapField(
         << "Found missing value signature at field '" << field_name << "'.";
 
     return MapValue(*field_signature->value_signature, onc_value, error);
-  } else {
-    DVLOG(1) << "Found unknown field name: '" << field_name << "'";
-    *found_unknown_field = true;
-    return std::unique_ptr<base::Value>();
   }
+  DVLOG(1) << "Found unknown field name: '" << field_name << "'";
+  *found_unknown_field = true;
+  return nullptr;
 }
 
 std::unique_ptr<base::ListValue> Mapper::MapArray(

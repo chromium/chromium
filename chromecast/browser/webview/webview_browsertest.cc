@@ -114,7 +114,7 @@ class WebviewTest : public content::BrowserTestBase {
       const net::test_server::HttpRequest& request) {
     GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
     if (absolute_url.path() != "/test" && absolute_url.path() != "/test2")
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();

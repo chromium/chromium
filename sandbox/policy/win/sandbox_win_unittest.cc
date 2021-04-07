@@ -139,9 +139,7 @@ class TestTargetPolicy : public TargetPolicy {
     return blocklisted_dlls_;
   }
 
-  std::unique_ptr<PolicyInfo> GetPolicyInfo() override {
-    return std::unique_ptr<PolicyDiagnostic>();
-  }
+  std::unique_ptr<PolicyInfo> GetPolicyInfo() override { return nullptr; }
 
  private:
   std::vector<std::wstring> blocklisted_dlls_;

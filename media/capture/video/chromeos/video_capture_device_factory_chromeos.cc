@@ -41,7 +41,7 @@ VideoCaptureDeviceFactoryChromeOS::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!initialized_) {
-    return std::unique_ptr<VideoCaptureDevice>();
+    return nullptr;
   }
   return camera_hal_delegate_->CreateDevice(task_runner_for_screen_observer_,
                                             device_descriptor);

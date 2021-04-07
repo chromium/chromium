@@ -38,7 +38,7 @@ VideoCaptureDeviceFactoryAndroid::CreateDevice(
   DCHECK(thread_checker_.CalledOnValidThread());
   int id;
   if (!base::StringToInt(device_descriptor.device_id, &id))
-    return std::unique_ptr<VideoCaptureDevice>();
+    return nullptr;
 
   std::unique_ptr<VideoCaptureDeviceAndroid> video_capture_device(
       new VideoCaptureDeviceAndroid(device_descriptor));
