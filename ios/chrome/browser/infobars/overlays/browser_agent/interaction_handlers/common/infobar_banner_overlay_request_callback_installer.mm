@@ -70,8 +70,8 @@ void InfobarBannerOverlayRequestCallbackInstaller::RemoveInfobar(
   InfoBarIOS* infobar = GetOverlayRequestInfobar(request);
   if (!infobar)
     return;
-  InfoBarManagerImpl::FromWebState(request->GetQueueWebState())
-      ->RemoveInfoBar(infobar);
+
+  static_cast<InfoBarControllerDelegate*>(infobar)->RemoveInfoBar();
 }
 
 #pragma mark - OverlayRequestCallbackInstaller
