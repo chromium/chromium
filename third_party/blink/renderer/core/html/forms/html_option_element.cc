@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -410,12 +411,50 @@ HTMLFormElement* HTMLOptionElement::form() const {
 }
 
 void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
+  root.EnableNameBasedSlotAssignment();
   UpdateLabel();
 }
 
 void HTMLOptionElement::UpdateLabel() {
+  // For <selectmenu> the label should not replace descendants for the visual
+  // in order to allow to render arbitrary content.
+  if (is_descendant_of_select_menu_)
+    return;
+
   if (ShadowRoot* root = UserAgentShadowRoot())
     root->setTextContent(DisplayLabel());
+}
+
+void HTMLOptionElement::OptionInsertedIntoSelectMenuElement() {
+  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+
+  if (is_descendant_of_select_menu_)
+    return;
+
+  ShadowRoot* root = UserAgentShadowRoot();
+  DCHECK(root);
+
+  is_descendant_of_select_menu_ = true;
+  // TODO(crbug.com/1196022) Refine the content that an option can render.
+  // Enable the option element to render arbitrary content.
+  root->RemoveChildren();
+  Document& document = this->GetDocument();
+  auto* default_slot = MakeGarbageCollected<HTMLSlotElement>(document);
+  root->AppendChild(default_slot);
+}
+
+void HTMLOptionElement::OptionRemovedFromSelectMenuElement() {
+  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+
+  if (!is_descendant_of_select_menu_)
+    return;
+
+  ShadowRoot* root = UserAgentShadowRoot();
+  DCHECK(root);
+
+  is_descendant_of_select_menu_ = false;
+  root->RemoveChildren();
+  UpdateLabel();
 }
 
 bool HTMLOptionElement::SpatialNavigationFocused() const {

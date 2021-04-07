@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -459,6 +460,11 @@ void HTMLSelectMenuElement::OptionPartInserted(Element* new_option_part) {
     return;
   }
 
+  if (auto* new_option_element =
+          DynamicTo<HTMLOptionElement>(new_option_part)) {
+    new_option_element->OptionInsertedIntoSelectMenuElement();
+  }
+
   new_option_part->addEventListener(event_type_names::kClick,
                                     option_part_listener_, false);
   // TODO(crbug.com/1121840) We don't want to actually change the attribute,
@@ -480,6 +486,10 @@ void HTMLSelectMenuElement::OptionPartInserted(Element* new_option_part) {
 void HTMLSelectMenuElement::OptionPartRemoved(Element* option_part) {
   if (!option_parts_.Contains(option_part)) {
     return;
+  }
+
+  if (auto* option_element = DynamicTo<HTMLOptionElement>(option_part)) {
+    option_element->OptionRemovedFromSelectMenuElement();
   }
 
   option_part->removeEventListener(event_type_names::kClick,

@@ -110,6 +110,9 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   }
   bool WasOptionInsertedCalled() const { return was_option_inserted_called_; }
 
+  void OptionInsertedIntoSelectMenuElement();
+  void OptionRemovedFromSelectMenuElement();
+
   // Callback for OptionTextObserver.
   void DidChangeTextContent();
 
@@ -143,6 +146,10 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // This flag is necessary to detect a state where DOM tree is updated and
   // OptionInserted() is not called yet.
   bool was_option_inserted_called_ = false;
+
+  // This flag is necessary to detect when an option is a descendant of
+  // <selectmenu> in order to be able to render arbitrary content.
+  bool is_descendant_of_select_menu_ = false;
 };
 
 }  // namespace blink

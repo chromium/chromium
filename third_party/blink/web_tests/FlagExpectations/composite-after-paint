@@ -64,3 +64,6 @@ crbug.com/1191032 virtual/threaded/http/tests/devtools/tracing/timeline-paint/pa
 crbug.com/1191162 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/composited-under-clip-under-multicol.html [ Failure ]
 crbug.com/1191162 virtual/layout_ng_block_frag/fast/multicol/composited-relpos-clipped.html [ Failure ]
 crbug.com/1191162 virtual/layout_ng_block_frag/fast/multicol/composited-relpos-in-clipped.html [ Failure ]
+
+# Some small text differences.
+external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-option-arbitrary-content-displayed.tentative.html [ Failure ]
