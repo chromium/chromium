@@ -48,6 +48,7 @@ import org.chromium.ui.base.WindowAndroid;
 @Config(manifest = Config.NONE)
 public class FeedStreamTest {
     private static final int LOAD_MORE_TRIGGER_LOOKAHEAD = 5;
+    private static final int LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP = 100;
     private Activity mActivity;
     private RecyclerView mRecyclerView;
     private FakeLinearLayoutManager mLayoutManager;
@@ -80,6 +81,8 @@ public class FeedStreamTest {
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead())
                 .thenReturn(LOAD_MORE_TRIGGER_LOOKAHEAD);
+        when(mFeedServiceBridgeJniMock.getLoadMoreTriggerScrollDistanceDp())
+                .thenReturn(LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP);
         // Surfaces won't open until after startup.
         FeedStreamSurface.startup();
         mFeedStream = new FeedStream(mActivity, false, mSnackbarManager, mPageNavigationDelegate,
@@ -305,7 +308,7 @@ public class FeedStreamTest {
 
     private int getLoadMoreTriggerScrollDistance() {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                FeedStream.LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP,
+                LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP,
                 mRecyclerView.getResources().getDisplayMetrics());
     }
 }

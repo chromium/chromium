@@ -18,6 +18,7 @@ extern const base::Feature kInterestFeedContentSuggestions;
 extern const base::Feature kInterestFeedV2;
 extern const base::Feature kInterestFeedV2Autoplay;
 extern const base::Feature kInterestFeedV2Hearts;
+extern const base::Feature kInterestFeedV2Scrolling;
 
 extern const base::FeatureParam<std::string> kDisableTriggerTypes;
 extern const base::FeatureParam<int> kSuppressRefreshDurationMinutes;

@@ -46,6 +46,10 @@ struct Config {
   // How far ahead in number of items from last visible item to final item
   // before attempting to load more content.
   int load_more_trigger_lookahead = 5;
+  // How far does the user have to scroll the feed before the feed begins
+  // to consider loading more data. The scrolling threshold is a proxy
+  // measure for deciding whether the user has engaged with the feed.
+  int load_more_trigger_scroll_distance_dp = 100;
   // Whether to attempt uploading actions when Chrome is hidden.
   bool upload_actions_on_enter_background = true;
   // Whether to send (pseudonymous) logs for signed-out sessions.

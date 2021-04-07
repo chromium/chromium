@@ -46,6 +46,11 @@ static int JNI_FeedServiceBridge_GetLoadMoreTriggerLookahead(JNIEnv* env) {
   return GetFeedConfig().load_more_trigger_lookahead;
 }
 
+static int JNI_FeedServiceBridge_GetLoadMoreTriggerScrollDistanceDp(
+    JNIEnv* env) {
+  return GetFeedConfig().load_more_trigger_scroll_distance_dp;
+}
+
 static void JNI_FeedServiceBridge_ReportOpenVisitComplete(JNIEnv* env,
                                                           jlong visitTimeMs) {
   FeedService* service = GetFeedService();

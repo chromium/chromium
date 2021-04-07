@@ -105,6 +105,11 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.get().getLoadMoreTriggerLookahead();
     }
 
+    /** Retrieves the config value for load_more_trigger_scroll_distance_dp. */
+    public static int getLoadMoreTriggerScrollDistanceDp() {
+        return FeedServiceBridgeJni.get().getLoadMoreTriggerScrollDistanceDp();
+    }
+
     public static void reportOpenVisitComplete(long visitTimeMs) {
         FeedServiceBridgeJni.get().reportOpenVisitComplete(visitTimeMs);
     }
@@ -122,6 +127,7 @@ public final class FeedServiceBridge {
         boolean isEnabled();
         void startup();
         int getLoadMoreTriggerLookahead();
+        int getLoadMoreTriggerScrollDistanceDp();
         String getClientInstanceId();
         void reportOpenVisitComplete(long visitTimeMs);
         int getVideoPreviewsTypePreference();

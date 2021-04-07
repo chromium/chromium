@@ -20,6 +20,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.shared.stream.Header;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -41,7 +42,7 @@ public class FeedStream implements Stream {
     private static final String TAG = "FeedStream";
 
     // How far the user has to scroll down in DP before attempting to load more content.
-    static final int LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP = 100;
+    private final int mLoadMoreTriggerScrollDistanceDp;
 
     private final Activity mActivity;
     @VisibleForTesting
@@ -67,6 +68,9 @@ public class FeedStream implements Stream {
                 HelpAndFeedbackLauncherImpl.getInstance(), isPlaceholderShown,
                 new FeedStreamSurface.ShareHelperWrapper(windowAndroid, shareDelegateSupplier),
                 windowAndroid.getDisplay());
+
+        this.mLoadMoreTriggerScrollDistanceDp =
+                FeedServiceBridge.getLoadMoreTriggerScrollDistanceDp();
     }
 
     @Override
@@ -270,7 +274,7 @@ public class FeedStream implements Stream {
             mAccumulatedDySinceLastLoadMore = 0;
         }
         if (mAccumulatedDySinceLastLoadMore < TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                    LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP,
+                    mLoadMoreTriggerScrollDistanceDp,
                     mRecyclerView.getResources().getDisplayMetrics())) {
             return;
         }

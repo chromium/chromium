@@ -24,6 +24,9 @@ const base::Feature kInterestFeedV2Autoplay{"InterestFeedV2Autoplay",
 const base::Feature kInterestFeedV2Hearts{"InterestFeedV2Hearts",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kInterestFeedV2Scrolling{"InterestFeedV2Scrolling",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::FeatureParam<std::string> kDisableTriggerTypes{
     &kInterestFeedContentSuggestions, "disable_trigger_types", ""};
 const base::FeatureParam<int> kSuppressRefreshDurationMinutes{
