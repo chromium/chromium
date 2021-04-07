@@ -79,14 +79,14 @@ void CrostiniUnsupportedActionNotifier::OnWindowFocused(
     aura::Window* gained_focus,
     aura::Window* lost_focus) {
   ShowVirtualKeyboardUnsupportedNotifictionIfNeeded();
-  ShowIMEUnsupportedNotifictionIfNeeded();
+  ShowIMEUnsupportedNotificationIfNeeded();
 }
 
 void CrostiniUnsupportedActionNotifier::InputMethodChanged(
     chromeos::input_method::InputMethodManager* manager,
     Profile* profile,
     bool show_message) {
-  ShowIMEUnsupportedNotifictionIfNeeded();
+  ShowIMEUnsupportedNotificationIfNeeded();
 }
 
 void CrostiniUnsupportedActionNotifier::OnKeyboardVisibilityChanged(
@@ -124,7 +124,7 @@ void CrostiniUnsupportedActionNotifier::
 }
 
 void CrostiniUnsupportedActionNotifier::
-    ShowIMEUnsupportedNotifictionIfNeeded() {
+    ShowIMEUnsupportedNotificationIfNeeded() {
   auto method = delegate_->GetCurrentInputMethod();
   if (IsIMESupportedByCrostini(method) ||
       !delegate_->IsFocusedWindowCrostini()) {

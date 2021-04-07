@@ -107,7 +107,7 @@ class CrostiniUnsupportedActionNotifier
   // Generally Crostini supports IMEs with 1:1 mappings betweens keys and glyphs
   // e.g. Armenian, and simple combinations like US International, but doesn't
   // support CJK, handwriting, completion, etc.
-  void ShowIMEUnsupportedNotifictionIfNeeded();
+  void ShowIMEUnsupportedNotificationIfNeeded();
 
   bool IsIMESupportedByCrostini(
       const chromeos::input_method::InputMethodDescriptor& method);
