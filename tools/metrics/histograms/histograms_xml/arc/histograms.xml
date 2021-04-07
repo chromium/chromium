@@ -829,7 +829,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Arc.PrintPreview.PreviewEvent" enum="PrintPreviewHelperEvents"
     expires_after="2021-06-01">
   <owner>bmgordon@chromium.org</owner>
-  <owner>jschettler@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
   <summary>
     Print preview events for ARC. Recorded when specific print preview events
     occur (print preview requested, preview document created, etc.).
@@ -839,7 +839,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Arc.PrintPreview.RenderAndGeneratePDFTime" units="ms"
     expires_after="2021-06-01">
   <owner>bmgordon@chromium.org</owner>
-  <owner>jschettler@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
   <summary>
     Time taken for ARC to render and generate a PDF for print preview. Includes
     time to reflow the page back to normal, but not the time to reflow the page
@@ -850,7 +850,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Arc.PrintPreview.RenderAndGeneratePDFTimeAvgPerPage"
     units="ms" expires_after="2021-06-01">
   <owner>bmgordon@chromium.org</owner>
-  <owner>jschettler@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
   <summary>
     Time taken for ARC to render and generate a PDF for print preview divided by
     the number of pages. Includes time to reflow the page back to normal, but
@@ -861,7 +861,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Arc.PrintPreview.RendererError" enum="PrintPreviewFailureType"
     expires_after="2021-08-01">
   <owner>bmgordon@chromium.org</owner>
-  <owner>jschettler@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
   <summary>
     Count how frequently a set of pre-defined print preview errors occur for
     ARC.
@@ -871,7 +871,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Arc.PrintPreview.RenderToPDFTime" units="ms"
     expires_after="2021-06-01">
   <owner>bmgordon@chromium.org</owner>
-  <owner>jschettler@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
   <summary>Time taken for ARC to render a PDF for print preview.</summary>
 </histogram>
 

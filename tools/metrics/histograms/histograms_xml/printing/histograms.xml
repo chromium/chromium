@@ -169,7 +169,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.JobDuration.JobCancelled" units="ms"
     expires_after="2021-06-01">
-  <owner>jschettler@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
     Records the print job duration of a cancelled print job. Includes time spent
@@ -179,7 +179,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.JobDuration.JobDone" units="ms"
     expires_after="2021-08-01">
-  <owner>jschettler@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
     Records the print job duration of a done/completed print job. Includes time
@@ -225,7 +225,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.PrintDocumentSize" units="KB"
     expires_after="2021-08-01">
-  <owner>jschettler@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
     Records the total size of the printed document (PDF) sent to CUPS. Only
