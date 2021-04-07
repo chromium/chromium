@@ -39,9 +39,6 @@ ProcessMonitor::Metrics ProcessMetricsHistory::SampleMetrics() {
   ProcessMonitor::Metrics metrics;
 
   metrics.cpu_usage = process_metrics_->GetPlatformIndependentCPUUsage();
-#if defined(OS_WIN)
-  metrics.disk_usage = process_metrics_->GetDiskUsageBytesPerSecond();
-#endif
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_AIX)
   metrics.idle_wakeups = process_metrics_->GetIdleWakeupsPerSecond();

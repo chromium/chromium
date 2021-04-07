@@ -79,10 +79,6 @@ ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
                                     const ProcessMonitor::Metrics& rhs) {
   lhs.cpu_usage += rhs.cpu_usage;
 
-#if defined(OS_WIN)
-  lhs.disk_usage += rhs.disk_usage;
-#endif
-
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_AIX)
   lhs.idle_wakeups += rhs.idle_wakeups;

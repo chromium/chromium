@@ -14185,7 +14185,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="WorkerProcess" label=""/>
   <affected-histogram name="PerformanceMonitor.AverageCPU"/>
   <affected-histogram name="PerformanceMonitor.AverageCPU2"/>
-  <affected-histogram name="PerformanceMonitor.AverageDisk"/>
+  <affected-histogram name="PerformanceMonitor.AverageDisk">
+    <obsolete>
+      Removed 04/2021. Not needed for current investigations.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="PerformanceMonitor.EnergyImpact"/>
   <affected-histogram name="PerformanceMonitor.HighCPU">
     <obsolete>

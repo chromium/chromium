@@ -11162,6 +11162,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceMonitor.AverageDisk" units="BytesPerSecond"
     expires_after="M85">
+  <obsolete>
+    Removed 04/2021. Not needed for current investigations.
+  </obsolete>
   <owner>etienneb@chromium.org</owner>
   <owner>oysteine@chromium.org</owner>
   <summary>

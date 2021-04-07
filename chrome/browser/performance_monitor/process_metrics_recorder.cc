@@ -25,12 +25,6 @@ constexpr int kCPUUsageHistogramMin = 1;
 constexpr int kCPUUsageHistogramMax = 200 * kCPUUsageFactor;
 constexpr int kCPUUsageHistogramBucketCount = 50;
 
-#if defined(OS_WIN)
-constexpr int kDiskUsageHistogramMin = 1;
-constexpr int kDiskUsageHistogramMax = 200 * 1024 * 1024;  // 200 M/sec.
-constexpr int kDiskUsageHistogramBucketCount = 50;
-#endif
-
 void RecordProcessHistograms(const char* histogram_suffix,
                              const ProcessMonitor::Metrics& metrics) {
   base::UmaHistogramCustomCounts(
@@ -38,13 +32,6 @@ void RecordProcessHistograms(const char* histogram_suffix,
                        ""),
       metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
       kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-#if defined(OS_WIN)
-  base::UmaHistogramCustomCounts(
-      base::JoinString({"PerformanceMonitor.AverageDisk.", histogram_suffix},
-                       ""),
-      metrics.disk_usage, kDiskUsageHistogramMin, kDiskUsageHistogramMax,
-      kDiskUsageHistogramBucketCount);
-#endif
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_AIX)
   base::UmaHistogramCounts10000(

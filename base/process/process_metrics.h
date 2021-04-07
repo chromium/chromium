@@ -194,14 +194,6 @@ class BASE_EXPORT ProcessMetrics {
   // otherwise.
   bool GetIOCounters(IoCounters* io_counters) const;
 
-  // Returns the number of bytes transferred to/from disk per second, across all
-  // threads of the process, in the interval since the last time the method was
-  // called.
-  //
-  // Since this API measures usage over an interval, it will return zero on the
-  // first call, and an actual value only on the second and subsequent calls.
-  uint64_t GetDiskUsageBytesPerSecond();
-
   // Returns the cumulative disk usage in bytes across all threads of the
   // process since process start.
   uint64_t GetCumulativeDiskUsageInBytes();
