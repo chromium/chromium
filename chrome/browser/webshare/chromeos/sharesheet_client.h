@@ -27,14 +27,14 @@ class PrepareDirectoryTask;
 // sharesheet::SharesheetService.
 class SharesheetClient : public content::WebContentsObserver {
  public:
-  using CloseCallback = sharesheet::CloseCallback;
+  using DeliveredCallback = sharesheet::DeliveredCallback;
   using SharesheetCallback = base::RepeatingCallback<void(
       content::WebContents* web_contents,
       const std::vector<base::FilePath>& file_paths,
       const std::vector<std::string>& content_types,
       const std::string& text,
       const std::string& title,
-      CloseCallback close_callback)>;
+      DeliveredCallback delivered_callback)>;
 
   explicit SharesheetClient(content::WebContents* web_contents);
   SharesheetClient(const SharesheetClient&) = delete;
@@ -61,7 +61,7 @@ class SharesheetClient : public content::WebContentsObserver {
                              const std::vector<std::string>& content_types,
                              const std::string& text,
                              const std::string& title,
-                             CloseCallback close_callback);
+                             DeliveredCallback delivered_callback);
 
   static SharesheetCallback& GetSharesheetCallback();
 

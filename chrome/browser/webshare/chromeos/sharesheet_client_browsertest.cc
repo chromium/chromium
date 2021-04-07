@@ -71,12 +71,12 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
                 const std::vector<base::FilePath>& file_paths,
                 const std::vector<std::string>& content_types,
                 const std::string& text, const std::string& title,
-                SharesheetClient::CloseCallback close_callback) {
+                SharesheetClient::DeliveredCallback delivered_callback) {
               EXPECT_EQ(text, expected_text);
               EXPECT_EQ(title, expected_title);
               EXPECT_EQ(file_paths.size(), content_types.size());
               EXPECT_EQ(content_types, expected_content_types);
-              std::move(close_callback)
+              std::move(delivered_callback)
                   .Run(sharesheet::SharesheetResult::kSuccess);
             }));
 
@@ -98,11 +98,12 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
   std::vector<base::FilePath> file_paths;
 
   SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
-      [contents, &file_paths](content::WebContents* in_contents,
-                              const std::vector<base::FilePath>& in_file_paths,
-                              const std::vector<std::string>& content_types,
-                              const std::string& text, const std::string& title,
-                              SharesheetClient::CloseCallback close_callback) {
+      [contents, &file_paths](
+          content::WebContents* in_contents,
+          const std::vector<base::FilePath>& in_file_paths,
+          const std::vector<std::string>& content_types,
+          const std::string& text, const std::string& title,
+          SharesheetClient::DeliveredCallback delivered_callback) {
         EXPECT_EQ(contents, in_contents);
 
         file_paths = std::move(in_file_paths);
@@ -111,7 +112,8 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
         EXPECT_EQ(content_types[0], "audio/mpeg");
         EXPECT_EQ(content_types[1], "video/mp4");
 
-        std::move(close_callback).Run(sharesheet::SharesheetResult::kSuccess);
+        std::move(delivered_callback)
+            .Run(sharesheet::SharesheetResult::kSuccess);
       }));
 
   EXPECT_EQ("share succeeded", content::EvalJs(contents, script));
@@ -144,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
                 const std::vector<base::FilePath>& in_file_paths,
                 const std::vector<std::string>& content_types,
                 const std::string& text, const std::string& title,
-                SharesheetClient::CloseCallback close_callback) {
+                SharesheetClient::DeliveredCallback delivered_callback) {
               EXPECT_EQ(contents, in_contents);
 
               file_paths = std::move(in_file_paths);
@@ -152,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
               EXPECT_EQ(content_types.size(), 1U);
               EXPECT_EQ(content_types[0], "image/webp");
 
-              std::move(close_callback)
+              std::move(delivered_callback)
                   .Run(sharesheet::SharesheetResult::kSuccess);
             }));
 
@@ -174,8 +176,9 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, CancelledShare) {
          const std::vector<base::FilePath>& file_paths,
          const std::vector<std::string>& content_types, const std::string& text,
          const std::string& title,
-         SharesheetClient::CloseCallback close_callback) {
-        std::move(close_callback).Run(sharesheet::SharesheetResult::kCancel);
+         SharesheetClient::DeliveredCallback delivered_callback) {
+        std::move(delivered_callback)
+            .Run(sharesheet::SharesheetResult::kCancel);
       }));
 
   EXPECT_EQ("share failed: AbortError: Share canceled",

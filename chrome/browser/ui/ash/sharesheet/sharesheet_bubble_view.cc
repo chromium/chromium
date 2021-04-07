@@ -174,9 +174,9 @@ SharesheetBubbleView::~SharesheetBubbleView() = default;
 void SharesheetBubbleView::ShowBubble(
     std::vector<TargetInfo> targets,
     apps::mojom::IntentPtr intent,
-    sharesheet::CloseCallback close_callback) {
+    sharesheet::DeliveredCallback delivered_callback) {
   intent_ = std::move(intent);
-  close_callback_ = std::move(close_callback);
+  delivered_callback_ = std::move(delivered_callback);
 
   main_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -259,8 +259,11 @@ void SharesheetBubbleView::ShowBubble(
 
 void SharesheetBubbleView::ShowNearbyShareBubble(
     apps::mojom::IntentPtr intent,
-    sharesheet::CloseCallback close_callback) {
-  ShowBubble({}, std::move(intent), std::move(close_callback));
+    sharesheet::DeliveredCallback delivered_callback) {
+  ShowBubble({}, std::move(intent), std::move(delivered_callback));
+  if (delivered_callback_) {
+    std::move(delivered_callback_).Run(sharesheet::SharesheetResult::kSuccess);
+  }
   delegate_->OnTargetSelected(
       l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME),
       sharesheet::TargetType::kAction, std::move(intent_), share_action_view_);
@@ -445,10 +448,6 @@ void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
 // CloseBubble is called from a ShareAction or after an app launches.
 void SharesheetBubbleView::CloseBubble() {
   if (!is_bubble_closing_) {
-    // TODO(crbug.com/1188938): Add a close reason arg.
-    if (close_callback_) {
-      std::move(close_callback_).Run(sharesheet::SharesheetResult::kSuccess);
-    }
     CloseWidgetWithAnimateFadeOut(
         views::Widget::ClosedReason::kAcceptButtonClicked);
   }
@@ -463,6 +462,11 @@ bool SharesheetBubbleView::AcceleratorPressed(
   if (share_action_view_->GetVisible() &&
       delegate_->OnAcceleratorPressed(accelerator, active_target_)) {
     return true;
+  }
+  // If delivered_callback_ is not null at this point, then the sharesheet was
+  // closed before a target was selected.
+  if (delivered_callback_) {
+    std::move(delivered_callback_).Run(sharesheet::SharesheetResult::kCancel);
   }
   escape_pressed_ = true;
   sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(
@@ -549,8 +553,8 @@ void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
   // If |user_selection_made_| we should not close the bubble here as it will be
   // closed in a different code path.
   if (!active && !user_selection_made_ && !is_bubble_closing_) {
-    if (close_callback_) {
-      std::move(close_callback_).Run(sharesheet::SharesheetResult::kCancel);
+    if (delivered_callback_) {
+      std::move(delivered_callback_).Run(sharesheet::SharesheetResult::kCancel);
     }
     auto user_action =
         sharesheet::SharesheetMetrics::UserAction::kCancelledThroughClickingOut;
@@ -631,6 +635,9 @@ void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
   }
   delegate_->OnTargetSelected(target.launch_name, type, std::move(intent_),
                               share_action_view_);
+  if (delivered_callback_) {
+    std::move(delivered_callback_).Run(sharesheet::SharesheetResult::kSuccess);
+  }
   intent_.reset();
 }
 

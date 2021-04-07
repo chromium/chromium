@@ -56,21 +56,27 @@ class SharesheetService : public KeyedService {
   // other applications and targets. |intent| contains the list of the
   // files/content to be shared. If the files to share contains Google
   // Drive hosted document, only drive share action will be shown.
+  //
+  // |delivered_callback| is run to signify that the intent has been
+  // delivered to the target selected by the user (which may then show its own
+  // separate UI, e.g. for Nearby Sharing)
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
                   SharesheetMetrics::LaunchSource source,
-                  CloseCallback close_callback);
+                  DeliveredCallback delivered_callback);
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
                   bool contains_hosted_document,
                   SharesheetMetrics::LaunchSource source,
-                  CloseCallback close_callback);
+                  DeliveredCallback delivered_callback);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog.
   void ShowNearbyShareBubble(content::WebContents* web_contents,
                              apps::mojom::IntentPtr intent,
                              SharesheetMetrics::LaunchSource source,
-                             sharesheet::CloseCallback close_callback);
+                             sharesheet::DeliveredCallback delivered_callback);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void OnBubbleClosed(gfx::NativeWindow native_window,
                       const std::u16string& active_action);
   void OnTargetSelected(gfx::NativeWindow native_window,
@@ -113,13 +119,13 @@ class SharesheetService : public KeyedService {
 
   void OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
                         apps::mojom::IntentPtr intent,
-                        CloseCallback close_callback,
+                        DeliveredCallback delivered_callback,
                         std::vector<TargetInfo> targets);
 
   void ShowBubbleWithDelegate(SharesheetServiceDelegate* delegate,
                               apps::mojom::IntentPtr intent,
                               bool contains_hosted_document,
-                              CloseCallback close_callback);
+                              DeliveredCallback delivered_callback);
 
   void RecordUserActionMetrics(const std::u16string& target_name);
   void RecordTargetCountMetrics(const std::vector<TargetInfo>& targets);

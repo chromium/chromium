@@ -41,7 +41,7 @@ SharesheetActionCache::SharesheetActionCache(Profile* profile) {
     AddShareAction(std::make_unique<ExampleAction>());
     AddShareAction(std::make_unique<ExampleAction>());
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 SharesheetActionCache::~SharesheetActionCache() = default;

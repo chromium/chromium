@@ -51,13 +51,14 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  static void AcceptShareRequest(content::WebContents* web_contents,
-                                 const std::vector<base::FilePath>& file_paths,
-                                 const std::vector<std::string>& content_types,
-                                 const std::string& text,
-                                 const std::string& title,
-                                 sharesheet::CloseCallback close_callback) {
-    std::move(close_callback).Run(sharesheet::SharesheetResult::kSuccess);
+  static void AcceptShareRequest(
+      content::WebContents* web_contents,
+      const std::vector<base::FilePath>& file_paths,
+      const std::vector<std::string>& content_types,
+      const std::string& text,
+      const std::string& title,
+      sharesheet::DeliveredCallback delivered_callback) {
+    std::move(delivered_callback).Run(sharesheet::SharesheetResult::kSuccess);
   }
 #endif
 

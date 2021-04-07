@@ -54,47 +54,50 @@ SharesheetService::~SharesheetService() = default;
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    apps::mojom::IntentPtr intent,
                                    SharesheetMetrics::LaunchSource source,
-                                   CloseCallback close_callback) {
+                                   DeliveredCallback delivered_callback) {
   ShowBubble(web_contents, std::move(intent),
              /*contains_hosted_document=*/false, source,
-             std::move(close_callback));
+             std::move(delivered_callback));
 }
 
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    apps::mojom::IntentPtr intent,
                                    bool contains_hosted_document,
                                    SharesheetMetrics::LaunchSource source,
-                                   CloseCallback close_callback) {
+                                   DeliveredCallback delivered_callback) {
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
   auto* sharesheet_service_delegate =
       GetOrCreateDelegate(web_contents->GetTopLevelNativeWindow());
   ShowBubbleWithDelegate(sharesheet_service_delegate, std::move(intent),
-                         contains_hosted_document, std::move(close_callback));
+                         contains_hosted_document,
+                         std::move(delivered_callback));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void SharesheetService::ShowNearbyShareBubble(
     content::WebContents* web_contents,
     apps::mojom::IntentPtr intent,
     SharesheetMetrics::LaunchSource source,
-    sharesheet::CloseCallback close_callback) {
+    sharesheet::DeliveredCallback delivered_callback) {
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
 
   ShareAction* share_action = sharesheet_action_cache_->GetActionFromName(
       l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME));
   if (!share_action) {
-    std::move(close_callback).Run(SharesheetResult::kCancel);
+    std::move(delivered_callback).Run(SharesheetResult::kCancel);
     return;
   }
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
 
   auto* sharesheet_service_delegate =
       GetOrCreateDelegate(web_contents->GetTopLevelNativeWindow());
-  sharesheet_service_delegate->ShowNearbyShareBubble(std::move(intent),
-                                                     std::move(close_callback));
+  sharesheet_service_delegate->ShowNearbyShareBubble(
+      std::move(intent), std::move(delivered_callback));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Cleanup delegate when bubble closes.
 void SharesheetService::OnBubbleClosed(gfx::NativeWindow native_window,
@@ -269,7 +272,7 @@ void SharesheetService::OnIconLoaded(
 
 void SharesheetService::OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
                                          apps::mojom::IntentPtr intent,
-                                         CloseCallback close_callback,
+                                         DeliveredCallback delivered_callback,
                                          std::vector<TargetInfo> targets) {
   RecordTargetCountMetrics(targets);
 
@@ -288,20 +291,20 @@ void SharesheetService::OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
       result = SharesheetResult::kSuccess;
     }
 
-    std::move(close_callback).Run(result);
+    std::move(delivered_callback).Run(result);
     delegate->OnBubbleClosed(/*active_action=*/std::u16string());
     return;
   }
 
   delegate->ShowBubble(std::move(targets), std::move(intent),
-                       std::move(close_callback));
+                       std::move(delivered_callback));
 }
 
 void SharesheetService::ShowBubbleWithDelegate(
     SharesheetServiceDelegate* delegate,
     apps::mojom::IntentPtr intent,
     bool contains_hosted_document,
-    CloseCallback close_callback) {
+    DeliveredCallback delivered_callback) {
   std::vector<TargetInfo> targets;
   auto& actions = sharesheet_action_cache_->GetShareActions();
   auto iter = actions.begin();
@@ -318,24 +321,25 @@ void SharesheetService::ShowBubbleWithDelegate(
       contains_hosted_document ? std::vector<apps::IntentLaunchInfo>()
                                : app_service_proxy_->GetAppsForIntent(intent);
   SharesheetMetrics::RecordSharesheetAppCount(intent_launch_info.size());
-  LoadAppIcons(std::move(intent_launch_info), std::move(targets), 0,
-               base::BindOnce(&SharesheetService::OnAppIconsLoaded,
-                              weak_factory_.GetWeakPtr(), delegate,
-                              std::move(intent), std::move(close_callback)));
+  LoadAppIcons(
+      std::move(intent_launch_info), std::move(targets), 0,
+      base::BindOnce(&SharesheetService::OnAppIconsLoaded,
+                     weak_factory_.GetWeakPtr(), delegate, std::move(intent),
+                     std::move(delivered_callback)));
 }
 
 void SharesheetService::RecordUserActionMetrics(
     const std::u16string& target_name) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (target_name == l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME)) {
     SharesheetMetrics::RecordSharesheetActionMetrics(
         SharesheetMetrics::UserAction::kNearbyAction);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (target_name ==
              l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL)) {
     SharesheetMetrics::RecordSharesheetActionMetrics(
         SharesheetMetrics::UserAction::kDriveAction);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // Should be an app if we reached here.
     auto app_type = app_service_proxy_->AppRegistryCache().GetAppType(
         base::UTF16ToUTF8(target_name));
@@ -362,7 +366,9 @@ void SharesheetService::RecordUserActionMetrics(
       case apps::mojom::AppType::kUnknown:
         NOTREACHED();
     }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SharesheetService::RecordTargetCountMetrics(
@@ -390,18 +396,20 @@ void SharesheetService::RecordTargetCountMetrics(
 
 void SharesheetService::RecordShareActionMetrics(
     const std::u16string& target_name) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (target_name == l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME)) {
     SharesheetMetrics::RecordSharesheetShareAction(
         SharesheetMetrics::UserAction::kNearbyAction);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (target_name ==
              l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL)) {
     SharesheetMetrics::RecordSharesheetShareAction(
         SharesheetMetrics::UserAction::kDriveAction);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     NOTREACHED();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace sharesheet

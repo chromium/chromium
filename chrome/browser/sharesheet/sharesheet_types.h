@@ -17,8 +17,8 @@ namespace sharesheet {
 constexpr int kIconSize = 40;
 
 enum class SharesheetResult {
-  kSuccess,           // Share was successful.
-  kCancel,            // Share was cancelled by the user or ShareAction.
+  kSuccess,           // Successfully passed data to selected target.
+  kCancel,            // Share was cancelled before a target was selected.
   kErrorAlreadyOpen,  // Share failed because the sharesheet is already open.
 };
 
@@ -73,7 +73,7 @@ struct TargetInfo {
   base::Optional<std::string> activity_name;
 };
 
-using CloseCallback = base::OnceCallback<void(SharesheetResult success)>;
+using DeliveredCallback = base::OnceCallback<void(SharesheetResult success)>;
 
 }  // namespace sharesheet
 
