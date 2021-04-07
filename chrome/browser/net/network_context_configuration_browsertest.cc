@@ -881,7 +881,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Cache) {
   }
 
   // Make a request whose response should be cached.
-  GURL request_url = embedded_test_server()->GetURL("/cachetime");
+  GURL request_url = embedded_test_server()->GetURL(kCacheRandomPath);
   url::Origin request_origin =
       url::Origin::Create(embedded_test_server()->base_url());
   std::unique_ptr<network::ResourceRequest> request =
@@ -905,9 +905,6 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Cache) {
   ASSERT_TRUE(simple_loader_helper.response_body());
   EXPECT_GT(simple_loader_helper.response_body()->size(), 0u);
 
-  // Stop the server.
-  ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-
   // Make the request again, and make sure it's cached or not, according to
   // expectations. Reuse the content::ResourceRequest, but nothing else.
   std::unique_ptr<network::ResourceRequest> request2 =
@@ -926,15 +923,14 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Cache) {
   simple_loader2->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       loader_factory(), simple_loader_helper2.GetCallback());
   simple_loader_helper2.WaitForCallback();
+  ASSERT_TRUE(simple_loader_helper2.response_body());
   if (GetHttpCacheType() == StorageType::kNone) {
-    // If there's no cache, and no server running, the request should have
-    // failed.
-    EXPECT_FALSE(simple_loader_helper2.response_body());
-    EXPECT_EQ(net::ERR_CONNECTION_REFUSED, simple_loader2->NetError());
+    // If there's no cache, the request should have returned a different
+    // response than before.
+    EXPECT_NE(*simple_loader_helper.response_body(),
+              *simple_loader_helper2.response_body());
   } else {
-    // Otherwise, the request should have succeeded, and returned the same
-    // result as before.
-    ASSERT_TRUE(simple_loader_helper2.response_body());
+    // Otherwise, the request should have returned the same result as before.
     EXPECT_EQ(*simple_loader_helper.response_body(),
               *simple_loader_helper2.response_body());
   }
