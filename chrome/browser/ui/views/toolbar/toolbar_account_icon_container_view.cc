@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
@@ -27,11 +28,13 @@
 #include "ui/views/widget/widget.h"
 
 ToolbarAccountIconContainerView::ToolbarAccountIconContainerView(
-    Browser* browser)
+    BrowserView* browser_view)
     : ToolbarIconContainerView(
-          /*uses_highlight=*/!browser->profile()->IsIncognitoProfile()),
-      avatar_(new AvatarToolbarButton(browser, this)),
-      browser_(browser) {
+          /*uses_highlight=*/!browser_view->browser()
+              ->profile()
+              ->IsIncognitoProfile()),
+      avatar_(new AvatarToolbarButton(browser_view, this)),
+      browser_(browser_view->browser()) {
   PageActionIconParams params;
   params.types_enabled = {
       PageActionIconType::kManagePasswords,

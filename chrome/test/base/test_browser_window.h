@@ -175,6 +175,7 @@ class TestBrowserWindow : public BrowserWindow {
       AvatarBubbleMode mode,
       signin_metrics::AccessPoint access_point,
       bool is_source_keyboard) override {}
+  void MaybeShowProfileSwitchIPH() override {}
 
 #if defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_WIN) || \
     defined(OS_LINUX)

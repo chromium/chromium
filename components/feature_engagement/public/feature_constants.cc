@@ -36,6 +36,8 @@ const base::Feature kIPHDesktopSnoozeFeature{"IPH_DesktopSnoozeFeature",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDesktopPwaInstallFeature{
     "IPH_DesktopPwaInstall", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHProfileSwitchFeature{"IPH_ProfileSwitch",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 

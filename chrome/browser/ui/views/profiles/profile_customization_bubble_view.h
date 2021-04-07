@@ -16,6 +16,7 @@ class View;
 class Profile;
 
 // This bubble is implemented as a WebUI page rendered inside a native bubble.
+// After the bubble is closed, a IPH for profile switching may be shown.
 class ProfileCustomizationBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(ProfileCustomizationBubbleView);
@@ -25,11 +26,14 @@ class ProfileCustomizationBubbleView : public views::BubbleDialogDelegateView {
       const ProfileCustomizationBubbleView& other) = delete;
   ~ProfileCustomizationBubbleView() override;
 
-  static void CreateBubble(Profile* profile, views::View* anchor_view);
+  // Creates and shows the bubble.
+  static ProfileCustomizationBubbleView* CreateBubble(Profile* profile,
+                                                      views::View* anchor_view);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ProfileBubbleInteractiveUiTest,
                            CustomizationBubbleFocus);
+  FRIEND_TEST_ALL_PREFIXES(ProfileCustomizationBubbleBrowserTest, IPH);
 
   ProfileCustomizationBubbleView(Profile* profile, views::View* anchor_view);
 

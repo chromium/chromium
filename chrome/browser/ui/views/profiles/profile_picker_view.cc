@@ -108,15 +108,19 @@ constexpr int kSupportedAcceleratorCommands[] = {
     IDC_CLOSE_TAB,       IDC_CLOSE_WINDOW, IDC_EXIT,  IDC_FULLSCREEN,
     IDC_MINIMIZE_WINDOW, IDC_BACK,         IDC_RELOAD};
 
+// Shows the customization bubble if possible. The bubble won't be shown if the
+// color is enforced by policy or downloaded through Sync. An IPH is shown after
+// the bubble, or right away if the bubble cannot be shown.
 void ShowCustomizationBubble(SkColor new_profile_color, Browser* browser) {
-  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
-                                 ->toolbar_button_provider()
-                                 ->GetAvatarToolbarButton();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  views::View* anchor_view =
+      browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
   DCHECK(anchor_view);
 
   // Don't show the customization bubble if a valid policy theme is set.
   if (ThemeServiceFactory::GetForProfile(browser->profile())
           ->UsingPolicyTheme()) {
+    browser_view->MaybeShowProfileSwitchIPH();
     return;
   }
 

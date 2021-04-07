@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -418,6 +420,9 @@ void RecordProfileMenuViewShown(Profile* profile) {
   base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened"));
   if (profile->IsRegularProfile()) {
     base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened_Regular"));
+    // Record usage for profile switch promo.
+    feature_engagement::TrackerFactory::GetForBrowserContext(profile)
+        ->NotifyEvent("profile_menu_shown");
   } else if (profile->IsGuestSession()) {
     base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened_Guest"));
   } else if (profile->IsIncognitoProfile()) {

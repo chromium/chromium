@@ -28,6 +28,19 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(EQUAL, 0), 180, 180));
     return config;
   }
+
+  if (kIPHProfileSwitchFeature.name == feature->name) {
+    base::Optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    // Show the promo once a year if the profile menu was not opened.
+    config->trigger =
+        EventConfig("profile_switch_trigger", Comparator(EQUAL, 0), 360, 360);
+    config->used =
+        EventConfig("profile_menu_shown", Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 

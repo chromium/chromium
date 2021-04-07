@@ -36,6 +36,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
  private:
   friend class ProfilePickerHandlerTest;
+  friend class ProfilePickerCreationFlowBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(
       ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
       CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch);

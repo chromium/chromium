@@ -472,6 +472,11 @@ class BrowserWindow : public ui::BaseWindow {
       signin_metrics::AccessPoint access_point,
       bool is_source_keyboard) = 0;
 
+  // Attempts showing the In-Produce-Help for profile Switching. This is called
+  // after creating a new profile or opening an existing profile. If the profile
+  // customization bubble is shown, the IPH should be shown after.
+  virtual void MaybeShowProfileSwitchIPH() = 0;
+
   // Shows User Happiness Tracking Survey's dialog after the survey associated
   // with |site_id| has been successfully loaded. Failure to load the survey
   // will result in the dialog not being shown. |product_specific_data| should

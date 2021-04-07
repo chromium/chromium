@@ -27,6 +27,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
@@ -161,7 +162,6 @@ void OpenOnSelectProfileTargetUrl(Browser* browser) {
     chrome::ShowSettings(browser);
   } else if (target_page_url.spec() == ProfilePicker::kTaskManagerUrl) {
     chrome::OpenTaskManager(browser);
-
   } else {
     NavigateParams params(
         GetSingletonTabNavigateParams(browser, target_page_url));
@@ -547,7 +547,7 @@ void ProfilePickerHandler::OnProfileCreationSuccess(
   else
     theme_service->UseDefaultTheme();
 
-  // Create shortcut if edded.
+  // Create shortcut if needed.
   if (create_shortcut) {
     DCHECK(ProfileShortcutManager::IsFeatureEnabled());
     ProfileShortcutManager* shortcut_manager =
@@ -695,6 +695,20 @@ void ProfilePickerHandler::OnSwitchToProfileComplete(
   Browser* browser = chrome::FindAnyBrowser(profile, false);
   DCHECK(browser);
   DCHECK(browser->window());
+
+  // Only show the profile switch IPH when the user clicked the card, and there
+  // are multiple profiles.
+  std::vector<ProfileAttributesEntry*> entries =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetAllProfilesAttributes();
+  int profile_count = std::count_if(
+      entries.begin(), entries.end(),
+      [](ProfileAttributesEntry* entry) { return !entry->IsOmitted(); });
+  if (profile_count > 1 && !open_settings &&
+      ProfilePicker::GetOnSelectProfileTargetUrl().is_empty()) {
+    browser->window()->MaybeShowProfileSwitchIPH();
+  }
 
   if (new_profile) {
     RecordProfilePickerAction(ProfilePickerAction::kLaunchNewProfile);

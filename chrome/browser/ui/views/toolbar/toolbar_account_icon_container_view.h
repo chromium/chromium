@@ -13,6 +13,7 @@
 
 class AvatarToolbarButton;
 class Browser;
+class BrowserView;
 class PageActionIconController;
 
 // A container view for user-account-related PageActionIconViews and the profile
@@ -23,7 +24,7 @@ class ToolbarAccountIconContainerView : public ToolbarIconContainerView,
                                         public PageActionIconView::Delegate {
  public:
   METADATA_HEADER(ToolbarAccountIconContainerView);
-  explicit ToolbarAccountIconContainerView(Browser* browser);
+  explicit ToolbarAccountIconContainerView(BrowserView* browser_view);
   ToolbarAccountIconContainerView(const ToolbarAccountIconContainerView&) =
       delete;
   ToolbarAccountIconContainerView& operator=(

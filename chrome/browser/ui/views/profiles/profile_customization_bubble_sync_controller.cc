@@ -28,9 +28,16 @@ bool CanSyncStart(syncer::SyncService* sync_service) {
 }
 
 void ShowBubble(Profile* profile, views::View* anchor_view, bool should_show) {
-  if (!should_show)
+  if (should_show) {
+    ProfileCustomizationBubbleView::CreateBubble(profile, anchor_view);
     return;
-  ProfileCustomizationBubbleView::CreateBubble(profile, anchor_view);
+  }
+
+  // If the customization bubble is not shown, show the IPH now. Otherwise the
+  // IPH will be shown after the customization bubble.
+  BrowserView::GetBrowserViewForNativeWindow(
+      anchor_view->GetWidget()->GetNativeWindow())
+      ->MaybeShowProfileSwitchIPH();
 }
 
 }  // namespace

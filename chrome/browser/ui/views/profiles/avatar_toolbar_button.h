@@ -15,6 +15,8 @@
 
 class AvatarToolbarButtonDelegate;
 class Browser;
+class BrowserView;
+class FeaturePromoControllerViews;
 
 class AvatarToolbarButton : public ToolbarButton,
                             ToolbarIconContainerView::Observer {
@@ -42,8 +44,9 @@ class AvatarToolbarButton : public ToolbarButton,
 
   // TODO(crbug.com/922525): Remove this constructor when this button always has
   // ToolbarIconContainerView as a parent.
-  explicit AvatarToolbarButton(Browser* browser);
-  AvatarToolbarButton(Browser* browser, ToolbarIconContainerView* parent);
+  explicit AvatarToolbarButton(BrowserView* browser);
+  AvatarToolbarButton(BrowserView* browser_view,
+                      ToolbarIconContainerView* parent);
   AvatarToolbarButton(const AvatarToolbarButton&) = delete;
   AvatarToolbarButton& operator=(const AvatarToolbarButton&) = delete;
   ~AvatarToolbarButton() override;
@@ -55,6 +58,9 @@ class AvatarToolbarButton : public ToolbarButton,
   void RemoveObserver(Observer* observer);
 
   void NotifyHighlightAnimationFinished();
+
+  // Attempts showing the In-Produce-Help for profile Switching.
+  void MaybeShowProfileSwitchIPH();
 
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -80,10 +86,16 @@ class AvatarToolbarButton : public ToolbarButton,
 
   void SetInsets();
 
+  // Attempts to show the in-product help for profile switching. This function
+  // should only be called after the backend is initialized. Otherwise prefer
+  // calling MaybeShowProfileSwitchIPH().
+  void MaybeShowProfileSwitchIPHInitialized(bool success);
+
   std::unique_ptr<AvatarToolbarButtonDelegate> delegate_;
 
   Browser* const browser_;
   ToolbarIconContainerView* const parent_;
+  FeaturePromoControllerViews* const feature_promo_controller_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

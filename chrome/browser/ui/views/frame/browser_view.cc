@@ -111,6 +111,7 @@
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
@@ -3516,6 +3517,15 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(
 #endif
   ProfileMenuViewBase::ShowBubble(bubble_view_mode, avatar_button, browser(),
                                   focus_first_profile_button);
+}
+
+void BrowserView::MaybeShowProfileSwitchIPH() {
+  AvatarToolbarButton* avatar_button =
+      toolbar_button_provider_
+          ? toolbar_button_provider_->GetAvatarToolbarButton()
+          : nullptr;
+  if (avatar_button)
+    avatar_button->MaybeShowProfileSwitchIPH();
 }
 
 void BrowserView::ShowHatsDialog(

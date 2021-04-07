@@ -1195,8 +1195,8 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
-      <!-- Profile Picker -->
       <if expr="not chromeos and not is_android">
+        <!-- Profile Picker -->
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE" desc="Profile picker main view title">
           Welcome to Chrome profiles
         </message>
@@ -1229,6 +1229,14 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE" desc="Profile picker profile switch subtitle">
           A Chrome profile with this account already exists on this device
+        </message>
+
+        <!-- Profile switch IPH -->
+        <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">
+          You can switch between Chrome profiles here
+        </message>
+        <message name="IDS_PROFILE_SWITCH_PROMO_SCREENREADER" desc="Text announced by screenreaders to explain how to switch between profiles.">
+          <ph name="SHORTCUT">$1<ex>CTRL+SHIFT+M</ex></ph> can switch between Chrome profiles
         </message>
       </if>
 

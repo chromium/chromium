@@ -18,7 +18,7 @@ using AvatarToolbarButtonTest = TestWithBrowserView;
 
 TEST_F(AvatarToolbarButtonTest, HighlightMeetsMinimumContrast) {
   auto* button = browser_view()->GetWidget()->GetContentsView()->AddChildView(
-      std::make_unique<AvatarToolbarButton>(browser()));
+      std::make_unique<AvatarToolbarButton>(browser_view()));
 
   SkColor toolbar_color =
       ToolbarButton::GetDefaultBackgroundColor(button->GetThemeProvider());

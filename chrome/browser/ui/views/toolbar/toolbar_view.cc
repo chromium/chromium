@@ -264,7 +264,7 @@ void ToolbarView::Init() {
     // should not be created twice.
     show_avatar_toolbar_button = false;
     toolbar_account_icon_container =
-        std::make_unique<ToolbarAccountIconContainerView>(browser_);
+        std::make_unique<ToolbarAccountIconContainerView>(browser_view_);
   }
 
   std::unique_ptr<ReadLaterToolbarButton> read_later_button;
@@ -319,7 +319,8 @@ void ToolbarView::Init() {
   } else {
     // TODO(crbug.com/932818): Remove this once the
     // |kAutofillEnableToolbarStatusChip| is fully launched.
-    avatar_ = AddChildView(std::make_unique<AvatarToolbarButton>(browser_));
+    avatar_ =
+        AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));
     avatar_->SetVisible(show_avatar_toolbar_button);
   }
 

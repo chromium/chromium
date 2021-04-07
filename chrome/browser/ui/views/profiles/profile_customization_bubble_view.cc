@@ -30,13 +30,17 @@ constexpr int kCustomizationBubbleWidth = 290;
 ProfileCustomizationBubbleView::~ProfileCustomizationBubbleView() = default;
 
 // static
-void ProfileCustomizationBubbleView::CreateBubble(Profile* profile,
-                                                  views::View* anchor_view) {
+ProfileCustomizationBubbleView* ProfileCustomizationBubbleView::CreateBubble(
+    Profile* profile,
+    views::View* anchor_view) {
+  ProfileCustomizationBubbleView* bubble_view =
+      new ProfileCustomizationBubbleView(profile, anchor_view);
   // The widget is owned by the views system.
-  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
-      new ProfileCustomizationBubbleView(profile, anchor_view));
+  views::Widget* widget =
+      views::BubbleDialogDelegateView::CreateBubble(bubble_view);
   // TODO(droger): Delay showing the bubble until the web view is loaded.
   widget->Show();
+  return bubble_view;
 }
 
 ProfileCustomizationBubbleView::ProfileCustomizationBubbleView(
@@ -69,8 +73,11 @@ ProfileCustomizationBubbleView::ProfileCustomizationBubbleView(
 }
 
 void ProfileCustomizationBubbleView::OnDoneButtonClicked() {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+      GetAnchorView()->GetWidget()->GetNativeWindow());
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
+  browser_view->MaybeShowProfileSwitchIPH();
 }
 
 BEGIN_METADATA(ProfileCustomizationBubbleView, views::BubbleDialogDelegateView)
