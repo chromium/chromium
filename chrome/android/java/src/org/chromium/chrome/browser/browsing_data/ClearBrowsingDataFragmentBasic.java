@@ -87,12 +87,21 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     }
 
     private SpannableString buildSearchHistoryText() {
-        // TODO(crbug.com/1188647): add actual MyActivity links and metrics for clicking them.
         return SpanApplier.applySpans(getContext().getString(R.string.clear_search_history_link),
                 new SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(getContext().getResources(), (widget) -> {})),
+                        new NoUnderlineClickableSpan(getContext().getResources(),
+                                (widget) -> {
+                                    new TabDelegate(false /* incognito */)
+                                            .launchUrl(
+                                                    UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_CBD,
+                                                    TabLaunchType.FROM_CHROME_UI);
+                                })),
                 new SpanInfo("<link2>", "</link2>",
-                        new NoUnderlineClickableSpan(getContext().getResources(), (widget) -> {})));
+                        new NoUnderlineClickableSpan(getContext().getResources(), (widget) -> {
+                            new TabDelegate(false /* incognito */)
+                                    .launchUrl(UrlConstants.MY_ACTIVITY_URL_IN_CBD,
+                                            TabLaunchType.FROM_CHROME_UI);
+                        })));
     }
 
     private boolean isHistorySyncEnabled() {
