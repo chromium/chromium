@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/user_metrics.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_local.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -77,12 +78,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
   // UMA uploader path is used.
   std::unique_ptr<base::DictionaryValue> GenerateLegacyMetadataDict();
 
-  // PerfettoTracedProcess::DataSourceBase implementation, called by
-  // ProducerClent.
-  void StartTracing(
+  // PerfettoTracedProcess::DataSourceBase implementation:
+  void StartTracingImpl(
       PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override;
-  void StopTracing(base::OnceClosure stop_complete_callback) override;
+  void StopTracingImpl(base::OnceClosure stop_complete_callback) override;
   void Flush(base::RepeatingClosure flush_complete_callback) override;
 
   void ResetForTesting();
@@ -160,16 +160,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
   // Installs TraceLog overrides for tracing during Chrome startup.
   void RegisterStartupHooks();
 
-  // The PerfettoProducer is responsible for calling StopTracing
-  // which will clear the stored pointer to it, before it
-  // gets destroyed. PerfettoProducer::CreateTraceWriter can be
-  // called by the TraceEventDataSource on any thread.
-  void StartTracing(
+  // PerfettoProducer::DataSourceBase implementation:
+  void StartTracingImpl(
       PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override;
-
-  // Called from the PerfettoProducer.
-  void StopTracing(base::OnceClosure stop_complete_callback) override;
+  void StopTracingImpl(base::OnceClosure stop_complete_callback) override;
   void Flush(base::RepeatingClosure flush_complete_callback) override;
   void ClearIncrementalState() override;
   void SetupStartupTracing(PerfettoProducer* producer,
@@ -264,7 +259,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
   // that may acquire another lock that may also be held while emitting a trace
   // event (crbug.com/986248). Use AutoLockWithDeferredTaskPosting rather than
   // base::AutoLock to protect code paths which may post tasks.
+  // TODO(eseckler): Use GUARDED_BY annotations on all fields below.
   base::Lock lock_;  // Protects subsequent members.
+  PerfettoProducer* producer_ GUARDED_BY(lock_) = nullptr;
   uint32_t target_buffer_ = 0;
   std::unique_ptr<perfetto::TraceWriter> trace_writer_;
   bool is_enabled_ = false;
@@ -285,7 +282,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
   int process_id_ = base::kNullProcessId;
   base::ActionCallback user_action_callback_ =
       base::BindRepeating(&TraceEventDataSource::OnUserActionSampleCallback);
-  SEQUENCE_CHECKER(perfetto_sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(TraceEventDataSource);
 };

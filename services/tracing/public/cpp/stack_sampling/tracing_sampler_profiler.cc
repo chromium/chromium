@@ -21,6 +21,7 @@
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/thread_annotations.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -123,11 +124,13 @@ class TracingSamplerProfilerDataSource
 
   // PerfettoTracedProcess::DataSourceBase implementation, called by
   // ProducerClient.
-  void StartTracing(
+  void StartTracingImpl(
       PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override {
     base::AutoLock lock(lock_);
+    DCHECK(!producer_);
     DCHECK(!is_started_);
+    producer_ = producer;
     is_started_ = true;
     is_startup_tracing_ = false;
     data_source_config_ = data_source_config;
@@ -142,7 +145,7 @@ class TracingSamplerProfilerDataSource
     }
   }
 
-  void StopTracing(base::OnceClosure stop_complete_callback) override {
+  void StopTracingImpl(base::OnceClosure stop_complete_callback) override {
     base::AutoLock lock(lock_);
     DCHECK(is_started_);
     is_started_ = false;
@@ -200,7 +203,9 @@ class TracingSamplerProfilerDataSource
   }
 
  private:
+  // TODO(eseckler): Use GUARDED_BY annotations for all members below.
   base::Lock lock_;  // Protects subsequent members.
+  tracing::PerfettoProducer* producer_ GUARDED_BY(lock_) = nullptr;
   std::set<TracingSamplerProfiler*> profilers_;
   bool is_startup_tracing_ = false;
   bool is_started_ = false;
@@ -691,7 +696,7 @@ void TracingSamplerProfiler::SetAuxUnwinderFactoryOnMainThread(
 // static
 void TracingSamplerProfiler::StartTracingForTesting(
     PerfettoProducer* producer) {
-  TracingSamplerProfilerDataSource::Get()->StartTracingWithID(
+  TracingSamplerProfilerDataSource::Get()->StartTracing(
       1, producer, perfetto::DataSourceConfig());
 }
 

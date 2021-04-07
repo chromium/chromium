@@ -348,7 +348,7 @@ TEST_F(PerfettoIntegrationTest,
   // client2 will trigger a StartTracing call without shutting down the data
   // source first, to prevent this hitting a DCHECK set the previous producer to
   // null.
-  data_source_->SetSystemProducerToNullptr();
+  data_source_->ClearProducerForTesting();
 
   std::unique_ptr<MockProducerClient::Handle> client2 =
       MockProducerClient::Create(

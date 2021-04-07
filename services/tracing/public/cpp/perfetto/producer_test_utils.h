@@ -109,7 +109,7 @@ class DataSourceTester {
   tracing::TestProducerClient* producer() { return producer_.get(); }
 
   void BeginTrace() {
-    data_source_->StartTracingWithID(
+    data_source_->StartTracing(
         /*data_source_id=*/1, producer_.get(), perfetto::DataSourceConfig());
   }
 

@@ -56,7 +56,7 @@ class ReachedCodeDataSourceTest : public testing::Test {
   }
 
   void BeginTrace() {
-    ReachedCodeDataSource::Get()->StartTracingWithID(
+    ReachedCodeDataSource::Get()->StartTracing(
         /*data_source_id=*/1, producer_.get(), perfetto::DataSourceConfig());
   }
 

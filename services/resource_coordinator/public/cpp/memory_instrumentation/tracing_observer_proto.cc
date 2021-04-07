@@ -67,7 +67,7 @@ bool TracingObserverProto::AddChromeDumpToTraceIfEnabled(
   if (!ShouldAddToTrace(args))
     return false;
 
-  base::AutoLock lock(producer_lock_);
+  base::AutoLock lock(writer_lock_);
 
   if (!trace_writer_)
     return false;
@@ -94,7 +94,7 @@ bool TracingObserverProto::AddOsDumpToTraceIfEnabled(
   if (!ShouldAddToTrace(args))
     return false;
 
-  base::AutoLock lock(producer_lock_);
+  base::AutoLock lock(writer_lock_);
 
   if (!trace_writer_)
     return false;
@@ -130,24 +130,22 @@ bool TracingObserverProto::AddOsDumpToTraceIfEnabled(
   return true;
 }
 
-void TracingObserverProto::StartTracing(
+void TracingObserverProto::StartTracingImpl(
     tracing::PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
-  base::AutoLock lock(producer_lock_);
-  producer_ = producer;
+  base::AutoLock lock(writer_lock_);
   // We rely on concurrent setup of TraceLog categories by the
   // TraceEventDataSource so don't look at the trace config ourselves.
   trace_writer_ =
       producer->CreateTraceWriter(data_source_config.target_buffer());
 }
 
-void TracingObserverProto::StopTracing(
+void TracingObserverProto::StopTracingImpl(
     base::OnceClosure stop_complete_callback) {
   // Scope to avoid reentrancy in case from the stop callback.
   {
-    base::AutoLock lock(producer_lock_);
+    base::AutoLock lock(writer_lock_);
     trace_writer_.reset();
-    producer_ = nullptr;
   }
 
   if (stop_complete_callback) {
@@ -157,7 +155,7 @@ void TracingObserverProto::StopTracing(
 
 void TracingObserverProto::Flush(
     base::RepeatingClosure flush_complete_callback) {
-  base::AutoLock lock(producer_lock_);
+  base::AutoLock lock(writer_lock_);
   if (trace_writer_)
     trace_writer_->Flush();
 }

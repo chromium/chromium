@@ -214,8 +214,8 @@ void ProducerClient::StartDataSource(
                 }
 
                 DCHECK_CALLED_ON_VALID_SEQUENCE(weak_ptr->sequence_checker_);
-                data_source->StartTracingWithID(id, weak_ptr.get(),
-                                                data_source_config);
+                data_source->StartTracing(id, weak_ptr.get(),
+                                          data_source_config);
 
                 // TODO(eseckler): Consider plumbing this callback through
                 // |data_source|.

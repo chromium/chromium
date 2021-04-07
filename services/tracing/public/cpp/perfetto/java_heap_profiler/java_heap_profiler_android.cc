@@ -20,7 +20,7 @@ JavaHeapProfiler* JavaHeapProfiler::GetInstance() {
   return instance.get();
 }
 
-void JavaHeapProfiler::StartTracing(
+void JavaHeapProfiler::StartTracingImpl(
     PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
   base::ScopedTempDir temp_dir;
@@ -39,8 +39,8 @@ void JavaHeapProfiler::StartTracing(
             HprofParser::ParseResult::PARSE_SUCCESS);
 }
 
-void JavaHeapProfiler::StopTracing(base::OnceClosure stop_complete_callback) {
-  producer_ = nullptr;
+void JavaHeapProfiler::StopTracingImpl(
+    base::OnceClosure stop_complete_callback) {
   std::move(stop_complete_callback).Run();
 }
 

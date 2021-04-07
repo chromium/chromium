@@ -61,19 +61,37 @@ const char* MaybeSocket() {
 PerfettoTracedProcess::DataSourceBase::DataSourceBase(const std::string& name)
     : name_(name) {
   DCHECK(!name.empty());
+  DETACH_FROM_SEQUENCE(perfetto_sequence_checker_);
 }
 
 PerfettoTracedProcess::DataSourceBase::~DataSourceBase() = default;
 
-void PerfettoTracedProcess::DataSourceBase::StartTracingWithID(
+void PerfettoTracedProcess::DataSourceBase::StartTracing(
     uint64_t data_source_id,
     PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
+
   data_source_id_ = data_source_id;
   // Producer may already be set if startup tracing in TraceEventDataSource.
   DCHECK(!producer_ || producer_ == producer) << name_;
   producer_ = producer;
-  StartTracing(producer_, data_source_config);
+  StartTracingImpl(producer_, data_source_config);
+}
+
+void PerfettoTracedProcess::DataSourceBase::StopTracing(
+    base::OnceClosure stop_complete_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
+
+  StopTracingImpl(base::BindOnce(
+      [](DataSourceBase* self, base::OnceClosure original_callback) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(self->perfetto_sequence_checker_);
+        self->producer_ = nullptr;
+        if (original_callback)
+          std::move(original_callback).Run();
+      },
+      this,  // OK to capture |this| because the callback is called by |this|.
+      std::move(stop_complete_callback)));
 }
 
 // static

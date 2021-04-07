@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer.h"
@@ -46,11 +47,11 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       const std::vector<mojom::VmRegionPtr>&,
       const base::TimeTicks& timestamp) override;
 
-  void StartTracing(
+  void StartTracingImpl(
       tracing::PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override;
 
-  void StopTracing(
+  void StopTracingImpl(
       base::OnceClosure stop_complete_callback = base::OnceClosure()) override;
 
   void Flush(base::RepeatingClosure flush_complete_callback) override;
@@ -61,9 +62,8 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       bool is_argument_filtering_enabled);
 
  private:
-  std::unique_ptr<perfetto::TraceWriter> trace_writer_;
-
-  base::Lock producer_lock_;
+  base::Lock writer_lock_;
+  std::unique_ptr<perfetto::TraceWriter> trace_writer_ GUARDED_BY(writer_lock_);
 
   DISALLOW_COPY_AND_ASSIGN(TracingObserverProto);
 };

@@ -122,8 +122,8 @@ class TraceEventDataSourceTest : public TracingUnitTest {
     config.mutable_chrome_config()->set_privacy_filtering_enabled(
         privacy_filtering_enabled);
     config.mutable_chrome_config()->set_trace_config(chrome_trace_config);
-    TraceEventDataSource::GetInstance()->StartTracing(producer_client(),
-                                                      config);
+    TraceEventDataSource::GetInstance()->StartTracingImpl(producer_client(),
+                                                          config);
   }
 
   TestProducerClient* producer_client() { return producer_client_.get(); }
@@ -641,8 +641,8 @@ TEST_F(TraceEventDataSourceTest, MetadataGeneratorBeforeTracing) {
   metadata_source->AddGeneratorFunction(
       base::BindRepeating(&AddJsonMetadataGenerator));
 
-  metadata_source->StartTracing(producer_client(),
-                                perfetto::DataSourceConfig());
+  metadata_source->StartTracingImpl(producer_client(),
+                                    perfetto::DataSourceConfig());
 
   base::RunLoop wait_for_stop;
   metadata_source->StopTracing(wait_for_stop.QuitClosure());
@@ -662,8 +662,8 @@ TEST_F(TraceEventDataSourceTest, MetadataGeneratorBeforeTracing) {
 TEST_F(TraceEventDataSourceTest, MetadataGeneratorWhileTracing) {
   auto* metadata_source = TraceEventMetadataSource::GetInstance();
 
-  metadata_source->StartTracing(producer_client(),
-                                perfetto::DataSourceConfig());
+  metadata_source->StartTracingImpl(producer_client(),
+                                    perfetto::DataSourceConfig());
   metadata_source->AddGeneratorFunction(
       base::BindRepeating(&AddJsonMetadataGenerator));
 
@@ -690,8 +690,8 @@ TEST_F(TraceEventDataSourceTest, MultipleMetadataGenerators) {
     return metadata;
   }));
 
-  metadata_source->StartTracing(producer_client(),
-                                perfetto::DataSourceConfig());
+  metadata_source->StartTracingImpl(producer_client(),
+                                    perfetto::DataSourceConfig());
   metadata_source->AddGeneratorFunction(
       base::BindRepeating(&AddJsonMetadataGenerator));
 
@@ -1496,7 +1496,7 @@ TEST_F(TraceEventDataSourceTest, FilteringMetadataSource) {
 
   perfetto::DataSourceConfig config;
   config.mutable_chrome_config()->set_privacy_filtering_enabled(true);
-  metadata_source->StartTracing(producer_client(), config);
+  metadata_source->StartTracingImpl(producer_client(), config);
 
   base::RunLoop wait_for_stop;
   metadata_source->StopTracing(wait_for_stop.QuitClosure());
@@ -1522,7 +1522,7 @@ TEST_F(TraceEventDataSourceTest, ProtoMetadataSource) {
 
   perfetto::DataSourceConfig config;
   config.mutable_chrome_config()->set_privacy_filtering_enabled(true);
-  metadata_source->StartTracing(producer_client(), config);
+  metadata_source->StartTracingImpl(producer_client(), config);
 
   base::RunLoop wait_for_stop;
   metadata_source->StopTracing(wait_for_stop.QuitClosure());
@@ -1652,7 +1652,7 @@ TEST_F(TraceEventDataSourceTest, StartupTracingTimeout) {
 
   // Start tracing while flush is running.
   perfetto::DataSourceConfig config;
-  data_source->StartTracing(producer_client(), config);
+  data_source->StartTracingImpl(producer_client(), config);
   wait_ptr->Signal();
 
   // Verify that the trace buffer does not have the event added to startup

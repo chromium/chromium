@@ -79,7 +79,7 @@ class ArcTracingDataSource
     bool success = bridges_.insert(bridge).second;
     DCHECK(success);
 
-    if (producer_ && !stop_complete_callback_) {
+    if (producer_on_ui_thread_ && !stop_complete_callback_) {
       // We're currently tracing, so start the new bridge, too.
       // |this| never gets destructed, so it's OK to bind an unretained pointer.
       bridge->StartTracing(
@@ -115,7 +115,7 @@ class ArcTracingDataSource
   ~ArcTracingDataSource() override = default;
 
   // tracing::PerfettoProducer::DataSourceBase.
-  void StartTracing(
+  void StartTracingImpl(
       tracing::PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override {
     // |this| never gets destructed, so it's OK to bind an unretained pointer.
@@ -126,7 +126,7 @@ class ArcTracingDataSource
                        base::Unretained(this), producer, data_source_config));
   }
 
-  void StopTracing(base::OnceClosure stop_complete_callback) override {
+  void StopTracingImpl(base::OnceClosure stop_complete_callback) override {
     // |this| never gets destructed, so it's OK to bind an unretained pointer.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&ArcTracingDataSource::StopTracingOnUI,
@@ -143,7 +143,9 @@ class ArcTracingDataSource
   void StartTracingOnUI(tracing::PerfettoProducer* producer,
                         const perfetto::DataSourceConfig& data_source_config) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK(!producer_on_ui_thread_);
 
+    producer_on_ui_thread_ = producer;
     data_source_config_ = data_source_config;
 
     for (ArcTracingBridge* bridge : bridges_) {
@@ -161,8 +163,11 @@ class ArcTracingDataSource
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     // We may receive a StopTracing without StartTracing.
-    if (!producer_)
+    if (!producer_on_ui_thread_) {
+      perfetto_task_runner_->PostTask(FROM_HERE,
+                                      std::move(stop_complete_callback));
       return;
+    }
 
     // We may still be in startup. In this case, store a callback to rerun
     // StopTracingOnUI() once startup is complete.
@@ -202,7 +207,7 @@ class ArcTracingDataSource
 
   // Called by each bridge when it has stopped tracing. Also called when a
   // bridge is unregisted. Records the supplied |data| into the
-  // |producer_|'s buffer.
+  // |producer_on_ui_thread_|'s buffer.
   void OnTraceDataOnUI(const std::string& data) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -210,13 +215,13 @@ class ArcTracingDataSource
     if (!stop_complete_callback_)
       return;
 
-    DCHECK(producer_);
+    DCHECK(producer_on_ui_thread_);
 
     if (!data.empty()) {
       if (!trace_writer_) {
         trace_writer_ =
             std::make_unique<tracing::SystemTraceWriter<std::string>>(
-                producer_, data_source_config_.target_buffer(),
+                producer_on_ui_thread_, data_source_config_.target_buffer(),
                 tracing::SystemTraceWriter<std::string>::TraceType::kJson);
       } else {
         trace_writer_->WriteData(",");
@@ -236,7 +241,7 @@ class ArcTracingDataSource
   }
 
   void OnTraceDataCommittedOnUI() {
-    producer_ = nullptr;
+    producer_on_ui_thread_ = nullptr;
     perfetto_task_runner_->PostTask(FROM_HERE,
                                     std::move(stop_complete_callback_));
   }
@@ -266,6 +271,9 @@ class ArcTracingDataSource
   // Called when all bridges have completed stopping, notifying
   // PerfettoProducer.
   base::OnceClosure stop_complete_callback_;
+  // Parent class's |producer_| member is only valid on the perfetto sequence,
+  // we need to track it ourselves for access from the UI thread.
+  tracing::PerfettoProducer* producer_on_ui_thread_ = nullptr;
   perfetto::DataSourceConfig data_source_config_;
   std::unique_ptr<tracing::SystemTraceWriter<std::string>> trace_writer_;
 

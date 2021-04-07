@@ -57,18 +57,16 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     explicit DataSourceBase(const std::string& name);
     virtual ~DataSourceBase();
 
-    void StartTracingWithID(
-        uint64_t data_source_id,
-        PerfettoProducer* producer,
-        const perfetto::DataSourceConfig& data_source_config);
+    void StartTracing(uint64_t data_source_id,
+                      PerfettoProducer* producer,
+                      const perfetto::DataSourceConfig& data_source_config);
+    void StopTracing(
+        base::OnceClosure stop_complete_callback = base::OnceClosure());
 
-    virtual void StartTracing(
+    virtual void StartTracingImpl(
         PerfettoProducer* producer,
         const perfetto::DataSourceConfig& data_source_config) = 0;
-    // StopTracing must set |producer_| to nullptr before invoking the callback.
-    // TODO(nuskos): Refactor this so that the implementation doesn't have to
-    // remember to do this.
-    virtual void StopTracing(
+    virtual void StopTracingImpl(
         base::OnceClosure stop_complete_callback = base::OnceClosure()) = 0;
 
     // Flush the data source.
@@ -93,15 +91,29 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     virtual void AbortStartupTracing() {}
 
     const std::string& name() const { return name_; }
-    uint64_t data_source_id() const { return data_source_id_; }
-    const PerfettoProducer* producer() const { return producer_; }
+
+    // These accessors are only allowed on the perfetto sequence.
+    uint64_t data_source_id() const {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
+      return data_source_id_;
+    }
+    const PerfettoProducer* producer() const {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
+      return producer_;
+    }
+
+    // In some tests we violate the assumption that only a single tracing
+    // session is alive. This allows tests to explicitly ignore the DCHECK in
+    // place to check this.
+    void ClearProducerForTesting() { producer_ = nullptr; }
 
    protected:
-    PerfettoProducer* producer_ = nullptr;
+    SEQUENCE_CHECKER(perfetto_sequence_checker_);
 
    private:
     uint64_t data_source_id_ = 0;
     std::string name_;
+    PerfettoProducer* producer_ = nullptr;
   };
 
   // Returns the process-wide instance of the PerfettoTracedProcess.

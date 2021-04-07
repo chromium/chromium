@@ -149,7 +149,7 @@ TEST_F(TracingObserverProtoTest,
           base::trace_event::TraceLog::GetInstance(), nullptr);
 
   perfetto::DataSourceConfig config;
-  tracing_observer->StartTracing(GetProducerClient(), config);
+  tracing_observer->StartTracingImpl(GetProducerClient(), config);
 
   DisableTraceLog();
 
@@ -184,7 +184,7 @@ TEST_F(TracingObserverProtoTest,
       args, kTestPid, &pmd, kTimestamp));
 
   perfetto::DataSourceConfig config;
-  tracing_observer->StartTracing(GetProducerClient(), config);
+  tracing_observer->StartTracingImpl(GetProducerClient(), config);
 
   EXPECT_TRUE(tracing_observer->AddChromeDumpToTraceIfEnabled(
       args, kTestPid, &pmd, kTimestamp));
@@ -199,7 +199,7 @@ TEST_F(TracingObserverProtoTest,
           base::trace_event::TraceLog::GetInstance(), nullptr);
 
   perfetto::DataSourceConfig config;
-  tracing_observer->StartTracing(GetProducerClient(), config);
+  tracing_observer->StartTracingImpl(GetProducerClient(), config);
 
   DisableTraceLog();
 
@@ -238,7 +238,7 @@ TEST_F(TracingObserverProtoTest,
       args, kTestPid, os_dump, memory_map, kTimestamp));
 
   perfetto::DataSourceConfig config;
-  tracing_observer->StartTracing(GetProducerClient(), config);
+  tracing_observer->StartTracingImpl(GetProducerClient(), config);
 
   EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(
       args, kTestPid, os_dump, memory_map, kTimestamp));
@@ -252,7 +252,7 @@ TEST_F(TracingObserverProtoTest, AddChromeDumpToTraceIfEnabled) {
           base::trace_event::TraceLog::GetInstance(), nullptr);
 
   perfetto::DataSourceConfig config;
-  tracing_observer->StartTracing(GetProducerClient(), config);
+  tracing_observer->StartTracingImpl(GetProducerClient(), config);
 
   EnableTraceLog();
 
@@ -317,7 +317,7 @@ TEST_F(TracingObserverProtoTest, AddOsDumpToTraceIfEnabled) {
           base::trace_event::TraceLog::GetInstance(), nullptr);
 
   perfetto::DataSourceConfig config;
-  tracing_observer->StartTracing(GetProducerClient(), config);
+  tracing_observer->StartTracingImpl(GetProducerClient(), config);
 
   EnableTraceLog();
 

@@ -39,19 +39,14 @@ class TestDataSource : public PerfettoTracedProcess::DataSourceBase {
   void WritePacketBigly();
 
   // DataSourceBase implementation
-  void StartTracing(
+  void StartTracingImpl(
       PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override;
-  void StopTracing(
+  void StopTracingImpl(
       base::OnceClosure stop_complete_callback = base::OnceClosure()) override;
   void Flush(base::RepeatingClosure flush_complete_callback) override;
 
   const perfetto::DataSourceConfig& config() { return config_; }
-
-  // In some tests we violate the assumption that only a single tracing session
-  // is alive. This allows tests to explicitly ignore the DCHECK in place to
-  // check this.
-  void SetSystemProducerToNullptr() { producer_ = nullptr; }
 
   void set_send_packet_count(size_t count) { send_packet_count_ = count; }
 
@@ -61,6 +56,7 @@ class TestDataSource : public PerfettoTracedProcess::DataSourceBase {
   TestDataSource(const std::string& data_source_name, size_t send_packet_count);
 
   size_t send_packet_count_;
+  tracing::PerfettoProducer* producer_ = nullptr;
   perfetto::DataSourceConfig config_;
   base::OnceClosure start_tracing_callback_ = base::OnceClosure();
 };

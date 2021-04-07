@@ -395,7 +395,7 @@ void TraceEventMetadataSource::GenerateMetadata(
   trace_writer->Flush();
 }
 
-void TraceEventMetadataSource::StartTracing(
+void TraceEventMetadataSource::StartTracingImpl(
     PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
   auto json_generators =
@@ -438,7 +438,7 @@ void TraceEventMetadataSource::StartTracing(
                      std::move(packet_generators)));
 }
 
-void TraceEventMetadataSource::StopTracing(
+void TraceEventMetadataSource::StopTracingImpl(
     base::OnceClosure stop_complete_callback) {
   base::OnceClosure maybe_generate_task = base::DoNothing();
   {
@@ -471,7 +471,6 @@ void TraceEventMetadataSource::StopTracing(
              base::OnceClosure stop_complete_callback) {
             {
               AutoLockWithDeferredTaskPosting lock(ds->lock_);
-              ds->producer_ = nullptr;
               ds->trace_writer_.reset();
               ds->chrome_config_ = std::string();
               ds->parsed_chrome_config_.reset();
@@ -538,7 +537,6 @@ TraceEventDataSource::TraceEventDataSource()
       << "SessionFlags are not atomic! We rely on efficient lock-free look-up "
          "of the session flags when emitting a trace event.";
   g_trace_event_data_source_for_testing = this;
-  DETACH_FROM_SEQUENCE(perfetto_sequence_checker_);
 }
 
 TraceEventDataSource::~TraceEventDataSource() = default;
@@ -799,9 +797,10 @@ void TraceEventDataSource::OnFlushFinished(
   }
 }
 
-void TraceEventDataSource::StartTracing(
+void TraceEventDataSource::StartTracingImpl(
     PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
   {
     AutoLockWithDeferredTaskPosting l(lock_);
     if (flushing_trace_log_) {
@@ -893,7 +892,7 @@ void TraceEventDataSource::StartTracingInternal(
   }
 }
 
-void TraceEventDataSource::StopTracing(
+void TraceEventDataSource::StopTracingImpl(
     base::OnceClosure stop_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
   stop_complete_callback_ = std::move(stop_complete_callback);
@@ -1030,6 +1029,7 @@ void TraceEventDataSource::LogHistograms() {
 
 void TraceEventDataSource::Flush(
     base::RepeatingClosure flush_complete_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
   DCHECK(TraceLog::GetInstance()->IsEnabled());
   TraceLog::GetInstance()->Flush(base::BindRepeating(
       [](base::RepeatingClosure flush_complete_callback,

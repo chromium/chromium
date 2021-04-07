@@ -70,9 +70,10 @@ void TestDataSource::WritePacketBigly() {
                                                        kLargeMessageSize);
 }
 
-void TestDataSource::StartTracing(
+void TestDataSource::StartTracingImpl(
     PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
+  producer_ = producer;
   config_ = data_source_config;
 
   if (send_packet_count_ > 0) {
@@ -89,7 +90,7 @@ void TestDataSource::StartTracing(
   }
 }
 
-void TestDataSource::StopTracing(base::OnceClosure stop_complete_callback) {
+void TestDataSource::StopTracingImpl(base::OnceClosure stop_complete_callback) {
   CHECK(producer_);
   producer_ = nullptr;
   std::move(stop_complete_callback).Run();

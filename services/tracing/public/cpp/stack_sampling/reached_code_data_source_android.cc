@@ -35,18 +35,17 @@ ReachedCodeDataSource::~ReachedCodeDataSource() {
   NOTREACHED();
 }
 
-void ReachedCodeDataSource::StartTracing(
+void ReachedCodeDataSource::StartTracingImpl(
     PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
   trace_writer_ =
       producer->CreateTraceWriter(data_source_config.target_buffer());
 }
 
-void ReachedCodeDataSource::StopTracing(
+void ReachedCodeDataSource::StopTracingImpl(
     base::OnceClosure stop_complete_callback) {
   WriteProfileData();
 
-  producer_ = nullptr;
   trace_writer_.reset();
   std::move(stop_complete_callback).Run();
 }

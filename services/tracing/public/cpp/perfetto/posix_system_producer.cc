@@ -294,7 +294,7 @@ void PosixSystemProducer::StartDataSource(
                   base::AutoLock lock(weak_ptr->lock_);
                   ++weak_ptr->data_sources_tracing_;
                 }
-                data_source->StartTracingWithID(
+                data_source->StartTracing(
                     id, weak_ptr.get(),
                     EnsureGuardRailsAreFollowed(data_source_config));
                 weak_ptr->GetService()->NotifyDataSourceStarted(id);

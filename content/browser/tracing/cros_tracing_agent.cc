@@ -103,7 +103,7 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   }
 
   // Called from the tracing::PerfettoProducer on its sequence.
-  void StartTracing(
+  void StartTracingImpl(
       tracing::PerfettoProducer* perfetto_producer,
       const perfetto::DataSourceConfig& data_source_config) override {
     GetUIThreadTaskRunner({})->PostTask(
@@ -113,7 +113,7 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   }
 
   // Called from the tracing::PerfettoProducer on its sequence.
-  void StopTracing(base::OnceClosure stop_complete_callback) override {
+  void StopTracingImpl(base::OnceClosure stop_complete_callback) override {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&CrOSDataSource::StopTracingOnUI, base::Unretained(this),
@@ -136,7 +136,9 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   void StartTracingOnUI(tracing::PerfettoProducer* producer,
                         const perfetto::DataSourceConfig& data_source_config) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+    DCHECK(!producer_);
     DCHECK(!session_);
+    producer_ = producer;
     target_buffer_ = data_source_config.target_buffer();
     session_ = std::make_unique<CrOSSystemTracingSession>();
     session_->StartTracing(
@@ -210,6 +212,7 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   }
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
+  tracing::PerfettoProducer* producer_ = nullptr;
   std::unique_ptr<CrOSSystemTracingSession> session_;
   bool session_started_ = false;
   base::OnceClosure on_session_started_callback_;
