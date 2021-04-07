@@ -113,15 +113,6 @@ ContentSubresourceFilterThrottleManager::FromWebContents(
           kContentSubresourceFilterThrottleManagerWebContentsUserDataKey));
 }
 
-// static
-const ContentSubresourceFilterThrottleManager*
-ContentSubresourceFilterThrottleManager::FromWebContents(
-    const content::WebContents* web_contents) {
-  return static_cast<const ContentSubresourceFilterThrottleManager*>(
-      web_contents->GetUserData(
-          kContentSubresourceFilterThrottleManagerWebContentsUserDataKey));
-}
-
 ContentSubresourceFilterThrottleManager::
     ContentSubresourceFilterThrottleManager(
         std::unique_ptr<SubresourceFilterClient> client,

@@ -101,8 +101,6 @@ class ContentSubresourceFilterThrottleManager
 
   static ContentSubresourceFilterThrottleManager* FromWebContents(
       content::WebContents* web_contents);
-  static const ContentSubresourceFilterThrottleManager* FromWebContents(
-      const content::WebContents* web_contents);
 
   ContentSubresourceFilterThrottleManager(
       std::unique_ptr<SubresourceFilterClient> client,
