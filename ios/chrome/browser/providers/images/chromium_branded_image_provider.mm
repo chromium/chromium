@@ -54,8 +54,8 @@ UIImage* ChromiumBrandedImageProvider::GetDownloadGoogleDriveImage() {
   return [UIImage imageNamed:@"download_drivium"];
 }
 
-UIImage* ChromiumBrandedImageProvider::GetAllTabsPromoImage() {
-  return [UIImage imageNamed:@"chromium_all_tabs"];
+UIImage* ChromiumBrandedImageProvider::GetStaySafePromoImage() {
+  return [UIImage imageNamed:@"chromium_stay_safe"];
 }
 
 UIImage* ChromiumBrandedImageProvider::GetMadeForIOSPromoImage() {

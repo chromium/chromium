@@ -51,7 +51,7 @@ UIImage* BrandedImageProvider::GetOmniboxAnswerIcon() {
   return nil;
 }
 
-UIImage* BrandedImageProvider::GetAllTabsPromoImage() {
+UIImage* BrandedImageProvider::GetStaySafePromoImage() {
   return nil;
 }
 
