@@ -6,7 +6,9 @@ package org.chromium.components.messages;
 
 import org.chromium.base.ActivityState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
-import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.LoadCommittedDetails;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.PageTransition;
@@ -89,21 +91,20 @@ class ScopeChangeController {
         }
 
         @Override
-        public void didFinishNavigation(NavigationHandle navigation) {
+        public void navigationEntryCommitted(LoadCommittedDetails details) {
             if (mScopeKey.scopeType != MessageScopeType.NAVIGATION) {
                 return;
             }
-            super.didFinishNavigation(navigation);
-            // TODO(crbug.com/1184084): Investigate more on:
-            // 1. whether entry id should be checked to ensure entry id is not changed
-            // 2. whether to set ingore_next_reload_ like infobars to ignore non-user
-            // triggered reload
-            if (!navigation.hasCommitted() || !navigation.isInMainFrame()
-                    || navigation.isSameDocument()) {
+            if (!details.isMainFrame() || details.isSameDocument() || details.didReplaceEntry()) {
                 return;
             }
+            super.navigationEntryCommitted(details);
 
-            int transition = navigation.pageTransition();
+            NavigationController controller = mScopeKey.webContents.getNavigationController();
+            NavigationEntry entry =
+                    controller.getEntryAtIndex(controller.getLastCommittedEntryIndex());
+
+            int transition = entry.getTransition();
             if ((transition & PageTransition.RELOAD) != PageTransition.RELOAD
                     && (transition & PageTransition.IS_REDIRECT_MASK) == 0) {
                 destroy();

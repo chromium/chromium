@@ -1,0 +1,98 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.components.messages;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.description;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import androidx.test.filters.SmallTest;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.messages.MessageScopeChange.ChangeType;
+import org.chromium.content_public.browser.LoadCommittedDetails;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
+import org.chromium.ui.base.PageTransition;
+
+/**
+ * A test for {@link ScopeChangeController}.
+ */
+@RunWith(BaseRobolectricTestRunner.class)
+public class ScopeChangeControllerTest {
+    @Test
+    @SmallTest
+    public void testNavigationScopeChange() {
+        ScopeChangeController.Delegate delegate =
+                Mockito.mock(ScopeChangeController.Delegate.class);
+        ScopeChangeController controller = new ScopeChangeController(delegate);
+
+        MockWebContents webContents = mock(MockWebContents.class);
+        NavigationController navigationController = mock(NavigationController.class);
+        NavigationEntry entry = mock(NavigationEntry.class);
+        when(webContents.getNavigationController()).thenReturn(navigationController);
+        when(navigationController.getLastCommittedEntryIndex()).thenReturn(1);
+        when(navigationController.getEntryAtIndex(anyInt())).thenReturn(entry);
+        when(entry.getTransition()).thenReturn(PageTransition.HOME_PAGE);
+
+        ScopeKey key = new ScopeKey(
+                org.chromium.components.messages.MessageScopeType.NAVIGATION, webContents);
+        controller.firstMessageEnqueued(key);
+
+        final ArgumentCaptor<WebContentsObserver> runnableCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(webContents).addObserver(runnableCaptor.capture());
+
+        WebContentsObserver observer = runnableCaptor.getValue();
+
+        // Default visibility of web contents is invisible.
+        ArgumentCaptor<MessageScopeChange> captor =
+                ArgumentCaptor.forClass(MessageScopeChange.class);
+        verify(delegate, description("Delegate should be called when page is hidden"))
+                .onScopeChange(captor.capture());
+        Assert.assertEquals("Scope type should be inactive when page is hidden",
+                ChangeType.INACTIVE, captor.getValue().changeType);
+
+        observer.wasShown();
+        verify(delegate, times(2).description("Delegate should be called when page is shown"))
+                .onScopeChange(captor.capture());
+        Assert.assertEquals("Scope type should be active when page is shown", ChangeType.ACTIVE,
+                captor.getValue().changeType);
+
+        observer.wasHidden();
+        verify(delegate, times(3).description("Delegate should be called when page is hidden"))
+                .onScopeChange(captor.capture());
+        Assert.assertEquals("Scope type should be inactive when page is hidden",
+                ChangeType.INACTIVE, captor.getValue().changeType);
+
+        observer.navigationEntryCommitted(
+                new LoadCommittedDetails(-1, null, true, false, true, -1));
+        verify(delegate,
+                times(3).description("Delegate should not be called when entry is replaced"))
+                .onScopeChange(any());
+
+        observer.navigationEntryCommitted(
+                new LoadCommittedDetails(-1, null, false, false, true, -1));
+
+        verify(delegate,
+                times(4).description(
+                        "Delegate should be called when page is navigated to another page"))
+                .onScopeChange(captor.capture());
+        Assert.assertEquals("Scope type should be destroy when navigated to another page",
+                ChangeType.DESTROY, captor.getValue().changeType);
+    }
+}
