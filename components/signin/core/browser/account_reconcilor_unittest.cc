@@ -726,6 +726,7 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
     //   U: Multilogin with mode UPDATE
     //   P: Multilogin with mode PRESERVE
     //   X: Logout all accounts.
+    //   A, B, C: Merge account.
 
     // - Cookies:
     //   A, B, C: Accounts in the Gaia cookie (returned by ListAccounts).
@@ -738,7 +739,7 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
     // First reconcile (Chrome restart): Rebuild the Gaia cookie to match the
     // tokens. Make the Sync account the default account in the Gaia cookie.
     // Sync enabled.
-    {  "",      "A",   IsFirstReconcile::kBoth,    "X",    "",     "",      3},
+    {  "",      "A",   IsFirstReconcile::kBoth,    "U",    "",     "",      3},
     {  "*AB",   "AB",  IsFirstReconcile::kBoth,    "",     "*AB",  "AB",    0},
     {  "*A",    "A",   IsFirstReconcile::kBoth,    "",     "*A" ,  "A",     0},
     {  "*A",    "",    IsFirstReconcile::kBoth,    "PA",   "*A" ,  "A",     1},
@@ -755,9 +756,9 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
     {  "*AB",   "",    IsFirstReconcile::kBoth,    "PAB",  "*AB",  "AB",    1},
     // Sync enabled, token error on primary.
 
-    {  "*xAB",  "AB",  IsFirstReconcile::kBoth,    "X",    "*xA",  "",      2},
+    {  "*xAB",  "AB",  IsFirstReconcile::kBoth,    "U",    "*xA",  "",      2},
     {  "*xAB",  "BA",  IsFirstReconcile::kBoth,    "UB",   "*xAB", "B",     2},
-    {  "*xAB",  "A",   IsFirstReconcile::kBoth,    "X",    "*xA",  "",      2},
+    {  "*xAB",  "A",   IsFirstReconcile::kBoth,    "U",    "*xA",  "",      2},
     {  "*xAB",  "B",   IsFirstReconcile::kBoth,    "",     "*xAB", "B",     0},
     {  "*xAB",  "",    IsFirstReconcile::kBoth,    "PB",   "*xAB", "B",     0},
     // Sync enabled, token error on secondary.
@@ -769,10 +770,10 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
     {  "*AxB",  "BA",  IsFirstReconcile::kBoth,     "UA",   "*A",   "A",     5},
     {  "*AxB",  "B",   IsFirstReconcile::kBoth,     "UA",   "*A",   "A",     1},
     // Sync enabled, token error on both accounts.
-    {  "*xAxB", "AB",  IsFirstReconcile::kBoth,     "X",    "*xA",  "",      2},
-    {  "*xAxB", "BA",  IsFirstReconcile::kBoth,     "X",    "*xA",  "",      2},
-    {  "*xAxB", "A",   IsFirstReconcile::kBoth,     "X",    "*xA",  "",      2},
-    {  "*xAxB", "B",   IsFirstReconcile::kBoth,     "X",    "*xA",  "",      5},
+    {  "*xAxB", "AB",  IsFirstReconcile::kBoth,     "U",    "*xA",  "",      2},
+    {  "*xAxB", "BA",  IsFirstReconcile::kBoth,     "U",    "*xA",  "",      2},
+    {  "*xAxB", "A",   IsFirstReconcile::kBoth,     "U",    "*xA",  "",      2},
+    {  "*xAxB", "B",   IsFirstReconcile::kBoth,     "U",    "*xA",  "",      5},
     {  "*xAxB", "",    IsFirstReconcile::kBoth,     "",     "*xA",  "",      0},
     // Sync disabled.
     {  "AB",    "AB",  IsFirstReconcile::kBoth,     "",     "AB",   "AB",    0},
@@ -782,12 +783,12 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
     {  "AB",    "",    IsFirstReconcile::kBoth,     "PAB",  "AB",   "AB",    0},
     // Sync disabled, token error on first account.
     {  "xAB",   "AB",  IsFirstReconcile::kFirst,    "UB",   "B",    "B",     3},
-    {  "xAB",   "AB",  IsFirstReconcile::kNotFirst, "X",    "",     "",      3},
+    {  "xAB",   "AB",  IsFirstReconcile::kNotFirst, "U",    "",     "",      3},
 
     {  "xAB",   "BA",  IsFirstReconcile::kBoth,     "UB",   "B",    "B",     5},
 
     {  "xAB",   "A",   IsFirstReconcile::kFirst,    "UB",   "B",    "B",     3},
-    {  "xAB",   "A",   IsFirstReconcile::kNotFirst, "X",    "",     "",      3},
+    {  "xAB",   "A",   IsFirstReconcile::kNotFirst, "U",    "",     "",      3},
 
     {  "xAB",   "B",   IsFirstReconcile::kBoth,     "",     "B",    "B",     0},
 
@@ -796,19 +797,19 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
     {  "AxB",   "AB",  IsFirstReconcile::kBoth,     "UA",   "A",    "A",     5},
 
     {  "AxB",   "BA",  IsFirstReconcile::kFirst,    "UA",   "A",    "A",     3},
-    {  "AxB",   "BA",  IsFirstReconcile::kNotFirst, "X",    "",     "",      3},
+    {  "AxB",   "BA",  IsFirstReconcile::kNotFirst, "U",    "",     "",      3},
 
     {  "AxB",   "A",   IsFirstReconcile::kBoth,     "",     "A",    "A",     0},
 
     {  "AxB",   "B",   IsFirstReconcile::kFirst,    "UA",   "A",    "A",     3},
-    {  "AxB",   "B",   IsFirstReconcile::kNotFirst, "X",    "",     "",      3},
+    {  "AxB",   "B",   IsFirstReconcile::kNotFirst, "U",    "",     "",      3},
 
     {  "AxB",   "",    IsFirstReconcile::kBoth,     "PA",   "A",    "A",     0},
     // Sync disabled, token error on both accounts.
-    {  "xAxB",  "AB",  IsFirstReconcile::kBoth,     "X",    "",     "",      3},
-    {  "xAxB",  "BA",  IsFirstReconcile::kBoth,     "X",    "",     "",      3},
-    {  "xAxB",  "A",   IsFirstReconcile::kBoth,     "X",    "",     "",      3},
-    {  "xAxB",  "B",   IsFirstReconcile::kBoth,     "X",    "",     "",      3},
+    {  "xAxB",  "AB",  IsFirstReconcile::kBoth,     "U",    "",     "",      3},
+    {  "xAxB",  "BA",  IsFirstReconcile::kBoth,     "U",    "",     "",      3},
+    {  "xAxB",  "A",   IsFirstReconcile::kBoth,     "U",    "",     "",      3},
+    {  "xAxB",  "B",   IsFirstReconcile::kBoth,     "U",    "",     "",      3},
     {  "xAxB",  "",    IsFirstReconcile::kBoth,     "",     "",     "",      0},
     // Account marked as invalid in cookies.
     // No difference between cookies and tokens, do not do do anything.
@@ -831,16 +832,16 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
     {  "*AB",  "xBxA", IsFirstReconcile::kNotFirst, "PBA",  "*AB",  "BA",    1},
     // Appending and invalidating cookies at the same time.
     {  "xAB",  "xAC",  IsFirstReconcile::kFirst,    "UB",   "B",    "B",     6},
-    {  "xAB",  "xAC",  IsFirstReconcile::kNotFirst, "X",    "",     "",      6},
+    {  "xAB",  "xAC",  IsFirstReconcile::kNotFirst, "U",    "",     "",      6},
 
     {  "xAB",  "AxC",  IsFirstReconcile::kFirst,    "UB",   "B",    "B",     3},
-    {  "xAB",  "AxC",  IsFirstReconcile::kNotFirst, "X",    "",     "",      3},
+    {  "xAB",  "AxC",  IsFirstReconcile::kNotFirst, "U",    "",     "",      3},
 
     {  "*xAB", "xABC", IsFirstReconcile::kFirst,    "UB",   "*xAB", "B",     5},
-    {  "*xAB", "xABC", IsFirstReconcile::kNotFirst, "X",    "*xA",  "",      5},
+    {  "*xAB", "xABC", IsFirstReconcile::kNotFirst, "U",    "*xA",  "",      5},
 
     {  "xAB",  "xABC", IsFirstReconcile::kFirst,    "UB",   "B",    "B",     5},
-    {  "xAB",  "xABC", IsFirstReconcile::kNotFirst, "X",    "",     "",      5},
+    {  "xAB",  "xABC", IsFirstReconcile::kNotFirst, "U",    "",     "",      5},
     // Miscellaneous cases.
     // Check that unknown Gaia accounts are signed o.
     {  "*A",   "AB",   IsFirstReconcile::kBoth,     "UA",   "*A",   "A",     5},
@@ -852,7 +853,7 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
     {  "xABC", "ABC",  IsFirstReconcile::kFirst,    "UCB",  "BC",   "CB",    1},
     // Check that order in the chrome_accounts is not important.
     {  "A*B",  "",     IsFirstReconcile::kBoth,     "PBA",  "A*B",  "BA",    7},
-    {  "*xBA", "BA",   IsFirstReconcile::kFirst,    "X",    "*xB",  "",      2},
+    {  "*xBA", "BA",   IsFirstReconcile::kFirst,    "U",    "*xB",  "",      2},
     // Required for idempotency check.
     {  "",     "",     IsFirstReconcile::kNotFirst, "",     "",     "",      0},
     {  "",     "xA",   IsFirstReconcile::kNotFirst, "",     "",     "xA",    0},
@@ -915,33 +916,29 @@ class AccountReconcilorTestForceDiceMigration
     testing::InSequence mock_sequence;
     bool should_logout;
     if (GetParam().gaia_api_calls[0] != '\0') {
-      if (GetParam().gaia_api_calls[0] == 'X') {
-        should_logout = true;
-        cookies_after_reconcile.clear();
+      gaia::MultiloginMode mode =
+          GetParam().gaia_api_calls[0] == 'U'
+              ? gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER
+              : gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER;
+      // Generate expected array of accounts in cookies and set fake gaia
+      // response.
+      std::vector<CoreAccountId> accounts_to_send;
+      for (int i = 1; GetParam().gaia_api_calls[i] != '\0'; ++i) {
+        accounts_to_send.push_back(
+            CoreAccountId(accounts_[GetParam().gaia_api_calls[i]].gaia_id));
+      }
+      const signin::MultiloginParameters params(mode, accounts_to_send);
+      cookies_after_reconcile = FakeSetAccountsInCookie(params, cookies);
+      should_logout =
+          accounts_to_send.empty() &&
+          (mode ==
+           gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER);
+      if (should_logout) {
         EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction())
             .Times(1);
-        EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(_)).Times(0);
       } else {
-        should_logout = false;
-        DCHECK_NE('\0', GetParam().gaia_api_calls[1]);
-        gaia::MultiloginMode mode =
-            GetParam().gaia_api_calls[0] == 'U'
-                ? gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER
-                : gaia::MultiloginMode::
-                      MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER;
-        // Generate expected array of accounts in cookies and set fake gaia
-        // response.
-        std::vector<CoreAccountId> accounts_to_send;
-        for (int i = 1; GetParam().gaia_api_calls[i] != '\0'; ++i) {
-          accounts_to_send.push_back(
-              CoreAccountId(accounts_[GetParam().gaia_api_calls[i]].gaia_id));
-        }
-        const signin::MultiloginParameters params(mode, accounts_to_send);
-        cookies_after_reconcile = FakeSetAccountsInCookie(params, cookies);
         EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params))
             .Times(1);
-        EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction())
-            .Times(0);
       }
     }
     // Reconcile.
@@ -994,26 +991,26 @@ const std::vector<ForceDiceMigrationTestTableParam> kForceDiceParams = {
     {"*A",   "AB",   "UA", "*A",    "A"   },
     {"*AxB", "AB",   "UA", "*A",    "A"   },
     {"AxB",  "AB",   "UA", "A",     "A"   },
-    {"xAxB", "AB",   "X",  "",      ""    },
+    {"xAxB", "AB",   "U",  "",      ""    },
     {"*A",   "",     "",   "*xA",   ""    },
-    {"*A",   "B",    "X",  "*xA",   ""    },
+    {"*A",   "B",    "U",  "*xA",   ""    },
     {"*AB",  "B",    "",   "*xAB",  "B"   },
-    {"*AxB", "B",    "X",  "*xA",   ""    },
+    {"*AxB", "B",    "U",  "*xA",   ""    },
     {"*ABC", "CB",   "",   "*xABC", "CB"  },
     {"*AB",  "A",    "",   "*A",    "A"   },
     {"AB",   "A",    "",   "A",     "A"   },
     {"AB",   "",     "",   "",      ""    },
     {"xAB",  "",     "",   "",      ""    },
-    {"xAB",  "A",    "X",  "",      ""    },
+    {"xAB",  "A",    "U",  "",      ""    },
     {"xAB",  "xA",   "",   "",      "xA"  },
     {"xAB",  "B",    "",   "B",     "B"   },
-    {"AxB",  "B",    "X",  "",      ""    },
+    {"AxB",  "B",    "U",  "",      ""    },
     {"AxB",  "",     "",   "",      ""    },
     {"xAxB", "",     "",   "",      ""    },
     {"B",    "xA",   "",   "",      "xA"  },
     {"AB",   "xAB",  "",   "B",     "xAB" },
-    {"xAB",  "xAC",  "X",  "",      ""    },
-    {"xAB",  "AxC",  "X",  "",      ""    },
+    {"xAB",  "xAC",  "U",  "",      ""    },
+    {"xAB",  "AxC",  "U",  "",      ""    },
     {"AB",   "BC",   "UB", "B",     "B"   },
     {"*AB",  "",     "",   "*xA",   ""    },
     {"*xAB", "",     "",   "*xA",   ""    },
@@ -1098,32 +1095,28 @@ TEST_P(AccountReconcilorTestDiceMultilogin, TableRowTest) {
   testing::InSequence mock_sequence;
   bool should_logout;
   if (GetParam().gaia_api_calls[0] != '\0') {
-    if (GetParam().gaia_api_calls[0] == 'X') {
-      should_logout = true;
-      cookies_after_reconcile.clear();
+    gaia::MultiloginMode mode =
+        GetParam().gaia_api_calls[0] == 'U'
+            ? gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER
+            : gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER;
+    // Generate expected array of accounts in cookies and set fake gaia
+    // response.
+    std::vector<CoreAccountId> accounts_to_send;
+    for (int i = 1; GetParam().gaia_api_calls[i] != '\0'; ++i) {
+      accounts_to_send.push_back(
+          CoreAccountId(accounts_[GetParam().gaia_api_calls[i]].gaia_id));
+    }
+    const signin::MultiloginParameters params(mode, accounts_to_send);
+    cookies_after_reconcile = FakeSetAccountsInCookie(params, cookies);
+    should_logout =
+        accounts_to_send.empty() &&
+        (mode == gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER);
+    if (should_logout) {
       EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction())
           .Times(1);
-      EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(_)).Times(0);
     } else {
-      should_logout = false;
-      DCHECK_NE('\0', GetParam().gaia_api_calls[1]);
-      gaia::MultiloginMode mode =
-          GetParam().gaia_api_calls[0] == 'U'
-              ? gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER
-              : gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER;
-      // Generate expected array of accounts in cookies and set fake gaia
-      // response.
-      std::vector<CoreAccountId> accounts_to_send;
-      for (int i = 1; GetParam().gaia_api_calls[i] != '\0'; ++i) {
-        accounts_to_send.push_back(
-            CoreAccountId(accounts_[GetParam().gaia_api_calls[i]].gaia_id));
-      }
-      const signin::MultiloginParameters params(mode, accounts_to_send);
-      cookies_after_reconcile = FakeSetAccountsInCookie(params, cookies);
       EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params))
           .Times(1);
-      EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction())
-          .Times(0);
     }
   }
   // Reconcile.
