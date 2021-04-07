@@ -157,6 +157,16 @@ const CGFloat kIconWidth = 32.0f;
   return self;
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (self.traitCollection.userInterfaceStyle !=
+      previousTraitCollection.userInterfaceStyle) {
+    // CGColors are static RGB, so the border color needs to be reset.
+    [self.contentView.layer
+        setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
+  }
+}
+
 - (void)setTitle:(NSString*)title {
   self.titleLabel.text = title;
 }
