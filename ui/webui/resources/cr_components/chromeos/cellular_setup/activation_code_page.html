@@ -17,6 +17,9 @@
         height: 300px;
         margin-top: -20px;
       }
+      :host {
+        --activation-page-qr-code-detection-height: 155px;
+      }
 
       :host cr-button {
         --ripple-opacity: 0;
@@ -25,8 +28,8 @@
       #esimQrCodeDetection {
         background-color: var(--google-grey-refresh-100);
         border-radius: 4px;
-        height: 130px;
-        margin: 20px 0 30px 0;
+        height: var(--activation-page-qr-code-detection-height);
+        margin: 20px 0 20px 0;
         overflow: hidden;
         position: relative;
       }
@@ -144,6 +147,11 @@
         letter-spacing: .4px;
         line-height: var(--cr-form-field-label-line-height);
         position: absolute;
+      }
+
+      #video {
+        height: var(--activation-page-qr-code-detection-height);
+        transform: rotateY(180deg);
       }
     </style>
     <base-page>
