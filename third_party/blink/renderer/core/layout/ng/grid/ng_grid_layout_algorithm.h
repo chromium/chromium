@@ -374,13 +374,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                             LayoutUnit* start_offset,
                             LayoutUnit* size) const;
 
-  // Determines the position of the out of flow item's container.
-  void DeterminePositionOfOutOfFlowContainer(
-      Vector<GridItemData>* out_of_flow_items,
-      const GridTrackSizingDirection track_direction) const;
-
-  GridTrackSizingDirection AutoFlowDirection() const;
-
   NGGridData::TrackCollectionGeometry ConvertSetGeometry(
       const SetGeometry& set_geometry,
       const NGGridLayoutAlgorithmTrackCollection& track_collection) const;
