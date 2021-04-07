@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
+#include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "chromeos/components/quick_answers/utils/unit_converter.h"
 
 namespace chromeos {
@@ -16,13 +17,6 @@ namespace quick_answers {
 namespace {
 
 using base::Value;
-
-constexpr char kRuleSetPath[] = "unitConversionResult.conversions";
-constexpr char kSourceUnitPath[] = "unitConversionResult.sourceUnit";
-constexpr char kSourceAmountPath[] = "unitConversionResult.sourceAmount";
-constexpr char kDestAmountPath[] = "unitConversionResult.destAmount";
-constexpr char kDestTextPath[] =
-    "unitConversionResult.destination.valueAndUnit.rawText";
 
 constexpr double kPreferredRatioRange = 100;
 

@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
+#include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 
 namespace chromeos {
 namespace quick_answers {
@@ -21,12 +22,6 @@ bool IsLinearFormula(const base::Optional<double> rate_a) {
 }
 
 }  // namespace
-
-const char kCategoryPath[] = "category";
-const char kConversionRateAPath[] = "conversionToSiA";
-const char kResultValueTemplate[] = "%.3f";
-const char kNamePath[] = "name";
-const char kUnitsPath[] = "units";
 
 UnitConverter::UnitConverter(const Value& rule_set) : rule_set_(rule_set) {}
 

@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
+#include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
