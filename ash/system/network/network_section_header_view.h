@@ -56,6 +56,8 @@ class NetworkSectionHeaderView : public views::View {
   // views::View:
   int GetHeightForWidth(int width) const override;
 
+  bool IsToggleVisible();
+
  private:
   void InitializeLayout();
   void AddToggleButton(bool enabled);

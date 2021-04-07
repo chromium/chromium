@@ -110,6 +110,10 @@ void TriView::AddView(Container container, views::View* view) {
   GetContainer(container)->AddChildView(view);
 }
 
+void TriView::AddViewAt(Container container, views::View* view, int index) {
+  GetContainer(container)->AddChildViewAt(view, index);
+}
+
 void TriView::RemoveAllChildren(Container container, bool delete_children) {
   GetContainer(container)->RemoveAllChildViews(delete_children);
 }

@@ -38,6 +38,7 @@ namespace tray {
 namespace {
 
 const int64_t kBluetoothTimeoutDelaySeconds = 2;
+const int kMobileHeaderExtraMarginRight = 10;
 
 bool IsCellularDeviceInhibited() {
   const DeviceStateProperties* cellular_device =
@@ -128,6 +129,10 @@ int NetworkSectionHeaderView::GetHeightForWidth(int width) const {
   return GetPreferredSize().height();
 }
 
+bool NetworkSectionHeaderView::IsToggleVisible() {
+  return toggle_ && toggle_->GetVisible();
+}
+
 void NetworkSectionHeaderView::InitializeLayout() {
   TrayPopupUtils::ConfigureAsStickyHeader(this);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -192,7 +197,15 @@ int MobileSectionHeaderView::UpdateToggleAndGetStatusMessage(
 
     const DeviceStateProperties* cellular_device =
         model()->GetDevice(NetworkType::kCellular);
-    if (cellular_device->sim_absent) {
+    if (base::FeatureList::IsEnabled(
+            chromeos::features::kUpdatedCellularActivationUi) &&
+        cellular_device && cellular_device->sim_absent) {
+      SetToggleVisibility(true);
+      return 0;
+    }
+    if (!base::FeatureList::IsEnabled(
+            chromeos::features::kUpdatedCellularActivationUi) &&
+        cellular_device && cellular_device->sim_absent) {
       SetToggleVisibility(false);
       return IDS_ASH_STATUS_TRAY_SIM_CARD_MISSING;
     }
@@ -347,8 +360,18 @@ void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
       base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
                           base::Unretained(this)),
       vector_icons::kAddCellularNetworkIcon, tooltip_message_id);
+
   add_cellular_button->SetEnabled(enabled && !IsCellularDeviceInhibited());
-  container()->AddView(TriView::Container::END, add_cellular_button);
+
+  // Because the toggle is added conditionally and the check is asynchronous, we
+  // need override the view index here in order for correct ordering of the
+  // toggle and the add cellular button.
+  container()->AddViewAt(TriView::Container::END, add_cellular_button,
+                         /*index=*/0);
+  if (!IsToggleVisible()) {
+    container()->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets(0, 0, 0, kMobileHeaderExtraMarginRight)));
+  }
 }
 
 void MobileSectionHeaderView::OnCellularNetworksFetched(

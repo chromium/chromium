@@ -85,6 +85,9 @@ class ASH_EXPORT TriView : public views::View {
   // Adds the child |view| to the specified |container|.
   void AddView(Container container, views::View* view);
 
+  // Adds the child |view| to the specified |container| at the child index.
+  void AddViewAt(Container container, views::View* view, int index);
+
   // Removes all the children from the specified |container|. If
   // |delete_children| is true, the views are deleted, unless marked as not
   // parent owned.
