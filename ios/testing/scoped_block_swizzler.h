@@ -21,6 +21,13 @@ class ScopedBlockSwizzler {
   // |selector| that does not exist on the |target| class.
   ScopedBlockSwizzler(Class target, SEL selector, id block);
 
+  // Constructs a new ScopedBlockSwizzler object and replaces the implementation
+  // of |selector| on the |target| class with the given |block|.
+  // |class_method| specifies if the swizzled method is a class method (YES) or
+  // an instance method (NO). This can be use to disambiguate if the class
+  // contains both method types with the same selector.
+  ScopedBlockSwizzler(Class target, SEL selector, id block, BOOL class_method);
+
   // Destroys the ScopedBlockSwizzler object, removing the swizzled method and
   // reinstalling the original method implementation.
   virtual ~ScopedBlockSwizzler();

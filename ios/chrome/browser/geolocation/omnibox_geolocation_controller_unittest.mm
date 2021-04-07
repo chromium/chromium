@@ -6,22 +6,20 @@
 
 #import <CoreLocation/CoreLocation.h>
 
+#include "ios/testing/scoped_block_swizzler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
-#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface OmniboxGeolocationController (Testing)
-// Sets the LocationManager for the receiver to use.
-- (void)setLocationManager:(CLLocationManager*)locationManager;
-@end
-
 namespace {
+
+typedef void (^RequestBlock)(id self);
+typedef CLAuthorizationStatus (^AuthorizationBlock)(id self);
+typedef BOOL (^LocationEnabledBlock)(id self);
 
 using OmniboxGeolocationControllerTest = PlatformTest;
 TEST_F(OmniboxGeolocationControllerTest, TriggerSystemPromptForNewUser) {
@@ -29,33 +27,26 @@ TEST_F(OmniboxGeolocationControllerTest, TriggerSystemPromptForNewUser) {
       [OmniboxGeolocationController sharedInstance];
   __block BOOL requested = NO;
   __block BOOL enabled = NO;
+  RequestBlock request_swizzler_block = ^(id self) {
+    requested = YES;
+  };
+  auto request_swizzler = std::make_unique<ScopedBlockSwizzler>(
+      [CLLocationManager class], @selector(requestWhenInUseAuthorization),
+      request_swizzler_block);
 
-  id locationManagerMock = OCMClassMock([CLLocationManager class]);
-  OCMStub([locationManagerMock requestWhenInUseAuthorization])
-      .andDo(^(NSInvocation* invocation) {
-        requested = YES;
-      });
+  AuthorizationBlock authorization_swizzler_block = ^(id self) {
+    return kCLAuthorizationStatusNotDetermined;
+  };
+  auto authorization_swizzler = std::make_unique<ScopedBlockSwizzler>(
+      [CLLocationManager class], @selector(authorizationStatus),
+      authorization_swizzler_block, YES);
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunguarded-availability-new"
-  // |authorizationStatus| was a class method but got deprecated in favor of an
-  // instance method in iOS 14.
-  OCMStub(ClassMethod([locationManagerMock authorizationStatus]))
-      .andReturn(kCLAuthorizationStatusNotDetermined);
-#pragma GCC diagnostic pop
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  // |locationServicesEnabled| is deprecated as an instance method in favor of
-  // the class method. Even with ClassMethod, it is still treated as an instance
-  // method here. Remove deprecation warning to ensure it is working.
-  OCMStub(ClassMethod([locationManagerMock locationServicesEnabled]))
-      .andDo(^(NSInvocation* invocation) {
-        [invocation setReturnValue:&enabled];
-      });
-#pragma GCC diagnostic pop
-
-  [controller setLocationManager:locationManagerMock];
+  LocationEnabledBlock location_enabled_swizzler_block = ^(id self) {
+    return enabled;
+  };
+  auto location_enabled_swizzler = std::make_unique<ScopedBlockSwizzler>(
+      [CLLocationManager class], @selector(locationServicesEnabled),
+      location_enabled_swizzler_block, YES);
 
   // Don't present system prompt if the user has disabled location services.
   [controller triggerSystemPrompt];

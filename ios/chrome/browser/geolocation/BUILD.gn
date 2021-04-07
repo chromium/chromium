@@ -42,7 +42,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser",
+    "//ios/testing:block_swizzler",
     "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }
