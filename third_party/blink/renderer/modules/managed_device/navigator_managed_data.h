@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MANAGED_DEVICE_DEVICE_SERVICE_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_MANAGED_DEVICE_DEVICE_SERVICE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MANAGED_DEVICE_NAVIGATOR_MANAGED_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MANAGED_DEVICE_NAVIGATOR_MANAGED_DATA_H_
 
 #include "third_party/blink/public/mojom/device/device.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -22,9 +22,9 @@ class ScriptPromiseResolver;
 class ScriptPromise;
 class ScriptState;
 
-class MODULES_EXPORT DeviceService final
+class MODULES_EXPORT NavigatorManagedData final
     : public EventTargetWithInlineData,
-      public ActiveScriptWrappable<DeviceService>,
+      public ActiveScriptWrappable<NavigatorManagedData>,
       public Supplement<Navigator>,
       public mojom::blink::ManagedConfigurationObserver {
   DEFINE_WRAPPERTYPEINFO();
@@ -33,11 +33,11 @@ class MODULES_EXPORT DeviceService final
   static const char kSupplementName[];
 
   // Web-based getter for navigator.managed.
-  static DeviceService* managed(Navigator&);
+  static NavigatorManagedData* managed(Navigator&);
 
-  explicit DeviceService(Navigator&);
-  DeviceService(const DeviceService&) = delete;
-  DeviceService& operator=(const DeviceService&) = delete;
+  explicit NavigatorManagedData(Navigator&);
+  NavigatorManagedData(const NavigatorManagedData&) = delete;
+  NavigatorManagedData& operator=(const NavigatorManagedData&) = delete;
 
   void Trace(Visitor*) const override;
 
@@ -91,11 +91,12 @@ class MODULES_EXPORT DeviceService final
   HeapMojoRemote<mojom::blink::ManagedConfigurationService>
       managed_configuration_service_;
 
-  HeapMojoReceiver<mojom::blink::ManagedConfigurationObserver, DeviceService>
+  HeapMojoReceiver<mojom::blink::ManagedConfigurationObserver,
+                   NavigatorManagedData>
       configuration_observer_;
   HeapHashSet<Member<ScriptPromiseResolver>> pending_promises_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MANAGED_DEVICE_DEVICE_SERVICE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MANAGED_DEVICE_NAVIGATOR_MANAGED_DATA_H_

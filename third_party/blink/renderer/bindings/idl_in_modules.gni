@@ -178,7 +178,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/delegated_ink/ink.idl",
           "//third_party/blink/renderer/modules/delegated_ink/ink_trail_style.idl",
           "//third_party/blink/renderer/modules/delegated_ink/navigator_ink.idl",
-          "//third_party/blink/renderer/modules/managed_device/device_service.idl",
+          "//third_party/blink/renderer/modules/managed_device/navigator_managed_data.idl",
           "//third_party/blink/renderer/modules/managed_device/navigator_managed.idl",
           "//third_party/blink/renderer/modules/device_orientation/device_motion_event.idl",
           "//third_party/blink/renderer/modules/device_orientation/device_motion_event_acceleration.idl",

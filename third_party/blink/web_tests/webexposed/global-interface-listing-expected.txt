@@ -4176,17 +4176,6 @@ interface DeviceOrientationEvent : Event
     getter beta
     getter gamma
     method constructor
-interface DeviceService : EventTarget
-    attribute @@toStringTag
-    getter onmanagedconfigurationchange
-    method constructor
-    method getAnnotatedAssetId
-    method getAnnotatedLocation
-    method getDirectoryId
-    method getHostname
-    method getManagedConfiguration
-    method getSerialNumber
-    setter onmanagedconfigurationchange
 interface Document : Node
     attribute @@toStringTag
     attribute @@unscopables
@@ -8210,6 +8199,17 @@ interface Navigator
     method unregisterProtocolHandler
     method vibrate
     method webkitGetUserMedia
+interface NavigatorManagedData : EventTarget
+    attribute @@toStringTag
+    getter onmanagedconfigurationchange
+    method constructor
+    method getAnnotatedAssetId
+    method getAnnotatedLocation
+    method getDirectoryId
+    method getHostname
+    method getManagedConfiguration
+    method getSerialNumber
+    setter onmanagedconfigurationchange
 interface NavigatorUAData
     attribute @@toStringTag
     getter brands

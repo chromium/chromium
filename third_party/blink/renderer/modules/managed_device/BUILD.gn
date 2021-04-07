@@ -6,8 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("managed_device") {
   sources = [
-    "device_service.cc",
-    "device_service.h",
+    "navigator_managed_data.cc",
+    "navigator_managed_data.h",
   ]
 
   public_deps = [ "//third_party/blink/renderer/platform" ]

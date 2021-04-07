@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 //
 [
-  ImplementedAs=DeviceService,
+  ImplementedAs=NavigatorManagedData,
   RuntimeEnabled=ManagedInterface,
   SecureContext
 ] partial interface Navigator {
   [SameObject]
-  readonly attribute DeviceService managed;
+  readonly attribute NavigatorManagedData managed;
 };

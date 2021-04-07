@@ -7,10 +7,10 @@
   Exposed=Window,
   RuntimeEnabled=ManagedInterface,
   SecureContext
-] interface DeviceService : EventTarget {
+] interface NavigatorManagedData : EventTarget {
   // Managed Configuration API.
   [CallWith=ScriptState, RuntimeEnabled=ManagedConfiguration]
-  Promise<object> getManagedConfiguration(sequence<DOMString> keys);
+  Promise<record<DOMString, object>> getManagedConfiguration(sequence<DOMString> keys);
   [RuntimeEnabled=ManagedConfiguration]
   attribute EventHandler onmanagedconfigurationchange;
 
