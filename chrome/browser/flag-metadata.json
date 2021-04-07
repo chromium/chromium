@@ -4193,11 +4193,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "pdf-viewer-update",
-    "owners": [ "rbpotter", "thestig" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "pdf-xfa-forms",
     "owners": [ "carlosil", "tsepez" ],
     "expiry_milestone": 94
