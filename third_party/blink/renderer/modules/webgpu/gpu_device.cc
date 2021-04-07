@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -292,10 +293,32 @@ ScriptPromise GPUDevice::createRenderPipelineAsync(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // Temporarily immediately create the pipeline and resolve the promise while
-  // waiting for Dawn to change to take a RenderPipelineDescriptor for
-  // Device::CreateRenderPipelineAsync.
-  resolver->Resolve(GPURenderPipeline::Create(script_state, this, descriptor));
+  if (!descriptor->hasVertex()) {
+    // Shim asynchronous pipeline compilation with the deprecated shape of the
+    // GPURenderPipelineDescriptor by immediately creating a pipeline and
+    // resolving the promise.
+    resolver->Resolve(
+        GPURenderPipeline::Create(script_state, this, descriptor));
+    return promise;
+  }
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
+                                 "GPUDevice", "createRenderPipelineAsync");
+  OwnedRenderPipelineDescriptor2 dawn_desc_info;
+  ConvertToDawnType(isolate, this, descriptor, &dawn_desc_info,
+                    exception_state);
+  if (exception_state.HadException()) {
+    resolver->Reject(exception_state);
+  } else {
+    auto* callback =
+        BindDawnCallback(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
+                         WrapPersistent(this), WrapPersistent(resolver));
+    GetProcs().deviceCreateRenderPipelineAsync(
+        GetHandle(), &dawn_desc_info.dawn_desc, callback->UnboundCallback(),
+        callback->AsUserdata());
+  }
+
   return promise;
 }
 
