@@ -10,6 +10,7 @@
 #include "content/public/common/content_client.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
@@ -31,6 +32,7 @@ void RegisterContentBinderPoliciesForSameOriginPrerendering(
   // sending the request.
   map.SetPolicy<blink::mojom::ClipboardHost>(MojoBinderPolicy::kUnexpected);
 
+  map.SetPolicy<blink::mojom::CacheStorage>(MojoBinderPolicy::kGrant);
   map.SetPolicy<blink::mojom::IDBFactory>(MojoBinderPolicy::kGrant);
   map.SetPolicy<network::mojom::RestrictedCookieManager>(
       MojoBinderPolicy::kGrant);
