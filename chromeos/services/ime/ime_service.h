@@ -51,6 +51,9 @@ class ImeService : public mojom::ImeService,
   int SimpleDownloadToFile(const char* url,
                            const char* file_path,
                            SimpleDownloadCallback callback) override;
+  int SimpleDownloadToFileV2(const char* url,
+                             const char* file_path,
+                             SimpleDownloadCallbackV2 callback) override;
   ImeCrosDownloader* GetDownloader() override;
   void RunInMainSequence(ImeSequencedTask task, int task_id) override;
   bool IsFeatureEnabled(const char* feature_name) override;
@@ -59,6 +62,13 @@ class ImeService : public mojom::ImeService,
   // On failure, |file| will be empty.
   void SimpleDownloadFinished(SimpleDownloadCallback callback,
                               const base::FilePath& file);
+  // V2 of |SimpleDownloadFinished|, returns an extra URL with |file|.
+  // Callback used when a file download finishes by the |SimpleURLLoader|.
+  // The |url| is the original download url and bound when downloading request
+  // starts. On failure, |file| will be empty.
+  void SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
+                                const std::string& url_str,
+                                const base::FilePath& file);
 
   mojo::Receiver<mojom::ImeService> receiver_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

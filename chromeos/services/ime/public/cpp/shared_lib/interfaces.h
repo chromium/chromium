@@ -68,6 +68,11 @@ typedef void (*ImeCrosDownloadCallback)(int request_id, int status_code);
 // A simple downloading callback.
 typedef void (*SimpleDownloadCallback)(int status_code, const char* file_path);
 
+// A simple downloading callback with the downloading URL as return.
+typedef void (*SimpleDownloadCallbackV2)(int status_code,
+                                         const char* url,
+                                         const char* file_path);
+
 // A function pointer of a sequenced task.
 typedef void (*ImeSequencedTask)(int task_id);
 
@@ -178,6 +183,12 @@ class ImeCrosPlatform {
 
   // Returns whether a Chrome OS experimental feature is enabled or not.
   virtual bool IsFeatureEnabled(const char* feature_name) = 0;
+
+  // Version 2 for |SimpleDownloadToFile|. Downloading URL is added into its
+  // callback.
+  virtual int SimpleDownloadToFileV2(const char* url,
+                                     const char* file_path,
+                                     SimpleDownloadCallbackV2 callback) = 0;
 
   // TODO(https://crbug.com/837156): Provide Logger for main entry.
 };
