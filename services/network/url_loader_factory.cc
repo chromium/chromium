@@ -235,7 +235,7 @@ void URLLoaderFactory::CreateLoaderAndStart(
         // outlive the URLLoader that will own this
         // TrustTokenRequestHelperFactory.
         base::BindRepeating(&NetworkContext::client,
-                            base::Unretained(context_.get())),
+                            base::Unretained(context_)),
         // It's safe to use Unretained here because
         // NetworkContext::CookieManager outlives the URLLoaders associated with
         // the NetworkContext.
@@ -283,7 +283,7 @@ void URLLoaderFactory::CreateLoaderAndStart(
   auto loader = std::make_unique<URLLoader>(
       context_->url_request_context(), this, context_->client(),
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
-                     base::Unretained(cors_url_loader_factory_.get())),
+                     base::Unretained(cors_url_loader_factory_)),
       std::move(receiver), options, url_request, std::move(client),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       params_.get(), coep_reporter_ ? coep_reporter_.get() : nullptr,

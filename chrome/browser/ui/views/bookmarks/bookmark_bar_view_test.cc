@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -128,7 +127,7 @@ class DialogWaiter : public aura::EnvObserver,
   }
 
   bool dialog_created_ = false;
-  CheckedPtr<views::Widget> dialog_ = nullptr;
+  views::Widget* dialog_ = nullptr;
   base::RepeatingClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(DialogWaiter);
@@ -201,7 +200,7 @@ class TabKeyWaiter : public ui::EventHandler {
     }
   }
 
-  CheckedPtr<views::Widget> widget_;
+  views::Widget* widget_;
   bool received_tab_;
   base::RepeatingClosure quit_closure_;
 
@@ -394,8 +393,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   // See comment above class description for what this does.
   virtual bool CreateBigMenu() { return false; }
 
-  CheckedPtr<BookmarkModel> model_ = nullptr;
-  CheckedPtr<BookmarkBarView> bb_view_ = nullptr;
+  BookmarkModel* model_ = nullptr;
+  BookmarkBarView* bb_view_ = nullptr;
   TestingPageNavigator navigator_;
 
  private:
@@ -476,7 +475,7 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
   // BookmarkBarViewEventTestBase:
   void DoTestOnMessageLoop() override {
     widget_observations_.AddObservation(window());
-    bookmark_bar_observation_.Observe(bb_view_.get());
+    bookmark_bar_observation_.Observe(bb_view_);
 
     // Record the URL for node f1a.
     const auto& f1 = model_->bookmark_bar_node()->children().front();
@@ -1045,7 +1044,7 @@ class BookmarkBarViewTest9 : public BookmarkBarViewEventTestBase {
   }
 
   int start_y_;
-  CheckedPtr<views::MenuItemView> first_menu_;
+  views::MenuItemView* first_menu_;
 };
 
 VIEW_TEST(BookmarkBarViewTest9, ScrollButtonScrolls)
@@ -1811,7 +1810,7 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
     layout->SetIgnoreDefaultMainAxisMargins(true)
         .SetCollapseMargins(true)
         .SetDefault(views::kMarginsKey, gfx::Insets(0, 2));
-    container_view->AddChildView(bb_view_.get());
+    container_view->AddChildView(bb_view_);
     bb_view_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -1881,7 +1880,7 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
     int press_count_ = 0;
   };
 
-  CheckedPtr<TestViewForMenuExit> test_view_ = nullptr;
+  TestViewForMenuExit* test_view_ = nullptr;
 };
 
 VIEW_TEST(BookmarkBarViewTest20, ContextMenuExitTest)

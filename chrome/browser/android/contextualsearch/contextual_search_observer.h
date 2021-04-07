@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -46,7 +45,7 @@ class ContextualSearchObserver
     api_handler_ = handler;
   }
 
-  CheckedPtr<ContextualSearchJsApiHandler> api_handler_;
+  ContextualSearchJsApiHandler* api_handler_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

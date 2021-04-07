@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/clipboard_stub.h"
 
 namespace remoting {
@@ -33,7 +32,7 @@ class ClipboardFilter : public ClipboardStub {
   void InjectClipboardEvent(const ClipboardEvent& event) override;
 
  private:
-  CheckedPtr<ClipboardStub> clipboard_stub_;
+  ClipboardStub* clipboard_stub_;
   bool enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(ClipboardFilter);

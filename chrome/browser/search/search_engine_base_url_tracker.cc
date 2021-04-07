@@ -17,7 +17,7 @@ SearchEngineBaseURLTracker::SearchEngineBaseURLTracker(
       previous_google_base_url_(search_terms_data_->GoogleBaseURLValue()) {
   DCHECK(template_url_service_);
 
-  observer_.Add(template_url_service_.get());
+  observer_.Add(template_url_service_);
 
   const TemplateURL* default_search_provider =
       template_url_service_->GetDefaultSearchProvider();

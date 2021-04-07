@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_SCREEN_CAPTURE_INFOBAR_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_SCREEN_CAPTURE_INFOBAR_DELEGATE_ANDROID_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
@@ -43,7 +42,7 @@ class ScreenCaptureInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
   // the appropriate stream device and UI object for video capture.
   void RunCallback(blink::mojom::MediaStreamRequestResult result);
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   const content::MediaStreamRequest request_;
   content::MediaResponseCallback callback_;
 

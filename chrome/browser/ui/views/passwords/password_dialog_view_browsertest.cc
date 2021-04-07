@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -77,9 +76,9 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
   MOCK_METHOD0(OnDialogClosed, void());
 
  private:
-  CheckedPtr<AccountChooserPrompt> current_account_chooser_;
-  CheckedPtr<AutoSigninFirstRunPrompt> current_autosignin_prompt_;
-  CheckedPtr<CredentialLeakPrompt> current_credential_leak_prompt_;
+  AccountChooserPrompt* current_account_chooser_;
+  AutoSigninFirstRunPrompt* current_autosignin_prompt_;
+  CredentialLeakPrompt* current_credential_leak_prompt_;
 
   DISALLOW_COPY_AND_ASSIGN(TestManagePasswordsUIController);
 };
@@ -168,7 +167,7 @@ class PasswordDialogViewTest : public DialogBrowserTest {
   }
 
  private:
-  CheckedPtr<TestManagePasswordsUIController> controller_;
+  TestManagePasswordsUIController* controller_;
 };
 
 void PasswordDialogViewTest::SetUpOnMainThread() {

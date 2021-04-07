@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -52,8 +51,8 @@ class SettingsOverridesAPI : public BrowserContextKeyedAPI,
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "SettingsOverridesAPI"; }
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<TemplateURLService> url_service_;
+  Profile* profile_;
+  TemplateURLService* url_service_;
 
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

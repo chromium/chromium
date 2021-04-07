@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "extensions/common/extension_set.h"
 
@@ -54,9 +53,9 @@ class SafeBrowsingVerdictHandler {
       const ExtensionIdSet& unchanged,
       const Blocklist::BlocklistStateMap& state_map);
 
-  CheckedPtr<ExtensionPrefs> extension_prefs_ = nullptr;
-  CheckedPtr<ExtensionRegistry> registry_ = nullptr;
-  CheckedPtr<ExtensionService> extension_service_ = nullptr;
+  ExtensionPrefs* extension_prefs_ = nullptr;
+  ExtensionRegistry* registry_ = nullptr;
+  ExtensionService* extension_service_ = nullptr;
 
   // Set of greylisted extensions. These extensions are disabled if they are
   // already installed in Chromium at the time when they are added to

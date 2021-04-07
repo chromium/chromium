@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -187,7 +186,7 @@ class TileManagerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TileManager> manager_;
-  CheckedPtr<MockTileStore> tile_store_;
+  MockTileStore* tile_store_;
   base::SimpleTestClock clock_;
 };
 

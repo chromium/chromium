@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/command_updater_delegate.h"
@@ -124,12 +123,12 @@ class PresentationReceiverWindowView final
   // Updates the UI in response to a change to fullscreen state.
   void OnFullscreenChanged();
 
-  const CheckedPtr<PresentationReceiverWindowFrame> frame_;
-  const CheckedPtr<PresentationReceiverWindowDelegate> delegate_;
+  PresentationReceiverWindowFrame* const frame_;
+  PresentationReceiverWindowDelegate* const delegate_;
   std::u16string title_;
   const std::unique_ptr<LocationBarModelImpl> location_bar_model_;
   CommandUpdaterImpl command_updater_;
-  CheckedPtr<LocationBarView> location_bar_view_ = nullptr;
+  LocationBarView* location_bar_view_ = nullptr;
   ExclusiveAccessManager exclusive_access_manager_;
   ui::Accelerator fullscreen_accelerator_;
   std::unique_ptr<ExclusiveAccessBubbleViews> exclusive_access_bubble_;

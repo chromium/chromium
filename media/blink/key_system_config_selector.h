@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/eme_constants.h"
 #include "media/blink/media_blink_export.h"
@@ -57,7 +56,7 @@ class MEDIA_BLINK_EXPORT KeySystemConfigSelector {
     // The pointer below will always be valid for the lifetime of this object
     // because it is held by KeySystemConfigSelector whose chain of ownership is
     // the same as RenderFrameImpl.
-    CheckedPtr<blink::WebLocalFrame> web_frame_;
+    blink::WebLocalFrame* web_frame_;
   };
 
   KeySystemConfigSelector(

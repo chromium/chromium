@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/test/content_test_suite.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/base_paths.h"
 #include "base/base_switches.h"
@@ -46,8 +45,7 @@ class TestInitializationListener : public testing::EmptyTestEventListener {
   }
 
  private:
-  CheckedPtr<content::TestContentClientInitializer>
-      test_content_client_initializer_;
+  content::TestContentClientInitializer* test_content_client_initializer_;
 
   DISALLOW_COPY_AND_ASSIGN(TestInitializationListener);
 };

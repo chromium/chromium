@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_EASY_RESIZE_WINDOW_TARGETER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/wm/core/easy_resize_window_targeter.h"
 
 namespace ui {
@@ -29,7 +28,7 @@ class AppWindowEasyResizeWindowTargeter : public wm::EasyResizeWindowTargeter {
                        gfx::Rect* rect_touch) const override;
 
  private:
-  CheckedPtr<ui::BaseWindow> native_app_window_;
+  ui::BaseWindow* native_app_window_;
 
   DISALLOW_COPY_AND_ASSIGN(AppWindowEasyResizeWindowTargeter);
 };

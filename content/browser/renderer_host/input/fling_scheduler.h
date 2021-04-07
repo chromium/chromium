@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_SCHEDULER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_SCHEDULER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/input/fling_controller.h"
 #include "content/browser/renderer_host/input/fling_scheduler_base.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -36,9 +35,9 @@ class CONTENT_EXPORT FlingScheduler : public FlingSchedulerBase,
 
  protected:
   virtual ui::Compositor* GetCompositor();
-  CheckedPtr<RenderWidgetHostImpl> host_;
+  RenderWidgetHostImpl* host_;
   base::WeakPtr<FlingController> fling_controller_;
-  CheckedPtr<ui::Compositor> observed_compositor_ = nullptr;
+  ui::Compositor* observed_compositor_ = nullptr;
 
  private:
   // ui::CompositorAnimationObserver

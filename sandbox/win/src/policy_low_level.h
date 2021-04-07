@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_engine_params.h"
@@ -103,7 +102,7 @@ class LowLevelPolicy {
     IpcTag service;
   };
   std::list<RuleNode> rules_;
-  CheckedPtr<PolicyGlobal> policy_store_;
+  PolicyGlobal* policy_store_;
   DISALLOW_IMPLICIT_CONSTRUCTORS(LowLevelPolicy);
 };
 
@@ -179,8 +178,8 @@ class PolicyRule {
                   size_t opcode_size,
                   char* data_start,
                   size_t* data_size) const;
-  CheckedPtr<PolicyBuffer> buffer_;
-  CheckedPtr<OpcodeFactory> opcode_factory_;
+  PolicyBuffer* buffer_;
+  OpcodeFactory* opcode_factory_;
   EvalResult action_;
   bool done_;
 };

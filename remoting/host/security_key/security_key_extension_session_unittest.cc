@@ -12,7 +12,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -176,8 +175,7 @@ class SecurityKeyExtensionSessionTest : public testing::Test {
   // Object under test.
   std::unique_ptr<SecurityKeyExtensionSession> security_key_extension_session_;
 
-  CheckedPtr<MockSecurityKeyAuthHandler> mock_security_key_auth_handler_ =
-      nullptr;
+  MockSecurityKeyAuthHandler* mock_security_key_auth_handler_ = nullptr;
 
   TestClientStub client_stub_;
   TestClientSessionDetails client_details_;
@@ -196,7 +194,7 @@ SecurityKeyExtensionSessionTest::SecurityKeyExtensionSessionTest()
   // once |security_key_extension_session_| is destroyed.
   mock_security_key_auth_handler_ = new MockSecurityKeyAuthHandler();
   security_key_extension_session_->SetSecurityKeyAuthHandlerForTesting(
-      base::WrapUnique(mock_security_key_auth_handler_.get()));
+      base::WrapUnique(mock_security_key_auth_handler_));
 }
 
 SecurityKeyExtensionSessionTest::~SecurityKeyExtensionSessionTest() = default;

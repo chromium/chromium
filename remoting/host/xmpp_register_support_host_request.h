@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/register_support_host_request.h"
@@ -73,7 +72,7 @@ class XmppRegisterSupportHostRequest : public RegisterSupportHostRequest,
                     base::TimeDelta lifetime,
                     protocol::ErrorCode error_code);
 
-  CheckedPtr<SignalStrategy> signal_strategy_ = nullptr;
+  SignalStrategy* signal_strategy_ = nullptr;
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string directory_bot_jid_;
   RegisterCallback callback_;

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ui/wm/core/transient_window_manager.h"
-#include "base/memory/checked_ptr.h"
 
 #include <utility>
 
@@ -64,7 +63,7 @@ class WindowVisibilityObserver : public aura::WindowObserver {
     owned_window_.reset();
   }
  private:
-  CheckedPtr<Window> observed_window_;
+  Window* observed_window_;
   std::unique_ptr<Window> owned_window_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowVisibilityObserver);
@@ -377,7 +376,7 @@ class DestroyedTrackingDelegate : public aura::test::TestWindowDelegate {
 
  private:
   const std::string name_;
-  CheckedPtr<std::vector<std::string>> results_;
+  std::vector<std::string>* results_;
 
   DISALLOW_COPY_AND_ASSIGN(DestroyedTrackingDelegate);
 };

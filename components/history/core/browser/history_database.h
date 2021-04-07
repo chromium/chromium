@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/download_database.h"
 #include "components/history/core/browser/history_types.h"
@@ -70,7 +69,7 @@ class HistoryDatabase : public DownloadDatabase,
     ~TransactionScoper() { db_->CommitTransaction(); }
 
    private:
-    CheckedPtr<HistoryDatabase> db_;
+    HistoryDatabase* db_;
   };
 
   // Must call Init() to complete construction. Although it can be created on

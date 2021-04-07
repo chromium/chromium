@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -235,7 +234,7 @@ class TabDragController : public views::WidgetObserver {
     TabDragData(TabDragData&&);
 
     // The WebContents being dragged.
-    CheckedPtr<content::WebContents> contents;
+    content::WebContents* contents;
 
     // There is a brief period of time when a tab is being moved from one tab
     // strip to another [after Detach but before Attach] that the TabDragData
@@ -247,7 +246,7 @@ class TabDragController : public views::WidgetObserver {
     int source_model_index;
 
     // If attached this is the view in |attached_context_|.
-    CheckedPtr<TabSlotView> attached_view;
+    TabSlotView* attached_view;
 
     // Is the tab pinned?
     bool pinned;

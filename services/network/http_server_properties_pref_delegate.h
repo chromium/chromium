@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/http/http_server_properties.h"
 
@@ -32,7 +31,7 @@ class HttpServerPropertiesPrefDelegate
   void WaitForPrefLoad(base::OnceClosure callback) override;
 
  private:
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(HttpServerPropertiesPrefDelegate);

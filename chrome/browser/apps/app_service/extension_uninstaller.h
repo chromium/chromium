@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -44,7 +43,7 @@ class ExtensionUninstaller
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
                                         const std::u16string& error) override;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::string app_id_;
   gfx::NativeWindow parent_window_;  // Can be null.
   std::unique_ptr<extensions::ExtensionUninstallDialog> dialog_;

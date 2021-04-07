@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 class TemplateURLService;
 class TestingProfile;
@@ -27,7 +26,7 @@ class TemplateURLServiceFactoryTestUtil {
   TemplateURLService* model() const;
 
  private:
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceFactoryTestUtil);
 };

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -41,9 +40,8 @@ class ChosenObjectView : public views::View {
 
   void ExecuteDeleteCommand();
 
-  CheckedPtr<views::ImageView> icon_;  // Owned by the views hierarchy.
-  CheckedPtr<views::ImageButton>
-      delete_button_;  // Owned by the views hierarchy.
+  views::ImageView* icon_;             // Owned by the views hierarchy.
+  views::ImageButton* delete_button_;  // Owned by the views hierarchy.
 
   base::ObserverList<ChosenObjectViewObserver>::Unchecked observer_list_;
   std::unique_ptr<PageInfoUI::ChosenObjectInfo> info_;

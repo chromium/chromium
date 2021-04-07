@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
@@ -47,7 +46,7 @@ class WebAppMenuButton : public AppMenuButton {
   void FadeHighlightOff();
 
   // The containing browser view.
-  CheckedPtr<BrowserView> browser_view_;
+  BrowserView* browser_view_;
 
   SkColor color_ = gfx::kPlaceholderColor;
 

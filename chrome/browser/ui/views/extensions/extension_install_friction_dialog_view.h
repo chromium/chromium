@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -44,7 +43,7 @@ class ExtensionInstallFrictionDialogView
   std::unique_ptr<views::StyledLabel> CreateWarningLabel();
   void OnLearnMoreLinkClicked();
 
-  CheckedPtr<content::PageNavigator> navigator_;
+  content::PageNavigator* navigator_;
   base::OnceCallback<void(bool)> callback_;
   bool learn_more_clicked_ = false;
 };

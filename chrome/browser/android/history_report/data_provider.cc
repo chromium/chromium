@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/android/history_report/delta_file_commons.h"
 #include "chrome/browser/android/history_report/delta_file_service.h"
@@ -37,8 +36,8 @@ static bool g_is_debug = false;
 using BookmarkMap = std::map<std::string, UrlAndTitle*>;
 
 struct Context {
-  CheckedPtr<history::HistoryService> history_service;
-  CheckedPtr<base::CancelableTaskTracker> history_task_tracker;
+  history::HistoryService* history_service;
+  base::CancelableTaskTracker* history_task_tracker;
   base::WaitableEvent finished;
 
   Context(history::HistoryService* hservice,
@@ -163,7 +162,7 @@ void DataProvider::StartVisitMigrationToUsageBuffer(
   buffer_service->Clear();
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&StartVisitMigrationToUsageBufferUiThread,
-                                base::Unretained(history_service_.get()),
+                                base::Unretained(history_service_),
                                 buffer_service, base::Unretained(&finished),
                                 base::Unretained(&history_task_tracker_)));
   finished.Wait();
@@ -183,8 +182,8 @@ void DataProvider::RecreateLog() {
         FROM_HERE,
         base::BindOnce(
             base::IgnoreResult(&history::HistoryService::ScheduleDBTask),
-            base::Unretained(history_service_.get()), FROM_HERE,
-            std::move(task), base::Unretained(&history_task_tracker_)));
+            base::Unretained(history_service_), FROM_HERE, std::move(task),
+            base::Unretained(&history_task_tracker_)));
     finished.Wait();
   }
 

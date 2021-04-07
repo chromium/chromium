@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller.h"
@@ -50,8 +49,7 @@ class CardExpirationDateFixFlowControllerImpl
 
  private:
   // View that displays the fix flow prompt.
-  CheckedPtr<CardExpirationDateFixFlowView>
-      card_expiration_date_fix_flow_view_ = nullptr;
+  CardExpirationDateFixFlowView* card_expiration_date_fix_flow_view_ = nullptr;
 
   // The callback to save the credit card to Google Payments once user accepts
   // fix flow.

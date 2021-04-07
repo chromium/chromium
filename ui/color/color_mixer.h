@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_set.h"
@@ -75,7 +74,7 @@ class COMPONENT_EXPORT(COLOR) ColorMixer {
   // Returns an iterator to the set in |sets_| with ID |id|, or sets_.cend().
   ColorSets::const_iterator FindSetWithId(ColorSetId id) const;
 
-  CheckedPtr<const ColorMixer> previous_mixer_;
+  const ColorMixer* previous_mixer_;
   MixerGetter input_mixer_getter_;
   ColorSets sets_;
 

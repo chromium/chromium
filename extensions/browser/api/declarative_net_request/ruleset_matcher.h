@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/api/declarative_net_request/extension_url_pattern_index_matcher.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
@@ -73,7 +72,7 @@ class RulesetMatcher {
  private:
   const std::string ruleset_data_;
 
-  const CheckedPtr<const flat::ExtensionIndexedRuleset> root_;
+  const flat::ExtensionIndexedRuleset* const root_;
 
   const RulesetID id_;
 

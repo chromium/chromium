@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -123,13 +122,13 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
 
    private:
     // A weak pointer to the profile we are associated with. Not owned by us.
-    CheckedPtr<Profile> profile_;
+    Profile* profile_;
 
     // The extension service associated with the profile.
-    CheckedPtr<ExtensionService> service_;
+    ExtensionService* service_;
 
     // The extension registry associated with the profile.
-    CheckedPtr<ExtensionRegistry> registry_;
+    ExtensionRegistry* registry_;
 
     // Name for corresponding pref that keeps if the info the bubble contains
     // was acknowledged by user.
@@ -210,10 +209,10 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   void OnClose();
 
   // A weak pointer to the Browser we are associated with. Not owned by us.
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   // The associated ToolbarActionsModel. Not owned.
-  CheckedPtr<ToolbarActionsModel> model_;
+  ToolbarActionsModel* model_;
 
   // The list of extensions found.
   ExtensionIdList extension_list_;

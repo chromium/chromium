@@ -36,7 +36,6 @@
 #include "base/command_line.h"
 #include "base/debug/profiler.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -176,8 +175,8 @@ class CastTransportWrapper : public CastTransport {
  private:
   std::unique_ptr<CastTransport> transport_;
   uint32_t audio_ssrc_, video_ssrc_;
-  CheckedPtr<uint64_t> encoded_video_bytes_;
-  CheckedPtr<uint64_t> encoded_audio_bytes_;
+  uint64_t* encoded_video_bytes_;
+  uint64_t* encoded_audio_bytes_;
 };
 
 struct MeasuringPoint {
@@ -428,10 +427,8 @@ class RunOneBenchmark {
   scoped_refptr<CastEnvironment> cast_environment_sender_;
   scoped_refptr<CastEnvironment> cast_environment_receiver_;
 
-  CheckedPtr<LoopBackTransport>
-      receiver_to_sender_;  // Owned by CastTransportImpl.
-  CheckedPtr<LoopBackTransport>
-      sender_to_receiver_;  // Owned by CastTransportImpl.
+  LoopBackTransport* receiver_to_sender_;  // Owned by CastTransportImpl.
+  LoopBackTransport* sender_to_receiver_;  // Owned by CastTransportImpl.
   CastTransportWrapper transport_sender_;
   std::unique_ptr<CastTransport> transport_receiver_;
   uint64_t video_bytes_encoded_;
@@ -466,7 +463,7 @@ class TransportClient : public CastTransport::Client {
   }
 
  private:
-  const CheckedPtr<RunOneBenchmark> run_one_benchmark_;
+  RunOneBenchmark* const run_one_benchmark_;
 
   DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
@@ -479,14 +476,14 @@ void RunOneBenchmark::Create(const MeasuringPoint& p) {
       new CastTransportImpl(
           &testing_clock_sender_, base::TimeDelta::FromSeconds(1),
           std::make_unique<TransportClient>(nullptr),
-          base::WrapUnique(sender_to_receiver_.get()), task_runner_sender_),
+          base::WrapUnique(sender_to_receiver_), task_runner_sender_),
       &video_bytes_encoded_, &audio_bytes_encoded_);
 
   receiver_to_sender_ = new LoopBackTransport(cast_environment_receiver_);
   transport_receiver_ = std::make_unique<CastTransportImpl>(
       &testing_clock_receiver_, base::TimeDelta::FromSeconds(1),
       std::make_unique<TransportClient>(this),
-      base::WrapUnique(receiver_to_sender_.get()), task_runner_receiver_);
+      base::WrapUnique(receiver_to_sender_), task_runner_receiver_);
 
   cast_receiver_ =
       CastReceiver::Create(cast_environment_receiver_, audio_receiver_config_,

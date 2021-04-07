@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "components/download/database/download_db_conversions.h"
 #include "components/download/database/download_db_entry.h"
 #include "components/download/database/proto/download_entry.pb.h"
@@ -87,7 +86,7 @@ class DownloadDBTest : public testing::Test {
 
  protected:
   std::map<std::string, download_pb::DownloadDBEntry> db_entries_;
-  CheckedPtr<leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>> db_;
+  leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>* db_;
   std::unique_ptr<DownloadDBImpl> download_db_;
   bool init_success_;
   DISALLOW_COPY_AND_ASSIGN(DownloadDBTest);

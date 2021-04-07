@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_MOCK_EXTENSION_SYSTEM_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/one_shot_event.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -61,7 +60,7 @@ class MockExtensionSystem : public ExtensionSystem {
                                         bool install_immediately) override;
 
  private:
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   base::OneShotEvent ready_;
 
   DISALLOW_COPY_AND_ASSIGN(MockExtensionSystem);

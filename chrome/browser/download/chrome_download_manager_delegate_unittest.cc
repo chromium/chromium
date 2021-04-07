@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -294,7 +293,7 @@ class ChromeDownloadManagerDelegateTest
 
  private:
   base::FilePath test_download_dir_;
-  CheckedPtr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  sync_preferences::TestingPrefServiceSyncable* pref_service_;
   std::unique_ptr<content::MockDownloadManager> download_manager_;
   std::unique_ptr<TestChromeDownloadManagerDelegate> delegate_;
   MockWebContentsDelegate web_contents_delegate_;
@@ -1697,7 +1696,7 @@ class AndroidDownloadInfobarCounter
     infobar->RemoveSelf();
   }
 
-  CheckedPtr<InfoBarService> infobar_service_;
+  InfoBarService* infobar_service_;
   int infobar_count_ = 0;
 };
 

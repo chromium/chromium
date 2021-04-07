@@ -203,7 +203,7 @@ void OnDidCompleteGetAllErrors(
 void OnDidCompleteGetPrimaryIcon(
     base::OnceCallback<void(const SkBitmap*)> callback,
     const InstallableData& data) {
-  std::move(callback).Run(data.primary_icon.get());
+  std::move(callback).Run(data.primary_icon);
 }
 
 }  // namespace

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -229,7 +228,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
  private:
   // Weak. Owns this.
-  const CheckedPtr<View> view_;
+  View* const view_;
 
   // If there are any virtual children, they override any real children.
   // We own our virtual children.
@@ -238,7 +237,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // The virtual child that is currently focused.
   // This is nullptr if no virtual child is focused.
   // See also OverrideFocus() and GetFocusedDescendant().
-  CheckedPtr<AXVirtualView> focused_virtual_child_;
+  AXVirtualView* focused_virtual_child_;
 
   const ui::AXUniqueId unique_id_;
 
@@ -266,8 +265,8 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
-  CheckedPtr<Widget> next_focus_ = nullptr;
-  CheckedPtr<Widget> previous_focus_ = nullptr;
+  Widget* next_focus_ = nullptr;
+  Widget* previous_focus_ = nullptr;
 
   // This view's child tree id.
   base::Optional<ui::AXTreeID> child_tree_id_;

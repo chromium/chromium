@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -90,13 +89,11 @@ struct DeviceServiceParams {
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker =
-      nullptr;
+  network::NetworkConnectionTracker* network_connection_tracker = nullptr;
   std::string geolocation_api_key;
   CustomLocationProviderCallback custom_location_provider_callback;
   bool use_gms_core_location_provider = false;
-  CheckedPtr<GeolocationSystemPermissionManager> location_permission_manager =
-      nullptr;
+  GeolocationSystemPermissionManager* location_permission_manager = nullptr;
   WakeLockContextCallback wake_lock_context_callback;
 
 #if defined(OS_ANDROID)
@@ -205,7 +202,7 @@ class DeviceService : public mojom::DeviceService {
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   const std::string geolocation_api_key_;
   WakeLockContextCallback wake_lock_context_callback_;

@@ -4,7 +4,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -104,7 +103,7 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
   }
 
   TestGuestViewManagerFactory factory_;
-  CheckedPtr<guest_view::TestGuestViewManager> test_guest_view_manager_;
+  guest_view::TestGuestViewManager* test_guest_view_manager_;
 };
 
 // Tests that <appview> is able to navigate to another installed app.

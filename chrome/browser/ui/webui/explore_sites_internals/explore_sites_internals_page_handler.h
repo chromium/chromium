@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_EXPLORE_SITES_INTERNALS_EXPLORE_SITES_INTERNALS_PAGE_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_service.h"
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -37,8 +36,8 @@ class ExploreSitesInternalsPageHandler
   void ForceNetworkRequest(ForceNetworkRequestCallback) override;
 
   mojo::Receiver<explore_sites_internals::mojom::PageHandler> receiver_;
-  CheckedPtr<ExploreSitesService> explore_sites_service_;
-  CheckedPtr<Profile> profile_;
+  ExploreSitesService* explore_sites_service_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ExploreSitesInternalsPageHandler);
 };

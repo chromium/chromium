@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/indexed_buffer_binding_host.h"
@@ -84,7 +83,7 @@ class GPU_GLES2_EXPORT TransformFeedback : public IndexedBufferBindingHost {
   ~TransformFeedback() override;
 
   // The manager that owns this Buffer.
-  CheckedPtr<TransformFeedbackManager> manager_;
+  TransformFeedbackManager* manager_;
 
   GLuint client_id_;
   GLuint service_id_;

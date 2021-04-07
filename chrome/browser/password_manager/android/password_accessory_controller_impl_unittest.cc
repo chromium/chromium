@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -127,7 +126,7 @@ class MockPasswordManagerClient
   }
 
  private:
-  CheckedPtr<PasswordStore> password_store_;
+  PasswordStore* password_store_;
 };
 
 std::u16string password_for_str(const std::u16string& user) {

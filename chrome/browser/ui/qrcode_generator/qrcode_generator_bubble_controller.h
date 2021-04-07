@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class GURL;
@@ -56,10 +55,10 @@ class QRCodeGeneratorBubbleController
   friend class content::WebContentsUserData<QRCodeGeneratorBubbleController>;
 
   // The web_contents associated with this controller.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // Will be nullptr if no bubble is currently shown.
-  CheckedPtr<QRCodeGeneratorBubbleView> qrcode_generator_bubble_ = nullptr;
+  QRCodeGeneratorBubbleView* qrcode_generator_bubble_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

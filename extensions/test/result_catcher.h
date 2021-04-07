@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
@@ -56,7 +55,7 @@ class ResultCatcher : public content::NotificationObserver {
   std::string message_;
 
   // If non-NULL, we will listen to events from this BrowserContext only.
-  CheckedPtr<content::BrowserContext> browser_context_restriction_;
+  content::BrowserContext* browser_context_restriction_;
 
   // Only set if we're in a nested run loop waiting for results from
   // the extension.

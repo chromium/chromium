@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/services/storage/dom_storage/session_storage_area_impl.h"
 #include "components/services/storage/dom_storage/session_storage_data_map.h"
@@ -199,11 +198,11 @@ class SessionStorageNamespaceImpl final
 
   const std::string namespace_id_;
   SessionStorageMetadata::NamespaceEntry namespace_entry_;
-  CheckedPtr<AsyncDomStorageDatabase> database_ = nullptr;
+  AsyncDomStorageDatabase* database_ = nullptr;
 
-  CheckedPtr<SessionStorageDataMap::Listener> data_map_listener_;
+  SessionStorageDataMap::Listener* data_map_listener_;
   SessionStorageAreaImpl::RegisterNewAreaMap register_new_map_callback_;
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   State state_ = State::kNotPopulated;
   std::string pending_population_from_parent_namespace_;

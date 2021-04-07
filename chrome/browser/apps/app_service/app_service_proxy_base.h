@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -259,9 +258,9 @@ class AppServiceProxyBase : public KeyedService,
 
     // |host_| owns |this|, as the InnerIconLoader is an AppServiceProxyBase
     // field.
-    CheckedPtr<AppServiceProxyBase> host_;
+    AppServiceProxyBase* host_;
 
-    CheckedPtr<apps::IconLoader> overriding_icon_loader_for_testing_;
+    apps::IconLoader* overriding_icon_loader_for_testing_;
   };
 
   bool IsValidProfile();
@@ -320,7 +319,7 @@ class AppServiceProxyBase : public KeyedService,
 
   apps::PreferredAppsList preferred_apps_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // TODO(crbug.com/1061843): Remove BrowserAppLauncher and merge the interfaces
   // to AppServiceProxyBase when publishers(ExtensionApps and WebApps) can run

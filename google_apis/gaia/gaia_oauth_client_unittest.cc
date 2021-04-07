@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
@@ -107,7 +106,7 @@ class ResponseInjector {
     complete_immediately_ = complete_immediately;
   }
  private:
-  CheckedPtr<network::TestURLLoaderFactory> url_loader_factory_;
+  network::TestURLLoaderFactory* url_loader_factory_;
   GURL pending_url_;
 
   net::HttpStatusCode response_code_;

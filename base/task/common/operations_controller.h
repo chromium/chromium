@@ -8,7 +8,6 @@
 #include <atomic>
 #include <cstdint>
 
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 
 namespace base {
@@ -77,7 +76,7 @@ class BASE_EXPORT OperationsController {
    private:
     friend class OperationsController;
     explicit OperationToken(OperationsController* outer) : outer_(outer) {}
-    CheckedPtr<OperationsController> outer_;
+    OperationsController* outer_;
   };
 
   OperationsController();

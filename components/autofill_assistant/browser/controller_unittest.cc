@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -242,8 +241,8 @@ class ControllerTest : public content::RenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::TimeTicks now_;
   std::vector<AutofillAssistantState> states_;
-  CheckedPtr<MockService> mock_service_;
-  CheckedPtr<MockWebController> mock_web_controller_;
+  MockService* mock_service_;
+  MockWebController* mock_web_controller_;
   NiceMock<MockClient> mock_client_;
   std::unique_ptr<MockRuntimeManager> mock_runtime_manager_;
   NiceMock<MockControllerObserver> mock_observer_;
@@ -278,7 +277,7 @@ class NavigationStateChangeListener
   std::vector<NavigationState> events;
 
  private:
-  const CheckedPtr<ScriptExecutorDelegate> delegate_;
+  ScriptExecutorDelegate* const delegate_;
 };
 
 NavigationStateChangeListener::~NavigationStateChangeListener() {}

@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -100,7 +99,7 @@ class MockMediaNotificationContainer : public MediaNotificationContainer {
   void SetView(MediaNotificationViewModernImpl* view) { view_ = view; }
 
  private:
-  CheckedPtr<MediaNotificationViewModernImpl> view_;
+  MediaNotificationViewModernImpl* view_;
 
   DISALLOW_COPY_AND_ASSIGN(MockMediaNotificationContainer);
 };

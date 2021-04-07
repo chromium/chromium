@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -66,8 +65,7 @@ class BackgroundIO : public base::RefCountedThreadSafe<BackgroundIO> {
 
   // An event to signal when the operation completes.
   base::WaitableEvent io_completed_;
-  CheckedPtr<InFlightIO>
-      controller_;              // The controller that tracks all operations.
+  InFlightIO* controller_;  // The controller that tracks all operations.
   base::Lock controller_lock_;  // A lock protecting clearing of controller_.
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundIO);

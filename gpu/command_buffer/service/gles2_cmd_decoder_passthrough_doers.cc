@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
 #include <memory>
@@ -325,7 +324,7 @@ class ScopedUnpackStateButAlignmentReset {
   }
 
  private:
-  CheckedPtr<gl::GLApi> api_;
+  gl::GLApi* api_;
   GLint skip_pixels_ = 0;
   GLint skip_rows_ = 0;
   GLint skip_images_ = 0;
@@ -351,7 +350,7 @@ class ScopedPackStateRowLengthReset {
   }
 
  private:
-  CheckedPtr<gl::GLApi> api_;
+  gl::GLApi* api_;
   GLint row_length_ = 0;
 };
 

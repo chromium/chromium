@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -72,7 +71,7 @@ class GeneratedPrefs : public KeyedService {
   // Preference object map.
   PrefsMap prefs_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(GeneratedPrefs);
 };

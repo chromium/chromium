@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_WEB_CONTENTS_HELPER_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_WEB_CONTENTS_HELPER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace extensions {
@@ -28,7 +27,7 @@ class WebContentsHelper : public content::WebContentsObserver {
 
  private:
   // Non-owned pointer.
-  const CheckedPtr<RulesetManager> ruleset_manager_ = nullptr;
+  RulesetManager* const ruleset_manager_ = nullptr;
 };
 
 }  // namespace declarative_net_request

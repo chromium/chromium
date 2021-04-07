@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -197,25 +196,25 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   void UpdateSyncInfoContainerBackground();
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
-  const CheckedPtr<views::Button> anchor_button_;
+  views::Button* const anchor_button_;
 
   // Component containers.
-  CheckedPtr<views::View> heading_container_ = nullptr;
-  CheckedPtr<views::View> identity_info_container_ = nullptr;
-  CheckedPtr<views::View> sync_info_container_ = nullptr;
-  CheckedPtr<views::View> shortcut_features_container_ = nullptr;
-  CheckedPtr<views::View> features_container_ = nullptr;
-  CheckedPtr<views::View> profile_mgmt_separator_container_ = nullptr;
-  CheckedPtr<views::View> profile_mgmt_heading_container_ = nullptr;
-  CheckedPtr<views::View> selectable_profiles_container_ = nullptr;
-  CheckedPtr<views::View> profile_mgmt_shortcut_features_container_ = nullptr;
-  CheckedPtr<views::View> profile_mgmt_features_container_ = nullptr;
+  views::View* heading_container_ = nullptr;
+  views::View* identity_info_container_ = nullptr;
+  views::View* sync_info_container_ = nullptr;
+  views::View* shortcut_features_container_ = nullptr;
+  views::View* features_container_ = nullptr;
+  views::View* profile_mgmt_separator_container_ = nullptr;
+  views::View* profile_mgmt_heading_container_ = nullptr;
+  views::View* selectable_profiles_container_ = nullptr;
+  views::View* profile_mgmt_shortcut_features_container_ = nullptr;
+  views::View* profile_mgmt_features_container_ = nullptr;
 
   // The first profile button that should be focused when the menu is opened
   // using a key accelerator.
-  CheckedPtr<views::Button> first_profile_button_ = nullptr;
+  views::Button* first_profile_button_ = nullptr;
 
   // May be disabled by tests that only watch to histogram records and don't
   // care about actual actions.
