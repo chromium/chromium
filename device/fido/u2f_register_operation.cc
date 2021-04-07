@@ -72,14 +72,7 @@ void U2fRegisterOperation::TrySign() {
 void U2fRegisterOperation::OnCheckForExcludedKeyHandle(
     base::Optional<std::vector<uint8_t>> device_response) {
   if (canceled_) {
-    FIDO_LOG(DEBUG) << "-> u2f (cancelled)";
     return;
-  }
-
-  if (device_response) {
-    FIDO_LOG(DEBUG) << "-> u2f " << base::HexEncode(*device_response);
-  } else {
-    FIDO_LOG(DEBUG) << "-> u2f (empty)";
   }
 
   auto result = apdu::ApduResponse::Status::SW_WRONG_DATA;
@@ -162,14 +155,7 @@ void U2fRegisterOperation::TryRegistration() {
 void U2fRegisterOperation::OnRegisterResponseReceived(
     base::Optional<std::vector<uint8_t>> device_response) {
   if (canceled_) {
-    FIDO_LOG(DEBUG) << "-> u2f (cancelled)";
     return;
-  }
-
-  if (device_response) {
-    FIDO_LOG(DEBUG) << "-> u2f " << base::HexEncode(*device_response);
-  } else {
-    FIDO_LOG(DEBUG) << "-> u2f (empty)";
   }
 
   auto result = apdu::ApduResponse::Status::SW_WRONG_DATA;

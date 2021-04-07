@@ -14,9 +14,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/device_event_log/device_event_log.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 
@@ -56,13 +54,11 @@ class DeviceOperation : public GenericDeviceOperation {
   void DispatchU2FCommand(base::Optional<std::vector<uint8_t>> command,
                           FidoDevice::DeviceCallback callback) {
     if (!command || device_->is_in_error_state()) {
-      FIDO_LOG(DEBUG) << "<- u2f (error)";
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
       return;
     }
 
-    FIDO_LOG(DEBUG) << "<- u2f " << base::HexEncode(*command);
     token_ = device_->DeviceTransact(std::move(*command), std::move(callback));
   }
 
