@@ -127,6 +127,8 @@ class AccountReconcilor : public KeyedService,
   bool IsReconcileBlocked() const;
 
  protected:
+  void OnAddAccountToCookieCompleted(const CoreAccountId& account_id,
+                                     const GoogleServiceAuthError& error);
   void OnSetAccountsInCookieCompleted(signin::SetAccountsInCookieResult result);
   void OnLogOutFromCookieCompleted(const GoogleServiceAuthError& error);
 
@@ -134,7 +136,6 @@ class AccountReconcilor : public KeyedService,
   friend class AccountReconcilorTest;
   friend class DiceBrowserTest;
   friend class BaseAccountReconcilorTestTable;
-  friend class AccountReconcilorTestForceDiceMigration;
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTestForceDiceMigration,
                            TableRowTestCheckNoOp);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
@@ -150,18 +151,21 @@ class AccountReconcilor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTestMiceMultilogin, TableRowTest);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMiceTest,
                            AccountReconcilorStateScheduled);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceEndpointParamTest,
                            DiceTokenServiceRegistration);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceEndpointParamTest,
                            DiceReconcileWithoutSignin);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest, DiceReconcileNoop);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceEndpointParamTest,
+                           DiceReconcileNoop);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceEndpointParamTest,
                            DiceLastKnownFirstAccount);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest, UnverifiedAccountNoop);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest, UnverifiedAccountMerge);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceEndpointParamTest,
+                           UnverifiedAccountNoop);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceEndpointParamTest,
+                           UnverifiedAccountMerge);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceEndpointParamTest,
                            HandleSigninDuringReconcile);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceEndpointParamTest,
                            DiceReconcileReuseGaiaFirstAccount);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest, DiceDeleteCookie);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest, TokensNotLoaded);
@@ -242,6 +246,7 @@ class AccountReconcilor : public KeyedService,
 
   // All actions with side effects, only doing meaningful work if account
   // consistency is enabled. Virtual so that they can be overridden in tests.
+  virtual void PerformMergeAction(const CoreAccountId& account_id);
   virtual void PerformLogoutAllAccountsAction();
   virtual void PerformSetCookiesAction(
       const signin::MultiloginParameters& parameters);
@@ -253,10 +258,14 @@ class AccountReconcilor : public KeyedService,
                        const std::vector<CoreAccountId>& chrome_accounts,
                        std::vector<gaia::ListedAccount>&& gaia_accounts);
   void AbortReconcile();
+  void CalculateIfMergeSessionReconcileIsDone();
   void ScheduleStartReconcileIfChromeAccountsChanged();
 
   // Returns the list of valid accounts from the TokenService.
   std::vector<CoreAccountId> LoadValidAccountsFromTokenService() const;
+
+  // Note internally that this |account_id| is added to the cookie jar.
+  bool MarkAccountAsAddedToCookie(const CoreAccountId& account_id);
 
   // The reconcilor only starts when the token service is ready.
   bool IsIdentityManagerReady();
@@ -290,6 +299,9 @@ class AccountReconcilor : public KeyedService,
   void UnblockReconcile();
 
   void HandleReconcileTimeout();
+
+  // Returns true is multilogin endpoint can be enabled.
+  bool IsMultiloginEndpointEnabled() const;
 
   // Returns true if current array of existing accounts in cookie is different
   // from the desired one. If this returns false, the multilogin call would be a
@@ -338,6 +350,7 @@ class AccountReconcilor : public KeyedService,
   bool reconcile_is_noop_;
 
   // Used during reconcile action.
+  std::vector<CoreAccountId> add_to_cookie_;  // Progress of AddAccount calls.
   bool set_accounts_in_progress_;             // Progress of SetAccounts calls.
   bool log_out_in_progress_;                  // Progress of LogOut calls.
   bool chrome_accounts_changed_;

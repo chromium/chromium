@@ -17,6 +17,10 @@ bool AccountReconcilorDelegate::IsReconcileEnabled() const {
   return false;
 }
 
+bool AccountReconcilorDelegate::IsMultiloginEndpointEnabled() const {
+  return true;
+}
+
 gaia::GaiaSource AccountReconcilorDelegate::GetGaiaApiSource() const {
   NOTREACHED() << "Reconcile is not enabled, no Gaia API calls should be made.";
   return gaia::GaiaSource::kChrome;

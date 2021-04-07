@@ -935,6 +935,9 @@ extern const char kNotificationSchedulerImmediateBackgroundTaskDescription[];
 extern const char kNotificationsSystemFlagName[];
 extern const char kNotificationsSystemFlagDescription[];
 
+extern const char kUseMultiloginEndpointName[];
+extern const char kUseMultiloginEndpointDescription[];
+
 extern const char kOmniboxAdaptiveSuggestionsCountName[];
 extern const char kOmniboxAdaptiveSuggestionsCountDescription[];
 

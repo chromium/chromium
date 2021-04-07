@@ -40,6 +40,11 @@ class AccountReconcilorDelegate {
   // false.
   virtual bool IsReconcileEnabled() const;
 
+  // Returns whether the OAuth multilogin endpoint can be used to build the Gaia
+  // cookies.
+  // Default implementation returns true.
+  virtual bool IsMultiloginEndpointEnabled() const;
+
   // Returns the value to set in the "source" parameter for Gaia API calls.
   virtual gaia::GaiaSource GetGaiaApiSource() const;
 
