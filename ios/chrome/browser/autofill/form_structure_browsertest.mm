@@ -6,6 +6,7 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
@@ -78,16 +79,18 @@ base::FilePath GetIOSOutputDirectory() {
 
 const std::vector<base::FilePath> GetTestFiles() {
   base::FilePath dir(GetIOSInputDirectory());
-  base::FileEnumerator input_files(dir, false, base::FileEnumerator::FILES);
-  std::vector<base::FilePath> files;
-  for (base::FilePath input_file = input_files.Next(); !input_file.empty();
-       input_file = input_files.Next()) {
-    files.push_back(input_file);
+  std::string input_list_string;
+  if (!base::ReadFileToString(dir.AppendASCII("autofill_test_files"),
+                              &input_list_string)) {
+    return {};
   }
-  std::sort(files.begin(), files.end());
-
-  base::mac::ClearAmIBundledCache();
-  return files;
+  std::vector<base::FilePath> result;
+  for (const base::StringPiece& piece :
+       base::SplitStringPiece(input_list_string, "\n", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    result.push_back(dir.AppendASCII(piece));
+  }
+  return result;
 }
 
 }  // namespace
