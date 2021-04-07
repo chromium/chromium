@@ -156,7 +156,7 @@
   },
   {
     "name": "arc-custom-tabs-experiment",
-    "owners": [ "hashimoto", "jschettler" ],
+    "owners": [ "hashimoto", "dominickn" ],
     "expiry_milestone": 95
   },
   {
@@ -4590,7 +4590,7 @@
   },
   {
     "name": "scan-app-media-link",
-    "owners": [ "gavinwill", "jschettler" ],
+    "owners": [ "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 95
   },
   {
