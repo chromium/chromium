@@ -49,6 +49,7 @@
 
     <!-- Link Group -->
     <item type="id" name="contextmenu_open_in_new_tab" />
+    <item type="id" name="contextmenu_open_in_new_tab_in_group" />
     <item type="id" name="contextmenu_open_in_incognito_tab" />
     <item type="id" name="contextmenu_open_in_other_window" />
     <item type="id" name="contextmenu_open_in_ephemeral_tab" />

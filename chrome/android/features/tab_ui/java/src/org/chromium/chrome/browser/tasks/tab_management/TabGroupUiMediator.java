@@ -216,14 +216,24 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
                                     ? ReasonToShow.LONG_PRESS
                                     : ReasonToShow.NEW_TAB);
                 }
-                if (type == TabLaunchType.FROM_CHROME_UI && mIsTabGroupUiVisible) {
-                    mModel.set(TabGroupUiProperties.INITIAL_SCROLL_INDEX,
-                            getTabsToShowForId(tab.getId()).size() - 1);
-                }
+
                 if (type == TabLaunchType.FROM_CHROME_UI || type == TabLaunchType.FROM_RESTORE
                         || type == TabLaunchType.FROM_STARTUP) {
                     return;
                 }
+
+                if (type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
+                        && !TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()) {
+                    return;
+                }
+
+                if (type == TabLaunchType.FROM_TAB_GROUP_UI && mIsTabGroupUiVisible) {
+                    mModel.set(TabGroupUiProperties.INITIAL_SCROLL_INDEX,
+                            getTabsToShowForId(tab.getId()).size() - 1);
+                }
+
+                if (mIsTabGroupUiVisible) return;
+
                 resetTabStripWithRelatedTabsForId(tab.getId());
             }
 

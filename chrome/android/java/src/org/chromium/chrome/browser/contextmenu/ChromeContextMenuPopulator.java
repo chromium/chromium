@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareHelper;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -343,7 +344,17 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (FirstRunStatus.getFirstRunFlowComplete() && !isEmptyUrl(mParams.getUrl())
                     && UrlUtilities.isAcceptedScheme(mParams.getUrl().getSpec())) {
                 if (mMode == ContextMenuMode.NORMAL) {
-                    linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
+                    if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()) {
+                        linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
+                    } else {
+                        if (TabUiFeatureUtilities.showContextMenuOpenNewTabInGroupItemFirst()) {
+                            linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB_IN_GROUP));
+                            linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
+                        } else {
+                            linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
+                            linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB_IN_GROUP));
+                        }
+                    }
                     if (!mItemDelegate.isIncognito() && mItemDelegate.isIncognitoSupported()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
                     }
@@ -572,6 +583,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
             mItemDelegate.onOpenInNewTab(mParams.getUrl(), mParams.getReferrer());
+        } else if (itemId == R.id.contextmenu_open_in_new_tab_in_group) {
+            mItemDelegate.onOpenInNewTabInGroup(mParams.getUrl(), mParams.getReferrer());
         } else if (itemId == R.id.contextmenu_open_in_incognito_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_INCOGNITO_TAB);
             mItemDelegate.onOpenInNewIncognitoTab(mParams.getUrl());

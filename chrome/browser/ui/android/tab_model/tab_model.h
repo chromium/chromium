@@ -91,6 +91,9 @@ class TabModel {
     // - "+" button in the bottom tab strip
     // - "+" button in the tab grid dialog
     FROM_TAB_GROUP_UI,
+    // Open from the long press context menu item 'Open in new tab in group'.
+    // Will not be brought to the foreground.
+    FROM_LONGPRESS_BACKGROUND_IN_GROUP,
     // Must be last.
     SIZE
   };

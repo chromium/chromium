@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST;
+
 import android.os.Build;
 import android.text.TextUtils;
 
@@ -98,9 +100,6 @@ public class TabUiFeatureUtilities {
     public static final BooleanCachedFieldTrialParameter ENABLE_TAB_GROUP_AUTO_CREATION =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, TAB_GROUP_AUTO_CREATION_PARAM, true);
-
-    private static final String CONTEXTMENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST =
-            "open_new_tab_in_group_first";
 
     private static Boolean sTabManagementModuleSupportedForTesting;
 
@@ -236,13 +235,13 @@ public class TabUiFeatureUtilities {
 
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
 
-        if (!sharedPreferencesManager.contains(CONTEXTMENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST)) {
+        if (!sharedPreferencesManager.contains(CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST)) {
             Random random = new Random();
             sharedPreferencesManager.writeBoolean(
-                    CONTEXTMENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST, random.nextBoolean());
+                    CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST, random.nextBoolean());
         }
 
         return sharedPreferencesManager.readBoolean(
-                CONTEXTMENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST, false);
+                CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST, false);
     }
 }

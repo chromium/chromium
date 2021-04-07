@@ -318,6 +318,15 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void addTab_TabLaunchedFromLongPressBackgroundInGroup() {
+        Tab newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, TAB1_ID);
+
+        doReturn(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP).when(newTab).getLaunchType();
+        addTabToTabModel(POSITION1 + 1, newTab);
+        assertThat(CriticalPersistedTabData.from(newTab).getRootId(), equalTo(TAB1_ROOT_ID));
+    }
+
+    @Test
     public void addTab_TabLaunchedFromChromeUi() {
         Tab newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, TAB1_ID);
 

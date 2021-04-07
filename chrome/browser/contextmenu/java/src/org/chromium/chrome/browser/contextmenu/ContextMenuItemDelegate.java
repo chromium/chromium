@@ -81,6 +81,13 @@ public interface ContextMenuItemDelegate {
     void onOpenInNewTab(GURL url, Referrer referrer);
 
     /**
+     * Called when {@code url} should be opened in a new tab in the same group as the current
+     * {@link Tab}.
+     * @param url The URL to open.
+     */
+    void onOpenInNewTabInGroup(GURL url, Referrer referrer);
+
+    /**
      * Called when the {@code url} should be opened in a new incognito tab.
      * @param url The URL to open.
      */

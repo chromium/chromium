@@ -213,6 +213,16 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
+    public void onOpenInNewTabInGroup(GURL url, Referrer referrer) {
+        RecordUserAction.record("MobileNewTabOpened");
+        RecordUserAction.record("LinkOpenedInNewTab");
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
+        loadUrlParams.setReferrer(referrer);
+        mTabModelSelector.openNewTab(loadUrlParams,
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, mTab, isIncognito());
+    }
+
+    @Override
     public void onLoadOriginalImage() {
         mLoadOriginalImageRequestedForPageLoad = true;
         mTab.loadOriginalImage();

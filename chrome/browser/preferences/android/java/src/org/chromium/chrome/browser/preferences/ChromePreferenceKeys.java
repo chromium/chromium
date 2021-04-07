@@ -237,6 +237,14 @@ public final class ChromePreferenceKeys {
             "Chrome.Contextmenu.OpenImageInEphemeralTabClicked";
     public static final String CONTEXT_MENU_OPEN_IN_EPHEMERAL_TAB_CLICKED =
             "Chrome.Contextmenu.OpenInEphemeralTabClicked";
+
+    /**
+     * Key used to save the context menu item order for the "Open in new tab" item and
+     * the "Open in new tab in group" item.
+     */
+    public static final String CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST =
+            "Chrome.ContextMenu.OpenNewTabInGroupFirst";
+
     public static final String CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED =
             "Chrome.ContextMenu.SearchWithGoogleLensClicked";
 
@@ -952,6 +960,7 @@ public final class ChromePreferenceKeys {
                 CONDITIONAL_TAB_STRIP_OPT_OUT,
                 CONTEXT_MENU_OPEN_IMAGE_IN_EPHEMERAL_TAB_CLICKED,
                 CONTEXT_MENU_OPEN_IN_EPHEMERAL_TAB_CLICKED,
+                CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST,
                 CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED,
                 CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
                 CONTEXT_MENU_SHOP_SIMILAR_PRODUCTS_CLICKED,

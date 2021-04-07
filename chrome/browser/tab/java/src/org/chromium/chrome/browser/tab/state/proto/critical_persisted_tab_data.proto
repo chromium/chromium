@@ -47,8 +47,9 @@ message CriticalPersistedTabDataProto {
     FROM_STARTUP = 11;
     FROM_START_SURFACE = 12;
     FROM_TAB_GROUP_UI = 13;
-    SIZE = 14;
-    UNKNOWN = 15;
+    FROM_LONGPRESS_BACKGROUND_IN_GROUP = 14;
+    SIZE = 15;
+    UNKNOWN = 16;
   }
   optional LaunchTypeAtCreation launch_type_at_creation = 8;
 }

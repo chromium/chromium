@@ -528,7 +528,10 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
 
         if (isTabModelRestored() && !mIsResetting
-                && (mGroupAutoCreation || tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI)) {
+                && (mGroupAutoCreation
+                        || (tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI
+                                || tab.getLaunchType()
+                                        == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP))) {
             Tab parentTab = TabModelUtils.getTabById(
                     getTabModel(), CriticalPersistedTabData.from(tab).getParentId());
             if (parentTab != null) {
