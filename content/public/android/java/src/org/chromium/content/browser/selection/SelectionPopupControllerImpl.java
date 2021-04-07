@@ -853,7 +853,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
         if (!mCanEditRichly) return false;
 
-        return Clipboard.getInstance().canPasteAsPlainText();
+        // We need to show "paste as plain text" when Clipboard contains the HTML text. In addition
+        // to that, on Android, Spanned could be copied to Clipboard as plain_text MIME type, but in
+        // some cases, Spanned could have text format, we need to show "paste as plain text" when
+        // that happens as well.
+        return Clipboard.getInstance().hasHTMLOrStyledText();
     }
 
     private void updateAssistMenuItem(Menu menu) {

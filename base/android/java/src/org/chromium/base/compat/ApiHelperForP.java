@@ -5,6 +5,7 @@
 package org.chromium.base.compat;
 
 import android.annotation.TargetApi;
+import android.content.ClipboardManager;
 import android.content.pm.PackageInfo;
 import android.location.LocationManager;
 import android.net.LinkProperties;
@@ -47,5 +48,10 @@ public final class ApiHelperForP {
     /** See {@link TelephonyManager#getSignalStrength() }. */
     public static SignalStrength getSignalStrength(TelephonyManager telephonyManager) {
         return telephonyManager.getSignalStrength();
+    }
+
+    /** See {@link ClipboardManager#clearPrimaryClip() }. */
+    public static void clearPrimaryClip(ClipboardManager clipboardManager) {
+        clipboardManager.clearPrimaryClip();
     }
 }

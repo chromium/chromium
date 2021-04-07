@@ -96,33 +96,33 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
 
     @Test
     @SmallTest
-    public void testPasteAsPlainTextForNormalText() {
+    public void testhasHTMLOrStyledTextForNormalText() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Clipboard.getInstance().setText("SampleTextToCopy");
-            Assert.assertFalse(Clipboard.getInstance().canPasteAsPlainText());
+            Assert.assertFalse(Clipboard.getInstance().hasHTMLOrStyledText());
         });
     }
 
     @Test
     @SmallTest
-    public void testPasteAsPlainTextForStyledText() {
+    public void testhasHTMLOrStyledTextForStyledText() {
         SpannableString spanString = new SpannableString("SpannableString");
         spanString.setSpan(new BackgroundColorSpan(0), 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         ClipData clipData =
                 ClipData.newPlainText("text", spanString.subSequence(0, spanString.length() - 1));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Clipboard.getInstance().setPrimaryClipNoException(clipData);
-            Assert.assertTrue(Clipboard.getInstance().canPasteAsPlainText());
+            Assert.assertTrue(Clipboard.getInstance().hasHTMLOrStyledText());
         });
     }
 
     @Test
     @SmallTest
-    public void testPastePopupPasteAsPlainTextForHtmlText() {
+    public void testhasHTMLOrStyledTextForHtmlText() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Clipboard.getInstance().setHTMLText(
                     "<span style=\"color: red;\">HTMLTextToCopy</span>", "HTMLTextToCopy");
-            Assert.assertTrue(Clipboard.getInstance().canPasteAsPlainText());
+            Assert.assertTrue(Clipboard.getInstance().hasHTMLOrStyledText());
         });
     }
 }

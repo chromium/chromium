@@ -115,7 +115,11 @@ class ClipboardMap {
   // Updates |last_modified_time_| to |time| and writes it to |local_state_|.
   void UpdateLastModifiedTime(base::Time time);
 
-  // Updates |map_| and |map_state_| if necessary by fetching data from Java.
+  // Updates 'map_' and 'map_state_' if necessary by fetching data from Java.
+  // Start from Android S, accessing the system clipboard will cause a
+  // pop up notification showing that the app copied content from clipboard. To
+  // avoid that, This function should only be called when we really need to read
+  // the data.
   void UpdateFromAndroidClipboard();
 
   std::map<ClipboardFormatType, std::string> map_ GUARDED_BY(lock_);
@@ -176,17 +180,62 @@ void ClipboardMap::ClearLastModifiedTime() {
 
 bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
   base::AutoLock lock(lock_);
-  UpdateFromAndroidClipboard();
+  if (map_state_ == MapState::kUpToDate) {
+    // If the 'map_' is up to date, we can just check with it.
+    return base::Contains(map_, format);
+  }
+
+  // If the 'map_' is not up to date, we need to check with the system if the
+  // formats are supported by Android clipboard.
+  // We will not update the map from here since update the map will update both
+  // formats and data, but we only need format info here. Also, reading data
+  // from the system clipboard will cause clipboard access notification popping
+  // up.
+  JNIEnv* env = AttachCurrentThread();
+  // TODO(crbug.com/1194601): Create a single method for the follow JNI calls.
+  if (format == ClipboardFormatType::GetPlainTextType()) {
+    return Java_Clipboard_hasCoercedText(env, clipboard_manager_);
+  } else if (format == ClipboardFormatType::GetHtmlType()) {
+    return Java_Clipboard_hasHTMLOrStyledText(env, clipboard_manager_);
+  } else if (format == ClipboardFormatType::GetType(kMimeTypeImageURI)) {
+    return Java_Clipboard_hasImage(env, clipboard_manager_);
+  }
+
+  // Android unsupported format types, check local only.
   return base::Contains(map_, format);
 }
 
 std::vector<ClipboardFormatType> ClipboardMap::GetFormats() {
   base::AutoLock lock(lock_);
-  UpdateFromAndroidClipboard();
   std::vector<ClipboardFormatType> formats;
   formats.reserve(map_.size());
-  for (const auto& it : map_)
+
+  // Check with Android for Android clipboard supported formats.
+  if (map_state_ != MapState::kUpToDate) {
+    JNIEnv* env = AttachCurrentThread();
+    if (Java_Clipboard_hasCoercedText(env, clipboard_manager_)) {
+      formats.push_back(ClipboardFormatType::GetPlainTextType());
+    }
+    if (Java_Clipboard_hasHTMLOrStyledText(env, clipboard_manager_)) {
+      formats.push_back(ClipboardFormatType::GetHtmlType());
+    }
+    if (Java_Clipboard_hasImage(env, clipboard_manager_)) {
+      formats.push_back(ClipboardFormatType::GetBitmapType());
+    }
+  }
+
+  // Check local cache, since the formats not supported by Android clipboard are
+  // not synced on any other layer.
+  for (const auto& it : map_) {
+    if (map_state_ != MapState::kUpToDate &&
+        (it.first == ClipboardFormatType::GetPlainTextType() ||
+         it.first == ClipboardFormatType::GetHtmlType() ||
+         it.first == ClipboardFormatType::GetType(kMimeTypeImageURI))) {
+      continue;
+    }
     formats.push_back(it.first);
+  }
+
   return formats;
 }
 

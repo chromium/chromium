@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 import android.text.style.ParagraphStyle;
 import android.text.style.UpdateAppearance;
@@ -35,6 +36,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForO;
+import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
@@ -147,6 +149,22 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         }
     }
 
+    @CalledByNative
+    private boolean hasCoercedText() {
+        ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+        if (description == null) return false;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            // On Pre-P, {@link clear()} uses an empty ClipData#newPlainText to clear the clipboard,
+            // which will create an empty MIMETYPE_TEXT_PLAIN in the clipboard, so we need to read
+            // the real clipboard data to check.
+            return !TextUtils.isEmpty(getCoercedText());
+        }
+
+        return description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                || description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML);
+    }
+
     private boolean hasStyleSpan(Spanned spanned) {
         Class<?>[] styleClasses = {
                 CharacterStyle.class, ParagraphStyle.class, UpdateAppearance.class};
@@ -195,6 +213,22 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     }
 
     /**
+     * Check if the system clipboard contains HTML text or plain text with stlyed text.
+     * Since Spanned could be copied to Clipboard as plain_text MIME type, and it can be converted
+     * to HTML by android.text.Html#toHtml().
+     * @return True if the system clipboard contains the html text or the styled text.
+     */
+    @CalledByNative
+    public boolean hasHTMLOrStyledText() {
+        ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+        if (description == null) return false;
+
+        boolean isPlainType = description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
+        return (isPlainType && hasStyledText(description))
+                || description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML);
+    }
+
+    /**
      * Gets the Uri of top item on the primary clip on the Android clipboard if the mime type is
      * image.
      *
@@ -206,10 +240,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         // crbug.com/654802).
         try {
             ClipData clipData = mClipboardManager.getPrimaryClip();
-            if (clipData == null || clipData.getItemCount() == 0) return null;
-
-            ClipDescription description = clipData.getDescription();
-            if (description == null || !description.hasMimeType("image/*")) {
+            if (clipData == null || clipData.getItemCount() == 0
+                    || !hasImageMimeType(clipData.getDescription())) {
                 return null;
             }
 
@@ -248,6 +280,16 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         } catch (IOException | SecurityException e) {
             return null;
         }
+    }
+
+    @CalledByNative
+    private boolean hasImage() {
+        ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+        return hasImageMimeType(description);
+    }
+
+    private static boolean hasImageMimeType(ClipDescription description) {
+        return (description != null) && (description.hasMimeType("image/*"));
     }
 
     /**
@@ -322,13 +364,14 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
                 imageData, extension, (Uri uri) -> { setImageUri(uri); });
     }
 
-    /**
-     * Clears the Clipboard Primary clip.
-     *
-     */
+    /** Clears the Clipboard Primary clip. */
     @CalledByNative
     private void clear() {
-        setPrimaryClipNoException(ClipData.newPlainText(null, null));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            setPrimaryClipNoException(ClipData.newPlainText(null, null));
+            return;
+        }
+        ApiHelperForP.clearPrimaryClip(mClipboardManager);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -509,25 +552,6 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
      */
     public boolean canPaste() {
         return mClipboardManager.hasPrimaryClip();
-    }
-
-    /**
-     * Check if need to show "paste as plain text" option.
-     * Don't show "paste as plain text" when "paste" and "paste as plain text" would do exactly the
-     * same.
-     * @return True if the system clipboard contains a styled text, or html text.
-     */
-    @VisibleForTesting
-    public boolean canPasteAsPlainText() {
-        ClipDescription description = mClipboardManager.getPrimaryClipDescription();
-        if (description == null) return false;
-
-        boolean isPlainType = description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
-        // On Android, Spanned could be copied to Clipboard as plain_text MIME type, but in some
-        // cases, Spanned could have text format, we need to show "paste as plain text" when
-        // that happens.
-        return (isPlainType && hasStyledText(description))
-                || description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML);
     }
 
     /**
