@@ -164,20 +164,10 @@ int RendererMain(const MainFunctionParams& parameters) {
   base::android::RecordLibraryLoaderRendererHistograms();
 #endif
 
-  base::Optional<base::Time> initial_virtual_time;
-  if (command_line.HasSwitch(switches::kInitialVirtualTime)) {
-    double initial_time;
-    if (base::StringToDouble(
-            command_line.GetSwitchValueASCII(switches::kInitialVirtualTime),
-            &initial_time)) {
-      initial_virtual_time = base::Time::FromDoubleT(initial_time);
-    }
-  }
-
   blink::Platform::InitializeBlink();
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler =
       blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler(
-          CreateMainThreadMessagePump(), initial_virtual_time);
+          CreateMainThreadMessagePump());
 
   platform.PlatformInitialize();
 

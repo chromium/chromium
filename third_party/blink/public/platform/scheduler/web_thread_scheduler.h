@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_WEB_THREAD_SCHEDULER_H_
 
 #include <memory>
+
 #include "base/macros.h"
 #include "base/message_loop/message_pump.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -61,12 +61,8 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
 
   // If |message_pump| is null caller must have registered one using
   // base::MessageLoop.
-  // If |initial_virtual_time| is specified then the
-  // scheduler will be created with virtual time enabled and paused, and
-  // base::Time will be overridden to start at |initial_virtual_time|.
   static std::unique_ptr<WebThreadScheduler> CreateMainThreadScheduler(
-      std::unique_ptr<base::MessagePump> message_pump = nullptr,
-      base::Optional<base::Time> initial_virtual_time = base::nullopt);
+      std::unique_ptr<base::MessagePump> message_pump = nullptr);
 
   // Returns compositor thread scheduler for the compositor thread
   // of the current process.
