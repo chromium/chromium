@@ -2511,8 +2511,9 @@ TEST_F(WebRtcEventLogManagerTest,
   }
 }
 
+// TODO(crbug.com/1112027): Fix this flaky test.
 TEST_F(WebRtcEventLogManagerTest,
-       LogMultipleActiveRemoteLogsDifferentBrowserContexts) {
+       DISABLED_LogMultipleActiveRemoteLogsDifferentBrowserContexts) {
   constexpr size_t kLogsNum = 3;
   std::unique_ptr<TestingProfile> browser_contexts[kLogsNum];
   std::vector<std::unique_ptr<MockRenderProcessHost>> rphs;
