@@ -19,6 +19,10 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/signin/public/base/signin_switches.h"
+#endif
+
 namespace signin {
 
 namespace {
@@ -199,7 +203,14 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
 // Sessions and Active Directory logins. Guest Sessions have already been
 // filtered upstream and we want to enforce account consistency in Public
 // Sessions and Active Directory logins.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  force_account_consistency = true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
+    force_account_consistency = true;
+  }
+#endif
+
   if (!force_account_consistency && gaia_id.empty()) {
 #if defined(OS_ANDROID) || defined(OS_IOS)
     if (base::FeatureList::IsEnabled(kMobileIdentityConsistency) &&
@@ -211,7 +222,6 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
     return std::string();
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (!gaia_id.empty() &&
       IsUrlEligibleToIncludeGaiaId(url, is_header_request)) {

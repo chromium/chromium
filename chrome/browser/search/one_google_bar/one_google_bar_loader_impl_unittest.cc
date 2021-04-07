@@ -26,6 +26,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/signin/public/base/signin_switches.h"
+#endif
+
 using testing::_;
 using testing::DoAll;
 using testing::Eq;
@@ -302,22 +306,32 @@ TEST_F(OneGoogleBarLoaderImplTest, MirrorAccountConsistencyNotRequired) {
   EXPECT_CALL(callback, Run(_, _)).WillOnce(Quit(&loop));
   loop.Run();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS, X-Chrome-Connected header is present, but
-  // enable_account_consistency is set to false.
-  std::string header_value;
-  EXPECT_TRUE(last_request_headers().GetHeader(signin::kChromeConnectedHeader,
-                                               &header_value));
-  // mode = PROFILE_MODE_DEFAULT
-  EXPECT_EQ(
-      "source=Chrome,mode=0,enable_account_consistency=false,"
-      "consistency_enabled_by_default=false",
-      header_value);
-#else
   // On not Chrome OS, the X-Chrome-Connected header must not be present.
-  EXPECT_FALSE(
-      last_request_headers().HasHeader(signin::kChromeConnectedHeader));
+  bool check_x_chrome_connected_header = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  check_x_chrome_connected_header = true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
+    check_x_chrome_connected_header = true;
+  }
 #endif
+
+  if (check_x_chrome_connected_header) {
+    // On Chrome OS, X-Chrome-Connected header is present, but
+    // enable_account_consistency is set to false.
+    std::string header_value;
+    EXPECT_TRUE(last_request_headers().GetHeader(signin::kChromeConnectedHeader,
+                                                 &header_value));
+    // mode = PROFILE_MODE_DEFAULT
+    EXPECT_EQ(
+        "source=Chrome,mode=0,enable_account_consistency=false,"
+        "consistency_enabled_by_default=false",
+        header_value);
+  } else {
+    // On not Chrome OS, the X-Chrome-Connected header must not be present.
+    EXPECT_FALSE(
+        last_request_headers().HasHeader(signin::kChromeConnectedHeader));
+  }
 }
 
 class OneGoogleBarLoaderImplWithMirrorAccountConsistencyTest
@@ -339,24 +353,35 @@ TEST_F(OneGoogleBarLoaderImplWithMirrorAccountConsistencyTest,
   EXPECT_CALL(callback, Run(_, _)).WillOnce(Quit(&loop));
   loop.Run();
 
-  // Make sure mirror account consistency is requested.
+  // On not Chrome OS, the X-Chrome-Connected header must not be present.
+  bool check_x_chrome_connected_header = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS, X-Chrome-Connected header is present, and
-  // enable_account_consistency is set to true.
-  std::string header_value;
-  EXPECT_TRUE(last_request_headers().GetHeader(signin::kChromeConnectedHeader,
-                                               &header_value));
-  // mode = PROFILE_MODE_INCOGNITO_DISABLED | PROFILE_MODE_ADD_ACCOUNT_DISABLED
-  EXPECT_EQ(
-      "source=Chrome,mode=3,enable_account_consistency=true,"
-      "consistency_enabled_by_default=false",
-      header_value);
-#else
-  // This is not a valid case (mirror account consistency can only be required
-  // on Chrome OS). This ensures in this case nothing happens.
-  EXPECT_FALSE(
-      last_request_headers().HasHeader(signin::kChromeConnectedHeader));
+  check_x_chrome_connected_header = true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
+    check_x_chrome_connected_header = true;
+  }
 #endif
+
+  // Make sure mirror account consistency is requested.
+  if (check_x_chrome_connected_header) {
+    // On Chrome OS, X-Chrome-Connected header is present, and
+    // enable_account_consistency is set to true.
+    std::string header_value;
+    EXPECT_TRUE(last_request_headers().GetHeader(signin::kChromeConnectedHeader,
+                                                 &header_value));
+    // mode = PROFILE_MODE_INCOGNITO_DISABLED |
+    // PROFILE_MODE_ADD_ACCOUNT_DISABLED
+    EXPECT_EQ(
+        "source=Chrome,mode=3,enable_account_consistency=true,"
+        "consistency_enabled_by_default=false",
+        header_value);
+  } else {
+    // This is not a valid case (mirror account consistency can only be required
+    // on Chrome OS). This ensures in this case nothing happens.
+    EXPECT_FALSE(
+        last_request_headers().HasHeader(signin::kChromeConnectedHeader));
+  }
 }
 
 TEST_F(OneGoogleBarLoaderImplTest, ParsesLanguageCode) {

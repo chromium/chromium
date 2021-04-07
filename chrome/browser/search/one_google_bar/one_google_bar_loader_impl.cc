@@ -30,10 +30,14 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/signin/public/base/signin_switches.h"
 #endif
 
 namespace {
@@ -165,7 +169,7 @@ class OneGoogleBarLoaderImpl::AuthenticatedURLLoader {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const GURL api_url_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   const bool account_consistency_mirror_required_;
 #endif
 
@@ -182,7 +186,7 @@ OneGoogleBarLoaderImpl::AuthenticatedURLLoader::AuthenticatedURLLoader(
     LoadDoneCallback callback)
     : url_loader_factory_(url_loader_factory),
       api_url_(std::move(api_url)),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       account_consistency_mirror_required_(account_consistency_mirror_required),
 #endif
       callback_(std::move(callback)) {
@@ -192,7 +196,14 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
     network::ResourceRequest* request) const {
   variations::AppendVariationsHeaderUnknownSignedIn(
       api_url_, variations::InIncognito::kNo, request);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   signin::ChromeConnectedHeaderHelper chrome_connected_header_helper(
       account_consistency_mirror_required_
           ? signin::AccountConsistencyMethod::kMirror
@@ -221,7 +232,7 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
     request->headers.SetHeader(signin::kChromeConnectedHeader,
                                chrome_connected_header_value);
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::Start() {
