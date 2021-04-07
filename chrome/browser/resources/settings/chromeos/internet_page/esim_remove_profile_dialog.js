@@ -50,6 +50,12 @@ Polymer({
     }
     this.esimProfileRemote_ = await cellular_setup.getESimProfile(
         this.networkState.typeState.cellular.iccid);
+    // Fail gracefully if init is incomplete, see crbug/1194729.
+    if (!this.esimProfileRemote_) {
+      this.fire('show-error-toast', this.i18n('eSimRemoveProfileDialogError'));
+      this.$.dialog.close();
+      return;
+    }
     this.esimProfileName_ = this.networkState.name;
   },
 

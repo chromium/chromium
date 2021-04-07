@@ -95,6 +95,33 @@ suite('EsimRenameDialog', function() {
     });
   });
 
+  test('esimProfileRemote_ falsey, show error', async function() {
+    eSimManagerRemote.addEuiccForTest(1);
+    addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
+    await flushAsync();
+
+    esimRenameDialog = document.createElement('esim-rename-dialog');
+    const response = await mojoApi_.getNetworkState(TEST_CELLULAR_GUID);
+    esimRenameDialog.networkState = response.result;
+    // Setting iccid to null wil result in improper initialization.
+    esimRenameDialog.networkState.typeState.cellular.iccid = null;
+    document.body.appendChild(esimRenameDialog);
+    assertTrue(!!esimRenameDialog);
+    Polymer.dom.flush();
+
+    return flushAsync().then(async () => {
+      await flushAsync();
+      const doneBtn = esimRenameDialog.$$('#done');
+
+      assertTrue(!!doneBtn);
+      assertFalse(doneBtn.disabled);
+      assertEquals(
+          'block',
+          window.getComputedStyle(esimRenameDialog.$$('#errorMessage'))
+              .display);
+    });
+  });
+
   test('Rename esim profile fails', async function() {
     eSimManagerRemote.addEuiccForTest(1);
     addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');

@@ -143,6 +143,48 @@ suite('EsimRemoveProfileDialog', function() {
         esimRemoveProfileDialog.i18n('eSimRemoveProfileDialogError'));
   });
 
+  test('esimProfileRemote_ falsey, remove profile', async function() {
+    eSimManagerRemote.addEuiccForTest(1);
+    addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
+    await flushAsync();
+
+    esimRemoveProfileDialog =
+        document.createElement('esim-remove-profile-dialog');
+    const response = await mojoApi_.getNetworkState(TEST_CELLULAR_GUID);
+    esimRemoveProfileDialog.networkState = response.result;
+    // Setting iccid to null wil result in improper initialization.
+    esimRemoveProfileDialog.networkState.typeState.cellular.iccid = null;
+
+    const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
+    let profiles = (await euicc.getProfileList()).profiles;
+
+    let foundProfile = await getProfileForIccid(profiles, '1');
+    assertTrue(!!foundProfile);
+
+    const showErrorToastPromise =
+        test_util.eventToPromise('show-error-toast', esimRemoveProfileDialog);
+
+    document.body.appendChild(esimRemoveProfileDialog);
+    assertTrue(!!esimRemoveProfileDialog);
+    await flushAsync();
+
+    profiles = (await euicc.getProfileList()).profiles;
+    foundProfile = await getProfileForIccid(profiles, '1');
+    assertTrue(!!foundProfile);
+
+    assertEquals(
+        settings.routes.INTERNET_NETWORKS,
+        settings.Router.getInstance().getCurrentRoute());
+    assertEquals(
+        'type=Cellular',
+        settings.Router.getInstance().getQueryParameters().toString());
+
+    const showErrorToastEvent = await showErrorToastPromise;
+    assertEquals(
+        showErrorToastEvent.detail,
+        esimRemoveProfileDialog.i18n('eSimRemoveProfileDialogError'));
+  });
+
   test('Warning message visibility', function() {
     const warningMessage = esimRemoveProfileDialog.$$('#warningMessage');
     assertTrue(!!warningMessage);
