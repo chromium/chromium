@@ -408,7 +408,12 @@ void GetAssertionRequestHandler::GetPlatformCredentialStatus(
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
 #if defined(OS_MAC)
-  CHECK(platform_authenticator->IsTouchIdAuthenticator());
+  // In tests the platform authenticator may be a virtual device.
+  if (!platform_authenticator->IsTouchIdAuthenticator()) {
+    FidoRequestHandlerBase::GetPlatformCredentialStatus(platform_authenticator);
+    return;
+  }
+
   fido::mac::TouchIdAuthenticator* touch_id_authenticator =
       static_cast<fido::mac::TouchIdAuthenticator*>(platform_authenticator);
   bool has_credential =
