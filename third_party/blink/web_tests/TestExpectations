@@ -6755,3 +6755,6 @@ crbug.com/1093840 external/wpt/mathml/relations/html5-tree/math-global-event-han
 
 # Sheriff 2021-04-06
 crbug.com/1032451 [ Linux ] virtual/threaded/animations/stability/animation-iteration-event-destroy-renderer.html [ Pass Failure ]
+
+# Sheriff 2021-04-07
+crbug.com/1196620 [ Mac ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Pass Failure ]
