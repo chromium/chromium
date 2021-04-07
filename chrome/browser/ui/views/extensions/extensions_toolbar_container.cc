@@ -520,10 +520,6 @@ content::WebContents* ExtensionsToolbarContainer::GetCurrentWebContents() {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
-bool ExtensionsToolbarContainer::ShownInsideMenu() const {
-  return false;
-}
-
 bool ExtensionsToolbarContainer::CanShowIconInToolbar() const {
   // Pinning extensions is not available in PWAs.
   return !browser_->app_controller();

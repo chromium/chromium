@@ -15,8 +15,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
-class ExtensionsMenuItemView;
-
 namespace views {
 class Button;
 }  // namespace views
@@ -29,7 +27,6 @@ class ExtensionsMenuButton : public HoverButton,
  public:
   METADATA_HEADER(ExtensionsMenuButton);
   ExtensionsMenuButton(Browser* browser,
-                       ExtensionsMenuItemView* parent,
                        ToolbarActionViewController* controller,
                        bool allow_pinning);
   ExtensionsMenuButton(const ExtensionsMenuButton&) = delete;
@@ -50,14 +47,10 @@ class ExtensionsMenuButton : public HoverButton,
   views::Button* GetReferenceButtonForPopup() override;
   content::WebContents* GetCurrentWebContents() const override;
   void UpdateState() override;
-  bool IsMenuRunning() const override;
 
   void ButtonPressed();
 
   Browser* const browser_;
-
-  // The container containing this view.
-  ExtensionsMenuItemView* const parent_;
 
   // Responsible for executing the extension's actions.
   ToolbarActionViewController* const controller_;

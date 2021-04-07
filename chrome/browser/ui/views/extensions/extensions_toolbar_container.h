@@ -143,7 +143,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
 
   // ToolbarActionView::Delegate:
   content::WebContents* GetCurrentWebContents() override;
-  bool ShownInsideMenu() const override;
   bool CanShowIconInToolbar() const override;
   void OnToolbarActionViewDragDone() override;
   views::LabelButton* GetOverflowReferenceView() const override;

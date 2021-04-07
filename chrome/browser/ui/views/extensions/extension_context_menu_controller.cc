@@ -18,9 +18,8 @@
 #include "ui/views/view_class_properties.h"
 
 ExtensionContextMenuController::ExtensionContextMenuController(
-    ToolbarActionView::Delegate* delegate,
     ToolbarActionViewController* controller)
-    : delegate_(delegate), controller_(controller) {}
+    : controller_(controller) {}
 
 ExtensionContextMenuController::~ExtensionContextMenuController() = default;
 
@@ -37,13 +36,7 @@ void ExtensionContextMenuController::ShowContextMenuForViewImpl(
   int run_types =
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
 
-  views::Widget* parent;
-  if (delegate_ && delegate_->ShownInsideMenu()) {
-    run_types |= views::MenuRunner::IS_NESTED;
-    parent = delegate_->GetOverflowReferenceView()->GetWidget();
-  } else {
-    parent = source->GetWidget();
-  }
+  views::Widget* const parent = source->GetWidget();
 
   // Unretained() is safe here as ToolbarActionView will always outlive the
   // menu. Any action that would lead to the deletion of |this| first triggers

@@ -21,14 +21,12 @@
 
 ExtensionsMenuButton::ExtensionsMenuButton(
     Browser* browser,
-    ExtensionsMenuItemView* parent,
     ToolbarActionViewController* controller,
     bool allow_pinning)
     : HoverButton(base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
                                       base::Unretained(this)),
                   std::u16string()),
       browser_(browser),
-      parent_(parent),
       controller_(controller),
       allow_pinning_(allow_pinning) {
   ConfigureBubbleMenuItem(this, 0);
@@ -83,10 +81,6 @@ void ExtensionsMenuButton::UpdateState() {
                       2,
                   12);
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
-}
-
-bool ExtensionsMenuButton::IsMenuRunning() const {
-  return parent_->IsContextMenuRunning();
 }
 
 void ExtensionsMenuButton::ButtonPressed() {

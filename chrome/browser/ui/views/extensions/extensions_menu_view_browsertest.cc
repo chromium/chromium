@@ -710,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   auto menu_items = GetExtensionsMenuItemViews();
   ASSERT_EQ(1u, menu_items.size());
   ExtensionsMenuItemView* item_view = menu_items[0];
-  EXPECT_FALSE(item_view->IsContextMenuRunning());
+  EXPECT_FALSE(item_view->IsContextMenuRunningForTesting());
 
   HoverButton* context_menu_button =
       menu_items[0]->context_menu_button_for_testing();
@@ -722,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
   context_menu_button->OnMouseReleased(release_event);
 
-  EXPECT_TRUE(item_view->IsContextMenuRunning());
+  EXPECT_TRUE(item_view->IsContextMenuRunningForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest, InvokeUi_InstallDialog) {

@@ -68,14 +68,9 @@ ToolbarActionView::ToolbarActionView(
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   set_drag_controller(delegate_);
 
-  context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
-      delegate, view_controller);
+  context_menu_controller_ =
+      std::make_unique<ExtensionContextMenuController>(view_controller);
   set_context_menu_controller(context_menu_controller_.get());
-
-  // If the button is within a menu, we need to make it focusable in order to
-  // have it accessible via keyboard navigation.
-  if (delegate_->ShownInsideMenu())
-    SetFocusBehavior(FocusBehavior::ALWAYS);
 
   InstallToolbarButtonHighlightPathGenerator(this);
 
@@ -92,12 +87,6 @@ gfx::Rect ToolbarActionView::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = GetBoundsInScreen();
   bounds.Inset(GetToolbarInkDropInsets(this));
   return bounds;
-}
-
-void ToolbarActionView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::MenuButton::GetAccessibleNodeData(node_data);
-  node_data->role = delegate_->ShownInsideMenu() ? ax::mojom::Role::kMenuItem
-                                                 : ax::mojom::Role::kButton;
 }
 
 std::unique_ptr<LabelButtonBorder> ToolbarActionView::CreateDefaultBorder()
@@ -122,11 +111,6 @@ bool ToolbarActionView::IsTriggerableEvent(const ui::Event& event) {
 }
 
 SkColor ToolbarActionView::GetInkDropBaseColor() const {
-  if (delegate_->ShownInsideMenu()) {
-    return color_utils::GetColorWithMaxContrast(
-        GetNativeTheme()->GetSystemColor(
-            ui::NativeTheme::kColorId_MenuBackgroundColor));
-  }
   return GetToolbarInkDropBaseColor(this);
 }
 
@@ -173,10 +157,6 @@ void ToolbarActionView::UpdateState() {
 
   Layout();  // We need to layout since we may have added an icon as a result.
   SchedulePaint();
-}
-
-bool ToolbarActionView::IsMenuRunningForTesting() const {
-  return IsMenuRunning();
 }
 
 gfx::ImageSkia ToolbarActionView::GetIconForTest() {
@@ -272,10 +252,6 @@ views::Button* ToolbarActionView::GetReferenceButtonForPopup() {
   return GetVisible() ? this : delegate_->GetOverflowReferenceView();
 }
 
-bool ToolbarActionView::IsMenuRunning() const {
-  return context_menu_controller_->IsMenuRunning();
-}
-
 bool ToolbarActionView::CanShowIconInToolbar() const {
   return delegate_->CanShowIconInToolbar();
 }
@@ -301,12 +277,8 @@ void ToolbarActionView::ButtonPressed() {
   if (view_controller_->IsEnabled(GetCurrentWebContents())) {
     base::RecordAction(base::UserMetricsAction(
         "Extensions.Toolbar.ExtensionActivatedFromToolbar"));
-    auto source =
-        delegate_->ShownInsideMenu()
-            ? ToolbarActionViewController::InvocationSource::
-                  kLegacyOverflowedEntry
-            : ToolbarActionViewController::InvocationSource::kToolbarButton;
-    view_controller_->ExecuteAction(true, source);
+    view_controller_->ExecuteAction(
+        true, ToolbarActionViewController::InvocationSource::kToolbarButton);
   } else {
     // We should only get a button pressed event with a non-enabled action if
     // the left-click behavior should open the menu.

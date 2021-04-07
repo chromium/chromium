@@ -42,7 +42,6 @@ class ExtensionsMenuItemView : public views::View {
 
   void UpdatePinButton();
 
-  bool IsContextMenuRunning() const;
   bool IsPinned() const;
 
   void ContextMenuPressed();
@@ -53,6 +52,7 @@ class ExtensionsMenuItemView : public views::View {
     return controller_.get();
   }
 
+  bool IsContextMenuRunningForTesting() const;
   ExtensionsMenuButton* primary_action_button_for_testing();
   HoverButton* context_menu_button_for_testing() {
     return context_menu_button_;

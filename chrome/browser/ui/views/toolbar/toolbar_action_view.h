@@ -33,9 +33,6 @@ class ToolbarActionView : public views::MenuButton,
     // Returns the current web contents.
     virtual content::WebContents* GetCurrentWebContents() = 0;
 
-    // Whether the container for this button is shown inside a menu.
-    virtual bool ShownInsideMenu() const = 0;
-
     // Whether the container supports showing extensions outside of the menu.
     virtual bool CanShowIconInToolbar() const;
 
@@ -61,7 +58,6 @@ class ToolbarActionView : public views::MenuButton,
 
   // views::MenuButton:
   gfx::Rect GetAnchorBoundsInScreen() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
   bool IsTriggerableEvent(const ui::Event& event) override;
@@ -81,12 +77,6 @@ class ToolbarActionView : public views::MenuButton,
   // Returns button icon so it can be accessed during tests.
   gfx::ImageSkia GetIconForTest();
 
-  bool IsMenuRunningForTesting() const;
-
-  ExtensionContextMenuController* context_menu_controller_for_testing() const {
-    return context_menu_controller_.get();
-  }
-
  private:
   // views::MenuButton:
   gfx::Size CalculatePreferredSize() const override;
@@ -101,7 +91,6 @@ class ToolbarActionView : public views::MenuButton,
   views::View* GetAsView() override;
   views::FocusManager* GetFocusManagerForAccelerator() override;
   views::Button* GetReferenceButtonForPopup() override;
-  bool IsMenuRunning() const override;
   bool CanShowIconInToolbar() const override;
   void OnPopupShown(bool by_user) override;
   void OnPopupClosed() override;

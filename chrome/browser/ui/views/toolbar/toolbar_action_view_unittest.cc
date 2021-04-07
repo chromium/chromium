@@ -28,8 +28,7 @@ namespace {
 class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
  public:
   TestToolbarActionViewDelegate()
-      : shown_in_menu_(false),
-        overflow_reference_view_(std::make_unique<views::MenuButton>()),
+      : overflow_reference_view_(std::make_unique<views::MenuButton>()),
         web_contents_(nullptr) {}
   TestToolbarActionViewDelegate(const TestToolbarActionViewDelegate&) = delete;
   TestToolbarActionViewDelegate& operator=(
@@ -40,7 +39,6 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
   content::WebContents* GetCurrentWebContents() override {
     return web_contents_;
   }
-  bool ShownInsideMenu() const override { return shown_in_menu_; }
   void OnToolbarActionViewDragDone() override {}
   views::MenuButton* GetOverflowReferenceView() const override {
     return overflow_reference_view_.get();
@@ -57,14 +55,11 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override { return false; }
 
-  void set_shown_in_menu(bool shown_in_menu) { shown_in_menu_ = shown_in_menu; }
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;
   }
 
  private:
-  bool shown_in_menu_;
-
   std::unique_ptr<views::MenuButton> overflow_reference_view_;
 
   content::WebContents* web_contents_;

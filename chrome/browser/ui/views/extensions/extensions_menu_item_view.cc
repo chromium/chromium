@@ -23,6 +23,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
@@ -61,7 +62,6 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
     bool allow_pinning)
     : profile_(browser->profile()),
       primary_action_button_(new ExtensionsMenuButton(browser,
-                                                      this,
                                                       controller.get(),
                                                       allow_pinning)),
       controller_(std::move(controller)),
@@ -70,8 +70,8 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
   // status when hovering child views.
   SetNotifyEnterExitOnChild(true);
 
-  context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
-      nullptr, controller_.get());
+  context_menu_controller_ =
+      std::make_unique<ExtensionContextMenuController>(controller_.get());
 
   views::FlexLayout* layout_manager_ =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -160,7 +160,7 @@ void ExtensionsMenuItemView::UpdatePinButton() {
                          icon_color);
 }
 
-bool ExtensionsMenuItemView::IsContextMenuRunning() const {
+bool ExtensionsMenuItemView::IsContextMenuRunningForTesting() const {
   return context_menu_controller_->IsMenuRunning();
 }
 
