@@ -153,7 +153,8 @@ void CaptionController::StartLiveCaption() {
     CreateUI();
   } else {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
-    speech::SodaInstaller::GetInstance()->Init(profile_);
+    speech::SodaInstaller::GetInstance()->Init(
+        profile_->GetPrefs(), g_browser_process->local_state());
   }
 }
 

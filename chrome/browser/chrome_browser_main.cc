@@ -1601,12 +1601,14 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
     // Exclude Android: SODA is not supported.
     // Exclude ChromeOS: SODA is independent of Component Updater.
-    speech::SodaInstaller::GetInstance()->Init(profile_);
+    speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs(),
+                                               browser_process_->local_state());
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  speech::SodaInstaller::GetInstance()->Init(profile_);
+  speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs(),
+                                             browser_process_->local_state());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   variations::VariationsService* variations_service =

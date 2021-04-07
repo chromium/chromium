@@ -8,7 +8,6 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/pref_names.h"
@@ -26,18 +25,16 @@ SodaInstaller::SodaInstaller() = default;
 
 SodaInstaller::~SodaInstaller() = default;
 
-void SodaInstaller::Init(Profile* profile) {
+void SodaInstaller::Init(PrefService* profile_prefs,
+                         PrefService* global_prefs) {
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
     return;
 
-  PrefService* prefs = profile->GetPrefs();
-  if (IsAnyFeatureUsingSodaEnabled(prefs)) {
-    g_browser_process->local_state()->SetTime(prefs::kSodaScheduledDeletionTime,
-                                              base::Time());
-    speech::SodaInstaller::GetInstance()->InstallSoda(prefs);
-    speech::SodaInstaller::GetInstance()->InstallLanguage(prefs);
+  if (IsAnyFeatureUsingSodaEnabled(profile_prefs)) {
+    global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
+    speech::SodaInstaller::GetInstance()->InstallSoda(profile_prefs);
+    speech::SodaInstaller::GetInstance()->InstallLanguage(profile_prefs);
   } else {
-    PrefService* global_prefs = g_browser_process->local_state();
     base::Time deletion_time =
         global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
     if (!deletion_time.is_null() && deletion_time < base::Time::Now()) {
