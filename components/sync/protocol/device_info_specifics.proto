@@ -78,6 +78,10 @@ message DeviceInfoSpecifics {
   // Information for contacting this device in order to perform security key
   // operations.
   optional PhoneAsASecurityKeySpecificFields paask_fields = 15;
+
+  // Unique hardware identifier string which details the HW combination of
+  // a ChromeOS device. This field will be empty on other OS devices.
+  optional string full_hardware_class = 16;
 }
 
 // Feature specific information about the device that is running a sync-enabled

@@ -389,6 +389,7 @@ VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {
   VISIT(sharing_fields);
   VISIT(invalidation_fields);
   VISIT(paask_fields);
+  VISIT(full_hardware_class);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::FeatureSpecificFields& proto) {
