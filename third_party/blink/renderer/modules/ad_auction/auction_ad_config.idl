@@ -1,0 +1,17 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Configuration that is passed to navigator.runAdAuction().
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
+
+typedef (USVString or sequence<USVString>) InterestGroupBuyers;
+
+dictionary AuctionAdConfig {
+  required USVString seller;
+  required USVString decisionLogicUrl;
+  InterestGroupBuyers interestGroupBuyers;
+  object auctionSignals;
+  object sellerSignals;
+  record<USVString, object> perBuyerSignals;
+};

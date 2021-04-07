@@ -12,6 +12,10 @@ import("//third_party/blink/renderer/config.gni")
 # modules/modules_idl_files.gni in addition to this list.
 static_idl_files_in_modules = get_path_info(
         [
+          "//third_party/blink/renderer/modules/ad_auction/auction_ad.idl",
+          "//third_party/blink/renderer/modules/ad_auction/auction_ad_config.idl",
+          "//third_party/blink/renderer/modules/ad_auction/auction_ad_interest_group.idl",
+          "//third_party/blink/renderer/modules/ad_auction/navigator_auction.idl",
           "//third_party/blink/renderer/modules/animationworklet/animation_worklet_global_scope.idl",
           "//third_party/blink/renderer/modules/animationworklet/css_animation_worklet.idl",
           "//third_party/blink/renderer/modules/animationworklet/worklet_animation.idl",

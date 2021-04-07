@@ -1,0 +1,17 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Name, origin owner, and metadata for ad interest groups.
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
+
+dictionary AuctionAdInterestGroup {
+  required USVString owner;
+  required USVString name;
+  USVString biddingLogicUrl;
+  USVString dailyUpdateUrl;
+  USVString trustedBiddingSignalsUrl;
+  sequence<USVString> trustedBiddingSignalsKeys;
+  object userBiddingSignals;
+  sequence<AuctionAd> ads;
+};

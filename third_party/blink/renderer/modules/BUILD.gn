@@ -77,6 +77,7 @@ component("modules") {
   sub_modules = [
     "//third_party/blink/renderer/bindings/modules/v8",
     "//third_party/blink/renderer/modules/accessibility",
+    "//third_party/blink/renderer/modules/ad_auction",
     "//third_party/blink/renderer/modules/animationworklet",
     "//third_party/blink/renderer/modules/app_banner",
     "//third_party/blink/renderer/modules/audio_output_devices",

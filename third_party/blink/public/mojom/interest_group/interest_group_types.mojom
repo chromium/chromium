@@ -1,0 +1,77 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// An advertisement to display for an interest group.
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#12-interest-group-attributes
+struct InterestGroupAd {
+  url.mojom.Url render_url;
+  // Opaque JSON data, persisted, then passed as object to auction worklet.
+  string? metadata;
+};
+
+// Interest group description, passed to JoinInterestGroup(). If an entry keyed
+// by (owner, name) already exists, we "merge" by overwriting specified fields,
+// leaving other existing fields intact.
+//
+// All URLs and origins must use https.
+//
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
+struct InterestGroup {
+  mojo_base.mojom.Time expiry;
+  // `owner` must match the current frame URL's origin.
+  url.mojom.Origin owner;
+  string name;
+  // `bidding_url` must match the current frame URL's origin.
+  url.mojom.Url? bidding_url;
+  // `update_url` must match the current frame URL's origin.
+  url.mojom.Url? update_url;
+  // `trusted_bidding_signals_url` must match the current frame URL's origin.
+  url.mojom.Url? trusted_bidding_signals_url;
+  array<string>? trusted_bidding_signals_keys;
+  // Opaque JSON data, persisted, then passed as object to auction worklet.
+  string?        user_bidding_signals;
+  array<InterestGroupAd>? ads;
+};
+
+// Represents all buyers, the "*" wildcard in JavaScript.
+// For use only with InterestGroupBuyers.
+struct AllBuyers {
+};
+
+// For use only with AuctionAdConfig.
+//
+// All origins must use https.
+union InterestGroupBuyers {
+  array<url.mojom.Origin> buyers;
+  AllBuyers all_buyers;
+};
+
+// Configuration to pass to RunAdAuction().
+//
+// All URLs and origins must use https.
+//
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
+struct AuctionAdConfig {
+  // `seller` must match the the current frame URL's origin.
+  url.mojom.Origin seller;
+  // `decision_logic_url`'s origin must match the the current frame URL's
+  // origin.
+  url.mojom.Url decision_logic_url;
+  InterestGroupBuyers? interest_group_buyers;
+  // Opaque JSON data, passed as object to auction worklet.
+  string? auction_signals;
+  // Opaque JSON data, passed as object to auction worklet.
+  string? seller_signals;
+  // Keys of `per_buyer_signals` must be a subset of origins specified by
+  // `interest_group_buyers`. Value is opaque JSON data, passed as object to
+  // auction worklet.
+  map<url.mojom.Origin, string>?
+      per_buyer_signals;
+};

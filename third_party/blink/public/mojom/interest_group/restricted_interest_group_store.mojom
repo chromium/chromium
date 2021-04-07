@@ -1,0 +1,26 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// APIs to add/leave interest groups and to initiate on-device auction. Exposed
+// to the renderer on a per-frame basis.
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+interface RestrictedInterestGroupStore {
+  // "Merges" interest group information from `group` with information already
+  // stored by the browser process by overwriting the fields provided in
+  // `group`. The browser verifies that the owner origin matches that of the
+  // frame's origin (in the future, a mechanism will allow delegating to other
+  // origins). The caller cannot observe the status or results of this
+  // operation.
+  JoinInterestGroup(InterestGroup group);
+
+  // Deletes the interest group stored in the browser as indicated by the
+  // (`origin`, `name`) tuple. `origin` must use https.
+  LeaveInterestGroup(url.mojom.Origin owner, string name);
+};

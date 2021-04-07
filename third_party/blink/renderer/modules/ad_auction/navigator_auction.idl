@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Partial Navigator interface for the FLEDGE ad-serving experiment.
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+
+[
+  ImplementedAs=NavigatorAuction,
+  RuntimeEnabled=FledgeInterestGroups,
+  SecureContext
+] partial interface Navigator {
+  [CallWith=ScriptState, Measure, RaisesException]
+  void joinAdInterestGroup(AuctionAdInterestGroup group, double durationSeconds);
+
+  [CallWith=ScriptState, Measure, RaisesException]
+  void leaveAdInterestGroup(AuctionAdInterestGroup group);
+
+  [CallWith=ScriptState, Measure, RaisesException]
+  Promise<USVString?> runAdAuction(AuctionAdConfig config);
+};

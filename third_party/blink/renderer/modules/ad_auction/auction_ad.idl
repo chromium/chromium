@@ -1,0 +1,11 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Information about an ad a given AuctionAdInterestGroup might show.
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#12-interest-group-attributes
+
+dictionary AuctionAd {
+  required USVString renderUrl;
+  object metadata;
+};

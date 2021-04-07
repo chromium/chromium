@@ -27,6 +27,8 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/handwriting/handwriting_recognition_service_factory.h"
 #include "content/browser/image_capture/image_capture_impl.h"
+#include "content/browser/interest_group/ad_auction_service_impl.h"
+#include "content/browser/interest_group/interest_group_service_impl.h"
 #include "content/browser/keyboard_lock/keyboard_lock_service_impl.h"
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/media/midi_host.h"
@@ -904,6 +906,12 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&KeyboardLockServiceImpl::CreateMojoService));
   map->Add<blink::mojom::FlocService>(
       base::BindRepeating(&FlocServiceImpl::CreateMojoService));
+  if (base::FeatureList::IsEnabled(features::kFledgeInterestGroups)) {
+    map->Add<blink::mojom::AdAuctionService>(
+        base::BindRepeating(&AdAuctionServiceImpl::CreateMojoService));
+    map->Add<blink::mojom::RestrictedInterestGroupStore>(
+        base::BindRepeating(&InterestGroupServiceImpl::CreateMojoService));
+  }
   map->Add<blink::mojom::MediaSessionService>(
       base::BindRepeating(&MediaSessionServiceImpl::Create));
   map->Add<blink::mojom::PictureInPictureService>(

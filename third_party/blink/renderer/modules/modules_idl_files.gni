@@ -48,6 +48,7 @@ import("//third_party/blink/renderer/config.gni")
 #   ]
 _idl_imports = [
   "//third_party/blink/renderer/modules/accessibility/idls.gni",
+  "//third_party/blink/renderer/modules/ad_auction/idls.gni",
   "//third_party/blink/renderer/modules/animationworklet/idls.gni",
   "//third_party/blink/renderer/modules/app_banner/idls.gni",
   "//third_party/blink/renderer/modules/audio_output_devices/idls.gni",

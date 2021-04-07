@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
+import "url/mojom/url.mojom";
+
+// API to initiate on-device ad auction, using interest groups specified with
+// the RestrictedInterestGroupStore service.
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+interface AdAuctionService {
+  // Triggers the ad auction to run in a sandboxed JavaScript process. The
+  // auction scripts run in this process come from the `bidding_logic_url`'s of
+  // the interest groups owned by `interest_group_buyers` and the auction
+  // config `decision_logic_url`. The result of the auction is a URL for the
+  // winning ad creative, which the publisher page loads into a page or iframe
+  // in the owner's domain. If no ad wins the auction, null is returned.
+  RunAdAuction(AuctionAdConfig config) => (url.mojom.Url? ad_display_url);
+};
