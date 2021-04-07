@@ -237,6 +237,8 @@ if (!is_win) {
 
     executable("minidump_dump") {
       sources = [
+        "breakpad/src/common/path_helper.cc",
+        "breakpad/src/common/path_helper.h",
         "breakpad/src/common/scoped_ptr.h",
         "breakpad/src/processor/basic_code_module.h",
         "breakpad/src/processor/basic_code_modules.cc",
@@ -496,6 +498,8 @@ if (is_linux || is_chromeos || is_android) {
         "breakpad/src/common/linux/symbol_collector_client.h",
         "breakpad/src/common/linux/symbol_upload.cc",
         "breakpad/src/common/linux/symbol_upload.h",
+        "breakpad/src/common/path_helper.cc",
+        "breakpad/src/common/path_helper.h",
         "breakpad/src/common/scoped_ptr.h",
         "breakpad/src/tools/linux/symupload/sym_upload.cc",
       ]
@@ -811,7 +815,11 @@ if (is_linux || is_chromeos || is_android) {
   }
 
   executable("core-2-minidump") {
-    sources = [ "breakpad/src/tools/linux/core2md/core2md.cc" ]
+    sources = [
+      "breakpad/src/common/path_helper.cc",
+      "breakpad/src/common/path_helper.h",
+      "breakpad/src/tools/linux/core2md/core2md.cc",
+    ]
 
     deps = [ ":client" ]
 
