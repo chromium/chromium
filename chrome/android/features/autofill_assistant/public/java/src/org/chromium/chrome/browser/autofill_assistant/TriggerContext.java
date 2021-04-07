@@ -10,8 +10,6 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -21,7 +19,6 @@ import java.util.Map;
  * Describes the context of the trigger, which contains the script parameters along with some other
  * optional parameters.
  */
-@JNINamespace("autofill_assistant")
 public class TriggerContext {
     /**
      * Builder class for {@link TriggerContext}.
@@ -279,43 +276,11 @@ public class TriggerContext {
     }
 
     /**
-     *  Returns true if this trigger context is a valid autofill-assistant trigger context.
+     *  Returns true if this trigger context is autofill-assistant-enabled. This does not indicate
+     *  that it is definitely possible to start a full flow, it merely signals that the intent is
+     *  requesting an autofill-assistant start.
      */
-    public boolean isValid() {
-        // Avoid JNI roundtrip for common case.
-        if (!getBooleanParameter(PARAMETER_ENABLED)) {
-            return false;
-        }
-
-        long nativeInstance = toNative();
-        // TODO(b/179648654): fetch MSBB status directly in native.
-        boolean isValid = TriggerContextJni.get().isValid(nativeInstance,
-                Starter.getMakeSearchesAndBrowsingBetterSettingEnabled(),
-                Starter.getProactiveHelpSettingEnabled(), Starter.getFeatureModuleInstalled());
-        TriggerContextJni.get().destroyNative(nativeInstance);
-
-        return isValid;
-    }
-
-    /**
-     * Creates a corresponding native trigger context. Note: the returned pointer is owning and
-     * must be freed with {@code destroyNative}!
-     */
-    public long toNative() {
-        // TODO(b/179648654): preserve type information in native.
-        Map<String, String> stringifiedParameters = getParameters();
-        return TriggerContextJni.get().createNative(mExperimentIds.toString(),
-                stringifiedParameters.keySet().toArray(new String[0]),
-                stringifiedParameters.values().toArray(new String[0]), mIsCustomTab,
-                mIsDirectAction, mInitialUrl);
-    }
-
-    @NativeMethods
-    interface Natives {
-        long createNative(String experimentIds, String[] parameterKeys, String[] parameterValues,
-                boolean isCustomTab, boolean isDirectAction, String initialUrl);
-        void destroyNative(long triggerContext);
-        boolean isValid(long triggerContext, boolean isMsbbSettingEnabled,
-                boolean isProactiveHelpSettingEnabled, boolean isFeatureModuleInstalled);
+    public boolean isEnabled() {
+        return getBooleanParameter(PARAMETER_ENABLED);
     }
 }

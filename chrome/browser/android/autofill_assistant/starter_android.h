@@ -58,6 +58,7 @@ class StarterAndroid : public StarterPlatformDelegate,
       const TriggerContext& trigger_context,
       base::OnceCallback<void(bool shown, OnboardingResult result)> callback)
       override;
+  void HideOnboarding() override;
   bool GetProactiveHelpSettingEnabled() const override;
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;

@@ -29,6 +29,9 @@ std::ostream& operator<<(std::ostream& out,
     case StartupUtil::StartupMode::SETTING_DISABLED:
       out << "SETTING_DISABLED";
       break;
+    case StartupUtil::StartupMode::NO_INITIAL_URL:
+      out << "NO_INITIAL_URL";
+      break;
     case StartupUtil::StartupMode::START_REGULAR:
       out << "START_REGULAR";
       break;
@@ -65,15 +68,18 @@ const std::array<base::Feature, 4> kFullFeatureSet = {
 // Common script parameters to reuse.
 const std::map<std::string, std::string> kRegularScript = {
     {"ENABLED", "true"},
-    {"START_IMMEDIATELY", "true"}};
+    {"START_IMMEDIATELY", "true"},
+    {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
 const std::map<std::string, std::string> kRequestTriggerScript = {
     {"ENABLED", "true"},
     {"START_IMMEDIATELY", "false"},
-    {"REQUEST_TRIGGER_SCRIPT", "true"}};
+    {"REQUEST_TRIGGER_SCRIPT", "true"},
+    {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
 const std::map<std::string, std::string> kBase64TriggerScript = {
     {"ENABLED", "true"},
     {"START_IMMEDIATELY", "false"},
-    {"TRIGGER_SCRIPTS_BASE64", "abc"}};
+    {"TRIGGER_SCRIPTS_BASE64", "abc"},
+    {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
 
 const TriggerContext::Options kDefaultCCTOptions = {
     std::string(), /* is_cct = */ true, false, false, std::string()};
@@ -339,7 +345,9 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
           TriggerContext{
               std::make_unique<ScriptParameters>(
                   std::map<std::string, std::string>{
-                      {"ENABLED", "true"}, {"START_IMMEDIATELY", "false"}}),
+                      {"ENABLED", "true"},
+                      {"START_IMMEDIATELY", "false"},
+                      {"ORIGINAL_DEEPLINK", "https://www.example.com"}}),
               kDefaultCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = false,
@@ -352,12 +360,14 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
   // REQUEST_TRIGGER_SCRIPT must not only be specified, but set to true.
   EXPECT_THAT(
       StartupUtil().ChooseStartupModeForIntent(
-          TriggerContext{std::make_unique<ScriptParameters>(
-                             std::map<std::string, std::string>{
-                                 {"ENABLED", "true"},
-                                 {"START_IMMEDIATELY", "false"},
-                                 {"REQUEST_TRIGGER_SCRIPT", "false"}}),
-                         kDefaultCCTOptions},
+          TriggerContext{
+              std::make_unique<ScriptParameters>(
+                  std::map<std::string, std::string>{
+                      {"ENABLED", "true"},
+                      {"START_IMMEDIATELY", "false"},
+                      {"REQUEST_TRIGGER_SCRIPT", "false"},
+                      {"ORIGINAL_DEEPLINK", "https://www.example.com"}}),
+              kDefaultCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = false,
            .feature_module_installed = true}),
@@ -369,18 +379,49 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
   // TRIGGER_SCRIPTS_BASE64 must not be empty.
   EXPECT_THAT(
       StartupUtil().ChooseStartupModeForIntent(
-          TriggerContext{std::make_unique<ScriptParameters>(
-                             std::map<std::string, std::string>{
-                                 {"ENABLED", "true"},
-                                 {"START_IMMEDIATELY", "false"},
-                                 {"TRIGGER_SCRIPTS_BASE64", ""}}),
-                         kDefaultCCTOptions},
+          TriggerContext{
+              std::make_unique<ScriptParameters>(
+                  std::map<std::string, std::string>{
+                      {"ENABLED", "true"},
+                      {"START_IMMEDIATELY", "false"},
+                      {"TRIGGER_SCRIPTS_BASE64", ""},
+                      {"ORIGINAL_DEEPLINK", "https://www.example.com"}}),
+              kDefaultCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = false,
            .feature_module_installed = true}),
       MatchingStartupMode(AreFeaturesEnabled({kAutofillAssistant,
                                               kAutofillAssistantProactiveHelp})
                               ? StartupMode::MANDATORY_PARAMETERS_MISSING
+                              : StartupMode::FEATURE_DISABLED));
+
+  // ORIGINAL_DEEPLINK or initial url must be specified and valid.
+  EXPECT_THAT(StartupUtil().ChooseStartupModeForIntent(
+                  TriggerContext{std::make_unique<ScriptParameters>(
+                                     std::map<std::string, std::string>{
+                                         {"ENABLED", "true"},
+                                         {"START_IMMEDIATELY", "true"}}),
+                                 kDefaultCCTOptions},
+                  {.msbb_setting_enabled = true,
+                   .proactive_help_setting_enabled = true,
+                   .feature_module_installed = true}),
+              MatchingStartupMode(AreFeaturesEnabled({kAutofillAssistant})
+                                      ? StartupMode::NO_INITIAL_URL
+                                      : StartupMode::FEATURE_DISABLED));
+
+  EXPECT_THAT(
+      StartupUtil().ChooseStartupModeForIntent(
+          TriggerContext{
+              std::make_unique<ScriptParameters>(
+                  std::map<std::string, std::string>{
+                      {"ENABLED", "true"}, {"START_IMMEDIATELY", "true"}}),
+              {std::string(), /* is_cct = */ true, false, false,
+               /* initial_url = */ "https://www.example.com"}},
+          {.msbb_setting_enabled = true,
+           .proactive_help_setting_enabled = true,
+           .feature_module_installed = true}),
+      MatchingStartupMode(AreFeaturesEnabled({kAutofillAssistant})
+                              ? StartupMode::START_REGULAR
                               : StartupMode::FEATURE_DISABLED));
 }
 

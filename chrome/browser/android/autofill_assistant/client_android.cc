@@ -53,9 +53,6 @@ namespace {
 // the UI.
 const char* const kCancelActionName = "cancel";
 
-// Intent not set constant.
-const char* const kIntentNotSet = "NotSet";
-
 }  // namespace
 
 static base::android::ScopedJavaLocalRef<jobject>
@@ -134,8 +131,7 @@ bool ClientAndroid::Start(JNIEnv* env,
       jonboarding_shown, /* is_direct_action = */ false, jinitial_url);
 
   intent_ = trigger_context->GetScriptParameters().GetIntent().value_or(
-      kIntentNotSet);
-
+      std::string());
   if (VLOG_IS_ON(2)) {
     std::string experiment_ids =
         base::android::ConvertJavaStringToUTF8(env, jexperiment_ids);

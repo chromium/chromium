@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
 #include "components/version_info/channel.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -43,7 +44,8 @@ void StarterAndroid::Attach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
   Detach(env, jcaller);
   java_object_ = base::android::ScopedJavaGlobalRef<jobject>(jcaller);
 
-  starter_ = std::make_unique<Starter>(web_contents_, this);
+  starter_ =
+      std::make_unique<Starter>(web_contents_, this, ukm::UkmRecorder::Get());
 }
 
 void StarterAndroid::Detach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
@@ -92,9 +94,8 @@ void StarterAndroid::OnInteractabilityChanged(
   }
 
   // The tab has become interactable again. Users may have adjusted their
-  // settings, so we need to notify the starter.
-  starter_->OnSettingsChanged(GetProactiveHelpSettingEnabled(),
-                              GetMakeSearchesAndBrowsingBetterEnabled());
+  // settings, so we need to check them again.
+  starter_->CheckSettings();
 }
 
 bool StarterAndroid::GetIsFirstTimeUser() const {
@@ -142,6 +143,10 @@ void StarterAndroid::ShowOnboarding(
                                   env, trigger_context.GetExperimentIds()),
                               base::android::ToJavaArrayOfStrings(env, keys),
                               base::android::ToJavaArrayOfStrings(env, values));
+}
+
+void StarterAndroid::HideOnboarding() {
+  // TODO(arbesser): implement this.
 }
 
 void StarterAndroid::OnOnboardingFinished(

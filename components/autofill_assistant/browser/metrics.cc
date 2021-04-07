@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -14,8 +15,12 @@
 
 namespace autofill_assistant {
 
+// Intent not set constant.
+const char* const kIntentNotSet = "NotSet";
+
 namespace {
 const char kDropOutEnumName[] = "Android.AutofillAssistant.DropOutReason";
+const char kOnboardingEnumName[] = "Android.AutofillAssistant.OnBoarding";
 const char kPaymentRequestPrefilledName[] =
     "Android.AutofillAssistant.PaymentRequest.Prefilled";
 const char kPaymentRequestAutofillInfoChangedName[] =
@@ -37,11 +42,12 @@ std::string GetSuffixForIntent(const std::string& intent) {
       {kRentCar, ".RentCar"},
       {kShopping, ".Shopping"},
       {kShoppingAssistedCheckout, ".ShoppingAssistedCheckout"},
-      {kTeleport, ".Teleport"}};
+      {kTeleport, ".Teleport"},
+      {kIntentNotSet, ".NotSet"}};
 
   // Check if histogram exists for given intent.
   if (histogramsSuffixes.count(intent) == 0) {
-    DVLOG(2) << "Unknow intent " << intent;
+    DVLOG(2) << "Unknown intent " << intent;
     return ".UnknownIntent";
   }
   return histogramsSuffixes[intent];
@@ -50,16 +56,20 @@ std::string GetSuffixForIntent(const std::string& intent) {
 
 // static
 void Metrics::RecordDropOut(DropOutReason reason, const std::string& intent) {
+  // TODO(arbesser): use an RAII token instead of a static variable to ensure
+  // that dropout recording happens exactly once per startup attempt.
   DCHECK_LE(reason, DropOutReason::kMaxValue);
   if (DROPOUT_RECORDED) {
     return;
   }
-  DVLOG_IF(3, reason != DropOutReason::AA_START)
-      << "Drop out with reason: " << reason;
-  auto suffix = GetSuffixForIntent(intent);
+
+  auto suffix = GetSuffixForIntent(intent.empty() ? kIntentNotSet : intent);
   base::UmaHistogramEnumeration(kDropOutEnumName + suffix, reason);
   base::UmaHistogramEnumeration(kDropOutEnumName, reason);
-  DROPOUT_RECORDED = true;
+  if (reason != DropOutReason::AA_START) {
+    DVLOG(3) << "Drop out with reason: " << reason;
+    DROPOUT_RECORDED = true;
+  }
 }
 
 // static
@@ -137,6 +147,49 @@ void Metrics::RecordPaymentRequestMandatoryPostalCode(bool required,
 }
 
 // static
+void Metrics::RecordLiteScriptStarted(ukm::UkmRecorder* ukm_recorder,
+                                      content::WebContents* web_contents,
+                                      StartupUtil::StartupMode startup_mode,
+                                      bool feature_module_installed,
+                                      bool is_first_time_user) {
+  LiteScriptStarted event;
+  switch (startup_mode) {
+    case StartupUtil::StartupMode::FEATURE_DISABLED:
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillAssistantProactiveHelp) &&
+          !feature_module_installed) {
+        event = LiteScriptStarted::LITE_SCRIPT_DFM_UNAVAILABLE;
+      } else {
+        event = LiteScriptStarted::LITE_SCRIPT_FEATURE_DISABLED;
+      }
+      break;
+    case StartupUtil::StartupMode::SETTING_DISABLED:
+      event = LiteScriptStarted::LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED;
+      break;
+    case StartupUtil::StartupMode::NO_INITIAL_URL:
+      event = LiteScriptStarted::LITE_SCRIPT_NO_INITIAL_URL;
+      break;
+    case StartupUtil::StartupMode::MANDATORY_PARAMETERS_MISSING:
+      event = LiteScriptStarted::LITE_SCRIPT_MANDATORY_PARAMETER_MISSING;
+      break;
+    case StartupUtil::StartupMode::START_BASE64_TRIGGER_SCRIPT:
+    case StartupUtil::StartupMode::START_RPC_TRIGGER_SCRIPT:
+      event = is_first_time_user
+                  ? LiteScriptStarted::LITE_SCRIPT_FIRST_TIME_USER
+                  : LiteScriptStarted::LITE_SCRIPT_RETURNING_USER;
+      break;
+    case StartupUtil::StartupMode::START_REGULAR:
+      // Regular starts do not record impressions for |LiteScriptStarted|.
+      return;
+  }
+
+  ukm::builders::AutofillAssistant_LiteScriptStarted(
+      ukm::GetSourceIdForWebContentsDocument(web_contents))
+      .SetLiteScriptStarted(static_cast<int64_t>(event))
+      .Record(ukm_recorder);
+}
+
+// static
 void Metrics::RecordLiteScriptFinished(ukm::UkmRecorder* ukm_recorder,
                                        content::WebContents* web_contents,
                                        TriggerUIType trigger_ui_type,
@@ -170,6 +223,12 @@ void Metrics::RecordLiteScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
       .SetTriggerUIType(static_cast<int64_t>(trigger_ui_type))
       .SetLiteScriptOnboarding(static_cast<int64_t>(event))
       .Record(ukm_recorder);
+}
+
+// static
+void Metrics::RecordOnboardingResult(OnBoarding event) {
+  DCHECK_LE(event, OnBoarding::kMaxValue);
+  base::UmaHistogramEnumeration(kOnboardingEnumName, event);
 }
 
 }  // namespace autofill_assistant

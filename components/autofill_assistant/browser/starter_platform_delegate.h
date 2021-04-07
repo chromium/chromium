@@ -51,6 +51,9 @@ class StarterPlatformDelegate {
       const TriggerContext& trigger_context,
       base::OnceCallback<void(bool shown, OnboardingResult result)>
           callback) = 0;
+  // Hide the onboarding, if currently shown. This may be invoked if the
+  // conditions necessary to proceed with the startup are no longer satisfied.
+  virtual void HideOnboarding() = 0;
 
   // Returns whether the proactive help setting is enabled.
   virtual bool GetProactiveHelpSettingEnabled() const = 0;

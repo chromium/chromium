@@ -19,18 +19,20 @@ class StartupUtil {
   enum class StartupMode {
     // A necessary feature was disabled. Depending on startup parameters, this
     // can refer to different features (check the log for more info).
-    FEATURE_DISABLED = 0,
+    FEATURE_DISABLED,
     // A mandatory startup parameter was missing.
-    MANDATORY_PARAMETERS_MISSING = 1,
+    MANDATORY_PARAMETERS_MISSING,
     // A required feature was turned off in the Chrome settings.
-    SETTING_DISABLED = 2,
+    SETTING_DISABLED,
+    // No initial url was set, neither in ORIGINAL_DEEPLINK nor in the intent.
+    NO_INITIAL_URL,
 
     // Parameters are ok, a regular script should be started immediately.
-    START_REGULAR = 3,
+    START_REGULAR,
     // Parameters are ok, a base64 trigger script should be started.
-    START_BASE64_TRIGGER_SCRIPT = 4,
+    START_BASE64_TRIGGER_SCRIPT,
     // Parameters are ok, a remote trigger script should be started.
-    START_RPC_TRIGGER_SCRIPT = 5
+    START_RPC_TRIGGER_SCRIPT
   };
 
   // Helper struct to facilitate instantiating this class.
@@ -57,7 +59,7 @@ class StartupUtil {
   // via ORIGINAL_DEEPLINK. If they have not, we try to guess the url from the
   // initial url. If this fails, this will return base::nullopt.
   base::Optional<GURL> ChooseStartupUrlForIntent(
-      const TriggerContext& trigger_context);
+      const TriggerContext& trigger_context) const;
 };
 
 }  //  namespace autofill_assistant

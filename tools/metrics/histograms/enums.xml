@@ -5024,6 +5024,9 @@ others/histograms.xml -->
   <int value="4" label="Success, returning user"/>
   <int value="5" label="Proactive triggering setting disabled"/>
   <int value="6" label="Intent received"/>
+  <int value="7" label="Feature disabled"/>
+  <int value="8" label="No initial url"/>
+  <int value="9" label="Mandatory parameter missing"/>
 </enum>
 
 <enum name="AutofillAssistantOnBoarding">

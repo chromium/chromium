@@ -56,6 +56,13 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
     return StartupMode::MANDATORY_PARAMETERS_MISSING;
   }
 
+  if (!ChooseStartupUrlForIntent(trigger_context).has_value()) {
+    VLOG(1)
+        << "Invalid Autofill Assistant intent: could not determine the URL "
+           "to start on. ORIGINAL_DEEPLINK and initial url not set or invalid.";
+    return StartupMode::NO_INITIAL_URL;
+  }
+
   if (script_parameters.GetStartImmediately().value()) {
     // For regular scripts we can stop checking here.
     return StartupMode::START_REGULAR;
@@ -94,7 +101,7 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
 }
 
 base::Optional<GURL> StartupUtil::ChooseStartupUrlForIntent(
-    const TriggerContext& trigger_context) {
+    const TriggerContext& trigger_context) const {
   GURL url =
       GURL(trigger_context.GetScriptParameters().GetOriginalDeeplink().value_or(
           std::string()));
