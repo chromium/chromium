@@ -319,7 +319,7 @@ constexpr ModelTypeSet ProxyTypes() {
 // - They are always enabled.  Users may not disable these types.
 // - Their contents are not encrypted automatically.
 // - They support custom update application and conflict resolution logic.
-// - All change processing occurs on the sync thread (GROUP_PASSIVE).
+// - All change processing occurs on the sync thread.
 constexpr ModelTypeSet ControlTypes() {
   return ModelTypeSet(NIGORI);
 }

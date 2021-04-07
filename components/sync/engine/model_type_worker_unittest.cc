@@ -279,7 +279,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
     worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
                                         server()->GetContext(), {&entity},
                                         &status_controller_);
-    worker()->PassiveApplyUpdates(&status_controller_);
+    worker()->ApplyUpdates(&status_controller_);
   }
 
   void TriggerPartialUpdateFromServer(int64_t version_offset,

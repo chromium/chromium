@@ -12,34 +12,6 @@
 
 namespace syncer {
 
-namespace {
-
-void NonPassiveApplyUpdates(const ModelTypeSet& gu_types,
-                            StatusController* status_controller,
-                            UpdateHandlerMap* update_handler_map) {
-  for (const auto& kv : *update_handler_map) {
-    if (gu_types.Has(kv.first)) {
-      kv.second->ApplyUpdates(status_controller);
-    }
-  }
-}
-
-void PassiveApplyUpdates(const ModelTypeSet& gu_types,
-                         StatusController* status_controller,
-                         UpdateHandlerMap* update_handler_map) {
-  for (const auto& kv : *update_handler_map) {
-    if (gu_types.Has(kv.first)) {
-      kv.second->PassiveApplyUpdates(status_controller);
-    }
-  }
-}
-
-}  // namespace
-
-GetUpdatesDelegate::GetUpdatesDelegate() {}
-
-GetUpdatesDelegate::~GetUpdatesDelegate() {}
-
 NormalGetUpdatesDelegate::NormalGetUpdatesDelegate(
     const NudgeTracker& nudge_tracker)
     : nudge_tracker_(nudge_tracker) {}
@@ -79,13 +51,6 @@ void NormalGetUpdatesDelegate::HelpPopulateGuMessage(
   }
 }
 
-void NormalGetUpdatesDelegate::ApplyUpdates(
-    const ModelTypeSet& gu_types,
-    StatusController* status_controller,
-    UpdateHandlerMap* update_handler_map) const {
-  NonPassiveApplyUpdates(gu_types, status_controller, update_handler_map);
-}
-
 std::unique_ptr<ProtocolEvent> NormalGetUpdatesDelegate::GetNetworkRequestEvent(
     base::Time timestamp,
     const sync_pb::ClientToServerMessage& request) const {
@@ -109,13 +74,6 @@ void ConfigureGetUpdatesDelegate::HelpPopulateGuMessage(
   get_updates->set_get_updates_origin(origin_);
 }
 
-void ConfigureGetUpdatesDelegate::ApplyUpdates(
-    const ModelTypeSet& gu_types,
-    StatusController* status_controller,
-    UpdateHandlerMap* update_handler_map) const {
-  PassiveApplyUpdates(gu_types, status_controller, update_handler_map);
-}
-
 std::unique_ptr<ProtocolEvent>
 ConfigureGetUpdatesDelegate::GetNetworkRequestEvent(
     base::Time timestamp,
@@ -136,13 +94,6 @@ void PollGetUpdatesDelegate::HelpPopulateGuMessage(
       sync_pb::GetUpdatesCallerInfo::UNKNOWN);
 
   get_updates->set_get_updates_origin(sync_pb::SyncEnums::PERIODIC);
-}
-
-void PollGetUpdatesDelegate::ApplyUpdates(
-    const ModelTypeSet& gu_types,
-    StatusController* status_controller,
-    UpdateHandlerMap* update_handler_map) const {
-  NonPassiveApplyUpdates(gu_types, status_controller, update_handler_map);
 }
 
 std::unique_ptr<ProtocolEvent> PollGetUpdatesDelegate::GetNetworkRequestEvent(

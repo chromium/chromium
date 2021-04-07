@@ -192,8 +192,8 @@ ModelTypeWorker::ModelTypeWorker(
   //
   // If |model_type_state_.initial_sync_done()| is false, |model_type_state_|
   // may still need to be updated, since OnCryptographerChange() will never
-  // happen, but we can assume PassiveApplyUpdates(...) will push the state to
-  // the processor, and we should not push it now. In fact, doing so now would
+  // happen, but we can assume ApplyUpdates(...) will push the state to the
+  // processor, and we should not push it now. In fact, doing so now would
   // violate the processor's assumption that the first OnUpdateReceived is will
   // be changing initial sync done to true.
   if (cryptographer_ && cryptographer_->CanEncrypt() &&
@@ -442,17 +442,12 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status) {
   // sync technically isn't done yet but by the time this value is persisted to
   // disk on the model thread it will be.
   //
-  // This should be mostly relevant for the call from PassiveApplyUpdates(), but
-  // in rare cases we may end up receiving initial updates outside configuration
+  // This should be mostly relevant for the call from ApplyUpdates(), but in
+  // rare cases we may end up receiving initial updates outside configuration
   // cycles (e.g. polling cycles).
   model_type_state_.set_initial_sync_done(true);
   // Download cycle is done, pass all updates to the processor.
   ApplyPendingUpdates();
-}
-
-void ModelTypeWorker::PassiveApplyUpdates(StatusController* status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ApplyUpdates(status);
 }
 
 void ModelTypeWorker::EncryptionAcceptedMaybeApplyUpdates() {

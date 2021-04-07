@@ -55,13 +55,8 @@ class UpdateHandler {
       const SyncEntityList& applicable_updates,
       StatusController* status) = 0;
 
-  // Called at the end of a non-configure GetUpdates loop to apply any unapplied
-  // updates.
+  // Called at the end of a GetUpdates loop to apply any unapplied updates.
   virtual void ApplyUpdates(StatusController* status) = 0;
-
-  // Called at the end of a configure GetUpdates loop to perform any required
-  // post-initial-download update application.
-  virtual void PassiveApplyUpdates(StatusController* status) = 0;
 };
 
 }  // namespace syncer

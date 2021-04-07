@@ -368,7 +368,11 @@ SyncerError GetUpdatesProcessor::ProcessGetUpdatesResponse(
 void GetUpdatesProcessor::ApplyUpdates(const ModelTypeSet& gu_types,
                                        StatusController* status_controller) {
   status_controller->set_get_updates_request_types(gu_types);
-  delegate_.ApplyUpdates(gu_types, status_controller, update_handler_map_);
+  for (const auto& kv : *update_handler_map_) {
+    if (gu_types.Has(kv.first)) {
+      kv.second->ApplyUpdates(status_controller);
+    }
+  }
 }
 
 }  // namespace syncer

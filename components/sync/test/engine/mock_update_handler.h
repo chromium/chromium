@@ -27,20 +27,15 @@ class MockUpdateHandler : public UpdateHandler {
       const SyncEntityList& applicable_updates,
       StatusController* status) override;
   void ApplyUpdates(StatusController* status) override;
-  void PassiveApplyUpdates(StatusController* status) override;
 
   // Returns the number of times ApplyUpdates() was invoked.
   int GetApplyUpdatesCount();
-
-  // Returns the number of times PassiveApplyUpdates() was invoked.
-  int GetPassiveApplyUpdatesCount();
 
  private:
   sync_pb::DataTypeProgressMarker progress_marker_;
   const sync_pb::DataTypeContext kEmptyDataTypeContext;
 
-  int apply_updates_count_;
-  int passive_apply_updates_count_;
+  int apply_updates_count_ = 0;
 };
 
 }  // namespace syncer

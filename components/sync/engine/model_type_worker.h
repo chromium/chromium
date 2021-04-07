@@ -126,7 +126,6 @@ class ModelTypeWorker : public UpdateHandler,
       const SyncEntityList& applicable_updates,
       StatusController* status) override;
   void ApplyUpdates(StatusController* status) override;
-  void PassiveApplyUpdates(StatusController* status) override;
 
   // CommitQueue implementation.
   void NudgeForCommit() override;

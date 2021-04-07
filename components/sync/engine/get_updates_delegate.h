@@ -16,25 +16,18 @@
 
 namespace syncer {
 
-class GetUpdatesProcessor;
-
 // Interface for GetUpdates functionality that depends on the requested
 // GetUpdate type (normal, configuration, poll).  The GetUpdatesProcessor is
 // given an appropriate GetUpdatesDelegate to handle type specific functionality
 // on construction.
 class GetUpdatesDelegate {
  public:
-  GetUpdatesDelegate();
-  virtual ~GetUpdatesDelegate() = 0;
+  GetUpdatesDelegate() = default;
+  virtual ~GetUpdatesDelegate() = default;
 
   // Populates GetUpdate message fields that depend on GetUpdates request type.
   virtual void HelpPopulateGuMessage(
       sync_pb::GetUpdatesMessage* get_updates) const = 0;
-
-  // Applies pending updates to non-control types.
-  virtual void ApplyUpdates(const ModelTypeSet& gu_types,
-                            StatusController* status,
-                            UpdateHandlerMap* update_handler_map) const = 0;
 
   virtual std::unique_ptr<ProtocolEvent> GetNetworkRequestEvent(
       base::Time timestamp,
@@ -53,11 +46,6 @@ class NormalGetUpdatesDelegate : public GetUpdatesDelegate {
   // Uses the member NudgeTracker to populate some fields of this GU message.
   void HelpPopulateGuMessage(
       sync_pb::GetUpdatesMessage* get_updates) const override;
-
-  // Applies pending updates on the appropriate data type threads.
-  void ApplyUpdates(const ModelTypeSet& gu_types,
-                    StatusController* status,
-                    UpdateHandlerMap* update_handler_map) const override;
 
   std::unique_ptr<ProtocolEvent> GetNetworkRequestEvent(
       base::Time timestamp,
@@ -80,14 +68,6 @@ class ConfigureGetUpdatesDelegate : public GetUpdatesDelegate {
   void HelpPopulateGuMessage(
       sync_pb::GetUpdatesMessage* get_updates) const override;
 
-  // Applies updates passively (i.e. on the sync thread).
-  //
-  // This is safe only if the ChangeProcessor is not listening to changes at
-  // this time.
-  void ApplyUpdates(const ModelTypeSet& gu_types,
-                    StatusController* status,
-                    UpdateHandlerMap* update_handler_map) const override;
-
   std::unique_ptr<ProtocolEvent> GetNetworkRequestEvent(
       base::Time timestamp,
       const sync_pb::ClientToServerMessage& request) const override;
@@ -107,11 +87,6 @@ class PollGetUpdatesDelegate : public GetUpdatesDelegate {
   // Sets the 'source' and 'origin' to indicate this is a poll request.
   void HelpPopulateGuMessage(
       sync_pb::GetUpdatesMessage* get_updates) const override;
-
-  // Applies updates on the appropriate data type thread.
-  void ApplyUpdates(const ModelTypeSet& gu_types,
-                    StatusController* status,
-                    UpdateHandlerMap* update_handler_map) const override;
 
   std::unique_ptr<ProtocolEvent> GetNetworkRequestEvent(
       base::Time timestamp,
