@@ -793,19 +793,15 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
                                 border_padding_in_child_writing_mode, min);
     }
     // Flex needs to never give a table a flexed main size that is less than its
-    // min-content size, so floor min-width by min-content size.
-    // TODO(dgrogan): This should probably apply to column flexboxes also,
-    // but that's not what legacy does.
-    if (child.IsTable() && !is_column_) {
-      const auto child_space = BuildSpaceForIntrinsicBlockSize(child);
-      const MinMaxSizes table_intrinsic_sizes =
-          child
-              .ComputeMinMaxSizes(ConstraintSpace().GetWritingMode(),
-                                  MinMaxSizesType::kContent, child_space)
-              .sizes;
-
-      min_max_sizes_in_main_axis_direction.Encompass(
-          table_intrinsic_sizes.min_size);
+    // min-content size, so floor the min main-axis size by min-content size.
+    if (child.IsTable()) {
+      if (MainAxisIsInlineAxis(child)) {
+        min_max_sizes_in_main_axis_direction.Encompass(
+            MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.min_size);
+      } else {
+        min_max_sizes_in_main_axis_direction.Encompass(
+            IntrinsicBlockSizeFunc());
+      }
     }
 
     min_max_sizes_in_main_axis_direction -= main_axis_border_padding;
