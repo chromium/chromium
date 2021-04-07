@@ -138,7 +138,6 @@ test("components_unittests") {
     "//components/reputation/core:unit_tests",
     "//components/safe_search_api:unit_tests",
     "//components/scheduling_metrics:unit_tests",
-    "//components/schema_org:unit_tests",
     "//components/search:unit_tests",
     "//components/search_engines:unit_tests",
     "//components/search_provider_logos:unit_tests",

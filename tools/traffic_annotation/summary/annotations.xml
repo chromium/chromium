@@ -176,8 +176,6 @@ Refer to README.md for content description and update process.
  <item id="logo_tracker" added_in_milestone="62" hash_code="36859107" type="0" deprecated="2018-12-07" content_hash_code="67588075" file_path=""/>
  <item id="lookup_single_password_leak" added_in_milestone="78" hash_code="16927377" type="0" content_hash_code="12158296" os_list="linux,windows" file_path="components/password_manager/core/browser/leak_detection/leak_detection_request.cc"/>
  <item id="managed_configuration_loader" added_in_milestone="89" hash_code="77734467" type="0" content_hash_code="101566873" os_list="linux,windows" file_path="chrome/browser/device_api/managed_configuration_api.cc"/>
- <item id="media_feeds" added_in_milestone="83" hash_code="116778918" type="0" content_hash_code="48909601" os_list="linux,windows" file_path="chrome/browser/media/feeds/media_feeds_fetcher.cc"/>
- <item id="media_feeds_checker" added_in_milestone="84" hash_code="107707089" type="0" content_hash_code="125348528" os_list="linux,windows" file_path="chrome/browser/media/feeds/media_feeds_service.cc"/>
  <item id="media_router_global_media_controls_image" added_in_milestone="81" hash_code="95983790" type="0" content_hash_code="48851217" os_list="linux,windows" file_path="chrome/browser/ui/global_media_controls/cast_media_notification_item.cc"/>
  <item id="memories_remote_model_request" added_in_milestone="90" hash_code="41799176" type="0" content_hash_code="53277182" os_list="linux,windows" file_path="components/history_clusters/core/memories_remote_model_helper.cc"/>
  <item id="metrics_report_ukm" added_in_milestone="62" hash_code="727478" type="0" content_hash_code="8746987" os_list="linux,windows" file_path="components/metrics/net/net_metrics_log_uploader.cc"/>

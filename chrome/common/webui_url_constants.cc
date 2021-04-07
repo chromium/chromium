@@ -112,7 +112,6 @@ const char kChromeUILocalStateHost[] = "local-state";
 const char kChromeUIManagementHost[] = "management";
 const char kChromeUIManagementURL[] = "chrome://management";
 const char kChromeUIMediaEngagementHost[] = "media-engagement";
-const char kChromeUIMediaFeedsHost[] = "media-feeds";
 const char kChromeUIMediaHistoryHost[] = "media-history";
 const char kChromeUIMediaRouterInternalsHost[] = "media-router-internals";
 const char kChromeUIMemoriesHost[] = "memories";

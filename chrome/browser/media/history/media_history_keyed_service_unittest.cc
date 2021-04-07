@@ -13,20 +13,14 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/media/feeds/media_feeds_store.mojom-shared.h"
-#include "chrome/browser/media/feeds/media_feeds_store.mojom.h"
-#include "chrome/browser/media/history/media_history_feed_items_table.h"
-#include "chrome/browser/media/history/media_history_feeds_table.h"
 #include "chrome/browser/media/history/media_history_images_table.h"
 #include "chrome/browser/media/history/media_history_origin_table.h"
 #include "chrome/browser/media/history/media_history_playback_table.h"
 #include "chrome/browser/media/history/media_history_session_images_table.h"
 #include "chrome/browser/media/history/media_history_session_table.h"
-#include "chrome/browser/media/history/media_history_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_database_params.h"
@@ -41,11 +35,6 @@
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !defined(OS_ANDROID)
-#include "chrome/browser/media/feeds/media_feeds_service.h"
-#include "chrome/browser/media/feeds/media_feeds_service_factory.h"
-#endif
 
 namespace media_history {
 
@@ -77,8 +66,6 @@ class MediaHistoryKeyedServiceTest
       public testing::WithParamInterface<TestState> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({media::kMediaFeeds}, {});
-
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     g_temp_history_dir = temp_dir_.GetPath();
 
@@ -206,42 +193,6 @@ class MediaHistoryKeyedServiceTest
     return out;
   }
 
-  static std::vector<media_feeds::mojom::MediaFeedItemPtr> GetExpectedItems() {
-    std::vector<media_feeds::mojom::MediaFeedItemPtr> items;
-
-    {
-      auto item = media_feeds::mojom::MediaFeedItem::New();
-      item->type = media_feeds::mojom::MediaFeedItemType::kVideo;
-      item->name = u"The Video";
-      item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMinutes(20));
-      item->is_family_friendly = media_feeds::mojom::IsFamilyFriendly::kNo;
-      item->action_status =
-          media_feeds::mojom::MediaFeedItemActionStatus::kActive;
-      items.push_back(std::move(item));
-    }
-
-    return items;
-  }
-
-  media_history::MediaHistoryKeyedService::MediaFeedFetchResult FetchResult(
-      const int64_t feed_id) {
-    media_history::MediaHistoryKeyedService::MediaFeedFetchResult result;
-    result.feed_id = feed_id;
-    result.items = GetExpectedItems();
-    result.status = media_feeds::mojom::FetchResult::kSuccess;
-    result.display_name = "Test";
-    result.reset_token = test::GetResetTokenSync(service(), feed_id);
-    return result;
-  }
-
-#if !defined(OS_ANDROID)
-  media_feeds::MediaFeedsService* GetMediaFeedsService() {
-    return media_feeds::MediaFeedsServiceFactory::GetInstance()->GetForProfile(
-        profile());
-  }
-#endif
-
   scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
 
  private:
@@ -250,8 +201,6 @@ class MediaHistoryKeyedServiceTest
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -428,20 +377,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
                                    CreateImageVector(shared_image));
   }
 
-#if !defined(OS_ANDROID)
-  // Discover the media feeds.
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_1);
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_2);
-#endif
-
   // Wait until the playbacks have finished saving.
-  WaitForDB();
-
-  // Store the feed data.
-  service()->StoreMediaFeedFetchResult(FetchResult(1), base::DoNothing());
-  service()->StoreMediaFeedFetchResult(FetchResult(2), base::DoNothing());
-
-  // Wait until the feed data has finished saving.
   WaitForDB();
 
   {
@@ -451,12 +387,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
     EXPECT_EQ(5,
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(5, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
-
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(2, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(2,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
 
     // There are 10 session images because each session has an image with two
     // sizes.
@@ -470,10 +400,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistoryPlaybackTable::kTableName));
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(images, GetURLsInTable(MediaHistoryImagesTable::kTableName));
-
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(media_feeds, GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
 
   MaybeSetSavingBrowsingHistoryDisabled();
 
@@ -503,12 +429,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(2, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
 
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(1,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
-
     // There are 4 session images because each session has an image with two
     // sizes.
     EXPECT_EQ(
@@ -521,11 +441,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   EXPECT_EQ(remaining, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(remaining_images,
             GetURLsInTable(MediaHistoryImagesTable::kTableName));
-
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(remaining_media_feeds,
-            GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
 }
 
 TEST_P(MediaHistoryKeyedServiceTest,
@@ -659,20 +574,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
   // Record a visit for |url3|.
   history->AddPage(url3, base::Time::Now(), history::SOURCE_BROWSED);
 
-#if !defined(OS_ANDROID)
-  // Discover the media feeds.
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_1);
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_2);
-#endif
-
   // Wait until the playbacks have finished saving.
-  WaitForDB();
-
-  // Store the feed data.
-  service()->StoreMediaFeedFetchResult(FetchResult(1), base::DoNothing());
-  service()->StoreMediaFeedFetchResult(FetchResult(2), base::DoNothing());
-
-  // Wait until the feed data has finished saving.
   WaitForDB();
 
   {
@@ -682,12 +584,6 @@ TEST_P(MediaHistoryKeyedServiceTest,
     EXPECT_EQ(5,
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(5, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
-
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(2, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(2,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
 
     // There are 10 session images because each session has an image with two
     // sizes.
@@ -701,10 +597,6 @@ TEST_P(MediaHistoryKeyedServiceTest,
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistoryPlaybackTable::kTableName));
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(images, GetURLsInTable(MediaHistoryImagesTable::kTableName));
-
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(media_feeds, GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
 
   MaybeSetSavingBrowsingHistoryDisabled();
 
@@ -734,12 +626,6 @@ TEST_P(MediaHistoryKeyedServiceTest,
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(4, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
 
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(2, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(2,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
-
     // There are 8 session images because each session has an image with two
     // sizes.
     EXPECT_EQ(
@@ -752,10 +638,6 @@ TEST_P(MediaHistoryKeyedServiceTest,
   EXPECT_EQ(remaining, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(remaining_images,
             GetURLsInTable(MediaHistoryImagesTable::kTableName));
-
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(media_feeds, GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
 }
 
 TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
@@ -883,20 +765,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
                                    CreateImageVector(shared_image));
   }
 
-#if !defined(OS_ANDROID)
-  // Discover the media feeds.
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_1);
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_2);
-#endif
-
   // Wait until the playbacks have finished saving.
-  WaitForDB();
-
-  // Store the feed data.
-  service()->StoreMediaFeedFetchResult(FetchResult(1), base::DoNothing());
-  service()->StoreMediaFeedFetchResult(FetchResult(2), base::DoNothing());
-
-  // Wait until the feed data has finished saving.
   WaitForDB();
 
   {
@@ -906,12 +775,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
     EXPECT_EQ(5,
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(5, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
-
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(2, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(2,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
 
     // There are 10 session images because each session has an image with two
     // sizes.
@@ -925,10 +788,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistoryPlaybackTable::kTableName));
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(images, GetURLsInTable(MediaHistoryImagesTable::kTableName));
-
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(media_feeds, GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
 
   // Check the origins have the correct aggregate watchtime.
   {
@@ -974,12 +833,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(3, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
 
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(2, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(2,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
-
     // There are 6 session images because each session has an image with two
     // sizes.
     EXPECT_EQ(
@@ -992,10 +845,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
   EXPECT_EQ(remaining, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(remaining_images,
             GetURLsInTable(MediaHistoryImagesTable::kTableName));
-
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(media_feeds, GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
 
   // Check the origins have the correct aggregate watchtime.
   {

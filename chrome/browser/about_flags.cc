@@ -6539,17 +6539,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableTranslateSubFramesDescription, kOsAll,
      FEATURE_VALUE_TYPE(translate::kTranslateSubFrames)},
 
-#if !defined(OS_ANDROID)
-    {"enable-media-feeds", flag_descriptions::kEnableMediaFeedsName,
-     flag_descriptions::kEnableMediaFeedsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kMediaFeeds)},
-
-    {"enable-media-feeds-background-fetch",
-     flag_descriptions::kEnableMediaFeedsBackgroundFetchName,
-     flag_descriptions::kEnableMediaFeedsBackgroundFetchDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kMediaFeedsBackgroundFetching)},
-#endif  // !defined(OS_ANDROID)
-
     {"conversion-measurement-api",
      flag_descriptions::kConversionMeasurementApiName,
      flag_descriptions::kConversionMeasurementApiDescription, kOsAll,

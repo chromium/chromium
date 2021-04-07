@@ -128,7 +128,6 @@
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
-#include "chrome/browser/media/feeds/media_feeds_service_factory.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "chrome/browser/profiles/profile_theme_update_service_factory.h"
@@ -337,7 +336,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (MediaEngagementService::IsEnabled())
     MediaEngagementServiceFactory::GetInstance();
 #if !defined(OS_ANDROID)
-  media_feeds::MediaFeedsServiceFactory::GetInstance();
   MediaGalleriesPreferencesFactory::GetInstance();
 #endif
   if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore))

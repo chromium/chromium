@@ -20,16 +20,3 @@ mojom("improved_mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 }
-
-component("common") {
-  output_name = "schema_org_common"
-
-  sources = [
-    "time.cc",
-    "time.h",
-  ]
-
-  defines = [ "IS_SCHEMA_ORG_COMMON_IMPL" ]
-
-  deps = [ "//base" ]
-}

@@ -37,7 +37,6 @@ js_type_check("closure_compile") {
   deps = [
     ":media_data_table",
     ":media_engagement",
-    ":media_feeds",
     ":media_history",
   ]
 }
@@ -60,16 +59,6 @@ js_library("media_history") {
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:ui.m",
     "//ui/webui/resources/js/cr/ui:tabs.m",
-  ]
-}
-
-js_library("media_feeds") {
-  deps = [
-    ":media_data_table",
-    "//chrome/browser/media/feeds:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
   ]
 }
 

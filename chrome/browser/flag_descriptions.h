@@ -2882,12 +2882,6 @@ extern const char kEnableNewBadgeOnMenuItemsDescription[];
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
 
-extern const char kEnableMediaFeedsName[];
-extern const char kEnableMediaFeedsDescription[];
-
-extern const char kEnableMediaFeedsBackgroundFetchName[];
-extern const char kEnableMediaFeedsBackgroundFetchDescription[];
-
 extern const char kEnableOopPrintDriversName[];
 extern const char kEnableOopPrintDriversDescription[];
 

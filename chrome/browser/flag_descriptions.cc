@@ -4946,17 +4946,6 @@ const char kEnableNewBadgeOnMenuItemsDescription[] =
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
 
-const char kEnableMediaFeedsName[] = "Enables Media Feeds";
-const char kEnableMediaFeedsDescription[] =
-    "Enables the Media Feeds feature which allows us to fetch feeds of media "
-    "items from websites that support the feature. ";
-
-const char kEnableMediaFeedsBackgroundFetchName[] =
-    "Enables Media Feeds Background Fetch";
-const char kEnableMediaFeedsBackgroundFetchDescription[] =
-    "Enables the Media Feeds background fetch feature which allows feeds to be "
-    "fetched in the background. Requires #enable-media-feeds to be enabled. ";
-
 const char kEnableOopPrintDriversName[] =
     "Enables Out-of-Process Printer Drivers";
 const char kEnableOopPrintDriversDescription[] =

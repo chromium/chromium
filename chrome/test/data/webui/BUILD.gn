@@ -388,7 +388,6 @@ if (include_js_tests) {
     sources = [
       "bluetooth_internals/bluetooth_internals_browsertest.js",
       "media/media_engagement_browsertest.js",
-      "media/media_feeds_webui_browsertest.js",
       "media/media_history_webui_browsertest.js",
       "new_tab_page/new_tab_page_browsertest.js",
       "new_tab_page_third_party/new_tab_page_third_party_browsertest.js",

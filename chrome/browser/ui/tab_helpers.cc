@@ -160,11 +160,6 @@
 #include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
 #endif
 
-#if !defined(OS_ANDROID)
-#include "chrome/browser/media/feeds/media_feeds_contents_observer.h"
-#include "chrome/browser/media/feeds/media_feeds_service.h"
-#endif
-
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
@@ -388,8 +383,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     LastTabStandingTrackerTabHelper::CreateForWebContents(web_contents);
   }
   ManagePasswordsUIController::CreateForWebContents(web_contents);
-  if (media_feeds::MediaFeedsService::IsEnabled())
-    MediaFeedsContentsObserver::CreateForWebContents(web_contents);
   pdf::PDFWebContentsHelper::CreateForWebContentsWithClient(
       web_contents, std::make_unique<ChromePDFWebContentsHelperClient>());
   SadTabHelper::CreateForWebContents(web_contents);

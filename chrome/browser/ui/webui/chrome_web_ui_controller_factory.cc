@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/webui/local_state/local_state_ui.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
-#include "chrome/browser/ui/webui/media/media_feeds_ui.h"
 #include "chrome/browser/ui/webui/media/media_history_ui.h"
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
 #include "chrome/browser/ui/webui/memory_internals_ui.h"
@@ -117,7 +116,6 @@
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
 #else  // defined(OS_ANDROID)
-#include "chrome/browser/media/feeds/media_feeds_service.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
@@ -999,13 +997,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       url.host_piece() == chrome::kChromeUIMediaEngagementHost) {
     return &NewWebUI<MediaEngagementUI>;
   }
-
-#if !defined(OS_ANDROID)
-  if (media_feeds::MediaFeedsService::IsEnabled() &&
-      url.host_piece() == chrome::kChromeUIMediaFeedsHost) {
-    return &NewWebUI<MediaFeedsUI>;
-  }
-#endif
 
   if (media_history::MediaHistoryKeyedService::IsEnabled() &&
       url.host_piece() == chrome::kChromeUIMediaHistoryHost) {

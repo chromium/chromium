@@ -35,9 +35,6 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_MEDIA_ENGAGEMENT_HTML" file="resources\media\media_engagement.html" type="BINDATA" />
       <include name="IDR_MEDIA_ENGAGEMENT_JS" file="resources\media\media_engagement.js" type="BINDATA" />
       <include name="IDR_MEDIA_ENGAGEMENT_SCORE_DETAILS_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\media\media_engagement_score_details.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_MEDIA_FEEDS_HTML" file="resources\media\media_feeds.html" type="BINDATA" />
-      <include name="IDR_MEDIA_FEEDS_JS" file="resources\media\media_feeds.js" type="BINDATA" />
-      <include name="IDR_MEDIA_FEEDS_STORE_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\media\feeds\media_feeds_store.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MEDIA_HISTORY_HTML" file="resources\media\media_history.html" type="BINDATA" allowexternalscript="true" />
       <include name="IDR_MEDIA_HISTORY_JS" file="resources\media\media_history.js" type="BINDATA" />
       <include name="IDR_MEDIA_HISTORY_STORE_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\media\history\media_history_store.mojom-lite.js" use_base_dir="false" type="BINDATA" />

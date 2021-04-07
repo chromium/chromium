@@ -108,7 +108,6 @@
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/cart/commerce_hint_service.h"
-#include "chrome/browser/media/feeds/media_feeds_store.mojom.h"
 #include "chrome/browser/payments/payment_credential_factory.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
@@ -130,7 +129,6 @@
 #endif
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
-#include "chrome/browser/ui/webui/media/media_feeds_ui.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
 #include "chrome/browser/ui/webui/memories/memories_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
@@ -680,9 +678,6 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<foo::mojom::FooHandler, NewTabPageUI>(
       map);
 #endif  // !defined(OFFICIAL_BUILD)
-
-  RegisterWebUIControllerInterfaceBinder<media_feeds::mojom::MediaFeedsStore,
-                                         MediaFeedsUI>(map);
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule)) {
     RegisterWebUIControllerInterfaceBinder<chrome_cart::mojom::CartHandler,

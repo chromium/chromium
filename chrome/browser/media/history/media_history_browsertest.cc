@@ -11,19 +11,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/media/feeds/media_feeds_service.h"
-#include "chrome/browser/media/feeds/media_feeds_service_factory.h"
-#include "chrome/browser/media/history/media_history_feed_items_table.h"
-#include "chrome/browser/media/history/media_history_feeds_table.h"
 #include "chrome/browser/media/history/media_history_images_table.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"
 #include "chrome/browser/media/history/media_history_origin_table.h"
 #include "chrome/browser/media/history/media_history_session_images_table.h"
 #include "chrome/browser/media/history/media_history_session_table.h"
-#include "chrome/browser/media/history/media_history_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -66,13 +60,6 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
  public:
   MediaHistoryBrowserTest() = default;
   ~MediaHistoryBrowserTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {media::kUseMediaHistoryStore, media::kMediaFeeds}, {});
-
-    InProcessBrowserTest::SetUp();
-  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -301,18 +288,6 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
     WaitForDB(GetMediaHistoryService(browser));
   }
 
-  media_history::MediaHistoryKeyedService::MediaFeedFetchResult FetchResult(
-      MediaHistoryKeyedService* service,
-      const int64_t feed_id) {
-    media_history::MediaHistoryKeyedService::MediaFeedFetchResult result;
-    result.feed_id = feed_id;
-    result.items = GetExpectedItems();
-    result.status = media_feeds::mojom::FetchResult::kSuccess;
-    result.display_name = "Test";
-    result.reset_token = test::GetResetTokenSync(service, feed_id);
-    return result;
-  }
-
   const GURL GetTestURL() const {
     return embedded_test_server()->GetURL("/media/media_history.html");
   }
@@ -335,34 +310,10 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
         browser->profile()->GetPrimaryOTRProfile());
   }
 
-  static media_feeds::MediaFeedsService* GetMediaFeedsService(
-      Browser* browser) {
-    return media_feeds::MediaFeedsServiceFactory::GetInstance()->GetForProfile(
-        browser->profile());
-  }
-
   static void WaitForDB(MediaHistoryKeyedService* service) {
     base::RunLoop run_loop;
     service->PostTaskToDBForTest(run_loop.QuitClosure());
     run_loop.Run();
-  }
-
-  static std::vector<media_feeds::mojom::MediaFeedItemPtr> GetExpectedItems() {
-    std::vector<media_feeds::mojom::MediaFeedItemPtr> items;
-
-    {
-      auto item = media_feeds::mojom::MediaFeedItem::New();
-      item->type = media_feeds::mojom::MediaFeedItemType::kVideo;
-      item->name = u"The Video";
-      item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMinutes(20));
-      item->is_family_friendly = media_feeds::mojom::IsFamilyFriendly::kNo;
-      item->action_status =
-          media_feeds::mojom::MediaFeedItemActionStatus::kActive;
-      items.push_back(std::move(item));
-    }
-
-    return items;
   }
 
   Browser* CreateBrowserFromParam() {
@@ -377,9 +328,6 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
   }
 
   bool IsReadOnly() const { return GetParam() != TestState::kNormal; }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1122,163 +1070,6 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   // Verify the session was not recorded.
   auto sessions = GetPlaybackSessionsSync(GetMediaHistoryService(browser), 1);
   EXPECT_TRUE(sessions.empty());
-}
-
-IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       ResetFeedsWhenBrowsingDataCleared) {
-  auto* browser = CreateBrowserFromParam();
-  auto* service = GetMediaHistoryService(browser);
-
-  // Discover a test feed.
-  if (auto* feeds_service = GetMediaFeedsService(browser)) {
-    feeds_service->DiscoverMediaFeed(
-        GURL("https://www.google.com/media-feed.json"));
-    WaitForDB(service);
-  }
-
-  // Store the feed data.
-  service->StoreMediaFeedFetchResult(FetchResult(service, 1),
-                                     base::DoNothing());
-  WaitForDB(service);
-
-  {
-    // Check that the tables have the right count in them.
-    auto stats = GetStatsSync(service);
-
-    if (IsReadOnly()) {
-      EXPECT_EQ(0, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    } else {
-      EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          1, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    }
-  }
-
-  // Clear the browsing data.
-  content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(browser->profile());
-  content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
-  remover->RemoveAndReply(
-      base::Time(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_CACHE,
-      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-      &completion_observer);
-  completion_observer.BlockUntilCompletion();
-
-  {
-    // Check that the tables have the right count in them.
-    auto stats = GetStatsSync(service);
-
-    if (IsReadOnly()) {
-      EXPECT_EQ(0, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    } else {
-      EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    }
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       ResetFeedsWhenBrowsingDataClearedWithFilter) {
-  const GURL feed_url("https://www.google.com/media-feed.json");
-
-  auto* browser = CreateBrowserFromParam();
-  auto* service = GetMediaHistoryService(browser);
-
-  // Discover a test feed.
-  if (auto* feeds_service = GetMediaFeedsService(browser)) {
-    feeds_service->DiscoverMediaFeed(
-        GURL("https://www.google.com/media-feed.json"));
-    WaitForDB(service);
-  }
-
-  // Store the feed data.
-  service->StoreMediaFeedFetchResult(FetchResult(service, 1),
-                                     base::DoNothing());
-  WaitForDB(service);
-
-  {
-    // Check that the tables have the right count in them.
-    auto stats = GetStatsSync(service);
-
-    if (IsReadOnly()) {
-      EXPECT_EQ(0, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    } else {
-      EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          1, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    }
-  }
-
-  {
-    // Clear the browsing data for another origin.
-    auto filter = content::BrowsingDataFilterBuilder::Create(
-        content::BrowsingDataFilterBuilder::Mode::kDelete);
-    filter->AddOrigin(url::Origin::Create(GURL("https://www.example.org")));
-    content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(browser->profile());
-    content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
-    remover->RemoveWithFilterAndReply(
-        base::Time(), base::Time::Max(),
-        content::BrowsingDataRemover::DATA_TYPE_CACHE,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-        std::move(filter), &completion_observer);
-    completion_observer.BlockUntilCompletion();
-  }
-
-  {
-    // Check that the tables have the right count in them (nothing should have
-    // been deleted).
-    auto stats = GetStatsSync(service);
-
-    if (IsReadOnly()) {
-      EXPECT_EQ(0, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    } else {
-      EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          1, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    }
-  }
-
-  {
-    // Clear the browsing data for the feed origin.
-    auto filter = content::BrowsingDataFilterBuilder::Create(
-        content::BrowsingDataFilterBuilder::Mode::kDelete);
-    filter->AddOrigin(url::Origin::Create(feed_url));
-    content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(browser->profile());
-    content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
-    remover->RemoveWithFilterAndReply(
-        base::Time(), base::Time::Max(),
-        content::BrowsingDataRemover::DATA_TYPE_CACHE,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-        std::move(filter), &completion_observer);
-    completion_observer.BlockUntilCompletion();
-  }
-
-  {
-    // Check that the tables have the right count in them.
-    auto stats = GetStatsSync(service);
-
-    if (IsReadOnly()) {
-      EXPECT_EQ(0, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    } else {
-      EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    }
-  }
 }
 
 IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,

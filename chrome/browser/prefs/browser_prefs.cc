@@ -410,10 +410,6 @@
 #include "chrome/browser/ui/browser_view_prefs.h"
 #endif
 
-#if !defined(OS_ANDROID)
-#include "chrome/browser/media/feeds/media_feeds_service.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_service_log.h"
 #endif
@@ -639,6 +635,13 @@ void RegisterProfilePrefsForMigration(
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   registry->RegisterBooleanPref(kRunAllFlashInAllowMode, false);
+#endif
+
+#if !defined(OS_ANDROID)
+  // Removed in M91.
+  registry->RegisterBooleanPref(prefs::kMediaFeedsBackgroundFetching, false);
+  registry->RegisterBooleanPref(prefs::kMediaFeedsSafeSearchEnabled, false);
+  registry->RegisterBooleanPref(prefs::kMediaFeedsAutoSelectEnabled, false);
 #endif
 }
 
@@ -1133,10 +1136,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   RegisterBrowserViewProfilePrefs(registry);
 #endif
 
-#if !defined(OS_ANDROID)
-  media_feeds::MediaFeedsService::RegisterProfilePrefs(registry);
-#endif
-
   RegisterProfilePrefsForMigration(registry);
 }
 
@@ -1318,6 +1317,13 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Added 03/2021
   profile_prefs->ClearPref(kRunAllFlashInAllowMode);
+#endif
+
+#if !defined(OS_ANDROID)
+  // Added 04/2021
+  profile_prefs->ClearPref(prefs::kMediaFeedsBackgroundFetching);
+  profile_prefs->ClearPref(prefs::kMediaFeedsSafeSearchEnabled);
+  profile_prefs->ClearPref(prefs::kMediaFeedsAutoSelectEnabled);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

@@ -970,17 +970,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             profile_));
 
-    if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore)) {
-      media_history::MediaHistoryKeyedService* media_history_service =
-          media_history::MediaHistoryKeyedServiceFactory::GetForProfile(
-              profile_);
-      if (media_history_service) {
-        media_history_service->ResetMediaFeedDueToCacheClearing(
-            delete_begin_, delete_end_, nullable_filter,
-            CreateTaskCompletionClosure(TracingDataType::kMediaFeeds));
-      }
-    }
-
 #if defined(OS_ANDROID)
 #if BUILDFLAG(ENABLE_FEED_V2)
     // Don't bridge through if the service isn't present, which means we're
