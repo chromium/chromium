@@ -40,6 +40,7 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -200,6 +201,8 @@ void BlinkAXTreeSource::SetRoot(WebAXObject root) {
   explicit_root_ = root;
 }
 
+#if defined(AX_FAIL_FAST_BUILD)
+// TODO(accessibility) Remove once it's clear this never triggers.
 bool BlinkAXTreeSource::IsInTree(WebAXObject node) const {
   CHECK(frozen_);
   while (IsValid(node)) {
@@ -209,6 +212,7 @@ bool BlinkAXTreeSource::IsInTree(WebAXObject node) const {
   }
   return false;
 }
+#endif
 
 void BlinkAXTreeSource::SetAccessibilityMode(ui::AXMode new_mode) {
   if (accessibility_mode_ == new_mode)

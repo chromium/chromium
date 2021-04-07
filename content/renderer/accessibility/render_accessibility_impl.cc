@@ -846,11 +846,13 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     if (!obj.MaybeUpdateLayoutAndCheckValidity())
       continue;
 
-    // Make sure it's a descendant of our root node - exceptions include the
-    // scroll area that's the parent of the main document (we ignore it), and
-    // possibly nodes attached to a different document.
-    if (!tree_source_->IsInTree(obj))
-      continue;
+      // Make sure it's a descendant of our root node - exceptions include the
+      // scroll area that's the parent of the main document (we ignore it), and
+      // possibly nodes attached to a different document.
+      // TODO(accessibility) Remove once it's clear this never triggers.
+#if defined(AX_FAIL_FAST_BUILD)
+    SANITIZER_CHECK(tree_source_->IsInTree(obj));
+#endif
 
     // If it's ignored, find the first ancestor that's not ignored.
     //

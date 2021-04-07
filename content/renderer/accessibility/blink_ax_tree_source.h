@@ -14,6 +14,7 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -56,8 +57,11 @@ class CONTENT_EXPORT BlinkAXTreeSource
   // WebDocument if accessibility isn't enabled globally.
   void SetRoot(blink::WebAXObject root);
 
+#if defined(AX_FAIL_FAST_BUILD)
   // Walks up the ancestor chain to see if this is a descendant of the root.
+  // TODO(accessibility) Remove once it's clear this never triggers.
   bool IsInTree(blink::WebAXObject node) const;
+#endif
 
   ui::AXMode accessibility_mode() { return accessibility_mode_; }
   void SetAccessibilityMode(ui::AXMode new_mode);
