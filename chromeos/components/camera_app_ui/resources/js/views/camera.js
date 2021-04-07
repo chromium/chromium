@@ -16,6 +16,7 @@ import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
 import * as metrics from '../metrics.js';
+import * as loadTimeData from '../models/load_time_data.js';
 import * as localStorage from '../models/local_storage.js';
 // eslint-disable-next-line no-unused-vars
 import {ResultSaver} from '../models/result_saver.js';
@@ -152,6 +153,14 @@ export class Camera extends View {
      * @private
      */
     this.activeDeviceId_ = null;
+
+    /**
+     * The last time of all screen state turning from OFF to ON during the app
+     * execution. Sets to -Infinity for no such time since app is opened.
+     * @type {number}
+     * @private
+     */
+    this.lastScreenOnTime_ = -Infinity;
 
     /**
      * Modes for the camera.
@@ -335,14 +344,16 @@ export class Camera extends View {
         await helper.initExternalScreenMonitor(updateExternalScreen);
     updateExternalScreen(hasExternalScreen);
 
-    const checkScreenOff = () => {
+    const handleScreenStateChange = () => {
       if (this.screenOff_) {
         this.start();
+      } else {
+        this.lastScreenOnTime_ = performance.now();
       }
     };
 
-    state.addObserver(state.State.SCREEN_OFF_AUTO, checkScreenOff);
-    state.addObserver(state.State.HAS_EXTERNAL_SCREEN, checkScreenOff);
+    state.addObserver(state.State.SCREEN_OFF_AUTO, handleScreenStateChange);
+    state.addObserver(state.State.HAS_EXTERNAL_SCREEN, handleScreenStateChange);
 
     this.initVideoEncoderOptions_();
   }
@@ -644,7 +655,19 @@ export class Camera extends View {
           if (deviceOperator !== null) {
             factory.prepareDevice(deviceOperator, constraints);
           }
+
+          // Sets 2500 ms delay between screen resumed and open camera preview.
+          // TODO(b/173679752): Removes this workaround after fix delay on
+          // kernel side.
+          if (loadTimeData.getBoard() === 'zork') {
+            const screenOnTime = performance.now() - this.lastScreenOnTime_;
+            const delay = 2500 - screenOnTime;
+            if (delay > 0) {
+              await util.sleep(delay);
+            }
+          }
           const stream = await this.preview_.open(constraints);
+
           this.facingMode_ = await this.options_.updateValues(stream);
           factory.setPreviewStream(stream);
           factory.setFacing(this.facingMode_);

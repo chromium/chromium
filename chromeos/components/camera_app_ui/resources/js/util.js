@@ -209,3 +209,12 @@ export async function createUntrustedJSModule(scriptUrl) {
   await untrustedRemote.loadScript(scriptUrl);
   return untrustedRemote;
 }
+
+/**
+ * Sleeps for a specified time.
+ * @param {number} ms Milliseconds to sleep.
+ * @return {!Promise}
+ */
+export function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
