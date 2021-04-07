@@ -106,7 +106,7 @@ AccessTokenFetcher::AccessTokenFetcher(
   // Start observing the IdentityManager. This observer will be removed either
   // when a refresh token is obtained and an access token request is started or
   // when this object is destroyed.
-  token_service_observation_.Observe(token_service_);
+  token_service_observation_.Observe(token_service_.get());
 }
 
 AccessTokenFetcher::~AccessTokenFetcher() {}
@@ -160,7 +160,7 @@ void AccessTokenFetcher::StartAccessTokenRequest() {
 
   // By the time of starting an access token request, we should no longer be
   // listening for signin-related events.
-  DCHECK(!token_service_observation_.IsObservingSource(token_service_));
+  DCHECK(!token_service_observation_.IsObservingSource(token_service_.get()));
 
   // Note: We might get here even in cases where we know that there's no refresh
   // token. We're requesting an access token anyway, so that the token service
@@ -199,7 +199,7 @@ void AccessTokenFetcher::OnRefreshTokenAvailable(
   if (!IsRefreshTokenAvailable())
     return;
 
-  DCHECK(token_service_observation_.IsObservingSource(token_service_));
+  DCHECK(token_service_observation_.IsObservingSource(token_service_.get()));
   token_service_observation_.Reset();
 
   StartAccessTokenRequest();

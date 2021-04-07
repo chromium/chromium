@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_H_
 #define CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/updateable_sequenced_task_runner.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
@@ -62,7 +63,7 @@ class AccessContextAuditService
     // audit service for persisting to disk.
     void FlushCookieRecords();
 
-    AccessContextAuditService* service_;
+    CheckedPtr<AccessContextAuditService> service_;
     canonical_cookie::CookieHashSet accessed_cookies_;
     url::Origin last_seen_top_frame_origin_;
     ScopedObserver<AccessContextAuditService, CookieAccessHelper>

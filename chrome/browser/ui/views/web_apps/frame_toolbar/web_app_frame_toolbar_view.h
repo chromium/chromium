@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -97,7 +98,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   void UpdateChildrenColor();
 
   // The containing browser view.
-  BrowserView* const browser_view_;
+  const CheckedPtr<BrowserView> browser_view_;
 
   // Button and text colors.
   bool paint_as_active_ = true;
@@ -109,12 +110,12 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   // All remaining members are owned by the views hierarchy.
 
   // The navigation container is only created when display mode is minimal-ui.
-  WebAppNavigationButtonContainer* left_container_ = nullptr;
+  CheckedPtr<WebAppNavigationButtonContainer> left_container_ = nullptr;
 
   // Empty container used by the parent frame to layout additional elements.
-  views::View* center_container_ = nullptr;
+  CheckedPtr<views::View> center_container_ = nullptr;
 
-  WebAppToolbarButtonContainer* right_container_ = nullptr;
+  CheckedPtr<WebAppToolbarButtonContainer> right_container_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_VIEW_H_

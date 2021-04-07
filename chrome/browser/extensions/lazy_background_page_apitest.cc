@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -92,7 +93,7 @@ class LoadedIncognitoObserver : public ExtensionRegistryObserver {
         profile_->GetPrimaryOTRProfile());
   }
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
   std::unique_ptr<LazyBackgroundObserver> original_complete_;

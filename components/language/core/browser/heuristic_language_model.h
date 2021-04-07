@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/url_language_histogram.h"
 
@@ -57,7 +58,7 @@ class HeuristicLanguageModel : public LanguageModel {
   std::vector<LanguageDetails> GetLanguages() override;
 
  private:
-  const PrefService* const pref_service_;
+  const CheckedPtr<const PrefService> pref_service_;
   const std::string ui_lang_;
   const std::string accept_langs_pref_;
   const std::string ulp_pref_;

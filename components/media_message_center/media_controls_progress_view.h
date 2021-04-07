@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_CONTROLS_PROGRESS_VIEW_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_CONTROLS_PROGRESS_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -49,9 +50,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
 
   void HandleSeeking(const gfx::Point& location);
 
-  views::ProgressBar* progress_bar_;
-  views::Label* progress_time_;
-  views::Label* duration_;
+  CheckedPtr<views::ProgressBar> progress_bar_;
+  CheckedPtr<views::Label> progress_time_;
+  CheckedPtr<views::Label> duration_;
 
   const bool is_modern_notification_;
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_PINNED_TAB_SERVICE_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -50,7 +51,7 @@ class PinnedTabService : public content::NotificationObserver,
   // window has been added since the last time the method was called.
   void WritePinnedTabsIfNecessary();
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // True if we should save the pinned tabs when a browser window closes or the
   // user exits the application. This is set to false after writing pinned tabs,

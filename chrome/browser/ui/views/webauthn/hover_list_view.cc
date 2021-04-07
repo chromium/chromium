@@ -155,7 +155,7 @@ HoverListView::HoverListView(std::unique_ptr<HoverListModel> model)
 
   scroll_view_ = new views::ScrollView();
   scroll_view_->SetContents(std::move(item_container));
-  AddChildView(scroll_view_);
+  AddChildView(scroll_view_.get());
   scroll_view_->ClipHeightTo(GetPreferredViewHeight(),
                              GetPreferredViewHeight());
 

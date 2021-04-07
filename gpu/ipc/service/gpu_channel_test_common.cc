@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gpu/ipc/service/gpu_channel_test_common.h"
+#include "base/memory/checked_ptr.h"
 
 #include <memory>
 
@@ -57,7 +58,7 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
 
  private:
   bool is_exiting_ = false;
-  Scheduler* const scheduler_;
+  const CheckedPtr<Scheduler> scheduler_;
 
   DISALLOW_COPY_AND_ASSIGN(TestGpuChannelManagerDelegate);
 };

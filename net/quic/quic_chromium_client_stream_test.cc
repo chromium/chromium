@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -182,7 +183,7 @@ class QuicChromiumClientStreamTest
             version_.transport_version, 0),
         &session_, quic::BIDIRECTIONAL, NetLogWithSource(),
         TRAFFIC_ANNOTATION_FOR_TESTS);
-    session_.ActivateStream(base::WrapUnique(stream_));
+    session_.ActivateStream(base::WrapUnique(stream_.get()));
     handle_ = stream_->CreateHandle();
     helper_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
   }
@@ -287,7 +288,7 @@ class QuicChromiumClientStreamTest
   quic::test::MockQuicConnectionHelper helper_;
   quic::test::MockAlarmFactory alarm_factory_;
   MockQuicClientSessionBase session_;
-  QuicChromiumClientStream* stream_;
+  CheckedPtr<QuicChromiumClientStream> stream_;
   spdy::Http2HeaderBlock headers_;
   spdy::Http2HeaderBlock trailers_;
   quic::QuicClientPushPromiseIndex push_promise_index_;

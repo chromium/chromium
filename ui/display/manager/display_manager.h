@@ -21,6 +21,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -511,7 +512,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
     ~BeginEndNotifier();
 
    private:
-    DisplayManager* display_manager_;
+    CheckedPtr<DisplayManager> display_manager_;
 
     DISALLOW_COPY_AND_ASSIGN(BeginEndNotifier);
   };

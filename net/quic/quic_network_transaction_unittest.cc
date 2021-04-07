@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
@@ -244,8 +245,8 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
   void OnConnectionChanged() override {}
 
  private:
-  bool* should_notify_updated_rtt_;
-  bool* rtt_notification_received_;
+  CheckedPtr<bool> should_notify_updated_rtt_;
+  CheckedPtr<bool> rtt_notification_received_;
 
   DISALLOW_COPY_AND_ASSIGN(TestSocketPerformanceWatcher);
 };
@@ -6785,7 +6786,7 @@ class QuicURLRequestContext : public URLRequestContext {
   MockClientSocketFactory& socket_factory() { return *socket_factory_; }
 
  private:
-  MockClientSocketFactory* socket_factory_;
+  CheckedPtr<MockClientSocketFactory> socket_factory_;
   URLRequestContextStorage storage_;
 };
 

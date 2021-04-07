@@ -5,6 +5,7 @@
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -285,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
     }
 
    private:
-    Browser* const browser_;
+    const CheckedPtr<Browser> browser_;
     base::OnceClosure on_tab_changed_;
   };
 

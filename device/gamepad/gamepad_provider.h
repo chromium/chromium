@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -177,7 +178,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
   // Polling is done on this background thread.
   std::unique_ptr<base::Thread> polling_thread_;
 
-  GamepadConnectionChangeClient* connection_change_client_;
+  CheckedPtr<GamepadConnectionChangeClient> connection_change_client_;
 
   DISALLOW_COPY_AND_ASSIGN(GamepadProvider);
 };

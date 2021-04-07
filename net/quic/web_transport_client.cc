@@ -4,6 +4,7 @@
 
 #include "net/quic/web_transport_client.h"
 
+#include "base/memory/checked_ptr.h"
 #include "net/quic/quic_transport_client.h"
 
 namespace net {
@@ -26,7 +27,7 @@ class FailedWebTransportClient : public WebTransportClient {
 
  private:
   QuicTransportError error_;
-  WebTransportClientVisitor* visitor_;
+  CheckedPtr<WebTransportClientVisitor> visitor_;
 };
 }  // namespace
 

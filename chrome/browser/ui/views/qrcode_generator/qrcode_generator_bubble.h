@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -104,15 +105,15 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   GURL url_;
 
   // Pointers to view widgets; weak.
-  views::ImageView* qr_code_image_ = nullptr;
-  views::Textfield* textfield_url_ = nullptr;
-  views::LabelButton* download_button_ = nullptr;
-  views::TooltipIcon* tooltip_icon_ = nullptr;
-  views::Label* center_error_label_ = nullptr;
-  views::Label* bottom_error_label_ = nullptr;
+  CheckedPtr<views::ImageView> qr_code_image_ = nullptr;
+  CheckedPtr<views::Textfield> textfield_url_ = nullptr;
+  CheckedPtr<views::LabelButton> download_button_ = nullptr;
+  CheckedPtr<views::TooltipIcon> tooltip_icon_ = nullptr;
+  CheckedPtr<views::Label> center_error_label_ = nullptr;
+  CheckedPtr<views::Label> bottom_error_label_ = nullptr;
 
-  QRCodeGeneratorBubbleController* controller_;  // weak.
-  content::WebContents* web_contents_;           // weak.
+  CheckedPtr<QRCodeGeneratorBubbleController> controller_;  // weak.
+  CheckedPtr<content::WebContents> web_contents_;           // weak.
 };
 
 }  // namespace qrcode_generator

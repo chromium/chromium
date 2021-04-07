@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -93,7 +94,7 @@ class TaskTabHelperUnitTest : public ChromeRenderViewHostTestHarness {
     return web_contents()->GetController().GetLastCommittedEntry();
   }
 
-  MockTaskTabHelper* task_tab_helper_;
+  CheckedPtr<MockTaskTabHelper> task_tab_helper_;
   base::HistogramTester histogram_tester_;
 };
 

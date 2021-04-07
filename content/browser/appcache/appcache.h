@@ -15,6 +15,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "content/browser/appcache/appcache_database.h"
@@ -243,7 +244,7 @@ class CONTENT_EXPORT AppCache
   std::string manifest_scope_;
 
   // to notify storage when cache is deleted
-  AppCacheStorage* storage_;
+  CheckedPtr<AppCacheStorage> storage_;
 
   FRIEND_TEST_ALL_PREFIXES(content::AppCacheTest, InitializeWithManifest);
   FRIEND_TEST_ALL_PREFIXES(content::AppCacheTest, ToFromDatabaseRecords);

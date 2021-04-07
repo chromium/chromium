@@ -14,6 +14,7 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -317,7 +318,7 @@ class CdmVideoFrameAdapter : public cdm::VideoFrame_2 {
   }
 
  private:
-  cdm::VideoFrame* const video_frame_ = nullptr;
+  const CheckedPtr<cdm::VideoFrame> video_frame_ = nullptr;
 };
 
 }  // namespace

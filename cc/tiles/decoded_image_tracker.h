@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -82,7 +83,7 @@ class CC_EXPORT DecodedImageTracker {
     base::TimeTicks lock_time() const { return lock_time_; }
 
    private:
-    DecodedImageTracker* tracker_;
+    CheckedPtr<DecodedImageTracker> tracker_;
     ImageController::ImageDecodeRequestId request_id_;
     base::TimeTicks lock_time_;
   };

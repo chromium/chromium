@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INTERNALS_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_INTERNALS_INTERNALS_UI_H_
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -41,8 +42,8 @@ class InternalsUI : public ui::MojoWebUIController {
   void AddQueryTilesInternals(content::WebUI* web_ui);
 #endif  // defined(OS_ANDROID)
 
-  Profile* profile_;
-  content::WebUIDataSource* source_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<content::WebUIDataSource> source_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_INTERNALS_UI_H_

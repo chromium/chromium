@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -156,7 +157,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
    private:
     // Used by |this| to create the new states to transition to.
-    HighlightStateFactory* state_factory_;
+    CheckedPtr<HighlightStateFactory> state_factory_;
 
     DISALLOW_COPY_AND_ASSIGN(HighlightState);
   };
@@ -184,7 +185,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
     AutoHighlightMode highlight_mode_;
 
     // The ink drop to invoke highlight changes on.
-    InkDropImpl* ink_drop_;
+    CheckedPtr<InkDropImpl> ink_drop_;
 
     DISALLOW_COPY_AND_ASSIGN(HighlightStateFactory);
   };
@@ -267,7 +268,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
   // The host of the ink drop. Used to create the ripples and highlights, and to
   // add/remove the root layer to/from it.
-  InkDropHostView* ink_drop_host_;
+  CheckedPtr<InkDropHostView> ink_drop_host_;
 
   // The root Layer that parents the InkDropRipple layers and the
   // InkDropHighlight layers. The |root_layer_| is the one that is added and

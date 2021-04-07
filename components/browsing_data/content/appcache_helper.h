@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/appcache_service.h"
 #include "url/gurl.h"
@@ -44,7 +45,7 @@ class AppCacheHelper : public base::RefCountedThreadSafe<AppCacheHelper> {
 
  private:
   // Owned by the profile.
-  content::AppCacheService* appcache_service_;
+  CheckedPtr<content::AppCacheService> appcache_service_;
 
   DISALLOW_COPY_AND_ASSIGN(AppCacheHelper);
 };

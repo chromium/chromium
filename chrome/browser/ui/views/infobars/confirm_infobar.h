@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -44,10 +45,10 @@ class ConfirmInfoBar : public InfoBarView {
   // uses this to determine how much space the label and link can take.
   int NonLabelWidth() const;
 
-  views::Label* label_ = nullptr;
-  views::MdTextButton* ok_button_ = nullptr;
-  views::MdTextButton* cancel_button_ = nullptr;
-  views::Link* link_ = nullptr;
+  CheckedPtr<views::Label> label_ = nullptr;
+  CheckedPtr<views::MdTextButton> ok_button_ = nullptr;
+  CheckedPtr<views::MdTextButton> cancel_button_ = nullptr;
+  CheckedPtr<views::Link> link_ = nullptr;
   std::unique_ptr<ElevationIconSetter> elevation_icon_setter_;
 
   DISALLOW_COPY_AND_ASSIGN(ConfirmInfoBar);

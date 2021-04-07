@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -140,9 +141,9 @@ class TipMarqueeViewTest : public views::ViewsTestBase {
 
  protected:
   std::unique_ptr<views::Widget> widget_;
-  views::View* contents_ = nullptr;
-  views::View* spacer_ = nullptr;
-  TipMarqueeView* marquee_ = nullptr;
+  CheckedPtr<views::View> contents_ = nullptr;
+  CheckedPtr<views::View> spacer_ = nullptr;
+  CheckedPtr<TipMarqueeView> marquee_ = nullptr;
 };
 
 TEST_F(TipMarqueeViewTest, NotVisibleWhenNoTip) {

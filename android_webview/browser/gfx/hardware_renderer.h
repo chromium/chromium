@@ -10,6 +10,7 @@
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/output_surface_provider_webview.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/color_space.h"
 
@@ -83,7 +84,7 @@ class HardwareRenderer {
   virtual void DrawAndSwap(const HardwareRendererDrawParams& params,
                            const OverlaysParams& overlays_params) = 0;
 
-  RenderThreadManager* const render_thread_manager_;
+  const CheckedPtr<RenderThreadManager> render_thread_manager_;
 
   typedef void* EGLContext;
   EGLContext last_egl_context_;

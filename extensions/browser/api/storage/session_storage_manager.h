@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "extensions/common/extension_id.h"
@@ -38,7 +39,7 @@ class SessionStorageManager : public base::SupportsUserData::Data {
 
     // Owned by the SessionStorageManager. Caller cannot rely on it after any
     // subsequent calls to SessionStorageManager methods.
-    const base::Value* new_value;
+    CheckedPtr<const base::Value> new_value;
   };
 
   explicit SessionStorageManager(size_t quota_bytes_per_extension);

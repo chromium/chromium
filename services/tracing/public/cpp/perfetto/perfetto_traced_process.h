@@ -6,6 +6,7 @@
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_TRACED_PROCESS_H_
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -97,7 +98,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     const PerfettoProducer* producer() const { return producer_; }
 
    protected:
-    PerfettoProducer* producer_ = nullptr;
+    CheckedPtr<PerfettoProducer> producer_ = nullptr;
 
    private:
     uint64_t data_source_id_ = 0;

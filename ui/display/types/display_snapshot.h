@@ -13,6 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/gfx/buffer_types.h"
@@ -190,10 +191,10 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   std::vector<uint8_t> edid_;
 
   // Mode currently being used by the output.
-  const DisplayMode* current_mode_;
+  CheckedPtr<const DisplayMode> current_mode_;
 
   // "Best" mode supported by the output.
-  const DisplayMode* const native_mode_;
+  const CheckedPtr<const DisplayMode> native_mode_;
 
   // Combination of manufacturer id and product id.
   const int64_t product_code_;

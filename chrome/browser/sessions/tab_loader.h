@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
@@ -293,7 +294,7 @@ class TabLoader : public base::RefCounted<TabLoader>,
 
   // The tick clock used by this class. This is used as a testing seam. If not
   // overridden it defaults to a base::DefaultTickClock.
-  const base::TickClock* clock_;
+  CheckedPtr<const base::TickClock> clock_;
 
   // Holds a pointer to the active tab loader, if one exists. Overlapping
   // session restores will be handled by the same tab loader.
@@ -307,7 +308,8 @@ class TabLoader : public base::RefCounted<TabLoader>,
   size_t reentry_depth_ = 0;
 
   // Callback that is invoked by calls to SetTabLoadingEnabled.
-  base::RepeatingCallback<void(bool)>* tab_loading_enabled_callback_ = nullptr;
+  CheckedPtr<base::RepeatingCallback<void(bool)>>
+      tab_loading_enabled_callback_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TabLoader);
 };

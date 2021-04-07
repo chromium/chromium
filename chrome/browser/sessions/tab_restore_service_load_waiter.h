@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SESSIONS_TAB_RESTORE_SERVICE_LOAD_WAITER_H_
 #define CHROME_BROWSER_SESSIONS_TAB_RESTORE_SERVICE_LOAD_WAITER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -25,7 +26,7 @@ class TabRestoreServiceLoadWaiter : public sessions::TabRestoreServiceObserver {
       sessions::TabRestoreService* service) override {}
   void TabRestoreServiceLoaded(sessions::TabRestoreService* service) override;
 
-  sessions::TabRestoreService* const service_;
+  const CheckedPtr<sessions::TabRestoreService> service_;
   base::RunLoop run_loop_;
   ScopedObserver<sessions::TabRestoreService,
                  sessions::TabRestoreServiceObserver>

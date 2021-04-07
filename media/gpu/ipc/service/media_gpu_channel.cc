@@ -4,6 +4,7 @@
 
 #include "media/gpu/ipc/service/media_gpu_channel.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -28,7 +29,7 @@ class MediaGpuChannelDispatchHelper {
   }
 
  private:
-  MediaGpuChannel* const channel_;
+  const CheckedPtr<MediaGpuChannel> channel_;
   const int32_t routing_id_;
   DISALLOW_COPY_AND_ASSIGN(MediaGpuChannelDispatchHelper);
 };
@@ -68,7 +69,7 @@ class MediaGpuChannelFilter : public IPC::MessageFilter {
  private:
   ~MediaGpuChannelFilter() override = default;
 
-  IPC::Channel* channel_;
+  CheckedPtr<IPC::Channel> channel_;
   base::UnguessableToken channel_token_;
 };
 

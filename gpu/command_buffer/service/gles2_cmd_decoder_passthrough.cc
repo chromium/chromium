@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -77,7 +78,7 @@ class ScopedFramebufferBindingReset {
   }
 
  private:
-  gl::GLApi* api_;
+  CheckedPtr<gl::GLApi> api_;
   bool supports_separate_fbo_bindings_;
   GLint draw_framebuffer_;
   GLint read_framebuffer_;
@@ -95,7 +96,7 @@ class ScopedRenderbufferBindingReset {
   }
 
  private:
-  gl::GLApi* api_;
+  CheckedPtr<gl::GLApi> api_;
   GLint renderbuffer_;
 };
 
@@ -113,7 +114,7 @@ class ScopedTextureBindingReset {
   }
 
  private:
-  gl::GLApi* api_;
+  CheckedPtr<gl::GLApi> api_;
   GLenum texture_target_;
   GLint texture_;
 };
@@ -129,7 +130,7 @@ class ScopedClearColorReset {
   }
 
  private:
-  gl::GLApi* api_;
+  CheckedPtr<gl::GLApi> api_;
   GLfloat clear_color_[4];
 };
 
@@ -144,7 +145,7 @@ class ScopedColorMaskReset {
   }
 
  private:
-  gl::GLApi* api_;
+  CheckedPtr<gl::GLApi> api_;
   GLboolean color_mask_[4];
 };
 
@@ -161,7 +162,7 @@ class ScopedScissorTestReset {
   }
 
  private:
-  gl::GLApi* api_;
+  CheckedPtr<gl::GLApi> api_;
   GLboolean scissor_test_;
 };
 

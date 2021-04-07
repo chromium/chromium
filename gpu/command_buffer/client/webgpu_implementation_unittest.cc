@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/client/mock_transfer_buffer.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -120,7 +121,7 @@ class WebGPUImplementationTest : public testing::Test {
   std::unique_ptr<WebGPUCmdHelper> helper_;
   std::unique_ptr<MockTransferBuffer> transfer_buffer_;
   std::unique_ptr<WebGPUImplementation> gl_;
-  CommandBufferEntry* commands_ = nullptr;
+  CheckedPtr<CommandBufferEntry> commands_ = nullptr;
   Capabilities capabilities_;
 };
 

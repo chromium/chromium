@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -113,7 +114,7 @@ class Connector::RunLoopNestingObserver
  private:
   friend class ActiveDispatchTracker;
 
-  ActiveDispatchTracker* top_tracker_ = nullptr;
+  CheckedPtr<ActiveDispatchTracker> top_tracker_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RunLoopNestingObserver);
 };

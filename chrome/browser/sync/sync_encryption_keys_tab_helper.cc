@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -95,7 +96,7 @@ class SyncEncryptionKeysTabHelper::EncryptionKeyApi
   }
 
  private:
-  syncer::SyncService* const sync_service_;
+  const CheckedPtr<syncer::SyncService> sync_service_;
 
   content::WebContentsFrameReceiverSet<
       chrome::mojom::SyncEncryptionKeysExtension>

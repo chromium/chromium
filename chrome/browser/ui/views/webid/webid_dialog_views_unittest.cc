@@ -6,6 +6,7 @@
 #include <memory>
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -64,7 +65,7 @@ class WebIdDialogViewsTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> parent_widget_;
-  WebIdDialogViews* dialog_{nullptr};
+  CheckedPtr<WebIdDialogViews> dialog_{nullptr};
 
   // Following are all that we need to create a test web contents.
   content::RenderViewHostTestEnabler test_render_host_enabler_;

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -114,7 +115,7 @@ class SiteSettingsCounterTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   scoped_refptr<HostContentSettingsMap> map_;
-  content::HostZoomMap* zoom_map_;
+  CheckedPtr<content::HostZoomMap> zoom_map_;
   std::unique_ptr<ProtocolHandlerRegistry> handler_registry_;
   std::unique_ptr<SiteSettingsCounter> counter_;
   bool finished_;

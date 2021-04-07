@@ -14,6 +14,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -110,7 +111,7 @@ class SocketResourceManager : public SocketResourceManagerInterface {
   }
 
  private:
-  ApiResourceManager<T>* manager_;
+  CheckedPtr<ApiResourceManager<T>> manager_;
 };
 
 class SocketAsyncApiFunction : public AsyncApiFunction {

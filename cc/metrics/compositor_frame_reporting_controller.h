@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -183,9 +184,10 @@ class CC_EXPORT CompositorFrameReportingController {
   // The latest frame that was started.
   viz::BeginFrameArgs previous_frame_;
 
-  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
+  CheckedPtr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 
-  DroppedFrameCounter* dropped_frame_counter_ = nullptr;
+  CheckedPtr<DroppedFrameCounter> dropped_frame_counter_ = nullptr;
 
   // When a frame with events metrics fails to be presented, its events metrics
   // will be added to this map. The first following presented frame will get

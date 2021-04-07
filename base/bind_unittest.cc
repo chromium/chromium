@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -109,10 +110,10 @@ struct DerivedCopyMoveCounter {
         assigns_(assigns),
         move_constructs_(move_constructs),
         move_assigns_(move_assigns) {}
-  int* copies_;
-  int* assigns_;
-  int* move_constructs_;
-  int* move_assigns_;
+  CheckedPtr<int> copies_;
+  CheckedPtr<int> assigns_;
+  CheckedPtr<int> move_constructs_;
+  CheckedPtr<int> move_assigns_;
 };
 
 // Used for probing the number of copies and moves in an argument.
@@ -188,10 +189,10 @@ class CopyMoveCounter {
   }
 
  private:
-  int* copies_;
-  int* assigns_;
-  int* move_constructs_;
-  int* move_assigns_;
+  CheckedPtr<int> copies_;
+  CheckedPtr<int> assigns_;
+  CheckedPtr<int> move_constructs_;
+  CheckedPtr<int> move_assigns_;
 };
 
 // Used for probing the number of copies in an argument. The instance is a
@@ -243,7 +244,7 @@ class DeleteCounter {
   void VoidMethod0() {}
 
  private:
-  int* deletes_;
+  CheckedPtr<int> deletes_;
 };
 
 template <typename T>
@@ -340,8 +341,8 @@ class BindTest : public ::testing::Test {
  protected:
   StrictMock<NoRef> no_ref_;
   StrictMock<HasRef> has_ref_;
-  const HasRef* const_has_ref_ptr_;
-  const NoRef* const_no_ref_ptr_;
+  CheckedPtr<const HasRef> const_has_ref_ptr_;
+  CheckedPtr<const NoRef> const_no_ref_ptr_;
   StrictMock<NoRef> static_func_mock_;
 
   // Used by the static functions to perform expectations.
@@ -463,7 +464,7 @@ TEST_F(BindTest, IgnoreResultForRepeating) {
   non_void_const_method_cb.Run();
 
   WeakPtrFactory<NoRef> weak_factory(&no_ref_);
-  WeakPtrFactory<const NoRef> const_weak_factory(const_no_ref_ptr_);
+  WeakPtrFactory<const NoRef> const_weak_factory(const_no_ref_ptr_.get());
 
   RepeatingClosure non_void_weak_method_cb  =
       BindRepeating(IgnoreResult(&NoRef::IntMethod0),
@@ -500,7 +501,7 @@ TEST_F(BindTest, IgnoreResultForOnce) {
   std::move(non_void_const_method_cb).Run();
 
   WeakPtrFactory<NoRef> weak_factory(&no_ref_);
-  WeakPtrFactory<const NoRef> const_weak_factory(const_no_ref_ptr_);
+  WeakPtrFactory<const NoRef> const_weak_factory(const_no_ref_ptr_.get());
 
   OnceClosure non_void_weak_method_cb  =
       BindOnce(IgnoreResult(&NoRef::IntMethod0),
@@ -706,7 +707,7 @@ TEST_F(BindTest, WeakPtrForRepeating) {
   EXPECT_CALL(no_ref_, VoidConstMethod0()).Times(2);
 
   WeakPtrFactory<NoRef> weak_factory(&no_ref_);
-  WeakPtrFactory<const NoRef> const_weak_factory(const_no_ref_ptr_);
+  WeakPtrFactory<const NoRef> const_weak_factory(const_no_ref_ptr_.get());
 
   RepeatingClosure method_cb =
       BindRepeating(&NoRef::VoidMethod0, weak_factory.GetWeakPtr());
@@ -737,7 +738,7 @@ TEST_F(BindTest, WeakPtrForRepeating) {
 
 TEST_F(BindTest, WeakPtrForOnce) {
   WeakPtrFactory<NoRef> weak_factory(&no_ref_);
-  WeakPtrFactory<const NoRef> const_weak_factory(const_no_ref_ptr_);
+  WeakPtrFactory<const NoRef> const_weak_factory(const_no_ref_ptr_.get());
 
   OnceClosure method_cb =
       BindOnce(&NoRef::VoidMethod0, weak_factory.GetWeakPtr());

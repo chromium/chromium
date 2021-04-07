@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -44,8 +45,9 @@ class PredictorsHandler : public content::WebUIMessageHandler {
       const std::map<std::string, predictors::OriginData>& data_map,
       base::ListValue* db) const;
 
-  predictors::AutocompleteActionPredictor* autocomplete_action_predictor_;
-  predictors::LoadingPredictor* loading_predictor_;
+  CheckedPtr<predictors::AutocompleteActionPredictor>
+      autocomplete_action_predictor_;
+  CheckedPtr<predictors::LoadingPredictor> loading_predictor_;
 
   DISALLOW_COPY_AND_ASSIGN(PredictorsHandler);
 };

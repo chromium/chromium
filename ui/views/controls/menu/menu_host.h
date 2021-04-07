@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -84,10 +85,10 @@ class MenuHost : public Widget, public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override;
 
   // Parent of the MenuHost widget.
-  Widget* owner_ = nullptr;
+  CheckedPtr<Widget> owner_ = nullptr;
 
   // The view we contain.
-  SubmenuView* submenu_;
+  CheckedPtr<SubmenuView> submenu_;
 
   // If true, DestroyMenuHost has been invoked.
   bool destroying_;

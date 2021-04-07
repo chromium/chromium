@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test_base.h"
@@ -123,7 +124,7 @@ class TestTabStatsTracker : public TabStatsTracker {
   TabStatsDataStore* data_store() { return tab_stats_data_store(); }
 
  private:
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   std::vector<std::unique_ptr<content::WebContents>> tabs_;
 
@@ -173,7 +174,7 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TestTabStatsTracker> tab_stats_tracker_;
 
   // Used to simulate power events.
-  base::PowerMonitorTestSource* power_monitor_source_;
+  CheckedPtr<base::PowerMonitorTestSource> power_monitor_source_;
 
   // Used to make sure that the metrics are reported properly.
   base::HistogramTester histogram_tester_;

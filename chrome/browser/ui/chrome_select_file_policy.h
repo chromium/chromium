@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
 namespace content {
@@ -29,7 +30,7 @@ class ChromeSelectFilePolicy : public ui::SelectFilePolicy {
   static bool FileSelectDialogsAllowed();
 
  private:
-  content::WebContents* source_contents_;
+  CheckedPtr<content::WebContents> source_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeSelectFilePolicy);
 };

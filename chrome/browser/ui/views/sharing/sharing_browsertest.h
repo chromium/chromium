@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -113,11 +114,11 @@ class SharingBrowserTest : public SyncTest {
 
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   syncer::FakeDeviceInfoTracker fake_device_info_tracker_;
   std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos_;
-  SharingService* sharing_service_;
-  FakeWebPushSender* fake_web_push_sender_;
+  CheckedPtr<SharingService> sharing_service_;
+  CheckedPtr<FakeWebPushSender> fake_web_push_sender_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
 
   DISALLOW_COPY_AND_ASSIGN(SharingBrowserTest);

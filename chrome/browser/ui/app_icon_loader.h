@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
 
 class Profile;
@@ -46,11 +47,11 @@ class AppIconLoader {
   AppIconLoaderDelegate* delegate() { return delegate_; }
 
  private:
-  Profile* const profile_ = nullptr;
+  const CheckedPtr<Profile> profile_ = nullptr;
   const int icon_size_in_dip_ = 0;
 
   // The delegate object which receives the icon images. No ownership.
-  AppIconLoaderDelegate* const delegate_ = nullptr;
+  const CheckedPtr<AppIconLoaderDelegate> delegate_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AppIconLoader);
 };

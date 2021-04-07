@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/animation_export.h"
@@ -111,7 +112,7 @@ class ANIMATION_EXPORT AnimationContainer
       AnimationRunner::CreateDefaultAnimationRunner();
   bool has_custom_animation_runner_ = false;
 
-  AnimationContainerObserver* observer_ = nullptr;
+  CheckedPtr<AnimationContainerObserver> observer_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AnimationContainer);
 };
