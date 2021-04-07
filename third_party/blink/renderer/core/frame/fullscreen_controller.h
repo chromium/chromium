@@ -98,6 +98,7 @@ class CORE_EXPORT FullscreenController {
     kInitial,
     kEnteringFullscreen,
     kFullscreen,
+    kChangingFullscreenDisplays,
     kExitingFullscreen,
   };
   State state_ = State::kInitial;

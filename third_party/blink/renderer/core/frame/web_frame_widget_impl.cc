@@ -1390,7 +1390,9 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   }
 
   if (!View()->AutoResizeMode()) {
-    if (visual_properties.is_fullscreen_granted != is_fullscreen_granted_) {
+    // This needs to run before ApplyVisualPropertiesSizing below,
+    // which updates the current set of screen_infos from visual properties.
+    if (DidChangeFullscreenState(visual_properties)) {
       is_fullscreen_granted_ = visual_properties.is_fullscreen_granted;
       if (is_fullscreen_granted_)
         View()->DidEnterFullscreen();
@@ -1525,6 +1527,18 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
 
     Resize(widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size));
   }
+}
+
+bool WebFrameWidgetImpl::DidChangeFullscreenState(
+    const VisualProperties& visual_properties) const {
+  if (visual_properties.is_fullscreen_granted != is_fullscreen_granted_)
+    return true;
+  // If changing fullscreen from one display to another, the fullscreen
+  // granted state will not change, but we still need to resolve promises
+  // by considering this a change.
+  return visual_properties.is_fullscreen_granted &&
+         widget_base_->screen_infos().current().display_id !=
+             visual_properties.screen_infos.current().display_id;
 }
 
 int WebFrameWidgetImpl::GetLayerTreeId() {

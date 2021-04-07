@@ -340,7 +340,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Accessors for information about available screens and the current screen.
   void set_screen_infos(const ScreenInfos& s) { screen_infos_ = s; }
-  const ScreenInfos& screen_infos() { return screen_infos_; }
+  const ScreenInfos& screen_infos() const { return screen_infos_; }
 
   const viz::LocalSurfaceId& local_surface_id_from_parent() const {
     return local_surface_id_from_parent_;

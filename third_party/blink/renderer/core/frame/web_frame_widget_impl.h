@@ -862,6 +862,11 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Called during |UpdateVisualProperties| to apply the new size to the widget.
   void ApplyVisualPropertiesSizing(const VisualProperties& visual_properties);
 
+  // Returns true iff the visual property state contains an update that will
+  // change the fullscreen state (e.g. on/off or current display).
+  bool DidChangeFullscreenState(
+      const VisualProperties& visual_properties) const;
+
   // Returns the current state of synchronous resize mode for testing.
   bool SynchronousResizeModeForTestingEnabled();
 

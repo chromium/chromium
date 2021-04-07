@@ -1345,8 +1345,14 @@ void BrowserView::Restore() {
 void BrowserView::EnterFullscreen(const GURL& url,
                                   ExclusiveAccessBubbleType bubble_type,
                                   const int64_t display_id) {
-  if (IsFullscreen())
-    return;  // Nothing to do.
+  auto* screen = display::Screen::GetScreen();
+  auto display = screen->GetDisplayNearestWindow(GetNativeWindow());
+  const bool requesting_another_screen =
+      display_id != display.id() && display_id != display::kInvalidDisplayId;
+  if (IsFullscreen() && !requesting_another_screen) {
+    // Nothing to do.
+    return;
+  }
 
   ProcessFullscreen(true, url, bubble_type, display_id);
 }
@@ -3308,24 +3314,31 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   if (fullscreen && display_id != display::kInvalidDisplayId) {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display;
-    if (screen && screen->GetDisplayWithDisplayId(display_id, &display)) {
-      const gfx::Rect current_bounds = frame_->GetWindowBoundsInScreen();
-      const bool is_maximized = frame_->IsMaximized();
-      restore_pre_fullscreen_bounds_callback_ = base::BindOnce(
-          [](base::WeakPtr<BrowserView> view, const gfx::Rect& bounds,
-             bool maximize) {
-            if (view && view->frame()) {
-              // Adjust the restored bounds to be onscreen, in case the original
-              // screen was disconnected or repositioned during fullscreen.
-              view->frame()->SetBoundsConstrained(bounds);
-              if (maximize)
-                view->frame()->Maximize();
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr(), current_bounds, is_maximized);
-      // Maximized windows must be restored to actually move between displays.
-      if (is_maximized)
-        frame_->Restore();
+    display::Display current_display =
+        screen->GetDisplayNearestWindow(GetNativeWindow());
+    if (screen && screen->GetDisplayWithDisplayId(display_id, &display) &&
+        current_display.id() != display_id) {
+      if (!IsFullscreen()) {
+        const gfx::Rect current_bounds = frame_->GetWindowBoundsInScreen();
+        const bool is_maximized = frame_->IsMaximized();
+        restore_pre_fullscreen_bounds_callback_ = base::BindOnce(
+            [](base::WeakPtr<BrowserView> view, const gfx::Rect& bounds,
+               bool maximize) {
+              if (view && view->frame()) {
+                // Adjust restored bounds to be on-screen, in case the original
+                // screen was disconnected or repositioned during fullscreen.
+                view->frame()->SetBoundsConstrained(bounds);
+                if (maximize)
+                  view->frame()->Maximize();
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr(), current_bounds, is_maximized);
+        // Maximized windows must be restored to actually move between displays.
+        if (is_maximized)
+          frame_->Restore();
+      } else {
+        frame_->SetFullscreen(false);
+      }
       frame_->SetBounds({display.work_area().origin(),
                          frame_->GetWindowBoundsInScreen().size()});
     }
