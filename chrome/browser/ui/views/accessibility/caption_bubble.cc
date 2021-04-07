@@ -266,16 +266,6 @@ class CaptionBubbleLabel : public views::Label {
     ax_document->GetCustomData().role = ax::mojom::Role::kDocument;
     ax_document->GetCustomData().SetRestriction(
         ax::mojom::Restriction::kReadOnly);
-
-    // The CaptionBubbleLabel accessibility tree contains one paragraph with
-    // many staticText nodes inside. The paragraph groups the static text nodes.
-    // Without a paragraph, VoiceOver intersperses the close button with the
-    // lines, such that as a user is traversing the caption bubble, they might
-    // read lines 1, 2, 3, 4, 5, 6, close button, line 7, line 8. The paragraph
-    // ensures that lines 1-8 are read together.
-    auto ax_paragraph = std::make_unique<views::AXVirtualView>();
-    ax_paragraph->GetCustomData().role = ax::mojom::Role::kParagraph;
-    ax_document->AddChildView(std::move(ax_paragraph));
     GetViewAccessibility().AddVirtualChildView(std::move(ax_document));
   }
 
@@ -287,10 +277,9 @@ class CaptionBubbleLabel : public views::Label {
     views::Label::SetText(text);
 
     auto& ax_document = GetViewAccessibility().virtual_children()[0];
-    auto& ax_paragraph = ax_document->children()[0];
-    auto& ax_lines = ax_paragraph->children();
+    auto& ax_lines = ax_document->children();
     if (text.empty() && !ax_lines.empty()) {
-      ax_paragraph->RemoveAllChildViews();
+      ax_document->RemoveAllChildViews();
       return;
     }
 
@@ -310,7 +299,7 @@ class CaptionBubbleLabel : public views::Label {
     // Remove all ax_lines that don't have a corresponding line.
     size_t num_ax_lines = ax_lines.size();
     for (size_t i = num_lines; i < num_ax_lines; ++i) {
-      ax_paragraph->RemoveChildView(ax_lines.back().get());
+      ax_document->RemoveChildView(ax_lines.back().get());
     }
 
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
@@ -321,15 +310,14 @@ class CaptionBubbleLabel : public views::Label {
                     const size_t line_index,
                     const gfx::Range& text_range) {
     auto& ax_document = GetViewAccessibility().virtual_children()[0];
-    auto& ax_paragraph = ax_document->children()[0];
-    auto& ax_lines = ax_paragraph->children();
+    auto& ax_lines = ax_document->children();
 
     // Add a new virtual child for a new line of text.
     DCHECK(line_index <= ax_lines.size());
     if (line_index == ax_lines.size()) {
       auto ax_line = std::make_unique<views::AXVirtualView>();
       ax_line->GetCustomData().role = ax::mojom::Role::kStaticText;
-      ax_paragraph->AddChildView(std::move(ax_line));
+      ax_document->AddChildView(std::move(ax_line));
     }
 
     // Set the virtual child's name as line text.

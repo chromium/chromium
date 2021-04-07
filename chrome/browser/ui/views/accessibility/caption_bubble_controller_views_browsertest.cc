@@ -194,19 +194,6 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     return ax_document->GetCustomData();
   }
 
-  size_t GetNumberAXParagraphNodes() {
-    auto& ax_document =
-        GetLabel()->GetViewAccessibility().virtual_children()[0];
-    return ax_document->children().size();
-  }
-
-  ui::AXNodeData GetAXParagraphNodeData() {
-    auto& ax_document =
-        GetLabel()->GetViewAccessibility().virtual_children()[0];
-    auto& ax_paragraph = ax_document->children()[0];
-    return ax_paragraph->GetCustomData();
-  }
-
   std::vector<ui::AXNodeData> GetAXLinesNodeData() {
     std::vector<ui::AXNodeData> node_datas;
     views::Label* label = GetLabel();
@@ -214,8 +201,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
       return node_datas;
     auto& ax_document =
         GetLabel()->GetViewAccessibility().virtual_children()[0];
-    auto& ax_paragraph = ax_document->children()[0];
-    auto& ax_lines = ax_paragraph->children();
+    auto& ax_lines = ax_document->children();
     for (auto& ax_line : ax_lines) {
       node_datas.push_back(ax_line->GetCustomData());
     }
@@ -1064,11 +1050,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleTextSetUp) {
   EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
             GetAXDocumentNodeData().GetRestriction());
 
-  // There is 1 paragraph node in the paragraph.
-  EXPECT_EQ(1u, GetNumberAXParagraphNodes());
-  EXPECT_EQ(ax::mojom::Role::kParagraph, GetAXParagraphNodeData().role);
-
-  // There is 1 staticText node in the paragraph.
+  // There is 1 staticText node in the document.
   EXPECT_EQ(1u, GetAXLinesNodeData().size());
   EXPECT_EQ(ax::mojom::Role::kStaticText, GetAXLinesNodeData()[0].role);
   EXPECT_EQ("Capybaras are the world's largest rodents.",
