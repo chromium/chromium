@@ -25,11 +25,9 @@ bool IsLacrosAppId(base::StringPiece app_id) {
 }  // namespace
 
 void ExoAppTypeResolver::PopulateProperties(
-    const std::string& app_id,
-    const std::string& startup_id,
-    bool for_creation,
+    const Params& params,
     ui::PropertyHandler& out_properties_container) {
-  if (IsLacrosAppId(app_id)) {
+  if (IsLacrosAppId(params.app_id)) {
     out_properties_container.SetProperty(
         aura::client::kAppType, static_cast<int>(ash::AppType::LACROS));
     // Lacros is trusted not to abuse window activation, so grant it a
@@ -38,7 +36,7 @@ void ExoAppTypeResolver::PopulateProperties(
         exo::kPermissionKey,
         new exo::Permission(exo::Permission::Capability::kActivate));
   } else if (borealis::BorealisWindowManager::IsBorealisWindowId(
-                 app_id.empty() ? startup_id : app_id)) {
+                 params.app_id.empty() ? params.startup_id : params.app_id)) {
     // TODO(b/165865831): Stop using CROSTINI_APP for borealis windows.
     out_properties_container.SetProperty(
         aura::client::kAppType, static_cast<int>(ash::AppType::CROSTINI_APP));
@@ -48,7 +46,7 @@ void ExoAppTypeResolver::PopulateProperties(
                                          false);
   }
 
-  int task_id = arc::GetTaskIdFromWindowAppId(app_id);
+  int task_id = arc::GetTaskIdFromWindowAppId(params.app_id);
   if (task_id == arc::kNoTaskId)
     return;
 

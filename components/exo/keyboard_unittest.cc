@@ -548,9 +548,7 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
     TestPropertyResolver() = default;
     ~TestPropertyResolver() override = default;
     void PopulateProperties(
-        const std::string& app_id,
-        const std::string& startup_id,
-        bool for_creation,
+        const Params& params,
         ui::PropertyHandler& out_properties_container) override {
       out_properties_container.SetProperty(
           aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));

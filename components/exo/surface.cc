@@ -232,6 +232,10 @@ int surface_id = 0;
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kClientSurfaceIdKey, nullptr)
 
+// A property key to store the window session Id set by client or full_restore
+// component.
+DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowSessionId, -1)
+
 ScopedSurface::ScopedSurface(Surface* surface, SurfaceObserver* observer)
     : surface_(surface), observer_(observer) {
   surface_->AddSurfaceObserver(observer_);
@@ -625,6 +629,17 @@ void Surface::SetClientSurfaceId(const char* client_surface_id) {
 std::string Surface::GetClientSurfaceId() const {
   std::string* value = window_->GetProperty(kClientSurfaceIdKey);
   return value ? *value : std::string();
+}
+
+void Surface::SetWindowSessionId(int32_t window_session_id) {
+  if (window_session_id > 0)
+    window_->SetProperty(kWindowSessionId, window_session_id);
+  else
+    window_->ClearProperty(kWindowSessionId);
+}
+
+int32_t Surface::GetWindowSessionId() {
+  return window_->GetProperty(kWindowSessionId);
 }
 
 void Surface::SetEmbeddedSurfaceId(

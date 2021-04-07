@@ -91,11 +91,15 @@ class WMHelper : public aura::client::DragDropDelegate {
   // based on the |app_id| and |startup_id|.
   class AppPropertyResolver {
    public:
+    struct Params {
+      std::string app_id;
+      std::string startup_id;
+      int32_t window_session_id = -1;
+      bool for_creation = false;
+    };
     virtual ~AppPropertyResolver() = default;
     virtual void PopulateProperties(
-        const std::string& app_id,
-        const std::string& startup_id,
-        bool for_creation,
+        const Params& params,
         ui::PropertyHandler& out_properties_container) = 0;
   };
 
@@ -166,9 +170,7 @@ class WMHelper : public aura::client::DragDropDelegate {
   // |for_creation| == true means this is called before a widget gets
   // created, and false means this is called when the application id is set
   // after the widget is created.
-  void PopulateAppProperties(const std::string& app_id,
-                             const std::string& startup_id,
-                             bool for_creation,
+  void PopulateAppProperties(const AppPropertyResolver::Params& params,
                              ui::PropertyHandler& out_properties_container);
 
  protected:

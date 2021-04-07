@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="17">
+  <interface name="zaura_shell" version="18">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -95,7 +95,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_surface" version="17">
+  <interface name="zaura_surface" version="18">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -326,6 +326,14 @@
         Unlocking happends while dragging a maximized window.
       </description>
     </event>
+
+    <!-- Version 18 additions -->
+    <request name="set_window_session_id" since="18">
+      <description summary="set surface window session id">
+          Set window session id to the surface.
+      </description>
+      <arg name="id" type="int" summary="window session id"/>
+    </request>
   </interface>
 
   <interface name="zaura_output" version="6">

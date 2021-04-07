@@ -48,6 +48,7 @@ class AuraSurface : public SurfaceObserver,
   void SetSnapLeft();
   void SetSnapRight();
   void UnsetSnap();
+  void SetWindowSessionId(int32_t window_session_id);
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;

@@ -183,6 +183,12 @@ void aura_surface_unset_snap(wl_client* client, wl_resource* resource) {
   GetUserDataAs<AuraSurface>(resource)->UnsetSnap();
 }
 
+void aura_surface_set_window_session_id(wl_client* client,
+                                        wl_resource* resource,
+                                        int32_t id) {
+  GetUserDataAs<AuraSurface>(resource)->SetWindowSessionId(id);
+}
+
 const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_frame,
     aura_surface_set_parent,
@@ -200,7 +206,8 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_intent_to_snap,
     aura_surface_set_snap_left,
     aura_surface_set_snap_right,
-    aura_surface_unset_snap};
+    aura_surface_unset_snap,
+    aura_surface_set_window_session_id};
 
 }  // namespace
 
@@ -317,6 +324,10 @@ void AuraSurface::SetSnapRight() {
 
 void AuraSurface::UnsetSnap() {
   surface_->UnsetSnap();
+}
+
+void AuraSurface::SetWindowSessionId(int32_t window_session_id) {
+  surface_->SetWindowSessionId(window_session_id);
 }
 
 // Overridden from SurfaceObserver:

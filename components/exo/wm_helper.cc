@@ -54,13 +54,10 @@ void WMHelper::RegisterAppPropertyResolver(
 }
 
 void WMHelper::PopulateAppProperties(
-    const std::string& app_id,
-    const std::string& startup_id,
-    bool for_creation,
+    const AppPropertyResolver::Params& params,
     ui::PropertyHandler& out_properties_container) {
   for (auto& resolver : resolver_list_) {
-    resolver->PopulateProperties(app_id, startup_id, for_creation,
-                                 out_properties_container);
+    resolver->PopulateProperties(params, out_properties_container);
   }
 }
 

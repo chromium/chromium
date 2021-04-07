@@ -435,11 +435,13 @@ void ShellSurfaceBase::SetApplicationId(const char* application_id) {
 
   if (widget_ && widget_->GetNativeWindow()) {
     SetShellApplicationId(widget_->GetNativeWindow(), application_id_);
+    WMHelper::AppPropertyResolver::Params params;
+    if (application_id_)
+      params.app_id = *application_id_;
+    if (startup_id_)
+      params.startup_id = *startup_id_;
     ui::PropertyHandler& property_handler = *widget_->GetNativeWindow();
-    WMHelper::GetInstance()->PopulateAppProperties(
-        application_id_ ? *application_id_ : std::string(),
-        startup_id_ ? *startup_id_ : std::string(),
-        /*for_creation=*/false, property_handler);
+    WMHelper::GetInstance()->PopulateAppProperties(params, property_handler);
   }
 }
 
@@ -1014,10 +1016,14 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   }
   params.bounds = gfx::Rect(origin_, gfx::Size());
 
+  WMHelper::AppPropertyResolver::Params property_resolver_params;
+  if (application_id_)
+    property_resolver_params.app_id = *application_id_;
+  if (startup_id_)
+    property_resolver_params.startup_id = *startup_id_;
+  property_resolver_params.for_creation = true;
   WMHelper::GetInstance()->PopulateAppProperties(
-      application_id_ ? *application_id_ : std::string(),
-      startup_id_ ? *startup_id_ : std::string(),
-      /*for_creation=*/true, params.init_properties_container);
+      property_resolver_params, params.init_properties_container);
 
   SetShellApplicationId(&params.init_properties_container, application_id_);
   SetShellRootSurface(&params.init_properties_container, root_surface());

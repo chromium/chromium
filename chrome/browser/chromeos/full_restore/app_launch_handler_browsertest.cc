@@ -203,8 +203,10 @@ views::Widget* CreateExoWindow(const std::string& window_app_id) {
   params.bounds = gfx::Rect(5, 5, 20, 20);
   params.context = ash::Shell::GetPrimaryRootWindow();
 
-  ExoAppTypeResolver().PopulateProperties(window_app_id, /*startup_id=*/"",
-                                          /*for_creation=*/true,
+  exo::WMHelper::AppPropertyResolver::Params resolver_params;
+  resolver_params.app_id = window_app_id;
+  resolver_params.for_creation = true;
+  ExoAppTypeResolver().PopulateProperties(resolver_params,
                                           params.init_properties_container);
 
   views::Widget* widget = new views::Widget();

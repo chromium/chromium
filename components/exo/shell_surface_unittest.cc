@@ -1361,14 +1361,12 @@ TEST_F(ShellSurfaceTest, PropertyResolverTest) {
     TestPropertyResolver() = default;
     ~TestPropertyResolver() override = default;
     void PopulateProperties(
-        const std::string& app_id,
-        const std::string& startup_id,
-        bool for_creation,
+        const Params& params,
         ui::PropertyHandler& out_properties_container) override {
-      if (expected_app_id == app_id) {
+      if (expected_app_id == params.app_id) {
         out_properties_container.AcquireAllPropertiesFrom(
-            std::move(for_creation ? properties_for_creation
-                                   : properties_after_creation));
+            std::move(params.for_creation ? properties_for_creation
+                                          : properties_after_creation));
       }
     }
     std::string expected_app_id;

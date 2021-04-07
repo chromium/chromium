@@ -18,9 +18,7 @@ class ExoAppTypeResolver : public exo::WMHelper::AppPropertyResolver {
 
   // exo::WMHelper::AppPropertyResolver:
   void PopulateProperties(
-      const std::string& app_id,
-      const std::string& startup_id,
-      bool for_creation,
+      const Params& params,
       ui::PropertyHandler& out_properties_container) override;
 };
 
