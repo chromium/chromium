@@ -143,9 +143,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return size_.block_size;
   }
 
-  void SetOverflowBlockSize(LayoutUnit overflow_block_size) {
-    overflow_block_size_ = overflow_block_size;
-  }
   void SetIntrinsicBlockSize(LayoutUnit intrinsic_block_size) {
     intrinsic_block_size_ = intrinsic_block_size;
   }
@@ -590,7 +587,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   NGBoxStrut border_padding_;
   NGBoxStrut border_scrollbar_padding_;
   LogicalSize child_available_size_;
-  LayoutUnit overflow_block_size_ = kIndefiniteSize;
   LayoutUnit intrinsic_block_size_;
   base::Optional<LogicalRect> inflow_bounds_;
 

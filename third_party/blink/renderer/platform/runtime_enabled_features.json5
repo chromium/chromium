@@ -1152,11 +1152,6 @@
       implied_by: ["CSSContainerQueries"],
     },
     {
-      name: "LayoutNGLayoutOverflow",
-      depends_on: ["LayoutNG"],
-      status: "stable",
-    },
-    {
       name: "LayoutNGPrinting",
     },
     {

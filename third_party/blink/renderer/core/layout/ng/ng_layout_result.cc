@@ -60,10 +60,6 @@ NGLayoutResult::NGLayoutResult(
   bitfields_.subtree_modified_margin_strut =
       builder->subtree_modified_margin_strut_;
   intrinsic_block_size_ = builder->intrinsic_block_size_;
-  if (builder->overflow_block_size_ != kIndefiniteSize &&
-      builder->overflow_block_size_ != intrinsic_block_size_) {
-    EnsureRareData()->overflow_block_size = builder->overflow_block_size_;
-  }
   if (builder->custom_layout_data_) {
     EnsureRareData()->custom_layout_data =
         std::move(builder->custom_layout_data_);

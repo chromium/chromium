@@ -84,9 +84,6 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
 
 template <typename Base>
 RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
-  if (!RuntimeEnabledFeatures::LayoutNGLayoutOverflowEnabled())
-    return Base::RecalcLayoutOverflow();
-
   RecalcLayoutOverflowResult child_result;
   if (Base::ChildNeedsLayoutOverflowRecalc())
     child_result = Base::RecalcChildLayoutOverflow();

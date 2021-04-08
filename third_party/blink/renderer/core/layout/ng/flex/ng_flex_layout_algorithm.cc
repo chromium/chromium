@@ -1128,7 +1128,6 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
   base::Optional<LayoutUnit> fallback_baseline;
 
   bool success = true;
-  LayoutUnit overflow_block_size;
   for (FlexLine& line_context : line_contexts) {
     if (UNLIKELY(layout_info_for_devtools_))
       layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
@@ -1179,14 +1178,6 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
 
       flex_item.ng_input_node_.StoreMargins(flex_item.physical_margins_);
 
-      LayoutUnit margin_block_end =
-          flex_item.physical_margins_
-              .ConvertToLogical(ConstraintSpace().GetWritingDirection())
-              .block_end;
-      overflow_block_size =
-          std::max(overflow_block_size,
-                   location.Y() + fragment.BlockSize() + margin_block_end);
-
       // Detect if the flex-item had its scrollbar state change. If so we need
       // to relayout as the input to the flex algorithm is incorrect.
       if (!ignore_child_scrollbar_changes_) {
@@ -1206,9 +1197,6 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
       }
     }
   }
-
-  container_builder_.SetOverflowBlockSize(overflow_block_size +
-                                          BorderScrollbarPadding().block_end);
 
   // Set the baseline to the fallback, if we didn't find any children with
   // baseline alignment.

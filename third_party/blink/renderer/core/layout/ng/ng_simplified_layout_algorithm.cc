@@ -143,7 +143,6 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     container_builder_.SetIsTableNGPart();
 
   container_builder_.SetIntrinsicBlockSize(result.IntrinsicBlockSize());
-  container_builder_.SetOverflowBlockSize(result.OverflowBlockSize());
 
   LayoutUnit new_block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), result.IntrinsicBlockSize(),

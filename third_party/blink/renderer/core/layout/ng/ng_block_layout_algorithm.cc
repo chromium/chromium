@@ -830,10 +830,7 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
         intrinsic_block_size_, previous_inflow_position->logical_block_offset);
   }
 
-  // Save the unconstrained intrinsic size on the builder before clamping it.
   LayoutUnit unconstrained_intrinsic_block_size = intrinsic_block_size_;
-  container_builder_.SetOverflowBlockSize(intrinsic_block_size_);
-
   intrinsic_block_size_ = ClampIntrinsicBlockSize(
       ConstraintSpace(), Node(), BorderScrollbarPadding(),
       intrinsic_block_size_,

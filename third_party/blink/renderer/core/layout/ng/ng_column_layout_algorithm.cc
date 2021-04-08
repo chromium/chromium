@@ -277,9 +277,6 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
   if (const auto* token = BreakToken())
     previously_consumed_block_size = token->ConsumedBlockSize();
 
-  // Save the unconstrained intrinsic size on the builder before clamping it.
-  container_builder_.SetOverflowBlockSize(intrinsic_block_size_);
-
   intrinsic_block_size_ =
       ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
                               BorderScrollbarPadding(), intrinsic_block_size_);

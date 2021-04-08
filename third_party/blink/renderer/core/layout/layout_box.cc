@@ -7092,7 +7092,6 @@ bool LayoutBox::HasLeftOverflow() const {
 
 void LayoutBox::SetLayoutOverflowFromLayoutResults() {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutNGLayoutOverflowEnabled());
   ClearSelfNeedsLayoutOverflowRecalc();
   ClearChildNeedsLayoutOverflowRecalc();
   ClearLayoutOverflow();

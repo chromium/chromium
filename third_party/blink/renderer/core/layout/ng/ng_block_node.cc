@@ -422,12 +422,8 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
 
     // Even if we can reuse the result, we may still need to recalculate our
     // overflow. TODO(crbug.com/919415): Explain why.
-    if (box_->NeedsLayoutOverflowRecalc()) {
-      if (RuntimeEnabledFeatures::LayoutNGLayoutOverflowEnabled())
-        box_->SetLayoutOverflowFromLayoutResults();
-      else
-        box_->RecalcLayoutOverflow();
-    }
+    if (box_->NeedsLayoutOverflowRecalc())
+      box_->SetLayoutOverflowFromLayoutResults();
 
     // Return the cached result unless we're marked for layout. We may have
     // added or removed scrollbars during overflow recalculation, which may have
@@ -1149,20 +1145,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
 
     block->SetNeedsOverflowRecalc(
         LayoutObject::OverflowRecalcType::kOnlyVisualOverflowRecalc);
-
-    if (RuntimeEnabledFeatures::LayoutNGLayoutOverflowEnabled()) {
-      block->SetLayoutOverflowFromLayoutResults();
-    } else {
-      BoxLayoutExtraInput input(*block);
-      SetupBoxLayoutExtraInput(constraint_space, *block, &input);
-
-      LayoutUnit overflow_block_size = layout_result.OverflowBlockSize();
-      if (UNLIKELY(previous_break_token))
-        overflow_block_size += previous_break_token->ConsumedBlockSize();
-
-      block->ComputeLayoutOverflow(overflow_block_size - borders.block_end -
-                                   scrollbars.block_end);
-    }
+    block->SetLayoutOverflowFromLayoutResults();
   }
 
   box_->UpdateAfterLayout();
