@@ -78,6 +78,14 @@ namespace reporting {
 class ReportQueueProvider {
  public:
   using CreateReportQueueResponse = StatusOr<std::unique_ptr<ReportQueue>>;
+
+  // The response will come back utilizing the ReportQueueProvider's thread. It
+  // is likely that within Chromium you will want to the response to come back
+  // on your own thread. The simplest way to achieve that is to pass a
+  // base::BindPostTask rather than a base::OnceCallback. Another way to achieve
+  // the same result is to utilize base::OnceCallback, and capture the response
+  // and forward it to your own thread. We maintain base::OnceCallback here for
+  // use in ChromiumOS.
   using CreateReportQueueCallback =
       base::OnceCallback<void(CreateReportQueueResponse)>;
 
@@ -314,7 +322,7 @@ class ReportQueueProvider {
 
   // Creates and initializes queue implementation. Returns status in case of
   // error.
-  virtual StatusOr<std::unique_ptr<ReportQueue>> CreateNewQueue(
+  virtual CreateReportQueueResponse CreateNewQueue(
       std::unique_ptr<ReportQueueConfiguration> config) = 0;
 
   void OnPushComplete();
