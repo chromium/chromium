@@ -8,7 +8,9 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback_list.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/types/strong_alias.h"
@@ -83,6 +85,12 @@ bool AreAllBrowsersCloseable() {
       return false;
   }
   return true;
+}
+
+base::RepeatingCallbackList<void(bool)>& GetClosingAllBrowsersCallbackList() {
+  static base::NoDestructor<base::RepeatingCallbackList<void(bool)>>
+      callback_list;
+  return *callback_list;
 }
 #endif  // !defined(OS_ANDROID)
 
@@ -171,10 +179,9 @@ void AttemptExitInternal(bool try_to_quit_application) {
     browser_shutdown::SetTryingToQuit(true);
 #endif
 
-  content::NotificationService::current()->Notify(
-      NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
+#if !defined(OS_ANDROID)
+  OnClosingAllBrowsers(true);
+#endif
 
   g_browser_process->platform_part()->AttemptExit(try_to_quit_application);
 }
@@ -373,10 +380,7 @@ void SessionEnding() {
   // Instead, here we call RecordShutdownInfoPrefs to record the shutdown info.
   browser_shutdown::RecordShutdownInfoPrefs();
 
-  content::NotificationService::current()->Notify(
-      NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
+  OnClosingAllBrowsers(true);
 
   // Write important data first.
   g_browser_process->EndSession();
@@ -405,6 +409,22 @@ void OnAppExiting() {
     return;
   notified = true;
   HandleAppExitingForPlatform();
+}
+
+void OnClosingAllBrowsers(bool closing) {
+  GetClosingAllBrowsersCallbackList().Notify(closing);
+
+  content::NotificationService::current()->Notify(
+      closing ? NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST
+              : NOTIFICATION_BROWSER_CLOSE_CANCELLED,
+      content::NotificationService::AllSources(),
+      content::NotificationService::NoDetails());
+}
+
+base::CallbackListSubscription AddClosingAllBrowsersCallback(
+    base::RepeatingCallback<void(bool)> closing_all_browsers_callback) {
+  return GetClosingAllBrowsersCallbackList().Add(
+      std::move(closing_all_browsers_callback));
 }
 #endif  // !defined(OS_ANDROID)
 

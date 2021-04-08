@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
@@ -25,8 +26,6 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/common/buildflags.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -42,8 +41,7 @@ class ScopedProfileKeepAlive;
 //
 // Note that the Profile objects may be destroyed when their last browser window
 // is closed. The DestroyProfileOnBrowserClose flag controls this behavior.
-class ProfileManager : public content::NotificationObserver,
-                       public Profile::Delegate {
+class ProfileManager : public Profile::Delegate {
  public:
   using CreateCallback =
       base::RepeatingCallback<void(Profile*, Profile::CreateStatus)>;
@@ -259,11 +257,6 @@ class ProfileManager : public content::NotificationObserver,
 
   const base::FilePath& user_data_dir() const { return user_data_dir_; }
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // Profile::Delegate implementation:
   void OnProfileCreated(Profile* profile,
                         bool success,
@@ -473,6 +466,8 @@ class ProfileManager : public content::NotificationObserver,
   // shutdown. New profiles will not be created.
   void ScheduleForcedEphemeralProfileForDeletion(
       const base::FilePath& profile_dir);
+
+  void OnClosingAllBrowsersChanged(bool closing);
 #endif  // !defined(OS_ANDROID)
 
   // Destroy after |profile_info_cache_| since Profile destruction may trigger
@@ -486,7 +481,7 @@ class ProfileManager : public content::NotificationObserver,
   // to an access to this member.
   std::unique_ptr<ProfileInfoCache> profile_info_cache_;
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription closing_all_browsers_subscription_;
 
   // The path to the user data directory (DIR_USER_DATA).
   const base::FilePath user_data_dir_;

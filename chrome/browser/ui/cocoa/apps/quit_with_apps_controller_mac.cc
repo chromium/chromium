@@ -102,10 +102,7 @@ void QuitWithAppsController::Click(
 
   if (*button_index == kQuitAllAppsButtonIndex) {
     if (hosted_app_quit_notification_) {
-      content::NotificationService::current()->Notify(
-          chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-          content::NotificationService::AllSources(),
-          content::NotificationService::NoDetails());
+      chrome::OnClosingAllBrowsers(true);
       chrome::CloseAllBrowsers();
     }
     AppWindowRegistryUtil::CloseAllAppWindows();

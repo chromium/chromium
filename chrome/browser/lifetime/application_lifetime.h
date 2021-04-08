@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_LIFETIME_APPLICATION_LIFETIME_H_
 #define CHROME_BROWSER_LIFETIME_APPLICATION_LIFETIME_H_
 
+#include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -86,6 +88,14 @@ void OnAppExiting();
 // Called once the application is exiting to do any platform specific
 // processing required.
 void HandleAppExitingForPlatform();
+
+// Called when the process of closing all browsers starts or is cancelled.
+void OnClosingAllBrowsers(bool closing);
+
+// Registers a callback that will be invoked with true when all browsers start
+// closing, and false if and when that process is cancelled.
+base::CallbackListSubscription AddClosingAllBrowsersCallback(
+    base::RepeatingCallback<void(bool)> closing_all_browsers_callback);
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace chrome

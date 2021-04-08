@@ -47,6 +47,8 @@
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lite_video/lite_video_keyed_service.h"
 #include "chrome/browser/lite_video/lite_video_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
@@ -428,10 +430,11 @@ std::string GetLastUsedProfileBaseName() {
 
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
     : user_data_dir_(user_data_dir) {
-  registrar_.Add(this, chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_BROWSER_CLOSE_CANCELLED,
-                 content::NotificationService::AllSources());
+#if !defined(OS_ANDROID)
+  closing_all_browsers_subscription_ = chrome::AddClosingAllBrowsersCallback(
+      base::BindRepeating(&ProfileManager::OnClosingAllBrowsersChanged,
+                          base::Unretained(this)));
+#endif
 
   if (ProfileShortcutManager::IsFeatureEnabled() && !user_data_dir_.empty())
     profile_shortcut_manager_ = ProfileShortcutManager::Create(this);
@@ -1255,36 +1258,6 @@ void ProfileManager::RegisterTestingProfile(std::unique_ptr<Profile> profile,
     InitProfileUserPrefs(profile_ptr);
     AddProfileToStorage(profile_ptr);
   }
-}
-
-void ProfileManager::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  bool save_active_profiles = false;
-  switch (type) {
-    case chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST: {
-      // Ignore any browsers closing from now on.
-      closing_all_browsers_ = true;
-      save_active_profiles = true;
-      break;
-    }
-    case chrome::NOTIFICATION_BROWSER_CLOSE_CANCELLED: {
-      // This will cancel the shutdown process, so the active profiles are
-      // tracked again. Also, as the active profiles may have changed (i.e. if
-      // some windows were closed) we save the current list of active profiles
-      // again.
-      closing_all_browsers_ = false;
-      save_active_profiles = true;
-      break;
-    }
-    default: {
-      NOTREACHED();
-      break;
-    }
-  }
-
-  if (save_active_profiles)
-    SaveActiveProfiles();
 }
 
 void ProfileManager::OnProfileCreated(Profile* profile,
@@ -2294,6 +2267,14 @@ void ProfileManager::ScheduleForcedEphemeralProfileForDeletion(
   RemoveFromLastActiveProfilesPrefList(profile_dir);
 
   FinishDeletingProfile(profile_dir, new_active_profile_dir.value());
+}
+
+void ProfileManager::OnClosingAllBrowsersChanged(bool closing) {
+  // Save active profiles when the browser begins shutting down, or if shutdown
+  // is cancelled. The active profiles won't be changed during the shutdown
+  // process as windows are closed.
+  closing_all_browsers_ = closing;
+  SaveActiveProfiles();
 }
 #endif  // !defined(OS_ANDROID)
 

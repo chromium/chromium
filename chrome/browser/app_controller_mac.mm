@@ -522,10 +522,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
       return NO;
     }
 
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-        content::NotificationService::AllSources(),
-        content::NotificationService::NoDetails());
+    chrome::OnClosingAllBrowsers(true);
     // This will close all browser sessions.
     chrome::CloseAllBrowsers();
 
@@ -542,10 +539,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // Initiate a shutdown (via chrome::CloseAllBrowsersAndQuit()) if we aren't
   // already shutting down.
   if (!browser_shutdown::IsTryingToQuit()) {
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-        content::NotificationService::AllSources(),
-        content::NotificationService::NoDetails());
+    chrome::OnClosingAllBrowsers(true);
     chrome::CloseAllBrowsersAndQuit();
   }
 

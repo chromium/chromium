@@ -25,6 +25,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1153,10 +1154,7 @@ TEST_F(ProfileManagerTest, LastOpenedProfilesAtShutdown) {
   EXPECT_EQ(profile2, last_opened_profiles[1]);
 
   // Simulate a shutdown.
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
+  chrome::OnClosingAllBrowsers(true);
 
   // Even if the browsers are destructed during shutdown, the profiles stay
   // open.
@@ -1310,10 +1308,7 @@ TEST_F(ProfileManagerTest, EphemeralProfilesDontEndUpAsLastOpenedAtShutdown) {
   SetProfileEphemeral(ephemeral_profile2);
 
   // Simulate a shutdown.
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
+  chrome::OnClosingAllBrowsers(true);
   browser1.reset();
   browser2.reset();
   browser3.reset();
