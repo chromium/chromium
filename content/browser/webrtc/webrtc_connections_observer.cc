@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/loader/webrtc_connections_observer.h"
+#include "content/browser/webrtc/webrtc_connections_observer.h"
 
 #include "content/browser/webrtc/webrtc_internals.h"
 

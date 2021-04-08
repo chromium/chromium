@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_LOADER_WEBRTC_CONNECTIONS_OBSERVER_H_
-#define CONTENT_BROWSER_LOADER_WEBRTC_CONNECTIONS_OBSERVER_H_
+#ifndef CONTENT_BROWSER_WEBRTC_WEBRTC_CONNECTIONS_OBSERVER_H_
+#define CONTENT_BROWSER_WEBRTC_WEBRTC_CONNECTIONS_OBSERVER_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -34,4 +34,4 @@ class WebRtcConnectionsObserver : public WebRtcInternalsConnectionsObserver {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_LOADER_WEBRTC_CONNECTIONS_OBSERVER_H_
+#endif  // CONTENT_BROWSER_WEBRTC_WEBRTC_CONNECTIONS_OBSERVER_H_
