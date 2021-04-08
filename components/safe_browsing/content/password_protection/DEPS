@@ -4,7 +4,7 @@ include_rules = [
   "+components/password_manager/core/browser/password_manager_metrics_util.h",
   "+components/password_manager/core/browser/password_reuse_detector.h",
   "+components/sessions",
-  "+components/signin/public/identity_manager/account_info.h",
+  "+components/signin/public/identity_manager",
   "+components/url_formatter",
   "+components/zoom",
   "+net",

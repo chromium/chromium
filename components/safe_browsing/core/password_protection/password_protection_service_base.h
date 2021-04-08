@@ -358,15 +358,9 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   virtual void MaybeHandleDeferredNavigations(
       PasswordProtectionRequest* request) {}
 
-  PrefService* pref_service() { return pref_service_; }
+  bool CanGetAccessToken();
 
   SafeBrowsingTokenFetcher* token_fetcher() { return token_fetcher_.get(); }
-
-  bool is_off_the_record() { return is_off_the_record_; }
-
-  signin::IdentityManager* identity_manager() { return identity_manager_; }
-
-  bool try_token_fetch() { return try_token_fetch_; }
 
   // Set of pending PasswordProtectionRequests that are still waiting for
   // verdict.

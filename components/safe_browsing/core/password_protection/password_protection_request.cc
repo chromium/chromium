@@ -7,6 +7,7 @@
 #include <cstddef>
 
 #include "base/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/allowlist_checker_client.h"
@@ -16,6 +17,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -26,6 +28,8 @@ namespace safe_browsing {
 
 using ReusedPasswordAccountType =
     LoginReputationClientRequest::PasswordReuseEvent::ReusedPasswordAccountType;
+
+constexpr char kAuthHeaderBearer[] = "Bearer ";
 
 namespace {
 
@@ -313,6 +317,20 @@ bool PasswordProtectionRequest::IsVisualFeaturesEnabled() {
 
 void PasswordProtectionRequest::SendRequest() {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
+  if (password_protection_service_->CanGetAccessToken() &&
+      password_protection_service_->token_fetcher()) {
+    password_protection_service_->token_fetcher()->Start(
+        base::BindOnce(&PasswordProtectionRequest::SendRequestWithToken,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+  std::string empty_access_token;
+  SendRequestWithToken(empty_access_token);
+}
+
+void PasswordProtectionRequest::SendRequestWithToken(
+    const std::string& access_token) {
+  DCHECK(CurrentlyOnThread(ThreadID::UI));
 
   MaybeAddPingToWebUI();
 
@@ -353,6 +371,11 @@ void PasswordProtectionRequest::SendRequest() {
           }
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
+  if (!access_token.empty()) {
+    resource_request->headers.SetHeader(
+        net::HttpRequestHeaders::kAuthorization,
+        base::StrCat({kAuthHeaderBearer, access_token}));
+  }
   resource_request->url =
       PasswordProtectionServiceBase::GetPasswordProtectionRequestUrl();
   resource_request->method = "POST";

@@ -12,6 +12,8 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +28,7 @@
 #include "components/safe_browsing/content/password_protection/mock_password_protection_service.h"
 #include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
@@ -33,6 +36,7 @@
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,7 +57,9 @@ using testing::_;
 using testing::AnyNumber;
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::Mock;
 using testing::Return;
+using testing::StrictMock;
 
 namespace {
 
@@ -72,6 +78,17 @@ const unsigned int kDay = 24 * 60 * kMinute;
 namespace safe_browsing {
 
 using PasswordReuseEvent = LoginReputationClientRequest::PasswordReuseEvent;
+
+class MockSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
+ public:
+  MockSafeBrowsingTokenFetcher() = default;
+  ~MockSafeBrowsingTokenFetcher() override = default;
+
+  MOCK_METHOD1(Start, void(Callback));
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingTokenFetcher);
+};
 
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
@@ -339,17 +356,24 @@ class PasswordProtectionServiceBaseTest
 
   void SetUp() override {
     HostContentSettingsMap::RegisterProfilePrefs(test_pref_service_.registry());
+    safe_browsing::RegisterProfilePrefs(test_pref_service_.registry());
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, false /* is_off_the_record */,
         false /* store_last_modified */,
         false /* restore_session*/);
     database_manager_ = new MockSafeBrowsingDatabaseManager();
+    auto token_fetcher =
+        std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();
+    raw_token_fetcher_ = token_fetcher.get();
+    identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com");
     password_protection_service_ =
         std::make_unique<TestPasswordProtectionService>(
             database_manager_,
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
-            content_setting_map_, nullptr, nullptr, false, nullptr, false);
+            content_setting_map_, &test_pref_service_, std::move(token_fetcher),
+            /*is_off_the_record=*/false, identity_test_env_.identity_manager(),
+            /*try_token_fetch=*/true);
     EXPECT_CALL(*password_protection_service_, IsExtendedReporting())
         .WillRepeatedly(Return(GetParam()));
     EXPECT_CALL(*password_protection_service_, IsIncognito())
@@ -465,6 +489,11 @@ class PasswordProtectionServiceBaseTest
     return contents;
   }
 
+  void SetFeatures(const std::vector<base::Feature>& enabled_features,
+                   const std::vector<base::Feature>& disabled_features) {
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
 // Visual features are not supported on Android.
 #if !defined(OS_ANDROID)
   void VerifyContentAreaSizeCollection(
@@ -491,6 +520,9 @@ class PasswordProtectionServiceBaseTest
   base::HistogramTester histograms_;
   content::TestBrowserContext browser_context_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
+  StrictMock<MockSafeBrowsingTokenFetcher>* raw_token_fetcher_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
+  signin::IdentityTestEnvironment identity_test_env_;
 };
 
 TEST_P(PasswordProtectionServiceBaseTest, TestCachePasswordReuseVerdicts) {
@@ -988,6 +1020,81 @@ TEST_P(PasswordProtectionServiceBaseTest,
             actual_response->cache_expression());
   EXPECT_EQ(expected_response.cache_duration_sec(),
             actual_response->cache_duration_sec());
+}
+
+TEST_P(PasswordProtectionServiceBaseTest,
+       TestPasswordOnFocusRequestEnhancedProtectionShouldHaveToken) {
+  SetEnhancedProtectionPrefForTests(&test_pref_service_, true);
+  SetFeatures(
+      /*enable_features*/ {kPasswordProtectionWithToken},
+      /*disable_features*/ {});
+  std::string access_token = "fake access token";
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::string out;
+        EXPECT_TRUE(request.headers.GetHeader(
+            net::HttpRequestHeaders::kAuthorization, &out));
+        EXPECT_EQ(out, "Bearer " + access_token);
+      }));
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
+
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  InitializeAndStartPasswordOnFocusRequest(/*match_allowlist=*/false,
+                                           /*timeout_in_ms=*/10000,
+                                           web_contents.get());
+  // Wait for token fetcher to be called.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run(access_token);
+}
+
+TEST_P(PasswordProtectionServiceBaseTest,
+       TestPasswordOnFocusRequestNoEnhancedProtectionShouldNotHaveToken) {
+  SetFeatures(
+      /*enable_features*/ {kPasswordProtectionWithToken},
+      /*disable_features*/ {});
+  std::string access_token = "fake access token";
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::string out;
+        EXPECT_FALSE(request.headers.GetHeader(
+            net::HttpRequestHeaders::kAuthorization, &out));
+      }));
+
+  // Never call token fetcher
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
+
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  InitializeAndStartPasswordOnFocusRequest(/*match_allowlist=*/false,
+                                           /*timeout_in_ms=*/10000,
+                                           web_contents.get());
+}
+
+TEST_P(PasswordProtectionServiceBaseTest,
+       TestPasswordOnFocusRequestDisabledFeatureShouldNotHaveToken) {
+  SetEnhancedProtectionPrefForTests(&test_pref_service_, true);
+  SetFeatures(
+      /*enable_features*/ {},
+      /*disable_features*/ {kPasswordProtectionWithToken});
+  std::string access_token = "fake access token";
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::string out;
+        EXPECT_FALSE(request.headers.GetHeader(
+            net::HttpRequestHeaders::kAuthorization, &out));
+      }));
+
+  // Never call token fetcher
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
+
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  InitializeAndStartPasswordOnFocusRequest(/*match_allowlist=*/false,
+                                           /*timeout_in_ms=*/10000,
+                                           web_contents.get());
 }
 
 TEST_P(PasswordProtectionServiceBaseTest,

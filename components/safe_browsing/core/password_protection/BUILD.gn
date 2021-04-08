@@ -22,6 +22,7 @@ source_set("password_protection") {
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common:thread_utils",

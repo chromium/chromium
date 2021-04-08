@@ -142,6 +142,10 @@ class PasswordProtectionRequest
   // Initiates network request to Safe Browsing backend.
   void SendRequest();
 
+  // Initiates network request to Safe Browsing backend with the given oauth2
+  // access token.
+  void SendRequestWithToken(const std::string& access_token);
+
   // Records an event for the result of the URL reputation lookup if the user
   // enters their password on a website.
   virtual void MaybeLogPasswordReuseLookupEvent(
@@ -270,6 +274,8 @@ class PasswordProtectionRequest
 
   // Whether there is a modal warning triggered by this request.
   bool is_modal_warning_showing_;
+
+  base::WeakPtrFactory<PasswordProtectionRequest> weak_factory_{this};
 };
 
 }  // namespace safe_browsing

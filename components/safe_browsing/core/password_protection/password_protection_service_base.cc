@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/db/database_manager.h"
@@ -399,6 +400,18 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
          base::FeatureList::IsEnabled(
              safe_browsing::kPasswordProtectionForSignedInUsers);
 #endif
+}
+
+bool PasswordProtectionServiceBase::CanGetAccessToken() {
+  if (!try_token_fetch_ || is_off_the_record_)
+    return false;
+
+  // Return true if the finch feature is enabled for an ESB user, and if the
+  // primary user account is signed in.
+  return base::FeatureList::IsEnabled(kPasswordProtectionWithToken) &&
+         pref_service_ && IsEnhancedProtectionEnabled(*pref_service_) &&
+         identity_manager_ &&
+         safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager_);
 }
 
 }  // namespace safe_browsing
