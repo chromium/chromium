@@ -14,7 +14,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {highlight} from 'chrome://resources/js/search_highlight_utils.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {TabData, TabItemType} from './tab_data.js';
+import {ariaLabel, TabData, TabItemType} from './tab_data.js';
 import {Tab} from './tab_search.mojom-webui.js';
 
 export class TabSearchItem extends PolymerElement {
@@ -42,12 +42,6 @@ export class TabSearchItem extends PolymerElement {
 
       /** @type {number} */
       index: Number,
-
-      /** @private {string} */
-      secondaryTextAriaLabel_: {
-        type: String,
-        value: '',
-      },
     };
   }
 
@@ -106,9 +100,6 @@ export class TabSearchItem extends PolymerElement {
           .prepend(document.createTextNode('chrome://'));
       secondaryLabel = `chrome://${secondaryLabel}`;
     }
-
-    this.secondaryTextAriaLabel_ =
-        `${secondaryLabel} ${this.data.tab.lastActiveElapsedText}`;
   }
 
   /**
@@ -130,7 +121,21 @@ export class TabSearchItem extends PolymerElement {
     }
   }
 
-  ariaLabel_(title) {
+  /**
+   * @param {!TabData} tabData
+   * @return {string}
+   * @private
+   */
+  ariaLabelForText_(tabData) {
+    return ariaLabel(tabData);
+  }
+
+  /**
+   * @param {string} title
+   * @return {string}
+   * @private
+   */
+  ariaLabelForButton_(title) {
     return `${loadTimeData.getString('closeTab')} ${title}`;
   }
 }

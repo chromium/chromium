@@ -34,5 +34,17 @@ export class TabData {
 
     /** @type {!TabItemType} */
     this.type;
+
+    /** @type {string} */
+    this.a11yTypeText;
   }
+}
+
+/**
+ * @param {!TabData} tabData
+ * @return {string}
+ */
+export function ariaLabel(tabData) {
+  return `${tabData.tab.title} ${tabData.hostname} ${
+      tabData.tab.lastActiveElapsedText} ${tabData.a11yTypeText}`;
 }

@@ -20,7 +20,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {fuzzySearch} from './fuzzy_search.js';
 import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
-import {TabData, TabItemType} from './tab_data.js';
+import {ariaLabel, TabData, TabItemType} from './tab_data.js';
 import {Tab, Window} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 import {TitleItem} from './title_item.js';
@@ -497,8 +497,7 @@ export class TabSearchAppElement extends PolymerElement {
 
       // TODO(tluk): Fix this to use aria-activedescendant when it's updated to
       // work with ShadowDOM elements.
-      this.$.searchField.announce(
-          this.ariaLabel_(this.$.tabsList.selectedItem));
+      this.$.searchField.announce(ariaLabel(this.$.tabsList.selectedItem));
     } else if (e.key === 'Enter') {
       const tabData = /** @type {!TabData} */ (this.$.tabsList.selectedItem);
       this.tabItemAction_(
@@ -520,8 +519,7 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   ariaLabel_(tabData) {
-    return `${tabData.tab.title} ${tabData.hostname}
-        ${tabData.tab.lastActiveElapsedText}`;
+    return ariaLabel(tabData);
   }
 
   /**
@@ -573,7 +571,8 @@ export class TabSearchAppElement extends PolymerElement {
     tabData.inActiveWindow = inActiveWindow;
     tabData.tab = tab;
     tabData.type = type;
-
+    tabData.a11yTypeText = loadTimeData.getStringF(
+        type === TabItemType.OPEN ? 'openTabs' : 'recentlyClosedTabs');
     return tabData;
   }
 

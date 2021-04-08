@@ -43,13 +43,13 @@
   .text-container {
     flex-grow: 1;
     overflow: hidden;
+    user-select: none;
   }
 
   #primaryText,
   #secondaryText {
     overflow: hidden;
     text-overflow: ellipsis;
-    user-select: none;
     white-space: nowrap;
   }
 
@@ -69,7 +69,7 @@
     flex-shrink: 0;
   }
 
-  #secondaryTextAriaLabel {
+  #textAriaLabel {
     clip: rect(0,0,0,0);
     display: inline-block;
     position: fixed;
@@ -93,10 +93,10 @@
 </style>
 
 <div class="favicon" style="background-image:[[faviconUrl_(data.tab)]]"></div>
-<div class="text-container">
+<div id="textAriaLabel" title="[[ariaLabelForText_(data)]]"></div>
+<div class="text-container" aria-hidden="true">
   <div id="primaryText" title="[[data.tab.title]]"></div>
-  <div id="secondaryTextAriaLabel" title="[[secondaryTextAriaLabel_]]"></div>
-  <div id="secondaryContainer" aria-hidden="true">
+  <div id="secondaryContainer">
     <div id="secondaryText"></div>
     <div id="separator">•</div>
     <div id="secondaryTimestamp">
@@ -106,7 +106,8 @@
 </div>
 <template is="dom-if" if="[[isCloseable_(data.type)]]">
   <div class="button-container">
-    <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.tab.title)]]"
+    <cr-icon-button id="closeButton"
+        aria-label="[[ariaLabelForButton_(data.tab.title)]]"
         iron-icon="mwb16:close" noink="[[!buttonRipples_]]"
         no-ripple-on-focus on-click="onItemClose_" title="$i18n{closeTab}">
     </cr-icon-button>
