@@ -33,10 +33,12 @@ bool HTMLPopupElement::open() const {
 void HTMLPopupElement::hide() {
   if (!open_)
     return;
-  GetDocument().HideAllPopupsUntil(this);
-  PopPopupElement(this);
   open_ = false;
   invoker_ = nullptr;
+  if (!isConnected())
+    return;
+  GetDocument().HideAllPopupsUntil(this);
+  PopPopupElement(this);
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   MarkStyleDirty();
   ScheduleHideEvent();
