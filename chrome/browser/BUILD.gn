@@ -3733,6 +3733,8 @@ static_library("browser") {
       "metrics/usage_scenario/usage_scenario_tracker.h",
       "metrics/usage_scenario/video_capture_event_provider.cc",
       "metrics/usage_scenario/video_capture_event_provider.h",
+      "metrics/usage_scenario/webrtc_event_provider.cc",
+      "metrics/usage_scenario/webrtc_event_provider.h",
       "notifications/muted_notification_handler.cc",
       "notifications/muted_notification_handler.h",
       "notifications/notification_system_observer.cc",

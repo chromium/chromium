@@ -161,6 +161,9 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   uint16_t current_visible_window_count_for_testing() {
     return current_visible_window_count_;
   }
+  uint16_t webrtc_open_connection_count_for_testing() {
+    return webrtc_open_connection_count_;
+  }
 
   base::flat_set<ukm::SourceId> GetVisibleSourceIdsForTesting();
 

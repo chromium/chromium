@@ -1171,6 +1171,7 @@ if (!is_android) {
       "../browser/metrics/ukm_background_recorder_browsertest.cc",
       "../browser/metrics/ukm_browsertest.cc",
       "../browser/metrics/usage_scenario/tab_usage_scenario_tracker_browsertest.cc",
+      "../browser/metrics/usage_scenario/webrtc_event_provider_browsertest.cc",
       "../browser/metrics/variations/force_field_trials_browsertest.cc",
       "../browser/metrics/variations/variations_http_headers_browsertest.cc",
       "../browser/navigation_predictor/navigation_predictor_browsertest.cc",
