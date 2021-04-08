@@ -7379,21 +7379,6 @@
             ]
         }
     ],
-    "WKHTTPSystemCookieStore": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "WKHTTPSystemCookieStore",
-                    "enable_features": [
-                        "WKHTTPSystemCookieStore"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebOtpBackendAuto": [
         {
             "platforms": [
