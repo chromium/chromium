@@ -3840,6 +3840,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "omnibox-clipboard-suggestions-content-hidden",
+    "owners": [ "gangwu", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "omnibox-clobber-triggers-contextual-web-zero-suggest",
     "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95

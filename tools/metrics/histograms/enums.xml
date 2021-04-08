@@ -44299,6 +44299,7 @@ from previous Chrome versions.
   <int value="-1806739839"
       label="UseLookalikesForNavigationSuggestions:disabled"/>
   <int value="-1804485171" label="disable-fullscreen-tab-detaching"/>
+  <int value="-1804411756" label="ClipboardSuggestionContentHidden:enabled"/>
   <int value="-1802502753" label="enable-manual-password-generation:enabled"/>
   <int value="-1799801575" label="CookieDeprecationMessages:enabled"/>
   <int value="-1798337879" label="enable-md-downloads"/>
@@ -47210,6 +47211,7 @@ from previous Chrome versions.
   <int value="779703052" label="ChromeOSAmbientMode:enabled"/>
   <int value="779849093" label="OfflinePagesCTSuppressNotifications:disabled"/>
   <int value="780743733" label="QueryTilesLocalOrdering:disabled"/>
+  <int value="781785788" label="ClipboardSuggestionContentHidden:disabled"/>
   <int value="782167080" label="enable-new-qp-input-view"/>
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
   <int value="787080596" label="DynamicTcmallocTuning:enabled"/>

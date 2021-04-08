@@ -1672,6 +1672,9 @@ extern const char kChromeSharingHubDescription[];
 extern const char kChromeSharingHubV15Name[];
 extern const char kChromeSharingHubV15Description[];
 
+extern const char kClipboardSuggestionContentHiddenName[];
+extern const char kClipboardSuggestionContentHiddenDescription[];
+
 extern const char kClearOldBrowsingDataName[];
 extern const char kClearOldBrowsingDataDescription[];
 

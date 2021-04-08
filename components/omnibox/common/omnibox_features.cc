@@ -289,6 +289,11 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
 const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, clipboard suggestion will not show the clipboard content until
+// the user clicks the reveal button.
+const base::Feature kClipboardSuggestionContentHidden = {
+    "ClipboardSuggestionContentHidden", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, shows slightly more compact suggestions, allowing the
 // kAdaptiveSuggestionsCount feature to fit more suggestions on screen.
 const base::Feature kCompactSuggestions{"OmniboxCompactSuggestions",

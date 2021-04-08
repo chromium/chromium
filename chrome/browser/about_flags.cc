@@ -4223,6 +4223,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxTabSwitchSuggestionsName,
      flag_descriptions::kOmniboxTabSwitchSuggestionsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxTabSwitchSuggestions)},
+    {"omnibox-clipboard-suggestions-content-hidden",
+     flag_descriptions::kClipboardSuggestionContentHiddenName,
+     flag_descriptions::kClipboardSuggestionContentHiddenDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kClipboardSuggestionContentHidden)},
 #endif  // defined(OS_ANDROID)
 
     {"omnibox-clobber-triggers-contextual-web-zero-suggest",
