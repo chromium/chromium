@@ -67,13 +67,25 @@ size_t SessionStorageManager::ExtensionStorage::CalculateUsage(
   return updated_used_total;
 }
 
-const base::Value* SessionStorageManager::ExtensionStorage::Get(
-    const std::string& key) const {
-  auto value_it = values_.find(key);
-  if (value_it == values_.end())
-    return nullptr;
+std::map<std::string, const base::Value*>
+SessionStorageManager::ExtensionStorage::Get(
+    const std::vector<std::string>& keys) {
+  std::map<std::string, const base::Value*> values;
+  for (auto& key : keys) {
+    auto value_it = values_.find(key);
+    if (value_it != values_.end())
+      values.emplace(key, &value_it->second->value);
+  }
+  return values;
+}
 
-  return &value_it->second->value;
+std::map<std::string, const base::Value*>
+SessionStorageManager::ExtensionStorage::GetAll() {
+  std::map<std::string, const base::Value*> values;
+  for (auto& value : values_) {
+    values.emplace(value.first, &value.second->value);
+  }
+  return values;
 }
 
 bool SessionStorageManager::ExtensionStorage::Set(
@@ -114,11 +126,35 @@ SessionStorageManager::~SessionStorageManager() = default;
 
 const base::Value* SessionStorageManager::Get(const ExtensionId& extension_id,
                                               const std::string& key) const {
-  auto storage_it = extensions_storage_.find(extension_id);
-  if (storage_it == extensions_storage_.end())
+  std::map<std::string, const base::Value*> values =
+      Get(extension_id, std::vector<std::string>(1, key));
+  if (values.empty())
     return nullptr;
 
-  return storage_it->second->Get(key);
+  // Only a single value should be returned.
+  DCHECK_EQ(1u, values.size());
+  return values.begin()->second;
+}
+
+std::map<std::string, const base::Value*> SessionStorageManager::Get(
+    const ExtensionId& extension_id,
+    const std::vector<std::string>& keys) const {
+  auto storage_it = extensions_storage_.find(extension_id);
+  if (storage_it == extensions_storage_.end()) {
+    return std::map<std::string, const base::Value*>();
+  }
+
+  return storage_it->second->Get(keys);
+}
+
+std::map<std::string, const base::Value*> SessionStorageManager::GetAll(
+    const ExtensionId& extension_id) const {
+  auto storage_it = extensions_storage_.find(extension_id);
+  if (storage_it == extensions_storage_.end()) {
+    return std::map<std::string, const base::Value*>();
+  }
+
+  return storage_it->second->GetAll();
 }
 
 bool SessionStorageManager::Set(const ExtensionId& extension_id,

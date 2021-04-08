@@ -52,17 +52,46 @@ class SessionStorageManagerUnittest : public testing::Test {
 };
 
 TEST_F(SessionStorageManagerUnittest, SetAndGetOneExtensionSuccessful) {
-  ValueChangeList changes;
-  std::map<std::string, base::Value> values;
-  values.emplace("key1", value_int_.Clone());
-  values.emplace("key2", value_string_.Clone());
-  values.emplace("key3", value_list_.Clone());
-  values.emplace("key4", value_dict_.Clone());
-  EXPECT_TRUE(manager_->Set(kTestExtensionId1, std::move(values), changes));
+  {
+    // Store individual value.
+    ValueChangeList changes;
+    std::map<std::string, base::Value> values;
+    values.emplace("key1", value_int_.Clone());
+    EXPECT_TRUE(manager_->Set(kTestExtensionId1, std::move(values), changes));
+  }
+
+  {
+    // Store multiple values.
+    ValueChangeList changes;
+    std::map<std::string, base::Value> values;
+    values.emplace("key2", value_string_.Clone());
+    values.emplace("key3", value_list_.Clone());
+    values.emplace("key4", value_dict_.Clone());
+    EXPECT_TRUE(manager_->Set(kTestExtensionId1, std::move(values), changes));
+  }
+
+  // Retrieve individual values from storage.
   EXPECT_EQ(*manager_->Get(kTestExtensionId1, "key1"), value_int_);
   EXPECT_EQ(*manager_->Get(kTestExtensionId1, "key2"), value_string_);
   EXPECT_EQ(*manager_->Get(kTestExtensionId1, "key3"), value_list_);
   EXPECT_EQ(*manager_->Get(kTestExtensionId1, "key4"), value_dict_);
+
+  // Retrieve multiple values from storage.
+  std::map<std::string, const base::Value*> multiple_values =
+      manager_->Get("extension id1", {"key1", "invalid key", "key4"});
+  ASSERT_EQ(multiple_values.size(), 2u);
+  EXPECT_EQ(*multiple_values["key1"], value_int_);
+  EXPECT_FALSE(base::Contains(multiple_values, "invalid_key"));
+  EXPECT_EQ(*multiple_values["key4"], value_dict_);
+
+  // Retrieve all values from storage.
+  std::map<std::string, const base::Value*> all_values =
+      manager_->GetAll(kTestExtensionId1);
+  ASSERT_EQ(all_values.size(), 4u);
+  EXPECT_EQ(*all_values["key1"], value_int_);
+  EXPECT_EQ(*all_values["key2"], value_string_);
+  EXPECT_EQ(*all_values["key3"], value_list_);
+  EXPECT_EQ(*all_values["key4"], value_dict_);
 }
 
 TEST_F(SessionStorageManagerUnittest, SetAndGetMultipleExtensionsSuccessful) {
@@ -176,14 +205,23 @@ TEST_F(SessionStorageManagerUnittest, SetFailsWhenQuotaIsExceeded) {
   }
 }
 
-TEST_F(SessionStorageManagerUnittest, GetFailsWhenInvalidKey) {
-  EXPECT_EQ(manager_->Get("invalid extension id", "key1"), nullptr);
+TEST_F(SessionStorageManagerUnittest, GetEmptyWhenInvalidKey) {
+  EXPECT_EQ(manager_->Get("invalid extension id", ""), nullptr);
+  EXPECT_TRUE(
+      manager_->Get("invalid extension id", std::vector<std::string>(1, ""))
+          .empty());
+  EXPECT_TRUE(manager_->GetAll("invalid extension id").empty());
 
   ValueChangeList changes;
   std::map<std::string, base::Value> values;
   values.emplace("key1", value_int_.Clone());
   ASSERT_TRUE(manager_->Set(kTestExtensionId1, std::move(values), changes));
+
   EXPECT_EQ(manager_->Get(kTestExtensionId1, "invalid key"), nullptr);
+  EXPECT_TRUE(
+      manager_
+          ->Get(kTestExtensionId1, std::vector<std::string>(1, "invalid key"))
+          .empty());
 }
 
 }  // namespace extensions

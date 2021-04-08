@@ -51,6 +51,17 @@ class SessionStorageManager : public base::SupportsUserData::Data {
   const base::Value* Get(const ExtensionId& extension_id,
                          const std::string& key) const;
 
+  // Returns a map with keys and values found in storage for the given
+  // `extension_id`.
+  std::map<std::string, const base::Value*> Get(
+      const ExtensionId& extension_id,
+      const std::vector<std::string>& keys) const;
+
+  // Returns a map with all keys and values found in storage for the given
+  // `extension_id`.
+  std::map<std::string, const base::Value*> GetAll(
+      const ExtensionId& extension_id) const;
+
   // Stores multiple values of an extension id.
   bool Set(const ExtensionId& extension_id,
            std::map<std::string, base::Value> values,
@@ -71,8 +82,12 @@ class SessionStorageManager : public base::SupportsUserData::Data {
     explicit ExtensionStorage(size_t quota_bytes);
     ~ExtensionStorage();
 
-    // Returns the value for the given `key`, or null if none exists.
-    const base::Value* Get(const std::string& key) const;
+    // Returns a map with keys and values found in storage.
+    std::map<std::string, const base::Value*> Get(
+        const std::vector<std::string>& keys);
+
+    // Returns a map with all keys and values found in storage.
+    std::map<std::string, const base::Value*> GetAll();
 
     // Stores the input values in the values map, and updates the changes list
     // if a change occurs.
