@@ -247,6 +247,66 @@ IN_PROC_BROWSER_TEST_F(DoNotTrackTest, ServiceWorker_Register) {
   // been completed.
 }
 
+// Checks that the DNT header is sent in a request for a module service worker
+// script.
+IN_PROC_BROWSER_TEST_F(DoNotTrackTest, ModuleServiceWorker_Register) {
+  if (!EnableDoNotTrack())
+    return;
+  const std::string kWorkerScript = "// empty";
+  net::test_server::HttpRequest::HeaderMap header_map;
+  base::RunLoop loop;
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&CaptureHeaderHandlerAndReturnScript, "/capture",
+                          &header_map, kWorkerScript, loop.QuitClosure()));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetURL("/service_worker/create_service_worker.html")));
+
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('/capture', '', 'module');"));
+  loop.Run();
+
+  EXPECT_TRUE(header_map.find("DNT") != header_map.end());
+  EXPECT_EQ("1", header_map["DNT"]);
+
+  // Module Service worker doesn't have to wait for onmessage event because
+  // navigator.serviceWorker.ready can ensure that the script load has
+  // been completed.
+}
+
+// Checks that the DNT header is sent in a request for a module service worker
+// script with a static import.
+IN_PROC_BROWSER_TEST_F(DoNotTrackTest,
+                       StaticImportModuleServiceWorker_Register) {
+  if (!EnableDoNotTrack())
+    return;
+  const std::string kModuleScript = "// empty";
+  const std::string kWorkerScript = "import './captureModule';";
+  net::test_server::HttpRequest::HeaderMap header_map;
+  base::RunLoop loop;
+
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &CaptureHeaderHandlerAndReturnScript, "/captureModule", &header_map,
+      kModuleScript, loop.QuitClosure()));
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &CaptureHeaderHandlerAndReturnScript, "/captureWorker", &header_map,
+      kWorkerScript, loop.QuitClosure()));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetURL("/service_worker/create_service_worker.html")));
+
+  EXPECT_EQ("DONE",
+            EvalJs(shell(), "register('/captureWorker','', 'module');"));
+  loop.Run();
+
+  EXPECT_TRUE(header_map.find("DNT") != header_map.end());
+  EXPECT_EQ("1", header_map["DNT"]);
+
+  // Module Service worker doesn't have to wait for onmessage event because
+  // navigator.serviceWorker.ready can ensure that the script load has
+  // been completed.
+}
+
 // Checks that the DNT header is sent in a request for a service worker
 // script during update checking.
 IN_PROC_BROWSER_TEST_F(DoNotTrackTest, ServiceWorker_Update) {
@@ -273,6 +333,69 @@ IN_PROC_BROWSER_TEST_F(DoNotTrackTest, ServiceWorker_Update) {
   EXPECT_EQ("1", header_map["DNT"]);
 
   // Service worker doesn't have to wait for onmessage event because
+  // waiting for a promise by registration.update() can ensure that the script
+  // load has been completed.
+}
+
+// Checks that the DNT header is sent in a request for a module service worker
+// script during update checking.
+IN_PROC_BROWSER_TEST_F(DoNotTrackTest, ModuleServiceWorker_Update) {
+  if (!EnableDoNotTrack())
+    return;
+  const std::string kWorkerScript = "// empty";
+  net::test_server::HttpRequest::HeaderMap header_map;
+  base::RunLoop loop;
+  // Wait for two requests to capture the request header for updating.
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &CaptureHeaderHandlerAndReturnScript, "/capture", &header_map,
+      kWorkerScript, base::BarrierClosure(2, loop.QuitClosure())));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Register a module service worker, trigger update, then wait until the
+  // handler sees the second request.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetURL("/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('/capture','','module');"));
+  EXPECT_EQ("DONE", EvalJs(shell(), "update();"));
+  loop.Run();
+
+  EXPECT_TRUE(header_map.find("DNT") != header_map.end());
+  EXPECT_EQ("1", header_map["DNT"]);
+
+  // Module service worker doesn't have to wait for onmessage event because
+  // waiting for a promise by registration.update() can ensure that the script
+  // load has been completed.
+}
+
+// Checks that the DNT header is sent in a request for a module service worker
+// with static import script during update checking.
+IN_PROC_BROWSER_TEST_F(DoNotTrackTest, StaticImportModuleServiceWorker_Update) {
+  if (!EnableDoNotTrack())
+    return;
+  const std::string kModuleScript = "// empty";
+  const std::string kWorkerScript = "import '/captureModule';";
+  net::test_server::HttpRequest::HeaderMap header_map;
+  base::RunLoop loop;
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &CaptureHeaderHandlerAndReturnScript, "/captureModule", &header_map,
+      kModuleScript, loop.QuitClosure()));
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &CaptureHeaderHandlerAndReturnScript, "/captureWorker", &header_map,
+      kWorkerScript, loop.QuitClosure()));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Register a module service worker, trigger update, then wait until the
+  // handler sees the second request.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetURL("/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('/captureWorker','','module');"));
+  EXPECT_EQ("DONE", EvalJs(shell(), "update();"));
+  loop.Run();
+
+  EXPECT_TRUE(header_map.find("DNT") != header_map.end());
+  EXPECT_EQ("1", header_map["DNT"]);
+
+  // Module service worker doesn't have to wait for onmessage event because
   // waiting for a promise by registration.update() can ensure that the script
   // load has been completed.
 }

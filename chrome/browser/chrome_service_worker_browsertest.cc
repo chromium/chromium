@@ -70,6 +70,29 @@ const char kInstallAndWaitForActivatedPage[] =
     "    });"
     "</script>";
 
+const char kInstallAndWaitForActivatedPageWithModuleScript[] =
+    R"(<script>
+    navigator.serviceWorker.register(
+        './sw.js', {scope: './scope/', type: 'module'})
+      .then(function(reg) {
+          reg.addEventListener('updatefound', function() {
+              var worker = reg.installing;
+              worker.addEventListener('statechange', function() {
+                  if (worker.state == 'activated')
+                    document.title = 'READY';
+                });
+            });
+        });
+    </script>)";
+
+template <typename T>
+static void ExpectResultAndRun(T expected,
+                               base::OnceClosure continuation,
+                               T actual) {
+  EXPECT_EQ(expected, actual);
+  std::move(continuation).Run();
+}
+
 class ChromeServiceWorkerTest : public InProcessBrowserTest {
  protected:
   ChromeServiceWorkerTest() {
@@ -109,19 +132,69 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
         ->GetServiceWorkerContext();
   }
 
+  void TestFallbackMainResourceRequestWhenJSDisabled(const char* test_script) {
+    WriteFile(FILE_PATH_LITERAL("sw.js"),
+              "self.onfetch = function(e) {"
+              "  e.respondWith(new Response('<title>Fail</title>',"
+              "                             {headers: {"
+              "                             'Content-Type': 'text/html'}}));"
+              "};");
+    WriteFile(FILE_PATH_LITERAL("scope/done.html"), "<title>Done</title>");
+    WriteFile(FILE_PATH_LITERAL("test.html"), test_script);
+    InitializeServer();
+    NavigateToPageAndWaitForReadyTitle("/test.html");
+
+    GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
+        url::Origin::Create(embedded_test_server()->base_url()));
+    HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
+                                   CONTENT_SETTING_BLOCK);
+
+    const std::u16string expected_title = u"Done";
+    content::TitleWatcher title_watcher(
+        browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+    ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/scope/done.html"));
+
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+    content::RenderFrameHost* main_frame =
+        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    EXPECT_TRUE(
+        content_settings::PageSpecificContentSettings::GetForFrame(main_frame)
+            ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  }
+
+  void TestStartServiceWorkerAndDispatchMessage(const char* test_script) {
+    base::RunLoop run_loop;
+    blink::TransferableMessage msg;
+    const std::u16string message_data = u"testMessage";
+
+    WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
+    WriteFile(FILE_PATH_LITERAL("test.html"), test_script);
+
+    InitializeServer();
+    NavigateToPageAndWaitForReadyTitle("/test.html");
+    msg.owned_encoded_message = blink::EncodeStringMessage(message_data);
+    msg.encoded_message = msg.owned_encoded_message;
+
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&content::ServiceWorkerContext::
+                           StartServiceWorkerAndDispatchMessage,
+                       base::Unretained(GetServiceWorkerContext()),
+                       embedded_test_server()->GetURL("/scope/"),
+                       std::move(msg),
+                       base::BindRepeating(&ExpectResultAndRun<bool>, true,
+                                           run_loop.QuitClosure())));
+    run_loop.Run();
+  }
+
   base::ScopedTempDir service_worker_dir_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerTest);
 };
-
-template <typename T>
-static void ExpectResultAndRun(T expected,
-                               base::OnceClosure continuation,
-                               T actual) {
-  EXPECT_EQ(expected, actual);
-  std::move(continuation).Run();
-}
 
 // http://crbug.com/368570
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
@@ -200,63 +273,29 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
-                       FallbackMainResourceRequestWhenJSDisabled) {
-  WriteFile(
-      FILE_PATH_LITERAL("sw.js"),
-      "self.onfetch = function(e) {"
-      "  e.respondWith(new Response('<title>Fail</title>',"
-      "                             {headers: {'Content-Type': 'text/html'}}));"
-      "};");
-  WriteFile(FILE_PATH_LITERAL("scope/done.html"), "<title>Done</title>");
-  WriteFile(FILE_PATH_LITERAL("test.html"), kInstallAndWaitForActivatedPage);
-  InitializeServer();
-  NavigateToPageAndWaitForReadyTitle("/test.html");
+IN_PROC_BROWSER_TEST_F(
+    ChromeServiceWorkerTest,
+    FallbackMainResourceRequestWhenJSDisabledForClassicServiceWorker) {
+  TestFallbackMainResourceRequestWhenJSDisabled(
+      kInstallAndWaitForActivatedPage);
+}
 
-  GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
-                                 CONTENT_SETTING_BLOCK);
-
-  const std::u16string expected_title2 = u"Done";
-  content::TitleWatcher title_watcher2(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title2);
-  ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/scope/done.html"));
-  EXPECT_EQ(expected_title2, title_watcher2.WaitAndGetTitle());
-
-  content::RenderFrameHost* main_frame =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
-  EXPECT_TRUE(
-      content_settings::PageSpecificContentSettings::GetForFrame(main_frame)
-          ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+IN_PROC_BROWSER_TEST_F(
+    ChromeServiceWorkerTest,
+    FallbackMainResourceRequestWhenJSDisabledForModuleServiceWorker) {
+  TestFallbackMainResourceRequestWhenJSDisabled(
+      kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
                        StartServiceWorkerAndDispatchMessage) {
-  base::RunLoop run_loop;
-  blink::TransferableMessage msg;
-  const std::u16string message_data = u"testMessage";
+  TestStartServiceWorkerAndDispatchMessage(kInstallAndWaitForActivatedPage);
+}
 
-  WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
-  WriteFile(FILE_PATH_LITERAL("test.html"), kInstallAndWaitForActivatedPage);
-  InitializeServer();
-  NavigateToPageAndWaitForReadyTitle("/test.html");
-  msg.owned_encoded_message = blink::EncodeStringMessage(message_data);
-  msg.encoded_message = msg.owned_encoded_message;
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &content::ServiceWorkerContext::StartServiceWorkerAndDispatchMessage,
-          base::Unretained(GetServiceWorkerContext()),
-          embedded_test_server()->GetURL("/scope/"), std::move(msg),
-          base::BindRepeating(&ExpectResultAndRun<bool>, true,
-                              run_loop.QuitClosure())));
-
-  run_loop.Run();
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
+                       StartServiceWorkerWithModuleScriptAndDispatchMessage) {
+  TestStartServiceWorkerAndDispatchMessage(
+      kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
 class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
@@ -635,30 +674,60 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
         static_cast<int>(expected_result), 1);
   }
 
+  void TestStarted(const char* test_script) {
+    WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
+    WriteFile(FILE_PATH_LITERAL("test.html"), test_script);
+    InitializeServer();
+    NavigateToPageAndWaitForReadyTitle("/test.html");
+    GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
+        url::Origin::Create(embedded_test_server()->base_url()));
+    RunNavigationHintTest(
+        "/scope/", content::StartServiceWorkerForNavigationHintResult::STARTED,
+        true);
+  }
+
+  void TestAlreadyRunning(const char* test_script) {
+    WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
+    WriteFile(FILE_PATH_LITERAL("test.html"), test_script);
+    InitializeServer();
+    NavigateToPageAndWaitForReadyTitle("/test.html");
+    RunNavigationHintTest(
+        "/scope/",
+        content::StartServiceWorkerForNavigationHintResult::ALREADY_RUNNING,
+        false);
+  }
+
+  void TestNoFetchHandler(const char* test_script) {
+    WriteFile(FILE_PATH_LITERAL("sw.js"), "/* empty */");
+    WriteFile(FILE_PATH_LITERAL("test.html"), test_script);
+    InitializeServer();
+    NavigateToPageAndWaitForReadyTitle("/test.html");
+    GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
+        url::Origin::Create(embedded_test_server()->base_url()));
+    RunNavigationHintTest(
+        "/scope/",
+        content::StartServiceWorkerForNavigationHintResult::NO_FETCH_HANDLER,
+        false);
+  }
   base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest, Started) {
-  WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
-  WriteFile(FILE_PATH_LITERAL("test.html"), kInstallAndWaitForActivatedPage);
-  InitializeServer();
-  NavigateToPageAndWaitForReadyTitle("/test.html");
-  GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
-  RunNavigationHintTest(
-      "/scope/", content::StartServiceWorkerForNavigationHintResult::STARTED,
-      true);
+  TestStarted(kInstallAndWaitForActivatedPage);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest,
+                       StartedModuleScript) {
+  TestStarted(kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest, AlreadyRunning) {
-  WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
-  WriteFile(FILE_PATH_LITERAL("test.html"), kInstallAndWaitForActivatedPage);
-  InitializeServer();
-  NavigateToPageAndWaitForReadyTitle("/test.html");
-  RunNavigationHintTest(
-      "/scope/",
-      content::StartServiceWorkerForNavigationHintResult::ALREADY_RUNNING,
-      false);
+  TestAlreadyRunning(kInstallAndWaitForActivatedPage);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest,
+                       AlreadyRunningModuleScript) {
+  TestAlreadyRunning(kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest,
@@ -696,16 +765,12 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest, NoFetchHandler) {
-  WriteFile(FILE_PATH_LITERAL("sw.js"), "/* empty */");
-  WriteFile(FILE_PATH_LITERAL("test.html"), kInstallAndWaitForActivatedPage);
-  InitializeServer();
-  NavigateToPageAndWaitForReadyTitle("/test.html");
-  GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
-  RunNavigationHintTest(
-      "/scope/",
-      content::StartServiceWorkerForNavigationHintResult::NO_FETCH_HANDLER,
-      false);
+  TestNoFetchHandler(kInstallAndWaitForActivatedPage);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest,
+                       NoFetchHandlerModuleScript) {
+  TestNoFetchHandler(kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
 // Copied from devtools_browsertest.cc.

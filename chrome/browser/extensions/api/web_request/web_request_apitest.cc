@@ -2743,6 +2743,154 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerScript) {
   }
 }
 
+// An extension should be able to modify the request header for module service
+// worker script by using WebRequest API.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
+                       ModuleServiceWorkerScript) {
+  // The extension to be used in this test adds foo=bar request header.
+  constexpr char kScriptPath[] = "/echoheader_service_worker.js";
+  // The request handler below will run on the EmbeddedTestServer's IO thread.
+  // Hence guard access to |served_service_worker_count| and |foo_header_value|
+  // using a lock.
+  base::Lock lock;
+  int served_service_worker_count = 0;
+  std::string foo_header_value;
+
+  // Capture the value of a request header foo, which should be added if
+  // extension modifies the request header.
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != kScriptPath)
+          return nullptr;
+
+        base::AutoLock auto_lock(lock);
+        ++served_service_worker_count;
+        foo_header_value.clear();
+        if (base::Contains(request.headers, "foo"))
+          foo_header_value = request.headers.at("foo");
+
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->set_content_type("text/javascript");
+        response->AddCustomHeader("Cache-Control", "no-cache");
+        response->set_content("// empty");
+        return response;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  InstallRequestHeaderModifyingExtension();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url = embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Register a service worker. `EvalJs` is blocked until the request handler
+  // serves the worker script. The worker script should have "foo: bar" request
+  // header added by the extension.
+  std::string script =
+      content::JsReplace("register($1, './in-scope', 'module');", kScriptPath);
+  EXPECT_EQ("DONE", EvalJs(web_contents, script));
+  {
+    base::AutoLock auto_lock(lock);
+    EXPECT_EQ(1, served_service_worker_count);
+    EXPECT_EQ("bar", foo_header_value);
+  }
+
+  // Update the worker. `EvalJs` is blocked until the request handler serves the
+  // worker script. The worker should have "foo: bar" request header in the
+  // request for update checking.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_EQ("DONE", EvalJs(web_contents, "update('./in-scope');"));
+  {
+    base::AutoLock auto_lock(lock);
+    EXPECT_EQ(2, served_service_worker_count);
+    EXPECT_EQ("bar", foo_header_value);
+  }
+}
+
+// An extension should be able to modify the request header for module service
+// worker script with static import by using WebRequest API.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
+                       ModuleServiceWorkerScriptWithStaticImport) {
+  // The extension to be used in this test adds foo=bar request header.
+  constexpr char kScriptPath[] = "/static-import-worker.js";
+  constexpr char kImportedScriptPath[] = "/echoheader_service_worker.js";
+  // The request handler below will run on the EmbeddedTestServer's IO thread.
+  // Hence guard access to |served_service_worker_count| and |foo_header_value|
+  // using a lock.
+  base::Lock lock;
+  int served_service_worker_count = 0;
+  std::string foo_header_value;
+
+  // Capture the value of a request header foo, which should be added if
+  // extension modifies the request header.
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        // Handle the top-level worker script.
+        if (request.relative_url == kScriptPath) {
+          base::AutoLock auto_lock(lock);
+          ++served_service_worker_count;
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/javascript");
+          response->AddCustomHeader("Cache-Control", "no-cache");
+          response->set_content("import './echoheader_service_worker.js';");
+          return response;
+        }
+        // Handle the static-imported script.
+        if (request.relative_url == kImportedScriptPath) {
+          base::AutoLock auto_lock(lock);
+          ++served_service_worker_count;
+          foo_header_value.clear();
+          if (base::Contains(request.headers, "foo"))
+            foo_header_value = request.headers.at("foo");
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/javascript");
+          response->AddCustomHeader("Cache-Control", "no-cache");
+          response->set_content("// empty");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  InstallRequestHeaderModifyingExtension();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url = embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Register a service worker. The worker script should have "foo: bar" request
+  // header added by the extension.
+  std::string script =
+      content::JsReplace("register($1, './in-scope', 'module');", kScriptPath);
+  EXPECT_EQ("DONE", EvalJs(web_contents, script));
+  {
+    base::AutoLock auto_lock(lock);
+    EXPECT_EQ(2, served_service_worker_count);
+    EXPECT_EQ("bar", foo_header_value);
+  }
+
+  // Update the worker. The worker should have "foo: bar" request header in the
+  // request for update checking.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_EQ("DONE", EvalJs(web_contents, "update('./in-scope');"));
+  {
+    base::AutoLock auto_lock(lock);
+    EXPECT_EQ(4, served_service_worker_count);
+    EXPECT_EQ("bar", foo_header_value);
+  }
+}
+
 // Ensure that extensions can intercept service worker navigation preload
 // requests.
 IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
