@@ -184,7 +184,8 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
                               helper_.network_device_handler());
 
     cellular_esim_profile_handler_.reset(new TestCellularESimProfileHandler());
-    cellular_esim_profile_handler_->Init(cellular_inhibitor_.get());
+    cellular_esim_profile_handler_->Init(helper_.network_state_handler(),
+                                         cellular_inhibitor_.get());
 
     cellular_esim_connection_handler_.reset(
         new CellularESimConnectionHandler());

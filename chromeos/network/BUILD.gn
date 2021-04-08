@@ -17,7 +17,6 @@ component("network") {
     "//chromeos/components/feature_usage",
     "//chromeos/dbus:common",
     "//chromeos/dbus/hermes",
-    "//chromeos/dbus/hermes",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state",

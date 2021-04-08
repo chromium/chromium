@@ -11,11 +11,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/network/network_type_pattern.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -26,6 +29,8 @@ namespace {
 const char kDefaultCellularDevicePath[] = "stub_cellular_device";
 const char kTestEuiccBasePath[] = "/org/chromium/Hermes/Euicc/";
 const char kTestBaseEid[] = "12345678901234567890123456789012";
+const char kTestPSimIccid[] = "1234567890";
+const char kTestCellularServicePath[] = "/service/cellular";
 
 std::string CreateTestEuiccPath(int euicc_num) {
   return base::StringPrintf("%s%d", kTestEuiccBasePath, euicc_num);
@@ -82,7 +87,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     handler_ = std::make_unique<CellularESimProfileHandlerImpl>();
     handler_->AddObserver(&observer_);
 
-    handler_->Init(&cellular_inhibitor_);
+    handler_->Init(helper_.network_state_handler(), &cellular_inhibitor_);
   }
 
   void SetDevicePrefs(bool set_to_null = false) {
@@ -117,6 +122,16 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
 
   std::vector<CellularESimProfile> GetESimProfiles() {
     return handler_->GetESimProfiles();
+  }
+
+  bool AddOrRemoveStubCellularNetworks(
+      NetworkStateHandler::ManagedStateList& network_list,
+      NetworkStateHandler::ManagedStateList& new_stub_networks) {
+    const DeviceState* device_state =
+        helper_.network_state_handler()->GetDeviceStateByType(
+            NetworkTypePattern::Cellular());
+    return handler_->AddOrRemoveStubCellularNetworks(
+        network_list, new_stub_networks, device_state);
   }
 
   size_t NumObserverEvents() const { return observer_.num_updates(); }
@@ -156,6 +171,20 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     return device_prefs_.GetList(prefs::kESimRefreshedEuiccs)->Clone();
   }
 
+  void SetPSimSlotInfo(const std::string& iccid) {
+    base::Value::ListStorage sim_slot_infos;
+    base::Value slot_info_item(base::Value::Type::DICTIONARY);
+    slot_info_item.SetStringKey(shill::kSIMSlotInfoEID, std::string());
+    slot_info_item.SetStringKey(shill::kSIMSlotInfoICCID, iccid);
+    slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, true);
+    sim_slot_infos.push_back(std::move(slot_info_item));
+
+    helper_.device_test()->SetDeviceProperty(kDefaultCellularDevicePath,
+                                             shill::kSIMSlotInfoProperty,
+                                             base::Value(sim_slot_infos),
+                                             /*notify_changed=*/true);
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_;
@@ -163,7 +192,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
   FakeObserver observer_;
 
   CellularInhibitor cellular_inhibitor_;
-  std::unique_ptr<CellularESimProfileHandler> handler_;
+  std::unique_ptr<CellularESimProfileHandlerImpl> handler_;
 };
 
 TEST_F(CellularESimProfileHandlerImplTest, NoEuicc) {
@@ -390,6 +419,56 @@ TEST_F(CellularESimProfileHandlerImplTest,
   EXPECT_EQ(1u, euicc_paths_from_prefs.GetList().size());
   EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
             euicc_paths_from_prefs.GetList()[0].GetString());
+}
+
+TEST_F(CellularESimProfileHandlerImplTest, AddOrRemoveStubCellularNetworks) {
+  SetPSimSlotInfo(kTestPSimIccid);
+  AddEuicc(/*euicc_num=*/1);
+  dbus::ObjectPath profile1_path =
+      AddProfile(/*euicc_num=*/1, hermes::profile::State::kPending,
+                 /*activation_code=*/"code1");
+  dbus::ObjectPath profile2_path =
+      AddProfile(/*euicc_num=*/1, hermes::profile::State::kInactive,
+                 /*activation_code=*/"code1");
+  Init();
+  SetDevicePrefs();
+  HermesProfileClient::Properties* profile2_properties =
+      HermesProfileClient::Get()->GetProperties(profile2_path);
+
+  NetworkStateHandler::ManagedStateList network_list, new_stub_networks;
+
+  // Verify that stub services are created for eSIM profiles and pSIM iccids
+  // on sim slot info.
+  AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
+  EXPECT_EQ(2u, new_stub_networks.size());
+  NetworkState* network1 = new_stub_networks[0]->AsNetworkState();
+  NetworkState* network2 = new_stub_networks[1]->AsNetworkState();
+  EXPECT_TRUE(network1->IsNonShillCellularNetwork());
+  EXPECT_TRUE(network2->IsNonShillCellularNetwork());
+  EXPECT_EQ(network1->iccid(), profile2_properties->iccid().value());
+  EXPECT_EQ(network2->iccid(), kTestPSimIccid);
+
+  // Verify the stub networks are removed when corresponding slot is no longer
+  // present. e.g. SIM removed.
+  network_list = std::move(new_stub_networks);
+  new_stub_networks.clear();
+  SetPSimSlotInfo(/*iccid=*/std::string());
+  base::RunLoop().RunUntilIdle();
+  AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
+  EXPECT_EQ(1u, network_list.size());
+
+  // Verify that stub networks are removed when real networks are added to the
+  // list.
+  std::unique_ptr<NetworkState> test_network =
+      std::make_unique<NetworkState>(kTestCellularServicePath);
+  test_network->PropertyChanged(shill::kTypeProperty,
+                                base::Value(shill::kTypeCellular));
+  test_network->PropertyChanged(
+      shill::kIccidProperty, base::Value(profile2_properties->iccid().value()));
+  test_network->set_update_received();
+  network_list.push_back(std::move(test_network));
+  AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
+  EXPECT_EQ(1u, network_list.size());
 }
 
 }  // namespace chromeos

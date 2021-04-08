@@ -111,7 +111,8 @@ class CrosNetworkConfigTest : public testing::Test {
                               network_device_handler_.get());
     cellular_esim_profile_handler_ =
         std::make_unique<TestCellularESimProfileHandler>();
-    cellular_esim_profile_handler_->Init(cellular_inhibitor_.get());
+    cellular_esim_profile_handler_->Init(helper_.network_state_handler(),
+                                         cellular_inhibitor_.get());
     network_connection_handler_ =
         NetworkConnectionHandler::InitializeForTesting(
             helper_.network_state_handler(),

@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
+#include "chromeos/network/network_state_handler.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -26,7 +27,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+  // CellularESimProfileHandler:
+  void InitInternal() override;
+
+  // NetworkStateHandler::StubCellularNetworksProvider:
+  bool AddOrRemoveStubCellularNetworks(
+      NetworkStateHandler::ManagedStateList& network_list,
+      NetworkStateHandler::ManagedStateList& new_stub_networks,
+      const DeviceState* device) override;
+
  private:
+  friend class CellularESimProfileHandlerImplTest;
+
   // CellularESimProfileHandler:
   std::vector<CellularESimProfile> GetESimProfiles() override;
   void SetDevicePrefs(PrefService* device_prefs) override;

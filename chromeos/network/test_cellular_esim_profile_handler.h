@@ -21,6 +21,12 @@ class TestCellularESimProfileHandler : public CellularESimProfileHandler {
   void SetDevicePrefs(PrefService* device_prefs) override;
   void OnHermesPropertiesUpdated() override;
 
+  // NetworkStateHandler::StubCellularNetworksProvider:
+  bool AddOrRemoveStubCellularNetworks(
+      NetworkStateHandler::ManagedStateList& network_list,
+      NetworkStateHandler::ManagedStateList& new_stub_networks,
+      const DeviceState* device) override;
+
  private:
   std::vector<CellularESimProfile> esim_profile_states_;
 };

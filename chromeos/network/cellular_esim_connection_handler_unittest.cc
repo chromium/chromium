@@ -77,7 +77,7 @@ class CellularESimConnectionHandlerTest : public testing::Test {
   void SetUp() override {
     inhibitor_.Init(helper_.network_state_handler(),
                     helper_.network_device_handler());
-    profile_handler_.Init(&inhibitor_);
+    profile_handler_.Init(helper_.network_state_handler(), &inhibitor_);
     handler_.Init(helper_.network_state_handler(), &inhibitor_,
                   &profile_handler_);
   }

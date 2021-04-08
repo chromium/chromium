@@ -87,7 +87,9 @@ class CellularMetricsLoggerTest : public testing::Test {
     network_state_test_helper_.hermes_manager_test()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath), kTestEidName, /*is_active=*/true,
         /*physical_slot=*/0);
-    cellular_esim_profile_handler_->Init(cellular_inhibitor_.get());
+    cellular_esim_profile_handler_->Init(
+        network_state_test_helper_.network_state_handler(),
+        cellular_inhibitor_.get());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -154,7 +156,6 @@ class CellularMetricsLoggerTest : public testing::Test {
                                      shill::kEidProperty,
                                      base::Value("test_eid"));
     base::RunLoop().RunUntilIdle();
-
   }
 
   void RemoveCellular() {

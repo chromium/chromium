@@ -17,6 +17,7 @@
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
 
 class PrefService;
@@ -27,7 +28,8 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
     : public HermesManagerClient::Observer,
       public HermesEuiccClient::Observer,
-      public HermesProfileClient::Observer {
+      public HermesProfileClient::Observer,
+      public NetworkStateHandler::StubCellularNetworksProvider {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -42,7 +44,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
       delete;
   ~CellularESimProfileHandler() override;
 
-  void Init(CellularInhibitor* cellular_inhibitor);
+  void Init(NetworkStateHandler* network_state_handler,
+            CellularInhibitor* cellular_inhibitor);
 
   // Callback which returns an InhibitLock. If the InhibitLock returned by the
   // function is null, this means that the operation failed.
@@ -79,6 +82,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
 
   virtual void OnHermesPropertiesUpdated() = 0;
   void NotifyESimProfileListUpdated();
+  virtual void InitInternal() {}
+
+  NetworkStateHandler* network_state_handler() {
+    return network_state_handler_;
+  }
 
  private:
   // HermesManagerClient::Observer:
@@ -104,6 +112,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
   void OnRequestInstalledProfilesResult(HermesResponseStatus status);
 
   CellularInhibitor* cellular_inhibitor_ = nullptr;
+
+  NetworkStateHandler* network_state_handler_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
 

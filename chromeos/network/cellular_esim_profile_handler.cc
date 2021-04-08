@@ -14,13 +14,19 @@ CellularESimProfileHandler::~CellularESimProfileHandler() {
   HermesManagerClient::Get()->RemoveObserver(this);
   HermesEuiccClient::Get()->RemoveObserver(this);
   HermesProfileClient::Get()->RemoveObserver(this);
+  network_state_handler_->set_stub_cellular_networks_provider(nullptr);
 }
 
-void CellularESimProfileHandler::Init(CellularInhibitor* cellular_inhibitor) {
+void CellularESimProfileHandler::Init(
+    NetworkStateHandler* network_state_handler,
+    CellularInhibitor* cellular_inhibitor) {
+  network_state_handler_ = network_state_handler;
+  network_state_handler_->set_stub_cellular_networks_provider(this);
   cellular_inhibitor_ = cellular_inhibitor;
   HermesManagerClient::Get()->AddObserver(this);
   HermesEuiccClient::Get()->AddObserver(this);
   HermesProfileClient::Get()->AddObserver(this);
+  InitInternal();
 }
 
 void CellularESimProfileHandler::RefreshProfileList(

@@ -76,7 +76,8 @@ void NetworkHandler::Init() {
   if (features::IsCellularActivationUiEnabled()) {
     cellular_inhibitor_->Init(network_state_handler_.get(),
                               network_device_handler_.get());
-    cellular_esim_profile_handler_->Init(cellular_inhibitor_.get());
+    cellular_esim_profile_handler_->Init(network_state_handler_.get(),
+                                         cellular_inhibitor_.get());
     cellular_esim_connection_handler_->Init(
         network_state_handler_.get(), cellular_inhibitor_.get(),
         cellular_esim_profile_handler_.get());
