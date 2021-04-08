@@ -49,6 +49,10 @@
 #include "components/os_crypt/os_crypt_switches.h"
 #endif
 
+#if defined(OS_WIN)
+#include "media/capture/capture_switches.h"
+#endif
+
 namespace content {
 
 UtilityMainThreadFactoryFunction g_utility_main_thread_factory = nullptr;
@@ -313,6 +317,13 @@ bool UtilityProcessHost::StartProcess() {
 
     for (const auto& extra_switch : extra_switches_)
       cmd_line->AppendSwitch(extra_switch);
+
+#if defined(OS_WIN)
+    if (base::FeatureList::IsEnabled(
+            media::kMediaFoundationD3D11VideoCapture)) {
+      cmd_line->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
+    }
+#endif
 
     std::unique_ptr<UtilitySandboxedProcessLauncherDelegate> delegate =
         std::make_unique<UtilitySandboxedProcessLauncherDelegate>(

@@ -39,10 +39,12 @@ static void TranslateDeviceInfos(
     translated_device_info.descriptor = device_info.descriptor;
     for (const auto& format : device_info.supported_formats) {
       media::VideoCaptureFormat translated_format;
-      translated_format.pixel_format =
-          (format.pixel_format == media::PIXEL_FORMAT_Y16)
-              ? media::PIXEL_FORMAT_Y16
-              : media::PIXEL_FORMAT_I420;
+      if (format.pixel_format == media::PIXEL_FORMAT_Y16 ||
+          format.pixel_format == media::PIXEL_FORMAT_NV12) {
+        translated_format.pixel_format = format.pixel_format;
+      } else {
+        translated_format.pixel_format = media::PIXEL_FORMAT_I420;
+      }
       translated_format.frame_size = format.frame_size;
       translated_format.frame_rate = format.frame_rate;
       if (base::Contains(translated_device_info.supported_formats,

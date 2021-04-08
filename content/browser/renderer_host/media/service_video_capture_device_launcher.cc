@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/media/service_launched_video_capture_device.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -19,6 +20,10 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/public/cpp/receiver_media_to_mojo_adapter.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
+
+#if defined(OS_WIN)
+#include "media/base/media_switches.h"
+#endif
 
 namespace content {
 
@@ -140,13 +145,19 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       media::VideoCaptureDevice::GetPowerLineFrequency(params);
 
   // GpuMemoryBuffer-based VideoCapture buffer works only on the Chrome OS
-  // VideoCaptureDevice implementation.
+  // and Windows VideoCaptureDevice implementations.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kVideoCaptureUseGpuMemoryBuffer)) {
     new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
   }
+#if defined(OS_WIN)
+  else if (base::FeatureList::IsEnabled(
+               media::kMediaFoundationD3D11VideoCapture)) {
+    new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
+  }
+#endif
 
   // Note that we set |force_reopen_with_new_settings| to true in order
   // to avoid the situation that a requests to open (or reopen) a device
