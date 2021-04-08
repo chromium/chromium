@@ -307,8 +307,8 @@ const char kInvalidBackground[] =
 const char kInvalidBackgroundAllowJsAccess[] =
     "Invalid value for 'background.allow_js_access'.";
 const char kInvalidBackgroundCombination[] =
-    "The background.page and background.scripts properties cannot be used at "
-    "the same time.";
+    "Only one of 'background.page', 'background.scripts', and "
+    "'background.service_worker' can be specified.";
 const char kInvalidBackgroundScript[] =
     "Invalid value for 'background.scripts[*]'.";
 const char kInvalidBackgroundScripts[] =

@@ -57,6 +57,24 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
                      errors::kInvalidBackgroundCombination);
 }
 
+TEST_F(ExtensionManifestBackgroundTest, BackgroundServiceWorkerScript) {
+  std::string error;
+  base::Value manifest = LoadManifest("background_script_sw.json", &error);
+  ASSERT_TRUE(manifest.is_dict());
+
+  scoped_refptr<Extension> extension(
+      LoadAndExpectSuccess(ManifestData(manifest.Clone(), "")));
+  ASSERT_TRUE(extension.get());
+  ASSERT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+  const std::string& service_worker_script =
+      BackgroundInfo::GetBackgroundServiceWorkerScript(extension.get());
+  EXPECT_EQ("service_worker.js", service_worker_script);
+
+  manifest.SetPath({"background", "page"}, base::Value("monkey.html"));
+  LoadAndExpectError(ManifestData(std::move(manifest), ""),
+                     errors::kInvalidBackgroundCombination);
+}
+
 TEST_F(ExtensionManifestBackgroundTest, BackgroundPage) {
   scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("background_page.json"));
