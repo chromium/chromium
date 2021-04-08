@@ -281,7 +281,7 @@ gfx::NativeViewAccessible WebView::GetNativeViewAccessible() {
 }
 
 void WebView::OnAXModeAdded(ui::AXMode mode) {
-  if (!web_contents())
+  if (!GetWidget() || !web_contents())
     return;
 
   // Normally, it is set during AttachWebContentsNativeView when the WebView is

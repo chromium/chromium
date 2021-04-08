@@ -196,6 +196,8 @@ class WebViewUnitTest : public views::test::WidgetTest {
         browser_context_.get(), /*site_instnace=*/nullptr);
   }
 
+  void SetAXMode(ui::AXMode mode) { web_view()->OnAXModeAdded(mode); }
+
  private:
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_enabler_;
   std::unique_ptr<content::TestBrowserContext> browser_context_;
@@ -431,6 +433,23 @@ TEST_F(WebViewUnitTest, ReparentingUpdatesParentAccessible) {
   // the web view's new parent view.
   EXPECT_EQ(added_web_view->parent()->GetNativeViewAccessible(),
             added_web_view->holder()->GetParentAccessible());
+}
+
+// This tests that we don't crash if WebView doesn't have a Widget or a
+// Webcontents. https://crbug.com/1191999
+TEST_F(WebViewUnitTest, ChangeAXMode) {
+  // Case 1: WebView has a Widget and no WebContents.
+  SetAXMode(ui::AXMode::kFirstModeFlag);
+
+  // Case 2: WebView has no Widget and a WebContents.
+  View* contents_view = top_level_widget()->GetContentsView();
+  contents_view->RemoveChildView(web_view());
+  const std::unique_ptr<content::WebContents> web_contents(CreateWebContents());
+  web_view()->SetWebContents(web_contents.get());
+
+  SetAXMode(ui::AXMode::kFirstModeFlag);
+
+  // No crash.
 }
 
 }  // namespace views

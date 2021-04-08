@@ -55,10 +55,14 @@ void NativeViewHost::Detach() {
 }
 
 void NativeViewHost::SetParentAccessible(gfx::NativeViewAccessible accessible) {
+  if (!native_wrapper_)
+    return;
   native_wrapper_->SetParentAccessible(accessible);
 }
 
 gfx::NativeViewAccessible NativeViewHost::GetParentAccessible() {
+  if (!native_wrapper_)
+    return nullptr;
   return native_wrapper_->GetParentAccessible();
 }
 
