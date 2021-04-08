@@ -327,8 +327,10 @@ TabSearchPageHandler::GetRecentlyClosedTab(
   sessions::SerializedNavigationEntry& entry =
       tab->navigations[tab->current_navigation_index];
   recently_closed_tab->tab_id = tab->id.id();
-  recently_closed_tab->title = base::UTF16ToUTF8(entry.title());
-  recently_closed_tab->url = entry.original_request_url().spec();
+  recently_closed_tab->url = entry.virtual_url().spec();
+  recently_closed_tab->title = entry.title().empty()
+                                   ? recently_closed_tab->url
+                                   : base::UTF16ToUTF8(entry.title());
   const base::Time last_active_time_ticks = entry.timestamp();
   recently_closed_tab->last_active_time_ticks = last_active_time_ticks;
   recently_closed_tab->last_active_elapsed_text =
