@@ -189,9 +189,12 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
 
 AudioFrame* MakeAudioFrame(ScriptState* script_state,
                            const wc_fuzzer::AudioFrameInit& proto) {
-  if (proto.length() > media::limits::kMaxPacketSizeInBytes ||
-      proto.channels().size() > media::limits::kMaxChannels)
+  if (proto.channels().size() > media::limits::kMaxChannels)
     return nullptr;
+
+  if (proto.length() > media::limits::kMaxSamplesPerPacket)
+    return nullptr;
+
   auto bus = AudioBus::Create(proto.channels().size(), proto.length());
   if (!bus)
     return nullptr;
