@@ -156,7 +156,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   // Inserting this task first ensures that |store_| is initialized before
   // it is used.
   task_queue_.AddTask(std::make_unique<WaitForStoreInitializeTask>(
-      store_,
+      store_, this,
       base::BindOnce(&FeedStream::InitializeComplete, base::Unretained(this))));
 }
 
@@ -216,6 +216,7 @@ void FeedStream::TriggerStreamLoad(const StreamType& stream_type) {
 
 void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   metadata_ = std::move(result.metadata);
+  metadata_populated_ = true;
   // TODO(crbug/1152592): Test that the index is populated once there's an API
   // to access the data.
   web_feed_subscription_coordinator_->Populate(result.web_feed_startup_data);
@@ -645,6 +646,14 @@ LoadStreamStatus FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
   if (!delegate_->IsEulaAccepted())
     return LoadStreamStatus::kLoadNotAllowedEulaNotAccepted;
 
+  // Skip this check if metadata_ is not initialized. ShouldAttemptLoad() will
+  // be called again from within the LoadStreamTask, and then the metadata
+  // will be initialized.
+  if (metadata_populated_ &&
+      delegate_->GetSyncSignedInGaia() != metadata_.gaia()) {
+    return LoadStreamStatus::kDataInStoreIsForAnotherUser;
+  }
+
   return LoadStreamStatus::kNoStatus;
 }
 
@@ -725,8 +734,7 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
     // The request is for the first page of the feed. Use client_instance_id
     // for signed in requests and session_id token (if any, and not expired)
     // for signed-out.
-    if (delegate_->IsSignedIn() &&
-        !ShouldForceSignedOutFeedQueryRequest(stream_type)) {
+    if (IsSignedIn() && !ShouldForceSignedOutFeedQueryRequest(stream_type)) {
       result.client_instance_id = GetClientInstanceId();
     } else if (!GetSessionId().empty() && feedstore::GetSessionIdExpiryTime(
                                               metadata_) > base::Time::Now()) {
@@ -828,6 +836,10 @@ void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
 // Performs work that is necessary for both background and foreground load
 // tasks.
 void FeedStream::LoadTaskComplete(const LoadStreamTask::Result& result) {
+  if (delegate_->GetSyncSignedInGaia() != metadata_.gaia()) {
+    ClearAll();
+    return;
+  }
   PopulateDebugStreamData(result, *profile_prefs_);
   if (result.fetched_content_has_notice_card.has_value())
     feed::prefs::SetLastFetchHadNoticeCard(
@@ -861,6 +873,7 @@ void FeedStream::MaybeReportNewSuggestionsAvailable(
 
 void FeedStream::ClearAll() {
   metrics_reporter_->OnClearAll(base::Time::Now() - GetLastFetchTime());
+  clear_all_in_progress_ = true;
   task_queue_.AddTask(std::make_unique<ClearAllTask>(this));
 }
 
@@ -869,9 +882,11 @@ void FeedStream::FinishClearAll() {
   feed::prefs::SetExperiments({}, *profile_prefs_);
   feed::prefs::ClearClientInstanceId(*profile_prefs_);
   upload_criteria_.Clear();
-  SetMetadata(feedstore::MakeMetadata());
+  SetMetadata(feedstore::MakeMetadata(delegate_->GetSyncSignedInGaia()));
 
   delegate_->ClearAll();
+
+  clear_all_in_progress_ = false;
 
   for (auto& item : streams_) {
     if (item.second.surface_updater->HasSurfaceAttached()) {
@@ -899,7 +914,7 @@ void FeedStream::UploadAction(
     feedwire::FeedAction action,
     bool upload_now,
     base::OnceCallback<void(UploadActionsTask::Result)> callback) {
-  if (!delegate_->IsSignedIn()) {
+  if (!IsSignedIn()) {
     DLOG(WARNING)
         << "Called UploadActions while user is signed-out, dropping upload";
     return;

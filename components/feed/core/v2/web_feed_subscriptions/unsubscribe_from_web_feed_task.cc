@@ -27,6 +27,11 @@ UnsubscribeFromWebFeedTask::UnsubscribeFromWebFeedTask(
 UnsubscribeFromWebFeedTask::~UnsubscribeFromWebFeedTask() = default;
 
 void UnsubscribeFromWebFeedTask::Run() {
+  if (stream_->ClearAllInProgress()) {
+    Done(WebFeedSubscriptionRequestStatus::
+             kAbortWebFeedSubscriptionPendingClearAll);
+    return;
+  }
   WebFeedSubscriptionCoordinator::SubscriptionInfo info =
       stream_->subscriptions().FindSubscriptionInfoById(web_feed_name_);
   if (info.status != WebFeedSubscriptionStatus::kSubscribed) {
@@ -42,8 +47,9 @@ void UnsubscribeFromWebFeedTask::Run() {
   feedwire::webfeed::UnfollowWebFeedRequest request;
   request.set_name(web_feed_name_);
   stream_->GetNetwork()->SendApiRequest<UnfollowWebFeedDiscoverApi>(
-      request, base::BindOnce(&UnsubscribeFromWebFeedTask::RequestComplete,
-                              base::Unretained(this)));
+      request, stream_->GetSyncSignedInGaia(),
+      base::BindOnce(&UnsubscribeFromWebFeedTask::RequestComplete,
+                     base::Unretained(this)));
 }
 
 void UnsubscribeFromWebFeedTask::RequestComplete(

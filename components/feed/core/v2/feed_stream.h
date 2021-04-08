@@ -72,7 +72,7 @@ class FeedStream : public FeedApi,
     virtual DisplayMetrics GetDisplayMetrics() = 0;
     virtual std::string GetLanguageTag() = 0;
     virtual void ClearAll() = 0;
-    virtual bool IsSignedIn() = 0;
+    virtual std::string GetSyncSignedInGaia() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
   };
@@ -201,7 +201,10 @@ class FeedStream : public FeedApi,
   // Returns the time of the last content fetch.
   base::Time GetLastFetchTime();
 
-  bool IsSignedIn() const { return delegate_->IsSignedIn(); }
+  bool IsSignedIn() const { return !delegate_->GetSyncSignedInGaia().empty(); }
+  std::string GetSyncSignedInGaia() const {
+    return delegate_->GetSyncSignedInGaia();
+  }
 
   // Determines if we should attempt loading the stream or refreshing at all.
   // Returns |LoadStreamStatus::kNoStatus| if loading may be attempted.
@@ -266,6 +269,8 @@ class FeedStream : public FeedApi,
   void SetIdleCallbackForTesting(base::RepeatingClosure idle_callback);
 
   bool CanUploadActions() const;
+
+  bool ClearAllInProgress() const { return clear_all_in_progress_; }
 
   base::WeakPtr<FeedStream> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -374,6 +379,7 @@ class FeedStream : public FeedApi,
 
   // State loaded at startup:
   feedstore::Metadata metadata_;
+  bool metadata_populated_ = false;
 
   base::ObserverList<UnreadContentObserver> unread_content_observers_;
 
@@ -386,6 +392,8 @@ class FeedStream : public FeedApi,
 
   feed_stream::UploadCriteria upload_criteria_;
   NoticeCardTracker notice_card_tracker_;
+
+  bool clear_all_in_progress_ = false;
 
   base::WeakPtrFactory<FeedStream> weak_ptr_factory_{this};
 };

@@ -10,8 +10,9 @@ namespace feed {
 
 WaitForStoreInitializeTask::WaitForStoreInitializeTask(
     FeedStore* store,
+    FeedStream* stream,
     base::OnceCallback<void(Result)> callback)
-    : store_(store), callback_(std::move(callback)) {}
+    : store_(store), stream_(stream), callback_(std::move(callback)) {}
 WaitForStoreInitializeTask::~WaitForStoreInitializeTask() = default;
 
 void WaitForStoreInitializeTask::Run() {
@@ -30,9 +31,26 @@ void WaitForStoreInitializeTask::OnStoreInitialized() {
 
 void WaitForStoreInitializeTask::OnMetadataLoaded(
     std::unique_ptr<feedstore::Metadata> metadata) {
+  if (metadata && metadata->gaia() != stream_->GetSyncSignedInGaia()) {
+    store_->ClearAll(base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
+                                    base::Unretained(this)));
+    return;
+  }
+  MaybeUpgradeStreamSchema(std::move(metadata));
+}
+
+void WaitForStoreInitializeTask::ClearAllDone(bool clear_ok) {
+  DLOG_IF(ERROR, !clear_ok) << "FeedStore::ClearAll failed";
+  // ClearAll just wiped metadata, so send nullptr.
+  MaybeUpgradeStreamSchema(nullptr);
+}
+
+void WaitForStoreInitializeTask::MaybeUpgradeStreamSchema(
+    std::unique_ptr<feedstore::Metadata> metadata) {
   if (!metadata || metadata->stream_schema_version() != 1) {
     if (!metadata) {
       metadata = std::make_unique<feedstore::Metadata>();
+      metadata->set_gaia(stream_->GetSyncSignedInGaia());
     }
     store_->UpgradeFromStreamSchemaV0(
         std::move(*metadata),

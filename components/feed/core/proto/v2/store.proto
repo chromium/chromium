@@ -94,6 +94,8 @@ message Metadata {
   //    records.
   int32 stream_schema_version = 4;
   repeated StreamMetadata stream_metadata = 5;
+  // The GAIA ID associated with the store.
+  string gaia = 6;
 }
 
 // A set of StreamStructures that should be applied to a stream.

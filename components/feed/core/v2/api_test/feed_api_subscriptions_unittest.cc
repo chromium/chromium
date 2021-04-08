@@ -668,7 +668,7 @@ TEST_F(FeedApiSubscriptionsTest, RecommendedWebFeedsAreClearedOnSignOut) {
   }
 
   // Sign out, and verify recommended web feeds are cleared.
-  is_signed_in_ = false;
+  signed_in_gaia_ = "";
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
@@ -688,12 +688,12 @@ TEST_F(FeedApiSubscriptionsTest,
   ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
 
   // Sign out, this clears recommended Web Feeds.
-  is_signed_in_ = false;
+  signed_in_gaia_ = "";
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
 
   // Sign in, and verify web feeds are fetched and stored.
-  is_signed_in_ = true;
+  signed_in_gaia_ = "examplegaia";
   stream_->OnSignedIn();
   WaitForIdleTaskQueue();
 
@@ -806,7 +806,7 @@ TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreClearedOnSignOut) {
   }
 
   // Sign out, and verify recommended web feeds are cleared.
-  is_signed_in_ = false;
+  signed_in_gaia_ = "";
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
@@ -826,14 +826,14 @@ TEST_F(FeedApiSubscriptionsTest,
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
 
   // Sign out, and verify no web feeds are fetched.
-  is_signed_in_ = false;
+  signed_in_gaia_ = "";
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
 
   // Sign in, and verify web feeds are fetched and stored.
-  is_signed_in_ = true;
+  signed_in_gaia_ = "examplegaia";
   stream_->OnSignedIn();
   WaitForIdleTaskQueue();
 

@@ -112,9 +112,10 @@ base::Time GetStreamViewTime(const Metadata& metadata,
   return result;
 }
 
-feedstore::Metadata MakeMetadata() {
+feedstore::Metadata MakeMetadata(const std::string& gaia) {
   feedstore::Metadata md;
   md.set_stream_schema_version(feed::FeedStore::kCurrentStreamSchemaVersion);
+  md.set_gaia(gaia);
   return md;
 }
 

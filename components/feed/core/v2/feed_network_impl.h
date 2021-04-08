@@ -52,12 +52,14 @@ class FeedNetworkImpl : public FeedNetwork {
       NetworkRequestType request_type,
       const feedwire::Request& request,
       bool force_signed_out_request,
+      const std::string& gaia,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
 
   void SendDiscoverApiRequest(
       base::StringPiece api_path,
       base::StringPiece method,
       std::string request_bytes,
+      const std::string& gaia,
       base::OnceCallback<void(RawResponse)> callback) override;
 
   // Cancels all pending requests immediately. This could be used, for example,
@@ -74,6 +76,7 @@ class FeedNetworkImpl : public FeedNetwork {
             std::string request_body,
             bool force_signed_out_request,
             bool allow_bless_auth,
+            const std::string& gaia,
             base::OnceCallback<void(FeedNetworkImpl::RawResponse)> callback);
 
   void SendComplete(NetworkFetch* fetch,

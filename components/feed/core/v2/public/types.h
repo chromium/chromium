@@ -145,6 +145,7 @@ enum class WebFeedSubscriptionRequestStatus {
   kFailedOffline = 2,
   kFailedTooManySubscriptions = 3,
   kFailedUnknownError = 4,
+  kAbortWebFeedSubscriptionPendingClearAll = 5,
 };
 std::ostream& operator<<(std::ostream& out,
                          WebFeedSubscriptionRequestStatus value);

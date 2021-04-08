@@ -152,12 +152,14 @@ class TestFeedNetwork : public FeedNetwork {
       NetworkRequestType request_type,
       const feedwire::Request& request,
       bool force_signed_out_request,
+      const std::string& gaia,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
 
   void SendDiscoverApiRequest(
       base::StringPiece api_path,
       base::StringPiece method,
       std::string request_bytes,
+      const std::string& gaia,
       base::OnceCallback<void(RawResponse)> callback) override;
 
   void CancelRequests() override;
@@ -392,7 +394,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   DisplayMetrics GetDisplayMetrics() override;
   std::string GetLanguageTag() override;
   void ClearAll() override {}
-  bool IsSignedIn() override;
+  std::string GetSyncSignedInGaia() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
 
@@ -439,7 +441,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   std::unique_ptr<FeedStream> stream_;
   bool is_eula_accepted_ = true;
   bool is_offline_ = false;
-  bool is_signed_in_ = true;
+  std::string signed_in_gaia_ = "examplegaia";
   base::test::ScopedFeatureList scoped_feature_list_;
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;

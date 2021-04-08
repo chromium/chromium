@@ -27,14 +27,19 @@ FetchSubscribedWebFeedsTask::FetchSubscribedWebFeedsTask(
 FetchSubscribedWebFeedsTask::~FetchSubscribedWebFeedsTask() = default;
 
 void FetchSubscribedWebFeedsTask::Run() {
+  if (stream_->ClearAllInProgress()) {
+    Done(WebFeedRefreshStatus::kAbortFetchWebFeedPendingClearAll);
+    return;
+  }
   if (!stream_->GetRequestThrottler()->RequestQuota(
           ListWebFeedsDiscoverApi::kRequestType)) {
     Done(WebFeedRefreshStatus::kNetworkRequestThrottled);
     return;
   }
   stream_->GetNetwork()->SendApiRequest<ListWebFeedsDiscoverApi>(
-      {}, base::BindOnce(&FetchSubscribedWebFeedsTask::RequestComplete,
-                         base::Unretained(this)));
+      {}, stream_->GetSyncSignedInGaia(),
+      base::BindOnce(&FetchSubscribedWebFeedsTask::RequestComplete,
+                     base::Unretained(this)));
 }
 
 void FetchSubscribedWebFeedsTask::RequestComplete(

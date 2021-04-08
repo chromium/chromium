@@ -263,6 +263,7 @@ void TestFeedNetwork::SendQueryRequest(
     NetworkRequestType request_type,
     const feedwire::Request& request,
     bool force_signed_out_request,
+    const std::string& gaia,
     base::OnceCallback<void(QueryRequestResult)> callback) {
   forced_signed_out_request = force_signed_out_request;
   ++send_query_call_count;
@@ -317,6 +318,7 @@ void TestFeedNetwork::SendDiscoverApiRequest(
     base::StringPiece api_path,
     base::StringPiece method,
     std::string request_bytes,
+    const std::string& gaia,
     base::OnceCallback<void(RawResponse)> callback) {
   api_requests_sent_[api_path.as_string()] = request_bytes;
   ++api_request_count_[api_path.as_string()];
@@ -637,8 +639,8 @@ bool FeedApiTest::IsEulaAccepted() {
 bool FeedApiTest::IsOffline() {
   return is_offline_;
 }
-bool FeedApiTest::IsSignedIn() {
-  return is_signed_in_;
+std::string FeedApiTest::GetSyncSignedInGaia() {
+  return signed_in_gaia_;
 }
 DisplayMetrics FeedApiTest::GetDisplayMetrics() {
   DisplayMetrics result;

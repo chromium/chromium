@@ -57,8 +57,9 @@ enum class LoadStreamStatus {
   kNetworkFetchFailed = 18,
   kCannotLoadMoreNoNextPageToken = 19,
   kDataInStoreIsExpired = 22,
-
-  kMaxValue = kDataInStoreIsExpired,
+  kDataInStoreIsForAnotherUser = 23,
+  kAbortWithPendingClearAll = 24,
+  kMaxValue = kAbortWithPendingClearAll,
 };
 
 std::ostream& operator<<(std::ostream& out, LoadStreamStatus value);
@@ -74,7 +75,9 @@ enum class UploadActionsStatus {
   kFinishedWithoutUpdatingConsistencyToken = 5,
   kAbortUploadForSignedOutUser = 6,
   kAbortUploadBecauseDisabled = 7,
-  kMaxValue = kAbortUploadBecauseDisabled,
+  kAbortUploadForWrongUser = 8,
+  kAbortUploadActionsWithPendingClearAll = 9,
+  kMaxValue = kAbortUploadActionsWithPendingClearAll,
 };
 
 // Keep this in sync with FeedUploadActionsBatchStatus in enums.xml.
@@ -98,6 +101,7 @@ enum class WebFeedRefreshStatus {
   kSuccess = 1,
   kNetworkFailure = 2,
   kNetworkRequestThrottled = 3,
+  kAbortFetchWebFeedPendingClearAll = 4,
 };
 std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value);
 

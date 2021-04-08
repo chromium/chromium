@@ -117,6 +117,8 @@ class UploadActionsTask : public offline_pages::Task {
   size_t stale_count_ = 0;
   base::Optional<NetworkResponseInfo> last_network_response_info_;
 
+  std::string gaia_;
+
   base::WeakPtrFactory<UploadActionsTask> weak_ptr_factory_{this};
 };
 

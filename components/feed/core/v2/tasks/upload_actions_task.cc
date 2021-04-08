@@ -118,6 +118,7 @@ UploadActionsTask::UploadActionsTask(
       (base::Time::Now() - base::Time::UnixEpoch()).InSeconds());
   client_data->set_action_surface(
       feedwire::FeedAction::ClientData::ANDROID_CHROME_NEW_TAB);
+  gaia_ = stream_->GetSyncSignedInGaia();
 }
 
 UploadActionsTask::UploadActionsTask(
@@ -126,18 +127,27 @@ UploadActionsTask::UploadActionsTask(
     base::OnceCallback<void(UploadActionsTask::Result)> callback)
     : stream_(stream),
       pending_actions_(std::move(pending_actions)),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)) {
+  gaia_ = stream_->GetSyncSignedInGaia();
+}
 
 UploadActionsTask::UploadActionsTask(
     FeedStream* stream,
     base::OnceCallback<void(UploadActionsTask::Result)> callback)
     : stream_(stream),
       read_pending_actions_(true),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)) {
+  gaia_ = stream_->GetSyncSignedInGaia();
+}
 
 UploadActionsTask::~UploadActionsTask() = default;
 
 void UploadActionsTask::Run() {
+  if (stream_->ClearAllInProgress()) {
+    Done(UploadActionsStatus::kAbortUploadActionsWithPendingClearAll);
+    return;
+  }
+
   consistency_token_ = stream_->GetMetadata().consistency_token();
 
   // From constructor 1: If there is an action to store, store it and maybe try
@@ -212,6 +222,11 @@ void UploadActionsTask::UploadPendingActions() {
     Done(UploadActionsStatus::kAbortUploadForSignedOutUser);
     return;
   }
+  // Can't upload actions for another user, so abort.
+  if (stream_->GetSyncSignedInGaia() != gaia_) {
+    Done(UploadActionsStatus::kAbortUploadForWrongUser);
+    return;
+  }
   if (!stream_->CanUploadActions()) {
     Done(UploadActionsStatus::kAbortUploadBecauseDisabled);
     return;
@@ -261,7 +276,7 @@ void UploadActionsTask::OnUpdateActionsFinished(
   DCHECK(network);
 
   network->SendApiRequest<UploadActionsDiscoverApi>(
-      *request,
+      *request, gaia_,
       base::BindOnce(&UploadActionsTask::OnUploadFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(batch)));
 }

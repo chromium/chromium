@@ -51,6 +51,13 @@ GetPrefetchSuggestionsTask::GetPrefetchSuggestionsTask(
 GetPrefetchSuggestionsTask::~GetPrefetchSuggestionsTask() = default;
 
 void GetPrefetchSuggestionsTask::Run() {
+  if (stream_->ClearAllInProgress()) {
+    // Abort and return an empty list.
+    std::move(result_callback_).Run({});
+    TaskComplete();
+    return;
+  }
+
   if (stream_->GetModel(kForYouStream)) {
     PullSuggestionsFromModel(*stream_->GetModel(kForYouStream));
     return;

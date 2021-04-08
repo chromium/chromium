@@ -50,6 +50,9 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kFailedTooManySubscriptions";
     case WebFeedSubscriptionRequestStatus::kFailedUnknownError:
       return out << "kFailedUnknownError";
+    case WebFeedSubscriptionRequestStatus::
+        kAbortWebFeedSubscriptionPendingClearAll:
+      return out << "kAbortWebFeedSubscriptionPendingClearAll";
   }
 }
 

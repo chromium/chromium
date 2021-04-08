@@ -61,6 +61,10 @@ LoadStreamTask::LoadStreamTask(LoadType load_type,
 LoadStreamTask::~LoadStreamTask() = default;
 
 void LoadStreamTask::Run() {
+  if (stream_->ClearAllInProgress()) {
+    Done(LoadStreamStatus::kAbortWithPendingClearAll);
+    return;
+  }
   latencies_->StepComplete(LoadLatencyTimes::kTaskExecution);
   // Phase 1: Try to load from persistent storage.
 
@@ -143,7 +147,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
           GetRequestReason(load_type_),
           stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/false),
           stream_->GetMetadata().consistency_token()),
-      force_signed_out_request,
+      force_signed_out_request, stream_->GetSyncSignedInGaia(),
       base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
 }
 

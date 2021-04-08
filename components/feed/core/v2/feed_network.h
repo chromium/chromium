@@ -116,6 +116,7 @@ class FeedNetwork {
       NetworkRequestType request_type,
       const feedwire::Request& request,
       bool force_signed_out_request,
+      const std::string& gaia,
       base::OnceCallback<void(QueryRequestResult)> callback) = 0;
 
   // Send a Discover API request. Usage:
@@ -123,11 +124,12 @@ class FeedNetwork {
   template <typename API>
   void SendApiRequest(
       const typename API::Request& request,
+      const std::string& gaia,
       base::OnceCallback<void(ApiResult<typename API::Response>)> callback) {
     std::string binary_proto;
     request.SerializeToString(&binary_proto);
     SendDiscoverApiRequest(
-        API::RequestPath(), API::Method(), std::move(binary_proto),
+        API::RequestPath(), API::Method(), std::move(binary_proto), gaia,
         base::BindOnce(&ParseAndForwardApiResponse<API>, std::move(callback)));
   }
 
@@ -142,6 +144,7 @@ class FeedNetwork {
       base::StringPiece api_path,
       base::StringPiece method,
       std::string request_bytes,
+      const std::string& gaia,
       base::OnceCallback<void(RawResponse)> callback) = 0;
 
   template <typename API>

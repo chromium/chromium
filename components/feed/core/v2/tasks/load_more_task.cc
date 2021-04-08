@@ -40,6 +40,10 @@ LoadMoreTask::LoadMoreTask(const StreamType& stream_type,
 LoadMoreTask::~LoadMoreTask() = default;
 
 void LoadMoreTask::Run() {
+  if (stream_->ClearAllInProgress()) {
+    Done(LoadStreamStatus::kAbortWithPendingClearAll);
+    return;
+  }
   // Check prerequisites.
   // TODO(crbug/1152592): Parameterize stream loading by stream type.
   StreamModel* model = stream_->GetModel(stream_type_);
@@ -84,7 +88,7 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
           stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/true),
           stream_->GetMetadata().consistency_token(),
           stream_->GetModel(stream_type_)->GetNextPageToken()),
-      force_signed_out_request,
+      force_signed_out_request, stream_->GetSyncSignedInGaia(),
       base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr()));
 }
 

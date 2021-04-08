@@ -31,7 +31,7 @@ base::Time GetLastAddedTime(const feedstore::StreamData& data);
 base::Time GetSessionIdExpiryTime(const feedstore::Metadata& metadata);
 base::Time GetStreamViewTime(const Metadata& metadata,
                              const feed::StreamType& stream_type);
-feedstore::Metadata MakeMetadata();
+feedstore::Metadata MakeMetadata(const std::string& gaia);
 
 // Mutations of Metadata. Metadata will need stored again after being changed,
 // call `FeedStream::SetMetadata()`.

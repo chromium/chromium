@@ -61,6 +61,10 @@ std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
       return out << "kLoadedStaleDataFromStoreDueToNetworkFailure";
     case LoadStreamStatus::kDataInStoreIsExpired:
       return out << "kDataInStoreIsExpired";
+    case LoadStreamStatus::kDataInStoreIsForAnotherUser:
+      return out << "kDataInStoreIsForAnotherUser";
+    case LoadStreamStatus::kAbortWithPendingClearAll:
+      return out << "kAbortWithPendingClearAll";
   }
 #else
   return out << (static_cast<int>(value));
@@ -86,6 +90,10 @@ std::ostream& operator<<(std::ostream& out, UploadActionsStatus value) {
       return out << "kAbortUploadForSignedOutUser";
     case UploadActionsStatus::kAbortUploadBecauseDisabled:
       return out << "kAbortUploadBecauseDisabled";
+    case UploadActionsStatus::kAbortUploadForWrongUser:
+      return out << "kAbortUploadForWrongUser";
+    case UploadActionsStatus::kAbortUploadActionsWithPendingClearAll:
+      return out << "kAbortUploadActionsWithPendingClearAll";
   }
 #else
   return out << (static_cast<int>(value));
@@ -125,6 +133,8 @@ std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value) {
       return out << "kNetworkFailure";
     case WebFeedRefreshStatus::kNetworkRequestThrottled:
       return out << "kNetworkRequestThrottled";
+    case WebFeedRefreshStatus::kAbortFetchWebFeedPendingClearAll:
+      return out << "kAbortFetchWebFeedPendingClearAll";
   }
 }
 

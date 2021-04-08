@@ -134,8 +134,9 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   void PrefetchImage(const GURL& url) override {
     service_delegate_->PrefetchImage(url);
   }
-  bool IsSignedIn() override {
-    return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  std::string GetSyncSignedInGaia() override {
+    return identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        .gaia;
   }
   void RegisterExperiments(const Experiments& experiments) override {
     service_delegate_->RegisterExperiments(experiments);

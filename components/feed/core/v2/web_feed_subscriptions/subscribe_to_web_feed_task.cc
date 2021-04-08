@@ -25,6 +25,11 @@ SubscribeToWebFeedTask::SubscribeToWebFeedTask(
 SubscribeToWebFeedTask::~SubscribeToWebFeedTask() = default;
 
 void SubscribeToWebFeedTask::Run() {
+  if (stream_->ClearAllInProgress()) {
+    Done(WebFeedSubscriptionRequestStatus::
+             kAbortWebFeedSubscriptionPendingClearAll);
+    return;
+  }
   if (!request_.web_feed_id.empty()) {
     DCHECK(request_.page_info.url().is_empty());
     WebFeedSubscriptionCoordinator::SubscriptionInfo info =
@@ -41,8 +46,9 @@ void SubscribeToWebFeedTask::Run() {
     feedwire::webfeed::FollowWebFeedRequest request;
     request.set_name(request_.web_feed_id);
     stream_->GetNetwork()->SendApiRequest<FollowWebFeedDiscoverApi>(
-        request, base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
-                                base::Unretained(this)));
+        request, stream_->GetSyncSignedInGaia(),
+        base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
+                       base::Unretained(this)));
   } else {
     DCHECK(request_.page_info.url().is_valid());
     WebFeedSubscriptionCoordinator::SubscriptionInfo info =
@@ -59,8 +65,9 @@ void SubscribeToWebFeedTask::Run() {
     feedwire::webfeed::FollowWebFeedRequest request;
     request.set_web_page_uri(request_.page_info.url().spec());
     stream_->GetNetwork()->SendApiRequest<FollowWebFeedDiscoverApi>(
-        request, base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
-                                base::Unretained(this)));
+        request, stream_->GetSyncSignedInGaia(),
+        base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
+                       base::Unretained(this)));
   }
 }
 

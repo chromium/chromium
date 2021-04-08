@@ -25,14 +25,19 @@ FetchRecommendedWebFeedsTask::FetchRecommendedWebFeedsTask(
 FetchRecommendedWebFeedsTask::~FetchRecommendedWebFeedsTask() = default;
 
 void FetchRecommendedWebFeedsTask::Run() {
+  if (stream_->ClearAllInProgress()) {
+    Done(WebFeedRefreshStatus::kAbortFetchWebFeedPendingClearAll);
+    return;
+  }
   if (!stream_->GetRequestThrottler()->RequestQuota(
           ListRecommendedWebFeedDiscoverApi::kRequestType)) {
     Done(WebFeedRefreshStatus::kNetworkRequestThrottled);
     return;
   }
   stream_->GetNetwork()->SendApiRequest<ListRecommendedWebFeedDiscoverApi>(
-      {}, base::BindOnce(&FetchRecommendedWebFeedsTask::RequestComplete,
-                         base::Unretained(this)));
+      {}, stream_->GetSyncSignedInGaia(),
+      base::BindOnce(&FetchRecommendedWebFeedsTask::RequestComplete,
+                     base::Unretained(this)));
 }
 
 void FetchRecommendedWebFeedsTask::RequestComplete(

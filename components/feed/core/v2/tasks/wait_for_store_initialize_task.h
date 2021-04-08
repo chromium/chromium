@@ -11,6 +11,7 @@
 
 namespace feed {
 class FeedStore;
+class FeedStream;
 
 // Initializes |store|. This task is run first so that other tasks can assume
 // storage is initialized.
@@ -23,6 +24,7 @@ class WaitForStoreInitializeTask : public offline_pages::Task {
 
   explicit WaitForStoreInitializeTask(
       FeedStore* store,
+      FeedStream* stream,
       base::OnceCallback<void(Result)> callback);
   ~WaitForStoreInitializeTask() override;
   WaitForStoreInitializeTask(const WaitForStoreInitializeTask&) = delete;
@@ -35,11 +37,14 @@ class WaitForStoreInitializeTask : public offline_pages::Task {
   void OnStoreInitialized();
   void OnMetadataLoaded(std::unique_ptr<feedstore::Metadata> metadata);
 
+  void ClearAllDone(bool clear_ok);
+  void MaybeUpgradeStreamSchema(std::unique_ptr<feedstore::Metadata> metadata);
   void MetadataDone(feedstore::Metadata metadata);
   void WebFeedStartupDataDone(FeedStore::WebFeedStartupData data);
   void Done();
 
   FeedStore* store_;
+  FeedStream* stream_;
   base::OnceCallback<void(Result)> callback_;
   Result result_;
   int done_count_ = 0;

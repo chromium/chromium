@@ -40,6 +40,11 @@ PrefetchImagesTask::PrefetchImagesTask(FeedStream* stream) : stream_(stream) {
 PrefetchImagesTask::~PrefetchImagesTask() = default;
 
 void PrefetchImagesTask::Run() {
+  if (stream_->ClearAllInProgress()) {
+    // Abort if ClearAll is in progress.
+    TaskComplete();
+    return;
+  }
   if (stream_->GetModel(kForYouStream)) {
     PrefetchImagesFromModel(*stream_->GetModel(kForYouStream));
     return;

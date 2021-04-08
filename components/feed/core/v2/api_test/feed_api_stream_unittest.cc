@@ -1138,19 +1138,21 @@ TEST_F(FeedApiTest, ClearAllWithNoSurfacesAttachedDoesNotReload) {
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
 }
 
-TEST_F(FeedApiTest, ClearAllWhileLoadingMore) {
+TEST_F(FeedApiTest, ClearAllWhileLoadingMoreDoesNotLoadMore) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  stream_->LoadMore(surface, base::DoNothing());
+  CallbackReceiver<bool> cr;
+  stream_->LoadMore(surface, cr.Bind());
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   stream_->OnCacheDataCleared();  // triggers ClearAll().
   WaitForIdleTaskQueue();
 
+  EXPECT_EQ(false, cr.GetResult());
   EXPECT_EQ(
-      "loading -> 2 slices -> 2 slices +spinner -> 4 slices -> loading -> 2 "
+      "loading -> 2 slices -> 2 slices +spinner -> 2 slices -> loading -> 2 "
       "slices",
       surface.DescribeUpdates());
 }
@@ -1192,7 +1194,8 @@ TEST_F(FeedApiTest, StorePendingAction) {
 }
 
 TEST_F(FeedApiTest, UploadActionWhileSignedOutIsNoOp) {
-  is_signed_in_ = false;
+  signed_in_gaia_ = "";
+  ASSERT_EQ(stream_->GetSyncSignedInGaia(), "");
   stream_->UploadAction(MakeFeedAction(42ul), false, base::DoNothing());
   WaitForIdleTaskQueue();
 
@@ -1201,13 +1204,42 @@ TEST_F(FeedApiTest, UploadActionWhileSignedOutIsNoOp) {
 
 TEST_F(FeedApiTest, SignOutWhileUploadActionDoesNotUpload) {
   stream_->UploadAction(MakeFeedAction(42ul), true, base::DoNothing());
-  is_signed_in_ = false;
+  signed_in_gaia_ = "";
 
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(UploadActionsStatus::kAbortUploadForSignedOutUser,
             metrics_reporter_->upload_action_status);
   EXPECT_EQ(0, network_.GetActionRequestCount());
+}
+
+TEST_F(FeedApiTest, ClearAllWhileUploadActionDoesNotUpload) {
+  CallbackReceiver<UploadActionsTask::Result> cr;
+  stream_->UploadAction(MakeFeedAction(42ul), true, cr.Bind());
+  stream_->OnCacheDataCleared();  // triggers ClearAll().
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(UploadActionsStatus::kAbortUploadActionsWithPendingClearAll,
+            metrics_reporter_->upload_action_status);
+  EXPECT_EQ(0, network_.GetActionRequestCount());
+  ASSERT_TRUE(cr.GetResult());
+  EXPECT_EQ(0ul, cr.GetResult()->upload_attempt_count);
+}
+
+TEST_F(FeedApiTest, WrongUserUploadActionDoesNotUpload) {
+  CallbackReceiver<UploadActionsTask::Result> cr;
+  stream_->UploadAction(MakeFeedAction(42ul), true, cr.Bind());
+  // Sign in as another user.
+  signed_in_gaia_ = "someothergaia";
+
+  WaitForIdleTaskQueue();
+
+  // Action should not upload.
+  EXPECT_EQ(UploadActionsStatus::kAbortUploadForWrongUser,
+            metrics_reporter_->upload_action_status);
+  EXPECT_EQ(0, network_.GetActionRequestCount());
+  ASSERT_TRUE(cr.GetResult());
+  EXPECT_EQ(0ul, cr.GetResult()->upload_attempt_count);
 }
 
 TEST_F(FeedApiTest, StorePendingActionAndUploadNow) {
@@ -1484,6 +1516,7 @@ TEST_F(FeedApiTest, MetadataLoadedWhenDatabaseInitialized) {
     feedstore::Metadata initial_metadata;
     feedstore::SetSessionId(initial_metadata, "session-id", kExpiry);
     initial_metadata.set_consistency_token("token");
+    initial_metadata.set_gaia(GetSyncSignedInGaia());
     store_->WriteMetadata(initial_metadata, base::DoNothing());
   }
 
@@ -1497,6 +1530,22 @@ TEST_F(FeedApiTest, MetadataLoadedWhenDatabaseInitialized) {
   // Verify the schema has been updated to the current version.
   EXPECT_EQ((int)FeedStore::kCurrentStreamSchemaVersion,
             stream_->GetMetadata().stream_schema_version());
+}
+
+TEST_F(FeedApiTest, ClearAllWhenDatabaseInitializedForWrongUser) {
+  {
+    // Write some metadata so it can be loaded when FeedStream starts up.
+    feedstore::Metadata initial_metadata;
+    initial_metadata.set_consistency_token("token");
+    initial_metadata.set_gaia("someotherusergaia");
+    store_->WriteMetadata(initial_metadata, base::DoNothing());
+  }
+
+  // Creating a stream should init database.
+  CreateStream();
+
+  EXPECT_EQ("{\n}\n\n", DumpStoreState());
+  EXPECT_EQ("", stream_->GetMetadata().consistency_token());
 }
 
 TEST_F(FeedApiTest, ModelUnloadsAfterTimeout) {
@@ -1625,7 +1674,7 @@ TEST_F(FeedApiTest, SignedOutSessionIdConsistency) {
   const std::string kSessionToken1("session-token-1");
   const std::string kSessionToken2("session-token-2");
 
-  is_signed_in_ = false;
+  signed_in_gaia_ = "";
 
   StreamModelUpdateRequestGenerator model_generator;
   model_generator.signed_in = false;
@@ -1724,7 +1773,7 @@ TEST_F(FeedApiTest, SignedOutSessionIdConsistency) {
 }
 
 TEST_F(FeedApiTest, ClearAllResetsSessionId) {
-  is_signed_in_ = false;
+  signed_in_gaia_ = "";
 
   // Initialize a session id.
   feedstore::Metadata metadata = stream_->GetMetadata();
@@ -1745,7 +1794,7 @@ TEST_F(FeedApiTest, SignedOutSessionIdExpiry) {
   const std::string kSessionToken1("session-token-1");
   const std::string kSessionToken2("session-token-2");
 
-  is_signed_in_ = false;
+  signed_in_gaia_ = "";
 
   StreamModelUpdateRequestGenerator model_generator;
   model_generator.signed_in = false;
@@ -1812,7 +1861,7 @@ TEST_F(FeedApiTest, SessionIdPersistsAcrossStreamLoads) {
 
   StreamModelUpdateRequestGenerator model_generator;
   model_generator.signed_in = false;
-  is_signed_in_ = false;
+  signed_in_gaia_ = "";
 
   // (1) Do an initial load of the store
   //     - this should trigger a network request
