@@ -39,7 +39,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
@@ -73,6 +72,7 @@ class WebAssociatedURLLoader;
 class WebAutofillClient;
 class WebContentCaptureClient;
 class WebContentSettingsClient;
+class WebDocument;
 class WebLocalFrameClient;
 class WebFrameWidget;
 class WebHistoryItem;
@@ -324,16 +324,14 @@ class WebLocalFrame : public WebFrame {
   // worldID must be > 0 (as 0 represents the main world).
   // worldID must be < kEmbedderWorldIdLimit, high number used internally.
   virtual void ExecuteScriptInIsolatedWorld(int32_t world_id,
-                                            const WebScriptSource&,
-                                            BackForwardCacheAware) = 0;
+                                            const WebScriptSource&) = 0;
 
   // worldID must be > 0 (as 0 represents the main world).
   // worldID must be < kEmbedderWorldIdLimit, high number used internally.
   // DEPRECATED: Use WebLocalFrame::requestExecuteScriptInIsolatedWorld.
   WARN_UNUSED_RESULT virtual v8::Local<v8::Value>
   ExecuteScriptInIsolatedWorldAndReturnValue(int32_t world_id,
-                                             const WebScriptSource&,
-                                             BackForwardCacheAware) = 0;
+                                             const WebScriptSource&) = 0;
 
   // Clears the isolated world CSP stored for |world_id| by this frame's
   // Document.
@@ -406,8 +404,7 @@ class WebLocalFrame : public WebFrame {
       unsigned num_sources,
       bool user_gesture,
       ScriptExecutionType,
-      WebScriptExecutionCallback*,
-      BackForwardCacheAware) = 0;
+      WebScriptExecutionCallback*) = 0;
 
   // Logs to the console associated with this frame. If |discard_duplicates| is
   // set, the message will only be added if it is unique (i.e. has not been

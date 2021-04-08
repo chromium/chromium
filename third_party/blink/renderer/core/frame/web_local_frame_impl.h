@@ -144,15 +144,11 @@ class CORE_EXPORT WebLocalFrameImpl final
   void GetPageDescription(uint32_t page_index,
                           WebPrintPageDescription*) override;
   void ExecuteScript(const WebScriptSource&) override;
-  void ExecuteScriptInIsolatedWorld(
-      int32_t world_id,
-      const WebScriptSource&,
-      BackForwardCacheAware back_forward_cache_aware) override;
+  void ExecuteScriptInIsolatedWorld(int32_t world_id,
+                                    const WebScriptSource&) override;
   WARN_UNUSED_RESULT v8::Local<v8::Value>
-  ExecuteScriptInIsolatedWorldAndReturnValue(
-      int32_t world_id,
-      const WebScriptSource&,
-      BackForwardCacheAware back_forward_cache_aware) override;
+  ExecuteScriptInIsolatedWorldAndReturnValue(int32_t world_id,
+                                             const WebScriptSource&) override;
   void ClearIsolatedWorldCSPForTesting(int32_t world_id) override;
   v8::Local<v8::Value> ExecuteScriptAndReturnValue(
       const WebScriptSource&) override;
@@ -185,8 +181,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       unsigned num_sources,
       bool user_gesture,
       ScriptExecutionType,
-      WebScriptExecutionCallback*,
-      BackForwardCacheAware back_forward_cache_aware) override;
+      WebScriptExecutionCallback*) override;
   void Alert(const WebString& message) override;
   bool Confirm(const WebString& message) override;
   WebString Prompt(const WebString& message,

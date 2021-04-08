@@ -1075,8 +1075,8 @@ TestRunnerBindings::EvaluateScriptInIsolatedWorldAndReturnValue(
     return {};
 
   blink::WebScriptSource source = blink::WebString::FromUTF8(script);
-  return GetWebFrame()->ExecuteScriptInIsolatedWorldAndReturnValue(
-      world_id, source, blink::BackForwardCacheAware::kAllow);
+  return GetWebFrame()->ExecuteScriptInIsolatedWorldAndReturnValue(world_id,
+                                                                   source);
 }
 
 void TestRunnerBindings::EvaluateScriptInIsolatedWorld(
@@ -1086,8 +1086,7 @@ void TestRunnerBindings::EvaluateScriptInIsolatedWorld(
     return;
 
   blink::WebScriptSource source = blink::WebString::FromUTF8(script);
-  GetWebFrame()->ExecuteScriptInIsolatedWorld(
-      world_id, source, blink::BackForwardCacheAware::kAllow);
+  GetWebFrame()->ExecuteScriptInIsolatedWorld(world_id, source);
 }
 
 void TestRunnerBindings::SetIsolatedWorldInfo(

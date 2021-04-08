@@ -133,10 +133,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
       return {"OutstandingNetworkRequestDirectSocket",
               "outstanding network request (direct socket)"};
-    case WebSchedulerTrackedFeature::kIsolatedWorldScript:
-      return {"IsolatedWorldScript", "Isolated world ran script"};
-    case WebSchedulerTrackedFeature::kInjectedStyleSheet:
-      return {"InjectedStyleSheet", "External systesheet injected"};
   }
   return {};
 }
@@ -222,9 +218,7 @@ uint64_t StickyFeaturesBitmask() {
          FeatureToBit(WebSchedulerTrackedFeature::kIdleManager) |
          FeatureToBit(WebSchedulerTrackedFeature::kPaymentManager) |
          FeatureToBit(WebSchedulerTrackedFeature::kKeyboardLock) |
-         FeatureToBit(WebSchedulerTrackedFeature::kWebOTPService) |
-         FeatureToBit(WebSchedulerTrackedFeature::kIsolatedWorldScript) |
-         FeatureToBit(WebSchedulerTrackedFeature::kInjectedStyleSheet);
+         FeatureToBit(WebSchedulerTrackedFeature::kWebOTPService);
 }
 
 }  // namespace scheduler

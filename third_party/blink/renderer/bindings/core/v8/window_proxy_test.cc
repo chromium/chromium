@@ -68,15 +68,13 @@ TEST_F(WindowProxyTest, IsolatedWorldReinitializedAfterNavigation) {
   // Save a reference to the top `window` in the isolated world.
   v8::Local<v8::Value> window_top =
       MainFrame().ExecuteScriptInIsolatedWorldAndReturnValue(
-          kIsolatedWorldId, WebScriptSource("window"),
-          BackForwardCacheAware::kAllow);
+          kIsolatedWorldId, WebScriptSource("window"));
   ASSERT_TRUE(window_top->IsObject());
 
   // Save a reference to the child frame's window proxy in the isolated world.
   v8::Local<v8::Value> saved_child_window =
       MainFrame().ExecuteScriptInIsolatedWorldAndReturnValue(
-          kIsolatedWorldId, WebScriptSource("saved = window[0]"),
-          BackForwardCacheAware::kAllow);
+          kIsolatedWorldId, WebScriptSource("saved = window[0]"));
   ASSERT_TRUE(saved_child_window->IsObject());
 
   frame_test_helpers::LoadFrame(MainFrame().FirstChild()->ToWebLocalFrame(),
@@ -89,8 +87,7 @@ TEST_F(WindowProxyTest, IsolatedWorldReinitializedAfterNavigation) {
   // cached earlier.
   v8::Local<v8::Value> top_via_saved =
       MainFrame().ExecuteScriptInIsolatedWorldAndReturnValue(
-          kIsolatedWorldId, WebScriptSource("saved.top"),
-          BackForwardCacheAware::kAllow);
+          kIsolatedWorldId, WebScriptSource("saved.top"));
   EXPECT_TRUE(top_via_saved->IsObject());
   EXPECT_TRUE(window_top->StrictEquals(top_via_saved));
 }

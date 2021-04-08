@@ -250,8 +250,7 @@ void TranslateAgent::ExecuteScript(const std::string& script) {
     return;
 
   WebScriptSource source = WebScriptSource(WebString::FromASCII(script));
-  main_frame->ExecuteScriptInIsolatedWorld(
-      world_id_, source, blink::BackForwardCacheAware::kAllow);
+  main_frame->ExecuteScriptInIsolatedWorld(world_id_, source);
 }
 
 bool TranslateAgent::ExecuteScriptAndGetBoolResult(const std::string& script,
@@ -263,8 +262,7 @@ bool TranslateAgent::ExecuteScriptAndGetBoolResult(const std::string& script,
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   WebScriptSource source = WebScriptSource(WebString::FromASCII(script));
   v8::Local<v8::Value> result =
-      main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-          world_id_, source, blink::BackForwardCacheAware::kAllow);
+      main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(world_id_, source);
   if (result.IsEmpty() || !result->IsBoolean()) {
     NOTREACHED();
     return fallback;
@@ -283,8 +281,7 @@ std::string TranslateAgent::ExecuteScriptAndGetStringResult(
   v8::HandleScope handle_scope(isolate);
   WebScriptSource source = WebScriptSource(WebString::FromASCII(script));
   v8::Local<v8::Value> result =
-      main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-          world_id_, source, blink::BackForwardCacheAware::kAllow);
+      main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(world_id_, source);
   if (result.IsEmpty() || !result->IsString()) {
     NOTREACHED();
     return std::string();
@@ -309,8 +306,7 @@ double TranslateAgent::ExecuteScriptAndGetDoubleResult(
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   WebScriptSource source = WebScriptSource(WebString::FromASCII(script));
   v8::Local<v8::Value> result =
-      main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-          world_id_, source, blink::BackForwardCacheAware::kAllow);
+      main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(world_id_, source);
   if (result.IsEmpty() || !result->IsNumber()) {
     NOTREACHED();
     return 0.0;
@@ -328,8 +324,7 @@ int64_t TranslateAgent::ExecuteScriptAndGetIntegerResult(
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   WebScriptSource source = WebScriptSource(WebString::FromASCII(script));
   v8::Local<v8::Value> result =
-      main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-          world_id_, source, blink::BackForwardCacheAware::kAllow);
+      main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(world_id_, source);
   if (result.IsEmpty() || !result->IsNumber()) {
     NOTREACHED();
     return 0;

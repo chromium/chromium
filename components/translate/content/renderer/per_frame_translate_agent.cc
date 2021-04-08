@@ -200,8 +200,7 @@ void PerFrameTranslateAgent::ExecuteScript(const std::string& script) {
     return;
 
   WebScriptSource source = WebScriptSource(WebString::FromASCII(script));
-  local_frame->ExecuteScriptInIsolatedWorld(
-      world_id_, source, blink::BackForwardCacheAware::kAllow);
+  local_frame->ExecuteScriptInIsolatedWorld(world_id_, source);
 }
 
 bool PerFrameTranslateAgent::ExecuteScriptAndGetBoolResult(
@@ -215,8 +214,8 @@ bool PerFrameTranslateAgent::ExecuteScriptAndGetBoolResult(
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   WebScriptSource source = WebScriptSource(WebString::FromASCII(script));
   v8::Local<v8::Value> result =
-      local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-          world_id_, source, blink::BackForwardCacheAware::kAllow);
+      local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(world_id_,
+                                                              source);
   DCHECK(result->IsBoolean());
 
   return result.As<v8::Boolean>()->Value();
@@ -233,8 +232,8 @@ std::string PerFrameTranslateAgent::ExecuteScriptAndGetStringResult(
   v8::HandleScope handle_scope(isolate);
   WebScriptSource source = WebScriptSource(WebString::FromASCII(script));
   v8::Local<v8::Value> result =
-      local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-          world_id_, source, blink::BackForwardCacheAware::kAllow);
+      local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(world_id_,
+                                                              source);
   DCHECK(result->IsString());
 
   v8::Local<v8::String> v8_str = result.As<v8::String>();
@@ -254,8 +253,8 @@ double PerFrameTranslateAgent::ExecuteScriptAndGetDoubleResult(
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   WebScriptSource source = WebScriptSource(WebString::FromASCII(script));
   v8::Local<v8::Value> result =
-      local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-          world_id_, source, blink::BackForwardCacheAware::kAllow);
+      local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(world_id_,
+                                                              source);
   DCHECK(result->IsNumber());
 
   return result.As<v8::Number>()->Value();
@@ -271,8 +270,8 @@ int64_t PerFrameTranslateAgent::ExecuteScriptAndGetIntegerResult(
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   WebScriptSource source = WebScriptSource(WebString::FromASCII(script));
   v8::Local<v8::Value> result =
-      local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-          world_id_, source, blink::BackForwardCacheAware::kAllow);
+      local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(world_id_,
+                                                              source);
   DCHECK(result->IsNumber());
 
   return result.As<v8::Integer>()->Value();

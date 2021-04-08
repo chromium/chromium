@@ -2044,7 +2044,6 @@ if (!is_android) {
         "../browser/extensions/app_process_apitest.cc",
         "../browser/extensions/app_window_overrides_browsertest.cc",
         "../browser/extensions/autoplay_browsertest.cc",
-        "../browser/extensions/back_forward_cache_browsertest.cc",
         "../browser/extensions/background_header_browsertest.cc",
         "../browser/extensions/background_page_apitest.cc",
         "../browser/extensions/background_scripts_apitest.cc",

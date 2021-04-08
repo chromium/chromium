@@ -82093,8 +82093,6 @@ Called by update_scheduler_enums.py.-->
   <int value="51" label="KeyboardLock"/>
   <int value="52" label="WebOTPService"/>
   <int value="53" label="OutstandingNetworkRequestDirectSocket"/>
-  <int value="54" label="IsolatedWorldScript"/>
-  <int value="55" label="ExtensionStyleSheet"/>
 </enum>
 
 <enum name="WebShareMethod">
