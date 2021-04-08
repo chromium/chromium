@@ -46,7 +46,8 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
     content::WebContents* web_contents,
     const std::u16string& filename,
     base::OnceClosure accept_callback,
-    base::OnceClosure open_now_callback) {
+    base::OnceClosure open_now_callback)
+    : open_now_callback_(std::move(open_now_callback)) {
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetTitle(IDS_DEEP_SCANNING_INFO_DIALOG_TITLE);
   SetButtonLabel(
