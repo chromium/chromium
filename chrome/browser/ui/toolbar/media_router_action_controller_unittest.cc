@@ -101,7 +101,9 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
 class MediaRouterActionControllerGMCUnitTest
     : public MediaRouterActionControllerUnitTest {
  public:
-  MediaRouterActionControllerGMCUnitTest() : cast_source_("cast:1234") {}
+  MediaRouterActionControllerGMCUnitTest()
+      : cast_source_("cast:1234"),
+        mirroring_source_("urn:x-org.chromium.media:source:tab:*") {}
   void SetUp() override {
     MediaRouterActionControllerUnitTest::SetUp();
     feature_list_.InitAndEnableFeature(
@@ -109,12 +111,16 @@ class MediaRouterActionControllerGMCUnitTest
 
     local_display_cast_route_list_.emplace_back(
         "routeId4", cast_source_, "sinkId4", "description", true, true);
+    local_display_mirroring_route_list_.emplace_back(
+        "routeId5", mirroring_source_, "sinkId5", "description", true, true);
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
   const media_router::MediaSource cast_source_;
+  const media_router::MediaSource mirroring_source_;
   std::vector<media_router::MediaRoute> local_display_cast_route_list_;
+  std::vector<media_router::MediaRoute> local_display_mirroring_route_list_;
 };
 
 TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForRoutesAndIssues) {
@@ -224,7 +230,7 @@ TEST_F(MediaRouterActionControllerUnitTest, ObserveAlwaysShowPrefChange) {
 }
 
 TEST_F(MediaRouterActionControllerGMCUnitTest,
-       EphemeralIconForRoutesAndIssues) {
+       EphemeralIconForMirroringSessions) {
   EXPECT_FALSE(IsIconShown());
   // Creating a cast route should not show the action icon.
   controller_->OnRoutesUpdated({local_display_cast_route_list_},
@@ -232,6 +238,7 @@ TEST_F(MediaRouterActionControllerGMCUnitTest,
   EXPECT_FALSE(IsIconShown());
 
   // Creating a local mirroring route should show the action icon.
-  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
+  controller_->OnRoutesUpdated(local_display_mirroring_route_list_,
+                               empty_route_id_list_);
   EXPECT_TRUE(IsIconShown());
 }

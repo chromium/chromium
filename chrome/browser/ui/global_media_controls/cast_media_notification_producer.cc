@@ -13,10 +13,14 @@
 namespace {
 
 bool ShouldHideNotification(const media_router::MediaRoute& route) {
-  if (!route.for_display() ||
-      route.controller_type() != media_router::RouteControllerType::kGeneric) {
+  // TODO(crbug.com/1195382): Display multizone group route.
+  // Hide a route if it's not for display or it's a mirroring route.
+  if (!route.for_display() || route.media_source().IsTabMirroringSource() ||
+      route.media_source().IsDesktopMirroringSource() ||
+      route.media_source().IsLocalFileSource()) {
     return true;
   }
+
   if (!route.media_source().IsCastPresentationUrl()) {
     return false;
   }

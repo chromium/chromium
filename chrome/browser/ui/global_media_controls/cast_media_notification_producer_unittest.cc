@@ -138,12 +138,12 @@ TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
   // These routes should not have notification items created for them.
   MediaRoute non_display_route = CreateRoute("route-1");
   non_display_route.set_for_display(false);
-  MediaRoute no_controller_route = CreateRoute("route-2");
-  no_controller_route.set_controller_type(RouteControllerType::kNone);
+  MediaRoute mirroring_route =
+      CreateRoute("route-2", "urn:x-org.chromium.media:source:tab:*");
   MediaRoute multizone_member_route = CreateRoute("route-3", "cast:705D30C6");
 
   notification_producer_->OnRoutesUpdated(
-      {non_display_route, no_controller_route, multizone_member_route}, {});
+      {non_display_route, mirroring_route, multizone_member_route}, {});
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
 

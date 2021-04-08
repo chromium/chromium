@@ -69,7 +69,9 @@ void MediaRouterActionController::OnRoutesUpdated(
           [](const media_router::MediaRoute& route) {
             bool should_hide_presentation =
                 media_router::GlobalMediaControlsCastStartStopEnabled() &&
-                route.media_source().IsCastPresentationUrl();
+                !(route.media_source().IsTabMirroringSource() ||
+                  route.media_source().IsDesktopMirroringSource() ||
+                  route.media_source().IsLocalFileSource());
             return route.is_local() && route.for_display() &&
                    !should_hide_presentation;
           }) != routes.end();
