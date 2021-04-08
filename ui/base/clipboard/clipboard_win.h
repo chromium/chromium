@@ -20,10 +20,6 @@ class MessageWindow;
 }
 }
 
-namespace gfx {
-class Size;
-}
-
 namespace ui {
 
 class ClipboardWin : public Clipboard {
@@ -106,10 +102,10 @@ class ClipboardWin : public Clipboard {
   void WriteData(const ClipboardFormatType& format,
                  const char* data_data,
                  size_t data_len) override;
-  void WriteBitmapFromHandle(HBITMAP source_hbitmap, const gfx::Size& size);
   SkBitmap ReadImageInternal(ClipboardBuffer buffer) const;
 
   // Safely write to system clipboard. Free |handle| on failure.
+  // This function takes ownership of the given handle's memory.
   void WriteToClipboard(ClipboardFormatType format, HANDLE handle);
 
   // Return the window that should be the clipboard owner, creating it

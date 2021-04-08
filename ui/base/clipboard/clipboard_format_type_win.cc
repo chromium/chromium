@@ -213,7 +213,7 @@ const ClipboardFormatType& ClipboardFormatType::GetRtfType() {
 
 // static
 const ClipboardFormatType& ClipboardFormatType::GetBitmapType() {
-  static base::NoDestructor<ClipboardFormatType> format(CF_BITMAP);
+  static base::NoDestructor<ClipboardFormatType> format(CF_DIBV5);
   return *format;
 }
 
@@ -337,6 +337,13 @@ const ClipboardFormatType& ClipboardFormatType::GetWebCustomDataType() {
   // TODO(http://crbug.com/106449): Standardize this name.
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(L"Chromium Web Custom MIME Data Format"));
+  return *format;
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::GetPNGType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ::RegisterClipboardFormat(L"PNG"));
   return *format;
 }
 

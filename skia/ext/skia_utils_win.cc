@@ -11,7 +11,9 @@
 #include "base/debug/gdi_debug_util_win.h"
 #include "base/numerics/checked_math.h"
 #include "base/win/scoped_hdc.h"
+#include "base/win/scoped_hglobal.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -44,6 +46,31 @@ void CreateBitmapHeaderWithColorDepth(LONG width,
   hdr->biYPelsPerMeter = 1;
   hdr->biClrUsed = 0;
   hdr->biClrImportant = 0;
+}
+
+// Fills in a BITMAPV5HEADER structure. This is to be used for images that have
+// an alpha channel and are in the ARGB8888 format. This is because DIBV5 has an
+// explicit mask for each component which default to XRGB and we manually set
+// flag so the alpha channel is the first byte. This is not supported by the
+// older-style BITMAPINFOHEADER.
+void CreateBitmapV5HeaderForARGB8888(LONG width,
+                                     LONG height,
+                                     LONG image_size,
+                                     BITMAPV5HEADER* hdr) {
+  memset(hdr, 0, sizeof(BITMAPV5HEADER));
+  hdr->bV5Size = sizeof(BITMAPV5HEADER);
+  hdr->bV5Width = width;
+  // If height is positive this means that the image will be bottom-up.
+  hdr->bV5Height = height;
+  hdr->bV5Planes = 1;
+  hdr->bV5BitCount = 32;
+  hdr->bV5Compression = BI_RGB;
+  hdr->bV5AlphaMask = 0xff000000;
+  hdr->bV5CSType = LCS_WINDOWS_COLOR_SPACE;
+  hdr->bV5Intent = LCS_GM_IMAGES;
+  hdr->bV5ClrUsed = 0;
+  hdr->bV5ClrImportant = 0;
+  hdr->bV5ProfileData = 0;
 }
 
 }  // namespace
@@ -216,6 +243,83 @@ void CreateBitmapHeaderForN32SkBitmap(const SkBitmap& bitmap,
   CHECK_EQ(bitmap.rowBytes(), bitmap.width() * static_cast<size_t>(4));
 
   CreateBitmapHeaderWithColorDepth(bitmap.width(), bitmap.height(), 32, hdr);
+}
+
+HGLOBAL CreateHGlobalForByteArray(
+    const std::vector<unsigned char>& byte_array) {
+  HGLOBAL hglobal = ::GlobalAlloc(GHND, byte_array.size());
+  if (!hglobal) {
+    return nullptr;
+  }
+  base::win::ScopedHGlobal<uint8_t*> global_mem(hglobal);
+  if (!global_mem.get()) {
+    ::GlobalFree(hglobal);
+    return nullptr;
+  }
+  memcpy(global_mem.get(), byte_array.data(), byte_array.size());
+
+  return hglobal;
+}
+
+HGLOBAL CreateDIBV5ImageDataFromN32SkBitmap(const SkBitmap& bitmap) {
+  // While DIBV5 support bit flags which would allow us to put channels in a any
+  // order, we require an ARGB format because it is more convenient to use.
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+  // The header will be for an ARGB bitmap with 32 bits-per-pixel. The SkBitmap
+  // data to go into the bitmap should be of the same size. If the SkBitmap
+  // SkColorType is for a larger number of bits-per-pixel, copying the SkBitmap
+  // into the DIBV5ImageData for this header would cause a write out-of-bounds.
+  CHECK_EQ(4, bitmap.info().bytesPerPixel());
+  // The DIBV5ImageData bytes will always be tightly packed so we expect the
+  // SkBitmap to be also. Row padding would mean the number of bytes in the
+  // SkBitmap and in the DIBV5ImageData for this header would be different,
+  // which can cause out-of- bound reads or writes.
+  CHECK_EQ(bitmap.rowBytes(), bitmap.width() * static_cast<size_t>(4));
+
+  int width = bitmap.width();
+  int height = bitmap.height();
+  size_t bytes;
+  // Native DIBV5 bitmaps store 32-bit ARGB data, and the SkBitmap used with it
+  // must also, as verified at the start of this function. A size_t type causes
+  // a type change from int when multiplying.
+  constexpr size_t bpp = 4;
+  if (!base::CheckMul(height, base::CheckMul(width, bpp)).AssignIfValid(&bytes))
+    return nullptr;
+
+  HGLOBAL hglobal = ::GlobalAlloc(GHND, sizeof(BITMAPV5HEADER) + bytes);
+  if (hglobal == nullptr)
+    return nullptr;
+
+  base::win::ScopedHGlobal<BITMAPV5HEADER*> header(hglobal);
+  if (!header.get()) {
+    ::GlobalFree(hglobal);
+    return nullptr;
+  }
+
+  CreateBitmapV5HeaderForARGB8888(width, height, bytes, header.get());
+  auto* dst_pixels =
+      reinterpret_cast<uint8_t*>(header.get()) + sizeof(BITMAPV5HEADER);
+
+  // CreateBitmapV5HeaderForARGB8888 creates a bitmap with a positive height as
+  // stated in the image's header. Having a positive value implies that the
+  // image is stored bottom-up. As skia uses the opposite, we have to flip
+  // vertically so the image's content while copying in the DIBV5 data structure
+  // to account for that. In theory, we could use a negative value to avoid the
+  // flip, but not all programs treat a negative value properly.
+
+  SkImageInfo infoSRGB = bitmap.info()
+                             .makeColorSpace(SkColorSpace::MakeSRGB())
+                             .makeWH(bitmap.width(), 1);
+
+  const size_t row_bytes = bitmap.rowBytes();
+
+  for (size_t line = 0; line < height; line++) {
+    size_t flipped_line_index = height - 1 - line;
+    auto* current_dst = dst_pixels + (row_bytes * flipped_line_index);
+    bool success = bitmap.readPixels(infoSRGB, current_dst, row_bytes, 0, line);
+    DCHECK(success);
+  }
+  return hglobal;
 }
 
 base::win::ScopedBitmap CreateHBitmapFromN32SkBitmap(const SkBitmap& bitmap) {

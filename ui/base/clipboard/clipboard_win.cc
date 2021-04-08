@@ -42,6 +42,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -211,13 +212,6 @@ void ParseBookmarkClipboardFormat(const std::u16string& bookmark,
           base::UTF16ToUTF8(bookmark.substr(url_start, std::u16string::npos));
     }
   }
-}
-
-void FreeData(unsigned int format, HANDLE data) {
-  if (format == CF_BITMAP)
-    ::DeleteObject(static_cast<HBITMAP>(data));
-  else
-    ::GlobalFree(data);
 }
 
 template <typename StringType>
@@ -761,15 +755,26 @@ void ClipboardWin::WriteWebSmartPaste() {
 }
 
 void ClipboardWin::WriteBitmap(const SkBitmap& bitmap) {
-  // This doesn't actually cost us a memcpy when the bitmap comes from the
-  // renderer as we load it into the bitmap using setPixels which just sets a
-  // pointer.  Someone has to memcpy it into GDI, it might as well be us here.
-  base::win::ScopedBitmap hbitmap = skia::CreateHBitmapFromN32SkBitmap(bitmap);
-  if (hbitmap.is_valid()) {
-    // Now we have an HBITMAP, we can write it to the clipboard
-    WriteBitmapFromHandle(hbitmap.get(),
-                          gfx::Size(bitmap.width(), bitmap.height()));
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
+  // On Windows there are 2 ways of writing a transparent image to the
+  // clipboard: Using the DIBV5 format with correct header and format or using
+  // the PNG format. Some programs only support one or the other. In particular,
+  // Word support for DIBV5 is buggy and PNG format is needed for it. Writing
+  // order is also important as some programs will use the first compatible
+  // format that is available on the clipboard, and we want Word to choose the
+  // PNG format.
+
+  std::vector<unsigned char> png_encoded_bitmap;
+  if (gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                        &png_encoded_bitmap)) {
+    HGLOBAL png_hglobal = skia::CreateHGlobalForByteArray(png_encoded_bitmap);
+    if (png_hglobal)
+      WriteToClipboard(ClipboardFormatType::GetPNGType(), png_hglobal);
   }
+  HGLOBAL dibv5_hglobal = skia::CreateDIBV5ImageDataFromN32SkBitmap(bitmap);
+  if (dibv5_hglobal)
+    WriteToClipboard(ClipboardFormatType::GetBitmapType(), dibv5_hglobal);
 }
 
 void ClipboardWin::WriteData(const ClipboardFormatType& format,
@@ -785,55 +790,6 @@ void ClipboardWin::WriteData(const ClipboardFormatType& format,
   WriteToClipboard(format, hdata);
 }
 
-void ClipboardWin::WriteBitmapFromHandle(HBITMAP source_hbitmap,
-                                         const gfx::Size& size) {
-  // We would like to just call ::SetClipboardData on the source_hbitmap,
-  // but that bitmap might not be of a sort we can write to the clipboard.
-  // For this reason, we create a new bitmap, copy the bits over, and then
-  // write that to the clipboard.
-
-  HDC dc = ::GetDC(nullptr);
-  HDC compatible_dc = ::CreateCompatibleDC(nullptr);
-  HDC source_dc = ::CreateCompatibleDC(nullptr);
-
-  // This is the HBITMAP we will eventually write to the clipboard
-  HBITMAP hbitmap = ::CreateCompatibleBitmap(dc, size.width(), size.height());
-  if (!hbitmap) {
-    // Failed to create the bitmap
-    ::DeleteDC(compatible_dc);
-    ::DeleteDC(source_dc);
-    ::ReleaseDC(nullptr, dc);
-    return;
-  }
-
-  HBITMAP old_hbitmap = (HBITMAP)SelectObject(compatible_dc, hbitmap);
-  HBITMAP old_source = (HBITMAP)SelectObject(source_dc, source_hbitmap);
-
-  // Now we need to blend it into an HBITMAP we can place on the clipboard
-  BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-  ::GdiAlphaBlend(compatible_dc,
-                  0,
-                  0,
-                  size.width(),
-                  size.height(),
-                  source_dc,
-                  0,
-                  0,
-                  size.width(),
-                  size.height(),
-                  bf);
-
-  // Clean up all the handles we just opened
-  ::SelectObject(compatible_dc, old_hbitmap);
-  ::SelectObject(source_dc, old_source);
-  ::DeleteObject(old_hbitmap);
-  ::DeleteObject(old_source);
-  ::DeleteDC(compatible_dc);
-  ::DeleteDC(source_dc);
-  ::ReleaseDC(nullptr, dc);
-
-  WriteToClipboard(ClipboardFormatType::GetBitmapType(), hbitmap);
-}
 
 SkBitmap ClipboardWin::ReadImageInternal(ClipboardBuffer buffer) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
@@ -928,7 +884,7 @@ void ClipboardWin::WriteToClipboard(ClipboardFormatType format, HANDLE handle) {
   if (handle && !::SetClipboardData(cf_format, handle)) {
     DCHECK_NE(GetLastError(),
               static_cast<unsigned long>(ERROR_CLIPBOARD_NOT_OPEN));
-    FreeData(cf_format, handle);
+    ::GlobalFree(handle);
   }
 }
 

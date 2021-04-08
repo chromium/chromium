@@ -83,6 +83,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& GetFilenameType();
   static const ClipboardFormatType& GetIDListType();
   static const ClipboardFormatType& GetMozUrlType();
+
+  // Specific image types that handle transparency on Windows.
+  static const ClipboardFormatType& GetPNGType();
 #endif
 
   // ClipboardFormatType can be used in a set on some platforms.
