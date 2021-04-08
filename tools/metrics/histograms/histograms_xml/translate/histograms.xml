@@ -202,6 +202,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.DeclineTranslateDismissUI" units="units"
     expires_after="2021-04-04">
+  <obsolete>
+    Removed M91. No longer used.
+  </obsolete>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

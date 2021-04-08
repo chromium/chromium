@@ -38,7 +38,6 @@ const char kNeverTranslateSite[] = "Translate.NeverTranslateSite";
 const char kAlwaysTranslateLang[] = "Translate.AlwaysTranslateLang";
 const char kModifySourceLang[] = "Translate.ModifyOriginalLang";
 const char kModifyTargetLang[] = "Translate.ModifyTargetLang";
-const char kDeclineTranslateDismissUI[] = "Translate.DeclineTranslateDismissUI";
 const char kShowErrorUI[] = "Translate.ShowErrorUI";
 
 // Returns a Collator object which helps to sort strings in a given locale or
@@ -355,8 +354,6 @@ void TranslateUIDelegate::TranslationDeclined(bool explicitly_closed) {
 
   if (explicitly_closed) {
     UMA_HISTOGRAM_BOOLEAN(kDeclineTranslate, true);
-  } else {
-    UMA_HISTOGRAM_BOOLEAN(kDeclineTranslateDismissUI, true);
   }
 }
 
