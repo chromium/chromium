@@ -1,0 +1,40 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+@keyframes ripple {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(var(--ripple-spread-ratio));
+  }
+}
+
+button:not(.rippling) .ripple {
+  display: none;
+}
+
+button.rippling .ripple {
+  --duration: 2s;
+  --border-size: 3px;
+
+  animation: ripple var(--duration) ease-out infinite;
+  border: var(--border-size) solid rgb(66, 133, 244);
+  border-radius: 50%;
+  height: calc(var(--ripple-start-radius) * 2);
+  left: calc(50% - var(--border-size) - var(--ripple-start-radius));
+  opacity: 0;
+  position: absolute;
+  top: calc(50% - var(--border-size) - var(--ripple-start-radius));
+  width: calc(var(--ripple-start-radius) * 2);
+}
+
+button.rippling .ripple-2nd {
+  animation-delay: calc(var(--duration) / 3);
+}
+
+button.rippling .ripple-3rd {
+  animation-delay: calc(var(--duration) * 2 / 3);
+}

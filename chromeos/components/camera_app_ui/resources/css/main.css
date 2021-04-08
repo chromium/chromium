@@ -65,7 +65,6 @@ label {
   border-radius: 4px;
   border-style: none;
   margin: 0;
-  outline: none;
   padding: 0;
   pointer-events: auto;
   position: relative;
@@ -77,6 +76,7 @@ input[type=checkbox] {
 }
 
 [tabindex] {
+  outline: none; /* Prevent default focus ring style. */
   user-select: none;
 }
 
@@ -670,6 +670,9 @@ body:not(.has-ptz-support) #open-ptz-panel {
 }
 
 #open-ptz-panel {
+  --ripple-spread-ratio: 2;
+  --ripple-start-radius: 18px;
+
   background-image: url(/images/camera_button_ptz_panel.svg);
 }
 

@@ -103,6 +103,15 @@ export class Preview {
   }
 
   /**
+   * Whether the opened camera supports PTZ controls.
+   * @return {boolean}
+   */
+  isSupportPTZ() {
+    const {pan, tilt, zoom} = this.stream.getVideoTracks()[0].getCapabilities();
+    return pan !== undefined || tilt !== undefined || zoom !== undefined;
+  }
+
+  /**
    * @override
    */
   toString() {

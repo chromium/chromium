@@ -219,12 +219,18 @@ export class Camera extends View {
     this.banner_ = dom.get('#banner', HTMLElement);
 
     /**
+     * @type {!HTMLElement}
+     * @private
+     */
+    this.ptzToast_ = dom.get('#ptz-toast', HTMLElement);
+
+    /**
      * @type {!HTMLButtonElement}
      */
     this.openPTZPanel_ = dom.get('#open-ptz-panel', HTMLButtonElement);
 
     /**
-     * @const {!Set<function(): void>}
+     * @const {!Set<function(): *>}
      * @private
      */
     this.configureCompleteListener_ = new Set();
@@ -293,9 +299,7 @@ export class Camera extends View {
           animate.cancel(this.banner_);
         });
 
-    this.openPTZPanel_.addEventListener('click', () => {
-      nav.open(ViewName.PTZ_PANEL, this.preview_.stream);
-    });
+    this.initOpenPTZPanel_();
 
     // Monitor the states to stop camera when locked/minimized.
     const idleDetector = new window.IdleDetector();
@@ -361,6 +365,45 @@ export class Camera extends View {
   /**
    * @private
    */
+  initOpenPTZPanel_() {
+    this.openPTZPanel_.addEventListener('click', () => {
+      nav.open(ViewName.PTZ_PANEL, this.preview_.stream);
+      highlight(false);
+    });
+
+    // Highlight effect for PTZ button.
+    const highlight = (enabled) => {
+      this.ptzToast_.classList.toggle('hidden', !enabled);
+      this.openPTZPanel_.classList.toggle('rippling', enabled);
+      if (enabled) {
+        this.ptzToast_.focus();
+        setTimeout(() => highlight(false), 10000);
+      }
+    };
+
+    this.addConfigureCompleteListener_(async () => {
+      if (!this.preview_.isSupportPTZ()) {
+        highlight(false);
+        return;
+      }
+
+      const ptzToastKey = 'isPTZToastShown';
+      if ((await localStorage.get({[ptzToastKey]: false}))[ptzToastKey]) {
+        return;
+      }
+      localStorage.set({[ptzToastKey]: true});
+
+      const {bottom, right} =
+          dom.get('#open-ptz-panel', HTMLButtonElement).getBoundingClientRect();
+      this.ptzToast_.style.bottom = `${window.innerHeight - bottom}px`;
+      this.ptzToast_.style.left = `${right + 20}px`;
+      highlight(true);
+    });
+  }
+
+  /**
+   * @private
+   */
   initVideoEncoderOptions_() {
     const options = this.videoEncoderOptions_;
     this.addConfigureCompleteListener_(() => {
@@ -374,7 +417,7 @@ export class Camera extends View {
   }
 
   /**
-   * @param {function(): void} listener
+   * @param {function(): *} listener
    * @private
    */
   addConfigureCompleteListener_(listener) {

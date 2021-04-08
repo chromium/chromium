@@ -176,6 +176,12 @@
       <message desc="Label for the button to open pan tilt zoom control panel" name="IDS_OPEN_PTZ_PANEL_BUTTON">
         Pan tilt zoom
       </message>
+      <message desc="Message notifying user about new controls available" name="IDS_NEW_CONTROL_TOAST">
+        Additional camera controls available
+      </message>
+      <message desc="Label for message notifying user about new controls available and how to navigate to controls UI with accessibility tool" name="IDS_LABEL_NEW_CONTROL_TOAST">
+        Additional camera controls available. Search + Right arrow to access.
+      </message>
       <message desc="Label for the checkbox to toggle the 3 seconds countdown timer." name="IDS_TOGGLE_TIMER_3S_BUTTON">
         3 seconds timer
       </message>

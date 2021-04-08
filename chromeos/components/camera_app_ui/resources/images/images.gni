@@ -44,6 +44,7 @@ in_app_images = [
   "camera_shutter_video_pause.svg",
   "ptz_pan_left.svg",
   "ptz_pan_right.svg",
+  "ptz_toast_icon.svg",
   "ptz_tilt_down.svg",
   "ptz_tilt_up.svg",
   "ptz_zoom_in.svg",

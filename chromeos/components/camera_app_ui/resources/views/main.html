@@ -10,6 +10,8 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/ptz_panel.css">
+    <link rel="stylesheet" href="/css/ripple.css">
+    <link rel="stylesheet" href="/css/ptz_toast.css">
     <script src="/js/mojo/mojo_bindings_lite.js"></script>
     <script src="/js/mojo/time.mojom-lite.js"></script>
     <script src="/js/mojo/camera_metadata_tags.mojom-lite.js"></script>
@@ -199,9 +201,18 @@
         <button id="switch-device" tabindex="0"
                 i18n-label="switch_camera_button"></button>
       </div>
+      <div id="ptz-toast" class="hidden" i18n-aria="label_new_control_toast"
+           tabindex="0">
+        <span i18n-text="new_control_toast" aria-hidden="true"></span>
+      </div>
+
       <div id="options-group" class="left-stripe buttons">
         <button id="open-ptz-panel" tabindex="0" aria-haspopup="true"
-                i18n-label="open_ptz_panel_button"></button>
+                i18n-label="open_ptz_panel_button">
+          <div class="ripple"></div>
+          <div class="ripple ripple-2nd"></div>
+          <div class="ripple ripple-3rd"></div>
+        </button>
         <input type="checkbox" id="toggle-timer" tabindex="0"
                data-state="timer" data-key="toggleTimer">
         <input type="checkbox" id="toggle-grid" tabindex="0"
