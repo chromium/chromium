@@ -30,6 +30,19 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
+struct RecordReplayCompareMemberByPointerId {
+  template <typename T>
+  bool operator()(const T& a, const T& b) const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId(a.Get());
+      int idb = recordreplay::PointerId(b.Get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
 namespace blink {
 
 namespace {
@@ -498,11 +511,19 @@ IntersectionObserver::GetDeliveryBehavior() const {
 }
 
 void IntersectionObserver::Deliver() {
+  recordreplay::Assert("IntersectionObserver::Deliver %lu", recordreplay::PointerId(this));
   if (!needs_delivery_)
     return;
   needs_delivery_ = 0;
   HeapVector<Member<IntersectionObserverEntry>> entries;
+
+  HeapVector<Member<IntersectionObservation>> observations_vector;
   for (auto& observation : observations_)
+    observations_vector.push_back(observation);
+  std::sort(observations_vector.begin(), observations_vector.end(),
+            RecordReplayCompareMemberByPointerId());
+
+  for (auto& observation : observations_vector)
     observation->TakeRecords(entries);
   if (entries.size())
     delegate_->Deliver(entries, *this);

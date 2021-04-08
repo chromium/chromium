@@ -16,6 +16,19 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
+struct RecordReplayCompareMemberByPointerId {
+  template <typename T>
+  bool operator()(const T& a, const T& b) const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId(a.Get());
+      int idb = recordreplay::PointerId(b.Get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
 namespace blink {
 
 IntersectionObserverController::IntersectionObserverController(
@@ -57,24 +70,13 @@ void IntersectionObserverController::DeliverNotifications(
     if (observer->GetDeliveryBehavior() == behavior)
       intersection_observers_being_invoked.push_back(observer);
   }
+  std::sort(intersection_observers_being_invoked.begin(), intersection_observers_being_invoked.end(),
+            RecordReplayCompareMemberByPointerId());
   for (auto& observer : intersection_observers_being_invoked) {
     pending_intersection_observers_.erase(observer);
     observer->Deliver();
   }
 }
-
-struct RecordReplayCompareMemberByPointerId {
-  template <typename T>
-  bool operator()(const T& a, const T& b) const {
-    if (recordreplay::IsRecordingOrReplaying()) {
-      int ida = recordreplay::PointerId(a.Get());
-      int idb = recordreplay::PointerId(b.Get());
-      CHECK(ida && idb);
-      return ida < idb;
-    }
-    return a < b;
-  }
-};
 
 bool IntersectionObserverController::ComputeIntersections(
     unsigned flags,
