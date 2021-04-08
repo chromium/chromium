@@ -445,6 +445,7 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<AccessibilityFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<QuietModeFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<RotationLockFeaturePodController>());
+  AddFeaturePodItem(std::make_unique<PrivacyScreenFeaturePodController>());
   if (features::IsCaptureModeEnabled())
     AddFeaturePodItem(std::make_unique<CaptureModeFeaturePodController>(this));
   if (chromeos::features::IsProjectorFeaturePodEnabled() &&
