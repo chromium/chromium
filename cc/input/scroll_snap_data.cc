@@ -13,9 +13,32 @@
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "cc/input/snap_selection_strategy.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 namespace {
+
+gfx::Vector2dF DistanceFromCorridor(double dx,
+                                    double dy,
+                                    const gfx::RectF& area) {
+  gfx::Vector2dF distance;
+
+  if (dx < 0)
+    distance.set_x(-dx);
+  else if (dx > area.width())
+    distance.set_x(dx - area.width());
+  else
+    distance.set_x(0);
+
+  if (dy < 0)
+    distance.set_y(-dy);
+  else if (dy > area.height())
+    distance.set_y(dy - area.height());
+  else
+    distance.set_y(0);
+
+  return distance;
+}
 
 bool IsMutualVisible(const SnapSearchResult& a, const SnapSearchResult& b) {
   return gfx::RangeF(b.snap_offset()).IsBoundedBy(a.visible_range()) &&
@@ -154,7 +177,6 @@ bool SnapContainerData::FindSnapPosition(
       SnapSearchResult initial_snap_position_y = {
           base::ClampToRange(base_position.y(), 0.f, max_position_.y()),
           gfx::RangeF(0, max_position_.x())};
-
       selected_x = FindClosestValidArea(SearchAxis::kX, strategy,
                                         initial_snap_position_y);
     }
@@ -172,8 +194,15 @@ bool SnapContainerData::FindSnapPosition(
     }
   }
 
-  if (!selected_x.has_value() && !selected_y.has_value())
+  if (!selected_x.has_value() && !selected_y.has_value()) {
+    // Searching along each axis separately can miss valid snap positions if
+    // snapping along both axes and the snap positions are off screen.
+    if (should_snap_on_x && should_snap_on_y &&
+        !strategy.ShouldRespectSnapStop())
+      return FindSnapPositionForMutualSnap(strategy, snap_position);
+
     return false;
+  }
 
   // If snapping in one axis pushes off-screen the other snap area, this snap
   // position is invalid. https://drafts.csswg.org/css-scroll-snap-1/#snap-scope
@@ -211,6 +240,61 @@ bool SnapContainerData::FindSnapPosition(
   }
 
   return true;
+}
+
+// This method is called only if the preferred algorithm fails to find either an
+// x or a y snap position.
+// The base algorithm searches on x (if appropriate) and then y (if
+// appropriate). Each search is along the corridor in the search direction.
+// For a search in the x-direction, areas as excluded from consideration if the
+// range in the y-direction does not overlap the y base position (i.e. can
+// scroll-snap in the x-direction without scrolling in the y-direction). Rules
+// for scroll-snap in the y-direction are symmetric. This is the preferred
+// approach, though the ordering of the searches should perhaps be determined
+// based on axis locking.
+// In cases where no valid snap points are found via searches along the axis
+// corridors, the snap selection strategy allows for selection of areas outside
+// of the corridors.
+bool SnapContainerData::FindSnapPositionForMutualSnap(
+    const SnapSelectionStrategy& strategy,
+    gfx::ScrollOffset* snap_position) const {
+  DCHECK(strategy.ShouldSnapOnX() && strategy.ShouldSnapOnY());
+  bool found = false;
+  gfx::Vector2dF smallest_distance(std::numeric_limits<float>::max(),
+                                   std::numeric_limits<float>::max());
+
+  // Snap to same element for x & y if possible.
+  for (const SnapAreaData& area : snap_area_list_) {
+    if (!strategy.IsValidSnapArea(SearchAxis::kX, area))
+      continue;
+
+    if (!strategy.IsValidSnapArea(SearchAxis::kY, area))
+      continue;
+
+    SnapSearchResult x_candidate = GetSnapSearchResult(SearchAxis::kX, area);
+    float dx = x_candidate.snap_offset() - strategy.current_position().x();
+    if (std::abs(dx) > proximity_range_.x())
+      continue;
+
+    SnapSearchResult y_candidate = GetSnapSearchResult(SearchAxis::kY, area);
+    float dy = y_candidate.snap_offset() - strategy.current_position().y();
+    if (std::abs(dy) > proximity_range_.y())
+      continue;
+
+    // Preferentially minimize block scrolling distance. Ties in block scrolling
+    // distance are resolved by considering inline scrolling distance.
+    gfx::Vector2dF distance = DistanceFromCorridor(dx, dy, rect_);
+    if (distance.y() < smallest_distance.y() ||
+        (distance.y() == smallest_distance.y() &&
+         distance.x() < smallest_distance.x())) {
+      smallest_distance = distance;
+      snap_position->set_x(x_candidate.snap_offset());
+      snap_position->set_y(y_candidate.snap_offset());
+      found = true;
+    }
+  }
+
+  return found;
 }
 
 base::Optional<SnapSearchResult>
