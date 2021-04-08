@@ -9,11 +9,13 @@
 #include "base/strings/string_util.h"
 #include "components/embedder_support/android/util_jni_headers/UrlUtilities_jni.h"
 #include "components/google/core/common/google_util.h"
+#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::ConvertJavaStringToUTF8;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -87,7 +89,7 @@ static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetDomainAndRegistry(
   net::registry_controlled_domains::PrivateRegistryFilter filter =
       GetRegistryFilter(include_private);
 
-  return base::android::ConvertUTF8ToJavaString(
+  return ConvertUTF8ToJavaString(
       env,
       net::registry_controlled_domains::GetDomainAndRegistry(gurl, filter));
 }
@@ -206,6 +208,15 @@ static jboolean JNI_UrlUtilities_IsDownloadable(
     const JavaParamRef<jobject>& url) {
   return CheckSchemeBelongsToList(
       env, *url::GURLAndroid::ToNativeGURL(env, url), g_downloadable_schemes);
+}
+
+static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_EscapeQueryParamValue(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& url,
+    jboolean use_plus) {
+  return ConvertUTF8ToJavaString(
+      env, net::EscapeQueryParamValue(
+               base::android::ConvertJavaStringToUTF8(url), use_plus));
 }
 
 }  // namespace embedder_support

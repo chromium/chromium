@@ -147,7 +147,19 @@ public class PageAnnotationsServiceProxyUnitTest {
             Assert.assertNotNull(result.getAnnotations());
             verifyAnnotations(result.getAnnotations());
         });
-        verifyEndpointFetcherCalled(1, "my-endpoint.com?url=" + DUMMY_PAGE_URL.getSpec(),
+        verifyEndpointFetcherCalled(1, "my-endpoint.com?url=https%3A%2F%2Fwww.red.com%2Fpage1",
+                new String[] {"Accept-Language", LocaleUtils.getDefaultLocaleListString()});
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:page_annotations_base_url/my-endpoint.com"})
+    public void testFetchSinglePageAnnotationsUrlEscaping() {
+        mServiceProxy.fetchAnnotations(
+                new GURL("http://foo.bar?some=param with spaces"), (result) -> {});
+        verifyEndpointFetcherCalled(1,
+                "my-endpoint.com?url=http%3A%2F%2Ffoo.bar%2F%3Fsome%3Dparam%2520with%2520spaces",
                 new String[] {"Accept-Language", LocaleUtils.getDefaultLocaleListString()});
     }
 
