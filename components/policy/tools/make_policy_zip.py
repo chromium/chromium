@@ -34,7 +34,7 @@ def main():
 
   # Process file list, possibly expanding language placeholders.
   _LANG_PLACEHOLDER = "${lang}"
-  languages = filter(bool, args.languages.split(','))
+  languages = list(filter(bool, args.languages.split(',')))
   file_list = []
   for file_to_add in args.files:
     if (_LANG_PLACEHOLDER in file_to_add):
