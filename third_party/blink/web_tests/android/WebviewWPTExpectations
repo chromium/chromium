@@ -114,7 +114,7 @@ crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-top.https.html [ Timeout ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-window.https.html [ Timeout ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/report-to-both_coop-ro.https.html [ Timeout ]
-crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Failure timeout ]
+crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Failure Timeout ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-four-reports.https.html [ Failure ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-from-unsafe-none.https.html [ Failure ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html [ Failure ]
