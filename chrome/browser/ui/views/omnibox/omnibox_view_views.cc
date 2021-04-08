@@ -234,14 +234,13 @@ void OmniboxViewViews::ElideAnimation::Start(
   // consumers can query them.
   elide_to_bounds_ = elide_to_bounds;
 
-  animation_ = std::make_unique<gfx::MultiAnimation>(
-      gfx::MultiAnimation::Parts({
+  animation_ =
+      std::make_unique<gfx::MultiAnimation>(gfx::MultiAnimation::Parts({
           gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(delay_ms),
                                     gfx::Tween::ZERO),
           gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(300),
                                     gfx::Tween::FAST_OUT_SLOW_IN),
-      }),
-      gfx::MultiAnimation::kDefaultTimerInterval);
+      }));
   animation_->set_delegate(this);
   animation_->set_continuous(false);
 

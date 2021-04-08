@@ -41,14 +41,11 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
                                  base::OnceClosure done_callback)
     : start_(start),
       target_(target),
-      animation_(
-          std::vector<gfx::MultiAnimation::Part>{
-              gfx::MultiAnimation::Part(kFadeInDuration,
-                                        gfx::Tween::Type::LINEAR),
-              gfx::MultiAnimation::Part(kFlyDuration, gfx::Tween::Type::LINEAR),
-              gfx::MultiAnimation::Part(kFadeOutDuration,
-                                        gfx::Tween::Type::LINEAR)},
-          gfx::MultiAnimation::kDefaultTimerInterval),
+      animation_(std::vector<gfx::MultiAnimation::Part>{
+          gfx::MultiAnimation::Part(kFadeInDuration, gfx::Tween::Type::LINEAR),
+          gfx::MultiAnimation::Part(kFlyDuration, gfx::Tween::Type::LINEAR),
+          gfx::MultiAnimation::Part(kFadeOutDuration,
+                                    gfx::Tween::Type::LINEAR)}),
       done_callback_(std::move(done_callback)) {
   animation_.set_delegate(this);
   animation_.set_continuous(false);

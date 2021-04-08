@@ -246,25 +246,20 @@ TabCounterAnimator::TabCounterAnimator(views::Label* appearing_label,
                                        views::Throbber* throbber)
     : appearing_label_(appearing_label),
       disappearing_label_(disappearing_label),
-      label_animation_(
-          std::vector<gfx::MultiAnimation::Part>{
-              // Stay in place.
-              gfx::MultiAnimation::Part(kFirstPartDuration,
-                                        gfx::Tween::Type::ZERO),
-              // Swap out to the new label.
-              gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(200),
-                                        gfx::Tween::Type::EASE_IN_OUT)},
-          gfx::MultiAnimation::kDefaultTimerInterval),
+      label_animation_(std::vector<gfx::MultiAnimation::Part>{
+          // Stay in place.
+          gfx::MultiAnimation::Part(kFirstPartDuration, gfx::Tween::Type::ZERO),
+          // Swap out to the new label.
+          gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(200),
+                                    gfx::Tween::Type::EASE_IN_OUT)}),
       border_view_(border_view),
-      border_animation_(
-          std::vector<gfx::MultiAnimation::Part>{
-              gfx::MultiAnimation::Part(kFirstPartDuration,
-                                        gfx::Tween::Type::EASE_OUT),
-              gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(150),
-                                        gfx::Tween::Type::EASE_IN_OUT),
-              gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(50),
-                                        gfx::Tween::Type::EASE_IN_OUT)},
-          gfx::MultiAnimation::kDefaultTimerInterval),
+      border_animation_(std::vector<gfx::MultiAnimation::Part>{
+          gfx::MultiAnimation::Part(kFirstPartDuration,
+                                    gfx::Tween::Type::EASE_OUT),
+          gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(150),
+                                    gfx::Tween::Type::EASE_IN_OUT),
+          gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(50),
+                                    gfx::Tween::Type::EASE_IN_OUT)}),
       throbber_(throbber) {
   label_animation_.set_delegate(this);
   label_animation_.set_continuous(false);

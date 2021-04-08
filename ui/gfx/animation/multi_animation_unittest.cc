@@ -18,7 +18,7 @@ TEST(MultiAnimationTest, Basic) {
   parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(100),
                                        Tween::EASE_OUT));
 
-  MultiAnimation animation(parts, MultiAnimation::kDefaultTimerInterval);
+  MultiAnimation animation(parts);
   AnimationContainerElement* as_element =
       static_cast<AnimationContainerElement*>(&animation);
   as_element->SetStartTime(base::TimeTicks());
@@ -45,7 +45,7 @@ TEST(MultiAnimationTest, DontCycle) {
   MultiAnimation::Parts parts;
   parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(200),
                                        Tween::LINEAR));
-  MultiAnimation animation(parts, MultiAnimation::kDefaultTimerInterval);
+  MultiAnimation animation(parts);
   AnimationContainerElement* as_element =
       static_cast<AnimationContainerElement*>(&animation);
   as_element->SetStartTime(base::TimeTicks());
@@ -78,7 +78,7 @@ TEST(MultiAnimationTest, ExceedCycleNonContinuous) {
   MultiAnimation::Parts parts;
   parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(200),
                                        Tween::LINEAR));
-  MultiAnimation animation(parts, MultiAnimation::kDefaultTimerInterval);
+  MultiAnimation animation(parts);
   CurrentValueDelegate delegate;
   animation.set_delegate(&delegate);
   animation.set_continuous(false);
@@ -96,7 +96,7 @@ TEST(MultiAnimationTest, Cycle) {
   MultiAnimation::Parts parts;
   parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(200),
                                        Tween::LINEAR));
-  MultiAnimation animation(parts, MultiAnimation::kDefaultTimerInterval);
+  MultiAnimation animation(parts);
   AnimationContainerElement* as_element =
       static_cast<AnimationContainerElement*>(&animation);
   as_element->SetStartTime(base::TimeTicks());
@@ -120,7 +120,7 @@ TEST(MultiAnimationTest, GetCurrentValueDerivedFromStartAndEndOfCurrentPart) {
                                        Tween::EASE_OUT, kSecondPartStart,
                                        kSecondPartEnd));
 
-  MultiAnimation animation(parts, MultiAnimation::kDefaultTimerInterval);
+  MultiAnimation animation(parts);
   animation.set_continuous(false);
   AnimationContainerElement* as_element =
       static_cast<AnimationContainerElement*>(&animation);

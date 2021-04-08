@@ -61,7 +61,9 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
   static constexpr auto kDefaultTimerInterval =
       base::TimeDelta::FromMilliseconds(20);
 
-  MultiAnimation(const Parts& parts, base::TimeDelta timer_interval);
+  explicit MultiAnimation(
+      const Parts& parts,
+      base::TimeDelta timer_interval = kDefaultTimerInterval);
   ~MultiAnimation() override;
 
   // Sets whether the animation continues after it reaches the end. If true, the
