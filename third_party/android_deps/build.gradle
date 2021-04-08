@@ -151,7 +151,7 @@ dependencies {
     androidTestCompile "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
 
 
-    def robolectricVersion = '4.5.1'
+    def robolectricVersion = '4.3.1'
     // Use testCompile to avoid having support_android = true set on
     // robolectric dependencies.
     testCompile "org.robolectric:robolectric:${robolectricVersion}"
