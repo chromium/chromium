@@ -55,6 +55,15 @@
 #include "chrome/browser/chromeos/net/delay_network_call.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/optional.h"
+#include "chrome/browser/lacros/account_manager_util.h"
+#include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_util.h"
+#endif
+
 #if !defined(OS_ANDROID)
 #include "chrome/browser/profiles/profile_window.h"
 #endif
@@ -266,6 +275,37 @@ void ChromeSigninClient::SetDiceMigrationCompleted() {
 bool ChromeSigninClient::IsNonEnterpriseUser(const std::string& username) {
   return policy::BrowserPolicyConnector::IsNonEnterpriseUser(username);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Returns the account that must be auto-signed-in to the Main Profile in
+// Lacros.
+// This is, when available, the account used to sign into the Chrome OS
+// session. This may be a Gaia account or a Microsoft Active Directory
+// account. This field will be null for Guest sessions, Managed Guest
+// sessions, Demo mode, and Kiosks. Note that this is different from the
+// concept of a Primary Account in the browser. A user may not be signed into
+// a Lacros browser Profile, or may be signed into a browser Profile with an
+// account which is different from the account which they used to sign into
+// the device - aka Device Account.
+// Also note that this will be null for Secondary / non-Main Profiles in
+// Lacros, because they do not start with the Chrome OS Device Account
+// signed-in by default.
+base::Optional<account_manager::Account>
+ChromeSigninClient::GetInitialPrimaryAccount() {
+  if (!IsAccountManagerAvailable(profile_)) {
+    // Secondary Profiles in Lacros do not start with the Device Account signed
+    // in.
+    return base::nullopt;
+  }
+
+  const crosapi::mojom::AccountPtr& device_account =
+      chromeos::LacrosChromeServiceImpl::Get()->init_params()->device_account;
+  if (!device_account)
+    return base::nullopt;
+
+  return account_manager::FromMojoAccount(device_account);
+}
+#endif
 
 void ChromeSigninClient::SetURLLoaderFactoryForTest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {

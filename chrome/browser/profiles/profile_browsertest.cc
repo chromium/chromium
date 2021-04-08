@@ -1174,7 +1174,6 @@ IN_PROC_BROWSER_TEST_F(
   FlushIoTaskRunnerAndSpinThreads();
 }
 
-// TODO(sinhak): Remove this test after launching go/cros-dent-1-lacros.
 IN_PROC_BROWSER_TEST_F(
     ProfileBrowserTest,
     IsMainProfileReturnsTrueForMainProfileInRegularSessions) {

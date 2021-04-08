@@ -334,6 +334,12 @@ class IdentityManagerTest : public testing::Test {
       identity_manager_->Shutdown();
     identity_manager_.reset();
 
+    if (temp_profile_dir_.IsValid()) {
+      // We are actually re-creating everything. Delete the previously used
+      // directory.
+      ASSERT_TRUE(temp_profile_dir_.Delete());
+    }
+
     ASSERT_TRUE(temp_profile_dir_.CreateUniqueTempDir());
 
     auto account_tracker_service = std::make_unique<AccountTrackerService>();
@@ -426,6 +432,9 @@ class IdentityManagerTest : public testing::Test {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     init_params.ash_account_manager = ash_account_manager;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    init_params.signin_client = &signin_client_;
 #endif
 
     init_params.account_fetcher_service = std::move(account_fetcher_service);
@@ -2237,6 +2246,24 @@ TEST_F(IdentityManagerTest, AreRefreshTokensLoaded) {
   run_loop.Run();
   EXPECT_TRUE(identity_manager()->AreRefreshTokensLoaded());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(IdentityManagerTest, SetPrimaryAccount) {
+  signin_client()->SetInitialPrimaryAccountForTests(account_manager::Account{
+      account_manager::AccountKey{kTestGaiaId,
+                                  account_manager::AccountType::kGaia},
+      kTestEmail});
+  // Do not sign into a primary account as part of the test setup.
+  RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
+                          PrimaryAccountManagerSetup::kNoAuthenticatedAccount);
+
+  // We should have a Primary Account set up automatically.
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_EQ(
+      kTestGaiaId,
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
+}
+#endif
 
 TEST_F(IdentityManagerTest, AccountIdMigration_DoneOnInitialization) {
   EXPECT_EQ(IdentityManager::AccountIdMigrationState::MIGRATION_DONE,

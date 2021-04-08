@@ -13,6 +13,11 @@
 #include "services/network/test/test_cookie_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/optional.h"
+#include "components/account_manager_core/account.h"
+#endif
+
 TestSigninClient::TestSigninClient(
     PrefService* pref_service,
     network::TestURLLoaderFactory* test_url_loader_factory)
@@ -115,3 +120,16 @@ void TestSigninClient::SetDiceMigrationCompleted() {
 bool TestSigninClient::IsNonEnterpriseUser(const std::string& email) {
   return gaia::ExtractDomainName(email) == "gmail.com";
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+base::Optional<account_manager::Account>
+TestSigninClient::GetInitialPrimaryAccount() {
+  return initial_primary_account_;
+}
+
+void TestSigninClient::SetInitialPrimaryAccountForTests(
+    const account_manager::Account& account) {
+  initial_primary_account_ = base::make_optional(account);
+}
+
+#endif

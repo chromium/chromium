@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
@@ -14,6 +15,7 @@
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
 #include "components/signin/internal/identity_manager/ubertoken_fetcher_impl.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -33,7 +35,42 @@
 #include "components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/account.h"
+#include "components/signin/public/base/signin_switches.h"
+#endif
+
 namespace signin {
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void SetPrimaryAccount(IdentityManager* identity_manager,
+                       AccountTrackerService* account_tracker_service,
+                       SigninClient* signin_client,
+                       const account_manager::Account& device_account) {
+  if (device_account.key.account_type != account_manager::AccountType::kGaia)
+    return;
+
+  // An account can be set as the Primary Account only if it exists in
+  // `AccountTrackerService`. However, for the first run, when accounts have not
+  // yet been received from `AccountManagerFacade`, entities can ask about the
+  // Primary Account and expect it to be available pretty early. Manually seed
+  // the account in `AccountTrackerService` to get around this issue.
+  const CoreAccountId account_id = account_tracker_service->SeedAccountInfo(
+      /*gaia=*/device_account.key.id, device_account.raw_email);
+  // TODO(https://crbug.com/1194983): Figure out how split sync settings will
+  // work here.
+  identity_manager->GetPrimaryAccountMutator()->SetUnconsentedPrimaryAccount(
+      account_id);
+
+  CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+  CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia,
+           device_account.key.id);
+}
+#endif
+
+}  // namespace
 
 IdentityManager::InitParameters::InitParameters() = default;
 
@@ -48,6 +85,9 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
           std::move(parameters.gaia_cookie_manager_service)),
       primary_account_manager_(std::move(parameters.primary_account_manager)),
       account_fetcher_service_(std::move(parameters.account_fetcher_service)),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      signin_client_(parameters.signin_client),
+#endif
       identity_mutator_(std::move(parameters.primary_account_mutator),
                         std::move(parameters.accounts_mutator),
                         std::move(parameters.accounts_cookie_mutator),
@@ -88,6 +128,20 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash_account_manager_ = parameters.ash_account_manager;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // We need to set the Primary Account in Lacros. In Ash, this happens in
+  // `UserSessionManager::InitProfilePreferences`, before anyone starts using
+  // Profile / KeyedServices - but with the availability of IdentityManager. We
+  // don't have such a place in Lacros - which guarantees that the Primary
+  // Account will be available on startup - just like Ash.
+  base::Optional<account_manager::Account> initial_account =
+      signin_client_->GetInitialPrimaryAccount();
+  if (initial_account.has_value()) {
+    SetPrimaryAccount(this, account_tracker_service_.get(), signin_client_,
+                      initial_account.value());
+  }
 #endif
 }
 

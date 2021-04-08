@@ -55,6 +55,10 @@ static_library("base") {
 
   if (is_chromeos_ash) {
     deps += [ "//components/user_manager" ]
+    public_deps += [ "//components/account_manager_core" ]
+  }
+  if (is_chromeos_lacros) {
+    public_deps += [ "//components/account_manager_core" ]
   }
 }
 

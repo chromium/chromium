@@ -17,6 +17,7 @@
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
+#include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -380,6 +381,9 @@ class IdentityManager : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::AccountManager* ash_account_manager = nullptr;
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    SigninClient* signin_client = nullptr;
+#endif
 
     bool allow_access_token_fetch = true;
 
@@ -664,6 +668,9 @@ class IdentityManager : public KeyedService,
   std::unique_ptr<GaiaCookieManagerService> gaia_cookie_manager_service_;
   std::unique_ptr<PrimaryAccountManager> primary_account_manager_;
   std::unique_ptr<AccountFetcherService> account_fetcher_service_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  SigninClient* const signin_client_;
+#endif
 
   IdentityMutator identity_mutator_;
 

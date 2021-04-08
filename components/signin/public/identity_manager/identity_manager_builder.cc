@@ -175,6 +175,9 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   init_params.ash_account_manager = params->account_manager;
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  init_params.signin_client = params->signin_client;
+#endif
 
   init_params.allow_access_token_fetch = params->allow_access_token_fetch;
   return init_params;

@@ -20,6 +20,11 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/optional.h"
+#include "components/account_manager_core/account.h"
+#endif
+
 class PrefService;
 
 // An implementation of SigninClient for use in unittests. Instantiates test
@@ -77,6 +82,7 @@ class TestSigninClient : public SigninClient {
   // executed immediately.
   void SetNetworkCallsDelayed(bool value);
 
+  // SigninClient overrides:
   bool AreSigninCookiesAllowed() override;
   bool AreSigninCookiesDeletedOnExit() override;
   void AddContentSettingsObserver(
@@ -89,6 +95,14 @@ class TestSigninClient : public SigninClient {
       gaia::GaiaSource source) override;
   void SetDiceMigrationCompleted() override;
   bool IsNonEnterpriseUser(const std::string& email) override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::Optional<account_manager::Account> GetInitialPrimaryAccount() override;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void SetInitialPrimaryAccountForTests(
+      const account_manager::Account& account);
+#endif
 
  private:
   std::unique_ptr<network::TestURLLoaderFactory>
@@ -103,6 +117,10 @@ class TestSigninClient : public SigninClient {
   bool is_dice_migration_completed_;
 
   std::vector<base::OnceClosure> delayed_network_calls_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::Optional<account_manager::Account> initial_primary_account_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(TestSigninClient);
 };
