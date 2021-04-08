@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
@@ -32,6 +33,10 @@ struct CookieParamsForTest {
 };
 
 class IdentityManager;
+
+// Blocks until `LoadCredentials` is complete and `OnRefreshTokensLoaded` is
+// invoked.
+void WaitForRefreshTokensLoaded(IdentityManager* identity_manager);
 
 // Sets the primary account (which must not already be set) to the given email
 // address, generating a GAIA ID that corresponds uniquely to that email
@@ -159,6 +164,14 @@ void UpdatePersistentErrorOfRefreshTokenForAccount(
     IdentityManager* identity_manager,
     const CoreAccountId& account_id,
     const GoogleServiceAuthError& auth_error);
+
+// Waits until `GetErrorStateOfRefreshTokenForAccount` result for `account_id`
+// satisfies the passed `predicate`. If calling the predicate on the current
+// error state returns true, this method returns immediately.
+void WaitForErrorStateOfRefreshTokenUpdatedForAccount(
+    IdentityManager* identity_manager,
+    const CoreAccountId& account_id,
+    base::RepeatingCallback<bool(const GoogleServiceAuthError&)> predicate);
 
 // Disables internal retries of failed access token fetches.
 void DisableAccessTokenFetchRetries(IdentityManager* identity_manager);

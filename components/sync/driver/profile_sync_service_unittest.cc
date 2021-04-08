@@ -810,6 +810,10 @@ TEST_F(ProfileSyncServiceTest,
 // Verify that sync transport data is cleared when the service is initializing
 // and account is signed out.
 TEST_F(ProfileSyncServiceTest, ClearTransportDataOnInitializeWhenSignedOut) {
+  // Clearing prefs can be triggered only after `IdentityManager` finishes
+  // loading the list of accounts, so wait for it to complete.
+  identity_test_env()->WaitForRefreshTokensLoaded();
+
   // Don't sign-in before creating the service.
   CreateService(ProfileSyncService::MANUAL_START);
 

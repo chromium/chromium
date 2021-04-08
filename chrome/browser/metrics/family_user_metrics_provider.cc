@@ -69,6 +69,11 @@ int GetNumSecondaryAccounts(Profile* profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   DCHECK(identity_manager);
+  if (!identity_manager->AreRefreshTokensLoaded()) {
+    // IdentityManager hasn't finished loading accounts, return -1 to indicate
+    // that we don't know the number of secondary accounts yet.
+    return -1;
+  }
   int num_accounts = identity_manager->GetAccountsWithRefreshTokens().size();
   return num_accounts - 1;
 }
@@ -139,8 +144,7 @@ void FamilyUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
 
 // Called when the user adds a secondary account. We're only interested in
 // detecting when a supervised user adds an EDU secondary account.
-void FamilyUserMetricsProvider::OnRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info) {
+void FamilyUserMetricsProvider::OnRefreshTokensLoaded() {
   Profile* profile = GetPrimaryUserProfile();
 
   num_secondary_accounts_ = GetNumSecondaryAccounts(profile);
@@ -151,16 +155,20 @@ void FamilyUserMetricsProvider::OnRefreshTokenUpdatedForAccount(
     family_user_log_segment_ = FamilyUserLogSegment::kSupervisedStudent;
 }
 
+void FamilyUserMetricsProvider::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  // Call OnRefreshTokensLoaded to update `num_secondary_accounts_` and
+  // `family_user_log_segment_`.
+  OnRefreshTokensLoaded();
+}
+
 // Called when the user removes a secondary account. We're interested in
 // detecting when a supervised user removes an EDU secondary account.
 void FamilyUserMetricsProvider::OnRefreshTokenRemovedForAccount(
     const CoreAccountId& account_id) {
-  Profile* profile = GetPrimaryUserProfile();
-
-  num_secondary_accounts_ = GetNumSecondaryAccounts(profile);
-
-  if (IsSupervisedUser(profile))
-    family_user_log_segment_ = FamilyUserLogSegment::kSupervisedUser;
+  // Call OnRefreshTokensLoaded to update `num_secondary_accounts_` and
+  // `family_user_log_segment_`.
+  OnRefreshTokensLoaded();
 }
 
 // static

@@ -358,6 +358,10 @@ class OAuth2Test : public OobeBaseTest {
     return user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN;
   }
 
+  signin::IdentityManager* identity_manager() {
+    return IdentityManagerFactory::GetForProfile(GetProfile());
+  }
+
  protected:
   // OobeBaseTest overrides.
   Profile* GetProfile() {
@@ -405,17 +409,6 @@ class OAuth2Test : public OobeBaseTest {
 
   void WaitForMergeSessionCompletion(
       OAuth2LoginManager::SessionRestoreState final_state) {
-    // Wait for all pending tasks to be completed before waiting for
-    // MergeSession. `SESSION_RESTORE_DONE` does not always mean valid token
-    // because the merge session operation could be skipped when the first
-    // account in Gaia cookies matches the primary account in TokenService.
-    // In this case the token could still be invalid. Wait for Access Token
-    // fetch requests to complete to make sure that after the test calls
-    // `WaitForMergeSessionCompletion` it can safely check token status. This
-    // race condition should be fixed after migration of OAuth2LoginManager to
-    // observe AccountReconcilor (https://crbug.com/1051956).
-    base::RunLoop().RunUntilIdle();
-
     // Wait for the session merge to finish.
     std::set<OAuth2LoginManager::SessionRestoreState> states;
     states.insert(OAuth2LoginManager::SESSION_RESTORE_DONE);
@@ -581,11 +574,19 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, MergeSession) {
       TryToLogin(AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId),
                  kTestAccountPassword));
 
-  ASSERT_EQ(kTestGaiaId,
-            PickAccountId(GetProfile(), kTestGaiaId, kTestEmail).ToString());
+  CoreAccountId account_id =
+      PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
+  ASSERT_EQ(kTestGaiaId, account_id.ToString());
 
   // Wait for the session merge to finish.
   WaitForMergeSessionCompletion(OAuth2LoginManager::SESSION_RESTORE_DONE);
+
+  base::RepeatingCallback<bool(const GoogleServiceAuthError&)> predicate =
+      base::BindRepeating([](const GoogleServiceAuthError& error) {
+        return error.state() == GoogleServiceAuthError::SERVICE_ERROR;
+      });
+  signin::WaitForErrorStateOfRefreshTokenUpdatedForAccount(
+      identity_manager(), account_id, predicate);
 
   EXPECT_EQ(GetOAuthStatusFromLocalState(kTestEmail),
             user_manager::User::OAUTH2_TOKEN_STATUS_INVALID);
@@ -731,16 +732,26 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, SetInvalidTokenStatus) {
       OAuth2LoginManagerFactory::GetInstance()->GetForProfile(GetProfile());
   ASSERT_NE(OAuth2LoginManager::SESSION_RESTORE_DONE, login_manager->state());
 
+  CoreAccountId account_id =
+      PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
   // Generate an auth error.
   signin::SetInvalidRefreshTokenForAccount(
       IdentityManagerFactory::GetInstance()->GetForProfile(GetProfile()),
-      PickAccountId(GetProfile(), kTestGaiaId, kTestEmail));
+      account_id);
 
   // Let go /ListAccounts request.
   list_accounts_request_deferer.UnblockRequest();
 
   // Wait for the session merge to finish with success.
   WaitForMergeSessionCompletion(OAuth2LoginManager::SESSION_RESTORE_DONE);
+
+  base::RepeatingCallback<bool(const GoogleServiceAuthError&)> predicate =
+      base::BindRepeating([](const GoogleServiceAuthError& error) {
+        return error.state() ==
+               GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS;
+      });
+  signin::WaitForErrorStateOfRefreshTokenUpdatedForAccount(
+      identity_manager(), account_id, predicate);
 
   // User oauth2 token status should be marked as invalid because of auth error
   // and regardless of the merge session outcome.

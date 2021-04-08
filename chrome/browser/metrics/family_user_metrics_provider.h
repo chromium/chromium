@@ -64,6 +64,7 @@ class FamilyUserMetricsProvider
   void OnUserSessionStarted(bool is_primary_user) override;
 
   // signin::IdentityManager::Observer:
+  void OnRefreshTokensLoaded() override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(

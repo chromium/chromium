@@ -451,6 +451,14 @@ class IdentityManagerTest : public testing::Test {
     identity_manager_diagnostics_observer_ =
         std::make_unique<TestIdentityManagerDiagnosticsObserver>(
             identity_manager_.get());
+
+    // CustomFakeProfileOAuth2TokenService loads credentials immediately, so
+    // several tests (for example, `AreRefreshTokensLoaded`) expect this
+    // behavior from all platforms, even from ones where tokens are loaded
+    // asynchronously (e.g., ChromeOS). Wait for loading to finish to meet these
+    // expectations.
+    // TODO(https://crbug.com/1195170): Move waiting to tests that need it.
+    signin::WaitForRefreshTokensLoaded(identity_manager());
   }
 
   void SimulateAdditionOfAccountToCookieSuccess(GaiaAuthConsumer* consumer,

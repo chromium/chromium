@@ -302,7 +302,12 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
         identity_manager_
             ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
                 account_key.id);
-    DCHECK(maybe_account_info.has_value());
+    if (!maybe_account_info.has_value()) {
+      // This account hasn't propagated to IdentityManager yet. When this
+      // happens, `IdentityManager` will call `OnRefreshTokenUpdatedForAccount`
+      // which will trigger another UI update.
+      continue;
+    }
 
     AccountBuilder account;
     account.SetId(account_key.id)
@@ -427,7 +432,14 @@ void AccountManagerUIHandler::OnAccountRemoved(
 }
 
 // |signin::IdentityManager::Observer| overrides.
-//
+// `GetSecondaryGaiaAccounts` skips all accounts that haven't been added to
+// `IdentityManager` yet. Thus, we should trigger an updated whenever a new
+// account is added into `IdentityManager`.
+void AccountManagerUIHandler::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& info) {
+  RefreshUI();
+}
+
 // For newly added accounts, |signin::IdentityManager| may take some time to
 // fetch user's full name and account image. Whenever that is completed, we may
 // need to update the UI with this new set of information. Note that we may be

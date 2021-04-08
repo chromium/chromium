@@ -107,12 +107,6 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest, StartSession) {
 
   StartUserLogIn(true /*wait_for_active_session*/);
 
-  // User should be marked as having a valid OAuth token.
-  const user_manager::UserManager* const user_manager =
-      user_manager::UserManager::Get();
-  EXPECT_EQ(user_manager::User::OAUTH2_TOKEN_STATUS_VALID,
-            user_manager->GetActiveUser()->oauth_token_status());
-
   // Check that the startup pages specified in policy were opened.
   BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1U, browser_list->size());
@@ -163,12 +157,6 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
 
   StartUserLogIn(true /*wait_for_active_session*/);
 
-  // User should be marked as having a valid OAuth token.
-  const user_manager::UserManager* const user_manager =
-      user_manager::UserManager::Get();
-  EXPECT_EQ(user_manager::User::OAUTH2_TOKEN_STATUS_VALID,
-            user_manager->GetActiveUser()->oauth_token_status());
-
   // User should still be marked as not needing policy
   EXPECT_EQ(user_manager::known_user::ProfileRequiresPolicy::kNoPolicyRequired,
             user_manager::known_user::GetProfileRequiresPolicy(
@@ -191,12 +179,6 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
                 logged_in_user_mixin_.GetAccountId()));
 
   StartUserLogIn(true /*wait_for_active_session*/);
-
-  // User should be marked as having a valid OAuth token.
-  const user_manager::UserManager* const user_manager =
-      user_manager::UserManager::Get();
-  EXPECT_EQ(user_manager::User::OAUTH2_TOKEN_STATUS_VALID,
-            user_manager->GetActiveUser()->oauth_token_status());
 
   // User should be marked as not requiring policy.
   EXPECT_EQ(user_manager::known_user::ProfileRequiresPolicy::kNoPolicyRequired,
@@ -223,12 +205,6 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
       ->policy_payload()
       ->Clear();
   StartUserLogIn(true /*wait_for_active_session*/);
-
-  // User should be marked as having a valid OAuth token.
-  const user_manager::UserManager* const user_manager =
-      user_manager::UserManager::Get();
-  EXPECT_EQ(user_manager::User::OAUTH2_TOKEN_STATUS_VALID,
-            user_manager->GetActiveUser()->oauth_token_status());
 
   // User of CHILD type should be marked as requiring policy.
   EXPECT_EQ(user_manager::known_user::ProfileRequiresPolicy::kPolicyRequired,

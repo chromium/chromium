@@ -125,4 +125,11 @@ void AccountsMutatorImpl::MoveAccount(AccountsMutator* target,
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+CoreAccountId AccountsMutatorImpl::SeedAccountInfo(const std::string& gaia_id,
+                                                   const std::string& email) {
+  return account_tracker_service_->SeedAccountInfo(gaia_id, email);
+}
+#endif
+
 }  // namespace signin

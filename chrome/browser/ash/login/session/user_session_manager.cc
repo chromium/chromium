@@ -1210,6 +1210,7 @@ void UserSessionManager::OnProfileCreated(const UserContext& user_context,
 void UserSessionManager::InitProfilePreferences(
     Profile* profile,
     const UserContext& user_context) {
+  DVLOG(1) << "Initializing profile preferences";
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
   if (user->GetType() == user_manager::USER_TYPE_KIOSK_APP &&
@@ -1264,32 +1265,18 @@ void UserSessionManager::InitProfilePreferences(
       DCHECK(!gaia_id.empty());
     }
 
-    // We need to set the Primary Account. This is handled by
-    // `IdentityManager`, which enforces the invariant that only an account
-    // previously known to `IdentityManager` can be set as the Primary
-    // Account. `IdentityManager` gets its knowledge of accounts from
-    // `AccountManager` and hence, before we set the Primary Account, we need
-    // to make sure that:
-    // 1. The account is present in `AccountManager`, and
-    // 2. `IdentityManager` has been notified about it.
+    // Set the Primary Account. Since `IdentityManager` requires that the
+    // account is seeded before it can be set as primary, there are three main
+    // steps in this process:
+    // 1. Make sure that the Primary Account is present in `AccountManager`.
+    // 2. Seed it into `IdentityManager`.
+    // 3. Set it as the Primary Account.
 
     AccountManager* account_manager =
         g_browser_process->platform_part()
             ->GetAccountManagerFactory()
             ->GetAccountManager(profile->GetPath().value());
 
-    // `AccountManager` MUST have been fully initialized at this point (via
-    // `UserSessionManager::InitializeAccountManager`), otherwise we cannot
-    // guarantee that `IdentityManager` will have this account in Step (2).
-    // Reason: `AccountManager::UpsertAccount` is an async API that can
-    // technically take an arbitrarily long amount of time to complete and
-    // notify `AccountManager`'s observers. However, if `AccountManager` has
-    // been fully initialized, `AccountManager::UpsertAccount` and the
-    // associated notifications happen synchronously. We are relying on that
-    // (undocumented) behaviour here.
-    // TODO(sinhak): This is a leaky abstraction. Explore if
-    // `UserSessionManager::InitProfilePreferences` can handle an asynchronous
-    // callback and continue.
     DCHECK(account_manager->IsInitialized());
 
     const ::account_manager::AccountKey account_key{
@@ -1320,13 +1307,15 @@ void UserSessionManager::InitProfilePreferences(
     }
     DCHECK(account_manager->IsTokenAvailable(account_key));
 
-    // 2. Make sure that IdentityManager has been notified about it.
-    base::Optional<AccountInfo> account_info =
-        identity_manager
-            ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
-                gaia_id);
+    // 2. Seed it into `IdentityManager`.
+    // TODO(https://crbug.com/1196784): Check whether we should use
+    //     GetAccountId().GetUserEmail() instead of GetDisplayEmail() here.
+    signin::AccountsMutator* accounts_mutator =
+        identity_manager->GetAccountsMutator();
+    CoreAccountId account_id =
+        accounts_mutator->SeedAccountInfo(gaia_id, user->GetDisplayEmail());
 
-    DCHECK(account_info.has_value());
+    // 3. Set it as the Primary Account.
     if (features::IsSplitSettingsSyncEnabled()) {
       // In theory this should only be done for new profiles. However, if user
       // profile prefs failed to save or the prefs are corrupted by a crash then
@@ -1335,7 +1324,7 @@ void UserSessionManager::InitProfilePreferences(
       if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin)) {
         // Set the account without recording browser sync consent.
         identity_manager->GetPrimaryAccountMutator()
-            ->SetUnconsentedPrimaryAccount(account_info->account_id);
+            ->SetUnconsentedPrimaryAccount(account_id);
       }
 
       CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -1347,7 +1336,7 @@ void UserSessionManager::InitProfilePreferences(
       // created with the feature SplitSettingsSync enabled. Then the
       // profile might only have an unconsented primary account.
       identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account_info->account_id);
+          account_id);
 
       CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
       CHECK_EQ(
@@ -1355,8 +1344,8 @@ void UserSessionManager::InitProfilePreferences(
           gaia_id);
     }
 
-    CoreAccountId account_id =
-        identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin);
+    DCHECK_EQ(account_id,
+              identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin));
     VLOG(1) << "Seed IdentityManager with the authenticated account info, "
             << "success=" << !account_id.empty();
 

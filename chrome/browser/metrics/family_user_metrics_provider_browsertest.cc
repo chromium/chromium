@@ -143,6 +143,8 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
       0);
 
   logged_in_user_mixin_.LogInUser();
+  signin::WaitForRefreshTokensLoaded(
+      IdentityManagerFactory::GetForProfile(browser()->profile()));
 
   if (GetFamilyUserLogSegment() ==
       FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedStudent) {
@@ -242,6 +244,8 @@ class FamilyUserMetricsProviderEphemeralUserTest
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     logged_in_user_mixin_.LogInUser();
+    signin::WaitForRefreshTokensLoaded(
+        IdentityManagerFactory::GetForProfile(browser()->profile()));
   }
 
   chromeos::DeviceStateMixin device_state_{

@@ -37,22 +37,6 @@ namespace signin {
 
 namespace {
 
-void WaitForLoadCredentialsToComplete(IdentityManager* identity_manager) {
-  base::RunLoop run_loop;
-  TestIdentityManagerObserver load_credentials_observer(identity_manager);
-  load_credentials_observer.SetOnRefreshTokensLoadedCallback(
-      run_loop.QuitClosure());
-
-  if (identity_manager->AreRefreshTokensLoaded())
-    return;
-
-  // Do NOT explicitly load credentials here:
-  // 1. It is not re-entrant and will DCHECK fail.
-  // 2. It should have been called by IdentityManager during its initialization.
-
-  run_loop.Run();
-}
-
 // Helper function that updates the refresh token for |account_id| to
 // |new_token|. Before updating the refresh token, blocks until refresh tokens
 // are loaded. After updating the token, blocks until the update is processed by
@@ -75,7 +59,7 @@ void UpdateRefreshTokenForAccount(
   // that refresh token mutation cannot occur until refresh tokens are loaded,
   // and it is desired to eventually enforce that invariant across all
   // platforms.
-  WaitForLoadCredentialsToComplete(identity_manager);
+  WaitForRefreshTokensLoaded(identity_manager);
 
   base::RunLoop run_loop;
   TestIdentityManagerObserver token_updated_observer(identity_manager);
@@ -113,7 +97,39 @@ AccountInfo EnsureAccountExists(AccountTrackerService* account_tracker_service,
   return account_info;
 }
 
+// Helper for `WaitForErrorStateOfRefreshTokenUpdatedForAccount` - checks the
+// current error status using a predicate and calls quit_closure if the
+// predicate returns `true`.
+void CompareErrorStatusAndCallClosure(
+    IdentityManager* identity_manager,
+    const CoreAccountId& account_id,
+    base::RepeatingCallback<bool(const GoogleServiceAuthError&)> predicate,
+    const base::RepeatingClosure& quit_closure) {
+  GoogleServiceAuthError error =
+      identity_manager->GetErrorStateOfRefreshTokenForAccount(account_id);
+  if (predicate.Run(error))
+    quit_closure.Run();
+}
+
 }  // namespace
+
+void WaitForRefreshTokensLoaded(IdentityManager* identity_manager) {
+  base::RunLoop run_loop;
+  TestIdentityManagerObserver load_credentials_observer(identity_manager);
+  load_credentials_observer.SetOnRefreshTokensLoadedCallback(
+      run_loop.QuitClosure());
+
+  if (identity_manager->AreRefreshTokensLoaded())
+    return;
+
+  // Do NOT explicitly load credentials here:
+  // 1. It is not re-entrant and will DCHECK fail.
+  // 2. It should have been called by IdentityManager during its initialization.
+
+  run_loop.Run();
+
+  DCHECK(identity_manager->AreRefreshTokensLoaded());
+}
 
 CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
                                   const std::string& email) {
@@ -257,7 +273,7 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
 
   // Wait until tokens are loaded, otherwise the account will be removed as soon
   // as tokens finish loading.
-  WaitForLoadCredentialsToComplete(identity_manager);
+  WaitForRefreshTokensLoaded(identity_manager);
 
   std::string gaia_id = GetTestGaiaIdForEmail(email);
   account_tracker_service->SeedAccountInfo(gaia_id, email);
@@ -284,7 +300,7 @@ AccountInfo MakeAccountAvailableWithCookies(
 
   // Wait until tokens are loaded, otherwise the account will be removed as soon
   // as tokens finish loading.
-  WaitForLoadCredentialsToComplete(identity_manager);
+  WaitForRefreshTokensLoaded(identity_manager);
 
   SetCookieAccounts(identity_manager, test_url_loader_factory,
                     {{email, gaia_id}});
@@ -425,6 +441,25 @@ void UpdatePersistentErrorOfRefreshTokenForAccount(
   DCHECK(identity_manager->HasAccountWithRefreshToken(account_id));
   identity_manager->GetTokenService()->GetDelegate()->UpdateAuthError(
       account_id, auth_error);
+}
+
+void WaitForErrorStateOfRefreshTokenUpdatedForAccount(
+    IdentityManager* identity_manager,
+    const CoreAccountId& account_id,
+    base::RepeatingCallback<bool(const GoogleServiceAuthError&)> predicate) {
+  DCHECK(identity_manager->HasAccountWithRefreshToken(account_id));
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure check_error_status =
+      base::BindRepeating(&CompareErrorStatusAndCallClosure, identity_manager,
+                          account_id, predicate, run_loop.QuitClosure());
+  TestIdentityManagerObserver token_updated_observer(identity_manager);
+  token_updated_observer.SetOnErrorStateOfRefreshTokenUpdatedCallback(
+      check_error_status);
+  // Call callback explicitly to check the current error state before waiting.
+  check_error_status.Run();
+
+  run_loop.Run();
 }
 
 void DisableAccessTokenFetchRetries(IdentityManager* identity_manager) {

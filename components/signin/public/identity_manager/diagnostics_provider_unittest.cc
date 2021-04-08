@@ -18,7 +18,9 @@ namespace {
 
 class DiagnosticsProviderTest : public testing::Test {
  public:
-  DiagnosticsProviderTest() = default;
+  DiagnosticsProviderTest() {
+    identity_test_env()->WaitForRefreshTokensLoaded();
+  }
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;

@@ -311,6 +311,9 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
       GetAccountsFromAccountManager();
   ASSERT_EQ(3UL, account_manager_accounts.size());
 
+  // Wait for accounts to propagate to IdentityManager.
+  base::RunLoop().RunUntilIdle();
+
   // Call "getAccounts".
   base::ListValue args;
   args.AppendString(kHandleFunctionName);

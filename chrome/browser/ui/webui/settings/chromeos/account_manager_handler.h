@@ -48,6 +48,7 @@ class AccountManagerUIHandler
   void OnAccountRemoved(const ::account_manager::Account& account) override;
 
   // |signin::IdentityManager::Observer| overrides.
+  void OnRefreshTokenUpdatedForAccount(const CoreAccountInfo& info) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,

@@ -2835,6 +2835,9 @@ TEST_F(AccountReconcilorTest, LockDestructionOrder) {
 // Checks that multilogin with empty list of accounts in UPDATE mode is changed
 // into a Logout call.
 TEST_F(AccountReconcilorTest, MultiloginLogout) {
+  // Reconcile can't start until accounts are loaded.
+  identity_test_env()->WaitForRefreshTokensLoaded();
+
   // Delegate implementation always returning UPDATE mode with no accounts.
   class MultiloginLogoutDelegate : public signin::AccountReconcilorDelegate {
     bool IsReconcileEnabled() const override { return true; }

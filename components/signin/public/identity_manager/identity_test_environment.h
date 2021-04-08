@@ -106,6 +106,10 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // Returns the |TestIdentityManagerObserver| watching the IdentityManager.
   TestIdentityManagerObserver* identity_manager_observer();
 
+  // Blocks until LoadCredentials is complete and OnRefreshTokensLoaded is
+  // invoked.
+  void WaitForRefreshTokensLoaded();
+
   // Sets the primary account for the given email address, generating a GAIA ID
   // that corresponds uniquely to that email address. On non-ChromeOS, results
   // in the firing of the IdentityManager and PrimaryAccountManager callbacks

@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
 namespace signin_metrics {
@@ -66,6 +67,15 @@ class AccountsMutator {
   // target mutator.
   virtual void MoveAccount(AccountsMutator* target,
                            const CoreAccountId& account_id) = 0;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Seeds account into AccountTrackerService. Used by UserSessionManager to
+  // manually seed the primary account before credentials are loaded.
+  // TODO(https://crbug.com/1195359): Remove after adding an account cache to
+  // AccountManagerFacade.
+  virtual CoreAccountId SeedAccountInfo(const std::string& gaia,
+                                        const std::string& email) = 0;
 #endif
 
  private:

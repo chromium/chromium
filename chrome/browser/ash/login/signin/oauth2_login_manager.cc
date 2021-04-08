@@ -64,7 +64,8 @@ void OAuth2LoginManager::ContinueSessionRestore() {
 
 void OAuth2LoginManager::RestoreSessionFromSavedTokens() {
   signin::IdentityManager* identity_manager = GetIdentityManager();
-  if (identity_manager->HasAccountWithRefreshToken(
+  if (identity_manager->AreRefreshTokensLoaded() &&
+      identity_manager->HasAccountWithRefreshToken(
           GetUnconsentedPrimaryAccountId())) {
     VLOG(1) << "OAuth2 refresh token is already loaded.";
     VerifySessionCookies();

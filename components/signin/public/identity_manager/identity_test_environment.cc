@@ -370,6 +370,10 @@ IdentityTestEnvironment::identity_manager_observer() {
   return test_identity_manager_observer_.get();
 }
 
+void IdentityTestEnvironment::WaitForRefreshTokensLoaded() {
+  signin::WaitForRefreshTokensLoaded(identity_manager());
+}
+
 CoreAccountInfo IdentityTestEnvironment::SetPrimaryAccount(
     const std::string& email) {
   return signin::SetPrimaryAccount(identity_manager(), email);
