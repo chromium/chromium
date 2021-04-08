@@ -18,6 +18,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
+import java.util.Objects;
+
 /**
  * Class to manage connected gamepad devices list.
  *
@@ -247,7 +249,7 @@ public class GamepadList {
         if (inputDevice == null) return false;
 
         // The fingerprint sensor is a SOURCE_JOYSTICK but is not a gamepad.
-        if (inputDevice.getName().equals("uinput-fpc")) return false;
+        if (Objects.equals(inputDevice.getName(), "uinput-fpc")) return false;
 
         return ((inputDevice.getSources() & InputDevice.SOURCE_JOYSTICK)
                 == InputDevice.SOURCE_JOYSTICK);
