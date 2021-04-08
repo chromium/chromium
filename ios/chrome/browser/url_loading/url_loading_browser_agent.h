@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 
 class SceneUrlLoadingService;
@@ -59,11 +60,21 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
   // Loads a url based on |params| in a new tab.
   virtual void LoadUrlInNewTab(const UrlLoadParams& params);
 
+  // Helper function implementing the creation and insertion of the new tab
+  // for LoadUrlInNewTab(). It is split to a separate function as it can be
+  // called asynchronously if the tab is opened in a background (and moving
+  // it to a separate function makes it safer not to capture state that can
+  // become invalid when creating the asynchronous task).
+  void LoadUrlInNewTabImpl(const UrlLoadParams& params,
+                           base::Optional<void*> hint);
+
   __weak id<URLLoadingDelegate> delegate_;
   Browser* browser_;
   UrlLoadingNotifierBrowserAgent* notifier_ = nullptr;
   UrlLoadingBrowserAgent* incognito_loader_ = nullptr;
   SceneUrlLoadingService* scene_service_ = nullptr;
+
+  base::WeakPtrFactory<UrlLoadingBrowserAgent> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_URL_LOADING_URL_LOADING_BROWSER_AGENT_H_

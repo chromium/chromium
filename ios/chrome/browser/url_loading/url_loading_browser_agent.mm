@@ -346,37 +346,58 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   // lead to be calling it twice, and calling 'did' below once.
   notifier_->NewTabWillLoadUrl(params.web_params.url, params.user_initiated);
 
+  if (!params.in_background()) {
+    LoadUrlInNewTabImpl(params, base::nullopt);
+  } else {
+    __block void* hint = nullptr;
+    __block UrlLoadParams saved_params = params;
+    __block base::WeakPtr<UrlLoadingBrowserAgent> weak_ptr =
+        weak_ptr_factory_.GetWeakPtr();
+
+    if (params.append_to == kCurrentTab) {
+      hint = browser_->GetWebStateList()->GetActiveWebState();
+    }
+
+    [delegate_ animateOpenBackgroundTabFromParams:params
+                                       completion:^{
+                                         if (weak_ptr) {
+                                           weak_ptr->LoadUrlInNewTabImpl(
+                                               saved_params, hint);
+                                         }
+                                       }];
+  }
+}
+
+void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
+                                                 base::Optional<void*> hint) {
   web::WebState* parent_web_state = nullptr;
-  if (params.append_to == kCurrentTab)
+  if (params.append_to == kCurrentTab) {
     parent_web_state = browser_->GetWebStateList()->GetActiveWebState();
+
+    // Detect whether the active tab changed during the animation of opening
+    // a tab in the background. This is only needed when opening in background
+    // (thus the use of optional).
+    //
+    // This compare the value read before vs after the animation (as `void*`
+    // to prevent trying to dereference a potentially dangling pointer). This
+    // is not 100% fool proof as the WebState could have been destroyed, then
+    // a new one allocated at the same address and inserted as the active tab.
+    // However, this is highly likely to happen. Even if it were to happen, it
+    // would be benign as the only drawback is that the wrong tab would be
+    // selected upon closing the newly opened tab.
+    if (hint && hint.value() != parent_web_state)
+      parent_web_state = nullptr;
+  }
 
   int insertion_index = TabInsertion::kPositionAutomatically;
   if (params.append_to == kSpecifiedIndex)
     insertion_index = params.insertion_index;
 
-  UrlLoadParams saved_params = params;
-  auto openTab = ^{
-    TabInsertionBrowserAgent* insertionAgent =
-        TabInsertionBrowserAgent::FromBrowser(browser_);
+  TabInsertionBrowserAgent* insertion_agent =
+      TabInsertionBrowserAgent::FromBrowser(browser_);
 
-    web::WebState* adjacent_web_state = parent_web_state;
-    if (adjacent_web_state &&
-        adjacent_web_state !=
-            browser_->GetWebStateList()->GetActiveWebState()) {
-      // The active tab could have changed or be destroyed.
-      adjacent_web_state = nullptr;
-    }
-
-    insertionAgent->InsertWebState(
-        saved_params.web_params, adjacent_web_state, false, insertion_index,
-        saved_params.in_background(), saved_params.inherit_opener);
-    notifier_->NewTabDidLoadUrl(saved_params.web_params.url,
-                                saved_params.user_initiated);
-  };
-
-  if (!params.in_background()) {
-    openTab();
-  } else {
-    [delegate_ animateOpenBackgroundTabFromParams:params completion:openTab];
-  }
+  insertion_agent->InsertWebState(
+      params.web_params, parent_web_state, /*opened_by_dom=*/false,
+      insertion_index, params.in_background(), params.inherit_opener);
+  notifier_->NewTabDidLoadUrl(params.web_params.url, params.user_initiated);
 }
