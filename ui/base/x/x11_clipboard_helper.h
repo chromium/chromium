@@ -32,24 +32,6 @@ class SelectionRequestor;
 // migration is complete and legacy backend gets removed.
 class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
  public:
-  // Represents a list of possible return types. Copy constructable.
-  class TargetList {
-   public:
-    explicit TargetList(const std::vector<x11::Atom>& target_list);
-    TargetList(const TargetList&);
-    TargetList& operator=(const TargetList&);
-    ~TargetList();
-
-    const std::vector<x11::Atom>& target_list() const { return target_list_; }
-
-    bool ContainsText() const;
-    bool ContainsFormat(const ClipboardFormatType& format_type) const;
-    bool ContainsAtom(x11::Atom atom) const;
-
-   private:
-    std::vector<x11::Atom> target_list_;
-  };
-
   explicit XClipboardHelper(base::RepeatingClosure selection_change_closure);
   XClipboardHelper(const XClipboardHelper&) = delete;
   XClipboardHelper& operator=(const XClipboardHelper&) = delete;
@@ -69,22 +51,21 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
   // |buffer|.
   void TakeOwnershipOfSelection(ClipboardBuffer buffer);
 
-  // Returns the first of |types| offered by the current selection holder in
-  // |data_out|, or returns nullptr if none of those types are available.
-  //
-  // If the selection holder is us, this call is synchronous and we pull
-  // the data out of |clipboard_selection_| or |primary_selection_|. If the
-  // selection holder is some other window, we spin up a nested run loop
-  // and do the asynchronous dance with whatever application is holding the
-  // selection.
-  SelectionData RequestAndWaitForTypes(ClipboardBuffer buffer,
-                                       const std::vector<x11::Atom>& types);
+  // Returns the first of |types| offered by the current selection holder, or
+  // returns nullptr if none of those types are available. Blocks until the data
+  // is fetched from the X server, unless we are the selection owner.
+  SelectionData Read(ClipboardBuffer buffer,
+                     const std::vector<x11::Atom>& types);
 
-  // Retrieves the list of possible data types the current clipboard owner has.
-  //
-  // If the selection holder is us, this is synchronous, otherwise this runs a
-  // blocking message loop.
-  TargetList WaitAndGetTargetsList(ClipboardBuffer buffer);
+  // Retrieves the list of possible data types the current clipboard owner has,
+  // for a given |buffer|. Blocks until the data is fetched from the X server,
+  // unless we are the selection owner.
+  std::vector<std::string> GetAvailableTypes(ClipboardBuffer buffer);
+
+  // Retrieves the list of target atom names currently available for reading in
+  // the clipboard, for a given |buffer|. Blocks until the data is fetched from
+  // the X server.
+  std::vector<std::string> GetAvailableAtomNames(ClipboardBuffer buffer);
 
   // Returns a list of all text atoms that we handle.
   std::vector<x11::Atom> GetTextAtoms() const;
@@ -103,8 +84,12 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
   uint64_t GetSequenceNumber(ClipboardBuffer buffer) const;
 
  private:
+  class TargetList;
+
   // x11::EventObserver:
   void OnEvent(const x11::Event& xev) override;
+
+  TargetList GetTargetList(ClipboardBuffer buffer);
 
   // Returns the X11 selection atom that we pass to various XSelection functions
   // for the given buffer.

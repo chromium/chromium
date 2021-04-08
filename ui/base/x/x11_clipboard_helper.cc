@@ -4,11 +4,17 @@
 
 #include "ui/base/x/x11_clipboard_helper.h"
 
+#include <string>
+#include <vector>
+
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/x/selection_owner.h"
 #include "ui/base/x/selection_requestor.h"
 #include "ui/base/x/selection_utils.h"
@@ -115,6 +121,37 @@ x11::Window GetSelectionOwner(x11::Atom selection) {
 
 }  // namespace
 
+class XClipboardHelper::TargetList {
+ public:
+  explicit TargetList(const std::vector<x11::Atom>& target_list)
+      : target_list_(target_list) {}
+  TargetList(const TargetList&) = default;
+  TargetList& operator=(const TargetList&) = default;
+  ~TargetList() = default;
+
+  const std::vector<x11::Atom>& target_list() const { return target_list_; }
+
+  bool ContainsText() const {
+    for (const auto& atom : GetTextAtomsFrom()) {
+      if (ContainsAtom(atom))
+        return true;
+    }
+    return false;
+  }
+
+  bool ContainsFormat(const ClipboardFormatType& format_type) const {
+    x11::Atom atom = x11::GetAtom(format_type.GetName().c_str());
+    return ContainsAtom(atom);
+  }
+
+  bool ContainsAtom(x11::Atom atom) const {
+    return base::Contains(target_list_, atom);
+  }
+
+ private:
+  std::vector<x11::Atom> target_list_;
+};
+
 XClipboardHelper::XClipboardHelper(
     base::RepeatingClosure selection_change_closure)
     : connection_(x11::Connection::Get()),
@@ -157,9 +194,8 @@ void XClipboardHelper::TakeOwnershipOfSelection(ClipboardBuffer buffer) {
     return primary_owner_.TakeOwnershipOfSelection(clipboard_data_);
 }
 
-SelectionData XClipboardHelper::RequestAndWaitForTypes(
-    ClipboardBuffer buffer,
-    const std::vector<x11::Atom>& types) {
+SelectionData XClipboardHelper::Read(ClipboardBuffer buffer,
+                                     const std::vector<x11::Atom>& types) {
   x11::Atom selection_name = LookupSelectionForClipboardBuffer(buffer);
   if (GetSelectionOwner(selection_name) == x_window_) {
     // We can local fastpath instead of playing the nested run loop game
@@ -172,7 +208,7 @@ SelectionData XClipboardHelper::RequestAndWaitForTypes(
         return SelectionData(format_map_it->first, format_map_it->second);
     }
   } else {
-    auto targets = WaitAndGetTargetsList(buffer);
+    auto targets = GetTargetList(buffer);
 
     x11::Atom selection_name = LookupSelectionForClipboardBuffer(buffer);
     std::vector<x11::Atom> intersection;
@@ -180,53 +216,51 @@ SelectionData XClipboardHelper::RequestAndWaitForTypes(
     return selection_requestor_->RequestAndWaitForTypes(selection_name,
                                                         intersection);
   }
-
   return SelectionData();
 }
 
-XClipboardHelper::TargetList XClipboardHelper::WaitAndGetTargetsList(
+std::vector<std::string> XClipboardHelper::GetAvailableTypes(
     ClipboardBuffer buffer) {
-  x11::Atom selection_name = LookupSelectionForClipboardBuffer(buffer);
-  std::vector<x11::Atom> out;
-  if (GetSelectionOwner(selection_name) == x_window_) {
-    // We can local fastpath and return the list of local targets.
-    const SelectionFormatMap& format_map = LookupStorageForAtom(selection_name);
+  std::vector<std::string> available_types;
+  auto target_list = GetTargetList(buffer);
 
-    for (const auto& format : format_map)
-      out.push_back(format.first);
-  } else {
-    std::vector<uint8_t> data;
-    x11::Atom out_type = x11::Atom::None;
-
-    if (selection_requestor_->PerformBlockingConvertSelection(
-            selection_name, x11::GetAtom(kTargets), &data, &out_type)) {
-      // Some apps return an |out_type| of "TARGETS". (crbug.com/377893)
-      if (out_type == x11::Atom::ATOM || out_type == x11::GetAtom(kTargets)) {
-        const x11::Atom* atom_array =
-            reinterpret_cast<const x11::Atom*>(data.data());
-        for (size_t i = 0; i < data.size() / sizeof(x11::Atom); ++i)
-          out.push_back(atom_array[i]);
-      }
-    } else {
-      // There was no target list. Most Java apps doesn't offer a TARGETS list,
-      // even though they AWT to. They will offer individual text types if you
-      // ask. If this is the case we attempt to make sense of the contents as
-      // text. This is pretty unfortunate since it means we have to actually
-      // copy the data to see if it is available, but at least this path
-      // shouldn't be hit for conforming programs.
-      std::vector<x11::Atom> types = GetTextAtoms();
-      for (const auto& text_atom : types) {
-        x11::Atom type = x11::Atom::None;
-        if (selection_requestor_->PerformBlockingConvertSelection(
-                selection_name, text_atom, nullptr, &type) &&
-            type == text_atom) {
-          out.push_back(text_atom);
-        }
-      }
-    }
+  if (target_list.ContainsText())
+    available_types.push_back(kMimeTypeText);
+  if (target_list.ContainsFormat(ClipboardFormatType::GetHtmlType()))
+    available_types.push_back(kMimeTypeHTML);
+  if (target_list.ContainsFormat(ClipboardFormatType::GetRtfType()))
+    available_types.push_back(kMimeTypeRTF);
+  if (target_list.ContainsFormat(ClipboardFormatType::GetBitmapType()))
+    available_types.push_back(kMimeTypePNG);
+  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
+  if (target_list.ContainsFormat(ClipboardFormatType::GetFilenamesType()) &&
+      base::FeatureList::IsEnabled(features::kClipboardFilenames)) {
+    available_types.push_back(kMimeTypeURIList);
   }
 
-  return XClipboardHelper::TargetList(out);
+  return available_types;
+}
+
+std::vector<std::string> XClipboardHelper::GetAvailableAtomNames(
+    ClipboardBuffer buffer) {
+  auto target_list = GetTargetList(buffer).target_list();
+  if (target_list.empty())
+    return {};
+
+  auto* connection = x11::Connection::Get();
+  std::vector<x11::Future<x11::GetAtomNameReply>> futures;
+  for (x11::Atom target : target_list)
+    futures.push_back(connection->GetAtomName({target}));
+
+  std::vector<std::string> atom_names;
+  atom_names.reserve(target_list.size());
+  for (auto& future : futures) {
+    if (auto response = future.Sync())
+      atom_names.push_back(response->name);
+    else
+      atom_names.emplace_back();
+  }
+  return atom_names;
 }
 
 std::vector<x11::Atom> XClipboardHelper::GetTextAtoms() const {
@@ -271,6 +305,51 @@ uint64_t XClipboardHelper::GetSequenceNumber(ClipboardBuffer buffer) const {
   return buffer == ClipboardBuffer::kCopyPaste
              ? selection_observer->clipboard_sequence_number()
              : selection_observer->primary_sequence_number();
+}
+
+XClipboardHelper::TargetList XClipboardHelper::GetTargetList(
+    ClipboardBuffer buffer) {
+  x11::Atom selection_name = LookupSelectionForClipboardBuffer(buffer);
+  std::vector<x11::Atom> out;
+  if (GetSelectionOwner(selection_name) == x_window_) {
+    // We can local fastpath and return the list of local targets.
+    const SelectionFormatMap& format_map = LookupStorageForAtom(selection_name);
+
+    for (const auto& format : format_map)
+      out.push_back(format.first);
+  } else {
+    std::vector<uint8_t> data;
+    x11::Atom out_type = x11::Atom::None;
+
+    if (selection_requestor_->PerformBlockingConvertSelection(
+            selection_name, x11::GetAtom(kTargets), &data, &out_type)) {
+      // Some apps return an |out_type| of "TARGETS". (crbug.com/377893)
+      if (out_type == x11::Atom::ATOM || out_type == x11::GetAtom(kTargets)) {
+        const x11::Atom* atom_array =
+            reinterpret_cast<const x11::Atom*>(data.data());
+        for (size_t i = 0; i < data.size() / sizeof(x11::Atom); ++i)
+          out.push_back(atom_array[i]);
+      }
+    } else {
+      // There was no target list. Most Java apps doesn't offer a TARGETS list,
+      // even though they AWT to. They will offer individual text types if you
+      // ask. If this is the case we attempt to make sense of the contents as
+      // text. This is pretty unfortunate since it means we have to actually
+      // copy the data to see if it is available, but at least this path
+      // shouldn't be hit for conforming programs.
+      std::vector<x11::Atom> types = GetTextAtoms();
+      for (const auto& text_atom : types) {
+        x11::Atom type = x11::Atom::None;
+        if (selection_requestor_->PerformBlockingConvertSelection(
+                selection_name, text_atom, nullptr, &type) &&
+            type == text_atom) {
+          out.push_back(text_atom);
+        }
+      }
+    }
+  }
+
+  return XClipboardHelper::TargetList(out);
 }
 
 void XClipboardHelper::OnEvent(const x11::Event& xev) {
@@ -328,36 +407,6 @@ const SelectionFormatMap& XClipboardHelper::LookupStorageForAtom(
 
   DCHECK_EQ(GetCopyPasteSelection(), atom);
   return clipboard_owner_.selection_format_map();
-}
-///////////////////////////////////////////////////////////////////////////////
-// XClipboardHelper::TargetList implementation
-
-XClipboardHelper::TargetList::TargetList(
-    const std::vector<x11::Atom>& target_list)
-    : target_list_(target_list) {}
-
-XClipboardHelper::TargetList::TargetList(const TargetList&) = default;
-XClipboardHelper::TargetList& XClipboardHelper::TargetList::operator=(
-    const TargetList&) = default;
-
-XClipboardHelper::TargetList::~TargetList() = default;
-
-bool XClipboardHelper::TargetList::ContainsText() const {
-  for (const auto& atom : GetTextAtomsFrom()) {
-    if (ContainsAtom(atom))
-      return true;
-  }
-  return false;
-}
-
-bool XClipboardHelper::TargetList::ContainsFormat(
-    const ClipboardFormatType& format_type) const {
-  x11::Atom atom = x11::GetAtom(format_type.GetName().c_str());
-  return ContainsAtom(atom);
-}
-
-bool XClipboardHelper::TargetList::ContainsAtom(x11::Atom atom) const {
-  return base::Contains(target_list_, atom);
 }
 
 }  //  namespace ui

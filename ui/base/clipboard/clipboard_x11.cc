@@ -7,9 +7,10 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -20,10 +21,8 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/x/x11_clipboard_helper.h"
 #include "ui/gfx/codec/png_codec.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -64,12 +63,12 @@ bool ClipboardX11::IsFormatAvailable(
   DCHECK(CalledOnValidThread());
   DCHECK(IsSupportedClipboardBuffer(buffer));
 
-  auto target_list = x_clipboard_helper_->WaitAndGetTargetsList(buffer);
+  auto available_types = x_clipboard_helper_->GetAvailableAtomNames(buffer);
   if (format == ClipboardFormatType::GetPlainTextType() ||
       format == ClipboardFormatType::GetUrlType()) {
-    return target_list.ContainsText();
+    return base::Contains(available_types, kMimeTypeText);
   }
-  return target_list.ContainsFormat(format);
+  return base::Contains(available_types, format.GetName());
 }
 
 void ClipboardX11::Clear(ClipboardBuffer buffer) {
@@ -88,28 +87,21 @@ void ClipboardX11::ReadAvailableTypes(
   DCHECK(CalledOnValidThread());
   DCHECK(types);
 
-  auto target_list = x_clipboard_helper_->WaitAndGetTargetsList(buffer);
-
   types->clear();
-
-  if (target_list.ContainsText())
-    types->push_back(base::UTF8ToUTF16(kMimeTypeText));
-  if (target_list.ContainsFormat(ClipboardFormatType::GetHtmlType()))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
-  if (target_list.ContainsFormat(ClipboardFormatType::GetRtfType()))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
-  if (target_list.ContainsFormat(ClipboardFormatType::GetBitmapType()))
-    types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
-  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
-  if (target_list.ContainsFormat(ClipboardFormatType::GetFilenamesType()) &&
-      base::FeatureList::IsEnabled(features::kClipboardFilenames))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
-
-  SelectionData data(x_clipboard_helper_->RequestAndWaitForTypes(
-      buffer, x_clipboard_helper_->GetAtomsForFormat(
-                  ClipboardFormatType::GetWebCustomDataType())));
-  if (data.IsValid())
-    ReadCustomDataTypes(data.GetData(), data.GetSize(), types);
+  auto available_types = x_clipboard_helper_->GetAvailableTypes(buffer);
+  for (const auto& mime_type : available_types) {
+    // Special handling for chromium/x-web-custom-data. We must read the data
+    // and deserialize it to find the list of mime types to report.
+    if (mime_type == ClipboardFormatType::GetWebCustomDataType().GetName()) {
+      auto data(x_clipboard_helper_->Read(
+          buffer, x_clipboard_helper_->GetAtomsForFormat(
+                      ClipboardFormatType::GetWebCustomDataType())));
+      if (data.IsValid())
+        ReadCustomDataTypes(data.GetData(), data.GetSize(), types);
+    } else {
+      types->push_back(base::UTF8ToUTF16(mime_type));
+    }
+  }
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -119,26 +111,10 @@ ClipboardX11::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
-
-  // Copy target_list(), so that XGetAtomNames can get a non-const Atom*.
-  auto target_list =
-      x_clipboard_helper_->WaitAndGetTargetsList(buffer).target_list();
-  if (target_list.empty())
-    return {};
-
-  std::vector<x11::Future<x11::GetAtomNameReply>> futures;
-  for (x11::Atom target : target_list)
-    futures.push_back(x11::Connection::Get()->GetAtomName({target}));
-  std::vector<std::u16string> types;
-  types.reserve(target_list.size());
-  for (auto& future : futures) {
-    if (auto response = future.Sync())
-      types.push_back(base::UTF8ToUTF16(response->name));
-    else
-      types.emplace_back();
-  }
-
-  return types;
+  std::vector<std::u16string> format_names;
+  for (const auto& name : x_clipboard_helper_->GetAvailableAtomNames(buffer))
+    format_names.push_back(base::UTF8ToUTF16(name));
+  return format_names;
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -149,8 +125,8 @@ void ClipboardX11::ReadText(ClipboardBuffer buffer,
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kText);
 
-  SelectionData data(x_clipboard_helper_->RequestAndWaitForTypes(
-      buffer, x_clipboard_helper_->GetTextAtoms()));
+  SelectionData data(
+      x_clipboard_helper_->Read(buffer, x_clipboard_helper_->GetTextAtoms()));
   if (data.IsValid()) {
     std::string text = data.GetText();
     *result = base::UTF8ToUTF16(text);
@@ -165,8 +141,8 @@ void ClipboardX11::ReadAsciiText(ClipboardBuffer buffer,
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kText);
 
-  SelectionData data(x_clipboard_helper_->RequestAndWaitForTypes(
-      buffer, x_clipboard_helper_->GetTextAtoms()));
+  SelectionData data(
+      x_clipboard_helper_->Read(buffer, x_clipboard_helper_->GetTextAtoms()));
   if (data.IsValid())
     result->assign(data.GetText());
 }
@@ -189,7 +165,7 @@ void ClipboardX11::ReadHTML(ClipboardBuffer buffer,
   *fragment_start = 0;
   *fragment_end = 0;
 
-  SelectionData data(x_clipboard_helper_->RequestAndWaitForTypes(
+  SelectionData data(x_clipboard_helper_->Read(
       buffer, x_clipboard_helper_->GetAtomsForFormat(
                   ClipboardFormatType::GetHtmlType())));
   if (data.IsValid()) {
@@ -209,7 +185,7 @@ void ClipboardX11::ReadSvg(ClipboardBuffer buffer,
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kSvg);
 
-  SelectionData data(x_clipboard_helper_->RequestAndWaitForTypes(
+  SelectionData data(x_clipboard_helper_->Read(
       buffer, x_clipboard_helper_->GetAtomsForFormat(
                   ClipboardFormatType::GetSvgType())));
   if (data.IsValid()) {
@@ -227,7 +203,7 @@ void ClipboardX11::ReadRTF(ClipboardBuffer buffer,
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kRtf);
 
-  SelectionData data(x_clipboard_helper_->RequestAndWaitForTypes(
+  SelectionData data(x_clipboard_helper_->Read(
       buffer, x_clipboard_helper_->GetAtomsForFormat(
                   ClipboardFormatType::GetRtfType())));
   if (data.IsValid())
@@ -253,7 +229,7 @@ void ClipboardX11::ReadCustomData(ClipboardBuffer buffer,
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kCustomData);
 
-  SelectionData data(x_clipboard_helper_->RequestAndWaitForTypes(
+  SelectionData data(x_clipboard_helper_->Read(
       buffer, x_clipboard_helper_->GetAtomsForFormat(
                   ClipboardFormatType::GetWebCustomDataType())));
   if (data.IsValid())
@@ -268,7 +244,7 @@ void ClipboardX11::ReadFilenames(ClipboardBuffer buffer,
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kFilenames);
 
-  SelectionData data(x_clipboard_helper_->RequestAndWaitForTypes(
+  SelectionData data(x_clipboard_helper_->Read(
       buffer, x_clipboard_helper_->GetAtomsForFormat(
                   ClipboardFormatType::GetFilenamesType())));
   std::string uri_list;
@@ -295,7 +271,7 @@ void ClipboardX11::ReadData(const ClipboardFormatType& format,
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kData);
 
-  SelectionData data(x_clipboard_helper_->RequestAndWaitForTypes(
+  SelectionData data(x_clipboard_helper_->Read(
       ClipboardBuffer::kCopyPaste,
       x_clipboard_helper_->GetAtomsForFormat(format)));
   if (data.IsValid())
@@ -456,7 +432,7 @@ SkBitmap ClipboardX11::ReadImageInternal(ClipboardBuffer buffer) const {
   // TODO(https://crbug.com/443355): Since now that ReadImage() is async,
   // refactor the code to keep a callback with the request, and invoke the
   // callback when the request is satisfied.
-  SelectionData data(x_clipboard_helper_->RequestAndWaitForTypes(
+  SelectionData data(x_clipboard_helper_->Read(
       buffer, x_clipboard_helper_->GetAtomsForFormat(
                   ClipboardFormatType::GetBitmapType())));
   if (data.IsValid()) {
