@@ -157,21 +157,25 @@ TEST(CounterPerfTest, Uint64_Lock_4Threads) {
   RunIncrementPerfTest<Uint64_Lock>("Uint64_Lock_4Threads", 4);
 }
 
-TEST(CounterPerfTest, AtomicUint64_NoBarrier_1Thread) {
+// TODO(crbug/1197115): fix and reenable
+TEST(CounterPerfTest, DISABLED_AtomicUint64_NoBarrier_1Thread) {
   RunIncrementPerfTest<AtomicUint64_NoBarrier>("AtomicUint64_NoBarrier_1Thread",
                                                1);
 }
 
-TEST(CounterPerfTest, AtomicUint64_NoBarrier_4Threads) {
+// TODO(crbug/1197115): fix and reenable
+TEST(CounterPerfTest, DISABLED_AtomicUint64_NoBarrier_4Threads) {
   RunIncrementPerfTest<AtomicUint64_NoBarrier>(
       "AtomicUint64_NoBarrier_4Threads", 4);
 }
 
-TEST(CounterPerfTest, AtomicUint64_Barrier_1Thread) {
+// TODO(crbug/1197115): fix and reenable
+TEST(CounterPerfTest, DISABLED_AtomicUint64_Barrier_1Thread) {
   RunIncrementPerfTest<AtomicUint64_Barrier>("AtomicUint64_Barrier_1Thread", 1);
 }
 
-TEST(CounterPerfTest, AtomicUint64_Barrier_4Threads) {
+// TODO(crbug/1197115): fix and reenable
+TEST(CounterPerfTest, DISABLED_AtomicUint64_Barrier_4Threads) {
   RunIncrementPerfTest<AtomicUint64_Barrier>("AtomicUint64_Barrier_4Threads",
                                              4);
 }
