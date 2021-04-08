@@ -134,6 +134,8 @@ class BASE_EXPORT BuildInfo {
 
   bool is_tv() const { return is_tv_; }
 
+  const char* version_incremental() const { return version_incremental_; }
+
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -168,6 +170,7 @@ class BASE_EXPORT BuildInfo {
   const int target_sdk_version_;
   const bool is_debug_android_;
   const bool is_tv_;
+  const char* const version_incremental_;
 
   DISALLOW_COPY_AND_ASSIGN(BuildInfo);
 };

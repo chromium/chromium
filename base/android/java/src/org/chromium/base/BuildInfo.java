@@ -97,6 +97,7 @@ public class BuildInfo {
                         ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion),
                 isDebugAndroid() ? "1" : "0",
                 buildInfo.isTV ? "1" : "0",
+                Build.VERSION.INCREMENTAL,
         };
     }
 

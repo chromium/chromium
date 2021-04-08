@@ -34,15 +34,10 @@ int GetEMUIVersion() {
   if (manufacturer != "HUAWEI")
     return -1;
 
-  // android_build_fp() examples:
-  // HUAWEI/SCM-W09/HWSCM:10/HUAWEISCM-W09/11.0.0.130C00:user/release-keys
-  auto strings = base::SplitString(build_info->android_build_fp(), "/",
-                                   base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (strings.size() < 6)
-    return -1;
-
+  // Huawei puts EMUI version in the build version incremental.
+  // Example: 11.0.0.130C00
   int version = 0;
-  if (sscanf(strings[4].c_str(), "%d.", &version) != 1)
+  if (sscanf(build_info->version_incremental(), "%d.", &version) != 1)
     return -1;
 
   return version;
