@@ -113,6 +113,7 @@ android_library("weblayer_private_java_tests") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//ui/android:ui_java_test_support",
+    "//weblayer/browser/java:test_interfaces_java",
     "//weblayer/public/java",
     "//weblayer/public/javatestutil:test_java",
     "//weblayer/shell/android:weblayer_shell_java",

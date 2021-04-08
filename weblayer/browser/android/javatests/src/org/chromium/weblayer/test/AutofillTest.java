@@ -23,6 +23,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
+import org.chromium.weblayer_private.test_interfaces.AutofillEventType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,16 +37,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(WebLayerJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
 public class AutofillTest {
-    // Constants below are from {@link TestAutofillManagerWrapper}, need to change the corresponding
-    // ones in TestAutofullManagerWrapper if any of them are changed.
-    private static final int AUTOFILL_VIEW_ENTERED = 1;
-    private static final int AUTOFILL_VIEW_EXITED = 2;
-    private static final int AUTOFILL_VALUE_CHANGED = 3;
-    private static final int AUTOFILL_COMMIT = 4;
-    private static final int AUTOFILL_CANCEL = 5;
-    private static final int AUTOFILL_SESSION_STARTED = 6;
-    private static final int AUTOFILL_QUERY_DONE = 7;
-
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
             new InstrumentationActivityTestRule();
@@ -111,11 +102,11 @@ public class AutofillTest {
         // Press "a" to trigger Autofill.
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
 
-        List<Integer> expected = new ArrayList(Arrays.asList(
-                AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED, AUTOFILL_VALUE_CHANGED));
+        List<Integer> expected = new ArrayList(Arrays.asList(AutofillEventType.VIEW_ENTERED,
+                AutofillEventType.SESSION_STARTED, AutofillEventType.VALUE_CHANGED));
         // We don't have the cancel event on P+, but we will see them on O and OMR1.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            expected.add(0, AUTOFILL_CANCEL);
+            expected.add(0, AutofillEventType.CANCEL);
         }
 
         // Wait for Autofill events.

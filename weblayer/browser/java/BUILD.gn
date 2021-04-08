@@ -336,6 +336,7 @@ android_library("test_java") {
     ":base_module_interfaces_java",
     ":interfaces_java",
     ":java",
+    ":test_interfaces_java",
     ":weblayer_test_resources",
     "//base:base_java",
     "//components/autofill/android/provider:java",
@@ -516,6 +517,13 @@ android_library("interfaces_java") {
   ]
 
   srcjar_deps = [ ":aidl" ]
+}
+
+android_library("test_interfaces_java") {
+  sources =
+      [ "org/chromium/weblayer_private/test_interfaces/AutofillEventType.java" ]
+
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
 # Separate target to allow for a dependency on GmsCore without pulling in all of

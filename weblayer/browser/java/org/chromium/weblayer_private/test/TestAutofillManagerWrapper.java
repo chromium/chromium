@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.autofill.AutofillValue;
 
 import org.chromium.components.autofill.AutofillManagerWrapper;
+import org.chromium.weblayer_private.test_interfaces.AutofillEventType;
 
 import java.util.ArrayList;
 
@@ -17,17 +18,6 @@ import java.util.ArrayList;
  * A test AutofillManagerWrapper for AutofillTest
  */
 public class TestAutofillManagerWrapper extends AutofillManagerWrapper {
-    // There is another copy of the list of the constants below in {@link
-    // org.chromium.weblayer.test.AutofillTest}, need to change the corresponding ones in
-    // in AutofillTest if any of them are changed.
-    public static final int AUTOFILL_VIEW_ENTERED = 1;
-    public static final int AUTOFILL_VIEW_EXITED = 2;
-    public static final int AUTOFILL_VALUE_CHANGED = 3;
-    public static final int AUTOFILL_COMMIT = 4;
-    public static final int AUTOFILL_CANCEL = 5;
-    public static final int AUTOFILL_SESSION_STARTED = 6;
-    public static final int AUTOFILL_QUERY_DONE = 7;
-
     public TestAutofillManagerWrapper(
             Context context, Runnable onNewEvents, ArrayList<Integer> eventsObserved) {
         super(context);
@@ -47,43 +37,43 @@ public class TestAutofillManagerWrapper extends AutofillManagerWrapper {
 
     @Override
     public void notifyVirtualViewEntered(View parent, int childId, Rect absBounds) {
-        mEventsObserved.add(AUTOFILL_VIEW_ENTERED);
+        mEventsObserved.add(AutofillEventType.VIEW_ENTERED);
         mOnNewEvents.run();
     }
 
     @Override
     public void notifyVirtualViewExited(View parent, int childId) {
-        mEventsObserved.add(AUTOFILL_VIEW_EXITED);
+        mEventsObserved.add(AutofillEventType.VIEW_EXITED);
         mOnNewEvents.run();
     }
 
     @Override
     public void notifyVirtualValueChanged(View parent, int childId, AutofillValue value) {
-        mEventsObserved.add(AUTOFILL_VALUE_CHANGED);
+        mEventsObserved.add(AutofillEventType.VALUE_CHANGED);
         mOnNewEvents.run();
     }
 
     @Override
     public void commit(int submissionSource) {
-        mEventsObserved.add(AUTOFILL_COMMIT);
+        mEventsObserved.add(AutofillEventType.COMMIT);
         mOnNewEvents.run();
     }
 
     @Override
     public void cancel() {
-        mEventsObserved.add(AUTOFILL_CANCEL);
+        mEventsObserved.add(AutofillEventType.CANCEL);
         mOnNewEvents.run();
     }
 
     @Override
     public void notifyNewSessionStarted(boolean hasServerPrediction) {
-        mEventsObserved.add(AUTOFILL_SESSION_STARTED);
+        mEventsObserved.add(AutofillEventType.SESSION_STARTED);
         mOnNewEvents.run();
     }
 
     @Override
     public void onQueryDone(boolean success) {
-        mEventsObserved.add(AUTOFILL_QUERY_DONE);
+        mEventsObserved.add(AutofillEventType.QUERY_DONE);
         mOnNewEvents.run();
     }
 
