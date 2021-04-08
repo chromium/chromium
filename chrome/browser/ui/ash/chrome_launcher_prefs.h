@@ -46,6 +46,10 @@ void InitLocalPref(PrefService* prefs, const char* local, const char* synced);
 std::vector<ash::ShelfID> GetPinnedAppsFromSync(
     LauncherControllerHelper* helper);
 
+// Gets the ordered list of apps that have been pinned by policy.
+std::vector<std::string> GetAppsPinnedByPolicy(
+    LauncherControllerHelper* helper);
+
 // Removes information about pin position from sync model for the app.
 // Note, |shelf_id| with non-empty launch_id is not supported.
 void RemovePinPosition(Profile* profile, const ash::ShelfID& shelf_id);

@@ -93,7 +93,12 @@ AppManagementPageHandler::AppManagementPageHandler(
     Profile* profile)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      profile_(profile) {
+      profile_(profile)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      ,
+      shelf_delegate_(this, profile)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+{
   Observe(&apps::AppServiceProxyFactory::GetForProfile(profile_)
                ->AppRegistryCache());
 

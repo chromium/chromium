@@ -4,18 +4,24 @@
 
 #include "chrome/browser/ui/webui/app_management/app_management_shelf_delegate_chromeos.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 using apps::mojom::OptionalBool;
 
 AppManagementShelfDelegate::AppManagementShelfDelegate(
-    AppManagementPageHandler* page_handler)
+    AppManagementPageHandler* page_handler,
+    Profile* profile)
     : page_handler_(page_handler) {
   auto* launcher_controller = ChromeLauncherController::instance();
   if (!launcher_controller) {
@@ -26,6 +32,7 @@ AppManagementShelfDelegate::AppManagementShelfDelegate(
   if (!shelf_model) {
     return;
   }
+  launcher_controller_helper_ = new LauncherControllerHelper(profile);
 
   shelf_model->AddObserver(this);
 }
@@ -61,10 +68,14 @@ bool AppManagementShelfDelegate::IsPolicyPinned(
   }
 
   auto* shelf_item = launcher_controller->GetItem(ash::ShelfID(app_id));
-
-  // If the app does not exist on the launcher, it has not been pinned by
-  // policy.
-  return shelf_item && shelf_item->pinned_by_policy;
+  if (shelf_item) {
+    return shelf_item->pinned_by_policy;
+  }
+  // The app doesn't exist on the shelf - check launcher prefs instead.
+  std::vector<std::string> policy_pinned_apps =
+      GetAppsPinnedByPolicy(launcher_controller_helper_);
+  return std::any_of(policy_pinned_apps.begin(), policy_pinned_apps.end(),
+                     [app_id](std::string app) { return app_id == app; });
 }
 
 void AppManagementShelfDelegate::SetPinned(const std::string& app_id,

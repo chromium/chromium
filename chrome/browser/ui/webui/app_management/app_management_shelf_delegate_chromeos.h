@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 
 class AppManagementPageHandler;
+class LauncherControllerHelper;
+class Profile;
 
 // This is a helper class used by the AppManagementPageHandler to manage
 // shelf-related functionality, which is only meaningful when running Chrome OS.
@@ -17,7 +19,8 @@ class AppManagementPageHandler;
 // apps are pinned or unpinned.
 class AppManagementShelfDelegate : public ash::ShelfModelObserver {
  public:
-  explicit AppManagementShelfDelegate(AppManagementPageHandler* page_handler);
+  explicit AppManagementShelfDelegate(AppManagementPageHandler* page_handler,
+                                      Profile* profile);
   ~AppManagementShelfDelegate() override;
 
   bool IsPinned(const std::string& app_id);
@@ -32,6 +35,7 @@ class AppManagementShelfDelegate : public ash::ShelfModelObserver {
   void ShelfItemChanged(int index, const ash::ShelfItem& old_item) override;
 
   AppManagementPageHandler* page_handler_;
+  LauncherControllerHelper* launcher_controller_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(AppManagementShelfDelegate);
 };

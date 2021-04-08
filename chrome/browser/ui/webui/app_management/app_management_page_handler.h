@@ -80,7 +80,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_app_list_prefs_observation_{this};
-  AppManagementShelfDelegate shelf_delegate_{this};
+  AppManagementShelfDelegate shelf_delegate_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   DISALLOW_COPY_AND_ASSIGN(AppManagementPageHandler);
