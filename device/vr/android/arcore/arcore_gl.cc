@@ -1768,7 +1768,13 @@ void ArCoreGl::OnBindingDisconnect() {
   CloseBindingsIfOpen();
   pending_shutdown_ = true;
 
-  std::move(session_shutdown_callback_).Run();
+  // Even if we're currently pending shutdown, it doesn't hurt to ensure that
+  // the bindings have been closed; but if we've already called the session
+  // shutdown callback and get a binding disconnect before we're destroyed, then
+  // we may not have a session_shutdown_callback to call.
+  if (session_shutdown_callback_) {
+    std::move(session_shutdown_callback_).Run();
+  }
 }
 
 void ArCoreGl::CloseBindingsIfOpen() {
