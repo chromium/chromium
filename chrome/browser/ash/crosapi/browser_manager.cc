@@ -702,10 +702,7 @@ void BrowserManager::LaunchForKeepAliveIfNecessary() {
   if (state_ == State::STOPPED && !keep_alive_features_.empty()) {
     CHECK(browser_util::IsLacrosEnabled());
     CHECK(browser_util::IsLacrosAllowedToLaunch());
-    // TODO(https://crbug.com/1194187): Call start with a different initial
-    // browser action. We need this even though UnlauchForKeepAlive is not
-    // implemented for unit testing.
-    Start(mojom::InitialBrowserAction::kOpenIncognitoWindow);
+    Start(mojom::InitialBrowserAction::kDoNotOpenWindow);
   }
 }
 

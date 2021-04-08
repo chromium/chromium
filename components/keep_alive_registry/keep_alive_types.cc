@@ -14,6 +14,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "BROWSER";
     case KeepAliveOrigin::BROWSER_PROCESS_CHROMEOS:
       return out << "BROWSER_PROCESS_CHROMEOS";
+    case KeepAliveOrigin::BROWSER_PROCESS_LACROS:
+      return out << "BROWSER_PROCESS_LACROS";
     case KeepAliveOrigin::SESSION_RESTORE:
       return out << "SESSION_RESTORE";
     case KeepAliveOrigin::BACKGROUND_MODE_MANAGER:

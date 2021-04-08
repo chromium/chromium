@@ -277,6 +277,11 @@ enum InitialBrowserAction {
 
   // TODO(hidehiko): This should be kRestoreLastTab.
   kRestoreLastSession = 2,
+
+  // Lacros will launch but will not show any windows. It will continue running
+  // in the background until a browser window is shown. At that point it will no
+  // longer run in the background and will close when all windows are closed.
+  [MinVersion=1] kDoNotOpenWindow = 3,
 };
 
 

@@ -85,6 +85,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_prefs.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif
@@ -678,6 +679,17 @@ bool StartupBrowserCreatorImpl::ShouldLaunch(
   // Don't open any browser windows if starting up in "background mode".
   if (command_line.HasSwitch(switches::kNoStartupWindow))
     return false;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Don't open any browser windows if Ash requested that Lacros not do so. The
+  // implicit assumption is that some other code is responsible for keeping
+  // Lacros running in the background
+  if (chromeos::LacrosService::Get() &&
+      chromeos::LacrosService::Get()->init_params()->initial_browser_action ==
+          crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow) {
+    return false;
+  }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If Lacros is the primary web browser, do not open the browser window

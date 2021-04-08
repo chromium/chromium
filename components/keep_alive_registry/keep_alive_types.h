@@ -18,6 +18,7 @@ enum class KeepAliveOrigin {
   APP_CONTROLLER,
   BROWSER,
   BROWSER_PROCESS_CHROMEOS,
+  BROWSER_PROCESS_LACROS,
   SESSION_RESTORE,
 
   // c/b/background
