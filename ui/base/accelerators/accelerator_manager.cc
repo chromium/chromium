@@ -4,11 +4,8 @@
 
 #include "ui/base/accelerators/accelerator_manager.h"
 
-#include <algorithm>
-
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/notreached.h"
 
 namespace ui {
 
@@ -23,58 +20,50 @@ void AcceleratorManager::Register(
   DCHECK(target);
 
   for (const ui::Accelerator& accelerator : accelerators) {
-    AcceleratorTargetList& targets = accelerators_[accelerator].second;
-    DCHECK(!base::Contains(targets, target))
-        << "Registering the same target multiple times";
-
-    // All priority accelerators go to the front of the line.
-    if (priority == kHighPriority) {
-      DCHECK(!accelerators_[accelerator].first)
-          << "Only one high-priority handler can be registered";
-      targets.push_front(target);
-      // Mark that we have a priority accelerator at the front.
-      accelerators_[accelerator].first = true;
-    } else {
-      // We are registering a normal priority handler. If no priority
-      // accelerator handler has been registered before us, just add the new
-      // handler to the front. Otherwise, register it after the first (only)
-      // priority handler.
-      if (!accelerators_[accelerator].first)
-        targets.push_front(target);
-      else
-        targets.insert(++targets.begin(), target);
-    }
+    accelerators_[accelerator].RegisterWithPriority(target, priority);
   }
 }
 
 void AcceleratorManager::Unregister(const Accelerator& accelerator,
                                     AcceleratorTarget* target) {
+  DCHECK(target);
   auto map_iter = accelerators_.find(accelerator);
-  if (map_iter == accelerators_.end()) {
-    NOTREACHED() << "Unregistering non-existing accelerator";
-    return;
-  }
+  DCHECK(map_iter != accelerators_.end())
+      << "Unregistering non-existing accelerator";
 
-  UnregisterImpl(map_iter, target);
+  AcceleratorTargetInfo& target_info = map_iter->second;
+  const bool was_registered = target_info.Unregister(target);
+  DCHECK(was_registered) << "Unregistering accelerator for wrong target";
+
+  // If the last target for the accelerator is removed, then erase the
+  // entry from the map.
+  if (!target_info.HasTargets())
+    accelerators_.erase(map_iter);
 }
 
 void AcceleratorManager::UnregisterAll(AcceleratorTarget* target) {
   for (auto map_iter = accelerators_.begin();
        map_iter != accelerators_.end();) {
-    AcceleratorTargetList* targets = &map_iter->second.second;
-    if (!base::Contains(*targets, target)) {
-      ++map_iter;
-    } else {
-      auto tmp_iter = map_iter;
-      ++map_iter;
-      UnregisterImpl(tmp_iter, target);
+    AcceleratorTargetInfo& target_info = map_iter->second;
+
+    // Unregister the target and remove the entry if it was the last target.
+    const bool was_registered = target_info.Unregister(target);
+    if (was_registered && !target_info.HasTargets()) {
+      map_iter = accelerators_.erase(map_iter);
+      continue;
     }
+
+    DCHECK(target_info.HasTargets());
+    ++map_iter;
   }
 }
 
 bool AcceleratorManager::IsRegistered(const Accelerator& accelerator) const {
   auto map_iter = accelerators_.find(accelerator);
-  return map_iter != accelerators_.end() && !map_iter->second.second.empty();
+
+  // If the accelerator is in the map, the target list should not be empty.
+  DCHECK(map_iter == accelerators_.end() || map_iter->second.HasTargets());
+  return map_iter != accelerators_.end();
 }
 
 bool AcceleratorManager::Process(const Accelerator& accelerator) {
@@ -82,12 +71,87 @@ bool AcceleratorManager::Process(const Accelerator& accelerator) {
   if (map_iter == accelerators_.end())
     return false;
 
-  // We have to copy the target list here, because an AcceleratorPressed
+  // If the accelerator is in the map, the target list should not be empty.
+  AcceleratorTargetInfo& target_info = map_iter->second;
+  DCHECK(target_info.HasTargets());
+
+  // We have to copy the target list here, because processing the accelerator
   // event handler may modify the list.
-  AcceleratorTargetList targets(map_iter->second.second);
-  for (auto iter = targets.begin(); iter != targets.end(); ++iter) {
-    if ((*iter)->CanHandleAccelerators() &&
-        (*iter)->AcceleratorPressed(accelerator)) {
+  AcceleratorTargetInfo target_info_copy(target_info);
+  return target_info_copy.TryProcess(accelerator);
+}
+
+bool AcceleratorManager::HasPriorityHandler(
+    const Accelerator& accelerator) const {
+  auto map_iter = accelerators_.find(accelerator);
+  if (map_iter == accelerators_.end())
+    return false;
+
+  return map_iter->second.HasPriorityHandler();
+}
+
+AcceleratorManager::AcceleratorTargetInfo::AcceleratorTargetInfo() = default;
+
+AcceleratorManager::AcceleratorTargetInfo::AcceleratorTargetInfo(
+    const AcceleratorManager::AcceleratorTargetInfo& other) = default;
+
+AcceleratorManager::AcceleratorTargetInfo&
+AcceleratorManager::AcceleratorTargetInfo::operator=(
+    const AcceleratorManager::AcceleratorTargetInfo& other) = default;
+
+AcceleratorManager::AcceleratorTargetInfo::~AcceleratorTargetInfo() = default;
+
+void AcceleratorManager::AcceleratorTargetInfo::RegisterWithPriority(
+    AcceleratorTarget* target,
+    HandlerPriority priority) {
+  DCHECK(!Contains(target)) << "Registering the same target multiple times";
+
+  // All priority accelerators go to the front of the line.
+  if (priority == kHighPriority) {
+    DCHECK(!has_priority_handler_)
+        << "Only one high-priority handler can be registered";
+    targets_.push_front(target);
+    // Mark that we have a priority accelerator at the front.
+    has_priority_handler_ = true;
+  } else {
+    // We are registering a normal priority handler. If no priority
+    // accelerator handler has been registered before us, just add the new
+    // handler to the front. Otherwise, register it after the first (only)
+    // priority handler.
+    if (has_priority_handler_) {
+      DCHECK(!targets_.empty());
+      targets_.insert(++targets_.begin(), target);
+    } else {
+      targets_.push_front(target);
+    }
+  }
+
+  // Post condition. Ensure there's at least one target.
+  DCHECK(!targets_.empty());
+}
+
+bool AcceleratorManager::AcceleratorTargetInfo::Unregister(
+    AcceleratorTarget* target) {
+  DCHECK(!targets_.empty());
+
+  // Only one priority handler is allowed, so if we remove the first element we
+  // no longer have a priority target.
+  if (targets_.front() == target)
+    has_priority_handler_ = false;
+
+  // Attempt to remove the target and return true if it was present.
+  const size_t original_target_count = targets_.size();
+  targets_.remove(target);
+  return original_target_count != targets_.size();
+}
+
+bool AcceleratorManager::AcceleratorTargetInfo::TryProcess(
+    const Accelerator& accelerator) {
+  DCHECK(!targets_.empty());
+
+  for (AcceleratorTarget* target : targets_) {
+    if (target->CanHandleAccelerators() &&
+        target->AcceleratorPressed(accelerator)) {
       return true;
     }
   }
@@ -95,40 +159,15 @@ bool AcceleratorManager::Process(const Accelerator& accelerator) {
   return false;
 }
 
-bool AcceleratorManager::HasPriorityHandler(
-    const Accelerator& accelerator) const {
-  auto map_iter = accelerators_.find(accelerator);
-  if (map_iter == accelerators_.end() || map_iter->second.second.empty())
-    return false;
-
-  // Check if we have a priority handler. If not, there's no more work needed.
-  if (!map_iter->second.first)
-    return false;
-
-  // If the priority handler says it cannot handle the accelerator, we must not
-  // count it as one.
-  return map_iter->second.second.front()->CanHandleAccelerators();
+bool AcceleratorManager::AcceleratorTargetInfo::HasPriorityHandler() const {
+  DCHECK(!targets_.empty());
+  return has_priority_handler_ && targets_.front()->CanHandleAccelerators();
 }
 
-void AcceleratorManager::UnregisterImpl(
-    AcceleratorTargetsMap::iterator map_iter,
-    AcceleratorTarget* target) {
-  AcceleratorTargetList* targets = &map_iter->second.second;
-  auto target_iter = std::find(targets->begin(), targets->end(), target);
-  if (target_iter == targets->end()) {
-    NOTREACHED() << "Unregistering accelerator for wrong target";
-    return;
-  }
-
-  // Only one priority handler is allowed, so if we remove the first element we
-  // no longer have a priority target.
-  if (target_iter == targets->begin())
-    map_iter->second.first = false;
-
-  targets->remove(target);
-  if (!targets->empty())
-    return;
-  accelerators_.erase(map_iter);
+bool AcceleratorManager::AcceleratorTargetInfo::Contains(
+    AcceleratorTarget* target) const {
+  DCHECK(target);
+  return base::Contains(targets_, target);
 }
 
 }  // namespace ui

@@ -7,13 +7,10 @@
 
 #include <list>
 #include <map>
-#include <utility>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/events/event_constants.h"
 
 namespace ui {
 
@@ -27,6 +24,8 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorManager {
   };
 
   AcceleratorManager();
+  AcceleratorManager(const AcceleratorManager& other) = delete;
+  AcceleratorManager& operator=(const AcceleratorManager& other) = delete;
   ~AcceleratorManager();
 
   // Register keyboard accelerators for the specified target. If multiple
@@ -59,9 +58,11 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorManager {
   }
 
   // Unregister the specified keyboard accelerator for the specified target.
+  // DCHECKs if |target| is null or not registered.
   void Unregister(const Accelerator& accelerator, AcceleratorTarget* target);
 
-  // Unregister all keyboard accelerator for the specified target.
+  // Unregister all keyboard accelerator for the specified target. DCHECKs if
+  // |target| is null.
   void UnregisterAll(AcceleratorTarget* target);
 
   // Returns whether |accelerator| is already registered.
@@ -79,21 +80,45 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorManager {
   bool HasPriorityHandler(const Accelerator& accelerator) const;
 
  private:
+  // Private helper class to manage the accelerator targets and priority. Each
+  // set of targets for a given accelerator can only have 0 or 1 priority
+  // handlers. If present this handler is tried first, otherwise all handlers
+  // are tried in registration order.
+  class AcceleratorTargetInfo {
+   public:
+    AcceleratorTargetInfo();
+    AcceleratorTargetInfo(const AcceleratorTargetInfo& other);
+    AcceleratorTargetInfo& operator=(const AcceleratorTargetInfo& other);
+    ~AcceleratorTargetInfo();
+
+    // Registers a |target| with a given |priority|.
+    void RegisterWithPriority(AcceleratorTarget* target,
+                              HandlerPriority priority);
+
+    // Unregisters |target| if it exists. Returns true if |target| was present.
+    bool Unregister(AcceleratorTarget* target);
+
+    // Iterate through the targets in priority order attempting to process
+    // |accelerator|. Returns true if a target processed |accelerator|.
+    bool TryProcess(const Accelerator& accelerator);
+
+    // Returns true if this set of targets has a priority handler and it can
+    // currently handle an accelerator.
+    bool HasPriorityHandler() const;
+
+    // Returns true if |target| is registered. Note this is O(num_targets).
+    bool Contains(AcceleratorTarget* target) const;
+
+    // Returns true if there are registered targets.
+    bool HasTargets() const { return !targets_.empty(); }
+
+   private:
+    std::list<AcceleratorTarget*> targets_;
+    bool has_priority_handler_ = false;
+  };
+
   // The accelerators and associated targets.
-  using AcceleratorTargetList = std::list<AcceleratorTarget*>;
-  // This construct pairs together a |bool| (denoting whether the list contains
-  // a priority_handler at the front) with the list of AcceleratorTargets.
-  using AcceleratorTargets = std::pair<bool, AcceleratorTargetList>;
-  using AcceleratorTargetsMap = std::map<Accelerator, AcceleratorTargets>;
-
-  // Implementation of Unregister(). |map_iter| points to the accelerator to
-  // remove, and |target| the AcceleratorTarget to remove.
-  void UnregisterImpl(AcceleratorTargetsMap::iterator map_iter,
-                      AcceleratorTarget* target);
-
-  AcceleratorTargetsMap accelerators_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorManager);
+  std::map<Accelerator, AcceleratorTargetInfo> accelerators_;
 };
 
 }  // namespace ui
