@@ -661,22 +661,9 @@
     'cc-animation': {
       'filepath': 'cc/animation/'
     },
-    'cc-contexts': {
-      'filepath': 'components/viz/common/gpu'
-    },
     'cc-display': {
       'filepath': 'components/viz/service/display'\
                   '|cc/output'
-    },
-    'cc-paint': {
-      'filepath': 'cc/paint'
-    },
-    'cc-quads': {
-      'filepath': 'components/viz/common/quads'
-    },
-    'cc-resources': {
-      'filepath': 'cc/resources'\
-                  '|components/viz/common/resources'
     },
     'cc-scheduler': {
       'filepath': 'cc/scheduler'
@@ -2131,8 +2118,7 @@
                       'olka+watch@chromium.org'],
     'aura': ['kalyan.kondapally@intel.com',
              'sadrul@chromium.org'],
-    'aura_compositor': ['danakj+watch@chromium.org',
-                        'jbauman+watch@chromium.org',
+    'aura_compositor': ['jbauman+watch@chromium.org',
                         'kalyan.kondapally@intel.com'],
     'autoclick': ['katie+watch@chromium.org'],
     'autofill': ['anthonyvd+autofillwatch@chromium.org',
@@ -2329,12 +2315,7 @@
     'cc': ['cc-bugs@chromium.org'],
     'cc-animation': ['gerchiko@microsoft.com',
                      'majidvp@chromium.org'],
-    'cc-contexts': ['danakj+watch@chromium.org'],
-    'cc-display': ['danakj+watch@chromium.org',
-                   'penghuang+viz@chromium.org'],
-    'cc-paint': ['danakj+watch@chromium.org'],
-    'cc-quads': ['danakj+watch@chromium.org'],
-    'cc-resources': ['danakj+watch@chromium.org'],
+    'cc-display': ['penghuang+viz@chromium.org'],
     'cc-scheduler': ['scheduler-bugs+cc@chromium.org'],
     'certificate_transparency': ['certificate-transparency-chrome@googlegroups.com',
                                  'martijn+crwatch@martijnc.be',
