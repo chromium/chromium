@@ -90,6 +90,13 @@
    *     processed the event. False otherwise.
    */
   handleTouchEvents(event, index, callback) {
+    // If the event is not cancelable, touch scrolling is active. Reset the
+    // touch tracking to disable tap event detection during scrolling.
+    if (event.cancelable === false) {
+      this.resetTouchTracking_();
+      return false;
+    }
+
     switch (event.type) {
       case 'touchcancel':
         this.resetTouchTracking_();
