@@ -60,7 +60,3 @@ crbug.com/1058792 fast/multicol/composited-with-child-layer-vertical-rl.html [ S
 crbug.com/1191032 http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure ]
 crbug.com/1191032 http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
 crbug.com/1191032 virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
-
-crbug.com/1191162 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/composited-under-clip-under-multicol.html [ Failure ]
-crbug.com/1191162 virtual/layout_ng_block_frag/fast/multicol/composited-relpos-clipped.html [ Failure ]
-crbug.com/1191162 virtual/layout_ng_block_frag/fast/multicol/composited-relpos-in-clipped.html [ Failure ]
