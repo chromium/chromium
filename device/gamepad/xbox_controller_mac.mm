@@ -136,6 +136,20 @@ struct XboxOneButtonData {
   int16_t stick_right_y;
 };
 
+struct XboxSeriesXOldFirmwareButtonData {
+  XboxOneButtonData xbox_one_data;
+  bool share : 1;
+  uint8_t padding : 7;
+};
+
+// Accurate for firmware version 5.5.2641.
+struct XboxSeriesXButtonData {
+  XboxOneButtonData xbox_one_data;
+  uint8_t padding[4];
+  bool share : 1;
+  uint8_t padding2 : 7;
+};
+
 struct XboxOneGuideData {
   uint8_t down;
   uint8_t dummy1;
@@ -163,6 +177,10 @@ static_assert(sizeof(Xbox360RumbleData) == 8, "Xbox360RumbleData wrong size");
 static_assert(sizeof(XboxOneButtonData) == 14, "XboxOneButtonData wrong size");
 static_assert(sizeof(XboxOneGuideData) == 2, "XboxOneGuideData wrong size");
 static_assert(sizeof(XboxOneRumbleData) == 13, "XboxOneRumbleData wrong size");
+static_assert(sizeof(XboxSeriesXOldFirmwareButtonData) == 15,
+              "XboxSeriesXOldFirmwareButtonData wrong size");
+static_assert(sizeof(XboxSeriesXButtonData) == 19,
+              "XboxSeriesXButtonData wrong size");
 
 // Report lengths for the input reports that carry gamepad button and axis data
 // on special Xbox One devices. These devices support input remapping and
@@ -173,6 +191,8 @@ static_assert(sizeof(XboxOneRumbleData) == 13, "XboxOneRumbleData wrong size");
 const size_t kXboxOneEliteButtonDataBytes = 29;
 const size_t kXboxOneElite2ButtonDataBytes = 34;
 const size_t kXboxAdaptiveButtonDataBytes = 50;
+const size_t kXboxSeriesXOldFirmwareButtonDataBytes = 40;
+const size_t kXboxSeriesXButtonDataBytes = 44;
 
 // From MSDN:
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ee417001(v=vs.85).aspx#dead_zone
@@ -295,6 +315,8 @@ XboxControllerMac::ControllerType ControllerTypeFromIds(uint16_t vendor_id,
         return XboxControllerMac::XBOX_ONE_ELITE_CONTROLLER_2;
       case XboxControllerMac::kProductXboxOneSController:
         return XboxControllerMac::XBOX_ONE_S_CONTROLLER;
+      case XboxControllerMac::kProductXboxSeriesXController:
+        return XboxControllerMac::XBOX_SERIES_X_CONTROLLER;
       case XboxControllerMac::kProductXboxAdaptiveController:
         return XboxControllerMac::XBOX_ADAPTIVE_CONTROLLER;
       default:
@@ -311,6 +333,7 @@ bool ControllerNeedsXboxOneInit(XboxControllerMac::ControllerType type) {
     case XboxControllerMac::XBOX_ONE_ELITE_CONTROLLER:
     case XboxControllerMac::XBOX_ONE_ELITE_CONTROLLER_2:
     case XboxControllerMac::XBOX_ONE_S_CONTROLLER:
+    case XboxControllerMac::XBOX_SERIES_X_CONTROLLER:
     case XboxControllerMac::XBOX_ADAPTIVE_CONTROLLER:
       return true;
     default:
@@ -357,7 +380,8 @@ void XboxControllerMac::SetVibration(double strong_magnitude,
              controller_type_ == XBOX_ONE_CONTROLLER_2015 ||
              controller_type_ == XBOX_ONE_ELITE_CONTROLLER ||
              controller_type_ == XBOX_ONE_ELITE_CONTROLLER_2 ||
-             controller_type_ == XBOX_ONE_S_CONTROLLER) {
+             controller_type_ == XBOX_ONE_S_CONTROLLER ||
+             controller_type_ == XBOX_SERIES_X_CONTROLLER) {
     WriteXboxOneRumble(static_cast<uint8_t>(strong_magnitude * 255.0),
                        static_cast<uint8_t>(weak_magnitude * 255.0));
   }
@@ -419,6 +443,7 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
     case XBOX_ONE_ELITE_CONTROLLER:
     case XBOX_ONE_ELITE_CONTROLLER_2:
     case XBOX_ONE_S_CONTROLLER:
+    case XBOX_SERIES_X_CONTROLLER:
     case XBOX_ADAPTIVE_CONTROLLER:
       read_endpoint_ = kXboxOneReadEndpoint;
       control_endpoint_ = kXboxOneControlEndpoint;
@@ -595,6 +620,7 @@ uint16_t XboxControllerMac::GetVendorId() const {
     case XBOX_ONE_ELITE_CONTROLLER:
     case XBOX_ONE_ELITE_CONTROLLER_2:
     case XBOX_ONE_S_CONTROLLER:
+    case XBOX_SERIES_X_CONTROLLER:
     case XBOX_ADAPTIVE_CONTROLLER:
       return kVendorMicrosoft;
     default:
@@ -616,6 +642,8 @@ uint16_t XboxControllerMac::GetProductId() const {
       return kProductXboxOneEliteController2;
     case XBOX_ONE_S_CONTROLLER:
       return kProductXboxOneSController;
+    case XBOX_SERIES_X_CONTROLLER:
+      return kProductXboxSeriesXController;
     case XBOX_ADAPTIVE_CONTROLLER:
       return kProductXboxAdaptiveController;
     default:
@@ -638,6 +666,8 @@ std::string XboxControllerMac::GetControllerTypeString() const {
     case XBOX_ONE_S_CONTROLLER:
     case XBOX_ADAPTIVE_CONTROLLER:
       return "Xbox One Controller";
+    case XBOX_SERIES_X_CONTROLLER:
+      return "Xbox Series X Controller";
     default:
       return "Unrecognized Controller";
   }
@@ -753,12 +783,29 @@ void XboxControllerMac::ProcessXboxOnePacket(size_t length) {
       if (length != sizeof(XboxOneButtonData) &&
           length != kXboxOneEliteButtonDataBytes &&
           length != kXboxOneElite2ButtonDataBytes &&
-          length != kXboxAdaptiveButtonDataBytes) {
+          length != kXboxAdaptiveButtonDataBytes &&
+          length != kXboxSeriesXOldFirmwareButtonDataBytes &&
+          length != kXboxSeriesXButtonDataBytes) {
         return;
       }
-      XboxOneButtonData* data = reinterpret_cast<XboxOneButtonData*>(buffer);
       Data normalized_data;
-      NormalizeXboxOneButtonData(*data, &normalized_data);
+      if (controller_type_ == XboxControllerMac::XBOX_SERIES_X_CONTROLLER) {
+        if (length == kXboxSeriesXOldFirmwareButtonDataBytes) {
+          XboxSeriesXOldFirmwareButtonData* data =
+              reinterpret_cast<XboxSeriesXOldFirmwareButtonData*>(buffer);
+          NormalizeXboxOneButtonData(data->xbox_one_data, &normalized_data);
+          normalized_data.buttons[14] = data->share;
+        } else if (length == kXboxSeriesXButtonDataBytes) {
+          XboxSeriesXButtonData* data =
+              reinterpret_cast<XboxSeriesXButtonData*>(buffer);
+          NormalizeXboxOneButtonData(data->xbox_one_data, &normalized_data);
+          normalized_data.buttons[14] = data->share;
+        }
+      } else {
+        XboxOneButtonData* data = reinterpret_cast<XboxOneButtonData*>(buffer);
+        NormalizeXboxOneButtonData(*data, &normalized_data);
+      }
+
       if (delegate_)
         delegate_->XboxControllerGotData(this, normalized_data);
       break;

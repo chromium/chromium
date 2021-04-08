@@ -118,6 +118,8 @@ class XboxDataFetcher : public GamepadDataFetcher,
       xbox_one_elite_2_device_removed_iter_;
   base::mac::ScopedIOObject<io_iterator_t> xbox_one_s_device_added_iter_;
   base::mac::ScopedIOObject<io_iterator_t> xbox_one_s_device_removed_iter_;
+  base::mac::ScopedIOObject<io_iterator_t> xbox_series_x_device_added_iter_;
+  base::mac::ScopedIOObject<io_iterator_t> xbox_series_x_device_removed_iter_;
   base::mac::ScopedIOObject<io_iterator_t> xbox_adaptive_device_added_iter_;
   base::mac::ScopedIOObject<io_iterator_t> xbox_adaptive_device_removed_iter_;
 

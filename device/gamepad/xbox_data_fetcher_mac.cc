@@ -206,6 +206,13 @@ bool XboxDataFetcher::RegisterForNotifications() {
 
   if (!RegisterForDeviceNotifications(
           XboxControllerMac::kVendorMicrosoft,
+          XboxControllerMac::kProductXboxSeriesXController,
+          &xbox_series_x_device_added_iter_,
+          &xbox_series_x_device_removed_iter_))
+    return false;
+
+  if (!RegisterForDeviceNotifications(
+          XboxControllerMac::kVendorMicrosoft,
           XboxControllerMac::kProductXboxOneSController,
           &xbox_one_s_device_added_iter_, &xbox_one_s_device_removed_iter_))
     return false;
@@ -378,6 +385,12 @@ void XboxDataFetcher::XboxControllerGotData(
       XboxControllerMac::XBOX_360_CONTROLLER) {
     pad.buttons[16].pressed = data.buttons[14];
     pad.buttons[16].value = data.buttons[14] ? 1.0f : 0.0f;
+  }
+  if (controller->GetControllerType() ==
+      XboxControllerMac::XBOX_SERIES_X_CONTROLLER) {
+    pad.buttons[17].pressed = data.buttons[14];
+    pad.buttons[17].value = data.buttons[14] ? 1.0f : 0.0f;
+    pad.buttons_length = 18;
   }
   for (size_t i = 0; i < base::size(data.axes); i++) {
     pad.axes[i] = data.axes[i];

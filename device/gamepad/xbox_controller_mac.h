@@ -35,6 +35,7 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   static const uint16_t kProductXboxOneSController = 0x02ea;
   static const uint16_t kProductXboxOneEliteController2 = 0x0b00;
   static const uint16_t kProductXboxAdaptiveController = 0x0b0a;
+  static const uint16_t kProductXboxSeriesXController = 0x0b12;
 
   enum ControllerType {
     UNKNOWN_CONTROLLER,
@@ -45,6 +46,7 @@ class XboxControllerMac final : public AbstractHapticGamepad {
     XBOX_ONE_ELITE_CONTROLLER_2,
     XBOX_ONE_S_CONTROLLER,
     XBOX_ADAPTIVE_CONTROLLER,
+    XBOX_SERIES_X_CONTROLLER,
   };
 
   enum LEDPattern {
