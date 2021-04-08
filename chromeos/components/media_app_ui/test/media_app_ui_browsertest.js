@@ -519,6 +519,56 @@ TEST_F('MediaAppUIBrowserTest', 'CanFullscreenVideo', async () => {
   testDone();
 });
 
+// Tests that associated subtitles get not just a handle but a valid open File
+// upon initial file load.
+TEST_F('MediaAppUIBrowserTest', 'LoadVideoWithSubtitles', async () => {
+  // Mock the send message call to prevent actual loading. We just want to see
+  // what would be sent.
+  let secondMessageSent;
+  const messageSent = new Promise(resolve => {
+    guestMessagePipe.sendMessage = (messageId, data) => {
+      resolve({messageId, data});
+      secondMessageSent = new Promise(resolveAgain => {
+        guestMessagePipe.sendMessage = (messageId, data) => {
+          resolveAgain({messageId, data});
+          return Promise.resolve();
+        };
+      });
+      return Promise.resolve();
+    };
+  });
+  await launchWithFiles([
+    new File([], 'zero_byte_video.webm', {type: 'video/webm'}),
+    new File([], 'zero_byte_video.vtt', {}),
+    new File([], 'extra_video.webm', {}),
+    new File([], 'unrelated_file.html', {}),
+  ]);
+
+  const message = await messageSent;
+  assertEquals(message.messageId, Message.LOAD_FILES);
+
+  // Initial launch should have two files, and they should both have valid
+  // (non-null) File objects.
+  let data = /** @type {!LoadFilesMessage} */ (message.data);
+  assertEquals(data.files.length, 2);
+  assertEquals(data.files[0].name, 'zero_byte_video.webm');
+  assertNotEquals(data.files[0].file, null);
+  assertEquals(data.files[1].name, 'zero_byte_video.vtt');
+  assertNotEquals(data.files[1].file, null);
+
+  // The extra files message shouldn't include any of the old files. And the new
+  // file should have a null ref.
+  const secondMessage = await secondMessageSent;
+  assertEquals(secondMessage.messageId, Message.LOAD_EXTRA_FILES);
+
+  data = /** @type {!LoadFilesMessage} */ (secondMessage.data);
+  assertEquals(data.files.length, 1);
+  assertEquals(data.files[0].name, 'extra_video.webm');
+  assertEquals(data.files[0].file, null);
+
+  testDone();
+});
+
 // Tests the IPC behind the implementation of ReceivedFile.overwriteOriginal()
 // in the untrusted context. Ensures it correctly updates the file handle owned
 // by the privileged context.

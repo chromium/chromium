@@ -601,11 +601,22 @@ async function sendSnapshotToGuest(
   // "nearby" files for preloading. However, reopening *all* files on every
   // navigation attempt to verify they can still be navigated to adds noticeable
   // lag in large directories.
+  let targetIndex = -1;
   if (focusIndex >= 0 && focusIndex < snapshot.length) {
-    await refreshFile(snapshot[focusIndex]);
+    targetIndex = focusIndex;
   } else if (snapshot.length !== 0) {
-    await refreshFile(snapshot[0]);
+    targetIndex = 0;
   }
+  if (targetIndex >= 0) {
+    const descriptor = snapshot[targetIndex];
+    await refreshFile(descriptor);
+    await refreshLoadRequiredAssociatedFiles(
+        snapshot, descriptor.handle.name, extraFiles);
+    if (extraFiles) {
+      snapshot.shift();
+    }
+  }
+
   if (localLaunchNumber !== globalLaunchNumber) {
     return;
   }
@@ -770,6 +781,15 @@ function isSubtitleFile(fileName) {
 }
 
 /**
+ * Returns whether `fileName` is a file likely to be a video.
+ * @param {string} fileName
+ * @return {boolean}
+ */
+function isVideoFile(fileName) {
+  return /^video\//.test(getMimeTypeFromFilename(fileName));
+}
+
+/**
  * Returns whether fileName is the filename for a video or image, or a related
  * file type (e.g. video subtitles).
  * @param {string} fileName
@@ -828,7 +848,7 @@ async function processOtherFilesInDirectory(
   }
 
   /** @type {!Array<!FileDescriptor>} */
-  const relatedFiles = [];
+  let relatedFiles = [];
   // TODO(b/158149714): Clear out old tokens as well? Care needs to be taken to
   // ensure any file currently open with unsaved changes can still be saved.
   for await (const /** !FileSystemHandle */ handle of directory.values()) {
@@ -853,6 +873,14 @@ async function processOtherFilesInDirectory(
         inCurrentDirectory: true,
       });
     }
+  }
+
+  if (currentFiles.length > 1) {
+    // Related files identified as required for the initial load must be removed
+    // so they don't appear in the file list twice.
+    const atLoadCurrentFiles = currentFiles.slice(1);
+    relatedFiles = relatedFiles.filter(
+        f => !atLoadCurrentFiles.find(c => c.handle.name === f.handle.name));
   }
 
   if (localLaunchNumber !== globalLaunchNumber) {
@@ -939,13 +967,10 @@ async function loadOtherRelatedFiles(
   }
 
   const shallowCopy = [...currentFiles];
-  if (processResult === ProcessOtherFilesResult.FOCUS_FILE_RELEVANT) {
-    shallowCopy.shift();
-    await sendSnapshotToGuest(shallowCopy, localLaunchNumber, true);
-  } else {
-    // If the focus file is no longer relevant, load files as normal.
-    await sendSnapshotToGuest(shallowCopy, localLaunchNumber);
-  }
+  // If the focus file is no longer relevant, loads files as normal.
+  await sendSnapshotToGuest(
+      shallowCopy, localLaunchNumber,
+      processResult === ProcessOtherFilesResult.FOCUS_FILE_RELEVANT);
 }
 
 /**
@@ -964,6 +989,70 @@ function setCurrentDirectory(directory, focusFile) {
   });
   currentDirectoryHandle = directory;
   entryIndex = 0;
+}
+
+/**
+ * Returns a filename associated with `focusFileName` that may be required to
+ * properly load the file. The file might not exist.
+ * TODO(b/175099007): Support multiple associated files.
+ * @param {string} focusFileName
+ * @return {string}
+ */
+function requiredAssociatedFileName(focusFileName) {
+  // Subtitles must be identified for the initial load to be properly attached.
+  if (!isVideoFile(focusFileName)) {
+    return '';
+  }
+  // To match the video player app, just look for `.vtt` until alternative
+  // heuristics are added inside the app layer. See b/175099007.
+  return focusFileName.replace(/\.[^\.]+$/, '.vtt');
+}
+
+/**
+ * Adds file handles for associated files to the set of launch files.
+ * @param {!FileSystemDirectoryHandle} directory
+ * @param {string} focusFileName
+ */
+async function detectLoadRequiredAssociatedFiles(directory, focusFileName) {
+  const vttFileName = requiredAssociatedFileName(focusFileName);
+  if (!vttFileName) {
+    return;
+  }
+  try {
+    const vttFileHandle = await directory.getFileHandle(vttFileName);
+    currentFiles.push({
+      token: generateToken(vttFileHandle),
+      file: null,  // Will be set by `refreshLoadRequiredAssociatedFiles()`.
+      handle: vttFileHandle,
+      inCurrentDirectory: true,
+    });
+  } catch (e) {
+    // Do nothing if not found or not permitted.
+  }
+}
+
+/**
+ * Refreshes the File object for all file handles associated with the focus
+ * file.
+ * @param {!Array<!FileDescriptor>} snapshot
+ * @param {string} focusFileName
+ * @param {boolean} forExtraFilesMessage
+ */
+async function refreshLoadRequiredAssociatedFiles(
+    snapshot, focusFileName, forExtraFilesMessage) {
+  const vttFileName = requiredAssociatedFileName(focusFileName);
+  if (!vttFileName) {
+    return;
+  }
+  const index = snapshot.findIndex(d => d.handle.name === vttFileName);
+  if (index >= 0) {
+    await refreshFile(snapshot[index]);
+    // In the extra files message, it's necessary to remove the vtt file from
+    // the snapshot to avoid it being added again in the receiver.
+    if (forExtraFilesMessage) {
+      snapshot.splice(index, 1);
+    }
+  }
 }
 
 /**
@@ -986,6 +1075,7 @@ async function launchWithDirectory(directory, handle) {
   }
   // Load currentFiles into the guest.
   setCurrentDirectory(directory, asFile);
+  await detectLoadRequiredAssociatedFiles(directory, handle.name);
   await sendSnapshotToGuest([...currentFiles], localLaunchNumber);
   // The app is operable with the first file now.
 
