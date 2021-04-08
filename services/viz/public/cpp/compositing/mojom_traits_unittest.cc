@@ -82,9 +82,11 @@ TEST_F(StructTraitsTest, BeginFrameArgs) {
   const bool on_critical_path = true;
   const uint64_t source_id = 5;
   const uint64_t sequence_number = 10;
+  const uint64_t frames_throttled_since_last = 20;
   const bool animate_only = true;
   BeginFrameArgs input;
   input.frame_id = BeginFrameId(source_id, sequence_number);
+  input.frames_throttled_since_last = frames_throttled_since_last;
   input.frame_time = frame_time;
   input.deadline = deadline;
   input.interval = interval;
@@ -97,6 +99,7 @@ TEST_F(StructTraitsTest, BeginFrameArgs) {
 
   EXPECT_EQ(source_id, output.frame_id.source_id);
   EXPECT_EQ(sequence_number, output.frame_id.sequence_number);
+  EXPECT_EQ(frames_throttled_since_last, output.frames_throttled_since_last);
   EXPECT_EQ(frame_time, output.frame_time);
   EXPECT_EQ(deadline, output.deadline);
   EXPECT_EQ(interval, output.interval);

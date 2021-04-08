@@ -156,7 +156,8 @@ class CC_EXPORT FrameSequenceTracker {
 
   void UpdateTrackedFrameData(TrackedFrameData* frame_data,
                               uint64_t source_id,
-                              uint64_t sequence_number);
+                              uint64_t sequence_number,
+                              uint64_t throttled_frame_count);
 
   bool ShouldIgnoreBeginFrameSource(uint64_t source_id) const;
 

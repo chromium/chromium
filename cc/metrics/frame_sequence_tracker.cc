@@ -142,7 +142,8 @@ void FrameSequenceTracker::ReportBeginImplFrame(
   DCHECK(!compositor_frame_submitted_) << TRACKER_DCHECK_MSG;
 
   UpdateTrackedFrameData(&begin_impl_frame_data_, args.frame_id.source_id,
-                         args.frame_id.sequence_number);
+                         args.frame_id.sequence_number,
+                         args.frames_throttled_since_last);
   impl_throughput().frames_expected +=
       begin_impl_frame_data_.previous_sequence_delta;
 #if DCHECK_IS_ON()
@@ -188,7 +189,8 @@ void FrameSequenceTracker::ReportBeginMainFrame(
   awaiting_main_response_sequence_ = args.frame_id.sequence_number;
 
   UpdateTrackedFrameData(&begin_main_frame_data_, args.frame_id.source_id,
-                         args.frame_id.sequence_number);
+                         args.frame_id.sequence_number,
+                         args.frames_throttled_since_last);
   if (!first_received_main_sequence_ ||
       first_received_main_sequence_ <= last_no_main_damage_sequence_) {
     first_received_main_sequence_ = args.frame_id.sequence_number;
@@ -639,12 +641,15 @@ void FrameSequenceTracker::PauseFrameProduction() {
   reset_all_state_ = true;
 }
 
-void FrameSequenceTracker::UpdateTrackedFrameData(TrackedFrameData* frame_data,
-                                                  uint64_t source_id,
-                                                  uint64_t sequence_number) {
+void FrameSequenceTracker::UpdateTrackedFrameData(
+    TrackedFrameData* frame_data,
+    uint64_t source_id,
+    uint64_t sequence_number,
+    uint64_t throttled_frame_count) {
   if (frame_data->previous_sequence &&
       frame_data->previous_source == source_id) {
-    uint32_t current_latency = sequence_number - frame_data->previous_sequence;
+    uint32_t current_latency =
+        sequence_number - frame_data->previous_sequence - throttled_frame_count;
     DCHECK_GT(current_latency, 0u) << TRACKER_DCHECK_MSG;
     frame_data->previous_sequence_delta = current_latency;
   } else {

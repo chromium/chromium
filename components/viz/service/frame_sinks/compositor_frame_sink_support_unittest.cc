@@ -1555,7 +1555,7 @@ TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
   uint64_t sequence_number = 1;
   int sent_frames = 0;
   BeginFrameArgs args;
-
+  uint64_t frames_throttled_since_last = 0;
   const base::TimeTicks end_time = frame_time + base::TimeDelta::FromSeconds(2);
 
   base::TimeTicks next_expected_begin_frame = frame_time;
@@ -1563,8 +1563,11 @@ TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
     args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0,
                                           sequence_number++, frame_time);
     if (frame_time < next_expected_begin_frame) {
-      EXPECT_CALL(mock_client, OnBeginFrame(args, _)).Times(0);
+      EXPECT_CALL(mock_client, OnBeginFrame(_, _)).Times(0);
+      ++frames_throttled_since_last;
     } else {
+      args.frames_throttled_since_last = frames_throttled_since_last;
+      frames_throttled_since_last = 0;
       EXPECT_CALL(mock_client, OnBeginFrame(args, _)).WillOnce([&]() {
         support->SubmitCompositorFrame(local_surface_id_,
                                        MakeDefaultCompositorFrame());

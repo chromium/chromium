@@ -754,6 +754,9 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
                            TRACE_ID_GLOBAL(copy_args.trace_id),
                            TRACE_EVENT_FLAG_FLOW_OUT, "step",
                            "IssueBeginFrame");
+    copy_args.frames_throttled_since_last = frames_throttled_since_last_;
+    frames_throttled_since_last_ = 0;
+
     last_frame_time_ = args.frame_time;
     client_->OnBeginFrame(copy_args, std::move(frame_timing_details_));
     begin_frame_tracker_.SentBeginFrame(args);
@@ -936,8 +939,7 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
   // |begin_frame_interval_| since the last one was sent because clients have
   // requested to update at such rate.
   const bool should_throttle_as_requested =
-      begin_frame_interval_ > base::TimeDelta() &&
-      (frame_time - last_frame_time_) < begin_frame_interval_;
+      ShouldThrottleBeginFrameAsRequested(frame_time);
   // We might throttle this OnBeginFrame() if it's been less than a second since
   // the last one was sent, either because clients are unresponsive or have
   // submitted too many undrawn frames.
@@ -982,6 +984,7 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
   }
 
   if (should_throttle_as_requested) {
+    ++frames_throttled_since_last_;
     RecordShouldSendBeginFrame("ThrottleRequested");
     return false;
   }
@@ -1027,6 +1030,12 @@ void CompositorFrameSinkSupport::CheckPendingSurfaces() {
   for (Surface* surface : pending_surfaces) {
     surface->ActivateIfDeadlinePassed();
   }
+}
+
+bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(
+    base::TimeTicks frame_time) {
+  return begin_frame_interval_ > base::TimeDelta() &&
+         (frame_time - last_frame_time_) < begin_frame_interval_;
 }
 
 void CompositorFrameSinkSupport::OnCompositorFrameTransitionDirectiveProcessed(

@@ -255,6 +255,12 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // deadline has passed. This is called every BeginFrame.
   void CheckPendingSurfaces();
 
+  // When throttling is requested by a client, a BeginFrame will not be sent
+  // until the time elapsed has passed the requested throttle interval since the
+  // last sent BeginFrame. This function returns true if such interval has
+  // passed and a BeginFrame should be sent.
+  bool ShouldThrottleBeginFrameAsRequested(base::TimeTicks frame_time);
+
   mojom::CompositorFrameSinkClient* const client_;
 
   FrameSinkManagerImpl* const frame_sink_manager_;
@@ -371,6 +377,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   // Represents whether the DocumentTransition feature is enabled.
   bool document_transitions_enabled_;
+
+  // Number of frames skipped during throttling since last BeginFrame sent.
+  uint64_t frames_throttled_since_last_ = 0;
 
   base::WeakPtrFactory<CompositorFrameSinkSupport> weak_factory_{this};
 

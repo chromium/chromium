@@ -42,6 +42,10 @@ struct StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs> {
     return args.frame_id.source_id;
   }
 
+  static uint64_t frames_throttled_since_last(const viz::BeginFrameArgs& args) {
+    return args.frames_throttled_since_last;
+  }
+
   static int64_t trace_id(const viz::BeginFrameArgs& args) {
     return args.trace_id;
   }

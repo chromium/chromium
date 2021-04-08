@@ -88,10 +88,7 @@ BeginFrameArgs::BeginFrameArgs()
     : frame_time(base::TimeTicks::Min()),
       deadline(base::TimeTicks::Min()),
       interval(base::TimeDelta::FromMicroseconds(-1)),
-      frame_id(BeginFrameId(0, kInvalidFrameNumber)),
-      type(BeginFrameArgs::INVALID),
-      on_critical_path(true),
-      animate_only(false) {}
+      frame_id(BeginFrameId(0, kInvalidFrameNumber)) {}
 
 BeginFrameArgs::BeginFrameArgs(uint64_t source_id,
                                uint64_t sequence_number,
@@ -103,9 +100,7 @@ BeginFrameArgs::BeginFrameArgs(uint64_t source_id,
       deadline(deadline),
       interval(interval),
       frame_id(BeginFrameId(source_id, sequence_number)),
-      type(type),
-      on_critical_path(true),
-      animate_only(false) {
+      type(type) {
   DCHECK_LE(kStartingFrameNumber, sequence_number);
 }
 
@@ -144,6 +139,7 @@ void BeginFrameArgs::AsValueInto(base::trace_event::TracedValue* state) const {
   state->SetString("subtype", TypeToString(type));
   state->SetInteger("source_id", frame_id.source_id);
   state->SetInteger("sequence_number", frame_id.sequence_number);
+  state->SetInteger("frames_throttled_since_last", frames_throttled_since_last);
   state->SetDouble("frame_time_us",
                    frame_time.since_origin().InMicrosecondsF());
   state->SetDouble("deadline_us", deadline.since_origin().InMicrosecondsF());
@@ -160,6 +156,9 @@ void BeginFrameArgs::AsProtozeroInto(
   state->set_type(TypeToProtozeroEnum(type));
   state->set_source_id(frame_id.source_id);
   state->set_sequence_number(frame_id.sequence_number);
+  // TODO(yjliu) add frames_throttled_since_last to third_party
+  // chrome_compositor_scheduler_state.proto
+  // state->set_frames_throttled_since_last(frames_throttled_since_last);
   state->set_frame_time_us(frame_time.since_origin().InMicroseconds());
   state->set_deadline_us(deadline.since_origin().InMicroseconds());
   state->set_interval_delta_us(interval.InMicroseconds());
@@ -185,13 +184,10 @@ std::string BeginFrameArgs::ToString() const {
   return value.ToJSON();
 }
 
-BeginFrameAck::BeginFrameAck() : has_damage(false) {}
-
 BeginFrameAck::BeginFrameAck(const BeginFrameArgs& args, bool has_damage)
-    : BeginFrameAck(args.frame_id.source_id,
-                    args.frame_id.sequence_number,
-                    has_damage,
-                    args.trace_id) {}
+    : frame_id(args.frame_id),
+      trace_id(args.trace_id),
+      has_damage(has_damage) {}
 
 BeginFrameAck::BeginFrameAck(uint64_t source_id,
                              uint64_t sequence_number,

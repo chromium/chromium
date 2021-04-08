@@ -55,6 +55,7 @@ bool StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs>::
   }
   out->frame_id.source_id = data.source_id();
   out->frame_id.sequence_number = data.sequence_number();
+  out->frames_throttled_since_last = data.frames_throttled_since_last();
   out->trace_id = data.trace_id();
   out->on_critical_path = data.on_critical_path();
   out->animate_only = data.animate_only();

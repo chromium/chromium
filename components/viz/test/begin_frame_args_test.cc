@@ -79,7 +79,8 @@ BeginFrameArgs CreateBeginFrameArgsForTesting(
 bool operator==(const BeginFrameArgs& lhs, const BeginFrameArgs& rhs) {
   return (lhs.type == rhs.type) && (lhs.frame_id == rhs.frame_id) &&
          (lhs.frame_time == rhs.frame_time) && (lhs.deadline == rhs.deadline) &&
-         (lhs.interval == rhs.interval);
+         (lhs.interval == rhs.interval) &&
+         (lhs.frames_throttled_since_last == rhs.frames_throttled_since_last);
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const BeginFrameArgs& args) {
@@ -92,7 +93,8 @@ void PrintTo(const BeginFrameArgs& args, ::std::ostream* os) {
       << args.frame_id.source_id << ", " << args.frame_id.sequence_number
       << ", " << args.frame_time.since_origin().InMicroseconds() << ", "
       << args.deadline.since_origin().InMicroseconds() << ", "
-      << args.interval.InMicroseconds() << "us)";
+      << args.interval.InMicroseconds() << "us, "
+      << args.frames_throttled_since_last << ")";
 }
 
 bool operator==(const BeginFrameAck& lhs, const BeginFrameAck& rhs) {
