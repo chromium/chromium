@@ -5,15 +5,16 @@
 #ifndef UI_BASE_CLIPBOARD_CLIPBOARD_X11_H_
 #define UI_BASE_CLIPBOARD_CLIPBOARD_X11_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstdint>
 #include <memory>
 
 #include "base/macros.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 
 namespace ui {
+
+class XClipboardHelper;
 
 class ClipboardX11 : public Clipboard {
  private:
@@ -101,10 +102,8 @@ class ClipboardX11 : public Clipboard {
 
   SkBitmap ReadImageInternal(ClipboardBuffer buffer) const;
 
-  // TODO(dcheng): Is this still needed now that each platform clipboard has its
-  // own class derived from Clipboard?
-  class X11Details;
-  std::unique_ptr<X11Details> x11_details_;
+  std::unique_ptr<XClipboardHelper> x_clipboard_helper_;
+
   base::flat_map<ClipboardBuffer, std::unique_ptr<DataTransferEndpoint>>
       data_src_;
 
