@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <wrl/client.h>
+
 #include <string>
 #include <vector>
 
@@ -31,6 +32,7 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
+#include "chrome/updater/win/setup/setup_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -67,6 +69,17 @@ std::wstring GetAppClientStateKey(const std::string& id) {
   return base::ASCIIToWide(base::StrCat({CLIENT_STATE_KEY, id}));
 }
 
+bool RegKeyExists(HKEY root, REGSAM regsam, const std::wstring& path) {
+  return base::win::RegKey(root, path.c_str(), KEY_QUERY_VALUE | regsam)
+      .Valid();
+}
+
+bool DeleteRegKey(HKEY root, REGSAM regsam, const std::wstring& path) {
+  LONG result =
+      base::win::RegKey(root, L"", regsam | KEY_READ).DeleteKey(path.c_str());
+  return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
+}
+
 }  // namespace
 
 base::Optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
@@ -94,10 +107,29 @@ base::Optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
 }
 
 void Clean(UpdaterScope scope) {
-  // TODO(crbug.com/1062288): Delete the Client / ClientState registry keys.
-  // TODO(crbug.com/1062288): Delete the COM server items.
+  // TODO(crbug.com/1096654): Add support for system scope.
+  const HKEY root = HKEY_CURRENT_USER;
+  for (const char* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
+    EXPECT_TRUE(DeleteRegKey(root, KEY_WOW64_32KEY, base::ASCIIToWide(key)));
+  }
+  for (const wchar_t* key : {COMPANY_POLICIES_KEY, UPDATER_POLICIES_KEY}) {
+    EXPECT_TRUE(DeleteRegKey(HKEY_LOCAL_MACHINE, 0, key));
+  }
+  for (const CLSID& clsid : GetSideBySideServers()) {
+    EXPECT_TRUE(DeleteRegKey(root, 0, GetComServerClsidRegistryPath(clsid)));
+  }
+  for (const CLSID& clsid : GetActiveServers()) {
+    EXPECT_TRUE(DeleteRegKey(root, 0, GetComServerClsidRegistryPath(clsid)));
+  }
+  for (const GUID& guid : GetSideBySideInterfaces()) {
+    EXPECT_TRUE(DeleteRegKey(root, 0, GetComIidRegistryPath(guid)));
+    EXPECT_TRUE(DeleteRegKey(root, 0, GetComTypeLibRegistryPath(guid)));
+  }
+  for (const GUID& guid : GetActiveInterfaces()) {
+    EXPECT_TRUE(DeleteRegKey(root, 0, GetComIidRegistryPath(guid)));
+    EXPECT_TRUE(DeleteRegKey(root, 0, GetComTypeLibRegistryPath(guid)));
+  }
   // TODO(crbug.com/1062288): Delete the COM service items.
-  // TODO(crbug.com/1062288): Delete the COM interfaces.
   // TODO(crbug.com/1062288): Delete the Wake task.
   base::Optional<base::FilePath> path = GetProductPath();
   EXPECT_TRUE(path);
@@ -110,12 +142,29 @@ void Clean(UpdaterScope scope) {
 }
 
 void ExpectClean(UpdaterScope scope) {
-  // TODO(crbug.com/1062288): Assert there are no Client / ClientState registry
-  // keys.
-  // TODO(crbug.com/1062288): Assert there is no UpdateDev registry key.
-  // TODO(crbug.com/1062288): Assert there are no COM server items.
+  // TODO(crbug.com/1096654): Add support for system scope.
+  const HKEY root = HKEY_CURRENT_USER;
+  for (const char* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
+    EXPECT_FALSE(RegKeyExists(root, KEY_WOW64_32KEY, base::ASCIIToWide(key)));
+  }
+  for (const wchar_t* key : {COMPANY_POLICIES_KEY, UPDATER_POLICIES_KEY}) {
+    EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, 0, key));
+  }
+  for (const CLSID& clsid : GetSideBySideServers()) {
+    EXPECT_FALSE(RegKeyExists(root, 0, GetComServerClsidRegistryPath(clsid)));
+  }
+  for (const CLSID& clsid : GetActiveServers()) {
+    EXPECT_FALSE(RegKeyExists(root, 0, GetComServerClsidRegistryPath(clsid)));
+  }
+  for (const GUID& guid : GetSideBySideInterfaces()) {
+    EXPECT_FALSE(RegKeyExists(root, 0, GetComIidRegistryPath(guid)));
+    EXPECT_FALSE(RegKeyExists(root, 0, GetComTypeLibRegistryPath(guid)));
+  }
+  for (const GUID& guid : GetActiveInterfaces()) {
+    EXPECT_FALSE(RegKeyExists(root, 0, GetComIidRegistryPath(guid)));
+    EXPECT_FALSE(RegKeyExists(root, 0, GetComTypeLibRegistryPath(guid)));
+  }
   // TODO(crbug.com/1062288): Assert there are no COM service items.
-  // TODO(crbug.com/1062288): Assert there are no COM interfaces.
   // TODO(crbug.com/1062288): Assert there are no Wake tasks.
 
   // Files must not exist on the file system.

@@ -28,7 +28,6 @@ extern const wchar_t kPrefsAccessMutex[];
 #define UPDATER_KEY COMPANY_KEY "Update\\"
 #define CLIENTS_KEY UPDATER_KEY "Clients\\"
 #define CLIENT_STATE_KEY UPDATER_KEY "ClientState\\"
-#define UPDATE_DEV_KEY COMPANY_KEY L"UpdateDev\\"
 
 #define COMPANY_POLICIES_KEY \
   L"Software\\Policies\\" COMPANY_SHORTNAME_STRING L"\\"
