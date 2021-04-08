@@ -13,7 +13,7 @@ div { (user agent stylesheet)
 
 ======== Inherited from div#container ========
 [expanded] 
-Style Attribute { ()
+style attribute { ()
     CoLoR: blAck;
 
 [expanded] 
