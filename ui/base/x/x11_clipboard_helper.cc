@@ -254,6 +254,11 @@ std::vector<std::string> XClipboardHelper::GetAvailableAtomNames(
   return atom_names;
 }
 
+bool XClipboardHelper::IsSelectionOwner(ClipboardBuffer buffer) const {
+  x11::Atom selection = LookupSelectionForClipboardBuffer(buffer);
+  return GetSelectionOwner(selection) == x_window_;
+}
+
 std::vector<x11::Atom> XClipboardHelper::GetTextAtoms() const {
   return GetTextAtomsFrom();
 }

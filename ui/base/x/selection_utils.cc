@@ -10,6 +10,8 @@
 
 #include "base/containers/contains.h"
 #include "base/i18n/icu_string_conversions.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -221,6 +223,15 @@ void SelectionData::AssignTo(std::string* result) const {
 
 void SelectionData::AssignTo(std::u16string* result) const {
   *result = RefCountedMemoryToString16(memory_);
+}
+
+scoped_refptr<base::RefCountedBytes> SelectionData::TakeBytes() {
+  if (!memory_.get())
+    return nullptr;
+
+  auto* memory = memory_.release();
+  return base::MakeRefCounted<base::RefCountedBytes>(memory->data(),
+                                                     memory->size());
 }
 
 }  // namespace ui

@@ -112,6 +112,9 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionData {
   void AssignTo(std::string* result) const;
   void AssignTo(std::u16string* result) const;
 
+  // Transfers ownership of |memory_| to the caller.
+  scoped_refptr<base::RefCountedBytes> TakeBytes();
+
  private:
   x11::Atom type_;
   scoped_refptr<base::RefCountedMemory> memory_;
