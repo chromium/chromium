@@ -15,6 +15,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "sandbox/policy/win/sandbox_win.h"
 
@@ -27,7 +28,9 @@ namespace {
 
 base::Value FetchBrowserChildProcesses() {
   // The |BrowserChildProcessHostIterator| must only be used on the IO thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
   base::Value browser_processes(base::Value::Type::LIST);
 
   for (BrowserChildProcessHostIterator itr; !itr.Done(); ++itr) {
@@ -97,7 +100,10 @@ void SandboxHandler::HandleRequestSandboxDiagnostics(
 
   AllowJavascript();
 
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&FetchBrowserChildProcesses),
       base::BindOnce(&SandboxHandler::FetchBrowserChildProcessesCompleted,
                      weak_ptr_factory_.GetWeakPtr()));

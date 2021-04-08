@@ -30,6 +30,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -184,7 +185,10 @@ void VizProcessTransportFactory::ConnectHostFrameSinkManager() {
                 debug_renderer_settings);
           }
         };
-    GetIOThreadTaskRunner({})->PostTask(
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? GetUIThreadTaskRunner({})
+                           : GetIOThreadTaskRunner({});
+    task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(connect_on_io_thread,
                        std::move(frame_sink_manager_receiver),

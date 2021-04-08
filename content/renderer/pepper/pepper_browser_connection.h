@@ -78,6 +78,9 @@ class PepperBrowserConnection
   // Return a bound PepperIOHost. This may return null in unittests.
   mojom::PepperIOHost* GetIOHost();
 
+  // Return a bound PepperHost.
+  mojom::PepperHost* GetHost();
+
  private:
   // RenderFrameObserver implementation.
   void OnDestruct() override;

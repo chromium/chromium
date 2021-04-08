@@ -542,7 +542,9 @@ bool GpuProcessHost::ValidateHost(GpuProcessHost* host) {
 
 // static
 GpuProcessHost* GpuProcessHost::Get(GpuProcessKind kind, bool force_create) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
 
   // Don't grant further access to GPU if it is not allowed.
   GpuDataManagerImpl* gpu_data_manager = GpuDataManagerImpl::GetInstance();
@@ -593,8 +595,12 @@ GpuProcessHost* GpuProcessHost::Get(GpuProcessKind kind, bool force_create) {
 
 // static
 void GpuProcessHost::GetHasGpuProcess(base::OnceCallback<void(bool)> callback) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    GetIOThreadTaskRunner({})->PostTask(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? GetUIThreadTaskRunner({})
+                         : GetIOThreadTaskRunner({});
+
+  if (!task_runner->BelongsToCurrentThread()) {
+    task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&GpuProcessHost::GetHasGpuProcess, std::move(callback)));
     return;
@@ -618,9 +624,12 @@ void GpuProcessHost::CallOnIO(
 #if !defined(OS_WIN)
   DCHECK_NE(kind, GPU_PROCESS_KIND_INFO_COLLECTION);
 #endif
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&RunCallbackOnIO, kind, force_create,
-                                std::move(callback)));
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? GetUIThreadTaskRunner({})
+                         : GetIOThreadTaskRunner({});
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&RunCallbackOnIO, kind, force_create,
+                                       std::move(callback)));
 }
 
 void GpuProcessHost::BindInterface(
@@ -650,7 +659,9 @@ void GpuProcessHost::TerminateGpuProcess(const std::string& message) {
 
 // static
 GpuProcessHost* GpuProcessHost::FromID(int host_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
 
   for (int i = 0; i < GPU_PROCESS_KIND_COUNT; ++i) {
     GpuProcessHost* host = g_gpu_process_hosts[i];
@@ -865,7 +876,9 @@ bool GpuProcessHost::Init() {
   DCHECK_NE(mode_, gpu::GpuMode::DISABLED);
 
   if (in_process_) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                            ? BrowserThread::UI
+                            : BrowserThread::IO);
     DCHECK(GetGpuMainThreadFactory());
     gpu::GpuPreferences gpu_preferences = GetGpuPreferencesFromCommandLine();
     GpuDataManagerImpl::GetInstance()->UpdateGpuPreferences(
@@ -1113,6 +1126,12 @@ void GpuProcessHost::RecordLogMessage(int32_t severity,
 void GpuProcessHost::BindDiscardableMemoryReceiver(
     mojo::PendingReceiver<
         discardable_memory::mojom::DiscardableSharedMemoryManager> receiver) {
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+        std::move(receiver));
+    return;
+  }
+
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&BindDiscardableMemoryReceiverOnUI, std::move(receiver)));

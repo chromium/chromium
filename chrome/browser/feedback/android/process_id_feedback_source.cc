@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 
 using base::android::AttachCurrentThread;
@@ -53,14 +54,21 @@ void ProcessIdFeedbackSource::PrepareProcessIds() {
     process_ids_[content::PROCESS_TYPE_RENDERER].push_back(
         host->GetProcess().Pid());
   }
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProcessIdFeedbackSource::PrepareProcessIdsOnIOThread,
-                     this));
+
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    PrepareProcessIdsOnProcessThread();
+  } else {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ProcessIdFeedbackSource::PrepareProcessIdsOnProcessThread, this));
+  }
 }
 
-void ProcessIdFeedbackSource::PrepareProcessIdsOnIOThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+void ProcessIdFeedbackSource::PrepareProcessIdsOnProcessThread() {
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter)
     process_ids_[iter.GetData().process_type].push_back(

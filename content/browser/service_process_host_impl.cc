@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -33,41 +34,65 @@ class ServiceProcessTracker {
 
   ServiceProcessInfo AddProcess(const base::Process& process,
                                 const std::string& service_interface_name) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    // TODO(jam): remove this class or at least the locks once we only have UI
+    // thread mode.
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                            ? BrowserThread::UI
+                            : BrowserThread::IO);
     base::AutoLock lock(processes_lock_);
     auto id = GenerateNextId();
     ServiceProcessInfo& info = processes_[id];
     info.service_process_id = id;
     info.pid = process.Pid();
     info.service_interface_name = service_interface_name;
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ServiceProcessTracker::NotifyLaunchOnUIThread,
-                       base::Unretained(this), info));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      for (auto& observer : observers_)
+        observer.OnServiceProcessLaunched(info);
+    } else {
+      ui_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ServiceProcessTracker::NotifyLaunchOnUIThread,
+                         base::Unretained(this), info));
+    }
     return info;
   }
 
   void NotifyTerminated(ServiceProcessId id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                            ? BrowserThread::UI
+                            : BrowserThread::IO);
     base::AutoLock lock(processes_lock_);
     auto iter = processes_.find(id);
     DCHECK(iter != processes_.end());
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ServiceProcessTracker::NotifyTerminatedOnUIThread,
-                       base::Unretained(this), iter->second));
+
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      for (auto& observer : observers_)
+        observer.OnServiceProcessTerminatedNormally(iter->second);
+    } else {
+      ui_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ServiceProcessTracker::NotifyTerminatedOnUIThread,
+                         base::Unretained(this), iter->second));
+    }
     processes_.erase(iter);
   }
 
   void NotifyCrashed(ServiceProcessId id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                            ? BrowserThread::UI
+                            : BrowserThread::IO);
     base::AutoLock lock(processes_lock_);
     auto iter = processes_.find(id);
     DCHECK(iter != processes_.end());
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ServiceProcessTracker::NotifyCrashedOnUIThread,
-                       base::Unretained(this), iter->second));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      for (auto& observer : observers_)
+        observer.OnServiceProcessCrashed(iter->second);
+    } else {
+      ui_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ServiceProcessTracker::NotifyCrashedOnUIThread,
+                         base::Unretained(this), iter->second));
+    }
     processes_.erase(iter);
   }
 
@@ -109,7 +134,9 @@ class ServiceProcessTracker {
   }
 
   ServiceProcessId GenerateNextId() {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                            ? BrowserThread::UI
+                            : BrowserThread::IO);
     return service_process_id_generator_.GenerateNextId();
   }
 
@@ -169,8 +196,8 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
 
 // TODO(crbug.com/977637): Once UtilityProcessHost is used only by service
 // processes, its logic can be inlined here.
-void LaunchServiceProcessOnIOThread(mojo::GenericPendingReceiver receiver,
-                                    ServiceProcessHost::Options options) {
+void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
+                          ServiceProcessHost::Options options) {
   UtilityProcessHost* host = new UtilityProcessHost(
       std::make_unique<UtilityProcessClient>(*receiver.interface_name()));
   host->SetName(!options.display_name.empty()
@@ -206,9 +233,12 @@ void ServiceProcessHost::RemoveObserver(Observer* observer) {
 void ServiceProcessHost::Launch(mojo::GenericPendingReceiver receiver,
                                 Options options) {
   DCHECK(receiver.interface_name().has_value());
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&LaunchServiceProcessOnIOThread,
-                                std::move(receiver), std::move(options)));
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? GetUIThreadTaskRunner({})
+                         : GetIOThreadTaskRunner({});
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&LaunchServiceProcess, std::move(receiver),
+                                std::move(options)));
 }
 
 void LaunchUtilityProcessServiceDeprecated(

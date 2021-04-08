@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -27,7 +28,9 @@ namespace {
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
 void BindReceiverInGpuProcess(
     mojo::PendingReceiver<media::mojom::MediaService> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
   auto* process_host = GpuProcessHost::Get();
   if (!process_host) {
     DLOG(ERROR) << "GPU process host not available";
@@ -60,9 +63,13 @@ media::mojom::MediaService& GetMediaService() {
     remote.reset_on_disconnect();
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BindReceiverInGpuProcess, std::move(receiver)));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      BindReceiverInGpuProcess(std::move(receiver));
+    } else {
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BindReceiverInGpuProcess, std::move(receiver)));
+    }
 #elif BUILDFLAG(ENABLE_MOJO_MEDIA_IN_BROWSER_PROCESS)
     static base::NoDestructor<std::unique_ptr<media::MediaService>> service;
     *service = media::CreateMediaService(std::move(receiver));

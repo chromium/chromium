@@ -443,9 +443,12 @@ void InProcessUtilityThreadHelper::CheckHasRunningChildProcess() {
           std::move(quit_closure).Run();
       };
 
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(check_has_running_child_process_on_io,
-                                run_loop_->QuitClosure()));
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? GetUIThreadTaskRunner({})
+                         : GetIOThreadTaskRunner({});
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(check_has_running_child_process_on_io,
+                                       run_loop_->QuitClosure()));
 }
 
 void InProcessUtilityThreadHelper::BrowserChildProcessHostDisconnected(

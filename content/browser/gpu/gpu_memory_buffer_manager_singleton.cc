@@ -11,6 +11,7 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/base/ui_base_features.h"
 
@@ -53,7 +54,9 @@ GpuMemoryBufferManagerSingleton::GpuMemoryBufferManagerSingleton(int client_id)
           base::BindRepeating(&content::GetGpuService),
           client_id,
           std::make_unique<gpu::GpuMemoryBufferSupport>(),
-          GetIOThreadTaskRunner({})),
+          base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+              ? GetUIThreadTaskRunner({})
+              : GetIOThreadTaskRunner({})),
       gpu_data_manager_impl_(GpuDataManagerImpl::GetInstance()) {
   DCHECK(!g_gpu_memory_buffer_manager);
   g_gpu_memory_buffer_manager = this;

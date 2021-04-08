@@ -43,25 +43,11 @@ class PepperRendererConnection
                            StoragePartition* storage_partition);
 
   // BrowserMessageFilter overrides.
+  void OverrideThreadForMessage(const IPC::Message& message,
+                                content::BrowserThread::ID* thread) override;
   bool OnMessageReceived(const IPC::Message& msg) override;
 
- private:
-  ~PepperRendererConnection() override;
-
-  class OpenChannelToPpapiPluginCallback;
-  // Returns the host for the child process for the given |child_process_id|.
-  // If |child_process_id| is 0, returns the host owned by this
-  // PepperRendererConnection, which serves as the host for in-process plugins.
-  BrowserPpapiHostImpl* GetHostForChildProcess(int child_process_id) const;
-
-  void OnMsgCreateResourceHostsFromHost(
-      int routing_id,
-      int child_process_id,
-      const ppapi::proxy::ResourceMessageCallParams& params,
-      PP_Instance instance,
-      const std::vector<IPC::Message>& nested_msgs);
-
-  // mojom::PepperPluginInstanceIOHost overrides;
+  // mojom::PepperIOHost overrides;
   void DidCreateInProcessInstance(int32_t instance,
                                   int32_t render_frame_id,
                                   const GURL& document_url,
@@ -84,6 +70,22 @@ class PepperRendererConnection
       const base::FilePath& path,
       const base::Optional<url::Origin>& origin_lock,
       OpenChannelToPepperPluginCallback callback) override;
+
+ private:
+  ~PepperRendererConnection() override;
+
+  class OpenChannelToPpapiPluginCallback;
+  // Returns the host for the child process for the given |child_process_id|.
+  // If |child_process_id| is 0, returns the host owned by this
+  // PepperRendererConnection, which serves as the host for in-process plugins.
+  BrowserPpapiHostImpl* GetHostForChildProcess(int child_process_id) const;
+
+  void OnMsgCreateResourceHostsFromHost(
+      int routing_id,
+      int child_process_id,
+      const ppapi::proxy::ResourceMessageCallParams& params,
+      PP_Instance instance,
+      const std::vector<IPC::Message>& nested_msgs);
 
   const int render_process_id_;
   const bool incognito_;

@@ -16,6 +16,7 @@
 #include "content/browser/ppapi_plugin_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,7 +86,10 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
     client->SetRunLoop(&run_loop);
 
     PluginServiceImpl* service = PluginServiceImpl::GetInstance();
-    GetIOThreadTaskRunner({})->PostTask(
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? GetUIThreadTaskRunner({})
+                           : GetIOThreadTaskRunner({});
+    task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&PluginServiceImpl::OpenChannelToPpapiPlugin,
                        base::Unretained(service), /*render_process_id=*/0,

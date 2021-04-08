@@ -65,6 +65,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
@@ -408,7 +409,10 @@ CastBrowserMainParts::CastBrowserMainParts(
   AddDefaultCommandLineSwitches(command_line);
 
   service_manager_context_ = std::make_unique<ServiceManagerContext>(
-      cast_content_browser_client_, content::GetIOThreadTaskRunner({}));
+      cast_content_browser_client_,
+      base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+          ? content::GetUIThreadTaskRunner({})
+          : content::GetIOThreadTaskRunner({}));
   ServiceManagerConnection::GetForProcess()->Start();
 }
 

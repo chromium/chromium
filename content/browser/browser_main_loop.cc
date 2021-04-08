@@ -1183,14 +1183,22 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   // Initialize the GPU shader cache. This needs to be initialized before
   // BrowserGpuChannelHostFactory below, since that depends on an initialized
   // ShaderCacheFactory.
-  InitShaderCacheFactorySingleton(GetIOThreadTaskRunner({}));
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? GetUIThreadTaskRunner({})
+                         : GetIOThreadTaskRunner({});
+  InitShaderCacheFactorySingleton(task_runner);
 
   // Initialize the FontRenderParams on IO thread. This needs to be initialized
   // before gpu process initialization below.
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&viz::GpuHostImpl::InitFontRenderParams,
-                                gfx::GetFontRenderParams(
-                                    gfx::FontRenderParamsQuery(), nullptr)));
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    viz::GpuHostImpl::InitFontRenderParams(
+        gfx::GetFontRenderParams(gfx::FontRenderParamsQuery(), nullptr));
+  } else {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&viz::GpuHostImpl::InitFontRenderParams,
+                                  gfx::GetFontRenderParams(
+                                      gfx::FontRenderParamsQuery(), nullptr)));
+  }
 
   bool always_uses_gpu = true;
   bool established_gpu_channel = false;

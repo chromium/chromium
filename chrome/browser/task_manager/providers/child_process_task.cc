@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/common/child_process_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
@@ -126,7 +127,9 @@ void ConnectResourceReporterOnIOThread(
     int unique_child_process_id,
     mojo::PendingReceiver<content::mojom::ResourceUsageReporter>
         resource_reporter) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   content::BrowserChildProcessHost* host =
       content::BrowserChildProcessHost::FromID(unique_child_process_id);
@@ -142,7 +145,10 @@ void ConnectResourceReporterOnIOThread(
 ProcessResourceUsage* CreateProcessResourcesSampler(
     int unique_child_process_id) {
   mojo::PendingRemote<content::mojom::ResourceUsageReporter> usage_reporter;
-  content::GetIOThreadTaskRunner({})->PostTask(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&ConnectResourceReporterOnIOThread,
                      unique_child_process_id,

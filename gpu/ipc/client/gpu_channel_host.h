@@ -63,10 +63,12 @@ class GPU_EXPORT GpuChannelHost
     : public IPC::Sender,
       public base::RefCountedThreadSafe<GpuChannelHost> {
  public:
-  GpuChannelHost(int channel_id,
-                 const gpu::GPUInfo& gpu_info,
-                 const gpu::GpuFeatureInfo& gpu_feature_info,
-                 mojo::ScopedMessagePipeHandle handle);
+  GpuChannelHost(
+      int channel_id,
+      const gpu::GPUInfo& gpu_info,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
+      mojo::ScopedMessagePipeHandle handle,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner = nullptr);
 
   bool IsLost() const {
     DCHECK(listener_.get());
@@ -157,10 +159,13 @@ class GPU_EXPORT GpuChannelHost
   // all the contexts.
   class GPU_EXPORT Listener : public IPC::Listener {
    public:
-    Listener(mojo::ScopedMessagePipeHandle handle,
-             scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+    Listener();
 
     ~Listener() override;
+
+    // Called on the IO thread.
+    void Initialize(mojo::ScopedMessagePipeHandle handle,
+                    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
     // Called on the IO thread.
     void Close();

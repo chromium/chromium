@@ -439,26 +439,33 @@ class HDRProxy {
 
   static void RequestHDRStatus() {
     // The request must be sent to the GPU process from the IO thread.
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&HDRProxy::RequestOnIOThread));
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? GetUIThreadTaskRunner({})
+                           : GetIOThreadTaskRunner({});
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce(&HDRProxy::RequestOnProcessThread));
   }
 
-  static void GotResultOnIOThread(bool hdr_enabled) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&HDRProxy::GotResult, hdr_enabled));
+  static void GotResultOnProcessThread(bool hdr_enabled) {
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      GotResult(hdr_enabled);
+    } else {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&HDRProxy::GotResult, hdr_enabled));
+    }
   }
 
  private:
-  static void RequestOnIOThread() {
+  static void RequestOnProcessThread() {
     auto* gpu_process_host =
         GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, false);
     if (gpu_process_host) {
       auto* gpu_service = gpu_process_host->gpu_host()->gpu_service();
       gpu_service->RequestHDRStatus(
-          base::BindOnce(&HDRProxy::GotResultOnIOThread));
+          base::BindOnce(&HDRProxy::GotResultOnProcessThread));
     } else {
       bool hdr_enabled = false;
-      GotResultOnIOThread(hdr_enabled);
+      GotResultOnProcessThread(hdr_enabled);
     }
   }
   static void GotResult(bool hdr_enabled) {
@@ -745,7 +752,10 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDx12Version(bool delayed) {
       },
       delta);
 
-  GetIOThreadTaskRunner({})->PostDelayedTask(FROM_HERE, std::move(task), delta);
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? GetUIThreadTaskRunner({})
+                         : GetIOThreadTaskRunner({});
+  task_runner->PostDelayedTask(FROM_HERE, std::move(task), delta);
 #endif
 }
 
@@ -987,9 +997,11 @@ void GpuDataManagerImplPrivate::UpdateOverlayInfo(
 }
 
 void GpuDataManagerImplPrivate::UpdateHDRStatus(bool hdr_enabled) {
-  // This is running on the IO thread;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  HDRProxy::GotResultOnIOThread(hdr_enabled);
+  // This is running on the process thread;
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
+  HDRProxy::GotResultOnProcessThread(hdr_enabled);
 }
 
 void GpuDataManagerImplPrivate::UpdateDxDiagNodeRequestStatus(

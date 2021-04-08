@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "content/common/frame_messages.h"
+#include "content/public/common/content_features.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/pepper/pepper_in_process_router.h"
 #include "content/renderer/render_frame_impl.h"
@@ -43,6 +44,12 @@ void PepperBrowserConnection::DidCreateInProcessInstance(
     int render_frame_id,
     const GURL& document_url,
     const GURL& plugin_url) {
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    GetHost()->DidCreateInProcessInstance(instance, render_frame_id,
+                                          document_url, plugin_url);
+    return;
+  }
+
   if (!GetIOHost())
     return;
   GetIOHost()->DidCreateInProcessInstance(instance, render_frame_id,
@@ -50,6 +57,11 @@ void PepperBrowserConnection::DidCreateInProcessInstance(
 }
 
 void PepperBrowserConnection::DidDeleteInProcessInstance(PP_Instance instance) {
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    GetHost()->DidDeleteInProcessInstance(instance);
+    return;
+  }
+
   if (!GetIOHost())
     return;
   GetIOHost()->DidDeleteInProcessInstance(instance);
@@ -63,6 +75,13 @@ void PepperBrowserConnection::DidCreateOutOfProcessPepperInstance(
     const GURL& document_url,
     const GURL& plugin_url,
     bool is_priviledged_context) {
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    GetHost()->DidCreateOutOfProcessPepperInstance(
+        plugin_child_id, pp_instance, is_external, render_frame_id,
+        document_url, plugin_url, is_priviledged_context);
+    return;
+  }
+
   if (!GetIOHost())
     return;
   GetIOHost()->DidCreateOutOfProcessPepperInstance(
@@ -74,6 +93,12 @@ void PepperBrowserConnection::DidDeleteOutOfProcessPepperInstance(
     int32_t plugin_child_id,
     int32_t pp_instance,
     bool is_external) {
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    GetHost()->DidDeleteOutOfProcessPepperInstance(plugin_child_id, pp_instance,
+                                                   is_external);
+    return;
+  }
+
   if (!GetIOHost())
     return;
   GetIOHost()->DidDeleteOutOfProcessPepperInstance(plugin_child_id, pp_instance,
@@ -132,6 +157,12 @@ mojom::PepperIOHost* PepperBrowserConnection::GetIOHost() {
       return nullptr;
   }
   return io_host_.get();
+}
+
+mojom::PepperHost* PepperBrowserConnection::GetHost() {
+  RenderFrameImpl* render_frame_impl =
+      static_cast<RenderFrameImpl*>(render_frame());
+  return render_frame_impl->GetPepperHost();
 }
 
 }  // namespace content

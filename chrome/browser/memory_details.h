@@ -146,12 +146,12 @@ class MemoryDetails : public base::RefCountedThreadSafe<MemoryDetails> {
 #endif
 
  private:
-  // Collect child process information on the IO thread.  This is needed because
-  // information about some child process types (i.e. plugins) can only be taken
-  // on that thread.  The data will be used by about:memory.  When finished,
-  // invokes back to the file thread to run the rest of the about:memory
-  // functionality.
-  void CollectChildInfoOnIOThread();
+  // Collect child process information on the process thread.  This is needed
+  // because information about some child process types (i.e. plugins) can only
+  // be taken on that thread.  The data will be used by about:memory.  When
+  // finished, invokes back to the file thread to run the rest of the
+  // about:memory functionality.
+  void CollectChildInfoOnProcessThread();
 
   // Collect current process information from the OS and store it
   // for processing.  If data has already been collected, clears old

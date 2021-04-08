@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
+#include "content/public/common/content_features.h"
 
 using content::BrowserChildProcessHostIterator;
 using content::BrowserThread;
@@ -27,7 +28,9 @@ namespace {
 // |BrowserChildProcessObserver|.
 std::unique_ptr<std::vector<ChildProcessData>> CollectChildProcessData() {
   // The |BrowserChildProcessHostIterator| must only be used on the IO thread.
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   std::unique_ptr<std::vector<ChildProcessData>> child_processes(
       new std::vector<ChildProcessData>());
@@ -82,7 +85,10 @@ void ChildProcessTaskProvider::StartUpdating() {
   DCHECK(tasks_by_child_id_.empty());
 
   // First, get the pre-existing child processes data.
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&CollectChildProcessData),
       base::BindOnce(&ChildProcessTaskProvider::ChildProcessDataCollected,
                      weak_ptr_factory_.GetWeakPtr()));

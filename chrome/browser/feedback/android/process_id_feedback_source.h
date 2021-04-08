@@ -33,7 +33,7 @@ class ProcessIdFeedbackSource
   friend base::RefCountedThreadSafe<ProcessIdFeedbackSource>;
   ~ProcessIdFeedbackSource();
 
-  void PrepareProcessIdsOnIOThread();
+  void PrepareProcessIdsOnProcessThread();
   void PrepareCompleted();
 
   std::map<int, std::vector<base::ProcessHandle>> process_ids_;

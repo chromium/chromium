@@ -31,16 +31,18 @@ using base::AutoLock;
 
 namespace gpu {
 
-GpuChannelHost::GpuChannelHost(int channel_id,
-                               const gpu::GPUInfo& gpu_info,
-                               const gpu::GpuFeatureInfo& gpu_feature_info,
-                               mojo::ScopedMessagePipeHandle handle)
-    : io_thread_(base::ThreadTaskRunnerHandle::Get()),
+GpuChannelHost::GpuChannelHost(
+    int channel_id,
+    const gpu::GPUInfo& gpu_info,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    mojo::ScopedMessagePipeHandle handle,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
+    : io_thread_(io_task_runner ? io_task_runner
+                                : base::ThreadTaskRunnerHandle::Get()),
       channel_id_(channel_id),
       gpu_info_(gpu_info),
       gpu_feature_info_(gpu_feature_info),
-      listener_(new Listener(std::move(handle), io_thread_),
-                base::OnTaskRunnerDeleter(io_thread_)),
+      listener_(new Listener(), base::OnTaskRunnerDeleter(io_thread_)),
       shared_image_interface_(
           this,
           static_cast<int32_t>(
@@ -49,6 +51,16 @@ GpuChannelHost::GpuChannelHost(int channel_id,
           this,
           static_cast<int32_t>(
               GpuChannelReservedRoutes::kImageDecodeAccelerator)) {
+  if (io_thread_->BelongsToCurrentThread()) {
+    listener_->Initialize(std::move(handle), io_thread_);
+    DCHECK(io_thread_->BelongsToCurrentThread());
+  } else {
+    io_thread_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Listener::Initialize, base::Unretained(listener_.get()),
+                       std::move(handle), io_thread_));
+  }
+
   next_image_id_.GetNext();
   for (int32_t i = 0;
        i <= static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue); ++i)
@@ -270,18 +282,16 @@ GpuChannelHost::OrderingBarrierInfo::OrderingBarrierInfo(
 GpuChannelHost::OrderingBarrierInfo& GpuChannelHost::OrderingBarrierInfo::
 operator=(OrderingBarrierInfo&&) = default;
 
-GpuChannelHost::Listener::Listener(
+GpuChannelHost::Listener::Listener() = default;
+
+void GpuChannelHost::Listener::Initialize(
     mojo::ScopedMessagePipeHandle handle,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : channel_(IPC::ChannelMojo::Create(
-          std::move(handle),
-          IPC::Channel::MODE_CLIENT,
-          this,
-          io_task_runner,
-          base::ThreadTaskRunnerHandle::Get(),
-          mojo::internal::MessageQuotaChecker::MaybeCreate())) {
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  channel_ = IPC::ChannelMojo::Create(
+      std::move(handle), IPC::Channel::MODE_CLIENT, this, io_task_runner,
+      base::ThreadTaskRunnerHandle::Get(),
+      mojo::internal::MessageQuotaChecker::MaybeCreate());
   DCHECK(channel_);
-  DCHECK(io_task_runner->BelongsToCurrentThread());
   bool result = channel_->Connect();
   DCHECK(result);
 }

@@ -20,6 +20,7 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -75,10 +76,12 @@ bool ShouldProfileNonRendererProcessType(Mode mode, int process_type) {
   return false;
 }
 
-void StartProfilingNonRendererChildOnIOThread(
+void StartProfilingNonRendererChildOnProcessThread(
     base::WeakPtr<Controller> controller,
     const content::ChildProcessData& data) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   if (!controller)
     return;
@@ -127,9 +130,11 @@ void StartProfilingBrowserProcessOnIOThread(
                                    mojom::ProcessType::BROWSER);
 }
 
-void StartProfilingPidOnIOThread(base::WeakPtr<Controller> controller,
-                                 base::ProcessId pid) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+void StartProfilingPidOnProcessThread(base::WeakPtr<Controller> controller,
+                                      base::ProcessId pid) {
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   if (!controller)
     return;
@@ -145,7 +150,7 @@ void StartProfilingPidOnIOThread(base::WeakPtr<Controller> controller,
        !browser_child_iter.Done(); ++browser_child_iter) {
     const content::ChildProcessData& data = browser_child_iter.GetData();
     if (data.GetProcess().Pid() == pid) {
-      StartProfilingNonRendererChildOnIOThread(controller, data);
+      StartProfilingNonRendererChildOnProcessThread(controller, data);
       return;
     }
   }
@@ -155,10 +160,12 @@ void StartProfilingPidOnIOThread(base::WeakPtr<Controller> controller,
       << pid;
 }
 
-void StartProfilingNonRenderersIfNecessaryOnIOThread(
+void StartProfilingNonRenderersIfNecessaryOnProcessThread(
     Mode mode,
     base::WeakPtr<Controller> controller) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   if (!controller)
     return;
@@ -168,7 +175,7 @@ void StartProfilingNonRenderersIfNecessaryOnIOThread(
     const content::ChildProcessData& data = browser_child_iter.GetData();
     if (ShouldProfileNonRendererProcessType(mode, data.process_type) &&
         data.GetProcess().IsValid()) {
-      StartProfilingNonRendererChildOnIOThread(controller, data);
+      StartProfilingNonRendererChildOnProcessThread(controller, data);
     }
   }
 }
@@ -202,7 +209,9 @@ Mode ClientConnectionManager::GetMode() {
 }
 
 void ClientConnectionManager::StartProfilingProcess(base::ProcessId pid) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   mode_ = Mode::kManual;
 
@@ -215,10 +224,14 @@ void ClientConnectionManager::StartProfilingProcess(base::ProcessId pid) {
     }
   }
 
-  // The BrowserChildProcessHostIterator iterator must be used on the IO thread.
-  content::GetIOThreadTaskRunner({})->PostTask(
+  // The BrowserChildProcessHostIterator iterator must be used on the IO thread
+  // (or on UI thread when kProcessHostOnUI is enabled).
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(&StartProfilingPidOnIOThread, controller_, pid));
+      base::BindOnce(&StartProfilingPidOnProcessThread, controller_, pid));
 }
 
 bool ClientConnectionManager::AllowedToProfileRenderer(
@@ -252,9 +265,12 @@ void ClientConnectionManager::StartProfilingExistingProcessesIfNecessary() {
     }
   }
 
-  content::GetIOThreadTaskRunner({})->PostTask(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(&StartProfilingNonRenderersIfNecessaryOnIOThread,
+      base::BindOnce(&StartProfilingNonRenderersIfNecessaryOnProcessThread,
                      GetMode(), controller_));
 }
 
@@ -275,8 +291,11 @@ void ClientConnectionManager::BrowserChildProcessLaunchedAndConnected(
 void ClientConnectionManager::StartProfilingNonRendererChild(
     const content::ChildProcessData& data) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&StartProfilingNonRendererChildOnIOThread,
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&StartProfilingNonRendererChildOnProcessThread,
                                 controller_, data.Duplicate()));
 }
 

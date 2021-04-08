@@ -118,8 +118,8 @@ class ProcessMonitor {
   static std::vector<ProcessMetadata> GatherProcessesOnUIThread();
 
   // Returns the ProcessMetadata for every Chrome processes accessible from the
-  // UI thread.
-  static std::vector<ProcessMetadata> GatherProcessesOnIOThread();
+  // process thread.
+  static std::vector<ProcessMetadata> GatherProcessesOnProcessThread();
 
   // Gather all the processes from both threads and then invokes GatherMetrics()
   // back on the calling thread.

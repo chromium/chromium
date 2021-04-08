@@ -36,6 +36,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -208,7 +209,10 @@ void MemoryInternalsDOMHandler::HandleRequestProcessList(
 
   // This is called on the UI thread, the child process iterator must run on
   // the IO thread, while the render process iterator must run on the UI thread.
-  content::GetIOThreadTaskRunner({})->PostTask(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&MemoryInternalsDOMHandler::GetChildProcessesOnIOThread,
                      weak_factory_.GetWeakPtr(), std::move(callback_id)));

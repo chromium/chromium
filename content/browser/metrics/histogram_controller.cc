@@ -15,6 +15,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -135,7 +136,9 @@ void HistogramController::RemoveChildHistogramFetcherInterface(T* host) {
 
 void HistogramController::GetHistogramDataFromChildProcesses(
     int sequence_number) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
 
   int pending_processes = 0;
   for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
@@ -187,7 +190,10 @@ void HistogramController::GetHistogramData(int sequence_number) {
   }
   OnPendingProcesses(sequence_number, pending_processes, false);
 
-  GetIOThreadTaskRunner({})->PostTask(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&HistogramController::GetHistogramDataFromChildProcesses,
                      base::Unretained(this), sequence_number));

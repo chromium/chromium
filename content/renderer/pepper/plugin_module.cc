@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/common/frame_messages.h"
+#include "content/public/common/content_features.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/pepper/host_dispatcher_wrapper.h"
 #include "content/renderer/pepper/host_globals.h"
@@ -701,15 +702,23 @@ scoped_refptr<PluginModule> PluginModule::Create(
   mojo::ScopedMessagePipeHandle channel_handle;
   base::ProcessId peer_pid = 0;
   int plugin_child_id = 0;
-  mojom::PepperIOHost* io_host =
-      PepperBrowserConnection::Get(render_frame)->GetIOHost();
-  if (!io_host) {
-    // Couldn't be initialized.
-    return scoped_refptr<PluginModule>();
+
+  auto* browser_connection = PepperBrowserConnection::Get(render_frame);
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    mojom::PepperHost* host = browser_connection->GetHost();
+    host->OpenChannelToPepperPlugin(
+        render_frame->GetWebFrame()->GetSecurityOrigin(), path, origin_lock,
+        &channel_handle, &peer_pid, &plugin_child_id);
+  } else {
+    mojom::PepperIOHost* io_host = browser_connection->GetIOHost();
+    if (!io_host) {
+      // Couldn't be initialized.
+      return scoped_refptr<PluginModule>();
+    }
+    io_host->OpenChannelToPepperPlugin(
+        render_frame->GetWebFrame()->GetSecurityOrigin(), path, origin_lock,
+        &channel_handle, &peer_pid, &plugin_child_id);
   }
-  io_host->OpenChannelToPepperPlugin(
-      render_frame->GetWebFrame()->GetSecurityOrigin(), path, origin_lock,
-      &channel_handle, &peer_pid, &plugin_child_id);
   if (!channel_handle.is_valid()) {
     // Couldn't be initialized.
     return scoped_refptr<PluginModule>();

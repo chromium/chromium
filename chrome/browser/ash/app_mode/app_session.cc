@@ -41,6 +41,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/webplugininfo.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -75,8 +76,10 @@ void StartFloatingAccessibilityMenu() {
 
 // Sends a SIGFPE signal to plugin subprocesses that matches |child_ids|
 // to trigger a dump.
-void DumpPluginProcessOnIOThread(const std::set<int>& child_ids) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+void DumpPluginProcessOnProcessThread(const std::set<int>& child_ids) {
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   bool dump_requested = false;
 
@@ -317,8 +320,9 @@ void AppSession::OnLastAppWindowClosed() {
 }
 
 bool AppSession::ShouldHandlePlugin(const base::FilePath& plugin_path) const {
-  // Note that BrowserChildProcessHostIterator in DumpPluginProcessOnIOThread
-  // also needs to be updated when adding more plugin types here.
+  // Note that BrowserChildProcessHostIterator in
+  // DumpPluginProcessOnProcessThread also needs to be updated when adding more
+  // plugin types here.
   return IsPepperPlugin(plugin_path);
 }
 
@@ -337,8 +341,12 @@ void AppSession::OnPluginHung(const std::set<int>& hung_plugins) {
   is_shutting_down_ = true;
 
   LOG(ERROR) << "Plugin hung detected. Dump and reboot.";
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DumpPluginProcessOnIOThread, hung_plugins));
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DumpPluginProcessOnProcessThread, hung_plugins));
 }
 
 }  // namespace ash

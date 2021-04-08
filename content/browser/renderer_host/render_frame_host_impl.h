@@ -2341,6 +2341,28 @@ class CONTENT_EXPORT RenderFrameHostImpl
                      const url::Origin& main_frame_origin,
                      const std::string& mime_type,
                      GetPluginInfoCallback callback) override;
+  void DidCreateInProcessInstance(int32_t instance,
+                                  int32_t render_frame_id,
+                                  const GURL& document_url,
+                                  const GURL& plugin_url) override;
+  void DidDeleteInProcessInstance(int32_t instance) override;
+  void DidCreateOutOfProcessPepperInstance(
+      int32_t plugin_child_id,
+      int32_t pp_instance,
+      bool is_external,
+      int32_t render_frame_id,
+      const GURL& document_url,
+      const GURL& plugin_url,
+      bool is_priviledged_context,
+      DidCreateOutOfProcessPepperInstanceCallback callback) override;
+  void DidDeleteOutOfProcessPepperInstance(int32_t plugin_child_id,
+                                           int32_t pp_instance,
+                                           bool is_external) override;
+  void OpenChannelToPepperPlugin(
+      const url::Origin& embedder_origin,
+      const base::FilePath& path,
+      const base::Optional<url::Origin>& origin_lock,
+      OpenChannelToPepperPluginCallback callback) override;
 
   // mojom::PepperHungDetectorHost overrides:
   void PluginHung(bool is_hung) override;

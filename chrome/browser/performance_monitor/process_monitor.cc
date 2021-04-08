@@ -19,6 +19,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
@@ -177,8 +178,10 @@ std::vector<ProcessMetadata> ProcessMonitor::GatherProcessesOnUIThread() {
 }
 
 // static
-std::vector<ProcessMetadata> ProcessMonitor::GatherProcessesOnIOThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+std::vector<ProcessMetadata> ProcessMonitor::GatherProcessesOnProcessThread() {
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
 
   std::vector<ProcessMetadata> processes;
 
@@ -221,10 +224,14 @@ void ProcessMonitor::GatherProcesses() {
   std::vector<ProcessMetadata> ui_thread_processes =
       GatherProcessesOnUIThread();
 
-  // Then retrieve IO thread processes and invoke GatherMetrics() with both
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  // Then retrieve process thread processes and invoke GatherMetrics() with both
   // set of processes.
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&ProcessMonitor::GatherProcessesOnIOThread),
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ProcessMonitor::GatherProcessesOnProcessThread),
       base::BindOnce(&ProcessMonitor::GatherMetrics,
                      weak_ptr_factory_.GetWeakPtr(), current_update_sequence,
                      std::move(ui_thread_processes)));

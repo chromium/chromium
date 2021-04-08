@@ -71,6 +71,8 @@ class CONTENT_EXPORT BrowserProcessSubThread : public base::Thread {
   // This method encapsulates cleanup that needs to happen on the IO thread.
   void IOThreadCleanUp();
 
+  void ProcessHostCleanUp();
+
   const BrowserThread::ID identifier_;
 
   // BrowserThreads are not allowed to do file I/O nor wait on synchronization

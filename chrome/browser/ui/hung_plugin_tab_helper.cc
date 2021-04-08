@@ -21,19 +21,20 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/plugin_service.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/result_codes.h"
 
 namespace {
 
-// Called on the I/O thread to actually kill the plugin with the given child
+// Called on the process thread to actually kill the plugin with the given child
 // ID. We specifically don't want this to be a member function since if the
 // user chooses to kill the plugin, we want to kill it even if they close the
 // tab first.
 //
 // Be careful with the child_id. It's supplied by the renderer which might be
 // hacked.
-void KillPluginOnIOThread(int child_id) {
+void KillPluginOnProcessThread(int child_id) {
   content::BrowserChildProcessHostIterator iter(
       content::PROCESS_TYPE_PPAPI_PLUGIN);
   while (!iter.Done()) {
@@ -166,8 +167,12 @@ void HungPluginTabHelper::OnManagerShuttingDown(
 }
 
 void HungPluginTabHelper::KillPlugin(int child_id) {
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&KillPluginOnIOThread, child_id));
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    KillPluginOnProcessThread(child_id);
+  } else {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&KillPluginOnProcessThread, child_id));
+  }
 }
 
 HungPluginTabHelper::HungPluginTabHelper(content::WebContents* contents)

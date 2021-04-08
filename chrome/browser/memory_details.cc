@@ -33,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
@@ -147,11 +148,15 @@ void MemoryDetails::StartFetch() {
   // getting called from the IO thread.
   DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::IO));
 
-  // In order to process this request, we need to use the plugin information.
-  // However, plugin process information is only available from the IO thread.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MemoryDetails::CollectChildInfoOnIOThread, this));
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    CollectChildInfoOnProcessThread();
+  } else {
+    // In order to process this request, we need to use the plugin information.
+    // However, plugin process information is only available from the IO thread.
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MemoryDetails::CollectChildInfoOnProcessThread, this));
+  }
 }
 
 MemoryDetails::~MemoryDetails() {}
@@ -191,8 +196,10 @@ std::string MemoryDetails::ToLogString(bool include_tab_title) {
   return log;
 }
 
-void MemoryDetails::CollectChildInfoOnIOThread() {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
+void MemoryDetails::CollectChildInfoOnProcessThread() {
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   std::vector<ProcessMemoryInformation> child_info;
 

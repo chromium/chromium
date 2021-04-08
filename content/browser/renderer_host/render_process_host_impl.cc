@@ -1350,11 +1350,15 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
     }
 #endif
 
-    if (auto r = receiver.As<
-                 discardable_memory::mojom::DiscardableSharedMemoryManager>()) {
-      discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-          std::move(r));
-      return;
+    // If other child processes live on the UI thread then
+    // DiscardableSharedMemoryManager will have to be used only on UI thread.
+    if (!base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      if (auto r = receiver.As<discardable_memory::mojom::
+                                   DiscardableSharedMemoryManager>()) {
+        discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+            std::move(r));
+        return;
+      }
     }
 
     if (auto r = receiver.As<ukm::mojom::UkmRecorderInterface>()) {
@@ -1594,9 +1598,13 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   if (!GetBrowserContext()->IsOffTheRecord() &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableGpuShaderDiskCache)) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&CacheShaderInfo, GetID(),
-                                  storage_partition_impl_->GetPath()));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      CacheShaderInfo(GetID(), storage_partition_impl_->GetPath());
+    } else {
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&CacheShaderInfo, GetID(),
+                                    storage_partition_impl_->GetPath()));
+    }
   }
 
   // This instance of PushMessagingManager is only used from clients
@@ -1616,9 +1624,12 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   const int id = GetID();
   const uint64_t tracing_id =
       ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(id);
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? GetUIThreadTaskRunner({})
+                         : GetIOThreadTaskRunner({});
   gpu_client_.reset(
       new viz::GpuClient(std::make_unique<BrowserGpuClientDelegate>(), id,
-                         tracing_id, GetIOThreadTaskRunner({})));
+                         tracing_id, task_runner));
 }
 
 // static
@@ -1700,8 +1711,12 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableGpuShaderDiskCache)) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&RemoveShaderInfo, GetID()));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      RemoveShaderInfo(GetID());
+    } else {
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&RemoveShaderInfo, GetID()));
+    }
   }
 
   if (cleanup_network_service_plugin_exceptions_upon_destruction_)
@@ -1711,6 +1726,12 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
                                   "render_process_host", this);
   TRACE_EVENT_NESTABLE_ASYNC_END1("shutdown", "Browser.RenderProcessHostImpl",
                                   this, "render_process_host", this);
+
+  // Manually delete here in order to avoid DeleteOnIOThread trait when
+  // kProcessHostOnUI is enabled.
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI) && gpu_client_) {
+    delete gpu_client_.release();
+  }
 }
 
 bool RenderProcessHostImpl::Init() {
@@ -1936,9 +1957,10 @@ void RenderProcessHostImpl::CreateMessageFilters() {
   AddFilter(render_message_filter.get());
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  AddFilter(new PepperRendererConnection(
+  pepper_renderer_connection_ = base::MakeRefCounted<PepperRendererConnection>(
       GetID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
-      storage_partition_impl_));
+      storage_partition_impl_);
+  AddFilter(pepper_renderer_connection_.get());
 #endif
 
   p2p_socket_dispatcher_host_ =
@@ -2151,7 +2173,9 @@ void RenderProcessHostImpl::DelayProcessShutdownForUnload(
 void RenderProcessHostImpl::AddAllowedRequestInitiatorForPlugin(
     int process_id,
     const url::Origin& allowed_request_initiator) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&AddAllowedRequestInitiatorForPluginOnUIThread,
@@ -2327,8 +2351,15 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   if (gpu_client_) {
     // |gpu_client_| outlives the registry, because its destruction is posted to
     // IO thread from the destructor of |this|.
-    registry->AddInterface(base::BindRepeating(
-        &viz::GpuClient::Add, base::Unretained(gpu_client_.get())));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      AddUIThreadInterface(
+          registry.get(),
+          base::BindRepeating(&viz::GpuClient::Add,
+                              base::Unretained(gpu_client_.get())));
+    } else {
+      registry->AddInterface(base::BindRepeating(
+          &viz::GpuClient::Add, base::Unretained(gpu_client_.get())));
+    }
   }
 
   registry->AddInterface(
@@ -4978,6 +5009,15 @@ void RenderProcessHostImpl::OnBindHostReceiver(
     return;
   }
 #endif
+
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    if (auto r = receiver.As<
+                 discardable_memory::mojom::DiscardableSharedMemoryManager>()) {
+      discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+          std::move(r));
+      return;
+    }
+  }
 
   GetContentClient()->browser()->BindHostReceiverForRenderer(
       this, std::move(receiver));

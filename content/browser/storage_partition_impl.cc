@@ -296,7 +296,9 @@ void ClearShaderCacheOnIOThread(const base::FilePath& path,
                                 const base::Time begin,
                                 const base::Time end,
                                 base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? BrowserThread::UI
+                          : BrowserThread::IO);
   gpu::ShaderCacheFactory* shader_cache_factory =
       GetShaderCacheFactorySingleton();
 
@@ -2249,10 +2251,17 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   }
 
   if (remove_mask_ & REMOVE_DATA_MASK_SHADER_CACHE) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&ClearShaderCacheOnIOThread, path, begin, end,
-                                  CreateTaskCompletionClosure(
-                                      TracingDataType::kShaderCache)));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      ClearShaderCacheOnIOThread(
+          path, begin, end,
+          CreateTaskCompletionClosure(TracingDataType::kShaderCache));
+    } else {
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &ClearShaderCacheOnIOThread, path, begin, end,
+              CreateTaskCompletionClosure(TracingDataType::kShaderCache)));
+    }
   }
 
   auto filter = CreateGenericOriginMatcher(storage_origin, origin_matcher,

@@ -277,6 +277,7 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/browser/plugin_service_impl.h"
+#include "content/browser/renderer_host/pepper/pepper_renderer_connection.h"
 #endif
 
 namespace content {
@@ -10758,6 +10759,59 @@ void RenderFrameHostImpl::GetPluginInfo(const GURL& url,
       GetProcess()->GetID(), routing_id_, url, main_frame_origin, mime_type,
       allow_wildcard, nullptr, &info, &actual_mime_type);
   std::move(callback).Run(found, info, actual_mime_type);
+}
+
+void RenderFrameHostImpl::DidCreateInProcessInstance(int32_t instance,
+                                                     int32_t render_frame_id,
+                                                     const GURL& document_url,
+                                                     const GURL& plugin_url) {
+  RenderProcessHostImpl* process =
+      static_cast<RenderProcessHostImpl*>(GetProcess());
+  process->pepper_renderer_connection()->DidCreateInProcessInstance(
+      instance, render_frame_id, document_url, plugin_url);
+}
+
+void RenderFrameHostImpl::DidDeleteInProcessInstance(int32_t instance) {
+  RenderProcessHostImpl* process =
+      static_cast<RenderProcessHostImpl*>(GetProcess());
+  process->pepper_renderer_connection()->DidDeleteInProcessInstance(instance);
+}
+
+void RenderFrameHostImpl::DidCreateOutOfProcessPepperInstance(
+    int32_t plugin_child_id,
+    int32_t pp_instance,
+    bool is_external,
+    int32_t render_frame_id,
+    const GURL& document_url,
+    const GURL& plugin_url,
+    bool is_privileged_context,
+    DidCreateOutOfProcessPepperInstanceCallback callback) {
+  RenderProcessHostImpl* process =
+      static_cast<RenderProcessHostImpl*>(GetProcess());
+  process->pepper_renderer_connection()->DidCreateOutOfProcessPepperInstance(
+      plugin_child_id, pp_instance, is_external, render_frame_id, document_url,
+      plugin_url, is_privileged_context, std::move(callback));
+}
+
+void RenderFrameHostImpl::DidDeleteOutOfProcessPepperInstance(
+    int32_t plugin_child_id,
+    int32_t pp_instance,
+    bool is_external) {
+  RenderProcessHostImpl* process =
+      static_cast<RenderProcessHostImpl*>(GetProcess());
+  process->pepper_renderer_connection()->DidDeleteOutOfProcessPepperInstance(
+      plugin_child_id, pp_instance, is_external);
+}
+
+void RenderFrameHostImpl::OpenChannelToPepperPlugin(
+    const url::Origin& embedder_origin,
+    const base::FilePath& path,
+    const base::Optional<url::Origin>& origin_lock,
+    OpenChannelToPepperPluginCallback callback) {
+  RenderProcessHostImpl* process =
+      static_cast<RenderProcessHostImpl*>(GetProcess());
+  process->pepper_renderer_connection()->OpenChannelToPepperPlugin(
+      embedder_origin, path, origin_lock, std::move(callback));
 }
 
 void RenderFrameHostImpl::PluginHung(bool is_hung) {

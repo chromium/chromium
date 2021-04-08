@@ -27,6 +27,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "ipc/ipc_message_macros.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/ppapi_message_utils.h"
@@ -36,8 +37,6 @@
 namespace content {
 
 namespace {
-
-const uint32_t kPepperFilteredMessageClasses[] = {PpapiMsgStart};
 
 // Responsible for creating the pending resource hosts, holding their IDs until
 // all of them have been created for a single message, and sending the reply to
@@ -134,8 +133,7 @@ PepperRendererConnection::PepperRendererConnection(
     PluginServiceImpl* plugin_service,
     BrowserContext* browser_context,
     StoragePartition* storage_partition)
-    : BrowserMessageFilter(kPepperFilteredMessageClasses,
-                           base::size(kPepperFilteredMessageClasses)),
+    : BrowserMessageFilter(PpapiMsgStart),
       BrowserAssociatedInterface<mojom::PepperIOHost>(this),
       render_process_id_(render_process_id),
       incognito_(browser_context->IsOffTheRecord()),
@@ -177,6 +175,15 @@ BrowserPpapiHostImpl* PepperRendererConnection::GetHostForChildProcess(
   }
 
   return host;
+}
+
+void PepperRendererConnection::OverrideThreadForMessage(
+    const IPC::Message& message,
+    content::BrowserThread::ID* thread) {
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI) &&
+      IPC_MESSAGE_ID_CLASS(message.type()) == PpapiMsgStart) {
+    *thread = content::BrowserThread::UI;
+  }
 }
 
 bool PepperRendererConnection::OnMessageReceived(const IPC::Message& msg) {
