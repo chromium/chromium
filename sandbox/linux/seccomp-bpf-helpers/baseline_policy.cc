@@ -140,6 +140,10 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   }
 #endif
 
+  if (sysno == __NR_uname) {
+    return Allow();
+  }
+
   if (IsBaselinePolicyAllowed(sysno)) {
     return Allow();
   }

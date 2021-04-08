@@ -138,7 +138,6 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     case __NR_getrlimit:
 #endif
     case __NR_sysinfo:  // https://crbug.com/655277
-    case __NR_uname:
 
     // Permit socket operations so that renderers can connect to logd and
     // debuggerd. The arguments to socket() are further restricted below.

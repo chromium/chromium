@@ -11,10 +11,7 @@
 #include <sys/mman.h>
 #include <sys/syscall.h>
 #include <unistd.h>
-
-#if defined(OS_ANDROID)
 #include <sys/utsname.h>
-#endif
 
 #include <algorithm>
 #include <atomic>
@@ -51,7 +48,6 @@ namespace core {
 
 namespace {
 
-#if defined(OS_ANDROID)
 // On Android base::SysInfo::OperatingSystemVersionNumbers actually returns the
 // build numbers and not the kernel version as the other posix OSes would.
 void KernelVersionNumbers(int32_t* major_version,
@@ -74,7 +70,6 @@ void KernelVersionNumbers(int32_t* major_version,
   if (num_read < 3)
     *bugfix_version = 0;
 }
-#endif  // defined(OS_ANDROID)
 
 }  // namespace
 
@@ -187,13 +182,14 @@ class EventFDNotifier : public DataAvailableNotifier,
 
   static std::unique_ptr<EventFDNotifier> CreateWriteNotifier() {
     static bool zero_on_wake_supported = []() -> bool {
-      base::ScopedFD fd(eventfd(0, kEfdFlags | EFD_ZERO_ON_WAKE));
+      base::ScopedFD fd(
+          syscall(__NR_eventfd2, 0, kEfdFlags | EFD_ZERO_ON_WAKE));
       return fd.is_valid();
     }();
 
     bool use_zero_on_wake = zero_on_wake_supported && g_use_zero_on_wake;
     int extra_flags = use_zero_on_wake ? EFD_ZERO_ON_WAKE : 0;
-    int fd = eventfd(0, kEfdFlags | extra_flags);
+    int fd = syscall(__NR_eventfd2, 0, kEfdFlags | extra_flags);
     if (fd < 0) {
       PLOG(ERROR) << "Unable to create an eventfd";
       return nullptr;
@@ -221,7 +217,7 @@ class EventFDNotifier : public DataAvailableNotifier,
     // Try to create an eventfd with bad flags if we get -EINVAL it's supported
     // if we get -ENOSYS it's not, we also support -EPERM because seccomp
     // policies can cause it to be returned.
-    int ret = eventfd(0, ~0);
+    int ret = syscall(__NR_eventfd2, 0, ~0);
     PCHECK(ret < 0 && (errno == EINVAL || errno == ENOSYS || errno == EPERM));
     return (ret < 0 && errno == EINVAL);
   }
@@ -909,21 +905,23 @@ void ChannelLinux::OfferSharedMemUpgradeInternal() {
 // static
 bool ChannelLinux::KernelSupportsUpgradeRequirements() {
   static bool supported = []() -> bool {
-#if defined(OS_ANDROID)
     // See https://crbug.com/1192696 for more context, but some Android vendor
     // kernels pre-3.17 would use higher undefined syscall numbers for private
     // syscalls. To start we'll validate the kernel version is greater than or
     // equal to 3.17 before even bothering to call memfd_create.
+    //
+    // Additionally, the behavior of eventfd prior to the 4.0 kernel could be
+    // racy.
     int os_major_version = 0;
     int os_minor_version = 0;
     int os_bugfix_version = 0;
     KernelVersionNumbers(&os_major_version, &os_minor_version,
                          &os_bugfix_version);
-    if (os_major_version < 3 ||
-        (os_major_version == 3 && os_minor_version < 17)) {
+    if (os_major_version < 4) {
+      // Due to the potentially races in 3.17/3.18 kernels with eventfd,
+      // explicitly require a 4.x+ kernel.
       return false;
     }
-#endif
 
     // Do we have memfd_create support, we check by seeing if we get an -ENOSYS
     // or an -EINVAL. We also support -EPERM because of seccomp rules this is
