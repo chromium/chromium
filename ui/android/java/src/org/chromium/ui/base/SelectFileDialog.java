@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContentUriUtils;
@@ -333,6 +334,52 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     /**
+     * Returns an Image capture Intent with the right flags and extra data.
+     */
+    private Intent getImageCaptureIntent() {
+        Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        camera.setFlags(
+                Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        camera.putExtra(MediaStore.EXTRA_OUTPUT, mCameraOutputUri);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            // ClipData.newUri may access the disk (for reading mime types).
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                camera.setClipData(
+                        ClipData.newUri(ContextUtils.getApplicationContext().getContentResolver(),
+                                UiUtils.IMAGE_FILE_PATH, mCameraOutputUri));
+            }
+        }
+        return camera;
+    }
+
+    /**
+     * Returns a Video capture Intent. Can return null if video capture is not supported or the
+     * camera permission has not been granted.
+     */
+    @Nullable
+    private Intent getVideoCaptureIntent() {
+        boolean hasCameraPermission = mWindowAndroid.hasPermission(Manifest.permission.CAMERA);
+        if (mSupportsVideoCapture && hasCameraPermission) {
+            return new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        }
+        return null;
+    }
+
+    /**
+     * Returns a SoundRecorder Intent. Can return null if sound capture is not supported or the
+     * sound permission has not been granted.
+     */
+    @Nullable
+    private Intent getSoundRecorderIntent() {
+        boolean hasAudioPermission =
+                mWindowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO);
+        if (mSupportsAudioCapture && hasAudioPermission) {
+            return new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+        }
+        return null;
+    }
+
+    /**
      * Called to launch an intent to allow user to select files. If |camera| is null,
      * the select file dialog shouldn't include any files from the camera. Otherwise, user
      * is allowed to choose files from the camera.
@@ -342,26 +389,16 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         RecordHistogram.recordEnumeratedHistogram("Android.SelectFileDialogScope",
                 determineSelectFileDialogScope(), SELECT_FILE_DIALOG_SCOPE_COUNT);
 
-        boolean hasCameraPermission = mWindowAndroid.hasPermission(Manifest.permission.CAMERA);
-        Intent camcorder = null;
-        if (mSupportsVideoCapture && hasCameraPermission) {
-            camcorder = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        }
-
-        boolean hasAudioPermission =
-                mWindowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO);
-        Intent soundRecorder = null;
-        if (mSupportsAudioCapture && hasAudioPermission) {
-            soundRecorder = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
-        }
+        Intent videoCapture = getVideoCaptureIntent();
+        Intent soundRecorder = getSoundRecorderIntent();
 
         // Quick check - if the |capture| parameter is set and |fileTypes| has the appropriate MIME
         // type, we should just launch the appropriate intent. Otherwise build up a chooser based
         // on the accept type and then display that to the user.
         if (captureImage() && camera != null) {
             if (mWindowAndroid.showIntent(camera, this, R.string.low_memory_error)) return;
-        } else if (captureVideo() && camcorder != null) {
-            if (mWindowAndroid.showIntent(camcorder, this, R.string.low_memory_error)) return;
+        } else if (captureVideo() && videoCapture != null) {
+            if (mWindowAndroid.showIntent(videoCapture, this, R.string.low_memory_error)) return;
         } else if (captureAudio() && soundRecorder != null) {
             if (mWindowAndroid.showIntent(soundRecorder, this, R.string.low_memory_error)) return;
         }
@@ -376,6 +413,17 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             mMediaPickerWasUsed = false;
         }
 
+        showExternalPicker(camera, videoCapture, soundRecorder);
+    }
+
+    /**
+     * Launches a chooser intent to get files from an external source. If launching the Intent is
+     * not successful, the onFileNotSelected is called to end file upload.
+     * @param camera A camera capture intent to supply as extra Intent data.
+     * @param camcorder A camcorder intent to supply as extra Intent data.
+     * @param soundRecorder A soundRecorder intent to supply as extra Intent data.
+     */
+    private void showExternalPicker(Intent camera, Intent camcorder, Intent soundRecorder) {
         Intent getContentIntent = new Intent(Intent.ACTION_GET_CONTENT);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && mAllowMultiple) {
@@ -402,7 +450,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
         }
 
-        if (extraIntents.isEmpty()) {
+        if (getContentIntent.getType() == null) {
             // We couldn't resolve a single accept type, so fallback to a generic chooser.
             getContentIntent.setType(ALL_TYPES);
             if (camera != null) extraIntents.add(camera);
@@ -501,12 +549,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
             case PhotoPickerAction.LAUNCH_GALLERY:
                 mMediaPickerWasUsed = false;
-
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                if (mAllowMultiple) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                mWindowAndroid.showCancelableIntent(intent, this, R.string.low_memory_error);
+                showExternalPicker(
+                        /* camera= */ null, /* camcorder= */ null, /* soundRecorder= */ null);
                 break;
 
             case PhotoPickerAction.LAUNCH_CAMERA:
@@ -570,22 +614,11 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 return;
             }
 
-            Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            camera.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            camera.putExtra(MediaStore.EXTRA_OUTPUT, mCameraOutputUri);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                // ClipData.newUri may access the disk (for reading mime types).
-                try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                    camera.setClipData(ClipData.newUri(
-                            ContextUtils.getApplicationContext().getContentResolver(),
-                            UiUtils.IMAGE_FILE_PATH, mCameraOutputUri));
-                }
-            }
+            Intent imageCapture = getImageCaptureIntent();
             if (mDirectToCamera) {
-                mWindow.showIntent(camera, mCallback, R.string.low_memory_error);
+                mWindow.showIntent(imageCapture, mCallback, R.string.low_memory_error);
             } else {
-                launchSelectFileWithCameraIntent(camera);
+                launchSelectFileWithCameraIntent(imageCapture);
             }
         }
     }
