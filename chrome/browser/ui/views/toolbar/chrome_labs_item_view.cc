@@ -113,7 +113,6 @@ ChromeLabsItemView::ChromeLabsItemView(
                    .CopyAddressTo(&experiment_name)
                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
                    .SetText(lab.visible_name)
-                   .SetTextStyle(ChromeTextStyle::STYLE_EMPHASIZED)
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .Build());
   AddChildView(
@@ -121,7 +120,7 @@ ChromeLabsItemView::ChromeLabsItemView(
           .CopyAddressTo(&experiment_description)
           .SetText(lab.visible_description)
           .SetTextContext(ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-          .SetTextStyle(views::style::STYLE_PRIMARY)
+          .SetTextStyle(views::style::STYLE_SECONDARY)
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetProperty(views::kFlexBehaviorKey,
@@ -136,11 +135,14 @@ ChromeLabsItemView::ChromeLabsItemView(
           .Build());
 
   // It may cause confusion if screen readers read out all experiments and
-  // descriptions when the bubble first opens. Ignore for now and delay reading
-  // out experiment name and description until a user interacts with the
-  // combobox in the item view. See crbug.com/1145666 Accessibility review.
+  // descriptions when the bubble first opens. Experiment name and description
+  // will be read out when a user enters the grouping.
+  // See crbug.com/1145666 Accessibility review.
   experiment_name->GetViewAccessibility().OverrideIsIgnored(true);
   experiment_description->GetViewAccessibility().OverrideIsIgnored(true);
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().OverrideName(lab.visible_name);
+  GetViewAccessibility().OverrideDescription(lab.visible_description);
 
   AddChildView(
       views::Builder<views::FlexLayoutView>()
@@ -151,8 +153,7 @@ ChromeLabsItemView::ChromeLabsItemView(
                    .SetTooltipTextAndAccessibleName(l10n_util::GetStringFUTF16(
                        IDS_TOOLTIP_CHROMELABS_COMBOBOX, lab.visible_name))
                    .SetAccessibleName(l10n_util::GetStringFUTF16(
-                       IDS_ACCNAME_CHROMELABS_COMBOBOX, lab.visible_name,
-                       lab.visible_description))
+                       IDS_ACCNAME_CHROMELABS_COMBOBOX, lab.visible_name))
                    .SetOwnedModel(std::make_unique<LabsComboboxModel>(
                        lab, feature_entry_, default_index))
                    .SetCallback(base::BindRepeating(combobox_callback, this))

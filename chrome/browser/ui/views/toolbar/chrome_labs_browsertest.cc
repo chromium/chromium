@@ -64,7 +64,7 @@ class ChromeLabsUiTest : public DialogBrowserTest {
 // TODO(crbug.com/1155358): ChromeOS logic for Chrome Labs
 #if !defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ChromeLabsUiTest, InvokeUi_default) {
-  set_baseline("2803681");
+  set_baseline("2810222");
   ShowAndVerifyUi();
 }
 #endif

@@ -6017,7 +6017,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Enterprise policy changed. Experiments button removed from toolbar.
       </message>
       <message name="IDS_ACCNAME_CHROMELABS_COMBOBOX" desc="The accessible name for the experiment's combobox to select between experiment states. ">
-        Select experiment state for the <ph name="EXPERIMENT_NAME">$1<ex>Tab Scrolling</ex></ph> experiment. Experiment description: <ph name="EXPERIMENT_DESCRIPTION">$2<ex>Enables tab strip to scroll left and right when full.</ex></ph>
+        Select experiment state for the <ph name="EXPERIMENT_NAME">$1<ex>Tab Scrolling</ex></ph> experiment.
       </message>
       <message name="IDS_ACCNAME_SEPARATOR" desc="The accessible name for a separator.">
         Separator
