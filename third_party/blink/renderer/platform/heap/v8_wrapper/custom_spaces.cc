@@ -18,4 +18,7 @@ constexpr cppgc::CustomSpaceIndex NodeSpace::kSpaceIndex;
 // static
 constexpr cppgc::CustomSpaceIndex CSSValueSpace::kSpaceIndex;
 
+// static
+constexpr cppgc::CustomSpaceIndex LayoutObjectSpace::kSpaceIndex;
+
 }  // namespace blink
