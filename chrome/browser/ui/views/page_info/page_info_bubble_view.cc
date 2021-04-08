@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
+#include "chrome/browser/ui/views/page_info/page_info_new_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row.h"
 #include "chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -47,6 +48,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/page_info/features.h"
 #include "components/page_info/page_info.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/strings/grit/components_chromium_strings.h"
@@ -217,6 +219,12 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
       url.SchemeIs(dom_distiller::kDomDistillerScheme)) {
     return new InternalPageInfoBubbleView(anchor_view, anchor_rect, parent_view,
                                           web_contents, url);
+  }
+
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
+    return new PageInfoNewBubbleView(anchor_view, anchor_rect, parent_view,
+                                     profile, web_contents, url,
+                                     std::move(closing_callback));
   }
 
   return new PageInfoBubbleView(anchor_view, anchor_rect, parent_view, profile,

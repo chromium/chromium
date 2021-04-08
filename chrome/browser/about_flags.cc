@@ -6390,6 +6390,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kPageInfoHistory)},
 #endif  // !defined(OS_ANDROID)
 
+#if !defined(OS_ANDROID)
+    {"page-info-version-2-desktop", flag_descriptions::kPageInfoV2DesktopName,
+     flag_descriptions::kPageInfoV2DesktopDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(page_info::kPageInfoV2Desktop)},
+#endif  // !defined(OS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enhanced_clipboard", flag_descriptions::kEnhancedClipboardName,
      flag_descriptions::kEnhancedClipboardDescription, kOsCrOS,

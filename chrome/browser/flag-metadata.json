@@ -4129,6 +4129,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "page-info-version-2-desktop",
+    "owners": [ "bsep", "olesiamarukhno" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa", "fredmello", "mahmoudi" ],
     "expiry_milestone": 91

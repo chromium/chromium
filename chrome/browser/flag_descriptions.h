@@ -1100,6 +1100,9 @@ extern const char kUpdateHoverAtBeginFrameDescription[];
 extern const char kOverscrollHistoryNavigationName[];
 extern const char kOverscrollHistoryNavigationDescription[];
 
+extern const char kPageInfoV2DesktopName[];
+extern const char kPageInfoV2DesktopDescription[];
+
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
 

@@ -54,6 +54,8 @@ class View;
 }  // namespace views
 
 // The views implementation of the page info UI.
+// TODO(crbug.com/1188101): This will be deprecated in favor of
+// PageInfoNewBubbleView (which is under PageInfoV2Desktop) when it is finished.
 class PageInfoBubbleView : public PageInfoBubbleViewBase,
                            public PermissionSelectorRowObserver,
                            public ChosenObjectViewObserver,

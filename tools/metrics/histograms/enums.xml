@@ -44621,6 +44621,7 @@ from previous Chrome versions.
   <int value="-1497450774" label="TreatUnsafeDownloadsAsActive:disabled"/>
   <int value="-1497338981" label="disable-accelerated-overflow-scroll"/>
   <int value="-1496106797" label="IPH_PasswordsAccountStorage:enabled"/>
+  <int value="-1496051102" label="PageInfoV2Desktop:disabled"/>
   <int value="-1495973732"
       label="ResamplingScrollEventsExperimentalPrediction:disabled"/>
   <int value="-1492934655" label="TabSwitcherOnReturn:enabled"/>
@@ -47682,6 +47683,7 @@ from previous Chrome versions.
   <int value="1222309415" label="SplitCacheByNetworkIsolationKey:enabled"/>
   <int value="1222808563" label="DisableInitialMostVisitedFadeIn:disabled"/>
   <int value="1226624874" label="Mus:disabled"/>
+  <int value="1226676061" label="PageInfoV2Desktop:enabled"/>
   <int value="1227633129" label="NtpChromeCartModule:disabled"/>
   <int value="1228115769" label="SiteCharacteristicsDatabase:disabled"/>
   <int value="1229299518" label="SingleTabMode:disabled"/>
