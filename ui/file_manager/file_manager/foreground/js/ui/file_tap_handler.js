@@ -5,11 +5,12 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 
 /**
- * Processes touch events and calls back upon tap, longpress and longtap.
- * This class is similar to cr.ui.TouchHandler. The major difference is that,
- * the user of this class can choose to either handle the event as a tap
- * distincted from mouse clicks, or leave it handled by the mouse event
- * handlers by default.
+ * Processes touch events and calls back to the class user when tap events
+ * defined by FileTapHandler.TapEvent are detected.
+ *
+ * The user can choose to 1) handle the tap event, in which case this class
+ * will suppress browser mouse event generation, or 2) not handle the event
+ * to let it be handled by mouse event handlers.
  */
 /* #export */ class FileTapHandler {
   constructor() {
@@ -33,9 +34,8 @@
     this.longTapDetectorTimerId_ = -1;
 
     /**
-     * If defined, the identifier of the single touch that is active.  Note that
-     * 0 is a valid touch identifier - it should not be treated equivalently to
-     * undefined.
+     * If defined, the identifier of the active touch. Note that 0 is a valid
+     * touch identifier.
      * @private {number|undefined}
      */
     this.activeTouchId_ = undefined;
@@ -73,17 +73,21 @@
   }
 
   /**
-   * Handles touch events.
-   * The propagation of the |event| will be cancelled if the |callback| takes
-   * any action, so as to avoid receiving mouse click events for the tapping and
-   * processing them duplicatedly.
-   * @param {!Event} event a touch event.
-   * @param {number} index of the target item in the file list.
-   * @param {function(!Event, number, !FileTapHandler.TapEvent)} callback called
-   *     when a tap event is detected. Should return true if it has taken any
-   *     action, and false if it ignroes the event.
-   * @return {boolean} true if a tap or longtap event was detected and the
-   *     callback processed it. False otherwise.
+   * Handles touch events. Calls touchend.preventDefault() if the |callback|
+   * takes any action on the detected tap events to suppress the browser's
+   * automatic conversion of touch events to mouse events:
+   *
+   *   browser events: touchstart > [touchmove] > touchend
+   *    ... if touchend.preventDefault() not called ...
+   *      browser events: mouseover > mousedown > [mousemove] > mouseup
+   *
+   * @param {!Event} event Touch event.
+   * @param {number} index Index of the target item in the file list.
+   * @param {function(!Event, number, !FileTapHandler.TapEvent)} callback
+   *     Called when a tap event is detected. Should return true if it has
+   *     taken any action, and false if it ignores the event.
+   * @return {boolean} True if a tap event was detected and the |callback|
+   *     processed the event. False otherwise.
    */
   handleTouchEvents(event, index, callback) {
     switch (event.type) {
