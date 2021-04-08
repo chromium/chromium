@@ -209,7 +209,11 @@ void WebOTPService::OnFailure(FailureType failure_type) {
       // could use such information for targeting. By using a timeout in all
       // cases, it is not possible to distinguish between sms not being received
       // and received but not shared.
+      // Note that we still unsubscribe it from the fetcher and |Unsubscribe|
+      // will be called again during the normal |CompleteRequest| process but it
+      // should be no-op.
       prompt_failure_ = failure_type;
+      fetcher_->Unsubscribe(origin_list_, this);
       return;
     case FailureType::kBackendNotAvailable:
       CompleteRequest(SmsStatus::kBackendNotAvailable);

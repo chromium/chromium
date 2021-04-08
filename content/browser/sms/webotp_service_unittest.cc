@@ -891,6 +891,7 @@ TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeWithTimerActivation) {
   ukm_loop.Run();
 
   ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kTimeout);
+  ASSERT_FALSE(service.fetcher()->HasSubscribers());
 }
 
 TEST_F(WebOTPServiceTest, NotRecordTimeoutAsOutcomeWithoutTimerActivation) {
@@ -909,6 +910,7 @@ TEST_F(WebOTPServiceTest, NotRecordTimeoutAsOutcomeWithoutTimerActivation) {
 
   loop.Run();
   ExpectNoOutcomeUKM();
+  ASSERT_FALSE(service.fetcher()->HasSubscribers());
 }
 
 TEST_F(WebOTPServiceTest, RecordUserCancelledAsOutcome) {
@@ -934,6 +936,7 @@ TEST_F(WebOTPServiceTest, RecordUserCancelledAsOutcome) {
   ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUserCancelled);
   ExpectTimingUKM("TimeUserCancelMs");
   histogram_tester().ExpectTotalCount("Blink.Sms.Receive.TimeUserCancel", 1);
+  ASSERT_FALSE(service.fetcher()->HasSubscribers());
 }
 
 TEST_F(WebOTPServiceTest,
@@ -953,6 +956,7 @@ TEST_F(WebOTPServiceTest,
 
   loop.Run();
   ExpectNoOutcomeUKM();
+  ASSERT_FALSE(service.fetcher()->HasSubscribers());
 }
 
 TEST_F(WebOTPServiceTest, RecordUserDismissPrompt) {
