@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_NIGHT_LIGHT_NIGHT_LIGHT_CLIENT_H_
-#define CHROME_BROWSER_CHROMEOS_NIGHT_LIGHT_NIGHT_LIGHT_CLIENT_H_
+#ifndef CHROME_BROWSER_ASH_NIGHT_LIGHT_NIGHT_LIGHT_CLIENT_H_
+#define CHROME_BROWSER_ASH_NIGHT_LIGHT_NIGHT_LIGHT_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -111,4 +111,4 @@ class NightLightClient : public ash::NightLightController::Observer,
   DISALLOW_COPY_AND_ASSIGN(NightLightClient);
 };
 
-#endif  // CHROME_BROWSER_CHROMEOS_NIGHT_LIGHT_NIGHT_LIGHT_CLIENT_H_
+#endif  // CHROME_BROWSER_ASH_NIGHT_LIGHT_NIGHT_LIGHT_CLIENT_H_
