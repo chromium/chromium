@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/post_task.h"
@@ -1217,7 +1218,7 @@ class HighCacheSizeBackForwardCacheBrowserTest
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 
-  // The number of document the BackForwardCache can hold per tab.
+  // The number of pages the BackForwardCache can hold per tab.
   const size_t kBackForwardCacheSize = 10;
 };
 
@@ -1253,6 +1254,196 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
     EXPECT_EQ(i >= kBackForwardCacheSize + 1, delete_observer_rfh_a.deleted());
     EXPECT_EQ(i >= kBackForwardCacheSize + 2, delete_observer_rfh_b.deleted());
   }
+}
+
+class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kBackForwardCache, "cache_size",
+                              base::NumberToString(kBackForwardCacheSize));
+    EnableFeatureAndSetParams(
+        features::kBackForwardCache, "foreground_cache_size",
+        base::NumberToString(kForegroundBackForwardCacheSize));
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  void ExpectCached(const RenderFrameDeletedObserver& deleted_observer,
+                    bool cached,
+                    bool backgrounded) {
+    EXPECT_FALSE(deleted_observer.deleted());
+    EXPECT_EQ(cached,
+              deleted_observer.render_frame_host()->IsInBackForwardCache());
+    EXPECT_EQ(backgrounded, deleted_observer.render_frame_host()
+                                ->GetProcess()
+                                ->IsProcessBackgrounded());
+  }
+  // The number of pages the BackForwardCache can hold per tab.
+  const size_t kBackForwardCacheSize = 4;
+  const size_t kForegroundBackForwardCacheSize = 2;
+};
+
+// Test that a series of same-site navigations (which use the same process)
+// uses the foreground limit.
+IN_PROC_BROWSER_TEST_F(
+    BackgroundForegroundProcessLimitBackForwardCacheBrowserTest,
+    CacheEvictionSameSite) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::vector<std::unique_ptr<RenderFrameDeletedObserver>> delete_observers;
+
+  for (size_t i = 0; i <= kBackForwardCacheSize * 2; ++i) {
+    SCOPED_TRACE(i);
+    GURL url(embedded_test_server()->GetURL(
+        "a.com", base::StringPrintf("/title1.html?i=%zu", i)));
+    ASSERT_TRUE(NavigateToURL(shell(), url));
+    RenderFrameHostImpl* rfh = current_frame_host();
+    EXPECT_FALSE(rfh->GetProcess()->IsProcessBackgrounded());
+    delete_observers.emplace_back(new RenderFrameDeletedObserver(rfh));
+
+    for (size_t j = 0; j <= i; ++j) {
+      SCOPED_TRACE(j);
+      // The last page is active, the previous |kForegroundBackForwardCacheSize|
+      // should be in the cache, any before that should be deleted.
+      if (i - j <= kForegroundBackForwardCacheSize) {
+        // All of the processes should be in the foreground.
+        ExpectCached(*delete_observers[j], /*cached=*/i != j,
+                     /*backgrounded=*/false);
+      } else {
+        delete_observers[j]->WaitUntilDeleted();
+      }
+    }
+  }
+
+  // Navigate back but not to the initial about:blank.
+  for (size_t i = 0; i <= kBackForwardCacheSize * 2 - 1; ++i) {
+    SCOPED_TRACE(i);
+    web_contents()->GetController().GoBack();
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    // The first |kBackForwardCacheSize| navigations should be restored from the
+    // cache. The rest should not.
+    if (i < kForegroundBackForwardCacheSize) {
+      ExpectRestored(FROM_HERE);
+    } else {
+      ExpectNotRestored(
+          {BackForwardCacheMetrics::NotRestoredReason::kForegroundCacheLimit},
+          {}, {}, {}, FROM_HERE);
+    }
+  }
+}
+
+// Test that a series of cross-site navigations (which use different processes)
+// use the background limit.
+IN_PROC_BROWSER_TEST_F(
+    BackgroundForegroundProcessLimitBackForwardCacheBrowserTest,
+    CacheEvictionCrossSite) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::vector<std::unique_ptr<RenderFrameDeletedObserver>> delete_observers;
+
+  for (size_t i = 0; i <= kBackForwardCacheSize * 2; ++i) {
+    SCOPED_TRACE(i);
+    GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.com", i),
+                                            "/title1.html"));
+    ASSERT_TRUE(NavigateToURL(shell(), url));
+    RenderFrameHostImpl* rfh = current_frame_host();
+    EXPECT_FALSE(rfh->GetProcess()->IsProcessBackgrounded());
+    delete_observers.emplace_back(new RenderFrameDeletedObserver(rfh));
+
+    for (size_t j = 0; j <= i; ++j) {
+      SCOPED_TRACE(j);
+      // The last page is active, the previous |kBackgroundBackForwardCacheSize|
+      // should be in the cache, any before that should be deleted.
+      if (i - j <= kBackForwardCacheSize) {
+        EXPECT_FALSE(delete_observers[j]->deleted());
+        // Pages except the active one should be cached and in the background.
+        ExpectCached(*delete_observers[j], /*cached=*/i != j,
+                     /*backgrounded=*/i != j);
+      } else {
+        EXPECT_TRUE(delete_observers[j]->deleted());
+      }
+    }
+  }
+
+  // Navigate back but not to the initial about:blank.
+  for (size_t i = 0; i <= kBackForwardCacheSize * 2 - 1; ++i) {
+    SCOPED_TRACE(i);
+    web_contents()->GetController().GoBack();
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    // The first |kBackForwardCacheSize| navigations should be restored from the
+    // cache. The rest should not.
+    if (i < kBackForwardCacheSize) {
+      ExpectRestored(FROM_HERE);
+    } else {
+      ExpectNotRestored(
+          {BackForwardCacheMetrics::NotRestoredReason::kCacheLimit}, {}, {}, {},
+          FROM_HERE);
+    }
+  }
+}
+
+// Test that the cache responds to processes switching from background to
+// foreground. We set things up so that we have
+// Cached sites:
+//   a0.com
+//   a1.com
+//   a2.com
+//   a3.com
+// and the active page is a4.com. Then set the process for a[1-3] to
+// foregrounded so that there are 3 entries whose processes are foregrounded.
+// BFCache should evict the eldest (a1) leaving a0 because despite being older,
+// it is backgrounded. Setting the priority directly is not ideal but there is
+// no reliable way to cause the processes to go into the foreground just by
+// navigating because proactive browsing instance swap makes it impossible to
+// reliably create a new a1.com renderer in the same process as the old a1.com.
+IN_PROC_BROWSER_TEST_F(
+    BackgroundForegroundProcessLimitBackForwardCacheBrowserTest,
+    ChangeToForeground) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::vector<std::unique_ptr<RenderFrameDeletedObserver>> delete_observers;
+
+  // Navigate through a[0-3].com.
+  for (size_t i = 0; i < kBackForwardCacheSize; ++i) {
+    SCOPED_TRACE(i);
+    GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.com", i),
+                                            "/title1.html"));
+    ASSERT_TRUE(NavigateToURL(shell(), url));
+    RenderFrameHostImpl* rfh = current_frame_host();
+    EXPECT_FALSE(rfh->GetProcess()->IsProcessBackgrounded());
+    delete_observers.emplace_back(new RenderFrameDeletedObserver(rfh));
+  }
+  // Check that a0-2 are cached and backgrounded.
+  for (size_t i = 0; i < kBackForwardCacheSize - 1; ++i) {
+    SCOPED_TRACE(i);
+    ExpectCached(*delete_observers[i], /*cached=*/true, /*backgrounded=*/true);
+  }
+
+  // Navigate to a page which causes the processes for a[1-3] to be
+  // foregrounded.
+  GURL url(embedded_test_server()->GetURL("a4.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Assert that we really have set up the situation we want where the processes
+  // are shared and in the foreground.
+  RenderFrameHostImpl* rfh = current_frame_host();
+  ASSERT_FALSE(rfh->GetProcess()->IsProcessBackgrounded());
+
+  delete_observers[1]->render_frame_host()->GetProcess()->SetPriorityOverride(
+      /*foreground=*/true);
+  delete_observers[2]->render_frame_host()->GetProcess()->SetPriorityOverride(
+      /*foreground=*/true);
+  delete_observers[3]->render_frame_host()->GetProcess()->SetPriorityOverride(
+      /*foreground=*/true);
+
+  // The page should be evicted.
+  delete_observers[1]->WaitUntilDeleted();
+
+  // Check that a0 is cached and backgrounded.
+  ExpectCached(*delete_observers[0], /*cached=*/true, /*backgrounded=*/true);
+  // Check that a2-3 are cached and foregrounded.
+  ExpectCached(*delete_observers[2], /*cached=*/true, /*backgrounded=*/false);
+  ExpectCached(*delete_observers[3], /*cached=*/true, /*backgrounded=*/false);
 }
 
 // Similar to BackForwardCacheBrowserTest.SubframeSurviveCache*

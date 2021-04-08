@@ -37,6 +37,7 @@
 #include "content/browser/media/media_internals.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
+#include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/tracing/tracing_service_controller.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/child_process.mojom.h"
@@ -306,6 +307,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
       int32_t new_routing_id,
       blink::LocalFrameToken& frame_token,
       base::UnguessableToken& devtools_frame_token);
+
+  void AddInternalObserver(RenderProcessHostInternalObserver* observer);
+  void RemoveInternalObserver(RenderProcessHostInternalObserver* observer);
 
   // Called when the renderer has fully destroyed the associated RenderView
   // identified by |closed_view_route_id|. This is static because its also
@@ -1006,6 +1010,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // The observers watching our lifetime.
   base::ObserverList<RenderProcessHostObserver> observers_;
+
+  // The observers watching content-internal events.
+  base::ObserverList<RenderProcessHostInternalObserver> internal_observers_;
 
   // True if the process can be shut down suddenly.  If this is true, then we're
   // sure that all the RenderViews in the process can be shutdown suddenly.  If

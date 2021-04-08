@@ -2766,6 +2766,16 @@ void RenderProcessHostImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void RenderProcessHostImpl::AddInternalObserver(
+    RenderProcessHostInternalObserver* observer) {
+  internal_observers_.AddObserver(observer);
+}
+
+void RenderProcessHostImpl::RemoveInternalObserver(
+    RenderProcessHostInternalObserver* observer) {
+  internal_observers_.RemoveObserver(observer);
+}
+
 void RenderProcessHostImpl::ShutdownForBadMessage(
     CrashReportMode crash_report_mode) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -4717,6 +4727,8 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   if ((background_state_changed) || visibility_state_changed) {
     SendProcessStateToRenderer();
   }
+  for (auto& observer : internal_observers_)
+    observer.RenderProcessBackgroundedChanged(this);
 }
 
 void RenderProcessHostImpl::SendProcessStateToRenderer() {

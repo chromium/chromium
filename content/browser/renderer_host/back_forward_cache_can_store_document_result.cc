@@ -95,6 +95,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "timeout";
     case Reason::kCacheLimit:
       return "cache limit";
+    case Reason::kForegroundCacheLimit:
+      return "foreground cache limit";
     case Reason::kJavaScriptExecution:
       return "JavaScript execution";
     case Reason::kRendererProcessKilled:

@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <set>
 #include <unordered_map>
 
 #include "base/feature_list.h"
@@ -17,9 +18,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "url/gurl.h"
@@ -45,7 +50,9 @@ constexpr base::Feature kRecordBackForwardCacheMetricsWithoutEnabling{
 // frozen state and is kept in this object. They can potentially be reused
 // after an history navigation. Reusing a document means swapping it back with
 // the current_frame_host.
-class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
+class CONTENT_EXPORT BackForwardCacheImpl
+    : public BackForwardCache,
+      public RenderProcessHostInternalObserver {
  public:
   enum MessageHandlingPolicyWhenCached {
     kMessagePolicyNone,
@@ -94,7 +101,7 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
   };
 
   explicit BackForwardCacheImpl();
-  ~BackForwardCacheImpl();
+  ~BackForwardCacheImpl() override;
 
   // Returns whether a RenderFrameHost can be stored into the BackForwardCache
   // right now. Depends on the |render_frame_host| and its children's state.
@@ -120,6 +127,11 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
   // the BackForwardCache is full, the least recently used document is evicted.
   // Precondition: CanStoreDocument(*(entry->render_frame_host)).
   void StoreEntry(std::unique_ptr<Entry> entry);
+
+  // Ensures that the cache is within its size limits. This should be called
+  // whenever events occur that could put the cache outside its limits. What
+  // those events are depends on the cache limit policy.
+  void EnforceCacheSizeLimit();
 
   // Returns a pointer to a cached BackForwardCache entry matching
   // |navigation_entry_id| if it exists in the BackForwardCache. Returns nullptr
@@ -202,6 +214,13 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
 
   void DisableForTesting(DisableForTestingReason reason) override;
 
+  // RenderProcessHostInternalObserver methods
+  void RenderProcessBackgroundedChanged(RenderProcessHostImpl* host) override;
+
+  // Returns true if we are managing the cache size using foreground and
+  // background limits (if finch parameter "foreground_cache_size" > 0).
+  static bool UsingForegroundBackgroundCacheSizeLimit();
+
  private:
   // Destroys all evicted frames in the BackForwardCache.
   void DestroyEvictedFrames();
@@ -216,11 +235,36 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
       BackForwardCacheCanStoreDocumentResult* result,
       RenderFrameHostImpl* render_frame_host);
 
+  // If non-zero, the cache may contain at most this many entries with involving
+  // foregrounded processes and the remaining space can only be used by entries
+  // with no foregrounded processes. We can be less strict on memory usage of
+  // background processes because Android will kill the process if memory
+  // becomes scarce.
+  static size_t GetForegroundedEntriesCacheSize();
+
+  // Enforces a limit on the number of entries. Which entries are counted
+  // towards the limit depends on the values of |foregrounded_only|. If it's
+  // true it only considers entries that are associated with a foregrounded
+  // process. Otherwise all entries are considered.
+  size_t EnforceCacheSizeLimitInternal(size_t limit, bool foregrounded_only);
+
+  // Updates |process_to_entry_map_| with processes from |entry|. These must
+  // be called after adding or removing an entry in |entries_|.
+  void AddProcessesForEntry(Entry& entry);
+  void RemoveProcessesForEntry(Entry& entry);
+
   // Contains the set of stored Entries.
   // Invariant:
   // - Ordered from the most recently used to the last recently used.
   // - Once the list is full, the least recently used document is evicted.
   std::list<std::unique_ptr<Entry>> entries_;
+
+  // Keeps track of the observed RenderProcessHosts. This is populated
+  // from and kept in sync with |entries_|. The RenderProcessHosts are collected
+  // from each Entry's RenderViewHosts. Every RenderProcessHost in here is
+  // observed by |this|. Every RenderProcessHost in this is referenced by a
+  // RenderViewHost in the Entry and so will be valid.
+  std::multiset<RenderProcessHost*> observed_processes_;
 
   // Only used in tests. Whether the BackforwardCached has been disabled for
   // testing.

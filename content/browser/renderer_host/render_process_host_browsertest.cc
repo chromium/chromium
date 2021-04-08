@@ -5,12 +5,15 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
@@ -1260,6 +1263,37 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, TooManyKeepaliveRequests) {
   EXPECT_EQ(title, watcher.WaitAndGetTitle());
 }
 
+// Records the value of |host->IsProcessBackgrounded()| when it changes.
+// |host| must remain a valid reference for the lifetime of this object.
+class IsProcessBackgroundedObserver : public RenderProcessHostInternalObserver {
+ public:
+  explicit IsProcessBackgroundedObserver(RenderProcessHostImpl* host)
+      : host_observation_(this) {
+    host_observation_.Observe(host);
+  }
+
+  void RenderProcessBackgroundedChanged(RenderProcessHostImpl* host) override {
+    backgrounded_ = host->IsProcessBackgrounded();
+  }
+
+  // Returns the latest recorded value if there was one and resets the recorded
+  // value to |nullopt|.
+  base::Optional<bool> TakeValue() {
+    auto value = backgrounded_;
+    backgrounded_ = base::nullopt;
+    return value;
+  }
+
+ private:
+  // Stores the last observed value of IsProcessBackgrounded for a host.
+  base::Optional<bool> backgrounded_;
+  base::ScopedObservation<RenderProcessHostImpl,
+                          RenderProcessHostInternalObserver,
+                          &RenderProcessHostImpl::AddInternalObserver,
+                          &RenderProcessHostImpl::RemoveInternalObserver>
+      host_observation_;
+};
+
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, PriorityOverride) {
   // RenderProcessHostImpl::UpdateProcessPriority has an early check of
   // run_renderer_in_process and exits for RenderProcessHosts without a child
@@ -1271,37 +1305,46 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, PriorityOverride) {
       RenderProcessHostImpl::CreateRenderProcessHost(
           ShellContentBrowserClient::Get()->browser_context(), nullptr));
 
+  IsProcessBackgroundedObserver observer(process);
+
   // It starts off as normal priority with no override.
   EXPECT_FALSE(process->HasPriorityOverride());
   EXPECT_FALSE(process->IsProcessBackgrounded());
+  EXPECT_FALSE(observer.TakeValue().has_value());
 
   process->SetPriorityOverride(false /* foreground */);
   EXPECT_TRUE(process->HasPriorityOverride());
   EXPECT_TRUE(process->IsProcessBackgrounded());
+  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
 
   process->SetPriorityOverride(true /* foreground */);
   EXPECT_TRUE(process->HasPriorityOverride());
   EXPECT_FALSE(process->IsProcessBackgrounded());
+  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
 
   process->SetPriorityOverride(false /* foreground */);
   EXPECT_TRUE(process->HasPriorityOverride());
   EXPECT_TRUE(process->IsProcessBackgrounded());
+  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
 
   // Add a pending view, and expect the process to *stay* backgrounded.
   process->AddPendingView();
   EXPECT_TRUE(process->HasPriorityOverride());
   EXPECT_TRUE(process->IsProcessBackgrounded());
+  EXPECT_FALSE(observer.TakeValue().has_value());
 
   // Clear the override. The pending view should cause the process to go back to
   // being foregrounded.
   process->ClearPriorityOverride();
   EXPECT_FALSE(process->HasPriorityOverride());
   EXPECT_FALSE(process->IsProcessBackgrounded());
+  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
 
   // Clear the pending view so the test doesn't explode.
   process->RemovePendingView();
   EXPECT_FALSE(process->HasPriorityOverride());
   EXPECT_TRUE(process->IsProcessBackgrounded());
+  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
 
   RenderProcessHost::SetRunRendererInProcess(false);
 }

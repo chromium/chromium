@@ -97,7 +97,8 @@ class BackForwardCacheMetrics
     kUserAgentOverrideDiffers = 43,
     kNetworkRequestDatapipeDrainedAsDatapipe = 44,
     kNetworkRequestDatapipeDrainedAsBytesConsumer = 45,
-    kMaxValue = kNetworkRequestDatapipeDrainedAsBytesConsumer,
+    kForegroundCacheLimit = 46,
+    kMaxValue = kForegroundCacheLimit,
   };
 
   using NotRestoredReasons =
