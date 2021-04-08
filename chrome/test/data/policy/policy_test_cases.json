@@ -8196,6 +8196,39 @@
       }
     ]
   },
+  "DefaultFileHandlingGuardSetting": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "DefaultFileHandlingGuardSetting": 1 },
+        "prefs": { "profile.managed_default_content_settings.file_handling_guard": { "value": 1 } }
+      },
+      {
+        "policies": { "DefaultFileHandlingGuardSetting": 2 },
+        "prefs": { "profile.managed_default_content_settings.file_handling_guard": { "value": 2 } }
+      }
+    ]
+  },
+  "FileHandlingAllowedForUrls": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {"FileHandlingAllowedForUrls": ["[*.].com"]},
+        "prefs": { "profile.managed_file_handling_allowed_for_urls": {}}
+      }
+    ]
+  },
+  "FileHandlingBlockedForUrls": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {"FileHandlingBlockedForUrls": ["[*.]google.com"]},
+        "prefs": { "profile.managed_file_handling_blocked_for_urls": {} }
+      }
+    ]
+  },
   "DefaultFileSystemReadGuardSetting": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [

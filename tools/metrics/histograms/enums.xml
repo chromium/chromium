@@ -24105,6 +24105,9 @@ Called by update_document_policy_enum.py.-->
   <int value="842" label="HeadlessMode"/>
   <int value="843" label="WebRTCIPHandlingPolicy"/>
   <int value="844" label="PdfAnnotationsEnabled"/>
+  <int value="845" label="DefaultFileHandlingGuardSetting"/>
+  <int value="846" label="FileHandlingAllowedForUrls"/>
+  <int value="847" label="FileHandlingBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

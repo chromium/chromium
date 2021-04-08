@@ -527,6 +527,7 @@
       'desc': '''Content settings allow you to specify how contents of a specific type (for example Cookies, Images or JavaScript) is handled.''',
       'policies': [
         'DefaultCookiesSetting',
+        'DefaultFileHandlingGuardSetting',
         'DefaultFileSystemReadGuardSetting',
         'DefaultFileSystemWriteGuardSetting',
         'DefaultImagesSetting',
@@ -546,6 +547,8 @@
         'CookiesAllowedForUrls',
         'CookiesBlockedForUrls',
         'CookiesSessionOnlyForUrls',
+        'FileHandlingAllowedForUrls',
+        'FileHandlingBlockedForUrls',
         'FileSystemReadAskForUrls',
         'FileSystemReadBlockedForUrls',
         'FileSystemWriteAskForUrls',
@@ -6456,6 +6459,94 @@
       This policy overrides <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME">DefaultSerialGuardSetting</ph>, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph> and the user's preferences.
 
       This policy only affects access to USB devices through the Web Serial API. To grant access to USB devices through the WebUSB API see the <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME">WebUsbAllowDevicesForUrls</ph> policy.''',
+    },
+    {
+      'name': 'DefaultFileHandlingGuardSetting',
+      'owners': ['huangdarwin@chromium.org', 'cmp@chromium.org'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 1, 2 ],
+      },
+      'items': [
+        {
+          'name': 'AllowFileHandling',
+          'value': 1,
+          'caption': '''Grant web apps access to file types''',
+        },
+        {
+          'name': 'BlockFileHandling',
+          'value': 2,
+          'caption': '''Do not allow any web app to access file types via the File Handling API''',
+        },
+      ],
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': 1,
+      'default': None,
+      'id': 845,
+      'caption': '''Control use of the File Handling API''',
+      'tags': ['website-sharing'],
+      'desc': '''Setting the policy to 1 lets web apps access file types. Setting the policy to 2 denies access to file types.
+
+      Leaving it unset lets web apps ask for access, but users can change this setting.''',
+    },
+    {
+      'name': 'FileHandlingAllowedForUrls',
+      'owners': ['huangdarwin@chromium.org', 'cmp@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'id': 846,
+      'caption': '''Allow the File Handling API on these web apps''',
+      'tags': ['website-sharing'],
+      'desc': '''Setting the policy lets you list the URL patterns that specify which web apps are granted access to file types.
+
+      Leaving the policy unset means <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME">DefaultFileHandlingGuardSetting</ph> applies for all web apps, if it's set. If not, users' personal settings apply.
+
+      For URL patterns which match neither <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME">FileHandlingAllowedForUrls</ph> nor <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME">FileHandlingBlockedForUrls</ph>, <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME">DefaultFileHandlingGuardSetting</ph>, or the users' personal settings, will be used, in that order.
+
+      URL patterns must not conflict with <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME">FileHandlingBlockedForUrls</ph>. Neither policy takes precedence if a URL matches with both.
+
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
+    },
+    {
+      'name': 'FileHandlingBlockedForUrls',
+      'owners': ['huangdarwin@chromium.org', 'cmp@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'id': 847,
+      'caption': '''Block the File Handling API on these web apps''',
+      'tags': [],
+      'desc': '''Setting the policy lets you list the URL patterns that specify which web apps can't ask users to grant them access to file types.
+
+      Leaving the policy unset means <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME">DefaultFileHandlingGuardSetting</ph> applies for all web apps, if it's set. If not, the user's personal setting applies.
+
+      For URL patterns which match neither <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME">FileHandlingAllowedForUrls</ph> nor <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME">FileHandlingBlockedForUrls</ph>, <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME">DefaultFileHandlingGuardSetting</ph>, or the users' personal settings, will be used, in that order.
+
+      URL patterns must not conflict with <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME">FileHandlingAllowedForUrls</ph>. Neither policy takes precedence if a URL matches with both.
+
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'DefaultFileSystemReadGuardSetting',
@@ -26263,6 +26354,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 844,
+  'highest_id_currently_used': 847,
   'highest_atomic_group_id_currently_used': 40
 }
