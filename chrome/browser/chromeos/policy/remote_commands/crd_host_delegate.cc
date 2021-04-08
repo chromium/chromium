@@ -86,8 +86,59 @@ constexpr char kTachyonOAuth2Scope[] =
 
 }  // namespace
 
-CRDHostDelegate::CRDHostDelegate()
-    : OAuth2AccessTokenManager::Consumer("crd_host_delegate") {}
+// Helper class that asynchronously fetches the OAuth token, and passes it to
+// the given callback.
+class CRDHostDelegate::OAuthTokenFetcher
+    : public OAuth2AccessTokenManager::Consumer {
+ public:
+  OAuthTokenFetcher(
+      DeviceCommandStartCRDSessionJob::OAuthTokenCallback success_callback,
+      DeviceCommandStartCRDSessionJob::ErrorCallback error_callback)
+      : OAuth2AccessTokenManager::Consumer("crd_host_delegate"),
+        success_callback_(std::move(success_callback)),
+        error_callback_(std::move(error_callback)) {}
+  OAuthTokenFetcher(const OAuthTokenFetcher&) = delete;
+  OAuthTokenFetcher& operator=(const OAuthTokenFetcher&) = delete;
+  ~OAuthTokenFetcher() override = default;
+
+  void Start() {
+    DeviceOAuth2TokenService* oauth_service =
+        DeviceOAuth2TokenServiceFactory::Get();
+
+    OAuth2AccessTokenManager::ScopeSet scopes{
+        GaiaConstants::kGoogleUserInfoEmail, kCloudDevicesOAuth2Scope,
+        kChromotingRemoteSupportOAuth2Scope, kTachyonOAuth2Scope};
+
+    oauth_request_ = oauth_service->StartAccessTokenRequest(scopes, this);
+  }
+
+  bool is_running() const { return oauth_request_ != nullptr; }
+
+ private:
+  // OAuth2AccessTokenManager::Consumer implementation:
+  void OnGetTokenSuccess(
+      const OAuth2AccessTokenManager::Request* request,
+      const OAuth2AccessTokenConsumer::TokenResponse& token_response) override {
+    std::move(success_callback_).Run(token_response.access_token);
+    oauth_request_.reset();
+  }
+
+  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
+                         const GoogleServiceAuthError& error) override {
+    std::move(error_callback_)
+        .Run(DeviceCommandStartCRDSessionJob::FAILURE_NO_OAUTH_TOKEN,
+             error.ToString());
+    oauth_request_.reset();
+  }
+
+  DeviceCommandStartCRDSessionJob::OAuthTokenCallback success_callback_;
+  DeviceCommandStartCRDSessionJob::ErrorCallback error_callback_;
+  // Handler for the OAuth access token request.
+  // When deleted the token manager will cancel the request (and not call us).
+  std::unique_ptr<OAuth2AccessTokenManager::Request> oauth_request_;
+};
+
+CRDHostDelegate::CRDHostDelegate() = default;
 
 CRDHostDelegate::~CRDHostDelegate() {}
 
@@ -141,37 +192,11 @@ base::TimeDelta CRDHostDelegate::GetIdlenessPeriod() const {
 void CRDHostDelegate::FetchOAuthToken(
     DeviceCommandStartCRDSessionJob::OAuthTokenCallback success_callback,
     DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) {
-  DCHECK(!oauth_success_callback_);
-  DCHECK(!error_callback_);
-  DeviceOAuth2TokenService* oauth_service =
-      DeviceOAuth2TokenServiceFactory::Get();
+  DCHECK(!oauth_token_fetcher_ || !oauth_token_fetcher_->is_running());
 
-  OAuth2AccessTokenManager::ScopeSet scopes{
-      GaiaConstants::kGoogleUserInfoEmail, kCloudDevicesOAuth2Scope,
-      kChromotingRemoteSupportOAuth2Scope, kTachyonOAuth2Scope};
-
-  oauth_success_callback_ = std::move(success_callback);
-  error_callback_ = std::move(error_callback);
-
-  oauth_request_ = oauth_service->StartAccessTokenRequest(scopes, this);
-}
-
-void CRDHostDelegate::OnGetTokenSuccess(
-    const OAuth2AccessTokenManager::Request* request,
-    const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
-  oauth_request_.reset();
-  error_callback_.Reset();
-  std::move(oauth_success_callback_).Run(token_response.access_token);
-}
-
-void CRDHostDelegate::OnGetTokenFailure(
-    const OAuth2AccessTokenManager::Request* request,
-    const GoogleServiceAuthError& error) {
-  oauth_request_.reset();
-  oauth_success_callback_.Reset();
-  std::move(error_callback_)
-      .Run(DeviceCommandStartCRDSessionJob::FAILURE_NO_OAUTH_TOKEN,
-           error.ToString());
+  oauth_token_fetcher_ = std::make_unique<OAuthTokenFetcher>(
+      std::move(success_callback), std::move(error_callback));
+  oauth_token_fetcher_->Start();
 }
 
 void CRDHostDelegate::StartCRDHostAndGetCode(
