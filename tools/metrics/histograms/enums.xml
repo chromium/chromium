@@ -58364,6 +58364,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Reauthentication"/>
 </enum>
 
+<enum name="ParentAccessCodeValidationResult">
+  <summary>Result of the parent access code validation</summary>
+  <int value="0" label="Valid"/>
+  <int value="1" label="Invalid"/>
+  <int value="2" label="No config"/>
+  <int value="3" label="Internal error"/>
+</enum>
+
 <enum name="ParentFrameKnown">
   <int value="0" label="Parent Frame Not Known"/>
   <int value="1" label="Parent Frame Known"/>

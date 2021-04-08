@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -239,13 +240,14 @@ void ScreenTimeController::ForceScreenLockByPolicy() {
 }
 
 void ScreenTimeController::OnAccessCodeValidation(
-    bool result,
+    ash::ParentCodeValidationResult result,
     base::Optional<AccountId> account_id) {
   AccountId current_user_id =
       chromeos::ProfileHelper::Get()
           ->GetUserByProfile(Profile::FromBrowserContext(context_))
           ->GetAccountId();
-  if (!result || !account_id || account_id.value() != current_user_id)
+  if (result != ash::ParentCodeValidationResult::kValid || !account_id ||
+      account_id.value() != current_user_id)
     return;
 
   if (!session_manager::SessionManager::Get()->IsScreenLocked())

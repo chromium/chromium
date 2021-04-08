@@ -24,6 +24,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 class SystemTrayNotifier;
+enum class ParentCodeValidationResult;
 enum class SupervisedAction;
 
 // LoginScreenController implements LoginScreen and wraps the LoginScreenClient
@@ -68,9 +69,10 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   void AuthenticateUserWithEasyUnlock(const AccountId& account_id);
   void AuthenticateUserWithChallengeResponse(const AccountId& account_id,
                                              OnAuthenticateCallback callback);
-  bool ValidateParentAccessCode(const AccountId& account_id,
-                                base::Time validation_time,
-                                const std::string& code);
+  ParentCodeValidationResult ValidateParentAccessCode(
+      const AccountId& account_id,
+      base::Time validation_time,
+      const std::string& code);
   bool GetSecurityTokenPinRequestCanceled() const;
   void HardlockPod(const AccountId& account_id);
   void OnFocusPod(const AccountId& account_id);

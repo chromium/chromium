@@ -11,6 +11,7 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen_client.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/root_window_controller.h"
@@ -163,14 +164,14 @@ void LoginScreenController::AuthenticateUserWithChallengeResponse(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-bool LoginScreenController::ValidateParentAccessCode(
+ParentCodeValidationResult LoginScreenController::ValidateParentAccessCode(
     const AccountId& account_id,
     base::Time validation_time,
     const std::string& code) {
   DCHECK(!validation_time.is_null());
 
   if (!client_)
-    return false;
+    return ParentCodeValidationResult::kInternalError;
 
   return client_->ValidateParentAccessCode(account_id, code, validation_time);
 }

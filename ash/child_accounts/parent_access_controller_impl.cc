@@ -10,8 +10,10 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_util.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -21,6 +23,34 @@ namespace {
 
 // Number of digits displayed in parent access code input.
 constexpr int kParentAccessCodePinLength = 6;
+
+// Base name of the histogram to log parent access code validation result.
+constexpr char kUMAParentAccessCodeValidationResultBase[] =
+    "Supervision.ParentAccessCode.ValidationResult";
+
+// Suffix of the histogram to log aggregated parent access code validation
+// results.
+constexpr char kUMAValidationResultSuffixAll[] = "All";
+
+// Suffix of the histogram to log parent access code validation results for
+// reauth flow.
+constexpr char kUMAValidationResultSuffixReauth[] = "Reauth";
+
+// Suffix of the histogram to log parent access code validation results for add
+// user flow.
+constexpr char kUMAValidationResultSuffixAddUser[] = "AddUser";
+
+// Suffix of the histogram to log parent access code validation results for time
+// limits override.
+constexpr char kUMAValidationResultSuffixTimeLimits[] = "TimeLimits";
+
+// Suffix of the histogram to log parent access code validation results for
+// timezone change.
+constexpr char kUMAValidationResultSuffixTimezone[] = "TimezoneChange";
+
+// Suffix of the histogram to log parent access code validation results for
+// clock change.
+constexpr char kUMAValidationResultSuffixClock[] = "ClockChange";
 
 base::string16 GetTitle(SupervisedAction action) {
   int title_id;
@@ -66,17 +96,95 @@ base::string16 GetAccessibleTitle() {
   return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_PARENT_ACCESS_DIALOG_NAME);
 }
 
+void RecordParentCodeValidationResultToHistogram(
+    ParentCodeValidationResult result,
+    const std::string& histogram_name) {
+  DCHECK(!histogram_name.empty());
+  switch (result) {
+    case ParentCodeValidationResult::kValid:
+      base::UmaHistogramEnumeration(
+          histogram_name,
+          ParentAccessControllerImpl::UMAValidationResult::kValid);
+      return;
+    case ParentCodeValidationResult::kInvalid:
+      base::UmaHistogramEnumeration(
+          histogram_name,
+          ParentAccessControllerImpl::UMAValidationResult::kInvalid);
+      return;
+    case ParentCodeValidationResult::kNoConfig:
+      base::UmaHistogramEnumeration(
+          histogram_name,
+          ParentAccessControllerImpl::UMAValidationResult::kNoConfig);
+      return;
+    case ParentCodeValidationResult::kInternalError:
+      base::UmaHistogramEnumeration(
+          histogram_name,
+          ParentAccessControllerImpl::UMAValidationResult::kInternalError);
+      return;
+  }
+}
+
+void RecordParentCodeValidationResult(ParentCodeValidationResult result,
+                                      SupervisedAction action) {
+  // Record to the action specific histogram.
+  const std::string action_result_histogram =
+      ParentAccessControllerImpl::GetUMAParentCodeValidationResultHistorgam(
+          action);
+  RecordParentCodeValidationResultToHistogram(result, action_result_histogram);
+
+  // Record the action to the aggregated histogram.
+  const std::string all_results_histogram =
+      ParentAccessControllerImpl::GetUMAParentCodeValidationResultHistorgam(
+          base::nullopt);
+  RecordParentCodeValidationResultToHistogram(result, all_results_histogram);
+}
+
 }  // namespace
-
-ParentAccessControllerImpl::ParentAccessControllerImpl() {}
-
-ParentAccessControllerImpl::~ParentAccessControllerImpl() = default;
 
 // static
 constexpr char ParentAccessControllerImpl::kUMAParentAccessCodeAction[];
 
 // static
 constexpr char ParentAccessControllerImpl::kUMAParentAccessCodeUsage[];
+
+// static
+std::string
+ParentAccessControllerImpl::GetUMAParentCodeValidationResultHistorgam(
+    base::Optional<SupervisedAction> action) {
+  const std::string separator = ".";
+  if (!action) {
+    return base::JoinString({kUMAParentAccessCodeValidationResultBase,
+                             kUMAValidationResultSuffixAll},
+                            separator);
+  }
+
+  switch (action.value()) {
+    case SupervisedAction::kUnlockTimeLimits:
+      return base::JoinString({kUMAParentAccessCodeValidationResultBase,
+                               kUMAValidationResultSuffixTimeLimits},
+                              separator);
+    case SupervisedAction::kAddUser:
+      return base::JoinString({kUMAParentAccessCodeValidationResultBase,
+                               kUMAValidationResultSuffixAddUser},
+                              separator);
+    case SupervisedAction::kReauth:
+      return base::JoinString({kUMAParentAccessCodeValidationResultBase,
+                               kUMAValidationResultSuffixReauth},
+                              separator);
+    case SupervisedAction::kUpdateTimezone:
+      return base::JoinString({kUMAParentAccessCodeValidationResultBase,
+                               kUMAValidationResultSuffixTimezone},
+                              separator);
+    case SupervisedAction::kUpdateClock:
+      return base::JoinString({kUMAParentAccessCodeValidationResultBase,
+                               kUMAValidationResultSuffixClock},
+                              separator);
+  }
+}
+
+ParentAccessControllerImpl::ParentAccessControllerImpl() = default;
+
+ParentAccessControllerImpl::~ParentAccessControllerImpl() = default;
 
 void RecordParentAccessAction(ParentAccessControllerImpl::UMAAction action) {
   UMA_HISTOGRAM_ENUMERATION(
@@ -124,11 +232,12 @@ void RecordParentAccessUsage(const AccountId& child_account_id,
 
 PinRequestView::SubmissionResult ParentAccessControllerImpl::OnPinSubmitted(
     const std::string& pin) {
-  bool pin_is_valid =
+  ParentCodeValidationResult pin_validation_result =
       Shell::Get()->login_screen_controller()->ValidateParentAccessCode(
           account_id_, validation_time_, pin);
+  RecordParentCodeValidationResult(pin_validation_result, action_);
 
-  if (pin_is_valid) {
+  if (pin_validation_result == ParentCodeValidationResult::kValid) {
     VLOG(1) << "Parent access code successfully validated";
     RecordParentAccessAction(
         ParentAccessControllerImpl::UMAAction::kValidationSuccess);

@@ -15313,6 +15313,24 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="Supervision.ParentAccessCode.ValidationResult.{Action}"
+    enum="ParentAccessCodeValidationResult" expires_after="2022-03-17">
+  <owner>agawronska@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    The result of the parent access code validation for {Action} action. Logged
+    every time the code is validated from the parent access dialog.
+  </summary>
+  <token key="Action">
+    <variant name="AddUser"/>
+    <variant name="All"/>
+    <variant name="ClockChange"/>
+    <variant name="Reauth"/>
+    <variant name="TimeLimits"/>
+    <variant name="TimezoneChange"/>
+  </token>
+</histogram>
+
 <histogram name="Supervision.StatusReport.Event"
     enum="SupervisionStatusReportEvent" expires_after="M85">
   <owner>escordeiro@google.com</owner>
