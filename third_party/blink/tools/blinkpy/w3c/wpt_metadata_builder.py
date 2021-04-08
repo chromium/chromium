@@ -135,7 +135,8 @@ class WPTMetadataBuilder(object):
             # tests are OK.
             statuses.append("PASS")
             statuses.append("OK")
-        if test_status_bitmap & TEST_FAIL:
+        if (test_status_bitmap & TEST_FAIL or
+                use_subtest_results and test_status_bitmap & SUBTEST_FAIL):
             # We need both FAIL and ERROR. Reftests will FAIL while testharness
             # tests have ERRORs.
             statuses.append("FAIL")

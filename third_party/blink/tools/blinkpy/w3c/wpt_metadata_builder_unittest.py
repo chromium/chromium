@@ -633,7 +633,7 @@ class WPTMetadataBuilderTest(unittest.TestCase):
             "[test.html]\n  blink_expect_any_subtest_status: True # wpt_metadata_builder.py\n  expected: [TIMEOUT]\n",
             mb.fs.read_text_file(resulting_ini_file))
 
-    def test_use_subtest_results_flag(self):
+    def test_use_subtest_results_flag_with_expectation(self):
         """Test that the --use-subtest-results flag updates metadata correctly.
 
         The --use-subtest-results flag should result in the
@@ -647,3 +647,61 @@ class WPTMetadataBuilderTest(unittest.TestCase):
             test_name, TEST_FAIL)
         self.assertEqual("test.html.ini", filename)
         self.assertEqual("[test.html]\n  expected: [FAIL, ERROR]\n", contents)
+
+    def test_use_subtest_results_flag_with_baseline(self):
+        """A test may have a failing baseline because there are subtest failures.
+        When the wptrunner see's the failing subtest it will return failure
+        for the test since we are not setting expectations for the subtest in
+        the metadata. However the expected result will be set to FAIL in the
+        JSON results and the CI will stay green."""
+        test_name = "external/wpt/test.html"
+        # Create a baseline with a failing subtest, and a TIMEOUT expectation
+        baseline_filename = self.port.expected_filename(test_name, '.txt')
+        self.host.filesystem.write_text_file(
+            baseline_filename,
+            "This is a test\nFAIL some subtest\nPASS another subtest\n")
+
+        expectations = _make_expectation(self.port, test_name, "TIMEOUT")
+
+        metadata_builder = WPTMetadataBuilder(expectations, self.port)
+        metadata_builder.use_subtest_results = True
+
+        test_and_status_dict = metadata_builder.get_tests_needing_metadata()
+
+        self.assertEqual(1, len(test_and_status_dict))
+        self.assertTrue(test_name in test_and_status_dict)
+        self.assertEqual(SUBTEST_FAIL | TEST_TIMEOUT,
+                         test_and_status_dict[test_name])
+
+        filename, contents = metadata_builder.get_metadata_filename_and_contents(
+            test_name, test_and_status_dict[test_name])
+        self.assertEqual("test.html.ini", filename)
+        self.assertEqual("[test.html]\n  expected: [FAIL, ERROR, TIMEOUT]\n",
+                         contents)
+
+    def test_without_use_subtest_results_flag_with_baseline(self):
+        """A test has a failing baseline."""
+        test_name = "external/wpt/test.html"
+        # Create a baseline with a failing subtest, and a TIMEOUT expectation
+        baseline_filename = self.port.expected_filename(test_name, '.txt')
+        self.host.filesystem.write_text_file(
+            baseline_filename,
+            "This is a test\nFAIL some subtest\nPASS another subtest\n")
+
+        expectations = _make_expectation(self.port, test_name, "TIMEOUT")
+
+        metadata_builder = WPTMetadataBuilder(expectations, self.port)
+
+        test_and_status_dict = metadata_builder.get_tests_needing_metadata()
+
+        self.assertEqual(1, len(test_and_status_dict))
+        self.assertTrue(test_name in test_and_status_dict)
+        self.assertEqual(TEST_TIMEOUT | SUBTEST_FAIL,
+                         test_and_status_dict[test_name])
+
+        filename, contents = metadata_builder.get_metadata_filename_and_contents(
+            test_name, test_and_status_dict[test_name])
+        self.assertEqual("test.html.ini", filename)
+        self.assertEqual(("[test.html]\n  blink_expect_any_subtest_status: "
+                          "True # wpt_metadata_builder.py\n  "
+                          "expected: [TIMEOUT]\n"), contents)
