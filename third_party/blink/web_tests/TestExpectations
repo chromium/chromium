@@ -6762,3 +6762,5 @@ crbug.com/1197087 external/wpt/web-animations/interfaces/Animation/finished.html
 crbug.com/1197087 external/wpt/css/css-animations/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
 crbug.com/1197087 external/wpt/css/css-transitions/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
 crbug.com/1197087 virtual/threaded/external/wpt/css/css-animations/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
+
+crbug.com/1195295 fast/events/touch/multi-touch-timestamp.html [ Pass Failure ]
