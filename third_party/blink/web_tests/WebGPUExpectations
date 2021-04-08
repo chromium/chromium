@@ -245,12 +245,6 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,v
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:format="depth16unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:format="stencil8";* [ Failure ]
 
-crbug.com/dawn/731 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:sampleCount=4;format="r8snorm";* [ Skip ]
-crbug.com/dawn/731 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:sampleCount=4;format="rg8snorm";* [ Skip ]
-crbug.com/dawn/731 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:sampleCount=4;format="rgba8snorm";* [ Skip ]
-crbug.com/dawn/731 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:sampleCount=4;format="rg11b10ufloat";* [ Skip ]
-crbug.com/dawn/731 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:sampleCount=4;format="rgb9e5ufloat";* [ Skip ]
-
 crbug.com/dawn/730 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:dimension="1d";format="depth24plus";* [ Skip ]
 crbug.com/dawn/730 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:dimension="1d";format="depth24plus-stencil8";* [ Skip ]
 crbug.com/dawn/730 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:dimension="1d";format="depth32float";* [ Skip ]
