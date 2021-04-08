@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -36,15 +38,30 @@ class PermissionChipBrowserTest : public UiBrowserTest {
                                 ContentSettingsType::GEOLOCATION);
 
     base::RunLoop().RunUntilIdle();
+
+    LocationBarView* lbv = GetLocationBarView();
+    lbv->GetFocusManager()->ClearFocus();
+    auto* button =
+        static_cast<OmniboxChipButton*>(lbv->permission_chip()->button());
+    button->SetForceExpandedForTesting(true);
   }
 
   bool VerifyUi() override {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    PermissionChip* permission_chip =
-        browser_view->toolbar()->location_bar()->permission_chip();
+    LocationBarView* lbv = GetLocationBarView();
+    PermissionChip* permission_chip = lbv->permission_chip();
+    if (!permission_chip || !permission_chip->GetVisible())
+      return false;
 
-    return permission_chip && permission_chip->GetVisible();
+// TODO(olesiamrukhno): VerifyPixelUi works only for these platforms, revise
+// this if supported platforms change.
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
+    const std::string screenshot_name =
+        base::StrCat({test_info->test_case_name(), "_", test_info->name()});
+    return VerifyPixelUi(permission_chip, "BrowserUi", screenshot_name);
+#else
+    return true;
+#endif
   }
 
   void WaitForUserDismissal() override {
@@ -54,6 +71,12 @@ class PermissionChipBrowserTest : public UiBrowserTest {
 
   content::RenderFrameHost* GetActiveMainFrame() {
     return browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  }
+
+  LocationBarView* GetLocationBarView() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->location_bar();
   }
 
  private:
