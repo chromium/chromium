@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
 #include "chrome/grit/theme_resources.h"
 #include "extensions/browser/extension_action.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -28,6 +27,8 @@
 #include "ui/gfx/skia_paint_util.h"
 
 namespace {
+
+constexpr gfx::Size kDefaultIconAreaSize(28, 28);
 
 gfx::ImageSkiaRep ScaleImageSkiaRep(const gfx::ImageSkiaRep& rep,
                                     int target_width_dp,
@@ -251,6 +252,6 @@ void IconWithBadgeImageSource::PaintBlockedActionDecoration(
 
 gfx::Rect IconWithBadgeImageSource::GetIconAreaRect() const {
   gfx::Rect icon_area(size());
-  icon_area.ClampToCenteredSize(ToolbarActionsBar::GetIconAreaSize());
+  icon_area.ClampToCenteredSize(kDefaultIconAreaSize);
   return icon_area;
 }

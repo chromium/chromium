@@ -169,7 +169,6 @@
 #include "chrome/browser/extensions/default_apps.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
 #include "extensions/browser/api/audio/audio_api.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
@@ -543,6 +542,14 @@ const char kWebAuthnLastTransportUsedPrefName[] =
     "webauthn.last_transport_used";
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Deprecated 04/2021
+const char kToolbarIconSurfacingBubbleAcknowledged[] =
+    "toolbar_icon_surfacing_bubble_acknowledged";
+const char kToolbarIconSurfacingBubbleLastShowTime[] =
+    "toolbar_icon_surfacing_bubble_show_time";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -659,6 +666,11 @@ void RegisterProfilePrefsForMigration(
 
   registry->RegisterDoublePref(kSessionStatisticFCPStdDev, -1.0f);
   registry->RegisterDoublePref(kSessionStatisticFCPMean, -1.0f);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  registry->RegisterBooleanPref(kToolbarIconSurfacingBubbleAcknowledged, false);
+  registry->RegisterInt64Pref(kToolbarIconSurfacingBubbleLastShowTime, 0);
+#endif
 }
 
 }  // namespace
@@ -965,7 +977,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionWebUI::RegisterProfilePrefs(registry);
   RegisterAnimationPolicyPrefs(registry);
-  ToolbarActionsBar::RegisterProfilePrefs(registry);
   extensions::api::CryptotokenRegisterProfilePrefs(registry);
   extensions::ActivityLog::RegisterProfilePrefs(registry);
   extensions::AudioAPI::RegisterUserPrefs(registry);
@@ -1346,6 +1357,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 04/2021.
   profile_prefs->ClearPref(kSessionStatisticFCPMean);
   profile_prefs->ClearPref(kSessionStatisticFCPStdDev);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Added 04/2021
+  profile_prefs->ClearPref(kToolbarIconSurfacingBubbleAcknowledged);
+  profile_prefs->ClearPref(kToolbarIconSurfacingBubbleLastShowTime);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

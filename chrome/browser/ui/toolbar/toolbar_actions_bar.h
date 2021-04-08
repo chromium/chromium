@@ -22,10 +22,6 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 class BrowserWindow;
 class ToolbarActionsBarDelegate;
 class ToolbarActionViewController;
@@ -87,12 +83,6 @@ class ToolbarActionsBar : public ExtensionsContainer,
   // Gets the ToolbarActionsBar from the given BrowserWindow. This method is
   // essentially deprecated. Use BrowserWindow::GetExtensionsContainer instead.
   static ToolbarActionsBar* FromBrowserWindow(BrowserWindow* window);
-
-  // Registers profile preferences.
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-  // Returns the size of the area where the action icon resides.
-  static gfx::Size GetIconAreaSize();
 
   // Returns the size of ToolbarActionView.
   gfx::Size GetViewSize() const;

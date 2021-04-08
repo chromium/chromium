@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/runtime_data.h"
@@ -40,6 +39,8 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace {
+
+constexpr gfx::Size kDefaultIconAreaSize(28, 28);
 
 using WeakToolbarActions = std::vector<ToolbarActionViewController*>;
 
@@ -134,23 +135,8 @@ ToolbarActionsBar* ToolbarActionsBar::FromBrowserWindow(BrowserWindow* window) {
   return static_cast<ToolbarActionsBar*>(window->GetExtensionsContainer());
 }
 
-// static
-void ToolbarActionsBar::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(
-      prefs::kToolbarIconSurfacingBubbleAcknowledged, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterInt64Pref(prefs::kToolbarIconSurfacingBubbleLastShowTime,
-                              0);
-}
-
-// static
-gfx::Size ToolbarActionsBar::GetIconAreaSize() {
-  return gfx::Size(28, 28);
-}
-
 gfx::Size ToolbarActionsBar::GetViewSize() const {
-  gfx::Rect rect(GetIconAreaSize());
+  gfx::Rect rect(kDefaultIconAreaSize);
   rect.Inset(-GetIconAreaInsets());
   return rect.size();
 }
