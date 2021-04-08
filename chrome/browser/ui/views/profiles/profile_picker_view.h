@@ -92,6 +92,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Struct holding the data related to the sign-in profile creation flow. These
   // variables are grouped together to simplify reasoning about state.
+  // TODO(crbug.com/1180654): Turn it into a separate class with code for all
+  // the sign-in logic.
   struct SignInFlow {
     explicit SignInFlow(ProfilePickerView* observer,
                         Profile* profile,
@@ -106,6 +108,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
     // Set for the profile at the very end to avoid coloring the simple toolbar
     // for GAIA sign-in (that uses the ThemeProvider of the current profile).
+    // TODO(crbug.com/1180654): Make this private and use the current
+    // GetSignInColor() as the getter.
     SkColor profile_color;
 
     // Controls whether `profile` browser window should be shown at the end of

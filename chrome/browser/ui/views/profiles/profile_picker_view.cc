@@ -201,6 +201,15 @@ void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
       ProfileMetrics::ProfileAddSignInFlowOutcome::kSAML);
 }
 
+SkColor GetSignInColor(Profile* profile, SkColor profile_color) {
+  // The new profile theme may be overridden by an existing policy theme. This
+  // check ensures the correct theme is applied to the sync confirmation window.
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
+  if (theme_service->UsingPolicyTheme())
+    return theme_service->GetPolicyThemeColor();
+  return profile_color;
+}
+
 class ProfilePickerWidget : public views::Widget {
  public:
   explicit ProfilePickerWidget(ProfilePickerView* profile_picker_view)
@@ -763,12 +772,8 @@ void ProfilePickerView::SwitchToSyncConfirmationFinished() {
   SyncConfirmationUI* sync_confirmation_ui = static_cast<SyncConfirmationUI*>(
       sign_in_->contents->GetWebUI()->GetController());
 
-  // The new profile theme may be overridden by an existing policy theme. This
-  // check ensures the correct theme is applied to the sync confirmation window.
-  auto* theme_service = ThemeServiceFactory::GetForProfile(sign_in_->profile);
   sync_confirmation_ui->InitializeMessageHandlerForCreationFlow(
-      theme_service->UsingPolicyTheme() ? theme_service->GetPolicyThemeColor()
-                                        : sign_in_->profile_color);
+      GetSignInColor(sign_in_->profile, sign_in_->profile_color));
 }
 
 void ProfilePickerView::SwitchToProfileSwitch(
@@ -807,7 +812,8 @@ void ProfilePickerView::SwitchToEnterpriseProfileWelcomeFinished(
           ->GetController()
           ->GetAs<EnterpriseProfileWelcomeUI>();
   enterprise_profile_welcome_ui->Initialize(
-      type, gaia::ExtractDomainName(sign_in_->email), sign_in_->profile_color,
+      type, gaia::ExtractDomainName(sign_in_->email),
+      GetSignInColor(sign_in_->profile, sign_in_->profile_color),
       std::move(proceed_callback));
 }
 
