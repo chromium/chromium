@@ -214,6 +214,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 
 Co modo de incógnito activado, non poden utilizalas para ver a túa actividade de navegación en distintos sitios (por exemplo, co fin de personalizar os anuncios).</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
+<translation id="3222343486469566063">Non iniciaches sesión</translation>
 <translation id="3224641773458703735">Para exportar os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="3240426699337459095">Copiouse a ligazón</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -421,6 +422,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5489208564673669003">Se queres xestionar as cookies para todos os sitios, vai a <ph name="BEGIN_LINK" />Configuración das cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas as cookies (non recomendado)</translation>
 <translation id="5508435575041083207">Pechar sesión e borrar datos deste dispositivo</translation>
+<translation id="5513681519188741830">Hai <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crear contrasinal</translation>
 <translation id="5548760955356983418">Handoff permíteche comezar a navegar nun sitio web neste dispositivo e despois continuar facilmente no teu Mac. O sitio web aberto actualmente aparecerá no Dock do teu Mac.
 
@@ -786,6 +788,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9152539721251340337">Crear código QR</translation>
 <translation id="9157836665414082580">Suprimir cadros de diálogos</translation>
 <translation id="9188680907066685419">Pechar sesión na conta xestionada</translation>
+<translation id="9200875785104711666">Hai <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Enviouse o informe de erros.</translation>
 <translation id="952704832371081537">Cancelar</translation>

@@ -238,7 +238,6 @@
 <translation id="2534155362429831547">Διαγράφηκαν <ph name="NUMBER_OF_ITEMS" /> στοιχεία</translation>
 <translation id="2536728043171574184">Προβολή ενός αντιγράφου αυτής της σελίδας εκτός σύνδεσης</translation>
 <translation id="2546283357679194313">Cookie και δεδομένα ιστότοπου</translation>
-<translation id="2549341709325358884">Μόνο Wi-Fi και δεδομένα κινητής τηλεφωνίας</translation>
 <translation id="2561519700418191927">Προεπισκοπήσεις βίντεο</translation>
 <translation id="2567385386134582609">ΕΙΚΟΝΑ</translation>
 <translation id="2571711316400087311">Παρέχεται δυνατότητα αποστολής των σελίδων με περιεχόμενο σε διαφορετική γλώσσα στη Μετάφραση Google.</translation>
@@ -752,6 +751,7 @@
 <translation id="5982307838673692400">Άνοιγμα καρτέλας ανώνυμης περιήγησης</translation>
 <translation id="6000066717592683814">Διατήρηση του Google</translation>
 <translation id="6000203700195075278">Ακολουθήστε ξανά</translation>
+<translation id="6002623704405939939">Για διαγραφή του ιστορικού <ph name="BEGIN_LINK1" />αναζήτησης<ph name="END_LINK1" /> ή άλλων μορφών ιστορικού, επισκεφτείτε την ενότητα <ph name="BEGIN_LINK2" />Η δραστηριότητά μου Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Προτεινόμενος κωδικός πρόσβασης</translation>
 <translation id="6036057147555329831">Επιπλέον ICU</translation>
 <translation id="6039379616847168523">Μετάβαση στην επόμενη καρτέλα</translation>
@@ -925,6 +925,7 @@
 <translation id="7088681679121566888">Το Chrome έχει ενημερωθεί.</translation>
 <translation id="7106762743910369165">Η διαχείριση του προγράμματος περιήγησής σας πραγματοποιείται από τον οργανισμό σας.</translation>
 <translation id="7121362699166175603">Διαγράφει το ιστορικό και τα στοιχεία αυτόματης συμπλήρωσης στη γραμμή διευθύνσεων. Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="7134993907760847334">Διαγράφει το ιστορικό από όλες τις συνδεδεμένες συσκευές.</translation>
 <translation id="7138678301420049075">Άλλο</translation>
 <translation id="7146622961999026732">Αυτοί οι ιστότοποι και οι εφαρμογές φαίνονται σημαντικές για εσάς:</translation>
 <translation id="7149893636342594995">Τελευταίες 24 ώρες</translation>

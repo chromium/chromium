@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome бета</translation>
 <translation id="1399397803214730675">На този компютър вече има по-нова версия на Google Chrome. Ако софтуерът не работи, моля, деинсталирайте Google Chrome и опитайте отново.</translation>
 <translation id="1434626383986940139">Приложения в ранната версия на Chrome</translation>
+<translation id="1507198376417198979">Персонализирайте новия си потребителски профил в Chrome</translation>
 <translation id="1516530951338665275">Google Chrome се нуждае от достъп до Bluetooth, за да продължи
 сдвояването. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
@@ -212,6 +213,7 @@
 <translation id="6943584222992551122">Данните за сърфирането на този човек ще бъдат изтрити от устройството. За да ги възстановите, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Правило за Google Chrome бета за допускане на входящия трафик за mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome е актуализиран, но не сте го използвали от поне 30 дни.</translation>
+<translation id="7025800014283535195">Оттук можете да превключвате между потребителските профили в Chrome</translation>
 <translation id="7062128746136194023">Някой от родителите ви е изключил разрешенията за сайтове, приложения и разширения за Chrome. Добавянето на <ph name="EXTENSION_TYPE_PARAMETER" /> не е разрешено.</translation>
 <translation id="7098166902387133879">Google Chrome използва микрофона ви.</translation>
 <translation id="7106741999175697885">Диспечер на задачите - Google Chrome</translation>
@@ -289,4 +291,5 @@
 <translation id="922152298093051471">Персонализиране на Chrome</translation>
 <translation id="940313311831216333">За да имате достъп до нещата си в Chrome на всичките си устройства, влезте в профила си и включете синхронизирането.</translation>
 <translation id="989369509083708165">Google Chrome е браузърът ви по подразбиране</translation>
+<translation id="989816563149873169">Посредством <ph name="SHORTCUT" /> можете да превключвате между потребителските профили в Chrome</translation>
 </translationbundle>

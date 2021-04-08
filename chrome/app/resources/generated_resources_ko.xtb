@@ -1026,6 +1026,7 @@
 <translation id="211144231511833662">유형 지우기</translation>
 <translation id="2111670510994270194">오른쪽에 새 탭 열기</translation>
 <translation id="2111810003053064883">광고주는 사이트 전반에서 사용자를 추적하지 않는 방식으로 광고의 효과를 연구할 수 있습니다.</translation>
+<translation id="2112554630428445878"><ph name="USERNAME" />님, 환영합니다</translation>
 <translation id="21133533946938348">탭 고정</translation>
 <translation id="2113479184312716848">파일 열기(&amp;F)...</translation>
 <translation id="2113921862428609753">기관 정보 액세스</translation>
@@ -1970,7 +1971,6 @@
 <translation id="313205617302240621">비밀번호 찾기</translation>
 <translation id="3132277757485842847">휴대전화와 연결을 유지할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="3132996321662585180">매일 새로고침</translation>
-<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> 실험의 상태를 선택하세요. 실험 설명: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">잘못된 PIN입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="313963229645891001">다운로드 중, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">기본 노란색 아바타</translation>
@@ -2643,6 +2643,7 @@
 <translation id="3881478300875776315">자막 접기</translation>
 <translation id="3882165008614329320">카메라 또는 파일의 기존 동영상</translation>
 <translation id="3884152383786131369">여러 언어를 지원하는 웹 콘텐츠는 목록의 첫 번째 지원 언어를 사용합니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">업데이트는 관리자가 관리합니다</translation>
 <translation id="3886446263141354045">사용자의 사이트 액세스 요청이 <ph name="NAME" />님에게 전송되었습니다.</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />(으)로 메모 작성</translation>
 <translation id="3888586133700543064">어시스턴트에서 발생하는 문제를 파악하는 데 도움이 되는 정보입니다. 정보는 최대 90일 동안 저장되며, 관련 엔지니어링팀과 의견팀에서만 액세스할 수 있습니다.</translation>
@@ -6400,7 +6401,6 @@
 <translation id="8147900440966275470">탭 <ph name="NUM" />개 찾음</translation>
 <translation id="8148760431881541277">로그인 제한</translation>
 <translation id="8149564499626272569">USB 케이블로 휴대전화를 연결하여 인증</translation>
-<translation id="8150259863378108853">Lacros는 실험 단계의 브라우저입니다. 문제가 발생하면 도움말 &gt; ‘문제 신고...’에서 신고해 주세요.</translation>
 <translation id="8151638057146502721">구성</translation>
 <translation id="8154790740888707867">파일 없음</translation>
 <translation id="815491593104042026">보안되지 않는 URL(<ph name="BLOCKED_URL" />)을 사용하도록 설정되었기 때문에 인증할 수 없습니다. 관리자에게 문의하세요.</translation>
@@ -6611,7 +6611,6 @@ Ctrl+Alt+어둡게 키를 사용하여 축소합니다.</translation>
 <translation id="8398877366907290961">무시하고 계속하기</translation>
 <translation id="8400146488506985033">사용자 관리</translation>
 <translation id="8401432541486058167">스마트 카드와 연결된 PIN을 입력하세요.</translation>
-<translation id="8403562727702715619">Google Drive의 최근 항목</translation>
 <translation id="8405046151008197676">최신 업데이트에서 중요한 사항을 확인하세요.</translation>
 <translation id="8407199357649073301">로그 수준:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> 네트워크, 연결 중</translation>

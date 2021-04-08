@@ -4,6 +4,7 @@
 <translation id="1175958423215084756">已偵測到連結。<ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">相片集嘅相</translation>
 <translation id="1430915738399379752">列印</translation>
+<translation id="1467231725790366244">已解除連接「<ph name="CAMERA" />」。</translation>
 <translation id="1473110567575736769">3 秒計時器</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,6 +25,7 @@
 <translation id="2501953888035679275">使用您的相機拍照及錄影。</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="2599796128805996109">後置鏡頭</translation>
+<translation id="2879583609344924966">已連接「<ph name="CAMERA" />」。</translation>
 <translation id="2912439424121107408">此裝置不支援專業模式</translation>
 <translation id="2968794441791257519">使用相機拍攝的相片和影片將會移至「下載」資料夾，您可以在「檔案」中存取這些相片和影片。
 

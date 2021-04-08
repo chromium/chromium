@@ -18,6 +18,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Þessi tölva er þegar búin nýrri útgáfu af Google Chrome. Ef hugbúnaðurinn virkar ekki skaltu fjarlægja Google Chrome og reyna aftur.</translation>
 <translation id="1434626383986940139">Chrome Canary forrit</translation>
+<translation id="1507198376417198979">Sérsníða nýja Chrome prófílinn</translation>
 <translation id="1516530951338665275">Google Chrome þarf Bluetooth-aðgang til að halda pörun áfram. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Uppfæra Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> er þegar innskráð(ur) á þennan Chrome prófíl. Þetta býr til nýjan Chrome prófíl fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -218,6 +219,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6943584222992551122">Vefskoðunargögnum þessa aðila verður eytt úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögn.</translation>
 <translation id="6967962315388095737">Innleiðarregla til að láta Google Chrome Beta leyfa mDNS-umferð.</translation>
 <translation id="6989339256997917931">Google Chrome var uppfært en þú hefur ekki notað það í a.m.k. 30 daga.</translation>
+<translation id="7025800014283535195">Hér geturðu skipt á milli Chrome prófíla</translation>
 <translation id="7062128746136194023">Foreldrar þínir hafa slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chrome. Ekki er leyfilegt að bæta við þessu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome er að nota hljóðnemann.</translation>
 <translation id="7106741999175697885">Verkstjórn – Google Chrome</translation>
@@ -295,4 +297,5 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="922152298093051471">Sérsníða Chrome</translation>
 <translation id="940313311831216333">Til að fá aðgang að Chrome efninu þínu í öllum tækjum skaltu skrá þig inn og kveikja á samstillingu.</translation>
 <translation id="989369509083708165">Google Chrome er sjálfgefinn vafri</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> getur skipt á milli Chrome prófíla</translation>
 </translationbundle>

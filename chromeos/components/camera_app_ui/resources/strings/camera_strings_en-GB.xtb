@@ -4,6 +4,7 @@
 <translation id="1175958423215084756">Link detected. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Gallery images</translation>
 <translation id="1430915738399379752">Print</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> is unplugged.</translation>
 <translation id="1473110567575736769">Three seconds timer</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,6 +25,7 @@
 <translation id="2501953888035679275">Take photos and record videos with your camera.</translation>
 <translation id="2549985041256363841">Start recording</translation>
 <translation id="2599796128805996109">Back camera</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> is plugged in.</translation>
 <translation id="2912439424121107408">Expert mode is not supported on this device</translation>
 <translation id="2968794441791257519">Photos and videos taken with the camera will be moved to the Downloads folder. You can access them in Files.
 

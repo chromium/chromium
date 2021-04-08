@@ -1027,6 +1027,7 @@
 <translation id="211144231511833662">Избриши ги типовите</translation>
 <translation id="2111670510994270194">Нова картичка надесно</translation>
 <translation id="2111810003053064883">Огласувачите може да ја проучуваат ефикасноста на рекламите на начин што не ве следи на сајтовите.</translation>
+<translation id="2112554630428445878">Добре дојдовте, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Прикачи картичка</translation>
 <translation id="2113479184312716848">Отвори &amp;датотека...</translation>
 <translation id="2113921862428609753">Пристап до информации на орган</translation>
@@ -1971,7 +1972,6 @@
 <translation id="313205617302240621">Ја заборавивте лозинката?</translation>
 <translation id="3132277757485842847">Не можевме да ја одржиме врската со вашиот телефон. Проверете дали телефонот е во близина, отклучен и со вклучени Bluetooth и Wi-Fi.</translation>
 <translation id="3132996321662585180">Освежувај дневно</translation>
-<translation id="3134393957315651797">Изберете состојба на експериментот за <ph name="EXPERIMENT_NAME" />. Опис на експериментот: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Погрешен PIN. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="313963229645891001">Преземање, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Стандарден жолт аватар</translation>
@@ -2644,6 +2644,7 @@
 <translation id="3881478300875776315">Прикажи помалку редови</translation>
 <translation id="3882165008614329320">Постојно видео од камера или датотека</translation>
 <translation id="3884152383786131369">Содржините од интернет што се достапни на повеќе јазици ќе го користат првиот поддржан јазик од списоков. Поставкиве се синхронизираат со поставките за прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Вашиот администратор управува со ажурирањата</translation>
 <translation id="3886446263141354045">Вашето барање за пристап на сајтов е испратено на <ph name="NAME" />.</translation>
 <translation id="3888550877729210209">Прибележување со <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Овие информации ни помагаат подобро да го разбереме вашиот проблем со „Помошникот“. Се чуваат до 90 дена, а пристапот до нив е ограничен на соодветните инженерски тимови и тимови за повратни информации.</translation>
@@ -3212,7 +3213,7 @@
 <translation id="4545759655004063573">Не може да се зачува поради недоволно дозволи. Зачувајте на друга локација.</translation>
 <translation id="4546308221697447294">Прелистувајте брзо со Google Chrome</translation>
 <translation id="4546345569117159016">Десно копче</translation>
-<translation id="4546692474302123343">Гласовен запис на „Помошникот на Google“</translation>
+<translation id="4546692474302123343">Гласовно внесување на „Помошникот на Google“</translation>
 <translation id="4547659257713117923">Нема картички од други уреди</translation>
 <translation id="4547672827276975204">Постави автоматски</translation>
 <translation id="4549791035683739768">Вашиот безбедносен клуч нема складирани отпечатоци</translation>
@@ -6402,7 +6403,6 @@
 <translation id="8147900440966275470">Најдена е <ph name="NUM" /> картичка</translation>
 <translation id="8148760431881541277">Ограничи најавување</translation>
 <translation id="8149564499626272569">Потврдете преку телефонот со USB-кабел</translation>
-<translation id="8150259863378108853">Lacros е експериментален прелистувач. Ако наидете на проблем, пријавете го во „Помош &gt; Пријавате проблем…“</translation>
 <translation id="8151638057146502721">Конфигурирај</translation>
 <translation id="8154790740888707867">Нема датотека</translation>
 <translation id="815491593104042026">Уф! Автентикацијата не успеа затоа што била конфигурирана да користи небезбеден URL (<ph name="BLOCKED_URL" />). Контактирајте со администраторот.</translation>
@@ -6616,7 +6616,6 @@
 <translation id="8398877366907290961">Сепак продолжи</translation>
 <translation id="8400146488506985033">Управувај со луѓе</translation>
 <translation id="8401432541486058167">Наведете го PIN-кодот што е поврзан со вашата паметна картичка.</translation>
-<translation id="8403562727702715619">Неодамна од Google Drive</translation>
 <translation id="8405046151008197676">Дознајте ги најдобрите карактеристики од најновото ажурирање</translation>
 <translation id="8407199357649073301">Ниво на евиденција:</translation>
 <translation id="8408068190360279472">Мрежа со <ph name="NETWORK_TYPE" />, се поврзува</translation>

@@ -422,6 +422,7 @@
 <translation id="5489208564673669003">Вы можете <ph name="BEGIN_LINK" />настроить файлы cookie<ph name="END_LINK" /> для разных сайтов.</translation>
 <translation id="5490005495580364134">Блокировать все файлы cookie (не рекомендуется)</translation>
 <translation id="5508435575041083207">Выйти из аккаунта и удалить данные с этого устройства</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> ч. назад</translation>
 <translation id="5525269841082836315">Создание код. фразы</translation>
 <translation id="5548760955356983418">Функция Handoff позволит начать просмотр веб-сайта на одном устройстве и продолжить на другом. Открытый сайт появится на панели Dock вашего компьютера Mac.
 
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">Создать QR-код</translation>
 <translation id="9157836665414082580">Блокировать диалоговые окна</translation>
 <translation id="9188680907066685419">Выход из управляемого аккаунта</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> дн. назад</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Отчет отправлен</translation>
 <translation id="952704832371081537">Отмена</translation>

@@ -86,7 +86,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> चयन गरियो</translation>
 <translation id="1740468249224277719">स्थापना गर्न डबल ट्याप गर्नुहोस्।</translation>
 <translation id="1746815479209538200">वेब ब्राउज गर्न कुनै नयाँ ट्याब थप्नुहोस्।</translation>
-<translation id="1752547299766512813">पासवर्डहरू सुरक्षित गर्नुहोस्</translation>
+<translation id="1752547299766512813">पासवर्डहरू सेभ गर्नुहोस्</translation>
 <translation id="1753905327828125965">धेरै भ्रमण गरिएको</translation>
 <translation id="1803264062614276815">कार्डवालाको नाम</translation>
 <translation id="1809939268435598390">फोल्डर मेटाउनुहोस्</translation>
@@ -202,7 +202,7 @@
 <translation id="3081338492074632642">तपाईंले सुरक्षित गर्न लाग्नुभएको पासवर्ड तपाईंको <ph name="WEBSITE" /> को पासवर्डसँग मेल खान्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="3112556859945124369">चिन्ह लगाउनुहोस्…</translation>
 <translation id="3131206671572504478">सबै ब्लक गर्नुहोस्</translation>
-<translation id="3153862085237805241">कार्ड सुरक्षित गर्नुहोस्</translation>
+<translation id="3153862085237805241">कार्ड सेभ गर्नुहोस्</translation>
 <translation id="3157684681743766797">सबैलाई चिन्ह लगाउनुहोस्…</translation>
 <translation id="3161291298470460782">यस कार्यले तपाईंलाई साइन आउट गराउने छ, सिंक गर्ने सुविधा निष्क्रिय पार्ने छ र यो यन्त्रबाट Chrome का सबै डेटा मेटाउने छ। सिंक भएको तपाईंको डेटा तपाईंको Google खातामा रहिरहने छ।</translation>
 <translation id="3169472444629675720">पत्ता लगाउनुहोस्</translation>
@@ -271,7 +271,7 @@
 <translation id="3771033907050503522">इन्कग्निटो ट्याबहरू</translation>
 <translation id="3775743491439407556">सिंक गर्ने सुविधाले काम गरिरहेको छैन</translation>
 <translation id="3779810277399252432">कुनै इन्टरनेट जडान छैन</translation>
-<translation id="3783017676699494206">छवि सुरक्षित गर्नुहोस्</translation>
+<translation id="3783017676699494206">छवि सेभ गर्नुहोस्</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
 <translation id="3803696231112616155">यो साइट अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
@@ -344,7 +344,7 @@
 <translation id="4636930964841734540">जानकारी</translation>
 <translation id="4659126640776004816">तपाईंले आफ्नो Google खातामा साइन इन गर्दा यो सुविधा सक्रिय गरिन्छ।</translation>
 <translation id="4659667755519643272">ट्याब स्विचर प्रविष्टि गर्नुहोस्</translation>
-<translation id="46614316059270592">पासवर्ड सुरक्षित गर्नुहोस्</translation>
+<translation id="46614316059270592">पासवर्ड सेभ गर्नुहोस्</translation>
 <translation id="4666531726415300315"><ph name="EMAIL" /> को रूपमा साइन इन गरिएको छ।
 
 तपाईँको डेटालाई तपाईँको सिंकको पासफ्रेजमार्फत इन्क्रिप्ट गरिएको छ। सिंक सुरु गर्न त्यो पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
@@ -371,7 +371,7 @@
 <translation id="4860895144060829044">कल गर्नुहोस्</translation>
 <translation id="4872323082491632254">पासवर्डहरू जाँच्नुहोस्</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
-<translation id="4901778704868714008">सुरक्षित गर्नुहोस्...</translation>
+<translation id="4901778704868714008">सेभ गर्नुहोस्...</translation>
 <translation id="4904877109095351937">पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="4908869848243824489">Google को Discover</translation>
 <translation id="4930268273022498155">विद्यमान डेटा मेट्नुहोस्। तपाईं फेरि <ph name="USER_EMAIL1" /> मा बदलेर त्यो डेटा प्राप्त गर्न सक्नुहुन्छ।</translation>
@@ -428,7 +428,7 @@
 <translation id="5551897871312988470">अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> को खातामा सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
-<translation id="5614553682702429503">पासवर्ड सुरक्षित गर्नुहोस्</translation>
+<translation id="5614553682702429503">पासवर्ड सेभ गर्नुहोस्</translation>
 <translation id="5626245204502895507">यस समयमा फाइल डाउनलोड गर्न सकिदैन।</translation>
 <translation id="5631164295104953411">भुक्तानी विधि थप्नुहोस्‌</translation>
 <translation id="5653058065071344726">तपाईंको सङ्गठनले व्यवस्थापन गरेको। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -689,7 +689,7 @@
 <translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>
 <translation id="8023878949384262191">खण्ड विस्तार गर्छ</translation>
 <translation id="8027581147000338959">नयाँ विन्डोमा खोल्नुहोस्</translation>
-<translation id="804427445359061970">तपाईंका अन्य यन्त्रका ट्याबहरू यहाँ देखिने छन्</translation>
+<translation id="804427445359061970">तपाईंका अन्य डिभाइसका ट्याबहरू यहाँ देखिने छन्</translation>
 <translation id="8059533439631660104">खण्ड संक्षिप्त गर्छ।</translation>
 <translation id="8065292699993359127">URL हरू Chrome को इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
 <translation id="806745655614357130">मेरो डेटा अलग राख्नुहोस्</translation>
@@ -707,6 +707,7 @@
 <translation id="8225985093977202398">क्यास गरिएका छवि र फाइलहरू</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8281781826761538115">पूर्वनिर्धारित - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">सेट गर्नुहोस्…</translation>
 <translation id="8299417921174340354">पासवर्डहरू प्रयोग गर्न सर्वप्रथम तपाईंले आफ्नो यन्त्रमा अनिवार्य रूपमा कुनै पासकोड सेट गर्नु पर्छ।</translation>
 <translation id="8319076807703933069">नयाँ खोज</translation>
 <translation id="8323906514956095947">ट्याबसम्बन्धी थप विकल्पहरू हेर्न टच एण्ड होल्ड गर्नुहोस्</translation>
@@ -721,7 +722,7 @@
 <translation id="8459333855531264009">सुरक्षित छैन</translation>
 <translation id="8487667956631253959">सक्रिय</translation>
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>
-<translation id="8490978609246021741">परिवर्तनहरू सुरक्षित गर्नुहोस्</translation>
+<translation id="8490978609246021741">परिवर्तनहरू सेभ गर्नुहोस्</translation>
 <translation id="8495097701594799854">तपाईंको सङ्गठनले यो सुविधा अफ गरेको छ।</translation>
 <translation id="8503813439785031346">एक-पटके पाठ सन्देश</translation>
 <translation id="850600235656508448">इन्कोग्निटोमा खोल्नुहोस्</translation>

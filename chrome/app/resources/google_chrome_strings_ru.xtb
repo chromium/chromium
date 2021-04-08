@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome (бета)</translation>
 <translation id="1399397803214730675">На компьютере уже установлена последняя версия браузера Google Chrome. Если он не работает, удалите его и установите снова.</translation>
 <translation id="1434626383986940139">Приложения Chrome Canary</translation>
+<translation id="1507198376417198979">Настройте новый профиль Chrome</translation>
 <translation id="1516530951338665275">Чтобы продолжить подключение, предоставьте браузеру Google Chrome доступ к Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
 <translation id="1583073672411044740">Пользователь <ph name="EXISTING_USER" /> уже вошел в профиль Chrome. Вы можете создать новый профиль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -209,6 +210,7 @@
 <translation id="6943584222992551122">Данные о работе этого пользователя в браузере будут удалены с устройства. Чтобы восстановить их, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Разрешить в Google Chrome (бета) передачу входящего трафика по протоколу mDNS</translation>
 <translation id="6989339256997917931">Google Chrome был обновлен, однако вы не использовали его в течение последних 30 дней.</translation>
+<translation id="7025800014283535195">Здесь можно переключиться на другой профиль Chrome</translation>
 <translation id="7062128746136194023">Родители отключили в Chrome параметр "Разрешения для сайтов, приложений и расширений". Добавлять это <ph name="EXTENSION_TYPE_PARAMETER" /> запрещено.</translation>
 <translation id="7098166902387133879">Google Chrome использует микрофон.</translation>
 <translation id="7106741999175697885">Диспетчер задач - Google Chrome</translation>
@@ -286,4 +288,5 @@
 <translation id="922152298093051471">Настроить</translation>
 <translation id="940313311831216333">Чтобы получить доступ к данным в Chrome на всех своих устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="989369509083708165">Google Chrome используется как браузер по умолчанию</translation>
+<translation id="989816563149873169">Переключиться на другой профиль Chrome можно с помощью сочетания клавиш <ph name="SHORTCUT" /></translation>
 </translationbundle>

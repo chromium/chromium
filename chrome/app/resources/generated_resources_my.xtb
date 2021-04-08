@@ -1971,7 +1971,6 @@
 <translation id="313205617302240621">စကားဝှက်မေ့နေပါသလား?</translation>
 <translation id="3132277757485842847">သင့်ဖုန်းနှင့် ချိတ်ဆက်ထား၍မရပါ။ သင့်ဖုန်းသည် အနီးတွင်ရှိပြီး လော့ခ်ဖွင့်ထားကာ ဘလူးတုသ်နှင့် Wi-Fi ဖွင့်ထားကြောင်း သေချာပါစေ။</translation>
 <translation id="3132996321662585180">နေ့စဉ် ပြန်လည် စတင်ရန်</translation>
-<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> စမ်းသပ်မှုအတွက် စမ်းသပ်မှုအခြေအနေကို ရွေးပါ။ စမ်းသပ်မှု ဖော်ပြချက်- <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">ပင်နံပါတ် မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="313963229645891001">ဒေါင်းလုဒ်လုပ်နေသည်၊ <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">မူရင်းအဝါရောင်ချန်နယ်ပုံ</translation>
@@ -6399,7 +6398,6 @@
 <translation id="8147900440966275470">တဘ် <ph name="NUM" /> ခု တွေ့သည်</translation>
 <translation id="8148760431881541277">လက်မှတ်ထိုးဝင်မှု ကန့်သတ်ရန်</translation>
 <translation id="8149564499626272569">USB ကြိုးဖြင့် သင့်ဖုန်းကို စိစစ်ရန်</translation>
-<translation id="8150259863378108853">Lacros သည် စမ်းသပ်ဘရောင်ဇာ ဖြစ်သည်။ ပြဿနာများရှိပါက သတင်းပို့ရန် 'အကူအညီ' &gt; "ပြဿနာ တိုင်ကြားရန်..." သို့သွားပါ</translation>
 <translation id="8151638057146502721">ပြုပြင်</translation>
 <translation id="8154790740888707867">ဖိုင်  မရှိ</translation>
 <translation id="815491593104042026">အူးပ်စ်! အထောက်အထား စိစစ်မှုမှာ မလုံခြုံသော URL (<ph name="BLOCKED_URL" />) ကို အသုံးပြုရန် စီစဉ်ထားခဲ့၍ မအောင်မြင်ခဲ့ပါ။ ကျေးဇူးပြုပြီး သင်၏ စီမံအုပ်ချုပ်သူကို ဆက်သွယ်ပါ။</translation>
@@ -6610,7 +6608,6 @@
 <translation id="8398877366907290961">မည်သို့ပင် ဖြစ်စေ ရှေ့ဆက်မည်</translation>
 <translation id="8400146488506985033">လူများကို စီမံခန့်ခွဲပါ</translation>
 <translation id="8401432541486058167">သင့်အဆင့်မြင့်ကတ်နှင့် ဆက်စပ်နေသော ပင်နံပါတ်ကို ပေးပါ။</translation>
-<translation id="8403562727702715619">Google Drive မှ မကြာသေးမီကအရာများ</translation>
 <translation id="8405046151008197676">နောက်ဆုံးထွက် အပ်ဒိတ်မှ အထူးအသားပေးများကို ရယူပါ</translation>
 <translation id="8407199357649073301">မှတ်တမ်းအဆင့်-</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ကွန်ရက်၊ ချိတ်ဆက်နေသည်</translation>

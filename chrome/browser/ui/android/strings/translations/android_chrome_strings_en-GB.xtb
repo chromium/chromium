@@ -238,7 +238,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items deleted</translation>
 <translation id="2536728043171574184">Viewing an offline copy of this page</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
-<translation id="2549341709325358884">Only Wi-Fi and mobile data</translation>
 <translation id="2561519700418191927">Video previews</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2571711316400087311">Offer to send pages in other languages to Google Translate</translation>
@@ -752,6 +751,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5982307838673692400">Open an Incognito tab</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6000203700195075278">Refollow</translation>
+<translation id="6002623704405939939">To clear <ph name="BEGIN_LINK1" />search<ph name="END_LINK1" /> or other forms of history, visit <ph name="BEGIN_LINK2" />My Google activity<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Suggested password</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Jump to the next tab</translation>
@@ -925,6 +925,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7088681679121566888">Chrome is up to date</translation>
 <translation id="7106762743910369165">Your browser is managed by your organisation</translation>
 <translation id="7121362699166175603">Clears history and auto-completions in the address bar. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="7134993907760847334">Clears history from all signed-in devices.</translation>
 <translation id="7138678301420049075">Other</translation>
 <translation id="7146622961999026732">These sites and apps seem important to you:</translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>

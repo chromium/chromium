@@ -422,6 +422,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5489208564673669003">To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Block all cookies (not recommended)</translation>
 <translation id="5508435575041083207">Sign out and clear data from this device</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> h ago</translation>
 <translation id="5525269841082836315">Create passphrase</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
@@ -787,6 +788,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9152539721251340337">Create a QR code</translation>
 <translation id="9157836665414082580">Suppress dialogues</translation>
 <translation id="9188680907066685419">Sign out of managed account</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> d ago</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Crash report sent.</translation>
 <translation id="952704832371081537">Cancel</translation>

@@ -238,7 +238,6 @@
 <translation id="2534155362429831547">Изтрихте <ph name="NUMBER_OF_ITEMS" /> елемента</translation>
 <translation id="2536728043171574184">Преглеждате офлайн копие на страницата</translation>
 <translation id="2546283357679194313">„Бисквитки“ и данни за сайтове</translation>
-<translation id="2549341709325358884">Само при Wi-Fi и мобилни данни</translation>
 <translation id="2561519700418191927">Визуализиране на видеоклипове</translation>
 <translation id="2567385386134582609">ИЗОБРАЖЕНИЕ</translation>
 <translation id="2571711316400087311">Извеждане на предложения за изпращане на страниците, написани на други езици, до Google Преводач</translation>
@@ -752,6 +751,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5982307838673692400">Отваряне на раздел в режим „инкогнито“</translation>
 <translation id="6000066717592683814">Запазване на Google</translation>
 <translation id="6000203700195075278">Повторно следене</translation>
+<translation id="6002623704405939939">За да изчистите историята на <ph name="BEGIN_LINK1" />търсенията<ph name="END_LINK1" /> или друг вид история, посетете <ph name="BEGIN_LINK2" />Моята активност в Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Предложена парола</translation>
 <translation id="6036057147555329831">допълнителният ICU модул</translation>
 <translation id="6039379616847168523">Преминаване към следващия раздел</translation>
@@ -925,6 +925,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7088681679121566888">Chrome е актуален</translation>
 <translation id="7106762743910369165">Браузърът се управлява от организацията ви</translation>
 <translation id="7121362699166175603">Изчиства историята и автоматичните довършвания в адресната лента. В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="7134993907760847334">Изчиства историята от всички устройства, на които сте влезли в профила си.</translation>
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7146622961999026732">Тези сайтове и приложения изглеждат важни за вас:</translation>
 <translation id="7149893636342594995">Последните 24 часа</translation>

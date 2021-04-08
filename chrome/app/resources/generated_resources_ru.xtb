@@ -1028,6 +1028,7 @@
 <translation id="211144231511833662">Снять флажки типов</translation>
 <translation id="2111670510994270194">Новая вкладка справа</translation>
 <translation id="2111810003053064883">Рекламодатели смогут оценивать эффективность рекламных объявлений, не отслеживая ваши действия в интернете.</translation>
+<translation id="2112554630428445878">Здравствуйте, <ph name="USERNAME" />!</translation>
 <translation id="21133533946938348">Закрепить вкладку</translation>
 <translation id="2113479184312716848">Открыть &amp;файл...</translation>
 <translation id="2113921862428609753">Доступ к информации о полномочиях</translation>
@@ -1971,7 +1972,6 @@
 <translation id="313205617302240621">Забыли пароль?</translation>
 <translation id="3132277757485842847">Не удалось сохранить подключение к телефону. Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="3132996321662585180">Обновлять ежедневно</translation>
-<translation id="3134393957315651797">Выберите состояние для эксперимента "<ph name="EXPERIMENT_NAME" />". Описание эксперимента: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3138624403379688522">Недействительный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Скачивание: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Аватар по умолчанию (желтый)</translation>
@@ -2644,6 +2644,7 @@
 <translation id="3881478300875776315">Показать меньше строк</translation>
 <translation id="3882165008614329320">Видео с камеры или из файла</translation>
 <translation id="3884152383786131369">Для веб-контента, доступного на нескольких языках, будет использоваться первый подходящий вариант из списка ниже. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Обновлениями управляет администратор</translation>
 <translation id="3886446263141354045">Ваш запрос на доступ к сайту отправлен пользователю <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Заметки в приложении "<ph name="LOCK_SCREEN_APP_NAME" />"</translation>
 <translation id="3888586133700543064">Эта информация поможет нам понять, в чем причина возникшей неполадки в работе Ассистента. Данные хранятся до 90 дней. Доступ к ним есть только у разработчиков и специалистов по работе с отзывами.</translation>
@@ -6402,7 +6403,6 @@
 <translation id="8147900440966275470">Найдена <ph name="NUM" /> вкладка</translation>
 <translation id="8148760431881541277">Ограничение на вход</translation>
 <translation id="8149564499626272569">Подтвердить с помощью телефона, подключенного через USB-кабель</translation>
-<translation id="8150259863378108853">Lacros – экспериментальный браузер. Чтобы сообщить о проблемах, связанных с ним, нажмите "Справка &gt; Сообщить о проблеме".</translation>
 <translation id="8151638057146502721">Настроить</translation>
 <translation id="8154790740888707867">Файлы отсутствуют</translation>
 <translation id="815491593104042026">Не удалось выполнить авторизацию, так как обнаружен небезопасный URL (<ph name="BLOCKED_URL" />). Обратитесь к администратору.</translation>
@@ -6613,7 +6613,6 @@
 <translation id="8398877366907290961">Продолжить все равно</translation>
 <translation id="8400146488506985033">Управлять пользователями</translation>
 <translation id="8401432541486058167">Укажите PIN-код, связанный с вашей смарт-картой.</translation>
-<translation id="8403562727702715619">Недавнее из Google Диска</translation>
 <translation id="8405046151008197676">Изучите основную информацию о последнем обновлении.</translation>
 <translation id="8407199357649073301">Уровень:</translation>
 <translation id="8408068190360279472">Сеть <ph name="NETWORK_TYPE" />, подключение</translation>

@@ -1970,7 +1970,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="313205617302240621">Сырсөздү унутуп калдыңызбы?</translation>
 <translation id="3132277757485842847">Телефонуңузга туташпай калды. Телефонуңуз жакын жерде турганын жана анын кулпусу ачык болуп, Bluetooth менен Wi-Fi күйгүзүлгөнүн текшериңиз.</translation>
 <translation id="3132996321662585180">Күндө жаңыртылсын</translation>
-<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> тажрыйбасы үчүн абалды тандаңыз. Тажрыйбанын сүрөттөмөсү: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN код жараксыз. Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="313963229645891001">Жүктөлүп алынууда, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Демейки сары аватар</translation>
@@ -6401,7 +6400,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8147900440966275470"><ph name="NUM" /> өтмөк табылды</translation>
 <translation id="8148760431881541277">Кирүүнү чектөө</translation>
 <translation id="8149564499626272569">Телефонуңузду USB кабель менен туташтырып көрүңүз</translation>
-<translation id="8150259863378108853">Lacros cерепчиси учурда сыналууда. Көйгөйлөрдү кабарлоо үчүн Жардам &gt; "Көйгөйдү кабарлоо..." бөлүмүнө өтүңүз</translation>
 <translation id="8151638057146502721">Конфигурациялоо</translation>
 <translation id="8154790740888707867">Файл жок</translation>
 <translation id="815491593104042026">Ой! Кооптуу URL дареги (<ph name="BLOCKED_URL" />) колдонулуп жаткандыктан, аныктыктыгы текшерилбей калды. Администраторуңузга кайрылыңыз.</translation>
@@ -6612,7 +6610,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8398877366907290961">Баары бир улантуу</translation>
 <translation id="8400146488506985033">Байланыштарды башкаруу</translation>
 <translation id="8401432541486058167">Акылдуу картаңыз менен байланышкан PIN кодду киргизиңиз.</translation>
-<translation id="8403562727702715619">Google Drive'дагы акыркы файлдар</translation>
 <translation id="8405046151008197676">Акыркы жаңыртуу жөнүндө маалымат алыңыз</translation>
 <translation id="8407199357649073301">Таржымалдын деңгээли:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> тармагы, туташууда</translation>

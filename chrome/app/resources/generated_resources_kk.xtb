@@ -1967,7 +1967,6 @@
 <translation id="313205617302240621">Құпия сөзді ұмытып қалдыңыз ба?</translation>
 <translation id="3132277757485842847">Телефоныңызбен байланыс орнату мүмкін болмады. Телефоныңыз жаныңызда, құлпы ашық және Bluetooth бен Wi-Fi қосылып тұруы керек.</translation>
 <translation id="3132996321662585180">Күнделікті жаңарту</translation>
-<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> экспериментінің күйін таңдаңыз. Эксперименттің сипаттамасы: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3138624403379688522">PIN коды жарамсыз. <ph name="RETRIES" /> әрекет қалды.</translation>
 <translation id="313963229645891001">Жүктеп алынуда, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Әдепкі сары түсті аватар</translation>
@@ -6398,7 +6397,6 @@
 <translation id="8147900440966275470"><ph name="NUM" /> қойынды табылды.</translation>
 <translation id="8148760431881541277">Кіруді шектеу</translation>
 <translation id="8149564499626272569">USB кабелімен қосылған телефоныңыз арқылы растау</translation>
-<translation id="8150259863378108853">Lacros – эксперименттік браузер. Ондағы кез келген ақауды "Анықтама &gt; Ақау туралы хабарлау" тармағынан көрсетіңіз.</translation>
 <translation id="8151638057146502721">Конфигурациялау</translation>
 <translation id="8154790740888707867">Файл жоқ</translation>
 <translation id="815491593104042026">Аутентификация сәтсіз аяқталды, себебі ол қауіпсіз емес URL (<ph name="BLOCKED_URL" />) пайдалануға конфигурацияланған. Әкімшіңізге хабарласыңыз.</translation>
@@ -6609,7 +6607,6 @@
 <translation id="8398877366907290961">Бәрібір жалғастыру</translation>
 <translation id="8400146488506985033">Адамдарды басқару</translation>
 <translation id="8401432541486058167">Смарт картаңызбен байланыстырылған PIN кодын көрсетіңіз.</translation>
-<translation id="8403562727702715619">Жақында шыққан Google Drive мүмкіндіктері</translation>
 <translation id="8405046151008197676">Ең соңғы нұсқаға қатысты негізгі ақпарат алыңыз.</translation>
 <translation id="8407199357649073301">Журнал деңгейі:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> желісі, жалғануда</translation>

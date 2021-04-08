@@ -18,6 +18,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Овој компјутер веќе има најнова верзија на Google Chrome. Доколку софтверот не работи, деинсталирајте го Google Chrome и обидете се повторно.</translation>
 <translation id="1434626383986940139">Апликации на Chrome Canary</translation>
+<translation id="1507198376417198979">Приспособете го вашиот нов профил на Chrome</translation>
 <translation id="1516530951338665275">Google Chrome бара пристап до Bluetooth за да продолжи со 
  спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
@@ -219,6 +220,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6943584222992551122">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Дојдовно правило за Google Chrome Beta за овозможување mDNS-сообраќај.</translation>
 <translation id="6989339256997917931">Google Chrome се ажурираше, но не сте го употребиле најмалку 30 дена.</translation>
+<translation id="7025800014283535195">Може да се префрлате помеѓу профилите на Chrome тука</translation>
 <translation id="7062128746136194023">Родителот ги исклучил „Дозволите за сајтови, апликации и екстензии“ за Chrome. Не е дозволено додавањето на оваа <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome го користи вашиот микрофон.</translation>
 <translation id="7106741999175697885">Управник со задачи - Google Chrome</translation>
@@ -296,4 +298,5 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="922152298093051471">Приспособете го Chrome</translation>
 <translation id="940313311831216333">За да пристапувате до вашите работи на Chrome на сите уреди, најавете се и вклучете ја синхронизацијата.</translation>
 <translation id="989369509083708165">Google Chrome е вашиот стандарден прелистувач</translation>
+<translation id="989816563149873169">Со <ph name="SHORTCUT" /> се менуваат профили на Chrome</translation>
 </translationbundle>

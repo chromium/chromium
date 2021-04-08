@@ -1963,7 +1963,6 @@
 <translation id="313205617302240621">ପାସ୍‍ୱାର୍ଡ ଭୁଲି ଯାଇଛନ୍ତି କି?</translation>
 <translation id="3132277757485842847">ଆମେ ଆପଣଙ୍କ ଫୋନ୍ ସହ ଏକ ସଂଯୋଗ ଜାରି ରଖିବାରେ ଅସମର୍ଥ ହେଲୁ। ଆପଣଙ୍କ ଫୋନ୍ ନିକଟରେ ଅଛି, ଅନଲକ୍ କରାଯାଇଛି ଏବଂ ସେଥିରେ ବ୍ଲୁଟୁଥ୍ ଏବଂ ୱାଇ-ଫାଇ ଚାଲୁ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="3132996321662585180">ଦୈନିକ ରିଫ୍ରେସ୍ କରନ୍ତୁ</translation>
-<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> ପରୀକ୍ଷଣ ପାଇଁ ପରୀକ୍ଷଣର ସ୍ଥିତି ଚୟନ କରନ୍ତୁ। ପରୀକ୍ଷଣର ବର୍ଣ୍ଣନା: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">ଅବୈଧ PIN। ଆପଣଙ୍କ ପାଖରେ <ph name="RETRIES" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି।</translation>
 <translation id="313963229645891001">ଡାଉନ୍‌ଲୋଡ୍‌ ହେଉଛି, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ଡିଫଲ୍ଟ ହଳଦିଆ ଅବତାର</translation>
@@ -6393,7 +6392,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8147900440966275470"><ph name="NUM" />ଟି ଟାବ୍ ମିଳିଲା</translation>
 <translation id="8148760431881541277">ସାଇନ୍-ଇନ୍ ସୀମିତ କରନ୍ତୁ</translation>
 <translation id="8149564499626272569">ଏକ USB କେବୁଲ୍ ସହ ଆପଣଙ୍କ ଫୋନ୍ ମାଧ୍ୟମରେ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
-<translation id="8150259863378108853">Lacros ଏକ ପରୀକ୍ଷାମୂଳକ ବ୍ରାଉଜର୍ ଅଟେ। ଦୟାକରି ଯେ କୌଣସି ସମସ୍ୟା ବିଷୟରେ ସହାୟତା &gt; "ଏକ ସମସ୍ୟା ବିଷୟରେ ରିପୋର୍ଟ କରନ୍ତୁ..."ରେ ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="8151638057146502721">କନ୍‍ଫିଗର୍ କରନ୍ତୁ</translation>
 <translation id="8154790740888707867">କୌଣସି ଫାଇଲ୍‌ ନାହିଁ</translation>
 <translation id="815491593104042026">ଓହୋ!  ପ୍ରାମାଣିକତା ବିଫଳ ହେଲା କାରଣ ଗୋଟିଏ ଅସୁରକ୍ଷିତ URLକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଏହାକୁ କନଫିଗର୍ କରାଯାଇଥିଲା (<ph name="BLOCKED_URL" />)। ଦୟାକରି ନିଜର ବ୍ୟବସ୍ଥାପକଙ୍କ ସହିତ ସମ୍ପର୍କ କରନ୍ତୁ।</translation>
@@ -6604,7 +6602,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8398877366907290961">ଯେକୌଣସି ପ୍ରକାରେ ଆଗେଇ ଚାଲନ୍ତୁ</translation>
 <translation id="8400146488506985033">ଲୋକମାନଙ୍କୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8401432541486058167">ଆପଣଙ୍କର ସ୍ମାର୍ଟ କାର୍ଡ ସହିତ ସମ୍ବନ୍ଧିତ ଥିବା PIN ପ୍ରଦାନ କରନ୍ତୁ।</translation>
-<translation id="8403562727702715619">ବର୍ତ୍ତମାନ Google Driveରୁ</translation>
 <translation id="8405046151008197676">ନବୀନତମ ଅପ୍‌ଡେଟ୍‍ରୁ ହାଇଲାଇଟ୍ସ ପାଆନ୍ତୁ</translation>
 <translation id="8407199357649073301">ଲଗ୍ ଲେବଲ୍:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ନେଟ୍‍ୱାର୍କ, ସଂଯୁକ୍ତ ହେଉଛି</translation>

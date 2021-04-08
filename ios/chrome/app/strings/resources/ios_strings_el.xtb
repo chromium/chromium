@@ -422,6 +422,7 @@
 <translation id="5489208564673669003">Για να διαχειριστείτε τα cookie για όλους τους ιστοτόπους, ανατρέξτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Αποκλεισμός όλων των cookie (δεν συνιστάται)</translation>
 <translation id="5508435575041083207">Αποσύνδεση και διαγραφή δεδομένων από αυτήν τη συσκευή</translation>
+<translation id="5513681519188741830">Πριν <ph name="TIME" /> ω.</translation>
 <translation id="5525269841082836315">Δημ. φράσης πρόσβ.</translation>
 <translation id="5548760955356983418">Το Handoff σάς δίνει τη δυνατότητα να ξεκινήσετε την περιήγηση σε έναν ιστότοπο σε αυτήν τη συσκευή και, στη συνέχεια, να συνεχίσετε εύκολα σε Mac. Ο ιστότοπος που είναι ανοικτός αυτήν τη στιγμή θα εμφανίζεται στο Dock του Mac.
 
@@ -788,6 +789,7 @@
 <translation id="9152539721251340337">Δημιουργία κωδικού QR</translation>
 <translation id="9157836665414082580">Απόκρυψη παραθύρων διαλόγου</translation>
 <translation id="9188680907066685419">Αποσύνδεση από διαχειριζόμενο λογαριασμό</translation>
+<translation id="9200875785104711666">Πριν από <ph name="TIME" /> ημ.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Η αναφορά σφάλματος εστάλη.</translation>
 <translation id="952704832371081537">Ακύρωση</translation>

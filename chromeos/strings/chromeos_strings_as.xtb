@@ -95,6 +95,7 @@
 <translation id="3226405216343213872">স্কেনাৰ বিচাৰি থকা হৈছে</translation>
 <translation id="3246869037381808805">১ দিনতকৈ পুৰণি প্ৰিণ্ট কাৰ্যসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="3268178239013324452">বিফল হৈছে - দুৱাৰ খোল খাই আছে</translation>
+<translation id="3283504360622356314">{0,plural, =1{ফাইল সম্পাদনা কৰক}one{ফাইলসমূহ সম্পাদনা কৰক}other{ফাইলসমূহ সম্পাদনা কৰক}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> গিগাহাৰ্টজ</translation>
 <translation id="3310640316857623290">DNSৰ বিলম্বতা যথেষ্ট পৰিমাণে অনুমতি দিয়া সীমাতকৈ ওপৰত আছে</translation>
 <translation id="3328783797891415197">পৰীক্ষা চলি আছে</translation>
@@ -272,7 +273,6 @@
 <translation id="6766275201586212568">DNSৰ সমাধান বিফল হৈছে</translation>
 <translation id="6768237774506518020">DNSৰ সমাধান বিফল হোৱাৰ হাৰ উচ্চ</translation>
 <translation id="6853312040151791195">চাৰ্জ খৰচ হোৱাৰ হাৰ</translation>
-<translation id="6898743098396957679">স্কেনিং সম্পূৰ্ণ কৰিব পৰা নগ’ল</translation>
 <translation id="6911383237894364323">মিডিয়া ছাৰ্ভাৰৰ সৈতে সংযোগ কৰিব পৰা নগ’ল</translation>
 <translation id="6957231940976260713">সেৱাৰ নাম</translation>
 <translation id="6977381486153291903">ফাৰ্মৱেৰৰ পুনৰীক্ষণ</translation>

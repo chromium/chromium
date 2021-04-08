@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Auf diesem Computer befindet sich bereits eine neuere Version von Google Chrome. Falls die Software nicht funktioniert, deinstallieren Sie Google Chrome und versuchen Sie es erneut.</translation>
 <translation id="1434626383986940139">Chrome Canary-Apps</translation>
+<translation id="1507198376417198979">Personalisieren Sie Ihr neues Chrome-Profil</translation>
 <translation id="1516530951338665275">Google Chrome benötigt Zugriff auf Bluetooth, um mit der Koppelung 
  fortzufahren. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome aktualisieren</translation>
@@ -210,6 +211,7 @@
 <translation id="6943584222992551122">Die Browserdaten dieser Person werden von diesem Gerät gelöscht. Um die Daten wiederherzustellen, melden Sie sich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="6967962315388095737">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Beta.</translation>
 <translation id="6989339256997917931">Google Chrome wurde aktualisiert, Sie haben den Browser jedoch mindestens 30 Tage nicht verwendet.</translation>
+<translation id="7025800014283535195">Hier können Sie zwischen Chrome-Profilen wechseln</translation>
 <translation id="7062128746136194023">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chrome deaktiviert. Das Hinzufügen dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>
 <translation id="7098166902387133879">Google Chrome verwendet Ihr Mikrofon.</translation>
 <translation id="7106741999175697885">Task-Manager - Google Chrome</translation>
@@ -287,4 +289,5 @@
 <translation id="922152298093051471">Chrome anpassen</translation>
 <translation id="940313311831216333">Wenn Sie auf allen Ihren Geräten auf Ihre Chrome-Inhalte zugreifen möchten, melden Sie sich an und aktivieren Sie die Synchronisierung.</translation>
 <translation id="989369509083708165">Google Chrome ist Ihr Standardbrowser</translation>
+<translation id="989816563149873169">Mit <ph name="SHORTCUT" /> kann zwischen Chrome-Profilen gewechselt werden</translation>
 </translationbundle>

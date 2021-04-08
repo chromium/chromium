@@ -238,7 +238,6 @@
 <translation id="2534155362429831547">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් මකන ලදි</translation>
 <translation id="2536728043171574184">මෙම පිටුවෙහි නොබැඳි පිටපතක් බලමින්</translation>
 <translation id="2546283357679194313">කුකීස් සහ අඩවි දත්ත</translation>
-<translation id="2549341709325358884">Wi-Fi සහ ජංගම දත්ත පමණි</translation>
 <translation id="2561519700418191927">වීඩියෝ පෙරදසුන්</translation>
 <translation id="2567385386134582609">රූපය</translation>
 <translation id="2571711316400087311">Google පරිවර්තනය වෙත වෙනත් භාෂාවලින් පිටු යැවීමට පිරිනමන්න</translation>
@@ -752,6 +751,7 @@
 <translation id="5982307838673692400">අප්‍රසිද්ධ ටැබයක් විවෘත කරන්න</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6000203700195075278">නැවත අනුගමනය කරන්න</translation>
+<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />සෙවීම්<ph name="END_LINK1" /> හෝ වෙනත් ආකාරවල ඉතිහාසය හිස් කිරීමට, <ph name="BEGIN_LINK2" />මගේ Google ක්‍රියාකාරකම්<ph name="END_LINK2" /> වෙත පිවිසෙන්න</translation>
 <translation id="6005538289190791541">යෝජිත මුරපදය</translation>
 <translation id="6036057147555329831">අතිරේක ICU</translation>
 <translation id="6039379616847168523">ඊළඟ ටැබය වෙත පනින්න</translation>
@@ -925,6 +925,7 @@
 <translation id="7088681679121566888">Chrome යාවත්කාලීනයි</translation>
 <translation id="7106762743910369165">ඔබේ බ්‍රවුසරය ඔබේ සංවිධානය විසින් කළමනාකරණය කරයි</translation>
 <translation id="7121362699166175603">ලිපින තීරුව තුළ ඉතිහාසය හා ස්වයං සම්පූර්ණ කිරීම් හිස් කරයි. ඔබේ Google ගිණුමට <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> හිදී බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාරයන් තිබිය හැක.</translation>
+<translation id="7134993907760847334">සියලු පුරන ලද උපාංග වෙතින් ඉතිහාසය හිස් කරයි.</translation>
 <translation id="7138678301420049075">වෙනත්</translation>
 <translation id="7146622961999026732">මෙම අඩවි සහ යෙදුම් ඔබට වැදගත් යැයි පෙනේ:</translation>
 <translation id="7149893636342594995">පසුගිය පැය 24</translation>

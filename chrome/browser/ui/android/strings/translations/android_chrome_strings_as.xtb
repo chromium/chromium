@@ -93,6 +93,7 @@
 <translation id="1641113438599504367">সুৰক্ষিত ব্ৰাউজিং</translation>
 <translation id="164269334534774161">আপুনি <ph name="CREATION_TIME" />ৰ পৰা এই পৃষ্ঠাটোৰ এটা অফলাইন প্ৰতিলিপি চাই আছে</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
+<translation id="1668122540633280551">Chromeৰ পৃষ্ঠাখনত ভিডিঅ'ৰ পূর্বদর্শন কেনেকৈ স্বয়ংক্ৰিয়ভাৱে প্লে' হ'ব সেয়া বাছনি কৰক।</translation>
 <translation id="1670399744444387456">প্ৰাথমিক</translation>
 <translation id="1671236975893690980">ডাউনল’ড বাকী আছে…</translation>
 <translation id="1672586136351118594">পুনৰাই নেদেখুৱাব</translation>
@@ -237,6 +238,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> টা সমল মচা হ’ল</translation>
 <translation id="2536728043171574184">এই পৃষ্ঠাটোৰ এটা অফলাইন প্ৰতিলিপি চাই আছে</translation>
 <translation id="2546283357679194313">কুকি আৰু ছাইট ডেটা</translation>
+<translation id="2561519700418191927">ভিডিঅ'ৰ পূৰ্বদৰ্শন</translation>
 <translation id="2567385386134582609">প্ৰতিচ্ছবি</translation>
 <translation id="2571711316400087311">অন্য ভাষাত থকা পৃষ্ঠাসমূহ Google Translateলৈ পঠিওৱাৰ সুবিধা দিয়ক</translation>
 <translation id="2581165646603367611">ই কুকি, কেশ্ব আৰু Chromeএ গুৰুত্বপূর্ণ বুলি নভবা ছাইটসমূহৰ অন্য ডেটা মচিব।</translation>
@@ -415,6 +417,7 @@
 <translation id="3773856050682458546">প্ৰাথমিক ডেটাৰ লগতে আপুনি চোৱা ৱেবছাইট আৰু আপুনি ব্যৱহাৰ কৰা এপৰ বিষয়ে তথ্য</translation>
 <translation id="3775705724665058594">আপোনাৰ ডিভাইচসমূহলৈ পঠিয়াওক</translation>
 <translation id="3778956594442850293">গৃহ স্ক্ৰীণত যোগ কৰা হ’ল</translation>
+<translation id="3803784507854318295">স্বয়ংক্ৰিয়ভাৱে প্লে’ হোৱা সুবিধাটো পৰিচালনা কৰক</translation>
 <translation id="3810838688059735925">ভিডিঅ’</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />টা ডাউনল'ড মচা হ'ল</translation>
@@ -748,6 +751,7 @@
 <translation id="5982307838673692400">এটা ইনক’গনিট’ টেবত খোলক</translation>
 <translation id="6000066717592683814">Google ৰাখক</translation>
 <translation id="6000203700195075278">পুনৰ ফ’ল’ কৰক</translation>
+<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />সন্ধান<ph name="END_LINK1" /> অথবা অন্য ধৰণৰ ইতিহাস মচিবলৈ <ph name="BEGIN_LINK2" />মই Googleত কৰা কাৰ্যকলাপ<ph name="END_LINK2" />লৈ যাওক</translation>
 <translation id="6005538289190791541">পৰামর্শ হিচাপে পোৱা পাছৱর্ড</translation>
 <translation id="6036057147555329831">অতিৰিক্ত ICU</translation>
 <translation id="6039379616847168523">পৰৱৰ্তী টেবলৈ যাওক</translation>
@@ -920,6 +924,7 @@
 <translation id="7088681679121566888">Chrome আপ টু ডে’ট আছে</translation>
 <translation id="7106762743910369165">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
 <translation id="7121362699166175603">ঠিকনাৰ বাৰত ইতিহাস আৰু স্বয়ংক্ৰিয়ভাৱে পুৰ হোৱা তথ্য মচে। <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত আপোনাৰ Google একাউণ্টৰ অন্য প্ৰকাৰৰ ব্ৰাউজিং ইতিহাস থাকিব পাৰে।</translation>
+<translation id="7134993907760847334">ছাইন ইন হৈ থকা আটাইবোৰ ডিভাইচৰ পৰা ইতিহাস মচে।</translation>
 <translation id="7138678301420049075">অন্য</translation>
 <translation id="7146622961999026732">এই ছাইট আৰু এপ্‌সমূহ আপোনাৰ বাবে গুৰুত্বপূৰ্ণ যেন লাগিছে:</translation>
 <translation id="7149893636342594995">যোৱা ২৪ ঘণ্টাত</translation>

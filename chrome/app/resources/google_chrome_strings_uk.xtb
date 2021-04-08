@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Бета-версія Google Chrome</translation>
 <translation id="1399397803214730675">На комп’ютері вже встановлено новішу версію Google Chrome. Якщо програмне забезпечення не працює, видаліть Google Chrome і повторіть спробу.</translation>
 <translation id="1434626383986940139">Програми Chrome для версії Canary</translation>
+<translation id="1507198376417198979">Налаштуйте свій новий профіль Chrome</translation>
 <translation id="1516530951338665275">Щоб продовжити підключення, надайте веб-переглядачу Google Chrome
 доступ до Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Оновити Chrome</translation>
@@ -211,6 +212,7 @@
 <translation id="6943584222992551122">Дані веб-перегляду користувача буде видалено з цього пристрою. Щоб відновити їх, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Вхідне правило для бета-версії Google Chrome дозволяє трафік mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome оновлено, проте ви не користувалися цим веб-переглядачем щонайменше 30 днів.</translation>
+<translation id="7025800014283535195">Тут можна перемикати профілі Chrome</translation>
 <translation id="7062128746136194023">Хтось із твоїх батьків вимкнув "Дозволи для сайтів, додатків і розширень" у Chrome. Додавати це <ph name="EXTENSION_TYPE_PARAMETER" /> заборонено.</translation>
 <translation id="7098166902387133879">Google Chrome використовує ваш мікрофон.</translation>
 <translation id="7106741999175697885">Диспетчер завдань - Google Chrome</translation>
@@ -288,4 +290,5 @@
 <translation id="922152298093051471">Налаштувати Chrome</translation>
 <translation id="940313311831216333">Щоб мати доступ до своїх даних Chrome на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію.</translation>
 <translation id="989369509083708165">Google Chrome – ваш веб-переглядач за умовчанням</translation>
+<translation id="989816563149873169">Комбінація клавіш <ph name="SHORTCUT" /> перемикає профілі Chrome</translation>
 </translationbundle>

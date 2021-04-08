@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">Предложение: <ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
 <translation id="257674075312929031">Група</translation>
 <translation id="2613747923081026172">Създаване на група</translation>
+<translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="2671423594960767771">Споделяне на групата</translation>
 <translation id="2759453070259087442">Разгъване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ със <ph name="NUMBER_OF_TABS" /> раздела.</translation>
+<translation id="2801787514987684416">Искате ли да прегледате информацията за магазина?</translation>
 <translation id="2977480621796371840">Премахване от групата</translation>
+<translation id="3194464645767632461">оценка</translation>
 <translation id="3291470810748040983">Ще получите сигнал, когато цената в отворен раздел е по-ниска</translation>
 <translation id="3328308545011660196">Предложение: <ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="3882834874697329510">За да получавате сигнал, когато цената в отворен раздел е по-ниска, включете известията от настройките.</translation>
 <translation id="3940195383040445971">Проследяване на цените в разделите</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">Продължаване на сърфирането</translation>
 <translation id="4450893287417543264">Да не се показва отново</translation>
 <translation id="4648718555153979859">Разделите ви са групирани заедно тук</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> отзив)}other{(<ph name="REVIEWS_COUNT_MANY" /> отзива)}}</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="492284538114688557">Установено бе намаление на цена</translation>
 <translation id="5007392906805964215">Преглед</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">Сравнявайте бързо страници, като създадете група. За да започнете, докоснете и задръжте дадена връзка.</translation>
 <translation id="5490235265819901748">Групата с раздели е разгъната</translation>
 <translation id="5533021382642990449">Показване по-късно</translation>
+<translation id="5556417849629758491">Преглед на информацията за магазина – опцията е близо до горната част на екрана</translation>
 <translation id="5558362125926932819">Затваряне на групата с раздели с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> раздела са групирани</translation>
 <translation id="575494663145460764">Искате ли да получавате сигнали за понижение на цените?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">Показване на разделите от групата в решетка на цял екран</translation>
 <translation id="7792771145871471484">Преглед на предложенията.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Добавяне на <ph name="TABS_COUNT_ONE" /> избран раздел към група}other{Добавяне на <ph name="TABS_COUNT_MANY" /> избрани раздела към група}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзив}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзива}}</translation>
 <translation id="7885132941432959125">Преместване на раздела надясно</translation>
 <translation id="7966321538264951561">Отхвърляне на предложенията.</translation>
 <translation id="814503310257431685">Преглед на всички</translation>

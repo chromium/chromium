@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">Predlog: Imate više kartica (<ph name="NUMBER_OF_TABS" />) koje niste koristili u skorije vreme. Želite li da ih zatvorite?</translation>
 <translation id="257674075312929031">Grupa</translation>
 <translation id="2613747923081026172">Napravi grupu</translation>
+<translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" /></translation>
 <translation id="2671423594960767771">Deli grupu</translation>
 <translation id="2759453070259087442">Proširite grupu kartica <ph name="TITLE_OF_GROUP" /> dodatnim karticama (<ph name="NUMBER_OF_TABS" />).</translation>
+<translation id="2801787514987684416">Želite da pregledate informacije o prodavnici?</translation>
 <translation id="2977480621796371840">Ukloni iz grupe</translation>
+<translation id="3194464645767632461">ocena</translation>
 <translation id="3291470810748040983">Dobićete obaveštenje kada postoji niža cena na otvorenoj kartici</translation>
 <translation id="3328308545011660196">Predlog: Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skupite <ph name="TABS_COUNT_ONE" /> karticu.}one{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> karticom.}few{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartice.}other{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="3882834874697329510">Da biste dobili obaveštenje kada postoji niža cena na otvorenoj kartici, uključite obaveštenja u Podešavanjima.</translation>
 <translation id="3940195383040445971">Prati cene na karticama</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">Nastavite sa pregledanjem</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="4648718555153979859">Kartice su grupisane zajedno ovde</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzija)}one{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzije)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}}</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="492284538114688557">Uočeno je sniženje</translation>
 <translation id="5007392906805964215">Pregledaj</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">Napravite grupu da biste brzo upoređivali stranice. Za početak dodirnite i zadržite link.</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>
 <translation id="5533021382642990449">Prikaži kasnije</translation>
+<translation id="5556417849629758491">Pregledajte informacije o prodavnici, opciju koja je dostupna u vrhu ekrana</translation>
 <translation id="5558362125926932819">Zatvorite grupu od kartica: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Kartice su grupisane (<ph name="TAB_COUNT" />)</translation>
 <translation id="575494663145460764">Želite da dobijate obaveštenja za sniženja?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">Prikazuje kartice grupe u mreži na celom ekranu</translation>
 <translation id="7792771145871471484">Pregledajte predloge.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Dodajte <ph name="TABS_COUNT_ONE" /> izabranu karticu u grupu}one{Dodajte <ph name="TABS_COUNT_MANY" /> izabranu karticu u grupu}few{Dodajte <ph name="TABS_COUNT_MANY" /> izabrane kartice u grupu}other{Dodajte <ph name="TABS_COUNT_MANY" /> izabranih kartica u grupu}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenzija}one{Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzija}few{Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzije}other{Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzija}}</translation>
 <translation id="7885132941432959125">Premestite karticu udesno</translation>
 <translation id="7966321538264951561">Odbacite predloge.</translation>
 <translation id="814503310257431685">Prikaži sve</translation>

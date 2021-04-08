@@ -238,7 +238,6 @@
 <translation id="2534155362429831547">تم حذف <ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
 <translation id="2536728043171574184">عرض نسخة بلا اتصال من هذه الصفحة</translation>
 <translation id="2546283357679194313">ملفات تعريف الارتباط وبيانات المواقع</translation>
-<translation id="2549341709325358884">‏تشغيل معاينات الفيديوهات عند الاتصال بشبكة Wi-Fi أو بشبكة بيانات الجوّال</translation>
 <translation id="2561519700418191927">معاينات الفيديوهات</translation>
 <translation id="2567385386134582609">صورة</translation>
 <translation id="2571711316400087311">‏اقتراح إرسال صفحات بلغات أخرى إلى "ترجمة Google"</translation>
@@ -752,6 +751,7 @@
 <translation id="5982307838673692400">فتح علامة تبويب في وضع التصفُّح المتخفي</translation>
 <translation id="6000066717592683814">‏الاستمرار في استخدام محرك Google</translation>
 <translation id="6000203700195075278">المتابعة مجدّدًا</translation>
+<translation id="6002623704405939939">‏لمحو <ph name="BEGIN_LINK1" />سجلّ البحث<ph name="END_LINK1" /> أو غيره من السجلّات، انتقِل إلى صفحة <ph name="BEGIN_LINK2" />نشاطي على Google<ph name="END_LINK2" />.</translation>
 <translation id="6005538289190791541">كلمة المرور المُقترحَة</translation>
 <translation id="6036057147555329831">وحدة الرعاية المركزية الإضافية</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>
@@ -925,6 +925,7 @@
 <translation id="7088681679121566888">‏Chrome محدّث.</translation>
 <translation id="7106762743910369165">تتولّى مؤسستك إدارة متصفِّحك.</translation>
 <translation id="7121362699166175603">‏يتم محو السجلّ وعمليات الإكمال التلقائي في شريط العناوين. وقد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="7134993907760847334">يؤدي هذا الإعداد إلى محو السجلّ من جميع الأجهزة التي تم تسجيل الدخول إليها.</translation>
 <translation id="7138678301420049075">أخرى</translation>
 <translation id="7146622961999026732">يبدو أن المواقع الإلكترونية والتطبيقات التالية مهمة بالنسبة إليك:</translation>
 <translation id="7149893636342594995">آخر 24 ساعة</translation>

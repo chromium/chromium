@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">추천: 최근 사용하지 않은 탭이 <ph name="NUMBER_OF_TABS" />개 있습니다. 탭을 닫으시겠습니까?</translation>
 <translation id="257674075312929031">그룹화</translation>
 <translation id="2613747923081026172">그룹 만들기</translation>
+<translation id="2662028055331606429">평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점</translation>
 <translation id="2671423594960767771">그룹 공유</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" />개의 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 확장합니다.</translation>
+<translation id="2801787514987684416">스토어 정보를 확인하시겠습니까?</translation>
 <translation id="2977480621796371840">그룹에서 삭제</translation>
+<translation id="3194464645767632461">평점</translation>
 <translation id="3291470810748040983">열려 있는 탭에 더 낮은 가격이 있으면 알림이 전송됩니다.</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 접습니다.}}</translation>
 <translation id="3882834874697329510">열린 탭에서 더 낮은 가격이 발견되었을 때 알림을 받으려면 설정에서 알림을 사용 설정하세요.</translation>
 <translation id="3940195383040445971">탭에서 가격 추적</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">계속 탐색</translation>
 <translation id="4450893287417543264">다시 표시하지 않음</translation>
 <translation id="4648718555153979859">탭이 여기에서 그룹화됩니다.</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(리뷰 <ph name="REVIEWS_COUNT_ONE" />개)}other{(리뷰 <ph name="REVIEWS_COUNT_MANY" />개)}}</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="492284538114688557">가격 인하 항목 발견</translation>
 <translation id="5007392906805964215">검토</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">그룹을 만들어서 페이지를 빠르게 비교하세요. 시작하려면 링크를 길게 터치합니다.</translation>
 <translation id="5490235265819901748">탭 그룹 펼침</translation>
 <translation id="5533021382642990449">계속 표시</translation>
+<translation id="5556417849629758491">스토어 정보 보기, 화면 상단에 옵션 있음</translation>
 <translation id="5558362125926932819">탭 <ph name="NUMBER_OF_TABS" />개가 포함된 탭 그룹 닫기</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" />개의 탭 그룹화됨</translation>
 <translation id="575494663145460764">가격 인하 알림을 받으시겠습니까?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">그룹 탭을 전체화면 그리드로 표시</translation>
 <translation id="7792771145871471484">추천을 검토합니다.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 그룹화}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 그룹화}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ 평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_ONE" />개}other{평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_MANY" />개}}</translation>
 <translation id="7885132941432959125">탭을 오른쪽으로 이동</translation>
 <translation id="7966321538264951561">추천을 닫습니다.</translation>
 <translation id="814503310257431685">전체 보기</translation>

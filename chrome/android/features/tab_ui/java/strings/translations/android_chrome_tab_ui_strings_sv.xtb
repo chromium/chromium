@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">Förslag: <ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
 <translation id="257674075312929031">Grupp</translation>
 <translation id="2613747923081026172">Skapa grupp</translation>
+<translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg</translation>
 <translation id="2671423594960767771">Dela grupp</translation>
 <translation id="2759453070259087442">Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> flikar.</translation>
+<translation id="2801787514987684416">Vill du visa butiksinformation?</translation>
 <translation id="2977480621796371840">Ta bort från gruppen</translation>
+<translation id="3194464645767632461">betyg</translation>
 <translation id="3291470810748040983">Du får en avisering när det finns ett lägre pris på en öppen flik</translation>
 <translation id="3328308545011660196">Förslag: <ph name="NUMBER_OF_TABS" /> flikar verkar höra ihop. Vill du gruppera dem?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="3882834874697329510">Aktivera aviseringar i inställningarna om du vill få en avisering när det finns ett lägre pris på en öppen flik.</translation>
 <translation id="3940195383040445971">Bevaka priser på flikar</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">Fortsätt surfa</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="4648718555153979859">Dina flikar samlas här</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(Recension av <ph name="REVIEWS_COUNT_ONE" />)}other{(Recensioner av <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Visa</translation>
 <translation id="492284538114688557">Prissänkning upptäcktes</translation>
 <translation id="5007392906805964215">Granska</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">Jämför sidor snabbt genom att skapa en grupp. Börja med att trycka länge på en länk.</translation>
 <translation id="5490235265819901748">Flikgruppen har utökats</translation>
 <translation id="5533021382642990449">Visa senare</translation>
+<translation id="5556417849629758491">Visa butiksinformation. Alternativet visas högt upp på skärmen</translation>
 <translation id="5558362125926932819">Stäng flikgruppen med <ph name="NUMBER_OF_TABS" /> flikar</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> flikar har grupperats</translation>
 <translation id="575494663145460764">Vill du få aviseringar om sänkt pris?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">Visa gruppens flikar i helskärmsrutnät</translation>
 <translation id="7792771145871471484">Granska förslagen.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Lägg till <ph name="TABS_COUNT_ONE" /> vald flik i gruppen}other{Lägg till <ph name="TABS_COUNT_MANY" /> valda flikar i gruppen}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg med <ph name="REVIEWS_COUNT_ONE" /> recension}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg med <ph name="REVIEWS_COUNT_MANY" /> recensioner}}</translation>
 <translation id="7885132941432959125">Flytta fliken åt höger</translation>
 <translation id="7966321538264951561">Ignorera förslagen.</translation>
 <translation id="814503310257431685">Visa alla</translation>

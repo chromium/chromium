@@ -1027,6 +1027,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="211144231511833662">Limpar tipos</translation>
 <translation id="2111670510994270194">Nova guia à direita</translation>
 <translation id="2111810003053064883">Os anunciantes podem estudar a eficácia dos anúncios sem rastrear você nos sites.</translation>
+<translation id="2112554630428445878">Olá, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fixar guia</translation>
 <translation id="2113479184312716848">Abrir &amp;arquivo...</translation>
 <translation id="2113921862428609753">Acesso às informações de autoridade</translation>
@@ -1971,7 +1972,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="313205617302240621">Esqueceu a senha?</translation>
 <translation id="3132277757485842847">Não foi possível manter uma conexão com o smartphone. Verifique se o smartphone está por perto, desbloqueado e com o Wi-Fi e o Bluetooth ativados.</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
-<translation id="3134393957315651797">Selecione um estado para o experimento <ph name="EXPERIMENT_NAME" />. Descrição do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN inválido. Você tem <ph name="RETRIES" /> tentativas restantes.</translation>
 <translation id="313963229645891001">Fazendo o download, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarelo padrão</translation>
@@ -2645,6 +2645,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3881478300875776315">Mostrar menos linhas</translation>
 <translation id="3882165008614329320">Vídeo existente de uma câmera ou de um arquivo</translation>
 <translation id="3884152383786131369">Conteúdos da Web disponíveis em vários idiomas usarão o primeiro idioma compatível desta lista. Estas preferências são sincronizadas com as configurações do navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">As atualizações são gerenciadas pelo administrador</translation>
 <translation id="3886446263141354045">Sua solicitação para acessar este site foi enviada para <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Tomando notas com <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Estas informações nos ajudam a entender melhor o problema com o Google Assistente. Elas ficam armazenadas por até 90 dias, com acesso restrito às equipes adequadas de feedback e engenharia.</translation>
@@ -6405,7 +6406,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8147900440966275470"><ph name="NUM" /> guia encontrada</translation>
 <translation id="8148760431881541277">Limitar login</translation>
 <translation id="8149564499626272569">Verificar pelo smartphone usando um cabo USB</translation>
-<translation id="8150259863378108853">O Lacros é um navegador experimental. Informe qualquer problema em "Ajuda &gt; Informar um problema…"</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Nenhum arquivo</translation>
 <translation id="815491593104042026">Falha na autenticação, porque ela foi configurada para usar um URL não seguro (<ph name="BLOCKED_URL" />). Entre em contato com o administrador.</translation>
@@ -6616,7 +6616,6 @@ Usar Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="8398877366907290961">Continuar mesmo assim</translation>
 <translation id="8400146488506985033">Gerenciar pessoas</translation>
 <translation id="8401432541486058167">Insira o PIN associado ao seu cartão inteligente.</translation>
-<translation id="8403562727702715619">Recentemente do Google Drive</translation>
 <translation id="8405046151008197676">Veja os destaques da atualização mais recente</translation>
 <translation id="8407199357649073301">Nível de registro:</translation>
 <translation id="8408068190360279472">Rede <ph name="NETWORK_TYPE" />, conectando</translation>

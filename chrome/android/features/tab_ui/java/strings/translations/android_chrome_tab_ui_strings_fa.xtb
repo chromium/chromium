@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">پیشنهاد: <ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
 <translation id="257674075312929031">گروه</translation>
 <translation id="2613747923081026172">ایجاد گروه</translation>
+<translation id="2662028055331606429">رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="2671423594960767771">هم‌رسانی گروه</translation>
 <translation id="2759453070259087442">گسترده کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="NUMBER_OF_TABS" /> برگه.</translation>
+<translation id="2801787514987684416">اطلاعات فروشگاه نمایش داده شود؟</translation>
 <translation id="2977480621796371840">برداشتن از گروه</translation>
+<translation id="3194464645767632461">رده‌بندی</translation>
 <translation id="3291470810748040983">وقتی در یکی از برگه‌های باز، قیمت کمتری وجود داشت، اعلان دریافت خواهید کرد</translation>
 <translation id="3328308545011660196">پیشنهاد: به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{جمع کردن <ph name="TABS_COUNT_ONE" /> برگه.}one{جمع کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه.}other{جمع کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
 <translation id="3882834874697329510">اعلان‌ها را در «تنظیمات» روشن کنید تا اگر قیمت کمتری در برگه‌ای باز وجود داشت هشدار دریافت کنید.</translation>
 <translation id="3940195383040445971">پیگیری قیمت در برگه‌ها</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">ادامه مرور</translation>
 <translation id="4450893287417543264">دیگر نشان داده نشود</translation>
 <translation id="4648718555153979859">برگه‌هایتان اینجا باهم گروه‌بندی می‌شوند</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> مرور)}one{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}other{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}}</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="492284538114688557">کاهش قیمت شناسایی شد</translation>
 <translation id="5007392906805964215">مرور</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">با ایجاد گروه، صفحه‌ها را سریع مقایسه کنید. برای شروع، پیوندی را لمس کنید و نگه دارید.</translation>
 <translation id="5490235265819901748">گروه برگه گسترده شد</translation>
 <translation id="5533021382642990449">نمایش در فرصتی دیگر</translation>
+<translation id="5556417849629758491">مشاهده اطلاعات فروشگاه، گزینه مربوطه در نزدیکی بالای صفحه قرار دارد</translation>
 <translation id="5558362125926932819">بستن گروه برگه با <ph name="NUMBER_OF_TABS" /> برگه</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> برگه گروه‌بندی شد</translation>
 <translation id="575494663145460764">برای کاهش قیمت‌ها اعلان دریافت شود؟</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">نمایش برگه‌های گروه در شبکه تمام‌صفحه</translation>
 <translation id="7792771145871471484">پیشنهاد‌ها مرور شود.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{گروه‌بندی <ph name="TABS_COUNT_ONE" /> برگه انتخابی}one{گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخابی}other{گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخابی}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_ONE" /> مرور}one{رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_MANY" /> مرور}other{رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_MANY" /> مرور}}</translation>
 <translation id="7885132941432959125">انتقال برگه به چپ</translation>
 <translation id="7966321538264951561">پیشنهادها رد شود.</translation>
 <translation id="814503310257431685">نمایش همه</translation>

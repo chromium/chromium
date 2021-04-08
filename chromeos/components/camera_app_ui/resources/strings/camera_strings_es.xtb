@@ -4,6 +4,7 @@
 <translation id="1175958423215084756">Enlace detectado. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imágenes de la galería</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> está desenchufada.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1627744224761163218">4x4</translation>
@@ -24,6 +25,7 @@
 <translation id="2501953888035679275">Haz fotos y graba vídeos con la cámara.</translation>
 <translation id="2549985041256363841">Iniciar grabación</translation>
 <translation id="2599796128805996109">Cámara trasera</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> está enchufada.</translation>
 <translation id="2912439424121107408">El modo experto no está disponible en este dispositivo</translation>
 <translation id="2968794441791257519">Las fotos y los vídeos hechos con la cámara se moverán a la carpeta Descargas. Podrás acceder a ellos con la aplicación Archivos.
 

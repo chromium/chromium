@@ -214,6 +214,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 
 Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld, om advertensies te personaliseer nie.</translation>
 <translation id="3207960819495026254">Geboekmerk</translation>
+<translation id="3222343486469566063">Nie aangemeld nie</translation>
 <translation id="3224641773458703735">Om wagwoorde uit te voer, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="3240426699337459095">Skakel gekopieer</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -421,6 +422,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5489208564673669003">Sien <ph name="BEGIN_LINK" />Webkoekie-instellings<ph name="END_LINK" /> om webkoekies vir alle werwe te bestuur.</translation>
 <translation id="5490005495580364134">Blokkeer alle webkoekies (nie aanbeveel nie)</translation>
 <translation id="5508435575041083207">Meld af en vee data op hierdie toestel uit</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> u. gelede</translation>
 <translation id="5525269841082836315">Skep wagfrase</translation>
 <translation id="5548760955356983418">Oorgee laat jou toe om op 'n webwerf op hierdie toestel te begin blaai en dan maklik op jou Mac voort te gaan. Die huidige oop webwerf sal in die dok van jou Mac verskyn.
 
@@ -786,6 +788,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9152539721251340337">Skep 'n QR-kode</translation>
 <translation id="9157836665414082580">Onderdruk dialoë</translation>
 <translation id="9188680907066685419">Meld af uit bestuurde rekening</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> d. gelede</translation>
 <translation id="9203116392574189331">Oorgee</translation>
 <translation id="9223358826628549784">Omvalverslag is gestuur.</translation>
 <translation id="952704832371081537">Kanselleer</translation>

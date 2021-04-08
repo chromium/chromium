@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">הצעה: <ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
 <translation id="257674075312929031">קבוצה</translation>
 <translation id="2613747923081026172">יצירת קבוצה</translation>
+<translation id="2662028055331606429">דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" /></translation>
 <translation id="2671423594960767771">שיתוף קבוצה</translation>
 <translation id="2759453070259087442">הרחבת קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="NUMBER_OF_TABS" /> כרטיסיות.</translation>
+<translation id="2801787514987684416">להציג את פרטי החנות?</translation>
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
+<translation id="3194464645767632461">דירוג</translation>
 <translation id="3291470810748040983">תתקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה</translation>
 <translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
+<translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}two{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}many{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="3882834874697329510">כדי לקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה, יש להפעיל את ההתראות בהגדרות.</translation>
 <translation id="3940195383040445971">מעקב אחר המחירים בכרטיסיות</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">המשך הגלישה</translation>
 <translation id="4450893287417543264">אין להציג שוב</translation>
 <translation id="4648718555153979859">הכרטיסיות שלך מסודרות כאן בקבוצה</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(ביקורת אחת (<ph name="REVIEWS_COUNT_ONE" />))}two{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}many{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}other{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}}</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="492284538114688557">זוהתה הנחה במחיר</translation>
 <translation id="5007392906805964215">עיון</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">כדי להשוות במהירות בין דפים, אפשר ליצור קבוצה. כדי להתחיל, צריך ללחוץ לחיצה ארוכה על קישור.</translation>
 <translation id="5490235265819901748">קבוצת כרטיסיות הורחבה</translation>
 <translation id="5533021382642990449">אני רוצה לראות את זה מאוחר יותר</translation>
+<translation id="5556417849629758491">ניתן להציג את פרטי החנות. האפשרות זמינה בחלק העליון של המסך</translation>
 <translation id="5558362125926932819">סגירת קבוצת הכרטיסיות עם <ph name="NUMBER_OF_TABS" /> כרטיסיות</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> כרטיסיות מקובצות</translation>
 <translation id="575494663145460764">רוצה לקבל התראות על הנחות?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">הצגת כרטיסיות הקבוצה ברשת מסך מלא</translation>
 <translation id="7792771145871471484">עיון בהצעות.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{קיבוץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}two{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}many{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, ביקורת אחת (<ph name="REVIEWS_COUNT_ONE" />)}two{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}many{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}other{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}}</translation>
 <translation id="7885132941432959125">העברת הכרטיסייה שמאלה</translation>
 <translation id="7966321538264951561">סגירת ההצעות.</translation>
 <translation id="814503310257431685">הצגת הכול</translation>

@@ -1973,7 +1973,6 @@
 <translation id="313205617302240621">Забылі пароль?</translation>
 <translation id="3132277757485842847">Нам не ўдалося захаваць падключэнне да вашага тэлефона. Упэўніцеся, што ён разблакіраваны, знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi.</translation>
 <translation id="3132996321662585180">Абнаўляць штодзень</translation>
-<translation id="3134393957315651797">Выберыце стан для эксперымента "<ph name="EXPERIMENT_NAME" />". Апісанне эксперымента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Няправільны PIN-код. Засталося спроб: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Ідзе спампоўванне, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Стандартны жоўты аватар</translation>
@@ -6404,7 +6403,6 @@
 <translation id="8147900440966275470">Знойдзена ўкладак: <ph name="NUM" /></translation>
 <translation id="8148760431881541277">Абмежаваць уваход</translation>
 <translation id="8149564499626272569">Спраўдзіць з дапамогай тэлефона, выкарыстаўшы кабель USB</translation>
-<translation id="8150259863378108853">Lacros — гэта эксперыментальны браўзер. Просім вас паведамляць пра любыя праблемы праз меню "Даведка &gt; Паведаміць аб праблеме..."</translation>
 <translation id="8151638057146502721">Наладзіць</translation>
 <translation id="8154790740888707867">Файла няма</translation>
 <translation id="815491593104042026">Памылка!  Адбыўся збой аўтэнтыфікацыі з-за выкарыстання небяспечнага URL-адраса (<ph name="BLOCKED_URL" />). Звяжыцеся са сваім адміністратарам.</translation>
@@ -6615,7 +6613,6 @@
 <translation id="8398877366907290961">Усё роўна працягнуць</translation>
 <translation id="8400146488506985033">Кіраваць данымі карыстальнікаў</translation>
 <translation id="8401432541486058167">Укажыце PIN-код, звязаны з разумнай карткай.</translation>
-<translation id="8403562727702715619">З чым вы працавалі нядаўна на Google Дыску</translation>
 <translation id="8405046151008197676">Атрымайце асноўную інфармацыю пра апошняе абнаўленне</translation>
 <translation id="8407199357649073301">Узровень гісторыі:</translation>
 <translation id="8408068190360279472">Тып сеткі – <ph name="NETWORK_TYPE" />, ідзе падключэнне</translation>

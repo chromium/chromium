@@ -16,6 +16,7 @@
 <translation id="137466361146087520">‏Google Chrome نسخه بتا</translation>
 <translation id="1399397803214730675">‏این رایانه از قبل دارای نسخه جدیدتر Google Chrome است. اگر نرم‌افزار کار نمی‌کند، لطفاً Google Chrome را حذف نصب کرده و دوباره امتحان کنید.</translation>
 <translation id="1434626383986940139">‏برنامه‌های Chrome Canary</translation>
+<translation id="1507198376417198979">‏سفارشی کردن نمایه جدید Chrome</translation>
 <translation id="1516530951338665275">‏Google Chrome باید برای ادامه مرتبط‌سازی به بلوتوث
 دسترسی داشته باشد. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">‏به‌روزرسانی Chrome</translation>
@@ -211,6 +212,7 @@
 <translation id="6943584222992551122">‏داده‌های محصول مرور این فرد از این دستگاه حذف می‌شود. برای بازیابی داده‌ها، با نام <ph name="USER_EMAIL" /> به سیستم Chrome وارد شوید.</translation>
 <translation id="6967962315388095737">‏قانون ترافیک ورودی Google Chrome نسخه بتا برای امکان دادن به ترافیک mDNS.</translation>
 <translation id="6989339256997917931">‏Google Chrome به روز شده است اما حداقل ۳۰ روز از آن استفاده نکرده‌اید.</translation>
+<translation id="7025800014283535195">‏می‌توانید در اینجا بین نمایه‌های Chrome جابه‌جا شوید</translation>
 <translation id="7062128746136194023">‏ولی‌تان «اجازه‌های مربوط به سایت‌ها، برنامه‌ها، و افزونه‌ها» را برای Chrome خاموش کرده است. افزودن این <ph name="EXTENSION_TYPE_PARAMETER" /> مجاز نیست.</translation>
 <translation id="7098166902387133879">‏Google Chrome درحال استفاده از میکروفون شما است.</translation>
 <translation id="7106741999175697885">‏مدیر فعالیت‌ها - Google Chrome</translation>
@@ -288,4 +290,5 @@
 <translation id="922152298093051471">‏سفارشی کردن Chrome</translation>
 <translation id="940313311831216333">‏برای دسترسی به چیزهای Chrome در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید.</translation>
 <translation id="989369509083708165">‏Google Chrome مرورگر پیش‌فرضتان است</translation>
+<translation id="989816563149873169">‏با <ph name="SHORTCUT" /> می‌توانید بین نمایه‌های Chrome جابه‌جا شوید</translation>
 </translationbundle>
