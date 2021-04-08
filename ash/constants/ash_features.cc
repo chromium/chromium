@@ -21,8 +21,8 @@ const base::Feature kInstantTetheringBackgroundAdvertisementSupport{
 
 // Enables redesign of account management flows.
 // https://crbug.com/1132472
-const base::Feature kAccountManagementFlowsV2{
-    "AccountManagementFlowsV2", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAccountManagementFlowsV2{"AccountManagementFlowsV2",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether devices are updated before reboot after the first update.
 const base::Feature kAllowRepeatedUpdates{"AllowRepeatedUpdates",
