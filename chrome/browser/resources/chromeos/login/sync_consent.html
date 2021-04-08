@@ -21,8 +21,65 @@
 
 <dom-module id="sync-consent-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="sync_consent.css">
+    <style include="oobe-dialog-host">
+      :root {
+        color: #333;
+      }
+
+      .overview-list-item:last-of-type {
+        margin-bottom: 0;
+      }
+
+      .overview-list-item-title {
+        font-size: 18px;
+        font-weight: 500; /* roboto-medium */
+        line-height: 24px;
+        margin-bottom: 4px;
+      }
+
+      /* Styles for the traditional dialog. */
+
+      #syncConsentOverviewDialog .overview-list-item {
+        background-color: var(--google-grey-50);
+        border-radius: 16px;
+        margin-bottom: 16px;
+        padding: 16px;
+      }
+
+      #syncConsentOverviewDialog .overview-list-item-icon {
+        padding-inline-end: 16px;
+      }
+
+      #syncConsentOverviewDialog cr-checkbox {
+        align-self: start; /* Prevent label from spanning the whole width. */
+        margin-top: 16px;
+        padding-inline-start: 8px;
+        --cr-checkbox-label-padding-start: 12px;
+      }
+
+      /* Styles used with SplitSettingsSync. */
+
+      #splitSettingsSyncConsentDialog .overview-list-item {
+        border-top: 1px solid var(--google-grey-200);
+        padding: 16px;
+      }
+
+      #splitSettingsSyncConsentDialog .overview-list-item:last-of-type {
+        border-bottom: 1px solid var(--google-grey-200);
+      }
+
+      #splitSettingsSyncConsentDialog .overview-list-item-icon {
+        padding-inline-end: 16px;
+      }
+
+      #splitSettingsSyncConsentDialog .overview-list-item-title {
+        margin-top: 4px;
+      }
+
+      #splitSettingsSyncConsentDialog .overview-list-item-description {
+        padding-inline-end: 16px;
+      }
+    </style>
 
     <!-- Traditional dialog. This can be deleted when SplitSettingsSync is the
          default. -->
