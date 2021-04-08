@@ -252,7 +252,7 @@ void ReadLaterButton::UpdateColors() {
 
   const int highlight_radius =
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-          views::EMPHASIS_MAXIMUM, size());
+          views::Emphasis::kMaximum, size());
   SetEnabledTextColors(highlight_color_animation_->GetTextColor());
   SetImageModel(
       views::Button::STATE_NORMAL,

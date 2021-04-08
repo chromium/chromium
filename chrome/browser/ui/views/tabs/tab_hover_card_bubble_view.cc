@@ -260,7 +260,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   if (using_rounded_corners_) {
     GetBubbleFrameView()->SetCornerRadius(
         ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-            views::EMPHASIS_HIGH));
+            views::Emphasis::kHigh));
   }
 
   // Start in the fully "faded-in" position so that whatever text we initially

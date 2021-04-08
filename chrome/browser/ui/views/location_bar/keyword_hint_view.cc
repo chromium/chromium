@@ -48,7 +48,7 @@ class ChipLabel : public views::Label {
     const int icon_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
     const int chip_corner_radius =
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::EMPHASIS_MAXIMUM, gfx::Size(icon_size, icon_size));
+            views::Emphasis::kMaximum, gfx::Size(icon_size, icon_size));
     return gfx::Insets(0, chip_corner_radius, 0, chip_corner_radius);
   }
   gfx::Size CalculatePreferredSize() const override {
@@ -222,7 +222,7 @@ void KeywordHintView::OnThemeChanged() {
       views::Painter::CreateRoundRectWith1PxBorderPainter(
           tab_bg_color, tab_border_color,
           views::LayoutProvider::Get()->GetCornerRadiusMetric(
-              views::EMPHASIS_HIGH))));
+              views::Emphasis::kHigh))));
 
   trailing_label_->SetEnabledColor(text_color);
   trailing_label_->SetBackgroundColor(background_color);

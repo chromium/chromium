@@ -61,7 +61,7 @@ OmniboxTabSwitchButton::OmniboxTabSwitchButton(
   }
   SetPreferredSize({full_text_width_, 32});
   SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MAXIMUM, GetPreferredSize()));
+      views::Emphasis::kMaximum, GetPreferredSize()));
   SetTooltipText(hint_);
   SetElideBehavior(gfx::FADE_TAIL);
 

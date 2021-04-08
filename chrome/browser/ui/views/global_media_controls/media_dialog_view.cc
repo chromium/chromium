@@ -150,8 +150,8 @@ void MediaDialogView::HideMediaDialog() {
 }
 
 void MediaDialogView::AddedToWidget() {
-  int corner_radius =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_HIGH);
+  int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
   views::BubbleFrameView* frame = GetBubbleFrameView();
   if (frame) {
     frame->SetCornerRadius(corner_radius);

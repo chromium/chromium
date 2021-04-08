@@ -235,7 +235,7 @@ void ToolbarButton::UpdateColorsAndInsets() {
 
   const int highlight_radius =
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-          views::EMPHASIS_MAXIMUM, target_size);
+          views::Emphasis::kMaximum, target_size);
 
   SetEnabledTextColors(highlight_color_animation_.GetTextColor());
 

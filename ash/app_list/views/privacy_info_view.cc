@@ -220,7 +220,7 @@ void PrivacyInfoView::InitLayout() {
   SetBorder(views::CreateRoundedRectBorder(
       /*thickness=*/1,
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::EMPHASIS_MEDIUM),
+          views::Emphasis::kMedium),
       gfx::Insets(kRowMarginDip, kRowMarginDip), gfx::kGoogleGrey300));
 
   // Info icon.

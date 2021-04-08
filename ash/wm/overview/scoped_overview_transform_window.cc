@@ -508,8 +508,8 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
 
   ui::Layer* layer = window_->layer();
   const float scale = layer->transform().Scale2d().x();
-  const int radius =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_LOW);
+  const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kLow);
   const gfx::RoundedCornersF radii(show ? (radius / scale) : 0.0f);
   layer->SetRoundedCornerRadius(radii);
   layer->SetIsFastRoundedCorner(true);

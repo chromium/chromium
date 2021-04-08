@@ -227,8 +227,8 @@ void QRCodeGeneratorBubble::Init() {
       1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   using Alignment = views::ImageView::Alignment;
   auto qr_code_image = std::make_unique<views::ImageView>();
-  const int border_radius =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_HIGH);
+  const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
   qr_code_image->SetBorder(views::CreateRoundedRectBorder(
       /*thickness=*/2, border_radius, gfx::kGoogleGrey200));
   qr_code_image->SetHorizontalAlignment(Alignment::kCenter);

@@ -22,10 +22,10 @@ std::unique_ptr<views::BubbleBorder> GetBorderForWindow(
           gfx::kPlaceholderColor);
       border->set_md_shadow_elevation(
           ChromeLayoutProvider::Get()->GetShadowElevationMetric(
-              views::EMPHASIS_MEDIUM));
+              views::Emphasis::kMedium));
   }
   border->SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EmphasisMetric::EMPHASIS_MEDIUM));
+      views::Emphasis::kMedium));
   border->set_use_theme_background_color(true);
   return border;
 }

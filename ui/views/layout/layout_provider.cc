@@ -161,33 +161,32 @@ gfx::Insets LayoutProvider::GetDialogInsetsForContentType(
                      dialog_insets.right());
 }
 
-int LayoutProvider::GetCornerRadiusMetric(EmphasisMetric emphasis_metric,
+int LayoutProvider::GetCornerRadiusMetric(Emphasis emphasis,
                                           const gfx::Size& size) const {
-  switch (emphasis_metric) {
-    case EMPHASIS_NONE:
+  switch (emphasis) {
+    case Emphasis::kNone:
       return 0;
-    case EMPHASIS_LOW:
-    case EMPHASIS_MEDIUM:
+    case Emphasis::kLow:
+    case Emphasis::kMedium:
       return 4;
-    case EMPHASIS_HIGH:
+    case Emphasis::kHigh:
       return 8;
-    case EMPHASIS_MAXIMUM:
+    case Emphasis::kMaximum:
       return std::min(size.width(), size.height()) / 2;
   }
 }
 
-int LayoutProvider::GetShadowElevationMetric(
-    EmphasisMetric emphasis_metric) const {
-  switch (emphasis_metric) {
-    case EMPHASIS_NONE:
+int LayoutProvider::GetShadowElevationMetric(Emphasis emphasis) const {
+  switch (emphasis) {
+    case Emphasis::kNone:
       return 0;
-    case EMPHASIS_LOW:
+    case Emphasis::kLow:
       return 1;
-    case EMPHASIS_MEDIUM:
+    case Emphasis::kMedium:
       return 2;
-    case EMPHASIS_HIGH:
+    case Emphasis::kHigh:
       return 3;
-    case EMPHASIS_MAXIMUM:
+    case Emphasis::kMaximum:
       return 16;
   }
 }

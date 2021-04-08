@@ -171,8 +171,8 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   contents_host_->layer()->SetFillsBoundsOpaquely(false);
 
   // Use rounded corners.
-  int corner_radius =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_HIGH);
+  int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
   contents_host_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(corner_radius));
   contents_host_->layer()->SetIsFastRoundedCorner(true);

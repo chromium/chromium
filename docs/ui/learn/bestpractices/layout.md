@@ -872,7 +872,7 @@ class FindBarView::FindBarButton
     const gfx::Point center = bounds.CenterPoint();
     const int radius = views::LayoutProvider::Get()
         ->GetCornerRadiusMetric(
-            views::EMPHASIS_MAXIMUM, bounds.size());
+            views::Emphasis::kMaximum, bounds.size());
     highlight_path->addCircle(
         center.x(), center.y(), radius);
     SetProperty(views::kHighlightPathKey,

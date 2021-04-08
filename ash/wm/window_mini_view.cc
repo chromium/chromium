@@ -97,8 +97,8 @@ void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
   ui::Layer* layer = preview_view()->layer();
   DCHECK(layer);
   const float scale = layer->transform().Scale2d().x();
-  const float rounding =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_LOW);
+  const float rounding = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kLow);
   const gfx::RoundedCornersF radii(show ? rounding / scale : 0.0f);
   layer->SetRoundedCornerRadius(radii);
   layer->SetIsFastRoundedCorner(true);

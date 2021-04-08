@@ -170,7 +170,7 @@ bool NewTabButton::GetHitTestMask(SkPath* mask) const {
 
 int NewTabButton::GetCornerRadius() const {
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MAXIMUM, GetContentsBounds().size());
+      views::Emphasis::kMaximum, GetContentsBounds().size());
 }
 
 void NewTabButton::PaintFill(gfx::Canvas* canvas) const {

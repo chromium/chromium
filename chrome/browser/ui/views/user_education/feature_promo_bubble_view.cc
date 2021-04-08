@@ -268,7 +268,8 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
   GetBubbleFrameView()->SetCornerRadius(
-      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_HIGH));
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kHigh));
 
   widget->Show();
   if (feature_promo_bubble_timeout_)

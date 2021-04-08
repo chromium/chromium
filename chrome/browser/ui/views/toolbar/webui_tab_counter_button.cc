@@ -532,7 +532,7 @@ void WebUITabCounterButton::UpdateColors() {
   border_view_->SetBorder(views::CreateRoundedRectBorder(
       2,
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::EMPHASIS_MEDIUM),
+          views::Emphasis::kMedium),
       current_text_color));
 }
 

@@ -425,7 +425,7 @@ int DialogDelegate::GetCornerRadius() const {
   if (GetModalType() == ui::MODAL_TYPE_WINDOW)
     return 2;
 #endif
-  return LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_MEDIUM);
+  return LayoutProvider::Get()->GetCornerRadiusMetric(views::Emphasis::kMedium);
 }
 
 std::unique_ptr<View> DialogDelegate::DisownFootnoteView() {

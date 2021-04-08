@@ -683,7 +683,8 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
   constexpr int kInsidePadding = 12;
   constexpr int kBorderThickness = 1;
   const int kBorderCornerRadius =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_HIGH);
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kHigh);
 
   sync_background_state_ = sync_info.background_state;
   UpdateSyncInfoContainerBackground();
@@ -1056,7 +1057,7 @@ void ProfileMenuViewBase::UpdateSyncInfoContainerBackground() {
   sync_info_container_->SetBackground(views::CreateRoundedRectBackground(
       GetNativeTheme()->GetSystemColor(bg_color),
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::EMPHASIS_HIGH)));
+          views::Emphasis::kHigh)));
 }
 
 // Despite ProfileMenuViewBase being a dialog, we are enforcing it to behave

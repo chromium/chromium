@@ -67,7 +67,7 @@ void PlaceholderImageSource::Draw(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(color_);
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MEDIUM);
+      views::Emphasis::kMedium);
   canvas->sk_canvas()->drawRoundRect(gfx::RectToSkRect(gfx::Rect(size())),
                                      corner_radius, corner_radius, flags);
 }
@@ -93,7 +93,7 @@ class RoundedCornerImageView : public views::ImageView {
 void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
   SkPath mask;
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MEDIUM);
+      views::Emphasis::kMedium);
   mask.addRoundRect(gfx::RectToSkRect(GetImageBounds()), corner_radius,
                     corner_radius);
   canvas->ClipPath(mask, true);

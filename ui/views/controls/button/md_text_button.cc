@@ -37,7 +37,7 @@ MdTextButton::MdTextButton(PressedCallback callback,
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetShowInkDropWhenHotTracked(true);
-  SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(EMPHASIS_LOW));
+  SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kLow));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
   const int minimum_width = LayoutProvider::Get()->GetDistanceMetric(

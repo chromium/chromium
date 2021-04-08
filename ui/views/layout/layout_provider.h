@@ -118,18 +118,18 @@ enum DistanceMetric {
 // elements that only show text. Otherwise CONTROL should be used.
 enum DialogContentType { CONTROL, TEXT };
 
-enum EmphasisMetric {
+enum class Emphasis {
   // No emphasis needed for shadows, corner radius, etc.
-  EMPHASIS_NONE,
+  kNone,
   // Use this to indicate low-emphasis interactive elements such as buttons and
   // text fields.
-  EMPHASIS_LOW,
+  kLow,
   // Use this for components with medium emphasis, such the autofill dropdown.
-  EMPHASIS_MEDIUM,
+  kMedium,
   // High-emphasis components, such as tabs or dialogs.
-  EMPHASIS_HIGH,
+  kHigh,
   // Maximum emphasis components like the omnibox or rich suggestions.
-  EMPHASIS_MAXIMUM,
+  kMaximum,
 };
 
 class VIEWS_EXPORT LayoutProvider {
@@ -170,12 +170,12 @@ class VIEWS_EXPORT LayoutProvider {
   // TODO(https://crbug.com/822000): Possibly combine the following two
   // functions into a single function returning a struct.
 
-  // Returns the corner radius specific to the given emphasis metric.
-  virtual int GetCornerRadiusMetric(EmphasisMetric emphasis_metric,
+  // Returns the corner radius specific to the given emphasis.
+  virtual int GetCornerRadiusMetric(Emphasis emphasis,
                                     const gfx::Size& size = gfx::Size()) const;
 
   // Returns the shadow elevation metric for the given emphasis.
-  virtual int GetShadowElevationMetric(EmphasisMetric emphasis_metric) const;
+  virtual int GetShadowElevationMetric(Emphasis emphasis) const;
 
   // Creates shadows for the given elevation. Use GetShadowElevationMetric for
   // the appropriate elevation.

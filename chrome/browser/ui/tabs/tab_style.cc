@@ -66,7 +66,7 @@ gfx::Size TabStyle::GetPreviewImageSize() {
 // static
 int TabStyle::GetCornerRadius() {
   return views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_HIGH);
+      views::Emphasis::kHigh);
 }
 
 // static

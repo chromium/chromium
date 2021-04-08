@@ -36,7 +36,7 @@ namespace autofill {
 
 int AutofillPopupBaseView::GetCornerRadius() {
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MEDIUM);
+      views::Emphasis::kMedium);
 }
 
 SkColor AutofillPopupBaseView::GetBackgroundColor() const {
@@ -311,7 +311,7 @@ std::unique_ptr<views::Border> AutofillPopupBaseView::CreateBorder() {
   border->SetCornerRadius(GetCornerRadius());
   border->set_md_shadow_elevation(
       ChromeLayoutProvider::Get()->GetShadowElevationMetric(
-          views::EMPHASIS_MEDIUM));
+          views::Emphasis::kMedium));
   return border;
 }
 

@@ -448,7 +448,7 @@ void FindBarView::OnThemeChanged() {
       bg_color);
 
   border->SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MEDIUM));
+      views::Emphasis::kMedium));
 
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));

@@ -41,7 +41,7 @@ void ToolbarIconContainerView::RoundRectBorder::OnPaintLayer(
   gfx::Canvas* canvas = paint_recorder.canvas();
 
   const int radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MAXIMUM, layer_.size());
+      views::Emphasis::kMaximum, layer_.size());
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);

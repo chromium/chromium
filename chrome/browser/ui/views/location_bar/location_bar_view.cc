@@ -353,7 +353,7 @@ SkColor LocationBarView::GetOpaqueBorderColor() const {
 
 int LocationBarView::GetBorderRadius() const {
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MAXIMUM, size());
+      views::Emphasis::kMaximum, size());
 }
 
 std::unique_ptr<views::Background> LocationBarView::CreateRoundRectBackground(

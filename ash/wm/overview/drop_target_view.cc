@@ -46,8 +46,8 @@ class DropTargetView::PlusIconView : public views::ImageView {
 };
 
 DropTargetView::DropTargetView(bool has_plus_icon) {
-  const int corner_radius =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_LOW);
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kLow);
   background_view_ = AddChildView(std::make_unique<views::View>());
   background_view_->SetBackground(views::CreateRoundedRectBackground(
       kDropTargetBackgroundColor, corner_radius));
