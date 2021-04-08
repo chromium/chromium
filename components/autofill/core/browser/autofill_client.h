@@ -518,6 +518,9 @@ class AutofillClient : public RiskDataLoader {
       const GURL& offer_details_url,
       const CreditCard* card);
 
+  // Returns true if the Autofill Assistant UI is currently being shown.
+  virtual bool IsAutofillAssistantShowing();
+
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() = 0;
 

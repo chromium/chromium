@@ -37,6 +37,7 @@ extern const base::Feature kAutofillParseMerchantPromoCodeFields;
 extern const base::Feature kAutofillSaveCardDismissOnNavigation;
 extern const base::Feature kAutofillSaveCardInfobarEditSupport;
 extern const base::Feature kAutofillSortSuggestionsBasedOnOfferPresence;
+extern const base::Feature kAutofillSuppressCreditCardSaveForAssistant;
 extern const base::Feature kAutofillUpstream;
 extern const base::Feature kAutofillUpstreamAllowAllEmailDomains;
 

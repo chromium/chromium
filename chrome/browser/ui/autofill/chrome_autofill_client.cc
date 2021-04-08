@@ -555,10 +555,7 @@ void ChromeAutofillClient::ShowAutofillPopup(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
   // Don't show any popups while Autofill Assistant's UI is shown.
-  auto* assistant_runtime_manager =
-      autofill_assistant::RuntimeManager::GetForWebContents(web_contents());
-  if (assistant_runtime_manager && assistant_runtime_manager->GetState() ==
-                                       autofill_assistant::UIState::kShown) {
+  if (IsAutofillAssistantShowing()) {
     return;
   }
 
@@ -664,6 +661,13 @@ void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
   controller->ShowOfferNotificationIfApplicable(domains_to_display_bubble,
                                                 card);
 #endif
+}
+
+bool ChromeAutofillClient::IsAutofillAssistantShowing() {
+  auto* assistant_runtime_manager =
+      autofill_assistant::RuntimeManager::GetForWebContents(web_contents());
+  return assistant_runtime_manager && assistant_runtime_manager->GetState() ==
+                                          autofill_assistant::UIState::kShown;
 }
 
 bool ChromeAutofillClient::IsAutocompleteEnabled() {

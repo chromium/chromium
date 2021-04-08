@@ -66,6 +66,10 @@ void AutofillClient::ShowOfferNotificationIfApplicable(
   // ChromeAutofillClient (Chrome Desktop and Clank) implement this.
 }
 
+bool AutofillClient::IsAutofillAssistantShowing() {
+  return false;
+}
+
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }

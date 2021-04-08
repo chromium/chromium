@@ -150,6 +150,7 @@ class ChromeAutofillClient
       const std::vector<GURL>& domains_to_display_bubble,
       const GURL& offer_details_url,
       const CreditCard* card) override;
+  bool IsAutofillAssistantShowing() override;
   bool IsAutocompleteEnabled() override;
   void PropagateAutofillPredictions(
       content::RenderFrameHost* rfh,

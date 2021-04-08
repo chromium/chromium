@@ -45303,6 +45303,8 @@ from previous Chrome versions.
   <int value="-958372962" label="LacrosSupport:enabled"/>
   <int value="-957200826" label="enable-spdy-proxy-auth"/>
   <int value="-956696029" label="scheduler-configuration"/>
+  <int value="-955667686"
+      label="AutofillSuppressCreditCardSaveForAssistant:enabled"/>
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
   <int value="-952996862" label="ArcUseHighMemoryDalvikProfile:enabled"/>
   <int value="-951394314" label="top-chrome-md"/>
@@ -47775,6 +47777,8 @@ from previous Chrome versions.
   <int value="1298788828" label="WebID:disabled"/>
   <int value="1298927156" label="TouchpadOverscrollHistoryNavigation:enabled"/>
   <int value="1298981651" label="disable-new-task-manager"/>
+  <int value="1299336534"
+      label="AutofillSuppressCreditCardSaveForAssistant:disabled"/>
   <int value="1300282719" label="OfflinePagesBackgroundLoading:enabled"/>
   <int value="1300753556" label="ManualPasswordGenerationAndroid:disabled"/>
   <int value="1301902557" label="AutofillCreditCardAuthentication:disabled"/>
