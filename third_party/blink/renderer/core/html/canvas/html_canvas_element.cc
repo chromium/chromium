@@ -317,6 +317,19 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
     return nullptr;
   }
 
+  // WebGL contexts are not currently supported when recording/replaying.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    switch (context_type) {
+      case CanvasRenderingContext::kContextExperimentalWebgl:
+      case CanvasRenderingContext::kContextWebgl:
+      case CanvasRenderingContext::kContextWebgl2:
+      case CanvasRenderingContext::kContextGPUPresent:
+        return nullptr;
+      default:
+        break;
+    }
+  }
+
   // Log the aliased context type used.
   if (!context_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.ContextType", context_type);

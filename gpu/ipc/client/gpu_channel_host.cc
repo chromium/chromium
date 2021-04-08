@@ -62,6 +62,10 @@ GpuChannelHost::GpuChannelHost(int channel_id,
 }
 
 bool GpuChannelHost::Send(IPC::Message* msg) {
+  // The sync wait below currently can prevent recordings from being finished
+  // on the main thread.
+  CHECK(!recordreplay::IsRecordingOrReplaying());
+
   TRACE_IPC_MESSAGE_SEND("ipc", "GpuChannelHost::Send", msg);
 
   auto message = base::WrapUnique(msg);
