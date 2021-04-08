@@ -108,6 +108,8 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
     void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                                 content::RenderFrameHost* new_host) override;
 
+    void AXTreeIDForMainFrameHasChanged() override;
+
    private:
     chromecast::accessibility::AXTreeSourceFlutter* ax_tree_source_;
 

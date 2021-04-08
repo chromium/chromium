@@ -65,6 +65,11 @@ void AXTreeSourceFlutter::AXTreeWebContentsObserver::RenderFrameHostChanged(
   ax_tree_source_->UpdateTree();
 }
 
+void AXTreeSourceFlutter::AXTreeWebContentsObserver::
+    AXTreeIDForMainFrameHasChanged() {
+  ax_tree_source_->UpdateTree();
+}
+
 constexpr int kInvalidId = -1;
 
 AXTreeSourceFlutter::AXTreeSourceFlutter(

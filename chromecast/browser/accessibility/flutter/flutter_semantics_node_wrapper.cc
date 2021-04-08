@@ -417,8 +417,11 @@ void FlutterSemanticsNodeWrapper::Serialize(ui::AXNodeData* out_data) const {
       // There will likely only ever be one active at any time.
       for (CastWebContents* contents : all_contents) {
         if (contents->id() == web_contents_id) {
-          content::WebContents* web_contents = contents->web_contents();
-          out_data->AddChildTreeId(web_contents->GetMainFrame()->GetAXTreeID());
+          auto child_tree_id =
+              contents->web_contents()->GetMainFrame()->GetAXTreeID();
+          if (!child_tree_id.ToString().empty()) {
+            out_data->AddChildTreeId(child_tree_id);
+          }
           break;
         }
       }
