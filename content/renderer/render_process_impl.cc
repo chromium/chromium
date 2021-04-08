@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_v8_features.h"
 #include "v8/include/v8.h"
 
 #if defined(OS_WIN)
@@ -175,7 +176,7 @@ RenderProcessImpl::RenderProcessImpl()
   }
   // SharedArrayBuffer requires feature flags, or site isolation.
   if (enable_shared_array_buffer || cross_origin_isolated) {
-    blink::EnableSharedArrayBuffer();
+    blink::WebV8Features::EnableSharedArrayBuffer();
   } else {
     constexpr char kNoSABFlag[] = "--no-harmony-sharedarraybuffer";
     v8::V8::SetFlagsFromString(kNoSABFlag, sizeof(kNoSABFlag));

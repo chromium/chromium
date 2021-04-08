@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CONTEXT_FEATURES_H_
-#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CONTEXT_FEATURES_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_V8_FEATURES_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_V8_FEATURES_H_
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-// WebContextFeatures is used in conjunction with IDL interface features which
+// WebV8Features is used in conjunction with IDL interface features which
 // specify a [ContextEnabled] extended attribute. Such features may be enabled
 // for arbitrary main-world V8 contexts by using these methods during
 // WebLocalFrameClient::DidCreateScriptContext. Enabling a given feature causes
@@ -19,14 +19,17 @@ namespace blink {
 //
 // See src/third_party/blink/renderer/bindings/IDLExtendedAttributes.md for more
 // information.
-class WebContextFeatures {
+class WebV8Features {
  public:
   BLINK_EXPORT static void EnableMojoJS(v8::Local<v8::Context>, bool);
 
+  // Enables SharedArrayBuffer for this process.
+  BLINK_EXPORT static void EnableSharedArrayBuffer();
+
  private:
-  WebContextFeatures() = delete;
+  WebV8Features() = delete;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CONTEXT_FEATURES_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_V8_FEATURES_H_

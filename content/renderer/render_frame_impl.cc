@@ -190,7 +190,6 @@
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_console_message.h"
-#include "third_party/blink/public/web/web_context_features.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
@@ -214,6 +213,7 @@
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_serialized_script_value.h"
 #include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/public/web/web_v8_features.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -4533,7 +4533,7 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
       IsMainFrame() && world_id == ISOLATED_WORLD_ID_GLOBAL) {
     // We only allow these bindings to be installed when creating the main
     // world context of the main frame.
-    blink::WebContextFeatures::EnableMojoJS(context, true);
+    blink::WebV8Features::EnableMojoJS(context, true);
   }
 
   for (auto& observer : observers_)

@@ -101,7 +101,6 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -110,6 +109,7 @@
 #include "third_party/blink/public/web/web_script_controller.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/public/web/web_v8_features.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -953,7 +953,7 @@ void Dispatcher::ActivateExtension(const std::string& extension_id) {
   // SharedArrayBuffer access in extension processes. Remove once we add support
   // for extension opt-in into cross-origin isolation.
   if (extension->is_extension())
-    blink::EnableSharedArrayBuffer();
+    blink::WebV8Features::EnableSharedArrayBuffer();
 
   active_extension_ids_.insert(extension_id);
 
