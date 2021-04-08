@@ -67,8 +67,10 @@ public class AddToHomescreenMostVisitedTileClickObserver implements MostVisitedT
     }
 
     private void removeObserver(Tab tab) {
-        NewTabPage ntp = tab.getNativePage() == null ? null : (NewTabPage) tab.getNativePage();
-        if (ntp == null) return;
+        if (tab.getNativePage() == null) return;
+        if (!UrlUtilities.isNTPUrl(tab.getNativePage().getUrl())) return;
+
+        NewTabPage ntp = (NewTabPage) tab.getNativePage();
         ntp.removeMostVisitedTileClickObserver(this);
     }
 }
