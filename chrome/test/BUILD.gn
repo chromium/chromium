@@ -781,6 +781,7 @@ if (!is_android) {
     use_xvfb = use_xvfb_in_this_config
 
     configs += [ "//build/config:precompiled_headers" ]
+    configs += [ ":disable_thinlto_cache_flags" ]
     defines = [
       "HAS_OUT_OF_PROC_TEST_RUNNER",
       "CHROME_VERSION_MAJOR=" + chrome_version_major,
@@ -3467,7 +3468,7 @@ group("telemetry_perf_webview_tests") {
   deps = [ "//chrome/test:telemetry_perf_tests" ]
 }
 
-config("unit_tests_thinlto_flags") {
+config("disable_thinlto_cache_flags") {
   if (is_linux && use_thin_lto) {
     # This build target has so many inputs the LLD will run into the default
     # vm.max_map_count limit of 65530 memory mappings when using the ThinLTO
@@ -4140,7 +4141,7 @@ test("unit_tests") {
   }
 
   configs += [ "//build/config:precompiled_headers" ]
-  configs += [ ":unit_tests_thinlto_flags" ]
+  configs += [ ":disable_thinlto_cache_flags" ]
 
   data_deps = [
     "//chrome/test/data/media/engagement/preload:generate_preload_list",
