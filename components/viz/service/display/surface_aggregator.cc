@@ -1033,6 +1033,11 @@ void SurfaceAggregator::CopyQuadsToPass(
   // If there are pixel-moving backdrop filters then the damage rect might be
   // expanded later, so we can't drop quads that are outside the current damage
   // rect safely.
+  // If overlay/underlay is enabled then the underlay rect might be added to the
+  // damage rect later. We are not able to predict right here which draw quad
+  // candidate will be promoted to overlay/underlay. Also, we might drop quads
+  // which are on top of an underlay and cause the overlay processor to
+  // present the quad as an overlay instead of an underlay.
   const bool ignore_undamaged =
       aggregate_only_damaged_ && !has_copy_requests_ &&
       !has_cached_render_passes_ && !has_pixel_moving_backdrop_filter_ &&
