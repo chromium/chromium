@@ -35,9 +35,9 @@ There are two common scenarios for hitting the pragma:
    using techniques such as forward declarations to avoid increasing the header
    size. Even complex classes may have forward declarations available, see for
    example
-   [https://source.chromium.org/chromium/chromium/src/+/master:base/callback_forward.h](callback_forward.h)
+   [https://source.chromium.org/chromium/chromium/src/+/HEAD:base/callback_forward.h](callback_forward.h)
    and
-   [https://source.chromium.org/chromium/chromium/src/+/master:base/strings/string_piece_forward.h](string_piece_forward.h).
+   [https://source.chromium.org/chromium/chromium/src/+/HEAD:base/strings/string_piece_forward.h](string_piece_forward.h).
    Many types defined in .mojom.h files have forward declarations in a
    corresponding .mojom-forward.h file. If the size increase is unavoidable,
    raise the limit.
@@ -71,3 +71,9 @@ are (or were) large and widely included.
   causing build problems downstream. To avoid this, the -Wmax-tokens warning
   was disabled for Chrome OS (see
   [crbug.com/1079053](https://crbug.com/1079053)).
+
+- Good examples of -Wmax-tokens preventing regressions:
+
+  - [https://chromium-review.googlesource.com/c/chromium/src/+/2795166](CL
+    2795166): The CQ caught a size increase in render_frame_host.h, and the
+    code was easily adjusted to avoid the increase.
