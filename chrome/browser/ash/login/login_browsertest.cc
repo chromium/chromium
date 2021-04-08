@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, FullEmailDontMatchProvided) {
   TestSystemTrayIsVisible();
 }
 
-IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, BackButtonTest) {
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, DISABLED_BackButtonTest) {
   std::string domain = gaia::ExtractDomainName(managed_user_id_.GetUserEmail());
 
   ConfigurePolicy(domain);
