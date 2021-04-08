@@ -780,8 +780,8 @@ bool VideoCaptureDeviceMac::Init(VideoCaptureApi capture_api_type) {
   if (capture_api_type != VideoCaptureApi::MACOSX_AVFOUNDATION)
     return false;
 
-  capture_device_.reset([[GetVideoCaptureDeviceAVFoundationImplementationClass()
-      alloc] initWithFrameReceiver:this]);
+  capture_device_.reset(
+      [[VideoCaptureDeviceAVFoundation alloc] initWithFrameReceiver:this]);
 
   if (!capture_device_)
     return false;

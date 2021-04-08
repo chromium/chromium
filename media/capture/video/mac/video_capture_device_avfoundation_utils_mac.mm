@@ -9,7 +9,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "media/base/media_switches.h"
-#include "media/capture/video/mac/video_capture_device_avfoundation_legacy_mac.h"
 #include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
@@ -189,48 +188,6 @@ base::scoped_nsobject<NSDictionary> GetVideoCaptureDeviceNames() {
   // this might cause instabilities (it did in QTKit), so keep an eye here.
   return base::scoped_nsobject<NSDictionary>(GetDeviceNames(),
                                              base::scoped_policy::RETAIN);
-}
-
-media::VideoCaptureFormats GetDeviceSupportedFormats(
-    Class implementation,
-    const media::VideoCaptureDeviceDescriptor& descriptor) {
-  media::VideoCaptureFormats formats;
-  NSArray* devices = [AVCaptureDevice devices];
-  AVCaptureDevice* device = nil;
-  for (device in devices) {
-    if (base::SysNSStringToUTF8([device uniqueID]) == descriptor.device_id)
-      break;
-  }
-  if (device == nil)
-    return media::VideoCaptureFormats();
-  for (AVCaptureDeviceFormat* format in device.formats) {
-    // MediaSubType is a CMPixelFormatType but can be used as CVPixelFormatType
-    // as well according to CMFormatDescription.h
-    const media::VideoPixelFormat pixelFormat = [implementation
-        FourCCToChromiumPixelFormat:CMFormatDescriptionGetMediaSubType(
-                                        [format formatDescription])];
-
-    CMVideoDimensions dimensions =
-        CMVideoFormatDescriptionGetDimensions([format formatDescription]);
-
-    for (AVFrameRateRange* frameRate in
-         [format videoSupportedFrameRateRanges]) {
-      media::VideoCaptureFormat format(
-          gfx::Size(dimensions.width, dimensions.height),
-          frameRate.maxFrameRate, pixelFormat);
-      DVLOG(2) << descriptor.display_name() << " "
-               << media::VideoCaptureFormat::ToString(format);
-      formats.push_back(std::move(format));
-    }
-  }
-  return formats;
-}
-
-Class GetVideoCaptureDeviceAVFoundationImplementationClass() {
-  if (base::FeatureList::IsEnabled(media::kAVFoundationCaptureV2)) {
-    return [VideoCaptureDeviceAVFoundation class];
-  }
-  return [VideoCaptureDeviceAVFoundationLegacy class];
 }
 
 gfx::Size GetPixelBufferSize(CVPixelBufferRef pixel_buffer) {

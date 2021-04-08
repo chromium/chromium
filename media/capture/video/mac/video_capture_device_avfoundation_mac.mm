@@ -911,9 +911,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   // If the SampleBufferTransformer is enabled, convert all possible capture
   // formats to an IOSurface-backed NV12 pixel buffer.
-  // TODO(https://crbug.com/1175142): Update this code path so that it is
-  // possible to turn on/off the kAVFoundationCaptureV2ZeroCopy feature and the
-  // kInCaptureConvertToNv12 feature separately.
+  // TODO(https://crbug.com/1175142): Refactor to not hijack the code paths
+  // below the transformer code.
   // TODO(hbos): When |_sampleBufferTransformer| gets shipped 100%, delete the
   // other code paths.
   if (_sampleBufferTransformer && sampleHasPixelBufferOrIsMjpeg) {
@@ -978,17 +977,13 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     DCHECK_EQ(pixelBufferPixelFormat, sampleBufferPixelFormat);
 
     // First preference is to use an NV12 IOSurface as a GpuMemoryBuffer.
-    static const bool kEnableGpuMemoryBuffers =
-        base::FeatureList::IsEnabled(media::kAVFoundationCaptureV2ZeroCopy);
-    if (kEnableGpuMemoryBuffers) {
-      if (CVPixelBufferGetIOSurface(pixelBuffer) &&
-          videoPixelFormat == media::PIXEL_FORMAT_NV12) {
-        [self processPixelBufferNV12IOSurface:pixelBuffer
-                                captureFormat:captureFormat
-                                   colorSpace:colorSpace
-                                    timestamp:timestamp];
-        return;
-      }
+    if (CVPixelBufferGetIOSurface(pixelBuffer) &&
+        videoPixelFormat == media::PIXEL_FORMAT_NV12) {
+      [self processPixelBufferNV12IOSurface:pixelBuffer
+                              captureFormat:captureFormat
+                                 colorSpace:colorSpace
+                                  timestamp:timestamp];
+      return;
     }
 
     // Second preference is to read the CVPixelBuffer's planes.

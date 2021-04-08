@@ -20,7 +20,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
-#import "media/capture/video/mac/video_capture_device_avfoundation_protocol_mac.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 
@@ -123,8 +122,7 @@ class VideoCaptureDeviceMac
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   InternalState state_;
 
-  base::scoped_nsobject<NSObject<VideoCaptureDeviceAVFoundationProtocol>>
-      capture_device_;
+  base::scoped_nsobject<VideoCaptureDeviceAVFoundation> capture_device_;
 
   // To hold on to the TakePhotoCallback while the picture is being taken.
   TakePhotoCallback photo_callback_;

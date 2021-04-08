@@ -232,11 +232,6 @@ MEDIA_EXPORT extern const base::Feature kMediaFoundationD3D11VideoCapture;
 MEDIA_EXPORT extern const base::Feature kWasapiRawAudioCapture;
 #endif  // defined(OS_WIN)
 
-#if defined(OS_MAC)
-MEDIA_EXPORT extern const base::Feature kAVFoundationCaptureV2;
-MEDIA_EXPORT extern const base::Feature kAVFoundationCaptureV2ZeroCopy;
-#endif
-
 #if defined(OS_CHROMEOS)
 MEDIA_EXPORT extern const base::Feature kDeprecateLowUsageCodecs;
 #endif

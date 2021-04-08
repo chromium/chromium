@@ -6,7 +6,6 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
 #import "media/capture/video/mac/test/video_capture_test_utils_mac.h"
@@ -15,22 +14,7 @@
 
 namespace media {
 
-enum class AVFoundationCaptureV2 { kEnabled, kDisabled };
-
-class VideoCaptureDeviceFactoryMacTest
-    : public ::testing::TestWithParam<AVFoundationCaptureV2> {
- public:
-  VideoCaptureDeviceFactoryMacTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        media::kAVFoundationCaptureV2,
-        /*enabled=*/GetParam() == AVFoundationCaptureV2::kEnabled);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(VideoCaptureDeviceFactoryMacTest, ListDevicesAVFoundation) {
+TEST(VideoCaptureDeviceFactoryMacTest, ListDevicesAVFoundation) {
   RunTestCase(base::BindOnce([]() {
     VideoCaptureDeviceFactoryMac video_capture_device_factory;
 
@@ -46,10 +30,5 @@ TEST_P(VideoCaptureDeviceFactoryMacTest, ListDevicesAVFoundation) {
     }
   }));
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         VideoCaptureDeviceFactoryMacTest,
-                         ::testing::Values(AVFoundationCaptureV2::kEnabled,
-                                           AVFoundationCaptureV2::kDisabled));
 
 }  // namespace media
