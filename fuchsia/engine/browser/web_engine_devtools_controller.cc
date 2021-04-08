@@ -200,11 +200,10 @@ class UserModeController : public WebEngineDevToolsController {
 class DebugModeController : public WebEngineDevToolsController {
  public:
   explicit DebugModeController(
-      std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners) {
-    for (auto& listener : listeners) {
-      devtools_listeners_.AddInterfacePtr(std::move(listener));
-    }
-  }
+      std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners)
+      : DebugModeController(
+            std::move(listeners),
+            net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0)) {}
   ~DebugModeController() override = default;
 
   DebugModeController(const DebugModeController&) = delete;
@@ -215,7 +214,7 @@ class DebugModeController : public WebEngineDevToolsController {
     StartRemoteDebuggingServer(
         base::BindOnce(&DebugModeController::OnDevToolsPortChanged,
                        base::Unretained(this)),
-        net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0));
+        ip_endpoint_);
   }
   void OnContextDestroyed() override {
     content::DevToolsAgentHost::StopRemoteDebuggingServer();
@@ -236,96 +235,25 @@ class DebugModeController : public WebEngineDevToolsController {
     std::move(callback).Run(0);
   }
 
- private:
-  void OnDevToolsPortChanged(uint16_t port) {
-    devtools_port_ = port;
-    MaybeSendRemoteDebuggingCallbacks();
+ protected:
+  DebugModeController(
+      std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners,
+      net::IPEndPoint ip_endpoint)
+      : ip_endpoint_(std::move(ip_endpoint)) {
+    for (auto& listener : listeners) {
+      devtools_listeners_.AddInterfacePtr(std::move(listener));
+    }
   }
 
-  void MaybeSendRemoteDebuggingCallbacks() {
-    if (!frame_loaded_ || !devtools_port_)
-      return;
-
-    // If |devtools_port_| is valid then notify all listeners, otherwise
-    // disconnect them.
-    if (devtools_port_.value() == 0) {
-      devtools_listeners_.CloseAll();
-    } else {
-      for (const auto& listener : devtools_listeners_.ptrs()) {
-        listener->get()->OnHttpPortOpen(devtools_port_.value());
-      }
-    }
+  virtual void OnDevToolsPortChanged(uint16_t port) {
+    devtools_port_ = port;
+    MaybeSendRemoteDebuggingCallbacks();
   }
 
   // Currently active DevTools port. Set to 0 on service startup error.
   base::Optional<uint16_t> devtools_port_;
 
-  bool frame_loaded_ = false;
-
-  fidl::InterfacePtrSet<fuchsia::web::DevToolsPerContextListener>
-      devtools_listeners_;
-};
-
-// "Mixed-mode" is used when both user and debug remote debugging are active at
-// the same time. The service lifespan is tied to the Context and all Frames are
-// available for remote debugging.
-class MixedModeController : public WebEngineDevToolsController {
- public:
-  explicit MixedModeController(
-      std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners,
-      uint16_t server_port)
-      : ip_endpoint_(net::IPAddress::IPv6AllZeros(), server_port) {
-    for (auto& listener : listeners) {
-      devtools_listeners_.AddInterfacePtr(std::move(listener));
-    }
-  }
-  ~MixedModeController() override = default;
-
-  MixedModeController(const MixedModeController&) = delete;
-  MixedModeController& operator=(const MixedModeController&) = delete;
-
-  // WebEngineDevToolsController implementation:
-  void OnContextCreated() override {
-    StartRemoteDebuggingServer(
-        base::BindOnce(&MixedModeController::OnDevToolsPortChanged,
-                       base::Unretained(this)),
-        ip_endpoint_);
-  }
-  void OnContextDestroyed() override {
-    content::DevToolsAgentHost::StopRemoteDebuggingServer();
-  }
-  bool OnFrameCreated(content::WebContents* contents,
-                      bool user_debugging) override {
-    return true;
-  }
-  void OnFrameLoaded(content::WebContents* contents) override {
-    frame_loaded_ = true;
-    MaybeSendRemoteDebuggingCallbacks();
-  }
-  void OnFrameDestroyed(content::WebContents* contents) override {}
-  content::DevToolsAgentHost::List RemoteDebuggingTargets() override {
-    return content::DevToolsAgentHost::GetOrCreateAll();
-  }
-  void GetDevToolsPort(base::OnceCallback<void(uint16_t)> callback) override {
-    get_port_callbacks_.emplace_back(std::move(callback));
-    MaybeNotifyGetPortCallbacks();
-  }
-
  private:
-  void OnDevToolsPortChanged(uint16_t port) {
-    devtools_port_ = port;
-    MaybeNotifyGetPortCallbacks();
-    MaybeSendRemoteDebuggingCallbacks();
-  }
-
-  void MaybeNotifyGetPortCallbacks() {
-    if (!devtools_port_)
-      return;
-    for (auto& callback : get_port_callbacks_)
-      std::move(callback).Run(devtools_port_.value());
-    get_port_callbacks_.clear();
-  }
-
   void MaybeSendRemoteDebuggingCallbacks() {
     if (!frame_loaded_ || !devtools_port_)
       return;
@@ -343,15 +271,50 @@ class MixedModeController : public WebEngineDevToolsController {
 
   const net::IPEndPoint ip_endpoint_;
 
-  // Currently active DevTools port. Set to 0 on service startup error.
-  base::Optional<uint16_t> devtools_port_;
-
-  std::vector<base::OnceCallback<void(uint16_t)>> get_port_callbacks_;
-
   bool frame_loaded_ = false;
 
   fidl::InterfacePtrSet<fuchsia::web::DevToolsPerContextListener>
       devtools_listeners_;
+};
+
+// "Mixed-mode" is used when both user and debug remote debugging are active at
+// the same time. The service lifespan is tied to the Context and all Frames are
+// available for remote debugging.
+class MixedModeController : public DebugModeController {
+ public:
+  MixedModeController(
+      std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners,
+      uint16_t server_port)
+      : DebugModeController(
+            std::move(listeners),
+            net::IPEndPoint(net::IPAddress::IPv6AllZeros(), server_port)) {}
+  ~MixedModeController() override = default;
+
+  // WebEngineDevToolsController overrides:
+  bool OnFrameCreated(content::WebContents* contents,
+                      bool user_debugging) override {
+    return true;
+  }
+  void GetDevToolsPort(base::OnceCallback<void(uint16_t)> callback) override {
+    get_port_callbacks_.emplace_back(std::move(callback));
+    MaybeNotifyGetPortCallbacks();
+  }
+
+  // DebugModeController overrides:
+  void OnDevToolsPortChanged(uint16_t port) override {
+    DebugModeController::OnDevToolsPortChanged(port);
+    MaybeNotifyGetPortCallbacks();
+  }
+
+  void MaybeNotifyGetPortCallbacks() {
+    if (!devtools_port_)
+      return;
+    for (auto& callback : get_port_callbacks_)
+      std::move(callback).Run(devtools_port_.value());
+    get_port_callbacks_.clear();
+  }
+
+  std::vector<base::OnceCallback<void(uint16_t)>> get_port_callbacks_;
 };
 
 }  //  namespace
