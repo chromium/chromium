@@ -10,7 +10,7 @@
 
 namespace web_app {
 
-#if !defined(OS_WIN)
+#if !(defined(OS_WIN) || defined(OS_LINUX))
 // Registers a protocol handler for the web app with the OS.
 void RegisterProtocolHandlersWithOs(
     const AppId& app_id,

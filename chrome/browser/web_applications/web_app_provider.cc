@@ -232,7 +232,8 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
     auto protocol_handler_manager =
         std::make_unique<WebAppProtocolHandlerManager>(profile);
     auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
-        profile, icon_manager.get(), file_handler_manager.get());
+        profile, icon_manager.get(), file_handler_manager.get(),
+        protocol_handler_manager.get());
 
     std::unique_ptr<UrlHandlerManager> url_handler_manager = nullptr;
 #if defined(OS_WIN) || defined(OS_MAC) || \

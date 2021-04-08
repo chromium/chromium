@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
+#include "chrome/browser/web_applications/components/protocol_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -29,10 +30,12 @@ namespace web_app {
 WebAppShortcutManager::WebAppShortcutManager(
     Profile* profile,
     WebAppIconManager* icon_manager,
-    FileHandlerManager* file_handler_manager)
+    FileHandlerManager* file_handler_manager,
+    ProtocolHandlerManager* protocol_handler_manager)
     : AppShortcutManager(profile),
       icon_manager_(icon_manager),
-      file_handler_manager_(file_handler_manager) {}
+      file_handler_manager_(file_handler_manager),
+      protocol_handler_manager_(protocol_handler_manager) {}
 
 WebAppShortcutManager::~WebAppShortcutManager() = default;
 
@@ -128,6 +131,14 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
         GetFileExtensionsFromFileHandlers(*file_handlers);
     shortcut_info->file_handler_mime_types =
         GetMimeTypesFromFileHandlers(*file_handlers);
+  }
+
+  std::vector<apps::ProtocolHandlerInfo> protocol_handlers =
+      protocol_handler_manager_->GetAppProtocolHandlerInfos(app->app_id());
+  for (const auto& protocol_handler : protocol_handlers) {
+    if (!protocol_handler.protocol.empty()) {
+      shortcut_info->protocol_handlers.emplace(protocol_handler.protocol);
+    }
   }
 
   return shortcut_info;

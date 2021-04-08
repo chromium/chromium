@@ -19,6 +19,7 @@ class Profile;
 namespace web_app {
 
 class FileHandlerManager;
+class ProtocolHandlerManager;
 class WebApp;
 class WebAppIconManager;
 class WebAppRegistrar;
@@ -28,7 +29,8 @@ class WebAppShortcutManager : public AppShortcutManager {
  public:
   WebAppShortcutManager(Profile* profile,
                         WebAppIconManager* icon_manager,
-                        FileHandlerManager* file_handler_manager);
+                        FileHandlerManager* file_handler_manager,
+                        ProtocolHandlerManager* protocol_handler_manager);
   WebAppShortcutManager(const WebAppShortcutManager&) = delete;
   WebAppShortcutManager& operator=(const WebAppShortcutManager&) = delete;
   ~WebAppShortcutManager() override;
@@ -49,6 +51,7 @@ class WebAppShortcutManager : public AppShortcutManager {
 
   WebAppIconManager* icon_manager_;
   FileHandlerManager* file_handler_manager_;
+  ProtocolHandlerManager* protocol_handler_manager_;
 
   base::WeakPtrFactory<WebAppShortcutManager> weak_ptr_factory_{this};
 };

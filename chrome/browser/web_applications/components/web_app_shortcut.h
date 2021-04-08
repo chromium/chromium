@@ -47,6 +47,7 @@ struct ShortcutInfo {
   std::string version_for_display;
   std::set<std::string> file_handler_extensions;
   std::set<std::string> file_handler_mime_types;
+  std::set<std::string> protocol_handlers;
 
   // An app is multi-profile if there is a single shortcut and single app shim
   // for all profiles. The app itself has a profile switcher that may be used

@@ -443,6 +443,12 @@ bool CreateDesktopShortcut(base::Environment* env,
       shortcut_info.file_handler_mime_types.begin(),
       shortcut_info.file_handler_mime_types.end());
 
+  // Convert protocol handlers into mime types for registration in the
+  // .desktop file.
+  for (const auto& protocol_handler : shortcut_info.protocol_handlers) {
+    mime_types.push_back("x-scheme-handler/" + protocol_handler);
+  }
+
   // Set NoDisplay=true if hidden. This will hide the application from
   // user-facing menus.
   std::string contents = shell_integration_linux::GetDesktopFileContents(

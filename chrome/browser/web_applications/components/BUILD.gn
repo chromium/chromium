@@ -117,7 +117,10 @@ source_set("components") {
   }
 
   if (is_linux) {
-    sources += [ "web_app_run_on_os_login_linux.cc" ]
+    sources += [
+      "web_app_protocol_handler_registration_linux.cc",
+      "web_app_run_on_os_login_linux.cc",
+    ]
   }
 
   if (is_chromeos_ash || is_chromeos_lacros) {
@@ -255,7 +258,10 @@ source_set("unit_tests") {
   }
 
   if (is_linux) {
-    sources += [ "web_app_run_on_os_login_linux_unittest.cc" ]
+    sources += [
+      "web_app_protocol_handler_registration_linux_unittest.cc",
+      "web_app_run_on_os_login_linux_unittest.cc",
+    ]
   }
 
   if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
