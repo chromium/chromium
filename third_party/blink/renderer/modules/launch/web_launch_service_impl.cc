@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/launch/dom_window_launch_queue.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 // static
@@ -61,6 +62,8 @@ void WebLaunchServiceImpl::SetLaunchFiles(
         std::move(entry), GetSupplementable()->GetExecutionContext()));
   }
 
+  UseCounter::Count(GetSupplementable()->GetExecutionContext(),
+                    WebFeature::kFileHandlingLaunch);
   DOMWindowLaunchQueue::UpdateLaunchFiles(GetSupplementable(),
                                           std::move(files));
 }

@@ -3185,6 +3185,7 @@ enum WebFeature {
   kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope = 3872,
   kAuthorizationCoveredByWildcard = 3873,
   kElementGetInnerHTML = 3874,
+  kFileHandlingLaunch = 3875,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

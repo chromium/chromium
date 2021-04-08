@@ -32100,6 +32100,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="WorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope"/>
   <int value="3873" label="AuthorizationCoveredByWildcard"/>
   <int value="3874" label="ElementGetInnerHTML"/>
+  <int value="3875" label="FileHandlingLaunch"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
