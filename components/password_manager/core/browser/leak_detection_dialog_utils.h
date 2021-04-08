@@ -36,10 +36,6 @@ enum class PasswordCheckupReferrer {
 // Contains combination of CredentialLeakFlags values.
 using CredentialLeakType = std::underlying_type_t<CredentialLeakFlags>;
 
-// Contains a number of compromised sites.
-using CompromisedSitesCount =
-    base::StrongAlias<class CompromisedSitesCountTag, int>;
-
 using IsSaved = base::StrongAlias<class IsSavedTag, bool>;
 using IsReused = base::StrongAlias<class IsReusedTag, bool>;
 using IsSyncing = base::StrongAlias<class IsSyncingTag, bool>;
@@ -67,12 +63,6 @@ std::u16string GetCancelButtonLabel();
 // Returns the leak dialog message based on leak type.
 std::u16string GetDescription(password_manager::CredentialLeakType leak_type,
                               const GURL& origin);
-
-// Returns the leak dialog message based on leak type and count of leaked sites.
-std::u16string GetDescriptionWithCount(
-    password_manager::CredentialLeakType leak_type,
-    const GURL& origin,
-    CompromisedSitesCount saved_sites);
 
 // Returns the leak dialog title based on leak type.
 std::u16string GetTitle(password_manager::CredentialLeakType leak_type);

@@ -19,12 +19,10 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
     password_manager::CredentialLeakType leak_type,
-    password_manager::CompromisedSitesCount saved_sites,
     const GURL& origin,
     const std::u16string& username,
     ui::WindowAndroid* window_android)
     : leak_type_(leak_type),
-      saved_sites_(saved_sites),
       origin_(origin),
       username_(username),
       window_android_(window_android) {}
@@ -86,8 +84,7 @@ std::u16string CredentialLeakControllerAndroid::GetCancelButtonLabel() const {
 }
 
 std::u16string CredentialLeakControllerAndroid::GetDescription() const {
-  return password_manager::GetDescriptionWithCount(leak_type_, origin_,
-                                                   saved_sites_);
+  return password_manager::GetDescription(leak_type_, origin_);
 }
 
 std::u16string CredentialLeakControllerAndroid::GetTitle() const {

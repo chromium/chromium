@@ -49,30 +49,25 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
   if (--wait_counter_ > 0)
     return;
 
-  base::flat_set<std::string> distinct_origins;
   std::u16string canonicalized_username = CanonicalizeUsername(username_);
   for (const auto& form : partial_results_) {
     if (CanonicalizeUsername(form->username_value) == canonicalized_username) {
-      distinct_origins.insert(form->signon_realm);
       PasswordStore& store =
           form->IsUsingAccountStore() ? *account_store_ : *profile_store_;
       store.AddInsecureCredential(InsecureCredential(
           form->signon_realm, form->username_value, base::Time::Now(),
           InsecureType::kLeaked, IsMuted(false)));
     }
-    }
+  }
 
   IsSaved is_saved(
       base::ranges::any_of(partial_results_, [this](const auto& form) {
         return form->url == url_ && form->username_value == username_;
       }));
 
-  // Number of compromised origins that the user saved.
-  CompromisedSitesCount saved_sites(distinct_origins.size());
-
   IsReused is_reused(partial_results_.size() > (is_saved ? 1 : 0));
   std::move(callback_).Run(is_saved, is_reused, std::move(url_),
-                           std::move(username_), saved_sites);
+                           std::move(username_));
 }
 
 }  // namespace password_manager

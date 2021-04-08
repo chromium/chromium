@@ -23,8 +23,8 @@ class PasswordStore;
 class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
  public:
   // Type alias for |callback_|.
-  using LeakTypeReply = base::OnceCallback<
-      void(IsSaved, IsReused, GURL, std::u16string, CompromisedSitesCount)>;
+  using LeakTypeReply =
+      base::OnceCallback<void(IsSaved, IsReused, GURL, std::u16string)>;
 
   LeakDetectionDelegateHelper(scoped_refptr<PasswordStore> profile_store,
                               scoped_refptr<PasswordStore> account_store,

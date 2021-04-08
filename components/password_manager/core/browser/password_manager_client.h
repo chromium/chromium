@@ -244,7 +244,6 @@ class PasswordManagerClient {
   // Informs the embedder that user credentials were leaked.
   virtual void NotifyUserCredentialsWereLeaked(
       CredentialLeakType leak_type,
-      CompromisedSitesCount saved_sites,
       const GURL& origin,
       const std::u16string& username);
 

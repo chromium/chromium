@@ -559,7 +559,6 @@ void ChromePasswordManagerClient::AutofillHttpAuth(
 
 void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
-    password_manager::CompromisedSitesCount saved_sites,
     const GURL& origin,
     const std::u16string& username) {
 #if defined(OS_ANDROID)
@@ -582,8 +581,7 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
   }
 
   (new CredentialLeakControllerAndroid(
-       leak_type, saved_sites, origin, username,
-       web_contents()->GetTopLevelNativeWindow()))
+       leak_type, origin, username, web_contents()->GetTopLevelNativeWindow()))
       ->ShowDialog();
 #else   // !defined(OS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =

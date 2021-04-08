@@ -53,19 +53,23 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_CONST_METHOD0(IsIncognito, bool());
-  MOCK_CONST_METHOD0(GetPrefs, PrefService*());
-  MOCK_METHOD4(NotifyUserCredentialsWereLeaked,
-               void(password_manager::CredentialLeakType,
-                    password_manager::CompromisedSitesCount,
-                    const GURL&,
-                    const std::u16string& username));
-  MOCK_CONST_METHOD0(GetProfilePasswordStore, PasswordStore*());
+  MOCK_METHOD(bool, IsIncognito, (), (const override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (const override));
+  MOCK_METHOD(void,
+              NotifyUserCredentialsWereLeaked,
+              (password_manager::CredentialLeakType,
+               const GURL&,
+               const std::u16string&),
+              (override));
+  MOCK_METHOD(PasswordStore*, GetProfilePasswordStore, (), (const override));
 };
 
 class MockLeakDetectionCheck : public LeakDetectionCheck {
  public:
-  MOCK_METHOD3(Start, void(const GURL&, std::u16string, std::u16string));
+  MOCK_METHOD(void,
+              Start,
+              (const GURL&, std::u16string, std::u16string),
+              (override));
 };
 
 }  // namespace
@@ -289,7 +293,7 @@ TEST_F(LeakDetectionDelegateTest,
               NotifyUserCredentialsWereLeaked(
                   password_manager::CreateLeakType(
                       IsSaved(false), IsReused(false), IsSyncing(false)),
-                  CompromisedSitesCount(0), form.url, form.username_value));
+                  form.url, form.username_value));
 
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/false, form.url, form.username_value, form.password_value);
@@ -313,7 +317,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
               NotifyUserCredentialsWereLeaked(
                   password_manager::CreateLeakType(
                       IsSaved(false), IsReused(false), IsSyncing(false)),
-                  CompromisedSitesCount(0), form.url, form.username_value));
+                  form.url, form.username_value));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
   WaitForPasswordStore();
@@ -336,9 +340,8 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
   delegate().StartLeakCheck(form);
 
-  EXPECT_CALL(client(),
-              NotifyUserCredentialsWereLeaked(_, CompromisedSitesCount(1),
-                                              form.url, form.username_value));
+  EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked(_, form.url,
+                                                        form.username_value));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
 

@@ -17,7 +17,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using password_manager::CompromisedSitesCount;
 using password_manager::CreateLeakType;
 using password_manager::CredentialLeakFlags;
 using password_manager::CredentialLeakType;
@@ -110,11 +109,8 @@ TEST(CredentialLeakDialogUtilsTest, GetChangeAndCheckPasswordsDescription) {
     if (kLeakTypesTestCases[i].leak_message_id ==
         IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE) {
       SCOPED_TRACE(testing::Message() << i);
-      std::u16string expected_message = l10n_util::GetStringFUTF16(
-          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE,
-          url_formatter::FormatOriginForSecurityDisplay(
-              url::Origin::Create(origin),
-              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+      std::u16string expected_message = l10n_util::GetStringUTF16(
+          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE);
       EXPECT_EQ(expected_message,
                 GetDescription(kLeakTypesTestCases[i].leak_type, origin));
     }
@@ -127,11 +123,8 @@ TEST(CredentialLeakDialogUtilsTest, GetChangePasswordDescription) {
     if (kLeakTypesTestCases[i].leak_message_id ==
         IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE) {
       SCOPED_TRACE(testing::Message() << i);
-      std::u16string expected_message = l10n_util::GetStringFUTF16(
-          IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE,
-          url_formatter::FormatOriginForSecurityDisplay(
-              url::Origin::Create(origin),
-              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+      std::u16string expected_message = l10n_util::GetStringUTF16(
+          IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE);
       EXPECT_EQ(expected_message,
                 GetDescription(kLeakTypesTestCases[i].leak_type, origin));
     }
@@ -189,76 +182,6 @@ TEST_P(BulkCheckCredentialLeakDialogUtilsTest, Title) {
                                           ? IDS_CREDENTIAL_LEAK_TITLE_CHECK
                                           : IDS_CREDENTIAL_LEAK_TITLE_CHANGE),
             GetTitle(GetParam().leak_type));
-}
-
-TEST_F(BulkCheckCredentialLeakDialogUtilsTest,
-       GetChangeDescriptionWitCountForSingleLeak) {
-  const CredentialLeakType leak_type =
-      CreateLeakType(IsSaved(true), IsReused(false), IsSyncing(true));
-  const GURL origin("https://example.com");
-  std::u16string expected_message =
-      base::i18n::MessageFormatter::FormatWithNumberedArgs(
-          l10n_util::GetStringUTF16(
-              IDS_CREDENTIAL_LEAK_SAVED_PASSWORDS_MESSAGE),
-          url_formatter::FormatOriginForSecurityDisplay(
-              url::Origin::Create(origin),
-              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
-          0);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_TITLE_CHANGE),
-            GetTitle(leak_type));
-  EXPECT_FALSE(ShouldCheckPasswords(leak_type));
-  EXPECT_FALSE(ShouldShowCancelButton(leak_type));
-  EXPECT_EQ(expected_message, GetDescriptionWithCount(
-                                  leak_type, origin, CompromisedSitesCount(1)));
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_OK), GetAcceptButtonLabel(leak_type));
-}
-
-TEST_F(BulkCheckCredentialLeakDialogUtilsTest,
-       GetCheckDescriptionWitCountForMultipleLeaks) {
-  const CredentialLeakType leak_type =
-      CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true));
-  const GURL origin("https://example.com");
-  std::u16string expected_message =
-      base::i18n::MessageFormatter::FormatWithNumberedArgs(
-          l10n_util::GetStringUTF16(
-              IDS_CREDENTIAL_LEAK_SAVED_PASSWORDS_MESSAGE),
-          url_formatter::FormatOriginForSecurityDisplay(
-              url::Origin::Create(origin),
-              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
-          2);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_TITLE_CHECK),
-            GetTitle(leak_type));
-  EXPECT_TRUE(ShouldCheckPasswords(leak_type));
-  EXPECT_TRUE(ShouldShowCancelButton(leak_type));
-  EXPECT_EQ(expected_message, GetDescriptionWithCount(
-                                  leak_type, origin, CompromisedSitesCount(3)));
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_LEAK_CHECK_CREDENTIALS),
-            GetAcceptButtonLabel(leak_type));
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE), GetCancelButtonLabel());
-}
-
-TEST_F(BulkCheckCredentialLeakDialogUtilsTest,
-       GetCheckDescriptionWitCountForUnsavedOriginWithMultipleLeaks) {
-  const CredentialLeakType leak_type =
-      CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true));
-  const GURL origin("https://example.com");
-  std::u16string expected_message =
-      base::i18n::MessageFormatter::FormatWithNumberedArgs(
-          l10n_util::GetStringUTF16(
-              IDS_CREDENTIAL_LEAK_SAVED_PASSWORDS_MESSAGE),
-          url_formatter::FormatOriginForSecurityDisplay(
-              url::Origin::Create(origin),
-              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
-          3);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_TITLE_CHECK),
-            GetTitle(leak_type));
-  EXPECT_TRUE(ShouldCheckPasswords(leak_type));
-  EXPECT_TRUE(ShouldShowCancelButton(leak_type));
-  EXPECT_EQ(expected_message, GetDescriptionWithCount(
-                                  leak_type, origin, CompromisedSitesCount(3)));
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_LEAK_CHECK_CREDENTIALS),
-            GetAcceptButtonLabel(leak_type));
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE), GetCancelButtonLabel());
 }
 
 INSTANTIATE_TEST_SUITE_P(InstantiationName,

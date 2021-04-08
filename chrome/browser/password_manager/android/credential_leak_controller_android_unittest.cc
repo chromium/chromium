@@ -29,8 +29,7 @@ CredentialLeakControllerAndroid* MakeController(IsSaved is_saved,
                                                 IsSyncing is_syncing) {
   return new CredentialLeakControllerAndroid(
       CreateLeakType(is_saved, is_reused, is_syncing),
-      password_manager::CompromisedSitesCount(0), GURL("https://example.com"),
-      u"test_username", nullptr);
+      GURL("https://example.com"), u"test_username", nullptr);
 }
 
 }  // namespace

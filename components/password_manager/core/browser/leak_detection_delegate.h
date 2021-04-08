@@ -56,8 +56,7 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   void OnShowLeakDetectionNotification(IsSaved is_saved,
                                        IsReused is_reused,
                                        GURL url,
-                                       std::u16string username,
-                                       CompromisedSitesCount saved_sites);
+                                       std::u16string username);
 
   void OnError(LeakDetectionError error) override;
 

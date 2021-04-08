@@ -95,7 +95,6 @@ class WebViewPasswordManagerClient
   void NotifyStorePasswordCalled() override;
   void NotifyUserCredentialsWereLeaked(
       password_manager::CredentialLeakType leak_type,
-      password_manager::CompromisedSitesCount saved_sites,
       const GURL& origin,
       const std::u16string& username) override;
   bool IsSavingAndFillingEnabled(const GURL& url) const override;
