@@ -2360,6 +2360,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-shortcut-customization-app",
+    "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
+    "expiry_milestone": 97
+  },
+  {
     "name": "enable-show-autofill-signatures",
     "owners": [ "kolos" ],
     // Used for debugging and QA by the autofill team for the indefinite future.

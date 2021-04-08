@@ -611,6 +611,9 @@ extern const char kEnablePortalsCrossOriginDescription[];
 extern const char kEnablePixelCanvasRecordingName[];
 extern const char kEnablePixelCanvasRecordingDescription[];
 
+extern const char kEnableShortcutCustomizationAppName[];
+extern const char kEnableShortcutCustomizationAppDescription[];
+
 extern const char kEnableSRPIsolatedPrerendersName[];
 extern const char kEnableSRPIsolatedPrerendersDescription[];
 

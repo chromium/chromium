@@ -45620,6 +45620,7 @@ from previous Chrome versions.
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
   <int value="-658319177" label="VaapiAV1Decoder:disabled"/>
   <int value="-657808907" label="CopyLinkToText:disabled"/>
+  <int value="-654705905" label="ShortcutCustomizationApp:enabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
   <int value="-650504533" label="enable-speculative-launch-service-worker"/>
@@ -46743,6 +46744,7 @@ from previous Chrome versions.
   <int value="386138870" label="DesktopPWAsOmniboxInstall:enabled"/>
   <int value="387178525" label="VideoFullscreenOrientationLock:enabled"/>
   <int value="387233614" label="HomePageButtonForceEnabled:disabled"/>
+  <int value="387678734" label="ShortcutCustomizationApp:disabled"/>
   <int value="388328387" label="WindowsMixedReality:enabled"/>
   <int value="388786873" label="EnableUnifiedMultiDeviceSettings:enabled"/>
   <int value="388996324" label="CustomContextMenu:disabled"/>

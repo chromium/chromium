@@ -849,6 +849,12 @@ const char kEnableGpuServiceLoggingName[] = "Enable gpu service logging";
 const char kEnableGpuServiceLoggingDescription[] =
     "Enable printing the actual GL driver calls.";
 
+const char kEnableShortcutCustomizationAppName[] =
+    "Enable shortcut customization app";
+const char kEnableShortcutCustomizationAppDescription[] =
+    "Enable the shortcut customization SWA, allowing users to customize system "
+    "shortcuts.";
+
 const char kEnableSRPIsolatedPrerendersName[] =
     "Enable Navigation Predictor Isolated Prerenders";
 const char kEnableSRPIsolatedPrerendersDescription[] =

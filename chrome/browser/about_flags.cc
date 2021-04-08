@@ -5656,6 +5656,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNetworkingInDiagnosticsAppName,
      flag_descriptions::kEnableNetworkingInDiagnosticsAppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEnableNetworkingInDiagnosticsApp)},
+
+    {"enable-shortcut-customization-app",
+     flag_descriptions::kEnableShortcutCustomizationAppName,
+     flag_descriptions::kEnableShortcutCustomizationAppDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kShortcutCustomizationApp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-portals", flag_descriptions::kEnablePortalsName,
