@@ -50,6 +50,12 @@ const transferHandlers = new Map([
     }
   ]
 ]);
+
+
+/**
+ * @param {*} obj
+ * @param {*} ep
+ */
 function expose(obj, ep = self) {
   ep.addEventListener('message', function callback(ev) {
     if (!ev || !ev.data) {
@@ -152,6 +158,7 @@ function createProxy(ep, path = [], target = function() {}) {
       }
       return createProxy(ep, [...path, prop]);
     },
+    // @ts-ignore
     set(_target, prop, rawValue) {
       throwIfProxyReleased(isProxyReleased);
       // FIXME: ES6 Proxy Handler `set` methods are supposed to return a
