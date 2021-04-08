@@ -538,6 +538,10 @@ const char kSessionStatisticFCPMean[] =
     "optimization_guide.session_statistic.fcp_mean";
 const char kSessionStatisticFCPStdDev[] =
     "optimization_guide.session_statistic.fcp_std_dev";
+#if !defined(OS_ANDROID)
+const char kWebAuthnLastTransportUsedPrefName[] =
+    "webauthn.last_transport_used";
+#endif
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -649,6 +653,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(prefs::kMediaFeedsBackgroundFetching, false);
   registry->RegisterBooleanPref(prefs::kMediaFeedsSafeSearchEnabled, false);
   registry->RegisterBooleanPref(prefs::kMediaFeedsAutoSelectEnabled, false);
+  registry->RegisterStringPref(kWebAuthnLastTransportUsedPrefName,
+                               std::string());
 #endif
 
   registry->RegisterDoublePref(kSessionStatisticFCPStdDev, -1.0f);
@@ -1335,6 +1341,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(prefs::kMediaFeedsBackgroundFetching);
   profile_prefs->ClearPref(prefs::kMediaFeedsSafeSearchEnabled);
   profile_prefs->ClearPref(prefs::kMediaFeedsAutoSelectEnabled);
+  profile_prefs->ClearPref(kWebAuthnLastTransportUsedPrefName);
 #endif
   // Added 04/2021.
   profile_prefs->ClearPref(kSessionStatisticFCPMean);

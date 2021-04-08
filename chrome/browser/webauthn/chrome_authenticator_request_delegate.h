@@ -99,8 +99,6 @@ class ChromeAuthenticatorRequestDelegate
   bool IsFocused() override;
   base::Optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride()
       override;
-  void UpdateLastTransportUsed(
-      device::FidoTransportProtocol transport) override;
   void DisableUI() override;
   bool IsWebAuthnUIEnabled() override;
   void SetConditionalRequest(bool is_conditional) override;

@@ -138,9 +138,6 @@ const char kWebAuthnTouchIdMetadataSecretPrefName[] =
     "webauthn.touchid.metadata_secret";
 #endif
 
-const char kWebAuthnLastTransportUsedPrefName[] =
-    "webauthn.last_transport_used";
-
 const char kWebAuthnCablePairingsPrefName[] = "webauthn.cablev2_pairings";
 
 // The |kWebAuthnCablePairingsPrefName| preference contains a list of dicts,
@@ -177,8 +174,6 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
                                std::string());
 #endif
 
-  registry->RegisterStringPref(kWebAuthnLastTransportUsedPrefName,
-                               std::string());
   registry->RegisterListPref(kWebAuthnCablePairingsPrefName);
 }
 
@@ -496,14 +491,6 @@ ChromeAuthenticatorRequestDelegate::GetGenerateRequestIdCallback() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-void ChromeAuthenticatorRequestDelegate::UpdateLastTransportUsed(
-    device::FidoTransportProtocol transport) {
-  PrefService* prefs =
-      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-  prefs->SetString(kWebAuthnLastTransportUsedPrefName,
-                   device::ToString(transport));
-}
-
 void ChromeAuthenticatorRequestDelegate::DisableUI() {
   disable_ui_ = true;
 }
@@ -540,8 +527,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
 
   weak_dialog_model_->AddObserver(this);
 
-  weak_dialog_model_->StartFlow(std::move(data), GetLastTransportUsed(),
-                                is_conditional_);
+  weak_dialog_model_->StartFlow(std::move(data), is_conditional_);
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
@@ -658,14 +644,6 @@ void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
   // |cancel_callback_| will destroy |this|.
   DCHECK(cancel_callback_);
   std::move(cancel_callback_).Run();
-}
-
-base::Optional<device::FidoTransportProtocol>
-ChromeAuthenticatorRequestDelegate::GetLastTransportUsed() const {
-  PrefService* prefs =
-      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-  return device::ConvertToFidoTransportProtocol(
-      prefs->GetString(kWebAuthnLastTransportUsedPrefName));
 }
 
 content::RenderFrameHost*

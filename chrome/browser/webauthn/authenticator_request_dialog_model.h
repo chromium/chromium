@@ -188,7 +188,6 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at step: kNotStarted.
   void StartFlow(
       TransportAvailabilityInfo transport_availability,
-      base::Optional<device::FidoTransportProtocol> last_used_transport,
       bool use_location_bar_bubble);
 
   // Restarts the UX flow.
@@ -482,9 +481,8 @@ class AuthenticatorRequestDialogModel {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  // These fields are only filled out when the UX flow is started.
+  // This field is only filled out once the UX flow is started.
   TransportAvailabilityInfo transport_availability_;
-  base::Optional<device::FidoTransportProtocol> last_used_transport_;
 
   RequestCallback request_callback_;
   base::RepeatingClosure bluetooth_adapter_power_on_callback_;

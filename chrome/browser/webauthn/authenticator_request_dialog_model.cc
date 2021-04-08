@@ -25,7 +25,6 @@ namespace {
 base::Optional<device::FidoTransportProtocol> SelectMostLikelyTransport(
     const device::FidoRequestHandlerBase::TransportAvailabilityInfo&
         transport_availability,
-    base::Optional<device::FidoTransportProtocol> last_used_transport,
     bool cable_extension_provided,
     bool have_paired_phones) {
   const base::flat_set<AuthenticatorTransport>& candidate_transports(
@@ -62,31 +61,7 @@ base::Optional<device::FidoTransportProtocol> SelectMostLikelyTransport(
     return AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy;
   }
 
-  // The remaining decisions are based on the most recently used successful
-  // transport.
-  if (!last_used_transport ||
-      !base::Contains(candidate_transports, *last_used_transport)) {
-    return base::nullopt;
-  }
-
-  // Auto-advancing to platform authenticator based on credential availability
-  // has been handled above. Hence, at this point it does not have a matching
-  // credential and should not be advanced to, because it would fail
-  // immediately.
-  if (*last_used_transport == device::FidoTransportProtocol::kInternal) {
-    return base::nullopt;
-  }
-
-  // Auto-advancing to caBLE based on a caBLEv1 request extension has been
-  // handled above. For caBLEv2, only auto-advance if the user has previously
-  // paired a caBLEv2 authenticator.
-  if (*last_used_transport ==
-          device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy &&
-      !have_paired_phones) {
-    return base::nullopt;
-  }
-
-  return *last_used_transport;
+  return base::nullopt;
 }
 
 }  // namespace
@@ -121,13 +96,11 @@ void AuthenticatorRequestDialogModel::HideDialog() {
 
 void AuthenticatorRequestDialogModel::StartFlow(
     TransportAvailabilityInfo transport_availability,
-    base::Optional<device::FidoTransportProtocol> last_used_transport,
     bool use_location_bar_bubble) {
   use_location_bar_bubble_ = use_location_bar_bubble;
   DCHECK_EQ(current_step(), Step::kNotStarted);
 
   transport_availability_ = std::move(transport_availability);
-  last_used_transport_ = last_used_transport;
 
   if (use_location_bar_bubble_) {
     // This is a conditional request so show a lightweight, non-modal dialog
@@ -173,9 +146,8 @@ void AuthenticatorRequestDialogModel::
     }
   }
 
-  auto most_likely_transport =
-      SelectMostLikelyTransport(transport_availability_, last_used_transport_,
-                                cable_extension_provided_, have_paired_phones_);
+  auto most_likely_transport = SelectMostLikelyTransport(
+      transport_availability_, cable_extension_provided_, have_paired_phones_);
   if (most_likely_transport) {
     StartGuidedFlowForTransport(*most_likely_transport);
   } else if (!transport_availability_.available_transports.empty()) {

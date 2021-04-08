@@ -1479,7 +1479,6 @@ void AuthenticatorCommon::OnRegisterResponse(
       bool is_transport_used_internal = false;
       bool is_transport_used_cable = false;
       if (transport_used) {
-        request_delegate_->UpdateLastTransportUsed(*transport_used);
         is_transport_used_internal =
             *transport_used == device::FidoTransportProtocol::kInternal;
         is_transport_used_cable =
@@ -1692,11 +1691,6 @@ void AuthenticatorCommon::OnSignResponse(
     case device::GetAssertionStatus::kSuccess:
       DCHECK(response_data.has_value());
       DCHECK(authenticator);
-
-      if (authenticator->AuthenticatorTransport()) {
-        request_delegate_->UpdateLastTransportUsed(
-            *authenticator->AuthenticatorTransport());
-      }
 
       // Show an account picker for requests with empty allow lists.
       // Authenticators may omit the identifying information in the user entity

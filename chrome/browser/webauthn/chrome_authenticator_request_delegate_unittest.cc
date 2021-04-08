@@ -53,15 +53,6 @@ class TestAuthenticatorModelObserver
   AuthenticatorRequestDialogModel::Step last_step_;
 };
 
-TEST_F(ChromeAuthenticatorRequestDelegateTest, TestTransportPrefType) {
-  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-  EXPECT_FALSE(delegate.GetLastTransportUsed());
-  delegate.UpdateLastTransportUsed(device::FidoTransportProtocol::kInternal);
-  const auto transport = delegate.GetLastTransportUsed();
-  ASSERT_TRUE(transport);
-  EXPECT_EQ(device::FidoTransportProtocol::kInternal, transport);
-}
-
 TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
   // Enabling conditional mode should cause the modal dialog to stay hidden at
   // the beginning of a request. An omnibar icon might be shown instead.

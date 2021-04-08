@@ -202,10 +202,6 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   virtual base::Optional<bool>
   IsUserVerifyingPlatformAuthenticatorAvailableOverride();
 
-  // Saves transport type the user used during WebAuthN API so that the
-  // WebAuthN UI will default to the same transport type during next API call.
-  virtual void UpdateLastTransportUsed(device::FidoTransportProtocol transport);
-
   // Disables the UI (needed in cases when called by other components, like
   // cryptotoken).
   virtual void DisableUI();

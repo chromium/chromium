@@ -4,8 +4,6 @@
 
 #include "device/fido/fido_transport_protocol.h"
 
-#include "base/notreached.h"
-
 namespace device {
 
 const char kUsbHumanInterfaceDevice[] = "usb";
@@ -31,7 +29,7 @@ base::Optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
 }
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::string ToString(FidoTransportProtocol protocol) {
+base::StringPiece ToString(FidoTransportProtocol protocol) {
   switch (protocol) {
     case FidoTransportProtocol::kUsbHumanInterfaceDevice:
       return kUsbHumanInterfaceDevice;
@@ -48,8 +46,6 @@ std::string ToString(FidoTransportProtocol protocol) {
       // is considered a flavour of caBLE.
       return kCloudAssistedBluetoothLowEnergy;
   }
-  NOTREACHED();
-  return "";
 }
 
 }  // namespace device

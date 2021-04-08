@@ -99,9 +99,6 @@ base::Optional<bool> AuthenticatorRequestClientDelegate::
   return base::nullopt;
 }
 
-void AuthenticatorRequestClientDelegate::UpdateLastTransportUsed(
-    device::FidoTransportProtocol transport) {}
-
 void AuthenticatorRequestClientDelegate::DisableUI() {}
 
 bool AuthenticatorRequestClientDelegate::IsWebAuthnUIEnabled() {

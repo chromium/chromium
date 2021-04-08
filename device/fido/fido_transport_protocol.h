@@ -5,10 +5,7 @@
 #ifndef DEVICE_FIDO_FIDO_TRANSPORT_PROTOCOL_H_
 #define DEVICE_FIDO_FIDO_TRANSPORT_PROTOCOL_H_
 
-#include <string>
-
 #include "base/component_export.h"
-#include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 
@@ -41,7 +38,7 @@ base::Optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
     base::StringPiece protocol);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::string ToString(FidoTransportProtocol protocol);
+base::StringPiece ToString(FidoTransportProtocol protocol);
 
 }  // namespace device
 

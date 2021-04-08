@@ -49,8 +49,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     model->set_cable_transport_info(/*cable_extension_provided=*/true,
                                     /*has_paired_phones=*/false,
                                     "fido://qrcode");
-    model->StartFlow(std::move(transport_availability), base::nullopt,
-                     /*is_conditional=*/false);
+    model->StartFlow(std::move(transport_availability),
+                     /*use_location_bar_bubble=*/false);
 
     // The dialog should immediately close as soon as it is displayed.
     if (name == "transports") {
