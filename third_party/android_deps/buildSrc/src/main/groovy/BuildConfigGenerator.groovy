@@ -209,7 +209,7 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         // 3. Generate the root level build files
-        updateBuildTargetDeclaration(graph, repositoryPath, normalisedRepoPath)
+        updateBuildTargetDeclaration(graph, normalisedRepoPath)
         if (!ignoreDEPS) {
             updateDepsDeclaration(graph, cipdBucket, repositoryPath,
                                   "${normalisedRepoPath}/../../DEPS")
@@ -223,8 +223,7 @@ class BuildConfigGenerator extends DefaultTask {
         return "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
     }
 
-    private void updateBuildTargetDeclaration(ChromiumDepGraph depGraph,
-            String repositoryPath, String normalisedRepoPath) {
+    private void updateBuildTargetDeclaration(ChromiumDepGraph depGraph, String normalisedRepoPath) {
         File buildFile = new File("${normalisedRepoPath}/BUILD.gn");
         def sb = new StringBuilder()
 
@@ -237,84 +236,21 @@ class BuildConfigGenerator extends DefaultTask {
             return dependency1.id.compareTo(dependency2.id)
         }
 
-        depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
-            if (excludeDependency(dependency) || !dependency.generateTarget) {
-                return
-            }
-
-            def targetName = translateTargetName(dependency.id) + "_java"
-            def javaGroupTarget = computeJavaGroupForwardingTarget(dependency)
-            if (javaGroupTarget != null) {
-                assert dependency.extension == 'jar' || dependency.extension == 'aar'
-                sb.append("""
-                java_group("${targetName}") {
-                  deps = [ \"${javaGroupTarget}\" ]
-                """.stripIndent())
-                if (dependency.testOnly) sb.append("  testonly = true\n")
-                sb.append("}\n\n")
-                return
-            }
-
-            def depsStr = ""
-            if (!dependency.children.isEmpty()) {
-                dependency.children.each { childDep ->
-                    def dep = depGraph.dependencies[childDep]
-                    if (dep.exclude) {
-                        return
-                    }
-                    // Special case: If a child dependency is an existing lib, rather than skipping
-                    // it, replace the child dependency with the existing lib.
-                    def existingLib = EXISTING_LIBS.get(dep.id)
-                    def depTargetName = translateTargetName(dep.id) + "_java"
-                    if (existingLib != null) {
-                        depsStr += "\"${existingLib}\","
-                    } else if (excludeDependency(dep)) {
-                        def thirdPartyDir = (dep.id.startsWith("androidx")) ? "androidx" : "android_deps"
-                        depsStr += "\"//third_party/${thirdPartyDir}:${depTargetName}\","
-                    } else if (dep.id == "com_google_android_material_material") {
-                        // Material design is pulled in via doubledown, should
-                        // use the variable instead of the real target.
-                        depsStr += "\"\\\$material_design_target\","
-                    } else {
-                        depsStr += "\":${depTargetName}\","
-                    }
-                }
-            }
-
-            def libPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
-            sb.append(GEN_REMINDER)
-            if (dependency.extension == 'jar') {
-                sb.append("""\
-                java_prebuilt("${targetName}") {
-                  jar_path = "${libPath}/${dependency.fileName}"
-                  output_name = "${dependency.id}"
-                """.stripIndent())
-                if (dependency.supportsAndroid) {
-                    sb.append("  supports_android = true\n")
-                } else {
-                    // Save some time by not validating classpaths of desktop
-                    // .jars. Also required to break a dependency cycle for
-                    // errorprone.
-                    sb.append("  enable_bytecode_checks = false\n")
-                }
-            } else if (dependency.extension == 'aar') {
-                sb.append("""\
-                android_aar_prebuilt("${targetName}") {
-                  aar_path = "${libPath}/${dependency.fileName}"
-                  info_path = "${libPath}/${dependency.id}.info"
-                """.stripIndent())
-            } else {
-                throw new IllegalStateException("Dependency type should be JAR or AAR")
-            }
-
-            sb.append(generateBuildTargetVisibilityDeclaration(dependency))
-
-            if (dependency.testOnly) sb.append("  testonly = true\n")
-            if (!depsStr.empty) sb.append("  deps = [${depsStr}]\n")
-            addSpecialTreatment(sb, dependency.id, dependency.extension)
-
-            sb.append("}\n\n")
+        def fixedDependencies = depGraph.dependencies.values().findAll {
+            dependency -> dependency.usedInBuild
         }
+        fixedDependencies.sort(dependencyComparator).each { dependency ->
+            appendBuildTarget(dependency, depGraph.dependencies, sb)
+        }
+
+        sb.append("if (build_with_chromium) {\n")
+        def buildWithChromiumDependencies = depGraph.dependencies.values().findAll {
+            dependency -> !dependency.usedInBuild
+        }
+        buildWithChromiumDependencies.sort(dependencyComparator).each { dependency ->
+            appendBuildTarget(dependency, depGraph.dependencies, sb)
+        }
+        sb.append("}\n")
 
         def out = "${BUILD_GN_TOKEN_START}\n${sb.toString()}\n${BUILD_GN_TOKEN_END}"
         if (buildFile.exists()) {
@@ -325,6 +261,87 @@ class BuildConfigGenerator extends DefaultTask {
             out = "import(\"//build/config/android/rules.gni\")\n" + out
         }
         buildFile.write(out)
+    }
+
+    public void appendBuildTarget(ChromiumDepGraph.DependencyDescription dependency,
+                                  Map<String, ChromiumDepGraph.DependencyDescription> allDependencies,
+                                  StringBuilder sb) {
+        if (excludeDependency(dependency) || !dependency.generateTarget) {
+            return
+        }
+
+        def targetName = translateTargetName(dependency.id) + "_java"
+        def javaGroupTarget = computeJavaGroupForwardingTarget(dependency)
+        if (javaGroupTarget != null) {
+            assert dependency.extension == 'jar' || dependency.extension == 'aar'
+            sb.append("""
+            java_group("${targetName}") {
+              deps = [ \"${javaGroupTarget}\" ]
+            """.stripIndent())
+            if (dependency.testOnly) sb.append("  testonly = true\n")
+            sb.append("}\n\n")
+            return
+        }
+
+        def depsStr = ""
+        if (!dependency.children.isEmpty()) {
+            dependency.children.each { childDep ->
+                def dep = allDependencies[childDep]
+                if (dep.exclude) {
+                    return
+                }
+                // Special case: If a child dependency is an existing lib, rather than skipping
+                // it, replace the child dependency with the existing lib.
+                def existingLib = EXISTING_LIBS.get(dep.id)
+                def depTargetName = translateTargetName(dep.id) + "_java"
+                if (existingLib != null) {
+                    depsStr += "\"${existingLib}\","
+                } else if (excludeDependency(dep)) {
+                    def thirdPartyDir = (dep.id.startsWith("androidx")) ? "androidx" : "android_deps"
+                    depsStr += "\"//third_party/${thirdPartyDir}:${depTargetName}\","
+                } else if (dep.id == "com_google_android_material_material") {
+                    // Material design is pulled in via doubledown, should
+                    // use the variable instead of the real target.
+                    depsStr += "\"\\\$material_design_target\","
+                } else {
+                    depsStr += "\":${depTargetName}\","
+                }
+            }
+        }
+
+        def libPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
+        sb.append(GEN_REMINDER)
+        if (dependency.extension == 'jar') {
+            sb.append("""\
+            java_prebuilt("${targetName}") {
+              jar_path = "${libPath}/${dependency.fileName}"
+              output_name = "${dependency.id}"
+            """.stripIndent())
+            if (dependency.supportsAndroid) {
+                sb.append("  supports_android = true\n")
+            } else {
+                // Save some time by not validating classpaths of desktop
+                // .jars. Also required to break a dependency cycle for
+                // errorprone.
+                sb.append("  enable_bytecode_checks = false\n")
+            }
+        } else if (dependency.extension == 'aar') {
+            sb.append("""\
+            android_aar_prebuilt("${targetName}") {
+              aar_path = "${libPath}/${dependency.fileName}"
+              info_path = "${libPath}/${dependency.id}.info"
+            """.stripIndent())
+        } else {
+            throw new IllegalStateException("Dependency type should be JAR or AAR")
+        }
+
+        sb.append(generateBuildTargetVisibilityDeclaration(dependency))
+
+        if (dependency.testOnly) sb.append("  testonly = true\n")
+        if (!depsStr.empty) sb.append("  deps = [${depsStr}]\n")
+        addSpecialTreatment(sb, dependency.id, dependency.extension)
+
+        sb.append("}\n\n")
     }
 
     public static String translateTargetName(String targetName) {

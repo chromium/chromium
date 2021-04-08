@@ -343,7 +343,7 @@ class ChromiumDepGraph {
 
     void collectDependencies() {
         Set<ResolvedConfiguration> deps = []
-        Set<ResolvedConfiguration> depsNoRecurse = []
+        Set<ResolvedConfiguration> buildDepsNoRecurse = []
         Set<ResolvedDependency> firstLevelModuleDependencies = []
         Map<String, List<ResolvedArtifact>> resolvedArtifacts = new HashMap<>()
         String[] configNames = [
@@ -359,7 +359,7 @@ class ChromiumDepGraph {
                 def config = project.configurations.getByName(configName).resolvedConfiguration
                 deps += config.firstLevelModuleDependencies
                 if (configName == 'buildCompileNoDeps') {
-                  depsNoRecurse += config.firstLevelModuleDependencies
+                  buildDepsNoRecurse += config.firstLevelModuleDependencies
                 }
                 if (!resolvedArtifacts.containsKey(configName)) {
                   resolvedArtifacts[configName] = []
@@ -375,7 +375,7 @@ class ChromiumDepGraph {
         List<String> topLevelIds = []
         deps.each { dependency ->
             topLevelIds.add(makeModuleId(dependency.module))
-            collectDependenciesInternal(dependency, !depsNoRecurse.contains(dependency))
+            collectDependenciesInternal(dependency, !buildDepsNoRecurse.contains(dependency))
         }
 
         topLevelIds.each { id -> dependencies.get(id).visible = true }
@@ -398,6 +398,7 @@ class ChromiumDepGraph {
             def id = makeModuleId(artifact)
             def dep = dependencies.get(id)
             assert dep != null : "No dependency collected for artifact ${artifact.name}"
+            dep.usedInBuild = true
             dep.testOnly = false
         }
 
@@ -412,10 +413,11 @@ class ChromiumDepGraph {
             dep.isShipped = true
         }
 
-        depsNoRecurse.each { resolvedDep ->
+        buildDepsNoRecurse.each { resolvedDep ->
             def id = makeModuleId(resolvedDep.module)
             def dep = dependencies.get(id)
             assert dep != null : "No dependency collected for artifact ${artifact.name}"
+            dep.usedInBuild = true
             dep.testOnly = false
         }
 
@@ -711,7 +713,7 @@ class ChromiumDepGraph {
         // the directory name as part of the CIPD names. However CIPD does not
         // allow uppercase in names.
         String directoryName
-        boolean supportsAndroid, visible, exclude, testOnly, isShipped
+        boolean supportsAndroid, visible, exclude, testOnly, isShipped, usedInBuild
         boolean generateTarget = true
         boolean licenseAndroidCompatible
         ComponentIdentifier componentId
