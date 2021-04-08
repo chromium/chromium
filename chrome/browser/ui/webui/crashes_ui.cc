@@ -67,6 +67,10 @@ content::WebUIDataSource* CreateCrashesUIHTMLSource() {
   source->UseStringsJs();
   source->AddResourcePath(crash_reporter::kCrashesUICrashesJS,
                           IDR_CRASH_CRASHES_JS);
+  source->AddResourcePath(crash_reporter::kCrashesUICrashesCSS,
+                          IDR_CRASH_CRASHES_CSS);
+  source->AddResourcePath(crash_reporter::kCrashesUISadTabSVG,
+                          IDR_CRASH_SADTAB_SVG);
   source->SetDefaultResource(IDR_CRASH_CRASHES_HTML);
   return source;
 }
@@ -141,6 +145,7 @@ void CrashesDOMHandler::RegisterMessages() {
 }
 
 void CrashesDOMHandler::HandleRequestCrashes(const base::ListValue* args) {
+  AllowJavascript();
   if (first_load_) {
     first_load_ = false;
     if (list_available_)
@@ -216,24 +221,16 @@ void CrashesDOMHandler::UpdateUI() {
   if (upload_list)
     crash_reporter::UploadListToValue(upload_list_.get(), &crash_list);
 
-  base::Value enabled(crash_reporting_enabled);
-  base::Value dynamic_backend(system_crash_reporter);
-  base::Value manual_uploads(support_manual_uploads);
-  base::Value version(version_info::GetVersionNumber());
-  base::Value os_string(base::SysInfo::OperatingSystemName() + " " +
-                        base::SysInfo::OperatingSystemVersion());
-  base::Value is_google_account(is_internal);
-
-  std::vector<const base::Value*> args;
-  args.push_back(&enabled);
-  args.push_back(&dynamic_backend);
-  args.push_back(&manual_uploads);
-  args.push_back(&crash_list);
-  args.push_back(&version);
-  args.push_back(&os_string);
-  args.push_back(&is_google_account);
-  web_ui()->CallJavascriptFunctionUnsafe(
-      crash_reporter::kCrashesUIUpdateCrashList, args);
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetBoolPath("enabled", crash_reporting_enabled);
+  result.SetBoolPath("dynamicBackend", system_crash_reporter);
+  result.SetBoolPath("manualUploads", support_manual_uploads);
+  result.SetPath("crashes", std::move(crash_list));
+  result.SetStringPath("version", version_info::GetVersionNumber());
+  result.SetStringPath("os", base::SysInfo::OperatingSystemName() + " " +
+                                 base::SysInfo::OperatingSystemVersion());
+  result.SetBoolPath("isGoogleAccount", is_internal);
+  FireWebUIListener(crash_reporter::kCrashesUIUpdateCrashList, result);
 }
 
 void CrashesDOMHandler::HandleRequestSingleCrashUpload(

@@ -8,7 +8,7 @@ body {
 
 h1 {
   -webkit-padding-start: 75px;
-  background-image: url(../../../../resources/sadtab.svg);
+  background-image: url(./sadtab.svg);
   background-position: left;
   background-repeat: no-repeat;
   font-size: 156%;
@@ -27,10 +27,9 @@ html[dir=rtl] h1 {
   background-color: rgb(235, 239, 250);
   border: 1px solid #bbb;
   border-radius: 2px;
+  display: flex;
   font-size: 100%;
   padding: 4px;
-
-  display: flex;
 }
 
 #countBanner #crashesCount {
@@ -41,7 +40,7 @@ html[dir=rtl] h1 {
   font-size: 100%;
 }
 
-.crashRow > * {
+.crash-row > * {
   margin: 0.75em 0;
 }
 
@@ -49,27 +48,27 @@ html[dir=rtl] h1 {
   color: #666;
 }
 
-.crashRow {
+.crash-row {
   padding-bottom: 0.75em;
 }
 
-.crashRow:not(:last-child) {
+.crash-row:not(:last-child) {
   border-bottom: 1px solid #bbb;
 }
 
-#crashList .crashRow .devDetail {
+#crashList .crash-row .dev-detail {
   display: none;
 }
 
-#crashList.showingDevDetails .crashRow .devDetail {
+#crashList.showing-dev-details .crash-row .dev-detail {
   display: table-row;
 }
 
-.crashDetail {
+.crash-detail {
   margin: 10px 0;
 }
 
-.crashDetail td {
+.crash-detail td {
   padding: 0 4px;
 }
 
@@ -78,6 +77,6 @@ html[dir=rtl] h1 {
   font-size: 125%;
 }
 
-.notUploaded {
+.not-uploaded {
   color: #a0a0a0;
 }

@@ -45,10 +45,12 @@ const size_t kCrashesUILocalizedStringsCount =
     base::size(kCrashesUILocalizedStrings);
 
 const char kCrashesUICrashesJS[] = "crashes.js";
+const char kCrashesUICrashesCSS[] = "crashes.css";
+const char kCrashesUISadTabSVG[] = "sadtab.svg";
 const char kCrashesUIRequestCrashList[] = "requestCrashList";
 const char kCrashesUIRequestCrashUpload[] = "requestCrashUpload";
 const char kCrashesUIShortProductName[] = "shortProductName";
-const char kCrashesUIUpdateCrashList[] = "updateCrashList";
+const char kCrashesUIUpdateCrashList[] = "update-crash-list";
 const char kCrashesUIRequestSingleCrashUpload[] = "requestSingleCrashUpload";
 
 std::string UploadInfoStateAsString(UploadList::UploadInfo::State state) {
