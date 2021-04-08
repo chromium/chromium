@@ -18,6 +18,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -81,6 +82,9 @@ void AssistantWebContainerView::DidStopLoading() {
 
   contents_view_->SetPreferredSize(GetPreferredSize());
   contents_view_ptr_ = AddChildView(std::move(contents_view_));
+  constexpr int kTopPaddingDip = 8;
+  contents_view_ptr_->SetBorder(
+      views::CreateEmptyBorder(kTopPaddingDip, 0, 0, 0));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 
