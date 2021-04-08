@@ -493,7 +493,8 @@
     "gtest_tests": [
       {
         "args": [
-          "angle_unittests"
+          "angle_unittests",
+          "--no-xvfb"
         ],
         "merge": {
           "args": [],
@@ -974,7 +975,8 @@
     "gtest_tests": [
       {
         "args": [
-          "angle_unittests"
+          "angle_unittests",
+          "--no-xvfb"
         ],
         "merge": {
           "args": [],

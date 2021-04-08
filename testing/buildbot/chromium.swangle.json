@@ -83,8 +83,7 @@
         "args": [
           "angle_deqp_egl_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -113,8 +112,7 @@
         "args": [
           "angle_deqp_gles2_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -143,8 +141,7 @@
         "args": [
           "angle_deqp_gles31_rotate180_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -173,8 +170,7 @@
         "args": [
           "angle_deqp_gles31_rotate270_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -203,8 +199,7 @@
         "args": [
           "angle_deqp_gles31_rotate90_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -233,8 +228,7 @@
         "args": [
           "angle_deqp_gles31_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -264,8 +258,7 @@
         "args": [
           "angle_deqp_gles3_rotate180_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -294,8 +287,7 @@
         "args": [
           "angle_deqp_gles3_rotate270_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -324,8 +316,7 @@
         "args": [
           "angle_deqp_gles3_rotate90_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -354,8 +345,7 @@
         "args": [
           "angle_deqp_gles3_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -385,8 +375,7 @@
         "args": [
           "angle_deqp_khr_gles2_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -415,8 +404,7 @@
         "args": [
           "angle_deqp_khr_gles31_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -445,8 +433,7 @@
         "args": [
           "angle_deqp_khr_gles3_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -475,8 +462,7 @@
         "args": [
           "angle_end2end_tests",
           "--bot-mode",
-          "--gtest_filter=*Vulkan_SwiftShader*",
-          "--xvfb"
+          "--gtest_filter=*Vulkan_SwiftShader*"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -509,8 +495,7 @@
         "args": [
           "angle_deqp_egl_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -539,8 +524,7 @@
         "args": [
           "angle_deqp_gles2_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -569,8 +553,7 @@
         "args": [
           "angle_deqp_gles31_rotate180_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -599,8 +582,7 @@
         "args": [
           "angle_deqp_gles31_rotate270_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -629,8 +611,7 @@
         "args": [
           "angle_deqp_gles31_rotate90_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -659,8 +640,7 @@
         "args": [
           "angle_deqp_gles31_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -690,8 +670,7 @@
         "args": [
           "angle_deqp_gles3_rotate180_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -720,8 +699,7 @@
         "args": [
           "angle_deqp_gles3_rotate270_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -750,8 +728,7 @@
         "args": [
           "angle_deqp_gles3_rotate90_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -780,8 +757,7 @@
         "args": [
           "angle_deqp_gles3_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -811,8 +787,7 @@
         "args": [
           "angle_deqp_khr_gles2_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -841,8 +816,7 @@
         "args": [
           "angle_deqp_khr_gles31_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -871,8 +845,7 @@
         "args": [
           "angle_deqp_khr_gles3_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -901,8 +874,7 @@
         "args": [
           "angle_end2end_tests",
           "--bot-mode",
-          "--gtest_filter=*Vulkan_SwiftShader*",
-          "--xvfb"
+          "--gtest_filter=*Vulkan_SwiftShader*"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -935,8 +907,7 @@
         "args": [
           "angle_deqp_egl_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -965,8 +936,7 @@
         "args": [
           "angle_deqp_gles2_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -995,8 +965,7 @@
         "args": [
           "angle_deqp_gles31_rotate180_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1025,8 +994,7 @@
         "args": [
           "angle_deqp_gles31_rotate270_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1055,8 +1023,7 @@
         "args": [
           "angle_deqp_gles31_rotate90_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1085,8 +1052,7 @@
         "args": [
           "angle_deqp_gles31_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1116,8 +1082,7 @@
         "args": [
           "angle_deqp_gles3_rotate180_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1146,8 +1111,7 @@
         "args": [
           "angle_deqp_gles3_rotate270_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1176,8 +1140,7 @@
         "args": [
           "angle_deqp_gles3_rotate90_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1206,8 +1169,7 @@
         "args": [
           "angle_deqp_gles3_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1237,8 +1199,7 @@
         "args": [
           "angle_deqp_khr_gles2_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1267,8 +1228,7 @@
         "args": [
           "angle_deqp_khr_gles31_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1297,8 +1257,7 @@
         "args": [
           "angle_deqp_khr_gles3_tests",
           "--use-angle=swiftshader",
-          "--bot-mode",
-          "--xvfb"
+          "--bot-mode"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1327,8 +1286,7 @@
         "args": [
           "angle_end2end_tests",
           "--bot-mode",
-          "--gtest_filter=*Vulkan_SwiftShader*",
-          "--xvfb"
+          "--gtest_filter=*Vulkan_SwiftShader*"
         ],
         "isolate_profile_data": true,
         "merge": {
