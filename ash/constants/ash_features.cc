@@ -168,7 +168,7 @@ const base::Feature kCdmFactoryDaemon{"CdmFactoryDaemon",
 
 // If enabled, send the LTE attach APN configuration to the modem.
 const base::Feature kCellularUseAttachApn{"CellularUseAttachApn",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, use external euicc in Cellular Setup and Settings.
 const base::Feature kCellularUseExternalEuicc{
