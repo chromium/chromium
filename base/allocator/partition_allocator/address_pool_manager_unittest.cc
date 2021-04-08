@@ -56,9 +56,8 @@ class AddressPoolManagerTest : public testing::Test {
 TEST_F(AddressPoolManagerTest, TooLargePool) {
   uintptr_t base_addr = 0x4200000;
 
-  constexpr size_t kSize = 16ull * 1024 * 1024 * 1024;
   EXPECT_DEATH_IF_SUPPORTED(
-      GetAddressPoolManager()->Add(base_addr, kSize + kSuperPageSize), "");
+      GetAddressPoolManager()->Add(base_addr, kPoolSize + kSuperPageSize), "");
 }
 
 TEST_F(AddressPoolManagerTest, ManyPages) {
@@ -71,9 +70,12 @@ TEST_F(AddressPoolManagerTest, ManyPages) {
             nullptr);
   GetAddressPoolManager()->UnreserveAndDecommit(pool_, base_ptr,
                                                 kPageCnt * kSuperPageSize);
+
   EXPECT_EQ(GetAddressPoolManager()->Reserve(pool_, nullptr,
                                              kPageCnt * kSuperPageSize),
             base_ptr);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, base_ptr,
+                                                kPageCnt * kSuperPageSize);
 }
 
 TEST_F(AddressPoolManagerTest, PagesFragmented) {
@@ -85,6 +87,8 @@ TEST_F(AddressPoolManagerTest, PagesFragmented) {
   }
   EXPECT_EQ(GetAddressPoolManager()->Reserve(pool_, nullptr, kSuperPageSize),
             nullptr);
+  // Free other other super page, so that we have plenty of free space, but none
+  // of the empty spaces can fit 2 super pages.
   for (size_t i = 1; i < kPageCnt; i += 2) {
     GetAddressPoolManager()->UnreserveAndDecommit(pool_, addrs[i],
                                                   kSuperPageSize);
@@ -92,12 +96,18 @@ TEST_F(AddressPoolManagerTest, PagesFragmented) {
   EXPECT_EQ(
       GetAddressPoolManager()->Reserve(pool_, nullptr, 2 * kSuperPageSize),
       nullptr);
+  // Reserve freed super pages back, so that there are no free ones.
   for (size_t i = 1; i < kPageCnt; i += 2) {
     addrs[i] = GetAddressPoolManager()->Reserve(pool_, nullptr, kSuperPageSize);
     EXPECT_EQ(addrs[i], base_ptr + i * kSuperPageSize);
   }
   EXPECT_EQ(GetAddressPoolManager()->Reserve(pool_, nullptr, kSuperPageSize),
             nullptr);
+  // Lastly, clean up.
+  for (size_t i = 0; i < kPageCnt; ++i) {
+    GetAddressPoolManager()->UnreserveAndDecommit(pool_, addrs[i],
+                                                  kSuperPageSize);
+  }
 }
 
 TEST_F(AddressPoolManagerTest, IrregularPattern) {
@@ -140,6 +150,14 @@ TEST_F(AddressPoolManagerTest, IrregularPattern) {
   void* a10 =
       GetAddressPoolManager()->Reserve(pool_, nullptr, 15 * kSuperPageSize);
   EXPECT_EQ(a10, base_ptr + 6 * kSuperPageSize);
+
+  // Clean up.
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a1, kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a2, 2 * kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a3, 3 * kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a8, 3 * kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a10,
+                                                15 * kSuperPageSize);
 }
 
 TEST_F(AddressPoolManagerTest, DecommittedDataIsErased) {
@@ -161,8 +179,9 @@ TEST_F(AddressPoolManagerTest, DecommittedDataIsErased) {
   for (size_t i = 0; i < kSuperPageSize; i++) {
     sum += reinterpret_cast<uint8_t*>(data2)[i];
   }
-
   EXPECT_EQ(0u, sum) << sum / 42 << " bytes were not zeroed";
+
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, data2, kSuperPageSize);
 }
 
 #else   // defined(PA_HAS_64_BITS_POINTERS)
