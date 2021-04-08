@@ -79,6 +79,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinBase
   // Used for making callbacks.
   base::WeakPtrFactory<InputMethodWinBase> weak_ptr_factory_{this};
 
+ private:
+  // Return false if |this| is destroyed during |PeekMessage| call.
+  bool HandlePeekMessage(HWND hwnd,
+                         UINT msg_filter_min,
+                         UINT msg_filter_max,
+                         std::vector<MSG>* char_msgs);
+
   DISALLOW_COPY_AND_ASSIGN(InputMethodWinBase);
 };
 
