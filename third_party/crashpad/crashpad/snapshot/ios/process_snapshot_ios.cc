@@ -51,7 +51,8 @@ ProcessSnapshotIOS::ProcessSnapshotIOS()
 
 ProcessSnapshotIOS::~ProcessSnapshotIOS() {}
 
-bool ProcessSnapshotIOS::Initialize(const IOSSystemDataCollector& system_data) {
+bool ProcessSnapshotIOS::Initialize(
+    const internal::IOSSystemDataCollector& system_data) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
 
   // Used by pid, parent pid and snapshot time.

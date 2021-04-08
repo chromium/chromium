@@ -20,6 +20,7 @@
 #include <string>
 
 namespace crashpad {
+namespace internal {
 
 //! \brief Used to collect system level data before a crash occurs.
 class IOSSystemDataCollector {
@@ -27,9 +28,10 @@ class IOSSystemDataCollector {
   IOSSystemDataCollector();
   ~IOSSystemDataCollector();
 
-  void OSVersion(int* major, int* minor, int* bugfix, std::string* build) const;
+  void OSVersion(int* major, int* minor, int* bugfix) const;
   std::string MachineDescription() const { return machine_description_; }
   int ProcessorCount() const { return processor_count_; }
+  std::string Build() const { return build_; }
   std::string CPUVendor() const { return cpu_vendor_; }
   bool HasDaylightSavingTime() const { return has_next_daylight_saving_time_; }
   bool IsDaylightSavingTime() const { return is_daylight_saving_time_; }
@@ -76,6 +78,7 @@ class IOSSystemDataCollector {
   std::string daylight_name_;
 };
 
+}  // namespace internal
 }  // namespace crashpad
 
 #endif  // CRASHPAD_UTIL_IOS_IOS_SYSTEM_DATA_COLLECTOR_H_

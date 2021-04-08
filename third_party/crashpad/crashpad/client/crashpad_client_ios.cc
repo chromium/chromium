@@ -201,7 +201,7 @@ class CrashHandler : public Thread, public UniversalMachExcServer::Interface {
   base::mac::ScopedMachReceiveRight exception_port_;
   ExceptionPorts::ExceptionHandlerVector original_handlers_;
   struct sigaction old_action_ = {};
-  IOSSystemDataCollector system_data_;
+  internal::IOSSystemDataCollector system_data_;
   InitializationStateDcheck initialized_;
 
   DISALLOW_COPY_AND_ASSIGN(CrashHandler);

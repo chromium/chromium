@@ -42,7 +42,7 @@ class ProcessSnapshotIOS final : public ProcessSnapshot {
   //!
   //! \return `true` if the snapshot could be created, `false` otherwise with
   //!     an appropriate message logged.
-  bool Initialize(const IOSSystemDataCollector& system_data);
+  bool Initialize(const internal::IOSSystemDataCollector& system_data);
 
   //! \brief Initialize exception information from a signal.
   void SetExceptionFromSignal(const siginfo_t* siginfo,

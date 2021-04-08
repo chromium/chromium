@@ -294,6 +294,10 @@ CrashReportUploadThread::UploadResult CrashReportUploadThread::UploadReport(
                                            "application/octet-stream");
 
   std::unique_ptr<HTTPTransport> http_transport(HTTPTransport::Create());
+  if (!http_transport) {
+    return UploadResult::kPermanentFailure;
+  }
+
   HTTPHeaders content_headers;
   http_multipart_builder.PopulateContentHeaders(&content_headers);
   for (const auto& content_header : content_headers) {

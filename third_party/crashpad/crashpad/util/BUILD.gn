@@ -389,7 +389,7 @@ crashpad_static_library("util") {
 
   deps = [ "//build:chromeos_buildflags" ]
 
-  if (crashpad_is_linux || crashpad_is_fuchsia || crashpad_is_android) {
+  if (crashpad_http_transport_impl == "socket") {
     sources += [ "net/http_transport_socket.cc" ]
     if (crashpad_use_boringssl_for_http_transport_socket) {
       defines += [ "CRASHPAD_USE_BORINGSSL" ]
@@ -403,6 +403,8 @@ crashpad_static_library("util") {
         ]
       }
     }
+  } else if (crashpad_http_transport_impl == "libcurl") {
+    sources += [ "net/http_transport_libcurl.cc" ]
   }
 
   if (crashpad_is_android) {

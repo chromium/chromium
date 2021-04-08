@@ -60,10 +60,9 @@ SystemSnapshotIOS::~SystemSnapshotIOS() {}
 void SystemSnapshotIOS::Initialize(const IOSSystemDataCollector& system_data) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
 
-  system_data.OSVersion(&os_version_major_,
-                        &os_version_minor_,
-                        &os_version_bugfix_,
-                        &os_version_build_);
+  system_data.OSVersion(
+      &os_version_major_, &os_version_minor_, &os_version_bugfix_);
+  os_version_build_ = system_data.Build();
   machine_description_ = system_data.MachineDescription();
   cpu_count_ = system_data.ProcessorCount();
   cpu_vendor_ = system_data.CPUVendor();
