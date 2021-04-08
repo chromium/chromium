@@ -13,6 +13,7 @@
 #if !defined(OS_ANDROID)
 // gn check doesn't understand "#if !defined(OS_ANDROID)" and fails this
 // non-Android include on Android.
+#include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"  // nogncheck
 #include "chrome/browser/ui/webui/internals/web_app/web_app_internals.mojom.h"  // nogncheck
 #endif
 
@@ -31,6 +32,10 @@ class InternalsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<
           mojom::web_app_internals::WebAppInternalsPageHandler> receiver);
+  void BindInterface(
+      mojo::PendingReceiver<
+          mojom::user_education_internals::UserEducationInternalsPageHandler>
+          receiver);
 #endif  // !defined(OS_ANDROID)
 
  private:

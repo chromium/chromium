@@ -1951,6 +1951,7 @@ static_library("browser") {
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
     "//chrome/browser/ui/webui/download_shelf:mojo_bindings",
     "//chrome/browser/ui/webui/downloads:mojo_bindings",
+    "//chrome/browser/ui/webui/internals/user_education:mojo_bindings",
     "//chrome/browser/ui/webui/internals/web_app:mojo_bindings",
     "//chrome/browser/ui/webui/memories:mojo_bindings",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
@@ -6642,8 +6643,10 @@ grit("dev_ui_browser_resources") {
 
   deps = [
     "//chrome/browser/media:mojo_bindings_js",
+    "//chrome/browser/resources/internals/user_education:components",
     "//chrome/browser/resources/local_state:build",
     "//chrome/browser/resources/web_app_internals:components",
+    "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_js",
     "//chrome/browser/ui/webui/internals/web_app:mojo_bindings_js",
     "//components/site_engagement/core/mojom:mojo_bindings_webui_js",
   ]
