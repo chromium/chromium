@@ -862,23 +862,6 @@
       ]
     },
     {
-      "id": 118,
-      "cr_bugs": [477306],
-      "description": "NVIDIA 331 series drivers shader compiler may crash when attempting to optimize pow()",
-      "os": {
-        "type": "linux"
-      },
-      "driver_version": {
-        "op": "<=",
-        "value": "331"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "remove_pow_with_constant_exponent"
-      ]
-    },
-    {
       "id": 119,
       "description": "Context lost recovery often fails on Mali-400/450 on Android.",
       "cr_bugs": [496438],
