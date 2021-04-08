@@ -34,44 +34,26 @@ constexpr auto kIndicatorFadeOutDuration =
 constexpr base::TimeDelta kIndicatorFrameInterval =
     base::TimeDelta::FromMilliseconds(50);  // 20 FPS
 
-// Animation that throbs in (towards 1.0) and out (towards 0.0), and ends in the
-// "in" state.
-class TabRecordingIndicatorAnimation : public gfx::MultiAnimation {
- public:
-  TabRecordingIndicatorAnimation(const gfx::MultiAnimation::Parts& parts,
-                                 const base::TimeDelta interval)
-      : MultiAnimation(parts, interval) {}
-  ~TabRecordingIndicatorAnimation() override = default;
+std::unique_ptr<gfx::MultiAnimation> CreateTabRecordingIndicatorAnimation() {
+  // Number of times the throbber fades in and out. After these cycles a final
+  // fade-in animation is played to end visible.
+  constexpr size_t kFadeInFadeOutCycles = 2;
 
-  // Overridden to provide alternating "towards in" and "towards out" behavior.
-  double GetCurrentValue() const override;
-
-  static std::unique_ptr<TabRecordingIndicatorAnimation> Create();
-};
-
-double TabRecordingIndicatorAnimation::GetCurrentValue() const {
-  return current_part_index() % 2 ? 1.0 - MultiAnimation::GetCurrentValue()
-                                  : MultiAnimation::GetCurrentValue();
-}
-
-std::unique_ptr<TabRecordingIndicatorAnimation>
-TabRecordingIndicatorAnimation::Create() {
-  // Number of times to "toggle throb" the recording and tab capture indicators
-  // when they first appear.
-  constexpr size_t kCaptureIndicatorThrobCycles = 5;
-
-  MultiAnimation::Parts parts;
-  static_assert(
-      kCaptureIndicatorThrobCycles % 2 != 0,
-      "odd number of cycles required so animation finishes in showing state");
-  for (size_t i = 0; i < kCaptureIndicatorThrobCycles; ++i) {
-    parts.push_back(MultiAnimation::Part(
-        i % 2 ? kIndicatorFadeOutDuration : kIndicatorFadeInDuration,
-        gfx::Tween::EASE_IN));
+  gfx::MultiAnimation::Parts parts;
+  for (size_t i = 0; i < kFadeInFadeOutCycles; ++i) {
+    // Fade-in:
+    parts.push_back(gfx::MultiAnimation::Part(kIndicatorFadeInDuration,
+                                              gfx::Tween::EASE_IN));
+    // Fade-out (from 1 to 0):
+    parts.push_back(gfx::MultiAnimation::Part(kIndicatorFadeOutDuration,
+                                              gfx::Tween::EASE_IN, 1.0, 0.0));
   }
+  // Finish by fading in to show the indicator.
+  parts.push_back(
+      gfx::MultiAnimation::Part(kIndicatorFadeInDuration, gfx::Tween::EASE_IN));
 
-  auto animation = std::make_unique<TabRecordingIndicatorAnimation>(
-      parts, kIndicatorFrameInterval);
+  auto animation =
+      std::make_unique<gfx::MultiAnimation>(parts, kIndicatorFrameInterval);
   animation->set_continuous(false);
   return animation;
 }
@@ -138,9 +120,12 @@ std::unique_ptr<gfx::Animation> CreateTabAlertIndicatorFadeAnimation(
   if (alert_state == TabAlertState::MEDIA_RECORDING ||
       alert_state == TabAlertState::TAB_CAPTURING ||
       alert_state == TabAlertState::DESKTOP_CAPTURING) {
-    return TabRecordingIndicatorAnimation::Create();
+    return CreateTabRecordingIndicatorAnimation();
   }
 
+  // TODO(pbos): Investigate if this functionality can be pushed down into a
+  // parent class somehow, or leave a better paper trail of why doing so is not
+  // feasible.
   // Note: While it seems silly to use a one-part MultiAnimation, it's the only
   // gfx::Animation implementation that lets us control the frame interval.
   gfx::MultiAnimation::Parts parts;
