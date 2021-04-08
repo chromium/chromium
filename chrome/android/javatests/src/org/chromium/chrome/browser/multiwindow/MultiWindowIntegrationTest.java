@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
@@ -67,6 +68,7 @@ public class MultiWindowIntegrationTest {
     @MediumTest
     @Feature("MultiWindow")
     @TargetApi(Build.VERSION_CODES.N)
+    @DisabledTest(message = "Flaky on test-n-phone https://crbug/1197125")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testIncognitoNtpHandledCorrectly() {
         try {
