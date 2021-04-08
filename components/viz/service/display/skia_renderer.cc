@@ -2426,8 +2426,9 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
       if (clip_rect.IsEmpty()) {
         clip_rect = current_draw_rect_;
       }
-      const gfx::Transform& transform =
+      gfx::Transform transform =
           quad->shared_quad_state->quad_to_target_transform;
+      transform.FlattenTo2d();
       if (!transform.IsInvertible()) {
         return rpdq_params;
       }

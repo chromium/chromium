@@ -1523,7 +1523,8 @@ bool GLRenderer::UpdateRPDQWithSkiaFilters(
         if (clip_rect.IsEmpty()) {
           clip_rect = current_draw_rect_;
         }
-        const gfx::Transform& transform = params->quad_to_target_transform;
+        gfx::Transform transform = params->quad_to_target_transform;
+        transform.FlattenTo2d();
         if (!transform.IsInvertible()) {
           return false;
         }
