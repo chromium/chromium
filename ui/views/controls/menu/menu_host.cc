@@ -81,14 +81,15 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
 };
 #endif  // OS_APPLE
 
-void TransferGesture(Widget* source, Widget* target) {
-#if defined(OS_APPLE)
+void TransferGesture(ui::GestureRecognizer* gesture_recognizer,
+                     gfx::NativeView source,
+                     gfx::NativeView target) {
+#if defined(USE_AURA)
+  gesture_recognizer->TransferEventsTo(
+      source, target, ui::TransferTouchesBehavior::kDontCancel);
+#else
   NOTIMPLEMENTED();
-#else   // !defined(OS_APPLE)
-  source->GetGestureRecognizer()->TransferEventsTo(
-      source->GetNativeView(), target->GetNativeView(),
-      ui::TransferTouchesBehavior::kDontCancel);
-#endif  // defined(OS_APPLE)
+#endif  // defined(USE_AURA)
 }
 
 }  // namespace internal
@@ -110,7 +111,8 @@ MenuHost::~MenuHost() {
 void MenuHost::InitMenuHost(Widget* parent,
                             const gfx::Rect& bounds,
                             View* contents_view,
-                            bool do_capture) {
+                            bool do_capture,
+                            gfx::NativeView native_view_for_gestures) {
   TRACE_EVENT0("views", "MenuHost::InitMenuHost");
   Widget::InitParams params(Widget::InitParams::TYPE_MENU);
   const MenuController* menu_controller =
@@ -150,6 +152,8 @@ void MenuHost::InitMenuHost(Widget* parent,
   if (owner_)
     owner_->AddObserver(this);
 
+  native_view_for_gestures_ = native_view_for_gestures;
+
   SetContentsView(contents_view);
   ShowMenuHost(do_capture);
 }
@@ -170,7 +174,11 @@ void MenuHost::ShowMenuHost(bool do_capture) {
       // TransferGesture when owner needs gesture events so that the incoming
       // touch events after MenuHost is created are properly translated into
       // gesture events instead of being dropped.
-      internal::TransferGesture(owner_, this);
+      gfx::NativeView source_view = native_view_for_gestures_
+                                        ? native_view_for_gestures_
+                                        : owner_->GetNativeView();
+      internal::TransferGesture(GetGestureRecognizer(), source_view,
+                                GetNativeView());
     } else {
       GetGestureRecognizer()->CancelActiveTouchesExcept(nullptr);
     }
@@ -187,7 +195,11 @@ void MenuHost::HideMenuHost() {
       submenu_->GetMenuItem()->GetMenuController();
   if (owner_ && menu_controller &&
       menu_controller->send_gesture_events_to_owner()) {
-    internal::TransferGesture(this, owner_);
+    gfx::NativeView target_view = native_view_for_gestures_
+                                      ? native_view_for_gestures_
+                                      : owner_->GetNativeView();
+    internal::TransferGesture(GetGestureRecognizer(), GetNativeView(),
+                              target_view);
   }
   ignore_capture_lost_ = true;
   ReleaseMenuHostCapture();
@@ -293,6 +305,7 @@ void MenuHost::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(owner_, widget);
   owner_->RemoveObserver(this);
   owner_ = nullptr;
+  native_view_for_gestures_ = nullptr;
 }
 
 }  // namespace views

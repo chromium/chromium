@@ -147,7 +147,8 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
     }
 
     runner_->RunMenuAt(parent_, nullptr, gfx::Rect(),
-                       MenuAnchorPosition::kTopLeft, MenuRunner::CONTEXT_MENU);
+                       MenuAnchorPosition::kTopLeft, MenuRunner::CONTEXT_MENU,
+                       nullptr);
     MaybeRunAsync();
   }
 
@@ -167,7 +168,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
     }
 
     runner_->RunMenuAt(parent_, nullptr, anchor, MenuAnchorPosition::kTopLeft,
-                       MenuRunner::COMBOBOX);
+                       MenuRunner::COMBOBOX, nullptr);
     MaybeRunAsync();
   }
 
