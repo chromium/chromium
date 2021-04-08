@@ -51,12 +51,10 @@ if (is_chrome_branded) {
     grd_prefix = "welcome_images"
     out_grd = "$target_gen_dir/icon_resources.grdp"
     input_files = [
-      "module_icons/google_dark.svg",
-      "module_icons/google_light.svg",
+      "module_icons/add_bookmarks.svg",
+      "module_icons/pick_a_background.svg",
       "module_icons/set_default_dark.svg",
       "module_icons/set_default_light.svg",
-      "module_icons/wallpaper_dark.svg",
-      "module_icons/wallpaper_light.svg",
       "ntp_thumbnails/art.jpg",
       "ntp_thumbnails/cityscape.jpg",
       "ntp_thumbnails/earth.jpg",
