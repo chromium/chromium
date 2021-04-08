@@ -49,10 +49,6 @@ class RequiredFieldsFallbackHandler {
   // attempt to fill the failed fields without Autofill using fallback values.
   void CheckAllRequiredFields(bool apply_fallback);
 
-  // Triggers the check for a specific field.
-  void CheckRequiredFieldsSequentially(bool allow_fallback,
-                                       size_t required_fields_index);
-
   // Updates the status of the required field.
   void OnGetRequiredFieldValue(size_t required_fields_index,
                                const ClientStatus& element_status,
@@ -67,31 +63,36 @@ class RequiredFieldsFallbackHandler {
   // Called after attempting to find one of the elements to execute a fallback
   // action on.
   void OnFindElement(const std::string& value,
-                     size_t required_fields_index,
+                     const RequiredField& required_field,
+                     base::OnceCallback<void()> set_next_field,
                      const ClientStatus& element_status,
                      std::unique_ptr<ElementFinder::Result> element_result);
 
   // Called after retrieving tag name from a field.
   void OnGetFallbackFieldElementTag(
       const std::string& value,
-      size_t required_fields_index,
+      const RequiredField& required_field,
+      base::OnceCallback<void()> set_next_field,
       std::unique_ptr<ElementFinder::Result> element,
       const ClientStatus& element_tag_status,
       const std::string& element_tag);
 
   // Called after clicking a fallback element.
   void OnClickOrTapFallbackElement(const std::string& value,
-                                   size_t required_fields_index,
+                                   const RequiredField& required_field,
+                                   base::OnceCallback<void()> set_next_field,
                                    const ClientStatus& element_click_status);
   // Called after waiting for option element to appear before clicking it.
   void OnShortWaitForElement(const Selector& selector_to_click,
-                             size_t required_fields_index,
+                             const RequiredField& required_field,
+                             base::OnceCallback<void()> set_next_field,
                              const ClientStatus& find_element_status,
                              base::TimeDelta wait_time);
 
   // Called after trying to set form values without Autofill in case of
   // fallback after failed validation.
-  void OnSetFallbackFieldValue(size_t required_fields_index,
+  void OnSetFallbackFieldValue(const RequiredField& required_field,
+                               base::OnceCallback<void()> set_next_field,
                                std::unique_ptr<ElementFinder::Result> element,
                                const ClientStatus& status);
 
