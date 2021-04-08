@@ -65,7 +65,7 @@ std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
   DCHECK(account_manager);
   if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
     return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
-        account_tracker_service, network_connection_tracker, account_manager,
+        account_tracker_service, network_connection_tracker,
         account_manager_facade, is_regular_profile);
   }
   return std::make_unique<

@@ -235,7 +235,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
     delegate_ = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
         &account_tracker_service_,
-        network::TestNetworkConnectionTracker::GetInstance(), &account_manager_,
+        network::TestNetworkConnectionTracker::GetInstance(),
         account_manager_facade_.get(), true /* is_regular_profile */);
 
     LoadCredentialsAndWaitForCompletion(
@@ -385,7 +385,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
   auto delegate = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
       &account_tracker_service_,
-      network::TestNetworkConnectionTracker::GetInstance(), &account_manager,
+      network::TestNetworkConnectionTracker::GetInstance(),
       account_manager_facade_.get(), false /* is_regular_profile */);
   TestOAuth2TokenServiceObserver observer(delegate.get());
 
@@ -608,7 +608,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   // Register callbacks before AccountManager has been fully initialized.
   auto delegate = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
       &account_tracker_service_,
-      network::TestNetworkConnectionTracker::GetInstance(), &account_manager,
+      network::TestNetworkConnectionTracker::GetInstance(),
       account_manager_facade.get(), true /* is_regular_profile */);
   delegate->LoadCredentials(account1.account_id /* primary_account_id */);
   TestOAuth2TokenServiceObserver observer(delegate.get());

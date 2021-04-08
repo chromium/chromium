@@ -16,7 +16,6 @@ namespace signin {
 TestProfileOAuth2TokenServiceDelegateChromeOS::
     TestProfileOAuth2TokenServiceDelegateChromeOS(
         AccountTrackerService* account_tracker_service,
-        ash::AccountManager* account_manager,
         crosapi::AccountManagerAsh* account_manager_ash,
         bool is_regular_profile) {
   if (!network::TestNetworkConnectionTracker::HasInstance()) {
@@ -32,7 +31,7 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::
 
   delegate_ = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
       account_tracker_service,
-      network::TestNetworkConnectionTracker::GetInstance(), account_manager,
+      network::TestNetworkConnectionTracker::GetInstance(),
       account_manager_facade_.get(), is_regular_profile);
   delegate_->AddObserver(this);
 }

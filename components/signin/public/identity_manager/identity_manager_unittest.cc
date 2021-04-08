@@ -362,8 +362,8 @@ class IdentityManagerTest : public testing::Test {
     auto token_service = std::make_unique<CustomFakeProfileOAuth2TokenService>(
         &pref_service_,
         std::make_unique<TestProfileOAuth2TokenServiceDelegateChromeOS>(
-            account_tracker_service.get(), ash_account_manager,
-            ash_account_manager_ash, /*is_regular_profile=*/true));
+            account_tracker_service.get(), ash_account_manager_ash,
+            /*is_regular_profile=*/true));
 #else
     auto token_service =
         std::make_unique<CustomFakeProfileOAuth2TokenService>(&pref_service_);

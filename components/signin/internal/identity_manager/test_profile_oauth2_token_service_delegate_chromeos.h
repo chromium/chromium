@@ -13,10 +13,6 @@
 
 class AccountTrackerService;
 
-namespace ash {
-class AccountManager;
-}
-
 namespace crosapi {
 class AccountManagerAsh;
 }
@@ -33,7 +29,6 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
  public:
   TestProfileOAuth2TokenServiceDelegateChromeOS(
       AccountTrackerService* account_tracker_service,
-      ash::AccountManager* account_manager,
       crosapi::AccountManagerAsh* account_manager_ash,
       bool is_regular_profile);
   ~TestProfileOAuth2TokenServiceDelegateChromeOS() override;
