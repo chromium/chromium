@@ -69,8 +69,11 @@ BASE_EXPORT std::string WideToASCII(WStringPiece wide) WARN_UNUSED_RESULT;
 // Wide) should be used. Deleting the overloads here catches these cases at
 // compile time.
 template <size_t N>
-std::u16string WideToUTF16(const wchar_t (&kUseChar16LiteralInstead)[N]) =
-    delete;
+std::u16string WideToUTF16(const wchar_t (&str)[N]) {
+  static_assert(N == 0, "Error: Use the u\"...\" prefix instead.");
+  return std::u16string();
+}
+
 }  // namespace base
 
 #endif  // BASE_STRINGS_UTF_STRING_CONVERSIONS_H_

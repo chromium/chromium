@@ -1031,6 +1031,24 @@ _BANNED_CPP_FUNCTIONS = (
       False,
       (),
     ),
+    (
+      r'/\bASCIIToUTF16\("(\\.|[^\\"])*"\)',
+      (
+       'base::ASCIIToUTF16 should not be used with a string literal.',
+       'Consider using a UTF16 string literal (u"...") instead.',
+      ),
+      False,
+      (),
+    ),
+    (
+      r'/\bUTF8ToUTF16\("(\\.|[^\\"])*"\)',
+      (
+       'base::UTF8ToUTF16 should not be used with a string literal.',
+       'Consider using a UTF16 string literal (u"...") instead.',
+      ),
+      False,
+      (),
+    ),
 )
 
 # Format: Sequence of tuples containing:
