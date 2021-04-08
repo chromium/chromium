@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/android/save_address_profile_message_delegate.h"
+#include "chrome/browser/autofill/android/save_address_profile_message_controller.h"
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,10 +16,12 @@
 
 namespace autofill {
 
-class SaveAddressProfileMessageDelegateTest
+using testing::_;
+
+class SaveAddressProfileMessageControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  SaveAddressProfileMessageDelegateTest() = default;
+  SaveAddressProfileMessageControllerTest() = default;
 
  protected:
   void SetUp() override;
@@ -27,7 +29,9 @@ class SaveAddressProfileMessageDelegateTest
 
   void EnqueueMessage(
       const AutofillProfile& profile,
-      AutofillClient::AddressProfileSavePromptCallback callback);
+      AutofillClient::AddressProfileSavePromptCallback save_callback,
+      SaveAddressProfileMessageController::PrimaryActionCallback
+          action_callback);
   void ExpectDismissMessageCall();
 
   void TriggerActionClick();
@@ -38,30 +42,42 @@ class SaveAddressProfileMessageDelegateTest
     return &message_dispatcher_bridge_;
   }
 
+  AutofillProfile profile_ = test::GetFullProfile();
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
+      save_callback_;
+  base::MockCallback<SaveAddressProfileMessageController::PrimaryActionCallback>
+      action_callback_;
+
  private:
-  SaveAddressProfileMessageDelegate delegate_;
+  SaveAddressProfileMessageController controller_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-void SaveAddressProfileMessageDelegateTest::SetUp() {
+void SaveAddressProfileMessageControllerTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillAddressProfileSavePrompt);
 }
 
-void SaveAddressProfileMessageDelegateTest::TearDown() {
+void SaveAddressProfileMessageControllerTest::TearDown() {
   messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
-void SaveAddressProfileMessageDelegateTest::EnqueueMessage(
+void SaveAddressProfileMessageControllerTest::EnqueueMessage(
     const AutofillProfile& profile,
-    AutofillClient::AddressProfileSavePromptCallback callback) {
+    AutofillClient::AddressProfileSavePromptCallback save_callback,
+    SaveAddressProfileMessageController::PrimaryActionCallback
+        action_callback) {
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
-  delegate_.DisplaySavePrompt(web_contents(), profile, std::move(callback));
+  controller_.DisplayMessage(web_contents(), profile, std::move(save_callback),
+                             std::move(action_callback));
 }
 
-void SaveAddressProfileMessageDelegateTest::ExpectDismissMessageCall() {
+void SaveAddressProfileMessageControllerTest::ExpectDismissMessageCall() {
   EXPECT_CALL(message_dispatcher_bridge_, DismissMessage)
       .WillOnce([](messages::MessageWrapper* message,
                    content::WebContents* web_contents,
@@ -71,97 +87,80 @@ void SaveAddressProfileMessageDelegateTest::ExpectDismissMessageCall() {
       });
 }
 
-void SaveAddressProfileMessageDelegateTest::TriggerActionClick() {
+void SaveAddressProfileMessageControllerTest::TriggerActionClick() {
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 }
 
-void SaveAddressProfileMessageDelegateTest::TriggerMessageDismissedCallback(
+void SaveAddressProfileMessageControllerTest::TriggerMessageDismissedCallback(
     messages::DismissReason dismiss_reason) {
   GetMessageWrapper()->HandleDismissCallback(
       base::android::AttachCurrentThread(), static_cast<int>(dismiss_reason));
 }
 
 messages::MessageWrapper*
-SaveAddressProfileMessageDelegateTest::GetMessageWrapper() {
-  return delegate_.message_.get();
+SaveAddressProfileMessageControllerTest::GetMessageWrapper() {
+  return controller_.message_.get();
 }
 
-// Tests that the save prompt is treated as accepted when the user clicks "Save"
-// button.
-TEST_F(SaveAddressProfileMessageDelegateTest, SaveOnActionClick) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillAddressProfileSavePrompt);
-
-  AutofillProfile profile = test::GetFullProfile();
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  EXPECT_CALL(
-      callback,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          profile));
-
-  EnqueueMessage(profile, callback.Get());
+// Tests that the action callback is triggered when the user clicks on the
+// primary action button.
+TEST_F(SaveAddressProfileMessageControllerTest, ProceedOnActionClick) {
+  EnqueueMessage(profile_, save_callback_.Get(), action_callback_.Get());
   EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(action_callback_, Run(_, profile_, _));
   TriggerActionClick();
   EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(save_callback_, Run(_, profile_)).Times(0);
   TriggerMessageDismissedCallback(messages::DismissReason::PRIMARY_ACTION);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
-// Tests that the save prompt is treated as declined when the user dismisses the
+// Tests that the save callback is triggered with
+// |SaveAddressProfileOfferUserDecision::kDeclined| when the user dismisses the
 // message.
-TEST_F(SaveAddressProfileMessageDelegateTest, DeclineOnGestureDismiss) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillAddressProfileSavePrompt);
-
-  AutofillProfile profile = test::GetFullProfile();
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  EXPECT_CALL(
-      callback,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-          profile));
-
-  EnqueueMessage(profile, callback.Get());
+TEST_F(SaveAddressProfileMessageControllerTest, DeclineOnGestureDismiss) {
+  EnqueueMessage(profile_, save_callback_.Get(), action_callback_.Get());
   EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(
+      save_callback_,
+      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+          profile_));
   TriggerMessageDismissedCallback(messages::DismissReason::GESTURE);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
-// Tests that the save prompt is treated as ignored when the message is
+// Tests that the save callback is triggered with
+// |SaveAddressProfileOfferUserDecision::kIgnored| when the message is
 // autodismissed.
-TEST_F(SaveAddressProfileMessageDelegateTest, IgnoreOnTimerAutodismiss) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillAddressProfileSavePrompt);
-
-  AutofillProfile profile = test::GetFullProfile();
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  EXPECT_CALL(callback,
-              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  profile));
-
-  EnqueueMessage(profile, callback.Get());
+TEST_F(SaveAddressProfileMessageControllerTest, IgnoreOnTimerAutodismiss) {
+  EnqueueMessage(profile_, save_callback_.Get(), action_callback_.Get());
   EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(save_callback_,
+              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+                  profile_));
   TriggerMessageDismissedCallback(messages::DismissReason::TIMER);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
 // Tests that the previous prompt gets dismissed when the new one is enqueued.
-TEST_F(SaveAddressProfileMessageDelegateTest, OnlyOnePromptAtATime) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillAddressProfileSavePrompt);
+TEST_F(SaveAddressProfileMessageControllerTest, OnlyOnePromptAtATime) {
+  EnqueueMessage(profile_, save_callback_.Get(), action_callback_.Get());
 
-  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile another_profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
-      callback1;
-  EXPECT_CALL(callback1,
+      another_save_callback;
+  base::MockCallback<SaveAddressProfileMessageController::PrimaryActionCallback>
+      another_action_callback;
+  EXPECT_CALL(save_callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  profile1));
-  EnqueueMessage(profile1, callback1.Get());
-
+                  profile_));
   ExpectDismissMessageCall();
-  AutofillProfile profile2 = test::GetFullProfile();
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
-      callback2;
-  EnqueueMessage(profile2, callback2.Get());
+  EnqueueMessage(another_profile, another_save_callback.Get(),
+                 another_action_callback.Get());
 
   TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
 }

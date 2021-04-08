@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/android/save_address_profile_message_delegate.h"
+#include "chrome/browser/autofill/android/save_address_profile_message_controller.h"
 
 #include <utility>
 
@@ -13,38 +13,42 @@
 
 namespace autofill {
 
-SaveAddressProfileMessageDelegate::SaveAddressProfileMessageDelegate() =
+SaveAddressProfileMessageController::SaveAddressProfileMessageController() =
     default;
 
-SaveAddressProfileMessageDelegate::~SaveAddressProfileMessageDelegate() {
-  DismissSavePrompt();
+SaveAddressProfileMessageController::~SaveAddressProfileMessageController() {
+  DismissMessage();
 }
 
-void SaveAddressProfileMessageDelegate::DisplaySavePrompt(
+void SaveAddressProfileMessageController::DisplayMessage(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
-    AutofillClient::AddressProfileSavePromptCallback callback) {
+    AutofillClient::AddressProfileSavePromptCallback
+        save_address_profile_callback,
+    PrimaryActionCallback primary_action_callback) {
   DCHECK(web_contents);
-  DCHECK(callback);
+  DCHECK(save_address_profile_callback);
+  DCHECK(primary_action_callback);
 
   DCHECK(base::FeatureList::IsEnabled(
       autofill::features::kAutofillAddressProfileSavePrompt));
 
   // Dismiss previous message if it is displayed.
-  DismissSavePrompt();
-  DCHECK(message_ == nullptr);
+  DismissMessage();
+  DCHECK(!message_);
 
   web_contents_ = web_contents;
   profile_ = profile;
-  callback_ = std::move(callback);
+  save_address_profile_callback_ = std::move(save_address_profile_callback);
+  primary_action_callback_ = std::move(primary_action_callback);
 
   // Binding with base::Unretained(this) is safe here because
-  // SaveAddressProfileMessageDelegate owns message_. Callbacks won't be called
-  // after the current object is destroyed.
+  // SaveAddressProfileMessageController owns message_. Callbacks won't be
+  // called after the current object is destroyed.
   message_ = std::make_unique<messages::MessageWrapper>(
-      base::BindOnce(&SaveAddressProfileMessageDelegate::OnSaveClicked,
+      base::BindOnce(&SaveAddressProfileMessageController::OnPrimaryAction,
                      base::Unretained(this)),
-      base::BindOnce(&SaveAddressProfileMessageDelegate::OnMessageDismissed,
+      base::BindOnce(&SaveAddressProfileMessageController::OnMessageDismissed,
                      base::Unretained(this)));
 
   // TODO(crbug.com/1167061): Replace with proper localized string.
@@ -56,18 +60,19 @@ void SaveAddressProfileMessageDelegate::DisplaySavePrompt(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS);
 }
 
-void SaveAddressProfileMessageDelegate::DismissSavePrompt() {
-  if (message_ != nullptr) {
+void SaveAddressProfileMessageController::DismissMessage() {
+  if (message_) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
         message_.get(), web_contents_, messages::DismissReason::UNKNOWN);
   }
 }
 
-void SaveAddressProfileMessageDelegate::OnSaveClicked() {
-  RunCallback(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted);
+void SaveAddressProfileMessageController::OnPrimaryAction() {
+  std::move(primary_action_callback_)
+      .Run(web_contents_, profile_, std::move(save_address_profile_callback_));
 }
 
-void SaveAddressProfileMessageDelegate::OnMessageDismissed(
+void SaveAddressProfileMessageController::OnMessageDismissed(
     messages::DismissReason dismiss_reason) {
   switch (dismiss_reason) {
     case messages::DismissReason::PRIMARY_ACTION:
@@ -76,12 +81,12 @@ void SaveAddressProfileMessageDelegate::OnMessageDismissed(
       break;
     case messages::DismissReason::GESTURE:
       // User explicitly dismissed the message.
-      RunCallback(
+      RunSaveAddressProfileCallback(
           AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
       break;
     default:
       // Dismissal without direct interaction.
-      RunCallback(
+      RunSaveAddressProfileCallback(
           AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored);
       break;
   }
@@ -91,9 +96,10 @@ void SaveAddressProfileMessageDelegate::OnMessageDismissed(
   web_contents_ = nullptr;
 }
 
-void SaveAddressProfileMessageDelegate::RunCallback(
+void SaveAddressProfileMessageController::RunSaveAddressProfileCallback(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  std::move(callback_).Run(decision, profile_);
+  std::move(save_address_profile_callback_).Run(decision, profile_);
+  primary_action_callback_.Reset();
 }
 
 }  // namespace autofill

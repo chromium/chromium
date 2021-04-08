@@ -110,6 +110,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/InternalAuthenticator.java",
   "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
   "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
+  "java/src/org/chromium/chrome/browser/autofill/SaveAddressProfilePrompt.java",
+  "java/src/org/chromium/chrome/browser/autofill/SaveAddressProfilePromptController.java",
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/DropdownFieldAdapter.java",
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorBase.java",
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorDialog.java",

@@ -4403,7 +4403,8 @@ test("unit_tests") {
     sources += [
       "../browser/android/search_permissions/search_permissions_service_unittest.cc",
       "../browser/autofill/address_accessory_controller_impl_unittest.cc",
-      "../browser/autofill/android/save_address_profile_message_delegate_unittest.cc",
+      "../browser/autofill/android/save_address_profile_message_controller_unittest.cc",
+      "../browser/autofill/android/save_address_profile_prompt_controller_unittest.cc",
       "../browser/autofill/autofill_credit_card_filling_infobar_delegate_mobile_unittest.cc",
       "../browser/autofill/autofill_keyboard_accessory_adapter_unittest.cc",
       "../browser/autofill/autofill_offer_notification_infobar_delegate_mobile_unittest.cc",

@@ -3376,6 +3376,8 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill/InternalAuthenticator.java",
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
+    "java/src/org/chromium/chrome/browser/autofill/SaveAddressProfilePrompt.java",
+    "java/src/org/chromium/chrome/browser/autofill/SaveAddressProfilePromptController.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/AutofillProfileBridge.java",
     "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskScheduler.java",
