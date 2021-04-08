@@ -855,6 +855,8 @@ component("net") {
       "quic/crypto/proof_source_chromium.h",
       "quic/crypto/proof_verifier_chromium.cc",
       "quic/crypto/proof_verifier_chromium.h",
+      "quic/dedicated_web_transport_http3_client.cc",
+      "quic/dedicated_web_transport_http3_client.h",
       "quic/network_connection.cc",
       "quic/network_connection.h",
       "quic/platform/impl/quic_chromium_clock.cc",

@@ -4,6 +4,7 @@
 
 #include "net/quic/web_transport_client.h"
 
+#include "net/quic/dedicated_web_transport_http3_client.h"
 #include "net/quic/quic_transport_client.h"
 
 namespace net {
@@ -19,7 +20,7 @@ class FailedWebTransportClient : public WebTransportClient {
                ErrorToString(net_error),
                /*safe_to_report_details=*/true),
         visitor_(visitor) {}
-  void Connect() override { visitor_->OnError(); }
+  void Connect() override { visitor_->OnConnectionFailed(); }
 
   quic::WebTransportSession* session() override { return nullptr; }
   const QuicTransportError& error() const override { return error_; }
@@ -52,6 +53,14 @@ std::unique_ptr<WebTransportClient> CreateWebTransportClient(
           ERR_DISALLOWED_URL_SCHEME, visitor);
     }
     return std::make_unique<QuicTransportClient>(
+        url, origin, visitor, isolation_key, context, parameters);
+  }
+  if (url.scheme() == url::kHttpsScheme) {
+    if (!parameters.enable_web_transport_http3) {
+      return std::make_unique<FailedWebTransportClient>(
+          ERR_DISALLOWED_URL_SCHEME, visitor);
+    }
+    return std::make_unique<DedicatedWebTransportHttp3Client>(
         url, origin, visitor, isolation_key, context, parameters);
   }
 

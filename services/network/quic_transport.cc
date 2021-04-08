@@ -28,6 +28,7 @@ net::WebTransportParameters CreateParameters(
         fingerprints) {
   net::WebTransportParameters params;
   params.enable_quic_transport = true;
+  params.enable_web_transport_http3 = true;
 
   for (const auto& fingerprint : fingerprints) {
     params.server_certificate_fingerprints.push_back(

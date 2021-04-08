@@ -337,13 +337,14 @@ TEST_F(QuicTransportTest, FailWithNoScheme) {
 TEST_F(QuicTransportTest, FailWithHttpsURL) {
   V8TestingScope scope;
   auto& exception_state = scope.GetExceptionState();
-  QuicTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+  QuicTransport::Create(scope.GetScriptState(), String("http://example.com/"),
                         EmptyOptions(), exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kSyntaxError),
             exception_state.Code());
   EXPECT_EQ(
-      "The URL's scheme must be 'quic-transport'. 'https' is not allowed.",
+      "The URL's scheme must be 'quic-transport' or 'https'. 'http' is not "
+      "allowed.",
       exception_state.Message());
 }
 
