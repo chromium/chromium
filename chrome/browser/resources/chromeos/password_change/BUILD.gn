@@ -1,0 +1,41 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [ "lock_screen_network.js" ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [ ":lock_screen_network" ]
+}
+
+js_library("lock_screen_network") {
+  deps = [
+    "//ui/webui/resources/cr_components/chromeos/network:network_select.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "lock_screen_network.js" ]
+}

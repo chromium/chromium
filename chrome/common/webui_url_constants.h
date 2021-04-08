@@ -255,6 +255,8 @@ extern const char kChromeUIInternetConfigDialogHost[];
 extern const char kChromeUIInternetDetailDialogHost[];
 extern const char kChromeUICrostiniCreditsHost[];
 extern const char kChromeUICrostiniCreditsURL[];
+extern const char kChromeUILockScreenNetworkHost[];
+extern const char kChromeUILockScreenNetworkURL[];
 extern const char kChromeUILockScreenStartReauthHost[];
 extern const char kChromeUILockScreenStartReauthURL[];
 extern const char kChromeUIMachineLearningInternalsHost[];

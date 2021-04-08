@@ -2524,6 +2524,12 @@
   <message name="IDS_LOCK_PASSWORD_CHANGED_OLD_PASSWORD_HINT" desc="Old password field hint on the password changed dialog.">
     Enter old password
   </message>
+  <message name="IDS_LOCK_SCREEN_NETWORK_TITLE" desc="Title for the network dialog shown on the lock screen">
+    Network not available
+  </message>
+  <message name="IDS_LOCK_SCREEN_NETWORK_SUBTITLE" desc="Subtitle for lock screen network dialog">
+    Please connect to the internet to sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+  </message>
   <message name="IDS_LOGIN_ERROR_GOOGLE_ACCOUNT_NOT_ALLOWED" desc="Couldn't sign into Google account on the Active Directory managed device.">
     Sorry, Google accounts are not allowed on this device.
   </message>

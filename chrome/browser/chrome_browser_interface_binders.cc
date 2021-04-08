@@ -174,6 +174,7 @@
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -762,8 +763,8 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       chromeos::network_config::mojom::CrosNetworkConfig,
       chromeos::InternetConfigDialogUI, chromeos::InternetDetailDialogUI,
-      chromeos::NetworkUI, chromeos::OobeUI, chromeos::settings::OSSettingsUI>(
-      map);
+      chromeos::NetworkUI, chromeos::OobeUI, chromeos::settings::OSSettingsUI,
+      chromeos::LockScreenNetworkUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::printing::printing_manager::mojom::PrintingMetadataProvider,

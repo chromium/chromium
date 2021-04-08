@@ -6,29 +6,20 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_DIALOGS_H_
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/base_lock_dialog.h"
+#include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_state_handler_observer.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace chromeos {
 
-// A modal system dialog without any frame decorating it.
-class BaseLockDialog : public SystemWebDialogDelegate {
- protected:
-  BaseLockDialog(GURL url, gfx::Size desired_size);
-  BaseLockDialog(BaseLockDialog const&) = delete;
-  ~BaseLockDialog() override;
+class LockScreenNetworkDialog;
 
-  // ui::WebDialogDelegate:
-  void GetDialogSize(gfx::Size* size) const override;
-  void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
-  ui::ModalType GetDialogModalType() const override;
-
- private:
-  gfx::Size desired_size_;
-};
-
-class LockScreenStartReauthDialog : public BaseLockDialog {
+class LockScreenStartReauthDialog : public BaseLockDialog,
+                                    public NetworkStateHandlerObserver {
  public:
   LockScreenStartReauthDialog();
   LockScreenStartReauthDialog(LockScreenStartReauthDialog const&) = delete;
@@ -38,9 +29,21 @@ class LockScreenStartReauthDialog : public BaseLockDialog {
   void Dismiss();
   bool IsRunning();
 
+  void CloseLockScreenNetworkDialog();
+  void ShowLockScreenNetworkDialog();
+
  private:
   void OnProfileCreated(Profile* profile, Profile::CreateStatus status);
   void OnDialogClosed(const std::string& json_retval) override;
+
+  // NetworkStateHandlerObserver:
+  void NetworkConnectionStateChanged(const NetworkState* network) override;
+  void DefaultNetworkChanged(const NetworkState* network) override;
+
+  std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
+
+  std::unique_ptr<LockScreenNetworkDialog> lock_screen_network_dialog_;
+  Profile* profile_;
 
   base::WeakPtrFactory<LockScreenStartReauthDialog> weak_factory_{this};
 };

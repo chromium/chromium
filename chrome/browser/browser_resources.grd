@@ -247,6 +247,8 @@
         <include name="IDR_GAIA_AUTH_AUTHENTICATOR_JS" file="resources\gaia_auth_host\authenticator.js" flattenhtml="true" type="BINDATA" />
         <include name="IDR_LOCK_SCREEN_REAUTH_HTML" file="resources\chromeos\password_change\lock_screen_reauth.html" flattenhtml="true" type="BINDATA" />
         <include name="IDR_LOCK_SCREEN_REAUTH_JS" file="resources\chromeos\password_change\lock_screen_reauth.js" type="BINDATA" />
+        <include name="IDR_LOCK_SCREEN_NETWORK_HTML" file="resources\chromeos\password_change\lock_screen_network.html" type="BINDATA" />
+        <include name="IDR_LOCK_SCREEN_NETWORK_JS" file="resources\chromeos\password_change\lock_screen_network.js" type="BINDATA" />
 
         <include name="IDR_CROSTINI_INSTALLER_INDEX_HTML" file="resources\chromeos\crostini_installer\index.html" type="BINDATA" />
         <include name="IDR_CROSTINI_INSTALLER_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\crostini_installer\app.js" type="BINDATA" use_base_dir="false" />

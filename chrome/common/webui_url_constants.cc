@@ -264,6 +264,8 @@ const char kChromeUIInternetConfigDialogHost[] = "internet-config-dialog";
 const char kChromeUIInternetDetailDialogHost[] = "internet-detail-dialog";
 const char kChromeUICrostiniCreditsHost[] = "crostini-credits";
 const char kChromeUICrostiniCreditsURL[] = "chrome://crostini-credits/";
+const char kChromeUILockScreenNetworkHost[] = "lock-network";
+const char kChromeUILockScreenNetworkURL[] = "chrome://lock-network";
 const char kChromeUILockScreenStartReauthHost[] = "lock-reauth";
 const char kChromeUILockScreenStartReauthURL[] = "chrome://lock-reauth";
 const char kChromeUIMachineLearningInternalsHost[] =
@@ -328,6 +330,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
       kChromeUIDeviceEmulatorHost,
       kChromeUIInternetConfigDialogHost,
       kChromeUIInternetDetailDialogHost,
+      kChromeUILockScreenNetworkHost,
       kChromeUILockScreenStartReauthHost,
       kChromeUIMobileSetupHost,
       kChromeUIMultiDeviceSetupHost,
@@ -571,6 +574,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUIDriveInternalsHost,
     kChromeUIMachineLearningInternalsHost,
     kChromeUINetworkHost,
+    kChromeUILockScreenNetworkHost,
     kChromeUIOobeHost,
     kChromeUIOSCreditsHost,
     kChromeUIOSSettingsHost,

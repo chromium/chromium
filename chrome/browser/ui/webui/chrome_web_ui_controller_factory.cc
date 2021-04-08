@@ -188,6 +188,7 @@
 #include "chrome/browser/ui/webui/chromeos/cryptohome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/drive_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
@@ -715,6 +716,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return nullptr;
     }
     return &NewWebUI<chromeos::LockScreenStartReauthUI>;
+  }
+  if (url.host_piece() == chrome::kChromeUILockScreenNetworkHost) {
+    if (!ash::features::IsSamlReauthenticationOnLockscreenEnabled()) {
+      return nullptr;
+    }
+    return &NewWebUI<chromeos::LockScreenNetworkUI>;
   }
   if (url.host_piece() == chrome::kChromeUIAccountManagerErrorHost)
     return &NewWebUI<chromeos::AccountManagerErrorUI>;
