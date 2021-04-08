@@ -22,3 +22,6 @@ NSString* const kPasswordLeakCheckItemAccessibilityIdentifier =
 
 NSString* const kSafeBrowsingItemAccessibilityIdentifier =
     @"SafeBrowsingItemAccessibilityIdentifier";
+
+NSString* const kAllowSigninItemAccessibilityIdentifier =
+    @"AllowSigninItemAccessibilityIdentifier";

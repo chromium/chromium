@@ -25,6 +25,7 @@
 #include "components/search_engines/util.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/strings/grit/components_strings.h"
@@ -218,6 +219,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   PrefBackedBoolean* _showMemoryDebugToolsEnabled;
   // PrefBackedBoolean for ArticlesForYou switch.
   PrefBackedBoolean* _articlesEnabled;
+  // Preference value for the "Allow Chrome Sign-in" feature.
+  PrefBackedBoolean* _allowChromeSigninPreference;
   // The item related to the switch for the show suggestions setting.
   SettingsSwitchItem* _showMemoryDebugToolsItem;
   // The item related to the switch for the show suggestions setting.
@@ -333,6 +336,11 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     _passwordCheckObserver = std::make_unique<PasswordCheckObserverBridge>(
         self, _passwordCheckManager.get());
 
+    _allowChromeSigninPreference =
+        [[PrefBackedBoolean alloc] initWithPrefService:prefService
+                                              prefName:prefs::kSigninAllowed];
+    _allowChromeSigninPreference.observer = self;
+
     _articlesEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
                    prefName:prefs::kArticlesForYouEnabled];
@@ -356,6 +364,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     _prefObserverBridge->ObserveChangesForPreference(
         DefaultSearchManager::kDefaultSearchProviderDataPrefName,
         &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(prefs::kSigninAllowed,
+                                                     &_prefChangeRegistrar);
 
     _dispatcher = dispatcher;
 
@@ -377,6 +387,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   _identityServiceObserver.reset();
   [_showMemoryDebugToolsEnabled setObserver:nil];
   [_articlesEnabled setObserver:nil];
+  [_allowChromeSigninPreference setObserver:nil];
 }
 
 #pragma mark View lifecycle
@@ -402,6 +413,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
 
+  [model addSectionWithIdentifier:SettingsSectionIdentifierSignIn];
   [self addPromoToIdentitySection];
   [self addAccountProfileToIdentitySection];
   [self addSyncAndGoogleServicesToIdentitySection];
@@ -488,7 +500,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 // Adds the identity promo to promote the sign-in or sync state.
 - (void)addPromoToIdentitySection {
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SettingsSectionIdentifierSignIn];
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   if (self.shouldDisplaySyncPromo ||
@@ -689,7 +700,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                                       IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE)
                        detailText:nil
                     iconImageName:kSettingsGoogleServicesImageName
-          accessibilityIdentifier:kSettingsGoogleSyncAndServicesCellId];
+          accessibilityIdentifier:kSettingsGoogleServicesCellId];
 }
 
 - (TableViewDetailIconItem*)googleSyncDetailItem {
@@ -1452,6 +1463,27 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   }
 }
 
+// Reloads all sign-in promos and default buttons.
+- (void)reloadSigninSection {
+  if (![self.tableViewModel
+          hasSectionForSectionIdentifier:SettingsSectionIdentifierSignIn]) {
+    return;
+  }
+  [self.tableViewModel
+      removeSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+
+  [self.tableViewModel
+      insertSectionWithIdentifier:SettingsSectionIdentifierSignIn
+                          atIndex:0];
+
+  [self addPromoToIdentitySection];
+  [self addAccountProfileToIdentitySection];
+  NSUInteger index = [self.tableViewModel
+      sectionForSectionIdentifier:SettingsSectionIdentifierSignIn];
+  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                withRowAnimation:UITableViewRowAnimationNone];
+}
+
 // Updates the Sync & Google services item to display the right icon and status
 // message in the detail text of the cell.
 - (void)updateSyncAndGoogleServicesItem:
@@ -1750,6 +1782,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   } else if (observableBoolean == _articlesEnabled) {
     _articlesForYouItem.on = [_articlesEnabled value];
     [self reconfigureCellsForItems:@[ _articlesForYouItem ]];
+  } else if (observableBoolean == _allowChromeSigninPreference) {
+    [self reloadSigninSection];
   } else {
     NOTREACHED();
   }

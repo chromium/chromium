@@ -22,4 +22,7 @@ extern NSString* const kPasswordLeakCheckItemAccessibilityIdentifier;
 // Accessibility identifier for the Safe Browsing cell.
 extern NSString* const kSafeBrowsingItemAccessibilityIdentifier;
 
+// Accessibility identifier for the Allow Chrome Sign-in cell.
+extern NSString* const kAllowSigninItemAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_CONSTANTS_H_

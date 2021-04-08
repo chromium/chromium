@@ -578,14 +578,21 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kGoogleServicesSettingsViewIdentifier);
 }
 
++ (id<GREYMatcher>)settingsMenuBackButton:(NSString*)buttonTitle {
+  return grey_allOf(
+      grey_anyOf(grey_accessibilityLabel(buttonTitle),
+                 grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
+                 grey_descendant(grey_buttonTitle(buttonTitle)), nil),
+      grey_kindOfClassName(@"_UIButtonBarButton"),
+      grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+}
+
 + (id<GREYMatcher>)settingsMenuBackButton {
   UINavigationBar* navBar = base::mac::ObjCCastStrict<UINavigationBar>(
       SubviewWithAccessibilityIdentifier(@"SettingNavigationBar",
                                          GetAnyKeyWindow()));
-  return grey_allOf(grey_anyOf(grey_buttonTitle(navBar.backItem.title),
-                               grey_buttonTitle(@"Back"), nil),
-                    grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-                    nil);
+  return
+      [ChromeMatchersAppInterface settingsMenuBackButton:navBar.backItem.title];
 }
 
 + (id<GREYMatcher>)settingsMenuBackButtonInWindowWithNumber:(int)windowNumber {
@@ -593,12 +600,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       SubviewWithAccessibilityIdentifier(
           @"SettingNavigationBar", WindowWithAccessibilityIdentifier([NSString
                                        stringWithFormat:@"%d", windowNumber])));
-  return grey_allOf(
-      grey_anyOf(grey_accessibilityLabel(navBar.backItem.title),
-                 grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
-                 grey_descendant(grey_buttonTitle(navBar.backItem.title)), nil),
-      grey_kindOfClassName(@"_UIButtonBarButton"),
-      grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+  return
+      [ChromeMatchersAppInterface settingsMenuBackButton:navBar.backItem.title];
 }
 
 + (id<GREYMatcher>)settingsMenuPrivacyButton {

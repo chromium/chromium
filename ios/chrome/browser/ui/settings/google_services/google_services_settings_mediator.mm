@@ -571,11 +571,12 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     [model addItem:item
         toSectionWithIdentifier:NonPersonalizedSectionIdentifier];
   }
-  [self updateNonPersonalizedSection];
+  [self updateNonPersonalizedSectionWithNotification:NO];
 }
 
-// Updates the non-personalized section according to the user consent.
-- (void)updateNonPersonalizedSection {
+// Updates the non-personalized section according to the user consent. If
+// |notifyConsumer| is YES, the consumer is notified about model changes.
+- (void)updateNonPersonalizedSectionWithNotification:(BOOL)notifyConsumer {
   for (TableViewItem* item in self.nonPersonalizedItems) {
     ItemType type = static_cast<ItemType>(item.type);
     switch (type) {
@@ -649,6 +650,13 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
         break;
     }
   }
+  if (notifyConsumer) {
+    TableViewModel* model = self.consumer.tableViewModel;
+    NSUInteger sectionIndex =
+        [model sectionForSectionIdentifier:NonPersonalizedSectionIdentifier];
+    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+    [self.consumer reloadSections:indexSet];
+  }
 }
 
 #pragma mark - Properties
@@ -693,6 +701,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
                               IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
                         detailStringID:detailTextID
                               dataType:0];
+      allowSigninItem.accessibilityIdentifier =
+          kAllowSigninItemAccessibilityIdentifier;
       [items addObject:allowSigninItem];
     }
     if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
@@ -951,6 +961,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   switch (type) {
     case AllowChromeSigninItemType:
       self.allowChromeSigninPreference.value = value;
+      [self updateNonPersonalizedSectionWithNotification:YES];
       break;
     case AutocompleteSearchesAndURLsItemType:
       self.autocompleteSearchPreference.value = value;
@@ -1087,12 +1098,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  [self updateNonPersonalizedSection];
-  TableViewModel* model = self.consumer.tableViewModel;
-  NSUInteger index =
-      [model sectionForSectionIdentifier:NonPersonalizedSectionIdentifier];
-  NSIndexSet* sectionIndexToReload = [NSIndexSet indexSetWithIndex:index];
-  [self.consumer reloadSections:sectionIndexToReload];
+  [self updateNonPersonalizedSectionWithNotification:YES];
 }
 
 #pragma mark - ChromeIdentityServiceObserver

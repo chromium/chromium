@@ -607,10 +607,6 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowed];
 
-  // Attempt to sign in.
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
   // Verify the sign-in view isn't showing.
   id<GREYMatcher> signin_matcher = StaticTextWithAccessibilityLabelId(
       IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE);
