@@ -1201,6 +1201,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/night_mode:java",
     "//chrome/browser/ui/android/night_mode:javatests",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/android/toolbar:javatests",

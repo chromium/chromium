@@ -52,16 +52,23 @@ android_resources("java_resources") {
   ]
 }
 
+android_library("night_mode_java_test_support") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/night_mode/ChromeNightModeTestUtils.java" ]
+  deps = [
+    ":java",
+    "//chrome/browser/preferences:java",
+  ]
+}
+
 android_library("javatests") {
   testonly = true
-  sources = [
-    "java/src/org/chromium/chrome/browser/night_mode/ChromeNightModeTestUtils.java",
-    "java/src/org/chromium/chrome/browser/night_mode/settings/ThemeSettingsFragmentTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/night_mode/settings/ThemeSettingsFragmentTest.java" ]
 
   deps = [
     ":java",
     ":java_resources",
+    ":night_mode_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
