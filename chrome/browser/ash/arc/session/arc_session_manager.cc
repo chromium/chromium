@@ -95,6 +95,8 @@ constexpr const size_t kArcSaltFileSize = 16;
 constexpr const char kArcPrepareHostGeneratedDirJobName[] =
     "arc_2dprepare_2dhost_2dgenerated_2ddir";
 
+const char kInitialParam[] = "S.org.chromium.arc.start_type=initialStart";
+
 // Generates a unique, 20-character hex string from |chromeos_user| and
 // |salt| which can be used as Android's ro.boot.serialno and ro.serialno
 // properties. Note that Android treats serialno in a case-insensitive manner.
@@ -682,8 +684,8 @@ void ArcSessionManager::OnProvisioningFinished(
             prefs->GetBoolean(prefs::kArcProvisioningInitiatedFromOobe))) {
       playstore_launcher_ = std::make_unique<ArcAppLauncher>(
           profile_, kPlayStoreAppId,
-          apps_util::CreateIntentForActivity(
-              kPlayStoreActivity, kInitialStartParam, kCategoryLauncher),
+          GetLaunchIntent(kPlayStorePackage, kPlayStoreActivity,
+                          {kInitialParam}),
           false /* deferred_launch_allowed */, display::kInvalidDisplayId,
           apps::mojom::LaunchSource::kFromChromeInternal);
     }

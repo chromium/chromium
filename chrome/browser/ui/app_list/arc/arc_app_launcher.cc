@@ -15,7 +15,7 @@
 
 ArcAppLauncher::ArcAppLauncher(content::BrowserContext* context,
                                const std::string& app_id,
-                               apps::mojom::IntentPtr launch_intent,
+                               const base::Optional<std::string>& launch_intent,
                                bool deferred_launch_allowed,
                                int64_t display_id,
                                apps::mojom::LaunchSource launch_source)
@@ -122,9 +122,12 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
   Observe(nullptr);
 
   if (launch_intent_) {
-    proxy->LaunchAppWithIntent(app_id_, ui::EF_NONE, std::move(launch_intent_),
-                               launch_source_,
-                               apps::MakeWindowInfo(display_id_));
+    if (!arc::LaunchAppWithIntent(context_, app_id_, launch_intent_,
+                                  ui::EF_NONE,
+                                  arc::UserInteractionType::NOT_USER_INITIATED,
+                                  arc::MakeWindowInfo(display_id_))) {
+      VLOG(2) << "Failed to launch app: " + app_id_ + ".";
+    }
   } else {
     proxy->Launch(app_id_, ui::EF_NONE, launch_source_,
                   apps::MakeWindowInfo(display_id_));

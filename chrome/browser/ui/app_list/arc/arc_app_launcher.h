@@ -28,7 +28,7 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer,
  public:
   ArcAppLauncher(content::BrowserContext* context,
                  const std::string& app_id,
-                 apps::mojom::IntentPtr launch_intent,
+                 const base::Optional<std::string>& launch_intent,
                  bool deferred_launch_allowed,
                  int64_t display_id,
                  apps::mojom::LaunchSource launch_source);
@@ -58,7 +58,7 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer,
   const std::string app_id_;
   // Optional intent to launch the app. If not set then app is started default
   // way.
-  apps::mojom::IntentPtr launch_intent_;
+  const base::Optional<std::string> launch_intent_;
   // If it is set to true that means app is allowed to launch in deferred mode
   // once it is registered, regardless it is ready or not. Otherwise app is
   // launched when it becomes ready.
