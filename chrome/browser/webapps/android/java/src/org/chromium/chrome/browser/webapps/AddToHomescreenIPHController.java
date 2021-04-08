@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.annotation.IdRes;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -172,6 +173,7 @@ public class AddToHomescreenIPHController {
                                 () -> onMessageAddButtonClicked(tab))
                         .build();
         mMessageDispatcher.enqueueMessage(model, tab.getWebContents(), MessageScopeType.NAVIGATION);
+        RecordUserAction.record("Android.AddToHomescreenIPH.Message.Shown");
     }
 
     private void onMessageAddButtonClicked(Tab tab) {
@@ -184,7 +186,7 @@ public class AddToHomescreenIPHController {
         AddToHomescreenCoordinator.showForAppMenu(
                 mActivity, mWindowAndroid, mModalDialogManager, tab.getWebContents(), menuItemData);
         mTracker.notifyEvent(EventConstants.ADD_TO_HOMESCREEN_DIALOG_SHOWN);
-        // TODO(shaktisahu): Record metrics that user clicked Add button.
+        RecordUserAction.record("Android.AddToHomescreenIPH.Message.Clicked");
     }
 
     private void onMessageDismissed(Integer dismissReason) {

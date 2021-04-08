@@ -1717,6 +1717,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.AddToHomescreenIPH.Message.Clicked">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <description>
+    User clicked on Add button of Add to homescreen IPH message.
+  </description>
+</action>
+
+<action name="Android.AddToHomescreenIPH.Message.Shown">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <description>Add to homescreen IPH message UI was shown.</description>
+</action>
+
 <action name="Android.BookmarkPage.ReadingList.MarkAsRead">
   <owner>shaktisahu@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
