@@ -26,8 +26,8 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/focus_changed_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -42,28 +42,6 @@ using ui_test_utils::IsViewFocused;
 
 namespace {
 const char kSimplePage[] = "/find_in_page/simple.html";
-
-class WebContentsFocusChangedWatcher : public content::WebContentsObserver {
- public:
-  explicit WebContentsFocusChangedWatcher(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {
-    EXPECT_TRUE(web_contents);
-  }
-  ~WebContentsFocusChangedWatcher() override {}
-
-  // Waits until focus changes in the page.
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // Overridden WebContentsObserver methods.
-  void OnFocusChangedInPage(content::FocusedNodeDetails* details) override {
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsFocusChangedWatcher);
-};
 }  // namespace
 
 class FindInPageTest : public InProcessBrowserTest {
@@ -670,13 +648,13 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionDuringFind) {
   auto* host_view = web_contents->GetRenderWidgetHostView();
   auto* host = host_view->GetRenderWidgetHost();
 
-  WebContentsFocusChangedWatcher watcher(web_contents);
+  content::FocusChangedObserver observer(web_contents);
 
   // Tab to the input (which selects the text inside)
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
                                               false, false, false));
 
-  watcher.Wait();
+  observer.Wait();
 
   auto* find_bar_controller = browser()->GetFindBarController();
   find_bar_controller->Show();

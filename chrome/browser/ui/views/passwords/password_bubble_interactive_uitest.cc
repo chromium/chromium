@@ -28,10 +28,9 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
+#include "content/public/test/focus_changed_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -248,9 +247,9 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnKey) {
-  content::WindowedNotificationObserver focus_observer(
-      content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-      content::NotificationService::AllSources());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::FocusChangedObserver focus_observer(web_contents);
   ui_test_utils::NavigateToURL(
       browser(),
       GURL("data:text/html;charset=utf-8,<input type=\"text\" autofocus>"));
@@ -261,8 +260,6 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnKey) {
                    ->GetFocusManager()
                    ->GetFocusedView());
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(web_contents->IsFocusedElementEditable());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_K, false,
                                               false, false, false));

@@ -46,6 +46,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/focus_changed_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
@@ -86,7 +87,7 @@ class BrowserFocusTest : public InProcessBrowserTest {
 
   void ClickOnView(ViewID vid) { ui_test_utils::ClickOnView(browser(), vid); }
 
-  void TestFocusTraversal(RenderViewHost* render_view_host, bool reverse) {
+  void TestFocusTraversal(WebContents* tab, bool reverse) {
     const char kGetFocusedElementJS[] =
         "window.domAutomationController.send(getFocusedElement());";
     const char* kExpectedIDs[] = {"textEdit",   "searchButton", "luckyButton",
@@ -131,21 +132,15 @@ class BrowserFocusTest : public InProcessBrowserTest {
         bool is_editable_node = index == 0;
 
         // Press Tab (or Shift+Tab) and check the focused element id.
-        auto source = content::Source<RenderViewHost>(render_view_host);
-        ui_test_utils::WindowedNotificationObserverWithDetails<bool> observer(
-            content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE, source);
+        content::FocusChangedObserver observer(tab);
         ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false,
                                                     reverse, false, false));
-        observer.Wait();
-        bool observed_editable_node;
-        ASSERT_TRUE(
-            observer.GetDetailsFor(source.map_key(), &observed_editable_node));
-        EXPECT_EQ(is_editable_node, observed_editable_node);
+        auto observed_details = observer.Wait();
+        EXPECT_EQ(is_editable_node, observed_details.is_editable_node);
 
         std::string focused_id;
         EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-            WebContents::FromRenderViewHost(render_view_host),
-            kGetFocusedElementJS, &focused_id));
+            tab, kGetFocusedElementJS, &focused_id));
         EXPECT_STREQ(kExpectedIDs[index], focused_id.c_str());
       }
 
@@ -409,10 +404,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_FocusTraversal) {
   chrome::FocusLocationBar(browser());
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_NO_FATAL_FAILURE(
-      TestFocusTraversal(tab->GetMainFrame()->GetRenderViewHost(), false));
-  EXPECT_NO_FATAL_FAILURE(
-      TestFocusTraversal(tab->GetMainFrame()->GetRenderViewHost(), true));
+  EXPECT_NO_FATAL_FAILURE(TestFocusTraversal(tab, false));
+  EXPECT_NO_FATAL_FAILURE(TestFocusTraversal(tab, true));
 }
 
 // Test that find-in-page UI can request focus, even when it is already open.

@@ -18,9 +18,8 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/focused_node_details.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/focus_changed_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/compositor_switches.h"
@@ -185,47 +184,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
   } while (CountPercentPixelsWithColor(image, highlight_color) < 0.1f);
 }
 
-// Observes the notifications for changes in focused node/element in the page.
-class FocusedNodeChangedObserver : content::NotificationObserver {
- public:
-  FocusedNodeChangedObserver() {
-    registrar_.Add(this, content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-                   content::NotificationService::AllSources());
-  }
-
-  void WaitForFocusChangeInPage() {
-    if (observed_)
-      return;
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
-  // content::NotificationObserver override.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    auto focused_node_details =
-        content::Details<content::FocusedNodeDetails>(details);
-    focused_node_bounds_in_screen_ =
-        focused_node_details->node_bounds_in_screen;
-    observed_ = true;
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-
-  const gfx::Rect& focused_node_bounds_in_screen() const {
-    return focused_node_bounds_in_screen_;
-  }
-
- private:
-  content::NotificationRegistrar registrar_;
-  bool observed_{false};
-  gfx::Rect focused_node_bounds_in_screen_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusedNodeChangedObserver);
-};
-
 IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
                        FocusBoundsIncludeImages) {
   ui_test_utils::NavigateToURL(browser(),
@@ -235,15 +193,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
                                     "style='vertical-align: middle;'>"
                                     "</a>"));
 
-  FocusedNodeChangedObserver observer;
-
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  content::FocusChangedObserver observer(web_contents);
   std::string script("document.getElementById('link').focus();");
   ASSERT_TRUE(content::ExecuteScript(web_contents, script));
-  observer.WaitForFocusChangeInPage();
+  auto details = observer.Wait();
 
-  gfx::Rect bounds = observer.focused_node_bounds_in_screen();
+  gfx::Rect bounds = details.node_bounds_in_screen;
   EXPECT_EQ(220, bounds.width());
 
   // Not sure where the extra px of height are coming from...
@@ -302,13 +259,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
                                                "<img width='10' height='10'>"
                                                "</a>"));
 
-  FocusedNodeChangedObserver observer;
-
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  content::FocusChangedObserver observer(web_contents);
   std::string script("document.getElementById('link').focus();");
   ASSERT_TRUE(content::ExecuteScript(web_contents, script));
-  observer.WaitForFocusChangeInPage();
+  observer.Wait();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   AccessibilityFocusHighlight* highlight =
       browser_view->GetAccessibilityFocusHighlightForTesting();

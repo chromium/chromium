@@ -148,6 +148,8 @@ static_library("test_support") {
     "../public/test/fake_speech_recognition_manager.h",
     "../public/test/find_test_utils.cc",
     "../public/test/find_test_utils.h",
+    "../public/test/focus_changed_observer.cc",
+    "../public/test/focus_changed_observer.h",
     "../public/test/frame_load_waiter.cc",
     "../public/test/frame_load_waiter.h",
     "../public/test/hit_test_region_observer.cc",

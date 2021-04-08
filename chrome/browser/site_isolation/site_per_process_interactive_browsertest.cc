@@ -27,12 +27,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -1428,50 +1422,6 @@ class SitePerProcessAutofillTest : public SitePerProcessInteractiveBrowserTest {
   TestAutofillClient test_autofill_client_;
 
   DISALLOW_COPY_AND_ASSIGN(SitePerProcessAutofillTest);
-};
-
-// Observes the notifications for changes in focused node/element in the page.
-class FocusedEditableNodeChangedObserver : content::NotificationObserver {
- public:
-  FocusedEditableNodeChangedObserver() : observed_(false) {
-    registrar_.Add(this, content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-                   content::NotificationService::AllSources());
-  }
-  ~FocusedEditableNodeChangedObserver() override {}
-
-  void WaitForFocusChangeInPage() {
-    if (observed_)
-      return;
-    loop_runner_ = new content::MessageLoopRunner();
-    loop_runner_->Run();
-  }
-
-  // content::NotificationObserver override.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    auto focused_node_details =
-        content::Details<content::FocusedNodeDetails>(details);
-    if (!focused_node_details->is_editable_node)
-      return;
-    focused_node_bounds_in_screen_ =
-        focused_node_details->node_bounds_in_screen.origin();
-    observed_ = true;
-    if (loop_runner_)
-      loop_runner_->Quit();
-  }
-
-  const gfx::Point& focused_node_bounds_in_screen() const {
-    return focused_node_bounds_in_screen_;
-  }
-
- private:
-  content::NotificationRegistrar registrar_;
-  bool observed_;
-  gfx::Point focused_node_bounds_in_screen_;
-  scoped_refptr<content::MessageLoopRunner> loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusedEditableNodeChangedObserver);
 };
 
 // Waits until transforming |sample_point| from |render_frame_host| coordinates
