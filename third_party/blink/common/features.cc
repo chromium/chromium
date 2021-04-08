@@ -909,6 +909,13 @@ const base::Feature kCompositeAfterPaint{"CompositeAfterPaint",
 const base::Feature kSanitizerAPI{"SanitizerAPI",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Kill switch for the blocking of the navigation of top from a cross origin
+// iframe to a different protocol. TODO(https://crbug.com/1151507): Remove in
+// M92.
+const base::Feature kBlockCrossOriginTopNavigationToDiffentScheme{
+    "BlockCrossOriginTopNavigationToDiffentScheme",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables a Web API for websites to access admin-provided configuration.
 const base::Feature kManagedConfiguration{"ManagedConfiguration",
                                           base::FEATURE_ENABLED_BY_DEFAULT};

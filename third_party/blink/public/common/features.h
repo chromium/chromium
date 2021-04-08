@@ -372,6 +372,12 @@ BLINK_COMMON_EXPORT extern const base::Feature kCompositeAfterPaint;
 BLINK_COMMON_EXPORT extern const base::Feature kSanitizerAPI;
 BLINK_COMMON_EXPORT extern const base::Feature kManagedConfiguration;
 
+// Kill switch for the blocking of the navigation of top from a cross origin
+// iframe to a different scheme. TODO(https://crbug.com/1151507): Remove in
+// M92.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kBlockCrossOriginTopNavigationToDiffentScheme;
+
 BLINK_COMMON_EXPORT extern const base::Feature kJXL;
 
 }  // namespace features
