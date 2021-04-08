@@ -7,7 +7,6 @@ build.sh
 demo*.html
 */demos/
 docs.html
-*.d.ts
 .eslintrc.json
 *gen-tsd.json
 .github
@@ -44,43 +43,43 @@ iron-form-element-behavior/*
 iron-validatable-behavior/*
 
 # iron-test-helpers
-iron-test-helpers/iron-test-helpers.js
-iron-test-helpers/test-helpers.js
+iron-test-helpers/iron-test-helpers.*
+iron-test-helpers/test-helpers.*
 
 # paper-behaviors
-paper-behaviors/paper-button-behavior.js
-paper-behaviors/paper-checked-element-behavior.js
+paper-behaviors/paper-button-behavior.*
+paper-behaviors/paper-checked-element-behavior.*
 
 # paper-spinner
-paper-spinner/paper-spinner.js
+paper-spinner/paper-spinner.*
 
 # paper-styles
 paper-styles/classes/*
-paper-styles/demo-pages.js
+paper-styles/demo-pages.*
 paper-styles/element-styles/*
-paper-styles/default-theme.js
-paper-styles/paper-styles-classes.js
-paper-styles/paper-styles.js
-paper-styles/typography.js
+paper-styles/default-theme.*
+paper-styles/paper-styles-classes.*
+paper-styles/paper-styles.*
+paper-styles/typography.*
 
 # neon-animations
-neon-animation/animations/cascaded-animation.js
-neon-animation/animations/hero-animation.js
-neon-animation/animations/opaque-animation.js
-neon-animation/animations/reverse-ripple-animation.js
-neon-animation/animations/ripple-animation.js
-neon-animation/animations/scale-down-animation.js
-neon-animation/animations/scale-up-animation.js
-neon-animation/animations/slide-down-animation.js
-neon-animation/animations/slide-from-bottom-animation.js
-neon-animation/animations/slide-from-left-animation.js
-neon-animation/animations/slide-from-right-animation.js
-neon-animation/animations/slide-from-top-animation.js
-neon-animation/animations/slide-left-animation.js
-neon-animation/animations/slide-right-animation.js
-neon-animation/animations/slide-up-animation.js
-neon-animation/animations/transform-animation.js
-neon-animation/neon-animation.js
-neon-animation/neon-animations.js
-neon-animation/neon-shared-element-animatable-behavior.js
-neon-animation/neon-shared-element-animation-behavior.js
+neon-animation/animations/cascaded-animation.*
+neon-animation/animations/hero-animation.*
+neon-animation/animations/opaque-animation.*
+neon-animation/animations/reverse-ripple-animation.*
+neon-animation/animations/ripple-animation.*
+neon-animation/animations/scale-down-animation.*
+neon-animation/animations/scale-up-animation.*
+neon-animation/animations/slide-down-animation.*
+neon-animation/animations/slide-from-bottom-animation.*
+neon-animation/animations/slide-from-left-animation.*
+neon-animation/animations/slide-from-right-animation.*
+neon-animation/animations/slide-from-top-animation.*
+neon-animation/animations/slide-left-animation.*
+neon-animation/animations/slide-right-animation.*
+neon-animation/animations/slide-up-animation.*
+neon-animation/animations/transform-animation.*
+neon-animation/neon-animation.*
+neon-animation/neon-animations.*
+neon-animation/neon-shared-element-animatable-behavior.*
+neon-animation/neon-shared-element-animation-behavior.*

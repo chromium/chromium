@@ -53,6 +53,13 @@ patch -p1 --forward -r - < chromium.patch
 echo 'Minifying Polymer 3, since it comes non-minified from NPM.'
 python minify_polymer.py
 
+echo 'Copying TypeScript .d.ts files to the final Polymer directory.'
+# Copy all .d.ts files to the final Polymer directory. Note that the order of
+# include and exclude flags matters.
+rsync -c --delete -r -v --prune-empty-dirs \
+    --include="*/" --include="*.d.ts" --exclude="*" \
+    "node_modules/@polymer/polymer/" "components-chromium/polymer/"
+
 echo 'Updating paper/iron elements to point to the minified file.'
 # Replace all paths that point to within polymer/ to point to the bundle.
 find components-chromium/ -name '*.js' -exec sed -i \
