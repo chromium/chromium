@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
 
   void SetForegroundColor(SkColor color);
   void SetBackgroundColor(SkColor color);
+  void SetTextColor(SkColor color);
 
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;

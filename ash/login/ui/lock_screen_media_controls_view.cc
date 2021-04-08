@@ -903,6 +903,8 @@ void LockScreenMediaControlsView::UpdateColors() {
       AshColorProvider::ContentLayerType::kProgressBarColorForeground));
   progress_->SetBackgroundColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kProgressBarColorBackground));
+  progress_->SetTextColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 BEGIN_METADATA(LockScreenMediaControlsView, views::View)

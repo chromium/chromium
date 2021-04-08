@@ -21,7 +21,6 @@ namespace media_message_center {
 
 namespace {
 
-constexpr SkColor kTimeColor = gfx::kGoogleGrey200;
 constexpr int kProgressBarAndTimeSpacing = 8;
 constexpr int kProgressTimeFontSize = 11;
 constexpr int kProgressBarHeight = 4;
@@ -64,14 +63,8 @@ MediaControlsProgressView::MediaControlsProgressView(
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(true);
 
-  // TODO(1157582): |progress_time_| and |duration_| should use
-  // AshColorProvider. There is no reason to keep this code in components/
-  // so it can be moved to ash/login/ui, which would allow the usage of Ash
-  // colors.
-
   auto progress_time = std::make_unique<views::Label>();
   progress_time->SetFontList(font_list);
-  progress_time->SetEnabledColor(kTimeColor);
   progress_time->SetAutoColorReadabilityEnabled(false);
   progress_time_ = time_view->AddChildView(std::move(progress_time));
 
@@ -85,7 +78,6 @@ MediaControlsProgressView::MediaControlsProgressView(
 
   auto duration = std::make_unique<views::Label>();
   duration->SetFontList(font_list);
-  duration->SetEnabledColor(kTimeColor);
   duration->SetAutoColorReadabilityEnabled(false);
   duration_ = time_view->AddChildView(std::move(duration));
 
@@ -149,6 +141,11 @@ void MediaControlsProgressView::SetForegroundColor(SkColor color) {
 
 void MediaControlsProgressView::SetBackgroundColor(SkColor color) {
   progress_bar_->SetBackgroundColor(color);
+}
+
+void MediaControlsProgressView::SetTextColor(SkColor color) {
+  progress_time_->SetEnabledColor(color);
+  duration_->SetEnabledColor(color);
 }
 
 bool MediaControlsProgressView::OnMousePressed(const ui::MouseEvent& event) {

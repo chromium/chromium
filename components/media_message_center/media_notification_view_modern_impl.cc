@@ -593,6 +593,7 @@ void MediaNotificationViewModernImpl::UpdateForegroundColor() {
 
   progress_->SetForegroundColor(foreground);
   progress_->SetBackgroundColor(disabled_icon_color);
+  progress_->SetTextColor(foreground);
 
   // Update the colors for the labels
   title_label_->SetEnabledColor(foreground);
