@@ -30,6 +30,11 @@ void RecordMetrics(const base::TimeTicks& start,
                    const char* jank_name,
                    const char* duration_name) {
   DCHECK(data.frames_expected);
+
+  // Report could happen during Shell shutdown. Early out in that case.
+  if (!Shell::HasInstance() || !Shell::Get()->tablet_mode_controller())
+    return;
+
   int duration_ms = (base::TimeTicks::Now() - start).InMilliseconds();
   int smoothness, jank;
   smoothness = metrics_util::CalculateSmoothness(data);
