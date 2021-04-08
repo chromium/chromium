@@ -52,7 +52,6 @@
 #include "chromeos/startup/startup_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -439,17 +438,6 @@ void BrowserManager::StartWithLogFile(
   base::LaunchOptions options;
   options.environment["EGL_PLATFORM"] = "surfaceless";
   options.environment["XDG_RUNTIME_DIR"] = GetXdgRuntimeDir();
-
-  std::string api_key;
-  if (google_apis::HasAPIKeyConfigured())
-    api_key = google_apis::GetAPIKey();
-  else
-    api_key = google_apis::GetNonStableAPIKey();
-  options.environment["GOOGLE_API_KEY"] = api_key;
-  options.environment["GOOGLE_DEFAULT_CLIENT_ID"] =
-      google_apis::GetOAuth2ClientID(google_apis::CLIENT_MAIN);
-  options.environment["GOOGLE_DEFAULT_CLIENT_SECRET"] =
-      google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_MAIN);
 
   // This sets the channel for Lacros.
   options.environment["CHROME_VERSION_EXTRA"] = "dev";
