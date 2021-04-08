@@ -135,11 +135,8 @@
       } break;
 
       case 'touchmove': {
-        if (this.activeTouchId_ === undefined) {
-          break;
-        }
         const touch = this.findActiveTouch_(event.changedTouches);
-        if (!touch) {
+        if (touch === undefined) {
           break;
         }
 
@@ -167,6 +164,7 @@
         if (!this.tapStarted_) {
           break;
         }
+
         // Mark as no longer being touched.
         // Two-finger tap event is issued when either of the 2 touch points is
         // released. Stop tracking the tap to avoid issuing duplicate events.
@@ -206,23 +204,23 @@
   }
 
   /**
-   * Given a list of Touches, find the one matching our activeTouch
-   * identifier. Note that Chrome currently always uses 0 as the identifier.
-   * In that case we'll end up always choosing the first element in the list.
-   * @param {TouchList} touches The list of Touch objects to search.
-   * @return {!Touch|undefined} The touch matching our active ID if any.
+   * Given a list of Touches, find the one matching the active touch Id. Note
+   * Chrome currently always uses 0 as the Id, so we end up always choosing
+   * the first element in the list.
+   *
+   * @param {TouchList} touches List of Touch objects to search.
+   * @return {!Touch|undefined} Touch matching the active touch Id, or
+   *     undefined if there is no active touch Id or no match was found.
    * @private
    */
   findActiveTouch_(touches) {
-    assert(this.activeTouchId_ !== undefined, 'Expecting an active touch');
-    // A TouchList isn't actually an array, so we shouldn't use
-    // Array.prototype.filter/some, etc.
-    for (let i = 0; i < touches.length; i++) {
-      if (touches[i].identifier == this.activeTouchId_) {
-        return touches[i];
+    if (this.activeTouchId_ !== undefined) {
+      for (let i = 0; i < touches.length; i++) {
+        if (touches[i].identifier === this.activeTouchId_) {
+          return touches[i];
+        }
       }
     }
-    return undefined;
   }
 }
 
