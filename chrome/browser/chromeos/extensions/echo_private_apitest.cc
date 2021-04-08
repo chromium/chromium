@@ -57,10 +57,7 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
     ASSERT_TRUE(result.get());
     ASSERT_EQ(base::Value::Type::BOOLEAN, result->type());
 
-    bool result_as_boolean = false;
-    ASSERT_TRUE(result->GetAsBoolean(&result_as_boolean));
-
-    EXPECT_EQ(expected_result, result_as_boolean);
+    EXPECT_EQ(expected_result, result->GetBool());
   }
 
   void OnDialogShown(ash::EchoDialogView* dialog) {

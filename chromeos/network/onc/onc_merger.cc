@@ -232,12 +232,12 @@ class MergeSettingsAndPolicies : public MergeListOfDictionaries {
       const std::string& key,
       const std::vector<const base::Value*>& values) override {
     bool user_editable = !HasUserPolicy();
-    if (values[kUserEditableIndex])
-      values[kUserEditableIndex]->GetAsBoolean(&user_editable);
+    if (values[kUserEditableIndex] && values[kUserEditableIndex]->is_bool())
+      user_editable = values[kUserEditableIndex]->GetBool();
 
     bool device_editable = !HasDevicePolicy();
-    if (values[kDeviceEditableIndex])
-      values[kDeviceEditableIndex]->GetAsBoolean(&device_editable);
+    if (values[kDeviceEditableIndex] && values[kDeviceEditableIndex]->is_bool())
+      device_editable = values[kDeviceEditableIndex]->GetBool();
 
     ValueParams params;
     params.user_policy = values[kUserPolicyIndex];

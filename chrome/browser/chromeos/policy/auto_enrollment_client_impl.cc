@@ -943,18 +943,17 @@ bool AutoEnrollmentClientImpl::GetCachedDecision() {
       local_state_->FindPreference(prefs::kShouldAutoEnroll);
   const PrefService::Preference* previous_limit_pref =
       local_state_->FindPreference(prefs::kAutoEnrollmentPowerLimit);
-  bool has_server_state = false;
   int previous_limit = -1;
 
   if (!has_server_state_pref || has_server_state_pref->IsDefaultValue() ||
-      !has_server_state_pref->GetValue()->GetAsBoolean(&has_server_state) ||
-      !previous_limit_pref || previous_limit_pref->IsDefaultValue() ||
+      !has_server_state_pref->GetValue()->is_bool() || !previous_limit_pref ||
+      previous_limit_pref->IsDefaultValue() ||
       !previous_limit_pref->GetValue()->GetAsInteger(&previous_limit) ||
       power_limit_ > previous_limit) {
     return false;
   }
 
-  has_server_state_ = has_server_state;
+  has_server_state_ = has_server_state_pref->GetValue()->GetBool();
   return true;
 }
 
