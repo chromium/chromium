@@ -100,7 +100,7 @@ public class WebFeedFollowIntroController {
     private void performFollowWithAccelerator(GURL url, String title) {
         mWebFeedFollowIntroView.showLoadingUI();
         WebFeedBridge bridge = new WebFeedBridge();
-        bridge.followFromUrlFake(
+        bridge.followFromUrl(
                 url, results -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
                     @Override
                     public void onShowLoadingUIComplete() {}

@@ -148,7 +148,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mChipView = findViewById(R.id.follow_chip_view);
         showEnabledChipView(
                 mChipView, mContext.getText(R.string.menu_follow), R.drawable.ic_add, (view) -> {
-                    mWebFeedBridge.followFromUrlFake(mUrl,
+                    mWebFeedBridge.followFromUrl(mUrl,
                             (result)
                                     -> mWebFeedSnackbarController.showSnackbarForFollow(
                                             result, mUrl, mTitle));
@@ -160,7 +160,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mChipView = findViewById(R.id.following_chip_view);
         showEnabledChipView(mChipView, mContext.getText(R.string.menu_following),
                 R.drawable.ic_check_googblue_24dp, (view) -> {
-                    mWebFeedBridge.unfollowFake(webFeedId,
+                    mWebFeedBridge.unfollow(webFeedId,
                             (result)
                                     -> mWebFeedSnackbarController.showSnackbarForUnfollow(
                                             result.requestStatus
