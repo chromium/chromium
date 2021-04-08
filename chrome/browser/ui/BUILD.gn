@@ -3935,6 +3935,8 @@ static_library("ui") {
       "views/omnibox/webui_omnibox_popup_view.h",
       "views/overlay/back_to_tab_image_button.cc",
       "views/overlay/back_to_tab_image_button.h",
+      "views/overlay/back_to_tab_label_button.cc",
+      "views/overlay/back_to_tab_label_button.h",
       "views/overlay/close_image_button.cc",
       "views/overlay/close_image_button.h",
       "views/overlay/constants.h",

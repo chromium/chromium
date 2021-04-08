@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_image_button.h"
+#include "chrome/browser/ui/views/overlay/back_to_tab_label_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -363,13 +366,24 @@ void OverlayWindowViews::SetUpViews() {
             overlay->RecordButtonPressed(OverlayWindowControl::kClose);
           },
           base::Unretained(this)));
-  auto back_to_tab_controls_view =
-      std::make_unique<views::BackToTabImageButton>(base::BindRepeating(
-          [](OverlayWindowViews* overlay) {
-            overlay->controller_->CloseAndFocusInitiator();
-            overlay->RecordButtonPressed(OverlayWindowControl::kBackToTab);
-          },
-          base::Unretained(this)));
+
+  std::unique_ptr<views::BackToTabImageButton> back_to_tab_image_button =
+      nullptr;
+  std::unique_ptr<BackToTabLabelButton> back_to_tab_label_button = nullptr;
+  auto back_to_tab_callback = base::BindRepeating(
+      [](OverlayWindowViews* overlay) {
+        overlay->controller_->CloseAndFocusInitiator();
+        overlay->RecordButtonPressed(OverlayWindowControl::kBackToTab);
+      },
+      base::Unretained(this));
+  if (base::FeatureList::IsEnabled(media::kMediaSessionWebRTC)) {
+    back_to_tab_label_button =
+        std::make_unique<BackToTabLabelButton>(std::move(back_to_tab_callback));
+  } else {
+    back_to_tab_image_button = std::make_unique<views::BackToTabImageButton>(
+        std::move(back_to_tab_callback));
+  }
+
   auto previous_track_controls_view = std::make_unique<views::TrackImageButton>(
       base::BindRepeating(
           [](OverlayWindowViews* overlay) {
@@ -458,9 +472,16 @@ void OverlayWindowViews::SetUpViews() {
   close_controls_view->layer()->SetName("CloseControlsView");
 
   // views::View that closes the window and focuses initiator tab. ------------
-  back_to_tab_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  back_to_tab_controls_view->layer()->SetFillsBoundsOpaquely(false);
-  back_to_tab_controls_view->layer()->SetName("BackToTabControlsView");
+  if (back_to_tab_image_button) {
+    back_to_tab_image_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+    back_to_tab_image_button->layer()->SetFillsBoundsOpaquely(false);
+    back_to_tab_image_button->layer()->SetName("BackToTabControlsView");
+  } else {
+    DCHECK(back_to_tab_label_button);
+    back_to_tab_label_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+    back_to_tab_label_button->layer()->SetFillsBoundsOpaquely(false);
+    back_to_tab_label_button->layer()->SetName("BackToTabControlsView");
+  }
 
   // views::View that holds the previous-track image button. ------------------
   previous_track_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -512,8 +533,16 @@ void OverlayWindowViews::SetUpViews() {
       controls_container_view->AddChildView(std::move(controls_scrim_view));
   close_controls_view_ =
       controls_container_view->AddChildView(std::move(close_controls_view));
-  back_to_tab_controls_view_ = controls_container_view->AddChildView(
-      std::move(back_to_tab_controls_view));
+
+  if (back_to_tab_image_button) {
+    back_to_tab_image_button_ = controls_container_view->AddChildView(
+        std::move(back_to_tab_image_button));
+  } else {
+    DCHECK(back_to_tab_label_button);
+    back_to_tab_label_button_ = controls_container_view->AddChildView(
+        std::move(back_to_tab_label_button));
+  }
+
   previous_track_controls_view_ = controls_container_view->AddChildView(
       std::move(previous_track_controls_view));
   play_pause_controls_view_ = controls_container_view->AddChildView(
@@ -638,6 +667,10 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
 
   WindowQuadrant quadrant = GetCurrentWindowQuadrant(GetBounds(), controller_);
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
+
+  if (back_to_tab_label_button_)
+    back_to_tab_label_button_->SetWindowSize(GetBounds().size());
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   resize_handle_view_->SetPosition(GetBounds().size(), quadrant);
 #endif
@@ -649,8 +682,12 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
   // #2 Previous track
   // #3 Play/Pause
   // #4 Next track
+  // #5 Toggle microphone
+  // #6 Toggle camera
+  // #7 Hang up
   std::vector<views::ImageButton*> visible_controls_views;
-  visible_controls_views.push_back(back_to_tab_controls_view_);
+  if (back_to_tab_image_button_)
+    visible_controls_views.push_back(back_to_tab_image_button_);
   if (show_previous_track_button_)
     visible_controls_views.push_back(previous_track_controls_view_);
   if (show_play_pause_button_)
@@ -676,6 +713,9 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
                             kSecondaryControlBottomMargin;
 
   switch (visible_controls_views.size()) {
+    case 0:
+      DCHECK(back_to_tab_label_button_);
+      break;
     case 1: {
       /* | --- --- [ ] --- --- | */
       visible_controls_views[0]->SetSize(kSecondaryControlSize);
@@ -698,14 +738,14 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
     }
     case 3: {
       /* | --- [ ] [ ] [ ] --- | */
-      visible_controls_views[0]->SetSize(kSecondaryControlSize);
-      visible_controls_views[0]->SetPosition(
-          gfx::Point(mid_window_x - kPrimaryControlSize.width() / 2 -
-                         kControlMargin - kSecondaryControlSize.width(),
-                     secondary_control_y));
-
       // Middle control is primary only if it's play/pause control.
       if (visible_controls_views[1] == play_pause_controls_view_) {
+        visible_controls_views[0]->SetSize(kSecondaryControlSize);
+        visible_controls_views[0]->SetPosition(
+            gfx::Point(mid_window_x - kPrimaryControlSize.width() / 2 -
+                           kControlMargin - kSecondaryControlSize.width(),
+                       secondary_control_y));
+
         visible_controls_views[1]->SetSize(kPrimaryControlSize);
         visible_controls_views[1]->SetPosition(gfx::Point(
             mid_window_x - kPrimaryControlSize.width() / 2, primary_control_y));
@@ -715,6 +755,12 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
             mid_window_x + kPrimaryControlSize.width() / 2 + kControlMargin,
             secondary_control_y));
       } else {
+        visible_controls_views[0]->SetSize(kSecondaryControlSize);
+        visible_controls_views[0]->SetPosition(
+            gfx::Point(mid_window_x - kSecondaryControlSize.width() / 2 -
+                           kControlMargin - kSecondaryControlSize.width(),
+                       secondary_control_y));
+
         visible_controls_views[1]->SetSize(kSecondaryControlSize);
         visible_controls_views[1]->SetPosition(
             gfx::Point(mid_window_x - kSecondaryControlSize.width() / 2,
@@ -787,6 +833,16 @@ void OverlayWindowViews::Close() {
 }
 
 void OverlayWindowViews::ShowInactive() {
+  if (back_to_tab_label_button_) {
+    back_to_tab_label_button_->SetText(url_formatter::FormatUrl(
+        controller_->GetWebContents()->GetLastCommittedURL(),
+        url_formatter::kFormatUrlOmitDefaults |
+            url_formatter::kFormatUrlOmitHTTPS |
+            url_formatter::kFormatUrlOmitTrivialSubdomains |
+            url_formatter::kFormatUrlTrimAfterHost,
+        net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+  }
+
   views::Widget::ShowInactive();
   views::Widget::SetVisibleOnAllWorkspaces(true);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1108,7 +1164,11 @@ void OverlayWindowViews::RecordButtonPressed(
 }
 
 gfx::Rect OverlayWindowViews::GetBackToTabControlsBounds() {
-  return back_to_tab_controls_view_->GetMirroredBounds();
+  if (back_to_tab_image_button_)
+    return back_to_tab_image_button_->GetMirroredBounds();
+
+  DCHECK(back_to_tab_label_button_);
+  return back_to_tab_label_button_->GetMirroredBounds();
 }
 
 gfx::Rect OverlayWindowViews::GetSkipAdControlsBounds() {
@@ -1242,8 +1302,9 @@ HangUpButton* OverlayWindowViews::hang_up_button_for_testing() const {
   return hang_up_button_;
 }
 
-views::View* OverlayWindowViews::back_to_tab_controls_for_testing() const {
-  return back_to_tab_controls_view_;
+BackToTabLabelButton* OverlayWindowViews::back_to_tab_label_button_for_testing()
+    const {
+  return back_to_tab_label_button_;
 }
 
 gfx::Point OverlayWindowViews::close_image_position_for_testing() const {

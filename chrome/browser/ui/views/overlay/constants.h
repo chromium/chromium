@@ -9,4 +9,6 @@
 
 constexpr SkColor kPipWindowIconColor = SK_ColorWHITE;
 
+constexpr SkColor kPipWindowTextColor = SK_ColorWHITE;
+
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_CONSTANTS_H_
