@@ -2893,11 +2893,17 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
           for (PaintLayerScrollableArea* area : *animating_scrollable_areas)
             area->UpdateCompositorScrollAnimations();
         }
-        frame_view.GetLayoutView()
-            ->GetDocument()
-            .GetDocumentAnimations()
-            .UpdateAnimations(DocumentLifecycle::kPaintClean,
-                              paint_artifact_compositor_.get());
+        {
+          // Updating animations can notify ready promises which could mutate
+          // the DOM. We should delay these until we have finished the lifecycle
+          // update. https://crbug.com/1196781
+          ScriptForbiddenScope forbid_script;
+          frame_view.GetLayoutView()
+              ->GetDocument()
+              .GetDocumentAnimations()
+              .UpdateAnimations(DocumentLifecycle::kPaintClean,
+                                paint_artifact_compositor_.get());
+        }
         Document& document = frame_view.GetLayoutView()->GetDocument();
         total_animations_count +=
             document.GetDocumentAnimations().GetAnimationsCount();
