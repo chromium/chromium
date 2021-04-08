@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Clicking outside a popup will dismiss the popup
+PASS Clicking inside a popup does not close that popup
+PASS Clicking inside a child popup shouldn't close either popup
+PASS Clicking inside a parent popup should close child popup
+PASS Clicking on anchor element shouldn't close its popup
+PASS An invoking element should be part of the ancestor chain
+PASS An invoking element that was not used to invoke the popup should NOT be part of the ancestor chain
+FAIL Dragging from an open popup outside an open popup should leave the popup open assert_true: popup1 should be open expected true got false
+FAIL Scrolling within a popup should not close the popup assert_equals: popup6 should scroll expected 50 but got 0
+FAIL Popup should be closed by a resize of the popup assert_false: popup1 should close when resized expected false got true
+Harness: the test ran to completion.
+
