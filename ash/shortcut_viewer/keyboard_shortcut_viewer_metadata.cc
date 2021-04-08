@@ -511,6 +511,13 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
 
       {// |categories|
        {ShortcutCategory::kTabAndWindow},
+       IDS_KSV_DESCRIPTION_IDC_SEARCH_TABS,
+       {},
+       // |accelerator_ids|
+       {{ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN}}},
+
+      {// |categories|
+       {ShortcutCategory::kTabAndWindow},
        IDS_KSV_DESCRIPTION_IDC_SELECT_LAST_TAB,
        {},
        // |accelerator_ids|

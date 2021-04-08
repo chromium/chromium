@@ -437,6 +437,9 @@
   <message name="IDS_KSV_DESCRIPTION_IDC_SAVE_PAGE" desc="Description of the command in keyboard shortcut viewer.">
     Save your current page
   </message>
+  <message name="IDS_KSV_DESCRIPTION_IDC_SEARCH_TABS" desc="Search for open and recently closed tabs.">
+    Search tabs
+  </message>
   <message name="IDS_KSV_DESCRIPTION_IDC_SELECT_LAST_TAB" desc="Description of the command in keyboard shortcut viewer.">
     Go to the last tab in the window
   </message>
