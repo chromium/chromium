@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_tree_id.h"
 
@@ -19,21 +20,24 @@ namespace crosapi {
 // Implements the crosapi interface for automation. Lives in Ash-Chrome on
 // the UI thread.
 class AutomationAsh : public mojom::Automation,
-                      public ui::AXActionHandlerObserver {
+                      public ui::AXActionHandlerObserver,
+                      public mojom::AutomationFactory {
  public:
   AutomationAsh();
   AutomationAsh(const AutomationAsh&) = delete;
   AutomationAsh& operator=(const AutomationAsh&) = delete;
   ~AutomationAsh() override;
 
-  void BindReceiver(mojo::PendingReceiver<mojom::Automation> receiver);
+  void BindReceiverDeprecated(
+      mojo::PendingReceiver<mojom::Automation> receiver);
+  void BindReceiver(mojo::PendingReceiver<mojom::AutomationFactory> receiver);
 
   // Called by ash's internal a11y implementation. Data is forwarded to Lacros.
   void EnableDesktop();
   void EnableTree(const ui::AXTreeID& tree_id);
 
   // crosapi::mojom::Automation:
-  void RegisterAutomationClient(
+  void RegisterAutomationClientDeprecated(
       mojo::PendingRemote<mojom::AutomationClient> client,
       const base::UnguessableToken& token) override;
   void ReceiveEventPrototype(const std::string& event_bundle,
@@ -50,18 +54,22 @@ class AutomationAsh : public mojom::Automation,
                      int32_t request_id,
                      const base::DictionaryValue& optional_args) override;
 
- private:
-  // Called when an AutomationClient is disconnected.
-  void ClientDisconnected(const base::UnguessableToken& token);
+  // crosapi::mojom::AutomationFactory:
+  void BindAutomation(
+      mojo::PendingRemote<crosapi::mojom::AutomationClient> automation_client,
+      mojo::PendingReceiver<crosapi::mojom::Automation> automation) override;
 
+ private:
   bool desktop_enabled_ = false;
 
   // Any number of crosapi clients can connect to this class.
-  mojo::ReceiverSet<mojom::Automation> receivers_;
+  mojo::ReceiverSet<mojom::AutomationFactory> automation_factory_receivers_;
 
-  // This map maintains a list of all known automation clients.
-  std::map<base::UnguessableToken, mojo::Remote<mojom::AutomationClient>>
-      automation_clients_;
+  // This set maintains a list of all remotes from automation tree sources.
+  mojo::ReceiverSet<mojom::Automation> automation_receivers_;
+
+  // This set maintains a list of all known automation clients.
+  mojo::RemoteSet<mojom::AutomationClient> automation_client_remotes_;
 
   base::WeakPtrFactory<AutomationAsh> weak_factory_{this};
 };

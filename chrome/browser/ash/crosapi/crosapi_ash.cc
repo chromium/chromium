@@ -95,8 +95,11 @@ void CrosapiAsh::BindReceiver(
     disconnect_handler_map_.emplace(id, std::move(disconnect_handler));
 }
 
-void CrosapiAsh::BindAutomation(
-    mojo::PendingReceiver<mojom::Automation> receiver) {
+void CrosapiAsh::BindAutomationDeprecated(
+    mojo::PendingReceiver<mojom::Automation> receiver) {}
+
+void CrosapiAsh::BindAutomationFactory(
+    mojo::PendingReceiver<mojom::AutomationFactory> receiver) {
   automation_ash_->BindReceiver(std::move(receiver));
 }
 

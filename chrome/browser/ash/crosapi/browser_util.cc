@@ -216,7 +216,7 @@ constexpr bool HasDuplicatedUuid() {
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 20,
+    crosapi::mojom::Crosapi::Version_ == 21,
     "if you add a new crosapi, please add it to the version map here");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");

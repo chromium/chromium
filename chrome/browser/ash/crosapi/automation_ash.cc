@@ -25,15 +25,18 @@ AutomationAsh::~AutomationAsh() {
   ui::AXActionHandlerRegistry::GetInstance()->RemoveObserver(this);
 }
 
+void AutomationAsh::BindReceiverDeprecated(
+    mojo::PendingReceiver<mojom::Automation> pending_receiver) {}
+
 void AutomationAsh::BindReceiver(
-    mojo::PendingReceiver<mojom::Automation> pending_receiver) {
-  receivers_.Add(this, std::move(pending_receiver));
+    mojo::PendingReceiver<mojom::AutomationFactory> pending_receiver) {
+  automation_factory_receivers_.Add(this, std::move(pending_receiver));
 }
 
 void AutomationAsh::EnableDesktop() {
   desktop_enabled_ = true;
-  for (auto& pair : automation_clients_) {
-    pair.second->Enable();
+  for (auto& client : automation_client_remotes_) {
+    client->Enable();
   }
 }
 
@@ -41,23 +44,14 @@ void AutomationAsh::EnableTree(const ui::AXTreeID& tree_id) {
   if (!tree_id.token().has_value())
     return;
 
-  for (auto& pair : automation_clients_) {
-    pair.second->EnableTree(tree_id.token().value());
+  for (auto& client : automation_client_remotes_) {
+    client->EnableTree(tree_id.token().value());
   }
 }
 
-void AutomationAsh::RegisterAutomationClient(
+void AutomationAsh::RegisterAutomationClientDeprecated(
     mojo::PendingRemote<mojom::AutomationClient> client,
-    const base::UnguessableToken& token) {
-  mojo::Remote<mojom::AutomationClient> remote(std::move(client));
-  remote.set_disconnect_handler(base::BindOnce(
-      &AutomationAsh::ClientDisconnected, weak_factory_.GetWeakPtr(), token));
-  automation_clients_[token] = std::move(remote);
-
-  if (desktop_enabled_) {
-    automation_clients_[token]->Enable();
-  }
-}
+    const base::UnguessableToken& token) {}
 
 void AutomationAsh::ReceiveEventPrototype(
     const std::string& event_bundle_string,
@@ -68,13 +62,6 @@ void AutomationAsh::ReceiveEventPrototype(
   // check for this by checking that the build of Chrome is unbranded.
   if (chrome::GetChannel() != version_info::Channel::UNKNOWN)
     return;
-
-  auto it = automation_clients_.find(token);
-  if (it == automation_clients_.end()) {
-    LOG(ERROR) << "Received automation event for an unregistered client. "
-                  "Ignoring the event.";
-    return;
-  }
 
   base::Pickle pickle(event_bundle_string.data(), event_bundle_string.size());
   base::PickleIterator iterator(pickle);
@@ -118,15 +105,23 @@ void AutomationAsh::PerformAction(const ui::AXTreeID& tree_id,
 
   if (!tree_id.token().has_value())
     return;
-  for (auto& pair : automation_clients_) {
-    pair.second->PerformActionPrototype(tree_id.token().value(),
-                                        automation_node_id, action_type,
-                                        request_id, optional_args.Clone());
+  for (auto& client : automation_client_remotes_) {
+    client->PerformActionPrototype(tree_id.token().value(), automation_node_id,
+                                   action_type, request_id,
+                                   optional_args.Clone());
   }
 }
 
-void AutomationAsh::ClientDisconnected(const base::UnguessableToken& token) {
-  automation_clients_.erase(token);
+void AutomationAsh::BindAutomation(
+    mojo::PendingRemote<crosapi::mojom::AutomationClient> automation_client,
+    mojo::PendingReceiver<crosapi::mojom::Automation> automation) {
+  mojo::Remote<mojom::AutomationClient> remote(std::move(automation_client));
+
+  if (desktop_enabled_)
+    remote->Enable();
+
+  automation_client_remotes_.Add(std::move(remote));
+  automation_receivers_.Add(this, std::move(automation));
 }
 
 }  // namespace crosapi

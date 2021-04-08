@@ -51,8 +51,10 @@ class CrosapiAsh : public mojom::Crosapi {
                     base::OnceClosure disconnect_handler);
 
   // crosapi::mojom::Crosapi:
-  void BindAutomation(
+  void BindAutomationDeprecated(
       mojo::PendingReceiver<mojom::Automation> receiver) override;
+  void BindAutomationFactory(
+      mojo::PendingReceiver<mojom::AutomationFactory> receiver) override;
   void BindAccountManager(
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
   void BindBrowserServiceHost(

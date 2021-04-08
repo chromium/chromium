@@ -15,11 +15,12 @@
 AutomationManagerLacros::AutomationManagerLacros() {
   chromeos::LacrosChromeServiceImpl* impl =
       chromeos::LacrosChromeServiceImpl::Get();
-  if (!impl->IsAvailable<crosapi::mojom::Automation>())
+  if (!impl->IsAvailable<crosapi::mojom::AutomationFactory>())
     return;
-  id_ = base::UnguessableToken::Create();
-  impl->GetRemote<crosapi::mojom::Automation>()->RegisterAutomationClient(
-      receiver_.BindNewPipeAndPassRemote(), id_);
+
+  impl->GetRemote<crosapi::mojom::AutomationFactory>()->BindAutomation(
+      automation_client_receiver_.BindNewPipeAndPassRemote(),
+      automation_remote_.BindNewPipeAndPassReceiver());
 
   extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(this);
 }
@@ -27,7 +28,7 @@ AutomationManagerLacros::AutomationManagerLacros() {
 AutomationManagerLacros::~AutomationManagerLacros() {
   chromeos::LacrosChromeServiceImpl* impl =
       chromeos::LacrosChromeServiceImpl::Get();
-  if (!impl->IsAvailable<crosapi::mojom::Automation>())
+  if (!impl->IsAvailable<crosapi::mojom::AutomationFactory>())
     return;
 
   extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(
@@ -39,6 +40,9 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
     std::vector<ui::AXTreeUpdate> updates,
     const gfx::Point& mouse_location,
     std::vector<ui::AXEvent> events) {
+  if (!automation_remote_)
+    return;
+
   ExtensionMsg_AccessibilityEventBundleParams event_bundle;
   event_bundle.tree_id = tree_id;
   event_bundle.updates = std::move(updates);
@@ -48,9 +52,9 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
   IPC::ParamTraits<ExtensionMsg_AccessibilityEventBundleParams>::Write(
       &pickle, event_bundle);
   std::string result(static_cast<const char*>(pickle.data()), pickle.size());
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->GetRemote<crosapi::mojom::Automation>()
-      ->ReceiveEventPrototype(std::move(result), false, id_, std::string());
+  automation_remote_->ReceiveEventPrototype(std::move(result), false,
+                                            base::UnguessableToken::Create(),
+                                            std::string());
 }
 
 void AutomationManagerLacros::DispatchAccessibilityLocationChange(
@@ -64,9 +68,10 @@ void AutomationManagerLacros::DispatchTreeDestroyedEvent(
   if (!tree_id.token())
     return;
 
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->GetRemote<crosapi::mojom::Automation>()
-      ->DispatchTreeDestroyedEvent(*(tree_id.token()));
+  if (!automation_remote_)
+    return;
+
+  automation_remote_->DispatchTreeDestroyedEvent(*(tree_id.token()));
 }
 
 void AutomationManagerLacros::DispatchActionResult(

@@ -10,6 +10,7 @@
 #include "chromeos/crosapi/mojom/automation.mojom.h"
 #include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 // This class receives and forwards automation events to Ash. It can only be
 // used on the main thread.
@@ -49,9 +50,9 @@ class AutomationManagerLacros
                               int32_t request_id,
                               base::Value optional_args) override;
 
-  // A unique id that identifies this instance of Lacros.
-  base::UnguessableToken id_;
-  mojo::Receiver<crosapi::mojom::AutomationClient> receiver_{this};
+  mojo::Remote<crosapi::mojom::Automation> automation_remote_;
+  mojo::Receiver<crosapi::mojom::AutomationClient> automation_client_receiver_{
+      this};
   base::WeakPtrFactory<AutomationManagerLacros> weak_ptr_factory_{this};
 };
 
