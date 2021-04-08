@@ -178,11 +178,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.removeAccountCoordinator stop];
   self.removeAccountCoordinator = nil;
   [self stopBrowserStateServiceObservers];
+  _browser = nullptr;
 }
 
 #pragma mark - SettingsRootTableViewController
 
 - (void)reloadData {
+  if (!_browser)
+    return;
+
   if (![self authService] -> IsAuthenticated()) {
     // This accounts table view will be popped or dismissed when the user
     // is signed out. Avoid reloading it in that case as that would lead to an
@@ -193,6 +197,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)loadModel {
+  if (!_browser)
+    return;
+
   // Update the title with the name with the currently signed-in account.
   ChromeIdentity* authenticatedIdentity =
       [self authService] -> GetAuthenticatedIdentity();
@@ -428,6 +435,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onEndBatchOfRefreshTokenStateChanges {
+  DCHECK(_browser) << "-onEndBatchOfRefreshTokenStateChanges called after "
+                      "-stopBrowserStateServiceObservers";
+
   [self reloadData];
   [self popViewIfSignedOut];
   if (![self authService] -> IsAuthenticated() &&
@@ -645,10 +655,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)handleSignOutWithForceClearData:(BOOL)forceClearData {
-  DCHECK(_alertCoordinator);
+  if (!_browser)
+    return;
+
   // |_alertCoordinator| should not be stopped, since the coordinator has been
   // confirmed.
+  DCHECK(_alertCoordinator);
   _alertCoordinator = nil;
+
   AuthenticationService* authService = [self authService];
   if (authService->IsAuthenticated()) {
     _authenticationOperationInProgress = YES;
@@ -691,6 +705,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)popViewIfSignedOut {
+  if (!_browser)
+    return;
+
   if ([self authService] -> IsAuthenticated()) {
     return;
   }
@@ -728,6 +745,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Access to authentication service
 
 - (AuthenticationService*)authService {
+  DCHECK(_browser) << "-authService called after -settingsWillBeDismissed";
   return AuthenticationServiceFactory::GetForBrowserState(
       _browser->GetBrowserState());
 }
