@@ -213,23 +213,9 @@ ash::AppStatus LauncherControllerHelper::GetAppStatus(
 
 std::string LauncherControllerHelper::GetAppID(content::WebContents* tab) {
   DCHECK(tab);
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile_manager) {
-    const std::vector<Profile*> profile_list =
-        profile_manager->GetLoadedProfiles();
-    if (!profile_list.empty()) {
-      for (auto* i : profile_list) {
-        base::Optional<std::string> app_id = GetAppIdForTab(i, tab);
-        if (app_id.has_value())
-          return *app_id;
-      }
-      return std::string();
-    }
-  }
-
-  // If there is no profile manager we only use the known profile.
-  base::Optional<std::string> app_id = GetAppIdForTab(profile_, tab);
-  return app_id.has_value() ? *app_id : std::string();
+  base::Optional<std::string> app_id = GetAppIdForTab(
+      Profile::FromBrowserContext(tab->GetBrowserContext()), tab);
+  return app_id.value_or(std::string());
 }
 
 bool LauncherControllerHelper::IsValidIDForCurrentUser(

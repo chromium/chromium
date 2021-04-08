@@ -880,6 +880,15 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     return result;
   }
 
+  // Returns the list containing app IDs of items shown in shelf. The order of
+  // IDs matches the order of associated shelf items in the shelf model.
+  std::vector<std::string> GetAppsShownInShelf() const {
+    std::vector<std::string> app_ids;
+    for (auto& item : model_->items())
+      app_ids.push_back(item.id.app_id);
+    return app_ids;
+  }
+
   // Remember the order of unpinned but running applications for the current
   // user.
   void RememberUnpinnedRunningApplicationOrder() {
@@ -2830,6 +2839,51 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
   EXPECT_FALSE(IsWindowOnDesktopOfUser(window, current_user));
   launcher_controller_->ActivateWindowOrMinimizeIfActive(browser_window, false);
   EXPECT_TRUE(IsWindowOnDesktopOfUser(window, current_user));
+}
+
+// Tests that web app icon is removed from shelf after user switch if the app is
+// not installed by the new active user, even if the user has the URL associated
+// with the app open in a tab.
+TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
+       WebAppNotShownIfNotInstalledAfterUserSwitch) {
+  // Create a browser item in the LauncherController.
+  InitLauncherController();
+
+  std::string user2 = "user2";
+  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  const AccountId account_id(
+      multi_user_util::GetAccountIdFromProfile(profile()));
+  const AccountId account_id2(
+      multi_user_util::GetAccountIdFromProfile(profile2));
+
+  constexpr char kWebAppUrl[] = "https://webappone.com/";
+  constexpr char kWebAppName[] = "WebApp1";
+
+  // Set up the test so
+  // *   the primary user has a test app pinned to shelf, and
+  // *   secondary user has a tab with the URL associated with the app open (but
+  //      does not have the app installed).
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = GURL(kWebAppUrl);
+  web_app::AppId installed_app_id =
+      web_app::InstallWebApp(profile(), std::move(web_app_info));
+  launcher_controller_->PinAppWithID(installed_app_id);
+
+  std::unique_ptr<Browser> profile2_browser =
+      CreateBrowserAndTabWithProfile(profile2, kWebAppName, kWebAppUrl);
+
+  EXPECT_EQ(std::vector<std::string>(
+                {extension_misc::kChromeAppId, installed_app_id}),
+            GetAppsShownInShelf());
+
+  // Switch to the secondary user, and verify the app only installed in the
+  // primary profile is removed from the model.
+  SwitchActiveUser(account_id2);
+
+  EXPECT_EQ(std::vector<std::string>({extension_misc::kChromeAppId}),
+            GetAppsShownInShelf());
+
+  chrome::CloseTab(profile2_browser.get());
 }
 
 // Check that a running windowed V1 application will be properly pinned and
