@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
@@ -930,6 +931,16 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   StopAutoLoginTimer();
 
+  // Before continuing with post login setups such as starting a session,
+  // check if browser data needs to be migrated from ash to lacros.
+  ash::BrowserDataMigrator::MaybeMigrate(
+      user_context,
+      base::BindOnce(&ExistingUserController::ContinueOnAuthSuccess,
+                     weak_factory_.GetWeakPtr(), user_context));
+}
+
+void ExistingUserController::ContinueOnAuthSuccess(
+    const UserContext& user_context) {
   // Truth table of `has_auth_cookies`:
   //                          Regular        SAML
   //  /ServiceLogin              T            T
