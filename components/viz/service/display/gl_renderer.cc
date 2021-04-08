@@ -1523,14 +1523,18 @@ bool GLRenderer::UpdateRPDQWithSkiaFilters(
         if (clip_rect.IsEmpty()) {
           clip_rect = current_draw_rect_;
         }
-        gfx::Transform transform = params->quad_to_target_transform;
+        const gfx::Transform& transform = params->quad_to_target_transform;
         if (!transform.IsInvertible()) {
           return false;
         }
-        gfx::QuadF clip_quad = gfx::QuadF(gfx::RectF(clip_rect));
-        gfx::QuadF local_clip =
-            cc::MathUtil::InverseMapQuadToLocalSpace(transform, clip_quad);
-        params->dst_rect.Intersect(local_clip.BoundingBox());
+        // If the transform has perspective, there might be visible content
+        // outside of the bounds of the quad.
+        if (!transform.HasPerspective()) {
+          gfx::QuadF clip_quad = gfx::QuadF(gfx::RectF(clip_rect));
+          gfx::QuadF local_clip =
+              cc::MathUtil::InverseMapQuadToLocalSpace(transform, clip_quad);
+          params->dst_rect.Intersect(local_clip.BoundingBox());
+        }
         // If we've been fully clipped out (by crop rect or clipping), there's
         // nothing to draw.
         if (params->dst_rect.IsEmpty()) {

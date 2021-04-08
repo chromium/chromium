@@ -2428,12 +2428,21 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
       }
       const gfx::Transform& transform =
           quad->shared_quad_state->quad_to_target_transform;
-      gfx::QuadF clip_quad = gfx::QuadF(gfx::RectF(clip_rect));
-      gfx::QuadF local_clip =
-          cc::MathUtil::InverseMapQuadToLocalSpace(transform, clip_quad);
+      if (!transform.IsInvertible()) {
+        return rpdq_params;
+      }
 
-      rpdq_params.filter_bounds.Intersect(
-          gfx::ToEnclosingRect(local_clip.BoundingBox()));
+      // If the transform has perspective, there might be visible content
+      // outside of the bounds of the quad.
+      if (!transform.HasPerspective()) {
+        gfx::QuadF clip_quad = gfx::QuadF(gfx::RectF(clip_rect));
+        gfx::QuadF local_clip =
+            cc::MathUtil::InverseMapQuadToLocalSpace(transform, clip_quad);
+
+        rpdq_params.filter_bounds.Intersect(
+            gfx::ToEnclosingRect(local_clip.BoundingBox()));
+      }
+
       // If we've been fully clipped out (by crop rect or clipping), there's
       // nothing to draw.
       if (rpdq_params.filter_bounds.IsEmpty()) {
