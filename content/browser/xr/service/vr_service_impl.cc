@@ -66,6 +66,30 @@ std::vector<content::PermissionType> GetRequiredPermissions(
   return permissions;
 }
 
+bool AreAllRequiredFeaturesEnabled(
+    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        required_features) {
+  DVLOG(3) << __func__
+           << ": enabled_features.size()=" << enabled_features.size();
+
+  // Try to find a required feature that was not enabled on the created session:
+  auto required_but_not_enabled_it =
+      std::find_if(required_features.begin(), required_features.end(),
+                   [&enabled_features](const auto& required_feature) {
+                     return !base::Contains(enabled_features, required_feature);
+                   });
+  if (required_but_not_enabled_it != required_features.end()) {
+    DVLOG(2) << __func__
+             << ": one of the required features was not enabled on the created "
+                "session, feature: "
+             << *required_but_not_enabled_it;
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 namespace content {
@@ -265,6 +289,17 @@ void VRServiceImpl::OnInlineSessionCreated(
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features(
       session->enabled_features.begin(), session->enabled_features.end());
 
+  if (!AreAllRequiredFeaturesEnabled(enabled_features,
+                                     request.required_features)) {
+    // UNKNOWN_FAILURE since a runtime should not return a session if there
+    // exists a required feature that was not enabled - this would signify a bug
+    // in the runtime.
+    std::move(request.callback)
+        .Run(device::mojom::RequestSessionResult::NewFailureReason(
+            device::mojom::RequestSessionError::UNKNOWN_FAILURE));
+    return;
+  }
+
   mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
       session_metrics_recorder = GetSessionMetricsHelper()->StartInlineSession(
           *(request.options), enabled_features, id.GetUnsafeValue());
@@ -287,21 +322,8 @@ void VRServiceImpl::OnImmersiveSessionCreated(
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features(
       session->enabled_features.begin(), session->enabled_features.end());
 
-  DVLOG(3) << __func__
-           << ": enabled_features.size()=" << enabled_features.size();
-
-  // Try to find a required feature that was not enabled on the created session:
-  auto required_but_not_enabled_it =
-      std::find_if(request.options->required_features.begin(),
-                   request.options->required_features.end(),
-                   [&enabled_features](const auto& required_feature) {
-                     return !base::Contains(enabled_features, required_feature);
-                   });
-  if (required_but_not_enabled_it != request.options->required_features.end()) {
-    DVLOG(2) << __func__
-             << ": one of the required features was not enabled on the created "
-                "session, feature: "
-             << *required_but_not_enabled_it;
+  if (!AreAllRequiredFeaturesEnabled(enabled_features,
+                                     request.required_features)) {
     // UNKNOWN_FAILURE since a runtime should not return a session if there
     // exists a required feature that was not enabled - this would signify a bug
     // in the runtime.
@@ -357,19 +379,6 @@ void VRServiceImpl::OnSessionCreated(
 
   mojo::Remote<device::mojom::XRSessionClient> client;
   session->client_receiver = client.BindNewPipeAndPassReceiver();
-
-  if (session->enabled_features.empty()) {
-    // The device did not report any features as enabled, assume that everything
-    // was enabled successfully since the session has been created:
-
-    for (const auto& feature : request.required_features) {
-      session->enabled_features.push_back(feature);
-    }
-
-    for (const auto& feature : request.optional_features) {
-      session->enabled_features.push_back(feature);
-    }
-  }
 
   client->OnVisibilityStateChanged(visibility_state_);
   session_clients_.Add(std::move(client));
@@ -553,12 +562,10 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
   auto runtime_options = GetRuntimeOptions(request.options.get());
   // Make the resolved enabled features available to the runtime.
 
-  runtime_options->required_features.assign(
-      request.options->required_features.begin(),
-      request.options->required_features.end());
-  runtime_options->optional_features.assign(
-      request.options->optional_features.begin(),
-      request.options->optional_features.end());
+  runtime_options->required_features.assign(request.required_features.begin(),
+                                            request.required_features.end());
+  runtime_options->optional_features.assign(request.optional_features.begin(),
+                                            request.optional_features.end());
 
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARCORE)
   if (request.runtime_id == device::mojom::XRDeviceId::ARCORE_DEVICE_ID) {
