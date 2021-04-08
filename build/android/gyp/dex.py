@@ -75,6 +75,11 @@ def _ParseArgs(args):
                       action='store_true',
                       help='Allow numerous dex files within output.')
   parser.add_argument('--r8-jar-path', required=True, help='Path to R8 jar.')
+  parser.add_argument('--skip-custom-d8',
+                      action='store_true',
+                      help='When rebuilding the CustomD8 jar, this may be '
+                      'necessary to avoid incompatibility with the new r8 '
+                      'jar.')
   parser.add_argument('--custom-d8-jar-path',
                       required=True,
                       help='Path to our customized d8 jar.')
@@ -502,7 +507,7 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
   if class_files:
     # Dex necessary classes into intermediate dex files.
     dex_cmd = dex_cmd + ['--intermediate', '--file-per-class-file']
-    if options.desugar_dependencies:
+    if options.desugar_dependencies and not options.skip_custom_d8:
       dex_cmd += ['--file-tmp-prefix', tmp_extract_dir]
     _RunD8(dex_cmd, class_files, options.incremental_dir,
            options.warnings_as_errors,
@@ -568,11 +573,19 @@ def main(args):
   if options.dump_inputs:
     dex_cmd += ['-Dcom.android.tools.r8.dumpinputtofile=d8inputs.zip']
 
-  dex_cmd += [
-      '-cp',
-      '{}:{}'.format(options.r8_jar_path, options.custom_d8_jar_path),
-      'org.chromium.build.CustomD8',
-  ]
+  if not options.skip_custom_d8:
+    dex_cmd += [
+        '-cp',
+        '{}:{}'.format(options.r8_jar_path, options.custom_d8_jar_path),
+        'org.chromium.build.CustomD8',
+    ]
+  else:
+    dex_cmd += [
+        '-cp',
+        options.r8_jar_path,
+        'com.android.tools.r8.D8',
+    ]
+
   if options.release:
     dex_cmd += ['--release']
   if options.min_api:
@@ -582,7 +595,7 @@ def main(args):
     dex_cmd += ['--no-desugaring']
   elif options.classpath:
     # The classpath is used by D8 to for interface desugaring.
-    if options.desugar_dependencies:
+    if options.desugar_dependencies and not options.skip_custom_d8:
       dex_cmd += ['--desugar-dependencies', options.desugar_dependencies]
       if track_subpaths_allowlist:
         track_subpaths_allowlist += options.classpath

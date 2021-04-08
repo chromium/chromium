@@ -1590,6 +1590,9 @@ if (enable_java_templates) {
           rebase_path(_r8_path, root_build_dir),
           "--custom-d8-jar-path",
           rebase_path(_custom_d8_path, root_build_dir),
+
+          # Uncomment when rebuilding custom_d8.jar.
+          #"--skip-custom-d8",
         ]
         if (treat_warnings_as_errors) {
           args += [ "--warnings-as-errors" ]

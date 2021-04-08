@@ -29,6 +29,8 @@ Local Modifications:
 Update Instructions:
 * For the custom d8 jar:
   * This is required only when CustomD8.java changes.
+  * Uncomment the flag --skip-custom-d8 in internal_rules.gni to avoid depending
+    on the previously built custom_d8.jar.
 autoninja -C out/Debug third_party/r8:custom_d8_java
 cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d8.jar
 
