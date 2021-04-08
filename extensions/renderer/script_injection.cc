@@ -336,7 +336,8 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
 
   render_frame_->GetWebFrame()->RequestExecuteScriptInIsolatedWorld(
       world_id, &sources.front(), sources.size(), is_user_gesture,
-      execution_option, callback.release());
+      execution_option, callback.release(),
+      blink::BackForwardCacheAware::kPossiblyDisallow);
 }
 
 void ScriptInjection::OnJsInjectionCompleted(
@@ -436,8 +437,9 @@ void ScriptInjection::InjectOrRemoveCss(
   } else {
     DCHECK(adding_css);
     for (const blink::WebString& css : css_sources)
-      web_frame->GetDocument().InsertStyleSheet(css, &style_sheet_key,
-                                                blink_css_origin);
+      web_frame->GetDocument().InsertStyleSheet(
+          css, &style_sheet_key, blink_css_origin,
+          blink::BackForwardCacheAware::kPossiblyDisallow);
   }
 }
 

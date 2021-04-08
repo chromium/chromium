@@ -864,10 +864,17 @@ void WebLocalFrameImpl::ExecuteScript(const WebScriptSource& source) {
 
 void WebLocalFrameImpl::ExecuteScriptInIsolatedWorld(
     int32_t world_id,
-    const WebScriptSource& source_in) {
+    const WebScriptSource& source_in,
+    BackForwardCacheAware back_forward_cache_aware) {
   DCHECK(GetFrame());
   CHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
   CHECK_LT(world_id, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit);
+
+  if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
+    GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
+        SchedulingPolicy::Feature::kIsolatedWorldScript,
+        {SchedulingPolicy::DisableBackForwardCache()});
+  }
 
   // Note: An error event in an isolated world will never be dispatched to
   // a foreign world.
@@ -881,10 +888,17 @@ void WebLocalFrameImpl::ExecuteScriptInIsolatedWorld(
 v8::Local<v8::Value>
 WebLocalFrameImpl::ExecuteScriptInIsolatedWorldAndReturnValue(
     int32_t world_id,
-    const WebScriptSource& source_in) {
+    const WebScriptSource& source_in,
+    BackForwardCacheAware back_forward_cache_aware) {
   DCHECK(GetFrame());
   CHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
   CHECK_LT(world_id, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit);
+
+  if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
+    GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
+        SchedulingPolicy::Feature::kIsolatedWorldScript,
+        {SchedulingPolicy::DisableBackForwardCache()});
+  }
 
   // Note: An error event in an isolated world will never be dispatched to
   // a foreign world.
@@ -987,10 +1001,17 @@ void WebLocalFrameImpl::RequestExecuteScriptInIsolatedWorld(
     unsigned num_sources,
     bool user_gesture,
     ScriptExecutionType option,
-    WebScriptExecutionCallback* callback) {
+    WebScriptExecutionCallback* callback,
+    BackForwardCacheAware back_forward_cache_aware) {
   DCHECK(GetFrame());
   CHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
   CHECK_LT(world_id, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit);
+
+  if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
+    GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
+        SchedulingPolicy::Feature::kIsolatedWorldScript,
+        {SchedulingPolicy::DisableBackForwardCache()});
+  }
 
   scoped_refptr<DOMWrapperWorld> isolated_world =
       DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(GetFrame()), world_id);

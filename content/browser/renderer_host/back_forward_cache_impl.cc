@@ -99,6 +99,14 @@ bool IsGeolocationSupported() {
   return geolocation_supported.Get();
 }
 
+bool IsContentInjectionSupported() {
+  if (!IsBackForwardCacheEnabled())
+    return false;
+  static constexpr base::FeatureParam<bool> content_injection_supported(
+      &features::kBackForwardCache, "content_injection_supported", false);
+  return content_injection_supported.Get();
+}
+
 bool IsFileSystemSupported() {
   if (!IsBackForwardCacheEnabled())
     return false;
@@ -202,6 +210,11 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
   if (!IsGeolocationSupported()) {
     result |= FeatureToBit(
         WebSchedulerTrackedFeature::kRequestedGeolocationPermission);
+  }
+
+  if (!IsContentInjectionSupported()) {
+    result |= FeatureToBit(WebSchedulerTrackedFeature::kIsolatedWorldScript) |
+              FeatureToBit(WebSchedulerTrackedFeature::kInjectedStyleSheet);
   }
 
   if (!IgnoresOutstandingNetworkRequestForTesting()) {
