@@ -91,30 +91,29 @@
    */
   handleTouchEvents(event, index, callback) {
     switch (event.type) {
+      case 'touchcancel':
+        this.resetTouchTracking_();
+        break;
+
       case 'touchstart': {
         // Only track the position of the single touch. However, we detect a
         // two-finger tap for opening a context menu of the target.
-        if (event.touches.length == 2) {
-          this.isTwoFingerTap_ = true;
-          return false;
-        } else if (event.touches.length > 2) {
+        if (event.touches.length > 2) {
           this.tapStarted_ = false;
+          return false;
+        } else if (this.activeTouchId_ !== undefined) {
+          this.isTwoFingerTap_ = event.touches.length === 2;
           return false;
         }
 
-        // It's still possible there could be an active "touch" if the user is
-        // simultaneously using a mouse and a touch input.
-        // TODO(yamaguchi): add this after adding handler for touchcancel that
-        // can reset this.activeTouchId_ to undefined.
-        // if (this.activeTouchId_ !== undefined)
-        //   return;
+        this.resetTouchTracking_();
         const touch = event.targetTouches[0];
         this.activeTouchId_ = touch.identifier;
         this.tapStarted_ = true;
 
         this.activeItemIndex_ = index;
         this.isLongTap_ = false;
-        this.isTwoFingerTap_ = false;
+        this.isTwoFingerTap_ = event.touches.length === 2;
 
         this.hasLongPressProcessed_ = false;
         this.longTapDetectorTimerId_ = setTimeout(() => {
@@ -160,20 +159,16 @@
         }
       } break;
 
-      case 'touchend':
-        if (!this.tapStarted_) {
-          break;
-        }
-
+      case 'touchend': {
         // Mark as no longer being touched.
         // Two-finger tap event is issued when either of the 2 touch points is
         // released. Stop tracking the tap to avoid issuing duplicate events.
-        this.tapStarted_ = false;
-        this.activeTouchId_ = undefined;
-        if (this.longTapDetectorTimerId_ != -1) {
-          clearTimeout(this.longTapDetectorTimerId_);
-          this.longTapDetectorTimerId_ = -1;
+        const tapStarted = this.resetTouchTracking_();
+
+        if (!tapStarted) {
+          break;
         }
+
         if (this.isLongTap_) {
           // The item at the touch start position is treated as the target item,
           // rather than the one at the touch end position. Note that |index| is
@@ -198,8 +193,36 @@
             return true;
           }
         }
-        break;
+      } break;
     }
+
+    return false;
+  }
+
+  /**
+   * Resets the touch tracking state variables. Saves the |this.tapStarted_|
+   * state first, then resets all tracking state variables.
+   *
+   * @return {boolean} The saved |this.tapStarted_| state or false if there
+   *    is no active touch Id.
+   * @private
+   */
+  resetTouchTracking_() {
+    const tapStarted = this.tapStarted_;
+    this.tapStarted_ = false;
+
+    const activeTouchId = this.activeTouchId_;
+    this.activeTouchId_ = undefined;
+
+    if (this.longTapDetectorTimerId_ !== -1) {
+      clearTimeout(this.longTapDetectorTimerId_);
+      this.longTapDetectorTimerId_ = -1;
+    }
+
+    if (activeTouchId !== undefined) {
+      return tapStarted;
+    }
+
     return false;
   }
 
