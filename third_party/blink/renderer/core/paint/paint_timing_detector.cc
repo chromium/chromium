@@ -337,10 +337,13 @@ FloatRect PaintTimingDetector::CalculateVisualRect(
   // As Layout objects live in different transform spaces, the object's rect
   // should be projected to the viewport's transform space.
   FloatClipRect float_clip_visual_rect = FloatClipRect(FloatRect(visual_rect));
+  const LocalFrame& local_root = frame_view_->GetFrame().LocalFrameRoot();
   GeometryMapper::LocalToAncestorVisualRect(current_paint_chunk_properties,
-                                            PropertyTreeState::Root(),
+                                            local_root.ContentLayoutObject()
+                                                ->FirstFragment()
+                                                .LocalBorderBoxProperties(),
                                             float_clip_visual_rect);
-  if (frame_view_->GetFrame().LocalFrameRoot().IsMainFrame()) {
+  if (local_root.IsMainFrame()) {
     return BlinkSpaceToDIPs(float_clip_visual_rect.Rect());
   }
   // OOPIF. The final rect lives in the iframe's root frame space. We need to
