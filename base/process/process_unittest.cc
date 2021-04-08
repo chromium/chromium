@@ -183,8 +183,8 @@ TEST_F(ProcessTest, Terminate) {
 
   EXPECT_NE(TERMINATION_STATUS_STILL_RUNNING,
             GetTerminationStatus(process.Handle(), &exit_code));
-#if !defined(OS_POSIX) && !defined(OS_FUCHSIA)
-  // The POSIX & Fuchsia implementations actually ignore the exit_code.
+#if defined(OS_WIN)
+  // Only Windows propagates the |exit_code| set in Terminate().
   EXPECT_EQ(kExpectedExitCode, exit_code);
 #endif
 }
