@@ -24,7 +24,12 @@ enum class ScanJobFailureReason {
   kScannerNotFound = 1,
   kUnsupportedScanToPath = 2,
   kSaveToDiskFailed = 3,
-  kMaxValue = kSaveToDiskFailed,
+  kDeviceBusy = 4,
+  kAdfJammed = 5,
+  kAdfEmpty = 6,
+  kFlatbedOpen = 7,
+  kIoError = 8,
+  kMaxValue = kIoError,
 };
 
 enum class ScanJobSettingsResolution {

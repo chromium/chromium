@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -203,6 +204,30 @@ base::FilePath SavePage(const base::FilePath& scan_to_path,
   }
 
   return scan_to_path.Append(filename);
+}
+
+// Returns a ScanJobFailureReason corresponding to the given |failure_mode|.
+scanning::ScanJobFailureReason GetScanJobFailureReason(
+    const lorgnette::ScanFailureMode failure_mode) {
+  switch (failure_mode) {
+    case lorgnette::SCAN_FAILURE_MODE_UNKNOWN:
+      return scanning::ScanJobFailureReason::kUnknownScannerError;
+    case lorgnette::SCAN_FAILURE_MODE_DEVICE_BUSY:
+      return scanning::ScanJobFailureReason::kDeviceBusy;
+    case lorgnette::SCAN_FAILURE_MODE_ADF_JAMMED:
+      return scanning::ScanJobFailureReason::kAdfJammed;
+    case lorgnette::SCAN_FAILURE_MODE_ADF_EMPTY:
+      return scanning::ScanJobFailureReason::kAdfEmpty;
+    case lorgnette::SCAN_FAILURE_MODE_FLATBED_OPEN:
+      return scanning::ScanJobFailureReason::kFlatbedOpen;
+    case lorgnette::SCAN_FAILURE_MODE_IO_ERROR:
+      return scanning::ScanJobFailureReason::kIoError;
+    case lorgnette::SCAN_FAILURE_MODE_NO_FAILURE:
+    case lorgnette::ScanFailureMode_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case lorgnette::ScanFailureMode_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      return scanning::ScanJobFailureReason::kUnknownScannerError;
+  }
 }
 
 // Records the histograms based on the scan job result.
@@ -470,8 +495,7 @@ void ScanService::OnAllPagesSaved(bool success,
 
   base::Optional<scanning::ScanJobFailureReason> failure_reason = base::nullopt;
   if (!success) {
-    // TODO(jschettler): Get ScanJobFailureReason from |failure_mode|.
-    failure_reason = scanning::ScanJobFailureReason::kUnknownScannerError;
+    failure_reason = GetScanJobFailureReason(failure_mode);
     scanned_file_paths_.clear();
   } else if (page_save_failed_) {
     failure_mode = lorgnette::SCAN_FAILURE_MODE_UNKNOWN;

@@ -69238,6 +69238,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Scanner not found"/>
   <int value="2" label="Unsupported Scan To path"/>
   <int value="3" label="Save to disk failed"/>
+  <int value="4" label="Device is busy"/>
+  <int value="5" label="ADF is jammed"/>
+  <int value="6" label="ADF is empty"/>
+  <int value="7" label="Flatbed cover is open"/>
+  <int value="8" label="Communication error"/>
 </enum>
 
 <enum name="ScanJobSettingsColorMode">
