@@ -12,6 +12,7 @@
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 NewBadgeLabel::NewBadgeLabel(const std::u16string& text,
                              int text_context,
@@ -27,6 +28,30 @@ NewBadgeLabel::NewBadgeLabel(const std::u16string& text, const CustomFont& font)
 }
 
 NewBadgeLabel::~NewBadgeLabel() = default;
+
+void NewBadgeLabel::SetDisplayNewBadge(bool display_new_badge) {
+  DCHECK(!GetWidget() || !GetVisible() || !GetWidget()->IsVisible())
+      << "New badge display should not be toggled while this element is "
+         "visible.";
+  if (display_new_badge_ == display_new_badge)
+    return;
+
+  display_new_badge_ = display_new_badge;
+
+  // At this point we know the display setting has changed, so we must add or
+  // remove the relevant padding and insets.
+  if (display_new_badge_) {
+    UpdatePaddingForNewBadge();
+  } else {
+    // Clearing these only when display is set to false - rather than in e.g.
+    // UpdatePaddingForNewBadge() - ensures that any subsequent modifications to
+    // the border or padding are not discarded.
+    views::Label::SetBorder(nullptr);
+    ClearProperty(views::kInternalPaddingKey);
+  }
+
+  OnPropertyChanged(&display_new_badge_, views::kPropertyEffectsLayout);
+}
 
 void NewBadgeLabel::SetPadAfterNewBadge(bool pad_after_new_badge) {
   if (pad_after_new_badge_ == pad_after_new_badge)
@@ -49,26 +74,34 @@ void NewBadgeLabel::SetBadgePlacement(BadgePlacement badge_placement) {
 void NewBadgeLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Label::GetAccessibleNodeData(node_data);
   std::u16string accessible_name = GetText();
-  accessible_name.push_back(' ');
-  accessible_name.append(views::NewBadge::GetNewBadgeAccessibleDescription());
+  if (display_new_badge_) {
+    accessible_name.push_back(' ');
+    accessible_name.append(views::NewBadge::GetNewBadgeAccessibleDescription());
+  }
   node_data->SetName(accessible_name);
 }
 
 gfx::Size NewBadgeLabel::CalculatePreferredSize() const {
   gfx::Size size = Label::CalculatePreferredSize();
-  size.SetToMax(views::NewBadge::GetNewBadgeSize(font_list()));
+  if (display_new_badge_)
+    size.SetToMax(views::NewBadge::GetNewBadgeSize(font_list()));
   return size;
 }
 
 gfx::Size NewBadgeLabel::GetMinimumSize() const {
   gfx::Size size = Label::GetMinimumSize();
-  size.SetToMax(views::NewBadge::GetNewBadgeSize(font_list()));
+  if (display_new_badge_)
+    size.SetToMax(views::NewBadge::GetNewBadgeSize(font_list()));
   return size;
 }
 
 int NewBadgeLabel::GetHeightForWidth(int w) const {
-  return std::max(Label::GetHeightForWidth(w),
-                  views::NewBadge::GetNewBadgeSize(font_list()).height());
+  int height = Label::GetHeightForWidth(w);
+  if (display_new_badge_) {
+    height = std::max(height,
+                      views::NewBadge::GetNewBadgeSize(font_list()).height());
+  }
+  return height;
 }
 
 void NewBadgeLabel::OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -101,6 +134,9 @@ void NewBadgeLabel::OnPaint(gfx::Canvas* canvas) {
 }
 
 void NewBadgeLabel::UpdatePaddingForNewBadge() {
+  if (!display_new_badge_)
+    return;
+
   // Calculate the width required for the badge plus separation from the text.
   int width = views::NewBadge::GetNewBadgeSize(font_list()).width();
   int right_padding = 0;
@@ -122,11 +158,15 @@ void NewBadgeLabel::UpdatePaddingForNewBadge() {
     border.set_left(0);
     border.set_right(width);
   }
-  SetBorder(views::CreateEmptyBorder(border));
+  views::Label::SetBorder(views::CreateEmptyBorder(border));
 
   // If there is right-padding, ensure that layouts understand it can be
   // collapsed into a margin.
   SetProperty(views::kInternalPaddingKey, gfx::Insets(0, 0, 0, right_padding));
+}
+
+void NewBadgeLabel::SetBorder(std::unique_ptr<views::Border> b) {
+  NOTREACHED() << "Calling SetBorder() externally is currently not allowed.";
 }
 
 DEFINE_ENUM_CONVERTERS(NewBadgeLabel::BadgePlacement,
@@ -136,6 +176,7 @@ DEFINE_ENUM_CONVERTERS(NewBadgeLabel::BadgePlacement,
                         u"kTrailingEdge"})
 
 BEGIN_METADATA(NewBadgeLabel, views::Label)
+ADD_PROPERTY_METADATA(bool, DisplayNewBadge)
 ADD_PROPERTY_METADATA(NewBadgeLabel::BadgePlacement, BadgePlacement)
 ADD_PROPERTY_METADATA(bool, PadAfterNewBadge)
 END_METADATA

@@ -6226,6 +6226,7 @@ test("unit_tests") {
       "../browser/ui/views/translate/translate_bubble_view_unittest.cc",
       "../browser/ui/views/user_education/feature_promo_bubble_view_unittest.cc",
       "../browser/ui/views/user_education/feature_promo_controller_views_unittest.cc",
+      "../browser/ui/views/user_education/new_badge_label_unittest.cc",
       "../browser/ui/views/user_education/tip_marquee_view_unittest.cc",
       "../browser/ui/views/webid/webid_dialog_views_unittest.cc",
       "../browser/ui/views/window_name_prompt_unittest.cc",
