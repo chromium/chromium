@@ -94,11 +94,11 @@ VariationsCrashKeys::VariationsCrashKeys() {
   UpdateCrashKeys();
 
   ui_thread_task_runner_ = base::SequencedTaskRunnerHandle::Get();
-  base::FieldTrialList::SetSynchronousObserver(this);
+  base::FieldTrialList::AddObserver(this);
 }
 
 VariationsCrashKeys::~VariationsCrashKeys() {
-  base::FieldTrialList::RemoveSynchronousObserver(this);
+  base::FieldTrialList::RemoveObserver(this);
   g_num_variations_crash_key.Clear();
   g_variations_crash_key.Clear();
 }

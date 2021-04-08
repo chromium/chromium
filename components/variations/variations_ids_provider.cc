@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/base64.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -44,7 +43,8 @@ bool VariationsHeaderKey::operator<(const VariationsHeaderKey& other) const {
 
 // static
 VariationsIdsProvider* VariationsIdsProvider::GetInstance() {
-  return base::Singleton<VariationsIdsProvider>::get();
+  static base::NoDestructor<VariationsIdsProvider> instance;
+  return instance.get();
 }
 
 variations::mojom::VariationsHeadersPtr

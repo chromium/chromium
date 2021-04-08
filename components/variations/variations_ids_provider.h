@@ -14,17 +14,13 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/synthetic_trials.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_associated_data.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
 
 namespace variations {
 class VariationsClient;
@@ -131,7 +127,7 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
   void ResetForTesting();
 
  private:
-  friend struct base::DefaultSingletonTraits<VariationsIdsProvider>;
+  friend class base::NoDestructor<VariationsIdsProvider>;
 
   typedef std::pair<VariationID, IDCollectionKey> VariationIDEntry;
 

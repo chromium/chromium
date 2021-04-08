@@ -57,6 +57,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <string>
@@ -268,6 +269,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   FRIEND_TEST_ALL_PREFIXES(FieldTrialTest, SetForcedTurnFeatureOn);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialTest, SetForcedChangeDefault_Default);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialTest, SetForcedChangeDefault_NonDefault);
+  FRIEND_TEST_ALL_PREFIXES(FieldTrialTest, ObserveReentrancy);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialTest, FloatBoundariesGiveEqualGroupSizes);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialTest, DoesNotSurpassTotalProbability);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest,
@@ -608,25 +610,14 @@ class BASE_EXPORT FieldTrialList {
   // Add an observer to be notified when a field trial is irrevocably committed
   // to being part of some specific field_group (and hence the group_name is
   // also finalized for that field_trial). Returns false and does nothing if
-  // there is no FieldTrialList singleton.
+  // there is no FieldTrialList singleton. The observer can be notified on any
+  // sequence; it must be thread-safe.
   static bool AddObserver(Observer* observer);
 
-  // Remove an observer.
+  // Remove an observer. This cannot be invoked concurrently with
+  // FieldTrial::group() (typically, this means that no other thread should be
+  // running when this is invoked).
   static void RemoveObserver(Observer* observer);
-
-  // Similar to AddObserver(), but the passed observer will be notified
-  // synchronously when a field trial is activated and its group selected. It
-  // will be notified synchronously on the same thread where the activation and
-  // group selection happened. It is the responsibility of the observer to make
-  // sure that this is a safe operation and the operation must be fast, as this
-  // work is done synchronously as part of group() or related APIs. Only a
-  // single such observer is supported, exposed specifically for crash
-  // reporting. Must be called on the main thread before any other threads
-  // have been started.
-  static void SetSynchronousObserver(Observer* observer);
-
-  // Removes the single synchronous observer.
-  static void RemoveSynchronousObserver(Observer* observer);
 
   // Grabs the lock if necessary and adds the field trial to the allocator. This
   // should only be called from FinalizeGroupChoice().
@@ -750,7 +741,7 @@ class BASE_EXPORT FieldTrialList {
   typedef std::map<std::string, FieldTrial*, std::less<>> RegistrationMap;
 
   // Helper function should be called only while holding lock_.
-  FieldTrial* PreLockedFind(StringPiece name);
+  FieldTrial* PreLockedFind(StringPiece name) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Register() stores a pointer to the given trial in a global map.
   // This method also AddRef's the indicated trial.
@@ -768,19 +759,22 @@ class BASE_EXPORT FieldTrialList {
   // FieldTrialList is created after that.
   static bool used_without_global_;
 
-  // Lock for access to registered_ and field_trial_allocator_.
+  // Lock for access to |registered_|, |observers_| and
+  // |field_trial_allocator_|.
   Lock lock_;
-  RegistrationMap registered_;
+  RegistrationMap registered_ GUARDED_BY(lock_);
 
   // Entropy provider to be used for one-time randomized field trials. If NULL,
   // one-time randomization is not supported.
   std::unique_ptr<const FieldTrial::EntropyProvider> entropy_provider_;
 
   // List of observers to be notified when a group is selected for a FieldTrial.
-  scoped_refptr<ObserverListThreadSafe<Observer> > observer_list_;
+  std::vector<Observer*> observers_ GUARDED_BY(lock_);
 
-  // Single synchronous observer to be notified when a trial group is chosen.
-  Observer* synchronous_observer_ = nullptr;
+  // Counts the ongoing calls to
+  // FieldTrialList::NotifyFieldTrialGroupSelection(). Used to ensure that
+  // RemoveObserver() isn't called while notifying observers.
+  std::atomic_int num_ongoing_notify_field_trial_group_selection_calls_{0};
 
   // Allocator in shared memory containing field trial data. Used in both
   // browser and child processes, but readonly in the child.

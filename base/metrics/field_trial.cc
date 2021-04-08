@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/debug/activity_tracker.h"
@@ -17,6 +18,7 @@
 #include "base/process/process_handle.h"
 #include "base/process/process_info.h"
 #include "base/rand_util.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -440,9 +442,7 @@ FieldTrialList::Observer::~Observer() = default;
 
 FieldTrialList::FieldTrialList(
     std::unique_ptr<const FieldTrial::EntropyProvider> entropy_provider)
-    : entropy_provider_(std::move(entropy_provider)),
-      observer_list_(new ObserverListThreadSafe<FieldTrialList::Observer>(
-          ObserverListPolicy::EXISTING_ONLY)) {
+    : entropy_provider_(std::move(entropy_provider)) {
   DCHECK(!global_);
   DCHECK(!used_without_global_);
   global_ = this;
@@ -917,7 +917,8 @@ FieldTrial* FieldTrialList::CreateFieldTrial(StringPiece name,
 bool FieldTrialList::AddObserver(Observer* observer) {
   if (!global_)
     return false;
-  global_->observer_list_->AddObserver(observer);
+  AutoLock auto_lock(global_->lock_);
+  global_->observers_.push_back(observer);
   return true;
 }
 
@@ -925,19 +926,10 @@ bool FieldTrialList::AddObserver(Observer* observer) {
 void FieldTrialList::RemoveObserver(Observer* observer) {
   if (!global_)
     return;
-  global_->observer_list_->RemoveObserver(observer);
-}
-
-// static
-void FieldTrialList::SetSynchronousObserver(Observer* observer) {
-  DCHECK(!global_->synchronous_observer_);
-  global_->synchronous_observer_ = observer;
-}
-
-// static
-void FieldTrialList::RemoveSynchronousObserver(Observer* observer) {
-  DCHECK_EQ(global_->synchronous_observer_, observer);
-  global_->synchronous_observer_ = nullptr;
+  AutoLock auto_lock(global_->lock_);
+  Erase(global_->observers_, observer);
+  DCHECK_EQ(global_->num_ongoing_notify_field_trial_group_selection_calls_, 0)
+      << "Cannot call RemoveObserver while accessing FieldTrial::group().";
 }
 
 // static
@@ -959,6 +951,8 @@ void FieldTrialList::NotifyFieldTrialGroupSelection(FieldTrial* field_trial) {
   if (!global_)
     return;
 
+  std::vector<Observer*> local_observers;
+
   {
     AutoLock auto_lock(global_->lock_);
     if (field_trial->group_reported_)
@@ -968,17 +962,24 @@ void FieldTrialList::NotifyFieldTrialGroupSelection(FieldTrial* field_trial) {
     if (!field_trial->enable_field_trial_)
       return;
 
+    ++global_->num_ongoing_notify_field_trial_group_selection_calls_;
+
     ActivateFieldTrialEntryWhileLocked(field_trial);
+
+    // Copy observers to a local variable to access outside the scope of the
+    // lock. Since removing observers concurrently with this method is
+    // disallowed, pointers should remain valid while observers are notified.
+    local_observers = global_->observers_;
   }
 
-  if (global_->synchronous_observer_) {
-    global_->synchronous_observer_->OnFieldTrialGroupFinalized(
-        field_trial->trial_name(), field_trial->group_name_internal());
+  for (Observer* observer : local_observers) {
+    observer->OnFieldTrialGroupFinalized(field_trial->trial_name(),
+                                         field_trial->group_name_internal());
   }
 
-  global_->observer_list_->NotifySynchronously(
-      FROM_HERE, &FieldTrialList::Observer::OnFieldTrialGroupFinalized,
-      field_trial->trial_name(), field_trial->group_name_internal());
+  int previous_num_ongoing_notify_field_trial_group_selection_calls =
+      global_->num_ongoing_notify_field_trial_group_selection_calls_--;
+  DCHECK_GT(previous_num_ongoing_notify_field_trial_group_selection_calls, 0);
 }
 
 // static

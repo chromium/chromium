@@ -1166,7 +1166,7 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
 
   HistogramSynchronizer::GetInstance();
 
-  field_trial_synchronizer_ = base::MakeRefCounted<FieldTrialSynchronizer>();
+  FieldTrialSynchronizer::CreateInstance();
 
   // cc assumes a single client name for metrics in a process, which is
   // is inconsistent with single process mode where both the renderer and
