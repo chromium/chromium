@@ -3578,7 +3578,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Only on Wi-Fi
       </message>
       <message name="IDS_VIDEO_PREVIEWS_OPTION_WIFI_AND_MOBILE_DATA" desc="Option in video previews preference. Users can click this option to allow video previews on both Wi-Fi and mobile data.">
-        Only Wi-Fi &amp; mobile data
+        On Wi-Fi &amp; mobile data
       </message>
 
       <!-- WebFeed -->
