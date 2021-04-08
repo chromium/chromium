@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_string_util.h"
+#import "ios/chrome/browser/ui/default_promo/tailored_promo_util.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -36,11 +37,24 @@ using l10n_util::GetNSString;
 @property(nonatomic, strong)
     PopoverLabelViewController* learnMoreViewController;
 
+// Popover used to show learn more info, not nil when presented.
+@property(nonatomic, assign) DefaultPromoType promoType;
+
 @end
 
 @implementation TailoredPromoCoordinator
 
 #pragma mark - Public Methods.
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                      type:(DefaultPromoType)type {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _promoType = type;
+  }
+  return self;
+}
 
 - (void)start {
   [super start];
@@ -48,7 +62,8 @@ using l10n_util::GetNSString;
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear"));
   self.tailoredPromoViewController = [[TailoredPromoViewController alloc] init];
 
-  // TODO(crbug.com/1191733): Set up the correct data in the view controller.
+  SetUpTailoredConsumerWithType(self.tailoredPromoViewController,
+                                self.promoType);
 
   self.tailoredPromoViewController.actionHandler = self;
   self.tailoredPromoViewController.modalPresentationStyle =

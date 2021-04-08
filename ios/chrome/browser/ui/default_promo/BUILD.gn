@@ -29,6 +29,8 @@ source_set("default_promo") {
     "default_browser_string_util.mm",
     "tailored_promo_coordinator.h",
     "tailored_promo_coordinator.mm",
+    "tailored_promo_util.h",
+    "tailored_promo_util.mm",
     "tailored_promo_view_controller.h",
     "tailored_promo_view_controller.mm",
   ]
@@ -43,6 +45,8 @@ source_set("default_promo") {
     "//ios/chrome/browser/ui/default_promo/resources",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/images",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

@@ -7,7 +7,10 @@
 
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
-@interface TailoredPromoViewController : ConfirmationAlertViewController
+#import "ios/chrome/browser/ui/default_promo/tailored_promo_util.h"
+
+@interface TailoredPromoViewController
+    : ConfirmationAlertViewController <TailoredPromoConsumer>
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_TAILORED_PROMO_VIEW_CONTROLLER_H_
