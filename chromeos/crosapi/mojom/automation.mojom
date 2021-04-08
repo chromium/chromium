@@ -38,8 +38,8 @@ interface AutomationClient {
 };
 
 // Interface for automation. Implemented by ash-chrome.
-// Next version: 1
-// Next method id: 2
+// Next version: 2
+// Next method id: 3
 [Stable, Uuid="356a895e-b41a-4c45-9336-d8dc6d332f98"]
 interface Automation {
   // A crosapi client can register itself as a automation client. This
@@ -52,15 +52,9 @@ interface Automation {
   // |event_bundle| is a serialized instance of
   // |ExtensionMsg_AutomationEventBundleParams|. This is potentially not
   // compatible across lacros/ash version skew. https://crbug.com/1182926.
-  // |root| refers to whether the associated accessibility tree is the root
-  // accessibility tree for Lacros. Ash needs this information so as to
-  // appropriately glue in Lacros's accessibility trees with the rest of ash's
-  // accessibility trees.
   // |token| uniquely identifies the client.
-  // |window_id| is a short-term placeholder that identifies a lacros window in
-  // which to glue the entire a11y tree (which may contain the contents of more
-  // than 1 lacros window). This relies on the assumption that lacros has a
-  // window open.
+  // |root|, |window_id| are unused but left to make presubmit happy (see
+  // below).
   //
   // This method is purely for prototyping and should not be called on
   // production devices. The main problem is we're not sure yet what interface
@@ -68,5 +62,9 @@ interface Automation {
   ReceiveEventPrototype@1(
       string event_bundle, bool root, mojo_base.mojom.UnguessableToken token,
       string window_id);
-};
 
+  // Forwards an accessibility tree destroyed event from any accessibility tree
+  // in Lacros to Ash.
+  [MinVersion=1]DispatchTreeDestroyedEvent@2(
+      mojo_base.mojom.UnguessableToken tree_id);
+};

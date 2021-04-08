@@ -1490,6 +1490,9 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::StringAttribute::kChildTreeId:
         result += " child_tree_id=" + value.substr(0, 8);
         break;
+      case ax::mojom::StringAttribute::kChildTreeNodeAppId:
+        result += " child_tree_node_app_id=" + value.substr(0, 8);
+        break;
       case ax::mojom::StringAttribute::kClassName:
         result += " class_name=" + value;
         break;
@@ -1536,6 +1539,9 @@ std::string AXNodeData::ToString() const {
         break;
       case ax::mojom::StringAttribute::kContainerLiveStatus:
         result += " container_live=" + value;
+        break;
+      case ax::mojom::StringAttribute::kParentTreeNodeAppId:
+        result += " parent_tree_node_app_id=" + value.substr(0, 8);
         break;
       case ax::mojom::StringAttribute::kPlaceholder:
         result += " placeholder=" + value;

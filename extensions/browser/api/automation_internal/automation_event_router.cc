@@ -107,6 +107,11 @@ void AutomationEventRouter::DispatchAccessibilityLocationChange(
 void AutomationEventRouter::DispatchTreeDestroyedEvent(
     ui::AXTreeID tree_id,
     content::BrowserContext* browser_context) {
+  if (remote_router_) {
+    remote_router_->DispatchTreeDestroyedEvent(tree_id, browser_context);
+    return;
+  }
+
   if (listeners_.empty())
     return;
 

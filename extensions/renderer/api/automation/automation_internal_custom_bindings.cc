@@ -686,6 +686,19 @@ void AutomationInternalCustomBindings::AddRoutes() {
     result.Set(v8::Integer::New(isolate, tree_wrapper->tree()->root()->id()));
   });
   RouteTreeIDFunction(
+      "GetPublicRoot",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper) {
+        tree_wrapper = tree_wrapper->GetTreeWrapperWithUnignoredRoot();
+        if (!tree_wrapper)
+          return;
+
+        gin::DataObjectBuilder response(isolate);
+        response.Set("treeId", tree_wrapper->GetTreeID().ToString());
+        response.Set("nodeId", tree_wrapper->tree()->root()->id());
+        result.Set(response.Build());
+      });
+  RouteTreeIDFunction(
       "GetDocURL", [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
                       AutomationAXTreeWrapper* tree_wrapper) {
         result.Set(v8::String::NewFromUtf8(
@@ -1891,18 +1904,39 @@ bool AutomationInternalCustomBindings::GetFocusInternal(
   // a node within the child tree is the one that actually has focus. This
   // doesn't apply to portals: portals have a child tree, but nothing in the
   // tree can have focus.
-  while (focus->data().HasStringAttribute(
-             ax::mojom::StringAttribute::kChildTreeId) &&
+  std::string child_tree_id_str;
+  std::string child_tree_node_app_id_str;
+  while ((focus->data().GetStringAttribute(
+              ax::mojom::StringAttribute::kChildTreeId, &child_tree_id_str) ||
+          focus->data().GetStringAttribute(
+              ax::mojom::StringAttribute::kChildTreeNodeAppId,
+              &child_tree_node_app_id_str)) &&
          focus->data().role != ax::mojom::Role::kPortal) {
+    AutomationAXTreeWrapper* child_tree_wrapper = nullptr;
+
+    if (!child_tree_node_app_id_str.empty()) {
+      const ui::AXNode* child_app_node =
+          AutomationAXTreeWrapper::GetChildTreeNodeForAppID(
+              child_tree_node_app_id_str, this);
+      if (child_app_node) {
+        auto* wrapper = GetAutomationAXTreeWrapperFromTreeID(
+            child_app_node->tree()->GetAXTreeID());
+
+        // TODO: figure out why this condition seems necessary (otherwise, we
+        // loop forever).
+        if (wrapper != tree_wrapper)
+          child_tree_wrapper = wrapper;
+      }
+    }
+
     // Try to keep following focus recursively, by letting |tree_id| be the
     // new subtree to search in, while keeping |focus_tree_id| set to the tree
     // where we know we found a focused node.
-    ui::AXTreeID child_tree_id =
-        ui::AXTreeID::FromString(focus->data().GetStringAttribute(
-            ax::mojom::StringAttribute::kChildTreeId));
+    if (!child_tree_wrapper && !child_tree_id_str.empty()) {
+      ui::AXTreeID child_tree_id = ui::AXTreeID::FromString(child_tree_id_str);
+      child_tree_wrapper = GetAutomationAXTreeWrapperFromTreeID(child_tree_id);
+    }
 
-    AutomationAXTreeWrapper* child_tree_wrapper =
-        GetAutomationAXTreeWrapperFromTreeID(child_tree_id);
     if (!child_tree_wrapper)
       break;
 
@@ -2111,6 +2145,20 @@ void AutomationInternalCustomBindings::UpdateOverallTreeChangeObserverFilter() {
 ui::AXNode* AutomationInternalCustomBindings::GetParent(
     ui::AXNode* node,
     AutomationAXTreeWrapper** in_out_tree_wrapper) const {
+  if (node->HasStringAttribute(
+          ax::mojom::StringAttribute::kParentTreeNodeAppId)) {
+    ui::AXNode* parent_app_node =
+        AutomationAXTreeWrapper::GetParentTreeNodeForAppID(
+            node->GetStringAttribute(
+                ax::mojom::StringAttribute::kParentTreeNodeAppId),
+            this);
+    if (parent_app_node) {
+      *in_out_tree_wrapper = GetAutomationAXTreeWrapperFromTreeID(
+          parent_app_node->tree()->GetAXTreeID());
+      return parent_app_node;
+    }
+  }
+
   if (node->GetUnignoredParent())
     return node->GetUnignoredParent();
 
@@ -2160,11 +2208,33 @@ ui::AXNode* AutomationInternalCustomBindings::GetParent(
 bool AutomationInternalCustomBindings::GetRootOfChildTree(
     ui::AXNode** in_out_node,
     AutomationAXTreeWrapper** in_out_tree_wrapper) const {
+  // Account for two types of links to child trees.
+  // An explicit tree id to a child tree.
   std::string child_tree_id_str;
+
+  // A node attribute pointing to a node in a descendant tree.
+  std::string child_tree_node_app_id_str;
+
   if (!(*in_out_node)
            ->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                &child_tree_id_str))
+                                &child_tree_id_str) &&
+      !(*in_out_node)
+           ->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId,
+                                &child_tree_node_app_id_str)) {
     return false;
+  }
+
+  if (!child_tree_node_app_id_str.empty()) {
+    ui::AXNode* child_app_node =
+        AutomationAXTreeWrapper::GetChildTreeNodeForAppID(
+            child_tree_node_app_id_str, this);
+    if (child_app_node) {
+      *in_out_node = child_app_node;
+      *in_out_tree_wrapper = GetAutomationAXTreeWrapperFromTreeID(
+          child_app_node->tree()->GetAXTreeID());
+      return true;
+    }
+  }
 
   AutomationAXTreeWrapper* child_tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(
@@ -2583,10 +2653,6 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
       raw_focus_target_id = event.id;
   }
 
-  bool is_from_desktop = tree->IsDesktopTree();
-  if (!event_bundle_has_focus_or_blur && !lost_old_focus && !is_from_desktop)
-    return;
-
   AutomationAXTreeWrapper* desktop_tree =
       GetAutomationAXTreeWrapperFromTreeID(desktop_tree_id_);
   ui::AXNode* new_node = nullptr;
@@ -2604,7 +2670,18 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
       return;
   }
 
-  if (new_wrapper == old_wrapper && new_node == old_node)
+  bool same_focused_tree = old_wrapper == new_wrapper;
+
+  // Return if focus didn't change.
+  if (same_focused_tree && new_node == old_node)
+    return;
+
+  bool is_from_desktop = tree->IsDesktopTree();
+
+  // Require an explicit focus event on non-desktop trees, when focus moves
+  // within them, with an old focused node.
+  if (!event_bundle_has_focus_or_blur && !lost_old_focus && !is_from_desktop &&
+      same_focused_tree)
     return;
 
   // Blur previous focus.

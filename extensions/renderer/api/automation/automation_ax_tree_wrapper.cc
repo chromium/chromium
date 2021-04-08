@@ -13,6 +13,25 @@
 
 namespace extensions {
 
+// Multiroot tree lookup.
+// These maps support moving from a node to a descendant tree node via an app id
+// (and vice versa).
+std::map<std::string, std::pair<ui::AXTreeID, int32_t>>&
+GetAppIDToChildTreeNodeMap() {
+  static base::NoDestructor<
+      std::map<std::string, std::pair<ui::AXTreeID, int32_t>>>
+      app_id_to_child_tree_node_map;
+  return *app_id_to_child_tree_node_map;
+}
+
+std::map<std::string, std::pair<ui::AXTreeID, int32_t>>&
+GetAppIDToParentTreeNodeMap() {
+  static base::NoDestructor<
+      std::map<std::string, std::pair<ui::AXTreeID, int32_t>>>
+      app_id_to_parent_tree_node_map;
+  return *app_id_to_parent_tree_node_map;
+}
+
 AutomationAXTreeWrapper::AutomationAXTreeWrapper(
     ui::AXTreeID tree_id,
     AutomationInternalCustomBindings* owner)
@@ -175,31 +194,47 @@ bool AutomationAXTreeWrapper::IsInFocusChain(int32_t node_id) {
   if (IsDesktopTree())
     return true;
 
-  AutomationAXTreeWrapper* descendant = this;
+  AutomationAXTreeWrapper* descendant_tree = this;
   ui::AXTreeID descendant_tree_id = GetTreeID();
-  AutomationAXTreeWrapper* ancestor = descendant;
+  AutomationAXTreeWrapper* ancestor_tree = descendant_tree;
   bool found = true;
-  while ((ancestor = GetParentOfTreeId(ancestor->tree()->data().tree_id))) {
-    int32_t focus_id = ancestor->tree()->data().focus_id;
-    ui::AXNode* focus = ancestor->tree()->GetFromId(focus_id);
-    if (!focus)
+  while ((ancestor_tree = ancestor_tree->GetParentTree())) {
+    int32_t ancestor_tree_focus_id = ancestor_tree->tree()->data().focus_id;
+    ui::AXNode* ancestor_tree_focused_node =
+        ancestor_tree->tree()->GetFromId(ancestor_tree_focus_id);
+    if (!ancestor_tree_focused_node)
       return false;
 
-    // Surprisingly, an ancestor frame can "skip" a child frame to point to a
-    // descendant granchild, so we have to scan upwards.
-    if (ui::AXTreeID::FromString(focus->GetStringAttribute(
-            ax::mojom::StringAttribute::kChildTreeId)) != descendant_tree_id &&
-        ancestor->tree()->data().focused_tree_id != descendant_tree_id) {
+    if (ancestor_tree_focused_node->HasStringAttribute(
+            ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
+      // |ancestor_tree_focused_node| points to a tree with multiple roots as
+      // its child tree node. Ensure the node points back to
+      // |ancestor_tree_focused_node| as its parent.
+      ui::AXNode* parent_node = descendant_tree->GetParentTreeNodeForAppID(
+          ancestor_tree_focused_node->GetStringAttribute(
+              ax::mojom::StringAttribute::kChildTreeNodeAppId),
+          owner_);
+      if (parent_node != ancestor_tree_focused_node)
+        return false;
+    } else if (ui::AXTreeID::FromString(
+                   ancestor_tree_focused_node->GetStringAttribute(
+                       ax::mojom::StringAttribute::kChildTreeId)) !=
+                   descendant_tree_id &&
+               ancestor_tree->tree()->data().focused_tree_id !=
+                   descendant_tree_id) {
+      // Surprisingly, an ancestor frame can "skip" a child frame to point to a
+      // descendant granchild, so we have to scan upwards.
       found = false;
       continue;
     }
 
     found = true;
 
-    if (ancestor->IsDesktopTree())
+    if (ancestor_tree->IsDesktopTree())
       return true;
 
-    descendant_tree_id = ancestor->GetTreeID();
+    descendant_tree_id = ancestor_tree->GetTreeID();
+    descendant_tree = ancestor_tree;
   }
 
   // We can end up here if the tree is detached from any desktop.  This can
@@ -225,6 +260,41 @@ ui::AXNode* AutomationAXTreeWrapper::GetAccessibilityFocusedNode() {
   return accessibility_focused_id_ == ui::kInvalidAXNodeID
              ? nullptr
              : tree_.GetFromId(accessibility_focused_id_);
+}
+
+AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentTree() {
+  // Explicit parent tree from this tree's data.
+  auto* ret = GetParentOfTreeId(tree()->data().tree_id);
+
+  // If this tree has multiple roots, and no explicit parent tree, fallback to
+  // any node with a parent tree node app id to find a parent tree.
+  return ret ? ret : GetParentTreeFromAnyAppID();
+}
+
+AutomationAXTreeWrapper*
+AutomationAXTreeWrapper::GetTreeWrapperWithUnignoredRoot() {
+  // The desktop is always unignored.
+  if (IsDesktopTree())
+    return this;
+
+  // Keep following these parent node id links upwards, since we want to ignore
+  // these roots for the api in js.
+  AutomationAXTreeWrapper* current = this;
+  AutomationAXTreeWrapper* parent = this;
+  while ((parent = current->GetParentTreeFromAnyAppID()))
+    current = parent;
+
+  return current;
+}
+
+AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentTreeFromAnyAppID() {
+  for (const std::string& app_id : all_parent_tree_node_app_ids_) {
+    auto* wrapper = GetParentTreeWrapperForAppID(app_id, owner_);
+    if (wrapper)
+      return wrapper;
+  }
+
+  return nullptr;
 }
 
 void AutomationAXTreeWrapper::EventListenerAdded(
@@ -259,6 +329,52 @@ AutomationAXTreeWrapper::GetChildTreeIDReverseMap() {
   return *child_tree_id_reverse_map;
 }
 
+// static
+ui::AXNode* AutomationAXTreeWrapper::GetParentTreeNodeForAppID(
+    const std::string& app_id,
+    const AutomationInternalCustomBindings* owner) {
+  auto& map = GetAppIDToChildTreeNodeMap();
+  auto it = map.find(app_id);
+  if (it == map.end())
+    return nullptr;
+
+  AutomationAXTreeWrapper* wrapper =
+      owner->GetAutomationAXTreeWrapperFromTreeID(it->second.first);
+  if (!wrapper)
+    return nullptr;
+
+  return wrapper->tree()->GetFromId(it->second.second);
+}
+
+// static
+AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentTreeWrapperForAppID(
+    const std::string& app_id,
+    const AutomationInternalCustomBindings* owner) {
+  auto& map = GetAppIDToChildTreeNodeMap();
+  auto it = map.find(app_id);
+  if (it == map.end())
+    return nullptr;
+
+  return owner->GetAutomationAXTreeWrapperFromTreeID(it->second.first);
+}
+
+// static
+ui::AXNode* AutomationAXTreeWrapper::GetChildTreeNodeForAppID(
+    const std::string& app_id,
+    const AutomationInternalCustomBindings* owner) {
+  auto& map = GetAppIDToParentTreeNodeMap();
+  auto it = map.find(app_id);
+  if (it == map.end())
+    return nullptr;
+
+  AutomationAXTreeWrapper* wrapper =
+      owner->GetAutomationAXTreeWrapperFromTreeID(it->second.first);
+  if (!wrapper)
+    return nullptr;
+
+  return wrapper->tree()->GetFromId(it->second.second);
+}
+
 void AutomationAXTreeWrapper::OnNodeDataChanged(
     ui::AXTree* tree,
     const ui::AXNodeData& old_node_data,
@@ -268,12 +384,72 @@ void AutomationAXTreeWrapper::OnNodeDataChanged(
     text_changed_node_ids_.push_back(new_node_data.id);
 }
 
+void AutomationAXTreeWrapper::OnStringAttributeChanged(
+    ui::AXTree* tree,
+    ui::AXNode* node,
+    ax::mojom::StringAttribute attr,
+    const std::string& old_value,
+    const std::string& new_value) {
+  if (attr == ax::mojom::StringAttribute::kChildTreeNodeAppId) {
+    if (new_value.empty()) {
+      GetAppIDToChildTreeNodeMap().erase(old_value);
+    } else {
+      GetAppIDToChildTreeNodeMap()[new_value] = {tree->GetAXTreeID(),
+                                                 node->data().id};
+    }
+  }
+
+  if (attr == ax::mojom::StringAttribute::kParentTreeNodeAppId) {
+    if (new_value.empty()) {
+      GetAppIDToParentTreeNodeMap().erase(old_value);
+      all_parent_tree_node_app_ids_.erase(old_value);
+    } else {
+      GetAppIDToParentTreeNodeMap()[new_value] = {tree->GetAXTreeID(),
+                                                  node->data().id};
+      all_parent_tree_node_app_ids_.insert(new_value);
+    }
+  }
+}
+
 void AutomationAXTreeWrapper::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                   ui::AXNode* node) {
   did_send_tree_change_during_unserialization_ |= owner_->SendTreeChangeEvent(
       api::automation::TREE_CHANGE_TYPE_NODEREMOVED, tree, node);
   deleted_node_ids_.push_back(node->id());
   node_id_to_events_.erase(node->id());
+
+  if (node->data().HasStringAttribute(
+          ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
+    GetAppIDToChildTreeNodeMap().erase(node->data().GetStringAttribute(
+        ax::mojom::StringAttribute::kChildTreeNodeAppId));
+  }
+
+  if (node->data().HasStringAttribute(
+          ax::mojom::StringAttribute::kParentTreeNodeAppId)) {
+    const std::string& app_id = node->data().GetStringAttribute(
+        ax::mojom::StringAttribute::kParentTreeNodeAppId);
+    GetAppIDToParentTreeNodeMap().erase(app_id);
+    all_parent_tree_node_app_ids_.erase(app_id);
+  }
+}
+
+void AutomationAXTreeWrapper::OnNodeCreated(ui::AXTree* tree,
+                                            ui::AXNode* node) {
+  if (node->data().HasStringAttribute(
+          ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
+    GetAppIDToChildTreeNodeMap()[node->data().GetStringAttribute(
+        ax::mojom::StringAttribute::kChildTreeNodeAppId)] = {
+        node->tree()->GetAXTreeID(), node->id()};
+  }
+
+  if (node->data().HasStringAttribute(
+          ax::mojom::StringAttribute::kParentTreeNodeAppId)) {
+    const std::string& app_id = node->data().GetStringAttribute(
+        ax::mojom::StringAttribute::kParentTreeNodeAppId);
+    GetAppIDToParentTreeNodeMap()[app_id] = {node->tree()->GetAXTreeID(),
+                                             node->id()};
+    all_parent_tree_node_app_ids_.insert(app_id);
+  }
 }
 
 void AutomationAXTreeWrapper::OnAtomicUpdateFinished(

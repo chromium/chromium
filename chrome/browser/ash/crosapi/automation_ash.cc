@@ -88,23 +88,20 @@ void AutomationAsh::ReceiveEventPrototype(
     return;
   }
 
-  if (root) {
-    // TODO(https://crbug.com/1185764): This is fine for prototyping but we'll
-    // likely want a specific binding for a Lacros AutomationManagerAura to push
-    // its ax tree id along with the window id, and ax root node id
-    aura::Window* window = crosapi::GetShellSurfaceWindow(window_id);
-    if (window) {
-      views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
-      if (widget) {
-        static_cast<exo::ShellSurfaceBase*>(widget->widget_delegate())
-            ->SetChildAxTreeId(event_bundle.tree_id);
-      }
-    }
-  }
-
   extensions::AutomationEventRouter::GetInstance()->DispatchAccessibilityEvents(
       event_bundle.tree_id, std::move(event_bundle.updates),
       event_bundle.mouse_location, std::move(event_bundle.events));
+}
+
+void AutomationAsh::DispatchTreeDestroyedEvent(
+    const base::UnguessableToken& tree_id) {
+  // This prototype method is only implemented on developer builds of Chrome. We
+  // check for this by checking that the build of Chrome is unbranded.
+  if (chrome::GetChannel() != version_info::Channel::UNKNOWN)
+    return;
+
+  extensions::AutomationEventRouter::GetInstance()->DispatchTreeDestroyedEvent(
+      ui::AXTreeID::FromToken(tree_id), nullptr);
 }
 
 // Forwards an action to all crosapi clients. This has no effect on production

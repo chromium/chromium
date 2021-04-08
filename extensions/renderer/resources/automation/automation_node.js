@@ -18,6 +18,14 @@ var IsInteractPermitted = natives.IsInteractPermitted;
 var GetRootID = natives.GetRootID;
 
 /**
+ * Similar to above, but may move to ancestor roots if the current tree
+ * has multiple roots.
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @return {{treeID: string, nodeID: number}}
+ */
+var GetPublicRoot = natives.GetPublicRoot;
+
+/**
  * @param {string} axTreeID The id of the accessibility tree.
  * @return {?string} The title of the document.
  */
@@ -616,14 +624,18 @@ AutomationNodeImpl.prototype = {
   },
 
   get root() {
-    return this.rootImpl && this.rootImpl.wrapper;
+    const info = GetPublicRoot(this.treeID);
+    if (!info) {
+      return null;
+    }
+    return AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId) ||
+        null;
   },
 
   get parent() {
     var info = GetParentID(this.treeID, this.id);
-    if (!info)
-      return;
-    return AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
+    if (info)
+      return AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
   },
 
   get htmlAttributes() {

@@ -85,10 +85,6 @@ class AutomationManagerAura : public ui::AXActionHandler,
     cache_ = std::move(cache);
   }
 
-  // TODO(https://crbug.com/1185764): Figure out an appropriate design for
-  // Lacros a11y that does not require exposing the root tree id.
-  ui::AXTreeID get_root_tree_id_deprecated() { return tree_->tree_id(); }
-
  private:
   friend class base::NoDestructor<AutomationManagerAura>;
 

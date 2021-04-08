@@ -16,6 +16,9 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/aura/window_tree_host_platform.h"
+#include "ui/platform_window/platform_window.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/widget/widget.h"
 
@@ -131,6 +134,27 @@ void AXWindowObjWrapper::GetChildren(
 }
 
 void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This is a top level root window.
+  if (window_->IsRootWindow() && !window_->parent()) {
+    // On desktop aura there is one WindowTreeHost per top-level window.
+    aura::WindowTreeHost* window_tree_host = window_->GetHost();
+    if (window_tree_host) {
+      // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
+      // aura::WindowTreeHostPlatform.
+      aura::WindowTreeHostPlatform* window_tree_host_platform =
+          static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
+
+      const std::string window_id =
+          window_tree_host_platform->platform_window()->GetWindowUniqueId();
+
+      if (!window_id.empty())
+        out_node_data->AddStringAttribute(
+            ax::mojom::StringAttribute::kParentTreeNodeAppId, window_id);
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   out_node_data->id = GetUniqueId();
   ax::mojom::Role role = window_->GetProperty(ui::kAXRoleOverride);
   if (role != ax::mojom::Role::kNone)

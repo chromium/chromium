@@ -758,6 +758,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "checkedStateDescription";
     case ax::mojom::StringAttribute::kChildTreeId:
       return "childTreeId";
+    case ax::mojom::StringAttribute::kChildTreeNodeAppId:
+      return "childTreeNodeAppId";
     case ax::mojom::StringAttribute::kClassName:
       return "className";
     case ax::mojom::StringAttribute::kContainerLiveRelevant:
@@ -790,6 +792,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "liveRelevant";
     case ax::mojom::StringAttribute::kLiveStatus:
       return "liveStatus";
+    case ax::mojom::StringAttribute::kParentTreeNodeAppId:
+      return "parentTreeNodeAppId";
     case ax::mojom::StringAttribute::kPlaceholder:
       return "placeholder";
     case ax::mojom::StringAttribute::kRole:

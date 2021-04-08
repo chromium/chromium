@@ -443,6 +443,9 @@ void ShellSurfaceBase::SetApplicationId(const char* application_id) {
     ui::PropertyHandler& property_handler = *widget_->GetNativeWindow();
     WMHelper::GetInstance()->PopulateAppProperties(params, property_handler);
   }
+
+  this->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
+                                 /* send_native_event */ false);
 }
 
 void ShellSurfaceBase::SetStartupId(const char* startup_id) {
@@ -904,6 +907,10 @@ gfx::Size ShellSurfaceBase::GetMaximumSize() const {
 
 void ShellSurfaceBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kClient;
+  if (application_id_) {
+    node_data->AddStringAttribute(
+        ax::mojom::StringAttribute::kChildTreeNodeAppId, *application_id_);
+  }
 }
 
 views::FocusTraversable* ShellSurfaceBase::GetFocusTraversable() {
