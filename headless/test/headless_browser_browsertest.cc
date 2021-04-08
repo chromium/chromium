@@ -252,14 +252,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithProxy, MAYBE_SetProxyConfig) {
   EXPECT_TRUE(browser_context->GetAllWebContents().empty());
 }
 
-// Crashes on Win7 only. http://crbug.com/1195289
-#if defined(OS_WIN)
-#define MAYBE_WebGLSupported DISABLED_WebGLSupported
-#else
-#define MAYBE_WebGLSupported WebGLSupported
-#endif
-
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, MAYBE_WebGLSupported) {
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WebGLSupported) {
   HeadlessBrowserContext* browser_context =
       browser()->CreateBrowserContextBuilder().Build();
 

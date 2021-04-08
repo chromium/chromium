@@ -86,7 +86,8 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
                                   base::size(kSwitchesToCopy));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    command_line.AppendSwitchASCII(switches::kUseGL, "swiftshader");
+    command_line.AppendSwitchASCII(switches::kUseGL,
+                                   gl::kGLImplementationSwiftShaderName);
 #endif
     return command_line;
   }
