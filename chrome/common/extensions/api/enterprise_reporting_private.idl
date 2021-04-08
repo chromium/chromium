@@ -8,27 +8,27 @@ namespace enterprise.reportingPrivate {
   // Invoked by <code>UploadChromeDesktopReport</code> when the upload is
   // finished.
   // Also Invoked by <code>setDeviceData</code> when data is stored.
-  [platforms = ("windows", "mac", "linux")]
+  [platforms = ("win", "mac", "linux")]
   callback DoneCallback = void();
 
   // Invoked by <code>getDeviceId</code> to return the ID.
-  [platforms = ("windows", "mac", "linux")]
+  [platforms = ("win", "mac", "linux")]
   callback GetDeviceIdCallback = void(DOMString id);
 
   // Invoked by <code>getPersistentSecret</code> to return the secret.
-  [platforms = ("windows", "mac", "linux")]
+  [platforms = ("win", "mac", "linux")]
   callback GetPersistentSecretCallback = void(ArrayBuffer secret);
 
   // Invoked by <code>getDeviceDataCallback</code> to return the device data.
-  [platforms = ("windows", "mac", "linux")]
+  [platforms = ("win", "mac", "linux")]
   callback GetDeviceDataCallback = void(ArrayBuffer data);
 
   // Possible states a particular device setting can be in.
-  [platforms = ("windows", "mac", "linux")]
+  [platforms = ("win", "mac", "linux")]
   enum SettingValue { UNKNOWN, DISABLED, ENABLED };
 
   // Device info fields returned by the getDeviceInfo API.
-  [platforms = ("windows", "mac", "linux")]
+  [platforms = ("win", "mac", "linux")]
   dictionary DeviceInfo {
     DOMString osName;
     DOMString osVersion;
@@ -41,7 +41,7 @@ namespace enterprise.reportingPrivate {
   };
 
   // Invoked by <code>getDeviceInfo</code> to return device information.
-  [platforms = ("windows", "mac", "linux")]
+  [platforms = ("win", "mac", "linux")]
   callback GetDeviceInfoCallback = void(DeviceInfo deviceInfo);
 
   // Possible states for the EnterpriseRealTimeUrlCheckMode policy.
@@ -65,7 +65,7 @@ namespace enterprise.reportingPrivate {
   interface Functions {
     // Gets the identity of device that Chrome browser is running on. The ID is
     // retrieved from the local device and used by the Google admin console.
-    [platforms = ("windows", "mac", "linux")]
+    [platforms = ("win", "mac", "linux")]
     static void getDeviceId(optional GetDeviceIdCallback callback);
 
     // Gets a randomly generated persistent secret (symmetric key) that
@@ -73,25 +73,25 @@ namespace enterprise.reportingPrivate {
     // optional parameter |forceCreation| is set to true the secret is recreated
     // in case of any failure to retrieve the currently stored one. Sets
     // $(ref:runtime.lastError) on failure.
-    [platforms = ("windows", "mac", "linux")]
+    [platforms = ("win", "mac", "linux")]
     static void getPersistentSecret(optional boolean resetSecret,
         GetPersistentSecretCallback callback);
 
     // Gets the device data for |id|. Sets $(ref:runtime.lastError) on failure.
-    [platforms = ("windows", "mac", "linux")]
+    [platforms = ("win", "mac", "linux")]
     static void getDeviceData(DOMString id, GetDeviceDataCallback callback);
 
     // Sets the device data for |id|. Sets $(ref:runtime.lastError) on failure.
     // If the |data| parameter is undefined and there is already data
     // associated with |id| it will be cleared.
-    [platforms = ("windows", "mac", "linux")]
+    [platforms = ("win", "mac", "linux")]
     static void setDeviceData(DOMString id,
              optional ArrayBuffer data,
              optional DoneCallback callback);
 
     // Gets the device information (including disk encryption status,
     // screen lock status, serial number, model).
-    [platforms = ("windows", "mac", "linux")]
+    [platforms = ("win", "mac", "linux")]
     static void getDeviceInfo(GetDeviceInfoCallback callback);
 
     // Gets the context information (including management status of the browser,
