@@ -182,11 +182,15 @@ void PdfViewWebPlugin::UpdateAllLifecyclePhases(
     blink::DocumentUpdateReason reason) {}
 
 void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
+  const float inverse_scale = 1.0f / device_scale();
+
   // Clip the intersection of the paint rect and the plugin rect, so that
   // painting outside the plugin or the paint rect area can be avoided.
-  const gfx::Rect plugin_area(rect.origin(), plugin_rect().size());
-  SkRect invalidate_rect =
-      gfx::RectToSkRect(gfx::IntersectRects(plugin_area, rect));
+  // Note: `invalidate_rect` and `rect` are in CSS pixels. The plugin rect (with
+  // the device scale applied) must be converted to CSS pixels as well before
+  // calculating `invalidate_rect`.
+  SkRect invalidate_rect = gfx::RectToSkRect(gfx::IntersectRects(
+      gfx::ScaleToEnclosingRectSafe(plugin_rect(), inverse_scale), rect));
   cc::PaintCanvasAutoRestore auto_restore(canvas, /*save=*/true);
   canvas->clipRect(invalidate_rect);
 
@@ -199,14 +203,10 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
     return;
   }
 
-  gfx::PointF origin(rect.origin());
-  if (device_scale() != 1.0 && device_scale() > 0.0) {
-    float inverse_scale = 1.0 / device_scale();
+  if (inverse_scale != 1.0f)
     canvas->scale(inverse_scale, inverse_scale);
-    origin.Scale(device_scale());
-  }
 
-  canvas->drawImage(snapshot_, origin.x(), origin.y());
+  canvas->drawImage(snapshot_, plugin_rect().x(), plugin_rect().y());
 }
 
 void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,

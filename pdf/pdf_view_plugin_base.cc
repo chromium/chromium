@@ -524,6 +524,7 @@ void PdfViewPluginBase::OnGeometryChanged(double old_zoom,
 void PdfViewPluginBase::UpdateGeometryOnViewChanged(
     const gfx::Rect& new_view_rect,
     float new_device_scale) {
+  DCHECK_GT(new_device_scale, 0.0f);
   const gfx::Rect new_plugin_rect =
       gfx::ScaleToEnclosingRectSafe(new_view_rect, new_device_scale);
 
