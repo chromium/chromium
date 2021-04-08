@@ -48,7 +48,8 @@ class MenuHost : public Widget, public WidgetObserver {
   void InitMenuHost(Widget* parent,
                     const gfx::Rect& bounds,
                     View* contents_view,
-                    bool do_capture);
+                    bool do_capture,
+                    gfx::NativeView native_view_for_gestures);
 
   // Returns true if the menu host is visible.
   bool IsMenuHostVisible();
@@ -85,6 +86,8 @@ class MenuHost : public Widget, public WidgetObserver {
 
   // Parent of the MenuHost widget.
   Widget* owner_ = nullptr;
+
+  gfx::NativeView native_view_for_gestures_ = nullptr;
 
   // The view we contain.
   SubmenuView* submenu_;

@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/views_export.h"
 
@@ -128,11 +129,17 @@ class VIEWS_EXPORT MenuRunner {
   // Runs the menu. MenuDelegate::OnMenuClosed will be notified of the results.
   // If |anchor| uses a |BUBBLE_..| type, the bounds will get determined by
   // using |bounds| as the thing to point at in screen coordinates.
+  // `native_view_for_gestures` is a NativeView that is used for cases where the
+  // surface hosting the menu has a different gfx::NativeView than the `parent`.
+  // This is required to correctly route gesture events to the correct
+  // NativeView in the cases where the surface hosting the menu is a
+  // WebContents.
   void RunMenuAt(Widget* parent,
                  MenuButtonController* button_controller,
                  const gfx::Rect& bounds,
                  MenuAnchorPosition anchor,
-                 ui::MenuSourceType source_type);
+                 ui::MenuSourceType source_type,
+                 gfx::NativeView native_view_for_gestures = nullptr);
 
   // Returns true if we're in a nested run loop running the menu.
   bool IsRunning() const;
