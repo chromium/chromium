@@ -231,8 +231,7 @@ class PictureInPictureWindowControllerBrowserTest
   void ExpectLeavePictureInPicture(content::WebContents* web_contents) {
     // 'leavepictureinpicture' is the title of the tab when the event is
     // received.
-    const std::u16string expected_title =
-        base::ASCIIToUTF16("leavepictureinpicture");
+    const std::u16string expected_title = u"leavepictureinpicture";
     EXPECT_EQ(
         expected_title,
         content::TitleWatcher(web_contents, expected_title).WaitAndGetTitle());
@@ -603,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   GetOverlayWindow()->SetSize(gfx::Size(400, 400));
 
-  std::u16string expected_title = base::ASCIIToUTF16("resized");
+  std::u16string expected_title = u"resized";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -641,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   window_controller()->Close(true /* should_pause_video */);
 
-  std::u16string expected_title = base::ASCIIToUTF16("leavepictureinpicture");
+  std::u16string expected_title = u"leavepictureinpicture";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -679,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(window_controller());
   window_controller()->Close(true /* should_pause_video */);
 
-  std::u16string expected_title = base::ASCIIToUTF16("leavepictureinpicture");
+  std::u16string expected_title = u"leavepictureinpicture";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -717,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   window_controller()->Close(true /* should_pause_video */);
 
   std::u16string expected_title =
-      base::ASCIIToUTF16("failed to enter Picture-in-Picture after leaving");
+      u"failed to enter Picture-in-Picture after leaving";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -752,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
       content::ExecuteScript(active_web_contents, "exitPictureInPicture();"));
 
   // 'left' is sent when the first video leaves Picture-in-Picture.
-  std::u16string expected_title = base::ASCIIToUTF16("leavepictureinpicture");
+  std::u16string expected_title = u"leavepictureinpicture";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -797,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
       content::ExecuteScript(active_web_contents, "exitPictureInPicture();"));
 
   // 'left' is sent when the video leaves Picture-in-Picture.
-  std::u16string expected_title = base::ASCIIToUTF16("leavepictureinpicture");
+  std::u16string expected_title = u"leavepictureinpicture";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -995,7 +994,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   window_controller()->Close(true /* should_pause_video */);
 
   // Wait for the window to close.
-  std::u16string expected_title = base::ASCIIToUTF16("leavepictureinpicture");
+  std::u16string expected_title = u"leavepictureinpicture";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -1118,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
     EXPECT_TRUE(pip_window_controller->GetWindowForTesting()->IsVisible());
 
     // 'left' is sent when the first tab leaves Picture-in-Picture.
-    std::u16string expected_title = base::ASCIIToUTF16("leavepictureinpicture");
+    std::u16string expected_title = u"leavepictureinpicture";
     EXPECT_EQ(expected_title,
               content::TitleWatcher(initial_web_contents, expected_title)
                   .WaitAndGetTitle());
@@ -1259,7 +1258,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
           : render_frame_hosts[0];
 
   // Wait for video metadata to load.
-  std::u16string expected_title = base::ASCIIToUTF16("loadedmetadata");
+  std::u16string expected_title = u"loadedmetadata";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -1303,7 +1302,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
           : render_frame_hosts[0];
 
   // Wait for video metadata to load.
-  std::u16string expected_title = base::ASCIIToUTF16("loadedmetadata");
+  std::u16string expected_title = u"loadedmetadata";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -1560,7 +1559,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
           : render_frame_hosts[0];
 
   // Wait for video metadata to load.
-  std::u16string expected_title = base::ASCIIToUTF16("loadedmetadata");
+  std::u16string expected_title = u"loadedmetadata";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -1749,21 +1748,21 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   // Hide page and check that the document visibility is hidden.
   active_web_contents->WasHidden();
-  std::u16string expected_title = base::ASCIIToUTF16("hidden");
+  std::u16string expected_title = u"hidden";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
 
   // Show page and check that the document visibility is visible.
   active_web_contents->WasShown();
-  expected_title = base::ASCIIToUTF16("visible");
+  expected_title = u"visible";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
 
   // Occlude page and check that the document visibility is hidden.
   active_web_contents->WasOccluded();
-  expected_title = base::ASCIIToUTF16("hidden");
+  expected_title = u"hidden";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -1793,7 +1792,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   // Hide page and check that the document visibility is hidden.
   active_web_contents->WasHidden();
-  std::u16string expected_title = base::ASCIIToUTF16("hidden");
+  std::u16string expected_title = u"hidden";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -1809,7 +1808,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   // Show page and check that the document visibility is visible.
   active_web_contents->WasShown();
-  expected_title = base::ASCIIToUTF16("visible");
+  expected_title = u"visible";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -1824,7 +1823,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   // Occlude page and check that the document visibility is hidden.
   active_web_contents->WasOccluded();
-  expected_title = base::ASCIIToUTF16("hidden");
+  expected_title = u"hidden";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2047,7 +2046,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
   // Simulates user clicking "Skip Ad" and check the handler function is called.
   window_controller()->SkipAd();
-  std::u16string expected_title = base::ASCIIToUTF16("skipad");
+  std::u16string expected_title = u"skipad";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2075,7 +2074,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   // Simulates user clicking "Play/Pause" and check that the "pause" handler
   // function is called.
   window_controller()->TogglePlayPause();
-  std::u16string expected_title = base::ASCIIToUTF16("pause");
+  std::u16string expected_title = u"pause";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2087,7 +2086,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   // Simulates user clicking "Play/Pause" and check that the "play" handler
   // function is called.
   window_controller()->TogglePlayPause();
-  expected_title = base::ASCIIToUTF16("play");
+  expected_title = u"play";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2113,7 +2112,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   // Simulates user clicking "Next Track" and check the handler function is
   // called.
   window_controller()->NextTrack();
-  std::u16string expected_title = base::ASCIIToUTF16("nexttrack");
+  std::u16string expected_title = u"nexttrack";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2139,7 +2138,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   // Simulates user clicking "Previous Track" and check the handler function is
   // called.
   window_controller()->PreviousTrack();
-  std::u16string expected_title = base::ASCIIToUTF16("previoustrack");
+  std::u16string expected_title = u"previoustrack";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2161,7 +2160,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
   content::MediaSession::Get(active_web_contents)
       ->Stop(content::MediaSession::SuspendType::kUI);
-  std::u16string expected_title = base::ASCIIToUTF16("leavepictureinpicture");
+  std::u16string expected_title = u"leavepictureinpicture";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2200,7 +2199,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
   // Hide page and check that there is no video that enters Picture-in-Picture
   // automatically.
   active_web_contents->WasHidden();
-  std::u16string expected_title = base::ASCIIToUTF16("hidden");
+  std::u16string expected_title = u"hidden";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2233,7 +2232,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
 
   // Hide page.
   active_web_contents->WasHidden();
-  std::u16string expected_title = base::ASCIIToUTF16("hidden");
+  std::u16string expected_title = u"hidden";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2246,7 +2245,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
 
   // Show page and check that video left Picture-in-Picture automatically.
   active_web_contents->WasShown();
-  expected_title = base::ASCIIToUTF16("visible");
+  expected_title = u"visible";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2333,15 +2332,14 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
 
   // Hide page and check that video entered Picture-in-Picture automatically.
   web_contents()->WasHidden();
-  std::u16string expected_title =
-      base::ASCIIToUTF16("video.enterpictureinpicture");
+  std::u16string expected_title = u"video.enterpictureinpicture";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
 
   // Show page and check that video left Picture-in-Picture automatically.
   web_contents()->WasShown();
-  expected_title = base::ASCIIToUTF16("video.leavepictureinpicture");
+  expected_title = u"video.leavepictureinpicture";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2369,7 +2367,7 @@ IN_PROC_BROWSER_TEST_F(
   // Hide page and check that the video did not entered
   // Picture-in-Picture automatically.
   web_contents()->WasHidden();
-  std::u16string expected_title = base::ASCIIToUTF16("hidden");
+  std::u16string expected_title = u"hidden";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2395,7 +2393,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
   // Hide page and check that the video did not entered
   // Picture-in-Picture automatically.
   web_contents()->WasHidden();
-  std::u16string expected_title = base::ASCIIToUTF16("hidden");
+  std::u16string expected_title = u"hidden";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2431,7 +2429,7 @@ IN_PROC_BROWSER_TEST_F(
   // Hide page and check that the second video did not entered
   // Picture-in-Picture automatically.
   web_contents()->WasHidden();
-  std::u16string expected_title = base::ASCIIToUTF16("hidden");
+  std::u16string expected_title = u"hidden";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2498,15 +2496,14 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
   // Hide page and check that second video is the video that enters
   // Picture-in-Picture automatically.
   web_contents()->WasHidden();
-  std::u16string expected_title =
-      base::ASCIIToUTF16("secondVideo.enterpictureinpicture");
+  std::u16string expected_title = u"secondVideo.enterpictureinpicture";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
 
   // Show page and unset Auto Picture-in-Picture attribute on second video.
   web_contents()->WasShown();
-  expected_title = base::ASCIIToUTF16("visible");
+  expected_title = u"visible";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2516,14 +2513,14 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
   // Hide page and check that first video is the video that enters
   // Picture-in-Picture automatically.
   web_contents()->WasHidden();
-  expected_title = base::ASCIIToUTF16("video.enterpictureinpicture");
+  expected_title = u"video.enterpictureinpicture";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
 
   // Show page and unset Auto Picture-in-Picture attribute on first video.
   web_contents()->WasShown();
-  expected_title = base::ASCIIToUTF16("visible");
+  expected_title = u"visible";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2533,14 +2530,14 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
   // Hide page and check that there is no video that enters Picture-in-Picture
   // automatically.
   web_contents()->WasHidden();
-  expected_title = base::ASCIIToUTF16("hidden");
+  expected_title = u"hidden";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
 
   // Show page and append a video with Auto Picture-in-Picture attribute.
   web_contents()->WasShown();
-  expected_title = base::ASCIIToUTF16("visible");
+  expected_title = u"visible";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2551,7 +2548,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
   // Hide page and check that the html video is the video that enters
   // Picture-in-Picture automatically.
   web_contents()->WasHidden();
-  expected_title = base::ASCIIToUTF16("htmlVideo.enterpictureinpicture");
+  expected_title = u"htmlVideo.enterpictureinpicture";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2572,8 +2569,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Hide page and check that video entered Picture-in-Picture automatically.
   web_contents()->WasHidden();
-  std::u16string expected_title =
-      base::ASCIIToUTF16("video.enterpictureinpicture");
+  std::u16string expected_title = u"video.enterpictureinpicture";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2588,7 +2584,7 @@ IN_PROC_BROWSER_TEST_F(
   // automatically as it's not the most recent element with the Auto
   // Picture-in-Picture attribute set anymore.
   web_contents()->WasShown();
-  expected_title = base::ASCIIToUTF16("visible");
+  expected_title = u"visible";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2617,8 +2613,7 @@ IN_PROC_BROWSER_TEST_F(
   // Hide page and check that video entered Picture-in-Picture automatically
   // and is playing.
   web_contents()->WasHidden();
-  std::u16string expected_title =
-      base::ASCIIToUTF16("video.enterpictureinpicture");
+  std::u16string expected_title = u"video.enterpictureinpicture";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
@@ -2653,7 +2648,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   // Hide page and check that the video is paused first.
   active_web_contents->WasHidden();
-  std::u16string expected_title = base::ASCIIToUTF16("pause");
+  std::u16string expected_title = u"pause";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2667,7 +2662,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   EXPECT_TRUE(result);
 
   // Check that video playback has resumed.
-  expected_title = base::ASCIIToUTF16("play");
+  expected_title = u"play";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2686,7 +2681,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
                                      "video.src=''; exitPictureInPicture();"));
 
   // 'left' is sent when the first video leaves Picture-in-Picture.
-  std::u16string expected_title = base::ASCIIToUTF16("leavepictureinpicture");
+  std::u16string expected_title = u"leavepictureinpicture";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2712,7 +2707,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   // Reset video source and wait for the notification.
   ASSERT_TRUE(content::ExecuteScript(active_web_contents, "resetVideo();"));
-  std::u16string expected_title = base::ASCIIToUTF16("emptied");
+  std::u16string expected_title = u"emptied";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
@@ -2744,7 +2739,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
                                  ui::DomCode::SPACE, ui::EF_NONE);
   GetOverlayWindow()->OnKeyEvent(&space_key_pressed);
 
-  std::u16string expected_title = base::ASCIIToUTF16("pause");
+  std::u16string expected_title = u"pause";
   EXPECT_EQ(expected_title,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());

@@ -167,9 +167,8 @@ WebIdPermissionView::WebIdPermissionView(WebIdDialogViews* dialog,
   dialog->SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, true);
 
   // TODO(majidvp): use localized strings
-  dialog->SetButtonLabel(ui::DIALOG_BUTTON_OK, base::ASCIIToUTF16("Continue"));
-  dialog->SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                         base::ASCIIToUTF16("Cancel"));
+  dialog->SetButtonLabel(ui::DIALOG_BUTTON_OK, u"Continue");
+  dialog->SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, u"Cancel");
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical)

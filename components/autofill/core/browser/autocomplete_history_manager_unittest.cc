@@ -147,15 +147,15 @@ class AutocompleteHistoryManagerTest : public testing::Test {
 // Tests that credit card numbers are not sent to the WebDatabase to be saved.
 TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Valid Visa credit card number pulled from the paypal help site.
   FormFieldData valid_cc;
-  valid_cc.label = ASCIIToUTF16("Credit Card");
-  valid_cc.name = ASCIIToUTF16("ccnum");
-  valid_cc.value = ASCIIToUTF16("4012888888881881");
+  valid_cc.label = u"Credit Card";
+  valid_cc.name = u"ccnum";
+  valid_cc.value = u"4012888888881881";
   valid_cc.properties_mask |= kUserTyped;
   valid_cc.form_control_type = "text";
   form.fields.push_back(valid_cc);
@@ -170,15 +170,15 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
 // to the WebDatabase to be saved.
 TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Invalid credit card number.
   FormFieldData invalid_cc;
-  invalid_cc.label = ASCIIToUTF16("Credit Card");
-  invalid_cc.name = ASCIIToUTF16("ccnum");
-  invalid_cc.value = ASCIIToUTF16("4580123456789012");
+  invalid_cc.label = u"Credit Card";
+  invalid_cc.name = u"ccnum";
+  invalid_cc.value = u"4580123456789012";
   invalid_cc.properties_mask |= kUserTyped;
   invalid_cc.form_control_type = "text";
   form.fields.push_back(invalid_cc);
@@ -191,14 +191,14 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
 // Tests that SSNs are not sent to the WebDatabase to be saved.
 TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   FormFieldData ssn;
-  ssn.label = ASCIIToUTF16("Social Security Number");
-  ssn.name = ASCIIToUTF16("ssn");
-  ssn.value = ASCIIToUTF16("078-05-1120");
+  ssn.label = u"Social Security Number";
+  ssn.name = u"ssn";
+  ssn.value = u"078-05-1120";
   ssn.properties_mask |= kUserTyped;
   ssn.form_control_type = "text";
   form.fields.push_back(ssn);
@@ -211,15 +211,15 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
 // Verify that autocomplete text is saved for search fields.
 TEST_F(AutocompleteHistoryManagerTest, SearchField) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Search field.
   FormFieldData search_field;
-  search_field.label = ASCIIToUTF16("Search");
-  search_field.name = ASCIIToUTF16("search");
-  search_field.value = ASCIIToUTF16("my favorite query");
+  search_field.label = u"Search";
+  search_field.name = u"search";
+  search_field.value = u"my favorite query";
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = "search";
   form.fields.push_back(search_field);
@@ -231,15 +231,15 @@ TEST_F(AutocompleteHistoryManagerTest, SearchField) {
 
 TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Search field.
   FormFieldData search_field;
-  search_field.label = ASCIIToUTF16("Search");
-  search_field.name = ASCIIToUTF16("search");
-  search_field.value = ASCIIToUTF16("my favorite query");
+  search_field.label = u"Search";
+  search_field.name = u"search";
+  search_field.value = u"my favorite query";
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = "search";
   form.fields.push_back(search_field);
@@ -252,7 +252,7 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
 // Verify that we don't save invalid values in Autocomplete.
 TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
@@ -260,25 +260,25 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   FormFieldData search_field;
 
   // Empty value.
-  search_field.label = ASCIIToUTF16("Search");
-  search_field.name = ASCIIToUTF16("search");
-  search_field.value = ASCIIToUTF16("");
+  search_field.label = u"Search";
+  search_field.name = u"search";
+  search_field.value = u"";
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = "search";
   form.fields.push_back(search_field);
 
   // Single whitespace.
-  search_field.label = ASCIIToUTF16("Search2");
-  search_field.name = ASCIIToUTF16("other search");
-  search_field.value = ASCIIToUTF16(" ");
+  search_field.label = u"Search2";
+  search_field.name = u"other search";
+  search_field.value = u" ";
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = "search";
   form.fields.push_back(search_field);
 
   // Multiple whitespaces.
-  search_field.label = ASCIIToUTF16("Search3");
-  search_field.name = ASCIIToUTF16("other search");
-  search_field.value = ASCIIToUTF16("      ");
+  search_field.label = u"Search3";
+  search_field.name = u"other search";
+  search_field.value = u"      ";
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = "search";
   form.fields.push_back(search_field);
@@ -294,15 +294,15 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
 // See AutofillManagerTest.DontSaveCvcInAutocompleteHistory
 TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Field specifying autocomplete="off".
   FormFieldData field;
-  field.label = ASCIIToUTF16("Something esoteric");
-  field.name = ASCIIToUTF16("esoterica");
-  field.value = ASCIIToUTF16("a truly esoteric value, I assure you");
+  field.label = u"Something esoteric";
+  field.name = u"esoterica";
+  field.value = u"a truly esoteric value, I assure you";
   field.properties_mask |= kUserTyped;
   field.form_control_type = "text";
   field.should_autocomplete = false;
@@ -318,15 +318,15 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
   autocomplete_manager_->Init(web_data_service_, prefs_.get(),
                               /*is_off_the_record_=*/true);
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Search field.
   FormFieldData search_field;
-  search_field.label = ASCIIToUTF16("Search");
-  search_field.name = ASCIIToUTF16("search");
-  search_field.value = ASCIIToUTF16("my favorite query");
+  search_field.label = u"Search";
+  search_field.name = u"search";
+  search_field.value = u"my favorite query";
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = "search";
   form.fields.push_back(search_field);
@@ -342,15 +342,15 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
 // because |properties_mask| is not set on iOS.
 TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Search field.
   FormFieldData search_field;
-  search_field.label = ASCIIToUTF16("Search");
-  search_field.name = ASCIIToUTF16("search");
-  search_field.value = ASCIIToUTF16("my favorite query");
+  search_field.label = u"Search";
+  search_field.name = u"search";
+  search_field.value = u"my favorite query";
   search_field.form_control_type = "search";
   search_field.properties_mask |= kUserTyped;
   search_field.is_focusable = false;
@@ -366,15 +366,15 @@ TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
 // WebDatabase to be saved.
 TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Presentation field.
   FormFieldData field;
-  field.label = ASCIIToUTF16("Something esoteric");
-  field.name = ASCIIToUTF16("esoterica");
-  field.value = ASCIIToUTF16("a truly esoteric value, I assure you");
+  field.label = u"Something esoteric";
+  field.name = u"esoterica";
+  field.value = u"a truly esoteric value, I assure you";
   field.properties_mask |= kUserTyped;
   field.form_control_type = "text";
   field.role = FormFieldData::RoleAttribute::kPresentation;
@@ -563,7 +563,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   auto test_prefix = ASCIIToUTF16("SomePrefix");
 
   std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_name, ASCIIToUTF16("SomePrefixOne"))};
+      GetAutofillEntry(test_name, u"SomePrefixOne")};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -603,7 +603,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   auto test_prefix = ASCIIToUTF16("SomePrefix");
 
   std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_name, ASCIIToUTF16("SomePrefixOne"))};
+      GetAutofillEntry(test_name, u"SomePrefixOne")};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -682,7 +682,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   auto test_prefix = ASCIIToUTF16("SomePrefix");
 
   std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_name, ASCIIToUTF16("someprefix"))};
+      GetAutofillEntry(test_name, u"someprefix")};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -776,10 +776,10 @@ TEST_F(AutocompleteHistoryManagerTest,
   auto test_prefix = ASCIIToUTF16("SomePrefix");
 
   std::vector<AutofillEntry> expected_values_first = {
-      GetAutofillEntry(test_name, ASCIIToUTF16("SomePrefixOne"))};
+      GetAutofillEntry(test_name, u"SomePrefixOne")};
 
   std::vector<AutofillEntry> expected_values_second = {
-      GetAutofillEntry(test_name, ASCIIToUTF16("SomePrefixTwo"))};
+      GetAutofillEntry(test_name, u"SomePrefixTwo")};
 
   std::unique_ptr<WDTypedResult> mocked_results_first =
       GetMockedDbResults(expected_values_first);
@@ -845,10 +845,10 @@ TEST_F(AutocompleteHistoryManagerTest,
   auto test_prefix = ASCIIToUTF16("SomePrefix");
 
   std::vector<AutofillEntry> expected_values_first = {
-      GetAutofillEntry(test_name, ASCIIToUTF16("SomePrefixOne"))};
+      GetAutofillEntry(test_name, u"SomePrefixOne")};
 
   std::vector<AutofillEntry> expected_values_second = {
-      GetAutofillEntry(test_name, ASCIIToUTF16("SomePrefixTwo"))};
+      GetAutofillEntry(test_name, u"SomePrefixTwo")};
 
   std::unique_ptr<WDTypedResult> mocked_results_first =
       GetMockedDbResults(expected_values_first);
@@ -910,7 +910,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   int mocked_db_query_id_one = 100;
   int test_query_id_one = 1;
   std::vector<AutofillEntry> expected_values_one = {
-      GetAutofillEntry(test_name, ASCIIToUTF16("SomePrefixOne"))};
+      GetAutofillEntry(test_name, u"SomePrefixOne")};
   std::unique_ptr<WDTypedResult> mocked_results_one =
       GetMockedDbResults(expected_values_one);
 
@@ -919,7 +919,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   int test_query_id_two = 2;
   int mocked_db_query_id_two = 101;
   std::vector<AutofillEntry> expected_values_two = {
-      GetAutofillEntry(test_name, ASCIIToUTF16("SomePrefixTwo"))};
+      GetAutofillEntry(test_name, u"SomePrefixTwo")};
   std::unique_ptr<WDTypedResult> mocked_results_two =
       GetMockedDbResults(expected_values_two);
 
@@ -969,7 +969,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 // // logged correctly.
 TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
@@ -1051,7 +1051,7 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteUMAQueryCreated) {
 
   // Mock one suggestion returned and verify that the suggestion UMA is correct.
   std::vector<AutofillEntry> values;
-  values.push_back(GetAutofillEntry(field.name, ASCIIToUTF16("value")));
+  values.push_back(GetAutofillEntry(field.name, u"value"));
   result = GetMockedDbResults(values);
   autocomplete_manager_->OnWebDataServiceRequestDone(mock_handle,
                                                      std::move(result));

@@ -349,9 +349,9 @@ class WebBundleBrowserTestBase : public ContentBrowserTest {
   void RunTestScript(const std::string& script) {
     EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
                               "loadScript('" + script + "');"));
-    std::u16string ok = base::ASCIIToUTF16("OK");
+    std::u16string ok = u"OK";
     TitleWatcher title_watcher(shell()->web_contents(), ok);
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
+    title_watcher.AlsoWaitForTitle(u"FAIL");
     EXPECT_EQ(ok, title_watcher.WaitAndGetTitle());
   }
 
@@ -2001,7 +2001,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, NoLocalFileScheme) {
 
   auto expected_title = base::ASCIIToUTF16("load failed");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("Local Script"));
+  title_watcher.AlsoWaitForTitle(u"Local Script");
 
   const GURL script_file_url =
       net::FilePathToFileURL(GetTestDataPath("local_script.js"));

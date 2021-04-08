@@ -1106,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptUrls) {
         browser()->tab_strip_model()->GetActiveWebContents());
     auto filter =
         [](const content::WebContentsConsoleObserver::Message& message) {
-          return message.message == base::ASCIIToUTF16("TestMessage");
+          return message.message == u"TestMessage";
         };
     observer.SetFilter(base::BindRepeating(filter));
     ui_test_utils::NavigateToURL(

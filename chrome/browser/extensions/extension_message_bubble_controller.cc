@@ -160,7 +160,7 @@ std::u16string ExtensionMessageBubbleController::GetExtensionListForDisplay() {
   std::u16string prefix = bullet_point + base::ASCIIToUTF16(" ");
   for (std::u16string& str : extension_list)
     str.insert(0, prefix);
-  return base::JoinString(extension_list, base::ASCIIToUTF16("\n"));
+  return base::JoinString(extension_list, u"\n");
 }
 
 const ExtensionIdList& ExtensionMessageBubbleController::GetExtensionIdList() {

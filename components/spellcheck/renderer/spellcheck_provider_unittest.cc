@@ -116,9 +116,8 @@ TEST_F(SpellCheckProviderCacheTest, SubstringWithoutMisspellings) {
   FakeTextCheckingCompletion completion(&result);
 
   blink::WebVector<blink::WebTextCheckingResult> last_results;
-  provider_.SetLastResults(base::ASCIIToUTF16("This is a test"), last_results);
-  EXPECT_TRUE(provider_.SatisfyRequestFromCache(base::ASCIIToUTF16("This is a"),
-                                                &completion));
+  provider_.SetLastResults(u"This is a test", last_results);
+  EXPECT_TRUE(provider_.SatisfyRequestFromCache(u"This is a", &completion));
   EXPECT_EQ(result.completion_count_, 1U);
 }
 
@@ -132,9 +131,8 @@ TEST_F(SpellCheckProviderCacheTest, SubstringWithMisspellings) {
       blink::WebTextCheckingResult(blink::kWebTextDecorationTypeSpelling, 5, 3,
                                    std::vector<blink::WebString>({"isq"})));
   last_results.Assign(results);
-  provider_.SetLastResults(base::ASCIIToUTF16("This isq a test"), last_results);
-  EXPECT_TRUE(provider_.SatisfyRequestFromCache(
-      base::ASCIIToUTF16("This isq a"), &completion));
+  provider_.SetLastResults(u"This isq a test", last_results);
+  EXPECT_TRUE(provider_.SatisfyRequestFromCache(u"This isq a", &completion));
   EXPECT_EQ(result.completion_count_, 1U);
 }
 
@@ -143,9 +141,8 @@ TEST_F(SpellCheckProviderCacheTest, ShorterTextNotSubstring) {
   FakeTextCheckingCompletion completion(&result);
 
   blink::WebVector<blink::WebTextCheckingResult> last_results;
-  provider_.SetLastResults(base::ASCIIToUTF16("This is a test"), last_results);
-  EXPECT_FALSE(provider_.SatisfyRequestFromCache(
-      base::ASCIIToUTF16("That is a"), &completion));
+  provider_.SetLastResults(u"This is a test", last_results);
+  EXPECT_FALSE(provider_.SatisfyRequestFromCache(u"That is a", &completion));
   EXPECT_EQ(result.completion_count_, 0U);
 }
 
@@ -154,12 +151,11 @@ TEST_F(SpellCheckProviderCacheTest, ResetCacheOnCustomDictionaryUpdate) {
   FakeTextCheckingCompletion completion(&result);
 
   blink::WebVector<blink::WebTextCheckingResult> last_results;
-  provider_.SetLastResults(base::ASCIIToUTF16("This is a test"), last_results);
+  provider_.SetLastResults(u"This is a test", last_results);
 
   UpdateCustomDictionary();
 
-  EXPECT_FALSE(provider_.SatisfyRequestFromCache(
-      base::ASCIIToUTF16("This is a"), &completion));
+  EXPECT_FALSE(provider_.SatisfyRequestFromCache(u"This is a", &completion));
   EXPECT_EQ(result.completion_count_, 0U);
 }
 
@@ -171,7 +167,7 @@ TEST_F(SpellCheckProviderTest, ShouldNotUseBrowserSpellCheck) {
   local_feature.InitAndDisableFeature(spellcheck::kWinUseBrowserSpellChecker);
 
   FakeTextCheckingResult completion;
-  std::u16string text = base::ASCIIToUTF16("This is a test");
+  std::u16string text = u"This is a test";
   provider_.RequestTextChecking(
       text, std::make_unique<FakeTextCheckingCompletion>(&completion));
 
@@ -219,7 +215,7 @@ void HybridSpellCheckTest::RunShouldUseBrowserSpellCheckOnlyWhenNeededTest() {
   provider_.spellcheck()->SetFakeLanguageCounts(
       test_case.language_count, test_case.enabled_language_count);
   provider_.RequestTextChecking(
-      base::ASCIIToUTF16("This is a test"),
+      u"This is a test",
       std::make_unique<FakeTextCheckingCompletion>(&completion));
 
   EXPECT_EQ(provider_.spelling_service_call_count_,

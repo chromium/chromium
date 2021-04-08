@@ -83,7 +83,7 @@ TEST_F(FileSearchProviderTest, SearchResultsMatchQuery) {
   WriteFile("no_match.png");
   WriteFile("my_file_2.png");
 
-  provider_->Start(base::ASCIIToUTF16("file"));
+  provider_->Start(u"file");
   Wait();
 
   EXPECT_THAT(
@@ -95,7 +95,7 @@ TEST_F(FileSearchProviderTest, SearchIsCaseInsensitive) {
   WriteFile("FILE_1.png");
   WriteFile("FiLe_2.Png");
 
-  provider_->Start(base::ASCIIToUTF16("fIle"));
+  provider_->Start(u"fIle");
   Wait();
 
   EXPECT_THAT(provider_->results(),
@@ -105,7 +105,7 @@ TEST_F(FileSearchProviderTest, SearchIsCaseInsensitive) {
 TEST_F(FileSearchProviderTest, DirectoriesIgnored) {
   CreateDirectory("my_folder");
 
-  provider_->Start(base::ASCIIToUTF16("my_folder"));
+  provider_->Start(u"my_folder");
   Wait();
 
   EXPECT_TRUE(provider_->results().empty());
@@ -114,7 +114,7 @@ TEST_F(FileSearchProviderTest, DirectoriesIgnored) {
 TEST_F(FileSearchProviderTest, ResultMetadataTest) {
   WriteFile("file.txt");
 
-  provider_->Start(base::ASCIIToUTF16("file"));
+  provider_->Start(u"file");
   Wait();
 
   ASSERT_TRUE(provider_->results().size() == 1u);

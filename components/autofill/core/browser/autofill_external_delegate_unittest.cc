@@ -447,10 +447,8 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
 TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
   IssueOnQuery(kRecentQueryId);
 
-  std::vector<std::u16string> data_list_values{base::ASCIIToUTF16("Rick"),
-                                               base::ASCIIToUTF16("Beyonce")};
-  std::vector<std::u16string> data_list_labels{base::ASCIIToUTF16("Deckard"),
-                                               base::ASCIIToUTF16("Knowles")};
+  std::vector<std::u16string> data_list_values{u"Rick", u"Beyonce"};
+  std::vector<std::u16string> data_list_labels{u"Deckard", u"Knowles"};
 
   EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(
                                     data_list_values, data_list_labels));
@@ -473,8 +471,8 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
   // Have an Autofill item that is identical to one of the datalist entries.
   std::vector<Suggestion> autofill_item;
   autofill_item.push_back(Suggestion());
-  autofill_item[0].value = ASCIIToUTF16("Rick");
-  autofill_item[0].label = ASCIIToUTF16("Deckard");
+  autofill_item[0].value = u"Rick";
+  autofill_item[0].label = u"Deckard";
   autofill_item[0].frontend_id = kAutofillProfileId;
   external_delegate_->OnSuggestionsReturned(
       kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
@@ -488,10 +486,8 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
 TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
   IssueOnQuery(kRecentQueryId);
 
-  std::vector<std::u16string> data_list_values{base::ASCIIToUTF16("Rick"),
-                                               base::ASCIIToUTF16("Beyonce")};
-  std::vector<std::u16string> data_list_labels{base::ASCIIToUTF16("Deckard"),
-                                               base::ASCIIToUTF16("Knowles")};
+  std::vector<std::u16string> data_list_values{u"Rick", u"Beyonce"};
+  std::vector<std::u16string> data_list_labels{u"Deckard", u"Knowles"};
 
   EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(
                                     data_list_values, data_list_labels));
@@ -516,10 +512,10 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
   // and one that is distinct.
   std::vector<Suggestion> autocomplete_items;
   autocomplete_items.push_back(Suggestion());
-  autocomplete_items[0].value = ASCIIToUTF16("Rick");
+  autocomplete_items[0].value = u"Rick";
   autocomplete_items[0].frontend_id = POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY;
   autocomplete_items.push_back(Suggestion());
-  autocomplete_items[1].value = ASCIIToUTF16("Cain");
+  autocomplete_items[1].value = u"Cain";
   autocomplete_items[1].frontend_id = POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY;
   external_delegate_->OnSuggestionsReturned(
       kRecentQueryId, autocomplete_items,
@@ -573,7 +569,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   suggestions[0].frontend_id =
       POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE;
   suggestions.push_back(Suggestion());
-  suggestions[1].value = ASCIIToUTF16("Rick");
+  suggestions[1].value = u"Rick";
   suggestions[1].frontend_id = POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY;
   external_delegate_->OnSuggestionsReturned(
       kRecentQueryId, suggestions, /*autoselect_first_suggestion=*/false);
@@ -608,13 +604,13 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   // cause any previews to get cleared.
   IssueOnQuery(123);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
-  external_delegate_->DidSelectSuggestion(ASCIIToUTF16("baz foo"),
+  external_delegate_->DidSelectSuggestion(u"baz foo",
                                           POPUP_ITEM_ID_PASSWORD_ENTRY);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(
       *autofill_manager_,
       FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_PREVIEW, _, _, _, _));
-  external_delegate_->DidSelectSuggestion(ASCIIToUTF16("baz foo"), 1);
+  external_delegate_->DidSelectSuggestion(u"baz foo", 1);
 
   // Ensure selecting an autocomplete entry will cause any previews to
   // get cleared.
@@ -643,7 +639,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   IssueOnQuery(0);
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  std::u16string dummy_string(ASCIIToUTF16("baz qux"));
+  std::u16string dummy_string(u"baz qux");
   EXPECT_CALL(*autofill_driver_,
               RendererShouldAcceptDataListSuggestion(field_id_, dummy_string));
   external_delegate_->DidAcceptSuggestion(dummy_string,
@@ -655,7 +651,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateAcceptAutofillSuggestion) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  std::u16string dummy_string(ASCIIToUTF16("John Legend"));
+  std::u16string dummy_string(u"John Legend");
   EXPECT_CALL(*autofill_manager_,
               FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_FILL, _, _, _,
                                 kAutofillProfileId));
@@ -805,7 +801,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   IssueOnQuery(456);
-  std::u16string dummy_string(ASCIIToUTF16("baz foo"));
+  std::u16string dummy_string(u"baz foo");
   EXPECT_CALL(*autofill_driver_,
               RendererShouldFillFieldWithValue(field_id_, dummy_string));
   EXPECT_CALL(*autofill_client_.GetMockAutocompleteHistoryManager(),

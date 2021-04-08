@@ -643,7 +643,7 @@ TEST_F(TooltipControllerTest, ReshowOnClickAfterEnterExit) {
 }
 
 TEST_F(TooltipControllerTest, ShowAndHideTooltipTriggeredFromKeyboard) {
-  std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text");
+  std::u16string expected_tooltip = u"Tooltip Text";
 
   wm::SetTooltipText(GetWindow(), &expected_tooltip);
   view_->set_tooltip_text(expected_tooltip);

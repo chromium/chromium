@@ -385,7 +385,7 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedGroups) {
   tab_groups::TabGroupVisualData visual_data1(
       std::u16string(), tab_groups::TabGroupColorId::kGrey);
   tab_groups::TabGroupVisualData visual_data2(
-      base::ASCIIToUTF16("title"), tab_groups::TabGroupColorId::kBlue);
+      u"title", tab_groups::TabGroupColorId::kBlue);
 
   std::unique_ptr<MockTRS> trs(new MockTRS(profile()));
   auto entries{CreateSessionEntries({
