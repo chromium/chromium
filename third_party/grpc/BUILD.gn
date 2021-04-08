@@ -7,6 +7,11 @@
 declare_args() {
   # Compiles with ares.
   enable_grpc_ares = false
+
+  # TODO(169395837): Somehow gRPC symbols cannot be found on Android.
+  # Keep using static linking for now.
+  # In windows use static linking.
+  grpc_use_static_linking = is_android || is_win
 }
 
 if (is_android) {
@@ -78,10 +83,7 @@ config("grpc_config_private") {
 }
 
 template("grpc_so") {
-  # TODO(169395837): Somehow gRPC symbols cannot be found on Android.
-  # Keep using static linking for now.
-  # In windows use static linking.
-  if (is_android || is_win) {
+  if (grpc_use_static_linking) {
     source_set(target_name) {
       forward_variables_from(invoker, "*")
     }
@@ -872,7 +874,7 @@ source_set("grpc++_h") {
     "src/third_party/address_sorting/include",
   ]
   visibility = [ "./*" ]
-  if (!is_win) {
+  if (!grpc_use_static_linking) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
@@ -1496,7 +1498,7 @@ source_set("grpc++_cc") {
     "src/third_party/address_sorting/include",
   ]
   visibility = [ "./*" ]
-  if (!is_win) {
+  if (!grpc_use_static_linking) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
@@ -1533,7 +1535,7 @@ source_set("grpc++_repeated") {
   public_configs = [ ":grpc_config" ]
   configs += [ ":grpc_config_private" ]
   visibility = [ "./*" ]
-  if (!is_win) {
+  if (!grpc_use_static_linking) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
@@ -1551,7 +1553,7 @@ source_set("address_sorting") {
   configs += [ ":grpc_config_private" ]
   include_dirs = [ "src/third_party/address_sorting/include" ]
   visibility = [ "./*" ]
-  if (!is_win) {
+  if (!grpc_use_static_linking) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
@@ -1634,7 +1636,7 @@ source_set("upb") {
   public_configs = [ ":grpc_config" ]
   configs += [ ":grpc_config_private" ]
   visibility = [ "./*" ]
-  if (!is_win) {
+  if (!grpc_use_static_linking) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }

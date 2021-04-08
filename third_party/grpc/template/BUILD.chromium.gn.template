@@ -12,6 +12,11 @@
   declare_args() {
     # Compiles with ares.
     enable_grpc_ares = false
+
+    # TODO(169395837): Somehow gRPC symbols cannot be found on Android.
+    # Keep using static linking for now.
+    # In windows use static linking.
+    grpc_use_static_linking = is_android || is_win
   }
 
   if (is_android) {
@@ -85,10 +90,7 @@
   }
 
   template("grpc_so") {
-    # TODO(169395837): Somehow gRPC symbols cannot be found on Android.
-    # Keep using static linking for now.
-    # In windows use static linking.
-    if (is_android || is_win) {
+    if (grpc_use_static_linking) {
       source_set(target_name) {
         forward_variables_from(invoker, "*")
       }
@@ -210,7 +212,7 @@
   def get_extra_stuff():
     extra_stuff = []
     extra_stuff.append('visibility = [ "./*" ]')
-    extra_stuff.append('if (!is_win) {')
+    extra_stuff.append('if (!grpc_use_static_linking) {')
     extra_stuff.append('  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]')
     extra_stuff.append('  configs += [ "//build/config/gcc:symbol_visibility_default" ]')
     extra_stuff.append('}')
