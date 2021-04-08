@@ -30,7 +30,7 @@ class OmniboxChipButton : public views::MdTextButton {
 
   void AnimateCollapse();
   void AnimateExpand();
-  void ResetAnimation(double value = 0);
+  void ResetAnimation();
 
   void SetIcon(const gfx::VectorIcon* icon);
   void SetExpandAnimationEndedCallback(
@@ -53,8 +53,6 @@ class OmniboxChipButton : public views::MdTextButton {
   // Set whether the button uses prominent styling, equivalent to
   // MdTextButton::SetProminent.
   void SetProminent(bool is_prominent);
-
-  void SetForceExpandedForTesting(bool force_expanded_for_testing);
 
  private:
   int GetIconSize() const;
@@ -90,8 +88,6 @@ class OmniboxChipButton : public views::MdTextButton {
   const gfx::VectorIcon* icon_ = nullptr;
 
   base::RepeatingCallback<void()> expand_animation_ended_callback_;
-
-  bool force_expanded_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_

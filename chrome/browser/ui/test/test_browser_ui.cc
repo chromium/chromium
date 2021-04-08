@@ -54,25 +54,18 @@ TestBrowserUi::~TestBrowserUi() = default;
 bool TestBrowserUi::VerifyPixelUi(views::Widget* widget,
                                   const std::string& screenshot_prefix,
                                   const std::string& screenshot_name) {
-  return VerifyPixelUi(widget->GetContentsView(), screenshot_prefix,
-                       screenshot_name);
-}
-
-bool TestBrowserUi::VerifyPixelUi(views::View* view,
-                                  const std::string& screenshot_prefix,
-                                  const std::string& screenshot_name) {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           "browser-ui-tests-verify-pixels"))
     return true;
 
   // Wait for painting complete.
-  auto* compositor = view->GetWidget()->GetCompositor();
+  auto* compositor = widget->GetCompositor();
   ui::DrawWaiterForTest::WaitForCompositingEnded(compositor);
 
   BrowserSkiaGoldPixelDiff pixel_diff;
-  pixel_diff.Init(view->GetWidget(), screenshot_prefix);
-  return pixel_diff.CompareScreenshot(screenshot_name, view,
-                                      GetPixelMatchAlgorithm());
+  pixel_diff.Init(widget, screenshot_prefix);
+  return pixel_diff.CompareScreenshot(
+      screenshot_name, widget->GetContentsView(), GetPixelMatchAlgorithm());
 }
 
 void TestBrowserUi::SetPixelMatchAlgorithm(

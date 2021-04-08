@@ -48,8 +48,8 @@ void OmniboxChipButton::AnimateExpand() {
   animation_->Show();
 }
 
-void OmniboxChipButton::ResetAnimation(double value) {
-  animation_->Reset(value);
+void OmniboxChipButton::ResetAnimation() {
+  animation_->Reset();
 }
 
 void OmniboxChipButton::SetIcon(const gfx::VectorIcon* icon) {
@@ -66,10 +66,9 @@ gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
   const int fixed_width = GetIconSize() + GetInsets().width();
   const int collapsable_width =
       label()->GetPreferredSize().width() + GetInsets().right();
-  const double animation_value =
-      force_expanded_for_testing_ ? 1.0 : animation_->GetCurrentValue();
   const int width =
-      std::round(collapsable_width * animation_value) + fixed_width;
+      std::round(collapsable_width * animation_->GetCurrentValue()) +
+      fixed_width;
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
@@ -140,11 +139,6 @@ SkColor OmniboxChipButton::GetForegroundColor() {
 
 SkColor OmniboxChipButton::GetBackgroundColor() {
   return GetProminent() ? GetMainColor() : GetNeutralColor();
-}
-
-void OmniboxChipButton::SetForceExpandedForTesting(
-    bool force_expanded_for_testing) {
-  force_expanded_for_testing_ = force_expanded_for_testing;
 }
 
 BEGIN_METADATA(OmniboxChipButton, views::MdTextButton)
