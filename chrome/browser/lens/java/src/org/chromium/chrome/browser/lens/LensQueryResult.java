@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.lens;
 
+import android.text.TextUtils;
+
 /**
  * A wrapper class for the Lens image query result from Lens Prime SDK.
  */
@@ -103,6 +105,8 @@ public class LensQueryResult {
         return mLensIntentType == other.getLensIntentType()
                 && mIsShoppyIntent == other.getIsShoppyIntent()
                 && mIsTranslateIntent == other.getIsTranslateIntent()
-                && mSessionId.equals(other.getSessionId()) && mQueryId == other.getQueryId();
+                // Return true for null values or equal values.
+                && TextUtils.equals(mSessionId, other.getSessionId())
+                && mQueryId == other.getQueryId();
     }
 }
