@@ -11,6 +11,7 @@
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/flat_map.h"
@@ -39,7 +40,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   // Struct which is the data in our fake full restore file.
   struct WindowInfo {
     int call_count = 0;
-    int activation_index = 0;
+    std::unique_ptr<full_restore::WindowInfo> info;
   };
 
   FullRestoreControllerTest() = default;
@@ -51,16 +52,18 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   // Returns the number of times |window| has been saved to file since the last
   // ResetSaveWindowsCount call.
   int GetSaveWindowsCount(aura::Window* window) const {
-    if (!base::Contains(fake_full_restore_file_, window))
+    const int32_t restore_window_id =
+        window->GetProperty(full_restore::kRestoreWindowIdKey);
+    if (!base::Contains(fake_full_restore_file_, restore_window_id))
       return 0;
-    return fake_full_restore_file_.at(window).call_count;
+    return fake_full_restore_file_.at(restore_window_id).call_count;
   }
 
   // Returns the total number of saves since the last ResetSaveWindowsCount
   // call.
   int GetTotalSaveWindowsCount() const {
     int count = 0;
-    for (const std::pair<aura::Window*, WindowInfo>& member :
+    for (const std::pair<int32_t, WindowInfo>& member :
          fake_full_restore_file_) {
       count += member.second.call_count;
     }
@@ -68,22 +71,27 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   }
 
   void ResetSaveWindowsCount() {
-    for (std::pair<aura::Window*, WindowInfo>& member : fake_full_restore_file_)
+    for (std::pair<int32_t, WindowInfo>& member : fake_full_restore_file_)
       member.second.call_count = 0;
   }
 
   // Returns the stored activation index for |window|.
   int GetActivationIndex(aura::Window* window) const {
-    if (!base::Contains(fake_full_restore_file_, window))
+    const int32_t restore_window_id =
+        window->GetProperty(full_restore::kRestoreWindowIdKey);
+    if (!base::Contains(fake_full_restore_file_, restore_window_id))
       return -1;
-    return fake_full_restore_file_.at(window).activation_index;
+    base::Optional<int32_t> activation_index =
+        fake_full_restore_file_.at(restore_window_id).info->activation_index;
+    return activation_index.value_or(-1);
   }
 
   // Mocks creating a widget that is launched from full restore service.
   views::Widget* CreateTestFullRestoredWidget(
       int32_t activation_index,
       const gfx::Rect& bounds = gfx::Rect(200, 200),
-      aura::Window* root_window = Shell::GetPrimaryRootWindow()) {
+      aura::Window* root_window = Shell::GetPrimaryRootWindow(),
+      base::Optional<int32_t> restore_window_id = base::nullopt) {
     // Full restore widgets are inactive when created as we do not want to take
     // activation from a possible activated window, and we want to stack them in
     // a certain order.
@@ -95,19 +103,58 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
         .SetActivatable(false);
     widget_builder.SetWindowProperty(full_restore::kActivationIndexKey,
                                      new int32_t(activation_index));
+    // If this is not given, the window will get assigned an id in
+    // `OnWindowInitialized()`.
+    if (restore_window_id) {
+      widget_builder.SetWindowProperty(full_restore::kRestoreWindowIdKey,
+                                       *restore_window_id);
+    }
     views::Widget* widget = widget_builder.BuildOwnedByNativeWidget();
+    widget->GetNativeWindow()->SetProperty(
+        aura::client::kResizeBehaviorKey,
+        aura::client::kResizeBehaviorCanResize |
+            aura::client::kResizeBehaviorCanMaximize);
     FullRestoreController::Get()->OnWidgetInitialized(widget);
     return widget;
   }
 
+  // Mocks creating a widget based on the window info in
+  // `fake_full_restore_file_`. Returns nullptr if there is not an entry that
+  // matches `restore_window_id`.
+  views::Widget* CreateTestFullRestoredWidgetFromRestoreId(
+      int32_t restore_window_id) {
+    if (!fake_full_restore_file_.contains(restore_window_id))
+      return nullptr;
+
+    full_restore::WindowInfo* info =
+        fake_full_restore_file_[restore_window_id].info.get();
+    const gfx::Rect bounds = info->current_bounds.value_or(gfx::Rect(200, 200));
+    const int32_t activation_index = info->activation_index.value_or(-1);
+    return CreateTestFullRestoredWidget(activation_index, bounds,
+                                        Shell::GetPrimaryRootWindow(),
+                                        restore_window_id);
+  }
+
   void VerifyStackingOrder(aura::Window* parent,
-                           const std::vector<aura::Window*> expected_windows) {
+                           const std::vector<aura::Window*>& expected_windows) {
     auto children = parent->children();
     EXPECT_EQ(children.size(), expected_windows.size());
 
-    for (size_t i = 0; i < children.size(); ++i) {
+    for (size_t i = 0; i < children.size(); ++i)
       EXPECT_EQ(children[i], expected_windows[i]);
-    }
+  }
+
+  // Adds an entry to the fake full restore file. Calling
+  // If `CreateTestFullRestoreWidget` is called with a matching
+  // `restore_window_id`, it will read and set the values set here.
+  void AddEntryToFakeFile(int restore_window_id,
+                          const gfx::Rect& bounds,
+                          chromeos::WindowStateType window_state_type) {
+    DCHECK(!fake_full_restore_file_.contains(restore_window_id));
+    auto window_info = std::make_unique<full_restore::WindowInfo>();
+    window_info->current_bounds = bounds;
+    window_info->window_state_type = window_state_type;
+    fake_full_restore_file_[restore_window_id].info = std::move(window_info);
   }
 
   // AshTestBase:
@@ -116,6 +163,9 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 
     AshTestBase::SetUp();
 
+    FullRestoreController::Get()->SetReadWindowCallbackForTesting(
+        base::BindRepeating(&FullRestoreControllerTest::OnGetWindowInfo,
+                            base::Unretained(this)));
     FullRestoreController::Get()->SetSaveWindowCallbackForTesting(
         base::BindRepeating(&FullRestoreControllerTest::OnSaveWindow,
                             base::Unretained(this)));
@@ -130,6 +180,22 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* window) override {
+    std::vector<AppType> kSupportedAppTypes = {
+        AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP};
+    if (!base::Contains(kSupportedAppTypes,
+                        static_cast<AppType>(
+                            window->GetProperty(aura::client::kAppType)))) {
+      return;
+    }
+
+    // If this is a new window, finds and sets a new restore window id.
+    if (window->GetProperty(full_restore::kRestoreWindowIdKey) == 0) {
+      int32_t restore_window_id = 1;
+      while (fake_full_restore_file_.contains(restore_window_id))
+        ++restore_window_id;
+      window->SetProperty(full_restore::kRestoreWindowIdKey, restore_window_id);
+    }
+
     // FullRestoreController relies on getting OnWindowInitialized events from
     // aura::Env via full_restore::FullRestoreInfo. That object does not exist
     // for ash unit tests, so we will observe aura::Env ourselves and forward
@@ -142,19 +208,54 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   // writes to our fake file |fake_full_restore_file_|.
   void OnSaveWindow(const full_restore::WindowInfo& window_info) {
     aura::Window* window = window_info.window;
-    DCHECK(window_info.activation_index);
+    DCHECK(window);
 
-    if (fake_full_restore_file_.contains(window)) {
-      fake_full_restore_file_[window].call_count++;
-      fake_full_restore_file_[window].activation_index =
-          *window_info.activation_index;
+    const int32_t restore_window_id =
+        window->GetProperty(full_restore::kRestoreWindowIdKey);
+    if (fake_full_restore_file_.contains(restore_window_id)) {
+      fake_full_restore_file_[restore_window_id].call_count++;
     } else {
-      fake_full_restore_file_[window] = {0, *window_info.activation_index};
+      fake_full_restore_file_[restore_window_id].info =
+          std::make_unique<full_restore::WindowInfo>();
     }
+
+    CopyWindowInfo(window_info,
+                   fake_full_restore_file_[restore_window_id].info.get());
+  }
+
+  // Callback function that is run when FullRestoreController tries to read
+  // window data from the file. Immediately reads from our fake file
+  // `fake_full_restore_file_`.
+  std::unique_ptr<full_restore::WindowInfo> OnGetWindowInfo(
+      aura::Window* window) {
+    DCHECK(window);
+    const int32_t restore_window_id =
+        window->GetProperty(full_restore::kRestoreWindowIdKey);
+    if (!fake_full_restore_file_.contains(restore_window_id))
+      return nullptr;
+
+    auto window_info = std::make_unique<full_restore::WindowInfo>();
+    CopyWindowInfo(*fake_full_restore_file_[restore_window_id].info,
+                   window_info.get());
+    return window_info;
+  }
+
+  // Copies the info from `src` to `out_dst` since `fullrestore::WindowInfo`
+  // copy constructor is deleted.
+  void CopyWindowInfo(const full_restore::WindowInfo& src,
+                      full_restore::WindowInfo* out_dst) {
+    out_dst->window = src.window;
+    out_dst->activation_index = src.activation_index;
+    out_dst->desk_id = src.desk_id;
+    out_dst->visible_on_all_workspaces = src.visible_on_all_workspaces;
+    out_dst->restore_bounds = src.restore_bounds;
+    out_dst->current_bounds = src.current_bounds;
+    out_dst->window_state_type = src.window_state_type;
+    out_dst->display_id = src.display_id;
   }
 
   // A map which is a fake representation of the full restore file.
-  base::flat_map<aura::Window*, WindowInfo> fake_full_restore_file_;
+  base::flat_map<int32_t, WindowInfo> fake_full_restore_file_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
 
@@ -489,6 +590,47 @@ TEST_F(FullRestoreControllerTest, StackingMultiDisplay) {
   VerifyStackingOrder(desk_container_display_2, {window_2_2, window_2_1});
   VerifyStackingOrder(desk_container_display_3,
                       {window_3_3, window_3_2, window_3_1});
+}
+
+// Tests snapped window functionality when creating a window from full restore.
+TEST_F(FullRestoreControllerTest, ClamshellSnapWindow) {
+  UpdateDisplay("800x800");
+
+  // Add two entries to our fake full restore file, one snapped left and the
+  // other snapped right.
+  const gfx::Rect restored_bounds(200, 200);
+  AddEntryToFakeFile(/*restore_window_id=*/2, restored_bounds,
+                     chromeos::WindowStateType::kLeftSnapped);
+  AddEntryToFakeFile(/*restore_window_id=*/3, restored_bounds,
+                     chromeos::WindowStateType::kRightSnapped);
+
+  // Create two full restore windows with the same restore window ids as the
+  // entries we added. Test they are snapped and have snapped bounds.
+  aura::Window* left_window =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
+          ->GetNativeWindow();
+  aura::Window* right_window =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
+          ->GetNativeWindow();
+  auto* left_window_state = WindowState::Get(left_window);
+  auto* right_window_state = WindowState::Get(right_window);
+  EXPECT_TRUE(left_window_state->IsSnapped());
+  EXPECT_TRUE(right_window_state->IsSnapped());
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
+                SplitViewController::LEFT, nullptr),
+            left_window->GetBoundsInScreen());
+  EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
+                SplitViewController::RIGHT, nullptr),
+            right_window->GetBoundsInScreen());
+
+  // Test that after restoring the snapped windows, they have the bounds we
+  // saved into the fake file.
+  left_window_state->Restore();
+  right_window_state->Restore();
+  EXPECT_EQ(restored_bounds, left_window->GetBoundsInScreen());
+  EXPECT_EQ(restored_bounds, right_window->GetBoundsInScreen());
 }
 
 }  // namespace ash

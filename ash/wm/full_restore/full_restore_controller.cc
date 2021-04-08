@@ -29,7 +29,11 @@ namespace {
 
 FullRestoreController* g_instance = nullptr;
 
-// Callback for testing which is run when SaveWindowImpl triggers a write to
+// Callback for testing which is run when `OnWidgetInitialized()` triggers a
+// read from file.
+FullRestoreController::ReadWindowCallback g_read_window_callback_for_testing;
+
+// Callback for testing which is run when `SaveWindowImpl()` triggers a write to
 // file.
 FullRestoreController::SaveWindowCallback g_save_window_callback_for_testing;
 
@@ -161,7 +165,10 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
   aura::Window* window = widget->GetNativeWindow();
   DCHECK(window->parent());
 
-  auto window_info = full_restore::GetWindowInfo(window);
+  std::unique_ptr<full_restore::WindowInfo> window_info =
+      g_read_window_callback_for_testing
+          ? g_read_window_callback_for_testing.Run(window)
+          : full_restore::GetWindowInfo(window);
   if (window_info) {
     // Snap the window if necessary.
     auto state_type = window_info->window_state_type;
@@ -271,6 +278,11 @@ void FullRestoreController::SaveWindowImpl(
 
   if (g_save_window_callback_for_testing)
     g_save_window_callback_for_testing.Run(window_info);
+}
+
+void FullRestoreController::SetReadWindowCallbackForTesting(
+    ReadWindowCallback callback) {
+  g_read_window_callback_for_testing = std::move(callback);
 }
 
 void FullRestoreController::SetSaveWindowCallbackForTesting(

@@ -33,6 +33,9 @@ class ASH_EXPORT FullRestoreController
       public TabletModeObserver,
       public full_restore::FullRestoreInfo::Observer {
  public:
+  using ReadWindowCallback =
+      base::RepeatingCallback<std::unique_ptr<full_restore::WindowInfo>(
+          aura::Window*)>;
   using SaveWindowCallback =
       base::RepeatingCallback<void(const full_restore::WindowInfo&)>;
 
@@ -81,6 +84,10 @@ class ASH_EXPORT FullRestoreController
   // instead of building the MRU list again for each window.
   void SaveWindowImpl(WindowState* window_state,
                       base::Optional<int> activation_index);
+
+  // Sets a callback for testing that will be read from in
+  // `OnWidgetInitialized()`.
+  void SetReadWindowCallbackForTesting(ReadWindowCallback callback);
 
   // Sets a callback for testing that will be fired immediately when
   // SaveWindowImpl is about to notify the full restore component we want to
