@@ -925,6 +925,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webgpu/gpu_command_buffer_descriptor.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_command_encoder.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_command_encoder_descriptor.idl",
+          "//third_party/blink/renderer/modules/webgpu/gpu_compilation_info.idl",
+          "//third_party/blink/renderer/modules/webgpu/gpu_compilation_message.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_compute_pass_descriptor.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_compute_pass_encoder.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_compute_pipeline.idl",

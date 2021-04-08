@@ -7,5 +7,6 @@
 [
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUShaderModule {
+    [CallWith=ScriptState] Promise<GPUCompilationInfo> compilationInfo();
 };
 GPUShaderModule includes GPUObjectBase;

@@ -13,6 +13,8 @@ modules_idl_files = [
   "gpu_color_write.idl",
   "gpu_command_buffer.idl",
   "gpu_command_encoder.idl",
+  "gpu_compilation_info.idl",
+  "gpu_compilation_message.idl",
   "gpu_compute_pass_encoder.idl",
   "gpu_compute_pipeline.idl",
   "gpu_device.idl",
