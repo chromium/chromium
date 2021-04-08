@@ -9,6 +9,7 @@
 #include <lib/sys/cpp/service_directory.h>
 
 #include "base/fuchsia/file_utils.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "base/macros.h"
 
@@ -55,13 +56,15 @@ StartupContext::StartupContext(::fuchsia::sys::StartupInfo startup_info) {
         std::move(startup_info.launch_info.additional_services->provider));
     additional_services_directory_ = std::make_unique<sys::OutgoingDirectory>();
     for (auto& name : startup_info.launch_info.additional_services->names) {
-      additional_services_directory_->AddPublicService(
+      zx_status_t status = additional_services_directory_->AddPublicService(
           std::make_unique<vfs::Service>([this, name](
                                              zx::channel channel,
                                              async_dispatcher_t* dispatcher) {
             additional_services_->ConnectToService(name, std::move(channel));
           }),
           name);
+      ZX_CHECK(status == ZX_OK, status)
+          << "AddPublicService(" << name << ") failed";
     }
 
     // Publish those services to the caller as |incoming_services|.

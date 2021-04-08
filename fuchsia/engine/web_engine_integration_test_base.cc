@@ -81,13 +81,16 @@ WebEngineIntegrationTestBase::ContextParamsWithFilteredServiceDirectory() {
       std::make_unique<base::FilteredServiceDirectory>(
           base::ComponentContextForProcess()->svc().get());
   fidl::InterfaceHandle<fuchsia::io::Directory> svc_dir;
-  filtered_service_directory_->ConnectClient(svc_dir.NewRequest());
+  EXPECT_EQ(filtered_service_directory_->ConnectClient(svc_dir.NewRequest()),
+            ZX_OK);
 
   // Push all services from /svc to the service directory.
   base::FileEnumerator file_enum(base::FilePath("/svc"), false,
                                  base::FileEnumerator::FILES);
   for (auto file = file_enum.Next(); !file.empty(); file = file_enum.Next()) {
-    filtered_service_directory_->AddService(file.BaseName().value().c_str());
+    EXPECT_EQ(filtered_service_directory_->AddService(
+                  file.BaseName().value().c_str()),
+              ZX_OK);
   }
 
   fuchsia::web::CreateContextParams create_params;

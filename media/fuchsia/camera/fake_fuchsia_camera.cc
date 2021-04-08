@@ -7,6 +7,7 @@
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -522,19 +523,22 @@ void FakeCameraDevice::NotImplemented_(const std::string& name) {
 
 FakeCameraDeviceWatcher::FakeCameraDeviceWatcher(
     sys::OutgoingDirectory* outgoing_directory) {
-  outgoing_directory->AddPublicService<fuchsia::camera3::DeviceWatcher>(
-      [this](fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
-        auto client = std::make_unique<Client>(this);
+  zx_status_t status =
+      outgoing_directory->AddPublicService<fuchsia::camera3::DeviceWatcher>(
+          [this](
+              fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
+            auto client = std::make_unique<Client>(this);
 
-        // Queue events for all existing devices.
-        for (auto& device : devices_) {
-          fuchsia::camera3::WatchDevicesEvent event;
-          event.set_added(device.first);
-          client->QueueEvent(std::move(event));
-        }
+            // Queue events for all existing devices.
+            for (auto& device : devices_) {
+              fuchsia::camera3::WatchDevicesEvent event;
+              event.set_added(device.first);
+              client->QueueEvent(std::move(event));
+            }
 
-        bindings_.AddBinding(std::move(client), std::move(request));
-      });
+            bindings_.AddBinding(std::move(client), std::move(request));
+          });
+  ZX_CHECK(status == ZX_OK, status) << "AddPublicService failed";
 
   devices_.insert(
       std::make_pair(next_device_id_++, std::make_unique<FakeCameraDevice>()));

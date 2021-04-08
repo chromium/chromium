@@ -171,14 +171,20 @@ SandboxPolicyFuchsia::SandboxPolicyFuchsia(SandboxType type) {
     service_directory_ = std::make_unique<base::FilteredServiceDirectory>(
         base::ComponentContextForProcess()->svc().get());
     for (const char* service_name : kDefaultServices) {
-      service_directory_->AddService(service_name);
+      zx_status_t status = service_directory_->AddService(service_name);
+      ZX_CHECK(status == ZX_OK, status)
+          << "AddService(" << service_name << ") failed";
     }
     for (const char* service_name : config->services) {
-      service_directory_->AddService(service_name);
+      zx_status_t status = service_directory_->AddService(service_name);
+      ZX_CHECK(status == ZX_OK, status)
+          << "AddService(" << service_name << ") failed";
     }
     // Bind the service directory and store the client channel for
     // UpdateLaunchOptionsForSandbox()'s use.
-    service_directory_->ConnectClient(service_directory_client_.NewRequest());
+    zx_status_t status = service_directory_->ConnectClient(
+        service_directory_client_.NewRequest());
+    ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
     CHECK(service_directory_client_);
   }
 }

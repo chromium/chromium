@@ -23,6 +23,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_controller.h"
+#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -240,6 +241,8 @@ class TestCastComponent {
 
   void CreateComponentContextAndStartComponent(
       base::StringPiece app_id = kTestAppId) {
+    ASSERT_FALSE(component_context_)
+        << "ComponentContext may only be created once";
     auto component_url = base::StrCat({"cast:", app_id});
     InjectQueryApi();
     CreateComponentContext(component_url);
@@ -249,6 +252,8 @@ class TestCastComponent {
   }
 
   void CreateComponentContext(const base::StringPiece& component_url) {
+    ASSERT_FALSE(component_context_)
+        << "ComponentContext may only be created once";
     url_request_rewrite_rules_provider_ =
         std::make_unique<FakeUrlRequestRewriteRulesProvider>();
     component_context_ = std::make_unique<cr_fuchsia::FakeComponentContext>(
@@ -260,6 +265,9 @@ class TestCastComponent {
   }
 
   void StartCastComponent(base::StringPiece component_url) {
+    ASSERT_FALSE(component_services_client_)
+        << "Component may only be started once";
+
     // Configure the Runner, including a service directory channel to publish
     // services to.
     fuchsia::sys::StartupInfo startup_info;
@@ -283,9 +291,11 @@ class TestCastComponent {
     component_services_.GetOrCreateDirectory("svc")->Serve(
         fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
         directory.NewRequest().TakeChannel());
-    component_services_.AddPublicService(
-        cors_exempt_header_provider_binding_.GetHandler(
-            &cors_exempt_header_provider_));
+
+    ASSERT_EQ(component_services_.AddPublicService(
+                  cors_exempt_header_provider_binding_.GetHandler(
+                      &cors_exempt_header_provider_)),
+              ZX_OK);
 
     // Provide the directory of services in the |flat_namespace|.
     startup_info.flat_namespace.paths.emplace_back(base::kServiceDirectoryPath);
@@ -592,18 +602,19 @@ class CastRunnerIntegrationTest : public testing::Test {
             web_engine_controller_.ptr().NewRequest());
     sys::ServiceDirectory web_engine_outgoing_services(
         std::move(web_engine_outgoing_dir));
-
-    services_for_cast_runner_
-        .RemovePublicService<fuchsia::web::ContextProvider>();
-    services_for_cast_runner_.AddPublicService(
-        std::make_unique<vfs::Service>(
-            [web_engine_outgoing_services =
-                 std::move(web_engine_outgoing_services)](
-                zx::channel channel, async_dispatcher_t* dispatcher) {
-              web_engine_outgoing_services.Connect(
-                  fuchsia::web::ContextProvider::Name_, std::move(channel));
-            }),
-        fuchsia::web::ContextProvider::Name_);
+    ignore_result(services_for_cast_runner_
+                      .RemovePublicService<fuchsia::web::ContextProvider>());
+    ASSERT_EQ(services_for_cast_runner_.AddPublicService(
+                  std::make_unique<vfs::Service>(
+                      [web_engine_outgoing_services =
+                           std::move(web_engine_outgoing_services)](
+                          zx::channel channel, async_dispatcher_t* dispatcher) {
+                        web_engine_outgoing_services.Connect(
+                            fuchsia::web::ContextProvider::Name_,
+                            std::move(channel));
+                      }),
+                  fuchsia::web::ContextProvider::Name_),
+              ZX_OK);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -648,7 +659,7 @@ TEST_F(CastRunnerIntegrationTest, CanRecreateContext) {
   component.app_config_manager()->AddApp(kTestAppId, app_url);
 
   // Create a Cast component and verify that it has loaded.
-  component.CreateComponentContextAndStartComponent();
+  component.CreateComponentContextAndStartComponent(kTestAppId);
   component.CheckAppUrl(app_url);
 
   // Terminate the component that provides the ContextProvider service and
@@ -663,9 +674,10 @@ TEST_F(CastRunnerIntegrationTest, CanRecreateContext) {
   // WebContentRunner::CreateFrameWithParams() will synchronously verify that
   // the web.Context is not-yet-closed, to work-around that.
   StartAndPublishWebEngine();
-  component.app_config_manager()->AddApp(kTestAppId, app_url);
-  component.CreateComponentContextAndStartComponent();
-  component.CheckAppUrl(app_url);
+  TestCastComponent second_component(cast_runner_.get());
+  second_component.app_config_manager()->AddApp(kTestAppId, app_url);
+  second_component.CreateComponentContextAndStartComponent(kTestAppId);
+  second_component.CheckAppUrl(app_url);
 }
 
 TEST_F(CastRunnerIntegrationTest, ApiBindings) {
@@ -911,13 +923,15 @@ TEST_F(CastRunnerIntegrationTest, MicrophoneRedirect) {
 
   // Expect fuchsia.media.Audio connection to be redirected to the agent.
   base::RunLoop run_loop;
-  component.component_state()->outgoing_directory()->AddPublicService(
-      std::make_unique<vfs::Service>(
-          [quit_closure = run_loop.QuitClosure()](
-              zx::channel channel, async_dispatcher_t* dispatcher) mutable {
-            std::move(quit_closure).Run();
-          }),
-      fuchsia::media::Audio::Name_);
+  ASSERT_EQ(
+      component.component_state()->outgoing_directory()->AddPublicService(
+          std::make_unique<vfs::Service>(
+              [quit_closure = run_loop.QuitClosure()](
+                  zx::channel channel, async_dispatcher_t* dispatcher) mutable {
+                std::move(quit_closure).Run();
+              }),
+          fuchsia::media::Audio::Name_),
+      ZX_OK);
 
   component.ExecuteJavaScript("connectMicrophone();");
 
@@ -941,13 +955,15 @@ TEST_F(CastRunnerIntegrationTest, CameraRedirect) {
   // Expect fuchsia.camera3.DeviceWatcher connection to be redirected to the
   // agent.
   bool received_device_watcher_request = false;
-  component.component_state()->outgoing_directory()->AddPublicService(
-      std::make_unique<vfs::Service>(
-          [&received_device_watcher_request](
-              zx::channel channel, async_dispatcher_t* dispatcher) mutable {
-            received_device_watcher_request = true;
-          }),
-      fuchsia::camera3::DeviceWatcher::Name_);
+  ASSERT_EQ(
+      component.component_state()->outgoing_directory()->AddPublicService(
+          std::make_unique<vfs::Service>(
+              [&received_device_watcher_request](
+                  zx::channel channel, async_dispatcher_t* dispatcher) mutable {
+                received_device_watcher_request = true;
+              }),
+          fuchsia::camera3::DeviceWatcher::Name_),
+      ZX_OK);
 
   component.ExecuteJavaScript("connectCamera();");
   EXPECT_TRUE(received_device_watcher_request);
@@ -1014,13 +1030,17 @@ TEST_F(CastRunnerIntegrationTest, MultipleComponentsUsingCamera) {
   // Expect fuchsia.camera3.DeviceWatcher connection to be redirected to the
   // agent.
   bool received_device_watcher_request = false;
-  second_component.component_state()->outgoing_directory()->AddPublicService(
-      std::make_unique<vfs::Service>(
-          [&received_device_watcher_request](
-              zx::channel channel, async_dispatcher_t* dispatcher) mutable {
-            received_device_watcher_request = true;
-          }),
-      fuchsia::camera3::DeviceWatcher::Name_);
+  ASSERT_EQ(
+      second_component.component_state()
+          ->outgoing_directory()
+          ->AddPublicService(std::make_unique<vfs::Service>(
+                                 [&received_device_watcher_request](
+                                     zx::channel channel,
+                                     async_dispatcher_t* dispatcher) mutable {
+                                   received_device_watcher_request = true;
+                                 }),
+                             fuchsia::camera3::DeviceWatcher::Name_),
+      ZX_OK);
 
   second_component.ExecuteJavaScript("connectCamera();");
   EXPECT_TRUE(received_device_watcher_request);
@@ -1080,12 +1100,14 @@ TEST_F(CastRunnerIntegrationTest, LegacyMetricsRedirect) {
   base::RunLoop run_loop;
 
   // Add MetricsRecorder the the component's incoming_services.
-  component.component_services()->AddPublicService(
-      std::make_unique<vfs::Service>(
-          [&run_loop](zx::channel request, async_dispatcher_t* dispatcher) {
-            run_loop.Quit();
-          }),
-      fuchsia::legacymetrics::MetricsRecorder::Name_);
+  ASSERT_EQ(
+      component.component_services()->AddPublicService(
+          std::make_unique<vfs::Service>(
+              [&run_loop](zx::channel request, async_dispatcher_t* dispatcher) {
+                run_loop.Quit();
+              }),
+          fuchsia::legacymetrics::MetricsRecorder::Name_),
+      ZX_OK);
 
   component.StartCastComponent(component_url);
 

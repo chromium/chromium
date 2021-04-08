@@ -18,7 +18,9 @@ class FilteredServiceDirectoryTest : public ServiceDirectoryTestBase {
     filtered_service_directory_ = std::make_unique<FilteredServiceDirectory>(
         public_service_directory_.get());
     fidl::InterfaceHandle<::fuchsia::io::Directory> directory;
-    filtered_service_directory_->ConnectClient(directory.NewRequest());
+    EXPECT_EQ(
+        filtered_service_directory_->ConnectClient(directory.NewRequest()),
+        ZX_OK);
     filtered_client_ =
         std::make_unique<sys::ServiceDirectory>(std::move(directory));
   }
@@ -30,7 +32,9 @@ class FilteredServiceDirectoryTest : public ServiceDirectoryTestBase {
 
 // Verify that we can connect to an allowed service.
 TEST_F(FilteredServiceDirectoryTest, Connect) {
-  filtered_service_directory_->AddService(testfidl::TestInterface::Name_);
+  EXPECT_EQ(
+      filtered_service_directory_->AddService(testfidl::TestInterface::Name_),
+      ZX_OK);
 
   auto stub = filtered_client_->Connect<testfidl::TestInterface>();
   VerifyTestInterface(&stub, ZX_OK);
@@ -38,7 +42,9 @@ TEST_F(FilteredServiceDirectoryTest, Connect) {
 
 // Verify that multiple connections to the same service work properly.
 TEST_F(FilteredServiceDirectoryTest, ConnectMultiple) {
-  filtered_service_directory_->AddService(testfidl::TestInterface::Name_);
+  EXPECT_EQ(
+      filtered_service_directory_->AddService(testfidl::TestInterface::Name_),
+      ZX_OK);
 
   auto stub1 = filtered_client_->Connect<testfidl::TestInterface>();
   auto stub2 = filtered_client_->Connect<testfidl::TestInterface>();
@@ -55,7 +61,9 @@ TEST_F(FilteredServiceDirectoryTest, ServiceBlocked) {
 // Verify that FilteredServiceDirectory handles the case when the target service
 // is not available in the underlying service directory.
 TEST_F(FilteredServiceDirectoryTest, NoService) {
-  filtered_service_directory_->AddService(testfidl::TestInterface::Name_);
+  EXPECT_EQ(
+      filtered_service_directory_->AddService(testfidl::TestInterface::Name_),
+      ZX_OK);
 
   service_binding_.reset();
 
@@ -66,7 +74,9 @@ TEST_F(FilteredServiceDirectoryTest, NoService) {
 // Verify that FilteredServiceDirectory handles the case when the underlying
 // service directory is destroyed.
 TEST_F(FilteredServiceDirectoryTest, NoServiceDir) {
-  filtered_service_directory_->AddService(testfidl::TestInterface::Name_);
+  EXPECT_EQ(
+      filtered_service_directory_->AddService(testfidl::TestInterface::Name_),
+      ZX_OK);
 
   service_binding_.reset();
   outgoing_directory_.reset();

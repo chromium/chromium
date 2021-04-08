@@ -39,7 +39,9 @@ TestComponentContextForProcess::TestComponentContextForProcess(
 
   // Create a ServiceDirectory backed by the contents of |incoming_directory|.
   fidl::InterfaceHandle<::fuchsia::io::Directory> incoming_directory;
-  context_services_->ConnectClient(incoming_directory.NewRequest());
+  zx_status_t status =
+      context_services_->ConnectClient(incoming_directory.NewRequest());
+  ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
   auto incoming_services =
       std::make_shared<sys::ServiceDirectory>(std::move(incoming_directory));
 
@@ -55,7 +57,7 @@ TestComponentContextForProcess::TestComponentContextForProcess(
   // Connect to the "/svc" directory of the |published_root_directory| and wrap
   // that into a ServiceDirectory.
   fidl::InterfaceHandle<::fuchsia::io::Directory> published_services;
-  zx_status_t status = fdio_service_connect_at(
+  status = fdio_service_connect_at(
       published_root_directory.channel().get(), "svc",
       published_services.NewRequest().TakeChannel().release());
   ZX_CHECK(status == ZX_OK, status) << "fdio_service_connect_at() to /svc";
@@ -73,7 +75,8 @@ sys::OutgoingDirectory* TestComponentContextForProcess::additional_services() {
 
 void TestComponentContextForProcess::AddService(
     const base::StringPiece service) {
-  context_services_->AddService(service);
+  zx_status_t status = context_services_->AddService(service);
+  ZX_CHECK(status == ZX_OK, status) << "AddService(" << service << ") failed";
 }
 
 void TestComponentContextForProcess::AddServices(

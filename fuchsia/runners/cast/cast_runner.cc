@@ -282,23 +282,36 @@ CastRunner::CastRunner(bool is_headless)
 
   // Specify the services to connect via the Runner process' service directory.
   for (const char* name : kServices) {
-    main_services_->AddService(name);
-    isolated_services_->AddService(name);
+    zx_status_t status = main_services_->AddService(name);
+    ZX_CHECK(status == ZX_OK, status)
+        << "AddService(" << name << ") to main failed";
+    status = isolated_services_->AddService(name);
+    ZX_CHECK(status == ZX_OK, status)
+        << "AddService(" << name << ") to isolated failed";
   }
 
   // Add handlers to main context's service directory for redirected services.
-  main_services_->outgoing_directory()->AddPublicService<fuchsia::media::Audio>(
-      fit::bind_member(this, &CastRunner::OnAudioServiceRequest));
-  main_services_->outgoing_directory()
-      ->AddPublicService<fuchsia::camera3::DeviceWatcher>(
-          fit::bind_member(this, &CastRunner::OnCameraServiceRequest));
-  main_services_->outgoing_directory()
-      ->AddPublicService<fuchsia::legacymetrics::MetricsRecorder>(
-          fit::bind_member(this, &CastRunner::OnMetricsRecorderServiceRequest));
+  zx_status_t status =
+      main_services_->outgoing_directory()
+          ->AddPublicService<fuchsia::media::Audio>(
+              fit::bind_member(this, &CastRunner::OnAudioServiceRequest));
+  ZX_CHECK(status == ZX_OK, status) << "AddPublicService(Audio) to main failed";
+  status = main_services_->outgoing_directory()
+               ->AddPublicService<fuchsia::camera3::DeviceWatcher>(
+                   fit::bind_member(this, &CastRunner::OnCameraServiceRequest));
+  ZX_CHECK(status == ZX_OK, status)
+      << "AddPublicService(DeviceWatcher) to main failed";
+  status = main_services_->outgoing_directory()
+               ->AddPublicService<fuchsia::legacymetrics::MetricsRecorder>(
+                   fit::bind_member(
+                       this, &CastRunner::OnMetricsRecorderServiceRequest));
+  ZX_CHECK(status == ZX_OK, status)
+      << "AddPublicService(MetricsRecorder) to main failed";
 
   // Isolated contexts can use the normal Audio service, and don't record
   // metrics.
-  isolated_services_->AddService(fuchsia::media::Audio::Name_);
+  status = isolated_services_->AddService(fuchsia::media::Audio::Name_);
+  ZX_CHECK(status == ZX_OK, status) << "AddService(Audio) to isolated failed";
 }
 
 CastRunner::~CastRunner() = default;
@@ -545,8 +558,9 @@ fuchsia::web::CreateContextParams CastRunner::GetMainContextParams() {
   *params.mutable_features() |=
       fuchsia::web::ContextFeatureFlags::NETWORK |
       fuchsia::web::ContextFeatureFlags::LEGACYMETRICS;
-  main_services_->ConnectClient(
+  zx_status_t status = main_services_->ConnectClient(
       params.mutable_service_directory()->NewRequest());
+  ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
 
   if (!disable_vulkan_for_test_)
     SetCdmParamsForMainContext(&params);
@@ -571,8 +585,9 @@ CastRunner::GetIsolatedContextParamsWithFuchsiaDirs(
   fuchsia::web::CreateContextParams params = GetCommonContextParams();
   params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
   params.set_content_directories(std::move(content_directories));
-  isolated_services_->ConnectClient(
+  zx_status_t status = isolated_services_->ConnectClient(
       params.mutable_service_directory()->NewRequest());
+  ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
   return params;
 }
 
@@ -583,8 +598,9 @@ CastRunner::GetIsolatedContextParamsForCastStreaming() {
   ApplyCastStreamingContextParams(&params);
   // TODO(crbug.com/1069746): Use a different FilteredServiceDirectory for Cast
   // Streaming Contexts.
-  main_services_->ConnectClient(
+  zx_status_t status = main_services_->ConnectClient(
       params.mutable_service_directory()->NewRequest());
+  ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
   return params;
 }
 

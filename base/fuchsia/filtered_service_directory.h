@@ -13,8 +13,17 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
+
+// TODO(crbug.com/1196525): Remove once Chromecast calls are checking results.
+#include "build/chromecast_buildflags.h"
+#if BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_WARN_UNUSED_RESULT
+#else
+#define MAYBE_WARN_UNUSED_RESULT WARN_UNUSED_RESULT
+#endif
 
 namespace base {
 
@@ -28,12 +37,13 @@ class BASE_EXPORT FilteredServiceDirectory {
   ~FilteredServiceDirectory();
 
   // Adds the specified service to the list of allowed services.
-  void AddService(base::StringPiece service_name);
+  zx_status_t AddService(base::StringPiece service_name)
+      MAYBE_WARN_UNUSED_RESULT;
 
   // Connects a directory client. The directory can be passed to a sandboxed
   // process to be used for /svc namespace.
-  void ConnectClient(
-      fidl::InterfaceRequest<::fuchsia::io::Directory> dir_request);
+  zx_status_t ConnectClient(fidl::InterfaceRequest<::fuchsia::io::Directory>
+                                dir_request) MAYBE_WARN_UNUSED_RESULT;
 
   // Accessor for the OutgoingDirectory, used to add handlers for services
   // in addition to those provided from |directory| via AddService().
