@@ -610,8 +610,7 @@ class CECPQ2PolicyTest : public PolicyTest {
                                  https_server_ok.GetURL("/title2.html"));
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_EQ(base::UTF8ToUTF16("Title Of Awesomeness"),
-              web_contents->GetTitle());
+    EXPECT_EQ(u"Title Of Awesomeness", web_contents->GetTitle());
     EXPECT_NE(
         web_contents->GetController().GetLastCommittedEntry()->GetPageType(),
         content::PAGE_TYPE_ERROR);

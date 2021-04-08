@@ -927,7 +927,7 @@ TEST_F(PasswordAutofillAgentTest, MetricsOnlyLoggedOnce) {
 // read-only field.
 TEST_F(PasswordAutofillAgentTest,
        AutocompletePasswordForReadonlyUsernamePrefixMatched) {
-  std::u16string username_at = username3_ + base::UTF8ToUTF16("@example.com");
+  std::u16string username_at = username3_ + u"@example.com";
   username_element_.SetValue(WebString::FromUTF16(username_at));
   SetElementReadOnly(username_element_, true);
 
@@ -968,8 +968,7 @@ TEST_F(PasswordAutofillAgentTest, NoFillingOnSignupForm_NoMetrics) {
 // of username in read-only field.
 TEST_F(PasswordAutofillAgentTest,
        DontAutocompletePasswordForReadonlyUsernamePrefixMatched) {
-  std::u16string prefilled_username =
-      username3_ + base::UTF8ToUTF16("example.com");
+  std::u16string prefilled_username = username3_ + u"example.com";
   username_element_.SetValue(WebString::FromUTF16(prefilled_username));
   SetElementReadOnly(username_element_, true);
 
@@ -988,8 +987,7 @@ TEST_F(PasswordAutofillAgentTest,
 TEST_F(
     PasswordAutofillAgentTest,
     DontAutocompletePasswordForNotReadonlyUsernameFieldEvenWhenPrefixMatched) {
-  std::u16string prefilled_username =
-      username3_ + base::UTF8ToUTF16("@example.com");
+  std::u16string prefilled_username = username3_ + u"@example.com";
   username_element_.SetValue(WebString::FromUTF16(prefilled_username));
 
   // Filled even though the username in the form is only a proper prefix of the

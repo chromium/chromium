@@ -139,8 +139,8 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->scroll_anchor_selector = u"#selector";
     frame_state->scroll_anchor_offset = gfx::PointF(2.5, 3.5);
     frame_state->scroll_anchor_simhash = 12345;
-    frame_state->app_history_key = base::UTF8ToUTF16("abcd");
-    frame_state->app_history_id = base::UTF8ToUTF16("wxyz");
+    frame_state->app_history_key = u"abcd";
+    frame_state->app_history_id = u"wxyz";
   }
 
   void PopulateHttpBody(
@@ -208,8 +208,8 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->document_state.push_back(u"displayName");
 
     if (version >= 29) {
-      frame_state->app_history_key = base::UTF8ToUTF16("abcdef");
-      frame_state->app_history_id = base::UTF8ToUTF16("uvwxyz");
+      frame_state->app_history_key = u"abcdef";
+      frame_state->app_history_id = u"uvwxyz";
     } else {
       frame_state->app_history_key = base::nullopt;
       frame_state->app_history_id = base::nullopt;

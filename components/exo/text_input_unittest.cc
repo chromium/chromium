@@ -337,7 +337,7 @@ TEST_F(TextInputTest, SurroundingText) {
 }
 
 TEST_F(TextInputTest, GetTextRange) {
-  std::u16string text = base::UTF8ToUTF16("surrounding text");
+  std::u16string text = u"surrounding text";
   text_input()->SetSurroundingText(text, 11, 12);
 
   SetCompositionText("composition");

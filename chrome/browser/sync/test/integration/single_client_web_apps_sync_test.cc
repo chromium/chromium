@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   WebApplicationInfo info;
   std::string name = "Test name";
   info.title = base::UTF8ToUTF16(name);
-  info.description = base::UTF8ToUTF16("Test description");
+  info.description = u"Test description";
   info.start_url = GURL("http://www.chromium.org/path");
   info.scope = GURL("http://www.chromium.org/");
   web_app::AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncBookmarkAppTest,
   WebApplicationInfo info;
   std::string name = "Test name";
   info.title = base::UTF8ToUTF16(name);
-  info.description = base::UTF8ToUTF16("Test description");
+  info.description = u"Test description";
   info.start_url = GURL("http://www.chromium.org/path");
   info.scope = GURL("http://www.chromium.org/");
   web_app::AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);

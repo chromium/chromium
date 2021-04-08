@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DISABLED_MultiProfile) {
   BookmarkModel* bookmark_model1 = WaitForBookmarkModel(browser()->profile());
 
   g_browser_process->profile_manager()->CreateMultiProfileAsync(
-      base::UTF8ToUTF16("New Profile"), 0, ProfileManager::CreateCallback());
+      u"New Profile", 0, ProfileManager::CreateCallback());
   Browser* browser2 = ui_test_utils::WaitForBrowserToOpen();
   BookmarkModel* bookmark_model2 = WaitForBookmarkModel(browser2->profile());
 

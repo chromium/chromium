@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest,
   // invoked (so they can do things like sign in the profile, etc).
   base::RunLoop run_loop;
   ProfileManager::CreateMultiProfileAsync(
-      base::UTF8ToUTF16("New Profile"),
+      u"New Profile",
       /*icon_index=*/0,
       base::BindRepeating(&ProfileCreationComplete,
                           run_loop.QuitWhenIdleClosure()));

@@ -739,8 +739,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   // Wait for the paste event to propagate to the web contents.
   // The web contents will notify us a paste occurred by updating page title.
   ignore_result(
-      content::TitleWatcher(web_contents, base ::UTF8ToUTF16("Paste 1"))
-          .WaitAndGetTitle());
+      content::TitleWatcher(web_contents, u"Paste 1").WaitAndGetTitle());
 
   // Confirm the expected paste data.
   base::ListValue last_paste = GetLastPaste();
@@ -760,8 +759,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   // Wait for the paste event to propagate to the web contents.
   // The web contents will notify us a paste occurred by updating page title.
   ignore_result(
-      content::TitleWatcher(web_contents, base ::UTF8ToUTF16("Paste 2"))
-          .WaitAndGetTitle());
+      content::TitleWatcher(web_contents, u"Paste 2").WaitAndGetTitle());
 
   // Confirm the expected paste data.
   last_paste = GetLastPaste();
@@ -789,7 +787,7 @@ class ClipboardHistoryTextfieldBrowserTest
     // Create a widget containing a single, focusable textfield.
     widget_ = CreateTestWidget();
     textfield_ = widget_->SetContentsView(std::make_unique<views::Textfield>());
-    textfield_->SetAccessibleName(base::UTF8ToUTF16("Textfield"));
+    textfield_->SetAccessibleName(u"Textfield");
     textfield_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
     // Show the widget.

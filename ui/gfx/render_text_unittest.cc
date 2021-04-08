@@ -2507,7 +2507,7 @@ TEST_F(RenderTextTest, MultilineElideRTL) {
   RenderText* render_text = GetRenderText();
   SetGlyphWidth(5);
 
-  std::u16string input_text(UTF8ToUTF16("זהו המסר של ההודעה"));
+  std::u16string input_text(u"זהו המסר של ההודעה");
   render_text->SetText(input_text);
   render_text->SetCursorEnabled(false);
   render_text->SetMultiline(true);
@@ -2914,7 +2914,7 @@ TEST_F(RenderTextTest, MoveCursor_Word) {
 
 TEST_F(RenderTextTest, MoveCursor_Word_RTL) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("אבג דהו זחט"));
+  render_text->SetText(u"אבג דהו זחט");
   std::vector<Range> expected;
 
   // SELECTION_NONE.
@@ -4431,7 +4431,7 @@ TEST_F(RenderTextTest, MoveLeftRightByWordInTextWithMultiSpaces) {
 TEST_F(RenderTextTest, MoveLeftRightByWordInThaiText) {
   RenderText* render_text = GetRenderText();
   // เรียกดูรวดเร็ว is broken to เรียก|ดู|รวดเร็ว.
-  render_text->SetText(UTF8ToUTF16("เรียกดูรวดเร็ว"));
+  render_text->SetText(u"เรียกดูรวดเร็ว");
   render_text->MoveCursor(LINE_BREAK, CURSOR_LEFT, SELECTION_NONE);
   EXPECT_EQ(0U, render_text->cursor_position());
   render_text->MoveCursor(WORD_BREAK, CURSOR_RIGHT, SELECTION_NONE);
@@ -4546,7 +4546,7 @@ TEST_F(RenderTextTest, DirectedSelections) {
   EXPECT_EQ(Range(4, 4), render_text->selection());  // Collapse right.
 
   auto ToHebrew = [](const char* digits) -> std::u16string {
-    const std::u16string hebrew = UTF8ToUTF16("אבגדח");  // Roughly "abcde".
+    const std::u16string hebrew = u"אבגדח";  // Roughly "abcde".
     DCHECK_EQ(5u, hebrew.size());
     std::u16string result;
     for (const char* d = digits; *d; d++)
@@ -5623,9 +5623,9 @@ TEST_F(RenderTextTest, SelectionKeepsLigatures) {
 TEST_F(RenderTextTest, ScriptExtensionsDoNotBreak) {
   // Apparently ramen restaurants prefer "らーめん" over "らあめん". The "dash"
   // is the long sound symbol and usually just appears in Katakana writing.
-  const std::u16string ramen_hiragana = UTF8ToUTF16("らーめん");
-  const std::u16string ramen_katakana = UTF8ToUTF16("ラーメン");
-  const std::u16string ramen_mixed = UTF8ToUTF16("らあメン");
+  const std::u16string ramen_hiragana = u"らーめん";
+  const std::u16string ramen_katakana = u"ラーメン";
+  const std::u16string ramen_mixed = u"らあメン";
 
   EXPECT_EQ(std::vector<std::u16string>({ramen_hiragana}),
             RunsFor(ramen_hiragana));
@@ -5642,11 +5642,11 @@ TEST_F(RenderTextTest, WhitespaceDoesBreak) {
   // Title of the Wikipedia page for "bit". ASCII spaces. In Hebrew and English.
   // Note that the hyphens that Wikipedia uses are different. English uses
   // ASCII (U+002D) "hyphen minus", Hebrew uses the U+2013 "EN Dash".
-  const std::u16string ascii_space_he = UTF8ToUTF16("סיבית – ויקיפדיה");
+  const std::u16string ascii_space_he = u"סיבית – ויקיפדיה";
   const std::u16string ascii_space_en = u"Bit - Wikipedia";
 
   // This says "thank you very much" with a full-width non-ascii space (U+3000).
-  const std::u16string full_width_space = UTF8ToUTF16("ども　ありがと");
+  const std::u16string full_width_space = u"ども　ありがと";
 
   EXPECT_EQ(ToString16Vec({"סיבית", " ", "–", " ", "ויקיפדיה"}),
             RunsFor(ascii_space_he));
@@ -6504,7 +6504,7 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsByEmoji) {
   EXPECT_EQ("[0][1->2][3][4]", GetRunListStructureString());
 
   // Ensure non-latin 「foo」 brackets around Emoji correctly break runs.
-  render_text->SetText(UTF8ToUTF16("「🦋」「"));
+  render_text->SetText(u"「🦋」「");
   EXPECT_EQ(ToString16Vec({"「", "🦋", "」「"}), GetRunListStrings());
   // Note 🦋 is a surrogate pair [1->2].
   EXPECT_EQ("[0][1->2][3->4]", GetRunListStructureString());
@@ -6681,7 +6681,7 @@ TEST_F(RenderTextTest, EmojiFlagGlyphCount) {
   RenderText* render_text = GetRenderText();
   render_text->SetDisplayRect(Rect(1000, 1000));
   // Two flags: UK and Japan. Note macOS 10.9 only has flags for 10 countries.
-  std::u16string text(UTF8ToUTF16("🇬🇧🇯🇵"));
+  std::u16string text(u"🇬🇧🇯🇵");
   // Each flag is 4 UTF16 characters (2 surrogate pair code points).
   EXPECT_EQ(8u, text.length());
   render_text->SetText(text);
@@ -7858,7 +7858,7 @@ TEST_F(RenderTextTest, GetSubstringBounds) {
   const float kGlyphWidth = 5;
   SetGlyphWidth(kGlyphWidth);
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("abc"));
+  render_text->SetText(u"abc");
   render_text->SetCursorEnabled(false);
   render_text->SetElideBehavior(NO_ELIDE);
 
@@ -7891,7 +7891,7 @@ TEST_F(RenderTextTest, GetSubstringBoundsFloatingPoint) {
   SetGlyphWidth(kGlyphWidth);
   RenderText* render_text = GetRenderText();
   render_text->SetDisplayRect(Rect(200, 1000));
-  render_text->SetText(UTF8ToUTF16("abcdef"));
+  render_text->SetText(u"abcdef");
   gfx::Rect bounds = GetSubstringBoundsUnion(Range(1, 2));
   // The bounds should be rounded outwards so that the full substring is always
   // contained in them.
@@ -7905,7 +7905,7 @@ TEST_F(RenderTextTest, GetSubstringBoundsInt) {
   SetGlyphWidth(kGlyphWidth);
   RenderText* render_text = GetRenderText();
   render_text->SetDisplayRect(Rect(200, 1000));
-  render_text->SetText(UTF8ToUTF16("abcdef"));
+  render_text->SetText(u"abcdef");
   gfx::Rect bounds = GetSubstringBoundsUnion(Range(1, 2));
   EXPECT_EQ(kGlyphWidth, bounds.x());
   EXPECT_EQ(2 * kGlyphWidth, bounds.right());
@@ -8135,7 +8135,7 @@ TEST_F(RenderTextTest, TeluguGraphemeBoundaries) {
   // combine into a ligature "cluster". But, unlike ligatures in English (e.g.
   // the "ffl" in "waffle"), this Telugu ligature is laid out vertically, with
   // both graphemes occupying the same horizontal space.
-  render_text->SetText(UTF8ToUTF16("క్రొ"));
+  render_text->SetText(u"క్రొ");
 
   const int whole_width = render_text->GetStringSize().width();
   // Sanity check. A typical width is 8 pixels. Anything less than 6 could screw

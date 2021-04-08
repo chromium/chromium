@@ -4335,8 +4335,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   size_t starting_origin_request_count = OriginServerRequestCount();
 
   ui_test_utils::NavigateToURL(browser(), prefetch_url);
-  EXPECT_EQ(base::UTF8ToUTF16("Title Of Awesomeness"),
-            GetWebContents()->GetTitle());
+  EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
 
   VerifyOriginRequestsAreIsolated({prefetch_url.path()});
 

@@ -72,7 +72,7 @@ class FileSearchProviderTest : public testing::Test {
 TEST_F(FileSearchProviderTest, NoResultsInZeroState) {
   WriteFile("file.txt");
 
-  provider_->Start(base::UTF8ToUTF16(""));
+  provider_->Start(u"");
   Wait();
 
   EXPECT_TRUE(provider_->results().empty());
