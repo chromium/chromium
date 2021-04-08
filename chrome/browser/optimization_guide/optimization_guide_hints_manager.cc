@@ -511,7 +511,7 @@ void OptimizationGuideHintsManager::UpdateComponentHints(
       optimization_guide::prefs::kPendingHintsProcessingVersion);
 
   if (!config) {
-    std::move(update_closure).Run();
+    MaybeRunUpdateClosure(std::move(update_closure));
     return;
   }
 
