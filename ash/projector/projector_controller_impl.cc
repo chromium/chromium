@@ -35,16 +35,17 @@ void ProjectorControllerImpl::OnSpeechRecognitionAvailable(bool available) {
 
 void ProjectorControllerImpl::OnTranscription(
     const std::u16string& text,
-    base::TimeDelta audio_start_time,
-    base::TimeDelta audio_end_time,
-    const std::vector<base::TimeDelta>& word_offsets,
+    base::Optional<base::TimeDelta> start_time,
+    base::Optional<base::TimeDelta> end_time,
+    const base::Optional<std::vector<base::TimeDelta>>& word_offsets,
     bool is_final) {
   std::string transcript = base::UTF16ToUTF8(text);
 
-  if (is_final) {
+  if (is_final && start_time.has_value() && end_time.has_value() &&
+      word_offsets.has_value()) {
     // Records final transcript.
-    metadata_controller_->RecordTranscription(transcript, audio_start_time,
-                                              audio_end_time, word_offsets);
+    metadata_controller_->RecordTranscription(
+        transcript, start_time.value(), end_time.value(), word_offsets.value());
   }
 
   // Render transcription.

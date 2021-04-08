@@ -9,20 +9,29 @@
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "media/base/media_switches.h"
 
 namespace {
 // On-device speech recognition is only available in US English.
 const char kEnglishLanguageCode[] = "en-US";
+
+bool ShouldUseWebSpeechFallback() {
+  return !base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
+}
+
 }  // namespace
 
 ProjectorClientImpl::ProjectorClientImpl() {
   ash::ProjectorController::Get()->SetClient(this);
-  bool soda_available =
-      OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
-          kEnglishLanguageCode);
 
-  ash::ProjectorController::Get()->OnSpeechRecognitionAvailable(soda_available);
-  if (!soda_available) {
+  bool recognition_available =
+      OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
+          kEnglishLanguageCode) ||
+      ShouldUseWebSpeechFallback();
+
+  ash::ProjectorController::Get()->OnSpeechRecognitionAvailable(
+      recognition_available);
+  if (!recognition_available) {
     observed_soda_installer_.Observe(speech::SodaInstaller::GetInstance());
   }
 }
@@ -34,7 +43,8 @@ void ProjectorClientImpl::StartSpeechRecognition() {
   // has been informed that recognition is available.
   // TODO(crbug.com/1165437): Dynamically determine language code.
   DCHECK(OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
-      kEnglishLanguageCode));
+             kEnglishLanguageCode) ||
+         ShouldUseWebSpeechFallback());
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
       weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetPrimaryUserProfile(),
@@ -51,10 +61,17 @@ void ProjectorClientImpl::OnSpeechResult(
     const std::u16string& text,
     bool is_final,
     const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>& timing) {
-  DCHECK(timing.has_value());
-  ash::ProjectorController::Get()->OnTranscription(
-      text, timing->audio_start_time, timing->audio_end_time,
-      timing->word_offsets, is_final);
+  DCHECK(timing.has_value() || ShouldUseWebSpeechFallback());
+
+  if (timing.has_value()) {
+    ash::ProjectorController::Get()->OnTranscription(
+        text, timing->audio_start_time, timing->audio_end_time,
+        timing->word_offsets, is_final);
+  } else {
+    // This is only used for development.
+    ash::ProjectorController::Get()->OnTranscription(
+        text, base::nullopt, base::nullopt, base::nullopt, is_final);
+  }
 }
 
 void ProjectorClientImpl::OnSpeechRecognitionStateChanged(

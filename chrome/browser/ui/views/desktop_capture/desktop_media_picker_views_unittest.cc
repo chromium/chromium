@@ -398,9 +398,9 @@ class ProjectorControllerMock : public ash::ProjectorController {
   MOCK_METHOD1(OnSpeechRecognitionAvailable, void(bool));
   MOCK_METHOD5(OnTranscription,
                void(const std::u16string&,
-                    base::TimeDelta,
-                    base::TimeDelta,
-                    const std::vector<base::TimeDelta>&,
+                    base::Optional<base::TimeDelta>,
+                    base::Optional<base::TimeDelta>,
+                    const base::Optional<std::vector<base::TimeDelta>>&,
                     bool));
   MOCK_METHOD1(SetProjectorToolsVisible, void(bool));
   MOCK_METHOD2(StartProjectorSession,

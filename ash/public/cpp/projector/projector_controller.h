@@ -37,11 +37,12 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   virtual void OnSpeechRecognitionAvailable(bool available) = 0;
 
   // Called when transcription result from mic input is ready.
-  virtual void OnTranscription(const std::u16string& text,
-                               base::TimeDelta start_time,
-                               base::TimeDelta end_time,
-                               const std::vector<base::TimeDelta>& word_offsets,
-                               bool is_final) = 0;
+  virtual void OnTranscription(
+      const std::u16string& text,
+      base::Optional<base::TimeDelta> start_time,
+      base::Optional<base::TimeDelta> end_time,
+      const base::Optional<std::vector<base::TimeDelta>>& word_offsets,
+      bool is_final) = 0;
 
   // Sets projector toolbar visibility.
   virtual void SetProjectorToolsVisible(bool is_visible) = 0;
