@@ -11,6 +11,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/linux_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/posix/global_descriptors.h"
@@ -149,6 +150,11 @@ base::FilePath PlatformCrashpadInitialization(
     }
 
     annotations["plat"] = std::string("Linux");
+
+#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    // crash_reporter provides it's own Chromium OS values for lsb-release.
+    annotations["lsb-release"] = base::GetLinuxDistro();
+#endif
 
     std::vector<std::string> arguments;
     if (crash_reporter_client->ShouldMonitorCrashHandlerExpensively()) {
