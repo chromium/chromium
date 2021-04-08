@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/time/default_clock.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/permissions/permission_actions_history.h"
@@ -87,10 +88,12 @@ PredictionBasedPermissionUiSelector::~PredictionBasedPermissionUiSelector() =
 void PredictionBasedPermissionUiSelector::SelectUiToUse(
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
+  VLOG(1) << "[CPSS] Selector activated";
   callback_ = std::move(callback);
   last_request_grant_likelihood_ = base::nullopt;
 
   if (!IsAllowedToUseAssistedPrompts()) {
+    VLOG(1) << "[CPSS] Configuration does not allows CPSS requests";
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
@@ -98,11 +101,17 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   auto features = BuildPredictionRequestFeatures(request);
   if (features.requested_permission_counts.total() <
       kRequestedPermissionMinimumHistoricalActions) {
+    VLOG(1) << "[CPSS] Historic prompt count ("
+            << features.requested_permission_counts.total()
+            << ") is smaller than threshold ("
+            << kRequestedPermissionMinimumHistoricalActions << ")";
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
 
   if (likelihood_override_for_testing_.has_value()) {
+    VLOG(1) << "[CPSS] Using likelihood override value that was provided via "
+               "command line";
     if (ShouldPredictionTriggerQuietUi(
             likelihood_override_for_testing_.value())) {
       std::move(callback_).Run(
@@ -118,6 +127,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   permissions::PredictionService* service =
       PredictionServiceFactory::GetForProfile(profile_);
 
+  VLOG(1) << "[CPSS] Starting prediction service request";
   request_ = std::make_unique<PredictionServiceRequest>(
       service, features,
       base::BindOnce(
@@ -162,12 +172,17 @@ void PredictionBasedPermissionUiSelector::LookupReponseReceived(
     std::unique_ptr<permissions::GeneratePredictionsResponse> response) {
   request_.reset();
   if (!lookup_succesful || !response || response->prediction_size() == 0) {
+    VLOG(1) << "[CPSS] Prediction service request failed";
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
 
   last_request_grant_likelihood_ =
       response->prediction(0).grant_likelihood().discretized_likelihood();
+
+  VLOG(1)
+      << "[CPSS] Prediction service request succeeded and received likelihood: "
+      << last_request_grant_likelihood_.value();
 
   if (ShouldPredictionTriggerQuietUi(last_request_grant_likelihood_.value())) {
     std::move(callback_).Run(Decision(
