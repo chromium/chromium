@@ -57,8 +57,12 @@ class BrowserDataMigrator {
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, GetTargetInfo);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, Migrate);
 
-  // Handles the migration on a worker thread.
-  void MigrateInternal();
+  // Handles the migration on a worker thread. Returns whether a migration
+  // occurred.
+  bool MigrateInternal();
+  // Called when the migration is finished on the UI thread.
+  static void MigrateInternalFinishedUIThread(base::OnceClosure callback,
+                                              bool did_migrate);
   // Checks if migration should happen. Called on UI thread.
   static bool IsMigrationRequiredOnUI(const user_manager::User* user);
   // Checks if migration should happen. Called on worker thread.

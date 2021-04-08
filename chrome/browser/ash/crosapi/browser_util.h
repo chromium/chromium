@@ -70,6 +70,12 @@ extern const char kLacrosStabilityMoreStable[];
 // Boolean preference. Whether to launch lacros-chrome on login.
 extern const char kLaunchOnLoginPref[];
 
+// A boolean preference that records whether the user data dir has been cleared.
+// We intentionally number this as we anticipate we might need to clear the user
+// data dir multiple times. This preference tracks the breaking change
+// introduced by account_manager in M91/M92 timeframe.
+extern const char kClearUserDataDir1Pref[];
+
 // Registers user profile preferences related to the lacros-chrome binary.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -130,6 +136,11 @@ bool IsLacrosAllowedToLaunch();
 // Returns true if |window| is an exo ShellSurface window representing a Lacros
 // browser.
 bool IsLacrosWindow(const aura::Window* window);
+
+// Returns true if |metadata| is appropriately formatted, contains a lacros
+// version, and that lacros versions supports the new backwards-incompatible
+// account_manager logic.
+bool DoesMetadataSupportNewAccountManager(base::Value* metadata);
 
 // Returns the UUID and version for all tracked interfaces. Exposed for testing.
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions();

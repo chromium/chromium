@@ -136,6 +136,24 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // is was validated by Ash.
   void SetDeviceAccountPolicy(const std::string& policy_blob);
 
+  // Parameters used to launch Lacros that are calculated on a background
+  // sequence. Public so that it can be used from private static functions.
+  struct LaunchParamsFromBackground {
+   public:
+    LaunchParamsFromBackground();
+    LaunchParamsFromBackground(LaunchParamsFromBackground&&);
+    LaunchParamsFromBackground(const LaunchParamsFromBackground&) = delete;
+    LaunchParamsFromBackground& operator=(const LaunchParamsFromBackground&) =
+        delete;
+    ~LaunchParamsFromBackground();
+
+    // An fd for a log file.
+    base::ScopedFD logfd;
+
+    // Whether this version of Lacros supports the new account manager.
+    bool use_new_account_manager = false;
+  };
+
  protected:
   enum class State {
     // Lacros is not initialized yet.
@@ -238,7 +256,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Starts the lacros-chrome process and redirects stdout/err to file pointed
   // by logfd.
   void StartWithLogFile(mojom::InitialBrowserAction initial_browser_action,
-                        base::ScopedFD logfd);
+                        LaunchParamsFromBackground params);
 
   // BrowserServiceHostObserver:
   void OnBrowserServiceConnected(CrosapiId id,

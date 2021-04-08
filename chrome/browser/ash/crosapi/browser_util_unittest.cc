@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -346,6 +347,65 @@ TEST_F(BrowserUtilTest, GetInterfaceVersions) {
   base::Token token;
   auto it = versions.find(token);
   EXPECT_EQ(it, versions.end());
+}
+
+TEST_F(BrowserUtilTest, MetadataMissing) {
+  EXPECT_FALSE(browser_util::DoesMetadataSupportNewAccountManager(nullptr));
+}
+
+TEST_F(BrowserUtilTest, MetadataMissingVersion) {
+  std::string json_string = R"###(
+   {
+     "content": {
+     },
+     "metadata_version": 1
+   }
+  )###";
+  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  EXPECT_FALSE(
+      browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
+}
+
+TEST_F(BrowserUtilTest, MetadataVersionBadFormat) {
+  std::string json_string = R"###(
+   {
+     "content": {
+       "version": "91.0.4469"
+     },
+     "metadata_version": 1
+   }
+  )###";
+  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  EXPECT_FALSE(
+      browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
+}
+
+TEST_F(BrowserUtilTest, MetadataOldVersion) {
+  std::string json_string = R"###(
+   {
+     "content": {
+       "version": "91.0.4469.5"
+     },
+     "metadata_version": 1
+   }
+  )###";
+  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  EXPECT_FALSE(
+      browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
+}
+
+TEST_F(BrowserUtilTest, MetadataNewVersion) {
+  std::string json_string = R"###(
+   {
+     "content": {
+       "version": "9999.0.4469.5"
+     },
+     "metadata_version": 1
+   }
+  )###";
+  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  EXPECT_TRUE(
+      browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
 }
 
 }  // namespace crosapi

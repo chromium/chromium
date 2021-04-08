@@ -60,11 +60,12 @@ void BrowserDataMigrator::MaybeMigrate(const UserContext& user_context,
   std::unique_ptr<BrowserDataMigrator> browser_data_migrator =
       std::make_unique<BrowserDataMigrator>(profile_data_dir);
 
-  base::ThreadPool::PostTaskAndReply(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&BrowserDataMigrator::MigrateInternal,
                      std::move(browser_data_migrator)),
-      std::move(callback));
+      base::BindOnce(&BrowserDataMigrator::MigrateInternalFinishedUIThread,
+                     std::move(callback)));
 }
 
 // static
@@ -84,9 +85,9 @@ BrowserDataMigrator::~BrowserDataMigrator() = default;
 // only web browser, update the underlying logic of migration from copy to move.
 // Note that during testing phase we are copying files and leaving files in
 // original location intact. We will allow these two states to diverge.
-void BrowserDataMigrator::MigrateInternal() {
+bool BrowserDataMigrator::MigrateInternal() {
   if (!IsMigrationRequiredOnWorker())
-    return;
+    return false;
 
   base::ElapsedTimer timer;
 
@@ -96,23 +97,23 @@ void BrowserDataMigrator::MigrateInternal() {
                  << " already exists indicating migration was aborted on the"
                     "previous attempt.";
     if (!base::DeletePathRecursively(tmp_dir_)) {
-      return;
+      return false;
     }
   }
 
   TargetInfo target_info = GetTargetInfo();
 
   if (!HasEnoughDiskSpace(target_info))
-    return;
+    return false;
 
   if (!CopyToTmpDir(target_info)) {
     base::DeletePathRecursively(tmp_dir_);
-    return;
+    return false;
   }
 
   if (!MoveTmpToTargetDir()) {
     base::DeletePathRecursively(tmp_dir_);
-    return;
+    return false;
   }
 
   // TODO(crbug.com/1178702): Add UMA data collection here for success status,
@@ -120,6 +121,25 @@ void BrowserDataMigrator::MigrateInternal() {
   LOG(WARNING) << "BrowserDataMigrator::Migrate took "
                << timer.Elapsed().InMilliseconds() << " ms and migrated "
                << target_info.total_byte_count / (1000 * 1000) << " MBs.";
+  return true;
+}
+
+void BrowserDataMigrator::MigrateInternalFinishedUIThread(
+    base::OnceClosure callback,
+    bool did_migrate) {
+  if (did_migrate) {
+    // If we did a migration, then we should set kClearUserDataDir1Pref. Note
+    // that if we did the migration, then the new user-data-dir has the ash
+    // profile as the main lacros profile.
+    //
+    // We only needed to delete old user-data-dirs because of the possibility
+    // that the main profile might not match the ash profile.
+    //
+    // TODO(https://crbug.com/1197220): Set the preference
+    // kClearUserDataDir1Pref to true. It's unclear whether the profile is
+    // ready for use at this point in the startup cycle.
+  }
+  std::move(callback).Run();
 }
 
 bool BrowserDataMigrator::IsMigrationRequiredOnWorker() const {

@@ -20,6 +20,8 @@
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
@@ -232,9 +234,12 @@ const char kLacrosStabilityLessStable[] = "less-stable";
 const char kLacrosStabilityMoreStable[] = "more-stable";
 
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
+const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kLaunchOnLoginPref, /*default_value=*/false);
+  registry->RegisterBooleanPref(kClearUserDataDir1Pref,
+                                /*default_value=*/false);
 }
 
 base::FilePath GetUserDataDir() {
@@ -425,6 +430,41 @@ bool IsLacrosWindow(const aura::Window* window) {
   if (!app_id)
     return false;
   return base::StartsWith(*app_id, kLacrosAppIdPrefix);
+}
+
+// Assuming the metadata exists, parse the version and check if it contains the
+// non-backwards-compatible account_manager change.
+// A typical format for metadata is:
+// {
+//   "content": {
+//     "version": "91.0.4469.5"
+//   },
+//   "metadata_version": 1
+// }
+bool DoesMetadataSupportNewAccountManager(base::Value* metadata) {
+  if (!metadata)
+    return false;
+
+  base::Value* version = metadata->FindPath("content.version");
+  if (!version || !version->is_string())
+    return false;
+
+  std::string version_str = version->GetString();
+  std::vector<std::string> versions_str = base::SplitString(
+      version_str, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (versions_str.size() != 4)
+    return false;
+
+  int major_version = 0;
+  int minor_version = 0;
+  if (!base::StringToInt(versions_str[0], &major_version))
+    return false;
+  if (!base::StringToInt(versions_str[2], &minor_version))
+    return false;
+
+  // TODO(https://crbug.com/1197220): Come up with more appropriate major/minor
+  // version numbers.
+  return major_version >= 1000 && minor_version >= 0;
 }
 
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {

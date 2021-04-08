@@ -20,8 +20,10 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -66,6 +68,8 @@ namespace crosapi {
 
 namespace {
 
+using LaunchParamsFromBackground = BrowserManager::LaunchParamsFromBackground;
+
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
@@ -87,7 +91,36 @@ base::FilePath LacrosLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
 }
 
-base::ScopedFD CreateLogFile() {
+// This method runs some work on a background thread prior to launching lacros.
+// The returns struct is used by the main thread as parameters to launch Lacros.
+LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
+    base::FilePath lacros_dir,
+    bool cleared_user_data_dir) {
+  LaunchParamsFromBackground params;
+
+  // This code wipes the Lacros --user-data-dir exactly once due to an
+  // incompatible account_manager change. This code can be removed when ash is
+  // newer than M92, as we can then assume that all relevant users have been
+  // migrated.
+  //
+  // First, check for Lacros metadata.
+  base::FilePath metadata_path = lacros_dir.Append("metadata.json");
+  JSONFileValueDeserializer deserializer(metadata_path);
+  int error_code = 0;
+  std::string error_message;
+  std::unique_ptr<base::Value> metadata =
+      deserializer.Deserialize(&error_code, &error_message);
+
+  if (browser_util::DoesMetadataSupportNewAccountManager(metadata.get())) {
+    params.use_new_account_manager = true;
+
+    // If we want to use the new account manager, and we haven't yet cleared the
+    // user data dir, do so.
+    if (!cleared_user_data_dir) {
+      base::DeletePathRecursively(browser_util::GetUserDataDir());
+    }
+  }
+
   base::FilePath::StringType log_path = LacrosLogPath().value();
 
   // Delete old log file if exists.
@@ -95,7 +128,7 @@ base::ScopedFD CreateLogFile() {
     if (errno != ENOENT) {
       // unlink() failed for reason other than the file not existing.
       PLOG(ERROR) << "Failed to unlink the log file " << log_path;
-      return base::ScopedFD();
+      return params;
     }
 
     // If log file does not exist, most likely the user directory does not exist
@@ -106,7 +139,7 @@ base::ScopedFD CreateLogFile() {
       LOG(ERROR) << "Failed to make directory "
                  << browser_util::GetUserDataDir()
                  << base::File::ErrorToString(error);
-      return base::ScopedFD();
+      return params;
     }
   }
 
@@ -115,10 +148,11 @@ base::ScopedFD CreateLogFile() {
 
   if (fd < 0) {
     PLOG(ERROR) << "Failed to get file descriptor for " << log_path;
-    return base::ScopedFD();
+    return params;
   }
 
-  return base::ScopedFD(fd);
+  params.logfd = base::ScopedFD(fd);
+  return params;
 }
 
 std::string GetXdgRuntimeDir() {
@@ -421,16 +455,31 @@ void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
 
   SetState(State::CREATING_LOG_FILE);
 
+  bool cleared_user_data_dir =
+      ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
+          browser_util::kClearUserDataDir1Pref);
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&CreateLogFile),
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
+                     cleared_user_data_dir),
       base::BindOnce(&BrowserManager::StartWithLogFile,
                      weak_factory_.GetWeakPtr(), initial_browser_action));
 }
 
 void BrowserManager::StartWithLogFile(
     mojom::InitialBrowserAction initial_browser_action,
-    base::ScopedFD logfd) {
+    LaunchParamsFromBackground params) {
   DCHECK_EQ(state_, State::CREATING_LOG_FILE);
+
+  // If we're using the new account manager, then we must have already cleared
+  // the user data dir. Record this regardless of whether a clear actually
+  // happened in this invocation.
+  if (params.use_new_account_manager) {
+    ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(
+        browser_util::kClearUserDataDir1Pref, true);
+
+    // TODO(https://crbug.com/1197220): Set the appropriate BrowserInitParams.
+  }
 
   std::string chrome_path = lacros_path_.MaybeAsASCII() + "/chrome";
   LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
@@ -496,15 +545,17 @@ void BrowserManager::StartWithLogFile(
   }
 
   // If logfd is valid, enable logging and redirect stdout/stderr to logfd.
-  if (logfd.is_valid()) {
+  if (params.logfd.is_valid()) {
     // The next flag will make chrome log only via stderr. See
     // DetermineLoggingDestination in logging_chrome.cc.
     argv.push_back("--enable-logging=stderr");
 
     // These options will assign stdout/stderr fds to logfd in the fd table of
     // the new process.
-    options.fds_to_remap.push_back(std::make_pair(logfd.get(), STDOUT_FILENO));
-    options.fds_to_remap.push_back(std::make_pair(logfd.get(), STDERR_FILENO));
+    options.fds_to_remap.push_back(
+        std::make_pair(params.logfd.get(), STDOUT_FILENO));
+    options.fds_to_remap.push_back(
+        std::make_pair(params.logfd.get(), STDERR_FILENO));
   }
 
   base::ScopedFD startup_fd = browser_util::CreateStartupData(
@@ -684,6 +735,11 @@ void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
         std::vector<uint8_t>(policy_blob.begin(), policy_blob.end()));
   }
 }
+
+LaunchParamsFromBackground::LaunchParamsFromBackground() = default;
+LaunchParamsFromBackground::LaunchParamsFromBackground(
+    LaunchParamsFromBackground&&) = default;
+LaunchParamsFromBackground::~LaunchParamsFromBackground() = default;
 
 void BrowserManager::StartKeepAlive(Feature feature) {
   DCHECK(keep_alive_features_.find(feature) == keep_alive_features_.end())
