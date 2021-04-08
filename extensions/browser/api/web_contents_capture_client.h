@@ -26,7 +26,12 @@ class WebContentsCaptureClient {
  protected:
   virtual ~WebContentsCaptureClient() {}
 
-  virtual bool IsScreenshotEnabled(
+  enum class ScreenshotAccess {
+    kEnabled,
+    kDisabledByPreferences,
+    kDisabledByDlp,
+  };
+  virtual ScreenshotAccess GetScreenshotAccess(
       content::WebContents* web_contents) const = 0;
   virtual bool ClientAllowsTransparency() = 0;
 
@@ -35,6 +40,7 @@ class WebContentsCaptureClient {
     FAILURE_REASON_READBACK_FAILED,
     FAILURE_REASON_ENCODING_FAILED,
     FAILURE_REASON_SCREEN_SHOTS_DISABLED,
+    FAILURE_REASON_SCREEN_SHOTS_DISABLED_BY_DLP,
     FAILURE_REASON_VIEW_INVISIBLE,
   };
   CaptureResult CaptureAsync(

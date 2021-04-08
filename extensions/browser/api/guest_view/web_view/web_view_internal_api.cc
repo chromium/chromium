@@ -327,9 +327,14 @@ WebViewInternalCaptureVisibleRegionFunction::Run() {
 
   return RespondNow(Error(GetErrorMessage(capture_result)));
 }
-bool WebViewInternalCaptureVisibleRegionFunction::IsScreenshotEnabled(
+
+WebContentsCaptureClient::ScreenshotAccess
+WebViewInternalCaptureVisibleRegionFunction::GetScreenshotAccess(
     content::WebContents* web_contents) const {
-  return !ExtensionsBrowserClient::Get()->IsScreenshotRestricted(web_contents);
+  if (ExtensionsBrowserClient::Get()->IsScreenshotRestricted(web_contents))
+    return ScreenshotAccess::kDisabledByDlp;
+
+  return ScreenshotAccess::kEnabled;
 }
 
 bool WebViewInternalCaptureVisibleRegionFunction::ClientAllowsTransparency() {
@@ -366,6 +371,7 @@ std::string WebViewInternalCaptureVisibleRegionFunction::GetErrorMessage(
       reason_description = "view is invisible";
       break;
     case FAILURE_REASON_SCREEN_SHOTS_DISABLED:
+    case FAILURE_REASON_SCREEN_SHOTS_DISABLED_BY_DLP:
       reason_description = "screenshot has been disabled";
       break;
     case OK:

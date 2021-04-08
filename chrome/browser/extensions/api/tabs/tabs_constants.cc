@@ -105,6 +105,9 @@ const char kSupportedInWindowsOnlyError[] = "Supported in Windows only";
 const char kInvalidWindowTypeError[] = "Invalid value for type";
 const char kInvalidWindowStateError[] = "Invalid value for state";
 const char kScreenshotsDisabled[] = "Taking screenshots has been disabled";
+const char kScreenshotsDisabledByDlp[] =
+    "Administrator policy disables screen capture when confidential content is "
+    "visible";
 const char kCannotUpdateMuteCaptured[] =
     "Cannot update mute state for tab *, tab has audio or video currently "
     "being captured";

@@ -1898,14 +1898,18 @@ TabsCaptureVisibleTabFunction::TabsCaptureVisibleTabFunction()
     : chrome_details_(this) {
 }
 
-bool TabsCaptureVisibleTabFunction::IsScreenshotEnabled(
+WebContentsCaptureClient::ScreenshotAccess
+TabsCaptureVisibleTabFunction::GetScreenshotAccess(
     content::WebContents* web_contents) const {
   PrefService* service =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
-  if (service->GetBoolean(prefs::kDisableScreenshots)) {
-    return false;
-  }
-  return !tabs_util::IsScreenshotRestricted(web_contents);
+  if (service->GetBoolean(prefs::kDisableScreenshots))
+    return ScreenshotAccess::kDisabledByPreferences;
+
+  if (tabs_util::IsScreenshotRestricted(web_contents))
+    return ScreenshotAccess::kDisabledByDlp;
+
+  return ScreenshotAccess::kEnabled;
 }
 
 bool TabsCaptureVisibleTabFunction::ClientAllowsTransparency() {
@@ -1996,6 +2000,8 @@ std::string TabsCaptureVisibleTabFunction::CaptureResultToErrorMessage(
       break;
     case FAILURE_REASON_SCREEN_SHOTS_DISABLED:
       return tabs_constants::kScreenshotsDisabled;
+    case FAILURE_REASON_SCREEN_SHOTS_DISABLED_BY_DLP:
+      return tabs_constants::kScreenshotsDisabledByDlp;
     case OK:
       NOTREACHED() << "CaptureResultToErrorMessage should not be called"
                       " with a successful result";
