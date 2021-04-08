@@ -22,6 +22,7 @@
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -1155,6 +1156,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
                        MojoCapabilityControl_CancelMainFrame) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
+  base::HistogramTester histogram_tester;
 
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
@@ -1181,7 +1183,15 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   mojo::Remote<mojom::TestInterfaceForCancel> remote;
   prerender_broker->GetInterface(remote.BindNewPipeAndPassReceiver());
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
-
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kDisallowedMojoInterface, 1);
+  // `TestInterfaceForCancel` doesn't have a enum value because it is not used
+  // in production, so histogram_tester should log
+  // PrerenderCancelledInterface::kUnkown here.
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderCancelledInterface",
+      PrerenderCancelledInterface::kUnknown, 1);
   SetBrowserClientForTesting(old_browser_client);
 }
 
@@ -1191,6 +1201,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
                        MojoCapabilityControl_CancelIframe) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
+  base::HistogramTester histogram_tester;
 
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
@@ -1223,6 +1234,15 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
   SetBrowserClientForTesting(old_browser_client);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kDisallowedMojoInterface, 1);
+  // `TestInterfaceForCancel` doesn't have a enum value because it is not used
+  // in production, so histogram_tester should log
+  // PrerenderCancelledInterface::kUnkown here.
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderCancelledInterface",
+      PrerenderCancelledInterface::kUnknown, 1);
 }
 
 // Tests that mojo capability control will crash the prerender if the browser

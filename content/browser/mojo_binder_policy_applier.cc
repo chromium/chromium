@@ -10,18 +10,19 @@ namespace content {
 
 MojoBinderPolicyApplier::MojoBinderPolicyApplier(
     const MojoBinderPolicyMapImpl* policy_map,
-    base::OnceClosure cancel_closure)
-    : policy_map_(*policy_map), cancel_closure_(std::move(cancel_closure)) {}
+    base::OnceCallback<void(const std::string& interface_name)> cancel_callback)
+    : policy_map_(*policy_map), cancel_callback_(std::move(cancel_callback)) {}
 
 MojoBinderPolicyApplier::~MojoBinderPolicyApplier() = default;
 
 // static
 std::unique_ptr<MojoBinderPolicyApplier>
 MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
-    base::OnceClosure cancel_closure) {
+    base::OnceCallback<void(const std::string& interface_name)>
+        cancel_callback) {
   return std::make_unique<MojoBinderPolicyApplier>(
       MojoBinderPolicyMapImpl::GetInstanceForSameOriginPrerendering(),
-      std::move(cancel_closure));
+      std::move(cancel_callback));
 }
 
 void MojoBinderPolicyApplier::ApplyPolicyToBinder(
@@ -55,16 +56,18 @@ void MojoBinderPolicyApplier::ApplyPolicyToBinder(
       std::move(binder_callback).Run();
       break;
     case MojoBinderPolicy::kCancel:
-      if (cancel_closure_)
-        std::move(cancel_closure_).Run();
+      if (cancel_callback_) {
+        std::move(cancel_callback_).Run(interface_name);
+      }
       break;
     case MojoBinderPolicy::kDefer:
       deferred_binders_.push_back(std::move(binder_callback));
       break;
     case MojoBinderPolicy::kUnexpected:
       mojo::ReportBadMessage("MBPA_BAD_INTERFACE: " + interface_name);
-      if (cancel_closure_)
-        std::move(cancel_closure_).Run();
+      if (cancel_callback_) {
+        std::move(cancel_callback_).Run(interface_name);
+      }
       break;
   }
 }

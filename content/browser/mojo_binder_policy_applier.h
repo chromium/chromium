@@ -40,17 +40,21 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
   };
 
   // `policy_map` must outlive `this` and must not be null.
-  // `cancel_closure` will be executed when ApplyPolicyToBinder() processes a
+  // `cancel_callback` will be executed when ApplyPolicyToBinder() processes a
   // kCancel interface.
-  MojoBinderPolicyApplier(const MojoBinderPolicyMapImpl* policy_map,
-                          base::OnceClosure cancel_closure);
+  MojoBinderPolicyApplier(
+      const MojoBinderPolicyMapImpl* policy_map,
+      base::OnceCallback<void(const std::string& interface_name)>
+          cancel_callback);
   ~MojoBinderPolicyApplier();
 
   // Returns the instance used by BrowserInterfaceBrokerImpl for same-origin
   // prerendering pages. This is used when the prerendered page and the page
   // that triggered the prerendering are same origin.
   static std::unique_ptr<MojoBinderPolicyApplier>
-  CreateForSameOriginPrerendering(base::OnceClosure cancel_closure);
+  CreateForSameOriginPrerendering(
+      base::OnceCallback<void(const std::string& interface_name)>
+          cancel_closure);
 
   // Disallows copy and move operations.
   MojoBinderPolicyApplier(const MojoBinderPolicyApplier& other) = delete;
@@ -63,7 +67,7 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
   // - In kEnforce mode:
   //   - kGrant: Runs `binder_callback` immediately.
   //   - kDefer: Saves `binder_callback` and runs it when GrantAll() is called.
-  //   - kCancel: Drops `binder_callback` and runs `cancel_closure_`.
+  //   - kCancel: Drops `binder_callback` and runs `cancel_callback_`.
   //   - kUnexpected: Unimplemented now.
   // - In the kPrepareToGrantAll mode:
   //   - kGrant: Runs `binder_callback` immediately.
@@ -90,7 +94,7 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
   // Maps Mojo interface name to its policy.
   const MojoBinderPolicyMapImpl& policy_map_;
   // Will be executed upon a request for a kCancel interface.
-  base::OnceClosure cancel_closure_;
+  base::OnceCallback<void(const std::string& interface_name)> cancel_callback_;
   Mode mode_ = Mode::kEnforce;
   // Stores binders which are delayed running.
   std::vector<base::OnceClosure> deferred_binders_;

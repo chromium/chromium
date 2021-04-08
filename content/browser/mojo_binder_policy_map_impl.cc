@@ -22,6 +22,10 @@ namespace {
 // interfaces.
 void RegisterContentBinderPoliciesForSameOriginPrerendering(
     MojoBinderPolicyMap& map) {
+  // Please update `PrerenderCancelledInterface` and
+  // `GetCancelledInterfaceType()` in
+  // content/browser/prerender/prerender_metrics.h once you add a new kCancel
+  // interface.
   map.SetPolicy<device::mojom::GamepadHapticsManager>(
       MojoBinderPolicy::kCancel);
   map.SetPolicy<device::mojom::GamepadMonitor>(MojoBinderPolicy::kCancel);

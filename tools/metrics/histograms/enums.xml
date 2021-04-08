@@ -62584,6 +62584,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="parse proto failed"/>
 </enum>
 
+<enum name="PrerenderCancelledInterface">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kGamepadHapticsManager"/>
+  <int value="2" label="kGamepadMonitor"/>
+</enum>
+
 <enum name="PrerenderCookieSendType">
   <obsolete>
     Deprecated March 13 2015.
@@ -62725,6 +62731,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="kNavigationRequestFailure"/>
   <int value="9" label="kNavigationRequestBlockedByCsp"/>
   <int value="10" label="kMainFrameNavigation"/>
+  <int value="11" label="kDisallowedMojoInterface"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

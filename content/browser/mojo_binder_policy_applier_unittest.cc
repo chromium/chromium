@@ -63,11 +63,18 @@ class TestReceiverCollector : public mojom::TestInterfaceForDefer,
 
   // Will be called when MojoBinderPolicyApplier::ApplyPolicyToBinder()
   // handles a kCancel binding request.
-  void Cancel() { is_canceled_ = true; }
+  void Cancel(const std::string& interface_name) {
+    is_cancelled_ = true;
+    cancelled_interface_ = interface_name;
+  }
 
   // Used to check if the cancel_closure of MojoBinderPolicyApplier was
   // executed.
-  bool IsCanceled() { return is_canceled_; }
+  bool IsCancelled() { return is_cancelled_; }
+
+  const std::string& cancelled_interface() const {
+    return cancelled_interface_;
+  }
 
   bool IsDeferReceiverBound() const { return defer_receiver_.is_bound(); }
 
@@ -84,7 +91,8 @@ class TestReceiverCollector : public mojom::TestInterfaceForDefer,
   mojo::Receiver<mojom::TestInterfaceForGrant> grant_receiver_{this};
   mojo::Receiver<mojom::TestInterfaceForCancel> cancel_receiver_{this};
   mojo::Receiver<mojom::TestInterfaceForUnexpected> unexpected_receiver_{this};
-  bool is_canceled_ = false;
+  bool is_cancelled_ = false;
+  std::string cancelled_interface_;
 };
 
 class MojoBinderPolicyApplierTest : public testing::Test {
@@ -120,7 +128,7 @@ TEST_F(MojoBinderPolicyApplierTest, GrantInEnforce) {
 
   // Bind the interface immediately if the policy is kGrant.
   const std::string interface_name = grant_receiver.interface_name().value();
-  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelled());
   EXPECT_FALSE(collector_.IsGrantReceiverBound());
   policy_applier_.ApplyPolicyToBinder(
       interface_name,
@@ -128,7 +136,7 @@ TEST_F(MojoBinderPolicyApplierTest, GrantInEnforce) {
                      base::Unretained(&collector_),
                      grant_receiver.As<mojom::TestInterfaceForGrant>()));
   EXPECT_TRUE(collector_.IsGrantReceiverBound());
-  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelled());
 }
 
 // Verifies that interfaces whose policies are kDefer cannot be bound until
@@ -141,7 +149,7 @@ TEST_F(MojoBinderPolicyApplierTest, DeferInEnforce) {
 
   // Delay binding the interface until GrantAll() is called.
   const std::string interface_name = defer_receiver.interface_name().value();
-  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelled());
   policy_applier_.ApplyPolicyToBinder(
       interface_name,
       base::BindOnce(&TestReceiverCollector::BindDeferInterface,
@@ -153,7 +161,7 @@ TEST_F(MojoBinderPolicyApplierTest, DeferInEnforce) {
   policy_applier_.GrantAll();
   EXPECT_EQ(0U, deferred_binders().size());
   EXPECT_TRUE(collector_.IsDeferReceiverBound());
-  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelled());
 }
 
 // Verifies that MojoBinderPolicyApplier will run `cancel_closure` when running
@@ -165,14 +173,16 @@ TEST_F(MojoBinderPolicyApplierTest, CancelInEnforce) {
       cancel_remote.BindNewPipeAndPassReceiver());
 
   const std::string interface_name = cancel_receiver.interface_name().value();
-  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelled());
   EXPECT_FALSE(collector_.IsCancelReceiverBound());
   policy_applier_.ApplyPolicyToBinder(
       interface_name,
       base::BindOnce(&TestReceiverCollector::BindCancelInterface,
                      base::Unretained(&collector_),
                      cancel_receiver.As<mojom::TestInterfaceForCancel>()));
-  EXPECT_TRUE(collector_.IsCanceled());
+  EXPECT_TRUE(collector_.IsCancelled());
+  EXPECT_EQ(collector_.cancelled_interface(),
+            "content.mojom.TestInterfaceForCancel");
   EXPECT_FALSE(collector_.IsCancelReceiverBound());
 }
 
@@ -236,7 +246,7 @@ TEST_F(MojoBinderPolicyApplierTest, CancelInPrepareToGrantAll) {
       base::BindOnce(&TestReceiverCollector::BindCancelInterface,
                      base::Unretained(&collector_),
                      cancel_receiver.As<mojom::TestInterfaceForCancel>()));
-  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelled());
   EXPECT_FALSE(collector_.IsCancelReceiverBound());
   EXPECT_EQ(1U, deferred_binders().size());
 
@@ -260,7 +270,7 @@ TEST_F(MojoBinderPolicyApplierTest, UnexpectedInPrepareToGrantAll) {
           &TestReceiverCollector::BindUnexpectedInterface,
           base::Unretained(&collector_),
           unexpected_receiver.As<mojom::TestInterfaceForUnexpected>()));
-  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelled());
   EXPECT_FALSE(collector_.IsUnexpectedReceiverBound());
   EXPECT_EQ(1U, deferred_binders().size());
 
@@ -296,7 +306,7 @@ TEST_F(MojoBinderPolicyApplierTest, BindInterfacesAfterResolving) {
       cancel_receiver.interface_name().value();
   const std::string unexpected_interface_name =
       unexpected_receiver.interface_name().value();
-  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelled());
   EXPECT_FALSE(collector_.IsGrantReceiverBound());
   EXPECT_FALSE(collector_.IsDeferReceiverBound());
   EXPECT_FALSE(collector_.IsCancelReceiverBound());
@@ -326,7 +336,7 @@ TEST_F(MojoBinderPolicyApplierTest, BindInterfacesAfterResolving) {
   EXPECT_TRUE(collector_.IsDeferReceiverBound());
   EXPECT_TRUE(collector_.IsCancelReceiverBound());
   EXPECT_TRUE(collector_.IsUnexpectedReceiverBound());
-  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelled());
   EXPECT_EQ(0U, deferred_binders().size());
 }
 
@@ -338,7 +348,7 @@ TEST_F(MojoBinderPolicyApplierTest, DropDeferredBinders) {
       defer_remote.BindNewPipeAndPassReceiver());
 
   const std::string interface_name = defer_receiver.interface_name().value();
-  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelled());
   policy_applier_.ApplyPolicyToBinder(
       interface_name,
       base::BindOnce(&TestReceiverCollector::BindDeferInterface,
