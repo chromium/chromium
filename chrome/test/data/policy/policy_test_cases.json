@@ -7389,22 +7389,6 @@
     ]
   },
 
-  "DeviceAllowedBluetoothServices": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceAllowedBluetoothServices": ["1124","180A","180F","1812"]
-        },
-        "prefs": {
-          "cros.device.allowed_bluetooth_services": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
-  },
-
   "----- Chrome Frame policies -------------------------------------------": {},
 
   "ChromeFrameRendererSettings": {},

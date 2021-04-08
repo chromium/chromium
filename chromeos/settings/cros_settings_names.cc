@@ -504,9 +504,4 @@ const char kDevicePeripheralDataAccessEnabled[] =
 const char kUsbDetachableAllowlist[] = "cros.device.usb_detachable_allowlist";
 const char kUsbDetachableAllowlistKeyVid[] = "vid";
 const char kUsbDetachableAllowlistKeyPid[] = "pid";
-
-// A list pref storing bluetooth service UUIDs allowed to connect.
-const char kDeviceAllowedBluetoothServices[] =
-    "cros.device.allowed_bluetooth_services";
-
 }  // namespace chromeos

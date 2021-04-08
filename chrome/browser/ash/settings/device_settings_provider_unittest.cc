@@ -1249,13 +1249,4 @@ TEST_F(DeviceSettingsProviderTest, DecodeBorealisDisallowed) {
   EXPECT_EQ(base::Value(false), *provider_->Get(kBorealisAllowedForDevice));
 }
 
-TEST_F(DeviceSettingsProviderTest, DeviceAllowedBluetoothServices) {
-  em::DeviceAllowedBluetoothServicesProto* proto =
-      device_policy_->payload().mutable_device_allowed_bluetooth_services();
-  proto->add_allowlist("0x1124");
-  BuildAndInstallDevicePolicy();
-  base::ListValue allowlist;
-  allowlist.Append(base::Value("0x1124"));
-  EXPECT_EQ(allowlist, *provider_->Get(kDeviceAllowedBluetoothServices));
-}
 }  // namespace ash
