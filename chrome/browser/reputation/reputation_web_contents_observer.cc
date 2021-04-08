@@ -379,6 +379,18 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
     return;
   }
 
+  // Log a console message if it's the first time we're going to open the Safety
+  // Tip. (Otherwise, we'd print the message each time the tab became visible.)
+  if (!called_from_visibility_check) {
+    web_contents()->GetMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf(
+            "Chrome has determined that %s could be fake or fraudulent.\n\n"
+            "If you believe this is shown in error please visit "
+            "https://g.co/chrome/lookalike-warnings",
+            result.url.host().c_str()));
+  }
+
   if (!IsSafetyTipEnabled(result.safety_tip_status)) {
     // When the feature isn't enabled, we 'ignore' the UI after the first visit
     // to make it easier to disambiguate the control groups' first visit from
