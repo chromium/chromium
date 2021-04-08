@@ -72,6 +72,7 @@ const char* const kKnownSettings[] = {
     kAttestationForContentProtectionEnabled,
     kBorealisAllowedForDevice,
     kCastReceiverName,
+    kDeviceAllowedBluetoothServices,
     kDeviceAttestationEnabled,
     kDeviceAutoUpdateTimeRestrictions,
     kDeviceCrostiniArcAdbSideloadingAllowed,
@@ -1064,6 +1065,16 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetValue(kBorealisAllowedForDevice,
                                  base::Value(container.allowed()));
     }
+  }
+
+  if (policy.has_device_allowed_bluetooth_services()) {
+    base::Value list(base::Value::Type::LIST);
+    const em::DeviceAllowedBluetoothServicesProto& container(
+        policy.device_allowed_bluetooth_services());
+    for (const auto& service_uuid : container.allowlist())
+      list.Append(service_uuid);
+    new_values_cache->SetValue(kDeviceAllowedBluetoothServices,
+                               std::move(list));
   }
 }
 

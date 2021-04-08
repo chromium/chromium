@@ -25425,7 +25425,31 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       When this policy is not set, or is set to true, then the PDF viewer will be able to annotate PDFs.
 
       When this policy is set to false, then the PDF viewer will not be able to annotate PDFs.'''
-    }
+    },
+    {
+      'name': 'DeviceAllowedBluetoothServices',
+      'owners': ['howardchung@google.com', 'alainm@chromium.org', 'mcchou@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'string',
+          'pattern': '^((0x)?[0-9A-Fa-f]{4})|((0x)?[0-9A-Fa-f]{8})|([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})$',
+        },
+      },
+      'supported_on': ['chrome_os:91-'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'example_value': ['0x111E', '0x110B', '0x1203', '0x1108', '0x110C', '0x110E', '0x110F', '0x1200'],
+      'id': 848,
+      'caption': '''Only allow connection to the Bluetooth services in the list''',
+      'tags': [],
+      'desc': '''This policy allows admins to configure Bluetooth services that <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> is allowed to connect to.
+
+When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> only allows users to connect to the specified Bluetooth services with an exception when the list is empty which means any service is allowed to use. UUIDs reserved by the Bluetooth SIG can be represented as <ph name="BLUETOOTH_RESERVED_UUID_WITH_0x">'0xABCD</ph>' or <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0x">'ABCD'</ph>. Custom UUIDs can be represented as <ph name="BLUETOOTH_CUSTOM_UUID">'AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE'</ph>. UUIDs are case insensitive. Leaving this policy unset lets users connect to any Bluetooth service.'''
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -25867,6 +25891,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceSystemWideTracingEnabled': 'device_system_wide_tracing_enabled.enabled',
     'DevicePciPeripheralDataAccessEnabled': 'device_pci_peripheral_data_access_enabled.enabled',
     'DeviceBorealisAllowed': 'device_borealis_allowed.allowed',
+    'DeviceAllowedBluetoothServices': 'device_allowed_bluetooth_services.allowlist',
   },
   'policy_atomic_group_definitions': [
     {
@@ -26355,6 +26380,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 847,
+  'highest_id_currently_used': 848,
   'highest_atomic_group_id_currently_used': 40
 }

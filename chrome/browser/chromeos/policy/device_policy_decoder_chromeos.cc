@@ -1932,6 +1932,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                   base::Value(policy.device_borealis_allowed().allowed()),
                   nullptr);
   }
+
+  if (policy.has_device_allowed_bluetooth_services()) {
+    const em::DeviceAllowedBluetoothServicesProto& container(
+        policy.device_allowed_bluetooth_services());
+    base::Value allowlist(base::Value::Type::LIST);
+    for (const auto& entry : container.allowlist())
+      allowlist.Append(entry);
+    policies->Set(key::kDeviceAllowedBluetoothServices, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                  std::move(allowlist), nullptr);
+  }
 }
 
 }  // namespace
