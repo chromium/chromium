@@ -13,10 +13,9 @@
 #include <string>
 #include <vector>
 
-#include "base/power_monitor/power_monitor.h"
-#include "base/power_monitor/power_monitor_source.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/power_monitor_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -55,37 +54,15 @@ namespace net {
 
 namespace {
 
-// Test power monitor source that can simulate entering suspend mode. Can't use
-// the one in base/ because it insists on bringing its own MessageLoop.
-class TestPowerMonitorSource : public base::PowerMonitorSource {
- public:
-  TestPowerMonitorSource() = default;
-  ~TestPowerMonitorSource() override = default;
-
-  void Suspend() { ProcessPowerEvent(SUSPEND_EVENT); }
-
-  void Resume() { ProcessPowerEvent(RESUME_EVENT); }
-
-  bool IsOnBatteryPower() override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestPowerMonitorSource);
-};
-
 class TCPClientSocketTest : public testing::Test {
  public:
   TCPClientSocketTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    std::unique_ptr<TestPowerMonitorSource> power_monitor_source =
-        std::make_unique<TestPowerMonitorSource>();
-    power_monitor_source_ = power_monitor_source.get();
-    base::PowerMonitor::Initialize(std::move(power_monitor_source));
-  }
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   ~TCPClientSocketTest() override { base::PowerMonitor::ShutdownForTesting(); }
 
-  void Suspend() { power_monitor_source_->Suspend(); }
-  void Resume() { power_monitor_source_->Resume(); }
+  void Suspend() { power_monitor_source_.Suspend(); }
+  void Resume() { power_monitor_source_.Resume(); }
 
   void CreateConnectedSockets(
       std::unique_ptr<StreamSocket>* accepted_socket,
@@ -128,8 +105,7 @@ class TCPClientSocketTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  TestPowerMonitorSource* power_monitor_source_;
+  base::test::ScopedPowerMonitorTestSource power_monitor_source_;
 };
 
 // Try binding a socket to loopback interface and verify that we can
