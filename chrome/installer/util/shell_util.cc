@@ -2746,9 +2746,10 @@ bool ShellUtil::RemoveAppProtocolAssociations(
 
     bool success = true;
     for (const auto& protocol : protocols) {
-      success = success && InstallUtil::DeleteRegistryValue(
-                               root, url_associations_path,
-                               WorkItem::kWow64Default, protocol);
+      if (!InstallUtil::DeleteRegistryValue(
+              root, url_associations_path, WorkItem::kWow64Default, protocol)) {
+        success = false;
+      }
     }
 
     return success;
