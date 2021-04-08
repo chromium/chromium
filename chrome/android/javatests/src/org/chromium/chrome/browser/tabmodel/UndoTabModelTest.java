@@ -22,7 +22,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -1230,11 +1229,8 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    // clang-format off
-    @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1196756",
-            supported_abis_includes = "x86")
+    @DisabledTest
     public void testMoveTab() throws TimeoutException {
-        // clang-format on
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> sActivityTestRule.getActivity().getTabCreator(false));
