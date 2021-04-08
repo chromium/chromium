@@ -205,12 +205,6 @@ TEST_P(PrerenderProcessorTest, CancelOnDestruction) {
 }
 
 TEST_P(PrerenderProcessorTest, StartTwice) {
-  // This test hits an assertion with the MPArch.
-  // TODO(https://crbug.com/1190020): Enable this test for the MPArch after
-  // https://crbug.com/1170619 is fixed.
-  if (IsMPArchActive())
-    return;
-
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
 

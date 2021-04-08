@@ -122,6 +122,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  bool IsAssociatedWith(const WebContentsImpl& web_contents);
+
   url::Origin initiator_origin() const { return initiator_origin_; }
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }

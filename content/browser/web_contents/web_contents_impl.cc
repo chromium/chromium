@@ -75,6 +75,7 @@
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/portal/portal.h"
+#include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -95,6 +96,7 @@
 #include "content/browser/screen_enumeration/screen_change_monitor.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/javascript_dialog_navigation_deferrer.h"
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
 #include "content/browser/web_package/save_as_web_bundle_job.h"
@@ -159,6 +161,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -932,7 +935,26 @@ WebContentsImpl::~WebContentsImpl() {
   color_chooser_.reset();
   find_request_manager_.reset();
 
+  // Shutdown the primary FrameTree.
   frame_tree_.Shutdown();
+
+  // Shutdown the non-primary FrameTrees. Currently the only instances of these
+  // are prerendering FrameTrees.
+  // Do this here rather than relying on the owner of the FrameTree to shutdown
+  // on WebContentsDestroyed(), so that all the FrameTrees are shutdown at the
+  // same time for consistency. Also, destroying a FrameTree results in other
+  // observer functions like RenderFrameDeleted() being called, which are not
+  // expected to be called after WebContentsDestroyed().
+  // TODO(https://crbug.com/1194865, https://crbug.com/1170619): Destroy the
+  // PrerenderHostRegistry here once it becomes per-WebContentsImpl instance,
+  // instead of calling AbandonAllHostsForWebContents() on it.
+  if (blink::features::IsPrerender2Enabled()) {
+    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+        GetMainFrame()->GetStoragePartition());
+    PrerenderHostRegistry* prerender_host_registry =
+        storage_partition_impl->GetPrerenderHostRegistry();
+    prerender_host_registry->AbandonAllHostsForWebContents(*this);
+  }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Call this before WebContentsDestroyed() is broadcasted since

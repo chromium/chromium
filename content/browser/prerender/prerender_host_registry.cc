@@ -105,6 +105,28 @@ void PrerenderHostRegistry::AbandonHostAsync(
   }
 }
 
+void PrerenderHostRegistry::AbandonAllHostsForWebContents(
+    const WebContentsImpl& web_contents) {
+  std::vector<int> associated_hosts;
+  for (auto& entry : prerender_host_by_frame_tree_node_id_) {
+    if (entry.second->IsAssociatedWith(web_contents)) {
+      associated_hosts.push_back(entry.first);
+    }
+  }
+  for (auto id : associated_hosts) {
+    AbandonHost(id);
+  }
+  std::vector<int> associated_reserved_hosts;
+  for (auto& entry : reserved_prerender_host_by_frame_tree_node_id_) {
+    if (entry.second->IsAssociatedWith(web_contents)) {
+      associated_hosts.push_back(entry.first);
+    }
+  }
+  for (auto id : associated_reserved_hosts) {
+    AbandonReservedHost(id);
+  }
+}
+
 int PrerenderHostRegistry::ReserveHostToActivate(
     const GURL& navigation_url,
     FrameTreeNode& frame_tree_node) {

@@ -473,4 +473,8 @@ void PrerenderHost::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool PrerenderHost::IsAssociatedWith(const WebContentsImpl& web_contents) {
+  return page_holder_->GetWebContents() == &web_contents;
+}
+
 }  // namespace content

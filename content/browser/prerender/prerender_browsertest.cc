@@ -574,6 +574,28 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 }
 
+// Regression test for https://crbug.com/1194865.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CloseOnPrerendering) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  // A prerender host for the URL should be registered.
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+
+  // Should not crash.
+  shell()->Close();
+}
+
 // Tests that non-http(s) schemes are disallowed for prerendering.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, HttpToBlobUrl) {
   base::HistogramTester histogram_tester;

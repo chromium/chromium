@@ -36,20 +36,11 @@ if (!run_test) {
 
   // Wait until the prerendered page signals us it's ready to close.
   nextValueFromServer(done_key).then(() => {
-    // We can just close the window, and finish the test. But to avoid hitting
-    // https://crbug.com/1194865, this test activates the page for workaround.
-    window.location = url.toString();
+    window.close();
   });
 } else {
-  const initial_prerendering = document.prerendering;
-  document.addEventListener('prerenderingchange', e => {
-    // Tell the harness the initial document.prerendering value.
-    // We can tell the server immdiately, but wait until the prerendering state
-    // change to avoid hitting https://crbug.com/1194865.
-    writeValueToServer(key, initial_prerendering).then(() => {
-      window.close();
-    });
-  });
+  // Tell the harness the initial document.prerendering value.
+  writeValueToServer(key, document.prerendering);
 
   // Tell the prerendering initiating page test being finished.
   const done_key = params.get('done-key');

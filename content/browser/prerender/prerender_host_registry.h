@@ -91,6 +91,10 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   void AbandonHostAsync(int frame_tree_node_id,
                         PrerenderHost::FinalStatus final_status);
 
+  // TODO(https://crbug.com/1194865): Remove the following method once the
+  // workaround in the call site is removed.
+  void AbandonAllHostsForWebContents(const WebContentsImpl& web_contents);
+
   // For activators.
   // Reserves the host to activate for a navigation for the given FrameTreeNode.
   // Returns the root frame tree node id of the prerendered page, which can be
