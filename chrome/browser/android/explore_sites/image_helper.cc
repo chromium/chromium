@@ -96,7 +96,7 @@ void ImageHelper::Job::DecodeImageBytes(
   }
 
   data_decoder::DecodeImage(&image_helper_->data_decoder_, *image_bytes,
-                            data_decoder::mojom::ImageCodec::DEFAULT, false,
+                            data_decoder::mojom::ImageCodec::kDefault, false,
                             data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
                             std::move(callback));
 }

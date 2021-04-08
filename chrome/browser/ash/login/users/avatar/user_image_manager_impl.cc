@@ -101,7 +101,7 @@ bool SaveAndDeleteImage(scoped_refptr<base::RefCountedBytes> image_bytes,
 ImageDecoder::ImageCodec ChooseCodecFromPath(
     const base::FilePath& image_path) {
   if (image_path.Extension() == FILE_PATH_LITERAL(".png"))
-    return ImageDecoder::ROBUST_PNG_CODEC;
+    return ImageDecoder::PNG_CODEC;
 
   return ImageDecoder::DEFAULT_CODEC;
 }
@@ -256,7 +256,7 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
     // Load the user image from a file referenced by `image_path`. This happens
-    // asynchronously. ROBUST_PNG_CODEC can be used here because LoadImage() is
+    // asynchronously. PNG_CODEC can be used here because LoadImage() is
     // called only for users whose user image has previously been set by one of
     // the Set*() methods, which transcode to JPEG or PNG format.
     DCHECK(!image_path_.empty());

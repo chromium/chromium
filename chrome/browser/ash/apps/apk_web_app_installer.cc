@@ -102,7 +102,7 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
   // base::Unretained is safe because this object owns itself.
   data_decoder::DecodeImageIsolated(
       std::move(icon->icon_png_data.value()),
-      data_decoder::mojom::ImageCodec::DEFAULT,
+      data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(),
       base::BindOnce(&ApkWebAppInstaller::OnImageDecoded,

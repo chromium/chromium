@@ -207,7 +207,7 @@ void NotificationProcessor::ImageDecoderDelegate::PerformImageDecode(
     DecodeImageCallback single_image_decoded_closure) {
   std::vector<uint8_t> image_bytes(data.begin(), data.end());
   data_decoder::DecodeImage(
-      &data_decoder_, image_bytes, data_decoder::mojom::ImageCodec::DEFAULT,
+      &data_decoder_, image_bytes, data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(),
       std::move(single_image_decoded_closure));

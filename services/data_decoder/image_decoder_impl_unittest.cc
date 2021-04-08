@@ -60,7 +60,7 @@ class Request {
 
   void DecodeImage(const std::vector<unsigned char>& image, bool shrink) {
     decoder_->DecodeImage(
-        image, mojom::ImageCodec::DEFAULT, shrink, kTestMaxImageSize,
+        image, mojom::ImageCodec::kDefault, shrink, kTestMaxImageSize,
         gfx::Size(),  // Take the smallest frame (there's only one frame).
         base::BindOnce(&Request::OnRequestDone, base::Unretained(this)));
   }

@@ -10,8 +10,9 @@ import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 enum ImageCodec {
-  DEFAULT,
-  ROBUST_PNG,
+  kDefault,
+  // Only valid for Ash. Backed by libpng so requires that image is a PNG.
+  kPng,
 };
 
 struct AnimationFrame {

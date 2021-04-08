@@ -207,7 +207,7 @@ void Seat::OnImageRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                        const std::vector<uint8_t>& data) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   data_decoder::DecodeImageIsolated(
-      data, data_decoder::mojom::ImageCodec::DEFAULT, false,
+      data, data_decoder::mojom::ImageCodec::kDefault, false,
       std::numeric_limits<int64_t>::max(), gfx::Size(),
       base::BindOnce(&Seat::OnImageDecoded, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback), writer));

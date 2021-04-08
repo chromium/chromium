@@ -136,7 +136,7 @@ void DecodeImageFileAndCopyToClipboard(
   // external storage.
   data_decoder::DecodeImageIsolated(
       std::vector<uint8_t>(png_data->data().begin(), png_data->data().end()),
-      data_decoder::mojom::ImageCodec::DEFAULT, false,
+      data_decoder::mojom::ImageCodec::kDefault, false,
       data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
       base::BindOnce(&CopyImageToClipboard, maintain_clipboard,
                      clipboard_sequence, std::move(callback), png_data));

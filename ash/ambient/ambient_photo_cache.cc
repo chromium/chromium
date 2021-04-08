@@ -176,7 +176,7 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
       base::OnceCallback<void(const gfx::ImageSkia&)> callback) override {
     std::vector<uint8_t> image_bytes(data->begin(), data->end());
     data_decoder::DecodeImageIsolated(
-        image_bytes, data_decoder::mojom::ImageCodec::DEFAULT,
+        image_bytes, data_decoder::mojom::ImageCodec::kDefault,
         /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
         /*desired_image_frame_size=*/gfx::Size(),
         base::BindOnce(&ToImageSkia, std::move(callback)));

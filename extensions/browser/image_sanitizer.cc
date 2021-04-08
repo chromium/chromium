@@ -146,7 +146,7 @@ void ImageSanitizer::ImageFileRead(
   }
   const std::vector<uint8_t>& image_data = std::get<0>(read_and_delete_result);
   image_decoder_->DecodeImage(
-      image_data, data_decoder::mojom::ImageCodec::DEFAULT,
+      image_data, data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/false, kMaxImageCanvas, gfx::Size(),
       base::BindOnce(&ImageSanitizer::ImageDecoded, weak_factory_.GetWeakPtr(),
                      image_path));

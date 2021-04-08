@@ -228,7 +228,7 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
   auto* instrument_ptr = instrument.get();
   // Decode the icon in a sandboxed process off the main thread.
   data_decoder::DecodeImageIsolated(
-      instrument_ptr->icon, data_decoder::mojom::ImageCodec::DEFAULT,
+      instrument_ptr->icon, data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(),
       base::BindOnce(&SecurePaymentConfirmationAppFactory::OnAppIconDecoded,

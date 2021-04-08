@@ -58,8 +58,8 @@ gfx::ImageSkia ImageLoader::Load() {
   }
   const ImageDecoder::ImageCodec codec =
       (path_.Extension() == FILE_PATH_LITERAL(".jpg")
-       ? ImageDecoder::DEFAULT_CODEC
-       : ImageDecoder::ROBUST_PNG_CODEC);
+           ? ImageDecoder::DEFAULT_CODEC
+           : ImageDecoder::PNG_CODEC);
   ImageDecoder::StartWithOptions(this, image_data, codec, false);
   run_loop_.Run();
   return decoded_image_;

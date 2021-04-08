@@ -291,7 +291,7 @@ void OnWallpaperDataRead(LoadedCallback callback,
     return;
   }
   // This image was once encoded to JPEG by |ResizeAndEncodeImage|.
-  DecodeWallpaper(*data, data_decoder::mojom::ImageCodec::DEFAULT,
+  DecodeWallpaper(*data, data_decoder::mojom::ImageCodec::kDefault,
                   std::move(callback));
 }
 
@@ -1044,7 +1044,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromData(
   // 2) the image data comes from the Chrome OS wallpaper picker and is
   // trusted (third-party wallpaper apps use |SetThirdPartyWallpaper|), 3) the
   // code path is never used on login screen (enforced by the check above).
-  DecodeWallpaper(image_data, data_decoder::mojom::ImageCodec::DEFAULT,
+  DecodeWallpaper(image_data, data_decoder::mojom::ImageCodec::kDefault,
                   std::move(decoded_callback));
 }
 
@@ -1099,7 +1099,7 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
     std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
-  DecodeWallpaper(data, data_decoder::mojom::ImageCodec::DEFAULT,
+  DecodeWallpaper(data, data_decoder::mojom::ImageCodec::kDefault,
                   std::move(callback));
 }
 

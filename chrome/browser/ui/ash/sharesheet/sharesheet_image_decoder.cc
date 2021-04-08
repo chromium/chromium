@@ -69,7 +69,7 @@ void SharesheetImageDecoder::DecodeURLForPreview(std::string image_data) {
   // external storage.
   data_decoder::DecodeImageIsolated(
       std::vector<uint8_t>(image_data.begin(), image_data.end()),
-      data_decoder::mojom::ImageCodec::DEFAULT, false,
+      data_decoder::mojom::ImageCodec::kDefault, false,
       data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
       base::BindOnce(&SharesheetImageDecoder::BitMapToImage,
                      weak_ptr_factory_.GetWeakPtr()));
