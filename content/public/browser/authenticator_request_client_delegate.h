@@ -34,15 +34,57 @@ class Origin;
 
 namespace content {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class RenderFrameHost;
-#endif
+class BrowserContext;
 
-// Interface that the embedder should implement to provide the //content layer
-// with embedder-specific configuration for a single Web Authentication API [1]
-// request serviced in a given RenderFrame.
+// WebAuthenticationDelegate is an interface that lets the //content layer
+// provide embedder specific configuration for handling Web Authentication API
+// (https://www.w3.org/TR/webauthn/) requests.
 //
-// [1]: See https://www.w3.org/TR/webauthn/.
+// Instances can be obtained via
+// ContentBrowserClient::GetWebAuthenticationDelegate(). They are guaranteed not
+// to outlive the RenderFrameHost with which they are associated.
+class CONTENT_EXPORT WebAuthenticationDelegate {
+ public:
+  WebAuthenticationDelegate();
+  virtual ~WebAuthenticationDelegate();
+
+#if defined(OS_MAC)
+  using TouchIdAuthenticatorConfig = device::fido::mac::AuthenticatorConfig;
+
+  // Returns configuration data for the built-in Touch ID platform
+  // authenticator. May return nullopt if the authenticator is not available in
+  // the current context, in which case the Touch ID authenticator will be
+  // unavailable.
+  virtual base::Optional<TouchIdAuthenticatorConfig>
+  GetTouchIdAuthenticatorConfig(BrowserContext* browser_context);
+#endif  // defined(OS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Callback that should generate and return a unique request id.
+  using ChromeOSGenerateRequestIdCallback = base::RepeatingCallback<uint32_t()>;
+
+  // Returns a callback to generate a request id for a WebAuthn request
+  // originating from |RenderFrameHost|. The request id has two purposes: 1.
+  // ChromeOS UI will use the request id to find the source window and show a
+  // dialog accordingly; 2. The authenticator will include the request id when
+  // asking ChromeOS platform to cancel the request.
+  virtual ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
+      RenderFrameHost* render_frame_host);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
+  // API call originating from |render_frame_host| should be overridden with
+  // that value, or base::nullopt otherwise.
+  virtual base::Optional<bool>
+  IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      RenderFrameHost* render_frame_host);
+};
+
+// AuthenticatorRequestClientDelegate is an interface that lets embedders
+// customize the lifetime of a single WebAuthn API request in the //content
+// layer. In particular, the Authenticator mojo service uses
+// AuthenticatorRequestClientDelegate to show WebAuthn request UI.
 class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     : public device::FidoRequestHandlerBase::Observer {
  public:
@@ -173,34 +215,6 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // implementation in ChromeContentBrowserClient for Android, return |true| so
   // that testing is possible.
   virtual bool IsFocused();
-
-#if defined(OS_MAC)
-  using TouchIdAuthenticatorConfig = device::fido::mac::AuthenticatorConfig;
-
-  // Returns configuration data for the built-in Touch ID platform
-  // authenticator. May return nullopt if the authenticator is not available in
-  // the current context, in which case the Touch ID authenticator will be
-  // unavailable.
-  virtual base::Optional<TouchIdAuthenticatorConfig>
-  GetTouchIdAuthenticatorConfig();
-#endif  // defined(OS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Callback that should generate and return a unique request id.
-  using ChromeOSGenerateRequestIdCallback = base::RepeatingCallback<uint32_t()>;
-
-  // Returns a callback to generate a request id for the |RenderFrameHost|
-  // associated with this delegate. The request id has two purposes: 1. ChromeOS
-  // UI will use the request id to find the source window and show a dialog
-  // accordingly; 2. The authenticator will include the request id when asking
-  // ChromeOS platform to cancel the request.
-  virtual ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
-  // API call should be overridden with that value, or base::nullopt otherwise.
-  virtual base::Optional<bool>
-  IsUserVerifyingPlatformAuthenticatorAvailableOverride();
 
   // Disables the UI (needed in cases when called by other components, like
   // cryptotoken).

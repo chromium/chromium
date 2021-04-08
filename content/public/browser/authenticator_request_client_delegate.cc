@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/webauth/authenticator_environment_impl.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_factory.h"
 
@@ -20,8 +21,42 @@
 
 namespace content {
 
+WebAuthenticationDelegate::WebAuthenticationDelegate() = default;
+
+WebAuthenticationDelegate::~WebAuthenticationDelegate() = default;
+
+#if defined(OS_MAC)
+base::Optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
+WebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
+    BrowserContext* browser_context) {
+  return base::nullopt;
+}
+#endif  // defined(OS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+WebAuthenticationDelegate::ChromeOSGenerateRequestIdCallback
+WebAuthenticationDelegate::GetGenerateRequestIdCallback(
+    RenderFrameHost* render_frame_host) {
+  return base::NullCallback();
+}
+#endif
+
+base::Optional<bool> WebAuthenticationDelegate::
+    IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+        RenderFrameHost* render_frame_host) {
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  if (AuthenticatorEnvironmentImpl::GetInstance()
+          ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
+    return AuthenticatorEnvironmentImpl::GetInstance()
+        ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node);
+  }
+  return base::nullopt;
+}
+
 AuthenticatorRequestClientDelegate::AuthenticatorRequestClientDelegate() =
     default;
+
 AuthenticatorRequestClientDelegate::~AuthenticatorRequestClientDelegate() =
     default;
 
@@ -78,25 +113,6 @@ void AuthenticatorRequestClientDelegate::SelectAccount(
 
 bool AuthenticatorRequestClientDelegate::IsFocused() {
   return true;
-}
-
-#if defined(OS_MAC)
-base::Optional<AuthenticatorRequestClientDelegate::TouchIdAuthenticatorConfig>
-AuthenticatorRequestClientDelegate::GetTouchIdAuthenticatorConfig() {
-  return base::nullopt;
-}
-#endif  // defined(OS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-AuthenticatorRequestClientDelegate::ChromeOSGenerateRequestIdCallback
-AuthenticatorRequestClientDelegate::GetGenerateRequestIdCallback() {
-  return base::NullCallback();
-}
-#endif
-
-base::Optional<bool> AuthenticatorRequestClientDelegate::
-    IsUserVerifyingPlatformAuthenticatorAvailableOverride() {
-  return base::nullopt;
 }
 
 void AuthenticatorRequestClientDelegate::DisableUI() {}

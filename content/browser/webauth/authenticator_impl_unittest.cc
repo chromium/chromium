@@ -463,6 +463,14 @@ class AuthenticatorTestBase : public content::RenderViewHostTestHarness {
     chromeos::U2FClient::InitializeFake();
 #endif
 
+#if defined(OS_WIN)
+    // Disable the Windows WebAuthn API integration by default. Individual tests
+    // can modify this.
+    fake_win_webauthn_api_.set_available(false);
+    AuthenticatorEnvironmentImpl::GetInstance()->SetWinWebAuthnApiForTesting(
+        &fake_win_webauthn_api_);
+#endif
+
     ResetVirtualDevice();
   }
 
@@ -471,6 +479,10 @@ class AuthenticatorTestBase : public content::RenderViewHostTestHarness {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::U2FClient::Shutdown();
+#endif
+#if defined(OS_WIN)
+    AuthenticatorEnvironmentImpl::GetInstance()
+        ->ClearWinWebAuthnApiForTesting();
 #endif
   }
 
@@ -481,9 +493,15 @@ class AuthenticatorTestBase : public content::RenderViewHostTestHarness {
     AuthenticatorEnvironmentImpl::GetInstance()
         ->ReplaceDefaultDiscoveryFactoryForTesting(
             std::move(virtual_device_factory));
+#if defined(OS_WIN)
+    virtual_device_factory_->set_win_webauthn_api(&fake_win_webauthn_api_);
+#endif
   }
 
   device::test::VirtualFidoDeviceFactory* virtual_device_factory_;
+#if defined(OS_WIN)
+  device::FakeWinWebAuthnApi fake_win_webauthn_api_;
+#endif
 };
 
 class AuthenticatorImplTest : public AuthenticatorTestBase {
@@ -1550,13 +1568,6 @@ TEST_F(AuthenticatorImplTest, GetAssertionResponseWithAttestedCredentialData) {
 
 #if defined(OS_WIN)
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
-  device::FakeWinWebAuthnApi win_webauthn_api;
-  auto discovery_factory =
-      std::make_unique<device::test::FakeFidoDiscoveryFactory>();
-  discovery_factory->set_win_webauthn_api(&win_webauthn_api);
-  AuthenticatorEnvironmentImpl::GetInstance()
-      ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery_factory));
-
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
       ConnectToAuthenticator();
@@ -1567,8 +1578,8 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
     for (const bool is_uvpaa : {false, true}) {
       SCOPED_TRACE(is_uvpaa ? "is_uvpaa" : "!is_uvpaa");
 
-      win_webauthn_api.set_available(enable_win_webauthn_api);
-      win_webauthn_api.set_is_uvpaa(is_uvpaa);
+      fake_win_webauthn_api_.set_available(enable_win_webauthn_api);
+      fake_win_webauthn_api_.set_is_uvpaa(is_uvpaa);
 
       TestIsUvpaaCallback cb;
       authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(
@@ -1712,6 +1723,16 @@ device::AttestationConveyancePreference ConvertAttestationConveyancePreference(
   }
 }
 
+class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
+ public:
+  base::Optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      RenderFrameHost*) override {
+    return is_uvpaa;
+  }
+
+  bool is_uvpaa = false;
+};
+
 class TestAuthenticatorRequestDelegate
     : public AuthenticatorRequestClientDelegate {
  public:
@@ -1721,14 +1742,12 @@ class TestAuthenticatorRequestDelegate
       EnterprisePolicy enterprise_policy,
       AttestationConsent attestation_consent,
       bool is_focused,
-      bool is_uvpaa,
       base::OnceClosure started_over_callback)
       : action_callbacks_registered_callback_(
             std::move(action_callbacks_registered_callback)),
         enterprise_policy_(enterprise_policy),
         attestation_consent_(attestation_consent),
         is_focused_(is_focused),
-        is_uvpaa_(is_uvpaa),
         started_over_callback_(std::move(started_over_callback)) {}
 
   ~TestAuthenticatorRequestDelegate() override {
@@ -1787,11 +1806,6 @@ class TestAuthenticatorRequestDelegate
     std::move(callback).Run(result);
   }
 
-  base::Optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride()
-      override {
-    return is_uvpaa_;
-  }
-
   bool IsFocused() override { return is_focused_; }
 
   void OnTransportAvailabilityEnumerated(
@@ -1810,7 +1824,6 @@ class TestAuthenticatorRequestDelegate
   const EnterprisePolicy enterprise_policy_;
   const AttestationConsent attestation_consent_;
   const bool is_focused_;
-  const bool is_uvpaa_;
   base::OnceClosure started_over_callback_;
   bool attestation_consent_queried_ = false;
 
@@ -1820,6 +1833,15 @@ class TestAuthenticatorRequestDelegate
 
 class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
  public:
+  TestWebAuthenticationDelegate* GetTestWebAuthenticationDelegate() {
+    return &web_authentication_delegate;
+  }
+
+  // ContentBrowserClient
+  WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
+    return &web_authentication_delegate;
+  }
+
   std::unique_ptr<AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
@@ -1830,9 +1852,11 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
         action_callbacks_registered_callback
             ? std::move(action_callbacks_registered_callback)
             : base::DoNothing(),
-        enterprise_policy, attestation_consent, is_focused, is_uvpaa,
+        enterprise_policy, attestation_consent, is_focused,
         std::move(started_over_callback_));
   }
+
+  TestWebAuthenticationDelegate web_authentication_delegate;
 
   // If set, this closure will be called when the subsequently constructed
   // delegate is informed that the request has started.
@@ -1841,8 +1865,6 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   EnterprisePolicy enterprise_policy = EnterprisePolicy::NOT_LISTED;
   AttestationConsent attestation_consent = AttestationConsent::NOT_USED;
   bool is_focused = true;
-
-  bool is_uvpaa = false;
 
   // This emulates scenarios where a nullptr RequestClientDelegate is returned
   // because a request is already in progress.
@@ -2328,7 +2350,7 @@ TEST_F(AuthenticatorContentBrowserClientTest,
 // behavior of the Touch ID platform authenticator.
 TEST_F(AuthenticatorContentBrowserClientTest,
        PlatformAuthenticatorAttestation) {
-  test_client_.is_uvpaa = true;
+  test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa = true;
   virtual_device_factory_->SetSupportedProtocol(
       device::ProtocolVersion::kCtap2);
   virtual_device_factory_->SetTransport(
@@ -2966,7 +2988,7 @@ TEST_F(AuthenticatorContentBrowserClientTest, IsUVPAAOverride) {
 
   for (const bool is_uvpaa : {false, true}) {
     SCOPED_TRACE(::testing::Message() << "is_uvpaa=" << is_uvpaa);
-    test_client_.is_uvpaa = is_uvpaa;
+    test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa = is_uvpaa;
 
     TestIsUvpaaCallback cb;
     authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
@@ -3030,7 +3052,6 @@ class MockAuthenticatorRequestDelegateObserver
             EnterprisePolicy::NOT_LISTED,
             AttestationConsent::NOT_USED,
             true /* is_focused */,
-            /*is_uvpaa=*/false,
             /*started_over_callback=*/base::OnceClosure()),
         failure_reasons_callback_(std::move(failure_reasons_callback)) {}
   ~MockAuthenticatorRequestDelegateObserver() override = default;
@@ -3070,8 +3091,8 @@ class FakeAuthenticatorCommon : public AuthenticatorCommon {
         mock_delegate_(std::move(mock_delegate)) {}
   ~FakeAuthenticatorCommon() override = default;
 
-  std::unique_ptr<AuthenticatorRequestClientDelegate> CreateRequestDelegate()
-      override {
+  std::unique_ptr<AuthenticatorRequestClientDelegate>
+  MaybeCreateRequestDelegate() override {
     DCHECK(mock_delegate_);
     return std::move(mock_delegate_);
   }
@@ -6256,15 +6277,15 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WithAppIDExtension) {
 // credProtect.
 TEST_F(ResidentKeyAuthenticatorImplTest, WinCredProtectApiVersion) {
   // The canned response returned by the Windows API fake is for acme.com.
+  fake_win_webauthn_api_.set_available(true);
   NavigateAndCommit(GURL("https://acme.com"));
   for (const bool supports_cred_protect : {false, true}) {
     SCOPED_TRACE(testing::Message()
                  << "supports_cred_protect: " << supports_cred_protect);
 
-    ::device::FakeWinWebAuthnApi api;
-    virtual_device_factory_->set_win_webauthn_api(&api);
-    api.set_version(supports_cred_protect ? WEBAUTHN_API_VERSION_2
-                                          : WEBAUTHN_API_VERSION_1);
+    fake_win_webauthn_api_.set_version(supports_cred_protect
+                                           ? WEBAUTHN_API_VERSION_2
+                                           : WEBAUTHN_API_VERSION_1);
 
     PublicKeyCredentialCreationOptionsPtr options = make_credential_options();
     options->relying_party = device::PublicKeyCredentialRpEntity();
@@ -6634,26 +6655,25 @@ TEST_F(InternalAuthenticatorImplTest, GetAssertionOriginAndRpIds) {
 }
 
 #if defined(OS_MAC)
-class TouchIdConfigAuthenticatorRequestClientDelegate
-    : public AuthenticatorRequestClientDelegate {
+class TouchIdConfigWebAuthenticationDelegate
+    : public WebAuthenticationDelegate {
  public:
-  TouchIdConfigAuthenticatorRequestClientDelegate() = default;
-  ~TouchIdConfigAuthenticatorRequestClientDelegate() override = default;
+  TouchIdConfigWebAuthenticationDelegate() = default;
+  ~TouchIdConfigWebAuthenticationDelegate() override = default;
 
-  base::Optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig()
-      override {
+  base::Optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
+      BrowserContext* browser_context) override {
     return TouchIdAuthenticatorConfig{};
   }
 };
 
 class TouchIdConfigAuthenticatorContentBrowserClient
     : public ContentBrowserClient {
- public:
-  std::unique_ptr<AuthenticatorRequestClientDelegate>
-  GetWebAuthenticationRequestDelegate(
-      RenderFrameHost* render_frame_host) override {
-    return std::make_unique<TouchIdConfigAuthenticatorRequestClientDelegate>();
+ private:
+  WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
+    return &delegate_;
   }
+  TouchIdConfigWebAuthenticationDelegate delegate_;
 };
 
 class TouchIdAuthenticatorImplTest : public AuthenticatorImplTest {

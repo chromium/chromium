@@ -26,8 +26,8 @@ namespace content {
 
 #if defined(OS_MAC)
 void IsUVPlatformAuthenticatorAvailable(
-    const content::AuthenticatorRequestClientDelegate::
-        TouchIdAuthenticatorConfig& config,
+    const content::WebAuthenticationDelegate::TouchIdAuthenticatorConfig&
+        config,
     IsUVPlatformAuthenticatorAvailableCallback callback) {
   device::fido::mac::TouchIdAuthenticator::IsAvailable(config,
                                                        std::move(callback));

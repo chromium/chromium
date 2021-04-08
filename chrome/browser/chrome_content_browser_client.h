@@ -93,6 +93,7 @@ class ChromeBluetoothDelegate;
 class ChromeFontAccessDelegate;
 class ChromeHidDelegate;
 class ChromeSerialDelegate;
+class ChromeWebAuthenticationDelegate;
 
 #if BUILDFLAG(ENABLE_VR)
 namespace vr {
@@ -551,6 +552,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   content::SerialDelegate* GetSerialDelegate() override;
   content::HidDelegate* GetHidDelegate() override;
   content::FontAccessDelegate* GetFontAccessDelegate() override;
+  content::WebAuthenticationDelegate* GetWebAuthenticationDelegate() override;
   std::unique_ptr<content::AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       content::RenderFrameHost* render_frame_host) override;
@@ -800,6 +802,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<ChromeSerialDelegate> serial_delegate_;
   std::unique_ptr<ChromeHidDelegate> hid_delegate_;
   std::unique_ptr<ChromeFontAccessDelegate> font_access_delegate_;
+  std::unique_ptr<ChromeWebAuthenticationDelegate> web_authentication_delegate_;
 #endif
   std::unique_ptr<ChromeBluetoothDelegate> bluetooth_delegate_;
 

@@ -846,8 +846,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
 #if defined(OS_MAC)
     device::fido::mac::TouchIdCredentialStore(
-        ChromeAuthenticatorRequestDelegate::
-            TouchIdAuthenticatorConfigForProfile(profile_))
+        ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
+            profile_))
         .DeleteCredentials(delete_begin_, delete_end_);
 #endif  // defined(OS_MAC)
   }

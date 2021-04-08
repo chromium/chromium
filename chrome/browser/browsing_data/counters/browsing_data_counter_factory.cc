@@ -87,7 +87,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
     std::unique_ptr<::device::fido::PlatformCredentialStore> credential_store =
 #if defined(OS_MAC)
         std::make_unique<::device::fido::mac::TouchIdCredentialStore>(
-            ChromeAuthenticatorRequestDelegate::
+            ChromeWebAuthenticationDelegate::
                 TouchIdAuthenticatorConfigForProfile(profile));
 #else
         nullptr;

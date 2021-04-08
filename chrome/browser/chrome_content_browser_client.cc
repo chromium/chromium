@@ -5194,6 +5194,15 @@ ChromeContentBrowserClient::GetFontAccessDelegate() {
   return static_cast<content::FontAccessDelegate*>(font_access_delegate_.get());
 }
 
+content::WebAuthenticationDelegate*
+ChromeContentBrowserClient::GetWebAuthenticationDelegate() {
+  if (!web_authentication_delegate_) {
+    web_authentication_delegate_ =
+        std::make_unique<ChromeWebAuthenticationDelegate>();
+  }
+  return web_authentication_delegate_.get();
+}
+
 std::unique_ptr<content::AuthenticatorRequestClientDelegate>
 ChromeContentBrowserClient::GetWebAuthenticationRequestDelegate(
     content::RenderFrameHost* render_frame_host) {

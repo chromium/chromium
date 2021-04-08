@@ -931,6 +931,12 @@ bool ContentBrowserClient::CreateThreadPool(base::StringPiece name) {
 }
 
 #if !defined(OS_ANDROID)
+WebAuthenticationDelegate*
+ContentBrowserClient::GetWebAuthenticationDelegate() {
+  static base::NoDestructor<WebAuthenticationDelegate> delegate;
+  return delegate.get();
+}
+
 std::unique_ptr<AuthenticatorRequestClientDelegate>
 ContentBrowserClient::GetWebAuthenticationRequestDelegate(
     RenderFrameHost* render_frame_host) {

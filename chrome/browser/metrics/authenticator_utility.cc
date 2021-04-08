@@ -71,9 +71,10 @@ void ReportUVPlatformAuthenticatorAvailabilityMainThreadMac() {
   // Return to a low-priority thread for the actual check.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&ReportUVPlatformAuthenticatorAvailabilityWithConfig,
-                     ChromeAuthenticatorRequestDelegate::
-                         TouchIdAuthenticatorConfigForProfile(profile)));
+      base::BindOnce(
+          &ReportUVPlatformAuthenticatorAvailabilityWithConfig,
+          ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
+              profile)));
 }
 #endif
 

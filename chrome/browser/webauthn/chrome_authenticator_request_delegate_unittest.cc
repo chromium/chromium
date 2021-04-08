@@ -75,17 +75,19 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
 
 #if defined(OS_MAC)
 API_AVAILABLE(macos(10.12.2))
-std::string TouchIdMetadataSecret(
-    ChromeAuthenticatorRequestDelegate* delegate) {
-  return delegate->GetTouchIdAuthenticatorConfig()->metadata_secret;
+std::string TouchIdMetadataSecret(ChromeWebAuthenticationDelegate& delegate,
+                                  content::BrowserContext* browser_context) {
+  return delegate.GetTouchIdAuthenticatorConfig(browser_context)
+      ->metadata_secret;
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, TouchIdMetadataSecret) {
   if (__builtin_available(macOS 10.12.2, *)) {
-    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-    std::string secret = TouchIdMetadataSecret(&delegate);
+    ChromeWebAuthenticationDelegate delegate;
+    std::string secret = TouchIdMetadataSecret(delegate, GetBrowserContext());
     EXPECT_EQ(secret.size(), 32u);
-    EXPECT_EQ(secret, TouchIdMetadataSecret(&delegate));
+    // The secret should be stable.
+    EXPECT_EQ(secret, TouchIdMetadataSecret(delegate, GetBrowserContext()));
   }
 }
 
@@ -94,27 +96,25 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   if (__builtin_available(macOS 10.12.2, *)) {
     // Different delegates on the same BrowserContext (Profile) should return
     // the same secret.
-    ChromeAuthenticatorRequestDelegate delegate1(main_rfh());
-    ChromeAuthenticatorRequestDelegate delegate2(main_rfh());
-    EXPECT_EQ(TouchIdMetadataSecret(&delegate1),
-              TouchIdMetadataSecret(&delegate2));
+    ChromeWebAuthenticationDelegate delegate1;
+    ChromeWebAuthenticationDelegate delegate2;
+    EXPECT_EQ(TouchIdMetadataSecret(delegate1, GetBrowserContext()),
+              TouchIdMetadataSecret(delegate2, GetBrowserContext()));
   }
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TouchIdMetadataSecret_NotEqualForDifferentProfiles) {
   if (__builtin_available(macOS 10.12.2, *)) {
-    // Different profiles have different secrets. (No way to reset
-    // browser_context(), so we have to create our own.)
-    auto browser_context = CreateBrowserContext();
-    auto web_contents = content::WebContentsTester::CreateTestWebContents(
-        browser_context.get(), nullptr);
-    ChromeAuthenticatorRequestDelegate delegate1(main_rfh());
-    ChromeAuthenticatorRequestDelegate delegate2(web_contents->GetMainFrame());
-    EXPECT_NE(TouchIdMetadataSecret(&delegate1),
-              TouchIdMetadataSecret(&delegate2));
+    // Different profiles have different secrets.
+    auto other_browser_context = CreateBrowserContext();
+    ChromeWebAuthenticationDelegate delegate;
+    EXPECT_NE(TouchIdMetadataSecret(delegate, GetBrowserContext()),
+              TouchIdMetadataSecret(delegate, other_browser_context.get()));
     // Ensure this second secret is actually valid.
-    EXPECT_EQ(32u, TouchIdMetadataSecret(&delegate2).size());
+    EXPECT_EQ(
+        32u,
+        TouchIdMetadataSecret(delegate, other_browser_context.get()).size());
   }
 }
 #endif  // defined(OS_MAC)

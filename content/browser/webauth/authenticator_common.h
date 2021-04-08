@@ -120,8 +120,14 @@ class CONTENT_EXPORT AuthenticatorCommon {
   RenderFrameHost* GetRenderFrameHost() const;
 
  protected:
+  // MaybeCreateRequestDelegate returns the embedder-provided implementation of
+  // AuthenticatorRequestClientDelegate, which encapsulates per-request state
+  // relevant to the embedder, e.g. because it is used to display browser UI.
+  //
+  // Chrome may return nullptr here in order to ensure that at most one request
+  // per WebContents is ongoing at once.
   virtual std::unique_ptr<AuthenticatorRequestClientDelegate>
-  CreateRequestDelegate();
+  MaybeCreateRequestDelegate();
 
   std::unique_ptr<AuthenticatorRequestClientDelegate> request_delegate_;
 

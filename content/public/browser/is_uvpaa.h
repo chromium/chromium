@@ -29,8 +29,7 @@ using IsUVPlatformAuthenticatorAvailableCallback =
 
 #if defined(OS_MAC)
 CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
-    const content::AuthenticatorRequestClientDelegate::
-        TouchIdAuthenticatorConfig&,
+    const content::WebAuthenticationDelegate::TouchIdAuthenticatorConfig&,
     IsUVPlatformAuthenticatorAvailableCallback);
 
 #elif defined(OS_WIN)

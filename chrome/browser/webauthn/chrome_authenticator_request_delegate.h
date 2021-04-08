@@ -39,29 +39,42 @@ class FidoAuthenticator;
 class FidoDiscoveryFactory;
 }  // namespace device
 
+// ChromeWebAuthenticationDelegate is the //chrome layer implementation of
+// content::WebAuthenticationDelegate.
+class ChromeWebAuthenticationDelegate
+    : public content::WebAuthenticationDelegate {
+ public:
+#if defined(OS_MAC)
+  // Returns a configuration struct for instantiating the macOS WebAuthn
+  // platform authenticator for the given Profile.
+  static TouchIdAuthenticatorConfig TouchIdAuthenticatorConfigForProfile(
+      Profile* profile);
+#endif  // defined(OS_MAC)
+
+  ~ChromeWebAuthenticationDelegate() override;
+
+  // content::WebAuthenticationDelegate:
+#if defined(OS_MAC)
+  base::Optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
+      content::BrowserContext* browser_context) override;
+#endif  // defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
+      content::RenderFrameHost* render_frame_host) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  base::Optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      content::RenderFrameHost* render_frame_host) override;
+};
+
 class ChromeAuthenticatorRequestDelegate
     : public content::AuthenticatorRequestClientDelegate,
       public AuthenticatorRequestDialogModel::Observer {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-#if defined(OS_MAC)
-  static TouchIdAuthenticatorConfig TouchIdAuthenticatorConfigForProfile(
-      Profile* profile);
-#endif  // defined(OS_MAC)
-
   // The |render_frame_host| must outlive this instance.
   explicit ChromeAuthenticatorRequestDelegate(
       content::RenderFrameHost* render_frame_host);
   ~ChromeAuthenticatorRequestDelegate() override;
-
-#if defined(OS_MAC)
-  base::Optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig()
-      override;
-#endif  // defined(OS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtr<ChromeAuthenticatorRequestDelegate> AsWeakPtr();
 
@@ -97,8 +110,6 @@ class ChromeAuthenticatorRequestDelegate
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback) override;
   bool IsFocused() override;
-  base::Optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride()
-      override;
   void DisableUI() override;
   bool IsWebAuthnUIEnabled() override;
   void SetConditionalRequest(bool is_conditional) override;
@@ -132,13 +143,13 @@ class ChromeAuthenticatorRequestDelegate
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
                            TestPairedDeviceAddressPreference);
 
-  content::BrowserContext* GetBrowserContext() const;
-
-  base::Optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
-
   // GetRenderFrameHost returns a pointer to the RenderFrameHost that was given
   // to the constructor.
   content::RenderFrameHost* GetRenderFrameHost() const;
+
+  content::BrowserContext* GetBrowserContext() const;
+
+  base::Optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
 
   // ShouldPermitCableExtension returns true if the given |origin| may set a
   // caBLE extension. This extension contains website-chosen BLE pairing
