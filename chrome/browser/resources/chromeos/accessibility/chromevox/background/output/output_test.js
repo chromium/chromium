@@ -1407,7 +1407,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'ARCCustomAction', function() {
     const range = cursors.Range.fromNode(actionable);
     const o = new Output().withSpeechAndBraille(range, null, 'navigate');
     checkSpeechOutput(
-        'test|Actions available. Press Search+Period to view',
+        'test|Actions available. Press Search+Ctrl+A to view',
         [
           {value: 'name', start: 0, end: 4},
           {value: {delay: true}, start: 5, end: 51}
