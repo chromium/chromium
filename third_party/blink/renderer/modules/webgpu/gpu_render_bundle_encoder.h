@@ -66,7 +66,7 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
                       const V8GPUIndexFormat& format,
                       uint64_t offset,
                       uint64_t size) {
-    GetProcs().renderBundleEncoderSetIndexBufferWithFormat(
+    GetProcs().renderBundleEncoderSetIndexBuffer(
         GetHandle(), buffer->GetHandle(), AsDawnEnum(format), offset, size);
   }
   void setVertexBuffer(uint32_t slot,

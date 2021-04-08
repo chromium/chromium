@@ -78,7 +78,7 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
                       const V8GPUIndexFormat& format,
                       uint64_t offset,
                       uint64_t size) {
-    GetProcs().renderPassEncoderSetIndexBufferWithFormat(
+    GetProcs().renderPassEncoderSetIndexBuffer(
         GetHandle(), buffer->GetHandle(), AsDawnEnum(format), offset, size);
   }
   void setVertexBuffer(uint32_t slot,
