@@ -1,0 +1,225 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/services/auction_worklet/auction_v8_helper.h"
+
+#include <memory>
+
+#include "base/location.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
+#include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "build/build_config.h"
+#include "gin/array_buffer.h"
+#include "gin/converter.h"
+#include "gin/gin_features.h"
+#include "gin/public/isolate_holder.h"
+#include "gin/v8_initializer.h"
+#include "v8/include/v8.h"
+
+namespace auction_worklet {
+
+namespace {
+
+// Initialize V8 (and gin).
+void InitV8() {
+  // TODO(mmenke): All these calls touch global state, which seems rather unsafe
+  // if the process is shared with anything else (e.g. --single-process mode, or
+  // on Android?).  Is there some safer way to do this?
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+  gin::V8Initializer::LoadV8Snapshot();
+#endif
+
+  // Each script is run once using its own isolate, so tune down V8 to use as
+  // little memory as possible.
+  static const char kOptimizeForSize[] = "--optimize_for_size";
+  v8::V8::SetFlagsFromString(kOptimizeForSize, strlen(kOptimizeForSize));
+
+  // Running v8 in jitless mode allows dynamic code to be disabled in the
+  // process, and since each isolate is used only once, this may be best for
+  // performance as well.
+  static const char kJitless[] = "--jitless";
+  v8::V8::SetFlagsFromString(kJitless, strlen(kJitless));
+
+  // WebAssembly isn't encountered during resolution, so reduce the
+  // potential attack surface.
+  static const char kNoExposeWasm[] = "--no-expose-wasm";
+  v8::V8::SetFlagsFromString(kNoExposeWasm, strlen(kNoExposeWasm));
+
+  gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
+                                 gin::ArrayBufferAllocator::SharedInstance());
+}
+
+}  // namespace
+
+AuctionV8Helper::FullIsolateScope::FullIsolateScope(AuctionV8Helper* v8_helper)
+    : locker_(v8_helper->isolate()),
+      isolate_scope_(v8_helper->isolate()),
+      handle_scope_(v8_helper->isolate()) {}
+
+AuctionV8Helper::FullIsolateScope::~FullIsolateScope() = default;
+
+AuctionV8Helper::AuctionV8Helper() {
+  static int v8_initialized = false;
+  if (!v8_initialized)
+    InitV8();
+
+  v8_initialized = true;
+
+  // Now the initialization is completed, create an isolate.
+  isolate_holder_ = std::make_unique<gin::IsolateHolder>(
+      base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kUseLocker,
+      gin::IsolateHolder::IsolateType::kUtility);
+  FullIsolateScope v8_scope(this);
+  scratch_context_.Reset(isolate(), v8::Context::New(isolate()));
+}
+
+AuctionV8Helper::~AuctionV8Helper() = default;
+
+v8::Local<v8::String> AuctionV8Helper::CreateStringFromLiteral(
+    const char* ascii_string) {
+  DCHECK(base::IsStringASCII(ascii_string));
+  return v8::String::NewFromUtf8(isolate(), ascii_string,
+                                 v8::NewStringType::kNormal,
+                                 strlen(ascii_string))
+      .ToLocalChecked();
+}
+
+v8::MaybeLocal<v8::String> AuctionV8Helper::CreateUtf8String(
+    base::StringPiece utf8_string) {
+  if (!base::IsStringUTF8(utf8_string))
+    return v8::MaybeLocal<v8::String>();
+  return v8::String::NewFromUtf8(isolate(), utf8_string.data(),
+                                 v8::NewStringType::kNormal,
+                                 utf8_string.length());
+}
+
+v8::MaybeLocal<v8::Value> AuctionV8Helper::CreateValueFromJson(
+    v8::Local<v8::Context> context,
+    base::StringPiece utf8_json) {
+  v8::Local<v8::String> v8_string;
+  if (!CreateUtf8String(utf8_json).ToLocal(&v8_string))
+    return v8::MaybeLocal<v8::Value>();
+  return v8::JSON::Parse(context, v8_string);
+}
+
+bool AuctionV8Helper::AppendUtf8StringValue(
+    base::StringPiece utf8_string,
+    std::vector<v8::Local<v8::Value>>* args) {
+  v8::Local<v8::String> value;
+  if (!CreateUtf8String(utf8_string).ToLocal(&value))
+    return false;
+  args->push_back(value);
+  return true;
+}
+
+bool AuctionV8Helper::AppendJsonValue(v8::Local<v8::Context> context,
+                                      base::StringPiece utf8_json,
+                                      std::vector<v8::Local<v8::Value>>* args) {
+  v8::Local<v8::Value> value;
+  if (!CreateValueFromJson(context, utf8_json).ToLocal(&value))
+    return false;
+  args->push_back(value);
+  return true;
+}
+
+bool AuctionV8Helper::InsertValue(base::StringPiece key,
+                                  v8::Local<v8::Value> value,
+                                  v8::Local<v8::Object> object) {
+  v8::Local<v8::String> v8_key;
+  if (!CreateUtf8String(key).ToLocal(&v8_key))
+    return false;
+  v8::Maybe<bool> result =
+      object->Set(isolate()->GetCurrentContext(), v8_key, value);
+  return !result.IsNothing() && result.FromJust();
+}
+
+bool AuctionV8Helper::InsertJsonValue(v8::Local<v8::Context> context,
+                                      base::StringPiece key,
+                                      base::StringPiece utf8_json,
+                                      v8::Local<v8::Object> object) {
+  v8::Local<v8::Value> v8_value;
+  return CreateValueFromJson(context, utf8_json).ToLocal(&v8_value) &&
+         InsertValue(key, v8_value, object);
+}
+
+// Attempts to convert |value| to JSON and write it to |out|. Returns false on
+// failure.
+bool AuctionV8Helper::ExtractJson(v8::Local<v8::Context> context,
+                                  v8::Local<v8::Value> value,
+                                  std::string* out) {
+  v8::MaybeLocal<v8::String> maybe_json = v8::JSON::Stringify(context, value);
+  v8::Local<v8::String> json;
+  if (!maybe_json.ToLocal(&json))
+    return false;
+  bool success = gin::ConvertFromV8(isolate(), json, out);
+  if (!success)
+    return false;
+  // Stringify can return the string "undefined" for certain inputs, which is
+  // not actually JSON. Treat those as failures.
+  if (*out == "undefined") {
+    out->clear();
+    return false;
+  }
+  return true;
+}
+
+v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
+    const std::string& src,
+    const GURL& src_url) {
+  v8::Isolate* v8_isolate = isolate();
+
+  v8::MaybeLocal<v8::String> src_string = CreateUtf8String(src);
+  v8::MaybeLocal<v8::String> origin_string = CreateUtf8String(src_url.spec());
+  if (src_string.IsEmpty() || origin_string.IsEmpty())
+    return v8::MaybeLocal<v8::UnboundScript>();
+
+  // Compile script.
+  v8::ScriptCompiler::Source script_source(
+      src_string.ToLocalChecked(),
+      v8::ScriptOrigin(v8_isolate, origin_string.ToLocalChecked()));
+  return v8::ScriptCompiler::CompileUnboundScript(
+      v8_isolate, &script_source, v8::ScriptCompiler::kNoCompileOptions,
+      v8::ScriptCompiler::NoCacheReason::kNoCacheNoReason);
+}
+
+v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::UnboundScript> script,
+    base::StringPiece script_name,
+    std::vector<v8::Local<v8::Value>> args) {
+  DCHECK_EQ(isolate(), context->GetIsolate());
+
+  v8::Local<v8::String> v8_script_name;
+  if (!CreateUtf8String(script_name).ToLocal(&v8_script_name))
+    return v8::MaybeLocal<v8::Value>();
+
+  v8::Local<v8::Script> local_script = script->BindToCurrentContext();
+
+  // Run script.
+  v8::TryCatch try_catch(isolate());
+  auto result = local_script->Run(context);
+  if (result.IsEmpty() || try_catch.HasCaught())
+    return v8::MaybeLocal<v8::Value>();
+
+  v8::Local<v8::Value> function;
+  if (!context->Global()->Get(context, v8_script_name).ToLocal(&function))
+    return v8::MaybeLocal<v8::Value>();
+
+  if (!function->IsFunction())
+    return v8::MaybeLocal<v8::Value>();
+
+  return v8::Function::Cast(*function)->Call(context, context->Global(),
+                                             args.size(), args.data());
+}
+
+}  // namespace auction_worklet

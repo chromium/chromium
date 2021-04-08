@@ -1,0 +1,187 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/services/auction_worklet/seller_worklet.h"
+
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/logging.h"
+#include "base/stl_util.h"
+#include "base/time/time.h"
+#include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/report_bindings.h"
+#include "content/services/auction_worklet/worklet_loader.h"
+#include "gin/converter.h"
+#include "gin/dictionary.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+#include "v8/include/v8.h"
+
+namespace auction_worklet {
+
+SellerWorklet::ScoreResult::ScoreResult() = default;
+
+SellerWorklet::ScoreResult::ScoreResult(double score)
+    : success(true), score(score) {
+  DCHECK_GT(score, 0);
+}
+
+SellerWorklet::Report::Report() = default;
+
+SellerWorklet::Report::Report(std::string signals_for_winner, GURL report_url)
+    : success(true),
+      signals_for_winner(std::move(signals_for_winner)),
+      report_url(std::move(report_url)) {}
+
+SellerWorklet::SellerWorklet(
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    const GURL& script_source_url,
+    AuctionV8Helper* v8_helper,
+    LoadWorkletCallback load_worklet_callback)
+    : v8_helper_(v8_helper) {
+  DCHECK(load_worklet_callback);
+  worklet_loader_ = std::make_unique<WorkletLoader>(
+      url_loader_factory, script_source_url, v8_helper,
+      base::BindOnce(&SellerWorklet::OnDownloadComplete, base::Unretained(this),
+                     std::move(load_worklet_callback)));
+}
+
+SellerWorklet::~SellerWorklet() = default;
+
+SellerWorklet::ScoreResult SellerWorklet::ScoreAd(
+    const std::string& ad_metadata_json,
+    double bid,
+    const std::string& auction_config_json,
+    const std::string& browser_signal_top_window_hostname,
+    const url::Origin& browser_signal_interest_group_owner,
+    const std::string& browser_signal_interest_group_name,
+    const std::string& browser_signal_ad_render_fingerprint,
+    base::TimeDelta browser_signal_bidding_duration) {
+  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
+  v8::Isolate* isolate = v8_helper_->isolate();
+  // Short lived context, to avoid leaking data at global scope between either
+  // repeated calls to this worklet, or to calls to any other worklet.
+  v8::Local<v8::Context> context = v8::Context::New(isolate);
+  v8::Context::Scope context_scope(context);
+
+  std::vector<v8::Local<v8::Value>> args;
+  if (!v8_helper_->AppendJsonValue(context, ad_metadata_json, &args))
+    return ScoreResult();
+
+  args.push_back(gin::ConvertToV8(isolate, bid));
+
+  if (!v8_helper_->AppendJsonValue(context, auction_config_json, &args))
+    return ScoreResult();
+
+  v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
+  gin::Dictionary browser_signals_dict(isolate, browser_signals);
+  if (!browser_signals_dict.Set("topWindowHostname",
+                                browser_signal_top_window_hostname) ||
+      !browser_signals_dict.Set(
+          "interestGroupOwner",
+          browser_signal_interest_group_owner.Serialize()) ||
+      !browser_signals_dict.Set("interestGroupName",
+                                browser_signal_interest_group_name) ||
+      !browser_signals_dict.Set("adRenderFingerprint",
+                                browser_signal_ad_render_fingerprint) ||
+      !browser_signals_dict.Set(
+          "biddingDurationMsec",
+          browser_signal_bidding_duration.InMilliseconds())) {
+    return ScoreResult();
+  }
+  args.push_back(browser_signals);
+
+  v8::Local<v8::Value> score_ad_result;
+  double score;
+  if (!v8_helper_
+           ->RunScript(context, worklet_script_->Get(isolate), "scoreAd", args)
+           .ToLocal(&score_ad_result) ||
+      !gin::ConvertFromV8(isolate, score_ad_result, &score)) {
+    return ScoreResult();
+  }
+
+  if (score <= 0 || std::isnan(score) || !std::isfinite(score))
+    return ScoreResult();
+
+  return ScoreResult(score);
+}
+
+SellerWorklet::Report SellerWorklet::ReportResult(
+    const std::string& auction_config_json,
+    const std::string& browser_signal_top_window_hostname,
+    const url::Origin& browser_signal_interest_group_owner,
+    const std::string& browser_signal_interest_group_name,
+    const GURL& browser_signal_render_url,
+    const std::string& browser_signal_ad_render_fingerprint,
+    double browser_signal_bid,
+    double browser_signal_desirability) {
+  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
+  v8::Isolate* isolate = v8_helper_->isolate();
+
+  v8::Local<v8::ObjectTemplate> global_template =
+      v8::ObjectTemplate::New(isolate);
+  ReportBindings report_bindings(v8_helper_, global_template);
+
+  // Short lived context, to avoid leaking data at global scope between either
+  // repeated calls to this worklet, or to calls to any other worklet.
+  v8::Local<v8::Context> context =
+      v8::Context::New(isolate, nullptr /* extensions */, global_template);
+  v8::Context::Scope context_scope(context);
+
+  std::vector<v8::Local<v8::Value>> args;
+  if (!v8_helper_->AppendJsonValue(context, auction_config_json, &args))
+    return Report();
+
+  v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
+  gin::Dictionary browser_signals_dict(isolate, browser_signals);
+  if (!browser_signals_dict.Set("topWindowHostname",
+                                browser_signal_top_window_hostname) ||
+      !browser_signals_dict.Set(
+          "interestGroupOwner",
+          browser_signal_interest_group_owner.Serialize()) ||
+      !browser_signals_dict.Set("interestGroupName",
+                                browser_signal_interest_group_name) ||
+      !browser_signals_dict.Set("renderUrl",
+                                browser_signal_render_url.spec()) ||
+      !browser_signals_dict.Set("adRenderFingerprint",
+                                browser_signal_ad_render_fingerprint) ||
+      !browser_signals_dict.Set("bid", browser_signal_bid) ||
+      !browser_signals_dict.Set("desirability", browser_signal_desirability)) {
+    return Report();
+  }
+  args.push_back(browser_signals);
+
+  v8::Local<v8::Value> signals_for_winner_value;
+  if (!v8_helper_
+           ->RunScript(context, worklet_script_->Get(isolate), "reportResult",
+                       args)
+           .ToLocal(&signals_for_winner_value)) {
+    return Report();
+  }
+
+  // Consider lack of error but no return value type, or a return value that
+  // can't be converted to JSON a valid result.
+  std::string signals_for_winner;
+  if (!v8_helper_->ExtractJson(context, signals_for_winner_value,
+                               &signals_for_winner)) {
+    signals_for_winner = "null";
+  }
+
+  return Report(signals_for_winner, report_bindings.report_url());
+}
+
+void SellerWorklet::OnDownloadComplete(
+    LoadWorkletCallback load_worklet_callback,
+    std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script) {
+  worklet_loader_.reset();
+  worklet_script_ = std::move(worklet_script);
+  std::move(load_worklet_callback).Run(worklet_script_ != nullptr);
+}
+
+}  // namespace auction_worklet

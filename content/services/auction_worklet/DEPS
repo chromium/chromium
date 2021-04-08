@@ -1,0 +1,8 @@
+include_rules = [
+  "+gin",
+  "+net",
+  "+services/network/public",
+  "+services/network/test",
+  "+third_party/blink/public/mojom",
+  "+v8",
+]
