@@ -12,6 +12,8 @@ namespace send_tab_to_self {
 
 const base::Feature kSendTabToSelfWhenSignedIn{
     "SendTabToSelfWhenSignedIn", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSendTabToSelfUseFakeBackend{
+    "SendTabToSelfUseFakeBackend", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsReceivingEnabledByUserOnThisDevice(PrefService* prefs) {
   // TODO(crbug.com/1015322): SyncPrefs is used directly instead of methods in

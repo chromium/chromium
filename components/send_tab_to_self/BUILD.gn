@@ -4,6 +4,8 @@
 
 static_library("send_tab_to_self") {
   sources = [
+    "fake_send_tab_to_self_model.cc",
+    "fake_send_tab_to_self_model.h",
     "features.cc",
     "features.h",
     "pref_names.cc",

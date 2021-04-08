@@ -23,6 +23,7 @@ class ModelTypeControllerDelegate;
 }  // namespace syncer
 
 namespace send_tab_to_self {
+class FakeSendTabToSelfModel;
 class SendTabToSelfBridge;
 class SendTabToSelfModel;
 
@@ -48,6 +49,7 @@ class SendTabToSelfSyncService : public KeyedService {
 
  private:
   std::unique_ptr<SendTabToSelfBridge> bridge_;
+  std::unique_ptr<FakeSendTabToSelfModel> fake_model_;
 
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfSyncService);
 };
