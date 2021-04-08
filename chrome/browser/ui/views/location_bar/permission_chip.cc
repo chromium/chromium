@@ -154,7 +154,10 @@ void PermissionChip::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(widget, prompt_bubble_->GetWidget());
   widget->RemoveObserver(this);
   prompt_bubble_ = nullptr;
-  Collapse(/*allow_restart=*/false);
+  // If permission request is still active after the prompt was closed,
+  // collapse the chip.
+  if (delegate_)
+    Collapse(/*allow_restart=*/false);
 }
 
 void PermissionChip::OpenBubble() {
