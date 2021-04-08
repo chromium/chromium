@@ -2079,6 +2079,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest,
        HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
+  base::HistogramTester histogram_tester;
+
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   std::unique_ptr<FakeTopHostProvider> top_host_provider =
@@ -2092,7 +2094,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
   InitializeWithDefaultConfig("1.0.0");
 
-  tab_url_provider()->SetUrls({GURL("https://a.com"), GURL("https://b.com")});
+  tab_url_provider()->SetUrls(
+      {GURL("https://a.com"), GURL("https://b.com"), GURL("chrome://new-tab")});
 
   // Force timer to expire after random delay and schedule a hints fetch that
   // succeeds.
@@ -2100,6 +2103,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
 
   // Move it forward again to make sure timer is scheduled.
   MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
@@ -2107,6 +2112,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
   // Urls didn't change and we have all URLs cached in store.
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0, 1);
 }
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetcherTimerFetch) {

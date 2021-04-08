@@ -556,7 +556,18 @@ void OptimizationGuideHintsManager::OnComponentHintsUpdated(
       optimization_guide::kComponentHintsUpdatedResultHistogramString,
       hints_updated);
 
-  MaybeScheduleActiveTabsHintsFetch();
+  if (optimization_guide::features::
+          ShouldBatchUpdateHintsForActiveTabsAndTopHosts()) {
+    SetLastHintsFetchAttemptTime(clock_->Now());
+    if (optimization_guide::switches::ShouldOverrideFetchHintsTimer()) {
+      FetchHintsForActiveTabs();
+    } else if (!active_tabs_hints_fetch_timer_.IsRunning()) {
+      // Batch update hints with a random delay.
+      active_tabs_hints_fetch_timer_.Start(
+          FROM_HERE, RandomFetchDelay(), this,
+          &OptimizationGuideHintsManager::FetchHintsForActiveTabs);
+    }
+  }
 
   MaybeRunUpdateClosure(std::move(update_closure));
 }
@@ -577,26 +588,6 @@ void OptimizationGuideHintsManager::SetHintsFetcherFactoryForTesting(
 void OptimizationGuideHintsManager::SetClockForTesting(
     const base::Clock* clock) {
   clock_ = clock;
-}
-
-void OptimizationGuideHintsManager::MaybeScheduleActiveTabsHintsFetch() {
-  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
-          profile_->IsOffTheRecord(), pref_service_)) {
-    return;
-  }
-
-  if (!optimization_guide::features::
-          ShouldBatchUpdateHintsForActiveTabsAndTopHosts()) {
-    return;
-  }
-
-  if (optimization_guide::switches::ShouldOverrideFetchHintsTimer()) {
-    SetLastHintsFetchAttemptTime(clock_->Now());
-    FetchHintsForActiveTabs();
-  } else if (!active_tabs_hints_fetch_timer_.IsRunning()) {
-    // Only Schedule this is the time is not already running.
-    ScheduleActiveTabsHintsFetch();
-  }
 }
 
 void OptimizationGuideHintsManager::ScheduleActiveTabsHintsFetch() {
@@ -635,6 +626,9 @@ OptimizationGuideHintsManager::GetActiveTabURLsToRefresh() {
 
   std::set<GURL> urls_to_refresh;
   for (const auto& url : active_tab_urls) {
+    if (!optimization_guide::IsValidURLForURLKeyedHint(url))
+      continue;
+
     if (!hint_cache_->HasURLKeyedEntryForURL(url))
       urls_to_refresh.insert(url);
   }
@@ -648,6 +642,11 @@ void OptimizationGuideHintsManager::FetchHintsForActiveTabs() {
       optimization_guide::features::GetActiveTabsFetchRefreshDuration(), this,
       &OptimizationGuideHintsManager::ScheduleActiveTabsHintsFetch);
 
+  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile_->IsOffTheRecord(), pref_service_)) {
+    return;
+  }
+
   if (!HasOptimizationTypeToFetchFor())
     return;
 
@@ -657,6 +656,10 @@ void OptimizationGuideHintsManager::FetchHintsForActiveTabs() {
 
   const std::vector<GURL> active_tab_urls_to_refresh =
       GetActiveTabURLsToRefresh();
+
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor",
+      active_tab_urls_to_refresh.size());
 
   if (top_hosts.empty() && active_tab_urls_to_refresh.empty())
     return;

@@ -230,10 +230,6 @@ class OptimizationGuideHintsManager
   // have a hint available in |hint_cache_|.
   const std::vector<GURL> GetActiveTabURLsToRefresh();
 
-  // Method to decide whether to fetch new hints for tab URLs and proceeds to
-  // schedule the fetch if so.
-  void MaybeScheduleActiveTabsHintsFetch();
-
   // Schedules |active_tabs_hints_fetch_timer_| to fire based on the last time a
   // fetch attempt was made.
   void ScheduleActiveTabsHintsFetch();

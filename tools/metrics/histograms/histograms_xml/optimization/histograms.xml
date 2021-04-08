@@ -248,6 +248,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor"
+    units="counts" expires_after="M94">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The number of active tab URLs that did not have a hint on device, and thus,
+    required a fetch for a new hint. Recorded when a fetch is initiated to the
+    remote Optimization Guide Service for active tabs, roughly once an hour but
+    configurable via experiment params.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.HintsManager.ConcurrentPageNavigationFetches"
     units="counts" expires_after="M94">
