@@ -60,6 +60,10 @@ mojom("mojom") {
     sources += [ "cast_application_media_info_manager.mojom" ]
   }
 
+  if (is_win) {
+    sources += [ "media_foundation_service.mojom" ]
+  }
+
   public_deps = [
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",

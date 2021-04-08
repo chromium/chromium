@@ -39,6 +39,8 @@
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "media/cdm/cdm_adapter_factory.h"          // nogncheck
+#include "media/mojo/mojom/cdm_service.mojom.h"     // nogncheck
+#include "media/mojo/mojom/frame_interface_factory.mojom.h"  // nogncheck
 #include "media/mojo/services/cdm_service.h"        // nogncheck
 #include "media/mojo/services/mojo_cdm_helper.h"    // nogncheck
 #include "media/mojo/services/mojo_media_client.h"  // nogncheck
@@ -69,7 +71,8 @@ extern sandbox::TargetServices* g_utility_target_services;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
-#include "media/mojo/services/media_service_factory.h"  // nogncheck
+#include "media/mojo/mojom/media_foundation_service.mojom.h"  // nogncheck
+#include "media/mojo/services/media_foundation_service.h"     // nogncheck
 #endif  // defined(OS_WIN)
 
 namespace content {
@@ -213,8 +216,8 @@ auto RunDataDecoder(
 
 #if defined(OS_WIN)
 auto RunMediaFoundationService(
-    mojo::PendingReceiver<media::mojom::MediaService> receiver) {
-  return media::CreateMediaFoundationService(std::move(receiver));
+    mojo::PendingReceiver<media::mojom::MediaFoundationService> receiver) {
+  return std::make_unique<media::MediaFoundationService>(std::move(receiver));
 }
 #endif  // defined(OS_WIN)
 

@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/frame_interface_factory.mojom";
+import "media/mojo/mojom/interface_factory.mojom";
+import "media/mojo/mojom/key_system_support.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+
+// A service to provide Windows MediaFoundation-based InterfaceFactory and
+// KeySystemCapability. The service runs in the MediaFoundationService process,
+// which is a specialized utility process with SandboxType::kMediaFoundationCdm.
+// The process is not sandboxed after launch. `Initialize()` must be called to
+// preload the CDM if needed, after which the sandbox will be sealed. The
+// service is always connected from the browser process. The remote
+// `InterfaceFactory` lives in the renderer process.
+interface MediaFoundationService {
+  // Must be called immediately after the `MediaFoundationService` is connected,
+  // before any other method can be called. Must seal the sandbox before return.
+  // If `cdm_path` is not empty, preloads the CDM into the process.
+  Initialize(mojo_base.mojom.FilePath cdm_path);
+
+  // Queries the capabilities of the MediaFoundation-based CDM.
+  IsKeySystemSupported(string key_system)
+    => (bool is_supported, KeySystemCapability? key_system_capability);
+
+  // Requests an InterfaceFactory. `frame_interfaces` can optionally be used to
+  // provide interfaces hosted by the caller to the remote InterfaceFactory
+  // implementation.
+  CreateInterfaceFactory(
+      pending_receiver<InterfaceFactory> factory,
+      pending_remote<FrameInterfaceFactory> frame_interfaces);
+};

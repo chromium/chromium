@@ -43,15 +43,15 @@ content::GetServiceSandboxType<media::mojom::CdmService>() {
 }
 
 #if defined(OS_WIN)
-// media::mojom::MediaService
+// media::mojom::MediaFoundationService
 namespace media {
 namespace mojom {
-class MediaService;
+class MediaFoundationService;
 }
 }  // namespace media
 template <>
 inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<media::mojom::MediaService>() {
+content::GetServiceSandboxType<media::mojom::MediaFoundationService>() {
   return sandbox::policy::SandboxType::kMediaFoundationCdm;
 }
 #endif  // defined(OS_WIN)

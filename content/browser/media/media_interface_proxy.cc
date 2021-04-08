@@ -84,13 +84,13 @@ constexpr base::TimeDelta kMediaFoundationServiceIdleTimeout =
 
 // Gets an instance of the MediaFoundationService.
 // Instances are started lazily as needed.
-media::mojom::MediaService& GetMediaFoundationService() {
+media::mojom::MediaFoundationService& GetMediaFoundationService() {
   // NOTE: We use sequence-local storage to limit the lifetime of this Remote to
   // that of the UI-thread sequence. This ensures that the Remote is destroyed
   // when the task environment is torn down and reinitialized, e.g. between unit
   // tests.
-  static base::NoDestructor<
-      base::SequenceLocalStorageSlot<mojo::Remote<media::mojom::MediaService>>>
+  static base::NoDestructor<base::SequenceLocalStorageSlot<
+      mojo::Remote<media::mojom::MediaFoundationService>>>
       remote_slot;
   auto& remote = remote_slot->GetOrCreateValue();
   if (!remote) {

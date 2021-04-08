@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 
 namespace media {
 
-// This class is the |mojo_media_client| parameter to create
-// media::MediaService. The MediaService itself is running in the mf_cdm utility
-// process to host MediaFoundationRenderer/Cdm.
+// MediaFoundation-specific MojoMediaClient implementation for
+// MediaFoundationService running in the "Media Foundation Service" utility
+// process hosting MediaFoundationRenderer and MediaFoundationCdm.
 class MediaFoundationMojoMediaClient : public MojoMediaClient {
  public:
   MediaFoundationMojoMediaClient();

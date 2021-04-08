@@ -50,16 +50,6 @@ std::unique_ptr<MediaService> CreateGpuMediaService(
       std::move(receiver));
 }
 
-#if defined(OS_WIN)
-std::unique_ptr<MediaService> CreateMediaFoundationService(
-    mojo::PendingReceiver<mojom::MediaService> receiver) {
-  DVLOG(1) << "Create MediaService with MediaFoundationMojoMediaClient";
-  return std::make_unique<MediaService>(
-      std::make_unique<media::MediaFoundationMojoMediaClient>(),
-      std::move(receiver));
-}
-#endif
-
 std::unique_ptr<MediaService> CreateMediaServiceForTesting(
     mojo::PendingReceiver<mojom::MediaService> receiver) {
   return std::make_unique<MediaService>(std::make_unique<TestMojoMediaClient>(),

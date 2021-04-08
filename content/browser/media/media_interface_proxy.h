@@ -34,7 +34,7 @@
 
 #if defined(OS_WIN)
 #include "base/sequenced_task_runner.h"
-#include "media/mojo/mojom/media_service.mojom.h"
+#include "media/mojo/mojom/media_foundation_service.mojom.h"
 #endif
 
 namespace content {
@@ -143,7 +143,7 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
       const media::CdmConfig& cdm_config);
 
   mojo::Remote<media::mojom::InterfaceFactory> mf_interface_factory_remote_;
-  media::mojom::MediaService* mf_service_ptr_ = nullptr;
+  media::mojom::MediaFoundationService* mf_service_ptr_ = nullptr;
 #endif  // defined(OS_WIN)
 
   // Safe to hold a raw pointer since |this| is owned by RenderFrameHostImpl.
