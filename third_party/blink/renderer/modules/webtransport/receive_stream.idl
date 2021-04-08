@@ -5,7 +5,7 @@
 // https://wicg.github.io/web-transport/#receive-stream
 
 [ Exposed=(Window,Worker),
-  RuntimeEnabled=QuicTransport ]
+  RuntimeEnabled=WebTransport ]
 interface ReceiveStream {
   // IncomingStream interface. In the standard this is a mixin, but we can't use
   // a mixin in the implementation because BidirectionalStream would end up

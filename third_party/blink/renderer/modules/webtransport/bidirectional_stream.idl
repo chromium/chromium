@@ -5,7 +5,7 @@
 // https://wicg.github.io/web-transport/#bidirectionalstream
 
 [ Exposed=(Window,Worker),
-  RuntimeEnabled=QuicTransport ]
+  RuntimeEnabled=WebTransport ]
 interface BidirectionalStream {
   // Attributes from the OutgoingStream mixin. OutgoingStream and IncomingStream
   // are not real mixins in this implementation because it would lead to diamond

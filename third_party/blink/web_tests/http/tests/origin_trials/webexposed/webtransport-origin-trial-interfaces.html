@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py --version 3 http://127.0.0.1:8000 WebTransport --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="A1p/IYSgP2mtHE5WZ2LuzhVkZwj2VW+xIhpsYtv61ESBoXir8JtuRp8tG9uf88UEvjpNGn4n/fOVh2K6kKmP3AUAAABUeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiV2ViVHJhbnNwb3J0IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<title>WebTransport API - interfaces and properties exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {'WebTransport': [],
+       'BidirectionalStream': [],
+       'ReceiveStream': [],
+       'SendStream': [],
+       });
+}, 'WebTransport API interfaces in Origin-Trial enabled document.');
+</script>

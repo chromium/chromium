@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/web-transport/#web-transport
+// https://w3c.github.io/webtransport/#web-transport
 [
     ActiveScriptWrappable,
     Exposed=(Window,Worker),
-    RuntimeEnabled=QuicTransport
+    RuntimeEnabled=WebTransport
 ] interface WebTransport {
   [CallWith=ScriptState, RaisesException, MeasureAs=WebTransport] constructor(USVString url, optional QuicTransportOptions options = {});
   [CallWith=ScriptState, RaisesException] Promise<SendStream>

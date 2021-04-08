@@ -666,6 +666,15 @@ void QuicTransport::Init(const String& url,
     return;
   }
 
+  if (url_.ProtocolIs("quic-transport") &&
+      !RuntimeEnabledFeatures::QuicTransportEnabled()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "You need to enable the \"QuicTransport\" "
+        "feature to use WebTransport over QUIC");
+    return;
+  }
+
   if (url_.HasFragmentIdentifier()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

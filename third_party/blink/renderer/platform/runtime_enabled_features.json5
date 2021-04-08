@@ -1672,7 +1672,6 @@
     },
     {
       name: "QuicTransport",
-      origin_trial_feature_name: "QuicTransport",
       status: "experimental",
     },
     {
@@ -2276,6 +2275,11 @@
     },
     {
       name: "WebSocketStream",
+      status: "experimental",
+    },
+    {
+      name: "WebTransport",
+      origin_trial_feature_name: "WebTransport",
       status: "experimental",
     },
     {
