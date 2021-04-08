@@ -538,5 +538,80 @@ TEST_F(VisualUtilsTest, IsVisualMatchMultipleMatchRules) {
   EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
 }
 
+TEST_F(VisualUtilsTest, IsVisualMatchFloatColorRange) {
+  for (int x = 0; x < 1000; x++)
+    for (int y = 0; y < 1000; y++)
+      *bitmap_.getAddr32(x, y) = kWhite;
+
+  // Adding a little noise in the red component makes the target_hue not an
+  // integer. Testing for this color requires float ranges.
+  *bitmap_.getAddr32(0, 0) = kBlue | 0x0f;
+
+  SkScalar hsv[3];
+  SkColorToHSV(bitmap_.getColor(0, 0), hsv);
+  SkScalar target_hue = hsv[0];
+  VisualTarget target;
+  MatchRule::FloatColorRange* color_range =
+      target.mutable_match_config()->add_match_rule()->add_float_color_range();
+  color_range->set_low(target_hue);
+  color_range->set_high(target_hue);
+
+  // Blue hue present
+  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+
+  // Color range too high
+  color_range->set_low(target_hue + 0.1);
+  color_range->set_high(target_hue + 0.1);
+  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+
+  // Color range too low
+  color_range->set_low(target_hue - 0.1);
+  color_range->set_high(target_hue - 0.1);
+  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+
+  // No blue hue present
+  *bitmap_.getAddr32(0, 0) = kWhite;
+  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+}
+
+TEST_F(VisualUtilsTest, IsVisualMatchMultipleFloatColorRanges) {
+  for (int x = 0; x < 1000; x++)
+    for (int y = 0; y < 1000; y++)
+      *bitmap_.getAddr32(x, y) = kWhite;
+  *bitmap_.getAddr32(0, 0) = kBlue;
+  *bitmap_.getAddr32(1, 0) = kGreen;
+
+  SkScalar hsv[3];
+  SkColorToHSV(bitmap_.getColor(0, 0), hsv);
+  SkScalar blue_hue = hsv[0];
+  VisualTarget target;
+  MatchRule* match_rule = target.mutable_match_config()->add_match_rule();
+  MatchRule::FloatColorRange* color_range = match_rule->add_float_color_range();
+  color_range->set_low(blue_hue);
+  color_range->set_high(blue_hue);
+
+  SkColorToHSV(bitmap_.getColor(1, 0), hsv);
+  SkScalar green_hue = hsv[0];
+  color_range = match_rule->add_float_color_range();
+  color_range->set_low(green_hue);
+  color_range->set_high(green_hue);
+
+  // Both hues present
+  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+
+  // No blue hue present
+  *bitmap_.getAddr32(0, 0) = kWhite;
+  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+
+  // No green hue present
+  *bitmap_.getAddr32(0, 0) = kBlue;
+  *bitmap_.getAddr32(1, 0) = kWhite;
+  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+
+  // Neither hue present
+  *bitmap_.getAddr32(0, 0) = kWhite;
+  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+}
+
 }  // namespace visual_utils
 }  // namespace safe_browsing

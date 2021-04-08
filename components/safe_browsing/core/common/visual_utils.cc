@@ -81,8 +81,24 @@ opencv::PointDistribution HistogramBinsToPointDistribution(
   return distribution;
 }
 
+// TODO(https://crbug.com/1196450): Remove this function once we are no longer
+// using regular ColorRanges.
 bool ImageHasColorInRange(const SkBitmap& image,
                           const MatchRule::ColorRange& color_range) {
+  for (int i = 0; i < image.width(); i++) {
+    for (int j = 0; j < image.height(); j++) {
+      SkScalar hsv[3];
+      SkColorToHSV(image.getColor(i, j), hsv);
+      if (color_range.low() <= hsv[0] && hsv[0] <= color_range.high())
+        return true;
+    }
+  }
+
+  return false;
+}
+
+bool ImageHasColorInRange(const SkBitmap& image,
+                          const MatchRule::FloatColorRange& color_range) {
   for (int i = 0; i < image.width(); i++) {
     for (int j = 0; j < image.height(); j++) {
       SkScalar hsv[3];
@@ -337,6 +353,11 @@ base::Optional<VisionMatchResult> IsVisualMatch(const SkBitmap& image,
     }
 
     for (const MatchRule::ColorRange& color_range : match_rule.color_range()) {
+      is_match &= ImageHasColorInRange(image, color_range);
+    }
+
+    for (const MatchRule::FloatColorRange& color_range :
+         match_rule.float_color_range()) {
       is_match &= ImageHasColorInRange(image, color_range);
     }
 
