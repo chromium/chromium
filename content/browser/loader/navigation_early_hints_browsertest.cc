@@ -203,7 +203,9 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, Basic) {
   GURL preloaded_url = net::QuicSimpleTestServer::GetFileURL(kHintedScriptPath);
   auto it = preloads.find(preloaded_url);
   ASSERT_TRUE(it != preloads.end());
-  EXPECT_EQ(it->second, net::OK);
+  ASSERT_FALSE(it->second.was_canceled);
+  ASSERT_TRUE(it->second.error_code.has_value());
+  EXPECT_EQ(it->second.error_code.value(), net::OK);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NavigationServerError) {

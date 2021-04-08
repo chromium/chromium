@@ -11,13 +11,15 @@
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/load_flags.h"
 #include "net/base/schemeful_site.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/empty_url_loader_client.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -132,12 +134,107 @@ network::mojom::CredentialsMode CalculateCredentialMode(
 
 }  // namespace
 
+NavigationEarlyHintsManager::PreloadedResource::PreloadedResource() = default;
+
+NavigationEarlyHintsManager::PreloadedResource::~PreloadedResource() = default;
+
+NavigationEarlyHintsManager::PreloadedResource::PreloadedResource(
+    const PreloadedResource&) = default;
+
+NavigationEarlyHintsManager::PreloadedResource&
+NavigationEarlyHintsManager::PreloadedResource::operator=(
+    const PreloadedResource&) = default;
+
 NavigationEarlyHintsManager::InflightPreload::InflightPreload(
     std::unique_ptr<blink::ThrottlingURLLoader> loader,
-    std::unique_ptr<network::EmptyURLLoaderClient> client)
+    std::unique_ptr<PreloadURLLoaderClient> client)
     : loader(std::move(loader)), client(std::move(client)) {}
 
 NavigationEarlyHintsManager::InflightPreload::~InflightPreload() = default;
+
+// A URLLoaderClient which drains the content of a request to put a
+// response into the disk cache. If the response was already in the cache,
+// this tries to cancel reading body to avoid further disk access.
+class NavigationEarlyHintsManager::PreloadURLLoaderClient
+    : public network::mojom::URLLoaderClient,
+      public mojo::DataPipeDrainer::Client {
+ public:
+  PreloadURLLoaderClient(NavigationEarlyHintsManager& owner, const GURL& url)
+      : owner_(owner), url_(url) {}
+
+  ~PreloadURLLoaderClient() override = default;
+
+  PreloadURLLoaderClient(const PreloadURLLoaderClient&) = delete;
+  PreloadURLLoaderClient& operator=(const PreloadURLLoaderClient&) = delete;
+  PreloadURLLoaderClient(PreloadURLLoaderClient&&) = delete;
+  PreloadURLLoaderClient& operator=(PreloadURLLoaderClient&&) = delete;
+
+ private:
+  // mojom::URLLoaderClient overrides:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+  }
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
+    if (head->network_accessed || !head->was_fetched_via_cache)
+      return;
+    result_.was_canceled = true;
+    MaybeCompletePreload();
+  }
+  void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
+                         network::mojom::URLResponseHeadPtr head) override {}
+  void OnUploadProgress(int64_t current_position,
+                        int64_t total_size,
+                        OnUploadProgressCallback callback) override {
+    NOTREACHED();
+  }
+  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
+  void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
+  void OnStartLoadingResponseBody(
+      mojo::ScopedDataPipeConsumerHandle body) override {
+    if (response_body_drainer_) {
+      mojo::ReportBadMessage("NEHM_BAD_RESPONSE_BODY");
+      return;
+    }
+    response_body_drainer_ =
+        std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
+  }
+  void OnComplete(const network::URLLoaderCompletionStatus& status) override {
+    if (result_.was_canceled || result_.error_code.has_value()) {
+      mojo::ReportBadMessage("NEHM_BAD_COMPLETE");
+      return;
+    }
+    result_.error_code = status.error_code;
+    MaybeCompletePreload();
+  }
+
+  // mojo::DataPipeDrainer::Client overrides:
+  void OnDataAvailable(const void* data, size_t num_bytes) override {}
+  void OnDataComplete() override {
+    DCHECK(response_body_drainer_);
+    response_body_drainer_.reset();
+    MaybeCompletePreload();
+  }
+
+  bool CanCompletePreload() {
+    if (result_.was_canceled)
+      return true;
+    if (result_.error_code.has_value() && !response_body_drainer_)
+      return true;
+    return false;
+  }
+
+  void MaybeCompletePreload() {
+    if (CanCompletePreload()) {
+      // Delete `this`.
+      owner_.OnPreloadComplete(url_, result_);
+    }
+  }
+
+  NavigationEarlyHintsManager& owner_;
+  const GURL url_;
+
+  PreloadedResource result_;
+  std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;
+};
 
 NavigationEarlyHintsManager::NavigationEarlyHintsManager(
     BrowserContext& browser_context,
@@ -231,28 +328,24 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
                               frame_tree_node_id_),
           /*navigation_ui_data=*/nullptr, frame_tree_node_id_);
 
-  auto loader_client = std::make_unique<network::EmptyURLLoaderClient>();
-  auto* raw_client = loader_client.get();
-
+  auto loader_client =
+      std::make_unique<PreloadURLLoaderClient>(*this, request.url);
   auto loader = blink::ThrottlingURLLoader::CreateLoaderAndStart(
       loader_factory_, std::move(throttles),
       content::GlobalRequestID::MakeBrowserInitiated().request_id,
-      network::mojom::kURLLoadOptionNone, &request, raw_client,
+      network::mojom::kURLLoadOptionNone, &request, loader_client.get(),
       kEarlyHintsPreloadTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
 
   inflight_preloads_[request.url] = std::make_unique<InflightPreload>(
       std::move(loader), std::move(loader_client));
-  raw_client->Drain(
-      base::BindOnce(&NavigationEarlyHintsManager::OnPreloadComplete,
-                     base::Unretained(this), request.url));
 }
 
 void NavigationEarlyHintsManager::OnPreloadComplete(
     const GURL& url,
-    const network::URLLoaderCompletionStatus& status) {
-  DCHECK(base::Contains(inflight_preloads_, url));
-  DCHECK(!base::Contains(preloaded_resources_, url));
-  preloaded_resources_[url] = status.error_code;
+    const PreloadedResource& result) {
+  DCHECK(inflight_preloads_.contains(url));
+  DCHECK(!preloaded_resources_.contains(url));
+  preloaded_resources_[url] = result;
   inflight_preloads_.erase(url);
 
   if (inflight_preloads_.empty() && preloads_completion_callback_for_testing_) {

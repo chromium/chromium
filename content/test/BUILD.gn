@@ -1918,6 +1918,7 @@ test("content_unittests") {
     "../browser/loader/cors_origin_pattern_setter_unittest.cc",
     "../browser/loader/file_url_loader_factory_unittest.cc",
     "../browser/loader/merkle_integrity_source_stream_unittest.cc",
+    "../browser/loader/navigation_early_hints_manager_unittest.cc",
     "../browser/loader/navigation_url_loader_impl_unittest.cc",
     "../browser/loader/navigation_url_loader_unittest.cc",
     "../browser/manifest/manifest_icon_downloader_unittest.cc",

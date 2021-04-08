@@ -18,7 +18,6 @@ class ThrottlingURLLoader;
 
 namespace network {
 struct ResourceRequest;
-class EmptyURLLoaderClient;
 class SharedURLLoaderFactory;
 }  // namespace network
 
@@ -35,7 +34,20 @@ class BrowserContext;
 // until inflight preloads finish.
 class CONTENT_EXPORT NavigationEarlyHintsManager {
  public:
-  using PreloadedResources = base::flat_map<GURL, /*error_code*/ int>;
+  // Contains results of a preload request.
+  struct CONTENT_EXPORT PreloadedResource {
+    PreloadedResource();
+    ~PreloadedResource();
+    PreloadedResource(const PreloadedResource&);
+    PreloadedResource& operator=(const PreloadedResource&);
+
+    // Completion error code. Set only when network request is completed.
+    base::Optional<int> error_code;
+    // True when the preload was canceled. When true, the response was already
+    // in the disk cache.
+    bool was_canceled = false;
+  };
+  using PreloadedResources = base::flat_map<GURL, PreloadedResource>;
 
   NavigationEarlyHintsManager(
       BrowserContext& browser_context,
@@ -65,12 +77,13 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
       base::OnceCallback<void(PreloadedResources)> callback);
 
  private:
+  class PreloadURLLoaderClient;
+
   void MaybePreloadHintedResource(
       const network::mojom::LinkHeaderPtr& link,
       const network::ResourceRequest& navigation_request);
 
-  void OnPreloadComplete(const GURL& url,
-                         const network::URLLoaderCompletionStatus& status);
+  void OnPreloadComplete(const GURL& url, const PreloadedResource& result);
 
   BrowserContext& browser_context_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
@@ -78,7 +91,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   struct InflightPreload {
     InflightPreload(std::unique_ptr<blink::ThrottlingURLLoader> loader,
-                    std::unique_ptr<network::EmptyURLLoaderClient> client);
+                    std::unique_ptr<PreloadURLLoaderClient> client);
     ~InflightPreload();
     InflightPreload(const InflightPreload&) = delete;
     InflightPreload& operator=(const InflightPreload&) = delete;
@@ -86,7 +99,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
     InflightPreload& operator=(InflightPreload&&) = delete;
 
     std::unique_ptr<blink::ThrottlingURLLoader> loader;
-    std::unique_ptr<network::EmptyURLLoaderClient> client;
+    std::unique_ptr<PreloadURLLoaderClient> client;
   };
   // Using flat_map because the number of preloads are expected to be small.
   // Early Hints preloads should be requested for critical subresources such as
