@@ -167,7 +167,7 @@ TranslateUIDelegate::TranslateUIDelegate(
         base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption)
             ? l10n_util::GetStringUTF16(IDS_TRANSLATE_DETECTED_LANGUAGE)
             : l10n_util::GetStringUTF16(IDS_TRANSLATE_UNKNOWN_SOURCE_LANGUAGE);
-    languages_.emplace_back("und", unknown_language_string);
+    languages_.emplace_back(kUnknownLanguageCode, unknown_language_string);
     std::rotate(languages_.rbegin(), languages_.rbegin() + 1,
                 languages_.rend());
   }
@@ -220,7 +220,7 @@ void TranslateUIDelegate::UpdateSourceLanguageIndex(size_t language_index) {
   UMA_HISTOGRAM_BOOLEAN(kModifySourceLang, true);
   source_language_index_ = language_index;
 
-  std::string language_code = "und";
+  std::string language_code = kUnknownLanguageCode;
   if (language_index < GetNumberOfLanguages())
     language_code = GetLanguageCodeAt(language_index);
   translate_manager_->GetActiveTranslateMetricsLogger()->LogSourceLanguage(
