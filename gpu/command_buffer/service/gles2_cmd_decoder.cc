@@ -4573,8 +4573,6 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
     driver_bug_workarounds |= SH_EMULATE_ISNAN_FLOAT_FUNCTION;
   if (workarounds().use_unused_standard_shared_blocks)
     driver_bug_workarounds |= SH_USE_UNUSED_STANDARD_SHARED_BLOCKS;
-  if (workarounds().dont_remove_invariant_for_fragment_input)
-    driver_bug_workarounds |= SH_DONT_REMOVE_INVARIANT_FOR_FRAGMENT_INPUT;
   if (workarounds().remove_invariant_and_centroid_for_essl3)
     driver_bug_workarounds |= SH_REMOVE_INVARIANT_AND_CENTROID_FOR_ESSL3;
   if (workarounds().rewrite_float_unary_minus_operator)

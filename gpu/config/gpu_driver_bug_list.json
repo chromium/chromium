@@ -1712,19 +1712,6 @@
       ]
     },
     {
-      "id": 201,
-      "cr_bugs": [659326,639760],
-      "description": "AMD drivers in Linux require invariant qualifier to match between vertex and fragment shaders",
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "dont_remove_invariant_for_fragment_input",
-        "remove_invariant_and_centroid_for_essl3"
-      ]
-    },
-    {
       "id": 202,
       "cr_bugs": [639760,641129],
       "description": "Mac driver GL 4.1 requires invariant and centroid to match between shaders",
