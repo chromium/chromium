@@ -45,21 +45,6 @@
           <include name="IDR_WEBSTORE_APP_ICON_16" file="google_chrome/chromeos/webstore_app_icon_16.png" type="BINDATA" />
           <include name="IDR_WEBSTORE_APP_ICON_128" file="google_chrome/chromeos/webstore_app_icon_128.png" type="BINDATA" />
         </if>
-        <if expr="not chromeos">
-          <include name="IDR_WELCOME_MODULE_ICONS_GOOGLE_DARK" file="google_chrome/welcome/module_icons/google_dark.svg" type="BINDATA" />
-          <include name="IDR_WELCOME_MODULE_ICONS_GOOGLE_LIGHT" file="google_chrome/welcome/module_icons/google_light.svg" type="BINDATA" />
-          <include name="IDR_WELCOME_MODULE_ICONS_SET_DEFAULT_DARK" file="google_chrome/welcome/module_icons/set_default_dark.svg" type="BINDATA" />
-          <include name="IDR_WELCOME_MODULE_ICONS_SET_DEFAULT_LIGHT" file="google_chrome/welcome/module_icons/set_default_light.svg" type="BINDATA" />
-          <include name="IDR_WELCOME_MODULE_ICONS_WALLPAPER_DARK" file="google_chrome/welcome/module_icons/wallpaper_dark.svg" type="BINDATA" />
-          <include name="IDR_WELCOME_MODULE_ICONS_WALLPAPER_LIGHT" file="google_chrome/welcome/module_icons/wallpaper_light.svg" type="BINDATA" />
-          <include name="IDR_WELCOME_NTP_THUMBNAILS_ART" file="google_chrome/welcome/ntp_thumbnails/art.jpg" type="BINDATA" />
-          <include name="IDR_WELCOME_NTP_THUMBNAILS_CITYSCAPE" file="google_chrome/welcome/ntp_thumbnails/cityscape.jpg" type="BINDATA" />
-          <include name="IDR_WELCOME_NTP_THUMBNAILS_EARTH" file="google_chrome/welcome/ntp_thumbnails/earth.jpg" type="BINDATA" />
-          <include name="IDR_WELCOME_NTP_THUMBNAILS_GEOMETRIC_SHAPES" file="google_chrome/welcome/ntp_thumbnails/geometric_shapes.jpg" type="BINDATA" />
-          <include name="IDR_WELCOME_NTP_THUMBNAILS_LANDSCAPE" file="google_chrome/welcome/ntp_thumbnails/landscape.jpg" type="BINDATA" />
-          <include name="IDR_WELCOME_SET_DEFAULT_DARK" file="google_chrome/welcome/set_default_dark.svg" type="BINDATA" />
-          <include name="IDR_WELCOME_SET_DEFAULT_LIGHT" file="google_chrome/welcome/set_default_light.svg" type="BINDATA" />
-        </if>
       </if>
       <if expr="not _google_chrome">
         <include name="IDR_PRODUCT_LOGO_64" file="chromium/product_logo_64.png" type="BINDATA" />

@@ -135,35 +135,6 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
   // Add welcome strings.
   AddStrings(html_source);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Load unscaled images.
-  static constexpr webui::ResourcePath kPaths[] = {
-      {"images/module_icons/google_dark.svg",
-       IDR_WELCOME_MODULE_ICONS_GOOGLE_DARK},
-      {"images/module_icons/google_light.svg",
-       IDR_WELCOME_MODULE_ICONS_GOOGLE_LIGHT},
-      {"images/module_icons/set_default_dark.svg",
-       IDR_WELCOME_MODULE_ICONS_SET_DEFAULT_DARK},
-      {"images/module_icons/set_default_light.svg",
-       IDR_WELCOME_MODULE_ICONS_SET_DEFAULT_LIGHT},
-      {"images/module_icons/wallpaper_dark.svg",
-       IDR_WELCOME_MODULE_ICONS_WALLPAPER_DARK},
-      {"images/module_icons/wallpaper_light.svg",
-       IDR_WELCOME_MODULE_ICONS_WALLPAPER_LIGHT},
-      {"images/ntp_thumbnails/art.jpg", IDR_WELCOME_NTP_THUMBNAILS_ART},
-      {"images/ntp_thumbnails/cityscape.jpg",
-       IDR_WELCOME_NTP_THUMBNAILS_CITYSCAPE},
-      {"images/ntp_thumbnails/earth.jpg", IDR_WELCOME_NTP_THUMBNAILS_EARTH},
-      {"images/ntp_thumbnails/geometric_shapes.jpg",
-       IDR_WELCOME_NTP_THUMBNAILS_GEOMETRIC_SHAPES},
-      {"images/ntp_thumbnails/landscape.jpg",
-       IDR_WELCOME_NTP_THUMBNAILS_LANDSCAPE},
-      {"images/set_default_dark.svg", IDR_WELCOME_SET_DEFAULT_DARK},
-      {"images/set_default_light.svg", IDR_WELCOME_SET_DEFAULT_LIGHT},
-  };
-  html_source->AddResourcePaths(kPaths);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if defined(OS_WIN)
   html_source->AddBoolean("is_win10",
                           base::win::GetVersion() >= base::win::Version::WIN10);

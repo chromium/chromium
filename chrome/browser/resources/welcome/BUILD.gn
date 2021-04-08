@@ -9,6 +9,8 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+assert(!is_chromeos_ash && !is_android)
+
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
@@ -37,6 +39,36 @@ generate_grd("build_grd") {
     "$target_gen_dir/$preprocess_manifest",
     "$target_gen_dir/$preprocess_gen_manifest",
   ]
+
+  if (is_chrome_branded) {
+    deps += [ ":build_icons_grdp" ]
+    grdp_files = [ "$target_gen_dir/icon_resources.grdp" ]
+  }
+}
+
+if (is_chrome_branded) {
+  generate_grd("build_icons_grdp") {
+    grd_prefix = "welcome_images"
+    out_grd = "$target_gen_dir/icon_resources.grdp"
+    input_files = [
+      "module_icons/google_dark.svg",
+      "module_icons/google_light.svg",
+      "module_icons/set_default_dark.svg",
+      "module_icons/set_default_light.svg",
+      "module_icons/wallpaper_dark.svg",
+      "module_icons/wallpaper_light.svg",
+      "ntp_thumbnails/art.jpg",
+      "ntp_thumbnails/cityscape.jpg",
+      "ntp_thumbnails/earth.jpg",
+      "ntp_thumbnails/geometric_shapes.jpg",
+      "ntp_thumbnails/landscape.jpg",
+      "set_default_dark.svg",
+      "set_default_light.svg",
+    ]
+    input_files_base_dir =
+        rebase_path("//chrome/app/theme/google_chrome/welcome/", "//")
+    resource_path_prefix = "images"
+  }
 }
 
 preprocess_if_expr("preprocess") {

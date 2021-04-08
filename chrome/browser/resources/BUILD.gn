@@ -128,7 +128,6 @@ if (enable_js_type_check) {
         "tab_search:closure_compile",
         "usb_internals:closure_compile",
         "web_app_internals:closure_compile",
-        "welcome:closure_compile",
       ]
     }
     if (is_win || is_android || is_linux || is_chromeos) {
@@ -144,6 +143,9 @@ if (enable_js_type_check) {
         "nearby_share/shared:closure_compile",
         "nearby_share/shared:closure_compile_module",
       ]
+    }
+    if (!is_android && !is_chromeos_ash) {
+      deps += [ "welcome:closure_compile" ]
     }
     if (enable_extensions) {
       deps += [ "extensions:closure_compile" ]
