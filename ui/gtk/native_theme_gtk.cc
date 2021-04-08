@@ -13,6 +13,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gtk/gtk_color_mixers.h"
+#include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
@@ -78,39 +79,39 @@ NativeThemeGtk* NativeThemeGtk::instance() {
 
 NativeThemeGtk::NativeThemeGtk() {
   // g_type_from_name() is only used in GTK3.
-#if BUILDFLAG(GTK_VERSION) < 4
-  // These types are needed by g_type_from_name(), but may not be registered at
-  // this point.  We need the g_type_class magic to make sure the compiler
-  // doesn't optimize away this code.
-  g_type_class_unref(g_type_class_ref(gtk_button_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_entry_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_frame_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_header_bar_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_image_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_info_bar_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_label_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_menu_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_menu_bar_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_menu_item_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_range_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_scrollbar_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_scrolled_window_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_separator_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_spinner_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_text_view_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_toggle_button_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_tree_view_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_window_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_combo_box_text_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_cell_view_get_type()));
-  g_type_class_unref(g_type_class_ref(gtk_scale_get_type()));
+  if (!GtkCheckVersion(4)) {
+    // These types are needed by g_type_from_name(), but may not be registered
+    // at this point.  We need the g_type_class magic to make sure the compiler
+    // doesn't optimize away this code.
+    g_type_class_unref(g_type_class_ref(gtk_button_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_entry_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_frame_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_header_bar_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_image_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_info_bar_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_label_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_menu_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_menu_bar_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_menu_item_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_range_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_scrollbar_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_scrolled_window_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_separator_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_spinner_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_text_view_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_toggle_button_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_tree_view_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_window_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_combo_box_text_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_cell_view_get_type()));
+    g_type_class_unref(g_type_class_ref(gtk_scale_get_type()));
 
-  // Initialize the GtkTreeMenu type.  _gtk_tree_menu_get_type() is private, so
-  // we need to initialize it indirectly.
-  auto model =
-      TakeGObject(GTK_TREE_MODEL(gtk_tree_store_new(1, G_TYPE_STRING)));
-  auto combo = TakeGObject(gtk_combo_box_new_with_model(model));
-#endif
+    // Initialize the GtkTreeMenu type.  _gtk_tree_menu_get_type() is private,
+    // so we need to initialize it indirectly.
+    auto model =
+        TakeGObject(GTK_TREE_MODEL(gtk_tree_store_new(1, G_TYPE_STRING)));
+    auto combo = TakeGObject(gtk_combo_box_new_with_model(model));
+  }
 
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(AddGtkNativeCoreColorMixer));
@@ -124,28 +125,29 @@ NativeThemeGtk::~NativeThemeGtk() {
 
 void NativeThemeGtk::SetThemeCssOverride(ScopedCssProvider provider) {
   if (theme_css_override_) {
-#if BUILDFLAG(GTK_VERSION) >= 4
-    gtk_style_context_remove_provider_for_display(
-        gdk_display_get_default(),
-        GTK_STYLE_PROVIDER(theme_css_override_.get()));
-#else
-    gtk_style_context_remove_provider_for_screen(
-        gdk_screen_get_default(),
-        GTK_STYLE_PROVIDER(theme_css_override_.get()));
-#endif
+    if (GtkCheckVersion(4)) {
+      gtk_style_context_remove_provider_for_display(
+          gdk_display_get_default(),
+          GTK_STYLE_PROVIDER(theme_css_override_.get()));
+    } else {
+      gtk_style_context_remove_provider_for_screen(
+          gdk_screen_get_default(),
+          GTK_STYLE_PROVIDER(theme_css_override_.get()));
+    }
   }
   theme_css_override_ = std::move(provider);
   if (theme_css_override_) {
-#if BUILDFLAG(GTK_VERSION) >= 4
-    gtk_style_context_add_provider_for_display(
-        gdk_display_get_default(),
-        GTK_STYLE_PROVIDER(theme_css_override_.get()),
-        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-#else
-    gtk_style_context_add_provider_for_screen(
-        gdk_screen_get_default(), GTK_STYLE_PROVIDER(theme_css_override_.get()),
-        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-#endif
+    if (GtkCheckVersion(4)) {
+      gtk_style_context_add_provider_for_display(
+          gdk_display_get_default(),
+          GTK_STYLE_PROVIDER(theme_css_override_.get()),
+          GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    } else {
+      gtk_style_context_add_provider_for_screen(
+          gdk_screen_get_default(),
+          GTK_STYLE_PROVIDER(theme_css_override_.get()),
+          GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    }
   }
 }
 
@@ -364,42 +366,33 @@ void NativeThemeGtk::PaintMenuSeparator(
   if (GtkCheckVersion(3, 20)) {
     auto context = GetStyleContextFromCss(
         StrCat({kGtkCSSMenu, " GtkSeparator#separator.horizontal"}));
-    GtkBorder margin, border, padding;
     int min_height = 1;
-#if BUILDFLAG(GTK_VERSION) >= 4
-    gtk_style_context_get_margin(context, &margin);
-    gtk_style_context_get_border(context, &border);
-    gtk_style_context_get_padding(context, &padding);
-    min_height = GetSeparatorSize(true).height();
-#else
-    GtkStateFlags state = gtk_style_context_get_state(context);
-    gtk_style_context_get_margin(context, state, &margin);
-    gtk_style_context_get_border(context, state, &border);
-    gtk_style_context_get_padding(context, state, &padding);
-    gtk_style_context_get(context, state, "min-height", &min_height, nullptr);
-#endif
-    int w = rect.width() - margin.left - margin.right;
-    int h = std::max(
-        min_height + padding.top + padding.bottom + border.top + border.bottom,
-        1);
-    int x = margin.left;
+    auto margin = GtkStyleContextGetMargin(context);
+    auto border = GtkStyleContextGetBorder(context);
+    auto padding = GtkStyleContextGetPadding(context);
+    if (GtkCheckVersion(4))
+      min_height = GetSeparatorSize(true).height();
+    else
+      GtkStyleContextGet(context, "min-height", &min_height, nullptr);
+    int w = rect.width() - margin.left() - margin.right();
+    int h = std::max(min_height + padding.top() + padding.bottom() +
+                         border.top() + border.bottom(),
+                     1);
+    int x = margin.left();
     int y = separator_offset(h);
     PaintWidget(canvas, gfx::Rect(x, y, w, h), context, BG_RENDER_NORMAL, true);
   } else {
-#if BUILDFLAG(GTK_VERSION) < 4
     auto context = GetStyleContextFromCss(
         StrCat({kGtkCSSMenu, " ", kGtkCSSMenuItem, ".separator.horizontal"}));
     gboolean wide_separators = false;
     gint separator_height = 0;
-    gtk_style_context_get_style(context, "wide-separators", &wide_separators,
-                                "separator-height", &separator_height, nullptr);
+    GtkStyleContextGetStyle(context, "wide-separators", &wide_separators,
+                            "separator-height", &separator_height, nullptr);
     // This code was adapted from gtk/gtkmenuitem.c.  For some reason,
     // padding is used as the margin.
-    GtkBorder padding;
-    gtk_style_context_get_padding(context, gtk_style_context_get_state(context),
-                                  &padding);
-    int w = rect.width() - padding.left - padding.right;
-    int x = rect.x() + padding.left;
+    auto padding = GtkStyleContextGetPadding(context);
+    int w = rect.width() - padding.left() - padding.right();
+    int x = rect.x() + padding.left();
     int h = wide_separators ? separator_height : 1;
     int y = rect.y() + separator_offset(h);
     if (wide_separators) {
@@ -411,7 +404,6 @@ void NativeThemeGtk::PaintMenuSeparator(
       flags.setStrokeWidth(1);
       canvas->drawLine(x + 0.5f, y + 0.5f, x + w + 0.5f, y + 0.5f, flags);
     }
-#endif
   }
 }
 

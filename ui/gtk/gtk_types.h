@@ -63,6 +63,7 @@ using GdkEventKey = struct _GdkEventKey;
 using GdkWindow = struct _GdkWindow;
 using GdkKeymap = struct _GdkKeymap;
 using GtkIconInfo = struct _GtkIconInfo;
+using GdkScreen = struct _GdkScreen;
 
 struct _GdkEventKey {
   GdkEventType type;
