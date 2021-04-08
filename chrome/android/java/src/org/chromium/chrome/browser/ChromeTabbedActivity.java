@@ -2174,6 +2174,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 || state == StartSurfaceState.SHOWING_PREVIOUS
                 || state == StartSurfaceState.SHOWING_START);
         if (mStartSurfaceSupplier.get() != null) {
+            if (StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn()) {
+                state = StartSurfaceState.SHOWING_TABSWITCHER;
+            }
             mStartSurfaceSupplier.get().getController().setOverviewState(state);
         }
 

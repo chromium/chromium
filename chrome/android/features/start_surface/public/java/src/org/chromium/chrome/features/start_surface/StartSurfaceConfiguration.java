@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /**
@@ -96,6 +98,11 @@ public class StartSurfaceConfiguration {
     public static final BooleanCachedFieldTrialParameter SHOW_TABS_IN_MRU_ORDER =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, SHOW_TABS_IN_MRU_ORDER_PARAM, false);
+
+    private static final String SUPPORT_ACCESSIBILITY_PARAM = "support_accessibility";
+    public static final BooleanCachedFieldTrialParameter SUPPORT_ACCESSIBILITY =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, SUPPORT_ACCESSIBILITY_PARAM, true);
 
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
@@ -220,8 +227,22 @@ public class StartSurfaceConfiguration {
         StartSurfaceUserData.setCreatedAsNtp(tab);
     }
 
+    /**
+     * @return Whether new surface should show when home button is clicked.
+     */
     public static boolean shouldShowNewSurfaceFromHomeButton() {
         return NEW_SURFACE_FROM_HOME_BUTTON.getValue().equals("hide_tab_switcher_only")
                 || NEW_SURFACE_FROM_HOME_BUTTON.getValue().equals("hide_mv_tiles_and_tab_switcher");
+    }
+
+    /**
+     * @return Whether start surface should be hidden when accessibility is enabled. If it's true,
+     *         NTP is shown as homepage. Also, when time threshold is reached, grid tab switcher or
+     *         overview list layout is shown instead of start surface.
+     */
+    public static boolean shouldHideStartSurfaceWithAccessibilityOn() {
+        return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                && !(SUPPORT_ACCESSIBILITY.getValue()
+                        && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
 }

@@ -32,8 +32,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -401,8 +399,7 @@ public final class ReturnToChromeExperimentsUtil {
         String homePageUrl = HomepageManager.getHomepageUri();
         return StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled()
                 && (TextUtils.isEmpty(homePageUrl) || isCanonicalizedNTPUrl(homePageUrl))
-                && (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                        || TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled())
+                && !StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                         ContextUtils.getApplicationContext());
     }
