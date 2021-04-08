@@ -270,6 +270,7 @@ export class TabElement extends CustomElement {
    * @private
    */
   onPointerUp_(event) {
+    event.stopPropagation();
     if (event.pointerType !== 'touch' && event.button === 2) {
       this.embedderApi_.showTabContextMenu(
           this.tab.id, event.clientX, event.clientY);

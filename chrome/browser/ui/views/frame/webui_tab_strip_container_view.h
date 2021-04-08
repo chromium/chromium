@@ -111,6 +111,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   void ShowContextMenuAtPoint(
       gfx::Point point,
       std::unique_ptr<ui::MenuModel> menu_model) override;
+  void CloseContextMenu() override;
   void ShowEditDialogForGroupAtPoint(gfx::Point point,
                                      gfx::Rect rect,
                                      tab_groups::TabGroupId group) override;

@@ -654,25 +654,6 @@ suite('DragManager', () => {
     assertFalse(isDraggedOut);
   });
 
-  test('DragEndWithoutMovingShowsContextMenu', async () => {
-    const draggedTab = delegate.children[0];
-    const dragDetails = {
-      bubbles: true,
-      composed: true,
-      clientX: 100,
-      clientY: 150,
-      dataTransfer: new MockDataTransfer(),
-    };
-    draggedTab.dispatchEvent(new DragEvent('dragstart', dragDetails));
-    draggedTab.dispatchEvent(new DragEvent('dragend', dragDetails));
-
-    assertEquals(
-        1, testTabStripEmbedderProxy.getCallCount('showTabContextMenu'));
-    const [tabId, clientX, clientY] =
-        await testTabStripEmbedderProxy.whenCalled('showTabContextMenu');
-    assertEquals(draggedTab.tab.id, tabId);
-  });
-
   test('DragendAfterMovingDoesNotShowContextMenu', async () => {
     const draggedTab = delegate.children[0];
     const dragOverTab = delegate.children[1];
@@ -690,25 +671,6 @@ suite('DragManager', () => {
 
     assertEquals(
         0, testTabStripEmbedderProxy.getCallCount('showTabContextMenu'));
-  });
-
-  test('DropWithoutMovingShowsContextMenu', async () => {
-    const draggedTab = delegate.children[0];
-    const dragDetails = {
-      bubbles: true,
-      composed: true,
-      clientX: 100,
-      clientY: 150,
-      dataTransfer: new MockDataTransfer(),
-    };
-    draggedTab.dispatchEvent(new DragEvent('dragstart', dragDetails));
-    draggedTab.dispatchEvent(new DragEvent('drop', dragDetails));
-
-    assertEquals(
-        1, testTabStripEmbedderProxy.getCallCount('showTabContextMenu'));
-    const [tabId, clientX, clientY] =
-        await testTabStripEmbedderProxy.whenCalled('showTabContextMenu');
-    assertEquals(draggedTab.tab.id, tabId);
   });
 
   test('DropPlaceholderWithoutMovingDoesNotShowContextMenu', () => {
@@ -786,10 +748,5 @@ suite('DragManager', () => {
       dataTransfer,
     }));
     assertTrue(isDefaultPrevented);
-
-    // The tab's context menu should be opened instead.
-    const [tabId, x, y] =
-        await testTabStripEmbedderProxy.whenCalled('showTabContextMenu');
-    assertEquals(draggedTab.tab.id, tabId);
   });
 });

@@ -31,6 +31,25 @@ const SCROLL_PADDING = 32;
 /** @type {boolean} */
 let scrollAnimationEnabled = true;
 
+/** @const {number} */
+const TOUCH_CONTEXT_MENU_OFFSET_X = 8;
+
+/** @const {number} */
+const TOUCH_CONTEXT_MENU_OFFSET_Y = -40;
+
+/**
+ * Context menu should position below the element for touch.
+ * @param {!Element} element
+ * @return {!Object<{x: number, y: number}>}
+ */
+function getContextMenuPosition(element) {
+  const rect = element.getBoundingClientRect();
+  return {
+    x: rect.left + TOUCH_CONTEXT_MENU_OFFSET_X,
+    y: rect.bottom + TOUCH_CONTEXT_MENU_OFFSET_Y
+  };
+}
+
 /** @param {boolean} enabled */
 export function setScrollAnimationEnabledForTesting(enabled) {
   scrollAnimationEnabled = enabled;
@@ -207,6 +226,12 @@ export class TabListElement extends CustomElement {
     /** @private @const {!EventTracker} */
     this.eventTracker_ = new EventTracker();
 
+    /** @private {!TabElement|null} */
+    this.lastTargetedTab_;
+
+    /** @private {!Object<{x: number, y: number}>|undefined} */
+    this.lastTouchPoint_;
+
     /** @private {!Element} */
     this.newTabButtonElement_ =
         /** @type {!Element} */ (this.$('#newTabButton'));
@@ -241,9 +266,6 @@ export class TabListElement extends CustomElement {
     /** @private {!Function} */
     this.scrollListener_ = (e) => this.onScroll_(e);
 
-    /** @private {!Function} */
-    this.contextMenuListener_ = e => this.onContextMenu_(e);
-
     this.addWebUIListener_(
         'layout-changed', layout => this.applyCSSDictionary_(layout));
     this.addWebUIListener_('theme-changed', () => {
@@ -258,9 +280,16 @@ export class TabListElement extends CustomElement {
     this.eventTracker_.add(
         document, 'contextmenu', e => this.onContextMenu_(e));
     this.eventTracker_.add(
+        document, 'pointerup',
+        e => this.onPointerUp_(/** @type {!PointerEvent} */ (e)));
+    this.eventTracker_.add(
         document, 'visibilitychange', () => this.onDocumentVisibilityChange_());
     this.eventTracker_.add(window, 'blur', () => this.onWindowBlur_());
     this.eventTracker_.add(this, 'scroll', e => this.onScroll_(e));
+    this.eventTracker_.add(
+        document, 'touchstart', (e) => this.onTouchStart_(e));
+    this.eventTracker_.add(document, 'touchend', (e) => this.onTouchEnd_(e));
+    this.eventTracker_.add(document, 'touchcancel', (e) => this.onTouchEnd_(e));
     this.addWebUIListener_(
         'received-keyboard-focus', () => this.onReceivedKeyboardFocus_());
 
@@ -365,6 +394,8 @@ export class TabListElement extends CustomElement {
       this.tabStripEmbedderProxy_.reportTabCreationDuration(
           tabs.length, Date.now() - createTabsStartTimestamp);
 
+      this.addWebUIListener_(
+          'show-context-menu', () => this.onShowContextMenu_());
       this.addWebUIListener_('tab-created', tab => this.onTabCreated_(tab));
       this.addWebUIListener_(
           'tab-moved',
@@ -479,9 +510,22 @@ export class TabListElement extends CustomElement {
    * @private
    */
   onContextMenu_(event) {
+    // Prevent the default context menu from triggering.
     event.preventDefault();
-    this.tabStripEmbedderProxy_.showBackgroundContextMenu(
-        event.clientX, event.clientY);
+  }
+
+  /**
+   * @param {!PointerEvent} event
+   * @private
+   */
+  onPointerUp_(event) {
+    event.stopPropagation();
+    if (event.pointerType !== 'touch' && event.button === 2) {
+      // If processing an uncaught right click event show the background context
+      // menu.
+      this.tabStripEmbedderProxy_.showBackgroundContextMenu(
+          event.clientX, event.clientY);
+    }
   }
 
   /** @private */
@@ -568,6 +612,23 @@ export class TabListElement extends CustomElement {
       return;
     }
     tabElement.resetSwipe();
+  }
+
+  /** @private */
+  onShowContextMenu_() {
+    // If we do not have a touch point don't show the context menu.
+    if (!this.lastTouchPoint_) {
+      return;
+    }
+
+    if (this.lastTargetedTab_) {
+      const position = getContextMenuPosition(this.lastTargetedTab_);
+      this.tabStripEmbedderProxy_.showTabContextMenu(
+          this.lastTargetedTab_.tab.id, position.x, position.y);
+    } else {
+      this.tabStripEmbedderProxy_.showBackgroundContextMenu(
+          this.lastTouchPoint_.clientX, this.lastTouchPoint_.clientY);
+    }
   }
 
   /**
@@ -725,6 +786,28 @@ export class TabListElement extends CustomElement {
       this.flushThumbnailTracker_();
       this.clearScrollTimeout_();
     }, 100);
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onTouchStart_(event) {
+    const composedPath = /** @type {!Array<!Element>} */ (event.composedPath());
+    const dragOverTabElement =
+        /** @type {?TabElement} */ (composedPath.find(isTabElement));
+    this.lastTargetedTab_ = dragOverTabElement;
+    const touch = event.changedTouches[0];
+    this.lastTouchPoint_ = {clientX: touch.clientX, clientY: touch.clientY};
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onTouchEnd_(event) {
+    this.lastTargetedTab_ = null;
+    this.lastTouchPoint_ = undefined;
   }
 
   /**

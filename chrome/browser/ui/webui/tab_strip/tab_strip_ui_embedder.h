@@ -27,6 +27,8 @@ class TabStripUIEmbedder {
       gfx::Point point,
       std::unique_ptr<ui::MenuModel> menu_model) = 0;
 
+  virtual void CloseContextMenu() = 0;
+
   virtual void ShowEditDialogForGroupAtPoint(gfx::Point point,
                                              gfx::Rect rect,
                                              tab_groups::TabGroupId group) = 0;

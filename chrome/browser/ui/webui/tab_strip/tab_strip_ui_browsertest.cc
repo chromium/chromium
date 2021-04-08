@@ -43,6 +43,7 @@ class MockTabStripUIEmbedder : public TabStripUIEmbedder {
   MOCK_METHOD0(CloseContainer, void());
   MOCK_METHOD2(ShowContextMenuAtPoint,
                void(gfx::Point, std::unique_ptr<ui::MenuModel>));
+  MOCK_METHOD0(CloseContextMenu, void());
   MOCK_METHOD3(ShowEditDialogForGroupAtPoint,
                void(gfx::Point, gfx::Rect, tab_groups::TabGroupId));
   MOCK_METHOD0(GetLayout, TabStripUILayout());
