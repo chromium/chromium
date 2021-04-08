@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include <map>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -129,10 +130,197 @@ base::Optional<DnsConfig> ConvertResStateToDnsConfig(
   return dns_config;
 }
 
+// Helper to add the effective result of `action` to `in_out_parsed_behavior`.
+// Returns false if `action` results in inconsistent behavior (setting an action
+// for a status that already has a different action).
+bool SetActionBehavior(const NsswitchReader::ServiceAction& action,
+                       std::map<NsswitchReader::Status, NsswitchReader::Action>&
+                           in_out_parsed_behavior) {
+  if (action.negated) {
+    for (NsswitchReader::Status status :
+         {NsswitchReader::Status::kSuccess, NsswitchReader::Status::kNotFound,
+          NsswitchReader::Status::kUnavailable,
+          NsswitchReader::Status::kTryAgain}) {
+      if (status != action.status) {
+        NsswitchReader::ServiceAction effective_action = {
+            /*negated=*/false, status, action.action};
+        if (!SetActionBehavior(effective_action, in_out_parsed_behavior))
+          return false;
+      }
+    }
+  } else {
+    if (in_out_parsed_behavior.count(action.status) >= 1 &&
+        in_out_parsed_behavior[action.status] != action.action) {
+      return false;
+    }
+    in_out_parsed_behavior[action.status] = action.action;
+  }
+
+  return true;
+}
+
+// Helper to determine if `actions` match `expected_actions`, meaning `actions`
+// contains no unknown statuses or actions and for every expectation set in
+// `expected_actions`, the expected action matches the effective result from
+// `actions`.
+bool AreActionsCompatible(
+    const std::vector<NsswitchReader::ServiceAction>& actions,
+    const std::map<NsswitchReader::Status, NsswitchReader::Action>
+        expected_actions) {
+  std::map<NsswitchReader::Status, NsswitchReader::Action> parsed_behavior;
+
+  for (const NsswitchReader::ServiceAction& action : actions) {
+    if (action.status == NsswitchReader::Status::kUnknown ||
+        action.action == NsswitchReader::Action::kUnknown) {
+      return false;
+    }
+
+    if (!SetActionBehavior(action, parsed_behavior))
+      return false;
+  }
+
+  // Default behavior if not configured.
+  if (parsed_behavior.count(NsswitchReader::Status::kSuccess) == 0)
+    parsed_behavior[NsswitchReader::Status::kSuccess] =
+        NsswitchReader::Action::kReturn;
+  if (parsed_behavior.count(NsswitchReader::Status::kNotFound) == 0)
+    parsed_behavior[NsswitchReader::Status::kNotFound] =
+        NsswitchReader::Action::kContinue;
+  if (parsed_behavior.count(NsswitchReader::Status::kUnavailable) == 0)
+    parsed_behavior[NsswitchReader::Status::kUnavailable] =
+        NsswitchReader::Action::kContinue;
+  if (parsed_behavior.count(NsswitchReader::Status::kTryAgain) == 0)
+    parsed_behavior[NsswitchReader::Status::kTryAgain] =
+        NsswitchReader::Action::kContinue;
+
+  for (const std::pair<const NsswitchReader::Status, NsswitchReader::Action>&
+           expected : expected_actions) {
+    if (parsed_behavior[expected.first] != expected.second)
+      return false;
+  }
+
+  return true;
+}
+
+enum class IncompatibleNsswitchReason {
+  kFilesMissing = 0,
+  kMultipleFiles,
+  kBadFilesActions,
+  kDnsMissing,
+  kBadDnsActions,
+  kBadMdnsMinimalActions,
+  kBadOtherServiceActions,
+  kUnknownService,
+  kIncompatibleService
+};
+
+void RecordIncompatibleNsswitchReason(IncompatibleNsswitchReason reason) {
+  // TODO(crbug.com/117655): Record metrics.
+}
+
 bool IsNsswitchConfigCompatible(
     const std::vector<NsswitchReader::ServiceSpecification>& nsswitch_hosts) {
-  // TODO(crbug.com/117655): Implement.
-  return true;
+  bool files_found = false;
+  for (const NsswitchReader::ServiceSpecification& specification :
+       nsswitch_hosts) {
+    switch (specification.service) {
+      case NsswitchReader::Service::kUnknown:
+        RecordIncompatibleNsswitchReason(
+            IncompatibleNsswitchReason::kUnknownService);
+        return false;
+
+      case NsswitchReader::Service::kFiles:
+        if (files_found) {
+          RecordIncompatibleNsswitchReason(
+              IncompatibleNsswitchReason::kMultipleFiles);
+          return false;
+        }
+        files_found = true;
+        // Chrome will use the result on HOSTS hit and otherwise continue to
+        // DNS. `kFiles` entries must match that behavior to be compatible.
+        if (!AreActionsCompatible(specification.actions,
+                                  {{NsswitchReader::Status::kSuccess,
+                                    NsswitchReader::Action::kReturn},
+                                   {NsswitchReader::Status::kNotFound,
+                                    NsswitchReader::Action::kContinue},
+                                   {NsswitchReader::Status::kUnavailable,
+                                    NsswitchReader::Action::kContinue},
+                                   {NsswitchReader::Status::kTryAgain,
+                                    NsswitchReader::Action::kContinue}})) {
+          RecordIncompatibleNsswitchReason(
+              IncompatibleNsswitchReason::kBadFilesActions);
+          return false;
+        }
+        break;
+
+      case NsswitchReader::Service::kDns:
+        if (!files_found) {
+          RecordIncompatibleNsswitchReason(
+              IncompatibleNsswitchReason::kFilesMissing);
+          return false;
+        }
+        // Chrome will always stop if DNS finds a result or will otherwise
+        // fallback to the system resolver (and get whatever behavior is
+        // configured in nsswitch.conf), so the only compatibility requirement
+        // is that `kDns` entries are configured to return on success.
+        if (!AreActionsCompatible(specification.actions,
+                                  {{NsswitchReader::Status::kSuccess,
+                                    NsswitchReader::Action::kReturn}})) {
+          RecordIncompatibleNsswitchReason(
+              IncompatibleNsswitchReason::kBadDnsActions);
+          return false;
+        }
+
+        // Ignore any entries after `kDns` because Chrome will fallback to the
+        // system resolver if a result was not found in DNS.
+        return true;
+
+      case NsswitchReader::Service::kMdns:
+      case NsswitchReader::Service::kMdns4:
+      case NsswitchReader::Service::kMdns6:
+      case NsswitchReader::Service::kResolve:
+        RecordIncompatibleNsswitchReason(
+            IncompatibleNsswitchReason::kIncompatibleService);
+        return false;
+
+      case NsswitchReader::Service::kMdnsMinimal:
+      case NsswitchReader::Service::kMdns4Minimal:
+      case NsswitchReader::Service::kMdns6Minimal:
+        // Always compatible as long as `kUnavailable` is `kContinue` because
+        // the service is expected to always result in `kUnavailable` for any
+        // names Chrome would attempt to resolve (non-*.local names because
+        // Chrome always delegates *.local names to the system resolver).
+        if (!AreActionsCompatible(specification.actions,
+                                  {{NsswitchReader::Status::kUnavailable,
+                                    NsswitchReader::Action::kContinue}})) {
+          RecordIncompatibleNsswitchReason(
+              IncompatibleNsswitchReason::kBadMdnsMinimalActions);
+          return false;
+        }
+        break;
+
+      case NsswitchReader::Service::kMyHostname:
+      case NsswitchReader::Service::kNis:
+        // Similar enough to Chrome behavior (or unlikely to matter for Chrome
+        // resolutions) to be considered compatible unless the actions do
+        // something very weird to skip remaining services without a result.
+        if (!AreActionsCompatible(specification.actions,
+                                  {{NsswitchReader::Status::kNotFound,
+                                    NsswitchReader::Action::kContinue},
+                                   {NsswitchReader::Status::kUnavailable,
+                                    NsswitchReader::Action::kContinue},
+                                   {NsswitchReader::Status::kTryAgain,
+                                    NsswitchReader::Action::kContinue}})) {
+          RecordIncompatibleNsswitchReason(
+              IncompatibleNsswitchReason::kBadOtherServiceActions);
+          return false;
+        }
+        break;
+    }
+  }
+
+  RecordIncompatibleNsswitchReason(IncompatibleNsswitchReason::kDnsMissing);
+  return false;
 }
 
 }  // namespace

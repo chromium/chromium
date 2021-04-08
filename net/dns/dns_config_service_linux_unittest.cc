@@ -52,6 +52,10 @@ const char* const kNameserversIPv6[] = {
     "::FFFF:129.144.52.38",
 };
 
+const std::vector<NsswitchReader::ServiceSpecification> kBasicNsswitchConfig = {
+    NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+    NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)};
+
 void DummyConfigCallback(const DnsConfig& config) {
   // Do nothing
 }
@@ -232,6 +236,7 @@ TEST_F(DnsConfigServiceLinuxTest, ConvertResStateToDnsConfig) {
   auto res = std::make_unique<struct __res_state>();
   InitializeResState(res.get());
   resolv_reader_->set_value(std::move(res));
+  nsswitch_reader_->set_value(kBasicNsswitchConfig);
 
   CallbackHelper callback_helper;
   service_.ReadConfig(callback_helper.GetCallback());
@@ -265,6 +270,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectEmptyNameserver) {
   res->nscount = 2;
 
   resolv_reader_->set_value(std::move(res));
+  nsswitch_reader_->set_value(kBasicNsswitchConfig);
 
   CallbackHelper callback_helper;
   service_.ReadConfig(callback_helper.GetCallback());
@@ -292,6 +298,7 @@ TEST_F(DnsConfigServiceLinuxTest, AcceptNonEmptyNameserver) {
   res->nscount = 2;
 
   resolv_reader_->set_value(std::move(res));
+  nsswitch_reader_->set_value(kBasicNsswitchConfig);
 
   CallbackHelper callback_helper;
   service_.ReadConfig(callback_helper.GetCallback());
@@ -326,6 +333,522 @@ TEST_F(DnsConfigServiceLinuxTest, DestroyOnDifferentThread) {
                                   base::BindRepeating(&DummyConfigCallback)));
   service.reset();
   RunUntilIdle();
+}
+
+TEST_F(DnsConfigServiceLinuxTest, AcceptsBasicNsswitchConfig) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+  nsswitch_reader_->set_value(kBasicNsswitchConfig);
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest,
+       IgnoresBasicNsswitchConfigIfResolvConfigUnhandled) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  res->options |= RES_USE_DNSSEC;  // Expect unhandled.
+  resolv_reader_->set_value(std::move(res));
+  nsswitch_reader_->set_value(kBasicNsswitchConfig);
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchWithoutFiles) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsWithExtraFiles) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, IgnoresRedundantActions) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kFiles,
+           {{/*negated=*/false, NsswitchReader::Status::kSuccess,
+             NsswitchReader::Action::kReturn},
+            {/*negated=*/true, NsswitchReader::Status::kSuccess,
+             NsswitchReader::Action::kContinue}}),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kDns,
+           {{/*negated=*/false, NsswitchReader::Status::kSuccess,
+             NsswitchReader::Action::kReturn},
+            {/*negated=*/true, NsswitchReader::Status::kSuccess,
+             NsswitchReader::Action::kContinue}})});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsInconsistentActions) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kDns,
+           {{/*negated=*/false, NsswitchReader::Status::kUnavailable,
+             NsswitchReader::Action::kReturn},
+            {/*negated=*/true, NsswitchReader::Status::kSuccess,
+             NsswitchReader::Action::kContinue}})});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadFilesSuccessAction) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kFiles,
+           {{/*negated=*/false, NsswitchReader::Status::kSuccess,
+             NsswitchReader::Action::kContinue}}),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadFilesNotFoundAction) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kFiles,
+           {{/*negated=*/false, NsswitchReader::Status::kNotFound,
+             NsswitchReader::Action::kReturn}}),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchWithoutDns) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadDnsSuccessAction) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kDns,
+           {{/*negated=*/false, NsswitchReader::Status::kSuccess,
+             NsswitchReader::Action::kContinue}})});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchWithMisorderedServices) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, AcceptsIncompatibleNsswitchServicesAfterDns) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kMdns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchMdns) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kMdns),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchMdns4) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kMdns4),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchMdns6) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kMdns6),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, AcceptsNsswitchMdnsMinimal) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kMdnsMinimal),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kMdns4Minimal),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kMdns6Minimal),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->unhandled_options);
+}
+
+// mdns*_minimal is often paired with [!UNAVAIL=RETURN] or [NOTFOUND=RETURN]
+// actions. Ensure that is accepted.
+TEST_F(DnsConfigServiceLinuxTest, AcceptsNsswitchMdnsMinimalWithCommonActions) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kMdnsMinimal,
+           {{/*negated=*/true, NsswitchReader::Status::kUnavailable,
+             NsswitchReader::Action::kReturn}}),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kMdns4Minimal,
+           {{/*negated=*/false, NsswitchReader::Status::kNotFound,
+             NsswitchReader::Action::kReturn}}),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kMdns6Minimal,
+           {{/*negated=*/true, NsswitchReader::Status::kUnavailable,
+             NsswitchReader::Action::kReturn}}),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadMdnsMinimalUnavailableAction) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kMdnsMinimal,
+           {{/*negated=*/false, NsswitchReader::Status::kUnavailable,
+             NsswitchReader::Action::kReturn}}),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, AcceptsNsswitchMyHostname) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kMyHostname),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadMyHostnameNotFoundAction) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kMyHostname,
+           {{/*negated=*/false, NsswitchReader::Status::kNotFound,
+             NsswitchReader::Action::kReturn}}),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchResolve) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kResolve),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, AcceptsNsswitchNis) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kNis),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadNisNotFoundAction) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(
+           NsswitchReader::Service::kNis,
+           {{/*negated=*/false, NsswitchReader::Status::kNotFound,
+             NsswitchReader::Action::kReturn}}),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchUnknown) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kUnknown),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  base::Optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_TRUE(config->unhandled_options);
 }
 
 }  // namespace
