@@ -212,8 +212,10 @@ class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest {
 // Tests -----------------------------------------------------------------------
 
 // Timer notifications should be dismissed when disabling Assistant in settings.
-IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
-                       ShouldDismissTimerNotificationsWhenDisablingAssistant) {
+// Flaky. See https://crbug.com/1196564.
+IN_PROC_BROWSER_TEST_F(
+    AssistantTimersBrowserTest,
+    DISABLED_ShouldDismissTimerNotificationsWhenDisablingAssistant) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
@@ -241,8 +243,9 @@ IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
 
 // Pressing the "STOP" action button in a timer notification should result in
 // the timer being removed.
+// Flaky. See https://crbug.com/1196564.
 IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
-                       ShouldRemoveTimerWhenStoppingViaNotification) {
+                       DISABLED_ShouldRemoveTimerWhenStoppingViaNotification) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
