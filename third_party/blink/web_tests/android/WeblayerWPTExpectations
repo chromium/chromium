@@ -12,6 +12,11 @@ crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-
 # https://crbug.com/1145401
 crbug.com/1050754 external/wpt/presentation-api/controlling-ua/getAvailability.https.html [ Failure ]
 
+# https://crbug.com/154571: SharedWorker is not supported on Android.
+crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
+crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
+crbug.com/1190392 external/wpt/trusted-types/worker-constructor.https.html [ Failure ]
+
 # Add untriaged failures in this block
 crbug.com/1050754 external/wpt/IndexedDB/file_support.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/IndexedDB/idbfactory_open10.htm [ Failure Pass ]
@@ -2182,10 +2187,6 @@ crbug.com/1050754 external/wpt/svg/types/scripted/SVGGraphicsElement.getBBox-02.
 crbug.com/1050754 external/wpt/trust-tokens/end-to-end/has-trust-token-with-no-top-frame.tentative.https.html [ Failure ]
 crbug.com/1050754 external/wpt/trust-tokens/trust-token-parameter-validation-xhr.tentative.https.html [ Failure ]
 crbug.com/1050754 external/wpt/trust-tokens/trust-token-parameter-validation.tentative.https.html [ Failure ]
-crbug.com/1050754 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
-crbug.com/1050754 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
-crbug.com/1050754 external/wpt/trusted-types/require-trusted-types-for.tentative.html [ Failure ]
-crbug.com/1050754 external/wpt/trusted-types/worker-constructor.https.html [ Failure ]
 crbug.com/1050754 external/wpt/uievents/click/click_events_on_input.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/unset/iframe-tag.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/unset/img-tag.https.html [ Failure ]

@@ -128,6 +128,11 @@ crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/navigat
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-redirect-with-same-origin-allow-popups.https.html [ Failure ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/resource-popup.https.html [ Timeout ]
 
+# https://crbug.com/154571: SharedWorker is not supported on Android.
+crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
+crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
+crbug.com/1190392 external/wpt/trusted-types/worker-constructor.https.html [ Failure ]
+
 # Add untriaged failures in this block
 crbug.com/1050754 external/wpt/FileAPI/file/File-constructor.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/FileAPI/historical.https.html [ Failure Pass ]
@@ -4808,11 +4813,6 @@ crbug.com/1050754 external/wpt/touch-events/idlharness.window.html [ Failure Pas
 crbug.com/1050754 external/wpt/trust-tokens/end-to-end/has-trust-token-with-no-top-frame.tentative.https.html [ Failure ]
 crbug.com/1050754 external/wpt/trust-tokens/trust-token-parameter-validation-xhr.tentative.https.html [ Failure ]
 crbug.com/1050754 external/wpt/trust-tokens/trust-token-parameter-validation.tentative.https.html [ Failure ]
-crbug.com/1050754 external/wpt/trusted-types/TrustedTypePolicyFactory-blocking.html [ Failure ]
-crbug.com/1050754 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
-crbug.com/1050754 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
-crbug.com/1050754 external/wpt/trusted-types/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.tentative.html [ Failure ]
-crbug.com/1050754 external/wpt/trusted-types/worker-constructor.https.html [ Failure ]
 crbug.com/1050754 external/wpt/ua-client-hints/idlharness.https.any.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/ua-client-hints/idlharness.https.any.worker.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/uievents/legacy/Event-subclasses-init.html [ Failure Pass ]
