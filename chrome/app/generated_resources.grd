@@ -6371,7 +6371,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Update password for <ph name="ORIGIN">$1<ex>example.com</ex></ph>
         </message>
         <message name="IDS_UPDATE_PASSWORD_DIALOG_SIGNED_IN_DESCRIPTION" desc="The description at the bottom of update password dialog when the user is signed in.">
-          Password will be updated in your Google Account, <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>
+          Passwords are saved in your Google Account (<ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>) so you can use them on any device
         </message>
       </if>
 
