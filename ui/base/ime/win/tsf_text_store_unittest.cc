@@ -374,7 +374,6 @@ class TSFTextStoreTestCallback {
     EXPECT_TRUE(text_store_->previous_text_spans_.empty());
 
     EXPECT_TRUE(text_store_->string_pending_insertion_.empty());
-    EXPECT_FALSE(text_store_->has_composition_range_);
     EXPECT_TRUE(text_store_->composition_range_.is_empty());
     EXPECT_EQ(text_store_->composition_from_client_.end(),
               text_store_->selection_.start());
