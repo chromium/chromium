@@ -32,6 +32,7 @@ dependencyCheck {
     // They are only used to aid in compiling or testing.
     skipConfigurations = [
         "buildCompile",
+        "buildCompileNoDeps",
         "androidTestCompile",
         "testCompile"
     ]
@@ -145,6 +146,17 @@ dependencies {
     buildCompile "org.ow2.asm:asm-commons:7.0"
     buildCompile "org.ow2.asm:asm-tree:7.0"
     buildCompile "org.ow2.asm:asm-util:7.0"
+
+    // Used by resource shrinking.
+    // buildCompileNoDeps targets do not bring in any of their dependencies,
+    // this list of targets is carefully curated for the use of the resources
+    // shrinker. If these are needed for something other than the resources
+    // shrinker, use buildCompile instead.
+    def androidToolsVersion = '30.0.0-alpha10'
+    buildCompileNoDeps "com.android.tools:sdk-common:${androidToolsVersion}"
+    buildCompileNoDeps "com.android.tools:common:${androidToolsVersion}"
+    buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
+    buildCompile "org.jetbrains.kotlin:kotlin-stdlib:1.4.30"
 
     androidTestCompile "com.googlecode.java-diff-utils:diffutils:1.3.0"
     // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.

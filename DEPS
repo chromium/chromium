@@ -2145,6 +2145,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/android_deps/libs/com_android_tools_common': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/android_deps/libs/com_android_tools_common',
+              'version': 'version:2@30.0.0-alpha10.cr0',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/android_deps/libs/com_android_tools_desugar_jdk_libs': {
       'packages': [
           {
@@ -2161,6 +2172,28 @@ deps = {
           {
               'package': 'chromium/third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration',
               'version': 'version:2@1.1.1.cr0',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/android_deps/libs/com_android_tools_layoutlib_layoutlib_api': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/android_deps/libs/com_android_tools_layoutlib_layoutlib_api',
+              'version': 'version:2@30.0.0-alpha10.cr0',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/android_deps/libs/com_android_tools_sdk_common': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/android_deps/libs/com_android_tools_sdk_common',
+              'version': 'version:2@30.0.0-alpha10.cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -3238,7 +3271,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_stdlib',
-              'version': 'version:2@1.3.72.cr0',
+              'version': 'version:2@1.4.30.cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -3249,7 +3282,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_stdlib_common',
-              'version': 'version:2@1.3.72.cr0',
+              'version': 'version:2@1.4.30.cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -3333,11 +3366,11 @@ deps = {
       'dep_type': 'cipd',
   },
 
-'src/third_party/android_deps/libs/org_robolectric_annotations': {
+  'src/third_party/android_deps/libs/org_robolectric_annotations': {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_robolectric_annotations',
-              'version': 'version:4.3.1.cr0',
+              'version': 'version:2@4.3.1.cr0',
           },
       ],
       'condition': 'checkout_android',

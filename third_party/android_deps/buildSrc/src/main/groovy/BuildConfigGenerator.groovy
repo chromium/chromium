@@ -636,6 +636,15 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # The library works without it as it\'s only used for logging.\n')
                 sb.append('  enable_bytecode_checks = false\n')
                 break
+            case 'com_android_tools_sdk_common':
+            case 'com_android_tools_common':
+            case 'com_android_tools_layoutlib_layoutlib_api':
+                sb.append('\n')
+                sb.append('  # This target does not come with most of its dependencies and is\n')
+                sb.append('  # only meant to be used by the resources shrinker. If you wish to use\n')
+                sb.append('  # this for other purposes, change buildCompileNoDeps in build.gradle.\n')
+                sb.append('  visibility = [ "//build/android/gyp/resources_shrinker:*" ]\n')
+                break
         }
     }
 

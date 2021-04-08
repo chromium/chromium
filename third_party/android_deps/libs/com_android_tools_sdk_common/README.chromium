@@ -1,0 +1,13 @@
+Name: com.android.tools.sdk-common
+Short Name: sdk-common
+URL: http://tools.android.com/
+Version: 30.0.0-alpha10
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+sdk-common library used by other Android tools libraries.
+
+Local Modifications:
+No modifications.

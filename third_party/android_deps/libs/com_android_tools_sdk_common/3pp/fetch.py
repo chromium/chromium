@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.4.30/kotlin-stdlib-common-1.4.30.jar'
-_FILE_NAME = 'kotlin-stdlib-common-1.4.30.jar'
-_FILE_VERSION = '1.4.30'
+_FILE_URL = 'https://maven.google.com/com/android/tools/sdk-common/30.0.0-alpha10/sdk-common-30.0.0-alpha10.jar'
+_FILE_NAME = 'sdk-common-30.0.0-alpha10.jar'
+_FILE_VERSION = '30.0.0-alpha10'
 
 
 def do_latest():
