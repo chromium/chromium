@@ -32105,6 +32105,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3873" label="AuthorizationCoveredByWildcard"/>
   <int value="3874" label="ElementGetInnerHTML"/>
   <int value="3875" label="FileHandlingLaunch"/>
+  <int value="3876" label="SameOriginDocumentsWithDifferentCOOPStatus"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

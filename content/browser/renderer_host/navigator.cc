@@ -22,6 +22,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -111,6 +112,42 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
     client->LogWebFeatureForCurrentPage(
         rfh,
         blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
+  }
+
+  // Check if the navigation resulted in having same-origin documents in pages
+  // with different COOP status inside the browsing context group.
+  RenderFrameHostImpl* top_level_document =
+      rfh->frame_tree_node()->frame_tree()->GetMainFrame();
+  network::mojom::CrossOriginOpenerPolicyValue page_coop =
+      top_level_document->cross_origin_opener_policy().value;
+  for (RenderFrameHostImpl* other_tld :
+       rfh->delegate()->GetActiveTopLevelDocumentsInBrowsingContextGroup(rfh)) {
+    network::mojom::CrossOriginOpenerPolicyValue other_page_coop =
+        other_tld->cross_origin_opener_policy().value;
+    if (page_coop == other_page_coop)
+      continue;
+
+    using CoopValue = network::mojom::CrossOriginOpenerPolicyValue;
+    DCHECK((page_coop == CoopValue::kSameOriginAllowPopups &&
+            other_page_coop == CoopValue::kUnsafeNone) ||
+           (page_coop == CoopValue::kUnsafeNone &&
+            other_page_coop == CoopValue::kSameOriginAllowPopups));
+    for (FrameTreeNode* frame_tree_node :
+         other_tld->frame_tree_node()->frame_tree()->Nodes()) {
+      RenderFrameHostImpl* other_rfh = frame_tree_node->current_frame_host();
+      if (other_rfh->lifecycle_state() ==
+              RenderFrameHostImpl::LifecycleStateImpl::kActive &&
+          rfh->GetLastCommittedOrigin().IsSameOriginWith(
+              other_rfh->GetLastCommittedOrigin())) {
+        // Always log the feature on the COOP same-origin-allow-popups page,
+        // since this is the spec we are trying to change.
+        RenderFrameHostImpl* rfh_to_log =
+            page_coop == CoopValue::kSameOriginAllowPopups ? rfh : other_rfh;
+        client->LogWebFeatureForCurrentPage(
+            rfh_to_log, blink::mojom::WebFeature::
+                            kSameOriginDocumentsWithDifferentCOOPStatus);
+      }
+    }
   }
 }
 

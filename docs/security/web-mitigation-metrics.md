@@ -130,6 +130,11 @@ restriction by default.
 * Explicit values of "same-origin" and "same-origin-allow-popups" are tracked
   via `kCrossOriginOpenerPolicySameOrigin` and
   `kCrossOriginOpenerPolicySameOriginAllowPopups` respectively.
+* We track how often same-origin documents are present in two pages with
+  different COOP values via `kSameOriginDocumentsWithDifferentCOOPStatus`. We
+  might restrict synchronous access between those in order to allow COOP
+  "same-origin-allow-popups" to enable crossOriginIsolated when used in
+  conjunction with COEP.
 
 [Cross-Origin-Embedder-Policy][coep] is used to restrict the embedding of
 subresources to only those that have explicitly opted in via

@@ -55,7 +55,21 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
   }
 
   void LoadIFrame(const GURL& url) {
-    EXPECT_EQ(true, content::EvalJs(web_contents(), content::JsReplace(R"(
+    LoadIFrameInWebContents(web_contents(), url);
+  }
+
+  content::WebContents* OpenPopup(const GURL& url) {
+    content::WebContentsAddedObserver new_tab_observer;
+    EXPECT_TRUE(
+        content::ExecJs(web_contents(), "window.open('" + url.spec() + "')"));
+    content::WebContents* web_contents = new_tab_observer.GetWebContents();
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+    return web_contents;
+  }
+
+  void LoadIFrameInWebContents(content::WebContents* web_contents,
+                               const GURL& url) {
+    EXPECT_EQ(true, content::EvalJs(web_contents, content::JsReplace(R"(
       new Promise(resolve => {
         let iframe = document.createElement("iframe");
         iframe.src = $1;
@@ -63,7 +77,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
         document.body.appendChild(iframe);
       });
     )",
-                                                                       url)));
+                                                                     url)));
   }
 
   void ExpectHistogramIncreasedBy(int count) {
@@ -848,6 +862,166 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   CheckCounter(WebFeature::kWasmModuleSharing, 1);
   CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
+}
+
+// Check that two pages with same-origin documents do not get reported when the
+// COOP status is the same.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       SameOriginDocumentsWithSameCOOPStatus) {
+  set_monitored_feature(
+      WebFeature::kSameOriginDocumentsWithDifferentCOOPStatus);
+  GURL main_document_url = https_server().GetURL("a.com",
+                                                 "/set-header?"
+                                                 "Cross-Origin-Opener-Policy: "
+                                                 "same-origin-allow-popups");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+  OpenPopup(main_document_url);
+  ExpectHistogramIncreasedBy(0);
+}
+
+// Check that two pages with same-origin documents do get reported when the
+// COOP status is not the same and they are in the same browsing context group.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       SameOriginDocumentsWithDifferentCOOPStatus) {
+  set_monitored_feature(
+      WebFeature::kSameOriginDocumentsWithDifferentCOOPStatus);
+  GURL main_document_url = https_server().GetURL("a.com",
+                                                 "/set-header?"
+                                                 "Cross-Origin-Opener-Policy: "
+                                                 "same-origin-allow-popups");
+  GURL no_coop_url = https_server().GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+  OpenPopup(no_coop_url);
+  ExpectHistogramIncreasedBy(1);
+}
+
+// Check that two pages with same-origin documents do not get reported when the
+// COOP status is not the same but they are in different browsing context
+// groups.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       SameOriginDocumentsWithDifferentCOOPStatusBCGSwitch) {
+  set_monitored_feature(
+      WebFeature::kSameOriginDocumentsWithDifferentCOOPStatus);
+  GURL main_document_url = https_server().GetURL("a.com",
+                                                 "/set-header?"
+                                                 "Cross-Origin-Opener-Policy: "
+                                                 "same-origin-allow-popups");
+  GURL coop_same_origin_url =
+      https_server().GetURL("a.com",
+                            "/set-header?"
+                            "Cross-Origin-Opener-Policy: "
+                            "same-origin");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+  OpenPopup(coop_same_origin_url);
+  ExpectHistogramIncreasedBy(0);
+}
+
+// Check that two pages with two different COOP status are not reported when
+// their documents are cross-origin.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CrossOriginDocumentsWithNoCOOPStatus) {
+  set_monitored_feature(
+      WebFeature::kSameOriginDocumentsWithDifferentCOOPStatus);
+  GURL main_document_url = https_server().GetURL("a.com",
+                                                 "/set-header?"
+                                                 "Cross-Origin-Opener-Policy: "
+                                                 "same-origin-allow-popups");
+  GURL no_coop_url = https_server().GetURL("b.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+  OpenPopup(no_coop_url);
+  ExpectHistogramIncreasedBy(0);
+}
+
+// Check that a COOP same-origin-allow-popups page with a cross-origin iframe
+// that opens a popup to the same origin document gets reported.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       COOPSameOriginAllowPopupsIframeAndPopup) {
+  set_monitored_feature(
+      WebFeature::kSameOriginDocumentsWithDifferentCOOPStatus);
+  GURL main_document_url = https_server().GetURL("a.com",
+                                                 "/set-header?"
+                                                 "Cross-Origin-Opener-Policy: "
+                                                 "same-origin-allow-popups");
+  GURL no_coop_url = https_server().GetURL("b.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+  LoadIFrame(no_coop_url);
+  OpenPopup(no_coop_url);
+  ExpectHistogramIncreasedBy(1);
+}
+
+// Check that an iframe that is same-origin with its opener of a different COOP
+// status gets reported.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       SameOriginIframeInCrossOriginPopupWithCOOP) {
+  set_monitored_feature(
+      WebFeature::kSameOriginDocumentsWithDifferentCOOPStatus);
+  GURL main_document_url = https_server().GetURL("a.com",
+                                                 "/set-header?"
+                                                 "Cross-Origin-Opener-Policy: "
+                                                 "same-origin-allow-popups");
+  GURL no_coop_url = https_server().GetURL("b.com", "/empty.html");
+  GURL same_origin_url = https_server().GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+  content::WebContents* popup = OpenPopup(no_coop_url);
+  LoadIFrameInWebContents(popup, same_origin_url);
+  ExpectHistogramIncreasedBy(1);
+}
+
+// Check that two same-origin iframes in pages with different COOP status gets
+// reported.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       IFramesWithDifferentCOOPStatus) {
+  set_monitored_feature(
+      WebFeature::kSameOriginDocumentsWithDifferentCOOPStatus);
+  GURL main_document_url = https_server().GetURL("a.com",
+                                                 "/set-header?"
+                                                 "Cross-Origin-Opener-Policy: "
+                                                 "same-origin-allow-popups");
+  GURL popup_url = https_server().GetURL("b.com", "/empty.html");
+  GURL iframe_url = https_server().GetURL("c.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+  LoadIFrame(iframe_url);
+  content::WebContents* popup = OpenPopup(popup_url);
+  LoadIFrameInWebContents(popup, iframe_url);
+  ExpectHistogramIncreasedBy(1);
+}
+
+// Check that when two pages both have frames that are same-origin with a
+// document in the other page and have different COOP status, the metrics is
+// only recorded once.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       SameOriginDifferentCOOPStatusRecordedOnce) {
+  set_monitored_feature(
+      WebFeature::kSameOriginDocumentsWithDifferentCOOPStatus);
+  GURL main_document_url = https_server().GetURL("a.com",
+                                                 "/set-header?"
+                                                 "Cross-Origin-Opener-Policy: "
+                                                 "same-origin-allow-popups");
+  GURL popup_url = https_server().GetURL("b.com", "/empty.html");
+  GURL same_origin_url = https_server().GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+  content::WebContents* popup = OpenPopup(popup_url);
+  LoadIFrame(popup_url);
+  LoadIFrameInWebContents(popup, same_origin_url);
+  ExpectHistogramIncreasedBy(1);
+}
+
+// Check that when two pages COOP same-origin-allow-popups have frames that are
+// same-origin with a COOP unsafe-none, the metrcis is recorded twice (once per
+// COOP same-origin-allow-popups page).
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       SameOriginDifferentCOOPStatusTwoCOOPPages) {
+  set_monitored_feature(
+      WebFeature::kSameOriginDocumentsWithDifferentCOOPStatus);
+  GURL main_document_url = https_server().GetURL("a.com",
+                                                 "/set-header?"
+                                                 "Cross-Origin-Opener-Policy: "
+                                                 "same-origin-allow-popups");
+  GURL same_origin_url = https_server().GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+  OpenPopup(main_document_url);
+  OpenPopup(same_origin_url);
+  ExpectHistogramIncreasedBy(2);
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
