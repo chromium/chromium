@@ -701,6 +701,8 @@ TEST_F('ChromeVoxTutorialTest', 'Gestures', function() {
         .expectSpeech('Essential keys', 'Link')
         .call(doGesture(Gesture.SWIPE_LEFT1))
         .expectSpeech('Quick orientation', 'Link')
+        .call(doGesture(Gesture.SWIPE_LEFT2))
+        .expectSpeech('Some web content')
         .replay();
   });
 });

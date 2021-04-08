@@ -17,6 +17,7 @@ goog.require('PointerHandler');
 
 goog.scope(function() {
 const RoleType = chrome.automation.RoleType;
+const Gesture = chrome.accessibilityPrivate.Gesture;
 
 /**
  * Global setting for the enabled state of this handler.
@@ -49,13 +50,15 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
 
   const chromeVoxState = ChromeVoxState.instance;
   const monitor = chromeVoxState ? chromeVoxState.getUserActionMonitor() : null;
-  if (monitor && !monitor.onGesture(gesture)) {
+  if (gesture !== Gesture.SWIPE_LEFT2 && monitor &&
+      !monitor.onGesture(gesture)) {
     // UserActionMonitor returns true if this gesture should propagate.
     // Prevent this gesture from propagating if it returns false.
+    // Always allow SWIPE_LEFT2 to propagate, since it simulates the escape key.
     return;
   }
 
-  if (gesture === chrome.accessibilityPrivate.Gesture.TOUCH_EXPLORE) {
+  if (gesture === Gesture.TOUCH_EXPLORE) {
     GestureCommandHandler.pointerHandler_.onTouchMove(x, y);
     return;
   }
