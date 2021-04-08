@@ -179,7 +179,6 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Clean();
 }
 
-// TODO(crbug.com/1163524): Enable on Windows.
 TEST_F(IntegrationTest, RegisterTestApp) {
   RegisterTestApp();
   ExpectInstalled();
@@ -188,7 +187,6 @@ TEST_F(IntegrationTest, RegisterTestApp) {
   Uninstall();
 }
 
-// TODO(crbug.com/1163625): Failing on Mac 10.11.
 TEST_F(IntegrationTest, ReportsActive) {
   // A longer than usual timeout is needed for this test because the macOS
   // UpdateServiceInternal server takes at least 10 seconds to shut down after
@@ -227,13 +225,7 @@ TEST_F(IntegrationTest, ReportsActive) {
   Uninstall();
 }
 
-// TODO(https://crbug.com/1186583): Test failing frequently on Mac
-#if defined(OS_MAC)
-#define MAYBE_UnregisterUninstalledApp DISABLED_UnregisterUninstalledApp
-#else
-#define MAYBE_UnregisterUninstalledApp UnregisterUninstalledApp
-#endif
-TEST_F(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
+TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);
@@ -254,15 +246,7 @@ TEST_F(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
   Uninstall();
 }
 
-// TODO(https://crbug.com/1186583): Test failing frequently on Mac
-#if defined(OS_MAC)
-#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
-  DISABLED_UninstallUpdaterWhenAllAppsUninstalled
-#else
-#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
-  UninstallUpdaterWhenAllAppsUninstalled
-#endif
-TEST_F(IntegrationTest, MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
+TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);

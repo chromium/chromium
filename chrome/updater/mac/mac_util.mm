@@ -26,6 +26,8 @@
 namespace updater {
 namespace {
 
+constexpr int kLaunchctlExitCodeNoSuchProcess = 3;
+
 base::FilePath GetUpdateFolderName() {
   return base::FilePath(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
@@ -161,12 +163,10 @@ bool RemoveJobFromLaunchd(UpdaterScope scope,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  // If the job doesn't exist return true.
-  if (!Launchd::GetInstance()->PlistExists(domain, type, name))
-    return true;
-
-  if (!Launchd::GetInstance()->DeletePlist(domain, type, name))
-    return false;
+  if (Launchd::GetInstance()->PlistExists(domain, type, name)) {
+    if (!Launchd::GetInstance()->DeletePlist(domain, type, name))
+      return false;
+  }
 
   base::CommandLine command_line(base::FilePath("/bin/launchctl"));
   command_line.AppendArg("remove");
@@ -177,7 +177,7 @@ bool RemoveJobFromLaunchd(UpdaterScope scope,
   int exit_code = -1;
   std::string output;
   base::GetAppOutputWithExitCode(command_line, &output, &exit_code);
-  return exit_code == 0;
+  return exit_code == 0 || exit_code == kLaunchctlExitCodeNoSuchProcess;
 }
 
 }  // namespace updater
