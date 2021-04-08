@@ -54,19 +54,20 @@ suite('CellularNetworksList', function() {
     mojoApi_.resetForTest();
     mojoApi_.setNetworkTypeEnabledState(type, true);
     mojoApi_.addNetworksForTest(networks);
-    cellularNetworkList.deviceState = mojoApi_.getDeviceStateForTest(type);
+    cellularNetworkList.cellularDeviceState =
+        mojoApi_.getDeviceStateForTest(type);
     cellularNetworkList.networks = networks;
   }
 
   function addPSimSlot() {
-    cellularNetworkList.set('deviceState.simInfos', [{
+    cellularNetworkList.set('cellularDeviceState.simInfos', [{
                               iccid: '',
                             }]);
     return flushAsync();
   }
 
   function removePSimSlot() {
-    cellularNetworkList.set('deviceState.simInfos', []);
+    cellularNetworkList.set('cellularDeviceState.simInfos', []);
     return flushAsync();
   }
 

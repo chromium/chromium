@@ -99,7 +99,7 @@
               show-technology-badge="[[showTechnologyBadge]]"
               networks="[[eSimNetworks_]]"
               custom-items="[[eSimPendingProfileItems_]]"
-              device-state="[[deviceState]]">
+              device-state="[[cellularDeviceState]]">
           </network-list>
         </div>
       </template>
@@ -116,7 +116,8 @@
       </template>
     </template>
     <template is="dom-if"
-        if="[[shouldShowPSimSection_(deviceState, deviceState.*)]]" restamp>
+        if="[[shouldShowPSimSection_(cellularDeviceState,
+          cellularDeviceState.*)]]" restamp>
       <div class="cellular-network-list-separator"></div>
       <div class="cellular-network-list-header">
         $i18n{cellularNetworkPsimLabel}
@@ -129,7 +130,7 @@
               id="psimNetworkList" show-buttons
               show-technology-badge="[[showTechnologyBadge]]"
               networks="[[pSimNetworks_]]"
-              device-state="[[deviceState]]">
+              device-state="[[cellularDeviceState]]">
           </network-list>
         </div>
       </template>

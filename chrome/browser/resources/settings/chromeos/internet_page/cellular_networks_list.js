@@ -36,10 +36,9 @@ Polymer({
 
     /**
      * Device state for the cellular network type.
-     * TODO(cvandermerwe): Rename to cellularDeviceState.
      * @type {!OncMojo.DeviceStateProperties|undefined}
      */
-    deviceState: Object,
+    cellularDeviceState: Object,
 
     isConnectedToNonCellularNetwork: {
       type: Boolean,
@@ -326,12 +325,12 @@ Polymer({
   },
 
   /**
-   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} cellularDeviceState
    * @returns {boolean}
    * @private
    */
-  shouldShowPSimSection_(deviceState) {
-    const {pSimSlots} = getSimSlotCount(deviceState);
+  shouldShowPSimSection_(cellularDeviceState) {
+    const {pSimSlots} = getSimSlotCount(cellularDeviceState);
     return pSimSlots > 0;
   },
 
