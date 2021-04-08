@@ -2540,6 +2540,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records ClearProxyOverride calls.</summary>
 </histogram>
 
+<histogram name="Android.WebView.ComponentUpdater.GetFilesDuration" units="ms"
+    expires_after="2021-10-08">
+  <owner>laisminchillo@chromium.org</owner>
+  <owner>nator@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Duration of ComponentsProviderService getFilesForComponent request. This
+    method retrieves FileDescriptors for an installed component. This is logged
+    at the end of every request the service receives.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ComponentUpdater.GetFilesResult"
+    enum="WebViewComponentUpdaterGetFilesResult" expires_after="2021-10-08">
+  <owner>laisminchillo@chromium.org</owner>
+  <owner>nator@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Logs the result of ComponentsProviderService getFilesForComponent request.
+    This method retrieves FileDescriptors for an installed component. This is
+    logged once for every request the service receives.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ConnectedToVariationService" enum="Boolean"
     expires_after="M93">
   <owner>hazems@chromium.org</owner>

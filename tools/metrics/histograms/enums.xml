@@ -82655,6 +82655,14 @@ Called by update_scheduler_enums.py.-->
   <int value="1" label="WebViewClientCompat (via AndroidX)"/>
 </enum>
 
+<enum name="WebViewComponentUpdaterGetFilesResult">
+  <int value="0" label="Sucess"/>
+  <int value="1" label="Failed (component not installed)"/>
+  <int value="2" label="Failed (no versions)"/>
+  <int value="3" label="Failed (no file descriptors)"/>
+  <int value="4" label="Failed (error opening file descriptors)"/>
+</enum>
+
 <enum name="WebViewDrawAndSubmissionType">
   <int value="0" label="No invalidate + no submission + same params"/>
   <int value="1" label="Params changed"/>

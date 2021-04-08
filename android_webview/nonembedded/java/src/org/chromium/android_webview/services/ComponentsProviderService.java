@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.ResultReceiver;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -24,6 +25,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -43,15 +45,37 @@ import java.util.concurrent.TimeUnit;
  * A Service to fetch Components files in WebView and WebLayer.
  */
 public class ComponentsProviderService extends Service {
+    // Result receiver constants.
+    public static final int RESULT_OK = 0;
+    public static final int RESULT_FAILED = 1;
+    public static final String KEY_RESULT = "RESULT";
+
+    // Histogram names.
+    public static final String HISTOGRAM_GET_FILES_RESULT =
+            "Android.WebView.ComponentUpdater.GetFilesResult";
+    public static final String HISTOGRAM_GET_FILES_DURATION =
+            "Android.WebView.ComponentUpdater.GetFilesDuration";
+
     private static final String TAG = "AW_CPS";
 
     // This should be greater than or equal to the native component updater service interval.
     private static final long UPDATE_INTERVAL_MS = TimeUnit.HOURS.toMillis(5);
     private static final int JOB_ID = TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID;
 
-    public static final int RESULT_OK = 0;
-    public static final int RESULT_FAILED = 1;
-    public static final String KEY_RESULT = "RESULT";
+    // UMA constants. These values are persisted to logs. Entries can't be reordered and numbers
+    // can't be reused.
+    @IntDef({GetFilesResultCode.SUCCESS, GetFilesResultCode.FAILED_NOT_INSTALLED,
+            GetFilesResultCode.FAILED_NO_VERSIONS, GetFilesResultCode.FAILED_NO_FDS,
+            GetFilesResultCode.FAILED_OPENING_FDS})
+    private @interface GetFilesResultCode {
+        int SUCCESS = 0;
+        int FAILED_NOT_INSTALLED = 1;
+        int FAILED_NO_VERSIONS = 2;
+        int FAILED_NO_FDS = 3;
+        int FAILED_OPENING_FDS = 4;
+        // Keep this one at the end and increment appropriately when adding new entries.
+        int COUNT = 5;
+    }
 
     private File mDirectory;
     private FutureTask<Void> mDeleteTask;
@@ -59,7 +83,16 @@ public class ComponentsProviderService extends Service {
     private final IBinder mBinder = new IComponentsProviderService.Stub() {
         @Override
         public void getFilesForComponent(String componentId, ResultReceiver resultReceiver) {
-            getFilesForComponentInternal(componentId, resultReceiver);
+            final long startTime = System.currentTimeMillis();
+            getFilesForComponentInternal(componentId, new ResultReceiver(/* handler = */ null) {
+                @Override
+                protected void onReceiveResult(int resultCode, Bundle resultData) {
+                    final long requestDuration = System.currentTimeMillis() - startTime;
+                    RecordHistogram.recordTimesHistogram(
+                            HISTOGRAM_GET_FILES_DURATION, requestDuration);
+                    resultReceiver.send(resultCode, resultData);
+                }
+            });
         }
     };
 
@@ -125,6 +158,7 @@ public class ComponentsProviderService extends Service {
         final File[] components = mDirectory.listFiles((dir, name) -> name.equals(componentId));
         if (components == null || components.length == 0) {
             resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
+            recordGetFilesResult(GetFilesResultCode.FAILED_NOT_INSTALLED);
             return;
         }
         assert components.length == 1 : "Only one directory should have the name " + componentId;
@@ -134,6 +168,7 @@ public class ComponentsProviderService extends Service {
             // This can happen if CUS created a parent directory but was killed before it could
             // move content into it. In this case there's nothing old to delete.
             resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
+            recordGetFilesResult(GetFilesResultCode.FAILED_NO_VERSIONS);
             return;
         }
         final File versionDirectory = versions[0];
@@ -146,15 +181,18 @@ public class ComponentsProviderService extends Service {
             if (resultMap.isEmpty()) {
                 Log.w(TAG, "No file descriptors found for " + componentId);
                 resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
+                recordGetFilesResult(GetFilesResultCode.FAILED_NO_FDS);
                 return;
             }
 
             final Bundle resultData = new Bundle();
             resultData.putSerializable(KEY_RESULT, resultMap);
             resultReceiver.send(RESULT_OK, resultData);
+            recordGetFilesResult(GetFilesResultCode.SUCCESS);
         } catch (IOException exception) {
             Log.w(TAG, exception.getMessage(), exception);
             resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
+            recordGetFilesResult(GetFilesResultCode.FAILED_OPENING_FDS);
         } finally {
             closeFileDescriptors(resultMap);
         }
@@ -225,5 +263,10 @@ public class ComponentsProviderService extends Service {
             return false;
         }
         return ApiHelperForN.getPendingJob(scheduler, jobId) != null;
+    }
+
+    private void recordGetFilesResult(@GetFilesResultCode int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_GET_FILES_RESULT, result, GetFilesResultCode.COUNT);
     }
 }
