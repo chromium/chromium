@@ -668,6 +668,13 @@ TEST_F(NGLineBreakerTest, TableCellWidthCalculationQuirkOutOfFlow) {
   // Pass if |ComputeMinMaxSizes| doesn't hit DCHECK failures.
 }
 
+TEST_F(NGLineBreakerTest, BoxDecorationBreakCloneWithoutBoxDecorations) {
+  SetBodyInnerHTML(R"HTML(
+    <span style="-webkit-box-decoration-break: clone"></span>
+  )HTML");
+  // Pass if it does not hit DCHECK.
+}
+
 TEST_F(NGLineBreakerTest, RewindPositionedFloat) {
   SetBodyInnerHTML(R"HTML(
 <div style="float: left">

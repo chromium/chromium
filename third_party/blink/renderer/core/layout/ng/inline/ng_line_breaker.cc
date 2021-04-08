@@ -1923,14 +1923,15 @@ void NGLineBreaker::HandleOpenTag(const NGInlineItem& item,
     // Force to create a box, because such inline boxes affect line heights.
     if (!item_result->should_create_line_box && !item.IsEmptyItem())
       item_result->should_create_line_box = true;
+  }
 
-    if (UNLIKELY(style.BoxDecorationBreak() == EBoxDecorationBreak::kClone)) {
-      has_cloned_box_decorations_ = true;
-      ++cloned_box_decorations_count_;
-      cloned_box_decorations_end_size_ += item_result->margins.inline_end +
-                                          item_result->borders.inline_end +
-                                          item_result->padding.inline_end;
-    }
+  if (UNLIKELY(style.BoxDecorationBreak() == EBoxDecorationBreak::kClone)) {
+    // Compute even when no margins/borders/padding to ensure correct counting.
+    has_cloned_box_decorations_ = true;
+    ++cloned_box_decorations_count_;
+    cloned_box_decorations_end_size_ += item_result->margins.inline_end +
+                                        item_result->borders.inline_end +
+                                        item_result->padding.inline_end;
   }
 
   bool was_auto_wrap = auto_wrap_;
