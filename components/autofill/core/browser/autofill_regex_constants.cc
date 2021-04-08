@@ -594,6 +594,9 @@ const char16_t kUrlSearchActionRe[] = u"/search(/|((\\w*\\.\\w+)?$))";
 const char16_t kSocialSecurityRe[] = u"ssn|social.?security.?(num(ber)?|#)*";
 const char16_t kOneTimePwdRe[] =
     u"one.?time|sms.?(code|token|password|pwd|pass)";
+// Matches strings that consist of one repeated non alphanumeric symbol,
+// that is likely a result of website modifying the value to hide it.
+const char16_t kHiddenValueRe[] = u"^(\\W)\\1+$";
 
 /////////////////////////////////////////////////////////////////////////////
 // merchant_promo_code_field.cc

@@ -75,6 +75,7 @@ extern const char16_t kCreditCardCVCPattern[];
 extern const char16_t kCreditCard4DigitExpYearPattern[];
 extern const char16_t kSocialSecurityRe[];
 extern const char16_t kOneTimePwdRe[];
+extern const char16_t kHiddenValueRe[];
 extern const char16_t kMerchantPromoCodeRe[];
 
 // Used to match field data that might be a UPI Virtual Payment Address.

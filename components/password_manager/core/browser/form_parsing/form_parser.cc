@@ -92,6 +92,13 @@ bool StringMatchesOTP(const std::u16string& str) {
   return autofill::MatchesPattern(str, autofill::kOneTimePwdRe);
 }
 
+// Returns true if the |str| consists of one repeated non alphanumeric symbol.
+// This is likely a result of website modifying the value, and such value should
+// not be saved.
+bool StringMatchesHiddenValue(const std::u16string& str) {
+  return autofill::MatchesPattern(str, autofill::kHiddenValueRe);
+}
+
 // TODO(crbug.com/860700): Remove name and attribute checking once server-side
 // provides hints for CVC.
 // Returns true if the |field| is suspected to be not the password field.
@@ -847,8 +854,10 @@ std::vector<ProcessedField> ProcessFields(
       continue;
 
     const std::u16string& field_value = GetFieldValue(field);
-    if (consider_only_non_empty && field_value.empty())
+    if (consider_only_non_empty &&
+        (field_value.empty() || StringMatchesHiddenValue(field_value))) {
       continue;
+    }
 
     const bool is_password = field.form_control_type == "password";
 
