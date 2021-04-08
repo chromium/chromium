@@ -42,33 +42,16 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
   // a single function. A common use case is a MultiAnimation that consists of
   // these parts: 0->1 (fade-in), 1->1 (hold) and 1->0 (fade out).
   struct Part {
-    Part() : Part(base::TimeDelta(), Tween::ZERO) {}
-    Part(base::TimeDelta part_length,
+    Part(base::TimeDelta length,
          Tween::Type type,
          double start_value = 0.0,
          double end_value = 1.0)
-        : Part(part_length,
-               base::TimeDelta(),
-               part_length,
-               type,
-               start_value,
-               end_value) {}
-    Part(base::TimeDelta part_length,
-         base::TimeDelta part_start,
-         base::TimeDelta total_length,
-         Tween::Type type,
-         double start_value = 0.0,
-         double end_value = 1.0)
-        : part_length(part_length),
-          part_start(part_start),
-          total_length(total_length),
+        : length(length),
           type(type),
           start_value(start_value),
           end_value(end_value) {}
 
-    base::TimeDelta part_length;
-    base::TimeDelta part_start;
-    base::TimeDelta total_length;
+    base::TimeDelta length;
     Tween::Type type;
     double start_value;
     double end_value;
