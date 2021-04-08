@@ -158,10 +158,12 @@ public class LensIntentParams {
             LensIntentParams lensIntentParams = new LensIntentParams();
             lensIntentParams.mIsIncognito = mIsIncognito;
             lensIntentParams.mLensEntryPoint = mLensEntryPoint;
+            lensIntentParams.mIntentType = mIntentType;
+            lensIntentParams.mRequiresConfirmation = mRequiresConfirmation;
+            lensIntentParams.mProactiveSessionId = mProactiveSessionId;
+            lensIntentParams.mProactiveQueryId = mProactiveQueryId;
             if (!Uri.EMPTY.equals(mImageUri)) {
                 lensIntentParams.mImageUri = mImageUri;
-                lensIntentParams.mIntentType = mIntentType;
-                lensIntentParams.mRequiresConfirmation = mRequiresConfirmation;
                 if (mSrcUrl != null) {
                     lensIntentParams.mSrcUrl = mSrcUrl;
                 }
