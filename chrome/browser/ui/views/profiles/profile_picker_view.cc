@@ -167,6 +167,11 @@ GURL GetSigninURL(bool dark_mode) {
   return signin_url;
 }
 
+GURL GetSyncConfirmationLoadingURL() {
+  return GURL(chrome::kChromeUISyncConfirmationURL)
+      .Resolve(chrome::kChromeUISyncConfirmationLoadingPath);
+}
+
 bool IsExternalURL(const GURL& url) {
   // Empty URL is used initially, about:blank is used to stop navigation after
   // sign-in succeeds.
@@ -1075,11 +1080,11 @@ void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
       base::BindOnce(&ShowCustomizationBubble, sign_in_->profile_color),
       /*enterprise_sync_consent_needed=*/false);
 
-  // Stop with the sign-in navigation, it is not needed any more and this avoids
-  // any glitches of the redirect page getting displayed. This is needed because
-  // in some cases (such as managed signed-in), there are further delays before
-  // any follow-up UI is shown.
-  ShowScreen(sign_in_->contents.get(), GURL(url::kAboutBlankURL),
+  // Stop with the sign-in navigation and show a spinner instead. The spinner
+  // will be shown until DiceTurnSyncOnHelper (below) figures out whether it's a
+  // managed account and whether sync is disabled by policies (which in some
+  // cases involves fetching policies and can take a couple of seconds).
+  ShowScreen(sign_in_->contents.get(), GetSyncConfirmationLoadingURL(),
              /*show_toolbar=*/false, /*enable_navigating_back=*/false);
 
   // Set up a timeout for extended account info (which cancels any existing

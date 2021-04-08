@@ -154,6 +154,7 @@
       </if>
       <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <if expr="is_win or is_macosx or desktop_linux or chromeos">
+        <include name="IDR_SYNC_LOADING_CONFIRMATION_HTML" file="resources\signin\sync_confirmation\sync_loading_confirmation.html" type="BINDATA" />
         <include name="IDR_SYNC_DISABLED_CONFIRMATION_HTML" file="resources\signin\sync_confirmation\sync_disabled_confirmation.html" type="BINDATA" />
         <include name="IDR_SYNC_DISABLED_CONFIRMATION_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\sync_confirmation\sync_disabled_confirmation_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
         <include name="IDR_SYNC_CONFIRMATION_HTML" file="resources\signin\sync_confirmation\sync_confirmation.html" type="BINDATA" />

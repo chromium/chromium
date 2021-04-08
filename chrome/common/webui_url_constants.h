@@ -165,6 +165,7 @@ extern const char kChromeUISuggestionsHost[];
 extern const char kChromeUISuggestionsURL[];
 extern const char kChromeUISupervisedUserPassphrasePageHost[];
 extern const char kChromeUISyncConfirmationHost[];
+extern const char kChromeUISyncConfirmationLoadingPath[];
 extern const char kChromeUISyncConfirmationURL[];
 extern const char kChromeUISyncFileSystemInternalsHost[];
 extern const char kChromeUISyncHost[];

@@ -77,8 +77,13 @@ void SyncConfirmationUI::Initialize(
       {"sync_confirmation_browser_proxy.js",
        IDR_SYNC_CONFIRMATION_BROWSER_PROXY_JS},
       {"sync_confirmation.js", IDR_SYNC_CONFIRMATION_JS},
+      {chrome::kChromeUISyncConfirmationLoadingPath,
+       IDR_SYNC_LOADING_CONFIRMATION_HTML},
   };
   source->AddResourcePaths(kResources);
+
+  AddStringResource(source, "syncLoadingConfirmationTitle",
+                    IDS_SYNC_LOADING_CONFIRMATION_TITLE);
 
   if (is_sync_allowed) {
     InitializeForSyncConfirmation(source, profile_creation_flow_color);
