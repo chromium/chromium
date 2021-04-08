@@ -49,6 +49,20 @@ Polymer({
     this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
   },
 
+  /** @override */
+  attached() {
+    window.addEventListener(
+        'orientationchange', this.onWindowResized_.bind(this));
+    window.addEventListener('resize', this.onWindowResized_.bind(this));
+  },
+
+  /** @override */
+  detached() {
+    window.removeEventListener(
+        'orientationchange', this.onWindowResized_.bind(this));
+    window.removeEventListener('resize', this.onWindowResized_.bind(this));
+  },
+
   /**
    * Indicates the type of the opt-in flow.
    */
@@ -72,25 +86,10 @@ Polymer({
    * @param {?string} type The type of the flow.
    * @param {?string} captionBarHeight The height of the caption bar.
    */
-  onShow(type, captionBarHeight, oobeDialogHeight, oobeDialogWidth) {
+  onShow(type, captionBarHeight) {
     captionBarHeight = captionBarHeight ? captionBarHeight + 'px' : '0px';
     this.style.setProperty('--caption-bar-height', captionBarHeight);
-
-    if (oobeDialogHeight && oobeDialogWidth) {
-      document.documentElement.style.setProperty(
-          '--oobe-oobe-dialog-height-base', oobeDialogHeight + 'px');
-      document.documentElement.style.setProperty(
-          '--oobe-oobe-dialog-width-base', oobeDialogWidth + 'px');
-
-      if (loadTimeData.valueExists('newLayoutEnabled') &&
-          loadTimeData.getBoolean('newLayoutEnabled')) {
-        if (parseInt(oobeDialogWidth) > parseInt(oobeDialogHeight)) {
-          document.documentElement.setAttribute('orientation', 'horizontal');
-        } else {
-          document.documentElement.setAttribute('orientation', 'vertical');
-        }
-      }
-    }
+    this.onWindowResized_();
 
     type = type ? type : this.FlowType.CONSENT_FLOW.toString();
     var flowType = Number(type);
@@ -289,6 +288,29 @@ Polymer({
     this.applyToStepElements((screen) => {
       screen.reloadPage();
     }, this.currentStep);
+  },
+
+  /**
+   * Called during initialization, when the window is resized, or the window's
+   * orientation is updated.
+   */
+  onWindowResized_() {
+    // Dialog size and orientation value needs to be updated for in-session
+    // assistant dialog.
+    if (!document.documentElement.hasAttribute('screen')) {
+      document.documentElement.style.setProperty(
+          '--oobe-oobe-dialog-height-base', window.innerHeight + 'px');
+      document.documentElement.style.setProperty(
+          '--oobe-oobe-dialog-width-base', window.innerWidth + 'px');
+      if (loadTimeData.valueExists('newLayoutEnabled') &&
+          loadTimeData.getBoolean('newLayoutEnabled')) {
+        if (window.innerWidth > window.innerHeight) {
+          document.documentElement.setAttribute('orientation', 'horizontal');
+        } else {
+          document.documentElement.setAttribute('orientation', 'vertical');
+        }
+      }
+    }
   },
 });
 })();
