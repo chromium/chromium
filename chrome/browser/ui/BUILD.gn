@@ -2093,6 +2093,8 @@ static_library("ui") {
       "ash/network/network_state_notifier.h",
       "ash/network/tether_notification_presenter.cc",
       "ash/network/tether_notification_presenter.h",
+      "ash/notification_badge_color_cache.cc",
+      "ash/notification_badge_color_cache.h",
       "ash/projector/projector_client_impl.cc",
       "ash/projector/projector_client_impl.h",
       "ash/quick_answers/quick_answers_browser_client_impl.cc",
