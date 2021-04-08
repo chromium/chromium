@@ -481,6 +481,8 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploration(
     return SendEvent(continuation, &event);
   }
 
+  delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kTouchExplore,
+                                        event.location_f());
   // Rewrite as a mouse-move event.
   // |event| locations are in DIP; see |RewriteEvent|. We need to dispatch
   // |screen coords.
@@ -737,6 +739,8 @@ void TouchExplorationController::OnTapTimerFired() {
       return;
   }
   EnterTouchToMouseMode();
+  delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kTouchExplore,
+                                        initial_press_->location_f());
   std::unique_ptr<ui::Event> mouse_move = CreateMouseMoveEvent(
       initial_press_->location_f(), initial_press_->flags());
   DispatchEvent(mouse_move.get(), initial_press_continuation_);

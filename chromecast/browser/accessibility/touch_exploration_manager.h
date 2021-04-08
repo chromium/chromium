@@ -48,8 +48,9 @@ class TouchExplorationManager : public ui::EventRewriter,
       const Continuation continuation) override;
 
   // TouchExplorationControllerDelegate overrides:
-  void HandleAccessibilityGesture(ax::mojom::Gesture gesture) override;
-  void HandleTap(const gfx::Point touch_location) override;
+  void HandleAccessibilityGesture(const ax::mojom::Gesture gesture,
+                                  const gfx::PointF& location) override;
+  void HandleTap(const gfx::Point& touch_location) override;
 
   // wm::ActivationChangeObserver overrides:
   void OnWindowActivated(

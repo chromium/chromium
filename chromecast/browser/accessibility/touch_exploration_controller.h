@@ -46,11 +46,13 @@ class TouchExplorationControllerDelegate {
 
   // Called when the user performed an accessibility gesture while in touch
   // accessibility mode, that should be forwarded to ChromeVox.
-  virtual void HandleAccessibilityGesture(ax::mojom::Gesture gesture) = 0;
+  virtual void HandleAccessibilityGesture(
+      const ax::mojom::Gesture gesture,
+      const gfx::PointF& location = gfx::PointF()) = 0;
 
   // Called when the user has performed a single tap, if it is not within
   // lift activation bounds.
-  virtual void HandleTap(const gfx::Point touch_location) = 0;
+  virtual void HandleTap(const gfx::Point& touch_location) = 0;
 };
 
 // TouchExplorationController is used in tandem with "Spoken Feedback" to

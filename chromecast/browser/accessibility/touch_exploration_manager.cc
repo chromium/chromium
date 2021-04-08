@@ -59,7 +59,8 @@ ui::EventDispatchDetails TouchExplorationManager::RewriteEvent(
 }
 
 void TouchExplorationManager::HandleAccessibilityGesture(
-    ax::mojom::Gesture gesture) {
+    const ax::mojom::Gesture gesture,
+    const gfx::PointF& location) {
   // (Code copied from Chrome's
   // AccessibilityController::HandleAccessibilityGestore.)
   extensions::EventRouter* event_router = extensions::EventRouter::Get(
@@ -67,6 +68,8 @@ void TouchExplorationManager::HandleAccessibilityGesture(
   std::unique_ptr<base::ListValue> event_args =
       std::make_unique<base::ListValue>();
   event_args->AppendString(ui::ToString(gesture));
+  event_args->AppendInteger(location.x());
+  event_args->AppendInteger(location.y());
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_ACCESSIBILITY_GESTURE,
       extensions::cast::api::accessibility_private::OnAccessibilityGesture::
@@ -76,7 +79,7 @@ void TouchExplorationManager::HandleAccessibilityGesture(
       extension_misc::kChromeVoxExtensionId, std::move(event));
 }
 
-void TouchExplorationManager::HandleTap(const gfx::Point touch_location) {
+void TouchExplorationManager::HandleTap(const gfx::Point& touch_location) {
   cast_gesture_handler_->HandleTapDownGesture(touch_location);
   cast_gesture_handler_->HandleTapGesture(touch_location);
 }
