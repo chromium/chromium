@@ -197,7 +197,6 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
-#include "chrome/browser/ui/webui/chromeos/plugin_vm_internal/plugin_vm_internal_ui.h"
 #include "chrome/browser/ui/webui/chromeos/power_ui.h"
 #include "chrome/browser/ui/webui/chromeos/set_time_ui.h"
 #include "chrome/browser/ui/webui/chromeos/slow_trace_ui.h"
@@ -205,6 +204,7 @@
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_credentials_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_share_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/sys_internals/sys_internals_ui.h"
+#include "chrome/browser/ui/webui/chromeos/vm/vm_ui.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
@@ -828,8 +828,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)) {
     return &NewWebUI<chromeos::eche_app::EcheAppUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIPluginVmInternalHost) {
-    return &NewWebUI<chromeos::PluginVmInternalUI>;
+  if (url.host_piece() == chrome::kChromeUIVmHost) {
+    return &NewWebUI<chromeos::VmUI>;
   }
   if (url.host_piece() == chromeos::kChromeUIPersonalizationAppHost &&
       chromeos::features::IsWallpaperWebUIEnabled()) {

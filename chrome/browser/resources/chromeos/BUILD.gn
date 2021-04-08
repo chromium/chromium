@@ -53,5 +53,6 @@ group("closure_compile") {
     "set_time_dialog:closure_compile",
     "smb_shares:closure_compile",
     "sys_internals:closure_compile",
+    "vm:closure_compile",
   ]
 }

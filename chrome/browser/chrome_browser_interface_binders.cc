@@ -181,6 +181,8 @@
 #include "chrome/browser/ui/webui/chromeos/machine_learning/machine_learning_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
+#include "chrome/browser/ui/webui/chromeos/vm/vm.mojom.h"
+#include "chrome/browser/ui/webui/chromeos/vm/vm_ui.h"
 #include "chrome/browser/ui/webui/internals/web_app/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
@@ -801,6 +803,9 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       chromeos::diagnostics::mojom::SystemRoutineController,
       chromeos::DiagnosticsDialogUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      chromeos::vm::mojom::VmDiagnosticsProvider, chromeos::VmUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<ash::scanning::mojom::ScanService,
                                          ash::ScanningUI>(map);

@@ -2369,6 +2369,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/machine_learning:mojo_bindings",
+      "//chrome/browser/ui/webui/chromeos/vm:mojo_bindings",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
       "//chromeos/components/camera_app_ui",
@@ -6592,12 +6593,14 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/gaia_action_buttons:web_components",
       "//chrome/browser/resources/chromeos/set_time_dialog:polymer3_elements",
       "//chrome/browser/resources/chromeos/smb_shares:polymer3_elements",
+      "//chrome/browser/resources/chromeos/vm:polymer3_elements",
       "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
       "//chrome/browser/ui/webui/app_management:mojo_bindings_js",
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings_js",
       "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings_js",
       "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings_js",
       "//chrome/browser/ui/webui/chromeos/machine_learning:mojo_bindings_js",
+      "//chrome/browser/ui/webui/chromeos/vm:mojo_bindings_webui_js",
       "//chrome/browser/ui/webui/settings/chromeos:mojom_js",
     ]
   }
