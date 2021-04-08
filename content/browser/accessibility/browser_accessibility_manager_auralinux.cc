@@ -142,11 +142,6 @@ void BrowserAccessibilityManagerAuraLinux::FireParentChangedEvent(
   ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnParentChanged();
 }
 
-void BrowserAccessibilityManagerAuraLinux::FireReadonlyChangedEvent(
-    BrowserAccessibility* node) {
-  ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnReadonlyChanged();
-}
-
 void BrowserAccessibilityManagerAuraLinux::FireSortDirectionChangedEvent(
     BrowserAccessibility* node) {
   ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnSortDirectionChanged();
@@ -227,9 +222,6 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::PARENT_CHANGED:
       FireParentChangedEvent(node);
       break;
-    case ui::AXEventGenerator::Event::READONLY_CHANGED:
-      FireReadonlyChangedEvent(node);
-      break;
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
       DCHECK(node->GetData().IsRangeValueSupported());
       FireEvent(node, ax::mojom::Event::kValueChanged);
@@ -297,6 +289,7 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
     case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
     case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
+    case ui::AXEventGenerator::Event::READONLY_CHANGED:
     case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
     case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
     case ui::AXEventGenerator::Event::ROLE_CHANGED:

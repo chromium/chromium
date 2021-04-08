@@ -43,7 +43,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   void FireNameChangedEvent(BrowserAccessibility* node);
   void FireDescriptionChangedEvent(BrowserAccessibility* node);
   void FireParentChangedEvent(BrowserAccessibility* node);
-  void FireReadonlyChangedEvent(BrowserAccessibility* node);
   void FireSortDirectionChangedEvent(BrowserAccessibility* node);
   void FireTextAttributesChangedEvent(BrowserAccessibility* node);
   void FireSubtreeCreatedEvent(BrowserAccessibility* node);

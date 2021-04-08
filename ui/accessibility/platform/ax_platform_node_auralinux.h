@@ -223,7 +223,6 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   void OnSubtreeCreated();
   void OnSubtreeWillBeDeleted();
   void OnParentChanged();
-  void OnReadonlyChanged();
   void OnWindowVisibilityChanged();
   void OnScrolledToAnchor();
   void OnAlertShown();

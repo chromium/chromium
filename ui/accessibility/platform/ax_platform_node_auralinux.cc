@@ -3029,20 +3029,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
   }
 }
 
-// If we were compiled with a newer version of ATK than the runtime version,
-// it's possible that the state we want to expose and/or emit an event for
-// is not present. This will generate a runtime error.
-bool PlatformSupportsState(AtkStateType atk_state_type) {
-  static base::Optional<int> max_state_type = base::nullopt;
-  if (!max_state_type.has_value()) {
-    GEnumClass* enum_class =
-        G_ENUM_CLASS(g_type_class_ref(atk_state_type_get_type()));
-    max_state_type = enum_class->maximum;
-    g_type_class_unref(enum_class);
-  }
-  return atk_state_type < max_state_type.value();
-}
-
 void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   AXNodeData data = GetData();
 
@@ -3101,11 +3087,9 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_ACTIVE);
   }
 #if defined(ATK_216)
-  // Runtime checks in case we were compiled with a newer version of ATK.
-  if (IsPlatformCheckable() && PlatformSupportsState(ATK_STATE_CHECKABLE))
+  if (IsPlatformCheckable())
     atk_state_set_add_state(atk_state_set, ATK_STATE_CHECKABLE);
-  if (data.HasIntAttribute(ax::mojom::IntAttribute::kHasPopup) &&
-      PlatformSupportsState(ATK_STATE_HAS_POPUP))
+  if (data.HasIntAttribute(ax::mojom::IntAttribute::kHasPopup))
     atk_state_set_add_state(atk_state_set, ATK_STATE_HAS_POPUP);
 #endif
   if (data.GetBoolAttribute(ax::mojom::BoolAttribute::kBusy))
@@ -3139,9 +3123,7 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   if (data.GetRestriction() != ax::mojom::Restriction::kDisabled) {
     if (IsReadOnlySupported(data.role) && data.IsReadOnlyOrDisabled()) {
 #if defined(ATK_216)
-      // Runtime check in case we were compiled with a newer version of ATK.
-      if (PlatformSupportsState(ATK_STATE_READ_ONLY))
-        atk_state_set_add_state(atk_state_set, ATK_STATE_READ_ONLY);
+      atk_state_set_add_state(atk_state_set, ATK_STATE_READ_ONLY);
 #endif
     } else {
       atk_state_set_add_state(atk_state_set, ATK_STATE_ENABLED);
@@ -3433,10 +3415,6 @@ void AXPlatformNodeAuraLinux::OnEnabledChanged() {
 
   atk_object_notify_state_change(
       obj, ATK_STATE_ENABLED,
-      GetData().GetRestriction() != ax::mojom::Restriction::kDisabled);
-
-  atk_object_notify_state_change(
-      obj, ATK_STATE_SENSITIVE,
       GetData().GetRestriction() != ax::mojom::Restriction::kDisabled);
 }
 
@@ -4028,22 +4006,6 @@ void AXPlatformNodeAuraLinux::OnParentChanged() {
                         "property-change::accessible-parent", &property_values,
                         nullptr);
   g_value_unset(&property_values.new_value);
-}
-
-void AXPlatformNodeAuraLinux::OnReadonlyChanged() {
-  AtkObject* obj = GetOrCreateAtkObject();
-  if (!obj)
-    return;
-
-#if defined(ATK_216)
-  // Runtime check in case we were compiled with a newer version of ATK.
-  if (!PlatformSupportsState(ATK_STATE_READ_ONLY))
-    return;
-
-  atk_object_notify_state_change(
-      obj, ATK_STATE_READ_ONLY,
-      GetData().GetRestriction() == ax::mojom::Restriction::kReadOnly);
-#endif
 }
 
 void AXPlatformNodeAuraLinux::OnInvalidStatusChanged() {

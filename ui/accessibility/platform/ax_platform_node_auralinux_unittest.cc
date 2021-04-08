@@ -2539,49 +2539,6 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectExpandRebuildsPlatformNode) {
   g_object_unref(original_atk_object);
 }
 
-#if defined(ATK_216)
-TEST_F(AXPlatformNodeAuraLinuxTest, TestReadonlyChanged) {
-  AXNodeData root_data;
-  root_data.id = 1;
-  root_data.role = ax::mojom::Role::kTextField;
-  Init(root_data);
-
-  AXNode* root = GetRootAsAXNode();
-  AtkObject* atk_object = AtkObjectFromNode(root);
-  AXPlatformNodeAuraLinux* node = GetPlatformNode(root);
-
-  bool is_read_only = false;
-  g_signal_connect(atk_object, "state-change",
-                   G_CALLBACK(+[](AtkObject* atkobject, gchar* state_changed,
-                                  gboolean new_value, bool* flag) {
-                     if (!g_strcmp0(state_changed, "read-only"))
-                       *flag = new_value;
-                   }),
-                   &is_read_only);
-
-  root_data.AddIntAttribute(
-      ax::mojom::IntAttribute::kRestriction,
-      static_cast<int32_t>(ax::mojom::Restriction::kReadOnly));
-  root->SetData(root_data);
-  node->OnReadonlyChanged();
-  ASSERT_TRUE(is_read_only);
-
-  root_data.AddIntAttribute(
-      ax::mojom::IntAttribute::kRestriction,
-      static_cast<int32_t>(ax::mojom::Restriction::kNone));
-  root->SetData(root_data);
-  node->OnReadonlyChanged();
-  ASSERT_FALSE(is_read_only);
-
-  root_data.AddIntAttribute(
-      ax::mojom::IntAttribute::kRestriction,
-      static_cast<int32_t>(ax::mojom::Restriction::kReadOnly));
-  root->SetData(root_data);
-  node->OnReadonlyChanged();
-  ASSERT_TRUE(is_read_only);
-}
-#endif
-
 TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectParentChanged) {
   AXNodeData root_data;
   root_data.id = 1;
