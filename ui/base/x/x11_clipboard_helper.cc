@@ -13,6 +13,7 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/x/selection_owner.h"
@@ -34,22 +35,18 @@ namespace {
 const char kClipboard[] = "CLIPBOARD";
 const char kClipboardManager[] = "CLIPBOARD_MANAGER";
 
-// Uses the XFixes API to provide sequence numbers each clipboard buffer and
-// notify about selection changes through |selection_change_closure_| callback.
+// Uses the XFixes API to notify about selection changes.
 class SelectionChangeObserver : public x11::EventObserver {
  public:
+  using SelectionChangeCallback = XClipboardHelper::SelectionChangeCallback;
+
   SelectionChangeObserver(const SelectionChangeObserver&) = delete;
   SelectionChangeObserver& operator=(const SelectionChangeObserver&) = delete;
 
   static SelectionChangeObserver* Get();
 
-  uint64_t clipboard_sequence_number() const {
-    return clipboard_sequence_number_;
-  }
-  uint64_t primary_sequence_number() const { return primary_sequence_number_; }
-
-  void set_callback(base::RepeatingClosure callback) {
-    selection_change_closure_ = callback;
+  void set_callback(SelectionChangeCallback callback) {
+    callback_ = std::move(callback);
   }
 
  private:
@@ -62,11 +59,7 @@ class SelectionChangeObserver : public x11::EventObserver {
   void OnEvent(const x11::Event& xev) override;
 
   const x11::Atom clipboard_atom_{};
-
-  uint64_t clipboard_sequence_number_{};
-  uint64_t primary_sequence_number_{};
-
-  base::RepeatingClosure selection_change_closure_;
+  SelectionChangeCallback callback_;
 };
 
 SelectionChangeObserver::SelectionChangeObserver()
@@ -96,22 +89,18 @@ SelectionChangeObserver* SelectionChangeObserver::Get() {
 }
 
 void SelectionChangeObserver::OnEvent(const x11::Event& xev) {
-  auto* ev = xev.As<x11::XFixes::SelectionNotifyEvent>();
-  if (!ev)
-    return;
+  if (auto* ev = xev.As<x11::XFixes::SelectionNotifyEvent>()) {
+    DCHECK(ev->selection == x11::Atom::PRIMARY ||
+           ev->selection == clipboard_atom_)
+        << "Unexpected selection atom: "
+        << static_cast<uint32_t>(ev->selection);
 
-  if (static_cast<x11::Atom>(ev->selection) == clipboard_atom_) {
-    clipboard_sequence_number_++;
-  } else if (ev->selection == x11::Atom::PRIMARY) {
-    primary_sequence_number_++;
-  } else {
-    DLOG(ERROR) << "Unexpected selection atom: "
-                << static_cast<uint32_t>(ev->selection);
-    return;
+    if (callback_) {
+      callback_.Run(ev->selection == x11::Atom::PRIMARY
+                        ? ClipboardBuffer::kSelection
+                        : ClipboardBuffer::kCopyPaste);
+    }
   }
-
-  if (selection_change_closure_)
-    selection_change_closure_.Run();
 }
 
 x11::Window GetSelectionOwner(x11::Atom selection) {
@@ -153,7 +142,7 @@ class XClipboardHelper::TargetList {
 };
 
 XClipboardHelper::XClipboardHelper(
-    base::RepeatingClosure selection_change_closure)
+    SelectionChangeCallback selection_change_callback)
     : connection_(x11::Connection::Get()),
       x_root_window_(ui::GetX11RootWindow()),
       x_window_(x11::CreateDummyWindow("Chromium Clipboard Window")),
@@ -168,12 +157,14 @@ XClipboardHelper::XClipboardHelper(
       x_window_, x11::EventMask::PropertyChange);
   connection_->AddEventObserver(this);
 
-  SelectionChangeObserver::Get()->set_callback(selection_change_closure);
+  SelectionChangeObserver::Get()->set_callback(
+      std::move(selection_change_callback));
 }
 
 XClipboardHelper::~XClipboardHelper() {
   connection_->RemoveEventObserver(this);
   connection_->DestroyWindow({x_window_});
+  SelectionChangeObserver::Get()->set_callback(SelectionChangeCallback());
 }
 
 void XClipboardHelper::CreateNewClipboardData() {
@@ -298,13 +289,6 @@ void XClipboardHelper::StoreCopyPasteDataAndWait() {
       x11::GetAtom(kClipboardManager), x11::GetAtom(kSaveTargets), targets);
   UMA_HISTOGRAM_TIMES("Clipboard.X11StoreCopyPasteDuration",
                       base::TimeTicks::Now() - start);
-}
-
-uint64_t XClipboardHelper::GetSequenceNumber(ClipboardBuffer buffer) const {
-  auto* selection_observer = SelectionChangeObserver::Get();
-  return buffer == ClipboardBuffer::kCopyPaste
-             ? selection_observer->clipboard_sequence_number()
-             : selection_observer->primary_sequence_number();
 }
 
 XClipboardHelper::TargetList XClipboardHelper::GetTargetList(

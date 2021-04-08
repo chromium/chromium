@@ -101,8 +101,12 @@ class ClipboardX11 : public Clipboard {
                  size_t data_len) override;
 
   SkBitmap ReadImageInternal(ClipboardBuffer buffer) const;
+  void OnSelectionChanged(ClipboardBuffer buffer);
 
   std::unique_ptr<XClipboardHelper> x_clipboard_helper_;
+
+  uint64_t clipboard_sequence_number_ = 0;
+  uint64_t primary_sequence_number_ = 0;
 
   base::flat_map<ClipboardBuffer, std::unique_ptr<DataTransferEndpoint>>
       data_src_;

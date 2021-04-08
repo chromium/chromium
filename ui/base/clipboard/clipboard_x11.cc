@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -27,10 +28,9 @@
 namespace ui {
 
 ClipboardX11::ClipboardX11()
-    : x_clipboard_helper_(
-          std::make_unique<XClipboardHelper>(base::BindRepeating(
-              &ClipboardMonitor::NotifyClipboardDataChanged,
-              base::Unretained(ClipboardMonitor::GetInstance())))) {
+    : x_clipboard_helper_(std::make_unique<XClipboardHelper>(
+          base::BindRepeating(&ClipboardX11::OnSelectionChanged,
+                              base::Unretained(this)))) {
   DCHECK(CalledOnValidThread());
 }
 
@@ -51,7 +51,8 @@ DataTransferEndpoint* ClipboardX11::GetSource(ClipboardBuffer buffer) const {
 
 uint64_t ClipboardX11::GetSequenceNumber(ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
-  return x_clipboard_helper_->GetSequenceNumber(buffer);
+  return buffer == ClipboardBuffer::kCopyPaste ? clipboard_sequence_number_
+                                               : primary_sequence_number_;
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -442,6 +443,14 @@ SkBitmap ClipboardX11::ReadImageInternal(ClipboardBuffer buffer) const {
   }
 
   return SkBitmap();
+}
+
+void ClipboardX11::OnSelectionChanged(ClipboardBuffer buffer) {
+  if (buffer == ClipboardBuffer::kCopyPaste)
+    clipboard_sequence_number_++;
+  else
+    primary_sequence_number_++;
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
 }  // namespace ui
