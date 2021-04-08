@@ -81887,15 +81887,6 @@ others/histograms.xml -->
   <int value="3" label="Sender, transport sequence number"/>
 </enum>
 
-<enum name="WebRtcDesktopCapturerImpl">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="WgcCapturerWin"/>
-  <int value="2" label="ScreenCapturerWinMagnifier"/>
-  <int value="3" label="WindowCapturerWinGdi"/>
-  <int value="4801607" label="ScreenCapturerWinGdi"/>
-  <int value="1229412420" label="ScreenCapturerWinDirectx"/>
-</enum>
-
 <enum name="WebRTCEventFrequency">
   <int value="0" label="None."/>
   <int value="1" label="Few."/>
@@ -82028,46 +82019,6 @@ others/histograms.xml -->
   <int value="1" label="VP8"/>
   <int value="2" label="VP9"/>
   <int value="3" label="H264"/>
-</enum>
-
-<enum name="WebRtcWgcCapturerResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="NoDirect3dDevice"/>
-  <int value="2" label="NoSourceSelected"/>
-  <int value="3" label="ItemCreationFailure"/>
-  <int value="4" label="SessionStartFailure"/>
-  <int value="5" label="GetFrameFailure"/>
-  <int value="6" label="FrameDropped"/>
-</enum>
-
-<enum name="WebRtcWgcCaptureSessionGetFrameResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="ItemClosed"/>
-  <int value="2" label="TryGetNextFrameFailed"/>
-  <int value="3" label="FrameDropped"/>
-  <int value="4" label="GetSurfaceFailed"/>
-  <int value="5" label="DxgiInterfaceAccessFailed"/>
-  <int value="6" label="Texture2dCastFailed"/>
-  <int value="7" label="CreateMappedTextureFailed"/>
-  <int value="8" label="MapFrameFailed"/>
-  <int value="9" label="GetContentSizeFailed"/>
-  <int value="10" label="ResizeMappedTextureFailed"/>
-  <int value="11" label="RecreateFramePoolFailed"/>
-</enum>
-
-<enum name="WebRtcWgcCaptureSessionStartResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="SourceClosed"/>
-  <int value="2" label="AddClosedFailed"/>
-  <int value="3" label="DxgiDeviceCastFailed"/>
-  <int value="4" label="D3dDelayLoadFailed"/>
-  <int value="5" label="D3dDeviceCreationFailed"/>
-  <int value="6" label="FramePoolActivationFailed"/>
-  <int value="7" label="FramePoolCastFailed"/>
-  <int value="8" label="GetItemSizeFailed"/>
-  <int value="9" label="CreateFreeThreadedFailed"/>
-  <int value="10" label="CreateCaptureSessionFailed"/>
-  <int value="11" label="StartCaptureFailed"/>
 </enum>
 
 <enum name="WebSchedulerTrackedFeature">

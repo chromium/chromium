@@ -1120,58 +1120,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.DesktopCapture.Win.DesktopCapturerImpl"
-    enum="WebRtcDesktopCapturerImpl" expires_after="2021-12-31">
-  <owner>auorion@microsoft.com</owner>
-  <owner>edgecapabilitiesdev@microsoft.com</owner>
-  <summary>
-    This measures the frequency of use for each desktop capturer implementation,
-    allowing us to measure the adoption of the WGC capturer.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.DesktopCapture.Win.WgcCapturerResult"
-    enum="WebRtcWgcCapturerResult" expires_after="2021-12-31">
-  <owner>auorion@microsoft.com</owner>
-  <owner>edgecapabilitiesdev@microsoft.com</owner>
-  <summary>
-    This records high level errors, or success, encountered across the entire
-    capture flow in the WGC based capturer.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionGetFrameResult"
-    enum="WebRtcWgcCaptureSessionGetFrameResult" expires_after="2021-12-31">
-  <owner>auorion@microsoft.com</owner>
-  <owner>edgecapabilitiesdev@microsoft.com</owner>
-  <summary>
-    This records the result from retrieving a frame from the WGC based capturer.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionStartResult"
-    enum="WebRtcWgcCaptureSessionStartResult" expires_after="2021-12-31">
-  <owner>auorion@microsoft.com</owner>
-  <owner>edgecapabilitiesdev@microsoft.com</owner>
-  <summary>
-    This records the result from starting up the WGC based capturer.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.DesktopCapture.Win.{Capturer}CapturerFrameTime"
-    units="ms" expires_after="2021-12-31">
-  <owner>auorion@microsoft.com</owner>
-  <owner>edgecapabilitiesdev@microsoft.com</owner>
-  <summary>This measures the performance of the {Capturer} capturer.</summary>
-  <token key="Capturer">
-    <variant name="DirectX" summary="DirectX based"/>
-    <variant name="Magnifier" summary="Magnifier based"/>
-    <variant name="ScreenGDI" summary="GDI based screen"/>
-    <variant name="Wgc" summary="WGC based"/>
-    <variant name="WindowGDI" summary="GDI based window"/>
-  </token>
-</histogram>
-
 <histogram name="WebRTC.DesktopCaptureCounters" enum="DesktopCaptureCounters"
     expires_after="2021-12-31">
   <owner>guidou@chromium.org</owner>
