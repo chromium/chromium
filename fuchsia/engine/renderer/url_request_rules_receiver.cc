@@ -28,6 +28,12 @@ UrlRequestRulesReceiver::~UrlRequestRulesReceiver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>&
+UrlRequestRulesReceiver::GetCachedRules() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return cached_rules_;
+}
+
 void UrlRequestRulesReceiver::OnUrlRequestRulesReceiverAssociatedReceiver(
     mojo::PendingAssociatedReceiver<mojom::UrlRequestRulesReceiver> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -38,14 +44,7 @@ void UrlRequestRulesReceiver::OnUrlRequestRulesReceiverAssociatedReceiver(
 void UrlRequestRulesReceiver::OnRulesUpdated(
     std::vector<mojom::UrlRequestRulePtr> rules) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::AutoLock auto_lock(lock_);
   cached_rules_ =
       base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
           std::move(rules));
-}
-
-scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>
-UrlRequestRulesReceiver::GetCachedRules() {
-  base::AutoLock auto_lock(lock_);
-  return cached_rules_;
 }
