@@ -18,6 +18,8 @@ public class LensIntentParams {
     private boolean mIsIncognito;
     private boolean mRequiresConfirmation;
     private int mIntentType;
+    private String mProactiveSessionId;
+    private int mProactiveQueryId;
     private @LensEntryPoint int mLensEntryPoint;
 
     /**
@@ -31,6 +33,8 @@ public class LensIntentParams {
         private boolean mIsIncognito;
         private boolean mRequiresConfirmation;
         private int mIntentType;
+        private String mProactiveSessionId;
+        private int mProactiveQueryId;
         private @LensEntryPoint int mLensEntryPoint;
 
         public Builder() {}
@@ -127,6 +131,27 @@ public class LensIntentParams {
         }
 
         /**
+         * Optionally set the session id for intents that were triggered
+         * by a proactive UI element.
+         * @param proactiveSessionId ID distinguishing the session responsible for the intent
+         */
+        public Builder withProactiveSessionId(String proactiveSessionId) {
+            this.mProactiveSessionId = proactiveSessionId;
+            return this;
+        }
+
+        /**
+         * Optionally set the query id for intents that were triggered
+         * by a proactive UI element.
+         *
+         * @param queryId ID distinguishing the query responsible for the intent
+         */
+        public Builder withProactiveQueryId(int proactiveQueryId) {
+            this.mProactiveQueryId = proactiveQueryId;
+            return this;
+        }
+
+        /**
          * Build LensIntentParams object from parameters set.
          */
         public LensIntentParams build() {
@@ -184,6 +209,16 @@ public class LensIntentParams {
     /** Returns the intentType for this set of params. */
     public int getIntentType() {
         return mIntentType;
+    }
+
+    /** Returns the sessionId for this set of params. */
+    public String getProactiveSessionId() {
+        return mProactiveSessionId;
+    }
+
+    /** Returns the sessionId for this set of params. */
+    public int getProactiveQueryId() {
+        return mProactiveQueryId;
     }
 
     /** Returns the {@link LensEntryPoint} for this set of params. */

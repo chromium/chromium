@@ -11,6 +11,8 @@ public class LensQueryResult {
     private boolean mIsShoppyIntent;
     private boolean mIsTranslateIntent;
     private int mLensIntentType;
+    private String mSessionId;
+    private int mQueryId;
 
     /**
      * Builder class for LensQueryParams.
@@ -19,6 +21,8 @@ public class LensQueryResult {
         private boolean mIsShoppyIntent;
         private boolean mIsTranslateIntent;
         private int mLensIntentType;
+        private String mSessionId;
+        private int mQueryId;
 
         public Builder() {}
 
@@ -37,11 +41,23 @@ public class LensQueryResult {
             return this;
         }
 
+        public Builder withSessionId(String sessionId) {
+            this.mSessionId = sessionId;
+            return this;
+        }
+
+        public Builder withQueryId(int queryId) {
+            this.mQueryId = queryId;
+            return this;
+        }
+
         public LensQueryResult build() {
             LensQueryResult lensQueryResult = new LensQueryResult();
             lensQueryResult.mIsShoppyIntent = this.mIsShoppyIntent;
             lensQueryResult.mIsTranslateIntent = this.mIsTranslateIntent;
             lensQueryResult.mLensIntentType = this.mLensIntentType;
+            lensQueryResult.mSessionId = this.mSessionId;
+            lensQueryResult.mQueryId = this.mQueryId;
             return lensQueryResult;
         }
     }
@@ -61,6 +77,14 @@ public class LensQueryResult {
         return mLensIntentType;
     }
 
+    public String getSessionId() {
+        return mSessionId;
+    }
+
+    public int getQueryId() {
+        return mQueryId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null) {
@@ -78,6 +102,7 @@ public class LensQueryResult {
 
         return mLensIntentType == other.getLensIntentType()
                 && mIsShoppyIntent == other.getIsShoppyIntent()
-                && mIsTranslateIntent == other.getIsTranslateIntent();
+                && mIsTranslateIntent == other.getIsTranslateIntent()
+                && mSessionId.equals(other.getSessionId()) && mQueryId == other.getQueryId();
     }
 }
