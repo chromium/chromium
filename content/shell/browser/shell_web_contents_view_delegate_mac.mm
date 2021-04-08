@@ -22,6 +22,7 @@
 #include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
 #include "content/shell/common/shell_switches.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 using blink::ContextMenuDataEditFlags;
 

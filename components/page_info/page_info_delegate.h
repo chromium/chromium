@@ -16,14 +16,18 @@
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
 #include "components/security_state/core/security_state.h"
 
-namespace safe_browsing {
-class PasswordProtectionService;
-}  // namespace safe_browsing
-
 namespace permissions {
 class ChooserContextBase;
 class PermissionDecisionAutoBlocker;
 }  // namespace permissions
+
+namespace safe_browsing {
+class PasswordProtectionService;
+}  // namespace safe_browsing
+
+namespace ui {
+class Event;
+}  // namespace ui
 
 class HostContentSettingsMap;
 class StatefulSSLHostStateDelegate;

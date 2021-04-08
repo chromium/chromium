@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <utility>
 

@@ -8,6 +8,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
+#include "ui/gfx/geometry/insets.h"
 
 namespace content {
 

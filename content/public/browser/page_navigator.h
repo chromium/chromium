@@ -25,7 +25,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -131,8 +131,7 @@ struct CONTENT_EXPORT OpenURLParams {
 
   // Whether the call to OpenURL was triggered by an Event, and what the
   // isTrusted flag of the event was.
-  blink::mojom::TriggeringEventInfo triggering_event_info =
-      blink::mojom::TriggeringEventInfo::kUnknown;
+  blink::mojom::TriggeringEventInfo triggering_event_info;
 
   // Indicates whether this navigation was started via context menu.
   bool started_from_context_menu;
