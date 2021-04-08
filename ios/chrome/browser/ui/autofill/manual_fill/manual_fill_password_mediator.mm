@@ -231,19 +231,6 @@ BOOL AreCredentialsAtIndexesConnected(
         [[NSMutableArray alloc] init];
     __weak __typeof(self) weakSelf = self;
 
-    NSString* otherPasswordsTitleString = l10n_util::GetNSString(
-        IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
-    auto otherPasswordsItem = [[ManualFillActionItem alloc]
-        initWithTitle:otherPasswordsTitleString
-               action:^{
-                 base::RecordAction(base::UserMetricsAction(
-                     "ManualFallback_Password_OpenOtherPassword"));
-                 [weakSelf.navigator openAllPasswordsList];
-               }];
-    otherPasswordsItem.accessibilityIdentifier =
-        manual_fill::OtherPasswordsAccessibilityIdentifier;
-    [actions addObject:otherPasswordsItem];
-
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnableManualPasswordGeneration) &&
         _syncService->IsSyncEnabled() && _activeFieldIsPassword) {
@@ -260,6 +247,19 @@ BOOL AreCredentialsAtIndexesConnected(
           manual_fill::SuggestPasswordAccessibilityIdentifier;
       [actions addObject:suggestPasswordItem];
     }
+
+    NSString* otherPasswordsTitleString = l10n_util::GetNSString(
+        IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
+    auto otherPasswordsItem = [[ManualFillActionItem alloc]
+        initWithTitle:otherPasswordsTitleString
+               action:^{
+                 base::RecordAction(base::UserMetricsAction(
+                     "ManualFallback_Password_OpenOtherPassword"));
+                 [weakSelf.navigator openAllPasswordsList];
+               }];
+    otherPasswordsItem.accessibilityIdentifier =
+        manual_fill::OtherPasswordsAccessibilityIdentifier;
+    [actions addObject:otherPasswordsItem];
 
     NSString* managePasswordsTitle =
         l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
