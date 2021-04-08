@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_header_extension_parameters.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
@@ -42,7 +41,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
@@ -355,9 +353,6 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
     } else if (encoding->scalabilityMode() == "L1T3") {
       webrtc_encoding.num_temporal_layers = 3;
     }
-  }
-  if (encoding->adaptivePtime()) {
-    UseCounter::Count(context, WebFeature::kRTCAdaptivePtime);
   }
   webrtc_encoding.adaptive_ptime = encoding->adaptivePtime();
   return webrtc_encoding;
