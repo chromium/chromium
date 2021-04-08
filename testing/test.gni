@@ -55,7 +55,7 @@ template("test") {
   if (use_rts) {
     action("${target_name}__rts_filters") {
       script = "//build/add_rts_filters.py"
-      rts_file = "${root_build_dir}/gen/rts/${target_name}.filter"
+      rts_file = "${root_build_dir}/gen/rts/${invoker.target_name}.filter"
       args = [ rebase_path(rts_file, root_build_dir) ]
       outputs = [ rts_file ]
     }
@@ -708,7 +708,7 @@ template("script_test") {
   if (use_rts) {
     action("${target_name}__rts_filters") {
       script = "//build/add_rts_filters.py"
-      rts_file = "${root_build_dir}/gen/rts/${target_name}.filter"
+      rts_file = "${root_build_dir}/gen/rts/${invoker.target_name}.filter"
       args = [ rebase_path(rts_file, root_build_dir) ]
       outputs = [ rts_file ]
     }
