@@ -466,6 +466,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.ClipboardHistory.ContextualNudge.NudgeToFeatureOpenTime"
     units="seconds" expires_after="2021-09-01">
+  <obsolete>
+    Removed 04/2021 as of http://crrev.com/2761780. This histogram entry was
+    recreated as to some metrics may not be logging correctly. Replaced by
+    Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeatureOpenTime.
+  </obsolete>
   <owner>yulunwu@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -478,6 +483,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.ClipboardHistory.ContextualNudge.NudgeToFeatureUseTime"
     units="seconds" expires_after="2021-09-01">
+  <obsolete>
+    Removed 04/2021 as of http://crrev.com/2761780. This histogram entry was
+    recreated as to some metrics may not be logging correctly. Replaced by
+    Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeaturePasteTime.
+  </obsolete>
   <owner>yulunwu@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -490,6 +500,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.ClipboardHistory.ContextualNudge.ShownCount"
     enum="BooleanHit" expires_after="2021-09-01">
+  <obsolete>
+    Replaced 04/2021 by Ash.ClipboardHistory.Nudges.OnboardingNudge.ShownCount
+    as of http://crrev.com/2761780.
+  </obsolete>
   <owner>yulunwu@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -544,6 +558,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ShownCount"
+    enum="BooleanHit" expires_after="2022-04-01">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of times the clipboard history {NudgeType} has been shown. This
+    number will be used as the baseline against the number of emits of the
+    ToFeaturePasteTime and ToFeatureOpenTime histograms.
+  </summary>
+  <token key="NudgeType">
+    <variant name="NewFeatureBadge" summary="new feature badge"/>
+    <variant name="OnboardingNudge" summary="onboarding nudge"/>
+    <variant name="ZeroStateNudge" summary="zero state nudge"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ToFeature{Action}Time"
+    units="seconds" expires_after="2022-04-01">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>multipaste@chromium.org</owner>
+  <summary>
+    The number of seconds between the user being shown the clipboard history
+    {NudgeType} and {Action}. The number of emits to this histogram will also be
+    used to measure the conversion rate by comparing it to ShownCount histogram
+  </summary>
+  <token key="NudgeType">
+    <variant name="NewFeatureBadge" summary="new feature badge"/>
+    <variant name="OnboardingNudge" summary="onboarding nudge"/>
+    <variant name="ZeroStateNudge" summary="zero state nudge"/>
+  </token>
+  <token key="Action">
+    <variant name="Open" summary="opening the clipboard history menu"/>
+    <variant name="Paste"
+        summary="using the clipboard history to paste something"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.ClipboardHistory.Operation"
     enum="ClipboardHistoryOperation" expires_after="2021-09-01">
   <owner>newcomer@chromium.org</owner>
@@ -558,12 +609,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.ClipboardHistory.ZeroStateContextualNudge.ShownCount"
     enum="BooleanHit" expires_after="2021-09-01">
+  <obsolete>
+    Replaced 04/2021 by Ash.ClipboardHistory.Nudges.ZeroStateNudge.ShownCount as
+    of http://crrev.com/2761780.
+  </obsolete>
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
     The number of times the clipboard history zero state contextual nudge has
     been shown. This number will be used as the baseline against the sum of the
-    NudgeToFeatureUseTime and NudgeToFeatureOpenTime.
+    ToFeatureUseTime and ToFeatureOpenTime.
   </summary>
 </histogram>
 

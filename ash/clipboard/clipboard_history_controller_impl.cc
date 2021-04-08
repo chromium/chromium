@@ -274,7 +274,7 @@ void ClipboardHistoryControllerImpl::ShowMenu(const gfx::Rect& anchor_rect,
           weak_ptr_factory_.GetWeakPtr()));
 
   for (auto& observer : observers_)
-    observer.OnClipboardHistoryMenuShown();
+    observer.OnClipboardHistoryMenuShown(show_source);
 }
 
 bool ClipboardHistoryControllerImpl::ShouldShowNewFeatureBadge() const {

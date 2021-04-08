@@ -32,8 +32,10 @@ constexpr char kNewFeatureBadgeCount[] = "new_feature_shown_count";
 
 // The maximum number of 1 second buckets used to record the time between
 // showing the nudge and recording the feature being opened/used.
-constexpr int kBucketCount = 61;
+constexpr int kMaxSeconds = 61;
 
+// Clock that can be overridden for testing.
+base::Clock* g_clock_override = nullptr;
 }  // namespace
 
 // A class for observing the clipboard nudge fade out animation. Once the fade
@@ -125,6 +127,15 @@ void ClipboardNudgeController::MarkNewFeatureBadgeShown() {
   const int shown_count = GetNewFeatureBadgeShownCount(prefs);
   DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kNewFeatureBadgeCount, shown_count + 1);
+  base::UmaHistogramBoolean(kNewBadge_ShowCount, true);
+  if (new_feature_last_shown_time_.ShouldLogFeatureOpenTime()) {
+    base::UmaHistogramExactLinear(kNewBadge_OpenTime, kMaxSeconds, kMaxSeconds);
+  }
+  if (new_feature_last_shown_time_.ShouldLogFeatureUsedTime()) {
+    base::UmaHistogramExactLinear(kNewBadge_PasteTime, kMaxSeconds,
+                                  kMaxSeconds);
+  }
+  new_feature_last_shown_time_.ResetTime();
 }
 
 bool ClipboardNudgeController::ShouldShowNewFeatureBadge() {
@@ -180,6 +191,8 @@ void ClipboardNudgeController::OnActiveUserPrefServiceChanged(
 }
 
 void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
+  DCHECK_NE(nudge_type, ClipboardNudgeType::kNewFeatureBadge);
+
   if (nudge_ && !nudge_->widget()->IsClosed()) {
     hide_nudge_timer_.AbandonAndStop();
     nudge_->Close();
@@ -199,13 +212,28 @@ void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
   // a user opening and then using the clipboard history feature.
   switch (nudge_type) {
     case ClipboardNudgeType::kOnboardingNudge:
-      last_shown_time_ = GetTime();
-      base::UmaHistogramExactLinear(
-          "Ash.ClipboardHistory.ContextualNudge.ShownCount", 1, 1);
+      if (last_shown_time_.ShouldLogFeatureOpenTime()) {
+        base::UmaHistogramExactLinear(kOnboardingNudge_OpenTime, kMaxSeconds,
+                                      kMaxSeconds);
+      }
+      if (last_shown_time_.ShouldLogFeatureUsedTime()) {
+        base::UmaHistogramExactLinear(kOnboardingNudge_PasteTime, kMaxSeconds,
+                                      kMaxSeconds);
+      }
+      last_shown_time_.ResetTime();
+      base::UmaHistogramBoolean(kOnboardingNudge_ShowCount, true);
       break;
     case ClipboardNudgeType::kZeroStateNudge:
-      base::UmaHistogramExactLinear(
-          "Ash.ClipboardHistory.ZeroStateContextualNudge.ShownCount", 1, 1);
+      if (zero_state_last_shown_time_.ShouldLogFeatureOpenTime()) {
+        base::UmaHistogramExactLinear(kZeroStateNudge_OpenTime, kMaxSeconds,
+                                      kMaxSeconds);
+      }
+      if (zero_state_last_shown_time_.ShouldLogFeatureUsedTime()) {
+        base::UmaHistogramExactLinear(kZeroStateNudge_PasteTime, kMaxSeconds,
+                                      kMaxSeconds);
+      }
+      zero_state_last_shown_time_.ResetTime();
+      base::UmaHistogramBoolean(kZeroStateNudge_ShowCount, true);
       break;
     default:
       NOTREACHED();
@@ -269,28 +297,76 @@ void ClipboardNudgeController::HandleNudgeShown() {
   update->SetPath(kLastTimeShown, util::TimeToValue(GetTime()));
 }
 
-void ClipboardNudgeController::OnClipboardHistoryMenuShown() {
-  if (last_shown_time_.is_null())
-    return;
-  base::TimeDelta time_since_shown = GetTime() - last_shown_time_;
+void ClipboardNudgeController::OnClipboardHistoryMenuShown(
+    ClipboardHistoryController::ShowSource show_source) {
+  if (last_shown_time_.ShouldLogFeatureOpenTime()) {
+    base::TimeDelta time_since_shown =
+        last_shown_time_.GetTimeSinceShown(GetTime());
 
-  // Tracks the amount of time between showing the user a nudge and the user
-  // opening the ClipboardHistory menu.
-  base::UmaHistogramExactLinear(
-      "Ash.ClipboardHistory.ContextualNudge.NudgeToFeatureOpenTime",
-      time_since_shown.InSeconds(), kBucketCount);
+    // Tracks the amount of time between showing the user a nudge and the user
+    // opening the ClipboardHistory menu.
+    base::UmaHistogramExactLinear(kOnboardingNudge_OpenTime,
+                                  time_since_shown.InSeconds(), kMaxSeconds);
+    last_shown_time_.set_was_logged_as_opened();
+  }
+  if (new_feature_last_shown_time_.ShouldLogFeatureOpenTime()) {
+    switch (show_source) {
+      case ClipboardHistoryController::ShowSource::kAccelerator:
+      case ClipboardHistoryController::ShowSource::kVirtualKeyboard:
+        break;
+      case ClipboardHistoryController::ShowSource::kRenderViewContextMenu:
+      case ClipboardHistoryController::ShowSource::kTextfieldContextMenu:
+        base::TimeDelta time_since_shown =
+            new_feature_last_shown_time_.GetTimeSinceShown(GetTime());
+        // Tracks the amount of time between showing the user the new badge and
+        // the user opening the ClipboardHistory menu.
+        base::UmaHistogramExactLinear(
+            kNewBadge_OpenTime, time_since_shown.InSeconds(), kMaxSeconds);
+        new_feature_last_shown_time_.set_was_logged_as_opened();
+        break;
+    }
+  }
+  if (zero_state_last_shown_time_.ShouldLogFeatureOpenTime()) {
+    base::TimeDelta time_since_shown =
+        zero_state_last_shown_time_.GetTimeSinceShown(GetTime());
+    // Tracks the amount of time between showing the user a zero state nudge and
+    // the user opening the ClipboardHistory menu.
+    base::UmaHistogramExactLinear(kZeroStateNudge_OpenTime,
+                                  time_since_shown.InSeconds(), kMaxSeconds);
+    zero_state_last_shown_time_.set_was_logged_as_opened();
+  }
 }
 
 void ClipboardNudgeController::OnClipboardHistoryPasted() {
-  if (last_shown_time_.is_null())
-    return;
-  base::TimeDelta time_since_shown = GetTime() - last_shown_time_;
+  if (last_shown_time_.ShouldLogFeatureUsedTime()) {
+    base::TimeDelta time_since_shown =
+        last_shown_time_.GetTimeSinceShown(GetTime());
 
-  // Tracks the amount of time between showing the user a nudge and the user
-  // using the ClipboardHistory feature.
-  base::UmaHistogramExactLinear(
-      "Ash.ClipboardHistory.ContextualNudge.NudgeToFeatureUseTime",
-      time_since_shown.InSeconds(), kBucketCount);
+    // Tracks the amount of time between showing the user a nudge and the user
+    // using the ClipboardHistory feature.
+    base::UmaHistogramExactLinear(kOnboardingNudge_PasteTime,
+                                  time_since_shown.InSeconds(), kMaxSeconds);
+    last_shown_time_.set_was_logged_as_used();
+  }
+  if (new_feature_last_shown_time_.ShouldLogFeatureUsedTime()) {
+    base::TimeDelta time_since_shown =
+        new_feature_last_shown_time_.GetTimeSinceShown(GetTime());
+    // Tracks the amount of time between showing the user a new badge and the
+    // user using the ClipboardHistory feature.
+    base::UmaHistogramExactLinear(kNewBadge_PasteTime,
+                                  time_since_shown.InSeconds(), kMaxSeconds);
+    new_feature_last_shown_time_.set_was_logged_as_used();
+  }
+  if (zero_state_last_shown_time_.ShouldLogFeatureUsedTime()) {
+    base::TimeDelta time_since_shown =
+        zero_state_last_shown_time_.GetTimeSinceShown(GetTime());
+
+    // Tracks the amount of time between showing the user a nudge and the user
+    // using the ClipboardHistory feature.
+    base::UmaHistogramExactLinear(kZeroStateNudge_PasteTime,
+                                  time_since_shown.InSeconds(), kMaxSeconds);
+    zero_state_last_shown_time_.set_was_logged_as_used();
+  }
 }
 
 void ClipboardNudgeController::ForceCloseAnimatingNudge() {
@@ -363,6 +439,28 @@ base::Time ClipboardNudgeController::GetTime() {
   if (g_clock_override)
     return g_clock_override->Now();
   return base::Time::Now();
+}
+
+void ClipboardNudgeController::TimeMetricHelper::ResetTime() {
+  last_shown_time_ =
+      g_clock_override ? g_clock_override->Now() : base::Time::Now();
+  was_logged_as_opened_ = false;
+  was_logged_as_used_ = false;
+}
+
+bool ClipboardNudgeController::TimeMetricHelper::ShouldLogFeatureUsedTime()
+    const {
+  return !last_shown_time_.is_null() && !was_logged_as_used_;
+}
+
+bool ClipboardNudgeController::TimeMetricHelper::ShouldLogFeatureOpenTime()
+    const {
+  return !last_shown_time_.is_null() && !was_logged_as_opened_;
+}
+
+base::TimeDelta ClipboardNudgeController::TimeMetricHelper::GetTimeSinceShown(
+    base::Time current_time) const {
+  return current_time - last_shown_time_;
 }
 
 }  // namespace ash

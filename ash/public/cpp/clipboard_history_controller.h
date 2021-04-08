@@ -55,7 +55,7 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   class Observer : public base::CheckedObserver {
    public:
     // Called when the clipboard history menu is shown.
-    virtual void OnClipboardHistoryMenuShown() {}
+    virtual void OnClipboardHistoryMenuShown(ShowSource show_source) {}
     // Called when the user pastes from the clipboard history menu.
     virtual void OnClipboardHistoryPasted() {}
     // Called when the clipboard history changes.

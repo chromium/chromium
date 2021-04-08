@@ -17,7 +17,28 @@ enum ClipboardNudgeType {
   // Shows when the keyboard shortcut for clipboard is pressed with no items
   // in the history.
   kZeroStateNudge = 1,
+  // Blue new feature badge for clipboard history's context menu option.
+  kNewFeatureBadge = 2,
 };
+
+const char kOnboardingNudge_ShowCount[] =
+    "Ash.ClipboardHistory.Nudges.OnboardingNudge.ShownCount";
+const char kOnboardingNudge_OpenTime[] =
+    "Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeatureOpenTime";
+const char kOnboardingNudge_PasteTime[] =
+    "Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeaturePasteTime";
+const char kZeroStateNudge_ShowCount[] =
+    "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ShownCount";
+const char kZeroStateNudge_OpenTime[] =
+    "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ToFeatureOpenTime";
+const char kZeroStateNudge_PasteTime[] =
+    "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ToFeaturePasteTime";
+const char kNewBadge_ShowCount[] =
+    "Ash.ClipboardHistory.Nudges.NewFeatureBadge.ShownCount";
+const char kNewBadge_OpenTime[] =
+    "Ash.ClipboardHistory.Nudges.NewFeatureBadge.ToFeatureOpenTime";
+const char kNewBadge_PasteTime[] =
+    "Ash.ClipboardHistory.Nudges.NewFeatureBadge.ToFeaturePasteTime";
 
 constexpr int kNotificationLimit = 3;
 constexpr int kContextMenuBadgeShowLimit = 3;
