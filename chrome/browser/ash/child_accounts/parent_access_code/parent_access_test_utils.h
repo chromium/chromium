@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_PARENT_ACCESS_TEST_UTILS_H_
-#define CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_PARENT_ACCESS_TEST_UTILS_H_
+#ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_PARENT_ACCESS_TEST_UTILS_H_
+#define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_PARENT_ACCESS_TEST_UTILS_H_
 
 #include <map>
 #include <string>
 
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/child_accounts/parent_access_code/authenticator.h"
-#include "chrome/browser/chromeos/child_accounts/parent_access_code/config_source.h"
+#include "chrome/browser/ash/child_accounts/parent_access_code/authenticator.h"
+#include "chrome/browser/ash/child_accounts/parent_access_code/config_source.h"
 
 namespace chromeos {
 namespace parent_access {
@@ -41,4 +41,4 @@ void GetTestAccessCodeValues(AccessCodeValues* test_values);
 }  // namespace parent_access
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_PARENT_ACCESS_TEST_UTILS_H_
+#endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_PARENT_ACCESS_TEST_UTILS_H_

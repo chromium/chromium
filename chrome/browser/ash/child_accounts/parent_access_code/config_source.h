@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_CONFIG_SOURCE_H_
-#define CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_CONFIG_SOURCE_H_
+#ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_CONFIG_SOURCE_H_
+#define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_CONFIG_SOURCE_H_
 
 #include <map>
 #include <memory>
@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/child_accounts/parent_access_code/authenticator.h"
+#include "chrome/browser/ash/child_accounts/parent_access_code/authenticator.h"
 
 class AccountId;
 
@@ -58,4 +58,4 @@ class ConfigSource {
 }  // namespace parent_access
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_CONFIG_SOURCE_H_
+#endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_CONFIG_SOURCE_H_

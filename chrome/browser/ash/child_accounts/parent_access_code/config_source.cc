@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/child_accounts/parent_access_code/config_source.h"
+#include "chrome/browser/ash/child_accounts/parent_access_code/config_source.h"
 
 #include <utility>
 
