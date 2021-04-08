@@ -739,25 +739,6 @@ void PageInfoBubbleView::DidChangeVisibleSecurityState() {
   presenter_->UpdateSecurityState();
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-std::unique_ptr<PageInfoUI::SecurityDescription>
-PageInfoBubbleView::CreateSecurityDescriptionForPasswordReuse() const {
-  std::unique_ptr<PageInfoUI::SecurityDescription> security_description(
-      new PageInfoUI::SecurityDescription());
-  security_description->summary_style = SecuritySummaryColor::RED;
-  security_description->summary =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY);
-  auto* service = safe_browsing::ChromePasswordProtectionService::
-      GetPasswordProtectionService(profile_);
-  std::vector<size_t> placeholder_offsets;
-  security_description->details = service->GetWarningDetailText(
-      service->reused_password_account_type_for_last_shown_warning(),
-      &placeholder_offsets);
-  security_description->type = SecurityDescriptionType::SAFE_BROWSING;
-  return security_description;
-}
-#endif
-
 std::unique_ptr<views::View> PageInfoBubbleView::CreateSiteSettingsView() {
   auto site_settings_view = std::make_unique<views::View>();
   auto* box_layout =

@@ -62,11 +62,6 @@ class PageInfoMainView : public views::View,
 
   gfx::Size CalculatePreferredSize() const override;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  std::unique_ptr<PageInfoUI::SecurityDescription>
-  CreateSecurityDescriptionForPasswordReuse() const override;
-#endif
-
   // PermissionSelectorRowObserver:
   void OnPermissionChanged(const PageInfo::PermissionInfo& permission) override;
 
@@ -106,8 +101,6 @@ class PageInfoMainView : public views::View,
   PageInfo* presenter_;
 
   PageInfoUiDelegate* ui_delegate_;
-
-  Profile* profile_;
 
   // The raw details of the status of the identity check for this site.
   std::u16string details_text_ = std::u16string();

@@ -113,6 +113,8 @@ class PageInfoUI {
     // Site's safety tip info. Only set if the feature is enabled to show the
     // Safety Tip UI.
     security_state::SafetyTipInfo safety_tip_info;
+    // Textual description of the Safe Browsing status.
+    std::u16string safe_browsing_details;
 
 #if defined(OS_ANDROID)
     // Textual description of the site's identity status that is displayed to
@@ -237,12 +239,6 @@ class PageInfoUI {
   // Helper to get security description info to display to the user.
   std::unique_ptr<SecurityDescription> GetSecurityDescription(
       const IdentityInfo& identity_info) const;
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  // Creates security description for password reuse case.
-  virtual std::unique_ptr<SecurityDescription>
-  CreateSecurityDescriptionForPasswordReuse() const = 0;
-#endif
 };
 
 typedef PageInfoUI::CookieInfoList CookieInfoList;

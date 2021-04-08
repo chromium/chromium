@@ -148,11 +148,6 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   // WebContentsObserver:
   void DidChangeVisibleSecurityState() override;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  std::unique_ptr<PageInfoUI::SecurityDescription>
-  CreateSecurityDescriptionForPasswordReuse() const override;
-#endif
-
   // Creates the contents of the |site_settings_view_|.
   std::unique_ptr<views::View> CreateSiteSettingsView() WARN_UNUSED_RESULT;
 

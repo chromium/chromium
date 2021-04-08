@@ -44,7 +44,7 @@ SkColor GetRelatedTextColor() {
 PageInfoMainView::PageInfoMainView(PageInfo* presenter,
                                    PageInfoUiDelegate* ui_delegate,
                                    Profile* profile)
-    : presenter_(presenter), ui_delegate_(ui_delegate), profile_(profile) {
+    : presenter_(presenter), ui_delegate_(ui_delegate) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   // In Harmony, the last view is a HoverButton, which overrides the bottom
@@ -413,25 +413,6 @@ void PageInfoMainView::OnChosenObjectDeleted(
   presenter_->OnSiteChosenObjectDeleted(info.ui_info,
                                         info.chooser_object->value);
 }
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-std::unique_ptr<PageInfoUI::SecurityDescription>
-PageInfoMainView::CreateSecurityDescriptionForPasswordReuse() const {
-  std::unique_ptr<PageInfoUI::SecurityDescription> security_description(
-      new PageInfoUI::SecurityDescription());
-  security_description->summary_style = SecuritySummaryColor::RED;
-  security_description->summary =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY);
-  auto* service = safe_browsing::ChromePasswordProtectionService::
-      GetPasswordProtectionService(profile_);
-  std::vector<size_t> placeholder_offsets;
-  security_description->details = service->GetWarningDetailText(
-      service->reused_password_account_type_for_last_shown_warning(),
-      &placeholder_offsets);
-  security_description->type = SecurityDescriptionType::SAFE_BROWSING;
-  return security_description;
-}
-#endif
 
 std::unique_ptr<views::View> PageInfoMainView::CreateSiteSettingsView() {
   auto site_settings_view = std::make_unique<views::View>();

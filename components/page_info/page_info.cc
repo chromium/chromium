@@ -780,12 +780,11 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   if (visible_security_state.malicious_content_status !=
       security_state::MALICIOUS_CONTENT_STATUS_NONE) {
     // The site has been flagged by Safe Browsing. Takes precedence over TLS.
-    std::u16string safe_browsing_details;
     GetSafeBrowsingStatusByMaliciousContentStatus(
         visible_security_state.malicious_content_status, &safe_browsing_status_,
-        &safe_browsing_details);
+        &safe_browsing_details_);
 #if defined(OS_ANDROID)
-    identity_status_description_android_ = safe_browsing_details;
+    identity_status_description_android_ = safe_browsing_details_;
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -1041,6 +1040,7 @@ void PageInfo::PresentSiteIdentity() {
   info.connection_status_description = UTF16ToUTF8(site_connection_details_);
   info.identity_status = site_identity_status_;
   info.safe_browsing_status = safe_browsing_status_;
+  info.safe_browsing_details = safe_browsing_details_;
   if (security_state::IsSafetyTipUIFeatureEnabled()) {
     info.safety_tip_info = safety_tip_info_;
   }

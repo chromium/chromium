@@ -302,12 +302,17 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
     case PageInfo::SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE:
     case PageInfo::SAFE_BROWSING_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE:
     case PageInfo::SAFE_BROWSING_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
-    case PageInfo::SAFE_BROWSING_STATUS_ENTERPRISE_PASSWORD_REUSE:
+    case PageInfo::SAFE_BROWSING_STATUS_ENTERPRISE_PASSWORD_REUSE: {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-      return CreateSecurityDescriptionForPasswordReuse();
+      auto security_description = CreateSecurityDescription(
+          SecuritySummaryColor::RED, IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY, 0,
+          SecurityDescriptionType::SAFE_BROWSING);
+      security_description->details = identity_info.safe_browsing_details;
+      return security_description;
 #endif
       NOTREACHED();
       break;
+    }
     case PageInfo::SAFE_BROWSING_STATUS_BILLING:
       return CreateSecurityDescription(SecuritySummaryColor::RED,
                                        IDS_PAGE_INFO_BILLING_SUMMARY,

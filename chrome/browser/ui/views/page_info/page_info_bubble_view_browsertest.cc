@@ -300,6 +300,10 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
               GetPasswordProtectionService(browser()->profile());
       service->set_reused_password_account_type_for_last_shown_warning(
           reused_password_account_type);
+      std::vector<size_t> placeholder_offsets;
+      identity.safe_browsing_details = service->GetWarningDetailText(
+          service->reused_password_account_type_for_last_shown_warning(),
+          &placeholder_offsets);
     }
 
     if (name != kInsecure && name.find(kInternal) == std::string::npos &&

@@ -418,6 +418,10 @@ class PageInfo : public content::WebContentsObserver {
   // Records whether the user interacted with the bubble beyond opening it.
   bool did_perform_action_;
 
+  // Description of the Safe Browsing status. Non-empty if
+  // MaliciousContentStatus isn't NONE.
+  std::u16string safe_browsing_details_;
+
   DISALLOW_COPY_AND_ASSIGN(PageInfo);
 };
 

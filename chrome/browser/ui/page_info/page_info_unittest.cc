@@ -116,21 +116,6 @@ class MockPageInfoUI : public PageInfoUI {
     }
   }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  std::unique_ptr<PageInfoUI::SecurityDescription>
-  CreateSecurityDescriptionForPasswordReuse() const override {
-    std::unique_ptr<PageInfoUI::SecurityDescription> security_description(
-        new PageInfoUI::SecurityDescription());
-    security_description->summary_style = SecuritySummaryColor::RED;
-    security_description->summary =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY);
-    security_description->details =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS);
-    security_description->type = SecurityDescriptionType::SAFE_BROWSING;
-    return security_description;
-  }
-#endif
-
   base::RepeatingCallback<void(const PermissionInfoList& permission_info_list,
                                ChosenObjectInfoList chosen_object_info_list)>
       set_permission_info_callback_;
