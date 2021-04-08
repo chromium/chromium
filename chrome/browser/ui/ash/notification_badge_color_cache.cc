@@ -49,8 +49,9 @@ NotificationBadgeColorCache::NotificationBadgeColorCache() = default;
 
 NotificationBadgeColorCache::~NotificationBadgeColorCache() = default;
 
-SkColor NotificationBadgeColorCache::GetBadgeColorForApp(std::string app_id,
-                                                         gfx::ImageSkia icon) {
+SkColor NotificationBadgeColorCache::GetBadgeColorForApp(
+    const std::string& app_id,
+    gfx::ImageSkia icon) {
   AppIdBadgeColor::const_iterator it = app_id_badge_color_map_.find(app_id);
   if (it != app_id_badge_color_map_.end())
     return it->second;
