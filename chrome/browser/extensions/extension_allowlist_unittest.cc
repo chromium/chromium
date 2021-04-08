@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "extensions/browser/allowlist_state.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -600,6 +601,34 @@ TEST_F(ExtensionAllowlistUnitTest, BypassFrictionSetAckowledgeEnabledByUser) {
             allowlist()->GetExtensionAllowlistState(kInstalledCrx));
   EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
             allowlist()->GetExtensionAllowlistAcknowledgeState(kInstalledCrx));
+}
+
+TEST_F(ExtensionAllowlistUnitTest, NoEnforcementOnPolicyInstalledExtension) {
+  CreateExtensionService(/*enhanced_protection_enabled=*/true);
+
+  // Add a policy installed extension.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("policy_installed")
+          .SetPath(data_dir().AppendASCII("good.crx"))
+          .SetLocation(mojom::ManifestLocation::kExternalPolicyDownload)
+          .Build();
+
+  service()->Init();
+  service()->AddExtension(extension.get());
+
+  EXPECT_TRUE(IsEnabled(extension->id()));
+
+  // On next update check, the extension is now marked as not allowlisted.
+  PerformActionBasedOnOmahaAttributes(extension->id(),
+                                      /*is_malware=*/false,
+                                      /*is_allowlisted=*/false);
+
+  EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
+            allowlist()->GetExtensionAllowlistState(extension->id()));
+  // A policy installed extension is not disabled by allowlist enforcement.
+  EXPECT_TRUE(IsEnabled(extension->id()));
+  // No warnings are shown for policy installed extensions.
+  EXPECT_FALSE(allowlist()->ShouldDisplayWarning(extension->id()));
 }
 
 class ExtensionAllowlistWithFeatureDisabledUnitTest

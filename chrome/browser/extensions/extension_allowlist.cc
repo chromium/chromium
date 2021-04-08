@@ -208,6 +208,9 @@ void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
 bool ExtensionAllowlist::ShouldDisplayWarning(
     const std::string& extension_id) const {
   return warnings_enabled_ &&
+         // Don't show a warning if the user can't disable the extension. (e.g.
+         // policy installs)
+         extension_service_->UserCanDisableInstalledExtension(extension_id) &&
          GetExtensionAllowlistState(extension_id) == ALLOWLIST_NOT_ALLOWLISTED;
 }
 
