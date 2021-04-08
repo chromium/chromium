@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/format_macros.h"
+#include "base/record_replay.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/add_event_listener_options_or_boolean.h"
 #include "third_party/blink/renderer/bindings/core/v8/event_listener_options_or_boolean.h"
@@ -495,11 +496,17 @@ bool EventTarget::AddEventListenerInternal(
     const AtomicString& event_type,
     EventListener* listener,
     const AddEventListenerOptionsResolved* options) {
-  if (!listener)
-    return false;
+  recordreplay::Assert("EventTarget::AddEventListenerInternal Start");
 
-  if (options->hasSignal() && options->signal()->aborted())
+  if (!listener) {
+    recordreplay::Assert("EventTarget::AddEventListenerInternal #1");
     return false;
+  }
+
+  if (options->hasSignal() && options->signal()->aborted()) {
+    recordreplay::Assert("EventTarget::AddEventListenerInternal #2");
+    return false;
+  }
 
   if (event_type == event_type_names::kTouchcancel ||
       event_type == event_type_names::kTouchend ||
@@ -555,6 +562,8 @@ bool EventTarget::AddEventListenerInternal(
                                 listener->async_task_id());
     }
   }
+
+  recordreplay::Assert("EventTarget::AddEventListenerInternal Done %d", added);
   return added;
 }
 

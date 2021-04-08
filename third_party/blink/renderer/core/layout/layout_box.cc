@@ -589,6 +589,8 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
 
 void LayoutBox::StyleDidChange(StyleDifference diff,
                                const ComputedStyle* old_style) {
+  recordreplay::Assert("LayoutBox::StyleDidChange Start");
+
   NOT_DESTROYED();
   // Horizontal writing mode definition is updated in LayoutBoxModelObject::
   // updateFromStyle, (as part of the LayoutBoxModelObject::styleDidChange call
@@ -704,6 +706,8 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
 
   // Non-atomic inlines should be LayoutInline or LayoutText, not LayoutBox.
   DCHECK(!IsInline() || IsAtomicInlineLevel());
+
+  recordreplay::Assert("LayoutBox::StyleDidChange Done");
 }
 
 void LayoutBox::UpdateBackgroundAttachmentFixedStatusAfterStyleChange() {

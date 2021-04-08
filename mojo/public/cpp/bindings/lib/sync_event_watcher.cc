@@ -10,6 +10,10 @@
 #include "base/containers/stack_container.h"
 #include "base/record_replay.h"
 
+// Used to make sure we finish recordings on the main thread, even if we're
+// blocked in a sync event.
+extern "C" void V8RecordReplayMaybeTerminate(void (*callback)(void*), void* info);
+
 namespace mojo {
 
 SyncEventWatcher::SyncEventWatcher(base::WaitableEvent* event,
@@ -29,6 +33,11 @@ void SyncEventWatcher::AllowWokenUpBySyncWatchOnSameThread() {
   IncrementRegisterCount();
 }
 
+static void SignalSyncWatcher(void* info) {
+  base::RefCountedData<bool>* destroyed = (base::RefCountedData<bool>*) info;
+  destroyed->data = true;
+}
+
 bool SyncEventWatcher::SyncWatch(const bool** stop_flags,
                                  size_t num_stop_flags) {
   recordreplay::Assert("SyncEventWatcher::SyncWatch Start");
@@ -40,6 +49,8 @@ bool SyncEventWatcher::SyncWatch(const bool** stop_flags,
   // the boolean that Wait uses.
   auto destroyed = destroyed_;
 
+  V8RecordReplayMaybeTerminate(SignalSyncWatcher, destroyed.get());
+
   constexpr size_t kFlagStackCapacity = 4;
   base::StackVector<const bool*, kFlagStackCapacity> should_stop_array;
   should_stop_array.container().push_back(&destroyed->data);
@@ -47,6 +58,8 @@ bool SyncEventWatcher::SyncWatch(const bool** stop_flags,
             std::back_inserter(should_stop_array.container()));
   bool result = registry_->Wait(should_stop_array.container().data(),
                                 should_stop_array.container().size());
+
+  V8RecordReplayMaybeTerminate(nullptr, nullptr);
 
   // This object has been destroyed.
   if (destroyed->data) {

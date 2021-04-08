@@ -2871,6 +2871,8 @@ void Element::RecalcStyleForTraversalRootAncestor() {
 
 void Element::RecalcStyle(const StyleRecalcChange change,
                           const StyleRecalcContext& style_recalc_context) {
+  recordreplay::Assert("Element::RecalcStyle Start");
+
   DCHECK(InActiveDocument());
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(!GetDocument().Lifecycle().InDetach());
@@ -2916,6 +2918,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     }
     if (HasCustomStyleCallbacks())
       DidRecalcStyle(child_change);
+    recordreplay::Assert("Element::RecalcStyle #1");
     return;
   }
 
@@ -2968,6 +2971,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
   if (HasCustomStyleCallbacks())
     DidRecalcStyle(child_change);
+
+  recordreplay::Assert("Element::RecalcStyle Done");
 }
 
 scoped_refptr<ComputedStyle> Element::PropagateInheritedProperties() {
