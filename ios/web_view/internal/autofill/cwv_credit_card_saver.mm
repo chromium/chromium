@@ -90,8 +90,11 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 
 #pragma mark - Public Methods
 
-- (void)acceptWithRiskData:(nullable NSString*)riskData
-         completionHandler:(void (^_Nullable)(BOOL))completionHandler {
+- (void)acceptWithCardHolderFullName:(NSString*)cardHolderFullName
+                     expirationMonth:(NSString*)expirationMonth
+                      expirationYear:(NSString*)expirationYear
+                            riskData:(NSString*)riskData
+                   completionHandler:(void (^)(BOOL))completionHandler {
   DCHECK(!_decisionMade)
       << "You may only call -acceptWithRiskData:completionHandler: or "
          "-decline: once per instance.";
@@ -102,7 +105,12 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
   DCHECK(_saveCardCallback);
   std::move(_saveCardCallback)
       .Run(autofill::AutofillClient::ACCEPTED,
-           /*user_provided_card_details=*/{});
+           {
+               .cardholder_name = base::SysNSStringToUTF16(cardHolderFullName),
+               .expiration_date_month =
+                   base::SysNSStringToUTF16(expirationMonth),
+               .expiration_date_year = base::SysNSStringToUTF16(expirationYear),
+           });
   _decisionMade = YES;
 }
 

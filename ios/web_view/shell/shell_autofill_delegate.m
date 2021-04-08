@@ -132,16 +132,29 @@
       [UIAlertController alertControllerWithTitle:@"Save card?"
                                           message:creditCard.debugDescription
                                    preferredStyle:UIAlertControllerStyleAlert];
+  __weak UIAlertController* weakAlertController = alertController;
+  __weak ShellAutofillDelegate* weakSelf = self;
   UIAlertAction* allowAction = [UIAlertAction
       actionWithTitle:@"Allow"
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* _Nonnull action) {
-                [saver acceptWithRiskData:self.riskDataLoader.riskData
-                        completionHandler:^(BOOL cardSaved) {
-                          if (!cardSaved) {
-                            NSLog(@"Failed to save: %@", saver.creditCard);
-                          }
-                        }];
+                NSString* cardHolderFullName =
+                    weakAlertController.textFields[0].text;
+                NSString* expirationMonth =
+                    weakAlertController.textFields[1].text;
+                NSString* expirationYear =
+                    weakAlertController.textFields[2].text;
+                [saver acceptWithCardHolderFullName:cardHolderFullName
+                                    expirationMonth:expirationMonth
+                                     expirationYear:expirationYear
+                                           riskData:weakSelf.riskDataLoader
+                                                        .riskData
+                                  completionHandler:^(BOOL cardSaved) {
+                                    if (!cardSaved) {
+                                      NSLog(@"Failed to save: %@",
+                                            saver.creditCard);
+                                    }
+                                  }];
               }];
   UIAlertAction* cancelAction =
       [UIAlertAction actionWithTitle:@"Cancel"
@@ -152,20 +165,26 @@
   [alertController addAction:allowAction];
   [alertController addAction:cancelAction];
 
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"Card holder full name";
+        textField.keyboardType = UIKeyboardTypeDefault;
+      }];
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"Expiration month (MM)";
+        textField.keyboardType = UIKeyboardTypeNumberPad;
+      }];
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"Expiration year (YYYY)";
+        textField.keyboardType = UIKeyboardTypeNumberPad;
+      }];
+
   [UIApplication.sharedApplication.keyWindow.rootViewController
       presentViewController:alertController
                    animated:YES
                  completion:nil];
-}
-
-- (void)autofillController:(CWVAutofillController*)autofillController
-    confirmCreditCardNameWithFixer:(CWVCreditCardNameFixer*)fixer {
-  [fixer acceptWithName:fixer.inferredCardHolderName ?: @""];
-}
-
-- (void)autofillController:(CWVAutofillController*)autofillController
-    confirmCreditCardExpirationWithFixer:(CWVCreditCardExpirationFixer*)fixer {
-  [fixer cancel];
 }
 
 - (void)autofillController:(CWVAutofillController*)autofillController
@@ -248,6 +267,7 @@
                                    preferredStyle:UIAlertControllerStyleAlert];
 
   __weak UIAlertController* weakAlertController = alertController;
+  __weak ShellAutofillDelegate* weakSelf = self;
   UIAlertAction* submit = [UIAlertAction
       actionWithTitle:@"Confirm"
                 style:UIAlertActionStyleDefault
@@ -258,7 +278,7 @@
                 [verifier verifyWithCVC:CVC
                         expirationMonth:nil
                          expirationYear:nil
-                               riskData:self.riskDataLoader.riskData
+                               riskData:weakSelf.riskDataLoader.riskData
                       completionHandler:^(NSError* error) {
                         if (error) {
                           NSLog(@"Card %@ failed to verify error: %@",

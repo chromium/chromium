@@ -130,6 +130,9 @@ TEST_F(CWVCreditCardSaverTest, Accept) {
                   user_provided_card_details) {
             callback_called = YES;
             EXPECT_EQ(autofill::AutofillClient::ACCEPTED, decision);
+            EXPECT_EQ(u"John Doe", user_provided_card_details.cardholder_name);
+            EXPECT_EQ(u"08", user_provided_card_details.expiration_date_month);
+            EXPECT_EQ(u"2021", user_provided_card_details.expiration_date_year);
           });
 
   CWVCreditCardSaver* credit_card_saver =
@@ -144,11 +147,14 @@ TEST_F(CWVCreditCardSaverTest, Accept) {
                                         risk_data_used = YES;
                                       })];
   __block BOOL completion_called = NO;
-  [credit_card_saver acceptWithRiskData:@"dummy-risk-data"
-                      completionHandler:^(BOOL cardSaved) {
-                        EXPECT_TRUE(cardSaved);
-                        completion_called = YES;
-                      }];
+  [credit_card_saver acceptWithCardHolderFullName:@"John Doe"
+                                  expirationMonth:@"08"
+                                   expirationYear:@"2021"
+                                         riskData:@"dummy-risk-data"
+                                completionHandler:^(BOOL cardSaved) {
+                                  EXPECT_TRUE(cardSaved);
+                                  completion_called = YES;
+                                }];
   [credit_card_saver handleCreditCardUploadCompleted:YES];
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {

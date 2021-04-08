@@ -30,4 +30,8 @@
 // Allows handling of SSL errors with CWVSSLErrorHandler.
 #define IOS_WEB_VIEW_SUPPORTS_CWV_SSL_ERROR_HANDLER 1
 
+// Allows new save API for CWVCreditCardSaver and deletes the previous fixer
+// based flows.
+#define IOS_WEB_VIEW_SUPPORTS_NEW_CREDIT_CARD_SAVE_APIS 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

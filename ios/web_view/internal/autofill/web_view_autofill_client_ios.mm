@@ -183,23 +183,14 @@ void WebViewAutofillClientIOS::OnUnmaskVerificationResult(
 
 void WebViewAutofillClientIOS::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
-  base::Optional<AccountInfo> primary_account_info =
-      identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSync));
-  std::u16string account_name =
-      primary_account_info ? base::UTF8ToUTF16(primary_account_info->full_name)
-                           : std::u16string();
-  [bridge_ confirmCreditCardAccountName:account_name
-                               callback:std::move(callback)];
+  NOTREACHED();
 }
 
 void WebViewAutofillClientIOS::ConfirmExpirationDateFixFlow(
     const CreditCard& card,
     base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
-  [bridge_ confirmCreditCardExpirationWithCard:card
-                                      callback:std::move(callback)];
+  NOTREACHED();
 }
 
 void WebViewAutofillClientIOS::ConfirmSaveCreditCardLocally(

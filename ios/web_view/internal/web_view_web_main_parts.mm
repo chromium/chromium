@@ -60,8 +60,6 @@ void WebViewWebMainParts::PreCreateThreads() {
       ",");
   std::string disabled_features = base::JoinString(
       {
-          // ios/web_view does not support editing card info in the save dialog.
-          autofill::features::kAutofillSaveCardInfobarEditSupport.name,
       },
       ",");
   feature_list->InitializeFromCommandLine(

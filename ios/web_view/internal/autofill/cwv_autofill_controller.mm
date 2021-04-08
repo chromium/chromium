@@ -35,9 +35,7 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_form_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
-#import "ios/web_view/internal/autofill/cwv_credit_card_expiration_fixer_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
-#import "ios/web_view/internal/autofill/cwv_credit_card_name_fixer_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_verifier_internal.h"
 #include "ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.h"
@@ -327,39 +325,6 @@ using autofill::FieldRendererId;
 
 - (bool)isQueryIDRelevant:(int)queryID {
   return [_autofillAgent isQueryIDRelevant:queryID];
-}
-
-- (void)
-    confirmCreditCardAccountName:(const std::u16string&)name
-                        callback:
-                            (base::OnceCallback<void(const std::u16string&)>)
-                                callback {
-  if (![_delegate respondsToSelector:@selector(autofillController:
-                                         confirmCreditCardNameWithFixer:)]) {
-    return;
-  }
-
-  CWVCreditCardNameFixer* fixer = [[CWVCreditCardNameFixer alloc]
-      initWithName:base::SysUTF16ToNSString(name)
-          callback:std::move(callback)];
-  [_delegate autofillController:self confirmCreditCardNameWithFixer:fixer];
-}
-
-- (void)confirmCreditCardExpirationWithCard:(const autofill::CreditCard&)card
-                                   callback:
-                                       (base::OnceCallback<void(
-                                            const std::u16string&,
-                                            const std::u16string&)>)callback {
-  if (![_delegate respondsToSelector:@selector
-                  (autofillController:confirmCreditCardExpirationWithFixer:)]) {
-    return;
-  }
-
-  CWVCreditCardExpirationFixer* fixer = [[CWVCreditCardExpirationFixer alloc]
-      initWithCreditCard:card
-                callback:std::move(callback)];
-  [_delegate autofillController:self
-      confirmCreditCardExpirationWithFixer:fixer];
 }
 
 - (void)
