@@ -117,15 +117,10 @@ suite('CellularNetworksList', function() {
     assertEquals(2, eSimNetworkList.customItems.length);
   });
   test(
-      'Fire show cellular setup event on eSim/psim no network link click',
+      'Fire show cellular setup event on eSim no network link click',
       async () => {
         eSimManagerRemote.addEuiccForTest(0);
         init();
-
-        setNetworksForTest(mojom.NetworkType.kCellular, [
-          OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
-        ]);
-        addPSimSlot();
 
         await flushAsync();
         const esimNoNetworkAnchor =
@@ -141,20 +136,6 @@ suite('CellularNetworksList', function() {
         assertEquals(
             eSimCellularEvent.detail.pageName,
             cellularSetup.CellularSetupPageName.ESIM_FLOW_UI);
-
-
-        const psimNoNetworkAnchor =
-            cellularNetworkList.$$('#pSimNoNetworkFound')
-                .querySelector('settings-localized-link')
-                .shadowRoot.querySelector('a');
-        assertTrue(!!psimNoNetworkAnchor);
-        const showPsimCellularSetupPromise = test_util.eventToPromise(
-            'show-cellular-setup', cellularNetworkList);
-        psimNoNetworkAnchor.click();
-        const pSimCellularEvent = await showPsimCellularSetupPromise;
-        assertEquals(
-            pSimCellularEvent.detail.pageName,
-            cellularSetup.CellularSetupPageName.PSIM_FLOW_UI);
       });
 
   test('Show EID and QR code popup', async () => {

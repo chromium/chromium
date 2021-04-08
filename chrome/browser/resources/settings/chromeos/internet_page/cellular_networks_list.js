@@ -368,20 +368,6 @@ Polymer({
         {pageName: cellularSetup.CellularSetupPageName.ESIM_FLOW_UI});
   },
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  onPsimLearnMoreClicked_(event) {
-    event.detail.event.preventDefault();
-    event.stopPropagation();
-
-    this.fire(
-        'show-cellular-setup',
-        {pageName: cellularSetup.CellularSetupPageName.PSIM_FLOW_UI});
-  },
-
-
   /** @private */
   toggleEidPopup_() {
     this.shouldShowEidPopup_ = !this.shouldShowEidPopup_;
