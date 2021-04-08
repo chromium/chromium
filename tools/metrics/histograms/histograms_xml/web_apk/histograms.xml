@@ -194,7 +194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApk.Session.TotalDuration2{WebApkDistributorType}"
-    units="ms" expires_after="2021-05-16">
+    units="ms" expires_after="2021-12-16">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
