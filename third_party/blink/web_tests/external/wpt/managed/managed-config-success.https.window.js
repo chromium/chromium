@@ -1,5 +1,3 @@
-// META: script=/resources/testharness.js
-// META: script=/resources/testharnessreport.js
 // META: script=/resources/test-only-api.js
 // META: script=resources/managed-configuration-helper.js
 

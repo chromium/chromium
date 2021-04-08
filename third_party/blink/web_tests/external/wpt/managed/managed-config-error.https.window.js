@@ -1,6 +1,3 @@
-// META: script=/resources/testharness.js
-// META: script=/resources/testharnessreport.js
-
 promise_test(t => {
   return promise_rejects_js(
       t, TypeError, navigator.managed.getManagedConfiguration(-1));
