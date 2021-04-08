@@ -512,6 +512,9 @@ void PasswordCheckDelegate::
   profile_->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       base::Time::Now().ToDoubleT());
+  profile_->GetPrefs()->SetTime(
+      password_manager::prefs::kSyncedLastTimePasswordCheckCompleted,
+      base::Time::Now());
 
   // Delay the last Check Status update by a second. This avoids flickering of
   // the UI if the full check ran from start to finish almost immediately.

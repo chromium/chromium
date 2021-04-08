@@ -87,6 +87,10 @@ extern const char kLastTimeObsoleteHttpCredentialsRemoved[];
 // The last time the password check has run to completion.
 extern const char kLastTimePasswordCheckCompleted[];
 
+// The last time the password check has run to completion synced across devices.
+// It's used on passwords.google.com and not in Chrome.
+extern const char kSyncedLastTimePasswordCheckCompleted[];
+
 // List that contains captured password hashes.
 extern const char kPasswordHashDataList[];
 

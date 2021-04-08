@@ -53,6 +53,9 @@ const char kLastTimeObsoleteHttpCredentialsRemoved[] =
 const char kLastTimePasswordCheckCompleted[] =
     "profile.last_time_password_check_completed";
 
+const char kSyncedLastTimePasswordCheckCompleted[] =
+    "profile.credentials_last_password_checkup_time";
+
 const char kPasswordHashDataList[] = "profile.password_hash_data_list";
 
 const char kPasswordLeakDetectionEnabled[] =

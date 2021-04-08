@@ -214,6 +214,9 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterDoublePref(prefs::kLastTimeObsoleteHttpCredentialsRemoved,
                                0.0);
   registry->RegisterDoublePref(prefs::kLastTimePasswordCheckCompleted, 0.0);
+  registry->RegisterTimePref(
+      prefs::kSyncedLastTimePasswordCheckCompleted, base::Time(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
 
   registry->RegisterDictionaryPref(prefs::kAccountStoragePerAccountSettings);
 

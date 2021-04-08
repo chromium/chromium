@@ -191,6 +191,9 @@ void PasswordCheckManager::OnStateChanged(State state) {
     profile_->GetPrefs()->SetDouble(
         password_manager::prefs::kLastTimePasswordCheckCompleted,
         base::Time::Now().ToDoubleT());
+    profile_->GetPrefs()->SetTime(
+        password_manager::prefs::kSyncedLastTimePasswordCheckCompleted,
+        base::Time::Now());
   }
 
   if (state != State::kRunning) {

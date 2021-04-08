@@ -221,6 +221,9 @@ void IOSChromePasswordCheckManager::OnStateChanged(State state) {
     browser_state_->GetPrefs()->SetDouble(
         password_manager::prefs::kLastTimePasswordCheckCompleted,
         base::Time::Now().ToDoubleT());
+    browser_state_->GetPrefs()->SetTime(
+        password_manager::prefs::kSyncedLastTimePasswordCheckCompleted,
+        base::Time::Now());
   }
   if (state != State::kRunning) {
     // If check was running
