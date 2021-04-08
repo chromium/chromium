@@ -100,7 +100,6 @@ bool IsLacrosAllowedToBeEnabledWithUser(const User* user, Channel channel) {
     return true;
 
   if (!IsUserTypeAllowed(user)) {
-    LOG(WARNING) << "Current user type not allowed to launch lacros-chrome";
     return false;
   }
 
@@ -113,7 +112,6 @@ bool IsLacrosAllowedToBeEnabledWithUser(const User* user, Channel channel) {
     case LacrosLaunchSwitch::kUserChoice:
       break;
     case LacrosLaunchSwitch::kLacrosDisallowed:
-      LOG(WARNING) << "Lacros-chrome is not allowed by policy";
       return false;
     case LacrosLaunchSwitch::kSideBySide:
     case LacrosLaunchSwitch::kLacrosPrimary:
@@ -130,7 +128,6 @@ bool IsLacrosAllowedToBeEnabledWithUser(const User* user, Channel channel) {
   DCHECK(
       g_browser_process->local_state()->FindPreference(prefs::kLacrosAllowed));
   if (!g_browser_process->local_state()->GetBoolean(prefs::kLacrosAllowed)) {
-    LOG(WARNING) << "Lacros-chrome is not allowed by policy";
     return false;
   }
 
@@ -269,8 +266,6 @@ bool IsLacrosAllowedToBeEnabled(Channel channel) {
   // GetPrimaryUser works only after user session is started.
   const User* user = user_manager::UserManager::Get()->GetPrimaryUser();
   if (!user) {
-    LOG(WARNING)
-        << "Unable to get primary user. Lacros-chrome will be disabled";
     return false;
   }
 
@@ -347,7 +342,6 @@ bool IsAshWebBrowserEnabled(version_info::Channel channel) {
     case LacrosLaunchSwitch::kLacrosPrimary:
       return true;
     case LacrosLaunchSwitch::kLacrosOnly:
-      LOG(WARNING) << "Ash browser is disabled by policy";
       return false;
   }
 
