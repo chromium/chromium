@@ -12,7 +12,7 @@ For example, if you want to use the flag in src/content, you should add a base::
 * [content/public/common/content_features.h](https://cs.chromium.org/chromium/src/content/public/common/content_features.h)
 
 If you want to use the flag in blink, you should also read
-[Runtime Enable Features](https://www.chromium.org/blink/runtime-enabled-features).
+[Runtime Enable Features](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md).
 
 You can refer to [this CL](https://chromium-review.googlesource.com/c/554510/) and [this document](initialize_blink_features.md)
 to see
