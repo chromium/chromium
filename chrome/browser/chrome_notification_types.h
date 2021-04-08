@@ -37,17 +37,6 @@ namespace chrome {
 enum NotificationType {
   NOTIFICATION_CHROME_START = PREVIOUS_END,
 
-  // Browser-window ----------------------------------------------------------
-
-  // This message is sent when closing a browser has been cancelled, either by
-  // the user cancelling a beforeunload dialog, or IsClosingPermitted()
-  // disallowing closing. This notification implies that no BROWSER_CLOSING or
-  // BROWSER_CLOSED notification will be sent.
-  // The source is a Source<Browser> containing the affected browser. No details
-  // are expected.
-  // TODO(https://crbug.com/1174777): Remove.
-  NOTIFICATION_BROWSER_CLOSE_CANCELLED = NOTIFICATION_CHROME_START,
-
   // Application-wide ----------------------------------------------------------
 
   // This message is sent when the application is terminating (the last
@@ -56,7 +45,7 @@ enum NotificationType {
   // no BackgroundContents keeping the browser running). No source or details
   // are passed.
   // TODO(https://crbug.com/1174781): Remove.
-  NOTIFICATION_APP_TERMINATING,
+  NOTIFICATION_APP_TERMINATING = NOTIFICATION_CHROME_START,
 
 #if defined(OS_MAC)
   // This notification is sent when the app has no key window, such as when
@@ -65,18 +54,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174783): Remove.
   NOTIFICATION_NO_KEY_WINDOW,
 #endif
-
-  // This is sent when the user has chosen to exit the app, but before any
-  // browsers have closed. This is sent if the user chooses to exit (via exit
-  // menu item or keyboard shortcut) or to restart the process (such as in flags
-  // page), not if Chrome exits by some other means (such as the user closing
-  // the last window). No source or details are passed.
-  //
-  // Note that receiving this notification does not necessarily mean the process
-  // will exit because the shutdown process can be cancelled by an unload
-  // handler.  Use APP_TERMINATING for such needs.
-  // TODO(https://crbug.com/1174784): Remove.
-  NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
 
   // Authentication ----------------------------------------------------------
 

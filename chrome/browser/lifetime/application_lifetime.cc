@@ -413,12 +413,6 @@ void OnAppExiting() {
 
 void OnClosingAllBrowsers(bool closing) {
   GetClosingAllBrowsersCallbackList().Notify(closing);
-
-  content::NotificationService::current()->Notify(
-      closing ? NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST
-              : NOTIFICATION_BROWSER_CLOSE_CANCELLED,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
 }
 
 base::CallbackListSubscription AddClosingAllBrowsersCallback(

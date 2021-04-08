@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "build/chromeos_buildflags.h"
@@ -17,7 +18,7 @@
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -46,7 +47,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/session_storage_namespace.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -66,8 +66,9 @@ SessionService::SessionService(Profile* profile)
     : SessionServiceBase(
           profile,
           SessionServiceBase::SessionServiceType::kSessionRestore) {
-  registrar_.Add(this, chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-                 content::NotificationService::AllSources());
+  closing_all_browsers_subscription_ = chrome::AddClosingAllBrowsersCallback(
+      base::BindRepeating(&SessionService::OnClosingAllBrowsersChanged,
+                          base::Unretained(this)));
 }
 
 SessionService::~SessionService() {
@@ -393,14 +394,6 @@ bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
   return false;
 }
 
-void SessionService::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  // NOTE: this is necessary for the session-ending code path.
-  DCHECK_EQ(type, chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST);
-  LogExitEvent();
-}
-
 void SessionService::BuildCommandsForTab(
     const SessionID& window_id,
     WebContents* tab,
@@ -575,6 +568,11 @@ void SessionService::MaybeDeleteSessionOnlyData() {
       return;
   }
   DeleteSessionOnlyData(profile());
+}
+
+void SessionService::OnClosingAllBrowsersChanged(bool closing) {
+  if (closing)
+    LogExitEvent();
 }
 
 void SessionService::LogExitEvent() {

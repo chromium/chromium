@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -17,8 +18,6 @@
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class Profile;
 
@@ -53,8 +52,7 @@ struct SessionWindow;
 
 // TODO(stahon@microsoft.com) When AppSessionService is implemented, we should
 // make a pass in SessionService to remove app related code.
-class SessionService : public SessionServiceBase,
-                       public content::NotificationObserver {
+class SessionService : public SessionServiceBase {
   friend class SessionServiceTestHelper;
  public:
   // Creates a SessionService for the specified profile.
@@ -155,11 +153,6 @@ class SessionService : public SessionServiceBase,
   bool RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
                           Browser* browser);
 
-  // content::NotificationObserver.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // Adds commands to commands that will recreate the state of the specified
   // tab. This adds at most kMaxNavigationCountToPersist navigations (in each
   // direction from the current navigation index).
@@ -205,6 +198,9 @@ class SessionService : public SessionServiceBase,
 
   // Deletes session data if no windows are open for the current profile.
   void MaybeDeleteSessionOnlyData() override;
+
+  // Invoked with true when all browsers start closing.
+  void OnClosingAllBrowsersChanged(bool closing);
 
   // If necessary, removes the current exit event and adds a new one. This
   // does nothing if `pending_window_close_ids_` is empty, which means the
@@ -255,7 +251,7 @@ class SessionService : public SessionServiceBase,
   // without quitting.
   bool force_browser_not_alive_with_no_windows_ = false;
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription closing_all_browsers_subscription_;
 
   bool did_log_exit_ = false;
 
