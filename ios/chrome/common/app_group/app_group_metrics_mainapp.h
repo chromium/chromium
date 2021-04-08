@@ -17,9 +17,6 @@ typedef void (^ProceduralBlockWithData)(NSData*);
 // These methods must be called from the Chrome app.
 namespace main_app {
 
-// Send histograms reporting the usage of notification center metrics.
-void RecordWidgetUsage();
-
 // Iterates through the extensions pending logs and deletes them.
 // Calls |callback| on each log before deleting.
 // TODO(crbug.com/782685): remove function.

@@ -664,7 +664,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)visitCopiedLink:(id)sender {
   // A search using clipboard link is activity that should indicate a user
   // that would be interested in setting Chrome as the default browser.
-  LogLikelyInterestedDefaultBrowserUserActivity();
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.VisitCopiedLink"));
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
       base::BindOnce(^(base::Optional<GURL> optionalURL) {
@@ -682,7 +682,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)searchCopiedText:(id)sender {
   // A search using clipboard text is activity that should indicate a user
   // that would be interested in setting Chrome as the default browser.
-  LogLikelyInterestedDefaultBrowserUserActivity();
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
       base::BindOnce(^(base::Optional<std::u16string> optionalText) {

@@ -7,6 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+// Enum for the different types of default browser modal promo. This are stored
+// as values, if adding a new one, make sure to add it at the end.
+typedef NS_ENUM(NSUInteger, DefaultPromoType) {
+  DefaultPromoTypeGeneral = 0,
+  DefaultPromoTypeStaySafe = 1,
+  DefaultPromoTypeMadeForIOS = 2,
+  DefaultPromoTypeAllTabs = 3
+};
+
 // UserDefaults key that saves the last time an HTTP(S) link was sent and opened
 // by the app.
 extern NSString* const kLastHTTPURLOpenTime;
@@ -38,8 +47,8 @@ extern const char kDefaultPromoNonModalInstructionsParam[];
 // Logs the timestamp of user activity that is deemed to be an indication of
 // a user that would likely benefit from having Chrome set as their default
 // browser. Before logging the current activity, this method will also clear all
-// past expired logs that have happened too far in the past.
-void LogLikelyInterestedDefaultBrowserUserActivity();
+// past expired logs for |type| that have happened too far in the past.
+void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 
 // Logs the timestamp of a user tap on the "Remind Me Later" button in the
 // Fullscreen Promo.
@@ -97,7 +106,12 @@ bool IsChromeLikelyDefaultBrowser();
 
 // Returns true if the past behavior of the user indicates that the user fits
 // the categorization that would likely benefit from having Chrome set as their
-// default browser. Returns false otherwise.
+// default browser for any promo type. Returns false otherwise.
 bool IsLikelyInterestedDefaultBrowserUser();
+
+// Returns true if the past behavior of the user indicates that the user fits
+// the categorization that would likely benefit from having Chrome set as their
+// default browser for the passed |type|. Returns false otherwise.
+bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type);
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_UTILS_H_

@@ -339,4 +339,8 @@ AutofillSuggestionState::AutofillSuggestionState(
   [self resetSuggestionState];
 }
 
+- (SuggestionProviderType)type {
+  return _provider ? _provider.type : SuggestionProviderTypeUnknown;
+}
+
 @end

@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
@@ -737,6 +738,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)navigationBarCancel:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileBookmarkManagerClose"));
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
   [self navigateAway];
   [self dismissWithURL:GURL()];
 }
@@ -1155,6 +1157,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                  new_tab_page_uma::ACTION_OPENED_BOOKMARK);
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarkManagerEntryOpened"));
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+
   UrlLoadParams params = UrlLoadParams::InCurrentTab(url);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);

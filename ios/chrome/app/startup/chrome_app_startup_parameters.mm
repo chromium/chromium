@@ -123,6 +123,7 @@ enum class WidgetKitExtensionAction {
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
 void LogWidgetKitAction(WidgetKitExtensionAction action) {
   UmaHistogramEnumeration("IOS.WidgetKit.Action", action);
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
 }
 
 }  // namespace
@@ -171,7 +172,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
     } else if ([completeURL.path isEqual:kWidgetKitActionGame]) {
       LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
 
-      LogLikelyInterestedDefaultBrowserUserActivity();
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 
       GURL URL(
           base::StringPrintf("%s://%s", kChromeUIScheme, kChromeUIDinoHost));
@@ -282,7 +283,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
     // be logged as siginficnat activity for a potential user that would want
     // Chrome as their default browser in case the user changes away from
     // Chrome. This will leave a trace of this activity for re-prompting.
-    LogLikelyInterestedDefaultBrowserUserActivity();
+    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 
     if (action == START_ACTION_OPEN_HTTP_FROM_OS ||
         action == START_ACTION_OPEN_HTTPS_FROM_OS) {
@@ -493,7 +494,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
     // An external action that opened Chrome (i.e. GrowthKit link open, open
     // Search, search clipboard content) is activity that should indicate a user
     // that would be interested in setting Chrome as the default browser.
-    LogLikelyInterestedDefaultBrowserUserActivity();
+    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   }
 
   if ([secureSourceApp

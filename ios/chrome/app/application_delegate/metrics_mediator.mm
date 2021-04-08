@@ -30,12 +30,14 @@
 #import "ios/chrome/browser/net/connection_type_observer_bridge.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/widget_kit/widget_metrics_util.h"
+#include "ios/chrome/common/app_group/app_group_metrics.h"
 #include "ios/chrome/common/app_group/app_group_metrics_mainapp.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
@@ -66,6 +68,101 @@ base::TimeDelta TimeDeltaSinceAppLaunchFromProcess() {
       time.tv_sec + (time.tv_usec / (double)USEC_PER_SEC);
   NSDate* date = [NSDate dateWithTimeIntervalSince1970:time_since_1970];
   return base::TimeDelta::FromSecondsD(-date.timeIntervalSinceNow);
+}
+
+// Send histograms reporting the usage of notification center metrics.
+void RecordWidgetUsage() {
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+  int content_extension_count =
+      [shared_defaults integerForKey:app_group::kContentExtensionDisplayCount];
+  base::UmaHistogramCounts1000("IOS.ContentExtension.DisplayCount",
+                               content_extension_count);
+  [shared_defaults setInteger:0
+                       forKey:app_group::kContentExtensionDisplayCount];
+  int search_extension_count =
+      [shared_defaults integerForKey:app_group::kSearchExtensionDisplayCount];
+  base::UmaHistogramCounts1000("IOS.SearchExtension.DisplayCount",
+                               search_extension_count);
+  [shared_defaults setInteger:0 forKey:app_group::kSearchExtensionDisplayCount];
+
+  int credential_extension_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionDisplayCount];
+  base::UmaHistogramCounts1000("IOS.CredentialExtension.DisplayCount",
+                               credential_extension_count);
+  [shared_defaults setInteger:0
+                       forKey:app_group::kCredentialExtensionDisplayCount];
+  int credential_extension_reauth_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionReauthCount];
+  base::UmaHistogramCounts1000("IOS.CredentialExtension.ReauthCount",
+                               credential_extension_reauth_count);
+  [shared_defaults setInteger:0
+                       forKey:app_group::kCredentialExtensionReauthCount];
+  int credential_extension_copy_url_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionCopyURLCount];
+  base::UmaHistogramCounts1000("IOS.CredentialExtension.CopyURLCount",
+                               credential_extension_copy_url_count);
+  [shared_defaults setInteger:0
+                       forKey:app_group::kCredentialExtensionCopyURLCount];
+  int credential_extension_copy_username_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionCopyUsernameCount];
+  base::UmaHistogramCounts1000("IOS.CredentialExtension.CopyUsernameCount",
+                               credential_extension_copy_username_count);
+  [shared_defaults setInteger:0
+                       forKey:app_group::kCredentialExtensionCopyUsernameCount];
+  int credential_extension_copy_password_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionCopyPasswordCount];
+  base::UmaHistogramCounts1000("IOS.CredentialExtension.CopyPasswordCount",
+                               credential_extension_copy_password_count);
+  [shared_defaults setInteger:0
+                       forKey:app_group::kCredentialExtensionCopyPasswordCount];
+  int credential_extension_show_password_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionShowPasswordCount];
+  base::UmaHistogramCounts1000("IOS.CredentialExtension.ShowPasswordCount",
+                               credential_extension_show_password_count);
+  [shared_defaults setInteger:0
+                       forKey:app_group::kCredentialExtensionShowPasswordCount];
+  int credential_extension_search_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionSearchCount];
+  base::UmaHistogramCounts1000("IOS.CredentialExtension.SearchCount",
+                               credential_extension_search_count);
+  [shared_defaults setInteger:0
+                       forKey:app_group::kCredentialExtensionSearchCount];
+  int credential_extension_password_use_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionPasswordUseCount];
+  base::UmaHistogramCounts1000("IOS.CredentialExtension.PasswordUseCount",
+                               credential_extension_password_use_count);
+  if (credential_extension_password_use_count) {
+    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+  }
+  [shared_defaults setInteger:0
+                       forKey:app_group::kCredentialExtensionPasswordUseCount];
+  int credential_extension_quick_password_use_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionQuickPasswordUseCount];
+  base::UmaHistogramCounts1000("IOS.CredentialExtension.QuickPasswordUseCount",
+                               credential_extension_quick_password_use_count);
+  if (credential_extension_quick_password_use_count) {
+    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+  }
+  [shared_defaults
+      setInteger:0
+          forKey:app_group::kCredentialExtensionQuickPasswordUseCount];
+  int credential_extension_fetch_password_failure_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionFetchPasswordFailureCount];
+  base::UmaHistogramCounts1000(
+      "IOS.CredentialExtension.FetchPasswordFailure",
+      credential_extension_fetch_password_failure_count);
+  [shared_defaults
+      setInteger:0
+          forKey:app_group::kCredentialExtensionFetchPasswordFailureCount];
+  int credential_extension_fetch_password_nil_argument_count = [shared_defaults
+      integerForKey:app_group::
+                        kCredentialExtensionFetchPasswordNilArgumentCount];
+  base::UmaHistogramCounts1000(
+      "IOS.CredentialExtension.FetchPasswordNilArgument",
+      credential_extension_fetch_password_nil_argument_count);
+  [shared_defaults
+      setInteger:0
+          forKey:app_group::kCredentialExtensionFetchPasswordNilArgumentCount];
 }
 }  // namespace
 
@@ -325,7 +422,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   } else {
     app_group::main_app::DisableMetrics();
   }
-  app_group::main_app::RecordWidgetUsage();
+  RecordWidgetUsage();
 }
 
 - (void)processCrashReportsPresentAtStartup {

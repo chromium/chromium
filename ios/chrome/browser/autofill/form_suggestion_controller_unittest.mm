@@ -143,6 +143,10 @@ using autofill::FieldRendererId;
   completion();
 }
 
+- (SuggestionProviderType)type {
+  return SuggestionProviderTypeUnknown;
+}
+
 @end
 
 namespace {

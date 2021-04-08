@@ -18,6 +18,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -87,6 +88,8 @@ const int64_t kLastUsedFolderNone = -1;
                                         URL:(const GURL&)URL
                                  editAction:(void (^)())editAction {
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+
   const BookmarkNode* defaultFolder =
       [[self class] folderForNewBookmarksInBrowserState:self.browserState];
   BookmarkModel* bookmarkModel =

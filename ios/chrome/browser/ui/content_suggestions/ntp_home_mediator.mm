@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #include "ios/chrome/browser/ui/ntp/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -276,6 +277,7 @@ const char kNTPHelpURL[] =
     switch (mostVisitedItem.collectionShortcutType) {
       case NTPCollectionShortcutTypeBookmark:
         base::RecordAction(base::UserMetricsAction("MobileNTPShowBookmarks"));
+        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
         [self.dispatcher showBookmarksManager];
         break;
       case NTPCollectionShortcutTypeReadingList:

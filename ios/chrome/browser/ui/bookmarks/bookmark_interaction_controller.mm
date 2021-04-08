@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller.h"
@@ -473,6 +474,7 @@ bookmarkHomeViewControllerWantsDismissal:(BookmarkHomeViewController*)controller
                                      new_tab_page_uma::ACTION_OPENED_BOOKMARK);
       base::RecordAction(
           base::UserMetricsAction("MobileBookmarkManagerEntryOpened"));
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
       if (newTab ||
           ((!!inIncognito) != _currentBrowserState->IsOffTheRecord())) {

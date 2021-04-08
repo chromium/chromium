@@ -462,6 +462,10 @@ autofillManagerFromWebState:(web::WebState*)webState
   }
 }
 
+- (SuggestionProviderType)type {
+  return SuggestionProviderTypeAutofill;
+}
+
 #pragma mark - AutofillDriverIOSBridge
 
 - (void)fillFormData:(const autofill::FormData&)form

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
@@ -72,6 +73,7 @@ using base::UserMetricsAction;
       break;
     case PopupMenuActionPageBookmark:
       RecordAction(UserMetricsAction("MobileMenuAddToBookmarks"));
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
       [self.dispatcher bookmarkCurrentPage];
       break;
     case PopupMenuActionTranslate:
@@ -129,6 +131,7 @@ using base::UserMetricsAction;
       break;
     case PopupMenuActionBookmarks:
       RecordAction(UserMetricsAction("MobileMenuAllBookmarks"));
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
       [self.dispatcher showBookmarksManager];
       break;
     case PopupMenuActionReadingList:

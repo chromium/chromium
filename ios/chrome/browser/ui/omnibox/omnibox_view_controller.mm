@@ -640,7 +640,7 @@ const CGFloat kClearButtonSize = 28.0f;
 - (void)visitCopiedLink:(id)sender {
   // A search using clipboard link is activity that should indicate a user
   // that would be interested in setting Chrome as the default browser.
-  LogLikelyInterestedDefaultBrowserUserActivity();
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.VisitCopiedLink"));
   self.omniboxInteractedWhileFocused = YES;
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
@@ -659,7 +659,7 @@ const CGFloat kClearButtonSize = 28.0f;
 - (void)searchCopiedText:(id)sender {
   // A search using clipboard text is activity that should indicate a user
   // that would be interested in setting Chrome as the default browser.
-  LogLikelyInterestedDefaultBrowserUserActivity();
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   self.omniboxInteractedWhileFocused = YES;
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(

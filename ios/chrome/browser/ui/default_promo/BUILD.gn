@@ -51,9 +51,13 @@ source_set("default_promo") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "default_browser_string_util_unittest.mm" ]
+  sources = [
+    "default_browser_string_util_unittest.mm",
+    "default_browser_utils_unittest.mm",
+  ]
   deps = [
     ":default_promo",
+    ":utils",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/app/strings:ios_google_chrome_strings_grit",

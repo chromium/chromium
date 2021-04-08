@@ -16,7 +16,25 @@
 #import <UIKit/UIKit.h>
 
 namespace {
-NSString* const kLastSignificantUserEvent = @"lastSignificantUserEvent";
+
+// Key for NSUserDefaults containing an array of dates. Each date correspond to
+// a general event of interest for Default Browser Promo modals.
+NSString* const kLastSignificantUserEventGeneral = @"lastSignificantUserEvent";
+
+// Key for NSUserDefaults containing an array of dates. Each date correspond to
+// a stay safe event of interest for Default Browser Promo modals.
+NSString* const kLastSignificantUserEventStaySafe =
+    @"lastSignificantUserEventStaySafe";
+
+// Key for NSUserDefaults containing an array of dates. Each date correspond to
+// a made for iOS event of interest for Default Browser Promo modals.
+NSString* const kLastSignificantUserEventMadeForIOS =
+    @"lastSignificantUserEventMadeForIOS";
+
+// Key for NSUserDefaults containing an array of dates. Each date correspond to
+// an all tabs event of interest for Default Browser Promo modals.
+NSString* const kLastSignificantUserEventAllTabs =
+    @"lastSignificantUserEventAllTabs";
 
 NSString* const kUserHasInteractedWithFullscreenPromo =
     @"userHasInteractedWithFullscreenPromo";
@@ -39,6 +57,45 @@ const NSTimeInterval kLatestURLOpenForDefaultBrowser = 7 * 24 * 60 * 60;
 // Delay for the user to be reshown the fullscreen promo when the user taps on
 // the "Remind Me Later" button. 50 hours.
 const NSTimeInterval kRemindMeLaterPresentationDelay = 50 * 60 * 60;
+
+// Helper function to clear all timestamps that occur later than 7 days ago and
+// keep it only to 10 timestamps.
+NSMutableArray<NSDate*>* SanitizePastUserEvents(
+    NSMutableArray<NSDate*>* pastUserEvents) {
+  // First, keep the array to 10 items:
+  NSInteger count = pastUserEvents.count;
+  if (count > 10) {
+    [pastUserEvents removeObjectsInRange:NSMakeRange(0, count - 10)];
+  }
+
+  // Next, remove items older than a week:
+  NSDate* sevenDaysAgoDate =
+      [NSDate dateWithTimeIntervalSinceNow:-kUserActivityTimestampExpiration];
+  NSUInteger firstUnexpiredIndex = [pastUserEvents
+      indexOfObjectPassingTest:^BOOL(NSDate* date, NSUInteger idx, BOOL* stop) {
+        return ([date laterDate:sevenDaysAgoDate] == date);
+      }];
+  if (firstUnexpiredIndex != NSNotFound && firstUnexpiredIndex > 0) {
+    [pastUserEvents removeObjectsInRange:NSMakeRange(0, firstUnexpiredIndex)];
+  }
+  return pastUserEvents;
+}
+
+// Helper function get the NSUserDefaults key for a specific promo type.
+NSString* NSUserDefaultKeyForType(DefaultPromoType type) {
+  switch (type) {
+    case DefaultPromoTypeGeneral:
+      return kLastSignificantUserEventGeneral;
+    case DefaultPromoTypeMadeForIOS:
+      return kLastSignificantUserEventMadeForIOS;
+    case DefaultPromoTypeAllTabs:
+      return kLastSignificantUserEventAllTabs;
+    case DefaultPromoTypeStaySafe:
+      return kLastSignificantUserEventStaySafe;
+  }
+  NOTREACHED();
+  return nil;
+}
 }
 
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
@@ -59,34 +116,19 @@ const char kDefaultPromoTailoredVariantSafeParam[] = "variant_safe_enabled";
 
 const char kDefaultPromoTailoredVariantTabsParam[] = "variant_tabs_enabled";
 
-// Helper function to clear all timestamps that occur later than 7 days ago.
-NSMutableArray<NSDate*>* SanitizePastUserEvents(
-    NSMutableArray<NSDate*>* pastUserEvents) {
-  NSDate* sevenDaysAgoDate =
-      [NSDate dateWithTimeIntervalSinceNow:-kUserActivityTimestampExpiration];
-  NSUInteger firstUnexpiredIndex = [pastUserEvents
-      indexOfObjectPassingTest:^BOOL(NSDate* date, NSUInteger idx, BOOL* stop) {
-        return ([date laterDate:sevenDaysAgoDate] == date);
-      }];
-  if (firstUnexpiredIndex != NSNotFound && firstUnexpiredIndex > 0) {
-    [pastUserEvents removeObjectsInRange:NSMakeRange(0, firstUnexpiredIndex)];
-  }
-  return pastUserEvents;
-}
-
-void LogLikelyInterestedDefaultBrowserUserActivity() {
+void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type) {
+  NSString* key = NSUserDefaultKeyForType(type);
+  NSDate* date = [NSDate date];
   NSMutableArray<NSDate*>* pastUserEvents =
-      [[[NSUserDefaults standardUserDefaults]
-          arrayForKey:kLastSignificantUserEvent] mutableCopy];
+      [[[NSUserDefaults standardUserDefaults] arrayForKey:key] mutableCopy];
   if (pastUserEvents) {
     pastUserEvents = SanitizePastUserEvents(pastUserEvents);
-    [pastUserEvents addObject:[NSDate date]];
+    [pastUserEvents addObject:date];
   } else {
-    pastUserEvents = [NSMutableArray arrayWithObject:[NSDate date]];
+    pastUserEvents = [@[ date ] mutableCopy];
   }
 
-  [[NSUserDefaults standardUserDefaults] setObject:pastUserEvents
-                                            forKey:kLastSignificantUserEvent];
+  [[NSUserDefaults standardUserDefaults] setObject:pastUserEvents forKey:key];
 }
 
 void LogRemindMeLaterPromoActionInteraction() {
@@ -200,9 +242,25 @@ bool IsChromeLikelyDefaultBrowser() {
 }
 
 bool IsLikelyInterestedDefaultBrowserUser() {
+  return IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
+         IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe) ||
+         IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs) ||
+         IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS);
+}
+
+bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type) {
+  if (type == DefaultPromoTypeAllTabs && !TabsTailoredPromoEnabled()) {
+    return NO;
+  }
+  if (type == DefaultPromoTypeStaySafe && !SafeTailoredPromoEnabled()) {
+    return NO;
+  }
+  if (type == DefaultPromoTypeMadeForIOS && !IOSTailoredPromoEnabled()) {
+    return NO;
+  }
+  NSString* key = NSUserDefaultKeyForType(type);
   NSMutableArray<NSDate*>* pastUserEvents =
-      [[[NSUserDefaults standardUserDefaults]
-          arrayForKey:kLastSignificantUserEvent] mutableCopy];
+      [[[NSUserDefaults standardUserDefaults] arrayForKey:key] mutableCopy];
   pastUserEvents = SanitizePastUserEvents(pastUserEvents);
   return [pastUserEvents count] > 0 && base::ios::IsRunningOnIOS14OrLater();
 }

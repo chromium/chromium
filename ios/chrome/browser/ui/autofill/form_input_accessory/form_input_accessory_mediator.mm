@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
 #import "ios/chrome/browser/ui/commands/security_alert_commands.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
@@ -541,6 +543,12 @@ using base::UmaHistogramEnumeration;
     self.currentProvider = provider;
     // Post it to the consumer.
     [self.consumer showAccessorySuggestions:suggestions];
+    if (suggestions.count) {
+      if (provider.type == SuggestionProviderTypeAutofill) {
+        LogLikelyInterestedDefaultBrowserUserActivity(
+            DefaultPromoTypeMadeForIOS);
+      }
+    }
   }
 }
 
@@ -622,21 +630,27 @@ using base::UmaHistogramEnumeration;
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion {
   UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                           ReauthenticationEvent::kAttempt);
+  __weak __typeof(self) weakSelf = self;
+  auto suggestionHandler = ^() {
+    if (weakSelf.currentProvider.type == SuggestionProviderTypePassword) {
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+    }
+    [weakSelf.currentProvider didSelectSuggestion:formSuggestion];
+  };
 
   if (!formSuggestion.requiresReauth) {
     UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                             ReauthenticationEvent::kSuccess);
-    [self.currentProvider didSelectSuggestion:formSuggestion];
+    suggestionHandler();
     return;
   }
   if ([self.reauthenticationModule canAttemptReauth]) {
     NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
-    __weak __typeof(self) weakSelf = self;
     auto completionHandler = ^(ReauthenticationResult result) {
       if (result != ReauthenticationResult::kFailure) {
         UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                                 ReauthenticationEvent::kSuccess);
-        [weakSelf.currentProvider didSelectSuggestion:formSuggestion];
+        suggestionHandler();
       } else {
         UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                                 ReauthenticationEvent::kFailure);
@@ -650,7 +664,7 @@ using base::UmaHistogramEnumeration;
   } else {
     UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                             ReauthenticationEvent::kMissingPasscode);
-    [self.currentProvider didSelectSuggestion:formSuggestion];
+    suggestionHandler();
   }
 }
 

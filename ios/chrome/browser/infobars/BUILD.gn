@@ -76,7 +76,10 @@ source_set("public") {
     "infobar_metrics_recorder.mm",
     "infobar_type.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/default_promo:utils",
+  ]
 }
 
 source_set("unit_tests") {

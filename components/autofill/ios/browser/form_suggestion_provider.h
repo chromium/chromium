@@ -20,9 +20,19 @@ typedef void (^SuggestionsReadyCompletion)(
     id<FormSuggestionProvider> delegate);
 typedef void (^SuggestionHandledCompletion)(void);
 
+// Different types for providers.
+typedef NS_ENUM(NSUInteger, SuggestionProviderType) {
+  SuggestionProviderTypeUnknown,
+  SuggestionProviderTypePassword,
+  SuggestionProviderTypeAutofill,
+};
+
 // Provides user-selectable suggestions for an input field of a web form
 // and handles user interaction with those suggestions.
 @protocol FormSuggestionProvider<NSObject>
+
+// The type of the suggestion provider.
+@property(nonatomic, readonly) SuggestionProviderType type;
 
 // Determines whether the receiver can provide suggestions for the specified
 // |form| and |field|, returning the result using the provided |completion|.

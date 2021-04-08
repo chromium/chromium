@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/autofill/ios/browser/form_suggestion_provider.h"
 #include "ios/chrome/browser/autofill/form_suggestion_client.h"
 
 namespace autofill {
@@ -32,6 +33,9 @@ typedef void (^FormSuggestionsReadyCompletion)(
 
 // A delegate for form navigation.
 @property(nonatomic, weak) id<FormInputNavigator> formInputNavigator;
+
+// The type of the current suggestion provider.
+@property(nonatomic, readonly) SuggestionProviderType type;
 
 // Asynchronously retrieves form suggestions from this provider for the
 // specified form/field and returns it via |accessoryViewUpdateBlock|. View

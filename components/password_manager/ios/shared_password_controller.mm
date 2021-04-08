@@ -469,6 +469,10 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   [_delegate sharedPasswordController:self didAcceptSuggestion:suggestion];
 }
 
+- (SuggestionProviderType)type {
+  return SuggestionProviderTypePassword;
+}
+
 #pragma mark - PasswordManagerDriverDelegate
 
 - (const GURL&)lastCommittedURL {
