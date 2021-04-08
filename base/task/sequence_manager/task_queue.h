@@ -68,6 +68,10 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Shuts down the queue when there are no more tasks queued.
   void ShutdownTaskQueueGracefully();
 
+  // Queues with higher priority are selected to run before queues of lower
+  // priority. Note that there is no starvation protection, i.e., a constant
+  // stream of high priority work can mean that tasks in lower priority queues
+  // won't get to run.
   // TODO(scheduler-dev): Could we define a more clear list of priorities?
   // See https://crbug.com/847858.
   enum QueuePriority : uint8_t {
@@ -76,24 +80,16 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
     // private queues which perform control operations.
     kControlPriority = 0,
 
-    // The selector will prioritize highest over high, normal and low; and
-    // high over normal and low; and normal over low. However it will ensure
-    // neither of the lower priority queues can be completely starved by higher
-    // priority tasks. All three of these queues will always take priority over
-    // and can starve the best effort queue.
     kHighestPriority = 1,
-
     kVeryHighPriority = 2,
-
     kHighPriority = 3,
-
-    // Queues with normal priority are the default.
-    kNormalPriority = 4,
+    kNormalPriority = 4,  // Queues with normal priority are the default.
     kLowPriority = 5,
 
     // Queues with best effort priority will only be run if all other queues are
-    // empty. They can be starved by the other queues.
+    // empty.
     kBestEffortPriority = 6,
+
     // Must be the last entry.
     kQueuePriorityCount = 7,
     kFirstQueuePriority = kControlPriority,
