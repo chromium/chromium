@@ -3,9 +3,10 @@
  * found in the LICENSE file. */
 
 #panel-container {
-  background: rgba(32, 33, 36, 30%);
+  background: rgba(32, 33, 36, 0.9);
   border-radius: 4px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
   position: absolute;
 }
 
@@ -297,4 +298,56 @@ body.has-pan-support.has-tilt-support.has-zoom-support #zoom-out {
 body.has-pan-support.has-tilt-support.has-zoom-support #panel-container button:focus::after {
   left: calc(var(--x) + var(--svg-width) / 2);
   top: calc(var(--y) + var(--svg-height) / 2);
+}
+
+/* Divider lines. */
+
+/* TODO(b/184712316): Fix split line other P, T, Z cases. */
+body:is(:not(.has-pan-support), :not(.has-tilt-support), :not(.has-zoom-support)) .ptz-divider {
+  display: none;
+}
+
+.ptz-divider {
+  background: rgba(95, 99, 104, 0.38);
+  position: absolute;
+  width: 1px;
+}
+
+#ptz-divider1 {
+  left: 0;
+  top: 0;
+  transform: rotate(-45deg);
+  transform-origin: left top;
+}
+
+#ptz-divider2 {
+  right: 0;
+  top: 0;
+  transform: rotate(45deg);
+  transform-origin: right top;
+}
+
+#ptz-divider3 {
+  bottom: 0;
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: left bottom;
+}
+
+#ptz-divider4 {
+  bottom: 0;
+  right: 0;
+  transform: rotate(-45deg);
+  transform-origin: right bottom;
+}
+
+#ptz-zoom-divider {
+  height: 36px;
+  left: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support .ptz-divider {
+  height: 98px;
 }
