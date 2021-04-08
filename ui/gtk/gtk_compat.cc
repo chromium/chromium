@@ -132,6 +132,20 @@ void GtkInit(const std::vector<std::string>& args) {
 }
 
 DISABLE_CFI_ICALL
+gfx::Insets GtkStyleContextGetPadding(GtkStyleContext* context) {
+  static void* get_padding =
+      DlSym(GetLibGtk(), "gtk_style_context_get_padding");
+  GtkBorder padding;
+  if (GtkCheckVersion(4)) {
+    DlCast<void(GtkStyleContext*, GtkBorder*)>(get_padding)(context, &padding);
+  } else {
+    DlCast<void(GtkStyleContext*, GtkStateFlags, GtkBorder*)>(get_padding)(
+        context, gtk_style_context_get_state(context), &padding);
+  }
+  return InsetsFromGtkBorder(padding);
+}
+
+DISABLE_CFI_ICALL
 gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context) {
   static void* get_border = DlSym(GetLibGtk(), "gtk_style_context_get_border");
   GtkBorder border;
@@ -142,6 +156,19 @@ gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context) {
         context, gtk_style_context_get_state(context), &border);
   }
   return InsetsFromGtkBorder(border);
+}
+
+DISABLE_CFI_ICALL
+gfx::Insets GtkStyleContextGetMargin(GtkStyleContext* context) {
+  static void* get_margin = DlSym(GetLibGtk(), "gtk_style_context_get_margin");
+  GtkBorder margin;
+  if (GtkCheckVersion(4)) {
+    DlCast<void(GtkStyleContext*, GtkBorder*)>(get_margin)(context, &margin);
+  } else {
+    DlCast<void(GtkStyleContext*, GtkStateFlags, GtkBorder*)>(get_margin)(
+        context, gtk_style_context_get_state(context), &margin);
+  }
+  return InsetsFromGtkBorder(margin);
 }
 
 DISABLE_CFI_ICALL
@@ -167,10 +194,37 @@ bool GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
                                                           path.value().c_str());
 }
 
+DISABLE_CFI_ICALL
+void GtkRenderIcon(GtkStyleContext* context,
+                   cairo_t* cr,
+                   GdkPixbuf* pixbuf,
+                   GdkTexture* texture,
+                   double x,
+                   double y) {
+  static void* render = DlSym(GetLibGtk(), "gtk_render_icon");
+  if (GtkCheckVersion(4)) {
+    DCHECK(texture);
+    DlCast<void(GtkStyleContext*, cairo_t*, GdkTexture*, double, double)>(
+        render)(context, cr, texture, x, y);
+  } else {
+    DCHECK(pixbuf);
+    DlCast<void(GtkStyleContext*, cairo_t*, GdkPixbuf*, double, double)>(
+        render)(context, cr, pixbuf, x, y);
+  }
+}
+
 ScopedGObject<GListModel> Gtk4FileChooserGetFiles(GtkFileChooser* dialog) {
   DCHECK(GtkCheckVersion(4));
   static void* get = DlSym(GetLibGtk(), "gtk_file_chooser_get_files");
   return TakeGObject(DlCast<GListModel*(GtkFileChooser*)>(get)(dialog));
+}
+
+void GtkStyleContextGet(GtkStyleContext* context, ...) {
+  va_list args;
+  va_start(args, context);
+  gtk_style_context_get_valist(context, gtk_style_context_get_state(context),
+                               args);
+  va_end(args);
 }
 
 void GtkStyleContextGetStyle(GtkStyleContext* context, ...) {
@@ -186,11 +240,27 @@ ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGicon(
     GIcon* icon,
     int size,
     GtkIconLookupFlags flags) {
-  static void* lookup = DlSym(GetLibGtk(), "gtk_icon_theme_lookup_by_gicon");
   DCHECK(!GtkCheckVersion(4));
+  static void* lookup = DlSym(GetLibGtk(), "gtk_icon_theme_lookup_by_gicon");
   return TakeGObject(
       DlCast<GtkIconInfo*(GtkIconTheme*, GIcon*, int, GtkIconLookupFlags)>(
           lookup)(theme, icon, size, flags));
+}
+
+DISABLE_CFI_ICALL
+ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupIcon(
+    GtkIconTheme* theme,
+    const char* icon_name,
+    const char* fallbacks[],
+    int size,
+    int scale,
+    GtkTextDirection direction,
+    GtkIconLookupFlags flags) {
+  static void* lookup = DlSym(GetLibGtk(), "gtk_icon_theme_lookup_icon");
+  return TakeGObject(
+      DlCast<GtkIconPaintable*(GtkIconTheme*, const char*, const char*[], int,
+                               int, GtkTextDirection, GtkIconLookupFlags)>(
+          lookup)(theme, icon_name, fallbacks, size, scale, direction, flags));
 }
 
 DISABLE_CFI_ICALL

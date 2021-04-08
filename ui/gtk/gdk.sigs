@@ -13,3 +13,6 @@ void gdk_paintable_snapshot(GdkPaintable* paintable, GdkSnapshot* snapshot, doub
 GType gdk_paintable_get_type(void);
 GdkSeat* gdk_display_get_default_seat(GdkDisplay* display);
 GdkDevice* gdk_seat_get_keyboard(GdkSeat* seat);
+GdkTexture* gdk_memory_texture_new(int width, int height, GdkMemoryFormat format, GBytes* bytes, gsize stride);
+int gdk_paintable_get_intrinsic_width(GdkPaintable* paintable);
+int gdk_paintable_get_intrinsic_height(GdkPaintable* paintable);

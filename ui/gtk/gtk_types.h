@@ -42,6 +42,8 @@ using GskRenderNodeType = enum {
   GSK_GL_SHADER_NODE
 };
 
+enum GdkMemoryFormat : int;
+
 using GskRenderNode = struct _GskRenderNode;
 using GtkIconPaintable = struct _GtkIconPaintable;
 using GdkTexture = struct _GdkTexture;
@@ -50,6 +52,8 @@ using GtkSnapshot = GdkSnapshot;
 using GdkPaintable = struct _GdkPaintable;
 using GtkNative = struct _GtkNative;
 using GdkSurface = struct _GdkSurface;
+
+constexpr GdkMemoryFormat GDK_MEMORY_B8G8R8A8 = static_cast<GdkMemoryFormat>(3);
 #else
 enum GtkWidgetHelpType : int;
 
@@ -74,7 +78,11 @@ struct _GdkEventKey {
   guint is_modifier : 1;
 };
 
+constexpr int GTK_ICON_LOOKUP_USE_BUILTIN = 1 << 2;
+constexpr int GTK_ICON_LOOKUP_GENERIC_FALLBACK = 1 << 3;
 constexpr int GTK_ICON_LOOKUP_FORCE_SIZE = 1 << 4;
+
+constexpr const char GTK_STYLE_PROPERTY_BACKGROUND_IMAGE[] = "background-image";
 #endif
 }
 

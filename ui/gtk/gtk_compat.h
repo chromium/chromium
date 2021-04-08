@@ -45,12 +45,23 @@ bool GtkCheckVersion(int major, int minor = 0, int micro = 0);
 
 void GtkInit(const std::vector<std::string>& args);
 
+gfx::Insets GtkStyleContextGetPadding(GtkStyleContext* context);
+
 gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context);
+
+gfx::Insets GtkStyleContextGetMargin(GtkStyleContext* context);
 
 bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event);
 
 bool GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
                                     const base::FilePath& path);
+
+void GtkRenderIcon(GtkStyleContext* context,
+                   cairo_t* cr,
+                   GdkPixbuf* pixbuf,
+                   GdkTexture* texture,
+                   double x,
+                   double y);
 
 ScopedGObject<GListModel> Gtk4FileChooserGetFiles(GtkFileChooser* dialog);
 
@@ -67,8 +78,19 @@ ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupByGicon(
     GtkTextDirection direction,
     GtkIconLookupFlags flags);
 
+ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupIcon(
+    GtkIconTheme* theme,
+    const char* icon_name,
+    const char* fallbacks[],
+    int size,
+    int scale,
+    GtkTextDirection direction,
+    GtkIconLookupFlags flags);
+
 // generate_stubs cannot forward to C-style variadic functions, so the
 // functions below wrap the corresponding GTK va_list functions.
+
+void GtkStyleContextGet(GtkStyleContext* context, ...);
 
 void GtkStyleContextGetStyle(GtkStyleContext* context, ...);
 
