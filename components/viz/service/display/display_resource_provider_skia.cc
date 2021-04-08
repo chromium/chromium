@@ -60,7 +60,6 @@ DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
     DCHECK(child_info.child_to_parent_map.count(child_id));
     DCHECK(resource.is_gpu_resource_type());
 
-    bool is_lost = lost_context_provider_;
     auto can_delete = CanDeleteNow(child_info, resource, style);
     if (can_delete == CanDeleteNowResult::kNo) {
       // Defer this resource deletion.
@@ -68,7 +67,7 @@ DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
       continue;
     }
 
-    is_lost = is_lost || can_delete == CanDeleteNowResult::kYesButLoseResource;
+    const bool is_lost = can_delete == CanDeleteNowResult::kYesButLoseResource;
 
     to_return.emplace_back(child_id, resource.sync_token(),
                            resource.imported_count, is_lost);

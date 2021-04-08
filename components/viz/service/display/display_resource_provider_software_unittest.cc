@@ -95,28 +95,6 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
   std::unique_ptr<TestSharedBitmapManager> shared_bitmap_manager_;
 };
 
-TEST_F(DisplayResourceProviderSoftwareTest, LostMailboxInParent) {
-  gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
-                            gpu::CommandBufferId::FromUnsafeValue(0x12), 0x34);
-  auto tran = CreateResource(RGBA_8888);
-  tran.id = ResourceId(11u);
-
-  std::vector<ReturnedResource> returned_to_child;
-  int child_id = resource_provider_->CreateChild(
-      base::BindRepeating(&CollectResources, &returned_to_child));
-
-  // Receive a resource then lose the gpu context.
-  resource_provider_->ReceiveFromChild(child_id, {tran});
-  resource_provider_->DidLoseContextProvider();
-
-  // Transfer resources back from the parent to the child.
-  resource_provider_->DeclareUsedResourcesFromChild(child_id, {});
-  ASSERT_EQ(1u, returned_to_child.size());
-
-  // Losing an output surface only loses hardware resources.
-  EXPECT_EQ(returned_to_child[0].lost, false);
-}
-
 TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
   gfx::Size size(64, 64);
   ResourceFormat format = RGBA_8888;

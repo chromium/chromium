@@ -63,7 +63,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   DisplayResourceProvider& operator=(const DisplayResourceProvider&) = delete;
 
   bool IsSoftware() const { return mode_ == kSoftware; }
-  void DidLoseContextProvider() { lost_context_provider_ = true; }
   size_t num_resources() const { return resources_.size(); }
 
   // base::trace_event::MemoryDumpProvider implementation.
@@ -392,9 +391,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // Keep track of whether deleted resources should be batched up or returned
   // immediately.
   int batch_return_resources_lock_count_ = 0;
-  // Set to true when the ContextProvider becomes lost, to inform that resources
-  // modified by this class are now in an indeterminate state.
-  bool lost_context_provider_ = false;
   // The ResourceIds in DisplayResourceProvider start from 2 to avoid
   // conflicts with id from ClientResourceProvider.
   ResourceIdGenerator resource_id_generator_{2u};

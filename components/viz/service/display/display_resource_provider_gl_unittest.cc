@@ -340,62 +340,6 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockFenceDestroyChild) {
   child_resource_provider_->RemoveImportedResource(id2);
 }
 
-TEST_F(DisplayResourceProviderGLTest, ReadLockFenceContextLost) {
-  TransferableResource tran1 = CreateResource(RGBA_8888);
-  tran1.read_lock_fences_enabled = true;
-  ResourceId id1 = child_resource_provider_->ImportResource(
-      tran1, SingleReleaseCallback::Create(base::DoNothing()));
-
-  TransferableResource tran2 = CreateResource(RGBA_8888);
-  tran2.read_lock_fences_enabled = false;
-  ResourceId id2 = child_resource_provider_->ImportResource(
-      tran2, SingleReleaseCallback::Create(base::DoNothing()));
-
-  std::vector<ReturnedResource> returned_to_child;
-  int child_id =
-      resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
-
-  // Transfer resources to the parent.
-  std::vector<TransferableResource> list;
-  child_resource_provider_->PrepareSendToParent(
-      {id1, id2}, &list,
-      static_cast<RasterContextProvider*>(child_context_provider_.get()));
-  ASSERT_EQ(2u, list.size());
-  EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
-  EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id2));
-
-  resource_provider_->ReceiveFromChild(child_id, list);
-
-  // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
-      resource_provider_->GetChildToParentMap(child_id);
-
-  scoped_refptr<TestFence> fence(new TestFence);
-  resource_provider_->SetReadLockFence(fence.get());
-  {
-    for (auto& resource : list) {
-      ResourceId parent_id = resource_map[resource.id];
-      resource_provider_->WaitSyncToken(parent_id);
-      DisplayResourceProviderGL::ScopedReadLockGL lock(resource_provider_.get(),
-                                                       parent_id);
-    }
-  }
-  EXPECT_EQ(0u, returned_to_child.size());
-
-  EXPECT_EQ(2u, resource_provider_->num_resources());
-  resource_provider_->DidLoseContextProvider();
-  resource_provider_ = nullptr;
-
-  EXPECT_EQ(2u, returned_to_child.size());
-
-  EXPECT_TRUE(returned_to_child[0].lost);
-  EXPECT_TRUE(returned_to_child[1].lost);
-
-  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
-  child_resource_provider_->RemoveImportedResource(id1);
-  child_resource_provider_->RemoveImportedResource(id2);
-}
-
 // Test that ScopedBatchReturnResources batching works.
 TEST_F(DisplayResourceProviderGLTest,
        ScopedBatchReturnResourcesPreventsReturn) {
@@ -490,28 +434,6 @@ TEST_F(DisplayResourceProviderGLTest,
   EXPECT_CALL(release, Released(_, _)).Times(kTotalResources);
   for (const auto& id : ids)
     child_resource_provider_->RemoveImportedResource(id);
-}
-
-TEST_F(DisplayResourceProviderGLTest, LostMailboxInParent) {
-  gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
-                            gpu::CommandBufferId::FromUnsafeValue(0x12), 0x34);
-  auto tran = CreateResource(RGBA_8888);
-  tran.id = ResourceId(11);
-
-  std::vector<ReturnedResource> returned_to_child;
-  int child_id = resource_provider_->CreateChild(
-      base::BindRepeating(&CollectResources, &returned_to_child));
-
-  // Receive a resource then lose the gpu context.
-  resource_provider_->ReceiveFromChild(child_id, {tran});
-  resource_provider_->DidLoseContextProvider();
-
-  // Transfer resources back from the parent to the child.
-  resource_provider_->DeclareUsedResourcesFromChild(child_id, {});
-  ASSERT_EQ(1u, returned_to_child.size());
-
-  // Losing an output surface only loses hardware resources.
-  EXPECT_EQ(returned_to_child[0].lost, true);
 }
 
 class TextureStateTrackingGLES2Interface : public TestGLES2Interface {

@@ -200,7 +200,6 @@ DisplayResourceProviderGL::DeleteAndReturnUnusedResourcesToChildImpl(
     ResourceId child_id = resource.transferable.id;
     DCHECK(child_info.child_to_parent_map.count(child_id));
 
-    bool is_lost = lost_context_provider_;
     auto can_delete = CanDeleteNow(child_info, resource, style);
     if (can_delete == CanDeleteNowResult::kNo) {
       // Defer this resource deletion.
@@ -208,7 +207,7 @@ DisplayResourceProviderGL::DeleteAndReturnUnusedResourcesToChildImpl(
       continue;
     }
 
-    is_lost = is_lost || can_delete == CanDeleteNowResult::kYesButLoseResource;
+    const bool is_lost = can_delete == CanDeleteNowResult::kYesButLoseResource;
 
     if (resource.gl_id && resource.filter != resource.transferable.filter) {
       DCHECK(resource.transferable.mailbox_holder.texture_target);
