@@ -7,7 +7,7 @@
 }
 
 #ready-img {
-  height: 288px;
+  height: 260px;
 }
 
 @media screen and (max-height: 736px) {
@@ -24,4 +24,8 @@
 #loading-spinner {
   height: 100px;
   width: 100px;
+}
+
+:host-context([orientation=horizontal]) #voice-match-animation {
+  padding-top: 16px;
 }

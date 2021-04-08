@@ -2,22 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#animation-container-horizontal-mode,
-#animation-container-vertical-mode {
-  display: none;
-}
-
-:host-context([orientation=horizontal]) #animation-container-horizontal-mode,
-:host-context([orientation=vertical]) #animation-container-vertical-mode {
-  display: block;
-}
-
 :host-context([orientation=vertical]) oobe-adaptive-dialog {
   --oobe-adaptive-dialog-content-top-padding: 0;
-}
-
-#animation-container-horizontal-mode {
-  transform: translateX(-20px);
 }
 
 #intro-title-text {

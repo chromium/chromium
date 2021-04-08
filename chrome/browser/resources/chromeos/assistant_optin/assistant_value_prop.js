@@ -81,12 +81,11 @@ Polymer({
   loadingError_: false,
 
   /**
-   * The value prop webview objects, could be populated with different webview
-   * elements for new/old oobe layout.
-   * @type {Array<Object>}
+   * The value prop webview object.
+   * @type {Object}
    * @private
    */
-  valuePropViewElements_: [],
+  valuePropView_: null,
 
   /**
    * Whether the screen has been initialized.
@@ -212,9 +211,7 @@ Polymer({
     this.loadingError_ = false;
     this.headerReceived_ = false;
     let locale = this.locale.replace('-', '_').toLowerCase();
-    for (let webviewObj of this.valuePropViewElements_) {
-      webviewObj.src = this.urlTemplate_.replace('$', locale);
-    }
+    this.valuePropView_.src = this.urlTemplate_.replace('$', locale);
   },
 
   /**
@@ -236,9 +233,7 @@ Polymer({
       return;
     }
     if (this.reloadWithDefaultUrl_) {
-      for (let webviewObj of this.valuePropViewElements_) {
-        webviewObj.src = this.defaultUrl;
-      }
+      this.valuePropView_.src = this.defaultUrl;
       this.headerReceived_ = false;
       this.reloadWithDefaultUrl_ = false;
       return;
@@ -374,21 +369,11 @@ Polymer({
 
     if (!this.initialized_) {
       if (this.newLayoutEnabled_) {
-        // We show value prop webview element based on orientation of the
-        // device. Horizontal mode element is in subtitle slot and it is shown
-        // in bottom left of the screen in horizontal mode. Vertical mode
-        // element is in content slot and allows scrolling with the rest of the
-        // content in vertical mode.
-        this.valuePropViewElements_.push(
-            this.$['value-prop-view-vertical-mode']);
-        this.valuePropViewElements_.push(
-            this.$['value-prop-view-horizontal-mode']);
+        this.valuePropView_ = this.$['value-prop-view'];
       } else {
-        this.valuePropViewElements_.push(this.$['value-prop-view-old']);
+        this.valuePropView_ = this.$['value-prop-view-old'];
       }
-      for (let webviewObj of this.valuePropViewElements_) {
-        this.initializeWebview_(webviewObj);
-      }
+      this.initializeWebview_(this.valuePropView_);
       this.reloadPage();
       this.initialized_ = true;
     }
@@ -403,5 +388,12 @@ Polymer({
     webview.addEventListener(
         'contentload', this.onWebViewContentLoad.bind(this));
     webview.addContentScripts([webviewStripLinksContentScript]);
+  },
+
+  /**
+   * Returns the webview animation container.
+   */
+  getAnimationContainer() {
+    return this.$['animation-container'];
   },
 });

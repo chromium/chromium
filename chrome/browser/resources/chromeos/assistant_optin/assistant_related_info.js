@@ -309,4 +309,11 @@ Polymer({
   getSubtitleMessage_(locale) {
     return this.i18nAdvanced('assistantRelatedInfoMessage');
   },
+
+  /**
+   * Returns the webview animation container.
+   */
+  getAnimationContainer() {
+    return this.$['animation-container'];
+  },
 });

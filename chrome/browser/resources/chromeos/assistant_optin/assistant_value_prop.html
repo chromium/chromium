@@ -21,15 +21,11 @@
           aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
       </iron-icon>
       <h1 slot="title" id="title-text"></h1>
-      <div slot="subtitle" id="animation-container-horizontal-mode"
-          class="animation-container">
-          <webview id="value-prop-view-horizontal-mode" tabindex="-1"></webview>
+      <div id="animation-container">
+          <webview id="value-prop-view" tabindex="-1"></webview>
       </div>
       <div slot="content" id="content-container"
           class="landscape-vertical-centered">
-        <div id="animation-container-vertical-mode" class="animation-container">
-          <webview id="value-prop-view-vertical-mode" tabindex="-1"></webview>
-        </div>
         <div id="intro-title-text" hidden$="[[!newLayoutEnabled_]]"></div>
         <div class="content" id="intro-text"></div>
         <div class="line" hidden$="[[!newLayoutEnabled_]]"></div>

@@ -31,12 +31,8 @@
       }
     }
 
-    :host-context([orientation=landscape]).animation-container {
-      transform: translateX(-20px);
-    }
-
     :host-context([orientation=vertical]) oobe-adaptive-dialog {
-      --oobe-adaptive-dialog-content-top-padding: 20px;
+      --oobe-adaptive-dialog-content-top-padding: 0;
     }
   </style>
   <link rel="stylesheet" href="assistant_shared_styles.css">
@@ -51,8 +47,7 @@
     <div slot="subtitle" hidden$="[[skipActivityControl_]]"
         inner-h-t-m-l="[[getSubtitleMessage_(locale)]]">
     </div>
-    <div slot="subtitle" class="animation-container"
-        hidden$="[[!skipActivityControl_]]">
+    <div id="animation-container" hidden$="[[!skipActivityControl_]]">
       <webview id="assistant-animation-webview" tabindex="-1"></webview>
     </div>
     <div slot="content" class="flex layout vertical center center-justified"

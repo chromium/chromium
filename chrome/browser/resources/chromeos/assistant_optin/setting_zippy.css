@@ -11,6 +11,10 @@
   height: 48px;
 }
 
+.sub-title {
+  color: var(--google-grey-900);
+}
+
 .content {
   padding-top: 4px;
 }

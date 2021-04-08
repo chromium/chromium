@@ -311,6 +311,13 @@ Polymer({
         }
       }
     }
+    // In landscape mode, animation element should reside in subtitle slot which
+    // is shown at the bottom left of the screen. In portrait mode, animation
+    // element should reside in content slot which allows scrolling with the
+    // rest of the content.
+    const slot = window.innerWidth > window.innerHeight ? 'subtitle' : 'content';
+    this.$.valueProp.getAnimationContainer().slot = slot;
+    this.$.relatedInfo.getAnimationContainer().slot = slot;
   },
 });
 })();

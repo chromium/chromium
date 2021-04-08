@@ -50,18 +50,29 @@ webview {
   margin-inline-end: 0;
 }
 
-:host-context(html:not([new-layout])) .animation-container {
+:host-context(html:not([new-layout])) #animation-container {
   display: none;
 }
 
-:host-context([new-layout]) .animation-container {
-  height: 220px;
+:host-context([orientation=horizontal]) #animation-container {
+  height: 240px;
+  transform: translate(-40px, -12px);
+  width: 340px;
+}
+
+:host-context([orientation=horizontal][screen=oobe]) #animation-container {
+  transform: translate(-48px, -12px);
+}
+
+:host-context([orientation=vertical]) #animation-container {
+  min-height: 280px;
+  padding-bottom: 20px;
+  transform: translateX(-8px);
+  width: 100%;
 }
 
 @media screen and (max-height: 1040px) {
-  :host-context([orientation=vertical][screen=oobe]) .animation-container,
-  :host-context([orientation=vertical][screen=oobe])
-      #animation-container-vertical-mode {
+  :host-context([orientation=vertical][screen=oobe]) #animation-container {
     display: none;
   }
 
@@ -74,9 +85,7 @@ webview {
 
 @media screen and (max-height: 825px) {
   :host-context([orientation=vertical]:not([screen=oobe]))
-      .animation-container,
-  :host-context([orientation=vertical]:not([screen=oobe]))
-      #animation-container-vertical-mode {
+      #animation-container {
     display: none;
   }
 
