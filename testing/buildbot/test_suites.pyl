@@ -1819,7 +1819,6 @@
           # Flaky when run with multiple processes.
           '--max-processes=1',
         ],
-        'linux_args': ['--no-xvfb'],
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
         },
@@ -1874,7 +1873,6 @@
           '-v',
           '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
         'android_swarming': {
           'shards': 4,
         },
@@ -1914,7 +1912,6 @@
           '--use-angle=gl',
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
         },
@@ -1974,7 +1971,6 @@
           '-v',
           '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
         'android_swarming': {
           'shards': 4,
         },
@@ -2014,7 +2010,6 @@
           '--use-angle=gl',
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
         },
@@ -2036,7 +2031,6 @@
           '-v',
           '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
         'android_swarming': {
           'shards': 20,
         },
@@ -2063,7 +2057,6 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
         },
@@ -2084,7 +2077,6 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
         },
@@ -2105,7 +2097,6 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
         },
@@ -2142,7 +2133,6 @@
           '--use-angle=gl',
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
         },
@@ -2205,7 +2195,6 @@
           '-v',
           '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
         'android_swarming': {
           'shards': 12,
         },
@@ -2232,7 +2221,6 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
         },
@@ -2253,7 +2241,6 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
         },
@@ -2274,7 +2261,6 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
         },
@@ -2292,7 +2278,6 @@
           'angle_deqp_khr_gles2_tests',
           '--use-angle=vulkan',
         ],
-        'linux_args': ['--no-xvfb'],
         'android_args': [
           '-v',
           '--shard-timeout=500',
@@ -2318,7 +2303,6 @@
           '-v',
           '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
         'android_swarming': {
           'shards': 2,
         },
@@ -2343,7 +2327,6 @@
           '-v',
           '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
         'desktop_args': [
           '--bot-mode',
         ],
@@ -2365,7 +2348,6 @@
           '-v',
           '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
         'android_swarming': {
           'shards': 2,
         },
@@ -2396,10 +2378,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        # Linux has issues with creating too many windows at once.
         'linux_args': [
-          # Linux has issues with creating too many windows at once.
           '--max-processes=4',
-          '--no-xvfb',
         ],
         'swarming': {
           'shards': 2,
@@ -2416,10 +2397,9 @@
           '--bot-mode',
           '--flaky-retries=2',
         ],
+        # Linux has issues with creating too many windows at once.
         'linux_args': [
-          # Linux has issues with creating too many windows at once.
           '--max-processes=4',
-          '--no-xvfb',
         ],
         'swarming': {
           'shards': 2,
@@ -2450,7 +2430,6 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'use_isolated_scripts_api': True,
       },
     },
@@ -2545,7 +2524,6 @@
         'android_args': [
           '-v',
         ],
-        'linux_args': ['--no-xvfb'],
         'use_isolated_scripts_api': True,
       },
     },
@@ -2565,7 +2543,6 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
         'use_isolated_scripts_api': True,
       },
     },
@@ -4893,6 +4870,9 @@
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
+        'linux_args': [
+          '--xvfb',
+        ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles2_tests': {
@@ -4900,6 +4880,9 @@
           'angle_deqp_gles2_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
@@ -4909,6 +4892,9 @@
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
+        'linux_args': [
+          '--xvfb',
+        ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles31_rotate270_tests': {
@@ -4916,6 +4902,9 @@
           'angle_deqp_gles31_rotate270_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
@@ -4925,6 +4914,9 @@
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
+        'linux_args': [
+          '--xvfb',
+        ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles31_tests': {
@@ -4932,6 +4924,9 @@
           'angle_deqp_gles31_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
         ],
         'swarming': {
           'shards': 10,
@@ -4944,6 +4939,9 @@
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
+        'linux_args': [
+          '--xvfb',
+        ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles3_rotate270_tests': {
@@ -4951,6 +4949,9 @@
           'angle_deqp_gles3_rotate270_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
@@ -4960,6 +4961,9 @@
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
+        'linux_args': [
+          '--xvfb',
+        ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles3_tests': {
@@ -4967,6 +4971,9 @@
           'angle_deqp_gles3_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
         ],
         'swarming': {
           'shards': 4,
@@ -4979,6 +4986,9 @@
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
+        'linux_args': [
+          '--xvfb',
+        ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_khr_gles31_tests': {
@@ -4986,6 +4996,9 @@
           'angle_deqp_khr_gles31_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
@@ -4995,6 +5008,9 @@
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
+        'linux_args': [
+          '--xvfb',
+        ],
         'use_isolated_scripts_api': True,
       },
       'angle_end2end_tests': {
@@ -5002,6 +5018,9 @@
           'angle_end2end_tests',
           '--bot-mode',
           '--gtest_filter=*Vulkan_SwiftShader*',
+        ],
+        'linux_args': [
+          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
