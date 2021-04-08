@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/discardable_memory.h"
+
 #include "base/feature_list.h"
 #include "base/memory/discardable_memory_internal.h"
 #include "base/memory/madv_free_discardable_memory_posix.h"
@@ -10,7 +11,7 @@
 #include "build/build_config.h"
 
 #if defined(OS_ANDROID)
-#include <third_party/ashmem/ashmem.h>
+#include "third_party/ashmem/ashmem.h"
 #endif  // defined(OS_ANDROID)
 
 namespace base {

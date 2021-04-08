@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
-#include <third_party/blink/public/common/manifest/manifest.h>
+
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
 
