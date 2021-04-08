@@ -62732,6 +62732,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="kNavigationRequestBlockedByCsp"/>
   <int value="10" label="kMainFrameNavigation"/>
   <int value="11" label="kDisallowedMojoInterface"/>
+  <int value="12" label="kPlugin"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

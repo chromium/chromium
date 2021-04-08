@@ -7159,6 +7159,10 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
   associated_registry_->AddInterface(base::BindRepeating(
       [](RenderFrameHostImpl* impl,
          mojo::PendingAssociatedReceiver<mojom::PepperHost> receiver) {
+        if (impl->frame_tree()->is_prerendering()) {
+          impl->CancelPrerendering(PrerenderHost::FinalStatus::kPlugin);
+          return;
+        }
         impl->pepper_host_receiver_.Bind(std::move(receiver));
         impl->pepper_host_receiver_.SetFilter(
             impl->CreateMessageFilterForAssociatedReceiver(

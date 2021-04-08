@@ -67,7 +67,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kNavigationRequestBlockedByCsp = 9,
     kMainFrameNavigation = 10,
     kDisallowedMojoInterface = 11,
-    kMaxValue = kDisallowedMojoInterface
+    kPlugin = 12,
+    kMaxValue = kPlugin
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
