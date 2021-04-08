@@ -64,6 +64,12 @@ ArcAppfuseBridge* ArcAppfuseBridge::GetForBrowserContext(
   return ArcAppfuseBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcAppfuseBridge* ArcAppfuseBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcAppfuseBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcAppfuseBridge::ArcAppfuseBridge(content::BrowserContext* context,
                                    ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {

@@ -26,6 +26,8 @@ class ArcAppfuseBridge : public KeyedService, public mojom::AppfuseHost {
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcAppfuseBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcAppfuseBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcAppfuseBridge(content::BrowserContext* context,
                    ArcBridgeService* bridge_service);

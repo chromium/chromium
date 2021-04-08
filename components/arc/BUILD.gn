@@ -402,6 +402,7 @@ source_set("arc_metrics_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "appfuse/arc_appfuse_bridge_unittest.cc",
     "arc_features_parser_unittest.cc",
     "arc_util_unittest.cc",
     "bluetooth/bluetooth_mojom_traits_unittest.cc",
