@@ -17,9 +17,8 @@
 namespace ash {
 
 TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
-                                     TrayBubbleView* bubble_view,
-                                     bool is_persistent)
-    : tray_(tray), bubble_view_(bubble_view), is_persistent_(is_persistent) {
+                                     TrayBubbleView* bubble_view)
+    : tray_(tray), bubble_view_(bubble_view) {
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_widget_->AddObserver(this);
 
@@ -29,13 +28,11 @@ TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
 
   tray->tray_event_filter()->AddBubble(this);
 
-  if (!is_persistent_)
-    Shell::Get()->activation_client()->AddObserver(this);
+  Shell::Get()->activation_client()->AddObserver(this);
 }
 
 TrayBubbleWrapper::~TrayBubbleWrapper() {
-  if (!is_persistent_)
-    Shell::Get()->activation_client()->RemoveObserver(this);
+  Shell::Get()->activation_client()->RemoveObserver(this);
 
   tray_->tray_event_filter()->RemoveBubble(this);
   if (bubble_widget_) {

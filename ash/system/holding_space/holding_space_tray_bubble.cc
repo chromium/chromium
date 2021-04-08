@@ -336,8 +336,8 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
     child_bubble->Init();
 
   // Show the bubble.
-  bubble_wrapper_ = std::make_unique<TrayBubbleWrapper>(
-      holding_space_tray, bubble_view, false /* is_persistent */);
+  bubble_wrapper_ =
+      std::make_unique<TrayBubbleWrapper>(holding_space_tray, bubble_view);
 
   // Set bubble frame to be invisible.
   bubble_wrapper_->GetBubbleWidget()

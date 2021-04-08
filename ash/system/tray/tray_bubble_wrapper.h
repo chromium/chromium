@@ -22,9 +22,7 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
                                      public views::WidgetObserver,
                                      public ::wm::ActivationChangeObserver {
  public:
-  TrayBubbleWrapper(TrayBackgroundView* tray,
-                    TrayBubbleView* bubble_view,
-                    bool is_persistent);
+  TrayBubbleWrapper(TrayBackgroundView* tray, TrayBubbleView* bubble_view);
   ~TrayBubbleWrapper() override;
 
   // TrayBubbleBase overrides:
@@ -50,7 +48,6 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
   TrayBackgroundView* tray_;
   TrayBubbleView* bubble_view_;  // unowned
   views::Widget* bubble_widget_;
-  bool is_persistent_;
 
   DISALLOW_COPY_AND_ASSIGN(TrayBubbleWrapper);
 };

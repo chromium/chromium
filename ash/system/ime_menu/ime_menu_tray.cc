@@ -372,8 +372,7 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
             is_voice_enabled_)));
   }
 
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view,
-                                                false /* is_persistent */);
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
   SetIsActive(true);
 }
 

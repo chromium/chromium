@@ -286,8 +286,7 @@ void MediaTray::ShowBubble() {
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
           kMenuSeparatorWidth));
 
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view,
-                                                false /*is_persistent*/);
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
   SetIsActive(true);
 
   base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.RepeatUsageOnShelf",

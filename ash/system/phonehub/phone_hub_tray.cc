@@ -180,8 +180,7 @@ void PhoneHubTray::ShowBubble() {
   DCHECK(content_view_);
   bubble_view->AddChildView(std::move(content_view));
 
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view,
-                                                false /* is_persistent */);
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
 
   SetIsActive(true);
 
