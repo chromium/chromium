@@ -143,19 +143,6 @@ class WebKioskAppUser : public DeviceLocalAccountUserBase {
   DISALLOW_COPY_AND_ASSIGN(WebKioskAppUser);
 };
 
-class SupervisedUser : public User {
- public:
-  explicit SupervisedUser(const AccountId& account_id);
-  ~SupervisedUser() override;
-
-  // Overridden from User:
-  UserType GetType() const override;
-  std::string display_email() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUser);
-};
-
 class PublicAccountUser : public DeviceLocalAccountUserBase {
  public:
   explicit PublicAccountUser(const AccountId& account_id);
@@ -340,10 +327,6 @@ User* User::CreateWebKioskAppUser(const AccountId& web_kiosk_account_id) {
   return new WebKioskAppUser(web_kiosk_account_id);
 }
 
-User* User::CreateSupervisedUser(const AccountId& account_id) {
-  return new SupervisedUser(account_id);
-}
-
 User* User::CreatePublicAccountUser(const AccountId& account_id,
                                     bool is_using_saml) {
   User* user = new PublicAccountUser(account_id);
@@ -507,21 +490,6 @@ WebKioskAppUser::~WebKioskAppUser() {}
 
 UserType WebKioskAppUser::GetType() const {
   return user_manager::USER_TYPE_WEB_KIOSK_APP;
-}
-
-SupervisedUser::SupervisedUser(const AccountId& account_id) : User(account_id) {
-  set_can_lock(true);
-}
-
-SupervisedUser::~SupervisedUser() {
-}
-
-UserType SupervisedUser::GetType() const {
-  return user_manager::USER_TYPE_SUPERVISED_DEPRECATED;
-}
-
-std::string SupervisedUser::display_email() const {
-  return base::UTF16ToUTF8(display_name());
 }
 
 PublicAccountUser::PublicAccountUser(const AccountId& account_id)
