@@ -85,12 +85,8 @@ void TransferGesture(ui::GestureRecognizer* gesture_recognizer,
                      gfx::NativeView source,
                      gfx::NativeView target) {
 #if defined(USE_AURA)
-  // Use kCancel for the transfer touches behavior to ensure that `source` sees
-  // a valid touch stream. If kCancel is not used source's touch state may not
-  // be valid after the menu is closed, potentially causing it to drop touch
-  // events it encounters immediately after the menu is closed.
-  gesture_recognizer->TransferEventsTo(source, target,
-                                       ui::TransferTouchesBehavior::kCancel);
+  gesture_recognizer->TransferEventsTo(
+      source, target, ui::TransferTouchesBehavior::kDontCancel);
 #else
   NOTIMPLEMENTED();
 #endif  // defined(USE_AURA)
