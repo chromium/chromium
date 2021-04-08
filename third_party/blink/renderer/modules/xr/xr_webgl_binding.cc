@@ -179,6 +179,15 @@ XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
     ExceptionState& exception_state) {
   DVLOG(1) << __func__;
 
+  XRFrame* frame = view->frame();
+
+  if (session_ != frame->session()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "View comes from a different session than this binding");
+    return nullptr;
+  }
+
   if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
     DVLOG(2) << __func__ << ": depth sensing is not enabled on a session";
     exception_state.ThrowDOMException(
@@ -186,8 +195,6 @@ XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
         XRSession::kDepthSensingFeatureNotSupported);
     return nullptr;
   }
-
-  XRFrame* frame = view->frame();
 
   if (!frame->IsActive()) {
     DVLOG(2) << __func__ << ": frame is not active";
