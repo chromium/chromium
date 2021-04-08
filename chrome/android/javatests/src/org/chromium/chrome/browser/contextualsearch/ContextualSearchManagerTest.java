@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchImageControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchQuickActionControl;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.ContextualSearchTestHost;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeResolveSearch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeSlowResolveSearch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
@@ -222,6 +223,7 @@ public class ContextualSearchManagerTest {
     private ContextualSearchPolicy mPolicy;
     private ContextualSearchSelectionController mSelectionController;
     private EmbeddedTestServer mTestServer;
+    private ContextualSearchManagerTestHost mTestHost;
 
     private float mDpToPx;
 
@@ -258,6 +260,7 @@ public class ContextualSearchManagerTest {
         sActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
 
         mManager = sActivityTestRule.getActivity().getContextualSearchManager();
+        mTestHost = new ContextualSearchManagerTestHost();
 
         Assert.assertNotNull(mManager);
         mPanel = (ContextualSearchPanel) mManager.getContextualSearchPanel();
@@ -268,7 +271,7 @@ public class ContextualSearchManagerTest {
         mSelectionController.setPolicy(mPolicy);
         resetCounters();
 
-        mFakeServer = new ContextualSearchFakeServer(mPolicy, this, mManager,
+        mFakeServer = new ContextualSearchFakeServer(mPolicy, mTestHost, mManager,
                 mManager.getOverlayContentDelegate(), new OverlayContentProgressObserver(),
                 sActivityTestRule.getActivity());
 
@@ -317,11 +320,56 @@ public class ContextualSearchManagerTest {
         mLatestSlowResolveSearch = null;
     }
 
-    /**
-     * @return The {@link ContextualSearchPanel}.
-     */
-    ContextualSearchPanel getPanel() {
-        return mPanel;
+    private class ContextualSearchManagerTestHost implements ContextualSearchTestHost {
+        @Override
+        public void triggerNonResolve(String nodeId) throws TimeoutException {
+            if (mPolicy.isLiteralSearchTapEnabled()) {
+                clickWordNode(nodeId);
+            } else if (!mPolicy.canResolveLongpress()) {
+                longPressNode(nodeId);
+            } else {
+                Assert.fail(
+                        "Cannot trigger a non-resolving gesture with literal tap or non-resolve!");
+            }
+        }
+
+        @Override
+        public void triggerResolve(String nodeId) throws TimeoutException {
+            if (mPolicy.canResolveLongpress()) {
+                longPressNode(nodeId);
+            } else {
+                // When tap can trigger a resolve, we use a tap (aka click).
+                clickWordNode(nodeId);
+            }
+        }
+
+        @Override
+        public void waitForSelectionToBe(final String text) {
+            CriteriaHelper.pollInstrumentationThread(() -> {
+                Criteria.checkThat(getSelectedText(), Matchers.is(text));
+            }, TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
+        }
+
+        @Override
+        public void waitForSearchTermResolutionToStart(final FakeResolveSearch search) {
+            CriteriaHelper.pollInstrumentationThread(
+                    ()
+                            -> { return search.didStartSearchTermResolution(); },
+                    "Fake Search Term Resolution never started.", TEST_TIMEOUT,
+                    DEFAULT_POLLING_INTERVAL);
+        }
+
+        @Override
+        public void waitForSearchTermResolutionToFinish(final FakeResolveSearch search) {
+            CriteriaHelper.pollInstrumentationThread(() -> {
+                return search.didFinishSearchTermResolution();
+            }, "Fake Search was never ready.", TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
+        }
+
+        @Override
+        public ContextualSearchPanel getPanel() {
+            return mPanel;
+        }
     }
 
     /**
@@ -442,27 +490,16 @@ public class ContextualSearchManagerTest {
      * Simulates a resolving trigger on the given node but does not wait for the panel to peek.
      * @param nodeId A string containing the node ID.
      */
-    public void triggerResolve(String nodeId) throws TimeoutException {
-        if (mPolicy.canResolveLongpress()) {
-            longPressNode(nodeId);
-        } else {
-            // When tap can trigger a resolve, we use a tap (aka click).
-            clickWordNode(nodeId);
-        }
+    private void triggerResolve(String nodeId) throws TimeoutException {
+        mTestHost.triggerResolve(nodeId);
     }
 
     /**
      * Simulates a non-resolve trigger on the given node and waits for the panel to peek.
      * @param nodeId A string containing the node ID.
      */
-    public void triggerNonResolve(String nodeId) throws TimeoutException {
-        if (mPolicy.isLiteralSearchTapEnabled()) {
-            clickWordNode(nodeId);
-        } else if (!mPolicy.canResolveLongpress()) {
-            longPressNode(nodeId);
-        } else {
-            Assert.fail("Cannot trigger a non-resolving gesture with literal tap or non-resolve!");
-        }
+    private void triggerNonResolve(String nodeId) throws TimeoutException {
+        mTestHost.triggerNonResolve(nodeId);
     }
 
     /**
@@ -525,30 +562,24 @@ public class ContextualSearchManagerTest {
      * Waits for the selected text string to be the given string, and asserts.
      * @param text The string to wait for the selection to become.
      */
-    public void waitForSelectionToBe(final String text) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(getSelectedText(), Matchers.is(text));
-        }, TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
+    private void waitForSelectionToBe(final String text) {
+        mTestHost.waitForSelectionToBe(text);
     }
 
     /**
      * Waits for the Search Term Resolution to become ready.
      * @param search A given FakeResolveSearch.
      */
-    public void waitForSearchTermResolutionToStart(final FakeResolveSearch search) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return search.didStartSearchTermResolution();
-        }, "Fake Search Term Resolution never started.", TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
+    private void waitForSearchTermResolutionToStart(final FakeResolveSearch search) {
+        mTestHost.waitForSearchTermResolutionToStart(search);
     }
 
     /**
      * Waits for the Search Term Resolution to finish.
      * @param search A given FakeResolveSearch.
      */
-    public void waitForSearchTermResolutionToFinish(final FakeResolveSearch search) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return search.didFinishSearchTermResolution();
-        }, "Fake Search was never ready.", TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
+    private void waitForSearchTermResolutionToFinish(final FakeResolveSearch search) {
+        mTestHost.waitForSearchTermResolutionToFinish(search);
     }
 
     /**
@@ -1604,6 +1635,7 @@ public class ContextualSearchManagerTest {
 
         mFakeServer.reset();
         mFakeServer.setLowPriorityPathInvalid();
+        mFakeServer.setActuallyLoadALiveSerp();
         simulateResolveSearch("search");
         assertLoadedLowPriorityInvalidUrl();
         Assert.assertTrue(mFakeServer.didAttemptLoadInvalidUrl());

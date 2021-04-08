@@ -118,6 +118,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/contextmenu/RevampedContextMenuRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/contextmenu/RevampedContextMenuTest.java",
   "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchFakeServer.java",
+  "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchInstrumentationTest.java",
   "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchInternalStateControllerWrapper.java",
   "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManagerTest.java",
   "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchPolicyTest.java",
