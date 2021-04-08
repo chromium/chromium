@@ -1624,6 +1624,15 @@ ci.chromium_builder(
 )
 
 ci.chromiumos_builder(
+    name = "linux-ash-chromium-generator-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "default",
+    ),
+    tree_closing = False,
+    main_console_view = "main",
+)
+
+ci.chromiumos_builder(
     name = "Linux ChromiumOS Full",
     console_view_entry = consoles.console_view_entry(
         category = "default",

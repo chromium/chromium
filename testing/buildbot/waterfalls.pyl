@@ -1677,6 +1677,11 @@
         },
         'os_type': 'chromeos'
       },
+      'linux-ash-chromium-generator-rel': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+      },
       'linux-cfm-rel': {
         'test_suites': {
           'gtest_tests': 'linux_cfm_gtests',

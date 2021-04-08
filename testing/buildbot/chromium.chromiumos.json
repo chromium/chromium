@@ -1294,6 +1294,11 @@
       }
     ]
   },
+  "linux-ash-chromium-generator-rel": {
+    "additional_compile_targets": [
+      "chrome"
+    ]
+  },
   "linux-cfm-rel": {
     "gtest_tests": [
       {

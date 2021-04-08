@@ -173,6 +173,7 @@
       'chromeos-kevin-rel': 'chromeos_kevin',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel',
+      'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-lacros-builder-rel': 'lacros_on_linux_release_bot',

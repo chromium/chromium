@@ -157,6 +157,16 @@
       "use_vaapi": true
     }
   },
+  "linux-ash-chromium-generator-rel": {
+    "gn_args": {
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "linux-cfm-rel": {
     "gn_args": {
       "is_cfm": true,
