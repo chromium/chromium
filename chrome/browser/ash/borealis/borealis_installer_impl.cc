@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
@@ -30,15 +31,107 @@
 
 namespace borealis {
 
-class Uninstallation : public Transition<BorealisInstallerImpl::UninstallInfo,
-                                         BorealisInstallerImpl::UninstallInfo,
-                                         BorealisUninstallResult> {
+class BorealisInstallerImpl::Installation
+    : public Transition<BorealisInstallerImpl::InstallInfo,
+                        BorealisInstallerImpl::InstallInfo,
+                        BorealisInstallResult> {
+ public:
+  explicit Installation(
+      base::RepeatingCallback<void(double)> update_progress_callback,
+      base::RepeatingCallback<void(InstallingState)> update_state_callback)
+      : installation_start_tick_(base::TimeTicks::Now()),
+        update_progress_callback_(std::move(update_progress_callback)),
+        update_state_callback_(std::move(update_state_callback)),
+        weak_factory_(this) {}
+
+  base::TimeTicks start_time() { return installation_start_tick_; }
+
+  void Cancel() { Fail(BorealisInstallResult::kCancelled); }
+
+ private:
+  void Start(std::unique_ptr<BorealisInstallerImpl::InstallInfo> start_instance)
+      override {
+    install_info_ = std::move(start_instance);
+
+    SetState(InstallingState::kInstallingDlc);
+    chromeos::DlcserviceClient::Get()->Install(
+        kBorealisDlcName,
+        base::BindOnce(&Installation::OnDlcInstallationCompleted,
+                       weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&Installation::OnDlcInstallationProgressUpdated,
+                            weak_factory_.GetWeakPtr()));
+  }
+
+  void SetState(InstallingState state) {
+    update_state_callback_.Run(state);
+    installing_state_ = state;
+  }
+
+  void OnDlcInstallationProgressUpdated(double progress) {
+    DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
+    update_progress_callback_.Run(progress);
+  }
+
+  void OnDlcInstallationCompleted(
+      const chromeos::DlcserviceClient::InstallResult& install_result) {
+    DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
+
+    // If success, continue to the next state.
+    if (install_result.error == dlcservice::kErrorNone) {
+      Succeed(std::move(install_info_));
+      return;
+    }
+
+    // At this point, the Borealis DLC installation has failed.
+    BorealisInstallResult result = BorealisInstallResult::kDlcUnknownError;
+
+    if (install_result.error == dlcservice::kErrorInternal) {
+      LOG(ERROR) << "Something went wrong internally with DlcService.";
+      result = BorealisInstallResult::kDlcInternalError;
+    } else if (install_result.error == dlcservice::kErrorInvalidDlc) {
+      LOG(ERROR)
+          << "Borealis DLC is not supported, need to enable Borealis DLC.";
+      result = BorealisInstallResult::kDlcUnsupportedError;
+    } else if (install_result.error == dlcservice::kErrorBusy) {
+      LOG(ERROR)
+          << "Borealis DLC is not able to be installed as dlcservice is busy.";
+      result = BorealisInstallResult::kDlcBusyError;
+    } else if (install_result.error == dlcservice::kErrorNeedReboot) {
+      LOG(ERROR) << "Device has pending update and needs a reboot to use "
+                    "Borealis DLC.";
+      result = BorealisInstallResult::kDlcNeedRebootError;
+    } else if (install_result.error == dlcservice::kErrorAllocation) {
+      LOG(ERROR) << "Device needs to free space to use Borealis DLC.";
+      result = BorealisInstallResult::kDlcNeedSpaceError;
+    } else if (install_result.error == dlcservice::kErrorNoImageFound) {
+      LOG(ERROR)
+          << "Omaha could not provide an image, device may need to be updated.";
+      result = BorealisInstallResult::kDlcNeedUpdateError;
+    } else {
+      LOG(ERROR) << "Failed to install Borealis DLC: " << install_result.error;
+    }
+
+    Fail(result);
+  }
+
+  base::TimeTicks installation_start_tick_;
+  InstallingState installing_state_;
+  base::RepeatingCallback<void(double)> update_progress_callback_;
+  base::RepeatingCallback<void(InstallingState)> update_state_callback_;
+  std::unique_ptr<BorealisInstallerImpl::InstallInfo> install_info_;
+  base::WeakPtrFactory<Installation> weak_factory_;
+};
+
+class BorealisInstallerImpl::Uninstallation
+    : public Transition<BorealisInstallerImpl::InstallInfo,
+                        BorealisInstallerImpl::InstallInfo,
+                        BorealisUninstallResult> {
  public:
   explicit Uninstallation(Profile* profile)
       : profile_(profile), weak_factory_(this) {}
 
-  void Start(std::unique_ptr<BorealisInstallerImpl::UninstallInfo>
-                 start_instance) override {
+  void Start(std::unique_ptr<BorealisInstallerImpl::InstallInfo> start_instance)
+      override {
     uninstall_info_ = std::move(start_instance);
     BorealisService::GetForProfile(profile_)->ContextManager().ShutDownBorealis(
         base::BindOnce(&Uninstallation::OnShutdownCompleted,
@@ -110,20 +203,17 @@ class Uninstallation : public Transition<BorealisInstallerImpl::UninstallInfo,
   }
 
   Profile* const profile_;
-  std::unique_ptr<BorealisInstallerImpl::UninstallInfo> uninstall_info_;
+  std::unique_ptr<BorealisInstallerImpl::InstallInfo> uninstall_info_;
   base::WeakPtrFactory<Uninstallation> weak_factory_;
 };
 
 BorealisInstallerImpl::BorealisInstallerImpl(Profile* profile)
-    : state_(State::kIdle),
-      installing_state_(InstallingState::kInactive),
-      profile_(profile),
-      weak_ptr_factory_(this) {}
+    : profile_(profile), weak_ptr_factory_(this) {}
 
 BorealisInstallerImpl::~BorealisInstallerImpl() = default;
 
 bool BorealisInstallerImpl::IsProcessing() {
-  return state_ != State::kIdle;
+  return in_progress_installation_ ? true : false;
 }
 
 void BorealisInstallerImpl::Start() {
@@ -131,31 +221,44 @@ void BorealisInstallerImpl::Start() {
   if (!BorealisService::GetForProfile(profile_)->Features().IsAllowed()) {
     LOG(ERROR) << "Installation of Borealis cannot be started because "
                << "Borealis is not allowed.";
-    InstallationEnded(BorealisInstallResult::kBorealisNotAllowed);
+    OnInstallComplete(
+        Unexpected<std::unique_ptr<InstallInfo>, BorealisInstallResult>(
+            BorealisInstallResult::kBorealisNotAllowed));
     return;
   }
 
   if (IsProcessing()) {
     LOG(ERROR) << "Installation of Borealis is already in progress.";
-    InstallationEnded(BorealisInstallResult::kBorealisInstallInProgress);
+    OnInstallComplete(
+        Unexpected<std::unique_ptr<InstallInfo>, BorealisInstallResult>(
+            BorealisInstallResult::kBorealisInstallInProgress));
     return;
   }
 
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
-    InstallationEnded(BorealisInstallResult::kOffline);
+    OnInstallComplete(
+        Unexpected<std::unique_ptr<InstallInfo>, BorealisInstallResult>(
+            BorealisInstallResult::kOffline));
     return;
   }
 
-  installation_start_tick_ = base::TimeTicks::Now();
-
-  progress_ = 0;
-  StartDlcInstallation();
+  auto install_info = std::make_unique<InstallInfo>();
+  install_info->vm_name = "borealis";
+  install_info->container_name = "penguin";
+  in_progress_installation_ = std::make_unique<Installation>(
+      base::BindRepeating(&BorealisInstallerImpl::UpdateProgress,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&BorealisInstallerImpl::UpdateInstallingState,
+                          weak_ptr_factory_.GetWeakPtr()));
+  in_progress_installation_->Begin(
+      std::move(install_info),
+      base::BindOnce(&BorealisInstallerImpl::OnInstallComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BorealisInstallerImpl::Cancel() {
-  if (state_ != State::kIdle) {
-    state_ = State::kCancelling;
-  }
+  if (in_progress_installation_)
+    in_progress_installation_->Cancel();
   for (auto& observer : observers_) {
     observer.OnCancelInitiated();
   }
@@ -171,10 +274,9 @@ void BorealisInstallerImpl::Uninstall(
   RecordBorealisUninstallNumAttemptsHistogram();
   // TODO(b/179303903): The installer should own the relevant bits so the VM and
   // container names are kept by it (and not context_manager).
-  auto uninstall_info = std::make_unique<UninstallInfo>();
+  auto uninstall_info = std::make_unique<InstallInfo>();
   uninstall_info->vm_name = "borealis";
   uninstall_info->container_name = "penguin";
-  uninstall_info->start_time = base::Time::Now();
   in_progress_uninstallation_ = std::make_unique<Uninstallation>(profile_);
   in_progress_uninstallation_->Begin(
       std::move(uninstall_info),
@@ -193,40 +295,7 @@ void BorealisInstallerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void BorealisInstallerImpl::StartDlcInstallation() {
-  state_ = State::kInstalling;
-  UpdateInstallingState(InstallingState::kInstallingDlc);
-
-  chromeos::DlcserviceClient::Get()->Install(
-      kBorealisDlcName,
-      base::BindOnce(&BorealisInstallerImpl::OnDlcInstallationCompleted,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(
-          &BorealisInstallerImpl::OnDlcInstallationProgressUpdated,
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
-void BorealisInstallerImpl::InstallationEnded(BorealisInstallResult result) {
-  // If another installation is in progress, we don't want to reset any states
-  // and interfere with the process. When that process completes, it will reset
-  // these states.
-  if (result != BorealisInstallResult::kBorealisInstallInProgress) {
-    state_ = State::kIdle;
-    installing_state_ = InstallingState::kInactive;
-  }
-  if (result == BorealisInstallResult::kSuccess) {
-    profile_->GetPrefs()->SetBoolean(prefs::kBorealisInstalledOnDevice, true);
-    RecordBorealisInstallOverallTimeHistogram(base::TimeTicks::Now() -
-                                              installation_start_tick_);
-  }
-  RecordBorealisInstallResultHistogram(result);
-  for (auto& observer : observers_) {
-    observer.OnInstallationEnded(result);
-  }
-}
-
 void BorealisInstallerImpl::UpdateProgress(double state_progress) {
-  DCHECK_EQ(state_, State::kInstalling);
   if (state_progress < 0 || state_progress > 1) {
     LOG(ERROR) << "Unexpected progress value " << state_progress
                << " in installing state "
@@ -241,19 +310,13 @@ void BorealisInstallerImpl::UpdateProgress(double state_progress) {
       start_range = 0;
       end_range = 1;
       break;
-    default:
+    case InstallingState::kInactive:
       NOTREACHED();
   }
 
   double new_progress =
       start_range + (end_range - start_range) * state_progress;
-  if (new_progress < progress_) {
-    LOG(ERROR) << "Progress went backwards from " << progress_ << " to "
-               << progress_;
-    return;
-  }
 
-  progress_ = new_progress;
   for (auto& observer : observers_) {
     observer.OnProgressUpdated(new_progress);
   }
@@ -268,64 +331,36 @@ void BorealisInstallerImpl::UpdateInstallingState(
   }
 }
 
-void BorealisInstallerImpl::OnDlcInstallationProgressUpdated(double progress) {
-  DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
-  if (state_ == State::kCancelling)
-    return;
-
-  UpdateProgress(progress);
-}
-
-void BorealisInstallerImpl::OnDlcInstallationCompleted(
-    const chromeos::DlcserviceClient::InstallResult& install_result) {
-  DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
-  if (state_ == State::kCancelling) {
-    InstallationEnded(BorealisInstallResult::kCancelled);
-    return;
+void BorealisInstallerImpl::OnInstallComplete(
+    Expected<std::unique_ptr<InstallInfo>, BorealisInstallResult>
+        result_or_error) {
+  BorealisInstallResult result = result_or_error
+                                     ? BorealisInstallResult::kSuccess
+                                     : result_or_error.Error();
+  // If another installation is in progress, we don't want to reset any states
+  // and interfere with the process. When that process completes, it will reset
+  // these states.
+  if (result != BorealisInstallResult::kBorealisInstallInProgress) {
+    base::TimeDelta duration =
+        in_progress_installation_
+            ? base::TimeTicks::Now() - in_progress_installation_->start_time()
+            : base::TimeDelta::FromSeconds(0);
+    in_progress_installation_.reset();
+    installing_state_ = InstallingState::kInactive;
+    if (result == BorealisInstallResult::kSuccess) {
+      profile_->GetPrefs()->SetBoolean(prefs::kBorealisInstalledOnDevice, true);
+      RecordBorealisInstallOverallTimeHistogram(duration);
+    }
+    RecordBorealisInstallResultHistogram(result);
   }
-
-  // If success, continue to the next state.
-  if (install_result.error == dlcservice::kErrorNone) {
-    InstallationEnded(BorealisInstallResult::kSuccess);
-    return;
+  for (auto& observer : observers_) {
+    observer.OnInstallationEnded(result);
   }
-
-  // At this point, the Borealis DLC installation has failed.
-  BorealisInstallResult result = BorealisInstallResult::kDlcUnknownError;
-
-  // TODO(b/172284265): Handle the case where a device update is required before
-  // a DLC can be installed.
-  if (install_result.error == dlcservice::kErrorInternal) {
-    LOG(ERROR) << "Something went wrong internally with DlcService.";
-    result = BorealisInstallResult::kDlcInternalError;
-  } else if (install_result.error == dlcservice::kErrorInvalidDlc) {
-    LOG(ERROR) << "Borealis DLC is not supported, need to enable Borealis DLC.";
-    result = BorealisInstallResult::kDlcUnsupportedError;
-  } else if (install_result.error == dlcservice::kErrorBusy) {
-    LOG(ERROR)
-        << "Borealis DLC is not able to be installed as dlcservice is busy.";
-    result = BorealisInstallResult::kDlcBusyError;
-  } else if (install_result.error == dlcservice::kErrorNeedReboot) {
-    LOG(ERROR)
-        << "Device has pending update and needs a reboot to use Borealis DLC.";
-    result = BorealisInstallResult::kDlcNeedRebootError;
-  } else if (install_result.error == dlcservice::kErrorAllocation) {
-    LOG(ERROR) << "Device needs to free space to use Borealis DLC.";
-    result = BorealisInstallResult::kDlcNeedSpaceError;
-  } else if (install_result.error == dlcservice::kErrorNoImageFound) {
-    LOG(ERROR)
-        << "Omaha could not provide an image, device may need to be updated.";
-    result = BorealisInstallResult::kDlcNeedUpdateError;
-  } else {
-    LOG(ERROR) << "Failed to install Borealis DLC: " << install_result.error;
-  }
-
-  InstallationEnded(result);
 }
 
 void BorealisInstallerImpl::OnUninstallComplete(
     base::OnceCallback<void(BorealisUninstallResult)> on_uninstall_callback,
-    Expected<std::unique_ptr<UninstallInfo>, BorealisUninstallResult> result) {
+    Expected<std::unique_ptr<InstallInfo>, BorealisUninstallResult> result) {
   in_progress_uninstallation_.reset();
   BorealisUninstallResult uninstall_result = BorealisUninstallResult::kSuccess;
   if (!result) {

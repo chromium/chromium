@@ -63,6 +63,8 @@ class Transition {
   // Called when the transition has completed successfully. This should be the
   // last thing you do.
   void Succeed(std::unique_ptr<T> terminating_instance) {
+    if (!callback_)
+      return;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_),
                                   Result(std::move(terminating_instance))));
@@ -72,6 +74,8 @@ class Transition {
   // be called at the very end of the failing transition (including cleanup if
   // needed).
   void Fail(E error) {
+    if (!callback_)
+      return;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_),
                                   Result::Unexpected(std::move(error))));

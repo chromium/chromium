@@ -65,5 +65,30 @@ TEST(TransitionTest, TransitionCanFail) {
   task_environment.RunUntilIdle();
 }
 
+class MultiCompletionTransition
+    : public Transition<std::string, std::string, std::string> {
+  void Start(std::unique_ptr<std::string> in) override {
+    Fail("foo");
+    Succeed(std::make_unique<std::string>("bar"));
+  }
+};
+
+TEST(TransitionTest, MultipleCompletionFiresCallbackOnce) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  MultiCompletionTransition transition;
+  CallbackFactory<MultiCompletionTransition::OnCompleteSignature>
+      callback_handler;
+
+  EXPECT_CALL(callback_handler, Call(testing::_))
+      .WillOnce(testing::Invoke([](MultiCompletionTransition::Result result) {
+        // The transition completes twice but only the first one will be used.
+        EXPECT_TRUE(result.Unexpected());
+        EXPECT_EQ(result.Error(), "foo");
+      }));
+
+  transition.Begin(nullptr, callback_handler.GetOnce());
+  task_environment.RunUntilIdle();
+}
+
 }  // namespace
 }  // namespace borealis
