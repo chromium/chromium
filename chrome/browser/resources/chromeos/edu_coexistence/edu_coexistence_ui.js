@@ -133,6 +133,8 @@ Polymer({
       this.$$('edu-coexistence-button').newOobeStyleEnabled =
           this.newOobeLayoutEnabled_;
 
+      this.$$('gaia-action-buttons').roundedButton = this.newOobeLayoutEnabled_;
+
       // Show the GAIA Buttons.
       this.showGaiaButtons_ = true;
       // Shrink the content-container so that the buttons line up more closely
