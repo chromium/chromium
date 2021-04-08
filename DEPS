@@ -365,7 +365,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'tint_revision': '09356cc3dc41abea88f1dd5039dc09bc076cd6d1',
+  'tint_revision': '101f463992613b055e6ac6e9588023e4b0695ed6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
