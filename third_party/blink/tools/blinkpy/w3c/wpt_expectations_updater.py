@@ -521,16 +521,15 @@ class WPTExpectationsUpdater(object):
             |test_name|.
         """
         lines = []
-        # The set of ports with no results is assumed to have have no
-        # overlap with the set of port names passed in here.
-        assert set(configs) & set(self.configs_with_no_results) == set()
-
         # The ports with no results are generally ports of builders that
-        # failed, maybe for unrelated reasons. At this point, we add ports
-        # with no results to the list of platforms because we're guessing
-        # that this new expectation might be cross-platform and should
-        # also apply to any ports that we weren't able to get results for.
-        configs = tuple(list(configs) + self.configs_with_no_results)
+        # failed, maybe for unrelated reasons. It is possible to have multiple
+        # builders using the same port, where one gets results while the other
+        # does not.
+        # At this point, we add ports with no results to the list of platforms
+        # because we're guessing that this new expectation might be
+        # cross-platform and should also apply to any ports that we weren't able
+        # to get results for.
+        configs = tuple(set(configs) | set(self.configs_with_no_results))
 
         expectations = '[ %s ]' % \
             ' '.join(self.get_expectations(result, test_name))

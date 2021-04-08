@@ -1286,6 +1286,36 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 ]
             })
 
+    def test_same_platform_one_without_results(self):
+        # In this example, there are two configs using the same platform
+        # (Mac10.10), and one of them has no results while the other one does.
+        # The specifiers are "filled in" and the failure is assumed to apply
+        # to the platform with missing results.
+        host = self.mock_host()
+        updater = WPTExpectationsUpdater(host)
+        results = {
+            'external/wpt/x.html': {
+                (
+                    DesktopConfig(port_name='test-linux-precise'),
+                    DesktopConfig(port_name='test-linux-trusty'),
+                    DesktopConfig(port_name='test-mac-mac10.10'),
+                ):
+                SimpleTestResult(expected='PASS',
+                                 actual='TEXT',
+                                 bug='crbug.com/test')
+            }
+        }
+        updater.configs_with_no_results = [
+            DesktopConfig(port_name='test-mac-mac10.10')
+        ]
+        self.assertEqual(
+            updater.create_line_dict(results), {
+                'external/wpt/x.html': [
+                    'crbug.com/test [ Linux ] external/wpt/x.html [ Failure ]',
+                    'crbug.com/test [ Mac10.10 ] external/wpt/x.html [ Failure ]',
+                ]
+            })
+
     def test_cleanup_all_deleted_tests_in_expectations_files(self):
         host = MockHost()
         port = host.port_factory.get()
