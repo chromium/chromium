@@ -80,8 +80,8 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
   // Check the enterprise policy.
   const PrefService::Preference* pref = GetMediaRouterPref(context);
   if (pref->IsManaged() && !pref->IsDefaultValue()) {
-    bool allowed;
-    CHECK(pref->GetValue()->GetAsBoolean(&allowed));
+    CHECK(pref->GetValue()->is_bool());
+    bool allowed = pref->GetValue()->GetBool();
     stored_pref_values->insert(std::make_pair(context, allowed));
     return allowed;
   }
@@ -112,7 +112,8 @@ bool GetCastAllowAllIPsPref(PrefService* pref_service) {
   // Only use the pref value if it is set from a mandatory policy.
   bool allow_all_ips = false;
   if (pref->IsManaged() && !pref->IsDefaultValue()) {
-    CHECK(pref->GetValue()->GetAsBoolean(&allow_all_ips));
+    CHECK(pref->GetValue()->is_bool());
+    allow_all_ips = pref->GetValue()->GetBool();
   } else {
     allow_all_ips = base::FeatureList::IsEnabled(kCastAllowAllIPsFeature);
   }
