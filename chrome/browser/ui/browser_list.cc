@@ -83,10 +83,6 @@ void BrowserList::AddBrowser(Browser* browser) {
 
   browser->RegisterKeepAlive();
 
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_BROWSER_OPENED, content::Source<Browser>(browser),
-      content::NotificationService::NoDetails());
-
   for (BrowserListObserver& observer : observers_.Get())
     observer.OnBrowserAdded(browser);
 

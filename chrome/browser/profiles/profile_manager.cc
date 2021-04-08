@@ -48,7 +48,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lite_video/lite_video_keyed_service.h"
 #include "chrome/browser/lite_video/lite_video_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"

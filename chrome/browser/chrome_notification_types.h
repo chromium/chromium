@@ -39,13 +39,6 @@ enum NotificationType {
 
   // Browser-window ----------------------------------------------------------
 
-  // This message is sent after a window has been opened.  The source is a
-  // Source<Browser> containing the affected Browser.  No details are
-  // expected.
-  // DEPRECATED: Use BrowserListObserver::OnBrowserAdded()
-  // TODO(https://crbug.com/1174776): Remove.
-  NOTIFICATION_BROWSER_OPENED = NOTIFICATION_CHROME_START,
-
   // This message is sent when closing a browser has been cancelled, either by
   // the user cancelling a beforeunload dialog, or IsClosingPermitted()
   // disallowing closing. This notification implies that no BROWSER_CLOSING or
@@ -53,7 +46,7 @@ enum NotificationType {
   // The source is a Source<Browser> containing the affected browser. No details
   // are expected.
   // TODO(https://crbug.com/1174777): Remove.
-  NOTIFICATION_BROWSER_CLOSE_CANCELLED,
+  NOTIFICATION_BROWSER_CLOSE_CANCELLED = NOTIFICATION_CHROME_START,
 
   // Application-wide ----------------------------------------------------------
 

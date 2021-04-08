@@ -6,17 +6,16 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/mac/app_mode_common.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 
 namespace apps {
 
@@ -29,18 +28,15 @@ void TerminateIfNoAppWindows() {
 }
 
 class AppShimTerminationManagerImpl : public AppShimTerminationManager,
-                                      public content::NotificationObserver {
+                                      public BrowserListObserver {
  public:
   AppShimTerminationManagerImpl() {
-    registrar_.Add(
-        this, chrome::NOTIFICATION_BROWSER_OPENED,
-        content::NotificationService::AllBrowserContextsAndSources());
-    registrar_.Add(
-        this, chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-        content::NotificationService::AllBrowserContextsAndSources());
-    registrar_.Add(
-        this, chrome::NOTIFICATION_BROWSER_CLOSE_CANCELLED,
-        content::NotificationService::AllBrowserContextsAndSources());
+    BrowserList::AddObserver(this);
+
+    closing_all_browsers_subscription_ =
+        chrome::AddClosingAllBrowsersCallback(base::BindRepeating(
+            &AppShimTerminationManagerImpl::OnClosingAllBrowsersChanged,
+            base::Unretained(this)));
   }
 
   AppShimTerminationManagerImpl(const AppShimTerminationManagerImpl&) = delete;
@@ -48,8 +44,7 @@ class AppShimTerminationManagerImpl : public AppShimTerminationManager,
       const AppShimTerminationManagerImpl&) = delete;
   ~AppShimTerminationManagerImpl() override { NOTREACHED(); }
 
- private:
-  // AppShimTerminationManager
+  // AppShimTerminationManager:
   void MaybeTerminate() override {
     if (!browser_session_running_) {
       // Post this to give AppWindows a chance to remove themselves from the
@@ -61,24 +56,17 @@ class AppShimTerminationManagerImpl : public AppShimTerminationManager,
 
   bool ShouldRestoreSession() override { return !browser_session_running_; }
 
-  // content::NotificationObserver override:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    switch (type) {
-      case chrome::NOTIFICATION_BROWSER_OPENED:
-      case chrome::NOTIFICATION_BROWSER_CLOSE_CANCELLED:
-        browser_session_running_ = true;
-        break;
-      case chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST:
-        browser_session_running_ = false;
-        break;
-      default:
-        NOTREACHED();
-    }
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    browser_session_running_ = true;
   }
 
-  content::NotificationRegistrar registrar_;
+ private:
+  void OnClosingAllBrowsersChanged(bool closing) {
+    browser_session_running_ = !closing;
+  }
+
+  base::CallbackListSubscription closing_all_browsers_subscription_;
   bool browser_session_running_ = false;
 };
 
