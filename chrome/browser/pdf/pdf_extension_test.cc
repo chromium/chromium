@@ -101,6 +101,7 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
@@ -3159,7 +3160,7 @@ class PDFExtensionAccessibilityTreeDumpTest
   using AXPropertyFilter = ui::AXPropertyFilter;
 
   //  See chrome/test/data/pdf/accessibility/readme.md for more info.
-  content::DumpAccessibilityTestHelper::Scenario ParsePdfForExtraDirectives(
+  ui::AXInspectScenario ParsePdfForExtraDirectives(
       const std::string& pdf_contents) {
     const char kCommentMark = '%';
 
@@ -3184,8 +3185,7 @@ class PDFExtensionAccessibilityTreeDumpTest
 
     // Set up the tree formatter. Parse filters and other directives in the test
     // file.
-    content::DumpAccessibilityTestHelper::Scenario scenario =
-        ParsePdfForExtraDirectives(pdf_contents);
+    ui::AXInspectScenario scenario = ParsePdfForExtraDirectives(pdf_contents);
 
     std::unique_ptr<AXTreeFormatter> formatter =
         AXInspectFactory::CreateFormatter(GetParam());

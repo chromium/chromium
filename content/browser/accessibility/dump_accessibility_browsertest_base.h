@@ -14,6 +14,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/dump_accessibility_test_helper.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 
 namespace content {
 
@@ -98,7 +99,7 @@ class DumpAccessibilityTestBase
   std::unique_ptr<ui::AXTreeFormatter> CreateFormatter() const;
 
   // Test scenario loaded from the test file.
-  DumpAccessibilityTestHelper::Scenario scenario_;
+  ui::AXInspectScenario scenario_;
 
   // Whether we should enable accessibility after navigating to the page,
   // otherwise we enable it first.

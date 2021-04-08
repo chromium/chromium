@@ -63,6 +63,8 @@ source_set("platform") {
     "inspect/ax_event_recorder.h",
     "inspect/ax_inspect.cc",
     "inspect/ax_inspect.h",
+    "inspect/ax_inspect_scenario.cc",
+    "inspect/ax_inspect_scenario.h",
     "inspect/ax_property_node.cc",
     "inspect/ax_property_node.h",
     "inspect/ax_tree_formatter.cc",
