@@ -4,6 +4,7 @@
 
 import {AsyncJobQueue} from '../async_job_queue.js';
 import * as dom from '../dom.js';
+import * as nav from '../nav.js';
 import * as state from '../state.js';
 import {ViewName} from '../type.js';
 
@@ -69,6 +70,12 @@ export class PTZPanel extends View {
      * @const
      */
     this.zoomOut_ = dom.get('#zoom-out', HTMLButtonElement);
+
+    state.addObserver(state.State.STREAMING, (streaming) => {
+      if (!streaming && state.get(this.name)) {
+        nav.close(this.name);
+      }
+    });
   }
 
   /**
