@@ -112,9 +112,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     private void initializeSheet(Callback<View> initializedCallback, Window window,
             KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root) {
         mBottomSheetContainer = root.get();
-
-        // Mark the container is gone until we actually need it.
-        mBottomSheetContainer.setVisibility(View.GONE);
+        mBottomSheetContainer.setVisibility(View.VISIBLE);
 
         LayoutInflater.from(root.get().getContext())
                 .inflate(R.layout.bottom_sheet, mBottomSheetContainer);

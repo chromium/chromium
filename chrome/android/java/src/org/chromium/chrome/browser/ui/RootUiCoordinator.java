@@ -445,6 +445,23 @@ public class RootUiCoordinator
             public void onExitVr() {}
         };
         VrModuleProvider.registerVrModeObserver(mVrModeObserver);
+
+        // Ensure the bottom sheet's container has been laid out at least once before hiding it.
+        // TODO(1196804): This should be owned by the BottomSheetControllerImpl, but there are some
+        //                complexities around the order of events resulting from waiting for layout.
+        ViewGroup sheetContainer = mActivity.findViewById(R.id.sheet_container);
+        if (!sheetContainer.isLaidOut()) {
+            sheetContainer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View view, int left, int top, int right, int bottom,
+                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    sheetContainer.setVisibility(View.GONE);
+                    sheetContainer.removeOnLayoutChangeListener(this);
+                }
+            });
+        } else {
+            sheetContainer.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -879,11 +896,9 @@ public class RootUiCoordinator
 
         // TODO(1094000): Initialize after inflation so we don't need to pass in view suppliers.
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
-                ()
-                        -> mScrimCoordinator,
-                sheetInitializedCallback, mActivity.getWindow(),
+                () -> mScrimCoordinator, sheetInitializedCallback, mActivity.getWindow(),
                 mActivity.getWindowAndroid().getKeyboardDelegate(),
-                () -> mActivity.findViewById(R.id.sheet_container /*R.id.coordinator*/));
+                () -> mActivity.findViewById(R.id.sheet_container));
         BottomSheetControllerFactory.setExceptionReporter(
                 (throwable)
                         -> PureJavaExceptionReporter.reportJavaException((Throwable) throwable));
