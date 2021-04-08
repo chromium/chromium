@@ -11416,6 +11416,7 @@
             'web_store',
             'canvas',
             'google_news',
+            'explore',
           ],
         },
       },
@@ -11455,6 +11456,11 @@
           'value': 'google_news',
           'caption': '''Google News (supported since version 91)''',
         },
+        {
+          'name': 'explore',
+          'value': 'explore',
+          'caption': '''Explore (supported since version 91)''',
+        },
       ],
       'supported_on': ['chrome_os:84-'],
       'features': {
@@ -11464,7 +11470,7 @@
       },
       'example_value': ['camera', 'browser_settings', 'os_settings', 'scanning', 'web_store', 'canvas'],
       'id': 689,
-      'caption': '''Configure the camera, browser settings, os settings, scanning, web store, canvas and Google news features to be disabled''',
+      'caption': '''Configure the camera, browser settings, os settings, scanning, web store, canvas, Google news and explore features to be disabled''',
       'tags': [],
       'desc': '''Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> features to be disabled.
 

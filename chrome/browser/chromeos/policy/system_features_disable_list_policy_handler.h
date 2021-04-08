@@ -27,7 +27,8 @@ enum SystemFeature : int {
   kWebStore = 5,         // The web store chrome app on Chrome OS.
   kCanvas = 6,           // The canvas web app on Chrome OS.
   kGoogleNews = 7,       // The Google news web app on Chrome OS.
-  kMaxValue = kGoogleNews
+  kExplore = 8,          // The explore web app on Chrome OS.
+  kMaxValue = kExplore
 };
 
 // A disabling mode that decides the user experience when a system feature is
@@ -46,6 +47,7 @@ extern const char kScanningFeature[];
 extern const char kWebStoreFeature[];
 extern const char kCanvasFeature[];
 extern const char kGoogleNewsFeature[];
+extern const char kExploreFeature[];
 
 extern const char kBlockedDisableMode[];
 extern const char kHiddenDisableMode[];

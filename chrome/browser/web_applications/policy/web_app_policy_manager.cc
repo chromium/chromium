@@ -461,6 +461,9 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kGoogleNews:
         disabled_web_apps_.insert(web_app::kGoogleNewsAppId);
         break;
+      case policy::SystemFeature::kExplore:
+        disabled_web_apps_.insert(web_app::kHelpAppId);
+        break;
     }
   }
 

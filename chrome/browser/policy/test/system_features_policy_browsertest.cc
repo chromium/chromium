@@ -189,6 +189,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
                    expected_visibility);
   }
 
+  // Used for non-link-capturing PWAs.
   void VerifyIsAppURLDisabled(const char* app_id,
                               const char* feature,
                               const char* url,
@@ -279,9 +280,14 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                           expected_visibility);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableCameraWithModes) {
+IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableSWAs) {
   InstallSWAs();
+
+  // Disable Camera app.
   VerifyAppDisableMode(web_app::kCameraAppId, kCameraFeature);
+
+  // Disable Explore app.
+  VerifyAppDisableMode(web_app::kHelpAppId, kExploreFeature);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
