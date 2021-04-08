@@ -1807,7 +1807,6 @@ crbug.com/613672 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-page.htm
 
 # Since there is no compositor thread when running tests then there is no main thread event queue. Hence the
 # logic for this test will be skipped when running Layout tests.
-crbug.com/770028 external/wpt/pointerevents/pointerlock/pointerevent_pointerrawupdate_in_pointerlock-manual.html [ Skip ]
 crbug.com/770028 external/wpt/pointerevents/pointerlock/pointerevent_getPredictedEvents_when_pointerlocked-manual.html [ Skip ]
 crbug.com/770028 external/wpt/pointerevents/pointerevent_predicted_events_attributes-manual.html [ Skip ]
 
