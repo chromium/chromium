@@ -5361,8 +5361,8 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
     // page.
     ClearTargetURL();
 
-    RenderWidgetHostViewBase* rwhvb =
-        static_cast<RenderWidgetHostViewBase*>(GetRenderWidgetHostView());
+    RenderWidgetHostViewBase* rwhvb = static_cast<RenderWidgetHostViewBase*>(
+        render_frame_host->GetMainFrame()->GetView());
     if (rwhvb)
       rwhvb->OnDidNavigateMainFrameToNewPage();
   }
@@ -5370,16 +5370,19 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
   if (delegate_)
     delegate_->DidNavigateMainFramePostCommit(this);
 
+  RenderViewHostImpl* rvh =
+      render_frame_host->GetMainFrame()->render_view_host();
+
   // The following events will not fire again if the page is restored from the
   // BackForwardCache. So fire them ourselves if needed.
   if (details.is_navigation_to_different_page() &&
-      GetRenderViewHost()->did_first_visually_non_empty_paint()) {
-    DidFirstVisuallyNonEmptyPaint(GetRenderViewHost());
+      rvh->did_first_visually_non_empty_paint()) {
+    DidFirstVisuallyNonEmptyPaint(rvh);
   }
-  if (GetRenderViewHost()->theme_color() != last_sent_theme_color_)
-    OnThemeColorChanged(GetRenderViewHost());
-  if (GetRenderViewHost()->background_color() != last_sent_background_color_)
-    OnBackgroundColorChanged(GetRenderViewHost());
+  if (rvh->theme_color() != last_sent_theme_color_)
+    OnThemeColorChanged(rvh);
+  if (rvh->background_color() != last_sent_background_color_)
+    OnBackgroundColorChanged(rvh);
 }
 
 void WebContentsImpl::DidNavigateAnyFramePostCommit(
