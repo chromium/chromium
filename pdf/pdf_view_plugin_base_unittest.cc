@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,6 +122,9 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, UserMetricsRecordAction, (const std::string&), (override));
 
+  const base::Value& sent_message() const { return sent_message_; }
+
+ private:
   base::Value sent_message_;
 };
 
@@ -140,7 +143,7 @@ TEST_F(PdfViewPluginBaseTest, ConsumeSaveToken) {
   expected_message.SetStringKey("type", "consumeSaveToken");
   expected_message.SetStringKey("token", kTokenString);
 
-  EXPECT_EQ(expected_message, fake_plugin_.sent_message_);
+  EXPECT_EQ(expected_message, fake_plugin_.sent_message());
 }
 
 TEST_F(PdfViewPluginBaseTest, HandleSetBackgroundColorMessage) {
