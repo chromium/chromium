@@ -43,11 +43,6 @@ ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
 }
 
 bool IsGenericProfile(const ProfileAttributesEntry& entry) {
-  // If the profile is using the placeholder avatar, fall back on the generic
-  // profile's themeable vector icon instead.
-  if (entry.GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex())
-    return true;
-
   return entry.GetAvatarIconIndex() == 0 &&
          GetProfileAttributesStorage().GetNumberOfProfiles() == 1;
 }
@@ -191,10 +186,7 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
     return AvatarToolbarButton::State::kGenericProfile;
   }
 
-  if (identity_animation_state_ ==
-          IdentityAnimationState::kShowingUntilTimeout ||
-      identity_animation_state_ ==
-          IdentityAnimationState::kShowingUntilNoLongerInUse) {
+  if (identity_animation_state_ == IdentityAnimationState::kShowing) {
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
   }
 
@@ -237,7 +229,7 @@ bool AvatarToolbarButtonDelegate::IsHighlightAnimationVisible() const {
   return highlight_animation_visible_;
 }
 
-void AvatarToolbarButtonDelegate::ShowIdentityAnimation(
+void AvatarToolbarButtonDelegate::MaybeShowIdentityAnimation(
     const gfx::Image& gaia_account_image) {
   // TODO(crbug.com/990286): Get rid of this logic completely when we cache the
   // Google account image in the profile cache and thus it is always available.
@@ -247,23 +239,25 @@ void AvatarToolbarButtonDelegate::ShowIdentityAnimation(
   }
 
   // Check that the user is still signed in. See https://crbug.com/1025674
-  CoreAccountInfo user_identity =
-      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-  if (user_identity.IsEmpty()) {
+  if (!IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSignin)) {
     identity_animation_state_ = IdentityAnimationState::kNotShowing;
     return;
   }
 
-  identity_animation_state_ = IdentityAnimationState::kShowingUntilTimeout;
-  avatar_toolbar_button_->UpdateText();
+  ShowIdentityAnimation();
+}
 
-  // Hide the pill after a while.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), user_identity.account_id),
-      kIdentityAnimationDuration);
+void AvatarToolbarButtonDelegate::SetHasInProductHelpPromo(bool has_promo) {
+  if (has_in_product_help_promo_ == has_promo)
+    return;
+
+  has_in_product_help_promo_ = has_promo;
+  if (has_in_product_help_promo_) {
+    ShowIdentityAnimation();
+  } else {
+    MaybeHideIdentityAnimation();
+  }
 }
 
 void AvatarToolbarButtonDelegate::NotifyClick() {
@@ -391,37 +385,29 @@ void AvatarToolbarButtonDelegate::OnUserIdentityChanged() {
   avatar_toolbar_button_->UpdateIcon();
 }
 
-void AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout(
-    CoreAccountId account_id) {
-  CoreAccountInfo user_identity =
-      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-  // If another account is signed-in then the one that initiated this animation,
-  // don't hide it. There's one more pending OnIdentityAnimationTimeout() that
-  // will properly hide it after the proper delay.
-  if (!user_identity.IsEmpty() && user_identity.account_id != account_id)
+void AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout() {
+  --identity_animation_timeout_count_;
+  // If the count is > 0, there's at least one more pending
+  // OnIdentityAnimationTimeout() that will hide it after the proper delay.
+  if (identity_animation_timeout_count_ > 0)
     return;
 
-  DCHECK_EQ(identity_animation_state_,
-            IdentityAnimationState::kShowingUntilTimeout);
-  identity_animation_state_ =
-      IdentityAnimationState::kShowingUntilNoLongerInUse;
+  DCHECK_EQ(identity_animation_state_, IdentityAnimationState::kShowing);
   MaybeHideIdentityAnimation();
 }
 
 void AvatarToolbarButtonDelegate::MaybeHideIdentityAnimation() {
   // No-op if not showing or if the timeout hasn't passed, yet.
-  if (identity_animation_state_ !=
-      IdentityAnimationState::kShowingUntilNoLongerInUse) {
+  if (identity_animation_state_ != IdentityAnimationState::kShowing ||
+      identity_animation_timeout_count_ > 0) {
     return;
   }
 
   // Keep identity visible if this button is in use (hovered or has focus) or
-  // if its parent is in use (which makes it highlighted). We should not move
-  // things around when the user wants to click on |this| or another button in
-  // the parent.
+  // has an associated In-Product-Help promo. We should not move things around
+  // when the user wants to click on |this| or another button in the parent.
   if (avatar_toolbar_button_->IsMouseHovered() ||
-      avatar_toolbar_button_->HasFocus()) {
+      avatar_toolbar_button_->HasFocus() || has_in_product_help_promo_) {
     return;
   }
 
@@ -437,4 +423,17 @@ void AvatarToolbarButtonDelegate::HideHighlightAnimation() {
   highlight_animation_visible_ = false;
   avatar_toolbar_button_->UpdateText();
   avatar_toolbar_button_->NotifyHighlightAnimationFinished();
+}
+
+void AvatarToolbarButtonDelegate::ShowIdentityAnimation() {
+  identity_animation_state_ = IdentityAnimationState::kShowing;
+  avatar_toolbar_button_->UpdateText();
+
+  // Hide the pill after a while.
+  ++identity_animation_timeout_count_;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kIdentityAnimationDuration);
 }

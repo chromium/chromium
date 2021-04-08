@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -100,7 +101,7 @@ void AvatarToolbarButton::UpdateIcon() {
   gfx::Image gaia_account_image = delegate_->GetGaiaAccountImage();
   for (auto state : kButtonStates)
     SetImageModel(state, GetAvatarIcon(state, gaia_account_image));
-  delegate_->ShowIdentityAnimation(gaia_account_image);
+  delegate_->MaybeShowIdentityAnimation(gaia_account_image);
 
   SetInsets();
 }
@@ -256,6 +257,13 @@ void AvatarToolbarButton::NotifyClick(const ui::Event& event) {
       BrowserWindow::AVATAR_BUBBLE_MODE_DEFAULT,
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
       event.IsKeyEvent());
+}
+
+void AvatarToolbarButton::AfterPropertyChange(const void* key,
+                                              int64_t old_value) {
+  if (key == kHasInProductHelpPromoKey)
+    delegate_->SetHasInProductHelpPromo(GetProperty(kHasInProductHelpPromoKey));
+  ToolbarButton::AfterPropertyChange(key, old_value);
 }
 
 std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {

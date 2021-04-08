@@ -47,7 +47,12 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void ShowHighlightAnimation();
   bool IsHighlightAnimationVisible() const;
 
-  void ShowIdentityAnimation(const gfx::Image& gaia_account_image);
+  // Should be called when the icon is updated. This may trigger the identity
+  // pill animation if the delegate is waiting for the image.
+  void MaybeShowIdentityAnimation(const gfx::Image& gaia_account_image);
+
+  // Enables or disables the IPH highlight.
+  void SetHasInProductHelpPromo(bool has_promo);
 
   // Called by the AvatarToolbarButton to notify the delegate about events.
   void NotifyClick();
@@ -56,12 +61,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void OnHighlightChanged();
 
  private:
-  enum class IdentityAnimationState {
-    kNotShowing,
-    kWaitingForImage,
-    kShowingUntilTimeout,
-    kShowingUntilNoLongerInUse
-  };
+  enum class IdentityAnimationState { kNotShowing, kWaitingForImage, kShowing };
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
@@ -94,10 +94,14 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   // Initiates showing the identity.
   void OnUserIdentityChanged();
 
-  void OnIdentityAnimationTimeout(CoreAccountId account_id);
+  void OnIdentityAnimationTimeout();
   // Called after the user interacted with the button or after some timeout.
   void MaybeHideIdentityAnimation();
   void HideHighlightAnimation();
+
+  // Shows the identity pill animation. If the animation is already showing,
+  // this extends the duration of the current animation.
+  void ShowIdentityAnimation();
 
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
@@ -112,7 +116,15 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   Profile* const profile_;
   IdentityAnimationState identity_animation_state_ =
       IdentityAnimationState::kNotShowing;
+
+  // Count of identity pill animation timeouts that are currently scheduled.
+  // Multiple timeouts are scheduled when multiple animation triggers happen in
+  // a quick sequence (before the first timeout passes). The identity pill tries
+  // to close when this reaches 0.
+  int identity_animation_timeout_count_ = 0;
+
   bool refresh_tokens_loaded_ = false;
+  bool has_in_product_help_promo_ = false;
 
   // Whether the avatar highlight animation is visible. The animation is shown
   // when an Autofill datatype is saved. When this is true the avatar button
