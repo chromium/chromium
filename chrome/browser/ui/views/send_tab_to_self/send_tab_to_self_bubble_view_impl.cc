@@ -33,6 +33,10 @@ constexpr int kDeviceButtonHeight = 56;
 // scrollable.
 constexpr int kMaximumButtons = 5;
 
+// Used to group the device buttons together, which makes moving between them
+// with arrow keys possible.
+constexpr int kDeviceButtonGroup = 0;
+
 }  // namespace
 
 SendTabToSelfBubbleViewImpl::SendTabToSelfBubbleViewImpl(
@@ -123,9 +127,13 @@ void SendTabToSelfBubbleViewImpl::PopulateScrollView(
   device_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   for (const auto& device : devices) {
-    device_list_view->AddChildView(
+    auto* view = device_list_view->AddChildView(
         std::make_unique<SendTabToSelfBubbleDeviceButton>(this, device));
+    view->SetGroup(kDeviceButtonGroup);
   }
+
+  if (!device_list_view->children().empty())
+    SetInitiallyFocusedView(device_list_view->children()[0]);
 
   MaybeSizeToContents();
   Layout();

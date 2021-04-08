@@ -72,8 +72,19 @@ class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
   SendTabToSelfBubbleViewImpl* bubble_;
 };
 
-TEST_F(SendTabToSelfBubbleViewImplTest, Init) {
-  EXPECT_EQ(3U, bubble_->GetButtonContainerForTesting()->children().size());
+TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
+  auto* container = bubble_->GetButtonContainerForTesting();
+
+  ASSERT_EQ(3U, container->children().size());
+
+  // All three device entries should be grouped together, and the first one
+  // should receive initial keyboard focus.
+  EXPECT_EQ(container->children()[0], bubble_->GetInitiallyFocusedView());
+  EXPECT_NE(-1, container->children()[0]->GetGroup());
+  EXPECT_EQ(container->children()[0]->GetGroup(),
+            container->children()[1]->GetGroup());
+  EXPECT_EQ(container->children()[0]->GetGroup(),
+            container->children()[2]->GetGroup());
 }
 
 TEST_F(SendTabToSelfBubbleViewImplTest, ButtonPressed) {
