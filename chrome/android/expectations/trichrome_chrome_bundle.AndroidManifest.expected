@@ -463,12 +463,12 @@
         <data android:mimeType="text/plain"/>
       </intent-filter>  # DIFF-ANCHOR: 4ee601b7
     </activity>  # DIFF-ANCHOR: 44158f9b
-    <activity  # DIFF-ANCHOR: f2fee469
+    <activity  # DIFF-ANCHOR: fbf1ba15
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:exported="false"
-        android:name="org.chromium.chrome.browser.signin.SigninActivity"
+        android:name="org.chromium.chrome.browser.signin.SyncConsentActivity"
         android:theme="@style/Theme.Chromium.DialogWhenLarge">
-    </activity>  # DIFF-ANCHOR: f2fee469
+    </activity>  # DIFF-ANCHOR: fbf1ba15
     <activity  # DIFF-ANCHOR: d2967c86
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:exported="false"

@@ -115,15 +115,15 @@ public class SigninSignoutIntegrationTest {
     public void testSignIn() {
         CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccountAndWaitForSeeding(
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        SigninActivity signinActivity = ActivityUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
+        SyncConsentActivity syncConsentActivity = ActivityUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
                             mActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
                             AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
                 });
         assertSignedOut();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { signinActivity.findViewById(R.id.positive_button).performClick(); });
+                () -> { syncConsentActivity.findViewById(R.id.positive_button).performClick(); });
         CriteriaHelper.pollUiThread(this::assertSignedIn);
         verify(mSignInStateObserverMock).onSignedIn();
         verify(mSignInStateObserverMock, never()).onSignedOut();

@@ -30,7 +30,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Implementation of {@link SyncConsentFragmentBase} for {@link SigninActivity}. */
+/** Implementation of {@link SyncConsentFragmentBase} for {@link SyncConsentActivity}. */
 public class SyncConsentFragment extends SyncConsentFragmentBase {
     private static final String ARGUMENT_PERSONALIZED_PROMO_ACTION =
             "SigninFragment.PersonalizedPromoAction";

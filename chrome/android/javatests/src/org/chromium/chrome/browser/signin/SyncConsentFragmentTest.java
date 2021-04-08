@@ -117,7 +117,7 @@ public class SyncConsentFragmentTest {
     @Mock
     private FirstRunPageDelegate mFirstRunPageDelegateMock;
 
-    private SigninActivity mSigninActivity;
+    private SyncConsentActivity mSyncConsentActivity;
 
     @Before
     public void setUp() {
@@ -129,8 +129,8 @@ public class SyncConsentFragmentTest {
     public void tearDown() throws Exception {
         // Since SigninActivity is launched inside this test class, we need to
         // tear it down inside the class as well.
-        if (mSigninActivity != null) {
-            ApplicationTestUtils.finishActivity(mSigninActivity);
+        if (mSyncConsentActivity != null) {
+            ApplicationTestUtils.finishActivity(mSyncConsentActivity);
         }
     }
 
@@ -138,13 +138,13 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSigninFragmentNewAccount() throws IOException {
-        mSigninActivity = ActivityUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
+        mSyncConsentActivity = ActivityUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER);
                 });
-        mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
+        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "signin_fragment_new_account");
     }
 
@@ -155,13 +155,13 @@ public class SyncConsentFragmentTest {
         CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mAccountManagerTestRule.addAccount("test.second.account@gmail.com");
-        mSigninActivity = ActivityUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
+        mSyncConsentActivity = ActivityUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoChooseAccountFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
                 });
-        mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
+        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "signin_fragment_choose_primary_account");
     }
 
@@ -172,13 +172,13 @@ public class SyncConsentFragmentTest {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         String secondAccountName = "test.second.account@gmail.com";
         mAccountManagerTestRule.addAccount(secondAccountName);
-        mSigninActivity = ActivityUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
+        mSyncConsentActivity = ActivityUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoChooseAccountFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER, secondAccountName);
                 });
-        mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
+        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "signin_fragment_choose_secondary_account");
     }
 
@@ -188,13 +188,13 @@ public class SyncConsentFragmentTest {
     public void testSigninFragmentDefaultAccount() throws IOException {
         CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mSigninActivity = ActivityUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
+        mSyncConsentActivity = ActivityUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
                 });
-        mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
+        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "signin_fragment_default_account");
     }
 
@@ -294,8 +294,8 @@ public class SyncConsentFragmentTest {
     public void testClickingSettingsDoesNotSetFirstSetupComplete() {
         CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mSigninActivity = ActivityUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
+        mSyncConsentActivity = ActivityUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
                             mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
                             accountInfo.getEmail());
@@ -321,8 +321,8 @@ public class SyncConsentFragmentTest {
     public void testSigninFragmentWithDefaultFlow() {
         HistogramDelta settingsHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.SETTINGS);
-        mSigninActivity = ActivityUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
+        mSyncConsentActivity = ActivityUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(
                             mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS);
                 });
@@ -340,8 +340,8 @@ public class SyncConsentFragmentTest {
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         String nonDefaultAccountName = "test.account.nondefault@gmail.com";
         mAccountManagerTestRule.addAccount(nonDefaultAccountName);
-        mSigninActivity = ActivityUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
+        mSyncConsentActivity = ActivityUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER, defaultAccountInfo.getEmail());

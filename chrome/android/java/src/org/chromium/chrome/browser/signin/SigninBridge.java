@@ -43,7 +43,7 @@ import org.chromium.ui.base.WindowAndroid;
  */
 final class SigninBridge {
     /**
-     * Launches {@link SigninActivity}.
+     * Launches {@link SyncConsentActivity}.
      * @param windowAndroid WindowAndroid from which to get the Context.
      * @param accessPoint for metrics purposes.
      */

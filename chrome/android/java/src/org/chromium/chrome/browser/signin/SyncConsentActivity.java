@@ -20,13 +20,13 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
  * sign-in promos. For more details see {@link SyncConsentFragmentBase}.
  */
 // TODO(https://crbug.com/820491): extend AsyncInitializationActivity.
-public class SigninActivity extends ChromeBaseAppCompatActivity {
+public class SyncConsentActivity extends ChromeBaseAppCompatActivity {
     private static final String ARGUMENT_FRAGMENT_ARGS = "SigninActivity.FragmentArgs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Make sure the native is initialized before calling super.onCreate(), as it might recreate
-        // SigninFragment that currently depends on native. See https://crbug.com/983730.
+        // SyncConsentFragment that currently depends on native. See https://crbug.com/983730.
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
 
         super.onCreate(savedInstanceState);
@@ -43,12 +43,12 @@ public class SigninActivity extends ChromeBaseAppCompatActivity {
     }
 
     /**
-     * Create a new intent to start the SigninActivity.
+     * Creates a new intent to start the {@link SyncConsentActivity}.
      *
-     * @param fragmentArgs arguments to create an Sign-in Fragment.
+     * @param fragmentArgs arguments to create an {@link SyncConsentFragment}.
      */
     static Intent createIntent(Context context, Bundle fragmentArgs) {
-        Intent intent = new Intent(context, SigninActivity.class);
+        Intent intent = new Intent(context, SyncConsentActivity.class);
         intent.putExtra(ARGUMENT_FRAGMENT_ARGS, fragmentArgs);
         return intent;
     }

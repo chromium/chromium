@@ -80,10 +80,10 @@ public final class SigninActivityLauncherImpl implements SigninActivityLauncher 
     }
 
     /**
-     * Launches the {@link SigninActivity} if signin is allowed.
+     * Launches the {@link SyncConsentActivity} if signin is allowed.
      * @param context A {@link Context} object.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
-     * @return a boolean indicating if the {@link SigninActivity} is launched.
+     * @return a boolean indicating if the {@link SyncConsentActivity} is launched.
      */
     @Override
     public boolean launchActivityIfAllowed(Context context, @SigninAccessPoint int accessPoint) {
@@ -100,7 +100,7 @@ public final class SigninActivityLauncherImpl implements SigninActivityLauncher 
     }
 
     private void launchInternal(Context context, Bundle fragmentArgs) {
-        Intent intent = SigninActivity.createIntent(context, fragmentArgs);
+        Intent intent = SyncConsentActivity.createIntent(context, fragmentArgs);
         context.startActivity(intent);
     }
 }

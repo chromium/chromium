@@ -32,7 +32,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
  * Tests {@link SigninActivityLauncherImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class SigninActivityLauncherImplTest {
+public class SyncConsentActivityLauncherImplTest {
     @Mock
     private SigninManager mSigninManagerMock;
 
