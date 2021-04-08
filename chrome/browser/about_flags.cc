@@ -668,6 +668,7 @@ const char kArcUseHighMemoryDalvikProfileInternalName[] =
 const char kLacrosPrimaryInternalName[] = "lacros-primary";
 const char kLacrosSupportInternalName[] = "lacros-support";
 const char kLacrosStabilityInternalName[] = "lacros-stability";
+const char kLacrosWebAppsInternalName[] = "lacros-web-apps";
 
 const FeatureEntry::Choice kLacrosStabilityChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -2990,6 +2991,9 @@ const FeatureEntry kFeatureEntries[] = {
     {kLacrosStabilityInternalName, flag_descriptions::kLacrosStabilityName,
      flag_descriptions::kLacrosStabilityDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kLacrosStabilityChoices)},
+    {kLacrosWebAppsInternalName, flag_descriptions::kLacrosWebAppsName,
+     flag_descriptions::kLacrosWebAppsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kLacrosWebApps)},
     {kLacrosPrimaryInternalName, flag_descriptions::kLacrosPrimaryName,
      flag_descriptions::kLacrosPrimaryDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kLacrosPrimary)},
@@ -5425,10 +5429,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFullRestoreDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFullRestore)},
 
-    {"lacros-web-apps", flag_descriptions::kLacrosWebAppsName,
-     flag_descriptions::kLacrosWebAppsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kLacrosWebApps)},
-
     {"use-fake-device-for-media-stream",
      flag_descriptions::kUseFakeDeviceForMediaStreamName,
      flag_descriptions::kUseFakeDeviceForMediaStreamDescription, kOsCrOS,
@@ -7274,17 +7274,20 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return true;
   }
 
-  if (!strcmp(kLacrosSupportInternalName, entry.internal_name) ||
-      !strcmp(kLacrosStabilityInternalName, entry.internal_name)) {
-    if (!crosapi::browser_util::IsLacrosAllowedToBeEnabled(channel)) {
-      return true;
-    }
+  if (!strcmp(kLacrosSupportInternalName, entry.internal_name)) {
+    return !crosapi::browser_util::IsLacrosSupportFlagAllowed(channel);
+  }
+
+  if (!strcmp(kLacrosStabilityInternalName, entry.internal_name)) {
+    return !crosapi::browser_util::IsLacrosAllowedToBeEnabled(channel);
   }
 
   if (!strcmp(kLacrosPrimaryInternalName, entry.internal_name)) {
-    if (!crosapi::browser_util::IsLacrosPrimaryBrowserAllowed(channel)) {
-      return true;
-    }
+    return !crosapi::browser_util::IsLacrosPrimaryFlagAllowed(channel);
+  }
+
+  if (!strcmp(kLacrosWebAppsInternalName, entry.internal_name)) {
+    return !crosapi::browser_util::IsLacrosAllowedToBeEnabled(channel);
   }
 
   // The following flags are only available to teamfooders.

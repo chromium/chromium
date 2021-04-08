@@ -321,6 +321,11 @@ bool IsLacrosEnabledWithUser(const User* user) {
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
+bool IsLacrosSupportFlagAllowed(version_info::Channel channel) {
+  return IsLacrosAllowedToBeEnabled(channel) &&
+         (GetLaunchSwitch() == LacrosLaunchSwitch::kUserChoice);
+}
+
 void SetLacrosEnabledForTest(bool force_enabled) {
   g_lacros_enabled_for_test = force_enabled;
 }
@@ -404,6 +409,11 @@ bool IsLacrosPrimaryBrowserAllowed(Channel channel) {
       // browser, yet.
       return false;
   }
+}
+
+bool IsLacrosPrimaryFlagAllowed(version_info::Channel channel) {
+  return IsLacrosPrimaryBrowserAllowed(channel) &&
+         (GetLaunchSwitch() == LacrosLaunchSwitch::kUserChoice);
 }
 
 bool IsLacrosAllowedToLaunch() {

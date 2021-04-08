@@ -90,6 +90,9 @@ bool IsLacrosEnabled(version_info::Channel channel);
 // UserManager.
 bool IsLacrosEnabledWithUser(const user_manager::User* user);
 
+// Returns true if |chromeos::features::kLacrosSupport| flag is allowed.
+bool IsLacrosSupportFlagAllowed(version_info::Channel channel);
+
 // Forces IsLacrosEnabled() to return true for testing.
 void SetLacrosEnabledForTest(bool force_enabled);
 
@@ -115,6 +118,9 @@ void SetLacrosPrimaryBrowserForTest(base::Optional<bool> value);
 // Note that IsLacrosPrimaryBrowser may return false, even if this returns
 // true, specifically, the feature is disabled by user/policy.
 bool IsLacrosPrimaryBrowserAllowed(version_info::Channel channel);
+
+// Returns true if |chromeos::features::kLacrosPrimary| flag is allowed.
+bool IsLacrosPrimaryFlagAllowed(version_info::Channel channel);
 
 // Returns true if Lacros is allowed to launch and show a window. This can
 // return false if the user is using multi-signin, which is mutually exclusive
