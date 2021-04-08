@@ -49,6 +49,9 @@
         'args': [
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
         ],
+        'swarming': {
+          'shards': 2,
+        },
       },
     },
   },
