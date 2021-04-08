@@ -95,6 +95,28 @@ requested alignment. This may be wasteful, but allows taking advantage of
 natural PartitionAlloc alignment guarantees. Allocations with an alignment
 requirement greater than `base::kAlignment` are expected to be very rare.
 
+## PartitionAlloc-Everywhere
+
+Originally, PartitionAlloc was used only in Blink (Chromium’s rendering engine).
+It was invoked explicitly, by calling PartitionAlloc APIs directly.
+
+PartitionAlloc-Everywhere is the name of the project that brought PartitionAlloc
+to the entire-ish codebase (exclusions apply). This was done by intercepting
+`malloc()`, `free()`, `realloc()`, aforementioned `posix_memalign()`, etc. and
+routing them into PartitionAlloc. The shim located in
+`base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h` is
+responsible for intercepting. For more details, see
+[base/allocator/README.md](../../../base/allocator/README.md).
+
+A special, catch-it-all *Malloc* partition has been created for the intercepted
+`malloc()` et al. This is to isolate from already existing Blink partitions.
+The only exception from that is Blink's *FastMalloc* partition, which was also
+catch-it-all in nature, so it's perfectly fine to merge these together, to
+minimize fragmentation.
+
+PartitionAlloc-Everywhere was launched in M89 for Windows 64-bit and Android.
+Windows 32-bit and Linux followed it shortly after, in M90.
+
 ## Architecture
 
 ### Many Different Flavors of Pages
