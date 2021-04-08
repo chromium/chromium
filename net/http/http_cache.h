@@ -301,13 +301,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   enum {
     kResponseInfoIndex = 0,
     kResponseContentIndex,
-    // Only currently used in DoTruncateCachedMetadata().
-    // TODO(mmenke): Remove this in and DoTruncateCachedMetadata() in M79, after
-    // most metadata entries in the cache have been removed. Without
-    // DoTruncateCachedMetadata(), the metadata will be removed when a cache
-    // entry is destroyed, but some conditionalized updates will keep it around.
-    kMetadataIndex,
-
+    kDeprecatedMetadataIndex,
     // Must remain at the end of the enum.
     kNumCacheEntryDataIndices
   };
