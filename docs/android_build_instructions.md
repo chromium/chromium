@@ -332,6 +332,19 @@ You can see these log via `adb logcat`, or:
 out/Default/bin/chrome_public_apk logcat
 ```
 
+Logcat supports an additional feature of filtering and highlighting user-defined patterns. To use
+this mechanism, define a shell variable: `CHROMIUM_LOGCAT_HIGHLIGHT` and assign your desired
+pattern. The pattern will be used to search for any substring (ie. no need to prefix or suffix it
+with `.*`), eg:
+
+```shell
+export CHROMIUM_LOGCAT_HIGHLIGHT='(WARNING|cr_Child)'
+out/Default.bin/chrome_public_apk logcat
+# Highlights messages/tags containing WARNING and cr_Child strings.
+```
+
+Note: both _Message_ and _Tag_ portion of logcat are matched against the pattern.
+
 To debug C++ code, use one of the following commands:
 
 ```shell

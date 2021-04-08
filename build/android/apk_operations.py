@@ -675,6 +675,15 @@ class _LogcatProcessor(object):
     # _start_pattern. There can be multiple "Start proc" messages from prior
     # runs of the app.
     self._found_initial_pid = self._primary_pid != None
+    # Retrieve any additional patterns that are relevant for the User.
+    self._user_defined_highlight = None
+    user_regex = os.environ['CHROMIUM_LOGCAT_HIGHLIGHT']
+    if user_regex:
+      self._user_defined_highlight = re.compile(user_regex)
+      if not self._user_defined_highlight:
+        print(_Colorize(
+            'Rejecting invalid regular expression: {}'.format(user_regex),
+            colorama.Fore.RED + colorama.Style.BRIGHT))
 
   def _UpdateMyPids(self):
     # We intentionally do not clear self._my_pids to make sure that the
@@ -741,10 +750,16 @@ class _LogcatProcessor(object):
 
   def _PrintParsedLine(self, parsed_line, dim=False):
     tid_style = colorama.Style.NORMAL
+    user_match = self._user_defined_highlight and (
+        re.search(self._user_defined_highlight, parsed_line.tag)
+        or re.search(self._user_defined_highlight, parsed_line.message))
+
     # Make the main thread bright.
     if not dim and parsed_line.pid == parsed_line.tid:
       tid_style = colorama.Style.BRIGHT
     pid_style = self._GetPidStyle(parsed_line.pid, dim)
+    msg_style = pid_style if not user_match else (colorama.Fore.GREEN +
+                                                  colorama.Style.BRIGHT)
     # We have to pad before adding color as that changes the width of the tag.
     pid_str = _Colorize('{:5}'.format(parsed_line.pid), pid_style)
     tid_str = _Colorize('{:5}'.format(parsed_line.tid), tid_style)
@@ -756,7 +771,7 @@ class _LogcatProcessor(object):
     if self._deobfuscator:
       messages = self._deobfuscator.TransformLines(messages)
     for message in messages:
-      message = _Colorize(message, pid_style)
+      message = _Colorize(message, msg_style)
       sys.stdout.write('{} {} {} {} {} {}: {}\n'.format(
           parsed_line.date, parsed_line.invokation_time, pid_str, tid_str,
           priority, tag, message))
