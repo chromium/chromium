@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/components/web_app_protocol_handler_registration.h"
 
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
@@ -11,14 +12,15 @@ namespace web_app {
 
 #if !defined(OS_WIN)
 // Registers a protocol handler for the web app with the OS.
-//
-// TODO(crbug.com/1174805): Add a callback as part of the protocol handling
-// registration flow.
 void RegisterProtocolHandlersWithOs(
     const AppId& app_id,
     const std::string& app_name,
     Profile* profile,
-    std::vector<apps::ProtocolHandlerInfo> protocol_handlers) {}
+    std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
+    base::OnceCallback<void(bool)> callback) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false));
+}
 
 // Unregisters a protocol handler for the web app with the OS.
 //

@@ -230,7 +230,10 @@ base::Optional<base::FilePath> CreateAppLauncherFile(
   base::DeleteFile(app_specific_launcher_path);
   if (!base::CreateWinHardLink(app_specific_launcher_path, pwa_launcher_path) &&
       !base::CopyFile(pwa_launcher_path, app_specific_launcher_path)) {
-    DPLOG(ERROR) << "Unable to copy the generic PWA launcher";
+    DPLOG(ERROR) << "Unable to copy the generic PWA launcher."
+                 << " pwa_launcher_path: " << pwa_launcher_path
+                 << " app_specific_launcher_path: "
+                 << app_specific_launcher_path;
     RecordRegistration(RegistrationResult::kFailToCopyFromGenericLauncher);
     return base::nullopt;
   }

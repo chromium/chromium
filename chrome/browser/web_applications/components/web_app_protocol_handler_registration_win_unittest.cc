@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/common/chrome_constants.h"
@@ -86,10 +87,14 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest, RegisterHandlers) {
   handler2_info.url = GURL(kApp1Url);
   auto handler2 = GetProtocolHandler(handler2_info, kApp1Id);
 
+  base::RunLoop run_loop;
   RegisterProtocolHandlersWithOs(kApp1Name, kApp1Id, GetProfile(),
-                                 {handler1_info, handler2_info});
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
+                                 {handler1_info, handler2_info},
+                                 base::BindLambdaForTesting([&](bool success) {
+                                   EXPECT_TRUE(success);
+                                   run_loop.Quit();
+                                 }));
+  run_loop.Run();
 
   EXPECT_TRUE(protocol_handler_registry()->IsRegistered(handler1));
   EXPECT_TRUE(protocol_handler_registry()->IsDefault(handler1));
@@ -105,20 +110,28 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
   handler1_info.url = GURL(kApp1Url);
   auto handler1 = GetProtocolHandler(handler1_info, kApp1Id);
 
+  base::RunLoop handler1_run_loop;
   RegisterProtocolHandlersWithOs(kApp1Name, kApp1Id, GetProfile(),
-                                 {handler1_info});
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
+                                 {handler1_info},
+                                 base::BindLambdaForTesting([&](bool success) {
+                                   EXPECT_TRUE(success);
+                                   handler1_run_loop.Quit();
+                                 }));
+  handler1_run_loop.Run();
 
   apps::ProtocolHandlerInfo handler2_info;
   handler2_info.protocol = "mailto";
   handler2_info.url = GURL(kApp2Url);
   auto handler2 = GetProtocolHandler(handler2_info, kApp2Id);
 
+  base::RunLoop handler2_run_loop;
   RegisterProtocolHandlersWithOs(kApp2Name, kApp2Id, GetProfile(),
-                                 {handler2_info});
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
+                                 {handler2_info},
+                                 base::BindLambdaForTesting([&](bool success) {
+                                   EXPECT_TRUE(success);
+                                   handler2_run_loop.Quit();
+                                 }));
+  handler2_run_loop.Run();
 
   EXPECT_TRUE(protocol_handler_registry()->IsRegistered(handler1));
   EXPECT_TRUE(protocol_handler_registry()->IsDefault(handler1));
@@ -133,10 +146,14 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest, UnregisterHandler) {
   handler_info.url = GURL(kApp1Url);
   auto handler = GetProtocolHandler(handler_info, kApp1Id);
 
+  base::RunLoop run_loop;
   RegisterProtocolHandlersWithOs(kApp1Name, kApp1Id, GetProfile(),
-                                 {handler_info});
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
+                                 {handler_info},
+                                 base::BindLambdaForTesting([&](bool success) {
+                                   EXPECT_TRUE(success);
+                                   run_loop.Quit();
+                                 }));
+  run_loop.Run();
 
   ASSERT_TRUE(protocol_handler_registry()->IsRegistered(handler));
   ASSERT_TRUE(protocol_handler_registry()->IsDefault(handler));

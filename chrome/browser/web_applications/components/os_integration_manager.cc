@@ -298,6 +298,15 @@ void OsIntegrationManager::DisableForceEnabledFileHandlingOriginTrial(
       app_id);
 }
 
+base::Optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
+    const AppId& app_id,
+    const GURL& protocol_url) {
+  if (!protocol_handler_manager_)
+    return base::Optional<GURL>();
+
+  return protocol_handler_manager_->TranslateProtocolUrl(app_id, protocol_url);
+}
+
 FileHandlerManager& OsIntegrationManager::file_handler_manager_for_testing() {
   DCHECK(file_handler_manager_);
   return *file_handler_manager_;
@@ -306,6 +315,12 @@ FileHandlerManager& OsIntegrationManager::file_handler_manager_for_testing() {
 UrlHandlerManager& OsIntegrationManager::url_handler_manager_for_testing() {
   DCHECK(url_handler_manager_);
   return *url_handler_manager_;
+}
+
+ProtocolHandlerManager&
+OsIntegrationManager::protocol_handler_manager_for_testing() {
+  DCHECK(protocol_handler_manager_);
+  return *protocol_handler_manager_;
 }
 
 ScopedOsHooksSuppress OsIntegrationManager::ScopedSuppressOsHooksForTesting() {
@@ -354,11 +369,8 @@ void OsIntegrationManager::RegisterProtocolHandlers(
     return;
   }
 
-  protocol_handler_manager_->RegisterOsProtocolHandlers(app_id);
-
-  // TODO(crbug.com/1087219): callback should be run after all hooks are
-  // deployed, need to refactor protocol_handler_manager to allow this.
-  std::move(callback).Run(true);
+  protocol_handler_manager_->RegisterOsProtocolHandlers(app_id,
+                                                        std::move(callback));
 }
 
 void OsIntegrationManager::RegisterUrlHandlers(

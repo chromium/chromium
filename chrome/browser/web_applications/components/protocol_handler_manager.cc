@@ -25,6 +25,20 @@ void ProtocolHandlerManager::Start() {
   DCHECK(app_registrar_);
 }
 
+base::Optional<GURL> ProtocolHandlerManager::TranslateProtocolUrl(
+    const AppId& app_id,
+    const GURL& protocol_url) const {
+  std::vector<ProtocolHandler> handlers = GetAppProtocolHandlers(app_id);
+
+  for (const auto& handler : handlers) {
+    if (handler.protocol() == protocol_url.scheme()) {
+      return handler.TranslateUrl(protocol_url);
+    }
+  }
+
+  return base::nullopt;
+}
+
 std::vector<ProtocolHandler> ProtocolHandlerManager::GetHandlersFor(
     const std::string& protocol) const {
   std::vector<ProtocolHandler> protocol_handlers;
@@ -56,22 +70,26 @@ std::vector<ProtocolHandler> ProtocolHandlerManager::GetAppProtocolHandlers(
   return protocol_handlers;
 }
 
-void ProtocolHandlerManager::RegisterOsProtocolHandlers(const AppId& app_id) {
+void ProtocolHandlerManager::RegisterOsProtocolHandlers(
+    const AppId& app_id,
+    base::OnceCallback<void(bool)> callback) {
   const std::vector<apps::ProtocolHandlerInfo> handlers =
       GetAppProtocolHandlerInfos(app_id);
-  RegisterOsProtocolHandlers(app_id, handlers);
+  RegisterOsProtocolHandlers(app_id, handlers, std::move(callback));
 }
 
 void ProtocolHandlerManager::RegisterOsProtocolHandlers(
     const AppId& app_id,
-    const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers) {
+    const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
+    base::OnceCallback<void(bool)> callback) {
   if (!app_registrar_->IsLocallyInstalled(app_id))
     return;
 
-  if (!protocol_handlers.empty())
-    RegisterProtocolHandlersWithOs(app_id,
-                                   app_registrar_->GetAppShortName(app_id),
-                                   profile_, protocol_handlers);
+  if (!protocol_handlers.empty()) {
+    RegisterProtocolHandlersWithOs(
+        app_id, app_registrar_->GetAppShortName(app_id), profile_,
+        protocol_handlers, std::move(callback));
+  }
 }
 
 void ProtocolHandlerManager::UnregisterOsProtocolHandlers(const AppId& app_id) {

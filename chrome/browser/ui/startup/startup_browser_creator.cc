@@ -40,6 +40,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/startup_helper.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -384,6 +386,55 @@ void FinalizeWebAppLaunch(
   StartupBrowserCreatorImpl::MaybeToggleFullscreen(browser);
 }
 
+// Tries to get the protocol url from the command line.
+// If the protocol app url switch doesnt exist, checks if the passed in url
+// is a potential protocol url, if it is, check the protocol handler registry
+// for an entry. Return the protocol url if there are handlers for this scheme.
+bool MaybeLaunchProtocolHandlerWebApp(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    Profile* profile,
+    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
+  // Maybe the URL passed in is a protocol URL.
+  GURL protocol_url;
+  base::CommandLine::StringVector args = command_line.GetArgs();
+  for (const auto& arg : args) {
+#if defined(OS_WIN)
+    GURL potential_protocol(base::WideToUTF16(arg));
+#else
+    GURL potential_protocol(arg);
+#endif  // defined(OS_WIN)
+    if (potential_protocol.is_valid() && !potential_protocol.IsStandard()) {
+      protocol_url = potential_protocol;
+      break;
+    }
+  }
+  if (protocol_url.is_empty())
+    return false;
+
+  ProtocolHandlerRegistry* handler_registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile);
+  const std::vector<ProtocolHandler> handlers =
+      handler_registry->GetHandlersFor(protocol_url.scheme());
+
+  // Check that there is at least one handler with web_app_id.
+  // TODO(crbug/1019239): Display intent picker if there are multiple handlers.
+  for (const auto& handler : handlers) {
+    if (handler.web_app_id().has_value()) {
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->BrowserAppLauncher()
+          ->LaunchAppWithCallback(
+              handler.web_app_id().value(), command_line, cur_dir,
+              /*url_handler_launch_url=*/base::nullopt, protocol_url,
+              base::BindOnce(&FinalizeWebAppLaunch,
+                             std::move(launch_mode_recorder)));
+      return true;
+    }
+  }
+
+  return false;
+}
+
 // If the process was launched with the web application command line flags,
 // e.g. --app=http://www.google.com/ or --app_id=... return true.
 // In this case |app_url| or |app_id| are populated if they're non-null.
@@ -424,6 +475,7 @@ bool MaybeLaunchApplication(
         ->LaunchAppWithCallback(
             app_id, command_line, cur_dir,
             /*url_handler_launch_url=*/base::nullopt,
+            /*protocol_handler_launch_url=*/base::nullopt,
             base::BindOnce(&FinalizeWebAppLaunch,
                            std::move(launch_mode_recorder)));
     return true;
@@ -492,6 +544,7 @@ bool MaybeLaunchUrlHandlerWebApp(
         ->BrowserAppLauncher()
         ->LaunchAppWithCallback(
             match.app_id, command_line, cur_dir, match.url,
+            /*protocol_handler_launch_url=*/base::nullopt,
             base::BindOnce(&FinalizeWebAppLaunch,
                            std::move(launch_mode_recorder)));
     return true;
@@ -974,6 +1027,13 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
             last_used_profile, app_id, command_line, cur_dir)) {
       return true;
     }
+  }
+
+  // Web app Protocol handling.
+  if (MaybeLaunchProtocolHandlerWebApp(
+          command_line, cur_dir, last_used_profile,
+          std::make_unique<LaunchModeRecorder>())) {
+    return true;
   }
 
   // If we're being run as an application window or application tab, don't

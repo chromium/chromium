@@ -138,10 +138,16 @@ class OsIntegrationManager {
   void ForceEnableFileHandlingOriginTrial(const AppId& app_id);
   void DisableForceEnabledFileHandlingOriginTrial(const AppId& app_id);
 
+  // Proxy calls for ProtocolHandlerManager.
+  virtual base::Optional<GURL> TranslateProtocolUrl(const AppId& app_id,
+                                                    const GURL& protocol_url);
+
   // Getter for testing FileHandlerManager
   FileHandlerManager& file_handler_manager_for_testing();
 
   UrlHandlerManager& url_handler_manager_for_testing();
+
+  ProtocolHandlerManager& protocol_handler_manager_for_testing();
 
   static ScopedOsHooksSuppress ScopedSuppressOsHooksForTesting();
 

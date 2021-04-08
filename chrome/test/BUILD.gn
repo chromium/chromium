@@ -1686,6 +1686,7 @@ if (!is_android) {
         "../browser/ui/views/chrome_cleaner_reboot_dialog_browsertest_win.cc",
         "../browser/ui/views/try_chrome_dialog_win/try_chrome_dialog_browsertest.cc",
       ]
+      data_deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher" ]
       data += [ "$root_out_dir/chrome_200_percent.pak" ]
       deps += [ "//chrome/app:chrome_dll_resources" ]
     }

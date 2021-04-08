@@ -57,11 +57,14 @@ class BrowserAppLauncher {
   // browser window was opened.
   // |url_handler_launch_url| is the launch URL when a PWA should be launched
   // as the URL handler. It's null if it's not a URL handler launch.
+  // |protocol_handler_launch_url| is the protocol URL when a PWA is launched
+  // as a protocol handler. It's null if it's not a protocol handler launch.
   void LaunchAppWithCallback(
       const std::string& app_id,
       const base::CommandLine& command_line,
       const base::FilePath& current_directory,
       const base::Optional<GURL>& url_handler_launch_url,
+      const base::Optional<GURL>& protocol_handler_launch_url,
       base::OnceCallback<void(Browser* browser,
                               apps::mojom::LaunchContainer container)>
           callback);

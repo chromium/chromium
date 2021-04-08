@@ -97,6 +97,11 @@ struct AppLaunchParams {
   // When PWA is launched as a URL handler, the URL that we should launch the
   // PWA to. Null when it's not a URL handler launch.
   base::Optional<GURL> url_handler_launch_url;
+
+  // When a PWA is launched as a protocol handler, the protocol URL that we
+  // should translate and then launch the PWA to. Null when it's not a protocol
+  // handler launch.
+  base::Optional<GURL> protocol_handler_launch_url;
 };
 
 }  // namespace apps

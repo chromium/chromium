@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 
 class Profile;
@@ -22,7 +23,8 @@ void RegisterProtocolHandlersWithOs(
     const AppId& app_id,
     const std::string& app_name,
     Profile* profile,
-    std::vector<apps::ProtocolHandlerInfo> protocol_handlers);
+    std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
+    base::OnceCallback<void(bool)> callback);
 
 void UnregisterProtocolHandlersWithOs(
     const AppId& app_id,

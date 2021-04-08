@@ -111,23 +111,57 @@ base::Optional<GURL> GetUrlHandlingLaunchUrl(
              : provider.registrar().GetAppLaunchUrl(params.app_id);
 }
 
+// TODO(crbug.com/1019239): Passing a WebAppProvider seems to be a bit of an
+// anti-pattern. We should refactor this and other existing functions in this
+// file to receive an OsIntegrationManager instead.
+base::Optional<GURL> GetProtocolHandlingTranslatedUrl(
+    WebAppProvider& provider,
+    const apps::AppLaunchParams& params) {
+  if (!params.protocol_handler_launch_url.has_value())
+    return base::nullopt;
+
+  GURL protocol_url(params.protocol_handler_launch_url.value());
+  if (!protocol_url.is_valid())
+    return base::nullopt;
+
+  base::Optional<GURL> translated_url =
+      provider.os_integration_manager().TranslateProtocolUrl(params.app_id,
+                                                             protocol_url);
+
+  return translated_url;
+}
+
 GURL GetLaunchUrl(WebAppProvider& provider,
                   const apps::AppLaunchParams& params,
                   const apps::ShareTarget* share_target) {
   if (!params.override_url.is_empty())
     return params.override_url;
 
+  // Handle url_handlers launch
   base::Optional<GURL> url_handler_launch_url =
       GetUrlHandlingLaunchUrl(provider, params);
   if (url_handler_launch_url.has_value())
     return url_handler_launch_url.value();
 
-  const GURL app_url =
-      share_target ? share_target->action
-                   : provider.registrar().GetAppLaunchUrl(params.app_id);
-  return provider.os_integration_manager()
-      .GetMatchingFileHandlerURL(params.app_id, params.launch_files)
-      .value_or(app_url);
+  // Handle file_handlers launch
+  base::Optional<GURL> file_handler_url =
+      provider.os_integration_manager().GetMatchingFileHandlerURL(
+          params.app_id, params.launch_files);
+  if (file_handler_url.has_value())
+    return file_handler_url.value();
+
+  // Handle protocol_handlers launch
+  base::Optional<GURL> protocol_handler_translated_url =
+      GetProtocolHandlingTranslatedUrl(provider, params);
+  if (protocol_handler_translated_url.has_value())
+    return protocol_handler_translated_url.value();
+
+  // Handle share_target launch
+  if (share_target)
+    return share_target->action;
+
+  // Default launch
+  return provider.registrar().GetAppLaunchUrl(params.app_id);
 }
 
 bool IsProtocolHandlerCommandLineArg(const base::CommandLine::StringType& arg) {
@@ -320,6 +354,7 @@ void WebAppLaunchManager::LaunchApplication(
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
     const base::Optional<GURL>& url_handler_launch_url,
+    const base::Optional<GURL>& protocol_handler_launch_url,
     base::OnceCallback<void(Browser* browser,
                             apps::mojom::LaunchContainer container)> callback) {
   if (!provider_)
@@ -341,6 +376,7 @@ void WebAppLaunchManager::LaunchApplication(
     params.launch_files = apps::GetLaunchFilesFromCommandLine(command_line);
   }
   params.url_handler_launch_url = url_handler_launch_url;
+  params.protocol_handler_launch_url = protocol_handler_launch_url;
 
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsAppIconShortcutsMenu)) {

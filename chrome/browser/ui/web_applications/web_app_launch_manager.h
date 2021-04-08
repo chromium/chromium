@@ -52,6 +52,7 @@ class WebAppLaunchManager {
       const base::CommandLine& command_line,
       const base::FilePath& current_directory,
       const base::Optional<GURL>& url_handler_launch_url,
+      const base::Optional<GURL>& protocol_handler_launch_url,
       base::OnceCallback<void(Browser* browser,
                               apps::mojom::LaunchContainer container)>
           callback);
