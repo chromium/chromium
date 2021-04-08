@@ -118,6 +118,9 @@ const char kNtpStatefulTasksModuleDataParam[] =
     "NtpStatefulTasksModuleDataParam";
 const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";
 
+const char kNtpChromeCartModuleAbandonedCartDiscountParam[] =
+    "NtpChromeCartModuleAbandonedCartDiscountParam";
+
 base::Time GetLocalHistoryRepeatableQueriesAgeThreshold() {
   const base::TimeDelta kLocalHistoryRepeatableQueriesAgeThreshold =
       base::TimeDelta::FromDays(180);  // Six months.

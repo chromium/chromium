@@ -66,6 +66,8 @@ extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
 extern const char kNtpStatefulTasksModuleDataParam[];
 // Parameter determining the type of cart data used to render module.
 extern const char kNtpChromeCartModuleDataParam[];
+// Parameter for enabling the abandoned cart discount.
+extern const char kNtpChromeCartModuleAbandonedCartDiscountParam[];
 
 // Returns the age threshold for local history repeatable queries.
 base::Time GetLocalHistoryRepeatableQueriesAgeThreshold();

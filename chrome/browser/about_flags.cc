@@ -1493,10 +1493,15 @@ const FeatureEntry::FeatureVariation kPromoBrowserCommandsVariations[] = {
 #if !defined(OS_ANDROID)
 
 const FeatureEntry::FeatureParam kNtpChromeCartModuleFakeData[] = {
-    {ntp_features::kNtpChromeCartModuleDataParam, "fake"}};
+    {ntp_features::kNtpChromeCartModuleDataParam, "fake"},
+    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"}};
+const FeatureEntry::FeatureParam kNtpChromeCartModuleAbandonedCartDiscount[] = {
+    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"}};
 const FeatureEntry::FeatureVariation kNtpChromeCartModuleVariations[] = {
-    {"- Fake Data", kNtpChromeCartModuleFakeData,
+    {"- Fake Data And Discount", kNtpChromeCartModuleFakeData,
      base::size(kNtpChromeCartModuleFakeData), nullptr},
+    {"- Abandoned Cart Discount", kNtpChromeCartModuleAbandonedCartDiscount,
+     base::size(kNtpChromeCartModuleAbandonedCartDiscount), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {
@@ -4714,20 +4719,20 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRecipeTasksModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpRecipeTasksModule,
                                     kNtpRecipeTasksModuleVariations,
-                                    "NtpRecipeTasksModule")},
+                                    "DesktopNtpModules")},
 
     {"ntp-shopping-tasks-module",
      flag_descriptions::kNtpShoppingTasksModuleName,
      flag_descriptions::kNtpShoppingTasksModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpShoppingTasksModule,
                                     kNtpShoppingTasksModuleVariations,
-                                    "NtpShoppingTasksModule")},
+                                    "DesktopNtpModules")},
 
     {"ntp-chrome-cart-module", flag_descriptions::kNtpChromeCartModuleName,
      flag_descriptions::kNtpChromeCartModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpChromeCartModule,
                                     kNtpChromeCartModuleVariations,
-                                    "NtpChromeCartModule")},
+                                    "DesktopNtpModules")},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(DCHECK_IS_CONFIGURABLE)
