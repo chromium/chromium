@@ -38,8 +38,8 @@ class SpeechRecognitionClientBrowserInterface
           media::mojom::SpeechRecognitionClientBrowserInterface> receiver);
 
   // media::mojom::SpeechRecognitionClientBrowserInterface
-  void BindSpeechRecognitionAvailabilityObserver(
-      mojo::PendingRemote<media::mojom::SpeechRecognitionAvailabilityObserver>
+  void BindSpeechRecognitionBrowserObserver(
+      mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
           pending_remote) override;
 
   // SodaInstaller::Observer:
@@ -49,9 +49,10 @@ class SpeechRecognitionClientBrowserInterface
 
  private:
   void OnSpeechRecognitionAvailabilityChanged();
+  void OnSpeechRecognitionLanguageChanged();
   void NotifyObservers(bool enabled);
 
-  mojo::RemoteSet<media::mojom::SpeechRecognitionAvailabilityObserver>
+  mojo::RemoteSet<media::mojom::SpeechRecognitionBrowserObserver>
       speech_recognition_availibility_observers_;
 
   mojo::ReceiverSet<media::mojom::SpeechRecognitionClientBrowserInterface>

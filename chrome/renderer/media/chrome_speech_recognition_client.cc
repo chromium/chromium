@@ -48,7 +48,7 @@ ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
           speech_recognition_client_browser_interface_
               .BindNewPipeAndPassReceiver();
   speech_recognition_client_browser_interface_
-      ->BindSpeechRecognitionAvailabilityObserver(
+      ->BindSpeechRecognitionBrowserObserver(
           speech_recognition_availability_observer_.BindNewPipeAndPassRemote());
 
   render_frame_->GetBrowserInterfaceBroker()->GetInterface(
@@ -128,6 +128,11 @@ void ChromeSpeechRecognitionClient::SpeechRecognitionAvailabilityChanged(
   } else if (reset_callback_) {
     reset_callback_.Run();
   }
+}
+
+void ChromeSpeechRecognitionClient::SpeechRecognitionLanguageChanged(
+    const std::string& language) {
+  speech_recognition_recognizer_->OnLanguageChanged(language);
 }
 
 void ChromeSpeechRecognitionClient::Initialize() {
@@ -217,9 +222,4 @@ void ChromeSpeechRecognitionClient::OnRecognizerDisconnected() {
 
 void ChromeSpeechRecognitionClient::OnCaptionHostDisconnected() {
   is_browser_requesting_transcription_ = false;
-}
-
-void ChromeSpeechRecognitionClient::OnLanguageChanged(
-    const std::string& language) {
-  speech_recognition_recognizer_->OnLanguageChanged(language);
 }

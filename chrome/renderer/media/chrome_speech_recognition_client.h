@@ -25,7 +25,7 @@ class RenderFrame;
 class ChromeSpeechRecognitionClient
     : public media::SpeechRecognitionClient,
       public media::mojom::SpeechRecognitionRecognizerClient,
-      public media::mojom::SpeechRecognitionAvailabilityObserver,
+      public media::mojom::SpeechRecognitionBrowserObserver,
       public media::AudioDataS16Converter {
  public:
   using SendAudioToSpeechRecognitionServiceCallback =
@@ -60,9 +60,10 @@ class ChromeSpeechRecognitionClient
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
 
-  // media::mojom::SpeechRecognitionAvailabilityObserver
+  // media::mojom::SpeechRecognitionBrowserObserver
   void SpeechRecognitionAvailabilityChanged(
       bool is_speech_recognition_available) override;
+  void SpeechRecognitionLanguageChanged(const std::string& language) override;
 
  private:
   // Initialize the speech recognition client and construct all of the mojo
@@ -90,8 +91,6 @@ class ChromeSpeechRecognitionClient
   // Called when the caption host is disconnected. Halts future transcriptions.
   void OnCaptionHostDisconnected();
 
-  void OnLanguageChanged(const std::string& language);
-
   content::RenderFrame* render_frame_;
 
   ChromeSpeechRecognitionClient::InitializeCallback initialize_callback_;
@@ -103,7 +102,7 @@ class ChromeSpeechRecognitionClient
   // Sends audio to the speech recognition thread on the renderer thread.
   SendAudioToSpeechRecognitionServiceCallback send_audio_callback_;
 
-  mojo::Receiver<media::mojom::SpeechRecognitionAvailabilityObserver>
+  mojo::Receiver<media::mojom::SpeechRecognitionBrowserObserver>
       speech_recognition_availability_observer_{this};
   mojo::Remote<media::mojom::SpeechRecognitionClientBrowserInterface>
       speech_recognition_client_browser_interface_;

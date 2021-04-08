@@ -31,6 +31,11 @@ SpeechRecognitionClientBrowserInterface::
       base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
                               OnSpeechRecognitionAvailabilityChanged,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kLiveCaptionLanguageCode,
+      base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
+                              OnSpeechRecognitionLanguageChanged,
+                          base::Unretained(this)));
 }
 
 SpeechRecognitionClientBrowserInterface::
@@ -43,8 +48,8 @@ void SpeechRecognitionClientBrowserInterface::BindReceiver(
 }
 
 void SpeechRecognitionClientBrowserInterface::
-    BindSpeechRecognitionAvailabilityObserver(
-        mojo::PendingRemote<media::mojom::SpeechRecognitionAvailabilityObserver>
+    BindSpeechRecognitionBrowserObserver(
+        mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
             pending_remote) {
   speech_recognition_availibility_observers_.Add(std::move(pending_remote));
   OnSpeechRecognitionAvailabilityChanged();
@@ -72,6 +77,14 @@ void SpeechRecognitionClientBrowserInterface::
   } else {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
     NotifyObservers(enabled);
+  }
+}
+
+void SpeechRecognitionClientBrowserInterface::
+    OnSpeechRecognitionLanguageChanged() {
+  for (auto& observer : speech_recognition_availibility_observers_) {
+    observer->SpeechRecognitionLanguageChanged(
+        profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode));
   }
 }
 
