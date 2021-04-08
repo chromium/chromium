@@ -4195,6 +4195,47 @@
             ]
         }
     ],
+    "MojoPosixUseWritev": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MojoPosixUseWritev"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MojoSharedMemoryChannelLinux": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "MojoLinuxChannelSharedMemEfdZeroOnWake": "true",
+                        "MojoLinuxChannelSharedMemPages": "2"
+                    },
+                    "enable_features": [
+                        "MojoLinuxChannelSharedMem"
+                    ]
+                }
+            ]
+        }
+    ],
     "MultipleBlinkIsolates": [
         {
             "platforms": [
