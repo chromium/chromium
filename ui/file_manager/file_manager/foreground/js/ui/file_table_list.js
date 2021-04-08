@@ -337,12 +337,13 @@ filelist.handleTap = function(e, index, eventType) {
   // Single finger tap.
   const isTap = eventType === FileTapHandler.TapEvent.TAP ||
       eventType === FileTapHandler.TapEvent.LONG_TAP;
-  // Revert to click handling for single tap on checkbox or tap during rename.
-  // Single tap on the checkbox in the list view mode should toggle select.
-  // Single tap on input for rename should focus on input.
-  const isCheckbox = e.target.classList.contains('detail-checkmark');
+  // Revert to click handling for single tap on the checkmark or rename input.
+  // Single tap on the item checkmark should toggle select the item.
+  // Single tap on rename input should focus on input.
+  const isCheckmark = e.target.classList.contains('detail-checkmark') ||
+      e.target.classList.contains('detail-icon');
   const isRename = e.target.localName === 'input';
-  if (eventType === FileTapHandler.TapEvent.TAP && (isCheckbox || isRename)) {
+  if (eventType === FileTapHandler.TapEvent.TAP && (isCheckmark || isRename)) {
     return false;
   }
 
