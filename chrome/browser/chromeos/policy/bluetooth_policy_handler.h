@@ -35,7 +35,8 @@ class BluetoothPolicyHandler {
   void SetBluetoothPolicy(scoped_refptr<device::BluetoothAdapter> adapter);
 
   ash::CrosSettings* cros_settings_;
-  base::CallbackListSubscription bluetooth_policy_subscription_;
+  base::CallbackListSubscription allow_bluetooth_subscription_;
+  base::CallbackListSubscription allowed_services_subscription_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   base::WeakPtrFactory<BluetoothPolicyHandler> weak_factory_{this};
 

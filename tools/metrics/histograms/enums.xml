@@ -24108,6 +24108,7 @@ Called by update_document_policy_enum.py.-->
   <int value="845" label="DefaultFileHandlingGuardSetting"/>
   <int value="846" label="FileHandlingAllowedForUrls"/>
   <int value="847" label="FileHandlingBlockedForUrls"/>
+  <int value="848" label="DeviceAllowedBluetoothServices"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

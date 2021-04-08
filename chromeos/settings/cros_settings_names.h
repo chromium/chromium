@@ -289,6 +289,9 @@ extern const char kUsbDetachableAllowlistKeyPid[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDevicePeripheralDataAccessEnabled[];
+
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kDeviceAllowedBluetoothServices[];
 }  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove when migrated to ash/components/.
@@ -324,6 +327,7 @@ using ::chromeos::kAttestationForContentProtectionEnabled;
 using ::chromeos::kBorealisAllowedForDevice;
 using ::chromeos::kCastReceiverName;
 using ::chromeos::kCrosSettingsPrefix;
+using ::chromeos::kDeviceAllowedBluetoothServices;
 using ::chromeos::kDeviceAttestationEnabled;
 using ::chromeos::kDeviceAutoUpdateTimeRestrictions;
 using ::chromeos::kDeviceChannelDowngradeBehavior;
