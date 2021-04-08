@@ -44,13 +44,14 @@
 #if defined(ARCH_CPU_X86_64)
 // Include order is important, so we disable formatting.
 // clang-format off
-#include <immintrin.h>
 // Including these headers directly should generally be avoided. For the
 // scanning loop, we check at runtime which SIMD extension we can use. Since
 // Chrome is compiled with -msse3 (the minimal requirement), we include the
 // headers directly to make the intrinsics available. Another option could be to
 // use inline assembly, but that would hinder compiler optimization for
 // vectorized instructions.
+#include <immintrin.h>
+#include <smmintrin.h>
 #include <avxintrin.h>
 #include <avx2intrin.h>
 // clang-format on
@@ -484,7 +485,7 @@ class StatsCollector final {
 
 enum class SimdSupport : uint8_t {
   kUnvectorized,
-  kSSE3,
+  kSSE41,
   kAVX2,
   // TODO(bikineev): Add support for Neon.
 };
@@ -493,8 +494,8 @@ SimdSupport DetectSimdSupport() {
   base::CPU cpu;
   if (cpu.has_avx2())
     return SimdSupport::kAVX2;
-  if (cpu.has_sse3())
-    return SimdSupport::kSSE3;
+  if (cpu.has_sse41())
+    return SimdSupport::kSSE41;
   return SimdSupport::kUnvectorized;
 }
 
@@ -1111,8 +1112,8 @@ class PCScanTask::ScanLoop final {
     const SimdSupport simd = PCScanInternal::Instance().simd_support();
     if (simd == SimdSupport::kAVX2)
       return &ScanLoop::RunAVX2;
-    if (simd == SimdSupport::kSSE3)
-      return &ScanLoop::RunSSE3;
+    if (simd == SimdSupport::kSSE41)
+      return &ScanLoop::RunSSE4;
 #endif
     return &ScanLoop::RunUnvectorized;
   }
@@ -1125,29 +1126,25 @@ class PCScanTask::ScanLoop final {
 #endif
 
 #if defined(ARCH_CPU_X86_64)
-  __attribute__((target("sse3"))) NO_SANITIZE("thread") size_t
-      RunSSE3(uintptr_t* begin, uintptr_t* end) const {
+  __attribute__((target("sse4.1"))) NO_SANITIZE("thread") size_t
+      RunSSE4(uintptr_t* begin, uintptr_t* end) const {
     static constexpr size_t kAlignmentRequirement = 16;
     static constexpr size_t kWordsInVector = 2;
     PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
     PA_DCHECK(
         !((reinterpret_cast<char*>(end) - reinterpret_cast<char*>(begin)) %
           kAlignmentRequirement));
-    // For SSE3, since some integer instructions are not yet available (e.g.
-    // _mm_cmpeq_epi64), use packed doubles (not integers). Sticking to doubles
-    // helps to avoid latency caused by "domain crossing penalties" (see bypass
-    // delays in https://agner.org/optimize/microarchitecture.pdf).
-    const __m128d vbase = _mm_castsi128_pd(_mm_set1_epi64x(brp_pool_base_));
-    const __m128d cage_mask = _mm_castsi128_pd(
-        _mm_set1_epi64x(PartitionAddressSpace::BRPPoolBaseMask()));
+    const __m128i vbase = _mm_set1_epi64x(brp_pool_base_);
+    const __m128i cage_mask =
+        _mm_set1_epi64x(PartitionAddressSpace::BRPPoolBaseMask());
 
     size_t quarantine_size = 0;
     for (uintptr_t* payload = begin; payload < end; payload += kWordsInVector) {
-      const __m128d maybe_ptrs =
-          _mm_load_pd(reinterpret_cast<double*>(payload));
-      const __m128d vand = _mm_and_pd(maybe_ptrs, cage_mask);
-      const __m128d vcmp = _mm_cmpeq_pd(vand, vbase);
-      const int mask = _mm_movemask_pd(vcmp);
+      const __m128i maybe_ptrs =
+          _mm_loadu_si128(reinterpret_cast<__m128i*>(payload));
+      const __m128i vand = _mm_and_si128(maybe_ptrs, cage_mask);
+      const __m128d vcmp = _mm_cmpeq_epi64(vand, vbase);
+      const int mask = _mm_movemask_pd(_mm_castsi128_pd(vcmp));
       if (LIKELY(!mask))
         continue;
       // It's important to extract pointers from the already loaded vector to
