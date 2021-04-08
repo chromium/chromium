@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "fuchsia/engine/url_request_rewrite.mojom.h"
 #include "fuchsia/engine/web_engine_export.h"
@@ -22,20 +21,13 @@ class WEB_ENGINE_EXPORT WebEngineURLLoaderThrottle
   using UrlRequestRewriteRules =
       base::RefCountedData<std::vector<mojom::UrlRequestRulePtr>>;
 
-  // An interface to provide rewrite rules to the throttle. Its
-  // implementation must outlive the WebEngineURLLoaderThrottle.
-  class CachedRulesProvider {
-   public:
-    virtual ~CachedRulesProvider() = default;
-
-    // Gets cached rules. This call can be made on any sequence, as
-    // URLLoaderThrottles are not guaranteed to stay on the same sequence.
-    virtual scoped_refptr<UrlRequestRewriteRules> GetCachedRules() = 0;
-  };
-
   explicit WebEngineURLLoaderThrottle(
-      CachedRulesProvider* cached_rules_provider);
+      scoped_refptr<UrlRequestRewriteRules> rules);
   ~WebEngineURLLoaderThrottle() override;
+
+  WebEngineURLLoaderThrottle(const WebEngineURLLoaderThrottle&) = delete;
+  WebEngineURLLoaderThrottle& operator=(const WebEngineURLLoaderThrottle&) =
+      delete;
 
   // blink::URLLoaderThrottle implementation.
   void DetachFromCurrentSequence() override;
@@ -58,9 +50,7 @@ class WEB_ENGINE_EXPORT WebEngineURLLoaderThrottle
       network::ResourceRequest* request,
       const mojom::UrlRequestRewriteAddHeadersPtr& add_headers);
 
-  CachedRulesProvider* const cached_rules_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebEngineURLLoaderThrottle);
+  scoped_refptr<UrlRequestRewriteRules> rules_;
 };
 
 #endif  // FUCHSIA_ENGINE_COMMON_WEB_ENGINE_URL_LOADER_THROTTLE_H_
