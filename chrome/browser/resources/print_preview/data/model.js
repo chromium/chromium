@@ -993,7 +993,7 @@ Polymer({
       savedSettings =
           /** @type {SerializedSettings} */ (JSON.parse(savedSettingsStr));
     } catch (e) {
-      console.error('Unable to parse state ' + e);
+      console.warn('Unable to parse state ' + e);
       return;  // use default values rather than updating.
     }
     if (savedSettings.version !== 2) {
@@ -1418,7 +1418,7 @@ Polymer({
       const selectedOption = destination.getSelectedColorOption(
           /** @type {boolean} */ (this.settings.color.value));
       if (!selectedOption) {
-        console.error('Could not find correct color option');
+        console.warn('Could not find correct color option');
       } else {
         cjt.print.color = {type: selectedOption.type};
         if (selectedOption.hasOwnProperty('vendor_id')) {

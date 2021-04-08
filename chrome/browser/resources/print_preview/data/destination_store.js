@@ -592,7 +592,7 @@ export class DestinationStore extends EventTarget {
         matchRules = JSON.parse(serializedDefaultDestinationSelectionRulesStr);
       }
     } catch (e) {
-      console.error('Failed to parse defaultDestinationSelectionRules: ' + e);
+      console.warn('Failed to parse defaultDestinationSelectionRules: ' + e);
     }
     if (!matchRules) {
       return null;
@@ -601,7 +601,7 @@ export class DestinationStore extends EventTarget {
     const isLocal = !matchRules.kind || matchRules.kind === 'local';
     const isCloud = !matchRules.kind || matchRules.kind === 'cloud';
     if (!isLocal && !isCloud) {
-      console.error('Unsupported type: "' + matchRules.kind + '"');
+      console.warn('Unsupported type: "' + matchRules.kind + '"');
       return null;
     }
 
@@ -622,7 +622,7 @@ export class DestinationStore extends EventTarget {
         idRegExp = new RegExp(matchRules.idPattern || '.*');
       }
     } catch (e) {
-      console.error('Failed to parse regexp for "id": ' + e);
+      console.warn('Failed to parse regexp for "id": ' + e);
     }
 
     let displayNameRegExp = null;
@@ -631,7 +631,7 @@ export class DestinationStore extends EventTarget {
         displayNameRegExp = new RegExp(matchRules.namePattern || '.*');
       }
     } catch (e) {
-      console.error('Failed to parse regexp for "name": ' + e);
+      console.warn('Failed to parse regexp for "name": ' + e);
     }
 
     return new DestinationMatch(

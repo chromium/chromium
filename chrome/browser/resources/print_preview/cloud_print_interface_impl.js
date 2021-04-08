@@ -302,7 +302,15 @@ export class CloudPrintInterfaceImpl {
   sendRequest_(request) {
     request.xhr.onreadystatechange =
         this.onReadyStateChange_.bind(this, request);
-    request.xhr.send(request.body);
+    request.xhr.onerror = () => {
+      console.warn('Error with request to Cloud Print');
+    };
+    try {
+      request.xhr.send(request.body);
+    } catch (error) {
+      console.warn('Error with request to Cloud Print: ' + request.body);
+      // Do nothing because otherwise JS crash reporting system will go crazy.
+    }
   }
 
   /**
@@ -452,7 +460,7 @@ export class CloudPrintInterfaceImpl {
           printerList.push(
               parseCloudDestination(printerJson, request.origin, activeUser));
         } catch (err) {
-          console.error('Unable to parse cloud print destination: ' + err);
+          console.warn('Unable to parse cloud print destination: ' + err);
         }
       });
       // Extract and store users.
@@ -498,7 +506,7 @@ export class CloudPrintInterfaceImpl {
         try {
           invitationList.push(parseInvitation(invitationJson, activeUser));
         } catch (e) {
-          console.error('Unable to parse invitation: ' + e);
+          console.warn('Unable to parse invitation: ' + e);
         }
       });
       // Dispatch INVITES_DONE event.
@@ -533,7 +541,7 @@ export class CloudPrintInterfaceImpl {
         printer = parseCloudDestination(
             request.result['printer'], request.origin, activeUser);
       } catch (e) {
-        console.error('Failed to parse cloud print destination: ' + e);
+        console.warn('Failed to parse cloud print destination: ' + e);
       }
     }
     this.eventTarget_.dispatchEvent(
@@ -607,7 +615,7 @@ export class CloudPrintInterfaceImpl {
         printer =
             parseCloudDestination(printerJson, request.origin, activeUser);
       } catch (err) {
-        console.error(
+        console.warn(
             'Failed to parse cloud print destination: ' +
             JSON.stringify(printerJson));
         return;

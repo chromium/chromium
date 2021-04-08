@@ -574,7 +574,7 @@ Polymer({
    * @private
    */
   onPrintFailed_(httpError) {
-    console.error('Printing failed with error code ' + httpError);
+    console.warn('Printing failed with error code ' + httpError);
     this.error_ = Error.PRINT_FAILED;
     this.$.state.transitTo(State.FATAL_ERROR);
   },
@@ -617,11 +617,11 @@ Polymer({
     this.error_ = Error.CLOUD_PRINT_ERROR;
     this.$.state.transitTo(State.FATAL_ERROR);
     if (event.detail.status === 200) {
-      console.error(
+      console.warn(
           'Google Cloud Print Error: ' +
           `(${event.detail.errorCode}) ${event.detail.message}`);
     } else {
-      console.error(
+      console.warn(
           'Google Cloud Print Error: ' +
           `HTTP status ${event.detail.status}`);
     }
