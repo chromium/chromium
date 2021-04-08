@@ -6470,6 +6470,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingV2)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"shimless-rma-flow", flag_descriptions::kShimlessRMAFlowName,
+     flag_descriptions::kShimlessRMAFlowDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kShimlessRMAFlow)},
     {"nearby-sharing", flag_descriptions::kNearbySharingName,
      flag_descriptions::kNearbySharingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNearbySharing)},

@@ -4723,6 +4723,9 @@ const char kScanAppStickySettingsDescription[] =
     "Enables sticky settings in Scan app for automatically saving scan"
     " settings in Chrome OS.";
 
+const char kShimlessRMAFlowName[] = "Enable shimless RMA flow";
+const char kShimlessRMAFlowDescription[] = "Enable shimless RMA flow";
+
 const char kSchedulerConfigurationName[] = "Scheduler Configuration";
 const char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";

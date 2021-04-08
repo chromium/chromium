@@ -44008,6 +44008,7 @@ from previous Chrome versions.
   <int value="-2035126988" label="enabled-new-style-notification"/>
   <int value="-2033950090" label="AutofillNoLocalSaveOnUploadSuccess:disabled"/>
   <int value="-2033908928" label="NightLight:enabled"/>
+  <int value="-2033853607" label="ShimlessRMAFlow:disabled"/>
   <int value="-2033678085"
       label="HappinessTrackingSurveysForDesktopPrivacySandbox:enabled"/>
   <int value="-2033225430" label="NTPMostLikelyFaviconsFromServer:disabled"/>
@@ -46064,6 +46065,7 @@ from previous Chrome versions.
   <int value="-255264176" label="OmniboxSearchEngineLogo:disabled"/>
   <int value="-254887599" label="google-profile-info"/>
   <int value="-254158542" label="SubresourceRedirectPreviews:enabled"/>
+  <int value="-252258023" label="ShimlessRMAFlow:enabled"/>
   <int value="-250822813" label="PwaImprovedSplashScreen:enabled"/>
   <int value="-250721831" label="AndroidAutofillAccessibility:disabled"/>
   <int value="-250543540" label="DeferAllScript:enabled"/>

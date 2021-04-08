@@ -282,6 +282,8 @@ extern const base::Feature kScanAppStickySettings;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSessionManagerLongKillTimeout;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kShimlessRMAFlow;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kShowBluetoothDebugLogToggle;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kShowPlayInDemoMode;
@@ -376,6 +378,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationCloudAPIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSamlReauthenticationOnLockscreenEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSplitSettingsSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperWebUIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();

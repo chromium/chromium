@@ -2748,6 +2748,9 @@ extern const char kScanAppMediaLinkDescription[];
 extern const char kScanAppStickySettingsName[];
 extern const char kScanAppStickySettingsDescription[];
 
+extern const char kShimlessRMAFlowName[];
+extern const char kShimlessRMAFlowDescription[];
+
 extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
 extern const char kSchedulerConfigurationConservative[];
