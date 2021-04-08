@@ -5,6 +5,7 @@
 package org.chromium.components.signin.base;
 
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -51,5 +52,14 @@ public class AccountInfo extends CoreAccountInfo {
      */
     public @Nullable Bitmap getAccountImage() {
         return mAccountImage;
+    }
+
+    /**
+     * @return Whether the {@link AccountInfo} has any valid displayable information.
+     * The displayable information are full name, given name and avatar.
+     */
+    public boolean hasDisplayableInfo() {
+        return !TextUtils.isEmpty(mFullName) || !TextUtils.isEmpty(mGivenName)
+                || mAccountImage != null;
     }
 }

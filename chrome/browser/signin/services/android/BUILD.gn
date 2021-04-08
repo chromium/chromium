@@ -78,14 +78,17 @@ android_library("junit") {
   bypass_platform_checks = true
   testonly = true
   sources = [
+    "junit/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/WebSigninBridgeTest.java",
   ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/signin/public/android:java",

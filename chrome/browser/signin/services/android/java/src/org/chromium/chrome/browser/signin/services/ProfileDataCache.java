@@ -226,7 +226,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
      */
     @Override
     public void onAccountInfoUpdated(AccountInfo accountInfo) {
-        if (accountInfo.getAccountImage() != null) {
+        if (accountInfo.hasDisplayableInfo()) {
             updateCacheAndNotifyObservers(accountInfo.getEmail(), accountInfo.getAccountImage(),
                     accountInfo.getFullName(), accountInfo.getGivenName());
         }
