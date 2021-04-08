@@ -3915,6 +3915,48 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
                     {}, {}, {}, FROM_HERE);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvicted) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/small_script.js");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/empty.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  // Append the script tag.
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    var script = document.createElement('script');
+    script.src = 'small_script.js'
+    document.body.appendChild(script);
+  )"));
+
+  response.WaitForRequest();
+  // Send the small_script.js but not complete, so that the datapipe is passed
+  // to ScriptStreamer upon bfcache entrance.
+  const char kHttpResponseHeader[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      "\r\n";
+  response.Send(kHttpResponseHeader);
+  response.Send("alert('more than 4 bytes');");
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  // Complete the response after navigating away.
+  response.Done();
+
+  // 3) Go back to A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kNetworkRequestDatapipeDrainedAsDatapipe},
+                    {}, {}, {}, FROM_HERE);
+}
+
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
                        ImageStillLoading_ResponseStartedWhileFrozen) {
   net::test_server::ControllableHttpResponse image_response(
