@@ -451,6 +451,9 @@
       <message name="IDS_ACCESSIBILITY_MERCHANT_VIEWER_MESSAGE_ANNOUNCEMENT" desc="Accessibility string for merchant viewer message announcement.">
         View store info, option available near top of the screen
       </message>
+      <message name="IDS_MERCHANT_VIEWER_PREVIEW_SHEET_TITLE" desc="Bottom sheet title for the merchant viewer experience.">
+        Google | About this store
+      </message>
     </messages>
   </release>
 </grit>
