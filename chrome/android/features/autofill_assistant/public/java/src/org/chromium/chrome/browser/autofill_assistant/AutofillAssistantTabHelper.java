@@ -10,6 +10,8 @@ import org.chromium.chrome.browser.tab.Tab;
  * Instantiates a tab helper for autofill-assistant.
  */
 public class AutofillAssistantTabHelper {
+    private static final Class<Starter> USER_DATA_KEY = Starter.class;
+
     /**
      * Creates an autofill-assistant starter for the given tab. The starter will attach itself to
      * the tab as observer and connect to its native counterpart in order to fulfill startup
@@ -18,5 +20,10 @@ public class AutofillAssistantTabHelper {
     public static void createForTab(Tab tab) {
         Starter starter = new Starter(tab);
         tab.addObserver(starter);
+        tab.getUserDataHost().setUserData(USER_DATA_KEY, starter);
+    }
+
+    public static Starter get(Tab tab) {
+        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 }

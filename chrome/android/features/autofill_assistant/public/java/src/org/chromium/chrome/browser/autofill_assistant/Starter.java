@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -22,7 +23,7 @@ import org.chromium.ui.base.WindowAndroid;
  * dependencies to start autofill-assistant flows.
  */
 @JNINamespace("autofill_assistant")
-public class Starter extends EmptyTabObserver {
+public class Starter extends EmptyTabObserver implements UserData {
     /** The tab that this starter tracks. */
     private final Tab mTab;
 
@@ -45,6 +46,11 @@ public class Starter extends EmptyTabObserver {
     public Starter(Tab tab) {
         mTab = tab;
         detectWebContentsChange(tab);
+    }
+
+    @Override
+    public void destroy() {
+        safeNativeDetach();
     }
 
     /**
@@ -117,7 +123,7 @@ public class Starter extends EmptyTabObserver {
 
     @CalledByNative
     static boolean getFeatureModuleInstalled() {
-        return AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled() != null;
+        return AutofillAssistantModuleEntryProvider.INSTANCE.isInstalled();
     }
 
     @CalledByNative

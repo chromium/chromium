@@ -30,6 +30,10 @@ public class AutofillAssistantModuleEntryProvider {
     static final AutofillAssistantModuleEntryProvider INSTANCE =
             new AutofillAssistantModuleEntryProvider();
 
+    boolean isInstalled() {
+        return AutofillAssistantModule.isInstalled();
+    }
+
     /* Returns the AA module entry, if it is already installed. */
     @Nullable
     /* package */

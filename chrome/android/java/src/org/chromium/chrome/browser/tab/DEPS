@@ -8,6 +8,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/ephemeraltab/EphemeralTabCoordinator.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherImpl.java",
+  "+chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTabHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationServiceImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/metrics/UkmRecorder.java",
