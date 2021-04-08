@@ -297,7 +297,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
       arc::data_snapshotd::ArcDataSnapshotdManager::Get()
           ->IsSnapshotInProgress()) {
     base::Value* applications_value =
-        filtered_policies.FindListKey("applications");
+        filtered_policies.FindListKey(ArcPolicyBridge::kApplications);
     if (applications_value) {
       base::Value::ListView list_view = applications_value->GetList();
       for (base::Value& entry : list_view) {
@@ -309,7 +309,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
       }
     }
     // Always reset android_id if ARC data snapshot update is in progress.
-    filtered_policies.SetBoolKey("resetAndroidIdEnabled", true);
+    filtered_policies.SetBoolKey(ArcPolicyBridge::kResetAndroidIdEnabled, true);
   }
 
   if (profile->IsSupervised() &&
@@ -321,7 +321,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     // Updates "applications" policy value for PlayStore to include the child's
     // primary email account.
     base::Value* applications_value =
-        filtered_policies.FindListKey("applications");
+        filtered_policies.FindListKey(ArcPolicyBridge::kApplications);
     if (applications_value) {
       base::Value::ListView list_view = applications_value->GetList();
       for (base::Value& entry : list_view) {
@@ -436,6 +436,12 @@ class ArcPolicyBridgeFactory
 };
 
 }  // namespace
+
+// static
+const char ArcPolicyBridge::kApplications[] = "applications";
+
+// static
+const char ArcPolicyBridge::kResetAndroidIdEnabled[] = "resetAndroidIdEnabled";
 
 // static
 ArcPolicyBridge* ArcPolicyBridge::GetForBrowserContext(

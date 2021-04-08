@@ -51,10 +51,14 @@ constexpr char kArcPolicyValue2[] =
 constexpr char kComplianceReportEmptyJson[] = "{}";
 constexpr char kComplianceReportNonCompliantJson[] =
     "{\"nonComplianceDetails\":"
-    "[{\"key\":\"value\"},{\"nonComplianceReason\":1}]}";
+    "[{\"settingName\":\"applications\",\"nonComplianceReason\":1}]}";
 constexpr char kComplianceReportCompliantJson[] =
     "{\"nonComplianceDetails\":"
-    "[{\"key\":\"value\"},{\"nonComplianceReason\":\"value\"}]}";
+    "[{\"settingName\":\"value\",\"nonComplianceReason\":\"value\"}]}";
+constexpr char kComplianceReportAndroidIdNonCompliantJson[] =
+    "{\"nonComplianceDetails\":"
+    "[{\"settingName\":\"resetAndroidIdEnabled\","
+    "\"nonComplianceReason\":1}]}";
 }  // namespace
 
 class ArcForceInstalledAppsTrackerTest : public testing::Test {
@@ -104,6 +108,10 @@ class ArcForceInstalledAppsTrackerTest : public testing::Test {
 
   void ReportNonCompliant() {
     ReportCompliance(kComplianceReportNonCompliantJson);
+  }
+
+  void ReportAndroidIdNonCompliant() {
+    ReportCompliance(kComplianceReportAndroidIdNonCompliantJson);
   }
 
   policy::PolicyMap& policy_map() { return policy_map_; }
@@ -304,6 +312,9 @@ TEST_F(ArcForceInstalledAppsTrackerTest, PolicyCompliance) {
   EXPECT_FALSE(is_policy_compliant);
 
   ReportNonCompliant();
+  EXPECT_FALSE(is_policy_compliant);
+
+  ReportAndroidIdNonCompliant();
   EXPECT_FALSE(is_policy_compliant);
 
   EXPECT_CALL(*policy_service(), RemoveObserver(_, _));

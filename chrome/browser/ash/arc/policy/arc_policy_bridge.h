@@ -102,6 +102,10 @@ class ArcPolicyBridge : public KeyedService,
     DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
+  // Policy constants.
+  static const char kApplications[];
+  static const char kResetAndroidIdEnabled[];
+
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcPolicyBridge* GetForBrowserContext(

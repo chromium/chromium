@@ -253,13 +253,29 @@ void PolicyComplianceObserver::OnComplianceReportReceived(
     return;
   }
 
-  std::set<std::string> pending_app_installs;
+  bool is_android_id_reset = true;
   for (const auto& detail : details->GetList()) {
     const base::Value* const reason =
         detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
-    // Not compliant with ARC policy.
-    if (reason)
+    const std::string* const settingName = detail.FindStringKey("settingName");
+    if (!reason || !settingName)
+      continue;
+    // Not compliant with ARC applications policy.
+    if (*settingName == ArcPolicyBridge::kApplications)
       return;
+    // android_id is expected to be reset, but still not reset by clouddpc.
+    if (*settingName == ArcPolicyBridge::kResetAndroidIdEnabled) {
+      is_android_id_reset = false;
+      continue;
+    }
+  }
+  // If compliant with ARC applications policy, android ID is expected to be
+  // reset shortly.
+  // Force a compliance report.
+  if (!is_android_id_reset) {
+    arc_policy_bridge_->OnPolicyUpdated(
+        policy::PolicyNamespace(), policy::PolicyMap(), policy::PolicyMap());
+    return;
   }
   if (!finish_callback_.is_null())
     std::move(finish_callback_).Run();
