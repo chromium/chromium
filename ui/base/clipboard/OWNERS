@@ -3,3 +3,5 @@ huangdarwin@chromium.org
 
 per-file clipboard_*ozone*=msisov@igalia.com
 per-file clipboard_*ozone*=adunaev@igalia.com
+per-file clipboard_*x11*=thomasanderson@chromium.org
+
