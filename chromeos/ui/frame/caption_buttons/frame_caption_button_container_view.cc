@@ -99,19 +99,6 @@ double CapAnimationValue(double value) {
   return base::ClampToRange(value, 0.0, 1.0);
 }
 
-// Returns a |views::BoxLayout| layout manager with the settings needed by
-// FrameCaptionButtonContainerView.
-std::unique_ptr<views::BoxLayout> MakeBoxLayoutManager(
-    int minimum_cross_axis_size) {
-  std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
-  layout->set_minimum_cross_axis_size(minimum_cross_axis_size);
-  return layout;
-}
-
 // A default CaptionButtonModel that uses the widget delegate's state
 // to determine if each button should be visible and enabled.
 class DefaultCaptionButtonModel : public CaptionButtonModel {
@@ -164,8 +151,10 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
     : views::AnimationDelegateViews(frame->GetRootView()),
       frame_(frame),
       model_(std::make_unique<DefaultCaptionButtonModel>(frame)) {
-  SetLayoutManager(MakeBoxLayoutManager(/*minimum_cross_axis_size=*/0));
-  tablet_mode_animation_.reset(new gfx::SlideAnimation(this));
+  SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  tablet_mode_animation_ = std::make_unique<gfx::SlideAnimation>(this);
   tablet_mode_animation_->SetTweenType(gfx::Tween::LINEAR);
 
   // Ensure animation tracks visibility of size button.
@@ -294,7 +283,7 @@ void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
   size_button_->SetPreferredSize(size);
   close_button_->SetPreferredSize(size);
 
-  SetLayoutManager(MakeBoxLayoutManager(size.height()));
+  SetMinimumCrossAxisSize(size.height());
 }
 
 void FrameCaptionButtonContainerView::SetModel(

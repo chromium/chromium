@@ -13,6 +13,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/window/frame_caption_button.h"
@@ -35,7 +36,7 @@ namespace chromeos {
 // is in //ash because it needs ash test support (AshTestBase and its
 // utilities).
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
-    : public views::View,
+    : public views::BoxLayoutView,
       public FrameSizeButtonDelegate,
       public views::AnimationDelegateViews {
  public:
