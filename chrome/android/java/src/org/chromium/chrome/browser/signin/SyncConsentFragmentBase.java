@@ -28,7 +28,6 @@ import androidx.fragment.app.FragmentTransaction;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -55,7 +54,8 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.GmsAvailabilityException;
 import org.chromium.components.signin.GmsJustUpdatedException;
-import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -386,10 +386,7 @@ public abstract class SyncConsentFragmentBase
         mIsSigninInProgress = true;
         mRecordUndoSignin = false;
         RecordUserAction.record("Signin_Signin_WithDefaultSyncSettings");
-
-        // Record the fact that the user consented to the consent text by clicking on a button
-        recordConsent((TextView) button);
-        seedAccountsAndSignin(false);
+        seedAccountsAndSignin(false, button);
     }
 
     private void onAddAccountButtonClicked(View button) {
@@ -401,10 +398,7 @@ public abstract class SyncConsentFragmentBase
         if (!areControlsEnabled()) return;
         mIsSigninInProgress = true;
         RecordUserAction.record("Signin_Signin_WithAdvancedSyncSettings");
-
-        // Record the fact that the user consented to the consent text by clicking on a link
-        recordConsent((TextView) view);
-        seedAccountsAndSignin(true);
+        seedAccountsAndSignin(true, view);
     }
 
     /**
@@ -417,13 +411,18 @@ public abstract class SyncConsentFragmentBase
         return !mAccountSelectionPending && !mIsSigninInProgress && !mHasGmsError;
     }
 
-    private void seedAccountsAndSignin(boolean settingsClicked) {
+    private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
         // Ensure that the AccountTrackerService has a fully up to date GAIA id <-> email mapping,
         // as this is needed for the previous account check.
         final long seedingStartTime = SystemClock.elapsedRealtime();
         IdentityServicesProvider.get()
                 .getAccountTrackerService(Profile.getLastUsedRegularProfile())
                 .seedAccountsIfNeeded(() -> {
+                    final CoreAccountInfo accountInfo =
+                            AccountInfoService.get().getAccountInfoByEmail(mSelectedAccountName);
+                    assert accountInfo != null : "The seeded CoreAccountInfo shouldn't be null";
+                    mConsentTextTracker.recordConsent(accountInfo.getId(),
+                            ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView, mView);
                     RecordHistogram.recordTimesHistogram(
                             "Signin.AndroidAccountSigninViewSeedingTime",
                             SystemClock.elapsedRealtime() - seedingStartTime);
@@ -457,26 +456,6 @@ public abstract class SyncConsentFragmentBase
                         mIsSigninInProgress = false;
                     }
                 });
-    }
-
-    /**
-     * Records the Sync consent.
-     * @param confirmationView The view that the user clicked when consenting.
-     */
-    private void recordConsent(TextView confirmationView) {
-        // TODO(crbug.com/831257): Provide the account id synchronously from AccountManagerFacade.
-        new AsyncTask<String>() {
-            @Override
-            public String doInBackground() {
-                return mAccountManagerFacade.getAccountGaiaId(mSelectedAccountName);
-            }
-
-            @Override
-            public void onPostExecute(String accountId) {
-                mConsentTextTracker.recordConsent(new CoreAccountId(accountId),
-                        ConsentAuditorFeature.CHROME_SYNC, confirmationView, mView);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void showAccountPicker() {
