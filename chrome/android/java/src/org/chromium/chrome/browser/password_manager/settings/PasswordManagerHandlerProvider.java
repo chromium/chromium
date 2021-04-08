@@ -59,6 +59,21 @@ public class PasswordManagerHandlerProvider implements PasswordManagerHandler.Pa
     }
 
     /**
+     * Resets the testing implementation of PasswordManagerHandler, clears all observers and ensures
+     * that the view is cleaned up properly.
+     */
+    @VisibleForTesting
+    public void resetPasswordManagerHandlerForTest() {
+        ThreadUtils.assertOnUiThread();
+        mObservers.clear();
+        mTestPasswordManagerHandler = null;
+        if (mPasswordUIView != null) {
+            mPasswordUIView.destroy();
+            mPasswordUIView = null;
+        }
+    }
+
+    /**
      * A convenience function to choose between the production and test PasswordManagerHandler
      * implementation.
      */

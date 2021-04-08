@@ -349,6 +349,10 @@ public class PasswordSettings
             passwordParent.addPreference(preference);
         }
         mNoPasswords = passwordParent.getPreferenceCount() == 0;
+        if (mMenu != null) {
+            mMenu.findItem(R.id.export_passwords)
+                    .setEnabled(!mNoPasswords && !mExportFlow.isActive());
+        }
         if (mNoPasswords) {
             if (count == 0) displayEmptyScreenMessage(); // Show if the list was already empty.
             if (mSearchQuery == null) {
