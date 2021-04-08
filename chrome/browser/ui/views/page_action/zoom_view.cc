@@ -76,8 +76,7 @@ void ZoomView::ZoomChangedForActiveTab(bool can_show_bubble) {
                                    zoom::ZoomController::ZOOM_BELOW_DEFAULT_ZOOM
                 ? &kZoomMinusIcon
                 : &kZoomPlusIcon;
-    if (GetNativeTheme())
-      UpdateIconImage();
+    UpdateIconImage();
 
     // Visibility must be enabled before the bubble is shown to ensure the
     // bubble anchors correctly.
