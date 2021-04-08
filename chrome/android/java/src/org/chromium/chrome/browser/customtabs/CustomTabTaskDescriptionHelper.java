@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -66,6 +67,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
     private String mForceTitle;
     @Nullable
     private Bitmap mForceIcon;
+    private boolean mUseClientIcon;
 
     @Nullable
     private Bitmap mLargestFavicon;
@@ -99,6 +101,15 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
             }
             mForceIcon = webappExtras.icon.bitmap();
             mForceTitle = webappExtras.shortName;
+
+            // This is a workaround for crbug/1098580. ActivityManager.TaskDescription
+            // does not handle adaptive icon when passing a bitmap. So set the task icon to be null
+            // to preserve the client app's icon. Only set this flag on O+ because this does not
+            // work with old_style_webapk.
+            if (mIntentDataProvider.isWebApkActivity()
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                mUseClientIcon = true;
+            }
         }
 
         mIconGenerator = new CustomTabTaskDescriptionIconGenerator(mActivity);
@@ -150,7 +161,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
         };
         mTabObserverRegistrar.registerActivityTabObserver(mTabObserver);
 
-        if (mForceIcon != null) {
+        if (mForceIcon == null && !mUseClientIcon) {
             mIconTabObserver = new CustomTabTabObserver() {
                 @Override
                 public void onWebContentsSwapped(
@@ -232,6 +243,8 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
      * Computes the icon for the task description.
      */
     private Bitmap computeIcon() {
+        if (mUseClientIcon) return null;
+
         if (mForceIcon != null) return mForceIcon;
 
         Tab currentTab = mTabProvider.getTab();
