@@ -225,10 +225,61 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       query_tiles(match.query_tiles),
       navsuggest_tiles(match.navsuggest_tiles) {}
 
-AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept =
-    default;
+AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept
+    : provider(std::move(match.provider)),
+      relevance(std::move(match.relevance)),
+      typed_count(std::move(match.typed_count)),
+      deletable(std::move(match.deletable)),
+      fill_into_edit(std::move(match.fill_into_edit)),
+      additional_text(std::move(match.additional_text)),
+      inline_autocompletion(std::move(match.inline_autocompletion)),
+      rich_autocompletion_triggered(
+          std::move(match.rich_autocompletion_triggered)),
+      prefix_autocompletion(std::move(match.prefix_autocompletion)),
+      split_autocompletion(std::move(match.split_autocompletion)),
+      allowed_to_be_default_match(std::move(match.allowed_to_be_default_match)),
+      destination_url(std::move(match.destination_url)),
+      stripped_destination_url(std::move(match.stripped_destination_url)),
+      image_dominant_color(std::move(match.image_dominant_color)),
+      image_url(std::move(match.image_url)),
+      document_type(std::move(match.document_type)),
+      tail_suggest_common_prefix(std::move(match.tail_suggest_common_prefix)),
+      contents(std::move(match.contents)),
+      contents_class(std::move(match.contents_class)),
+      description(std::move(match.description)),
+      description_class(std::move(match.description_class)),
+      description_for_shortcuts(std::move(match.description_for_shortcuts)),
+      description_class_for_shortcuts(
+          std::move(match.description_class_for_shortcuts)),
+      suggestion_group_id(std::move(match.suggestion_group_id)),
+      swap_contents_and_description(
+          std::move(match.swap_contents_and_description)),
+      answer(std::move(match.answer)),
+      transition(std::move(match.transition)),
+      type(std::move(match.type)),
+      has_tab_match(std::move(match.has_tab_match)),
+      subtypes(std::move(match.subtypes)),
+      associated_keyword(std::move(match.associated_keyword)),
+      keyword(std::move(match.keyword)),
+      from_keyword(std::move(match.from_keyword)),
+      pedal(std::move(match.pedal)),
+      from_previous(std::move(match.from_previous)),
+      search_terms_args(std::move(match.search_terms_args)),
+      post_content(std::move(match.post_content)),
+      additional_info(std::move(match.additional_info)),
+      duplicate_matches(std::move(match.duplicate_matches)),
+      query_tiles(std::move(match.query_tiles)),
+      navsuggest_tiles(std::move(match.navsuggest_tiles)) {
+#if defined(OS_ANDROID)
+  java_match_ = std::move(match.java_match_);
+  UpdateJavaObjectNativeRef();
+#endif
+}
 
 AutocompleteMatch::~AutocompleteMatch() {
+#if defined(OS_ANDROID)
+  DestroyJavaObject();
+#endif
 }
 
 AutocompleteMatch& AutocompleteMatch::operator=(

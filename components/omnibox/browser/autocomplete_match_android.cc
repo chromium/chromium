@@ -83,9 +83,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
   std::vector<int> temp_subtypes(subtypes.begin(), subtypes.end());
 
   java_match_ = Java_AutocompleteMatch_build(
-      env, type, ToJavaIntArray(env, temp_subtypes),
-      AutocompleteMatch::IsSearchType(type), relevance, transition,
-      ConvertUTF16ToJavaString(env, contents),
+      env, reinterpret_cast<intptr_t>(this), type,
+      ToJavaIntArray(env, temp_subtypes), AutocompleteMatch::IsSearchType(type),
+      relevance, transition, ConvertUTF16ToJavaString(env, contents),
       ToJavaIntArray(env, contents_class_offsets),
       ToJavaIntArray(env, contents_class_styles),
       ConvertUTF16ToJavaString(env, description),
@@ -102,4 +102,22 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
       url::GURLAndroid::ToJavaArrayOfGURLs(env, navsuggest_urls));
 
   return ScopedJavaLocalRef<jobject>(java_match_);
+}
+
+void AutocompleteMatch::UpdateJavaObjectNativeRef() {
+  if (!java_match_)
+    return;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutocompleteMatch_updateNativeObjectRef(
+      env, java_match_, reinterpret_cast<intptr_t>(this));
+}
+
+void AutocompleteMatch::DestroyJavaObject() {
+  if (!java_match_)
+    return;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutocompleteMatch_destroy(env, java_match_);
+  java_match_.Reset();
 }

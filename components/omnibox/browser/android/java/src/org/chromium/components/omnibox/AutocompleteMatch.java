@@ -100,6 +100,7 @@ public class AutocompleteMatch {
     private final byte[] mClipboardImageData;
     private final boolean mHasTabMatch;
     private final @Nullable List<NavsuggestTile> mNavsuggestTiles;
+    private long mNativeMatch;
 
     public AutocompleteMatch(int nativeType, Set<Integer> subtypes, boolean isSearchType,
             int relevance, int transition, String displayText,
@@ -139,7 +140,7 @@ public class AutocompleteMatch {
     }
 
     @CalledByNative
-    private static AutocompleteMatch build(int nativeType, int[] nativeSubtypes,
+    private static AutocompleteMatch build(long nativeObject, int nativeType, int[] nativeSubtypes,
             boolean isSearchType, int relevance, int transition, String contents,
             int[] contentClassificationOffsets, int[] contentClassificationStyles,
             String description, int[] descriptionClassificationOffsets,
@@ -173,10 +174,24 @@ public class AutocompleteMatch {
             subtypes.add(nativeSubtypes[i]);
         }
 
-        return new AutocompleteMatch(nativeType, subtypes, isSearchType, relevance, transition,
-                contents, contentClassifications, description, descriptionClassifications, answer,
-                fillIntoEdit, url, imageUrl, imageDominantColor, isDeletable, postContentType,
-                postData, groupId, tiles, clipboardImageData, hasTabMatch, navsuggestTiles);
+        AutocompleteMatch match = new AutocompleteMatch(nativeType, subtypes, isSearchType,
+                relevance, transition, contents, contentClassifications, description,
+                descriptionClassifications, answer, fillIntoEdit, url, imageUrl, imageDominantColor,
+                isDeletable, postContentType, postData, groupId, tiles, clipboardImageData,
+                hasTabMatch, navsuggestTiles);
+        match.updateNativeObjectRef(nativeObject);
+        return match;
+    }
+
+    @CalledByNative
+    private void updateNativeObjectRef(long nativeMatch) {
+        assert nativeMatch != 0 : "Invalid native object.";
+        mNativeMatch = nativeMatch;
+    }
+
+    @CalledByNative
+    private void destroy() {
+        mNativeMatch = 0;
     }
 
     public int getType() {
@@ -295,7 +310,8 @@ public class AutocompleteMatch {
         }
 
         AutocompleteMatch suggestion = (AutocompleteMatch) obj;
-        return mType == suggestion.mType && ObjectsCompat.equals(mSubtypes, suggestion.mSubtypes)
+        return mType == suggestion.mType && mNativeMatch == suggestion.mNativeMatch
+                && ObjectsCompat.equals(mSubtypes, suggestion.mSubtypes)
                 && TextUtils.equals(mFillIntoEdit, suggestion.mFillIntoEdit)
                 && TextUtils.equals(mDisplayText, suggestion.mDisplayText)
                 && ObjectsCompat.equals(

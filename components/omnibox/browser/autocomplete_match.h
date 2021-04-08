@@ -201,6 +201,15 @@ struct AutocompleteMatch {
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
       JNIEnv* env) const;
 
+  // Update the bond with- or drop the Java AutocompleteMatch instance.
+  // This should be called whenever the native AutocompleteMatch object is
+  // updated for an existing Java object.
+  void UpdateJavaObjectNativeRef();
+
+  // Notify the Java object that its native counterpart is about to be
+  // destroyed.
+  void DestroyJavaObject();
+
   // Returns a corresponding Java Class object.
   static jclass GetClazz(JNIEnv* env);
 #endif
