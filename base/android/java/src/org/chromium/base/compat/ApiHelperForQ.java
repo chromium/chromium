@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.hardware.biometrics.BiometricManager;
+import android.net.NetworkCapabilities;
+import android.net.TransportInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.FileUtils;
@@ -98,5 +100,10 @@ public final class ApiHelperForQ {
     /** See {@link BiometricManager#canAuthenticate() }. */
     public static int canAuthenticate(BiometricManager manager) {
         return manager.canAuthenticate();
+    }
+
+    /** See {@link NetworkCapabilities#getTransportInfo() } */
+    public static TransportInfo getTransportInfo(NetworkCapabilities networkCapabilities) {
+        return networkCapabilities.getTransportInfo();
     }
 }
