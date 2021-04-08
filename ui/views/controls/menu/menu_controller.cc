@@ -62,7 +62,6 @@
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
-#include "ui/aura/window_delegate.h"
 #endif
 
 #if defined(USE_OZONE)
@@ -468,8 +467,7 @@ void MenuController::Run(Widget* parent,
                          const gfx::Rect& bounds,
                          MenuAnchorPosition position,
                          bool context_menu,
-                         bool is_nested_drag,
-                         gfx::NativeView native_view_for_gestures) {
+                         bool is_nested_drag) {
   exit_type_ = ExitType::kNone;
   possible_drag_ = false;
   drag_in_progress_ = false;
@@ -514,8 +512,6 @@ void MenuController::Run(Widget* parent,
     owner_ = parent;
     if (owner_)
       owner_->AddObserver(this);
-
-    native_view_for_gestures_ = native_view_for_gestures;
 
     // Only create a MenuPreTargetHandler for non-nested menus. Nested menus
     // will use the existing one.
@@ -890,16 +886,13 @@ bool MenuController::OnMouseWheel(SubmenuView* source,
 void MenuController::OnGestureEvent(SubmenuView* source,
                                     ui::GestureEvent* event) {
   if (owner_ && send_gesture_events_to_owner()) {
-#if defined(USE_AURA)
-    gfx::NativeView target = native_view_for_gestures_
-                                 ? native_view_for_gestures_
-                                 : owner()->GetNativeWindow();
+#if defined(OS_APPLE)
+    NOTIMPLEMENTED();
+#else   // !defined(OS_APPLE)
     event->ConvertLocationToTarget(source->GetWidget()->GetNativeWindow(),
-                                   target);
-    target->delegate()->OnGestureEvent(event);
-#else
+                                   owner()->GetNativeWindow());
+#endif  // defined(OS_APPLE)
     owner()->OnGestureEvent(event);
-#endif  // defined(USE_AURA)
     // Reset |send_gesture_events_to_owner_| when the first gesture ends.
     if (event->type() == ui::ET_GESTURE_END)
       send_gesture_events_to_owner_ = false;
@@ -1301,7 +1294,6 @@ void MenuController::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(owner_, widget);
   owner_->RemoveObserver(this);
   owner_ = nullptr;
-  native_view_for_gestures_ = nullptr;
 }
 
 bool MenuController::IsCancelAllTimerRunningForTest() {
@@ -2125,8 +2117,7 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
   }
 
   if (show) {
-    item->GetSubmenu()->ShowAt(owner_, bounds, do_capture,
-                               native_view_for_gestures_);
+    item->GetSubmenu()->ShowAt(owner_, bounds, do_capture);
 
     // Figure out if the mouse is under the menu; if so, remember the mouse
     // location so we can ignore the first mouse move event(s) with that

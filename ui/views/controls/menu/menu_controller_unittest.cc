@@ -46,8 +46,6 @@
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
-#include "ui/aura/test/test_window_delegate.h"
-#include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -1752,65 +1750,6 @@ TEST_F(MenuControllerTest, PreserveGestureForOwner) {
   controller->OnGestureEvent(sub_menu, &event2);
   EXPECT_EQ(CountOwnerOnGestureEvent(), 2);
 }
-
-#if defined(USE_AURA)
-// Tests that setting `send_gesture_events_to_owner` flag forwards gesture
-// events to the NativeView specified for gestures and not the owner's
-// NativeView.
-TEST_F(MenuControllerTest, ForwardsEventsToNativeViewForGestures) {
-  aura::test::EventCountDelegate child_delegate;
-  auto child_window = std::make_unique<aura::Window>(&child_delegate);
-  child_window->Init(ui::LAYER_TEXTURED);
-  owner()->GetNativeView()->AddChild(child_window.get());
-
-  MenuController* controller = menu_controller();
-  MenuItemView* item = menu_item();
-
-  // Ensure menu is closed before running with the menu with `child_window` as
-  // the NativeView for gestures.
-  controller->Cancel(MenuController::ExitType::kAll);
-
-  controller->Run(owner(), nullptr, item, gfx::Rect(),
-                  MenuAnchorPosition::kBottomCenter, false, false,
-                  child_window.get());
-  SubmenuView* sub_menu = item->GetSubmenu();
-  sub_menu->ShowAt(owner(), gfx::Rect(0, 0, 100, 100), true,
-                   child_window.get());
-
-  gfx::Point location(sub_menu->bounds().bottom_left().x(),
-                      sub_menu->bounds().bottom_left().y() + 10);
-  ui::GestureEvent event(location.x(), location.y(), 0, ui::EventTimeForNow(),
-                         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN));
-
-  // Gesture events should not be forwarded to either the `child_window` or the
-  // hosts native window if the flag is not set.
-  EXPECT_EQ(0, CountOwnerOnGestureEvent());
-  EXPECT_EQ(0, child_delegate.GetGestureCountAndReset());
-  EXPECT_FALSE(controller->send_gesture_events_to_owner());
-  controller->OnGestureEvent(sub_menu, &event);
-  EXPECT_EQ(0, CountOwnerOnGestureEvent());
-  EXPECT_EQ(0, child_delegate.GetGestureCountAndReset());
-
-  // The `child_window` should receive gestures triggered outside the menu.
-  controller->set_send_gesture_events_to_owner(true);
-  controller->OnGestureEvent(sub_menu, &event);
-  EXPECT_EQ(0, CountOwnerOnGestureEvent());
-  EXPECT_EQ(1, child_delegate.GetGestureCountAndReset());
-
-  ui::GestureEvent event2(location.x(), location.y(), 0, ui::EventTimeForNow(),
-                          ui::GestureEventDetails(ui::ET_GESTURE_END));
-
-  controller->OnGestureEvent(sub_menu, &event2);
-  EXPECT_EQ(0, CountOwnerOnGestureEvent());
-  EXPECT_EQ(1, child_delegate.GetGestureCountAndReset());
-
-  // ET_GESTURE_END resets the `send_gesture_events_to_owner_` flag, so further
-  // gesture events should not be sent to the `child_window`.
-  controller->OnGestureEvent(sub_menu, &event2);
-  EXPECT_EQ(0, CountOwnerOnGestureEvent());
-  EXPECT_EQ(0, child_delegate.GetGestureCountAndReset());
-}
-#endif
 
 // Tests that touch outside menu does not closes the menu when forwarding
 // gesture events to owner.

@@ -386,8 +386,7 @@ bool SubmenuView::IsShowing() const {
 
 void SubmenuView::ShowAt(Widget* parent,
                          const gfx::Rect& bounds,
-                         bool do_capture,
-                         gfx::NativeView native_view_for_gestures) {
+                         bool do_capture) {
   if (host_) {
     host_->SetMenuHostBounds(bounds);
     host_->ShowMenuHost(do_capture);
@@ -398,8 +397,7 @@ void SubmenuView::ShowAt(Widget* parent,
     // Force a layout since our preferred size may not have changed but our
     // content may have.
     InvalidateLayout();
-    host_->InitMenuHost(parent, bounds, scroll_view_container_, do_capture,
-                        native_view_for_gestures);
+    host_->InitMenuHost(parent, bounds, scroll_view_container_, do_capture);
   }
 
   // Only fire kMenuStart for the top level menu, not for each submenu.

@@ -109,10 +109,7 @@ class VIEWS_EXPORT SubmenuView : public View,
 
   // Shows the menu at the specified location. Coordinates are in screen
   // coordinates. max_width gives the max width the view should be.
-  void ShowAt(Widget* parent,
-              const gfx::Rect& bounds,
-              bool do_capture,
-              gfx::NativeView native_view_for_gestures = nullptr);
+  void ShowAt(Widget* parent, const gfx::Rect& bounds, bool do_capture);
 
   // Resets the bounds of the submenu to |bounds|.
   void Reposition(const gfx::Rect& bounds);

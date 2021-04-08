@@ -131,8 +131,7 @@ void MenuRunnerImpl::RunMenuAt(Widget* parent,
                                MenuButtonController* button_controller,
                                const gfx::Rect& bounds,
                                MenuAnchorPosition anchor,
-                               int32_t run_types,
-                               gfx::NativeView native_view_for_gestures) {
+                               int32_t run_types) {
   closing_event_time_ = base::TimeTicks();
   if (running_) {
     // Ignore requests to show the menu while it's already showing. MenuItemView
@@ -196,8 +195,7 @@ void MenuRunnerImpl::RunMenuAt(Widget* parent,
 
   controller->Run(parent, button_controller, menu_, bounds, anchor,
                   (run_types & MenuRunner::CONTEXT_MENU) != 0,
-                  (run_types & MenuRunner::NESTED_DRAG) != 0,
-                  native_view_for_gestures);
+                  (run_types & MenuRunner::NESTED_DRAG) != 0);
 }
 
 void MenuRunnerImpl::Cancel() {

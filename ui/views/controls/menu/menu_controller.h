@@ -102,8 +102,7 @@ class VIEWS_EXPORT MenuController
            const gfx::Rect& bounds,
            MenuAnchorPosition position,
            bool context_menu,
-           bool is_nested_drag,
-           gfx::NativeView native_view_for_gestures = nullptr);
+           bool is_nested_drag);
 
   bool for_drop() const { return for_drop_; }
 
@@ -693,10 +692,6 @@ class VIEWS_EXPORT MenuController
   // Owner of child windows.
   // WARNING: this may be NULL.
   Widget* owner_ = nullptr;
-
-  // An optional NativeView to which gestures will be forwarded to if
-  // RunType::SEND_GESTURE_EVENTS_TO_OWNER is set.
-  gfx::NativeView native_view_for_gestures_ = nullptr;
 
   // Indicates a possible drag operation.
   bool possible_drag_ = false;
