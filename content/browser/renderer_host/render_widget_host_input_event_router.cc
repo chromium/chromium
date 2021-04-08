@@ -1984,13 +1984,6 @@ void RenderWidgetHostInputEventRouter::SetMouseCaptureTarget(
     mouse_capture_target_ = nullptr;
 }
 
-RenderWidgetHostImpl*
-RenderWidgetHostInputEventRouter::GetMouseCaptureWidgetForTests() const {
-  if (mouse_capture_target_)
-    return mouse_capture_target_->host();
-  return nullptr;
-}
-
 void RenderWidgetHostInputEventRouter::SetAutoScrollInProgress(
     bool is_autoscroll_in_progress) {
   event_targeter_->SetIsAutoScrollInProgress(is_autoscroll_in_progress);

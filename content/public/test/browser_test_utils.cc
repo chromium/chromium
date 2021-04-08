@@ -711,14 +711,6 @@ void ResetTouchAction(RenderWidgetHost* host) {
       ->ForceResetTouchActionForTest();
 }
 
-void RequestMouseLock(RenderWidgetHost* host,
-                      bool user_gesture,
-                      bool request_unadjusted_movement) {
-  static_cast<RenderWidgetHostImpl*>(host)->RequestMouseLock(
-      user_gesture, request_unadjusted_movement,
-      /*response=*/base::DoNothing());
-}
-
 void RunUntilInputProcessed(RenderWidgetHost* host) {
   base::RunLoop run_loop;
   RenderWidgetHostImpl::From(host)->WaitForInputProcessed(
@@ -958,21 +950,6 @@ void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,
 #endif  // defined(OS_ANDROID)
 }
 
-void SendMouseDownToWidget(RenderWidgetHost* target,
-                           int modifiers,
-                           blink::WebMouseEvent::Button button) {
-  auto* view = static_cast<RenderWidgetHostImpl*>(target)->GetView();
-
-  blink::WebMouseEvent mouse_event(blink::WebInputEvent::Type::kMouseDown,
-                                   modifiers, ui::EventTimeForNow());
-  mouse_event.button = button;
-  int x = view->GetViewBounds().width() / 2;
-  int y = view->GetViewBounds().height() / 2;
-  mouse_event.SetPositionInWidget(x, y);
-  mouse_event.click_count = 1;
-  target->ForwardMouseEvent(mouse_event);
-}
-
 void SimulateMouseEvent(WebContents* web_contents,
                         blink::WebInputEvent::Type type,
                         const gfx::Point& point) {
@@ -1122,37 +1099,6 @@ void SimulateGestureScrollSequence(WebContents* web_contents,
       blink::WebGestureDevice::kTouchpad);
   scroll_end.SetPositionInWidget(gfx::PointF(point));
   widget_host->ForwardGestureEvent(scroll_end);
-}
-
-void SimulateGestureFlingSequence(WebContents* web_contents,
-                                  const gfx::Point& point,
-                                  const gfx::Vector2dF& velocity) {
-  RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
-
-  blink::WebGestureEvent scroll_begin(
-      blink::WebGestureEvent::Type::kGestureScrollBegin,
-      blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow(),
-      blink::WebGestureDevice::kTouchpad);
-  scroll_begin.SetPositionInWidget(gfx::PointF(point));
-  widget_host->ForwardGestureEvent(scroll_begin);
-
-  blink::WebGestureEvent scroll_end(
-      blink::WebGestureEvent::Type::kGestureScrollEnd,
-      blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow(),
-      blink::WebGestureDevice::kTouchpad);
-  scroll_end.SetPositionInWidget(gfx::PointF(point));
-  widget_host->ForwardGestureEvent(scroll_end);
-
-  blink::WebGestureEvent fling_start(
-      blink::WebGestureEvent::Type::kGestureFlingStart,
-      blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow(),
-      blink::WebGestureDevice::kTouchpad);
-  fling_start.SetPositionInWidget(gfx::PointF(point));
-  fling_start.data.fling_start.target_viewport = false;
-  fling_start.data.fling_start.velocity_x = velocity.x();
-  fling_start.data.fling_start.velocity_y = velocity.y();
-  widget_host->ForwardGestureEvent(fling_start);
 }
 
 void SimulateGestureEvent(WebContents* web_contents,
@@ -2229,18 +2175,8 @@ void UiaGetPropertyValueVtArrayVtUnknownValidate(
 }
 #endif
 
-RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents) {
-  return static_cast<WebContentsImpl*>(web_contents)->GetMouseLockWidget();
-}
-
 RenderWidgetHost* GetKeyboardLockWidget(WebContents* web_contents) {
   return static_cast<WebContentsImpl*>(web_contents)->GetKeyboardLockWidget();
-}
-
-RenderWidgetHost* GetMouseCaptureWidget(WebContents* web_contents) {
-  return static_cast<WebContentsImpl*>(web_contents)
-      ->GetInputEventRouter()
-      ->GetMouseCaptureWidgetForTests();
 }
 
 bool RequestKeyboardLock(WebContents* web_contents,

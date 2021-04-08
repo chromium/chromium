@@ -266,12 +266,6 @@ void SimulateMouseClickAt(WebContents* web_contents,
 void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,
                                           const std::string& id);
 
-// Simulates MouseDown at the center of the given RenderWidgetHost's area.
-// This does not send a corresponding MouseUp.
-void SendMouseDownToWidget(RenderWidgetHost* target,
-                           int modifiers,
-                           blink::WebMouseEvent::Button button);
-
 // Simulates asynchronously a mouse enter/move/leave event. The mouse event is
 // routed through RenderWidgetHostInputEventRouter and thus can target OOPIFs.
 void SimulateMouseEvent(WebContents* web_contents,
@@ -312,10 +306,6 @@ void SimulateGesturePinchSequence(WebContents* web_contents,
 void SimulateGestureScrollSequence(WebContents* web_contents,
                                    const gfx::Point& point,
                                    const gfx::Vector2dF& delta);
-
-void SimulateGestureFlingSequence(WebContents* web_contents,
-                                  const gfx::Point& point,
-                                  const gfx::Vector2dF& velocity);
 
 void SimulateGestureEvent(WebContents* web_contents,
                           const blink::WebGestureEvent& gesture_event,
@@ -375,11 +365,6 @@ void SimulateKeyPressWithoutChar(WebContents* web_contents,
 
 // Reset touch action for the embedder of a BrowserPluginGuest.
 void ResetTouchAction(RenderWidgetHost* host);
-
-// Requests mouse lock on the implementation of the given RenderWidgetHost
-void RequestMouseLock(RenderWidgetHost* host,
-                      bool user_gesture,
-                      bool request_unadjusted_movement);
 
 // Spins a run loop until effects of previously forwarded input are fully
 // realized.
@@ -1016,17 +1001,8 @@ void UiaGetPropertyValueVtArrayVtUnknownValidate(
     const std::vector<std::string>& expected_names);
 #endif
 
-// Returns the RenderWidgetHost that holds the mouse lock.
-RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents);
-
 // Returns the RenderWidgetHost that holds the keyboard lock.
 RenderWidgetHost* GetKeyboardLockWidget(WebContents* web_contents);
-
-// Returns the RenderWidgetHost that holds mouse capture, if any. This is
-// distinct from MouseLock above in that it is a widget that has requested
-// implicit capture, such as during a drag. MouseLock is explicitly gained
-// through the JavaScript API.
-RenderWidgetHost* GetMouseCaptureWidget(WebContents* web_contents);
 
 // Allows tests to drive keyboard lock functionality without requiring access
 // to the RenderWidgetHostImpl header or setting up an HTTP test server.
