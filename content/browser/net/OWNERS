@@ -1,4 +1,5 @@
 file://net/OWNERS
+yhirano@chromium.org
 
 # Trust Tokens-related files.
 per-file *trust_token*=file://services/network/trust_tokens/OWNERS
