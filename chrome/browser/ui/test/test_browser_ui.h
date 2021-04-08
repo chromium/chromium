@@ -14,6 +14,7 @@
 
 namespace views {
 class Widget;
+class View;
 }  // namespace views
 
 namespace ui {
@@ -97,6 +98,11 @@ class TestBrowserUi {
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // Can be called by VerifyUi() to ensure pixel correctness.
   bool VerifyPixelUi(views::Widget* widget,
+                     const std::string& screenshot_prefix,
+                     const std::string& screenshot_name);
+
+  // Can be called by VerifyUi() to ensure pixel correctness.
+  bool VerifyPixelUi(views::View* view,
                      const std::string& screenshot_prefix,
                      const std::string& screenshot_name);
 
