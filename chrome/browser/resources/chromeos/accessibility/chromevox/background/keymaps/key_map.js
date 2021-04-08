@@ -565,6 +565,11 @@ KeyMap.BINDINGS_ = [
         {cvoxModifier: true, keys: {keyCode: [KeyCode.L], ctrlKey: [true]}}
   },
   {
+    command: 'showActionsMenu',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.A], ctrlKey: [true]}}
+  },
+  {
     command: 'showTablesList',
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.T], ctrlKey: [true]}}

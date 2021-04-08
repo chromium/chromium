@@ -191,3 +191,14 @@ TEST_F('ChromeVoxPanelTest', 'InternationalFormControlsMenu', function() {
     this.assertActiveMenuItem('panel_menu_form_controls', 'Test Button');
   });
 });
+
+TEST_F('ChromeVoxPanelTest', 'ActionsMenu', function() {
+  this.runWithLoadedTree(this.linksDoc, async function(root) {
+    CommandHandler.onCommand('showActionsMenu');
+    await this.waitForMenu('panel_menu_actions');
+    this.fireMockEvent('ArrowDown')();
+    this.assertActiveMenuItem('panel_menu_actions', 'Start Or End Selection');
+    this.fireMockEvent('ArrowUp')();
+    this.assertActiveMenuItem('panel_menu_actions', 'Click On Current Item');
+  });
+});

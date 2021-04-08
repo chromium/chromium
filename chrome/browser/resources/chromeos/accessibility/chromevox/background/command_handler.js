@@ -773,6 +773,10 @@ CommandHandler.onCommand = function(command) {
     case 'showLinksList':
       (new PanelCommand(PanelCommandType.OPEN_MENUS, 'role_link')).send();
       return false;
+    case 'showActionsMenu':
+      (new PanelCommand(PanelCommandType.OPEN_MENUS, 'panel_menu_actions'))
+          .send();
+      return false;
     case 'showTablesList':
       (new PanelCommand(PanelCommandType.OPEN_MENUS, 'table_strategy')).send();
       return false;
