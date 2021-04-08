@@ -58,6 +58,9 @@ extern const char kEnterprisePasswordAlertHistogram[];
 extern const char kGsuiteSyncPasswordAlertHistogram[];
 extern const char kGsuiteNonSyncPasswordAlertHistogram[];
 
+extern const char kPasswordOnFocusRequestWithTokenHistogram[];
+extern const char kAnyPasswordEntryRequestWithTokenHistogram[];
+
 using ReusedPasswordAccountType =
     LoginReputationClientRequest::PasswordReuseEvent::ReusedPasswordAccountType;
 using SyncAccountType =
@@ -149,6 +152,12 @@ enum class WarningUIType {
   // chrome://reset-password interstitial.
   INTERSTITIAL = 3,
 };
+
+// Logs whether an access_token was sent or not, for the appropriate
+// |trigger_type| metric.
+void LogPasswordProtectionRequestTokenHistogram(
+    LoginReputationClientRequest::TriggerType trigger_type,
+    bool has_access_token);
 
 // Logs the |outcome| to several UMA metrics, depending on the value
 // of |password_type| and |sync_account_type|.

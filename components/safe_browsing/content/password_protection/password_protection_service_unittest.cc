@@ -1024,6 +1024,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
 
 TEST_P(PasswordProtectionServiceBaseTest,
        TestPasswordOnFocusRequestEnhancedProtectionShouldHaveToken) {
+  histograms_.ExpectTotalCount(kPasswordOnFocusRequestWithTokenHistogram, 0);
   SetEnhancedProtectionPrefForTests(&test_pref_service_, true);
   SetFeatures(
       /*enable_features*/ {kPasswordProtectionWithToken},
@@ -1050,10 +1051,13 @@ TEST_P(PasswordProtectionServiceBaseTest,
 
   ASSERT_FALSE(cb.is_null());
   std::move(cb).Run(access_token);
+  histograms_.ExpectUniqueSample(kPasswordOnFocusRequestWithTokenHistogram,
+                                 1 /* Attached token */, 1);
 }
 
 TEST_P(PasswordProtectionServiceBaseTest,
        TestPasswordOnFocusRequestNoEnhancedProtectionShouldNotHaveToken) {
+  histograms_.ExpectTotalCount(kPasswordOnFocusRequestWithTokenHistogram, 0);
   SetFeatures(
       /*enable_features*/ {kPasswordProtectionWithToken},
       /*disable_features*/ {});
@@ -1072,6 +1076,9 @@ TEST_P(PasswordProtectionServiceBaseTest,
   InitializeAndStartPasswordOnFocusRequest(/*match_allowlist=*/false,
                                            /*timeout_in_ms=*/10000,
                                            web_contents.get());
+  base::RunLoop().RunUntilIdle();
+  histograms_.ExpectUniqueSample(kPasswordOnFocusRequestWithTokenHistogram,
+                                 0 /* No attached token */, 1);
 }
 
 TEST_P(PasswordProtectionServiceBaseTest,

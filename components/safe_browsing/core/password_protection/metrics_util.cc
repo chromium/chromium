@@ -110,6 +110,23 @@ const char kGsuiteSyncPasswordAlertHistogram[] =
 const char kGsuiteNonSyncPasswordAlertHistogram[] =
     "PasswordProtection.PasswordAlertModeOutcome.GSuiteNonSyncPasswordEntry";
 
+const char kPasswordOnFocusRequestWithTokenHistogram[] =
+    "PasswordProtection.RequestWithToken.PasswordFieldOnFocus";
+const char kAnyPasswordEntryRequestWithTokenHistogram[] =
+    "PasswordProtection.RequestWithToken.AnyPasswordEntry";
+
+void LogPasswordProtectionRequestTokenHistogram(
+    LoginReputationClientRequest::TriggerType trigger_type,
+    bool has_access_token) {
+  if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
+    base::UmaHistogramBoolean(kPasswordOnFocusRequestWithTokenHistogram,
+                              has_access_token);
+  } else {
+    base::UmaHistogramBoolean(kAnyPasswordEntryRequestWithTokenHistogram,
+                              has_access_token);
+  }
+}
+
 void LogPasswordEntryRequestOutcome(
     RequestOutcome outcome,
     ReusedPasswordAccountType password_account_type) {

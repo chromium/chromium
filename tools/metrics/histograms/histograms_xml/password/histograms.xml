@@ -21,6 +21,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="PasswordProtectionTriggerType">
+  <variant name="AnyPasswordEntry" summary="password reuse event"/>
+  <variant name="PasswordFieldOnFocus" summary="on focus event"/>
+</variants>
+
 <histogram name="PasswordBubble.CompromisedBubble.CheckClicked"
     enum="BooleanClicked" expires_after="2021-09-12">
   <owner>vasilii@chromium.org</owner>
@@ -2564,6 +2569,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     indicating the source of the referring app name in the request. This metric
     is only logged on Android.
   </summary>
+</histogram>
+
+<histogram name="PasswordProtection.RequestWithToken.{TriggerType}"
+    units="BooleanSent" expires_after="2021-07-06">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records if the password protection request, triggered by a(n) {TriggerType},
+    was sent with a GAIA-tied OAuth2 token. This token is sent only for
+    signed-in Enhanced Safe Browsing users.
+  </summary>
+  <token key="TriggerType" variants="PasswordProtectionTriggerType"/>
 </histogram>
 
 <histogram name="PasswordProtection.SampleReportSent" units="Boolean"

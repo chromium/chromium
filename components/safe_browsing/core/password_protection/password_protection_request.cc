@@ -371,7 +371,9 @@ void PasswordProtectionRequest::SendRequestWithToken(
           }
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  if (!access_token.empty()) {
+  bool has_access_token = !access_token.empty();
+  LogPasswordProtectionRequestTokenHistogram(trigger_type_, has_access_token);
+  if (has_access_token) {
     resource_request->headers.SetHeader(
         net::HttpRequestHeaders::kAuthorization,
         base::StrCat({kAuthHeaderBearer, access_token}));
