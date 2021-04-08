@@ -319,6 +319,7 @@ interface AudioDestinationNode : AudioNode
     getter maxChannelCount
     method constructor
 interface AudioEncoder
+    static method isConfigSupported
     attribute @@toStringTag
     getter encodeQueueSize
     getter state
@@ -11540,6 +11541,7 @@ interface VideoDecoder
     method flush
     method reset
 interface VideoEncoder
+    static method isConfigSupported
     attribute @@toStringTag
     getter encodeQueueSize
     getter state

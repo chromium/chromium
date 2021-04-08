@@ -27,6 +27,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method flush
 [Worker]     method reset
 [Worker] interface AudioEncoder
+[Worker]     static method isConfigSupported
 [Worker]     attribute @@toStringTag
 [Worker]     getter encodeQueueSize
 [Worker]     getter state
@@ -1773,6 +1774,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method flush
 [Worker]     method reset
 [Worker] interface VideoEncoder
+[Worker]     static method isConfigSupported
 [Worker]     attribute @@toStringTag
 [Worker]     getter encodeQueueSize
 [Worker]     getter state

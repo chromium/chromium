@@ -70,6 +70,10 @@ class MODULES_EXPORT VideoEncoder final
   VideoEncoder(ScriptState*, const VideoEncoderInit*, ExceptionState&);
   ~VideoEncoder() override;
 
+  static ScriptPromise isConfigSupported(ScriptState*,
+                                         const VideoEncoderConfig*,
+                                         ExceptionState&);
+
  private:
   using Base = EncoderBase<VideoEncoderTraits>;
   using ParsedConfig = VideoEncoderTraits::ParsedConfig;

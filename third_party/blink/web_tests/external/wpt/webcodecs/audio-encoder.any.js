@@ -32,13 +32,6 @@ function join_buffers(buffers) {
   return result;
 }
 
-function clone_frame(frame) {
-  return new AudioFrame({
-    timestamp: frame.timestamp,
-    buffer: join_buffers([frame.buffer])
-  });
-}
-
 promise_test(async t => {
   let sample_rate = 48000;
   let total_duration_s = 1;

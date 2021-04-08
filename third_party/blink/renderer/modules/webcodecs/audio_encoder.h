@@ -68,6 +68,10 @@ class MODULES_EXPORT AudioEncoder final
     return Base::encode(frame, nullptr, exception_state);
   }
 
+  static ScriptPromise isConfigSupported(ScriptState*,
+                                         const AudioEncoderConfig*,
+                                         ExceptionState&);
+
  private:
   using Base = EncoderBase<AudioEncoderTraits>;
   using ParsedConfig = AudioEncoderTraits::ParsedConfig;

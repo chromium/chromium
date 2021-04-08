@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_support.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -142,6 +143,106 @@ std::unique_ptr<media::VideoEncoder> CreateOpenH264VideoEncoder() {
 #endif  // BUILDFLAG(ENABLE_OPENH264)
 }
 
+VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
+    const VideoEncoderConfig* config,
+    ExceptionState& exception_state) {
+  constexpr int kMaxSupportedFrameSize = 8000;
+  auto* result = MakeGarbageCollected<VideoEncoderTraits::ParsedConfig>();
+
+  result->options.frame_size.set_height(config->height());
+  if (result->options.frame_size.height() == 0 ||
+      result->options.frame_size.height() > kMaxSupportedFrameSize) {
+    exception_state.ThrowTypeError("Invalid height.");
+    return nullptr;
+  }
+
+  result->options.frame_size.set_width(config->width());
+  if (result->options.frame_size.width() == 0 ||
+      result->options.frame_size.width() > kMaxSupportedFrameSize) {
+    exception_state.ThrowTypeError("Invalid width.");
+    return nullptr;
+  }
+
+  if (config->alpha() == "keep") {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Alpha encoding is not currently supported.");
+    return nullptr;
+  }
+
+  if (config->hasDisplayWidth() && config->hasDisplayHeight()) {
+    result->display_size.emplace(config->displayWidth(),
+                                 config->displayHeight());
+  }
+
+  if (config->hasFramerate())
+    result->options.framerate = config->framerate();
+
+  if (config->hasBitrate())
+    result->options.bitrate = config->bitrate();
+
+  // https://w3c.github.io/webrtc-svc/
+  if (config->hasScalabilityMode()) {
+    if (config->scalabilityMode() == "L1T2") {
+      result->options.temporal_layers = 2;
+    } else if (config->scalabilityMode() == "L1T3") {
+      result->options.temporal_layers = 3;
+    } else {
+      exception_state.ThrowTypeError("Unsupported scalabilityMode.");
+      return nullptr;
+    }
+  }
+
+  // The IDL defines a default value of "allow".
+  DCHECK(config->hasHardwareAcceleration());
+
+  result->hw_pref = StringToHardwarePreference(
+      IDLEnumAsString(config->hardwareAcceleration()));
+
+  bool is_codec_ambiguous = true;
+  result->codec = media::kUnknownVideoCodec;
+  result->profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
+  result->color_space = media::VideoColorSpace::REC709();
+  result->level = 0;
+  result->codec_string = config->codec();
+
+  bool parse_succeeded = media::ParseVideoCodecString(
+      "", config->codec().Utf8(), &is_codec_ambiguous, &result->codec,
+      &result->profile, &result->level, &result->color_space);
+
+  if (!parse_succeeded) {
+    exception_state.ThrowTypeError("Invalid codec string.");
+    return nullptr;
+  }
+
+  if (is_codec_ambiguous) {
+    exception_state.ThrowTypeError("Ambiguous codec string.");
+    return nullptr;
+  }
+
+  // We are done with the parsing.
+  if (!config->hasAvc())
+    return result;
+
+  // We should only get here with H264 codecs.
+  if (result->codec != media::VideoCodec::kCodecH264) {
+    exception_state.ThrowTypeError(
+        "'avcOptions' can only be used with AVC codecs");
+    return nullptr;
+  }
+
+  std::string avc_format = IDLEnumAsString(config->avc()->format()).Utf8();
+  if (avc_format == "avc") {
+    result->options.avc.produce_annexb = false;
+  } else if (avc_format == "annexb") {
+    result->options.avc.produce_annexb = true;
+  } else {
+    NOTREACHED();
+  }
+
+  return result;
+}
+
 }  // namespace
 
 // static
@@ -171,101 +272,7 @@ VideoEncoder::~VideoEncoder() = default;
 VideoEncoder::ParsedConfig* VideoEncoder::ParseConfig(
     const VideoEncoderConfig* config,
     ExceptionState& exception_state) {
-  constexpr int kMaxSupportedFrameSize = 8000;
-  auto* parsed = MakeGarbageCollected<ParsedConfig>();
-
-  parsed->options.frame_size.set_height(config->height());
-  if (parsed->options.frame_size.height() == 0 ||
-      parsed->options.frame_size.height() > kMaxSupportedFrameSize) {
-    exception_state.ThrowTypeError("Invalid height.");
-    return nullptr;
-  }
-
-  parsed->options.frame_size.set_width(config->width());
-  if (parsed->options.frame_size.width() == 0 ||
-      parsed->options.frame_size.width() > kMaxSupportedFrameSize) {
-    exception_state.ThrowTypeError("Invalid width.");
-    return nullptr;
-  }
-
-  if (config->alpha() == "keep") {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Alpha encoding is not currently supported.");
-    return nullptr;
-  }
-
-  if (config->hasDisplayWidth() && config->hasDisplayHeight()) {
-    parsed->display_size.emplace(config->displayWidth(),
-                                 config->displayHeight());
-  }
-
-  if (config->hasFramerate())
-    parsed->options.framerate = config->framerate();
-
-  if (config->hasBitrate())
-    parsed->options.bitrate = config->bitrate();
-
-  // https://w3c.github.io/webrtc-svc/
-  if (config->hasScalabilityMode()) {
-    if (config->scalabilityMode() == "L1T2") {
-      parsed->options.temporal_layers = 2;
-    } else if (config->scalabilityMode() == "L1T3") {
-      parsed->options.temporal_layers = 3;
-    } else {
-      exception_state.ThrowTypeError("Unsupported scalabilityMode.");
-      return nullptr;
-    }
-  }
-
-  // The IDL defines a default value of "allow".
-  DCHECK(config->hasHardwareAcceleration());
-
-  parsed->hw_pref = StringToHardwarePreference(
-      IDLEnumAsString(config->hardwareAcceleration()));
-
-  bool is_codec_ambiguous = true;
-  parsed->codec = media::kUnknownVideoCodec;
-  parsed->profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
-  parsed->color_space = media::VideoColorSpace::REC709();
-  parsed->level = 0;
-  parsed->codec_string = config->codec();
-
-  bool parse_succeeded = media::ParseVideoCodecString(
-      "", config->codec().Utf8(), &is_codec_ambiguous, &parsed->codec,
-      &parsed->profile, &parsed->level, &parsed->color_space);
-
-  if (!parse_succeeded) {
-    exception_state.ThrowTypeError("Invalid codec string.");
-    return nullptr;
-  }
-
-  if (is_codec_ambiguous) {
-    exception_state.ThrowTypeError("Ambiguous codec string.");
-    return nullptr;
-  }
-
-  // We are done with the parsing.
-  if (!config->hasAvc())
-    return parsed;
-
-  // We should only get here with H264 codecs.
-  if (parsed->codec != media::VideoCodec::kCodecH264) {
-    exception_state.ThrowTypeError(
-        "'avcOptions' can only be used with AVC codecs");
-    return nullptr;
-  }
-
-  std::string avc_format = IDLEnumAsString(config->avc()->format()).Utf8();
-  if (avc_format == "avc") {
-    parsed->options.avc.produce_annexb = false;
-  } else if (avc_format == "annexb") {
-    parsed->options.avc.produce_annexb = true;
-  } else {
-    NOTREACHED();
-  }
-
-  return parsed;
+  return ParseConfigStatic(config, exception_state);
 }
 
 bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
@@ -685,6 +692,19 @@ void VideoEncoder::CallOutputCallback(
 
   ScriptState::Scope scope(script_state_);
   output_callback_->InvokeAndReportException(nullptr, chunk, metadata);
+}
+
+// static
+ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
+                                              const VideoEncoderConfig* config,
+                                              ExceptionState& exception_state) {
+  if (!ParseConfigStatic(config, exception_state))
+    return ScriptPromise();
+
+  auto* support = VideoEncoderSupport::Create();
+  support->setSupported(false);
+  support->setConfig(MakeGarbageCollected<VideoEncoderConfig>());
+  return ScriptPromise::Cast(script_state, ToV8(support, script_state));
 }
 
 }  // namespace blink

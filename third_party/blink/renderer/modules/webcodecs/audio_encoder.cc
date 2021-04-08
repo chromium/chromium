@@ -7,10 +7,12 @@
 #include "base/numerics/safe_conversions.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/limits.h"
 #include "media/base/offloading_audio_encoder.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_support.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_metadata.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
@@ -18,6 +20,47 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
+
+namespace {
+AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
+    const AudioEncoderConfig* opts,
+    ExceptionState& exception_state) {
+  auto* result = MakeGarbageCollected<AudioEncoderTraits::ParsedConfig>();
+  if (opts->codec().Utf8() == "opus") {
+    result->codec = media::kCodecOpus;
+  } else {
+    exception_state.ThrowTypeError("Unknown codec.");
+    return nullptr;
+  }
+  result->options.channels = opts->numberOfChannels();
+  if (result->options.channels > media::limits::kMaxChannels) {
+    exception_state.ThrowTypeError("Too many channels.");
+    return nullptr;
+  }
+
+  result->options.sample_rate = opts->sampleRate();
+  result->codec_string = opts->codec();
+  if (opts->hasBitrate()) {
+    if (!base::IsValueInRangeForNumericType<int>(opts->bitrate())) {
+      exception_state.ThrowTypeError("Invalid bitrate.");
+      return nullptr;
+    }
+    result->options.bitrate = static_cast<int>(opts->bitrate());
+  }
+
+  if (result->options.channels == 0) {
+    exception_state.ThrowTypeError("Invalid channel number.");
+    return nullptr;
+  }
+
+  if (result->options.sample_rate == 0) {
+    exception_state.ThrowTypeError("Invalid sample rate.");
+    return nullptr;
+  }
+  return result;
+}
+
+}  // namespace
 
 // static
 const char* AudioEncoderTraits::GetNameForDevTools() {
@@ -151,31 +194,7 @@ void AudioEncoder::ProcessReconfigure(Request* request) {
 AudioEncoder::ParsedConfig* AudioEncoder::ParseConfig(
     const AudioEncoderConfig* opts,
     ExceptionState& exception_state) {
-  auto* result = MakeGarbageCollected<ParsedConfig>();
-  result->codec = opts->codec().Utf8() == "opus" ? media::kCodecOpus
-                                                 : media::kUnknownAudioCodec;
-  result->options.channels = opts->numberOfChannels();
-
-  result->options.sample_rate = opts->sampleRate();
-  result->codec_string = opts->codec();
-  if (opts->hasBitrate()) {
-    if (!base::IsValueInRangeForNumericType<int>(opts->bitrate())) {
-      exception_state.ThrowTypeError("Invalid bitrate.");
-      return nullptr;
-    }
-    result->options.bitrate = static_cast<int>(opts->bitrate());
-  }
-
-  if (result->options.channels == 0) {
-    exception_state.ThrowTypeError("Invalid channel number.");
-    return nullptr;
-  }
-
-  if (result->options.sample_rate == 0) {
-    exception_state.ThrowTypeError("Invalid sample rate.");
-    return nullptr;
-  }
-  return result;
+  return ParseConfigStatic(opts, exception_state);
 }
 
 bool AudioEncoder::CanReconfigure(ParsedConfig& original_config,
@@ -259,6 +278,19 @@ void AudioEncoder::CallOutputCallback(
 
   ScriptState::Scope scope(script_state_);
   output_callback_->InvokeAndReportException(nullptr, chunk, metadata);
+}
+
+// static
+ScriptPromise AudioEncoder::isConfigSupported(ScriptState* script_state,
+                                              const AudioEncoderConfig* config,
+                                              ExceptionState& exception_state) {
+  if (!ParseConfigStatic(config, exception_state))
+    return ScriptPromise();
+
+  auto* support = AudioEncoderSupport::Create();
+  support->setSupported(false);
+  support->setConfig(MakeGarbageCollected<AudioEncoderConfig>());
+  return ScriptPromise::Cast(script_state, ToV8(support, script_state));
 }
 
 }  // namespace blink
