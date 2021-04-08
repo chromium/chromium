@@ -650,6 +650,10 @@ WebInputEventResult WebFrameWidgetImpl::HandleKeyEvent(
     return WebInputEventResult::kNotHandled;
 
   WebInputEventResult result = frame->GetEventHandler().KeyEvent(event);
+  // EventHandler may have detached the frame.
+  if (!LocalRootImpl())
+    return result;
+
   if (result != WebInputEventResult::kNotHandled) {
     if (WebInputEvent::Type::kRawKeyDown == event.GetType()) {
       // Suppress the next keypress event unless the focused node is a plugin
