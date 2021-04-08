@@ -258,7 +258,7 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
     if (!(request.relative_url == kTosPath ||
           request.relative_url == kPrivacyPolicyPath)) {
-      return std::unique_ptr<HttpResponse>();
+      return nullptr;
     }
 
     if (request.relative_url == kPrivacyPolicyPath)

@@ -50,7 +50,7 @@ MTPFileSystemBackendDelegate::CreateFileStreamWriter(
   DCHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, url.type());
 
   // TODO(kinaba): support writing.
-  return std::unique_ptr<storage::FileStreamWriter>();
+  return nullptr;
 }
 
 storage::WatcherManager* MTPFileSystemBackendDelegate::GetWatcherManager(

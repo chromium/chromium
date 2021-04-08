@@ -62,7 +62,7 @@ class FakeWindowFactory : public WindowFactory {
     last_content_url_ = create_options->content_url;
     last_can_be_closed_by_user_ = create_options->can_be_closed_by_user;
     last_close_callback_ = std::move(create_options->close_callback);
-    return std::unique_ptr<Window>();
+    return nullptr;
   }
 
   bool create_was_called() const { return create_was_called_; }

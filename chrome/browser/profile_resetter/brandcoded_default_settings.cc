@@ -98,5 +98,5 @@ std::unique_ptr<base::ListValue> BrandcodedDefaultSettings::ExtractList(
       !value->empty()) {
     return std::unique_ptr<base::ListValue>(value->DeepCopy());
   }
-  return std::unique_ptr<base::ListValue>();
+  return nullptr;
 }

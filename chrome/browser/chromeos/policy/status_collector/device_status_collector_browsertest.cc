@@ -345,7 +345,7 @@ class TestingDeviceStatusCollector : public policy::DeviceStatusCollector {
       override {
     if (kiosk_account_)
       return std::make_unique<policy::DeviceLocalAccount>(*kiosk_account_);
-    return std::unique_ptr<policy::DeviceLocalAccount>();
+    return nullptr;
   }
 
   std::string GetAppVersion(const std::string& app_id) override {

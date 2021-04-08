@@ -383,7 +383,7 @@ ExtensionsMetricsProvider::GetInstalledExtensions(Profile* profile) {
     return extensions::ExtensionRegistry::Get(profile)
         ->GenerateInstalledExtensionsSet();
   }
-  return std::unique_ptr<extensions::ExtensionSet>();
+  return nullptr;
 }
 
 uint64_t ExtensionsMetricsProvider::GetClientID() const {

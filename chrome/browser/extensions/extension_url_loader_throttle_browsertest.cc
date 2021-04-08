@@ -57,7 +57,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   }
 
   // Unhandled requests result in the Embedded test server sending a 404.
-  return std::unique_ptr<net::test_server::BasicHttpResponse>();
+  return nullptr;
 }
 
 }  // namespace

@@ -641,7 +641,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   static std::unique_ptr<net::test_server::HttpResponse> HandleFaviconRequest(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url != "/favicon.ico")
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
@@ -654,7 +654,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   HandleCacheRedirectRequest(const net::test_server::HttpRequest& request) {
     if (!base::StartsWith(request.relative_url, "/cached-redirect?",
                           base::CompareCase::INSENSITIVE_ASCII)) {
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     GURL request_url = request.GetURL();

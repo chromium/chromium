@@ -113,18 +113,19 @@ CreateFileEnumeratorOnBlockingPoolThread(
       PortableDeviceMapService::GetInstance()->GetPortableDevice(
           device_info.registered_device_path);
   if (!device)
-    return std::unique_ptr<MTPDeviceObjectEnumerator>();
+    return nullptr;
 
   std::wstring object_id =
       GetFileObjectIdFromPathOnBlockingPoolThread(device_info, root);
   if (object_id.empty())
-    return std::unique_ptr<MTPDeviceObjectEnumerator>();
+    return nullptr;
 
   MTPDeviceObjectEntries entries;
   if (!media_transfer_protocol::GetDirectoryEntries(device, object_id,
                                                     &entries) ||
-      entries.empty())
-    return std::unique_ptr<MTPDeviceObjectEnumerator>();
+      entries.empty()) {
+    return nullptr;
+  }
 
   return std::unique_ptr<MTPDeviceObjectEnumerator>(
       new MTPDeviceObjectEnumerator(entries));

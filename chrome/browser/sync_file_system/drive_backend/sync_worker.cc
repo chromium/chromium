@@ -188,7 +188,7 @@ std::unique_ptr<base::ListValue> SyncWorker::DumpFiles(const GURL& origin) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   if (!GetMetadataDatabase())
-    return std::unique_ptr<base::ListValue>();
+    return nullptr;
   return GetMetadataDatabase()->DumpFiles(origin.host());
 }
 
@@ -196,7 +196,7 @@ std::unique_ptr<base::ListValue> SyncWorker::DumpDatabase() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   if (!GetMetadataDatabase())
-    return std::unique_ptr<base::ListValue>();
+    return nullptr;
   return GetMetadataDatabase()->DumpDatabase();
 }
 

@@ -98,7 +98,7 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
     if (socket->BindAndListen(fallback_address, kBackLog) == net::OK)
       return std::move(socket);
 
-    return std::unique_ptr<net::ServerSocket>();
+    return nullptr;
   }
 
   std::unique_ptr<net::ServerSocket> CreateForTethering(
@@ -108,7 +108,7 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
     std::unique_ptr<net::UnixDomainServerSocket> socket(
         new net::UnixDomainServerSocket(auth_callback_, true));
     if (socket->BindAndListen(*name, kBackLog) != net::OK)
-      return std::unique_ptr<net::ServerSocket>();
+      return nullptr;
 
     return std::move(socket);
   }

@@ -52,14 +52,14 @@ DeclarativeContentCssPredicate::Create(ContentPredicateEvaluator* evaluator,
       if (!css_rules_value->GetString(i, &css_rule)) {
         *error = base::StringPrintf(kCssInvalidTypeOfParameter,
                                     declarative_content_constants::kCss);
-        return std::unique_ptr<DeclarativeContentCssPredicate>();
+        return nullptr;
       }
       css_rules.push_back(css_rule);
     }
   } else {
     *error = base::StringPrintf(kCssInvalidTypeOfParameter,
                                 declarative_content_constants::kCss);
-    return std::unique_ptr<DeclarativeContentCssPredicate>();
+    return nullptr;
   }
 
   return !css_rules.empty()

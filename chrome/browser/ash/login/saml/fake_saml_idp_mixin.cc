@@ -197,7 +197,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(
 
   if (request_type == RequestType::kUnknown) {
     // Ignore this request.
-    return std::unique_ptr<HttpResponse>();
+    return nullptr;
   }
 
   // For HTTP Basic Auth, we don't care to check the credentials, just
@@ -224,7 +224,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(
       return BuildResponseForCheckDeviceAnswer(request, request_url);
     case RequestType::kUnknown:
       NOTREACHED();
-      return std::unique_ptr<HttpResponse>();
+      return nullptr;
   }
 }
 

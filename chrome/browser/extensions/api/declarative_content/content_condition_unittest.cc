@@ -40,7 +40,7 @@ class TestPredicateFactoryGeneratingError : public ContentPredicateFactory {
       const base::Value& value,
       std::string* error) override {
     *error = error_;
-    return std::unique_ptr<const ContentPredicate>();
+    return nullptr;
   }
 
  private:

@@ -250,7 +250,7 @@ std::unique_ptr<LastDownloadFinder> LastDownloadFinder::Create(
           std::move(download_details_getter), std::move(callback))));
   // Return NULL if there is no work to do.
   if (finder->profile_states_.empty())
-    return std::unique_ptr<LastDownloadFinder>();
+    return nullptr;
   return finder;
 }
 

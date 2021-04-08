@@ -137,13 +137,13 @@ std::unique_ptr<base::DictionaryValue> ParseDictionary(
     SCOPED_TRACE(json.c_str());
     SCOPED_TRACE(parsed_json.error_message.c_str());
     ADD_FAILURE();
-    return std::unique_ptr<base::DictionaryValue>();
+    return nullptr;
   }
   base::DictionaryValue* dict = nullptr;
   if (!parsed_json.value->GetAsDictionary(&dict)) {
     SCOPED_TRACE("JSON object is not a dictionary");
     ADD_FAILURE();
-    return std::unique_ptr<base::DictionaryValue>();
+    return nullptr;
   }
   return std::unique_ptr<base::DictionaryValue>(dict->DeepCopy());
 }

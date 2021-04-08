@@ -106,7 +106,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestRequestHandler(
     const base::RepeatingClosure& quit_closure,
     const net::test_server::HttpRequest& request) {
   if (request.relative_url != kUploadPath)
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
 
   ++*request_count_out;
   *last_request_content_out = request.has_content ? request.content : "";

@@ -48,19 +48,19 @@ DeclarativeContentIsBookmarkedPredicate::Create(
     const Extension* extension,
     const base::Value& value,
     std::string* error) {
-  if (value.is_bool()) {
-    if (!HasBookmarkAPIPermission(extension)) {
-      *error = kIsBookmarkedRequiresBookmarkPermission;
-      return std::unique_ptr<DeclarativeContentIsBookmarkedPredicate>();
-    } else {
-      return base::WrapUnique(new DeclarativeContentIsBookmarkedPredicate(
-          evaluator, extension, value.GetBool() /* is_bookmarked */));
-    }
-  } else {
+  if (!value.is_bool()) {
     *error = base::StringPrintf(kIsBookmarkedInvalidTypeOfParameter,
                                 declarative_content_constants::kIsBookmarked);
-    return std::unique_ptr<DeclarativeContentIsBookmarkedPredicate>();
+    return nullptr;
   }
+
+  if (!HasBookmarkAPIPermission(extension)) {
+    *error = kIsBookmarkedRequiresBookmarkPermission;
+    return nullptr;
+  }
+
+  return base::WrapUnique(new DeclarativeContentIsBookmarkedPredicate(
+      evaluator, extension, value.GetBool() /* is_bookmarked */));
 }
 
 ContentPredicateEvaluator*

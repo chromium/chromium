@@ -137,7 +137,7 @@ class MockServiceDiscoveryClient : public ServiceDiscoveryClient {
       net::AddressFamily address_family,
       LocalDomainResolver::IPAddressCallback callback) override {
     NOTREACHED();
-    return std::unique_ptr<LocalDomainResolver>();
+    return nullptr;
   }
 
  private:

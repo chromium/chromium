@@ -241,7 +241,7 @@ std::unique_ptr<ContentAction> RequestContentScript::Create(
     std::string* error) {
   ScriptData script_data;
   if (!InitScriptData(dict, error, &script_data))
-    return std::unique_ptr<ContentAction>();
+    return nullptr;
 
   RecordContentActionCreated(
       declarative_content_constants::ContentActionType::kRequestContentScript);
@@ -428,7 +428,7 @@ std::unique_ptr<ContentAction> ContentAction::Create(
         action_dict->GetString(declarative_content_constants::kInstanceType,
                                &instance_type))) {
     *error = kMissingInstanceTypeError;
-    return std::unique_ptr<ContentAction>();
+    return nullptr;
   }
 
   ContentActionFactory& factory = g_content_action_factory.Get();
@@ -438,7 +438,7 @@ std::unique_ptr<ContentAction> ContentAction::Create(
         browser_context, extension, action_dict, error);
 
   *error = base::StringPrintf(kInvalidInstanceTypeError, instance_type.c_str());
-  return std::unique_ptr<ContentAction>();
+  return nullptr;
 }
 
 // static

@@ -795,7 +795,7 @@ class FakeGoogle {
                                     base::Unretained(this)));
       return std::make_unique<HungResponse>();
     } else {
-      return std::unique_ptr<HttpResponse>();  // Request not understood.
+      return nullptr;  // Request not understood.
     }
 
     return std::move(http_response);

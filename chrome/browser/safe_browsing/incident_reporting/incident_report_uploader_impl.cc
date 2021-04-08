@@ -76,7 +76,7 @@ IncidentReportUploaderImpl::UploadReport(
     const ClientIncidentReport& report) {
   std::string post_data;
   if (!report.SerializeToString(&post_data))
-    return std::unique_ptr<IncidentReportUploader>();
+    return nullptr;
   return std::unique_ptr<IncidentReportUploader>(new IncidentReportUploaderImpl(
       std::move(callback), url_loader_factory, post_data));
 }

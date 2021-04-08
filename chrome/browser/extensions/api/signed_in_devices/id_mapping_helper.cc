@@ -97,7 +97,7 @@ std::unique_ptr<DeviceInfo> GetDeviceInfoForClientId(
       return device;
     }
   }
-  return std::unique_ptr<DeviceInfo>();
+  return nullptr;
 }
 
 }  // namespace  extensions

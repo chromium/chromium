@@ -545,14 +545,14 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
                            const GURL& redirect_target,
                            const net::test_server::HttpRequest& request) {
     if (!base::StartsWith(path, request.relative_url,
-                          base::CompareCase::SENSITIVE))
-      return std::unique_ptr<net::test_server::HttpResponse>();
+                          base::CompareCase::SENSITIVE)) {
+      return nullptr;
+    }
 
     auto it = request.headers.find("User-Agent");
     EXPECT_TRUE(it != request.headers.end());
-    if (!base::StartsWith("foobar", it->second,
-                          base::CompareCase::SENSITIVE))
-      return std::unique_ptr<net::test_server::HttpResponse>();
+    if (!base::StartsWith("foobar", it->second, base::CompareCase::SENSITIVE))
+      return nullptr;
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse);
@@ -567,8 +567,9 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
                           const GURL& redirect_target,
                           const net::test_server::HttpRequest& request) {
     if (!base::StartsWith(path, request.relative_url,
-                          base::CompareCase::SENSITIVE))
-      return std::unique_ptr<net::test_server::HttpResponse>();
+                          base::CompareCase::SENSITIVE)) {
+      return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse);
@@ -586,7 +587,7 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
       return std::unique_ptr<net::test_server::HttpResponse>(
           new net::test_server::RawHttpResponse("", ""));
 
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   }
 
   // Handles |request| by serving cache-able response.
@@ -594,8 +595,9 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
   CacheControlResponseHandler(const std::string& path,
                               const net::test_server::HttpRequest& request) {
     if (!base::StartsWith(path, request.relative_url,
-                          base::CompareCase::SENSITIVE))
-      return std::unique_ptr<net::test_server::HttpResponse>();
+                          base::CompareCase::SENSITIVE)) {
+      return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse);
@@ -2950,7 +2952,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleDownloadRequestWithCookie(
     const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(request.relative_url, kDownloadPathPrefix,
                         base::CompareCase::SENSITIVE)) {
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   }
 
   std::string cookie_to_expect = request.GetURL().query();

@@ -51,7 +51,7 @@ ArcPaiStarter::~ArcPaiStarter() {
 // static
 std::unique_ptr<ArcPaiStarter> ArcPaiStarter::CreateIfNeeded(Profile* profile) {
   if (profile->GetPrefs()->GetBoolean(prefs::kArcPaiStarted))
-    return std::unique_ptr<ArcPaiStarter>();
+    return nullptr;
   return std::make_unique<ArcPaiStarter>(profile);
 }
 

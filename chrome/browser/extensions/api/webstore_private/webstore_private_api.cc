@@ -131,7 +131,7 @@ std::unique_ptr<WebstoreInstaller::Approval> PendingApprovals::PopApproval(
       return approval;
     }
   }
-  return std::unique_ptr<WebstoreInstaller::Approval>();
+  return nullptr;
 }
 
 void PendingApprovals::Clear() {

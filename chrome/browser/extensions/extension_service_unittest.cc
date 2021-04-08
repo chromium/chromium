@@ -460,10 +460,9 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
 
     if (!json_value || !json_value->is_dict()) {
       ADD_FAILURE() << "Unable to deserialize json data";
-      return std::unique_ptr<base::DictionaryValue>();
-    } else {
-      return base::DictionaryValue::From(std::move(json_value));
+      return nullptr;
     }
+    return base::DictionaryValue::From(std::move(json_value));
   }
 
  private:

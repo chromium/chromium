@@ -201,7 +201,7 @@ ServiceDiscoveryClientMac::CreateLocalDomainResolver(
     LocalDomainResolver::IPAddressCallback callback) {
   NOTIMPLEMENTED();  // TODO(noamsml): Implement.
   VLOG(1) << "CreateLocalDomainResolver: " << domain;
-  return std::unique_ptr<LocalDomainResolver>();
+  return nullptr;
 }
 
 void ServiceDiscoveryClientMac::StartThreadIfNotStarted() {

@@ -423,7 +423,7 @@ FileSystemBackend::CreateFileStreamReader(
   DCHECK(url.is_valid());
 
   if (!IsAccessAllowed(url))
-    return std::unique_ptr<storage::FileStreamReader>();
+    return nullptr;
 
   switch (url.type()) {
     case storage::kFileSystemTypeProvided:
@@ -451,7 +451,7 @@ FileSystemBackend::CreateFileStreamReader(
     default:
       NOTREACHED();
   }
-  return std::unique_ptr<storage::FileStreamReader>();
+  return nullptr;
 }
 
 std::unique_ptr<storage::FileStreamWriter>
@@ -462,7 +462,7 @@ FileSystemBackend::CreateFileStreamWriter(
   DCHECK(url.is_valid());
 
   if (!IsAccessAllowed(url))
-    return std::unique_ptr<storage::FileStreamWriter>();
+    return nullptr;
 
   switch (url.type()) {
     case storage::kFileSystemTypeProvided:
@@ -484,11 +484,11 @@ FileSystemBackend::CreateFileStreamWriter(
     // Read only file systems.
     case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeArcContent:
-      return std::unique_ptr<storage::FileStreamWriter>();
+      return nullptr;
     default:
       NOTREACHED();
   }
-  return std::unique_ptr<storage::FileStreamWriter>();
+  return nullptr;
 }
 
 bool FileSystemBackend::GetVirtualPath(const base::FilePath& filesystem_path,

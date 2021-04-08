@@ -707,7 +707,7 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
       prefs_->GetDictionary(arc::prefs::kArcPackages);
   if (!packages ||
       !packages->GetDictionaryWithoutPathExpansion(package_name, &package))
-    return std::unique_ptr<PackageInfo>();
+    return nullptr;
 
   if (package->FindBoolKey(kUninstalled).value_or(false))
     return nullptr;
@@ -809,7 +809,7 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetApp(
   // Information for default app is available before ARC enabled.
   if ((!IsArcAlive() || !IsArcAndroidEnabledForProfile(profile_)) &&
       !default_apps_->HasApp(app_id)) {
-    return std::unique_ptr<AppInfo>();
+    return nullptr;
   }
 
   return GetAppFromPrefs(app_id);
@@ -821,7 +821,7 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
   const base::DictionaryValue* apps =
       prefs_->GetDictionary(arc::prefs::kArcApps);
   if (!apps || !apps->GetDictionaryWithoutPathExpansion(app_id, &app))
-    return std::unique_ptr<AppInfo>();
+    return nullptr;
 
   std::string name;
   std::string package_name;

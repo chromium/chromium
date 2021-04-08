@@ -158,7 +158,7 @@ UserPolicySigninServiceBase::CreateClientForRegistrationOnly(
   // If the user should not get policy, just bail out.
   if (!policy_manager() || !ShouldLoadPolicyForUser(username)) {
     DVLOG(1) << "Signed in user is not in the whitelist";
-    return std::unique_ptr<CloudPolicyClient>();
+    return nullptr;
   }
 
   // If the DeviceManagementService is not yet initialized, start it up now.

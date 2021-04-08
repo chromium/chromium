@@ -110,7 +110,7 @@ class MockHttpAgent : public chrome_cleaner::HttpAgent {
 
     if (post_succeeds)
       return std::make_unique<MockHttpResponse>(config_);
-    return std::unique_ptr<MockHttpResponse>();
+    return nullptr;
   }
 
   // chrome_cleaner::HttpAgent:
@@ -132,7 +132,7 @@ class MockHttpAgent : public chrome_cleaner::HttpAgent {
 
     if (get_succeeds)
       return std::make_unique<MockHttpResponse>(config_);
-    return std::unique_ptr<MockHttpResponse>();
+    return nullptr;
   }
 
  private:

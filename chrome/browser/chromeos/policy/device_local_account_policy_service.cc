@@ -71,7 +71,7 @@ std::unique_ptr<CloudPolicyClient> CreateClient(
       !policy_data->has_request_token() ||
       !policy_data->has_device_id() ||
       !device_management_service) {
-    return std::unique_ptr<CloudPolicyClient>();
+    return nullptr;
   }
 
   std::unique_ptr<CloudPolicyClient> client =

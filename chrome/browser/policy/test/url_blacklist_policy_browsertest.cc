@@ -64,7 +64,7 @@ void CheckCanOpenURL(Browser* browser, const std::string& spec) {
 std::unique_ptr<net::test_server::HttpResponse> JSIncrementerPageHandler(
     const net::test_server::HttpRequest& request) {
   if (request.relative_url != "/test.html") {
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(

@@ -208,7 +208,7 @@ std::unique_ptr<MetadataDatabaseIndex> MetadataDatabaseIndex::Create(
   std::unique_ptr<ServiceMetadata> service_metadata =
       InitializeServiceMetadata(db);
   if (!service_metadata)
-    return std::unique_ptr<MetadataDatabaseIndex>();
+    return nullptr;
 
   DatabaseContents contents;
   PutVersionToDB(kCurrentDatabaseVersion, db);

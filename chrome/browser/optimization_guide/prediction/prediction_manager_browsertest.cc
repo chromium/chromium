@@ -348,7 +348,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> HandleGetModelsRequest(
       const net::test_server::HttpRequest& request) {
     if (request.GetURL() == model_file_url_)
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
 
     std::unique_ptr<net::test_server::BasicHttpResponse> response;
 

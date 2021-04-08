@@ -51,19 +51,19 @@ std::unique_ptr<NativeMessagingHostManifest> NativeMessagingHostManifest::Load(
   std::unique_ptr<base::Value> parsed =
       deserializer.Deserialize(NULL, error_message);
   if (!parsed) {
-    return std::unique_ptr<NativeMessagingHostManifest>();
+    return nullptr;
   }
 
   base::DictionaryValue* dictionary;
   if (!parsed->GetAsDictionary(&dictionary)) {
     *error_message = "Invalid manifest file.";
-    return std::unique_ptr<NativeMessagingHostManifest>();
+    return nullptr;
   }
 
   std::unique_ptr<NativeMessagingHostManifest> result(
       new NativeMessagingHostManifest());
   if (!result->Parse(dictionary, error_message)) {
-    return std::unique_ptr<NativeMessagingHostManifest>();
+    return nullptr;
   }
 
   return result;

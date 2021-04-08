@@ -48,7 +48,7 @@ DeviceLocalAccountPolicyProvider::Create(
   DeviceLocalAccount::Type type;
   if (!device_local_account_policy_service ||
       !IsDeviceLocalAccountUser(user_id, &type)) {
-    return std::unique_ptr<DeviceLocalAccountPolicyProvider>();
+    return nullptr;
   }
 
   std::unique_ptr<PolicyMap> chrome_policy_overrides;

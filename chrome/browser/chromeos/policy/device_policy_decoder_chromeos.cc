@@ -136,7 +136,7 @@ std::unique_ptr<base::Value> DecodeIntegerValue(google::protobuf::int64 value) {
       value > std::numeric_limits<int>::max()) {
     LOG(WARNING) << "Integer value " << value
                  << " out of numeric limits, ignoring.";
-    return std::unique_ptr<base::Value>();
+    return nullptr;
   }
 
   return std::unique_ptr<base::Value>(new base::Value(static_cast<int>(value)));

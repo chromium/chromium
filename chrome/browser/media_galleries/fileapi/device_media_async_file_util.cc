@@ -620,7 +620,7 @@ DeviceMediaAsyncFileUtil::GetFileStreamReader(
   MTPDeviceAsyncDelegate* delegate =
       MTPDeviceMapService::GetInstance()->GetMTPDeviceAsyncDelegate(url);
   if (!delegate)
-    return std::unique_ptr<storage::FileStreamReader>();
+    return nullptr;
 
   DCHECK(delegate->IsStreaming());
   return std::unique_ptr<storage::FileStreamReader>(

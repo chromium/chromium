@@ -370,7 +370,7 @@ std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
   ByteBuffer data_buffer(previous_buffer_size_);
 
   if (!QuerySystemProcessInformation(&data_buffer))
-    return std::unique_ptr<ProcessDataSnapshot>();
+    return nullptr;
 
   previous_buffer_size_ = data_buffer.capacity();
 

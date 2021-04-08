@@ -100,7 +100,7 @@ std::unique_ptr<base::Value> GetAction(const std::string& action) {
     return std::unique_ptr<base::Value>(
         new base::Value(chromeos::PowerPolicyController::ACTION_DO_NOTHING));
   }
-  return std::unique_ptr<base::Value>();
+  return nullptr;
 }
 
 // Applies |value| as the recommended value of |user_policy| in

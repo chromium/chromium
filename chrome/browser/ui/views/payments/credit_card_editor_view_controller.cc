@@ -551,7 +551,7 @@ CreditCardEditorViewController::GetComboboxModelForType(
       NOTREACHED();
       break;
   }
-  return std::unique_ptr<ui::ComboboxModel>();
+  return nullptr;
 }
 
 void CreditCardEditorViewController::SelectBasicCardNetworkIcon(

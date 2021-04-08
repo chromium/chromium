@@ -52,7 +52,7 @@ class TCPServerSocketFactory
       return socket;
     if (socket->ListenWithAddressAndPort("::1", port, kBackLog) == net::OK)
       return socket;
-    return std::unique_ptr<net::ServerSocket>();
+    return nullptr;
   }
 
   // content::DevToolsSocketFactory.
@@ -65,7 +65,7 @@ class TCPServerSocketFactory
   std::unique_ptr<net::ServerSocket> CreateForTethering(
       std::string* name) override {
     if (!g_tethering_enabled.Get())
-      return std::unique_ptr<net::ServerSocket>();
+      return nullptr;
 
     if (last_tethering_port_ == kMaxTetheringPort)
       last_tethering_port_ = kMinTetheringPort;

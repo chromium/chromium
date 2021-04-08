@@ -347,7 +347,7 @@ TestingUpdateManifestProvider::HandleRequest(
   base::AutoLock auto_lock(lock_);
   const GURL url("http://localhost" + request.relative_url);
   if (url.path() != relative_update_url_)
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
 
   std::string content = kUpdateManifestHeader;
   for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {

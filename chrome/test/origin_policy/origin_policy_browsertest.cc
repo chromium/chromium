@@ -85,7 +85,7 @@ class OriginPolicyBrowserTest : public InProcessBrowserTest {
     }
 
     // If we return nullptr, then the server will do the default behavior.
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   }
 
   std::unique_ptr<net::test_server::EmbeddedTestServer> server_;

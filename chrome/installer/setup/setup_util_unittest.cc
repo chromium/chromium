@@ -169,7 +169,7 @@ std::unique_ptr<ScopedPriorityClass> ScopedPriorityClass::Create(
           new ScopedPriorityClass(original_priority_class));
     }
   }
-  return std::unique_ptr<ScopedPriorityClass>();
+  return nullptr;
 }
 
 ScopedPriorityClass::ScopedPriorityClass(DWORD original_priority_class)

@@ -525,7 +525,7 @@ class IncidentReportingServiceTest : public testing::Test {
         non_binary_download;
     if (on_create_download_finder_action_ ==
         ON_CREATE_DOWNLOAD_FINDER_NO_PROFILES) {
-      return std::unique_ptr<safe_browsing::LastDownloadFinder>();
+      return nullptr;
     }
     if (on_create_download_finder_action_ ==
             ON_CREATE_DOWNLOAD_FINDER_DOWNLOADS_FOUND ||

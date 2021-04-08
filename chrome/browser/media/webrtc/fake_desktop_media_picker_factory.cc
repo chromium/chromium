@@ -93,7 +93,7 @@ std::unique_ptr<DesktopMediaPicker> FakeDesktopMediaPickerFactory::CreatePicker(
     const content::MediaStreamRequest* request) {
   EXPECT_LE(current_test_, tests_count_);
   if (current_test_ >= tests_count_)
-    return std::unique_ptr<DesktopMediaPicker>();
+    return nullptr;
   ++current_test_;
   picker_ = new FakeDesktopMediaPicker(test_flags_ + current_test_ - 1);
   return std::unique_ptr<DesktopMediaPicker>(picker_);

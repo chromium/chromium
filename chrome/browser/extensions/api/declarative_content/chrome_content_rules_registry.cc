@@ -155,7 +155,7 @@ ChromeContentRulesRegistry::CreateRule(
     conditions.push_back(
         CreateContentCondition(extension, predicate_factories, *value, error));
     if (!error->empty())
-      return std::unique_ptr<ContentRule>();
+      return nullptr;
   }
 
   std::vector<std::unique_ptr<const ContentAction>> actions;
@@ -163,7 +163,7 @@ ChromeContentRulesRegistry::CreateRule(
     actions.push_back(ContentAction::Create(browser_context(), extension,
                                             *value, error));
     if (!error->empty())
-      return std::unique_ptr<ContentRule>();
+      return nullptr;
   }
 
   // Note: |api_rule| may contain tags, but these are ignored.

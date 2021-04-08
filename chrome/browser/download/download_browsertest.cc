@@ -2058,7 +2058,7 @@ static std::unique_ptr<net::test_server::HttpResponse>
 ServerRedirectRequestHandler(const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(request.relative_url, "/redirect",
                         base::CompareCase::SENSITIVE)) {
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> response(
@@ -3466,7 +3466,7 @@ EchoReferrerRequestHandler(const net::test_server::HttpRequest& request) {
 
   if (!base::StartsWith(request.relative_url, "/echoreferrer",
                         base::CompareCase::SENSITIVE)) {
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> response(

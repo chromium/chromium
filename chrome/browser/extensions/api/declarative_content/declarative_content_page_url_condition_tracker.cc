@@ -43,16 +43,16 @@ DeclarativeContentPageUrlPredicate::Create(
   if (!value.GetAsDictionary(&dict)) {
     *error = base::StringPrintf(kPageUrlInvalidTypeOfParameter,
                                 declarative_content_constants::kPageUrl);
-    return std::unique_ptr<DeclarativeContentPageUrlPredicate>();
-  } else {
-    url_matcher_condition_set =
-        url_matcher::URLMatcherFactory::CreateFromURLFilterDictionary(
-            url_matcher_condition_factory, dict, ++g_next_id, error);
-    if (!url_matcher_condition_set)
-      return std::unique_ptr<DeclarativeContentPageUrlPredicate>();
-    return base::WrapUnique(new DeclarativeContentPageUrlPredicate(
-        evaluator, url_matcher_condition_set));
+    return nullptr;
   }
+
+  url_matcher_condition_set =
+      url_matcher::URLMatcherFactory::CreateFromURLFilterDictionary(
+          url_matcher_condition_factory, dict, ++g_next_id, error);
+  if (!url_matcher_condition_set)
+    return nullptr;
+  return base::WrapUnique(new DeclarativeContentPageUrlPredicate(
+      evaluator, url_matcher_condition_set));
 }
 
 ContentPredicateEvaluator*

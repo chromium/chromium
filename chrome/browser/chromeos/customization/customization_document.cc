@@ -681,7 +681,7 @@ bool ServicesCustomizationDocument::GetDefaultWallpaperUrl(
 std::unique_ptr<base::DictionaryValue>
 ServicesCustomizationDocument::GetDefaultApps() const {
   if (!IsReady())
-    return std::unique_ptr<base::DictionaryValue>();
+    return nullptr;
 
   return GetDefaultAppsInProviderFormat(*root_);
 }

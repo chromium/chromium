@@ -46,7 +46,7 @@ ArcContentFileSystemBackendDelegate::CreateFileStreamWriter(
     int64_t offset,
     storage::FileSystemContext* context) {
   NOTIMPLEMENTED();
-  return std::unique_ptr<storage::FileStreamWriter>();
+  return nullptr;
 }
 
 storage::WatcherManager* ArcContentFileSystemBackendDelegate::GetWatcherManager(

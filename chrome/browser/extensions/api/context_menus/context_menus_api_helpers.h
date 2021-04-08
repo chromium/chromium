@@ -24,7 +24,7 @@ std::unique_ptr<extensions::MenuItem::Id> GetParentId(
     bool is_off_the_record,
     const MenuItem::ExtensionKey& key) {
   if (!property.parent_id)
-    return std::unique_ptr<extensions::MenuItem::Id>();
+    return nullptr;
 
   std::unique_ptr<extensions::MenuItem::Id> parent_id(
       new extensions::MenuItem::Id(is_off_the_record, key));

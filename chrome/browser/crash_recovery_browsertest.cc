@@ -64,7 +64,7 @@ class CacheMaxAgeHandler {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url != path_)
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
 
     request_count_++;
     std::unique_ptr<net::test_server::BasicHttpResponse> response(

@@ -46,7 +46,7 @@ std::unique_ptr<FileTracker> FindTrackerByID(
   std::unique_ptr<FileTracker> tracker(new FileTracker);
   if (metadata_database->FindTrackerByTrackerID(tracker_id, tracker.get()))
     return tracker;
-  return std::unique_ptr<FileTracker>();
+  return nullptr;
 }
 
 bool GetKnownChangeID(MetadataDatabase* metadata_database,

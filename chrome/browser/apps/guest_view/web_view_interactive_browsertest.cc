@@ -254,13 +254,13 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     // For serving guest pages.
     if ((test_server == NEEDS_TEST_SERVER) && !StartEmbeddedTestServer()) {
       LOG(ERROR) << "FAILED TO START TEST SERVER.";
-      return std::unique_ptr<ExtensionTestMessageListener>();
+      return nullptr;
     }
 
     LoadAndLaunchPlatformApp(app_location.c_str(), "Launched");
     if (!ui_test_utils::ShowAndFocusNativeWindow(GetPlatformAppWindow())) {
       LOG(ERROR) << "UNABLE TO FOCUS TEST WINDOW.";
-      return std::unique_ptr<ExtensionTestMessageListener>();
+      return nullptr;
     }
 
     // Flush any pending events to make sure we start with a clean slate.
@@ -275,7 +275,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
             *embedder_web_contents,
             base::StringPrintf("runTest('%s')", test_name.c_str()))) {
       LOG(ERROR) << "UNABLE TO START TEST";
-      return std::unique_ptr<ExtensionTestMessageListener>();
+      return nullptr;
     }
 
     return done_listener;

@@ -94,7 +94,7 @@ class WebSocketTest : public testing::Test {
     run_loop.Run();
     if (error == net::OK)
       return sock;
-    return std::unique_ptr<WebSocket>();
+    return nullptr;
   }
 
   std::unique_ptr<WebSocket> CreateConnectedWebSocket(

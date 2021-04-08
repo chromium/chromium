@@ -1075,7 +1075,7 @@ class ContentSettingsWorkerModulesBrowserTest : public ContentSettingsTest {
       const std::string& content_type,
       const net::test_server::HttpRequest& request) const {
     if (request.relative_url != relative_url)
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         std::make_unique<net::test_server::BasicHttpResponse>());
     http_response->set_code(net::HTTP_OK);

@@ -237,7 +237,7 @@ class DataSaverWithServerBrowserTest : public InProcessBrowserTest {
 
     if (request.relative_url == "/favicon.ico") {
       // Favicon request could be received for the previous page load.
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     if (!expected_save_data_header_.empty()) {
@@ -249,7 +249,7 @@ class DataSaverWithServerBrowserTest : public InProcessBrowserTest {
       EXPECT_TRUE(save_data_header_it == request.headers.end())
           << request.relative_url;
     }
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   }
 
   std::unique_ptr<net::EmbeddedTestServer> test_server_;

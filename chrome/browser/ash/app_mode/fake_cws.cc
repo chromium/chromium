@@ -328,7 +328,7 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
     }
   }
 
-  return std::unique_ptr<HttpResponse>();
+  return nullptr;
 }
 
 }  // namespace ash

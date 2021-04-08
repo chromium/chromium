@@ -437,7 +437,7 @@ std::unique_ptr<base::DictionaryValue>
 SupervisedUserSettingsService::GetSettings() {
   DCHECK(IsReady());
   if (!active_ || initialization_failed_)
-    return std::unique_ptr<base::DictionaryValue>();
+    return nullptr;
 
   std::unique_ptr<base::DictionaryValue> settings(local_settings_->DeepCopy());
 

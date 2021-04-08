@@ -106,7 +106,7 @@ std::unique_ptr<HttpResponse> PnaclHeaderTest::WatchForPexeFetch(
   // Skip other non-pexe files and let ServeFilesFromDirectory handle it.
   GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
   if (absolute_url.path().find(".pexe") == std::string::npos)
-    return std::unique_ptr<HttpResponse>();
+    return nullptr;
 
   // For pexe files, check for the special Accept header,
   // along with the expected ResourceType of the URL request.

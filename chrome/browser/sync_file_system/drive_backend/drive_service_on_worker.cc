@@ -431,7 +431,7 @@ DriveServiceOnWorker::MultipartUploadExistingFile(
 std::unique_ptr<drive::BatchRequestConfiguratorInterface>
 DriveServiceOnWorker::StartBatchRequest() {
   NOTREACHED();
-  return std::unique_ptr<drive::BatchRequestConfiguratorInterface>();
+  return nullptr;
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::AddPermission(
