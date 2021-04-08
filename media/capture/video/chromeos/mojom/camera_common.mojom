@@ -90,12 +90,12 @@ interface VendorTagOps {
 // (https://goo.gl/8Hf8S8).  CameraModule is the interface to interact with a
 // camera HAL to query device info and open camera devices.
 //
-// Next method ID: 7
+// Next method ID: 8
 interface CameraModule {
   // Opens the camera device specified by |camera_id|.  On success, the camera
   // device is accessible through the |device_ops| returned.
   OpenDevice@0(int32 camera_id,
-               pending_receiver<Camera3DeviceOps> device_ops_request)
+               pending_receiver<Camera3DeviceOps> device_ops_receiver)
       => (int32 result);
 
   // Gets the number of cameras currently present on the system.
@@ -124,7 +124,7 @@ interface CameraModule {
   // should fill in all the vendor tag operation methods, or leave ops unchanged
   // if no vendor tags are defined.
   [MinVersion=2]
-  GetVendorTagOps@6(pending_receiver<VendorTagOps> vendor_tag_ops_request)
+  GetVendorTagOps@6(pending_receiver<VendorTagOps> vendor_tag_ops_receiver)
       => ();
 
   // Registers the CameraModuleCallbacks associated interface with the camera

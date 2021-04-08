@@ -332,7 +332,7 @@ void CameraHalDispatcherImpl::RegisterClientWithToken(
           media::BindToCurrentLoop(std::move(callback))));
 }
 
-void CameraHalDispatcherImpl::GetJpegDecodeAccelerator(
+void CameraHalDispatcherImpl::GetMjpegDecodeAccelerator(
     mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
         jda_receiver) {
   jda_factory_.Run(std::move(jda_receiver));

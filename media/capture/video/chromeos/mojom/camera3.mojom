@@ -284,12 +284,11 @@ interface Camera3DeviceOps {
   // [Deprecated in version 2]
   //
   // The type of buffers the CrOS camera service currently supports.
-  // GRALLOC is for the platform-specific gralloc buffer allocated by Android.
-  // SHM is for the shared memory buffer allocated by Chrome.
+  // DMABUF is for the DMA buffer allocated through GBM.
+  // SHM is for the shared memory buffer allocated by Chrome. Deprecated.
   enum BufferType {
-    GRALLOC = 0,  // gralloc buffer. Needs to be imported through GBM.
-    SHM = 1,      // shared memory buffer. Can be mmapped directly.
-    // Add DMABUF when needed.
+    DMABUF = 0,   // DMA buffer. Needs to be imported through GBM.
+    SHM = 1,      // Shared memory buffer. Deprecated and not used.
   };
 
   // [Deprecated in version 2]

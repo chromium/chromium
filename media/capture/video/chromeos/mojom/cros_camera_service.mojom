@@ -13,7 +13,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // CameraClientType indicates the type of a CameraHalClient.
 // It should be kept in sync with the ChromeOSCameraClientType enum in
-// tools/metrics/histograms/enums.xml
+// tools/metrics/histograms/enums.xml in chromium.
 [Extensible]
 enum CameraClientType{
   UNKNOWN = 0,
@@ -60,14 +60,15 @@ interface CameraHalDispatcher {
   // dispatcher.
   RegisterClient@1(pending_remote<CameraHalClient> client);
 
-  // Get JpegDecodeAccelerator from dispatcher.
-  [MinVersion=1] GetJpegDecodeAccelerator@2(
-    pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator>
+  // Get MjpegDecodeAccelerator from dispatcher.
+  [MinVersion=1] GetMjpegDecodeAccelerator@2(
+      pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator>
         jda_receiver);
 
   // Get JpegEncodeAccelerator from dispatcher.
   [MinVersion=2] GetJpegEncodeAccelerator@3(
-    pending_receiver<chromeos_camera.mojom.JpegEncodeAccelerator> jea_receiver);
+      pending_receiver<chromeos_camera.mojom.JpegEncodeAccelerator>
+        jea_receiver);
 
   // A CameraHalServer calls RegisterServerWithToken to register itself with the
   // dispatcher. CameraHalDispatcher would authenticate the server with the
@@ -94,10 +95,10 @@ interface CameraHalDispatcher {
 // Next method ID: 2
 interface CameraHalServer {
   // A caller calls CreateChannel to create a new Mojo channel to the camera
-  // HAL v3 adapter.  Upon successfully binding of |camera_module_request|, the
+  // HAL v3 adapter.  Upon successfully binding of |camera_module_receiver|, the
   // caller will have a established Mojo channel to the camera HAL v3 adapter
   // process.
-  CreateChannel@0(pending_receiver<CameraModule> camera_module_request,
+  CreateChannel@0(pending_receiver<CameraModule> camera_module_receiver,
                   [MinVersion=4] CameraClientType type);
 
   // Enable or disable tracing.
@@ -130,11 +131,11 @@ interface CameraHalServerCallbacks {
 // Next method ID: 1
 interface CameraHalClient {
   // A caller calls SetUpChannel to dispatch the established Mojo channel
-  // |camera_module_ptr| to the client.  The CameraHalClient can create a
-  // Mojo channel to the camera HAL v3 adapter process with |camera_module_ptr|.
+  // |camera_module| to the client.  The CameraHalClient can create a Mojo
+  // channel to the camera HAL v3 adapter process with |camera_module|.
   // SetUpChannel may be called multiple times.  In cases such as the
   // CameraHalServer which holds the original Mojo channel crashes,
   // CameraHalDispatcher will call SetUpChannel again once a new CameraHalServer
   // reconnects.
-  SetUpChannel@0(pending_remote<CameraModule> camera_module_ptr);
+  SetUpChannel@0(pending_remote<CameraModule> camera_module);
 };

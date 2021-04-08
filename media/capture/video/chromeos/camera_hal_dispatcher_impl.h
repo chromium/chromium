@@ -171,7 +171,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       cros::mojom::CameraClientType type,
       const base::UnguessableToken& auth_token,
       RegisterClientWithTokenCallback callback) final;
-  void GetJpegDecodeAccelerator(
+  void GetMjpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver) final;
   void GetJpegEncodeAccelerator(
