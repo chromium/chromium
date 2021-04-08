@@ -4627,7 +4627,7 @@
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Система: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="624789221780392884">Актуализацията е готова</translation>
-<translation id="6248988683584659830">Търсене в Настройки</translation>
+<translation id="6248988683584659830">Търсене в „Настройки“</translation>
 <translation id="6249200942125593849">Управление на настройките за достъпност</translation>
 <translation id="6251870443722440887">Манипулатори за GDI обекти</translation>
 <translation id="625369703868467034">Състояние на мрежата</translation>
@@ -5094,6 +5094,7 @@
 <translation id="6793723358811598107"><ph name="CURRENTKEY" /> вече се използва за действието „<ph name="ACTION" />“. Натиснете произволен бутон, за да излезете.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">Ами сега! Нещо се обърка.</translation>
+<translation id="679845623837196966">Показване на списъка за четене</translation>
 <translation id="6798578729981748444">За да завършите импортирането, затворете всички прозорци на Firefox.</translation>
 <translation id="6798780071646309401">caps lock е включен</translation>
 <translation id="6798954102094737107">Приставка: <ph name="PLUGIN_NAME" /></translation>
@@ -7209,6 +7210,7 @@
       <ph name="LIST_ITEM" />да стартирате Chrome Connectivity Diagnostics.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Картина в картината</translation>
+<translation id="9167063903968449027">Показване на списъка за четене</translation>
 <translation id="9168436347345867845">По-късно</translation>
 <translation id="9169496697824289689">Преглед на клавишните комбинации</translation>
 <translation id="916964310188958970">Защо виждате това предложение?</translation>

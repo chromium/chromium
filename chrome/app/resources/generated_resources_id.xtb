@@ -5095,6 +5095,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' telah ditetapkan untuk tindakan '<ph name="ACTION" />'. Tekan sembarang tombol untuk keluar.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Ups, ada yang tidak beres.</translation>
+<translation id="679845623837196966">Tampilkan daftar bacaan</translation>
 <translation id="6798578729981748444">Untuk menyelesaikan impor, tutup semua jendela Firefox.</translation>
 <translation id="6798780071646309401">caps lock aktif</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
       <ph name="LIST_ITEM" />Jalankan Diagnosis Konektivitas Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture-in-Picture</translation>
+<translation id="9167063903968449027">Tampilkan Daftar Bacaan</translation>
 <translation id="9168436347345867845">Nanti saja</translation>
 <translation id="9169496697824289689">Lihat pintasan keyboard</translation>
 <translation id="916964310188958970">Mengapa saran ini muncul?</translation>

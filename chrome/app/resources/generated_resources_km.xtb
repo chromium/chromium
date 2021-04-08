@@ -4068,7 +4068,7 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">កំពុង​ផ្ទុក​កម្មវិធី...</translation>
 <translation id="5592595402373377407">មិនមានទិន្នន័យគ្រប់គ្រាន់នៅឡើយទេ។</translation>
-<translation id="5595485650161345191">កែសម្រួលអាសយដ្ឋាន</translation>
+<translation id="5595485650161345191">កែអាសយដ្ឋាន</translation>
 <translation id="5596627076506792578">ជម្រើសច្រើនទៀត</translation>
 <translation id="5600706100022181951">កំណែថ្មីនឹង​ត្រូវបានទាញយកដោយប្រើទិន្នន័យទូរសព្ទចល័តចំនួន <ph name="UPDATE_SIZE_MB" /> MB ។ តើអ្នក​ចង់បន្តដែរទេ?</translation>
 <translation id="5601503069213153581">លេខសម្គាល់</translation>
@@ -5096,6 +5096,7 @@
 <translation id="6793723358811598107">បានកំណត់ '<ph name="CURRENTKEY" />' ទៅសកម្មភាព '<ph name="ACTION" />' រួចហើយ។ ចុចគ្រាប់ចុចណាមួយ ដើម្បីចាកចេញ។</translation>
 <translation id="6795884519221689054">ខ្លាឃ្មុំ​ផេនដា</translation>
 <translation id="6797493596609571643">អូ មានបញ្ហាអ្វីមួយកើតឡើង។</translation>
+<translation id="679845623837196966">បង្ហាញ​បញ្ជីអាន</translation>
 <translation id="6798578729981748444">ដើម្បីបញ្ចប់ការនាំចូល សូមបិទវិនដូ Firefox ទាំងអស់។</translation>
 <translation id="6798780071646309401">បើកពុម្ពអក្សរធំ</translation>
 <translation id="6798954102094737107">កម្មវិធីជំនួយ៖ <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@
       <ph name="LIST_ITEM" />ដំណើរការ​ការធ្វើតេស្ត​ការតភ្ជាប់ Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">រូបក្នុងរូប</translation>
+<translation id="9167063903968449027">បង្ហាញ​បញ្ជីអាន</translation>
 <translation id="9168436347345867845">ធ្វើនៅ​ពេលក្រោយ</translation>
 <translation id="9169496697824289689">មើលផ្លូវកាត់ក្តារចុច</translation>
 <translation id="916964310188958970">ហេតុអ្វី​ឃើញ​ការណែនាំ​នេះ?</translation>

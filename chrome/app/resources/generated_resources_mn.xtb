@@ -5089,6 +5089,7 @@
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />'-г аль хэдийн '<ph name="ACTION" />' үйлдэлд оноосон байна. Гарахын тулд дурын товчийг дарна уу.</translation>
 <translation id="6795884519221689054">Хулсны баавгай</translation>
 <translation id="6797493596609571643">Өө, ямар нэг зүйл ажиллахаа больсон байна.</translation>
+<translation id="679845623837196966">Унших жагсаалтыг харуулах</translation>
 <translation id="6798578729981748444">Импортыг дуусгахын тулд Firefox-н бүх цонхыг хаана уу.</translation>
 <translation id="6798780071646309401">томоор бичих горим асаалттай</translation>
 <translation id="6798954102094737107">Нэмэлт өргөтгөл: <ph name="PLUGIN_NAME" /></translation>
@@ -7198,6 +7199,7 @@
       <ph name="LIST_ITEM" />Chrome холбоосны оношилгоог ажиллуулах
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Дэлгэцэн доторх дэлгэц</translation>
+<translation id="9167063903968449027">Унших жагсаалтыг харуулах</translation>
 <translation id="9168436347345867845">Үүнийг дараа хийх</translation>
 <translation id="9169496697824289689">Компьютерын гарын богино холбоосыг үзэх</translation>
 <translation id="916964310188958970">Яагаад энэ зөвлөмж гэж?</translation>

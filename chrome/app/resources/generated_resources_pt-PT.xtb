@@ -5096,6 +5096,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6793723358811598107">A tecla "<ph name="CURRENTKEY" />" já está atribuída à ação "<ph name="ACTION" />". Prima qualquer tecla para sair.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Ups... algo correu mal.</translation>
+<translation id="679845623837196966">Mostrar Lista de leitura</translation>
 <translation id="6798578729981748444">Para concluir a importação, feche todas as janelas do Firefox.</translation>
 <translation id="6798780071646309401">caps lock ativado</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
       <ph name="LIST_ITEM" />Executar o Diagnóstico de conetividade do Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Ecrã no ecrã</translation>
+<translation id="9167063903968449027">Mostrar Lista de leitura</translation>
 <translation id="9168436347345867845">Fazer isto mais tarde</translation>
 <translation id="9169496697824289689">Ver atalhos de teclado</translation>
 <translation id="916964310188958970">Porquê esta sugestão?</translation>

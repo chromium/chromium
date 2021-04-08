@@ -5094,6 +5094,7 @@ USB ડિવાઇસ</translation>
 <translation id="6793723358811598107">'<ph name="ACTION" />' ક્રિયાને '<ph name="CURRENTKEY" />' કી પહેલેથી સોંપવામાં આવી છે. બહાર નીકળવા માટે કોઈપણ કી દબાવો.</translation>
 <translation id="6795884519221689054">પાંડા</translation>
 <translation id="6797493596609571643">અરેરે, કંઈક ખોટું થયું.</translation>
+<translation id="679845623837196966">વાંચન સૂચિ બતાવો</translation>
 <translation id="6798578729981748444">આયાત કરવાનું સમાપ્ત કરવા માટે, બધી Firefox વિંડો બંધ કરો.</translation>
 <translation id="6798780071646309401">caps lock ચાલુ છે</translation>
 <translation id="6798954102094737107">પ્લગિન: <ph name="PLUGIN_NAME" /></translation>
@@ -6761,7 +6762,7 @@ USB ડિવાઇસ</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8702825062053163569">તમારું <ph name="DEVICE_TYPE" /> લૉક હતું.</translation>
 <translation id="8703346390800944767">જાહેરાત છોડો</translation>
-<translation id="8705331520020532516">શૃંખલા ક્રમાંક</translation>
+<translation id="8705331520020532516">અનુક્રમ નંબર</translation>
 <translation id="8705580154597116082">ફોન દ્વારા વાઇ-ફાઇ ઉપલબ્ધ</translation>
 <translation id="8705629851992224300">તમારી સુરક્ષા કી વાંચી શકાઈ નથી</translation>
 <translation id="8708000541097332489">બહાર નીકળવા પર સાફ કરો</translation>
@@ -7204,6 +7205,7 @@ USB ડિવાઇસ</translation>
       <ph name="LIST_ITEM" />Chrome Connectivity Diagnostics સાધન ચલાવો
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">ચિત્ર-માં-ચિત્ર</translation>
+<translation id="9167063903968449027">વાંચન સૂચિ બતાવો</translation>
 <translation id="9168436347345867845">આ પછીથી કરો</translation>
 <translation id="9169496697824289689">કીબોર્ડ શૉર્ટકટ જુઓ</translation>
 <translation id="916964310188958970">આ સૂચન શા માટે?</translation>

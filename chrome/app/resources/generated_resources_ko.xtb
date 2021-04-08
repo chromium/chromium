@@ -5093,6 +5093,7 @@
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' 키는 이미 '<ph name="ACTION" />' 작업에 할당되었습니다. 종료하려면 아무 키나 누르세요.</translation>
 <translation id="6795884519221689054">판다</translation>
 <translation id="6797493596609571643">문제가 발생했습니다.</translation>
+<translation id="679845623837196966">읽기 목록 표시</translation>
 <translation id="6798578729981748444">가져오기를 완료하려면 Firefox 창을 모두 닫으세요.</translation>
 <translation id="6798780071646309401">Caps Lock 사용</translation>
 <translation id="6798954102094737107">플러그인: <ph name="PLUGIN_NAME" /></translation>
@@ -7208,6 +7209,7 @@
       <ph name="LIST_ITEM" />Chrome 연결 진단 실행
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">PIP 모드</translation>
+<translation id="9167063903968449027">읽기 목록 표시</translation>
 <translation id="9168436347345867845">나중에</translation>
 <translation id="9169496697824289689">단축키 보기</translation>
 <translation id="916964310188958970">이러한 추천이 표시된 이유는 무엇인가요?</translation>

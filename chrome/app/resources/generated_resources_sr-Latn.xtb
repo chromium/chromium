@@ -5095,6 +5095,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6793723358811598107">Taster <ph name="CURRENTKEY" /> je već dodeljen radnji <ph name="ACTION" />. Pritisnite bilo koji taster da biste izašli.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Ups, nešto nije u redu.</translation>
+<translation id="679845623837196966">Prikaži listu za čitanje</translation>
 <translation id="6798578729981748444">Da biste dovršili uvoz, zatvorite sve Firefox prozore.</translation>
 <translation id="6798780071646309401">caps lock je uključen</translation>
 <translation id="6798954102094737107">Dodatna komponenta: <ph name="PLUGIN_NAME" /></translation>
@@ -7212,6 +7213,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
       <ph name="LIST_ITEM" />Pokrenite Chrome dijagnostiku povezivosti
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Slika u slici</translation>
+<translation id="9167063903968449027">Prikaži listu za čitanje</translation>
 <translation id="9168436347345867845">Uradiću to kasnije</translation>
 <translation id="9169496697824289689">Prikaz tasterskih prečica</translation>
 <translation id="916964310188958970">Zašto ovaj predlog?</translation>

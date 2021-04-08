@@ -5093,6 +5093,7 @@
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' ही आधीपासून '<ph name="ACTION" />' या कृतीसाठी असाइन केलेली आहे. बाहेर पडण्यासाठी कोणतीही की दाबा.</translation>
 <translation id="6795884519221689054">पांडा</translation>
 <translation id="6797493596609571643">अरेरे, काहीतरी चूक झाली.</translation>
+<translation id="679845623837196966">वाचन सूची दाखवा</translation>
 <translation id="6798578729981748444">इंपोर्ट करणे पूर्ण करण्यासाठी, सर्व Firefox विंडो बंद करा.</translation>
 <translation id="6798780071646309401">कॅप्स लॉक सुरू आहे</translation>
 <translation id="6798954102094737107">प्लग-इन: <ph name="PLUGIN_NAME" /></translation>
@@ -7207,6 +7208,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
       <ph name="LIST_ITEM" />Chrome कनेक्टिव्हिटी निदान रन करणे
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">चित्रात-चित्र</translation>
+<translation id="9167063903968449027">वाचन सूची दाखवा</translation>
 <translation id="9168436347345867845">ते नंतर करा</translation>
 <translation id="9169496697824289689">कीबोर्ड शॉर्टकट पहा</translation>
 <translation id="916964310188958970">ही सूचना कशासाठी आहे?</translation>

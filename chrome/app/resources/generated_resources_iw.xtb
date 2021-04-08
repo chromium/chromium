@@ -5095,6 +5095,7 @@
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' כבר מוקצה לפעולה '<ph name="ACTION" />'. יש להקיש על מקש כלשהו כדי לצאת.</translation>
 <translation id="6795884519221689054">פנדה</translation>
 <translation id="6797493596609571643">אופס. משהו השתבש.</translation>
+<translation id="679845623837196966">הצגת רשימת הקריאה</translation>
 <translation id="6798578729981748444">‏סגירת כל החלונות של Firefox תשלים את פעולת הייבוא.</translation>
 <translation id="6798780071646309401">‏caps lock מופעל</translation>
 <translation id="6798954102094737107">פלאגין: <ph name="PLUGIN_NAME" /></translation>
@@ -7213,6 +7214,7 @@
       <ph name="LIST_ITEM" />להפעיל את Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">תמונה בתוך תמונה</translation>
+<translation id="9167063903968449027">הצגת רשימת הקריאה</translation>
 <translation id="9168436347345867845">מאוחר יותר</translation>
 <translation id="9169496697824289689">הצגת מקשי קיצור</translation>
 <translation id="916964310188958970">למה ההצעה הזאת הופיעה?</translation>

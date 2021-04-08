@@ -4054,7 +4054,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5582839680698949063">Menú principal</translation>
 <translation id="5583640892426849032">Retrocés</translation>
 <translation id="5584088138253955452">Vols desar el nom d'usuari?</translation>
-<translation id="5584091888252706332">En iniciar</translation>
+<translation id="5584091888252706332">A l'inici</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Es tracta d'informació general sobre el dispositiu i sobre com el fas servir, com ara els errors, el nivell de bateria i l'activitat al sistema i en aplicacions. Les dades s'utilitzaran per millorar Android i part de la informació agregada també ajudarà les aplicacions i els partners de Google, com ara els desenvolupadors d'Android, a millorar les seves aplicacions i els seus productes.<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Si aquesta funció es desactiva, no afectarà la capacitat del dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />El propietari pot controlar aquesta funció des de Configuració &gt; Configuració avançada &gt; Envia automàticament dades de diagnòstic i d'ús a Google.<ph name="END_PARAGRAPH3" />
@@ -5095,6 +5095,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6793723358811598107">La tecla <ph name="CURRENTKEY" /> ja està assignada a l'acció <ph name="ACTION" />. Prem qualsevol tecla per sortir.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">S'ha produït un error.</translation>
+<translation id="679845623837196966">Mostra la Llista de lectura</translation>
 <translation id="6798578729981748444">Per finalitzar la importació, tanca totes les finestres de Firefox.</translation>
 <translation id="6798780071646309401">bloqueig de majúscules activat</translation>
 <translation id="6798954102094737107">Connector: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
       <ph name="LIST_ITEM" />Executa Diagnòstic de connectivitat de Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pantalla en pantalla</translation>
+<translation id="9167063903968449027">Mostra la Llista de lectura</translation>
 <translation id="9168436347345867845">Fes-ho més tard</translation>
 <translation id="9169496697824289689">Mostra les tecles de drecera</translation>
 <translation id="916964310188958970">Per què es mostra aquest suggeriment?</translation>

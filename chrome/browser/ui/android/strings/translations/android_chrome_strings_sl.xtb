@@ -880,7 +880,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6929699136511445623">Omogoči sinhronizacijo sistema Android</translation>
 <translation id="6941901516114974832">V anonimnem načinu je vaša dejavnost <ph name="BEGIN_BOLD1" />morda še vedno vidna<ph name="END_BOLD1" /> spletnim mestom, ki jih obiščete, delodajalcu ali šoli ter ponudniku internetnih storitev.
 
-Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" />zaprete vse zavihke brez beleženja dejavnosti<ph name="END_BOLD2" />.</translation>
+Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" />zaprete vse anonimne zavihke<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Z možnostjo v meniju z nastavitvami lahko kadar koli spremenite privzeto mesto za prenose</translation>
 <translation id="694267552845942083">Trenutno prilagajate nastavitve sinhronizacije. Če želite dokončati vklop sinhronizacije, se dotaknite gumba za potrditev pri dnu zaslona. Pomik navzgor</translation>
 <translation id="6945221475159498467">Izberi</translation>

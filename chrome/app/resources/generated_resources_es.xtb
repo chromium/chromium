@@ -1625,7 +1625,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2783298271312924866">Descargado</translation>
 <translation id="2783321960289401138">Crear acceso directo...</translation>
 <translation id="2783829359200813069">Seleccionar tipos de cifrado</translation>
-<translation id="2783952358106015700">Usar la llave de seguridad con <ph name="APP_NAME" /></translation>
+<translation id="2783952358106015700">Usa tu llave de seguridad con <ph name="APP_NAME" /></translation>
 <translation id="2784407158394623927">Activando el servicio de datos móviles</translation>
 <translation id="2785873697295365461">Descriptores de archivo</translation>
 <translation id="2787354132612937472">—</translation>
@@ -4121,7 +4121,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5646558797914161501">Hombre de negocios</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
-<translation id="5651308944918885595">Descubribilidad de Compartir con Nearby</translation>
+<translation id="5651308944918885595">Detección de Compartir con Nearby</translation>
 <translation id="5653154844073528838">Tienes <ph name="PRINTER_COUNT" /> impresoras guardadas.</translation>
 <translation id="5656845498778518563">Enviar comentarios a Google</translation>
 <translation id="5657156137487675418">Permitir todas las cookies</translation>
@@ -4192,7 +4192,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5739235828260127894">Esperando verificación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" />.</translation>
 <translation id="5739458112391494395">Muy grande</translation>
 <translation id="5740328398383587084">Compartir con Nearby</translation>
-<translation id="5740820643029013514">Usar mensajes menos intrusivos (recomendado)</translation>
+<translation id="5740820643029013514">Usar notificaciones más discretas (recomendado)</translation>
 <translation id="574104302965107104">Proyección de pantalla</translation>
 <translation id="574209121243317957">Tono</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
@@ -4901,7 +4901,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6556903358015358733">Tema y fondo de pantalla</translation>
 <translation id="6557290421156335491">Mis accesos directos</translation>
 <translation id="6560151649238390891">Sugerencia insertada</translation>
-<translation id="6561560012278703671">Usar avisos discretos (bloquea las notificaciones emergentes para evitar interrupciones)</translation>
+<translation id="6561560012278703671">Usar notificaciones más discretas (bloquea las notificaciones emergentes para evitar interrupciones)</translation>
 <translation id="6561726789132298588">intro</translation>
 <translation id="6562117348069327379">Almacena registros del sistema en el directorio Descargas.</translation>
 <translation id="656293578423618167">La ruta o el nombre del archivo es demasiado largo. Especifica un nombre más corto o guarda el archivo en otra ubicación.</translation>
@@ -5094,6 +5094,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6793723358811598107">La tecla "<ph name="CURRENTKEY" />" ya está asignada a la acción "<ph name="ACTION" />". Pulsa cualquier tecla para salir.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Vaya, algo ha salido mal...</translation>
+<translation id="679845623837196966">Mostrar lista de lectura</translation>
 <translation id="6798578729981748444">Para terminar la importación, cierra todas las ventanas de Firefox.</translation>
 <translation id="6798780071646309401">bloqueo de mayúsculas activado</translation>
 <translation id="6798954102094737107">Complemento: <ph name="PLUGIN_NAME" /></translation>
@@ -5695,7 +5696,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7475671414023905704">URL de contraseñas perdidas de Netscape</translation>
 <translation id="7476454130948140105">No tienes suficiente batería para instalar la actualización (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Con bloqueo automático: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>
-<translation id="7477793887173910789">Controla tu música, tus vídeos y mucho más</translation>
+<translation id="7477793887173910789">Controla tu música, tus vídeos y más</translation>
 <translation id="7478485216301680444">No se ha podido instalar la aplicación del kiosco.</translation>
 <translation id="7478623944308207463">Tus aplicaciones y ajustes se sincronizarán en todos los dispositivos Chrome OS en los que hayas iniciado sesión con tu cuenta de Google. Para ver las opciones de sincronización del navegador, ve a la <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
 <translation id="7479221278376295180">Resumen del uso de almacenamiento</translation>
@@ -6667,7 +6668,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" />: proyectando RV a un visor</translation>
 <translation id="8590375307970699841">Configurar actualizaciones automáticas</translation>
 <translation id="8591783563402255548">1 segundo</translation>
-<translation id="8592141010104017453">No mostrar notificaciones</translation>
+<translation id="8592141010104017453">No mostrar ninguna notificación</translation>
 <translation id="859246725979739260">Este sitio web no tiene permiso para acceder a tu ubicación.</translation>
 <translation id="8593121833493516339">Enviar datos de uso y diagnóstico. Contribuye a mejorar la experiencia de Android de tu hijo enviando automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos no se usarán para identificar a tu hijo, sino para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos recogidos también ayudarán a las aplicaciones y los colaboradores de Google, como los desarrolladores de Android. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="8594908476761052472">Grabar vídeo</translation>
@@ -7209,6 +7210,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
       <ph name="LIST_ITEM" />Ejecutar el Diagnóstico de conectividad de Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Imagen en imagen</translation>
+<translation id="9167063903968449027">Mostrar lista de lectura</translation>
 <translation id="9168436347345867845">En otro momento</translation>
 <translation id="9169496697824289689">Ver combinaciones de teclas</translation>
 <translation id="916964310188958970">¿Por qué aparece esta sugerencia?</translation>

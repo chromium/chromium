@@ -5095,6 +5095,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6793723358811598107"><ph name="CURRENTKEY" /> har redan tilldelats åtgärden <ph name="ACTION" />. Tryck på valfri tangent för att avsluta.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hoppsan! Ett fel uppstod.</translation>
+<translation id="679845623837196966">Visa läslista</translation>
 <translation id="6798578729981748444">Stäng alla fönster i Firefox så att importen kan slutföras.</translation>
 <translation id="6798780071646309401">caps lock på</translation>
 <translation id="6798954102094737107">Pluginprogram: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
       <ph name="LIST_ITEM" />köra diagnostiseringsverktyget för Chrome-anslutningar.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Bild-i-bild</translation>
+<translation id="9167063903968449027">Visa Läslista</translation>
 <translation id="9168436347345867845">Gör det senare</translation>
 <translation id="9169496697824289689">Visa kortkommandon</translation>
 <translation id="916964310188958970">Varför visas detta förslag?</translation>

@@ -5095,6 +5095,7 @@
 <translation id="6793723358811598107">Тастер <ph name="CURRENTKEY" /> је већ додељен радњи <ph name="ACTION" />. Притисните било који тастер да бисте изашли.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">Упс, нешто није у реду.</translation>
+<translation id="679845623837196966">Прикажи листу за читање</translation>
 <translation id="6798578729981748444">Да бисте довршили увоз, затворите све Firefox прозоре.</translation>
 <translation id="6798780071646309401">caps lock је укључен</translation>
 <translation id="6798954102094737107">Додатна компонента: <ph name="PLUGIN_NAME" /></translation>
@@ -7212,6 +7213,7 @@
       <ph name="LIST_ITEM" />Покрените Chrome дијагностику повезивости
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Слика у слици</translation>
+<translation id="9167063903968449027">Прикажи листу за читање</translation>
 <translation id="9168436347345867845">Урадићу то касније</translation>
 <translation id="9169496697824289689">Приказ тастерских пречица</translation>
 <translation id="916964310188958970">Зашто овај предлог?</translation>

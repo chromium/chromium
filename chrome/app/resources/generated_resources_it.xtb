@@ -5094,6 +5094,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6793723358811598107">Il tasto "'<ph name="CURRENTKEY" />" è già stato assegnato all'azione "<ph name="ACTION" />". Premi un tasto qualsiasi per uscire.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Spiacenti, qualcosa è andato storto.</translation>
+<translation id="679845623837196966">Mostra Elenco di lettura</translation>
 <translation id="6798578729981748444">Per terminare l'importazione, chiudi tutte le finestre di Firefox.</translation>
 <translation id="6798780071646309401">bloc maiusc attivo</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
@@ -7208,6 +7209,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
       <ph name="LIST_ITEM" />Eseguire lo strumento Diagnostica della connettività Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture in picture</translation>
+<translation id="9167063903968449027">Mostra Elenco di lettura</translation>
 <translation id="9168436347345867845">Più tardi</translation>
 <translation id="9169496697824289689">Visualizza scorciatoie da tastiera</translation>
 <translation id="916964310188958970">Perché questo suggerimento?</translation>

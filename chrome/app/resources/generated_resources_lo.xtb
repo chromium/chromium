@@ -5093,6 +5093,7 @@
 <translation id="6793723358811598107">ມີການກຳນົດ '<ph name="CURRENTKEY" />' ໃຫ້ຄຳສັ່ງ '<ph name="ACTION" />' ແລ້ວ. ກົດປຸ່ມໃດໆກໍໄດ້ເພື່ອອອກ.</translation>
 <translation id="6795884519221689054">ແພນດ້າ</translation>
 <translation id="6797493596609571643">ອຸ້ຍ, ມີບາງອັນຜິດພາດ.</translation>
+<translation id="679845623837196966">ສະແດງລາຍຊື່ການອ່ານ</translation>
 <translation id="6798578729981748444">ເພື່ອສຳເລັດການນຳເຂົ້າ, ກະລຸນາປິດໜ້າຈໍ Firefox ທັງໝົດ.</translation>
 <translation id="6798780071646309401">Caps Lock ເປີດຢູ່</translation>
 <translation id="6798954102094737107">ປ​ລັກ​ອິນ: <ph name="PLUGIN_NAME" /></translation>
@@ -7206,6 +7207,7 @@
       <ph name="LIST_ITEM" />ກຳລັງເອີ້ນໃຊ້ການວິເຄາະການເຊື່ອມຕໍ່ Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">ສະແດງຜົນຫຼາຍຢ່າງພ້ອມກັນ</translation>
+<translation id="9167063903968449027">ສະແດງລາຍຊື່ການອ່ານ</translation>
 <translation id="9168436347345867845">ເຮັດໃນພາຍຫຼັງ</translation>
 <translation id="9169496697824289689">ເບິ່ງທາງລັດຄີບອດ</translation>
 <translation id="916964310188958970">ເປັນຫຍັງຕ້ອງການແນະນຳນີ້?</translation>

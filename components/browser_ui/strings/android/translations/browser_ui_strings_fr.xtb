@@ -201,7 +201,7 @@
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6545864417968258051">Recherche Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
-<translation id="6561560012278703671">Activer l'affichage discret (empêche les notifications de vous interrompre)</translation>
+<translation id="6561560012278703671">Activer les notifications discrètes (empêche les notifications de vous interrompre)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Go</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>
 <translation id="662080504995468778">Rester</translation>

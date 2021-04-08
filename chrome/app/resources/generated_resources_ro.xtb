@@ -5096,6 +5096,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6793723358811598107">Tasta „<ph name="CURRENTKEY" />” a fost deja asociată acțiunii „<ph name="ACTION" />”. Apasă pe orice tastă pentru a ieși.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hopa! A apărut o eroare.</translation>
+<translation id="679845623837196966">Afișează lista de lecturi</translation>
 <translation id="6798578729981748444">Pentru a finaliza importul, închide toate ferestrele Firefox.</translation>
 <translation id="6798780071646309401">tasta Caps Lock este activată</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
@@ -7212,6 +7213,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
       <ph name="LIST_ITEM" />să rulezi Diagnostice conectivitate Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture-in-Picture</translation>
+<translation id="9167063903968449027">Afișează Lista de lecturi</translation>
 <translation id="9168436347345867845">Mai târziu</translation>
 <translation id="9169496697824289689">Vedeți comenzile rapide de la tastatură</translation>
 <translation id="916964310188958970">De ce se afișează această sugestie?</translation>

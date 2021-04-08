@@ -150,7 +150,7 @@
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Sin servicio</translation>
 <translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
-<translation id="4593212453765072419">Autenticación de proxy necesaria</translation>
+<translation id="4593212453765072419">Se requiere autenticación de proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pulsa Intro para cancelar el trabajo de impresión.</translation>
 <translation id="4646949265910132906">Conexión Wi‑Fi segura</translation>
 <translation id="4652335678334611408">Guardar registro de la sesión</translation>

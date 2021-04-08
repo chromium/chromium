@@ -5095,6 +5095,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' is already assigned to the '<ph name="ACTION" />' action. Press any key to exit.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Oops, something went wrong.</translation>
+<translation id="679845623837196966">Show reading list</translation>
 <translation id="6798578729981748444">To finish importing, close all Firefox windows.</translation>
 <translation id="6798780071646309401">caps lock on</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@ Press an assigned switch to remove assignment.</translation>
       <ph name="LIST_ITEM" />Running Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture in Picture</translation>
+<translation id="9167063903968449027">Show reading list</translation>
 <translation id="9168436347345867845">Do it later</translation>
 <translation id="9169496697824289689">View keyboard shortcuts</translation>
 <translation id="916964310188958970">Why this suggestion?</translation>

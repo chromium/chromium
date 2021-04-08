@@ -5096,6 +5096,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6793723358811598107">„<ph name="CURRENTKEY" />“ er þegar úthlutað á aðgerðina „<ph name="ACTION" />“. Ýttu á hvaða lykil sem er til að loka.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Úbbs, eitthvað fór úrskeiðis.</translation>
+<translation id="679845623837196966">Sýna leslista</translation>
 <translation id="6798578729981748444">Lokaðu öllum Firefox-gluggum til að ljúka við innflutning.</translation>
 <translation id="6798780071646309401">hástafalás á</translation>
 <translation id="6798954102094737107">Viðbót: <ph name="PLUGIN_NAME" /></translation>
@@ -7211,6 +7212,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
       <ph name="LIST_ITEM" />Keyra tengingargreiningu Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Mynd í mynd</translation>
+<translation id="9167063903968449027">Sýna leslista</translation>
 <translation id="9168436347345867845">Gera þetta seinna</translation>
 <translation id="9169496697824289689">Skoða flýtilykla</translation>
 <translation id="916964310188958970">Hvers vegna þessi tillaga?</translation>

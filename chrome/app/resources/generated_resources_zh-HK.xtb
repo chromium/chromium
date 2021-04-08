@@ -5094,6 +5094,7 @@
 <translation id="6793723358811598107">「<ph name="CURRENTKEY" />」鍵已指派給「<ph name="ACTION" />」動作。請按任何按鍵以離開。</translation>
 <translation id="6795884519221689054">熊貓</translation>
 <translation id="6797493596609571643">糟糕，發生錯誤。</translation>
+<translation id="679845623837196966">顯示閱讀清單</translation>
 <translation id="6798578729981748444">如要完成匯入，請關閉所有 Firefox 視窗。</translation>
 <translation id="6798780071646309401">大寫鎖定已開啟</translation>
 <translation id="6798954102094737107">外掛程式：<ph name="PLUGIN_NAME" /></translation>
@@ -5445,7 +5446,7 @@
 <translation id="7187855807420906517">在您離開或離線後，網站通常會保持同步以完成工作，例如上載相片或傳送即時通訊訊息</translation>
 <translation id="7189234443051076392">確保您的裝置上有足夠的儲存空間</translation>
 <translation id="7189451821249468368">您沒有足夠升級，無法註冊這部裝置。如要購買更多升級，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
-<translation id="7189965711416741966">已新增指紋。</translation>
+<translation id="7189965711416741966">已加入指紋。</translation>
 <translation id="7191159667348037">不明打印機 (USB)</translation>
 <translation id="7193051357671784796">此應用程式由您的機構新增。重新啟動應用程式即可完成安裝。</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> 沒有密碼可供儲存</translation>
@@ -6786,7 +6787,7 @@
 <translation id="8720816553731218127">安裝時間屬性的初始化已逾時。</translation>
 <translation id="8722912030556880711">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料將有助改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="8724405322205516354">看到此圖示時，請使用您的指紋識別身份或核准購物交易。</translation>
-<translation id="8724409975248965964">已新增指紋</translation>
+<translation id="8724409975248965964">已力入指紋</translation>
 <translation id="8724859055372736596">在資料夾中顯示(&amp;S)</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8725178340343806893">我的最愛/書籤</translation>
@@ -7207,6 +7208,7 @@
       <ph name="LIST_ITEM" />執行 Chrome 連線診斷工具
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">畫中畫</translation>
+<translation id="9167063903968449027">顯示閱讀清單</translation>
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9169496697824289689">查看鍵盤快速鍵</translation>
 <translation id="916964310188958970">為什麼會顯示此建議？</translation>

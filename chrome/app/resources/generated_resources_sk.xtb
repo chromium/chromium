@@ -445,7 +445,7 @@
 <translation id="1484979925941077974">Web používa Bluetooth</translation>
 <translation id="1485015260175968628">Teraz môže:</translation>
 <translation id="1485141095922496924">Verzia <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
-<translation id="1486096554574027028">Hľadať v heslách</translation>
+<translation id="1486096554574027028">Vyhľadajte heslá</translation>
 <translation id="1487335504823219454">Zapnutá – vlastné nastavenia</translation>
 <translation id="1489664337021920575">Vybrať inú možnosť</translation>
 <translation id="1490491397986065675">Toto je správa od vášho správcu: <ph name="CUSTOM_MESSAGE" />.</translation>
@@ -4194,7 +4194,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5739235828260127894">Čaká sa na overenie. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Veľmi veľké</translation>
 <translation id="5740328398383587084">Zdieľanie nablízku</translation>
-<translation id="5740820643029013514">Používať tichšie správy (odporúčané)</translation>
+<translation id="5740820643029013514">Používať tichší režim (odporúčané)</translation>
 <translation id="574104302965107104">Zrkadlenie obrazovky</translation>
 <translation id="574209121243317957">Výška hlasu</translation>
 <translation id="5746169159649715125">Uložiť ako PDF</translation>
@@ -4629,7 +4629,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">Systém: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="624789221780392884">Aktualizácia je pripravená</translation>
-<translation id="6248988683584659830">Hľadať v nastaveniach</translation>
+<translation id="6248988683584659830">Vyhľadajte nastavenia</translation>
 <translation id="6249200942125593849">Spravovať a11y</translation>
 <translation id="6251870443722440887">GDI – popisovače</translation>
 <translation id="625369703868467034">Stav siete</translation>
@@ -4903,7 +4903,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6556903358015358733">Motív a tapeta</translation>
 <translation id="6557290421156335491">Moje skratky</translation>
 <translation id="6560151649238390891">Návrh bol vložený</translation>
-<translation id="6561560012278703671">Použiť tichšie správy (blokovanie vyrušovania upozorneniami)</translation>
+<translation id="6561560012278703671">Používať tichší režim (blokovať rušivé výzvy na odber upozornení)</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Ukladajte denníky systému do priečinka Stiahnuté.</translation>
 <translation id="656293578423618167">Názov súboru alebo cesta má veľa znakov. Uložte súbor pod kratším názvom alebo inde.</translation>
@@ -5096,6 +5096,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6793723358811598107">Kláves <ph name="CURRENTKEY" /> je už pridelený k akcii <ph name="ACTION" />. Ukončite stlačením ľubovoľného klávesa.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hops, niečo sa pokazilo.</translation>
+<translation id="679845623837196966">Zobraziť čitateľský zoznam</translation>
 <translation id="6798578729981748444">Importovanie dokončíte zavretím všetkých okien prehliadača Firefox.</translation>
 <translation id="6798780071646309401">Funkcia Caps Lock je zapnutá</translation>
 <translation id="6798954102094737107">Doplnok: <ph name="PLUGIN_NAME" /></translation>
@@ -7212,6 +7213,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
       <ph name="LIST_ITEM" />spustiť Diagnostiku pripojenia Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Obraz v obraze</translation>
+<translation id="9167063903968449027">Zobraziť čitateľský zoznam</translation>
 <translation id="9168436347345867845">Neskôr</translation>
 <translation id="9169496697824289689">Zobraziť klávesové skratky</translation>
 <translation id="916964310188958970">Prečo tento návrh?</translation>

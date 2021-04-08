@@ -5096,6 +5096,7 @@
 <translation id="6793723358811598107">Το <ph name="CURRENTKEY" /> έχει ήδη εκχωρηθεί στην ενέργεια "<ph name="ACTION" />". Πατήστε οποιοδήποτε πλήκτρο για έξοδο.</translation>
 <translation id="6795884519221689054">Πάντα</translation>
 <translation id="6797493596609571643">Ωχ, κάτι δεν πήγε καλά.</translation>
+<translation id="679845623837196966">Εμφάνιση λίστας ανάγνωσης</translation>
 <translation id="6798578729981748444">Για να ολοκληρώσετε την εισαγωγή, κλείστε όλα τα παράθυρα του Firefox.</translation>
 <translation id="6798780071646309401">η λειτουργία Caps Lock ενεργοποιήθηκε</translation>
 <translation id="6798954102094737107">Προσθήκη: <ph name="PLUGIN_NAME" /></translation>
@@ -7209,6 +7210,7 @@
       <ph name="LIST_ITEM" />Εκτελέστε τα Διαγνωστικά στοιχεία συνδεσιμότητας Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Παράθεση εικόνων</translation>
+<translation id="9167063903968449027">Εμφάνιση λίστας ανάγνωσης</translation>
 <translation id="9168436347345867845">Αργότερα</translation>
 <translation id="9169496697824289689">Προβολή συντομεύσεων πληκτρολογίου</translation>
 <translation id="916964310188958970">Γιατί εμφανίζεται αυτή η πρόταση;</translation>

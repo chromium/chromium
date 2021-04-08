@@ -3174,7 +3174,7 @@
 <translation id="4545759655004063573">Не може да се зачува поради недоволно дозволи. Зачувајте на друга локација.</translation>
 <translation id="4546308221697447294">Прелистувајте брзо со Google Chrome</translation>
 <translation id="4546345569117159016">Десно копче</translation>
-<translation id="4546692474302123343">Гласовен запис на „Помошникот на Google“</translation>
+<translation id="4546692474302123343">Гласовно внесување на „Помошникот на Google“</translation>
 <translation id="4547659257713117923">Нема картички од други уреди</translation>
 <translation id="4547672827276975204">Постави автоматски</translation>
 <translation id="4549791035683739768">Вашиот безбедносен клуч нема складирани отпечатоци</translation>
@@ -5096,6 +5096,7 @@
 <translation id="6793723358811598107">Копчето „<ph name="CURRENTKEY" />“ е веќе назначено за дејството „<ph name="ACTION" />“. Притиснете го кое било копче за да излезете.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">Упс, нешто не е во ред.</translation>
+<translation id="679845623837196966">Прикажи го списокот за читање</translation>
 <translation id="6798578729981748444">За да го завршите увезувањето, затворете ги сите прозорци на Firefox.</translation>
 <translation id="6798780071646309401">Caps Lock е вклучено</translation>
 <translation id="6798954102094737107">Приклучок: <ph name="PLUGIN_NAME" /></translation>
@@ -7214,6 +7215,7 @@
       <ph name="LIST_ITEM" />да извршите проверка преку „Дијагностика за поврзливост на Chrome“
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Слика во слика</translation>
+<translation id="9167063903968449027">Прикажи го списокот за читање</translation>
 <translation id="9168436347345867845">Остави за подоцна</translation>
 <translation id="9169496697824289689">Прикажи кратенки на тастатура</translation>
 <translation id="916964310188958970">Зошто овој предлог?</translation>

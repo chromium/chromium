@@ -2351,7 +2351,7 @@
 <translation id="3613134908380545408">「<ph name="FOLDER_NAME" />」を表示</translation>
 <translation id="3613422051106148727">新しいタブで開く(&amp;O)</translation>
 <translation id="3614974189435417452">バックアップが完了しました</translation>
-<translation id="3615073365085224194">指紋認証センサーに指を置いてください</translation>
+<translation id="3615073365085224194">指紋認証センサーを指でタッチしてください</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> をスキャンしています。</translation>
 <translation id="3616741288025931835">閲覧履歴を消去(&amp;C)...</translation>
 <translation id="3617891479562106823">背景を利用できません。しばらくしてからもう一度お試しください。</translation>
@@ -3847,7 +3847,7 @@
 <translation id="5340638867532133571">サイトに支払いハンドラのインストールを許可する（推奨）</translation>
 <translation id="5341793073192892252">以下の Cookie がブロックされました（サードパーティの Cookie は例外なくブロックされます）</translation>
 <translation id="5341980496415249280">圧縮しています。しばらくお待ちください...</translation>
-<translation id="5342091991439452114">PIN は <ph name="MINIMUM" /> 桁以上で指定してください</translation>
+<translation id="5342091991439452114">PIN は <ph name="MINIMUM" /> 桁以上で作成してください</translation>
 <translation id="5344036115151554031">Linux を復元しています</translation>
 <translation id="5345916423802287046">ログイン時にアプリを開く</translation>
 <translation id="5350293332385664455">Google アシスタントをオフにする</translation>
@@ -5095,6 +5095,7 @@
 <translation id="6793723358811598107">「<ph name="CURRENTKEY" />」キーはすでに「<ph name="ACTION" />」に割り当てられています。終了するには、どれかキーを押してください。</translation>
 <translation id="6795884519221689054">パンダ</translation>
 <translation id="6797493596609571643">エラーが発生しました。</translation>
+<translation id="679845623837196966">リーディング リストを表示</translation>
 <translation id="6798578729981748444">インポートを完了するには、すべての Firefox ウィンドウを閉じてください。</translation>
 <translation id="6798780071646309401">CapsLock オン</translation>
 <translation id="6798954102094737107">プラグイン: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@
       <ph name="LIST_ITEM" />Chrome Connectivity Diagnostics を実行する
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">ピクチャー イン ピクチャー</translation>
+<translation id="9167063903968449027">リーディング リストを表示</translation>
 <translation id="9168436347345867845">後で行う</translation>
 <translation id="9169496697824289689">キーボード ショートカットの表示</translation>
 <translation id="916964310188958970">この候補が表示された理由</translation>

@@ -73,7 +73,7 @@
 <translation id="1605658421715042784">Sao chép hình ảnh</translation>
 <translation id="1608337082864370066">Tìm kiếm hình ảnh đã sao chép</translation>
 <translation id="1612730193129642006">Hiển thị lưới thẻ</translation>
-<translation id="1644574205037202324">Lịch sử</translation>
+<translation id="1644574205037202324">Nhật ký</translation>
 <translation id="1650222530560417226">Nhấn nút "Bắt đầu ghi nhật ký" để thu thập nhật ký trong bảng điều khiển JavaScript và lỗi từ tất cả các thẻ trong tương lai. Nhật ký sẽ được thu thập (và chỉ được lưu trữ trong bộ nhớ) cho đến khi bạn đóng trang này hoặc nhấn vào "Dừng ghi nhật ký".</translation>
 <translation id="1657011748321897393">Không thể chia sẻ do bạn không kết nối với mạng.</translation>
 <translation id="1657641691196698092">Số cookie bị chặn</translation>
@@ -83,7 +83,7 @@
 <translation id="1687475363370981210">Đánh dấu tất cả là đã đọc</translation>
 <translation id="1689333818294560261">Biệt hiệu</translation>
 <translation id="1690731385917361335">Không có mục nào</translation>
-<translation id="1692118695553449118">Đồng bộ hóa đang bật</translation>
+<translation id="1692118695553449118">Tính năng đồng bộ hóa đang bật</translation>
 <translation id="1700629756560807968">Đã chọn <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dấu trang</translation>
 <translation id="1740468249224277719">Nhấn đúp để cài đặt.</translation>
 <translation id="1746815479209538200">Để duyệt web, hãy thêm thẻ mới.</translation>
@@ -145,7 +145,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2421004566762153674">Chặn cookie của bên thứ ba</translation>
 <translation id="2421044535038393232">Tiếp tục chỉnh sửa</translation>
 <translation id="2435457462613246316">Hiển thị mật khẩu</translation>
-<translation id="2497852260688568942">Đồng bộ hóa bị quản trị viên của bạn tắt</translation>
+<translation id="2497852260688568942">Quản trị viên của bạn đã tắt tính năng đồng bộ hóa</translation>
 <translation id="2500374554657206846">Các tùy chọn lưu mật khẩu</translation>
 <translation id="2523363575747517183">Trang web này đang liên tục tìm cách mở một ứng dụng khác.</translation>
 <translation id="2529021024822217800">Mở tất cả</translation>
@@ -395,7 +395,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5090832849094901128">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Đã đăng lên Twitter.</translation>
 <translation id="5118764316110575523">Đang tắt</translation>
-<translation id="5127805178023152808">Đồng bộ hóa đã tắt</translation>
+<translation id="5127805178023152808">Tính năng đồng bộ hóa đang tắt</translation>
 <translation id="5132942445612118989">Đồng bộ hóa mật khẩu, lịch sử và các thông tin khác của bạn trên tất cả các thiết bị</translation>
 <translation id="5140288047769711648">Chrome sẽ nhớ mật khẩu này cho bạn. Bạn không phải nhớ mật khẩu.</translation>
 <translation id="5150492518600715772">Gửi tới thiết bị của bạn</translation>
@@ -497,7 +497,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6196207969502475924">Tìm kiếm bằng giọng nói</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Đóng {COUNT} thẻ}other{Đóng {COUNT} thẻ}}</translation>
 <translation id="6219688215832490856">Không bao giờ dịch</translation>
-<translation id="6254066287920239840">Mở liên kết trong ứng dụng thay vì trình duyệt.</translation>
+<translation id="6254066287920239840">Mở đường liên kết trong ứng dụng thay vì trình duyệt.</translation>
 <translation id="6255097610484507482">Chỉnh sửa thẻ tín dụng</translation>
 <translation id="6284652193729350524">Đề xuất dịch <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Để bật tính năng Duyệt web an toàn, hãy mở <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" /> rồi nhấn vào Duyệt web an toàn.</translation>

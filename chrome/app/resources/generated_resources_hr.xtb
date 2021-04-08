@@ -2767,7 +2767,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4047726037116394521">Otvaranje početnog zaslona</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt nije dostupan. Da biste s tim kontaktom koristili dijeljenje u blizini, u kontakte dodajte e-adresu povezanu s njegovim Google računom.}one{# kontakt nije dostupan. Da biste s tim kontaktima koristili dijeljenje u blizini, u kontakte dodajte e-adrese povezane s njihovim Google računima.}few{# kontakta nisu dostupna. Da biste s tim kontaktima koristili dijeljenje u blizini, u kontakte dodajte e-adrese povezane s njihovim Google računima.}other{# kontakata nije dostupno. Da biste s tim kontaktima koristili dijeljenje u blizini, u kontakte dodajte e-adrese povezane s njihovim Google računima.}}</translation>
 <translation id="4050225813016893843">Način autentifikacije</translation>
-<translation id="4050534976465737778">Provjerite jesu li oba uređaja otključana, blizu jedan drugome te imaju li uključen Bluetooth. Ako dijelite s Chromebookom koji nije u vašim kontaktima, provjerite je li na njemu uključena vidljivost uređaja (otvorite područje statusa, a zatim uključite vidljivost uređaja). <ph name="LINK_BEGIN" />Saznaj više<ph name="LINK_END" /></translation>
+<translation id="4050534976465737778">Provjerite jesu li oba uređaja otključana, blizu jedan drugome te imaju li uključen Bluetooth. Ako dijelite s Chromebookom koji nije u vašim kontaktima, provjerite je li na njemu uključena vidljivost uređaja (otvorite područje statusa, a zatim uključite vidljivost uređaja). <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Jako mali</translation>
 <translation id="4054070260844648638">Vidljivo svima</translation>
 <translation id="4056908315660577142">Dosegnuto je vremensko ograničenje koje je tvoj roditelj postavio za Chromeovu aplikaciju <ph name="APP_NAME" />. Sutra je možeš koristiti <ph name="TIME_LIMIT" />.</translation>
@@ -3596,7 +3596,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5052499409147950210">Uređivanje web-lokacije</translation>
 <translation id="5053962746715621840">Pretraži sliku pomoću Google objektiva</translation>
 <translation id="5057110919553308744">Kada kliknete proširenje</translation>
-<translation id="5057403786441168405">Upravljajte računima na koje ste prijavljeni. Web-lokacije, aplikacije i proširenja u Chromeu i Google Playu mogu upotrebljavati te račune da bi vam prilagodile doživljaj, ovisno o dopuštenjima. <ph name="LINK_BEGIN" />Saznaj više<ph name="LINK_END" /></translation>
+<translation id="5057403786441168405">Upravljajte računima na koje ste prijavljeni. Web-lokacije, aplikacije i proširenja u Chromeu i Google Playu mogu upotrebljavati te račune da bi vam prilagodile doživljaj, ovisno o dopuštenjima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ograničenje prijave</translation>
 <translation id="5059526285558225588">Odaberite što želite dijeliti</translation>
 <translation id="5060332552815861872">Jedan je pisač dostupan za spremanje.</translation>
@@ -5096,6 +5096,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6793723358811598107">Tipka "<ph name="CURRENTKEY" />" već je dodijeljena radnji "<ph name="ACTION" />". Pritisnite bilo koju tipku za izlaz.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Ups, nešto je pošlo po krivu.</translation>
+<translation id="679845623837196966">Prikaži popis za čitanje</translation>
 <translation id="6798578729981748444">Da biste dovršili uvoz, zatvorite sve Firefoxove prozore.</translation>
 <translation id="6798780071646309401">Caps Lock uključen</translation>
 <translation id="6798954102094737107">Dodatak: <ph name="PLUGIN_NAME" /></translation>
@@ -7212,6 +7213,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
       <ph name="LIST_ITEM" />Pokrenite Chromeovu dijagnostiku veze.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Slika u slici</translation>
+<translation id="9167063903968449027">Prikaži popis za čitanje</translation>
 <translation id="9168436347345867845">Učinite to kasnije</translation>
 <translation id="9169496697824289689">Prikaz tipkovnih prečaca</translation>
 <translation id="916964310188958970">Zašto taj prijedlog?</translation>

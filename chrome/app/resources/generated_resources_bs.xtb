@@ -4092,7 +4092,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5616726534702877126">Rezerviraj veličinu</translation>
 <translation id="561698261642843490">Zatvaranje Firefoxa</translation>
 <translation id="5618333180342767515">(ovo može potrajati nekoliko minuta)</translation>
-<translation id="56197088284879152">Preopterećena je veza s uređajem za daljinsko upravljanje: "<ph name="DEVICE_NAME" />".</translation>
+<translation id="56197088284879152">Preopterećena je veza s udaljenim uređajem: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">Administratorska pravila onemogućavaju snimanje ekrana</translation>
 <translation id="5620568081365989559">DevTools zahtijeva puni pristup putanji <ph name="FOLDER_PATH" />. Vodite računa da ne otkrijete povjerljive informacije.</translation>
 <translation id="5620612546311710611">statistika korištenja</translation>
@@ -5097,6 +5097,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6793723358811598107">Tipka "<ph name="CURRENTKEY" />" je već dodijeljena radnji "<ph name="ACTION" />". Pritisnite bilo koju tipku da izađete.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Nešto nije uredu.</translation>
+<translation id="679845623837196966">Prikaži listu za čitanje</translation>
 <translation id="6798578729981748444">Zatvorite sve prozore u pregledniku Firefox da završite uvoz.</translation>
 <translation id="6798780071646309401">Caps Lock uključen</translation>
 <translation id="6798954102094737107">Dodatak: <ph name="PLUGIN_NAME" /></translation>
@@ -7214,6 +7215,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
       <ph name="LIST_ITEM" />Pokrenite Dijagnostiku povezivosti Chromea
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Slika u slici</translation>
+<translation id="9167063903968449027">Prikaži Listu za čitanje</translation>
 <translation id="9168436347345867845">Uradit ću to kasnije</translation>
 <translation id="9169496697824289689">Prikaži prečice na tastaturi</translation>
 <translation id="916964310188958970">Zbog čega ovaj prijedlog?</translation>

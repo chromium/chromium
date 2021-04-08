@@ -201,7 +201,7 @@
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más bloqueados}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más bloqueados}}</translation>
-<translation id="6561560012278703671">Usar avisos discretos (bloquea las notificaciones emergentes para evitar interrupciones)</translation>
+<translation id="6561560012278703671">Usar notificaciones más discretas (bloquea las notificaciones emergentes para evitar interrupciones)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contenido protegido</translation>
 <translation id="662080504995468778">Seguir aquí</translation>

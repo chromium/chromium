@@ -5095,6 +5095,7 @@
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' को पहले ही '<ph name="ACTION" />' कार्रवाई के लिए असाइन किया जा चुका है. बाहर निकलने के लिए कोई भी बटन दबाएं.</translation>
 <translation id="6795884519221689054">पांडा</translation>
 <translation id="6797493596609571643">ओह! कुछ गड़बड़ी हो गई है.</translation>
+<translation id="679845623837196966">रीडिंग लिस्ट दिखाएं</translation>
 <translation id="6798578729981748444">आयात करना पूरा करने के लिए, सभी Firefox विंडो बंद करें.</translation>
 <translation id="6798780071646309401">caps lock चालू है</translation>
 <translation id="6798954102094737107">प्‍लग इन: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@
       <ph name="LIST_ITEM" />Chrome कनेक्टिविटी डाइग्नोस्टिक्स टूल चलाएं
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">पिक्चर में पिक्चर</translation>
+<translation id="9167063903968449027">रीडिंग लिस्ट दिखाएं</translation>
 <translation id="9168436347345867845">बाद में करें</translation>
 <translation id="9169496697824289689">कीबोर्ड शॉर्टकट देखें</translation>
 <translation id="916964310188958970">यह सुझाव क्यों दिख रहा है?</translation>

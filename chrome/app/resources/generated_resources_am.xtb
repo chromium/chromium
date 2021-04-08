@@ -5093,6 +5093,7 @@
 <translation id="6793723358811598107">«<ph name="CURRENTKEY" />» ቀደም ብሎ ወደ «<ph name="ACTION" />» እርምጃ ተመድቧል። ለመውጣት ማንኛውንም ቁልፍ ይጫኑ።</translation>
 <translation id="6795884519221689054">ፓንዳ</translation>
 <translation id="6797493596609571643">ውይ፣ የሆነ ችግር ተፈጥሯል።</translation>
+<translation id="679845623837196966">የንባብ ዝርዝርን አሳይ</translation>
 <translation id="6798578729981748444">ማስመጣትን ለመጨረስ ሁሉንም የFirefox መስኮቶች ይዝጉ።</translation>
 <translation id="6798780071646309401">አቢያት ማድረጊያ በርቷል</translation>
 <translation id="6798954102094737107">ተሰኪ፦ <ph name="PLUGIN_NAME" /></translation>
@@ -7213,6 +7214,7 @@ nil</translation>
       <ph name="LIST_ITEM" />የChrome ተገናኝነት ምርመራን በማሄድ ላይ
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">በሥዕል ላይ ሥዕል</translation>
+<translation id="9167063903968449027">የንባብ ዝርዝርን አሳይ</translation>
 <translation id="9168436347345867845">በኋላ ያድርጉት</translation>
 <translation id="9169496697824289689">የቁልፍ ሰሌዳ አቋራጮችን ይመልከቱ</translation>
 <translation id="916964310188958970">ይህ የአስተያየት ጥቆማ ለምን?</translation>

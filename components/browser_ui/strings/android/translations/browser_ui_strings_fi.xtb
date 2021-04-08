@@ -241,7 +241,7 @@
 <translation id="757524316907819857">Estä sivustoja toistamasta suojattua sisältöä</translation>
 <translation id="7589445247086920869">Estä nykyiselle hakukoneelle</translation>
 <translation id="7649070708921625228">Ohje</translation>
-<translation id="7658239707568436148">Peruuta</translation>
+<translation id="7658239707568436148">Peru</translation>
 <translation id="7781829728241885113">Eilen</translation>
 <translation id="7791543448312431591">Lisää</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
@@ -250,7 +250,7 @@
 <translation id="7828557259026017104">Evästeet ovat avaamiesi verkkosivustojen luomia tiedostoja. Niiden avulla sivustot muistavat valintasi. Kolmannen osapuolen evästeitä luovat muut sivustot. Nämä sivustot omistavat mainoksia, kuvia tai muita sisältöjä, joita käytetään avaamallasi sivulla.</translation>
 <translation id="7835852323729233924">Toistetaan mediaa</translation>
 <translation id="783819812427904514">Poista videon mykistys</translation>
-<translation id="7846076177841592234">Peruuta valinta</translation>
+<translation id="7846076177841592234">Peru valinta</translation>
 <translation id="7846621471902887024">Sinut kirjataan ulos kaikilta sivustoilta.</translation>
 <translation id="7882806643839505685">Salli tietyn sivuston äänet.</translation>
 <translation id="7986741934819883144">Valitse yhteystieto</translation>
@@ -278,7 +278,7 @@
 <translation id="8425213833346101688">Vaihda</translation>
 <translation id="8441146129660941386">Kelaa taaksepäin</translation>
 <translation id="8444433999583714703">Ota sijaintitiedot käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn sijaintiisi.</translation>
-<translation id="8447861592752582886">Peruuta laitteen käyttöoikeus</translation>
+<translation id="8447861592752582886">Peru laitteen käyttöoikeus</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 eväste käytössä}other{# evästettä käytössä}}</translation>
 <translation id="8463851957836045671">Sivusto on nopea</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>

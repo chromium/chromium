@@ -27,9 +27,9 @@
 <translation id="1413240736185167732">प्रिन्ट गर्न सकिएन - फिल्टरमा समस्या आयो</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1468664791493211953">योजनाहरू</translation>
-<translation id="1476467821656042872"><ph name="MANAGER" /> ले यो यन्त्र व्यवस्थापन गर्छ र यसले तपाईंको क्रियाकलाप निगरानी गर्न सक्छ।</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले तपाईंको क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="1478594628797167447">स्क्यानर</translation>
-<translation id="1499900233129743732"><ph name="MANAGER" /> ले यो यन्त्र व्यवस्थापन गर्छ र यसले टाढैबाट सेटिङ व्यवस्थापन गर्न र प्रयोगकर्ताले गर्ने क्रियाकलाप निगरानी गर्न सक्छ।</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले टाढैबाट सेटिङ व्यवस्थापन गर्न र प्रयोगकर्ताले गर्ने क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="150962533380566081">अमान्य PUK।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
@@ -119,7 +119,7 @@
 <translation id="3820172043799983114">अमान्य PIN।</translation>
 <translation id="3838338534323494292">नयाँ पासवर्ड</translation>
 <translation id="3865414814144988605">रिजोलुसन</translation>
-<translation id="387301095347517405">तपाईंको यन्त्रको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
+<translation id="387301095347517405">तपाईंको डिभाइसको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
 <translation id="3941014780699102620">होस्टको समस्या समाधान गर्न सकिएन</translation>
 <translation id="3942420633017001071">निदान</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
@@ -142,7 +142,7 @@
 <translation id="4431821876790500265">रिपोर्ट हेर्नुहोस्</translation>
 <translation id="445059817448385655">पुरानो पासवर्ड</translation>
 <translation id="4453205916657964690">सबनेट मास्क</translation>
-<translation id="4454245904991689773">स्क्यान गरेर यहाँ सुरक्षित गर्नुहोस्</translation>
+<translation id="4454245904991689773">स्क्यान गरेर यहाँ सेभ गर्नुहोस्</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">नेटवर्कको पूर्वनिर्धारित गेटवेका रूपमा सेट नगरिएको यस गेटवेलाई पिङ गर्न सकिएन</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
@@ -153,7 +153,7 @@
 <translation id="4593212453765072419">प्रोक्सी प्रमाणित गर्नु पर्ने हुन्छ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> मध्ये <ph name="PRINTED_PAGE_NUMBER" />। प्रिन्ट गर्ने कार्य रद्द गर्न enter थिच्नुहोस्।</translation>
 <translation id="4646949265910132906">WiFi कनेक्सन सुरक्षित बनाउनुहोस्</translation>
-<translation id="4652335678334611408">सत्रको लग सुरक्षित गर्नुहोस्</translation>
+<translation id="4652335678334611408">सत्रको लग सेभ गर्नुहोस्</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्डहरू मिलेनन्</translation>
 <translation id="467715984478005772">फायरवालका कारणले हुन सक्छ</translation>
@@ -271,7 +271,7 @@
 <translation id="6911383237894364323">मिडिया सर्भरहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="6957231940976260713">सेवाको नाम</translation>
 <translation id="6977381486153291903">फर्मवेयरको पुनरावृत्ति</translation>
-<translation id="7028979494427204405"><ph name="MANAGER" /> ले यो यन्त्र व्यवस्थापन गर्छ र यसले हेरिएका वेबपेज, पासवर्ड र इमेललगायत प्रयोगकर्ताले गर्ने सबै क्रियाकलाप हेर्न सक्छ।</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले हेरिएका वेबपेज, पासवर्ड र इमेललगायत प्रयोगकर्ताले गर्ने सबै क्रियाकलाप हेर्न सक्छ।</translation>
 <translation id="7040230719604914234">सेवा प्रदायक</translation>
 <translation id="7059230779847288458">चार्ज भइरहेको छ, पूर्ण रूपमा चार्ज हुन अझै <ph name="TIME_VALUE" /> लाग्छ</translation>
 <translation id="708426984172631313">रोकिएको छ</translation>
@@ -279,7 +279,7 @@
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="714876143603641390">Lan कनेक्टिभिटी</translation>
 <translation id="7162487448488904999">Gallery</translation>
-<translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो यन्त्र कन्फिगर गर्न सक्छन्।</translation>
+<translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो डिभाइस कन्फिगर गर्न सक्छन्।</translation>
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">नेटवर्कसम्बन्धी यन्त्रहरू</translation>
@@ -289,7 +289,7 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्क्यान गरिसकियो। एउटा पेज स्क्यान गरियो}other{स्क्यान गरिसकियो। {NUMBER_OF_PAGES} पेज स्क्यान गरिए}}</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
 <translation id="7487067081878637334">प्रविधि</translation>
-<translation id="7490813197707563893">MAC ठेगाना</translation>
+<translation id="7490813197707563893">MAC एड्रेस</translation>
 <translation id="7497215489070763236">सर्भरको CA को प्रमाणपत्र</translation>
 <translation id="7502658306369382406">IPv6 ठेगाना</translation>
 <translation id="7550715992156305117">डायग्नोस्टिक रुटिनहरू</translation>
@@ -332,7 +332,7 @@
 <translation id="8461329675984532579">गृह प्रदायकको नाम</translation>
 <translation id="8475690821716466388">WiFi नेटवर्क WEP PSK नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="8477551185774834963">DNS को विलम्बता तोकिएको समयसीमाभन्दा थोरै बढी छ</translation>
-<translation id="8483248364096924578">IP ठेगाना</translation>
+<translation id="8483248364096924578">IP एड्रेस</translation>
 <translation id="8503813439785031346">एक-पटके पाठ सन्देश</translation>
 <translation id="8503836310948963452">थप केही मिनेट मात्र पर्खनुहोस्…</translation>
 <translation id="8576249514688522074">सुरु गरिएको छैन</translation>

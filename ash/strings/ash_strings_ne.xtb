@@ -153,7 +153,7 @@
 <translation id="225680501294068881">उपकरणहरूको लागि स्क्यान गर्दै ...</translation>
 <translation id="2268130516524549846">ब्लुतुथ असक्षम गरियो</translation>
 <translation id="2268813581635650749">सबै साइन आउट गर्नु…</translation>
-<translation id="2269016722240250274">एउटा एपले तपाईंको यन्त्रको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
+<translation id="2269016722240250274">एउटा एपले तपाईंको डिभाइसको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="2277103315734023688">अगाडि जानुहोस्</translation>
 <translation id="2292698582925480719">प्रदर्शनको अनुपात</translation>
 <translation id="229397294990920565">मोबाइल डेटा अफ गरिँदै छ...</translation>
@@ -242,7 +242,7 @@
 <translation id="3038571455154067151">साइन इन गर्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड प्रविष्टि गर्नुहोस्</translation>
 <translation id="3039939407102840004">स्टाइलसको ब्याट्री <ph name="PERCENTAGE" /> प्रतिशत बाँकी छ।</translation>
 <translation id="3045488863354895414">नमस्ते,</translation>
-<translation id="3055162170959710888">तपाईंले आज यो यन्त्र <ph name="USED_TIME" /> प्रयोग गर्नुभयो</translation>
+<translation id="3055162170959710888">तपाईंले आज यो डिभाइस <ph name="USED_TIME" /> प्रयोग गर्नुभयो</translation>
 <translation id="3077734595579995578">शिफ्ट</translation>
 <translation id="3081696990447829002">मेनु विस्तृत गर्नुहोस्</translation>
 <translation id="3087734570205094154">तल</translation>
@@ -602,7 +602,7 @@
 <translation id="6059276912018042191">Chrome का हालसालै खोलिएका ट्याबहरू</translation>
 <translation id="6062360702481658777">तपाइँ <ph name="LOGOUT_TIME_LEFT" /> मा स्वचालित रूपमा साइन आउट हुनुहुनेछ।</translation>
 <translation id="6073451960410192870">रेकर्ड गर्न छाड्नुहोस्</translation>
-<translation id="607652042414456612">तपाइँको कम्प्युटर नजिकको ब्लुतुथ यन्त्रहरूको लागि दृश्य-योग्य छ र "<ph name="NAME" />" को रूपमा ठेगाना <ph name="ADDRESS" /> सँग देखा पर्नेछ</translation>
+<translation id="607652042414456612">तपाइँको कम्प्युटर नजिकको ब्लुतुथ डिभाइसहरूको लागि दृश्य-योग्य छ र "<ph name="NAME" />" को रूपमा ठेगाना <ph name="ADDRESS" /> सँग देखा पर्नेछ</translation>
 <translation id="6094290315941448991">स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन रेकर्ड गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google सहायक अतिथिको सत्रमा उपलब्ध हुँदैन।</translation>
@@ -626,7 +626,7 @@
 <translation id="6315170314923504164">भ्वाइस</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> ले व्यवस्थापन गर्ने सत्र हो</translation>
 <translation id="6376931439017688372">ब्लुटुथ सक्रिय छ</translation>
-<translation id="6381109794406942707">यो यन्त्र अनलक गर्न आफ्नो PIN प्रविष्टि गर्नुहोस्।</translation>
+<translation id="6381109794406942707">यो डिभाइस अनलक गर्न आफ्नो PIN प्रविष्टि गर्नुहोस्।</translation>
 <translation id="639644700271529076">CAPS LOCK बन्द छ</translation>
 <translation id="6396835948284782440">बाहिर निस्कन [Esc] थिचिराख्नुहोस्।</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -643,7 +643,7 @@
 <translation id="649452524636452238">स्मार्ट कार्डको PIN</translation>
 <translation id="6501401484702599040">स्क्रिन <ph name="RECEIVER_NAME" /> मा cast गर्दै</translation>
 <translation id="6520517963145875092">फोटो खिच्न कुनै विन्डो चयन गर्नुहोस्</translation>
-<translation id="652139407789908527">यो अद्यावधिक गर्दै गर्दा तपाईंको यन्त्रको स्क्रिन सामान्यभन्दा बढी समय (एक मिनेटसम्म) खाली हुन सक्छ। अद्यावधिक हुँदै गर्दा कृपया पावर बटन नथिच्नुहोस्।</translation>
+<translation id="652139407789908527">यो अद्यावधिक गर्दै गर्दा तपाईंको डिभाइसको स्क्रिन सामान्यभन्दा बढी समय (एक मिनेटसम्म) खाली हुन सक्छ। अद्यावधिक हुँदै गर्दा कृपया पावर बटन नथिच्नुहोस्।</translation>
 <translation id="6528179044667508675">बाधा नगर्नुहोस्</translation>
 <translation id="65320610082834431">इमोजीहरू</translation>
 <translation id="6537270692134705506">स्क्रिन कैद गर्नुहोस्</translation>
@@ -751,7 +751,7 @@
 <translation id="742608627846767349">नमस्ते,</translation>
 <translation id="743058460480092004">क्यामेरा र माइक्रोफोन प्रयोगमा छ।</translation>
 <translation id="7434543979546293336">यो मुख्य विचारका रूपमा चिन्ह लगाइएको छ</translation>
-<translation id="7452560014878697800">कुनै एपले तपाईंको यन्त्रको क्यामेरा प्रयोग गरिरहेको छ</translation>
+<translation id="7452560014878697800">कुनै एपले तपाईंको डिभाइसको क्यामेरा प्रयोग गरिरहेको छ</translation>
 <translation id="7456049842111127849">क्याप्चर मोड, पूर्वनिर्धारित मोड <ph name="SOURCE" /> <ph name="TYPE" /> हो।</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746232733191930409">स्क्रिन रेकर्डिङ मोड</translation>
@@ -762,7 +762,7 @@
 <translation id="7509246181739783082">आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="7513622367902644023">स्क्रिनसट मोड चयन गरियो</translation>
 <translation id="7526573455193969409">नेटवर्कको अनुगमन गरिने सम्भावना छ</translation>
-<translation id="7536035074519304529">IP ठेगाना: <ph name="ADDRESS" /></translation>
+<translation id="7536035074519304529">IP एड्रेस: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">सुत्ने बेला भयो</translation>
 <translation id="7551643184018910560">शेल्फमा पिन गर्नुहोस्</translation>
 <translation id="7561982940498449837">मेनु बन्द गर्नुहोस्</translation>
@@ -867,7 +867,7 @@
 <translation id="8375916635258623388">यो <ph name="DEVICE_NAME" /> र तपाईंको फोन स्वतः जोडिने छन्</translation>
 <translation id="8380784334203145311">नमस्ते,</translation>
 <translation id="8388750414311082622">अन्तिम डेस्क हटाउन सकिँदैन।</translation>
-<translation id="8394567579869570560">तपाईंका अभिभावकले यो यन्त्र लक गर्नुभयो</translation>
+<translation id="8394567579869570560">तपाईंका अभिभावकले यो डिभाइस लक गर्नुभयो</translation>
 <translation id="8412677897383510995">डिस्प्लेसम्बन्धी सेटिङ देखाउनुहोस्</translation>
 <translation id="8413272770729657668">रेकर्डिङ सुरु हुनै आँटेको छ ३, २, १</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>

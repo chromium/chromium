@@ -5095,6 +5095,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6793723358811598107">Klávesa <ph name="CURRENTKEY" /> je už přiřazena k akci „<ph name="ACTION" />“. Ukončíte stisknutím libovolné klávesy.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Jejda, něco se pokazilo.</translation>
+<translation id="679845623837196966">Zobrazit seznam četby</translation>
 <translation id="6798578729981748444">Chcete-li import dokončit, zavřete všechna okna prohlížeče Firefox.</translation>
 <translation id="6798780071646309401">caps lock je zapnutý</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
@@ -7211,6 +7212,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
       <ph name="LIST_ITEM" />Spustit Diagnostiku připojení Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Obraz v obraze</translation>
+<translation id="9167063903968449027">Zobrazit seznam četby</translation>
 <translation id="9168436347345867845">Později</translation>
 <translation id="9169496697824289689">Zobrazit klávesové zkratky</translation>
 <translation id="916964310188958970">Proč tento návrh?</translation>

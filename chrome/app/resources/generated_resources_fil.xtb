@@ -5096,6 +5096,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6793723358811598107">Nakatalaga na ang '<ph name="CURRENTKEY" />' sa pagkilos na '<ph name="ACTION" />.' Pumindot ng anumang key para lumabas.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Oops, nagkaroon ng problema.</translation>
+<translation id="679845623837196966">Ipakita ang listahan ng babasahin</translation>
 <translation id="6798578729981748444">Upang tapusin ang pag-import, isara ang lahat ng Firefox window.</translation>
 <translation id="6798780071646309401">naka-on ang caps lock</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
@@ -7214,6 +7215,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
       <ph name="LIST_ITEM" />Patakbuhin ang Mga Diagnostic sa Pagkakakonekta ng Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture in Picture</translation>
+<translation id="9167063903968449027">Ipakita ang Listahan ng Babasahin</translation>
 <translation id="9168436347345867845">Gawin ito sa ibang pagkakataon</translation>
 <translation id="9169496697824289689">Tingnan ang mga keyboard shortcut</translation>
 <translation id="916964310188958970">Bakit ang suhestyong ito?</translation>

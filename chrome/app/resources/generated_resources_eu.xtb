@@ -3847,7 +3847,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5340638867532133571">Baimendu webguneei ordainketa-kudeatzaileak instalatzea (gomendatua)</translation>
 <translation id="5341793073192892252">Cookie hauek blokeatu egin dira (hirugarrenen cookieak blokeatzen ari dira, salbuespenik gabe):</translation>
 <translation id="5341980496415249280">Itxaron paketatzeko prozesua osatzen dugun arte…</translation>
-<translation id="5342091991439452114">PIN kodeak <ph name="MINIMUM" /> digitu izan behar ditu gutxienez</translation>
+<translation id="5342091991439452114">PINak <ph name="MINIMUM" /> digitu izan behar ditu gutxienez</translation>
 <translation id="5344036115151554031">Linux leheneratzen</translation>
 <translation id="5345916423802287046">Abiarazi aplikazioa saioa hasten duzunean</translation>
 <translation id="5350293332385664455">Desaktibatu Google-ren Laguntzailea</translation>
@@ -5095,6 +5095,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" tekla "<ph name="ACTION" />" ekintzari esleituta dago dagoeneko. Irteteko, sakatu edozein tekla.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Arazoren bat izan da.</translation>
+<translation id="679845623837196966">Erakutsi irakurketa-zerrenda</translation>
 <translation id="6798578729981748444">Inportazioa amaitzeko, itxi Firefox-eko leiho guztiak.</translation>
 <translation id="6798780071646309401">maiuskulak aktibatuta daude</translation>
 <translation id="6798954102094737107"><ph name="PLUGIN_NAME" /> plugina</translation>
@@ -5878,7 +5879,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7684559058815332124">Joan saioa hasteko atari gatibuaren orrira</translation>
 <translation id="7684718995427157417">Zeure aplikazioak sortu eta probatzeko, gaitu Android Debug Bridge (ADB). Kontuan izan ekintza honekin baimendu egiten dela Google-k egiaztatu ez dituen Android-erako aplikazioak instalatzeko aukera eta, inoiz tresna hori desgaitu nahi izanez gero, jatorrizko datuak berrezarri beharko direla.</translation>
 <translation id="7685049629764448582">JavaScript memoria</translation>
-<translation id="7685087414635069102">PIN kodea behar da</translation>
+<translation id="7685087414635069102">PINa behar da</translation>
 <translation id="768549422429443215">Gehitu hizkuntzak edo aldatu zerrendako elementuen ordena.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Berretsi pasahitz berria</translation>
@@ -7209,6 +7210,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
       <ph name="LIST_ITEM" />Chrome-ren Konexioen diagnostikoak exekutatu.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pantaila txiki gainjarria</translation>
+<translation id="9167063903968449027">Erakutsi irakurketa-zerrenda</translation>
 <translation id="9168436347345867845">Geroago</translation>
 <translation id="9169496697824289689">Ikusi laster-teklak</translation>
 <translation id="916964310188958970">Zergatik jaso dut iradokizun hau?</translation>

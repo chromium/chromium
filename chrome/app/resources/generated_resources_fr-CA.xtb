@@ -5097,6 +5097,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6793723358811598107">La touche « <ph name="CURRENTKEY" /> » est déjà attribuée à l'action « <ph name="ACTION" /> ». Appuyez sur n'importe quelle touche pour quitter.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Une erreur s'est produite.</translation>
+<translation id="679845623837196966">Afficher la liste de lecture</translation>
 <translation id="6798578729981748444">Pour terminer l'importation, fermez toutes les fenêtres Firefox.</translation>
 <translation id="6798780071646309401">verrouillage des majuscules activé</translation>
 <translation id="6798954102094737107">Plugiciel : <ph name="PLUGIN_NAME" /></translation>
@@ -7212,6 +7213,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
       <ph name="LIST_ITEM" />Exécutez l'utilitaire Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Incrustation d'image</translation>
+<translation id="9167063903968449027">Afficher la liste de lecture</translation>
 <translation id="9168436347345867845">Plus tard</translation>
 <translation id="9169496697824289689">Voir les raccourcis clavier</translation>
 <translation id="916964310188958970">Pourquoi cette suggestion s'affiche-t-elle?</translation>

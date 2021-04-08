@@ -1963,7 +1963,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3155072594963189910">Cайттардын түзмөгүңүздөгү файлдарды жана папкаларды түзөтүүсүн бөгөттөө</translation>
 <translation id="3157387275655328056">Окуу тизмесине кошуу</translation>
 <translation id="3157931365184549694">Калыбына келтирүү</translation>
-<translation id="3158033540161634471">Манжа изин жөндөө</translation>
+<translation id="3158033540161634471">Манжа изин кошуу</translation>
 <translation id="3159493096109238499">Саргыч боз</translation>
 <translation id="3159978855457658359">Түзмөктүн аталышын өзгөртүү</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (аппараттык камсыздоонун камдык көчүрмөсү сакталды)</translation>
@@ -5095,6 +5095,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" "<ph name="ACTION" />" аракети үчүн дайындалган. Чыгуу үчүн каалаган баскычты басыңыз.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">Ой, бир жерден ката кетти окшойт.</translation>
+<translation id="679845623837196966">Окуу тизмесин көрсөтүү</translation>
 <translation id="6798578729981748444">Импорттоону бүтүрүү үчүн бардык Firefox терезелерин жабыңыз.</translation>
 <translation id="6798780071646309401">Caps Lock күйүк</translation>
 <translation id="6798954102094737107">Плагин: <ph name="PLUGIN_NAME" /></translation>
@@ -6793,7 +6794,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>
 <translation id="8725178340343806893">Сүйүктүүлөр/Кыстармалар</translation>
 <translation id="8726206820263995930">Серверден саясат жөндөөлөрү алынып жаткан учурда келип чыккан ката: <ph name="CLIENT_ERROR" />.</translation>
-<translation id="8727154974495727220"><ph name="DEVICE_TYPE" /> жөндөлгөндөн кийин, ага каалаган убакта кайрылуу үчүн, Жардамчынын баскычын басыңыз же "Окей Google" деп айтыңыз. Аларды Жардамчынын жөндөөлөрүнө өтүп, өзгөртсөңүз болот.</translation>
+<translation id="8727154974495727220"><ph name="DEVICE_TYPE" /> жөндөлгөндөн кийин, ага каалаган убакта кайрылуу үчүн Жардамчынын баскычын басыңыз же "Окей Google" деп айтыңыз. Аларды Жардамчынын жөндөөлөрүнө өтүп, өзгөртсөңүз болот.</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> төмөнкү аракетти аткарганы жатат: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Оюкчанын номери</translation>
@@ -7209,6 +7210,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
       <ph name="LIST_ITEM" />Chrome туташуу мүчүлүштүктөрүн аныктагычты иштетиңиз
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Сүрөт ичиндеги сүрөт</translation>
+<translation id="9167063903968449027">Окуу тизмесин көрсөтүү</translation>
 <translation id="9168436347345867845">Азыр эмес</translation>
 <translation id="9169496697824289689">Ыкчам баскычтардын айкалышын карап көрүү</translation>
 <translation id="916964310188958970">Бул сунуш эмне үчүн көрсөтүлдү?</translation>

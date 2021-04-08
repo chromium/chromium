@@ -3877,7 +3877,7 @@
 <translation id="5377721922656071359">{COUNT,plural, =1{ส่ง <ph name="ATTACHMENTS" />ไปยัง <ph name="DEVICE_NAME" /> เรียบร้อยแล้ว}other{ส่ง <ph name="ATTACHMENTS" />ไปยัง <ph name="DEVICE_NAME" /> เรียบร้อยแล้ว}}</translation>
 <translation id="537813040452600081">หน้าที่คุณดูในหน้าต่างนี้จะไม่ปรากฏในประวัติเบราว์เซอร์และจะไม่ทิ้งร่องรอยอื่นๆ เช่น คุกกี้ ไว้ในคอมพิวเตอร์หลังจากที่คุณออกจากระบบ ไฟล์ที่คุณดาวน์โหลดและบุ๊กมาร์กที่คุณสร้างจะหายไป</translation>
 <translation id="5379140238605961210">บล็อกการเข้าถึงไมโครโฟนต่อไป</translation>
-<translation id="5382591305415226340">จัดการลิงก์ที่สนับสนุน</translation>
+<translation id="5382591305415226340">จัดการลิงก์ที่รองรับ</translation>
 <translation id="5383377866517186886">กล้องปิดอยู่ในค่ากำหนดของระบบ Mac</translation>
 <translation id="5383740867328871413">กลุ่มที่ไม่มีชื่อ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="5388885445722491159">จับคู่</translation>
@@ -5095,6 +5095,7 @@
 <translation id="6793723358811598107">กำหนด "<ph name="CURRENTKEY" />" ให้กับการดำเนินการ "<ph name="ACTION" />" แล้ว กดแป้นใดก็ได้เพื่อออก</translation>
 <translation id="6795884519221689054">แพนด้า</translation>
 <translation id="6797493596609571643">อ๊ะ เกิดข้อผิดพลาดบางอย่าง</translation>
+<translation id="679845623837196966">แสดงเรื่องรออ่าน</translation>
 <translation id="6798578729981748444">ปิดหน้าต่างทั้งหมดของ Firefox เพื่อทำการนำเข้าให้เสร็จเรียบร้อย</translation>
 <translation id="6798780071646309401">เปิด Caps Lock</translation>
 <translation id="6798954102094737107">ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@
       <ph name="LIST_ITEM" />เรียกใช้การวินิจฉัยการเชื่อมต่อของ Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">การแสดงภาพซ้อนภาพ</translation>
+<translation id="9167063903968449027">แสดงเรื่องรออ่าน</translation>
 <translation id="9168436347345867845">ข้ามไปก่อน</translation>
 <translation id="9169496697824289689">ดูแป้นพิมพ์ลัด</translation>
 <translation id="916964310188958970">ทำไมแนะนำการค้นหานี้</translation>

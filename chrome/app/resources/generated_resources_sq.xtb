@@ -5092,6 +5092,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" i është caktuar tashmë veprimit "<ph name="ACTION" />". Shtyp çdo tast për të dalë.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Mos, ndodhi një gabim.</translation>
+<translation id="679845623837196966">Shfaq "Listën e leximit"</translation>
 <translation id="6798578729981748444">Për të përfunduar importimin, mbyll të gjitha dritaret e Firefox.</translation>
 <translation id="6798780071646309401">kyçja e germave kapitale aktive</translation>
 <translation id="6798954102094737107">Përbërësi shtesë: <ph name="PLUGIN_NAME" /></translation>
@@ -7205,6 +7206,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
       <ph name="LIST_ITEM" />Të ekzekutosh "Diagnostikimin e lidhjes së Chrome"
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Figura brenda figurës</translation>
+<translation id="9167063903968449027">Shfaq "Listën e leximit"</translation>
 <translation id="9168436347345867845">Bëje më vonë</translation>
 <translation id="9169496697824289689">Shiko shkurtoret e tastierës</translation>
 <translation id="916964310188958970">Pse ky sugjerim?</translation>

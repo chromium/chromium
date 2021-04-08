@@ -323,7 +323,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2129079103035905234">Liiketunnistimet</translation>
 <translation id="2130448033692577677">Määrittämiäsi malleja ei välttämättä käytetä, sillä DnsOverHttpsMode-käytäntöä ei ole määritetty.</translation>
 <translation id="213826338245044447">Mobiilikirjanmerkit</translation>
-<translation id="214556005048008348">Peruuta maksu</translation>
+<translation id="214556005048008348">Peru maksu</translation>
 <translation id="2147827593068025794">Taustasynkronointi</translation>
 <translation id="2148613324460538318">Lisää kortti</translation>
 <translation id="2149968176347646218">Yhteys ei ole turvallinen</translation>
@@ -575,7 +575,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3188393374551744535">Tilin saldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> haluaa tallentaa tietoja pysyvästi laitteellesi.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />, palvelin: <ph name="SERVER_NAME" /></translation>
-<translation id="320323717674993345">Peruuta maksu</translation>
+<translation id="320323717674993345">Peru maksu</translation>
 <translation id="3207960819495026254">Kirjanmerkeissä</translation>
 <translation id="3209034400446768650">Sivu voi veloittaa</translation>
 <translation id="3212581601480735796">Toimintaasi (<ph name="HOSTNAME" />) tarkkaillaan</translation>
@@ -674,7 +674,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3567778190852720481">Liittyminen yritystilillä ei onnistu (yritystiliä ei tueta).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3576616784287504635">Viesti upotetulta sivulta osoitteessa <ph name="SITE" /></translation>
-<translation id="3581089476000296252">Chrome ilmoittaa, kun tämä sivu on valmis. &lt;a&gt;Peruuta&lt;/a&gt;</translation>
+<translation id="3581089476000296252">Chrome ilmoittaa, kun tämä sivu on valmis. &lt;a&gt;Peru&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Lisää nimi</translation>
 <translation id="3583757800736429874">&amp;Toista siirto</translation>
 <translation id="3584299510153766161">Kaksi reikää alareunassa</translation>
@@ -1605,7 +1605,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 Lisätietoja:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="725866823122871198">Verkkotunnukseen <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ei voi muodostaa salattua yhteyttä, koska tietokoneesi aika ja päivämäärä (<ph name="DATE_AND_TIME" />) ovat virheelliset.</translation>
-<translation id="7260504762447901703">Peruuta käyttöoikeus</translation>
+<translation id="7260504762447901703">Peru käyttöoikeus</translation>
 <translation id="7275334191706090484">Hallinnoidut kirjanmerkit</translation>
 <translation id="7292031607255951991">Vastaanottajan nimi</translation>
 <translation id="7298195798382681320">Suositus</translation>
@@ -1716,7 +1716,7 @@ Lisätietoja:
 <translation id="7653957176542370971">Maksujenkäsittelytaulukko on suljettu</translation>
 <translation id="7654909834015434372">Kun muokkaat merkintöjä, tämä dokumentti palaa alkuperäiseen asentoon</translation>
 <translation id="765676359832457558">Piilota lisäasetukset...</translation>
-<translation id="7658239707568436148">Peruuta</translation>
+<translation id="7658239707568436148">Peru</translation>
 <translation id="7662298039739062396">Laajennuksen hallinnoima asetus</translation>
 <translation id="7663736086183791259">Varmenne <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7667346355482952095">Palautettu käytäntötunnus on tyhjä tai ei vastaa nykyistä tunnusta.</translation>

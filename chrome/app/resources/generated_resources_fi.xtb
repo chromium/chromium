@@ -1948,7 +1948,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3141318088920353606">Kuunnellaan…</translation>
 <translation id="3141917231319778873">Annettua pyyntöä ei tueta laitteella <ph name="DEVICE_NAME" />.</translation>
 <translation id="3142562627629111859">Uusi ryhmä</translation>
-<translation id="3143515551205905069">Peruuta synkronointi</translation>
+<translation id="3143515551205905069">Peru synkronointi</translation>
 <translation id="3143754809889689516">Toista alusta</translation>
 <translation id="3144647712221361880">Avaa linkki käyttäjänä</translation>
 <translation id="3149510190863420837">Chrome-sovellukset</translation>
@@ -2254,7 +2254,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3497560059572256875">Jaa Doodle</translation>
 <translation id="3498215018399854026">Emme tavoittaneet vanhempaasi. Yritä uudelleen.</translation>
 <translation id="3500417806337761827">Virhe jaon käyttöönotossa. Liian monta SMB-jakoa on jo käytössä.</translation>
-<translation id="3505030558724226696">Peruuta laitteen käyttöoikeus</translation>
+<translation id="3505030558724226696">Peru laitteen käyttöoikeus</translation>
 <translation id="3505100368357440862">Ostosehdotukset</translation>
 <translation id="3507132249039706973">Perustason suojaus on päällä</translation>
 <translation id="3507421388498836150">Laajennuksen <ph name="EXTENSION_NAME" /> nykyiset käyttöoikeudet</translation>
@@ -2896,7 +2896,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4225397296022057997">Kaikilla sivustoilla</translation>
 <translation id="4231095370974836764">Asenna sovelluksia ja pelejä Google Playsta (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Määritä Kerberos</translation>
-<translation id="4235965441080806197">Peruuta sisäänkirjautuminen</translation>
+<translation id="4235965441080806197">Peru sisäänkirjautuminen</translation>
 <translation id="4242145785130247982">Useita käyttöoikeusvarmenteita ei tueta</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
 <translation id="4242577469625748426">Käytäntöasetuksien asentaminen laitteelle epäonnistui: <ph name="VALIDATION_ERROR" />.</translation>
@@ -3953,7 +3953,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="5473333559083690127">Anna uusi PIN-koodi uudelleen</translation>
 <translation id="5481273127572794904">Useiden tiedostojen automaattinen lataaminen kielletty</translation>
 <translation id="5481941284378890518">Lisää lähellä olevia tulostimia</translation>
-<translation id="5483785310822538350">Peruuta tiedoston ja laitteen käyttöoikeudet</translation>
+<translation id="5483785310822538350">Peru tiedoston ja laitteen käyttöoikeudet</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> edellyttää, että varmuuskopioit datasi ja palautat laitteen (<ph name="DEVICE_TYPE" />) tänään. <ph name="LINK_BEGIN" />Näytä tiedot<ph name="LINK_END" />}other{<ph name="MANAGER" /> edellyttää, että varmuuskopioit datasi ja palautat laitteen (<ph name="DEVICE_TYPE" />) {NUM_DAYS} päivän sisällä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> on lukittu turvallisuussyistä. Jatka antamalla salasanasi manuaalisesti.</translation>
 <translation id="5485102783864353244">Lisää sovellus</translation>
@@ -5092,6 +5092,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6793723358811598107"><ph name="CURRENTKEY" /> liittyy jo toimintoon (<ph name="ACTION" />). Poistu painamalla mitä tahansa näppäintä.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hups… Jotain meni pieleen.</translation>
+<translation id="679845623837196966">Näytä lukulista</translation>
 <translation id="6798578729981748444">Jos haluat suorittaa tuonnin loppuun, sulje kaikki Firefox-ikkunat.</translation>
 <translation id="6798780071646309401">caps lock päällä</translation>
 <translation id="6798954102094737107">Laajennus: <ph name="PLUGIN_NAME" /></translation>
@@ -5190,7 +5191,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6902837902700739466">Liitä laite verkkotunnukseen</translation>
 <translation id="6903590427234129279">Avaa kaikki (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Ota synkronointi käyttöön</translation>
-<translation id="6904344821472985372">Peruuta pääsy tiedostoon</translation>
+<translation id="6904344821472985372">Peru pääsy tiedostoon</translation>
 <translation id="6904655473976120856">Sulje painamalla Sovellukset-painiketta.</translation>
 <translation id="6909422577741440844">Vastaanotetaanko tältä laitteelta?</translation>
 <translation id="6910211073230771657">Poistettu</translation>
@@ -5227,7 +5228,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6939815295902433669">Tarkista laiteohjelmisto</translation>
 <translation id="6941937518557314510">Kirjaudu sisään laitteeseen <ph name="TOKEN_NAME" /> ja todenna <ph name="HOST_NAME" /> varmenteellasi.</translation>
 <translation id="6943060957016121200">Ota yhteyden pikajakaminen käyttöön</translation>
-<translation id="6943176775188458830">Peruuta tulostus</translation>
+<translation id="6943176775188458830">Peru tulostus</translation>
 <translation id="6943836128787782965">HTTP get -toiminto epäonnistui</translation>
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="694592694773692225">Uudelleenohjaus estettiin tällä sivulla.</translation>
@@ -5845,7 +5846,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="765293928828334535">Sovelluksia, laajennuksia ja käyttäjien komentosarjoja ei voi lisätä tältä verkkosivustolta.</translation>
 <translation id="7652954539215530680">Luo PIN-koodi</translation>
 <translation id="7654941827281939388">Tämä tili on jo käytössä tässä tietokoneessa.</translation>
-<translation id="7658239707568436148">Peruuta</translation>
+<translation id="7658239707568436148">Peru</translation>
 <translation id="7659297516559011665">Vain tämän laitteen salasanat</translation>
 <translation id="7659584679870740384">Sinulla ei ole tämän laitteen käyttölupaa. Pyydä järjestelmänvalvojalta kirjautumislupa.</translation>
 <translation id="7661259717474717992">Salli sivustojen tallentaa ja lukea evästetietoja</translation>
@@ -7206,6 +7207,7 @@ Paina määritettyä kytkintä, niin poistat sen määrityksen.</translation>
       <ph name="LIST_ITEM" />Chromen yhteysdiagnostiikkaa.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Kuva kuvassa</translation>
+<translation id="9167063903968449027">Näytä lukulista</translation>
 <translation id="9168436347345867845">Myöhemmin</translation>
 <translation id="9169496697824289689">Näytä pikanäppäimet</translation>
 <translation id="916964310188958970">Miksi ehdotus näytetään?</translation>

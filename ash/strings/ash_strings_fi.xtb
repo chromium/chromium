@@ -782,7 +782,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7647488630410863958">Katso ilmoitukset avaamalla laitteesi lukitus.</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7654687942625752712">Poista äänipalaute käytöstä painamalla molempia äänenvoimakkuuspainikkeita viiden sekunnin ajan.</translation>
-<translation id="7658239707568436148">Peruuta</translation>
+<translation id="7658239707568436148">Peru</translation>
 <translation id="7662283695561029522">Määritä napauttamalla.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Lisää uusi mobiiliverkko</translation>
@@ -793,7 +793,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="776344839111254542">Klikkaa nähdäksesi päivityksen tiedot</translation>
 <translation id="7780159184141939021">Käännä näyttö</translation>
 <translation id="7796353162336583443">Napauttamalla hyllyn näyttökynäpainiketta voit tehdä muistiinpanoja, tallentaa kuvakaappauksen ja käyttää Google Assistantia, laserosoitinta tai suurennuslasia.</translation>
-<translation id="7798302898096527229">Peruuta painamalla haku- tai vaihtonäppäintä.</translation>
+<translation id="7798302898096527229">Peru painamalla haku- tai vaihtonäppäintä.</translation>
 <translation id="7807966291075028781">Lisälaitetta ei tueta vierastilassa tietoturvasyistä</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Vahva signaali</translation>
@@ -882,7 +882,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8462305545768648477">Sulje teksti puhuttuna</translation>
 <translation id="847056008324733326">Näytön skaalauksen asetukset</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> omistaa tämän: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
-<translation id="8477270416194247200">Peruuta painamalla Alt+haku tai vaihto.</translation>
+<translation id="8477270416194247200">Peru painamalla Alt+haku tai vaihto.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" />. Pidä muutokset valitsemalla Vahvista. Aiempi asetus palautetaan <ph name="TIMEOUT_SECONDS" /> päästä.</translation>
 <translation id="8513108775083588393">Autom. kääntö</translation>
 <translation id="851458219935658693">Näytä ikkunat nykyiseltä työpöydältä, valintanappi valittu</translation>

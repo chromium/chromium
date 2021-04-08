@@ -11,7 +11,7 @@
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
 <translation id="1067922213147265141">Google का अन्य सेवाहरू</translation>
-<translation id="107147699690128016">तपाईंले फाइलको एक्स्टेन्सन परिवर्तन गर्नुभयो भने यो फाइल कुनै अर्को अनुप्रयोगमा खुल्न सक्छ जुन तपाईंको यन्त्रका लागि हानिकारक पनि हुन सक्छ।</translation>
+<translation id="107147699690128016">तपाईंले फाइलको एक्स्टेन्सन परिवर्तन गर्नुभयो भने यो फाइल कुनै अर्को अनुप्रयोगमा खुल्न सक्छ जुन तपाईंको डिभाइसका लागि हानिकारक पनि हुन सक्छ।</translation>
 <translation id="1100066534610197918">समूहमा नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="1105960400813249514">स्क्रिन क्याप्चर</translation>
 <translation id="1111673857033749125">तपाईँका अन्य यन्त्रहरूमा सुरक्षित गरिएका पुस्तक चिन्हहरू यहाँ देखिनेछन्।</translation>
@@ -279,7 +279,7 @@
 <translation id="2893180576842394309">Google ले खोज र Google का अन्य सेवाहरूलाई वैयक्तीकृत गर्न तपाईंको इतिहाससम्बन्धी जानकारी प्रयोग गर्न सक्छ</translation>
 <translation id="2900528713135656174">कार्यक्रम सिर्जना गर्नुहोस्</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> सम्बन्धी सुझावहरू देखाइँदै</translation>
-<translation id="2904414404539560095">ट्याब आदान प्रदान गरिनु पर्ने यन्त्रहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
+<translation id="2904414404539560095">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
 <translation id="2905036901251765993">वरपर रहेका मान्छेहरूसँग आदान प्रदान गर्न उनीहरूलाई यो QR कोड स्क्यान गर्न लगाउनुहोस्</translation>
 <translation id="2909615210195135082">Google का सूचनाहरूको प्लेटफर्म</translation>
 <translation id="2923908459366352541">नाम मान्य छैन</translation>
@@ -295,7 +295,7 @@
 <translation id="2996291259634659425">पासफ्रेज सिर्जना गर्नुहोस्</translation>
 <translation id="2996809686854298943">URL आवश्यक छ</translation>
 <translation id="3006881078666935414">उपयोगसम्बन्धी कुनै डेटा छैन</translation>
-<translation id="3016635187733453316">यो यन्त्र इन्टरनेटमा जोडिएको कुरा सुनिश्चित गर्नुहोस्</translation>
+<translation id="3016635187733453316">यो डिभाइस इन्टरनेटमा जोडिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="3029704984691124060">पासफ्रेजहरू मेल खाँदैनन्</translation>
 <translation id="3031225630520268969">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI</translation>
 <translation id="3034163383943672781"><ph name="DATE" /> मा डाउनलोड सुरु हुने छ।</translation>
@@ -454,7 +454,7 @@
 <translation id="4108314971463891922">फलो गर्नुहोस्</translation>
 <translation id="4108998448622696017">खतरनाक गतिविधि हुँदा पत्ता लगाउँछ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="4116038641877404294">पृष्ठहरूलाई अफलाइन हेर्न तिनीहरूलाई डाउनलोड गर्नुहोस्</translation>
-<translation id="4135200667068010335">ट्याब आदान प्रदान गरिनु पर्ने यन्त्रहरूको सूची बन्द छ।</translation>
+<translation id="4135200667068010335">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची बन्द छ।</translation>
 <translation id="4141536112466364990">Chrome चलाउन सिक्नुहोस्</translation>
 <translation id="4149994727733219643">वेब पृष्ठहरूका लागि सरलीकृत दृश्य</translation>
 <translation id="4170011742729630528">यो सेवा उपलब्ध छैन, पछि पुन: प्रयास गर्नुहोस्।</translation>
@@ -594,7 +594,7 @@
 <translation id="509429900233858213">त्रुटि भयो।</translation>
 <translation id="510275257476243843">१ घन्टा बाँकी छ</translation>
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
-<translation id="5127805178023152808">सिंक बन्द छ</translation>
+<translation id="5127805178023152808">सिंक अफ छ</translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
 <translation id="5136035049889637840">उस्तै उत्पादनहरू किन्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google Drive प्रयोग गर्ने तरिका सिक्नुहोस्</translation>
@@ -647,7 +647,7 @@
 <translation id="549025011754480756">बोलेर खोज्ने तरिका</translation>
 <translation id="5500777121964041360">तपाईंको स्थानमा उपलब्ध नहुन सक्छ</translation>
 <translation id="5512137114520586844">यो खाता <ph name="PARENT_NAME" /> द्वारा व्यवस्थित गरिएको छ।</translation>
-<translation id="5514904542973294328">यो यन्त्रका प्रशासकले असक्षम पार्नुभएको</translation>
+<translation id="5514904542973294328">यो डिभाइसका प्रशासकले असक्षम पार्नुभएको</translation>
 <translation id="5515439363601853141">आफ्नो पासवर्ड हेर्न अनलक गर्नुहोस्</translation>
 <translation id="5517095782334947753">तपाईंसँग <ph name="FROM_ACCOUNT" /> का पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू छन्।</translation>
 <translation id="5524843473235508879">रिडिरेक्ट गर्न रोक लगाइयो।</translation>
@@ -773,7 +773,7 @@
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6292420053234093573">Chrome प्रयोग गरेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ।</translation>
 <translation id="629730747756840877">खाता</translation>
-<translation id="6297765934698848803">तपाईंको यन्त्रको व्यवस्थापन गर्ने सङ्गठनले तपाईंको यन्त्रको क्यामेरा निष्क्रिय पारेको छ।</translation>
+<translation id="6297765934698848803">तपाईंको डिभाइसको व्यवस्थापन गर्ने सङ्गठनले तपाईंको डिभाइसको क्यामेरा निष्क्रिय पारेको छ।</translation>
 <translation id="6301525844455696527">आफ्नो अध्ययन सूची हेर्न नभुल्नुहोस्</translation>
 <translation id="6303969859164067831">साइन आउट गरी सिंक प्रक्रिया निष्क्रिय पार्नुहोस्</translation>
 <translation id="6312687380483398334">वेब एपहरू (मौन)</translation>
@@ -842,7 +842,7 @@
 <translation id="6643649862576733715">बचत गरिएको डेटाको मात्राद्वारा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}other{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> छविको पूर्वावलोकन गर्नुहोस्</translation>
-<translation id="6656545060687952787">Chrome यन्त्रहरूको लागि स्क्यान गर्न स्थान पहुँच आवश्यक छ। <ph name="BEGIN_LINK" /> अनुमतिहरू अपडेट गर्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="6656545060687952787">Chrome डिभाइसहरूको लागि स्क्यान गर्न स्थान पहुँच आवश्यक छ। <ph name="BEGIN_LINK" /> अनुमतिहरू अपडेट गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ट्याब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
@@ -856,8 +856,8 @@
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="671481426037969117">तपाईंको <ph name="FQDN" /> टाइमरको समय सकियो। यो भोलि फेरि सुरु हुने छ।</translation>
 <translation id="6738867403308150051">डाउनलोड गर्दैछ…</translation>
-<translation id="6767294960381293877">ट्याब आदान प्रदान गरिनु पर्ने यन्त्रहरूको सूची आधा उचाइमा खोलिएको छ।</translation>
-<translation id="6783942555455976443">यो पृष्ठ पछि पढ्ने प्रयोजनका लागि सुरक्षित गर्नुहोस् र रिमाइन्डर प्राप्त गर्नुहोस्</translation>
+<translation id="6767294960381293877">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची आधा उचाइमा खोलिएको छ।</translation>
+<translation id="6783942555455976443">यो पृष्ठ पछि पढ्ने प्रयोजनका लागि सेभ गर्नुहोस् र रिमाइन्डर प्राप्त गर्नुहोस्</translation>
 <translation id="6811034713472274749">पृष्ठ हेर्नका लागि तयार छ</translation>
 <translation id="6813446258015311409">Chrome मा साइन इन गर्ने पेज खोलियो।</translation>
 <translation id="6820686453637990663">CVC</translation>
@@ -1198,7 +1198,7 @@
 <translation id="9100505651305367705">समर्थित भएको बेला लेखहरूलाई सरलीकृत दृश्यमा देखाउने प्रस्ताव गर्नुहोस्</translation>
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>
 <translation id="9102803872260866941">पूर्वावलोकन ट्याब खुला छ</translation>
-<translation id="9104217018994036254">ट्याब आदान प्रदान गरिनु पर्ने यन्त्रहरूको सूची।</translation>
+<translation id="9104217018994036254">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची।</translation>
 <translation id="9108312223223904744">सुरक्षा साँचोका रूपमा प्रयोग गर्न मिल्ने फोन</translation>
 <translation id="9108808586816295166">सुरक्षित DNS सधैँ उपलब्ध नहुन सक्छ</translation>
 <translation id="9133397713400217035">अफलाइनमा अन्वेषण गर्नुहोस्</translation>

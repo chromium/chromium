@@ -5090,6 +5090,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6793723358811598107">«<ph name="CURRENTKEY" />» er allerede tilordnet handlingen «<ph name="ACTION" />» Trykk på en tast for å avslutte.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Beklager. Noe gikk galt.</translation>
+<translation id="679845623837196966">Vis leselisten</translation>
 <translation id="6798578729981748444">Lukk alle Firefox-vinduer for å fullføre importeringen.</translation>
 <translation id="6798780071646309401">capslock er på</translation>
 <translation id="6798954102094737107">Programtillegg: <ph name="PLUGIN_NAME" /></translation>
@@ -7205,6 +7206,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
       <ph name="LIST_ITEM" />kjøre Tilkoblingsdiagnostikk for Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Bilde i bilde</translation>
+<translation id="9167063903968449027">Vis leselisten</translation>
 <translation id="9168436347345867845">Gjør det senere</translation>
 <translation id="9169496697824289689">Se tastaturets hurtigtaster</translation>
 <translation id="916964310188958970">Hvorfor dette forslaget?</translation>

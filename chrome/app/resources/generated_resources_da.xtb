@@ -5096,6 +5096,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" er allerede tildelt handlingen "<ph name="ACTION" />". Tryk på en vilkårlig tast for at afslutte.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Ups! Noget gik galt.</translation>
+<translation id="679845623837196966">Vis læselisten</translation>
 <translation id="6798578729981748444">Luk alle Firefox-vinduer for at fuldføre importen.</translation>
 <translation id="6798780071646309401">capslock er slået til</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
@@ -7212,6 +7213,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
       <ph name="LIST_ITEM" />Kør Chrome Forbindelsesdiagnose
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Integreret billede</translation>
+<translation id="9167063903968449027">Vis læselisten</translation>
 <translation id="9168436347345867845">Gør det senere</translation>
 <translation id="9169496697824289689">Se tastaturgenveje</translation>
 <translation id="916964310188958970">Hvorfor vises dette forslag?</translation>

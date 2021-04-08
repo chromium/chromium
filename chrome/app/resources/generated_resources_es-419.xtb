@@ -2904,7 +2904,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4244238649050961491">Encontrar más apps para la pluma stylus</translation>
 <translation id="424726838611654458">Abrir siempre en Adobe Reader</translation>
 <translation id="4247901771970415646">No se puede sincronizar con <ph name="USERNAME" /></translation>
-<translation id="4248098802131000011">Mantén protegidas tus contraseñas ante violaciones de la seguridad de los datos y otros problemas de seguridad</translation>
+<translation id="4248098802131000011">Mantén protegidas tus contraseñas ante violaciones de la seguridad de los datos y otros problemas de seguridad.</translation>
 <translation id="4249248555939881673">Esperando la conexión de red...</translation>
 <translation id="4249373718504745892">Se bloqueó el acceso de esta página a la cámara y el micrófono.</translation>
 <translation id="424963718355121712">Las apps deben proceder del host al que afecten</translation>
@@ -4037,7 +4037,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5561162485081632007">Detecta eventos peligrosos cuando ocurren y te advierte sobre ellos.</translation>
 <translation id="5562781907504170924">Esta pestaña está conectada con un dispositivo Bluetooth.</translation>
 <translation id="556321030400250233">archivo local o compartido</translation>
-<translation id="5563234215388768762">Realizar una búsqueda en Google o escribir una URL</translation>
+<translation id="5563234215388768762">Haz una búsqueda en Google o escribe una URL</translation>
 <translation id="5565735124758917034">Activo</translation>
 <translation id="5567989639534621706">Cachés de aplicación</translation>
 <translation id="5568069709869097550">No puedo acceder</translation>
@@ -5092,6 +5092,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6793723358811598107">Ya se asignó la tecla "<ph name="CURRENTKEY" />" a la acción "<ph name="ACTION" />". Presiona cualquier tecla para salir.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Se produjo un error.</translation>
+<translation id="679845623837196966">Mostrar la Lista de lectura</translation>
 <translation id="6798578729981748444">Para finalizar la importación, cierra todas las ventanas de Firefox.</translation>
 <translation id="6798780071646309401">bloqueo de mayúscula activado</translation>
 <translation id="6798954102094737107">Complemento: <ph name="PLUGIN_NAME" /></translation>
@@ -7207,6 +7208,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
       <ph name="LIST_ITEM" />Ejecuta el Diagnóstico de conectividad de Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pantalla en pantalla</translation>
+<translation id="9167063903968449027">Mostrar la Lista de lectura</translation>
 <translation id="9168436347345867845">Hacerlo más tarde</translation>
 <translation id="9169496697824289689">Ver combinaciones de teclas para acceso directo</translation>
 <translation id="916964310188958970">¿Por qué recibo esta sugerencia?</translation>

@@ -5100,6 +5100,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6793723358811598107">Tipka »<ph name="CURRENTKEY" />« je že dodeljena dejanju »<ph name="ACTION" />«. Pritisnite poljubno tipko, če želite zapreti.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Ojoj, prišlo je do napake.</translation>
+<translation id="679845623837196966">Pokaži bralni seznam</translation>
 <translation id="6798578729981748444">Če želite dokončati uvoz, zaprite vsa okna v Firefoxu.</translation>
 <translation id="6798780071646309401">zaklepanje velikih črk je vklopljeno</translation>
 <translation id="6798954102094737107">Vtičnik: <ph name="PLUGIN_NAME" /></translation>
@@ -7218,6 +7219,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
       <ph name="LIST_ITEM" />zaženite Chromovo diagnostiko povezav.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Slika v sliki</translation>
+<translation id="9167063903968449027">Pokaži bralni seznam</translation>
 <translation id="9168436347345867845">Pozneje</translation>
 <translation id="9169496697824289689">Ogled bližnjičnih tipk</translation>
 <translation id="916964310188958970">Zakaj ta predlog?</translation>

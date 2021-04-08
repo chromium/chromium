@@ -5090,6 +5090,7 @@
 <translation id="6793723358811598107">“<ph name="CURRENTKEY" />”键已分配给“<ph name="ACTION" />”操作。按任意键即可退出。</translation>
 <translation id="6795884519221689054">熊猫</translation>
 <translation id="6797493596609571643">糟糕，出问题了。</translation>
+<translation id="679845623837196966">显示阅读清单</translation>
 <translation id="6798578729981748444">要想顺利完成导入，请关闭所有 Firefox 窗口。</translation>
 <translation id="6798780071646309401">已开启大写锁定模式</translation>
 <translation id="6798954102094737107">插件：<ph name="PLUGIN_NAME" /></translation>
@@ -7204,6 +7205,7 @@
       <ph name="LIST_ITEM" />运行 Chrome 连接诊断工具
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">画中画</translation>
+<translation id="9167063903968449027">显示阅读清单</translation>
 <translation id="9168436347345867845">以后再说</translation>
 <translation id="9169496697824289689">查看键盘快捷键</translation>
 <translation id="916964310188958970">为什么显示这项推荐内容？</translation>

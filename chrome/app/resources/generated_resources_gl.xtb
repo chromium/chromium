@@ -5094,6 +5094,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6793723358811598107">A tecla <ph name="CURRENTKEY" /> xa se lle asignou á acción <ph name="ACTION" />. Preme unha tecla calquera para saír.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Produciuse un erro.</translation>
+<translation id="679845623837196966">Mostrar Lista de lectura</translation>
 <translation id="6798578729981748444">Para finalizar a importación, pecha todas as ventás de Firefox.</translation>
 <translation id="6798780071646309401">activouse o bloqueo de maiúsculas</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
@@ -7208,6 +7209,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
       <ph name="LIST_ITEM" />Executa a ferramenta Diagnóstico de conectividade de Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pantalla superposta</translation>
+<translation id="9167063903968449027">Mostrar Lista de lectura</translation>
 <translation id="9168436347345867845">Configurar máis tarde</translation>
 <translation id="9169496697824289689">Ver atallos de teclado</translation>
 <translation id="916964310188958970">Por que ves esta suxestión?</translation>

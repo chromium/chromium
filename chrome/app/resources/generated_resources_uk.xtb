@@ -5098,6 +5098,7 @@
 <translation id="6793723358811598107">Клавіші "<ph name="CURRENTKEY" />" уже призначено дію "<ph name="ACTION" />". Щоб вийти, натисніть будь-яку клавішу.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">На жаль, сталася помилка.</translation>
+<translation id="679845623837196966">Показувати список читання</translation>
 <translation id="6798578729981748444">Щоб завершити імпорт, закрийте всі вікна Firefox.</translation>
 <translation id="6798780071646309401">Caps Lock увімкнено</translation>
 <translation id="6798954102094737107">Плагін: <ph name="PLUGIN_NAME" /></translation>
@@ -7216,6 +7217,7 @@
       <ph name="LIST_ITEM" />запустити Діагностику з'єднання в Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Картинка в картинці</translation>
+<translation id="9167063903968449027">Показувати список читання</translation>
 <translation id="9168436347345867845">Пізніше</translation>
 <translation id="9169496697824289689">Переглянути комбінації клавіш</translation>
 <translation id="916964310188958970">Чому ця пропозиція?</translation>

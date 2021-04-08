@@ -1394,7 +1394,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="252502352004572774">Chrome sedang menyemak komputer anda untuk mengesan perisian berbahaya...</translation>
 <translation id="2526277209479171883">Pasang &amp; teruskan</translation>
 <translation id="2526590354069164005">Desktop</translation>
-<translation id="2526619973349913024">Semak kemas kini</translation>
+<translation id="2526619973349913024">Semak kemaskinian</translation>
 <translation id="2527167509808613699">Mana-mana jenis sambungan</translation>
 <translation id="2530166226437958497">Menyelesai masalah</translation>
 <translation id="2532589005999780174">Mod kontras tinggi</translation>
@@ -5095,6 +5095,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' telah pun ditetapkan untuk tindakan '<ph name="ACTION" />'. Tekan mana-mana kekunci untuk keluar.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Op, sesuatu telah berlaku.</translation>
+<translation id="679845623837196966">Paparkan senarai bacaan</translation>
 <translation id="6798578729981748444">Untuk menyelesaikan import, tutup semua tetingkap Firefox.</translation>
 <translation id="6798780071646309401">kunci huruf besar dihidupkan</translation>
 <translation id="6798954102094737107">Pemalam: <ph name="PLUGIN_NAME" /></translation>
@@ -7211,6 +7212,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
       <ph name="LIST_ITEM" />Jalankan Diagnostik Kesambungan
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Gambar dalam Gambar</translation>
+<translation id="9167063903968449027">Paparkan Senarai Bacaan</translation>
 <translation id="9168436347345867845">Lakukan kemudian</translation>
 <translation id="9169496697824289689">Lihat pintasan papan kekunci</translation>
 <translation id="916964310188958970">Mengapakah cadangan ini dipaparkan?</translation>

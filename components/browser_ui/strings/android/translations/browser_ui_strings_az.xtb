@@ -199,7 +199,7 @@
 <translation id="6439114592976064011">Saytların virtual reallıq cihazınızı və datanızı istifadə etməsinin qarşısını alın</translation>
 <translation id="6447842834002726250">Kukilər</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
-<translation id="6545864417968258051">Bluetooth skanı</translation>
+<translation id="6545864417968258051">Bluetooth axtarışı</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə bloklanıb}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə bloklanıb}}</translation>
 <translation id="6561560012278703671">Səssiz mesajlaşmadan istifadə edin (bildirişlər sizi narahat etməyəcək)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

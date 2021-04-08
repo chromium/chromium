@@ -875,7 +875,7 @@
 <translation id="1938351510777341717">Знешняя клавіша Command</translation>
 <translation id="1940546824932169984">Падключаныя прылады</translation>
 <translation id="1942600407708803723">Пры закрыцці вечка выключаць прыладу</translation>
-<translation id="1944528062465413897">Код спалучэння Bluetooth</translation>
+<translation id="1944528062465413897">Код спалучэння па Bluetooth</translation>
 <translation id="1944921356641260203">Знойдзена абнаўленне</translation>
 <translation id="1946577776959096882">Праглядзець уліковыя запісы</translation>
 <translation id="1949584741547056205">Хуткія адказы</translation>
@@ -5098,6 +5098,7 @@
 <translation id="6793723358811598107">Клавіша "<ph name="CURRENTKEY" />" ужо прызначана для дзеяння "<ph name="ACTION" />" Каб выйсці, націсніце любую клавішу.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">На жаль, нешта пайшло не так.</translation>
+<translation id="679845623837196966">Паказаць спіс на прагляд</translation>
 <translation id="6798578729981748444">Каб завяршыць імпартаванне, закрыйце ўсе вокны Firefox.</translation>
 <translation id="6798780071646309401">Caps Lock уключаны</translation>
 <translation id="6798954102094737107">Убудова "<ph name="PLUGIN_NAME" />"</translation>
@@ -7215,6 +7216,7 @@
       <ph name="LIST_ITEM" />запусціць Дыягностыку падключэнняў Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Відарыс у відарысе</translation>
+<translation id="9167063903968449027">Паказаць спіс на прагляд</translation>
 <translation id="9168436347345867845">Пазней</translation>
 <translation id="9169496697824289689">Паказаць спалучэнні клавіш</translation>
 <translation id="916964310188958970">Чаму паказваецца гэта прапанова?</translation>

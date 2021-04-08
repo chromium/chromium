@@ -246,7 +246,7 @@
 <translation id="126710816202626562">Tərcümə dili:</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Dayandırın</translation>
-<translation id="1272293450992660632">PIN-lər üst-üstə düşmür.</translation>
+<translation id="1272293450992660632">PIN-lər eyni deyil.</translation>
 <translation id="1272978324304772054">Bu hesab cihazın qeyd olduğu domenə aid deyil. Başqa domenə qeyd etmək istəyirsinizsə, ilk öncə cihazı bərpa etməlisiniz.</translation>
 <translation id="1274997165432133392">Kukilər və sayt datası</translation>
 <translation id="1275718070701477396">Seçilib</translation>
@@ -4385,7 +4385,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> başladın</translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" bu brauzeri sazlamağa başlayıb</translation>
 <translation id="5973605538625120605">PIN-i dəyişin</translation>
-<translation id="5975792506968920132">Batareya dolma faizi</translation>
+<translation id="5975792506968920132">Şarj faizi</translation>
 <translation id="5976160379964388480">Digərləri</translation>
 <translation id="5978277834170881274">&amp;Əsas orfoqrafik yoxlanışdan istifadə edin</translation>
 <translation id="5979084224081478209">Parolları yoxlayın</translation>
@@ -4878,7 +4878,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Yalnız nə etdiyinizi bildiyiniz halda aktivləşdirin.</translation>
 <translation id="6541638731489116978">Bu saytın hərəkət sensorlarınıza girişini blok edilib.</translation>
 <translation id="6545665334409411530">Təkrar dərəcəsi</translation>
-<translation id="6545864417968258051">Bluetooth skanı</translation>
+<translation id="6545864417968258051">Bluetooth axtarışı</translation>
 <translation id="6545867563032584178">Mikrofon Mac Sistem Tərcihlərində deaktivdir</translation>
 <translation id="6547354035488017500">Ən az 512 MB boşaldın əks halda cihazınız reaksiya verməyəcək. Yer boşaltmaq üçün, cihaz yaddaşından faylları silin.</translation>
 <translation id="654871471440386944">Klaviatura ilə baxış aktiv edilsin?</translation>
@@ -5087,6 +5087,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' artıq '<ph name="ACTION" />' əməliyyatına təyin edilib. Çıxmaq üçün istənilən düyməni basın.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Xəta oldu.</translation>
+<translation id="679845623837196966">Oxu siyahısını göstərin</translation>
 <translation id="6798578729981748444">İmportu tamamlamaq üçün bütün Firefox pəncərələrini bağlayın</translation>
 <translation id="6798780071646309401">böyük hərflər aktivdir</translation>
 <translation id="6798954102094737107">Plagin: <ph name="PLUGIN_NAME" /></translation>
@@ -5712,7 +5713,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7505717542095249632"><ph name="MERCHANT" /> platformasını gizlədin</translation>
 <translation id="7506093026325926984">Bu parol bu cihazda saxlanılıb</translation>
 <translation id="7506130076368211615">Yeni şəbəkə ayarlayın</translation>
-<translation id="7506242536428928412">Yeni təhlükəsizlik açarınızı istifadə etmək üçün yeni PIN ayarlayın</translation>
+<translation id="7506242536428928412">Yeni güvənlik açarını işlətmək üçün yeni PIN ayarlayın</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> cihazınız sahibkarlıq idarəçiliyi üçün uğurla qeydiyyatdan keçdi.</translation>
 <translation id="7507207699631365376">Bu təminatçının <ph name="BEGIN_LINK" />məxfilik siyasətinə<ph name="END_LINK" /> baxın</translation>
 <translation id="7507930499305566459">Status Responder Certificate</translation>
@@ -6778,7 +6779,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="8720200012906404956">Mobil şəbəkə axtarılır. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8720816553731218127">Quraşdırma vaxtının atributlarını başlatmaq çox vaxt aparır.</translation>
 <translation id="8722912030556880711">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda Google'a diaqnostika, cihaz və tətbiq istifadə datasını avtomatik göndərir. Bu, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Ümumi data, həmçinin, Google tətbiqləri və Android developerləri kimi partnyorlara kömək edəcək. Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabında yadda saxlana bilər. <ph name="BEGIN_LINK2" />Ətraflı Məlumat<ph name="END_LINK2" /></translation>
-<translation id="8724405322205516354">Bu ikonanı görən zaman identifikasiya və ya satınalmaları təsdiq etmək üçün barmaq izindən istifadə edin.</translation>
+<translation id="8724405322205516354">Bu ikonu görəndə kimlik və ya alışları təsdiqləmək üçün barmaq izini istifadə edin.</translation>
 <translation id="8724409975248965964">Barmaq izi əlavə edildi</translation>
 <translation id="8724859055372736596">Qovluqda göstərin</translation>
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>
@@ -7198,6 +7199,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
       <ph name="LIST_ITEM" />Chrome Bağlantı Diaqnostikasını icra edin
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Şəkil içində Şəkil</translation>
+<translation id="9167063903968449027">Oxu Siyahısını göstərin</translation>
 <translation id="9168436347345867845">Daha sonra edin</translation>
 <translation id="9169496697824289689">Klaviatura qısayollarına baxın</translation>
 <translation id="916964310188958970">Niyə bu təklif?</translation>

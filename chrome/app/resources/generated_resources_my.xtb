@@ -5093,6 +5093,7 @@
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' ကို '<ph name="ACTION" />' လုပ်ဆောင်ချက်အတွက် သတ်မှတ်ပြီးဖြစ်သည်။ ထွက်ရန် ကီးတစ်ခုခုကို နှိပ်ပါ။</translation>
 <translation id="6795884519221689054">ပန်ဒါဝက်ဝံ</translation>
 <translation id="6797493596609571643">အူးပ်စ်၊ တစ်ခုခု မှားသွားပြီ။</translation>
+<translation id="679845623837196966">ဖတ်ရန်စာရင်း ပြရန်</translation>
 <translation id="6798578729981748444">တင်သွင်းခြင်းကို အပြီးသတ်ရန် Firefox ဝင်းဒိုများအားလုံးကို ပိတ်ပါ။</translation>
 <translation id="6798780071646309401">စာလုံးကြီး ခလုတ် ဖွင့်ထားသည်</translation>
 <translation id="6798954102094737107">ပလတ်အင်- <ph name="PLUGIN_NAME" /></translation>
@@ -7207,6 +7208,7 @@
       <ph name="LIST_ITEM" />Chrome ချိတ်ဆက်မှု စိစစ်ချက်များ လုပ်ဆောင်ခြင်း
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">တစ်ခုပေါ်တစ်ခုထပ်၍ ဖွင့်ခြင်း</translation>
+<translation id="9167063903968449027">ဖတ်ရန်စာရင်း ပြရန်</translation>
 <translation id="9168436347345867845">နောက်မှလုပ်ရန်</translation>
 <translation id="9169496697824289689">ကီးဘုတ် ဖြတ်လမ်းများကို ကြည့်ရန်</translation>
 <translation id="916964310188958970">ဘာကြောင့် ဤအကြံပြုချက် ပေးပါသလဲ။</translation>

@@ -5091,6 +5091,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6793723358811598107">„<ph name="CURRENTKEY" />“ wurde bereits der Aktion „<ph name="ACTION" />“ zugewiesen. Drücken Sie zum Beenden eine beliebige Taste.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hoppla, ein Fehler ist aufgetreten.</translation>
+<translation id="679845623837196966">Leseliste anzeigen</translation>
 <translation id="6798578729981748444">Schließen Sie alle Firefox-Fenster, um den Import abzuschließen.</translation>
 <translation id="6798780071646309401">Feststelltaste an</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
@@ -7205,6 +7206,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
       <ph name="LIST_ITEM" />Verbindungsdiagnose für Chrome ausführen
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Bild im Bild</translation>
+<translation id="9167063903968449027">Leseliste anzeigen</translation>
 <translation id="9168436347345867845">Später</translation>
 <translation id="9169496697824289689">Tastenkombinationen ansehen</translation>
 <translation id="916964310188958970">Warum erhalte ich diesen Vorschlag?</translation>

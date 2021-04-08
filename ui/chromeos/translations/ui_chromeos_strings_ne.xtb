@@ -103,7 +103,7 @@
 <translation id="2046702855113914483">रामेन</translation>
 <translation id="2070909990982335904">विन्दुबाट सुरु हुने नामहरू प्रणालीको लागि आरक्षित छन्। कृपया अर्को नाम छान्नुहोस्।</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
-<translation id="2084108471225856927">यन्त्रका सेटिङहरू</translation>
+<translation id="2084108471225856927">डिभाइसका सेटिङहरू</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" नाम गरेको फाइल पहिले नै विद्यमान छ। तपाईं के गर्न चाहनुहुन्छ?</translation>
 <translation id="2121825465123208577">पुनःआकार मिलाउनुहोस्</translation>
 <translation id="2125607626296734455">खमेर</translation>
@@ -582,7 +582,7 @@
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> जि.बि.</translation>
 <translation id="7191454237977785534">यसको रूपमा फाइल बचत गर्नुहोस्</translation>
-<translation id="7238097264433196391">यन्त्रको नाम</translation>
+<translation id="7238097264433196391">डिभाइसको नाम</translation>
 <translation id="7248671827512403053">एप</translation>
 <translation id="7268659760406822741">उपलब्ध सेवाहरू</translation>
 <translation id="7283041136720745563">तपाईंको Google ड्राइभको कोटा पर्याप्त ठुलो छैन।</translation>
@@ -661,7 +661,7 @@
 <translation id="7925686952655276919">समक्रमणको लागि मोबाइल डाटा प्रयोग नगर्नुहोस्</translation>
 <translation id="7928710562641958568">यन्त्र निकाल्नुहोस्</translation>
 <translation id="7943385054491506837">युएस कोलमाक</translation>
-<translation id="7953739707111622108">यो यन्त्र खोलिन सकिँदैन किनभने त्यसको फाइलप्रणाली पहिचान गर्न सकिएन।</translation>
+<translation id="7953739707111622108">यो डिभाइस खोलिन सकिँदैन किनभने त्यसको फाइलप्रणाली पहिचान गर्न सकिएन।</translation>
 <translation id="7969525169268594403">स्लोभेनियन</translation>
 <translation id="7972920761225148017">फ्रान्सेली (स्विजरल्यान्ड)</translation>
 <translation id="7980421588063892270">अङ्ग्रेजी (सं. रा. अमेरिकी) कोलमाक किबोर्ड</translation>

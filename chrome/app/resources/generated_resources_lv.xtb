@@ -5097,6 +5097,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6793723358811598107">Taustiņš “<ph name="CURRENTKEY" />” jau ir piešķirts darbībai “<ph name="ACTION" />”. Lai izietu, nospiediet jebkuru taustiņu.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Šķiet, ka radās kļūda.</translation>
+<translation id="679845623837196966">Rādīt lasīšanas sarakstu</translation>
 <translation id="6798578729981748444">Lai pabeigtu importēšanu, aizveriet visus Firefox logus.</translation>
 <translation id="6798780071646309401">burtslēga taustiņš ieslēgts</translation>
 <translation id="6798954102094737107">Spraudnis: <ph name="PLUGIN_NAME" /></translation>
@@ -7213,6 +7214,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
       <ph name="LIST_ITEM" />Veiciet Chrome savienojamības diagnostiku.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Attēls attēlā</translation>
+<translation id="9167063903968449027">Rādīt lasīšanas sarakstu</translation>
 <translation id="9168436347345867845">Vēlāk</translation>
 <translation id="9169496697824289689">Skatīt īsinājumtaustiņus</translation>
 <translation id="916964310188958970">Kāpēc tiek rādīts šis ieteikums?</translation>

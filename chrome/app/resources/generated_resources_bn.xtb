@@ -5095,6 +5095,7 @@
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />'-কে আগে থেকেই '<ph name="ACTION" />' অ্যাকশনের জন্য অ্যাসাইন করা হয়েছে। বেরিয়ে আসার জন্য যেকোনও কী প্রেস করুন।</translation>
 <translation id="6795884519221689054">পান্ডা</translation>
 <translation id="6797493596609571643">ওহো, কিছু সমস্যা হয়েছে৷</translation>
+<translation id="679845623837196966">পড়ার তালিকা দেখান</translation>
 <translation id="6798578729981748444">আমদানি প্রক্রিয়া শেষ করতে, সমস্ত Firefox উইন্ডোগুলি বন্ধ করুন</translation>
 <translation id="6798780071646309401">caps lock চালু আছে</translation>
 <translation id="6798954102094737107">প্লাগ-ইন: <ph name="PLUGIN_NAME" /></translation>
@@ -7209,6 +7210,7 @@
       <ph name="LIST_ITEM" />Chrome কানেক্টিভিটি ডায়াগনস্টিক চালান
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">ছবির-মধ্যে-ছবি</translation>
+<translation id="9167063903968449027">পড়ার তালিকা দেখান</translation>
 <translation id="9168436347345867845">এটি পরে করুন</translation>
 <translation id="9169496697824289689">কীবোর্ড শর্টকাটগুলি দেখুন</translation>
 <translation id="916964310188958970">এই সাজেশন কেন দেখানো হচ্ছে?</translation>

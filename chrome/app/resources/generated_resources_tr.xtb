@@ -4194,7 +4194,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5739235828260127894">Doğrulama bekleniyor. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Çok büyük</translation>
 <translation id="5740328398383587084">Yakındakilerle Paylaş</translation>
-<translation id="5740820643029013514">İletişim daha sessiz kurulsun (önerilir)</translation>
+<translation id="5740820643029013514">Sessiz bildirim kullanılsın (önerilir)</translation>
 <translation id="574104302965107104">Ekran yansıtma</translation>
 <translation id="574209121243317957">Ses Kalınlığı</translation>
 <translation id="5746169159649715125">PDF olarak kaydet</translation>
@@ -4305,7 +4305,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> yakında duraklatılacak</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> programını disk görüntüsünden çalıştırıyorsunuz. Bu ürünü bilgisayarınıza kurduğunuzda, disk görüntüsü olmadan çalıştırabilir ve her zaman güncel olacağından emin olabilirsiniz.</translation>
 <translation id="5865733239029070421">Kullanım istatistiklerini ve kilitlenme raporlarını Google'a otomatik olarak gönderir</translation>
-<translation id="5867841422488265304">Web adresini arayın veya yazın</translation>
+<translation id="5867841422488265304">Arama yapın veya web adresi yazın</translation>
 <translation id="5869029295770560994">Tamam, Anladım</translation>
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
 <translation id="5870086504539785141">Erişilebilirlik menüsünü kapat</translation>
@@ -4903,7 +4903,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6556903358015358733">Tema ve Duvar Kağıdı</translation>
 <translation id="6557290421156335491">Kısayollarım</translation>
 <translation id="6560151649238390891">Öneri eklendi</translation>
-<translation id="6561560012278703671">İletişim daha sessiz kurulsun (bildirim istemlerinin sizi rahatsız etmesini engeller)</translation>
+<translation id="6561560012278703671">Bildirim daha sessiz yapılsın (bildirim istemlerinin sizi rahatsız etmesini engeller)</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Sistem günlüklerini İndirilenler konumunda saklayın.</translation>
 <translation id="656293578423618167">Dosya yolu veya adı çok uzun. Lütfen daha kısa bir adla veya başka bir konuma  kaydedin.</translation>
@@ -5096,6 +5096,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" tuşu zaten "<ph name="ACTION" />" işlemine atanmış durumda. Çıkmak için herhangi bir tuşa basın.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hata. Bir şeyler ters gitti.</translation>
+<translation id="679845623837196966">Okuma listesini göster</translation>
 <translation id="6798578729981748444">İçe aktarma işlemini tamamlamak için tüm Firefox pencerelerini kapatın.</translation>
 <translation id="6798780071646309401">caps lock açık</translation>
 <translation id="6798954102094737107">Eklenti: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
       <ph name="LIST_ITEM" />Chrome Bağlantı Teşhisi'ni çalıştırma
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pencere içinde Pencere</translation>
+<translation id="9167063903968449027">Okuma Listesini Göster</translation>
 <translation id="9168436347345867845">Daha sonra yap</translation>
 <translation id="9169496697824289689">Klavye kısayollarını görüntüle</translation>
 <translation id="916964310188958970">Neden bu öneri gösteriliyor?</translation>

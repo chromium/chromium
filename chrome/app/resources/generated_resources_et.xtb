@@ -5095,6 +5095,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6793723358811598107"><ph name="CURRENTKEY" /> on juba määratud toimingu <ph name="ACTION" /> jaoks. Väljumiseks vajutage mis tahes klahvi.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Vabandust! Midagi läks valesti.</translation>
+<translation id="679845623837196966">Kuva lugemisloend</translation>
 <translation id="6798578729981748444">Importimise lõpetamiseks sulgege kõik Firefoxi aknad.</translation>
 <translation id="6798780071646309401">suurtähelukk on sisse lülitatud</translation>
 <translation id="6798954102094737107">Pistikprogramm: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
       <ph name="LIST_ITEM" />Käitage Chrome'i ühenduvuse diagnostika
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pilt pildis</translation>
+<translation id="9167063903968449027">Kuva lugemisloend</translation>
 <translation id="9168436347345867845">Teen seda hiljem</translation>
 <translation id="9169496697824289689">Kuva klaviatuuri otseteed</translation>
 <translation id="916964310188958970">Miks see soovitus?</translation>

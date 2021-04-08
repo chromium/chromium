@@ -1020,7 +1020,7 @@
 <translation id="2124930039827422115">{1,plural, =1{ਇੱਕ ਵਰਤੋਂਕਾਰ ਵੱਲੋਂ <ph name="AVERAGE_RATING" /> ਰੇਟ ਕੀਤਾ ਗਿਆ।}one{# ਵਰਤੋਂਕਾਰ ਵੱਲੋਂ <ph name="AVERAGE_RATING" /> ਰੇਟ ਕੀਤਾ ਗਿਆ।}other{# ਵਰਤੋਂਕਾਰਾਂ ਵੱਲੋਂ <ph name="AVERAGE_RATING" /> ਰੇਟ ਕੀਤਾ ਗਿਆ।}}</translation>
 <translation id="2126167708562367080">ਸਮਕਾਲੀਕਰਨ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਦੁਆਰਾ ਅਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="2127372758936585790">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ</translation>
-<translation id="212862741129535676">ਬਾਰੰਬਾਰਤਾ ਸਥਿਤੀ ਅਧਿਕਾਰ ਪ੍ਰਤਿਸ਼ਤਤਾ</translation>
+<translation id="212862741129535676">ਬਾਰੰਬਾਰਤਾ ਸਥਿਤੀ ਅਧਿਕਾਰ ਫ਼ੀਸਦ</translation>
 <translation id="212876957201860463">ਤੁਹਾਡੇ ਸੈਲਿਊਲਰ ਡੀਵਾਈਸ ਦੇ ਸੈੱਟਅੱਪ ਦੀ ਤਿਆਰੀ ਹੋ ਰਹੀ ਹੈ...</translation>
 <translation id="2129825002735785149">ਪਲੱਗਇਨ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ ਕਿਉਂਕਿ "<ph name="IMPORT_NAME" />" ਵੱਲੋਂ ਇਸਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
@@ -2206,7 +2206,7 @@
 <translation id="3448492834076427715">ਖਾਤਾ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="3449393517661170867">ਟੈਬ ਕੀਤੀ ਗਈ ਨਵੀਂ ਵਿੰਡੋ</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> ਨੂੰ ਕਮਾਂਡਾ ਭੇਜਣ ਲਈ <ph name="SEARCH_KEY" /> ਦਬਾਓ</translation>
-<translation id="3450157232394774192">ਨਿਸ਼ਕਿਰਿਆ ਸਥਿਤੀ ਅਧਿਕਾਰ ਪ੍ਰਤਿਸ਼ਤਤਾ</translation>
+<translation id="3450157232394774192">ਨਿਸ਼ਕਿਰਿਆ ਸਥਿਤੀ ਅਧਿਕਾਰ ਫ਼ੀਸਦ</translation>
 <translation id="3453612417627951340">ਇਖਤਿਆਰੀਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="3454157711543303649">ਸਕਿਰਿਆਕਰਨ ਪੂਰਾ</translation>
 <translation id="3454213325559396544">ਇਹ ਇਸ <ph name="DEVICE_TYPE" /> ਲਈ ਆਖਰੀ ਸਵੈਚਲਿਤ ਸਾਫ਼ਟਵੇਅਰ ਅਤੇ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਹੈ। ਭਵਿੱਖ ਵਿੱਚ ਅੱਪਡੇਟਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਇੱਕ ਨਵੇਂ ਮਾਡਲ 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕਰੋ।</translation>
@@ -5094,6 +5094,7 @@
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' ਨੂੰ ਪਹਿਲਾਂ ਹੀ '<ph name="ACTION" />' ਕਾਰਵਾਈ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਬਾਹਰ ਜਾਣ ਲਈ ਕਿਸੇ ਵੀ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="6795884519221689054">ਪਾਂਡਾ</translation>
 <translation id="6797493596609571643">ਓਹੋ, ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
+<translation id="679845623837196966">ਪੜ੍ਹਨ-ਸੂਚੀ ਦਿਖਾਓ</translation>
 <translation id="6798578729981748444">ਆਯਾਤ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ, ਸਾਰੀਆਂ Firefox ਵਿੰਡੋਆਂ ਬੰਦ ਕਰੋ।</translation>
 <translation id="6798780071646309401">ਕੈਪਸ ਲੌਕ ਚਾਲੂ</translation>
 <translation id="6798954102094737107">ਪਲੱਗਇਨ: <ph name="PLUGIN_NAME" /></translation>
@@ -7207,6 +7208,7 @@
       <ph name="LIST_ITEM" />Chrome ਕਨੈਕਟੀਵਿਟੀ ਤਸ਼ਖੀਸਾਂ ਨੂੰ ਚਲਾਉਣਾ
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ</translation>
+<translation id="9167063903968449027">ਪੜ੍ਹਨ-ਸੂਚੀ ਦਿਖਾਓ</translation>
 <translation id="9168436347345867845">ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="9169496697824289689">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦੇਖੋ</translation>
 <translation id="916964310188958970">ਇਹ ਸੁਝਾਅ ਕਿਉਂ?</translation>

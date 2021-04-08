@@ -247,7 +247,7 @@
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> kohdetta siirretty</translation>
 <translation id="3645531960514756307">Irrota kansio</translation>
 <translation id="3685122418104378273">Google Driven synkronointi on oletuksena pois käytöstä käyttäessäsi mobiilitiedonsiirtoa.</translation>
-<translation id="3689865792480713551">Peruuta <ph name="ACTIVITY_DESCRIPTION" />.</translation>
+<translation id="3689865792480713551">Peru <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3691184985318546178">sinhala</translation>
 <translation id="3726463242007121105">Tätä laitetta ei voi avata, sillä sen tiedostojärjestelmää ei tueta.</translation>
 <translation id="3741243925913727067">Varmuuskopioi medialaitteesi kuvat ja videot Google Driveen.</translation>
@@ -622,7 +622,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" /> % valmis</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7654209398114106148">Siirretään <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
-<translation id="7658239707568436148">Peruuta</translation>
+<translation id="7658239707568436148">Peru</translation>
 <translation id="7663224033570512922">hindi</translation>
 <translation id="7693909743393669729">Aseman alustaminen poistaa kaiken sille tallennetun datan sekä kaikki osiot, myös näkymättömät sellaiset. Tätä toimintoa ei voi kumota.</translation>
 <translation id="7695430100978772476">Ei voitu alustaa: <ph name="DRIVE_NAME" /></translation>
@@ -651,7 +651,7 @@
     Kokeile valita vähemmän kuvia.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> Tt</translation>
 <translation id="7839804798877833423">Mobiiliyhteyden kautta noudettavien tiedostojen koko on noin <ph name="FILE_SIZE" />.</translation>
-<translation id="7846076177841592234">Peruuta valinta</translation>
+<translation id="7846076177841592234">Peru valinta</translation>
 <translation id="7853966320808728790">Ranskalainen BÉPO</translation>
 <translation id="7868774406711971383">puola</translation>
 <translation id="7873831373602885875">Tallentaminen kansioon <ph name="FOLDER_NAME" /> ei onnistu. Kaikki muokkaukset tallennetaan Lataukset-kansion kohteeseen <ph name="DOWNLOADS_FOLDER" />.</translation>

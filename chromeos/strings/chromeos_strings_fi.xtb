@@ -55,7 +55,7 @@
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> Gt / <ph name="TOTAL_MEMORY" /> Gt saatavilla</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">JONOSSA</translation>
-<translation id="2161394479394250669">Peruuta tulostustyö</translation>
+<translation id="2161394479394250669">Peru tulostustyö</translation>
 <translation id="2217935453350629363">Nykyinen nopeus</translation>
 <translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -151,7 +151,7 @@
 <translation id="4562494484721939086">Ei yhteyttä</translation>
 <translation id="458794348635939462">Kaikkien isäntien selvittäminen epäonnistui</translation>
 <translation id="4593212453765072419">Välityspalvelimen todennus vaaditaan</translation>
-<translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peruuta tulostustyö painamalla Enter.</translation>
+<translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peru tulostustyö painamalla Enter.</translation>
 <translation id="4646949265910132906">Suojattu Wi-Fi-yhteys</translation>
 <translation id="4652335678334611408">Tallenna käyttökertaloki</translation>
 <translation id="4665014895760275686">Valmistaja</translation>
@@ -299,7 +299,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> jäljellä</translation>
 <translation id="7620771111601174153">Lue lisää ohjekeskuksesta</translation>
 <translation id="7648838807254605802">Suuri HTTPS-viive</translation>
-<translation id="7658239707568436148">Peruuta</translation>
+<translation id="7658239707568436148">Peru</translation>
 <translation id="7690294790491645610">Vahvista uusi salasana</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7705524343798198388">VPN</translation>

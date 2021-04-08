@@ -256,7 +256,7 @@
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2728754400939377704">Сайт бойынша сұрыптау</translation>
 <translation id="2744248271121720757">Бірден іздеу үшін сөзді түртіңіз не ұқсас әрекеттерді қараңыз</translation>
-<translation id="2760989362628427051">Құрылғыдағы қараңғы тақырып немесе Battery saver режимі қосылып тұрғанда, қараңғы тақырыпты қосу</translation>
+<translation id="2760989362628427051">Құрылғыдағы қараңғы тақырып немесе Батареяны үнемдеу режимі қосылып тұрғанда, қараңғы тақырыпты қосу</translation>
 <translation id="2762000892062317888">жаңа ғана</translation>
 <translation id="2776236159752647997">Құпиялылыққа, қауіпсіздікке және дерек жинауға қатысты басқа да параметрлерді <ph name="BEGIN_LINK" />Google қызметтері<ph name="END_LINK" /> бөлімінен қараңыз.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> сек қалды</translation>
@@ -971,7 +971,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="7577900504646297215">Қызығушылықтарды басқару</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл жүктеп алынды.}other{<ph name="FILES_DOWNLOADED_MANY" /> файл жүктеп алынды.}}</translation>
 <translation id="7583262514280211622">Оқу тізімін осы жерден таба аласыз</translation>
-<translation id="7588219262685291874">Құрылғыдағы Battery saver режимі қосылғанда, қараңғы тақырыпты қосу</translation>
+<translation id="7588219262685291874">Құрылғыдағы Батареяны үнемдеу режимі қосылғанда, қараңғы тақырыпты қосу</translation>
 <translation id="7593557518625677601">Android параметрлерін ашып, Chrome Sync қолданбасын іске қосу үшін Android жүйесін синхрондауды қайта қосыңыз</translation>
 <translation id="7596558890252710462">Операциялық жүйе</translation>
 <translation id="7605594153474022051">Синхрондау жұмыс істемейді</translation>

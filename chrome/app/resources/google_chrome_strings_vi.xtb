@@ -29,7 +29,7 @@
 <translation id="162629503687514352">Chrome OS không thể đồng bộ hóa các mật khẩu của bạn.</translation>
 <translation id="1628000112320670027">Nhận trợ giúp về Chrome</translation>
 <translation id="1666409074978194368">Sắp xong rồi! Hãy chạy lại Google Chrome để hoàn tất quá trình cập nhật. Các cửa sổ ẩn danh sẽ không mở lại.</translation>
-<translation id="1674870198290878346">Mở liên kết trong cửa sổ ẩn &amp;danh của Chrome</translation>
+<translation id="1674870198290878346">Mở đường liên kết trong cửa sổ ẩn &amp;danh của Chrome</translation>
 <translation id="1682634494516646069">Google Chrome không thể đọc và ghi vào thư mục dữ liệu:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -70,7 +70,7 @@
 <translation id="2588634262982826227">Chrome OS có thể khôi phục các ứng dụng và trang bất cứ lúc nào sau khi khởi động lại mà không cần hỏi.</translation>
 <translation id="2622559029861875898">Chrome không thể kiểm tra để tìm các bản cập nhật. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="2644798301485385923">Hệ thống Chrome OS</translation>
-<translation id="2652691236519827073">Mở liên kết trong &amp;tab mới của Chrome</translation>
+<translation id="2652691236519827073">Mở đường liên kết trong &amp;tab mới của Chrome</translation>
 <translation id="2665296953892887393">Giúp cải thiện Google Chrome bằng cách gửi báo cáo sự cố và <ph name="UMA_LINK" /> tới Google</translation>
 <translation id="2689103672227170538">Tiện ích này đã thay đổi trang nào được hiển thị khi bạn khởi động Chrome.</translation>
 <translation id="2765403129283291972">Chrome cần có quyền truy cập vào micrô của bạn cho trang web này</translation>
@@ -119,7 +119,7 @@
 <translation id="3835168907083856002">Thao tác này sẽ tạo một hồ sơ mới trên Chrome cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Vui lòng đóng tất cả cửa sổ của Google Chrome và thử lại.</translation>
 <translation id="3865754807470779944">Bạn đã cài đặt Chrome phiên bản <ph name="PRODUCT_VERSION" /></translation>
-<translation id="3873044882194371212">Mở liên kết trong cửa sổ ẩn &amp;danh của Chrome</translation>
+<translation id="3873044882194371212">Mở đường liên kết trong cửa sổ ẩn &amp;danh của Chrome</translation>
 <translation id="3889417619312448367">Gỡ cài đặt Google Chrome</translation>
 <translation id="4050175100176540509">Cải thiện bảo mật quan trọng và tính năng mới có trong phiên bản mới nhất.</translation>
 <translation id="4053720452172726777">Tùy chỉnh và điều khiển Google Chrome</translation>
@@ -156,7 +156,7 @@
 <translation id="4771048833395599659">Tệp này có thể nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="479167709087336770">Dịch vụ này sử dụng cùng một trình kiểm tra chính tả dùng trong Google Tìm kiếm. Thông tin bạn nhập vào trình duyệt sẽ được gửi tới Google. Bạn luôn có thể thay đổi hành động này trong phần cài đặt.</translation>
 <translation id="4891791193823137474">Để Google Chrome chạy trên nền</translation>
-<translation id="4895437082222824641">Mở liên kết trong thẻ mới của Chrome</translation>
+<translation id="4895437082222824641">Mở đường liên kết trong thẻ mới của Chrome</translation>
 <translation id="4953650215774548573">Đặt Google Chrome làm trình duyệt mặc định của bạn</translation>
 <translation id="495931528404527476">Trong Chrome</translation>
 <translation id="4970761609246024540">Chào mừng bạn đến với hồ sơ trên Chrome</translation>

@@ -5099,6 +5099,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6793723358811598107">Klavišas „<ph name="CURRENTKEY" />“ jau priskirtas veiksmui „<ph name="ACTION" />“. Paspauskite bet kurį klavišą, kad išeitumėte.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Oi, kažkas ne taip.</translation>
+<translation id="679845623837196966">Rodyti skaitymo sąrašą</translation>
 <translation id="6798578729981748444">Kad užbaigtumėte importuoti, uždarykite visus „Firefox“ langus.</translation>
 <translation id="6798780071646309401">didžiųjų raidžių klavišas paspaustas</translation>
 <translation id="6798954102094737107">Papildinys: „<ph name="PLUGIN_NAME" />“</translation>
@@ -7217,6 +7218,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
       <ph name="LIST_ITEM" />vykdyti „Chrome“ ryšio diagnostiką.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Vaizdas vaizde</translation>
+<translation id="9167063903968449027">Rodyti skaitymo sąrašą</translation>
 <translation id="9168436347345867845">Atlikti vėliau</translation>
 <translation id="9169496697824289689">Peržiūrėti sparčiuosius klavišus</translation>
 <translation id="916964310188958970">Kodėl tai siūloma?</translation>

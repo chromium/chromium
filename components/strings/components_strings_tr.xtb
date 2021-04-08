@@ -1054,7 +1054,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5040262127954254034">Gizlilik</translation>
 <translation id="5043480802608081735">Kopyalanan Bağlantı</translation>
 <translation id="5045550434625856497">Hatalı parola</translation>
-<translation id="5056549851600133418">Size uygun makaleler</translation>
+<translation id="5056549851600133418">Sizin için seçilmiş makaleler</translation>
 <translation id="5061227663725596739">Şunu mu demek istediniz: <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 çerez kullanımda)}other{(# çerez kullanımda)}}</translation>

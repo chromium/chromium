@@ -4642,7 +4642,7 @@
 <translation id="625895209797312329">Արգելել կայքերին օգտագործել ձեր սարքում տեղադրված տառատեսակները</translation>
 <translation id="6259104249628300056">Հայտնաբերել սարքեր ձեր տեղական ցանցում</translation>
 <translation id="6262371516389954471">Կրկնօրինակները վերբեռնվում են Google և գաղտնագրվում ձեր Google հաշվի գաղտնաբառի միջոցով։</translation>
-<translation id="6263082573641595914">Microsoft-ի ՎԿ-ի տարբերակ</translation>
+<translation id="6263082573641595914">Microsoft-ի CA-ի տարբերակ</translation>
 <translation id="6263284346895336537">Ոչ վճռական</translation>
 <translation id="6264365405983206840">Ընտրել &amp;բոլորը</translation>
 <translation id="6265687851677020761">Հեռացնել միացքը</translation>
@@ -5100,6 +5100,7 @@
 <translation id="6793723358811598107">«<ph name="CURRENTKEY" />» ստեղնն արդեն նշանակված է «<ph name="ACTION" />» գործողության համար։ Սեղմեք որևէ ստեղն՝ դուրս գալու համար։</translation>
 <translation id="6795884519221689054">Պանդա</translation>
 <translation id="6797493596609571643">Ինչ-որ սխալ տեղի ունեցավ:</translation>
+<translation id="679845623837196966">Ցուցադրել ընթերցանության ցանկը</translation>
 <translation id="6798578729981748444">Ներմուծումն ավարտելու համար փակեք Firefox-ի բոլոր պատուհանները:</translation>
 <translation id="6798780071646309401">Caps Lock-ը միացված է</translation>
 <translation id="6798954102094737107">Փլագին՝ <ph name="PLUGIN_NAME" /></translation>
@@ -7214,6 +7215,7 @@
       <ph name="LIST_ITEM" />Գործարկել Chrome-ի կապի ախտորոշումը
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Նկար նկարի մեջ</translation>
+<translation id="9167063903968449027">Ցուցադրել ընթերցանության ցանկը</translation>
 <translation id="9168436347345867845">Ավելի ուշ</translation>
 <translation id="9169496697824289689">Դիտել ստեղնաշարի դյուրանցումները</translation>
 <translation id="916964310188958970">Ինչո՞ւ եմ տեսնում այս հուշումը</translation>

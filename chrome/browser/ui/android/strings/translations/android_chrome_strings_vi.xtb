@@ -90,13 +90,13 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
 <translation id="164269334534774161">Bạn đang xem bản sao ngoại tuyến của trang này từ <ph name="CREATION_TIME" /></translation>
-<translation id="1644574205037202324">Lịch sử</translation>
+<translation id="1644574205037202324">Nhật ký</translation>
 <translation id="1670399744444387456">Cơ bản</translation>
 <translation id="1671236975893690980">Đang chờ tải xuống...</translation>
 <translation id="1672586136351118594">Không hiển thị lại</translation>
 <translation id="1680919990519905526">Mua sắm với Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Thử ngay</translation>
-<translation id="1692118695553449118">Đồng bộ hóa đang bật</translation>
+<translation id="1692118695553449118">Tính năng đồng bộ hóa đang bật</translation>
 <translation id="1697284962337958118">Thêm vào</translation>
 <translation id="1718835860248848330">Giờ vừa qua</translation>
 <translation id="1724977129262658800">Mở khóa để chỉnh sửa mật khẩu của bạn</translation>
@@ -222,7 +222,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2494974097748878569">Trợ lý Google trong Chrome</translation>
 <translation id="2496180316473517155">Lịch sử duyệt web</translation>
-<translation id="2497852260688568942">Đồng bộ hóa bị quản trị viên của bạn tắt</translation>
+<translation id="2497852260688568942">Quản trị viên của bạn đã tắt tính năng đồng bộ hóa</translation>
 <translation id="250020030759455918">Trong Chrome, bạn sẽ thấy trạng thái đăng nhập, dữ liệu duyệt web và dữ liệu trang web trên <ph name="SITE_NAME" /></translation>
 <translation id="2512164632052122970">Ngôn ngữ nội dung</translation>
 <translation id="2513403576141822879">Bạn có thể xem thêm tùy chọn cài đặt liên quan đến quyền riêng tư, bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK" />Đồng bộ hóa và dịch vụ của Google<ph name="END_LINK" /></translation>
@@ -595,7 +595,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="509429900233858213">Đã xảy ra lỗi.</translation>
 <translation id="510275257476243843">Còn 1 giờ</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
-<translation id="5127805178023152808">Đồng bộ hóa đã tắt</translation>
+<translation id="5127805178023152808">Tính năng đồng bộ hóa đang tắt</translation>
 <translation id="5132942445612118989">Đồng bộ hóa mật khẩu, lịch sử và các thông tin khác của bạn trên tất cả các thiết bị</translation>
 <translation id="5136035049889637840">Mua các sản phẩm tương tự <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Tìm hiểu cách sử dụng Google Drive</translation>
@@ -914,7 +914,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7187993566681480880">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập.</translation>
 <translation id="718926126787620637">Danh sách thư mục dấu trang đã được mở ở toàn độ cao</translation>
-<translation id="7189372733857464326">Đợi Dịch vụ của Google Play cập nhật xong</translation>
+<translation id="7189372733857464326">Đợi Dịch vụ Google Play cập nhật xong</translation>
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
 <translation id="7233236755231902816">Để duyệt web bằng ngôn ngữ của bạn, hãy tải phiên bản Chrome mới nhất</translation>
 <translation id="7248069434667874558">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> đã bật tính năng đồng bộ hóa trên Chrome</translation>

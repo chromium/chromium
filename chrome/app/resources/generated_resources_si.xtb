@@ -5093,6 +5093,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' දැනටමත් '<ph name="ACTION" />' ක්‍රියාව වෙත පවරා ඇත. පිටවීමට ඕනෑම යතුරක් ඔබන්න.</translation>
 <translation id="6795884519221689054">පැන්ඩා</translation>
 <translation id="6797493596609571643">අපොයි, කිසියම් වැරැද්දක් සිදුව ඇත.</translation>
+<translation id="679845623837196966">කියවීම් ලැයිස්තුව පෙන්වන්න</translation>
 <translation id="6798578729981748444">ආයාත කිරීම අවසන් කිරීමට, සියලු Firefox කවුළු වසන්න.</translation>
 <translation id="6798780071646309401">කැප්ස් ලොක් ක්‍රියාත්මකයි</translation>
 <translation id="6798954102094737107">ප්ලගින: <ph name="PLUGIN_NAME" /></translation>
@@ -7207,6 +7208,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
       <ph name="LIST_ITEM" />Chrome සම්බන්ධක විශ්ලේෂක ධාවනය කිරීම
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">පින්තූරය තුළ පින්තූරය</translation>
+<translation id="9167063903968449027">කියවීම් ලැයිස්තුව පෙන්වන්න</translation>
 <translation id="9168436347345867845">පසුව එය කරන්න</translation>
 <translation id="9169496697824289689">යතුරුපුවරු කෙටිමං බලන්න</translation>
 <translation id="916964310188958970">ඇයි මෙම යෝජනාව?</translation>

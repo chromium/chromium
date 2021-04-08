@@ -5094,6 +5094,7 @@
 <translation id="6793723358811598107">„<ph name="CURRENTKEY" />“-ის მიერ უკვე სრულდება „<ph name="ACTION" />“. გასასვლელად დააჭირეთ ნებისმიერ კლავიშს.</translation>
 <translation id="6795884519221689054">პანდა</translation>
 <translation id="6797493596609571643">უი! შეცდომა მოხდა.</translation>
+<translation id="679845623837196966">საკითხავი სიის ჩვენება</translation>
 <translation id="6798578729981748444">იმპორტის დასასრულებლად დახურეთ Firefox-ის ყველა ფანჯარა.</translation>
 <translation id="6798780071646309401">Caps Lock ჩართულია</translation>
 <translation id="6798954102094737107">დანამატი: <ph name="PLUGIN_NAME" /></translation>
@@ -7207,6 +7208,7 @@
       <ph name="LIST_ITEM" />Chrome-ის კავშირების დიაგნოსტიკა
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">გამოსახულება გამოსახულებაში</translation>
+<translation id="9167063903968449027">საკითხავი სიის ჩვენება</translation>
 <translation id="9168436347345867845">მოგვიანებით გაკეთება</translation>
 <translation id="9169496697824289689">კლავიატურის მალსახმობების ნახვა</translation>
 <translation id="916964310188958970">რატომ მთავაზობთ ამას?</translation>

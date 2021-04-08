@@ -643,7 +643,7 @@
 <translation id="1689945336726856614">‏نسخ &amp;عنوان URL</translation>
 <translation id="1690248886740053041">تعذّر الاتصال بشبكة جوّال. للحصول على الدعم الفني، يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
 <translation id="1692115862433274081">استخدام حساب آخر</translation>
-<translation id="1692118695553449118">المزامنة ممكنة</translation>
+<translation id="1692118695553449118">المزامنة مفعَّلة</translation>
 <translation id="1692210323591458290">أرجواني داكن</translation>
 <translation id="169279809881363536">لم يتم العثور على أي ملفات شخصية. لإعداد شبكة جديدة، يمكنك مسح رمز الاستجابة السريعة ضوئيًا باستخدام كاميرا الجهاز أو إدخال رمز التفعيل المُقدَّم من مشغِّل شبكة الجوّال.</translation>
 <translation id="1697150536837697295">الفن</translation>
@@ -5098,6 +5098,7 @@
 <translation id="6793723358811598107">سبق وتم تخصيص مفتاح "<ph name="CURRENTKEY" />" للإجراء "<ph name="ACTION" />". يُرجى الضغط على أي مفتاح للخروج.</translation>
 <translation id="6795884519221689054">باندا</translation>
 <translation id="6797493596609571643">عفوًا، حدث خطأ ما.</translation>
+<translation id="679845623837196966">إظهار قائمة القراءة</translation>
 <translation id="6798578729981748444">‏لإنهاء الاستيراد، أغلق جميع نوافذ Firefox.</translation>
 <translation id="6798780071646309401">‏مفتاح caps lock قيد التفعيل</translation>
 <translation id="6798954102094737107">المكوّن الإضافي: <ph name="PLUGIN_NAME" /></translation>
@@ -7217,6 +7218,7 @@
       <ph name="LIST_ITEM" />تشغيل "بيانات تشخيص مشاكل الاتصال بالشبكة في Chrome"
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">نافذة ضمن النافذة</translation>
+<translation id="9167063903968449027">إظهار قائمة القراءة</translation>
 <translation id="9168436347345867845">تنفيذ ذلك لاحقًا</translation>
 <translation id="9169496697824289689">عرض اختصارات لوحة المفاتيح</translation>
 <translation id="916964310188958970">لماذا يظهر هذا الاقتراح؟</translation>

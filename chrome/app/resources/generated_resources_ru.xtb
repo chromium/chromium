@@ -5096,6 +5096,7 @@
 <translation id="6793723358811598107">Клавиша "<ph name="CURRENTKEY" />" уже используется для действия "<ph name="ACTION" />". Нажмите любую клавишу, чтобы выйти.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">Произошла ошибка</translation>
+<translation id="679845623837196966">Показывать список для чтения</translation>
 <translation id="6798578729981748444">Чтобы завершить импорт, закройте все окна Firefox.</translation>
 <translation id="6798780071646309401">клавиша Caps Lock нажата</translation>
 <translation id="6798954102094737107">Плагин: <ph name="PLUGIN_NAME" /></translation>
@@ -7213,6 +7214,7 @@
       <ph name="LIST_ITEM" />Запустите Диагностику соединений Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Картинка в картинке</translation>
+<translation id="9167063903968449027">Показывать список для чтения</translation>
 <translation id="9168436347345867845">Позже</translation>
 <translation id="9169496697824289689">Просмотреть быстрые клавиши</translation>
 <translation id="916964310188958970">Почему я вижу эту подсказку?</translation>

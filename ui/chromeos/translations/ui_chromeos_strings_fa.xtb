@@ -245,7 +245,7 @@
 <translation id="3626281679859535460">روشنایی</translation>
 <translation id="3644896802912593514">عرض</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> مورد منتقل شد.</translation>
-<translation id="3645531960514756307">برداشتن پین پوشه</translation>
+<translation id="3645531960514756307">برداشتن سنجاق پوشه</translation>
 <translation id="3685122418104378273">‏هنگام استفاده از داده‌های شبکه همراه، همگام‌سازی Google Drive به‌صورت پیش‌فرض غیرفعال است.</translation>
 <translation id="3689865792480713551">لغو <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3691184985318546178">سینهالی</translation>
@@ -610,7 +610,7 @@
 <translation id="7544853251252956727">درهم</translation>
 <translation id="7547780573915868306">لیتوانیایی</translation>
 <translation id="7547811415869834682">هلند</translation>
-<translation id="7551643184018910560">پین کردن به فقسه</translation>
+<translation id="7551643184018910560">سنجاق کردن به فقسه</translation>
 <translation id="7553492409867692754">‏به برنامه‌های Linux اجازه دهید به فایل‌های پوشه <ph name="FOLDER_NAME" /> دسترسی داشته باشند</translation>
 <translation id="7575645593344061397">درحال بازیابی «<ph name="FILENAME" />»…</translation>
 <translation id="7576032389798113292">۶x۴</translation>
@@ -708,7 +708,7 @@
 <translation id="8395901698320285466">ابعاد</translation>
 <translation id="8437209419043462667">آمریکایی</translation>
 <translation id="8456681095658380701">نام نامعتبر</translation>
-<translation id="8461467696380332069">برای دسترسی سریع به فایل‌ها در قفسه، روی فایلی کلیک راست کنید و «پین کردن به قفسه» را انتخاب کنید.</translation>
+<translation id="8461467696380332069">برای دسترسی سریع به فایل‌ها در قفسه، روی فایلی کلیک راست کنید و «سنجاق کردن به قفسه» را انتخاب کنید.</translation>
 <translation id="8463494891489624050">‏ویتنامی (VIQR)</translation>
 <translation id="8466234950814670489">تار نوار</translation>
 <translation id="8475647382427415476">‏Google Drive نتوانست در این لحظه «<ph name="FILENAME" />» را همگام‌سازی کند. Google Drive بعداً دوباره امتحان می‌کند.</translation>
@@ -735,7 +735,7 @@
 <translation id="8714406895390098252">دوچرخه</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> انتخاب شد.</translation>
 <translation id="872537912056138402">کرواسی</translation>
-<translation id="8750438273876807512">برای دسترسی سریع به فایل‌های داخل قفسه، فایلی را لمس کنید و نگه دارید، روی <ph name="ICON" /> ضربه بزنید، و «پین کردن به قفسه» را انتخاب کنید.</translation>
+<translation id="8750438273876807512">برای دسترسی سریع به فایل‌های داخل قفسه، فایلی را لمس کنید و نگه دارید، روی <ph name="ICON" /> ضربه بزنید، و «سنجاق کردن به قفسه» را انتخاب کنید.</translation>
 <translation id="8775404590947523323">ویرایش‌های شما به‌طور خودکار ذخیره می‌شوند.<ph name="BREAKS" />برای داشتن یک نسخه از تصویر اصلی٬ علامت «رونویسی نسخهٔ اصلی» را بردارید.</translation>
 <translation id="8808686172382650546">گربه</translation>
 <translation id="8810671769985673465">فشرده‌سازی انجام نشد، موارد موجود: «<ph name="FILE_NAME" />»</translation>
@@ -759,7 +759,7 @@
 <translation id="9110990317705400362">‏همواره به دنبال راه‌هایی هستیم تا مرورتان را ایمن‌تر کنیم. قبلاً هر وب‌سایتی از شما می‌خواست برنامه‌افزودنی‌ای را در مرورگرتان اضافه کنید. در جدیدترین نسخه Google Chrome، باید به Chrome صراحتاً بگویید که می‌خواهید با افزودن این برنامه‌های افزودنی از طریق صفحه افزونه‌ها آنها را نصب کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">باز کردن قفل</translation>
 <translation id="912419004897138677">کدک</translation>
-<translation id="9129931661813833980">پین کردن پوشه</translation>
+<translation id="9129931661813833980">سنجاق کردن پوشه</translation>
 <translation id="9130775360844693113">اعضای «<ph name="DESTINATION_NAME" />» به این موارد دسترسی پیدا می‌کنند.</translation>
 <translation id="9131598836763251128">انتخاب یک یا چند فایل</translation>
 <translation id="9133055936679483811">فشرده‌سازی انجام نشد. <ph name="ERROR_MESSAGE" /></translation>

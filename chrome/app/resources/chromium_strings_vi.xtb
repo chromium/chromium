@@ -62,7 +62,7 @@
 <translation id="3103660991484857065">Trình cài đặt không thể giải nén tệp lưu trữ. Hãy tải xuống Chromium lại lần nữa.</translation>
 <translation id="3130323860337406239">Chromium đang sử dụng micrô của bạn.</translation>
 <translation id="3155163173539279776">Chạy lại Chromium</translation>
-<translation id="3179665906251668410">Mở liên kết trong cửa sổ ẩn danh của Chromium</translation>
+<translation id="3179665906251668410">Mở đường liên kết trong cửa sổ ẩn danh của Chromium</translation>
 <translation id="3190315855212034486">Rất tiếc! Chromium đã gặp sự cố. Chạy lại ngay bây giờ?</translation>
 <translation id="3229526316128325841">Chromium muốn xuất các mật khẩu của bạn.</translation>
 <translation id="3258596308407688501">Chromium không thể đọc và ghi vào thư mục dữ liệu:
@@ -85,7 +85,7 @@
 <translation id="3685209450716071127">Chromium không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="371088601698879021">Chromium OS có thể khôi phục các ứng dụng và trang bất cứ lúc nào sau khi khởi động lại mà không cần hỏi.</translation>
-<translation id="3713809861844741608">Mở liên kết trong thẻ mới của Chromium</translation>
+<translation id="3713809861844741608">Mở đường liên kết trong thẻ mới của Chromium</translation>
 <translation id="3728336900324680424">Chromium sẽ truy cập vào Drive của bạn để đưa ra đề xuất trên thanh địa chỉ</translation>
 <translation id="378917192836375108">Chromium cho phép bạn nhấp vào số điện thoại trên web và gọi tới số đó bằng Skype!</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
@@ -196,7 +196,7 @@ Một số tính năng có thể không khả dụng. Hãy chỉ định thư m�
 <translation id="6897548120660295439">Rosetta cho phép Chromium phát nội dung nghe nhìn được bảo vệ trên trang này.</translation>
 <translation id="691026815377248078">Chromium cần có quyền truy cập Bluetooth để tiếp tục 
  ghép nối. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
-<translation id="6964305034639999644">Mở liên kết trong cửa sổ ẩn danh của Chromium</translation>
+<translation id="6964305034639999644">Mở đường liên kết trong cửa sổ ẩn danh của Chromium</translation>
 <translation id="6978145336957848883">Mật khẩu yếu thường dễ đoán. Chromium có thể <ph name="BEGIN_LINK" />tạo mật khẩu mạnh và ghi nhớ mật khẩu này cho bạn<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium cần có quyền truy cập vào micrô của bạn cho trang web này</translation>
 <translation id="701244094609242530">Chromium không thể kiểm tra các tiện ích của bạn. Hãy thử lại sau.</translation>
@@ -276,7 +276,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="9047197236183657400">Chuyển tài khoản sang hồ sơ mới trên Chromium?</translation>
 <translation id="9089354809943900324">Chromium đã lỗi thời</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium sẽ khởi động lại sau một giờ}other{Chromium sẽ khởi động lại sau # giờ}}</translation>
-<translation id="91086099826398415">Mở liên kết trong thẻ mới của Chromium</translation>
+<translation id="91086099826398415">Mở đường liên kết trong thẻ mới của Chromium</translation>
 <translation id="911206726377975832">Bạn cũng muốn xóa dữ liệu duyệt web của mình?</translation>
 <translation id="9158494823179993217">Quản trị viên hệ thống của bạn đã định cấu hình Chromium để mở một trình duyệt thay thế khi truy cập vào <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

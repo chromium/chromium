@@ -5096,6 +5096,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6793723358811598107">A(z) „<ph name="CURRENTKEY" />” már hozzá van rendelve a következő művelethez: <ph name="ACTION" />. A kilépéshez nyomja meg bármelyik billentyűt.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hoppá, hiba történt.</translation>
+<translation id="679845623837196966">Olvasólista megjelenítése</translation>
 <translation id="6798578729981748444">Az importálás befejezéséhez zárja be az összes Firefox-ablakot.</translation>
 <translation id="6798780071646309401">caps lock bekapcsolva</translation>
 <translation id="6798954102094737107">Beépülő modul: <ph name="PLUGIN_NAME" /></translation>
@@ -7211,6 +7212,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
       <ph name="LIST_ITEM" />Futtassa a Chrome kapcsolati diagnosztikát
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Kép a képben</translation>
+<translation id="9167063903968449027">Olvasólista megjelenítése</translation>
 <translation id="9168436347345867845">Később</translation>
 <translation id="9169496697824289689">Billentyűparancsok megtekintése</translation>
 <translation id="916964310188958970">Miért jelent meg ez a javaslat?</translation>

@@ -5095,6 +5095,7 @@
 <translation id="6793723358811598107">'<ph name="ACTION" />' చర్యకు '<ph name="CURRENTKEY" />' ఇప్పటికే కేటాయించబడింది. నిష్క్రమించడానికి ఏదైనా కీని నొక్కండి.</translation>
 <translation id="6795884519221689054">పాండా</translation>
 <translation id="6797493596609571643">అయ్యో, ఏదో తప్పు జరిగింది.</translation>
+<translation id="679845623837196966">చదవాల్సిన లిస్ట్‌ను చూపించు</translation>
 <translation id="6798578729981748444">దిగుమతిని పూర్తి చేయాలంటే, అన్ని Firefox విండోలను మూసివేయండి.</translation>
 <translation id="6798780071646309401">caps lock ఆన్‌లో ఉంది</translation>
 <translation id="6798954102094737107">ప్లగ్ఇన్‌: <ph name="PLUGIN_NAME" /></translation>
@@ -7206,6 +7207,7 @@
       <ph name="LIST_ITEM" />Chrome కనెక్టివిటీ సమస్య విశ్లేషణలు రన్ చేయండి
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">చిత్రంలో చిత్రం</translation>
+<translation id="9167063903968449027">చదవాల్సిన లిస్ట్‌ను చూపించు</translation>
 <translation id="9168436347345867845">దీనిని తర్వాత చేయి</translation>
 <translation id="9169496697824289689">కీబోర్డ్ షార్ట్‌క‌ట్‌లను వీక్షించండి</translation>
 <translation id="916964310188958970">ఈ సూచన ఎందుకు చూపబడింది?</translation>

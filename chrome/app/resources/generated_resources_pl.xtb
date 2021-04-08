@@ -5093,6 +5093,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6793723358811598107">Klawisz „<ph name="CURRENTKEY" />” jest już przypisany do czynności „<ph name="ACTION" />”. Naciśnij dowolny klawisz, by zakończyć.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Ups, coś poszło nie tak.</translation>
+<translation id="679845623837196966">Pokaż listę Do przeczytania</translation>
 <translation id="6798578729981748444">Aby zakończyć importowanie, zamknij wszystkie okna Firefoksa.</translation>
 <translation id="6798780071646309401">caps lock włączony</translation>
 <translation id="6798954102094737107">Wtyczka: <ph name="PLUGIN_NAME" /></translation>
@@ -7210,6 +7211,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
       <ph name="LIST_ITEM" />Uruchom Chrome Connectivity Diagnostics.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Obraz w obrazie</translation>
+<translation id="9167063903968449027">Pokaż listę Do przeczytania</translation>
 <translation id="9168436347345867845">Później</translation>
 <translation id="9169496697824289689">Pokaż skróty klawiszowe</translation>
 <translation id="916964310188958970">Dlaczego ta sugestia?</translation>
