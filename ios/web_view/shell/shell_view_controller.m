@@ -1026,7 +1026,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   return YES;
 }
 
-- (void)webViewDidStartProvisionalNavigation:(CWVWebView*)webView {
+- (void)webViewDidStartNavigation:(CWVWebView*)webView {
   NSLog(@"%@", NSStringFromSelector(_cmd));
   [self updateToolbar];
 }
