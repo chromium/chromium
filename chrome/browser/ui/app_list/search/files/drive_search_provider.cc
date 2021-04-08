@@ -77,8 +77,9 @@ void DriveSearchProvider::Start(const std::u16string& query) {
   // SortField. The SortDirection does nothing in this case.
   drive_service_->SearchDriveByFileName(
       base::UTF16ToUTF8(query), kMaxResults,
-      drivefs::mojom ::QueryParameters::SortField::kNone,
-      drivefs::mojom ::QueryParameters::SortDirection::kAscending,
+      drivefs::mojom::QueryParameters::SortField::kNone,
+      drivefs::mojom::QueryParameters::SortDirection::kAscending,
+      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
       base::BindOnce(&DriveSearchProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
 }

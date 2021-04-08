@@ -1098,6 +1098,7 @@ void DriveIntegrationService::SearchDriveByFileName(
     int max_results,
     drivefs::mojom::QueryParameters::SortField sort_field,
     drivefs::mojom::QueryParameters::SortDirection sort_direction,
+    drivefs::mojom::QueryParameters::QuerySource query_source,
     SearchDriveByFileNameCallback callback) const {
   if (!GetDriveFsHost()) {
     std::move(callback).Run(drive::FileError::FILE_ERROR_SERVICE_UNAVAILABLE,
@@ -1110,6 +1111,7 @@ void DriveIntegrationService::SearchDriveByFileName(
   drive_query->page_size = max_results;
   drive_query->sort_field = sort_field;
   drive_query->sort_direction = sort_direction;
+  drive_query->query_source = query_source;
 
   auto on_response =
       base::BindOnce(&DriveIntegrationService::OnSearchDriveByFileName,

@@ -170,6 +170,7 @@ class DriveIntegrationService : public KeyedService,
       int max_results,
       drivefs::mojom::QueryParameters::SortField sort_field,
       drivefs::mojom::QueryParameters::SortDirection sort_direction,
+      drivefs::mojom::QueryParameters::QuerySource query_source,
       SearchDriveByFileNameCallback callback) const;
 
   // Returns the metadata for Drive file at |local_path|.

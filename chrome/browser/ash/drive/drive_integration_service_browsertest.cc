@@ -140,6 +140,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
   drive_service->SearchDriveByFileName(
       "ba", 10, drivefs::mojom::QueryParameters::SortField::kLastViewedByMe,
       drivefs::mojom::QueryParameters::SortDirection::kAscending,
+      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
       base::BindLambdaForTesting(
           [=](FileError error,
               std::vector<drivefs::mojom::QueryItemPtr> items) {
