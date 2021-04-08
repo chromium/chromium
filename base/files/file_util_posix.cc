@@ -20,6 +20,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#include <sys/sendfile.h>
+#endif
+
 #include "base/base_switches.h"
 #include "base/bits.h"
 #include "base/command_line.h"
@@ -1219,6 +1223,41 @@ bool MoveUnsafe(const FilePath& from_path, const FilePath& to_path) {
   DeletePathRecursively(from_path);
   return true;
 }
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+bool CopyFileContentsWithSendfile(File& infile,
+                                  File& outfile,
+                                  bool& retry_slow) {
+  int64_t file_size = infile.GetLength();
+  if (file_size < 0) {
+    return false;
+  }
+
+  size_t copied = 0;
+  ssize_t res = 0;
+  while (file_size - copied > 0) {
+    // Don't specify an offset and the kernel will begin reading/writing to the
+    // current file offsets.
+    res = HANDLE_EINTR(sendfile(outfile.GetPlatformFile(),
+                                infile.GetPlatformFile(), /*offset=*/nullptr,
+                                /*length=*/file_size - copied));
+    if (res <= 0) {
+      break;
+    }
+
+    copied += res;
+  }
+
+  // Fallback on non-fatal error cases. None of these errors can happen after
+  // data has started copying, a check is included for good measure. As a result
+  // file sizes and file offsets will not have changed. A slow fallback and
+  // proceed without issues.
+  retry_slow = (copied == 0 && res < 0 &&
+                (errno == EINVAL || errno == ENOSYS || errno == EPERM));
+
+  return res >= 0;
+}
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
 }  // namespace internal
 

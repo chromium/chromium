@@ -4124,7 +4124,7 @@ if (is_android) {
 
     # Make sure robolectric tests have classes filtered out of base_java by
     # jar_excluded_patterns.
-    srcjar_deps = [ "//build/android:native_libraries_gen", ]
+    srcjar_deps = [ "//build/android:native_libraries_gen" ]
     deps = [
       ":base_java",
       "//testing/android/junit:junit_test_support",

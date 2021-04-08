@@ -144,6 +144,13 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return Allow();
   }
 
+  // Return -EPERM rather than killing the process with SIGSYS. This happens
+  // because if a sandboxed process attempts to use sendfile(2) it should be
+  // allowed to fall back to read(2)/write(2).
+  if (SyscallSets::IsSendfile(sysno)) {
+    return Error(EPERM);
+  }
+
   if (IsBaselinePolicyAllowed(sysno)) {
     return Allow();
   }

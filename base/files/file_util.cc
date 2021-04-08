@@ -50,6 +50,17 @@ bool Move(const FilePath& from_path, const FilePath& to_path) {
 }
 
 bool CopyFileContents(File& infile, File& outfile) {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+  bool retry_slow = false;
+  bool res =
+      internal::CopyFileContentsWithSendfile(infile, outfile, retry_slow);
+  if (res || !retry_slow) {
+    return res;
+  }
+  // Any failures which allow retrying using read/write will not have modified
+  // either file offset or size.
+#endif
+
   static constexpr size_t kBufferSize = 32768;
   std::vector<char> buffer(kBufferSize);
 

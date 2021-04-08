@@ -65,6 +65,18 @@ bool SyscallSets::IsAllowedGettime(int sysno) {
   }
 }
 
+bool SyscallSets::IsSendfile(int sysno) {
+  if (sysno == __NR_sendfile) {
+    return true;
+  }
+#if defined(__NR_sendfile64)
+  if (sysno == __NR_sendfile64) {
+    return true;
+  }
+#endif
+  return false;
+}
+
 bool SyscallSets::IsCurrentDirectory(int sysno) {
   switch (sysno) {
     case __NR_getcwd:
@@ -620,11 +632,6 @@ bool SyscallSets::IsAllowedGeneralIo(int sysno) {
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
     case __NR_recvmmsg_time64:  // Could specify source.
-#endif
-    case __NR_sendfile:
-#if defined(__i386__) || defined(__arm__) || \
-    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
-    case __NR_sendfile64:
 #endif
     case __NR_sendmmsg:  // Could specify destination.
     case __NR_splice:
