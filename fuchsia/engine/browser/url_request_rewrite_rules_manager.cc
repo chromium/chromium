@@ -137,18 +137,20 @@ UrlRequestRewriteRulesManager::UrlRequestRewriteRulesManager(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
-UrlRequestRewriteRulesManager::~UrlRequestRewriteRulesManager() = default;
+UrlRequestRewriteRulesManager::~UrlRequestRewriteRulesManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 zx_status_t UrlRequestRewriteRulesManager::OnRulesUpdated(
     std::vector<fuchsia::web::UrlRequestRewriteRule> rules,
     fuchsia::web::Frame::SetUrlRequestRewriteRulesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!ValidateRules(rules)) {
-    base::AutoLock auto_lock(lock_);
     cached_rules_ = nullptr;
     return ZX_ERR_INVALID_ARGS;
   }
 
-  base::AutoLock auto_lock(lock_);
   cached_rules_ =
       base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
           mojo::ConvertTo<std::vector<mojom::UrlRequestRulePtr>>(
@@ -165,16 +167,18 @@ zx_status_t UrlRequestRewriteRulesManager::OnRulesUpdated(
   return ZX_OK;
 }
 
-scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>
+scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>&
 UrlRequestRewriteRulesManager::GetCachedRules() {
-  base::AutoLock auto_lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cached_rules_;
 }
 
-UrlRequestRewriteRulesManager::UrlRequestRewriteRulesManager() {}
+UrlRequestRewriteRulesManager::UrlRequestRewriteRulesManager() = default;
 
 void UrlRequestRewriteRulesManager::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Register the frame rules receiver.
   mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver> rules_receiver;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
@@ -183,7 +187,6 @@ void UrlRequestRewriteRulesManager::RenderFrameCreated(
       render_frame_host->GetGlobalFrameRoutingId(), std::move(rules_receiver));
   DCHECK(iter.second);
 
-  base::AutoLock auto_lock(lock_);
   if (cached_rules_) {
     // Send an initial set of rules.
     iter.first->second->OnRulesUpdated(mojo::Clone(cached_rules_->data));
@@ -192,6 +195,8 @@ void UrlRequestRewriteRulesManager::RenderFrameCreated(
 
 void UrlRequestRewriteRulesManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   size_t removed =
       active_remotes_.erase(render_frame_host->GetGlobalFrameRoutingId());
   DCHECK_EQ(removed, 1u);
