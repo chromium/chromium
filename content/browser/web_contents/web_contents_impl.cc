@@ -657,23 +657,29 @@ class WebContentsImpl::WebContentsDestructionObserver
 // WebContentsImpl::ColorChooser ----------------------------------------------
 class WebContentsImpl::ColorChooser : public blink::mojom::ColorChooser {
  public:
-  ColorChooser(content::ColorChooser* chooser,
-               mojo::PendingReceiver<blink::mojom::ColorChooser> receiver,
+  ColorChooser(mojo::PendingReceiver<blink::mojom::ColorChooser> receiver,
                mojo::PendingRemote<blink::mojom::ColorChooserClient> client)
-      : chooser_(chooser),
-        receiver_(this, std::move(receiver)),
-        client_(std::move(client)) {
-    receiver_.set_disconnect_handler(
-        base::BindOnce([](content::ColorChooser* chooser) { chooser->End(); },
-                       base::Unretained(chooser)));
+      : receiver_(this, std::move(receiver)), client_(std::move(client)) {}
+
+  ~ColorChooser() override {
+    if (chooser_)
+      chooser_->End();
   }
 
-  ~ColorChooser() override { chooser_->End(); }
+  void SetChooser(std::unique_ptr<content::ColorChooser> chooser) {
+    chooser_ = std::move(chooser);
+    if (chooser_) {
+      receiver_.set_disconnect_handler(
+          base::BindOnce([](content::ColorChooser* chooser) { chooser->End(); },
+                         base::Unretained(chooser_.get())));
+    }
+  }
 
   void SetSelectedColor(SkColor color) override {
     OPTIONAL_TRACE_EVENT0("content",
                           "WebContentsImpl::ColorChooser::SetSelectedColor");
-    chooser_->SetSelectedColor(color);
+    if (chooser_)
+      chooser_->SetSelectedColor(color);
   }
 
   void DidChooseColorInColorChooser(SkColor color) {
@@ -5906,16 +5912,19 @@ void WebContentsImpl::OpenColorChooser(
     SkColor color,
     std::vector<blink::mojom::ColorSuggestionPtr> suggestions) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OpenColorChooser");
+  // Create `color_chooser_` before calling OpenColorChooser since
+  // OpenColorChooser may callback with results.
   color_chooser_.reset();
+  color_chooser_ = std::make_unique<ColorChooser>(std::move(chooser_receiver),
+                                                  std::move(client));
 
   content::ColorChooser* new_color_chooser =
       delegate_ ? delegate_->OpenColorChooser(this, color, suggestions)
                 : nullptr;
-  if (!new_color_chooser)
-    return;
+  color_chooser_->SetChooser(base::WrapUnique(new_color_chooser));
 
-  color_chooser_ = std::make_unique<ColorChooser>(
-      new_color_chooser, std::move(chooser_receiver), std::move(client));
+  if (!new_color_chooser)
+    color_chooser_.reset();
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
