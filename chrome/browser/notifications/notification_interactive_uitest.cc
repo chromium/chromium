@@ -691,7 +691,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayFullscreen) {
 // The Fake OSX fullscreen window doesn't like drawing a second fullscreen
 // window when another is visible.
 #if !defined(OS_MAC)
-IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayMultiFullscreen) {
+// Disabled on other platforms because it is flaky.  http://crbug.com/1195324
+IN_PROC_BROWSER_TEST_F(NotificationsTest, DISABLED_TestShouldDisplayMultiFullscreen) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AllowAllOrigins();
 
