@@ -608,6 +608,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
 
   // This also calls out to ContentBrowserClient::GetApplicationLocale and
   // modifies the current process' command line.
+  // NOTE: This function is fundamentally unsafe and *should not be used*. By
+  // the time a ContentBrowserClient exists in test fixtures, it is already
+  // unsafe to modify the command-line. The command-line should only be modified
+  // from SetUpCommandLine, which is before the ContentClient is created. See
+  // crbug.com/1197147
   static void SetRunRendererInProcess(bool value);
 
   // This forces a renderer that is running "in process" to shut down.

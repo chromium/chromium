@@ -1295,15 +1295,13 @@ class IsProcessBackgroundedObserver : public RenderProcessHostInternalObserver {
 };
 
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, PriorityOverride) {
-  // RenderProcessHostImpl::UpdateProcessPriority has an early check of
-  // run_renderer_in_process and exits for RenderProcessHosts without a child
-  // process launcher.  In order to skip initializing that here and the layer of
-  // indirection, we explicitly run in-process, which we must also disable once
-  // the test has finished to prevent crashing on exit.
-  RenderProcessHost::SetRunRendererInProcess(true);
-  RenderProcessHostImpl* process = static_cast<RenderProcessHostImpl*>(
-      RenderProcessHostImpl::CreateRenderProcessHost(
-          ShellContentBrowserClient::Get()->browser_context(), nullptr));
+  // Start up a real renderer process.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  RenderProcessHost* rph =
+      shell()->web_contents()->GetMainFrame()->GetProcess();
+  RenderProcessHostImpl* process = static_cast<RenderProcessHostImpl*>(rph);
 
   IsProcessBackgroundedObserver observer(process);
 
@@ -1342,11 +1340,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, PriorityOverride) {
 
   // Clear the pending view so the test doesn't explode.
   process->RemovePendingView();
-  EXPECT_FALSE(process->HasPriorityOverride());
-  EXPECT_TRUE(process->IsProcessBackgrounded());
-  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
-
-  RenderProcessHost::SetRunRendererInProcess(false);
 }
 
 // This test verifies properties of RenderProcessHostImpl *before* Init method
