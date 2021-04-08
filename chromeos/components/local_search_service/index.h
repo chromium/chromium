@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_H_
 #define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -34,6 +35,10 @@ class Index : public mojom::Index {
   SearchParams GetSearchParamsForTesting() const { return search_params_; }
 
  protected:
+  // Get size of the index for metrics. Only accurate if called after index has
+  // done updating.
+  virtual uint32_t GetIndexSize() const = 0;
+
   // Logs daily search metrics if |reporter_remote_| is bound. Also logs
   // other UMA metrics (number results and search latency).
   void MaybeLogSearchResultsStats(ResponseStatus status,
@@ -41,7 +46,18 @@ class Index : public mojom::Index {
                                   base::TimeDelta latency);
 
   // Logs number of documents in the index.
-  void MaybeLogIndexSize(uint64_t index_size);
+  void MaybeLogIndexSize();
+
+  void AddOrUpdateCallbackWithTime(AddOrUpdateCallback callback,
+                                   const base::Time start_time);
+  void DeleteCallbackWithTime(DeleteCallback callback,
+                              const base::Time start_time,
+                              uint32_t num_deleted);
+  void UpdateDocumentsCallbackWithTime(UpdateDocumentsCallback callback,
+                                       const base::Time start_time,
+                                       uint32_t num_deleted);
+  void ClearIndexCallbackWithTime(ClearIndexCallback callback,
+                                  const base::Time start_time);
 
   SearchParams search_params_;
   IndexId index_id_;

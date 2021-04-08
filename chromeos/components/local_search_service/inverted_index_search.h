@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INVERTED_INDEX_SEARCH_H_
 #define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INVERTED_INDEX_SEARCH_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
@@ -44,6 +45,7 @@ class InvertedIndexSearch : public Index {
             uint32_t max_results,
             FindCallback callback) override;
   void ClearIndex(ClearIndexCallback callback) override;
+  uint32_t GetIndexSize() const override;
 
   // Returns document id and number of occurrences of |term|.
   // Document ids are sorted in alphabetical order.

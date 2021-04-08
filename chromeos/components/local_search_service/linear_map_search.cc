@@ -96,7 +96,7 @@ void LinearMapSearch::AddOrUpdate(const std::vector<Data>& data,
     UpdateData(id, item.contents, &data_);
   }
 
-  MaybeLogIndexSize(data_.size());
+  MaybeLogIndexSize();
   std::move(callback).Run();
 }
 
@@ -108,7 +108,7 @@ void LinearMapSearch::Delete(const std::vector<std::string>& ids,
     num_deleted += data_.erase(id);
   }
 
-  MaybeLogIndexSize(data_.size());
+  MaybeLogIndexSize();
   std::move(callback).Run(num_deleted);
 }
 
@@ -126,7 +126,7 @@ void LinearMapSearch::UpdateDocuments(const std::vector<Data>& data,
     }
   }
 
-  MaybeLogIndexSize(data_.size());
+  MaybeLogIndexSize();
   std::move(callback).Run(num_deleted);
 }
 
@@ -160,6 +160,10 @@ void LinearMapSearch::Find(const std::u16string& query,
 void LinearMapSearch::ClearIndex(ClearIndexCallback callback) {
   data_.clear();
   std::move(callback).Run();
+}
+
+uint32_t LinearMapSearch::GetIndexSize() const {
+  return data_.size();
 }
 
 std::vector<Result> LinearMapSearch::GetSearchResults(

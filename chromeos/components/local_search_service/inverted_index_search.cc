@@ -4,6 +4,7 @@
 
 #include "chromeos/components/local_search_service/inverted_index_search.h"
 
+#include <cstdint>
 #include <utility>
 #include <vector>
 
@@ -102,8 +103,12 @@ void InvertedIndexSearch::AddOrUpdate(const std::vector<Data>& data,
   base::PostTaskAndReplyWithResult(
       blocking_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ExtractDocumentsContent, data),
-      base::BindOnce(&InvertedIndexSearch::FinalizeAddOrUpdate,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          &InvertedIndexSearch::FinalizeAddOrUpdate,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&InvertedIndexSearch::AddOrUpdateCallbackWithTime,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         base::Time::Now())));
 }
 
 void InvertedIndexSearch::Delete(const std::vector<std::string>& ids,
@@ -112,8 +117,12 @@ void InvertedIndexSearch::Delete(const std::vector<std::string>& ids,
   DCHECK(!ids.empty());
   blocking_task_runner_->PostTaskAndReply(
       FROM_HERE, base::DoNothing(),
-      base::BindOnce(&InvertedIndexSearch::FinalizeDelete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback), ids));
+      base::BindOnce(
+          &InvertedIndexSearch::FinalizeDelete, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&InvertedIndexSearch::DeleteCallbackWithTime,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         base::Time::Now()),
+          ids));
 }
 
 void InvertedIndexSearch::UpdateDocuments(const std::vector<Data>& data,
@@ -123,8 +132,12 @@ void InvertedIndexSearch::UpdateDocuments(const std::vector<Data>& data,
   base::PostTaskAndReplyWithResult(
       blocking_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ExtractDocumentsContent, data),
-      base::BindOnce(&InvertedIndexSearch::FinalizeUpdateDocuments,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          &InvertedIndexSearch::FinalizeUpdateDocuments,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&InvertedIndexSearch::UpdateDocumentsCallbackWithTime,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         base::Time::Now())));
 }
 
 void InvertedIndexSearch::Find(const std::u16string& query,
@@ -160,7 +173,13 @@ void InvertedIndexSearch::Find(const std::u16string& query,
 }
 
 void InvertedIndexSearch::ClearIndex(ClearIndexCallback callback) {
-  inverted_index_->ClearInvertedIndex(std::move(callback));
+  inverted_index_->ClearInvertedIndex(base::BindOnce(
+      &InvertedIndexSearch::ClearIndexCallbackWithTime,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), base::Time::Now()));
+}
+
+uint32_t InvertedIndexSearch::GetIndexSize() const {
+  return inverted_index_->NumberDocuments();
 }
 
 std::vector<std::pair<std::string, uint32_t>>

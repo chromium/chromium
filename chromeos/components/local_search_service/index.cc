@@ -70,11 +70,46 @@ void Index::MaybeLogSearchResultsStats(ResponseStatus status,
   }
 }
 
-void Index::MaybeLogIndexSize(uint64_t index_size) {
+void Index::MaybeLogIndexSize() {
+  const uint32_t index_size = GetIndexSize();
   if (index_size != 0u) {
     base::UmaHistogramCounts10000(histogram_prefix_ + ".NumberDocuments",
                                   index_size);
   }
+}
+
+void Index::AddOrUpdateCallbackWithTime(AddOrUpdateCallback callback,
+                                        const base::Time start_time) {
+  const auto time_diff = base::Time::Now() - start_time;
+  MaybeLogIndexSize();
+  base::UmaHistogramTimes(histogram_prefix_ + ".AddOrUpdateLatency", time_diff);
+  std::move(callback).Run();
+}
+
+void Index::DeleteCallbackWithTime(DeleteCallback callback,
+                                   const base::Time start_time,
+                                   const uint32_t num_deleted) {
+  const auto time_diff = base::Time::Now() - start_time;
+  base::UmaHistogramTimes(histogram_prefix_ + ".DeleteLatency", time_diff);
+  MaybeLogIndexSize();
+  std::move(callback).Run(num_deleted);
+}
+
+void Index::UpdateDocumentsCallbackWithTime(UpdateDocumentsCallback callback,
+                                            const base::Time start_time,
+                                            const uint32_t num_deleted) {
+  const auto time_diff = base::Time::Now() - start_time;
+  base::UmaHistogramTimes(histogram_prefix_ + ".UpdateDocumentsLatency",
+                          time_diff);
+  MaybeLogIndexSize();
+  std::move(callback).Run(num_deleted);
+}
+
+void Index::ClearIndexCallbackWithTime(ClearIndexCallback callback,
+                                       const base::Time start_time) {
+  const auto time_diff = base::Time::Now() - start_time;
+  base::UmaHistogramTimes(histogram_prefix_ + ".ClearIndexLatency", time_diff);
+  std::move(callback).Run();
 }
 
 }  // namespace local_search_service

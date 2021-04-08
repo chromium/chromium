@@ -54,6 +54,7 @@ class LinearMapSearch : public Index {
             uint32_t max_results,
             FindCallback callback) override;
   void ClearIndex(ClearIndexCallback callback) override;
+  uint32_t GetIndexSize() const override;
 
  private:
   // Returns all search results for a given query.

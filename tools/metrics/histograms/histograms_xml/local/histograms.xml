@@ -47,6 +47,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="LocalSearchService.AddOrUpdateLatency" units="ms"
+    expires_after="2021-12-30">
+<!-- Name completed by histogram_suffixes name="IndexId" -->
+
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Time taken to add/update content to the index. It is reported once for every
+    AddOrUpdate call. Chrome OS only.
+  </summary>
+</histogram>
+
 <histogram name="LocalSearchService.Backend" enum="LocalSearchServiceBackend"
     expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
@@ -71,6 +84,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="LocalSearchService.ClearIndexLatency" units="ms"
+    expires_after="2021-12-30">
+<!-- Name completed by histogram_suffixes name="IndexId" -->
+
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Time taken to clear all content from the index. It is reported once for
+    every ClearIndex call. Chrome OS only.
+  </summary>
+</histogram>
+
 <histogram name="LocalSearchService.DailySearch" units="count"
     expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
@@ -85,6 +111,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     day or more has passed since the last report. If the system is suspended or
     off for more than a day, the current count will be reported the next time
     the system boots, but the skipped days will not be reported. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="LocalSearchService.DeleteLatency" units="ms"
+    expires_after="2021-12-30">
+<!-- Name completed by histogram_suffixes name="IndexId" -->
+
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Time taken to delete content from the index. It is reported once for every
+    Delete call. Chrome OS only.
   </summary>
 </histogram>
 
@@ -159,6 +198,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Time taken to find search results. Only recorded if search response status
     is success, i.e. neither index nor query is empty. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="LocalSearchService.UpdateDocumentsLatency" units="ms"
+    expires_after="2021-12-30">
+<!-- Name completed by histogram_suffixes name="IndexId" -->
+
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Time taken to update contents from the index. It is reported once for every
+    UpdateDocuments call. Chrome OS only.
   </summary>
 </histogram>
 
