@@ -38,9 +38,9 @@ about:version template page
 </if>
 <if expr="is_ios or is_android">
         <picture>
-          <source srcset="../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo_white.png" media="(prefers-color-scheme: dark)">
-          <source srcset="../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
-          <img alt="$i18n{logo_alt_text}" src="../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo.png">
+          <source srcset="images/product_logo_white.png" media="(prefers-color-scheme: dark)">
+          <source srcset="images/product_logo.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
+          <img alt="$i18n{logo_alt_text}" src="images/product_logo.png">
         </picture>
 </if>
         <div id="company">$i18n{company}</div>
