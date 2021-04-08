@@ -16,37 +16,27 @@
     th { position: sticky; top: 0; background-color: #ffffff }
     th:nth-child(n+2) { cursor: pointer; }
     th.highlighted { background-color: #dddddd }
+    #filterResults { font-weight: bold }
     </style>
   </head>
   <body>
 
-<h1>Chrome #include Analysis</h1>
+<h1>Chrome #include Analysis (go/chrome-includes)</h1>
 
-<p>Build target: <span id="buildTarget">x</span>. Revision: <span id="buildRevision">x</span>. Analyzed on: <span id="analysisDate">x</span>.</p>
+<p>Build target: <span id="buildTarget">x</span> (Linux). Revision: <span id="buildRevision">x</span>. Analyzed on: <span id="analysisDate">x</span>.</p>
 
 <p>Number of translation units: <span id="numRoots">x</span>. Total translation unit size: <span id="totBuildSize">x</span> bytes.</p>
 
 <p>Number of files: <span id="numFiles">x</span>. Total file size: <span id="totFileSize">x</span> bytes.</p>
 
-<h3>Legend</h3>
-<dl>
-  <dt>Translation Unit</dt> <dd>The data processed during a compiler invocation.</dd>
-  <dt>Individual Size</dt> <dd>The size of the file, and as a percentage of the total file size.</dd>
-  <dt>Expanded Size</dt> <dd>The size of the file and all the files it includes, directly and indirectly. Also shown as percentage of the total translation unit size.</dd>
-  <dt>Added Size</dt> <dd>How much size is added by this file being part of the build. In other words, if this file were empty and had no includes, how much smaller would the build be. Also shown as percentage of the total translation unit size.</dd>
-  <dt>Occurrences</dt> <dd>How many translation units this file is part of. Also shown as a percentage of the total number of translation units.</dd>
-  <dt>Include Count</dt> <dd>How many times this file is included directly.</dd>
-</dl>
-
-<p>File size does not correlate perfectly with compile time, but generally serves as a rough guide to what files are slow to compile.</p>
-
+<hr>
 
 <p>
-<label for="filter">Filter:</label>
+<label for="filter">Filter: (regex)</label>
 <input type="text" id="filter" name="filter" size="60" onKeyUp="if (event.keyCode == 13) document.getElementById('apply').click()">
 <button onClick="changeState('filter', document.getElementById('filter').value)" id="apply">Apply</button>
 <button onClick="changeState('filter', '')">Clear</button>
-(Filename regex)
+<span id="filterResults"></span>
 </p>
 
 <table border="1">
@@ -64,6 +54,22 @@
   <tbody>
   </tbody>
 </table>
+
+<hr>
+
+<h3>Legend</h3>
+<p>
+Translation Unit: The data processed during a compiler invocation.<br>
+Individual Size: The size of the file, and as a percentage of the total file size.<br>
+Expanded Size: The size of the file and all the files it includes, directly and indirectly. Also shown as percentage of the total translation unit size.<br>
+Added Size: How much size is added by this file being part of the build. In other words, if this file were empty and had no includes, how much smaller would the build be. Also shown as percentage of the total translation unit size.<br>
+Occurrences: How many translation units this file is part of. Also shown as a percentage of the total number of translation units.<br>
+Include Count: How many times this file is included directly.<br>
+</p>
+
+<p>File size does not correlate perfectly with compile time, but can serve as a rough guide to what files are slow to compile.</p>
+
+<p>Analysis by <a href="https://source.chromium.org/chromium/chromium/src/+/HEAD:tools/clang/scripts/analyze_includes.py">analyze_includes.py</a>.</p>
 
 <script>
 "use strict";
@@ -102,7 +108,7 @@ function buildRow(i, rank) {
   return `
 <tr>
 <td><a href="javascript:changeState('filter', '^' + regexEscape('${data.files[i]}' + '$'))">${rank + 1}</a></td>
-<td><a href="https://source.chromium.org/chromium/chromium/src/+/master:${data.files[i]}">${data.files[i]}</a></td>
+<td><a href="https://source.chromium.org/chromium/chromium/src/+/HEAD:${data.files[i]}">${data.files[i]}</a></td>
 <td>${fmt(data.sizes[i])}</td> <td>${(100 * data.sizes[i] / totFileSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.tsizes[i])}</td> <td>${(100 * data.tsizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.asizes[i])}</td> <td>${(100 * data.asizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
@@ -115,6 +121,7 @@ function buildRow(i, rank) {
 function clearTable() {
   const tbody = document.querySelector('tbody');
   tbody.parentNode.removeChild(tbody);
+  document.getElementById('filterResults').innerHTML = '';
 }
 
 function intersect(arr1, arr2) {
@@ -127,7 +134,7 @@ function buildTable() {
   let fileNums = [...Array(data.files.length).keys()];
   const state = getState();
 
-  let filter = state.filter;
+  let filter = state.get('filter');
   document.getElementById('filter').value = filter;
 
   if (filter !== '') {
@@ -144,6 +151,9 @@ function buildTable() {
 
     const re = new RegExp(filter);
     fileNums = fileNums.filter(i => data.files[i].match(re));
+
+    document.getElementById('filterResults').innerHTML =
+        `${fmt(fileNums.length)} result${fileNums.length == 1 ? '' : 's'}.`;
   }
 
   const sortFuncs = {
@@ -156,9 +166,9 @@ function buildTable() {
   };
 
   document.querySelectorAll('th').forEach(th => th.classList.remove('highlighted'));
-  document.getElementById(state.sort).classList.add('highlighted');
+  document.getElementById(state.get('sort')).classList.add('highlighted');
 
-  fileNums.sort(sortFuncs[state.sort]);
+  fileNums.sort(sortFuncs[state.get('sort')]);
 
   const limit = Math.min(1000, fileNums.length);
   fileNums = fileNums.slice(0, limit);
@@ -168,30 +178,24 @@ function buildTable() {
   document.querySelector('table').appendChild(tbody);
 }
 
-function setState(s) {
-  window.location.hash = Object.entries(s).map(e => e.join('=')).join(';');
+function setState(params) {
+  window.location.hash = params.toString();
 }
 
 function getState() {
-  let state = {
-    filter: '',
-    sort: 'asize',
-  }
+  let params = new URLSearchParams(window.location.hash.substring(1));
 
-  const re = new RegExp('(\\w+)=([\\\\\\w: \/\.+*$\^-]*);*');
-  let hash = decodeURIComponent(window.location.hash);
-  let match;
-  while (match = hash.match(re)) {
-    state[match[1]] = match[2];
-    hash = hash.replace(re, '');
-  }
+  if (!params.has('filter'))
+    params.set('filter', '');
+  if (!params.has('sort'))
+    params.set('sort', 'asize');
 
-  return state;
+  return params;
 }
 
 function changeState(key, value) {
   let s = getState();
-  s[key] = value;
+  s.set(key, value);
   setState(s);
 }
 
