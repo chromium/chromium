@@ -2691,7 +2691,8 @@
                         "ShowUi": "true"
                     },
                     "enable_features": [
-                        "DnsOverHttps"
+                        "DnsOverHttps",
+                        "DnsOverHttpsUpgrade"
                     ]
                 }
             ]
