@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/chooser_bubble_testapi.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
@@ -297,8 +298,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDeviceEphemeral) {
   EXPECT_EQ("", content::EvalJs(web_contents, "removedPromise"));
 }
 
-// TODO(https://crbug.com/1069695): This is flaky on Linux, Mac, and Win.
-IN_PROC_BROWSER_TEST_F(WebUsbTest, DISABLED_NavigateWithChooserCrossOrigin) {
+IN_PROC_BROWSER_TEST_F(WebUsbTest, NavigateWithChooserCrossOrigin) {
   UseRealChooser();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -307,14 +307,24 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, DISABLED_NavigateWithChooserCrossOrigin) {
       web_contents, 1 /* number_of_navigations */,
       content::MessageLoopRunner::QuitMode::DEFERRED);
 
+  auto waiter = test::ChooserBubbleUiWaiter::Create();
+
   EXPECT_TRUE(content::ExecJs(web_contents,
-                              R"(
-        navigator.usb.requestDevice({ filters: [] });
-        document.location.href = "https://google.com";
-      )"));
+                              "navigator.usb.requestDevice({ filters: [] })",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the chooser to be displayed before navigating to avoid a race
+  // between the two IPCs.
+  waiter->WaitForChange();
+  EXPECT_TRUE(waiter->has_shown());
+
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.location.href = 'https://google.com'"));
 
   observer.Wait();
-  EXPECT_FALSE(chrome::IsDeviceChooserShowingForTesting(browser()));
+  waiter->WaitForChange();
+  EXPECT_TRUE(waiter->has_closed());
+  EXPECT_EQ(GURL("https://google.com"), web_contents->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUsbTest, ShowChooserInBackgroundTab) {
