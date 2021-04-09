@@ -265,12 +265,10 @@ class ArCoreDeviceTest : public testing::Test {
   ArCoreDeviceTest() {}
   ~ArCoreDeviceTest() override {}
 
-  void OnSessionCreated(
-      mojom::XRSessionPtr session,
-      mojo::PendingRemote<mojom::XRSessionController> controller) {
+  void OnSessionCreated(mojom::XRRuntimeSessionResultPtr session_result) {
     DVLOG(1) << __func__;
-    session_ = std::move(session);
-    controller_.Bind(std::move(controller));
+    session_ = std::move(session_result->session);
+    controller_.Bind(std::move(session_result->controller));
     // TODO(crbug.com/837834): verify that things fail if restricted.
     // We should think through the right result here for javascript.
     // If an AR page tries to hittest while not focused, should it

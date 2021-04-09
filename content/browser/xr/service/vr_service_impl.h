@@ -154,10 +154,10 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
 
   void OnInlineSessionCreated(
       SessionRequestData request,
-      device::mojom::XRSessionPtr session,
-      mojo::PendingRemote<device::mojom::XRSessionController> controller);
-  void OnImmersiveSessionCreated(SessionRequestData request,
-                                 device::mojom::XRSessionPtr session);
+      device::mojom::XRRuntimeSessionResultPtr session_result);
+  void OnImmersiveSessionCreated(
+      SessionRequestData request,
+      device::mojom::XRRuntimeSessionResultPtr session_result);
   void OnSessionCreated(
       SessionRequestData request,
       device::mojom::XRSessionPtr session,

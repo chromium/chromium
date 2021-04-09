@@ -113,7 +113,7 @@ void ArCoreDevice::RequestSession(
 
   if (HasExclusiveSession()) {
     DVLOG(1) << __func__ << ": Rejecting additional session request";
-    std::move(callback).Run(nullptr, mojo::NullRemote());
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -289,7 +289,7 @@ void ArCoreDevice::CallDeferredRequestSessionCallback(
       std::move(session_state_->pending_request_session_callback_);
 
   if (!initialize_result) {
-    std::move(deferred_callback).Run(nullptr, mojo::NullRemote());
+    std::move(deferred_callback).Run(nullptr);
     return;
   }
 
@@ -316,7 +316,13 @@ void ArCoreDevice::OnCreateSessionCallback(
   DVLOG(2) << __func__;
   DCHECK(IsOnMainThread());
 
-  mojom::XRSessionPtr session = mojom::XRSession::New();
+  auto session_result = mojom::XRRuntimeSessionResult::New();
+  session_result->controller =
+      std::move(create_session_result.session_controller);
+
+  session_result->session = mojom::XRSession::New();
+  auto* session = session_result->session.get();
+
   session->data_provider = std::move(create_session_result.frame_data_provider);
   session->display_info = std::move(create_session_result.display_info);
   session->submit_frame_sink =
@@ -337,9 +343,7 @@ void ArCoreDevice::OnCreateSessionCallback(
       device::mojom::XREnvironmentBlendMode::kAlphaBlend;
   session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
 
-  std::move(deferred_callback)
-      .Run(std::move(session),
-           std::move(create_session_result.session_controller));
+  std::move(deferred_callback).Run(std::move(session_result));
 }
 
 void ArCoreDevice::PostTaskToGlThread(base::OnceClosure task) {

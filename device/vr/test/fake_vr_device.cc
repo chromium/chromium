@@ -49,7 +49,7 @@ void FakeVRDevice::RequestSession(
   OnStartPresenting();
   // The current tests never use the return values, so it's fine to return
   // invalid data here.
-  std::move(callback).Run(nullptr, mojo::NullRemote());
+  std::move(callback).Run(nullptr);
 }
 
 void FakeVRDevice::OnPresentingControllerMojoConnectionError() {

@@ -9,6 +9,7 @@ import "device/vr/public/mojom/vr_service.mojom";
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/gpu.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -59,6 +60,19 @@ struct XRRuntimeSessionOptions {
   XRDepthOptions? depth_options;
 };
 
+// Used to contain all data from the session created by the runtime, and meant
+// to be consumed by the browser process.
+struct XRRuntimeSessionResult {
+  // Used to provide the Browser with the ability to control the session created
+  // by the runtime. Closing the pipe will terminate the session.
+  pending_remote<XRSessionController> controller;
+
+  // Session data needed by the renderer process. The browser process may need
+  // to validate and/or manipulate this data before passing it on as part of
+  // brokering the session request.
+  XRSession session;
+};
+
 // An XRRuntime may live in the browser process or a utility process.  The
 // browser process is the client, and may in turn expose device information to
 // render processes using vr_service interfaces, such as XRDevice.
@@ -68,8 +82,7 @@ interface XRRuntime {
   // possibly submitting graphics without going through an extra IPC hop through
   // the browser process.
   RequestSession(XRRuntimeSessionOptions options) => (
-                     XRSession? session,
-                     pending_remote<XRSessionController>? controller);
+                     XRRuntimeSessionResult? session);
 
   // Initiate shutdown of a session, and call the callback once the runtime
   // is ready for starting a new session.

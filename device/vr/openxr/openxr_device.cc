@@ -84,7 +84,7 @@ OpenXrDevice::~OpenXrDevice() {
   // OpenXrDevice while we're still making asynchronous calls to setup the GPU
   // process connection. Ensure the callback is run regardless.
   if (request_session_callback_) {
-    std::move(request_session_callback_).Run(nullptr, mojo::NullRemote());
+    std::move(request_session_callback_).Run(nullptr);
   }
 }
 
@@ -125,7 +125,7 @@ void OpenXrDevice::RequestSession(
   if ((anchors_required && !anchors_supported) ||
       (hand_input_required && !hand_input_supported)) {
     // Reject session request
-    std::move(callback).Run(nullptr, mojo::NullRemote());
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -135,7 +135,7 @@ void OpenXrDevice::RequestSession(
     render_loop_->Start();
 
     if (!render_loop_->IsRunning()) {
-      std::move(callback).Run(nullptr, mojo::NullRemote());
+      std::move(callback).Run(nullptr);
       return;
     }
 
@@ -173,7 +173,7 @@ void OpenXrDevice::OnRequestSessionResult(
   DCHECK(request_session_callback_);
 
   if (!result) {
-    std::move(request_session_callback_).Run(nullptr, mojo::NullRemote());
+    std::move(request_session_callback_).Run(nullptr);
     return;
   }
 
@@ -181,9 +181,12 @@ void OpenXrDevice::OnRequestSessionResult(
 
   session->display_info = display_info_.Clone();
 
-  std::move(request_session_callback_)
-      .Run(std::move(session),
-           exclusive_controller_receiver_.BindNewPipeAndPassRemote());
+  auto session_result = mojom::XRRuntimeSessionResult::New();
+  session_result->session = std::move(session);
+  session_result->controller =
+      exclusive_controller_receiver_.BindNewPipeAndPassRemote();
+
+  std::move(request_session_callback_).Run(std::move(session_result));
 
   // Use of Unretained is safe because the callback will only occur if the
   // binding is not destroyed.

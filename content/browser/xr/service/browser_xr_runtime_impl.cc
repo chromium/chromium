@@ -383,9 +383,15 @@ void BrowserXRRuntimeImpl::SetFramesThrottled(const VRServiceImpl* service,
   }
 }
 
-void BrowserXRRuntimeImpl::RequestSession(
+void BrowserXRRuntimeImpl::RequestInlineSession(
+    device::mojom::XRRuntimeSessionOptionsPtr options,
+    device::mojom::XRRuntime::RequestSessionCallback callback) {
+  runtime_->RequestSession(std::move(options), std::move(callback));
+}
+
+void BrowserXRRuntimeImpl::RequestImmersiveSession(
     VRServiceImpl* service,
-    const device::mojom::XRRuntimeSessionOptionsPtr& options,
+    device::mojom::XRRuntimeSessionOptionsPtr options,
     RequestSessionCallback callback) {
   DVLOG(2) << __func__ << ": id=" << id_;
   // base::Unretained is safe because we won't be called back after runtime_ is
@@ -401,15 +407,12 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
     base::WeakPtr<VRServiceImpl> service,
     device::mojom::XRRuntimeSessionOptionsPtr options,
     RequestSessionCallback callback,
-    device::mojom::XRSessionPtr session,
-    mojo::PendingRemote<device::mojom::XRSessionController>
-        immersive_session_controller) {
-  if (session && service) {
+    device::mojom::XRRuntimeSessionResultPtr session_result) {
+  if (session_result && service) {
     DVLOG(2) << __func__ << ": id=" << id_;
     if (device::XRSessionModeUtils::IsImmersive(options->mode)) {
       presenting_service_ = service.get();
-      immersive_session_controller_.Bind(
-          std::move(immersive_session_controller));
+      immersive_session_controller_.Bind(std::move(session_result->controller));
       immersive_session_controller_.set_disconnect_handler(
           base::BindOnce(&BrowserXRRuntimeImpl::OnImmersiveSessionError,
                          base::Unretained(this)));
@@ -421,14 +424,13 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
       }
     }
 
-    std::move(callback).Run(std::move(session));
+    std::move(callback).Run(std::move(session_result));
   } else {
     std::move(callback).Run(nullptr);
-    if (session) {
+    if (session_result) {
       // The service has been removed, but we still got a session, so make
       // sure to clean up this weird state.
-      immersive_session_controller_.Bind(
-          std::move(immersive_session_controller));
+      immersive_session_controller_.Bind(std::move(session_result->controller));
       StopImmersiveSession(base::DoNothing());
     }
   }

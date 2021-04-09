@@ -33,7 +33,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
                              public device::mojom::XRRuntimeEventListener {
  public:
   using RequestSessionCallback =
-      base::OnceCallback<void(device::mojom::XRSessionPtr)>;
+      base::OnceCallback<void(device::mojom::XRRuntimeSessionResultPtr)>;
   explicit BrowserXRRuntimeImpl(
       device::mojom::XRDeviceId id,
       device::mojom::XRDeviceDataPtr device_data,
@@ -58,9 +58,19 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   void ExitPresent(VRServiceImpl* service,
                    VRServiceImpl::ExitPresentCallback on_exited);
   void SetFramesThrottled(const VRServiceImpl* service, bool throttled);
-  void RequestSession(VRServiceImpl* service,
-                      const device::mojom::XRRuntimeSessionOptionsPtr& options,
-                      RequestSessionCallback callback);
+
+  // Both of these will forward the RequestSession call onto the runtime, the
+  // main difference is that when Requesting an Immersive session we will bind
+  // the XRSessionController rather than passing it back to the VrService, as
+  // well as setting the appropriate presenting state.
+  void RequestImmersiveSession(
+      VRServiceImpl* service,
+      device::mojom::XRRuntimeSessionOptionsPtr options,
+      RequestSessionCallback callback);
+  void RequestInlineSession(
+      device::mojom::XRRuntimeSessionOptionsPtr options,
+      device::mojom::XRRuntime::RequestSessionCallback callback);
+
   void EnsureInstalled(int render_process_id,
                        int render_frame_id,
                        base::OnceCallback<void(bool)> install_callback);
@@ -99,9 +109,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
       base::WeakPtr<VRServiceImpl> service,
       device::mojom::XRRuntimeSessionOptionsPtr options,
       RequestSessionCallback callback,
-      device::mojom::XRSessionPtr session,
-      mojo::PendingRemote<device::mojom::XRSessionController>
-          immersive_session_controller);
+      device::mojom::XRRuntimeSessionResultPtr session_result);
   void OnImmersiveSessionError();
   void OnInstallFinished(bool succeeded);
 

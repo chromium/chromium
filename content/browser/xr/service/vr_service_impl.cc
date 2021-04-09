@@ -267,10 +267,8 @@ void VRServiceImpl::OnWebContentsFocusChanged(content::RenderWidgetHost* host,
 
 void VRServiceImpl::OnInlineSessionCreated(
     SessionRequestData request,
-    device::mojom::XRSessionPtr session,
-    mojo::PendingRemote<device::mojom::XRSessionController>
-        pending_controller) {
-  if (!session) {
+    device::mojom::XRRuntimeSessionResultPtr session_result) {
+  if (!session_result) {
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_RUNTIME_ERROR));
@@ -278,7 +276,7 @@ void VRServiceImpl::OnInlineSessionCreated(
   }
 
   mojo::Remote<device::mojom::XRSessionController> controller(
-      std::move(pending_controller));
+      std::move(session_result->controller));
   // Start giving out magic window data if we are focused.
   controller->SetFrameDataRestricted(!in_focused_frame_);
 
@@ -286,6 +284,7 @@ void VRServiceImpl::OnInlineSessionCreated(
   DVLOG(2) << __func__ << ": session_id=" << id.GetUnsafeValue()
            << " runtime_id=" << request.runtime_id;
 
+  auto* session = session_result->session.get();
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features(
       session->enabled_features.begin(), session->enabled_features.end());
 
@@ -304,21 +303,22 @@ void VRServiceImpl::OnInlineSessionCreated(
       session_metrics_recorder = GetSessionMetricsHelper()->StartInlineSession(
           *(request.options), enabled_features, id.GetUnsafeValue());
 
-  OnSessionCreated(std::move(request), std::move(session),
+  OnSessionCreated(std::move(request), std::move(session_result->session),
                    std::move(session_metrics_recorder));
 }
 
 void VRServiceImpl::OnImmersiveSessionCreated(
     SessionRequestData request,
-    device::mojom::XRSessionPtr session) {
+    device::mojom::XRRuntimeSessionResultPtr session_result) {
   DCHECK(request.options);
-  if (!session) {
+  if (!session_result) {
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_RUNTIME_ERROR));
     return;
   }
 
+  auto* session = session_result->session.get();
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features(
       session->enabled_features.begin(), session->enabled_features.end());
 
@@ -339,7 +339,7 @@ void VRServiceImpl::OnImmersiveSessionCreated(
           GetSessionMetricsHelper()->StartImmersiveSession(*(request.options),
                                                            enabled_features);
 
-  OnSessionCreated(std::move(request), std::move(session),
+  OnSessionCreated(std::move(request), std::move(session_result->session),
                    std::move(session_metrics_recorder));
 }
 
@@ -601,21 +601,18 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
 
     runtime_options->depth_options = std::move(request.options->depth_options);
 
-    base::OnceCallback<void(device::mojom::XRSessionPtr)> immersive_callback =
+    auto immersive_callback =
         base::BindOnce(&VRServiceImpl::OnImmersiveSessionCreated,
                        weak_ptr_factory_.GetWeakPtr(), std::move(request));
 
-    runtime->RequestSession(this, std::move(runtime_options),
-                            std::move(immersive_callback));
+    runtime->RequestImmersiveSession(this, std::move(runtime_options),
+                                     std::move(immersive_callback));
   } else {
-    base::OnceCallback<void(
-        device::mojom::XRSessionPtr,
-        mojo::PendingRemote<device::mojom::XRSessionController>)>
-        non_immersive_callback =
-            base::BindOnce(&VRServiceImpl::OnInlineSessionCreated,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(request));
-    runtime->GetRuntime()->RequestSession(std::move(runtime_options),
-                                          std::move(non_immersive_callback));
+    auto non_immersive_callback =
+        base::BindOnce(&VRServiceImpl::OnInlineSessionCreated,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(request));
+    runtime->RequestInlineSession(std::move(runtime_options),
+                                  std::move(non_immersive_callback));
   }
 }
 

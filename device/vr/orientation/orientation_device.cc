@@ -134,7 +134,12 @@ void VROrientationDevice::RequestSession(
       this, data_provider.InitWithNewPipeAndPassReceiver(),
       controller.InitWithNewPipeAndPassReceiver()));
 
-  auto session = mojom::XRSession::New();
+  auto session_result = mojom::XRRuntimeSessionResult::New();
+  session_result->controller = std::move(controller);
+
+  session_result->session = mojom::XRSession::New();
+  auto* session = session_result->session.get();
+
   session->data_provider = std::move(data_provider);
   if (display_info_) {
     session->display_info = display_info_.Clone();
@@ -156,7 +161,7 @@ void VROrientationDevice::RequestSession(
                                    options->optional_features.begin(),
                                    options->optional_features.end());
 
-  std::move(callback).Run(std::move(session), std::move(controller));
+  std::move(callback).Run(std::move(session_result));
 
   // The sensor may have been suspended, so resume it now.
   sensor_->Resume();

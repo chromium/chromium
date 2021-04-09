@@ -120,8 +120,7 @@ GvrDevice::~GvrDevice() {
   }
 
   if (pending_request_session_callback_) {
-    std::move(pending_request_session_callback_)
-        .Run(nullptr, mojo::NullRemote());
+    std::move(pending_request_session_callback_).Run(nullptr);
   }
 
   GvrDelegateProviderFactory::SetDevice(nullptr);
@@ -136,7 +135,7 @@ void GvrDevice::RequestSession(
     mojom::XRRuntime::RequestSessionCallback callback) {
   // We can only process one request at a time.
   if (pending_request_session_callback_) {
-    std::move(callback).Run(nullptr, mojo::NullRemote());
+    std::move(callback).Run(nullptr);
     return;
   }
   pending_request_session_callback_ = std::move(callback);
@@ -154,8 +153,7 @@ void GvrDevice::OnStartPresentResult(
   DCHECK(pending_request_session_callback_);
 
   if (!session) {
-    std::move(pending_request_session_callback_)
-        .Run(nullptr, mojo::NullRemote());
+    std::move(pending_request_session_callback_).Run(nullptr);
     return;
   }
 
@@ -165,9 +163,12 @@ void GvrDevice::OnStartPresentResult(
   // TODO(billorr): Only do this in OnPresentingControllerMojoConnectionError.
   exclusive_controller_receiver_.reset();
 
-  std::move(pending_request_session_callback_)
-      .Run(std::move(session),
-           exclusive_controller_receiver_.BindNewPipeAndPassRemote());
+  auto session_result = mojom::XRRuntimeSessionResult::New();
+  session_result->controller =
+      exclusive_controller_receiver_.BindNewPipeAndPassRemote();
+  session_result->session = std::move(session);
+
+  std::move(pending_request_session_callback_).Run(std::move(session_result));
 
   // Unretained is safe because the error handler won't be called after the
   // binding has been destroyed.
@@ -285,15 +286,13 @@ void GvrDevice::OnInitRequestSessionFinished(
   DCHECK(pending_request_session_callback_);
 
   if (!success) {
-    std::move(pending_request_session_callback_)
-        .Run(nullptr, mojo::NullRemote());
+    std::move(pending_request_session_callback_).Run(nullptr);
     return;
   }
 
   GvrDelegateProvider* delegate_provider = GetGvrDelegateProvider();
   if (!delegate_provider) {
-    std::move(pending_request_session_callback_)
-        .Run(nullptr, mojo::NullRemote());
+    std::move(pending_request_session_callback_).Run(nullptr);
     return;
   }
 
