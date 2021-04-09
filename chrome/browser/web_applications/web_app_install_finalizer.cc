@@ -18,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -28,14 +29,20 @@
 #include "chrome/browser/web_applications/components/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_result.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
@@ -282,6 +289,7 @@ bool WebAppInstallFinalizer::WasExternalAppUninstalledByUser(
 
 void WebAppInstallFinalizer::FinalizeUpdate(
     const WebApplicationInfo& web_app_info,
+    content::WebContents* web_contents,
     InstallFinalizedCallback callback) {
   CHECK(started_);
 
@@ -296,12 +304,14 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     return;
   }
 
+  bool file_handlers_need_os_update =
+      DoFileHandlersNeedOsUpdate(app_id, web_app_info, web_contents);
   // Grab the shortcut info before the app is removed from the database.
   os_integration_manager().GetShortcutInfoForApp(
-      app_id,
-      base::BindOnce(&WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     app_id, web_app_info));
+      app_id, base::BindOnce(
+                  &WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo,
+                  weak_ptr_factory_.GetWeakPtr(), file_handlers_need_os_update,
+                  std::move(callback), app_id, web_app_info));
 }
 
 void WebAppInstallFinalizer::RemoveLegacyInstallFinalizerForTesting() {
@@ -456,6 +466,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
 }
 
 void WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo(
+    bool file_handlers_need_os_update,
     InstallFinalizedCallback callback,
     const AppId app_id,
     const WebApplicationInfo& web_app_info,
@@ -464,18 +475,83 @@ void WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo(
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
   auto web_app = std::make_unique<WebApp>(*existing_web_app);
   const bool is_synced = web_app->IsSynced();
-
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
-      existing_web_app->name(), std::move(old_shortcut), web_app_info);
+      existing_web_app->name(), std::move(old_shortcut),
+      file_handlers_need_os_update, web_app_info);
 
   SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
                                       std::move(commit_callback));
 
   if (legacy_finalizer_ && is_synced &&
-      base::FeatureList::IsEnabled(features::kSyncBookmarkApps))
-    legacy_finalizer_->FinalizeUpdate(web_app_info, base::DoNothing());
+      base::FeatureList::IsEnabled(features::kSyncBookmarkApps)) {
+    // Passing an empty web_contents because BookmarkApps should not need this.
+    legacy_finalizer_->FinalizeUpdate(web_app_info, nullptr, base::DoNothing());
+  }
+}
+
+bool WebAppInstallFinalizer::DoFileHandlersNeedOsUpdate(
+    const AppId app_id,
+    const WebApplicationInfo& web_app_info,
+    content::WebContents* web_contents) {
+  if (!base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI))
+    return false;
+  // TODO(https://crbug.com/1197013): Consider trying to re-use
+  // HaveFileHandlersChanged() results from the ManifestUpdateTask.
+  if (!HaveFileHandlersChanged(
+          /*old_handlers=*/registrar().GetAppFileHandlers(app_id),
+          /*new_handlers=*/web_app_info.file_handlers)) {
+    return false;
+  }
+
+  const GURL& url = web_app_info.scope;
+
+  // Keep in sync with chromeos::kChromeUIMediaAppURL.
+  const char kChromeUIMediaAppURL[] = "chrome://media-app/";
+  // Keep in sync with chromeos::kChromeUICameraAppURL.
+  const char kChromeUICameraAppURL[] = "chrome://camera-app/";
+
+  // Omit file handler permission downgrade for the ChromeOS Media and Camera
+  // System Web Apps (SWAs), which have permissions granted by default.
+  // TODO(huangdarwin): Find a better architecture to structure this exception
+  // and check relevant only in ChromeOS (outside of LaCrOS).
+  if (url == kChromeUIMediaAppURL || url == kChromeUICameraAppURL) {
+    return true;
+  }
+
+  // Downgrade file handlers permission before
+  // OsIntegrationManager::UpdateOsHooks(), as `web_contents` may no
+  // longer exist by the time we reach OsIntegrationManager.
+  //
+  // It's possible we'll downgrade the permission and then fail to update OS
+  // integrations (ex. if the disk or icon downloads fail), but this is ok
+  // because these failures should rarely occur.
+  permissions::PermissionManager* permission_manager =
+      PermissionManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  DCHECK(permission_manager);
+  // Note: Using GetPermissionStatus instead of GetPermissionStatusForFrame()
+  // because the relevant frame isn't available here.
+  permissions::PermissionResult status =
+      permission_manager->GetPermissionStatus(
+          ContentSettingsType::FILE_HANDLING, url, url);
+
+  // If file handling permission is "ALLOW" during manifest update, downgrade
+  // to "ASK" via reset, as the user may not want to allow newly added file
+  // handlers, which may include more dangerous extensions.
+  // If the permission is "ASK" or "BLOCK", leave it as is. To avoid misuse, the
+  // user must re-install the PWA to enable previously blocked file handlers.
+  if (status.content_setting == CONTENT_SETTING_ALLOW) {
+    permission_manager->ResetPermission(content::PermissionType::FILE_HANDLING,
+                                        url, url);
+  } else if (status.content_setting == CONTENT_SETTING_BLOCK) {
+    // TODO(https://crbug.com/1194163): CONTENT_SETTING_BLOCK should block
+    // update to avoid re-registering file handlers after they're unregistered.
+    // Implement unregistration of file handlers when "BLOCK" is set.
+    return false;
+  }
+  return true;
 }
 
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
@@ -483,6 +559,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     AppId app_id,
     std::string old_name,
     std::unique_ptr<ShortcutInfo> old_shortcut,
+    bool file_handlers_need_os_update,
     const WebApplicationInfo& web_app_info,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -491,9 +568,9 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  os_integration_manager().UpdateOsHooks(app_id, old_name,
-                                         std::move(old_shortcut), web_app_info);
-
+  os_integration_manager().UpdateOsHooks(
+      app_id, old_name, std::move(old_shortcut), file_handlers_need_os_update,
+      web_app_info);
   registrar().NotifyWebAppManifestUpdated(app_id, old_name);
   std::move(callback).Run(app_id, InstallResultCode::kSuccessAlreadyInstalled);
 }

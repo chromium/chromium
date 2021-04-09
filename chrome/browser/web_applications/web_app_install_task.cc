@@ -757,7 +757,7 @@ void WebAppInstallTask::OnIconsRetrievedFinalizeUpdate(
   }
 
   install_finalizer_->FinalizeUpdate(
-      *web_app_info,
+      *web_app_info, web_contents(),
       base::BindOnce(&WebAppInstallTask::CallInstallCallback, GetWeakPtr()));
 }
 

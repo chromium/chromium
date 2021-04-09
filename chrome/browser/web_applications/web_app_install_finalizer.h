@@ -41,6 +41,7 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   void FinalizeUninstallAfterSync(const AppId& app_id,
                                   UninstallWebAppCallback callback) override;
   void FinalizeUpdate(const WebApplicationInfo& web_app_info,
+                      content::WebContents* web_contents,
                       InstallFinalizedCallback callback) override;
   void UninstallExternalWebApp(const AppId& app_id,
                                ExternalInstallSource external_install_source,
@@ -83,15 +84,24 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
                                            AppId app_id,
                                            bool success);
   void FinalizeUpdateWithShortcutInfo(
+      bool file_handlers_need_os_update,
       InstallFinalizedCallback callback,
       const AppId app_id,
       const WebApplicationInfo& web_app_info,
       std::unique_ptr<ShortcutInfo> old_shortcut);
+  // Checks whether OS registered file handlers need to update, taking into
+  // account permission settings, as file handlers should not update when the
+  // permission has been denied. Also, downgrades granted file handling
+  // permissions if file handlers have changed.
+  bool DoFileHandlersNeedOsUpdate(const AppId app_id,
+                                  const WebApplicationInfo& web_app_info,
+                                  content::WebContents* web_contents);
   void OnDatabaseCommitCompletedForUpdate(
       InstallFinalizedCallback callback,
       AppId app_id,
       std::string old_name,
       std::unique_ptr<ShortcutInfo> old_shortcut,
+      bool file_handlers_need_os_update,
       const WebApplicationInfo& web_app_info,
       bool success);
   void OnUninstallOsHooks(const AppId& app_id,

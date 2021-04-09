@@ -43,7 +43,7 @@ class ManifestUpdateTaskTest : public testing::Test {
   ~ManifestUpdateTaskTest() override = default;
 };
 
-// Below tests primarily test internal::HaveFileHandlersChanged.
+// Below tests primarily test HaveFileHandlersChanged.
 // Basic tests like added/removed/unchanged handlers are also in
 // functional tests at ManifestUpdateManagerBrowserTestWithFileHandling.
 TEST_F(ManifestUpdateTaskTest, TestFileHandlersUnchanged) {
@@ -51,7 +51,7 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlersUnchanged) {
   std::vector<blink::Manifest::FileHandler> new_handlers =
       GetDefaultManifestFileHandlers();
 
-  EXPECT_FALSE(internal::HaveFileHandlersChanged(&old_handlers, new_handlers));
+  EXPECT_FALSE(HaveFileHandlersChanged(&old_handlers, new_handlers));
 }
 
 TEST_F(ManifestUpdateTaskTest, TestSecondFileHandlerAdded) {
@@ -65,7 +65,7 @@ TEST_F(ManifestUpdateTaskTest, TestSecondFileHandlerAdded) {
   second_handler.accept.emplace(u"text/csv", extensions);
   new_handlers.push_back(second_handler);
 
-  EXPECT_TRUE(internal::HaveFileHandlersChanged(&old_handlers, new_handlers));
+  EXPECT_TRUE(HaveFileHandlersChanged(&old_handlers, new_handlers));
 }
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedName) {
@@ -75,7 +75,7 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedName) {
   new_handlers[0].name = u"Comma-Separated Values";
 
   // Ignore name changes, because the registrar doesn't store the name.
-  EXPECT_FALSE(internal::HaveFileHandlersChanged(&old_handlers, new_handlers));
+  EXPECT_FALSE(HaveFileHandlersChanged(&old_handlers, new_handlers));
 }
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedAction) {
@@ -84,7 +84,7 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedAction) {
       GetDefaultManifestFileHandlers();
   new_handlers[0].action = GURL("/?csvtext");
 
-  EXPECT_TRUE(internal::HaveFileHandlersChanged(&old_handlers, new_handlers));
+  EXPECT_TRUE(HaveFileHandlersChanged(&old_handlers, new_handlers));
 }
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerExtraAccept) {
@@ -94,7 +94,7 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerExtraAccept) {
   std::vector<std::u16string> csv_extensions = {u".csv"};
   new_handlers[0].accept.emplace(u"text/csv", csv_extensions);
 
-  EXPECT_TRUE(internal::HaveFileHandlersChanged(&old_handlers, new_handlers));
+  EXPECT_TRUE(HaveFileHandlersChanged(&old_handlers, new_handlers));
 }
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedMimeType) {
@@ -103,7 +103,7 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedMimeType) {
       GetDefaultManifestFileHandlers();
   old_handlers[0].accept[0].mime_type = "text/csv";
 
-  EXPECT_TRUE(internal::HaveFileHandlersChanged(&old_handlers, new_handlers));
+  EXPECT_TRUE(HaveFileHandlersChanged(&old_handlers, new_handlers));
 }
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedExtension) {
@@ -112,7 +112,7 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedExtension) {
       GetDefaultManifestFileHandlers();
   old_handlers[0].accept[0].file_extensions.emplace(".csv");
 
-  EXPECT_TRUE(internal::HaveFileHandlersChanged(&old_handlers, new_handlers));
+  EXPECT_TRUE(HaveFileHandlersChanged(&old_handlers, new_handlers));
 }
 
 }  // namespace web_app

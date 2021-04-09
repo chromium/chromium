@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -43,6 +44,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -1491,6 +1494,63 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   auto new_extensions = new_file_handler.accept[0].file_extensions;
   EXPECT_EQ(1u, new_extensions.size());
   EXPECT_TRUE(base::Contains(new_extensions, ".md"));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
+                       AllowedPermissionResetToAskOnUpdate) {
+  constexpr char kFileHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "file_handlers": [
+        {
+          "action": "/?plaintext",
+          "name": "Plain Text",
+          "accept": {
+            "text/plain": ["$1"]
+          }
+        }
+      ],
+      "icons": $2
+    }
+  )";
+
+  OverrideManifest(kFileHandlerManifestTemplate,
+                   {".txt", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const auto& old_file_handler = web_app->file_handlers()[0];
+  auto old_extensions = old_file_handler.accept[0].file_extensions;
+  EXPECT_TRUE(base::Contains(old_extensions, ".txt"));
+  auto* map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  const GURL url = GetAppURL();
+  const GURL origin = url.GetOrigin();
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+  // Set permission to ALLOW.
+  map->SetContentSettingDefaultScope(origin, origin,
+                                     ContentSettingsType::FILE_HANDLING,
+                                     CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+  // Update manifest.
+  OverrideManifest(kFileHandlerManifestTemplate, {".md", kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(url, &app_id));
+  const auto& new_file_handler = web_app->file_handlers()[0];
+  auto new_extensions = new_file_handler.accept[0].file_extensions;
+  EXPECT_TRUE(base::Contains(new_extensions, ".md"));
+
+  // Confirm permission is downgraded to ASK after manifest update.
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,

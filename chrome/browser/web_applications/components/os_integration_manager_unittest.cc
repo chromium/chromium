@@ -311,7 +311,7 @@ TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
   EXPECT_CALL(manager, UpdateShortcutsMenu(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, UpdateUrlHandlers(app_id, testing::_)).Times(1);
 
-  manager.UpdateOsHooks(app_id, old_name, nullptr, web_app_info);
+  manager.UpdateOsHooks(app_id, old_name, nullptr, true, web_app_info);
 }
 
 }  // namespace
