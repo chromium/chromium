@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTAINER_H_
 
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/view.h"
 
 class PageActionIconController;
 struct PageActionIconParams;
@@ -20,7 +20,7 @@ class PageActionIconContainer {
 };
 
 // Implements a default icon container for page action icons.
-class PageActionIconContainerView : public views::View,
+class PageActionIconContainerView : public views::BoxLayoutView,
                                     public PageActionIconContainer {
  public:
   METADATA_HEADER(PageActionIconContainerView);

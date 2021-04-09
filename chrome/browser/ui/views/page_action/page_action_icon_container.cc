@@ -12,12 +12,9 @@
 PageActionIconContainerView::PageActionIconContainerView(
     const PageActionIconParams& params)
     : controller_(std::make_unique<PageActionIconController>()) {
-  views::BoxLayout* layout =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          params.between_icon_spacing));
+  SetBetweenChildSpacing(params.between_icon_spacing);
   // Right align to clip the leftmost items first when not enough space.
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
 
   controller_->Init(params, this);
 }
