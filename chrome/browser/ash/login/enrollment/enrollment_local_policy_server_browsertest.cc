@@ -127,10 +127,11 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
     ASSERT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
     WaitForGaiaPageBackButtonUpdate();
 
-    SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
+    SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                                 FakeGaiaMixin::kEmailPath);
     test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
     SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
-                                 {"password"});
+                                 FakeGaiaMixin::kPasswordPath);
     test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
   }
 

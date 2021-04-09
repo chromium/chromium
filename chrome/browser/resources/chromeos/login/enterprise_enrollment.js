@@ -211,18 +211,6 @@ Polymer({
         keyboard.onAdvanceFocus(true);
     });
 
-    this.authenticator_.addEventListener(
-        'authCompleted',
-        (function(e) {
-          var detail = e.detail;
-          if (!detail.email) {
-            this.showError(
-                loadTimeData.getString('fatalEnrollmentError'), false);
-            return;
-          }
-          chrome.send('oauthEnrollCompleteLogin', [detail.email]);
-        }).bind(this));
-
     this.$["step-ad-join"].addEventListener('authCompleted', function(e) {
       this.$["step-ad-join"].disabled = true;
       this.$["step-ad-join"].loading = true;
@@ -436,6 +424,15 @@ Polymer({
 
   isEmpty_(str) {
     return !str;
+  },
+
+  onAuthCompleted_(e) {
+    var detail = e.detail;
+    if (!detail.email) {
+      this.showError(loadTimeData.getString('fatalEnrollmentError'), false);
+      return;
+    }
+    chrome.send('oauthEnrollCompleteLogin', [detail.email]);
   },
 
   onReady() {

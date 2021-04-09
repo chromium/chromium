@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ash/login/test/https_forwarder.h"
+#include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 
@@ -54,6 +55,9 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   static const char kTestRefreshToken1[];
   static const char kTestUserinfoToken2[];
   static const char kTestRefreshToken2[];
+
+  static const test::UIPath kEmailPath;
+  static const test::UIPath kPasswordPath;
 
   FakeGaiaMixin(InProcessBrowserTestMixinHost* host,
                 net::EmbeddedTestServer* embedded_test_server);

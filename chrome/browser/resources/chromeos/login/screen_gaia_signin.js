@@ -309,9 +309,6 @@ Polymer({
 
   /** @override */
   ready() {
-    this.authenticator_.addEventListener(
-        'authCompleted', this.onAuthCompletedMessage_.bind(this));
-
     this.authenticator_.confirmPasswordCallback =
         this.onAuthConfirmPassword_.bind(this);
     this.authenticator_.onePasswordCallback =

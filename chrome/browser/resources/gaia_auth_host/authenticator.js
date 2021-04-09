@@ -1256,10 +1256,12 @@ cr.define('cr.login', function() {
     }
 
     /**
-     * Invoked when |samlHandler_| fires 'apiPasswordAdded' event.
+     * Invoked when |samlHandler_| fires 'apiPasswordAdded' event. Could be from
+     * 3rd-party SAML IdP or Gaia which also uses the API.
      * @private
      */
     onSamlApiPasswordAdded_(e) {
+      this.dispatchEvent(new Event('apiPasswordAdded'));
       // Saml API 'add' password might be received after the 'loadcommit'
       // event. In such case, maybeCompleteAuth_ should be attempted again if
       // GAIA ID is available.

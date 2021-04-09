@@ -564,6 +564,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Gaia.PasswordFlow" enum="BooleanStartedCompleted"
+    expires_after="2022-01-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records events for the Gaia password flow. &quot;Started&quot; is recorded
+    on each password entry on the Gaia page. &quot;Completed&quot; is recorded
+    when Gaia authentication succeeds. Note: this is not recorded for SAML
+    flows.
+  </summary>
+</histogram>
+
 <histogram base="true" name="ChromeOS.HardwareVerifier.Report"
     enum="HardwareVerifierQualificationStatus" expires_after="2021-08-22">
 <!-- Name completed by histogram_suffixes name="HardwareVerifierSupportCategory" -->

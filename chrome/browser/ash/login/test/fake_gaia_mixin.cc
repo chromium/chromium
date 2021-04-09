@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_switches.h"
 #include "base/command_line.h"
+#include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/chromeos/child_accounts/child_account_test_utils.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -40,6 +41,9 @@ const char FakeGaiaMixin::kTestUserinfoToken1[] = "fake-userinfo-token-1";
 const char FakeGaiaMixin::kTestRefreshToken1[] = "fake-refresh-token-1";
 const char FakeGaiaMixin::kTestUserinfoToken2[] = "fake-userinfo-token-2";
 const char FakeGaiaMixin::kTestRefreshToken2[] = "fake-refresh-token-2";
+
+const test::UIPath FakeGaiaMixin::kEmailPath = {"identifier"};
+const test::UIPath FakeGaiaMixin::kPasswordPath = {"password"};
 
 FakeGaiaMixin::FakeGaiaMixin(InProcessBrowserTestMixinHost* host,
                              net::EmbeddedTestServer* embedded_test_server)

@@ -8,6 +8,8 @@
  */
 
 cr.define('cr.login', function() {
+  const AuthFlow = {DEFAULT: 0, SAML: 1};
+
   class Authenticator {
     /**
      * @param {!WebView|string} webview
@@ -29,6 +31,8 @@ cr.define('cr.login', function() {
     addEventListener(eventType, listener, thisObject) {
     }
   }
+
+  Authenticator.AuthFlow = AuthFlow;
 
   return {Authenticator: Authenticator};
 });

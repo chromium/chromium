@@ -846,7 +846,7 @@ void SAMLEnrollmentTest::StartSamlAndWaitForIdpPageLoad(
   WaitForGaiaPageBackButtonUpdate();
   auto flow_change_waiter =
       OobeBaseTest::CreateGaiaPageEventWaiter("authFlowChange");
-  SigninFrameJS().TypeIntoPath(gaia_email, {"identifier"});
+  SigninFrameJS().TypeIntoPath(gaia_email, FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
   flow_change_waiter->Wait();
 }

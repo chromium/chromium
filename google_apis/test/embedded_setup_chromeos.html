@@ -55,6 +55,8 @@ gaia.chromeOSLogin.attemptLogin = function(email, password) {
   gaia.chromeOSLogin.parent_webview_.postMessage(msg,
       gaia.chromeOSLogin.parent_webview_url_);
 
+  if (!email || !password)
+    return;
   // SAML credential passing api for password.
   window.postMessage(
       {type: 'gaia_saml_api',

@@ -358,7 +358,8 @@ class WebviewLoginTest : public OobeBaseTest {
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest, NativeTest) {
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectIdentifierPage();
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                               FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
   WaitForGaiaPageBackButtonUpdate();
   ExpectPasswordPage();
@@ -396,7 +397,8 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, NativeTest) {
   test::OobeJS().ExpectElementText("Submit", kPrimaryButton);
 
   SigninFrameJS().TypeIntoPath("[]", {"services"});
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
   test::WaitForPrimaryUserSessionStart();
@@ -409,7 +411,8 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, Basic) {
 
   ExpectIdentifierPage();
 
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                               FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
   WaitForGaiaPageBackButtonUpdate();
   ExpectPasswordPage();
@@ -418,7 +421,8 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, Basic) {
   EXPECT_TRUE(LoginDisplayHost::default_host()->GetWebUILoginView());
 
   SigninFrameJS().TypeIntoPath("[]", {"services"});
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
   // The login view should be destroyed after the browser window opens.
@@ -443,7 +447,8 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, BackButton) {
 
   // Move to password page.
   auto back_button_waiter = CreateGaiaPageEventWaiter("backButton");
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                               FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
   back_button_waiter->Wait();
   ExpectPasswordPage();
@@ -462,7 +467,8 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, BackButton) {
 
   // Finish sign-up.
   SigninFrameJS().TypeIntoPath("[]", {"services"});
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
   test::WaitForPrimaryUserSessionStart();
@@ -495,7 +501,8 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
 
   ExpectIdentifierPage();
 
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                               FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
   WaitForGaiaPageBackButtonUpdate();
   ExpectPasswordPage();
@@ -503,7 +510,8 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
   ASSERT_TRUE(LoginDisplayHost::default_host());
 
   SigninFrameJS().TypeIntoPath("[]", {"services"});
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
   Browser* browser = ui_test_utils::WaitForBrowserToOpen();
@@ -1576,11 +1584,12 @@ IN_PROC_BROWSER_TEST_F(WebviewChildLoginTest, UserInfoSentBeforeAuthFinished) {
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectIdentifierPage();
   SigninFrameJS().TypeIntoPath(child_account_id_.GetUserEmail(),
-                               {"identifier"});
+                               FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
   SigninFrameJS().ExecuteAsync("gaia.chromeOSLogin.sendUserInfo(['uca'])");
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
   // Wait for services to be set.
@@ -1603,9 +1612,10 @@ IN_PROC_BROWSER_TEST_F(WebviewChildLoginTest, UserInfoSentAfterTimerSet) {
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectIdentifierPage();
   SigninFrameJS().TypeIntoPath(child_account_id_.GetUserEmail(),
-                               {"identifier"});
+                               FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
   // Wait for user info timer to be set.
@@ -1627,9 +1637,11 @@ IN_PROC_BROWSER_TEST_F(WebviewChildLoginTest, UserInfoSentAfterTimerSet) {
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest, UserInfoNeverSent) {
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectIdentifierPage();
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                               FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
-  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
   // Wait for user info timer to be set.
@@ -1646,6 +1658,30 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, UserInfoNeverSent) {
   const user_manager::UserManager* const user_manager =
       user_manager::UserManager::Get();
   EXPECT_FALSE(user_manager->GetActiveUser()->IsChild());
+}
+
+// Verifies `ChromeOS.Gaia.PasswordFlow` events are recorded.
+IN_PROC_BROWSER_TEST_F(WebviewLoginTest, PasswordMetrics) {
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  ExpectIdentifierPage();
+
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                               FakeGaiaMixin::kEmailPath);
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  base::HistogramTester histogram_tester;
+  // This should generate first "Started" event.
+  SigninFrameJS().ExecuteAsync(
+      "gaia.chromeOSLogin.attemptLogin('email@email.com', 'password')");
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
+  // This should generate second "Started" event. And also eventually
+  // "Completed" event.
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  test::WaitForPrimaryUserSessionStart();
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.PasswordFlow", 0, 2);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.PasswordFlow", 1, 1);
 }
 
 }  // namespace chromeos

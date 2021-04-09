@@ -7,6 +7,12 @@
  * authenticator.js and SAML notice handling.
  */
 
+'use strict';
+
+(function() {
+
+const CHROMEOS_GAIA_PASSWORD_METRIC = 'ChromeOS.Gaia.PasswordFlow';
+
 Polymer({
   is: 'gaia-dialog',
 
@@ -129,7 +135,6 @@ Polymer({
     },
   },
 
-
   /**
    * Emulate click on the primary action button when it is visible and enabled.
    * @type {boolean}
@@ -219,6 +224,23 @@ Polymer({
       },
       'removeUserByEmail': (e) => {
         this.fire('removeuserbyemail', e.detail);
+      },
+      'apiPasswordAdded': (e) => {
+        // Only record the metric for Gaia flow without 3rd-party SAML IdP.
+        if (this.authFlow !== cr.login.Authenticator.AuthFlow.DEFAULT)
+          return;
+        chrome.send(
+            'metricsHandler:recordBooleanHistogram',
+            [CHROMEOS_GAIA_PASSWORD_METRIC, false]);
+      },
+      'authCompleted': (e) => {
+        // Only record the metric for Gaia flow without 3rd-party SAML IdP.
+        if (this.authFlow === cr.login.Authenticator.AuthFlow.DEFAULT) {
+          chrome.send(
+              'metricsHandler:recordBooleanHistogram',
+              [CHROMEOS_GAIA_PASSWORD_METRIC, true]);
+        }
+        this.fire('authcompleted', e.detail);
       },
     };
 
@@ -323,3 +345,4 @@ Polymer({
   },
 
 });
+})();

@@ -57,6 +57,7 @@
         auth-flow="{{authFlow_}}"
         is-saml-sso-visible="[[isSaml_(authFlow_)]]"
         webview-name="authView"
+        on-authcompleted="onAuthCompleted_"
         on-backcancel="cancel"
         on-closesaml="cancel"
         on-ready="onReady">
