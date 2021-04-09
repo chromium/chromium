@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/link_header.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
@@ -33,52 +34,17 @@ const char kNavigationPath[] = "https://a.test/";
 const char kPreloadPath[] = "https://a.test/script.js";
 const std::string kPreloadBody = "/*empty*/";
 
-// TODO(crbug.com/671310): Consider replacing this with
-// WeakWrapperSharedURLLoaderFactory wrapping a network::TestURLLoaderFactory.
-class TestPreloadSharedURLLoaderFactory
-    : public network::TestURLLoaderFactory,
-      public network::SharedURLLoaderFactory {
- public:
-  TestPreloadSharedURLLoaderFactory() = default;
-
-  // mojom::URLLoaderFactory implementation.
-  void CreateLoaderAndStart(
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t request_id,
-      uint32_t options,
-      const network::ResourceRequest& url_request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-      override {
-    network::TestURLLoaderFactory::CreateLoaderAndStart(
-        std::move(receiver), request_id, options, url_request,
-        std::move(client), traffic_annotation);
-  }
-
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory>) override {
-    NOTREACHED();
-  }
-
-  std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED();
-    return nullptr;
-  }
-
- private:
-  friend class base::RefCounted<TestPreloadSharedURLLoaderFactory>;
-  ~TestPreloadSharedURLLoaderFactory() override = default;
-};
-
 }  // namespace
 
 class NavigationEarlyHintsManagerTest : public testing::Test {
  public:
   NavigationEarlyHintsManagerTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        loader_factory_(
-            base::MakeRefCounted<TestPreloadSharedURLLoaderFactory>()),
+        shared_loader_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &loader_factory_)),
         early_hints_manager_(browser_context_,
-                             loader_factory_,
+                             shared_loader_factory_,
                              FrameTreeNode::kFrameTreeNodeInvalidId) {}
 
   ~NavigationEarlyHintsManagerTest() override = default;
@@ -89,9 +55,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
   }
 
  protected:
-  TestPreloadSharedURLLoaderFactory* loader_factory() {
-    return loader_factory_.get();
-  }
+  network::TestURLLoaderFactory& loader_factory() { return loader_factory_; }
 
   NavigationEarlyHintsManager& early_hints_manager() {
     return early_hints_manager_;
@@ -141,7 +105,9 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
-  scoped_refptr<TestPreloadSharedURLLoaderFactory> loader_factory_;
+  network::TestURLLoaderFactory loader_factory_;
+  scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
+      shared_loader_factory_;
   NavigationEarlyHintsManager early_hints_manager_;
 };
 
@@ -151,8 +117,8 @@ TEST_F(NavigationEarlyHintsManagerTest, SimpleResponse) {
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = kPreloadBody.size();
   status.error_code = net::OK;
-  loader_factory()->AddResponse(GURL(kPreloadPath), std::move(head),
-                                kPreloadBody, status);
+  loader_factory().AddResponse(GURL(kPreloadPath), std::move(head),
+                               kPreloadBody, status);
 
   early_hints_manager().HandleEarlyHints(CreateEarlyHintWithPreload(),
                                          CreateNavigationResourceRequest());
@@ -172,8 +138,7 @@ TEST_F(NavigationEarlyHintsManagerTest, EmptyBody) {
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = 0;
   status.error_code = net::OK;
-  loader_factory()->AddResponse(GURL(kPreloadPath), std::move(head), "",
-                                status);
+  loader_factory().AddResponse(GURL(kPreloadPath), std::move(head), "", status);
 
   early_hints_manager().HandleEarlyHints(CreateEarlyHintWithPreload(),
                                          CreateNavigationResourceRequest());
@@ -194,8 +159,8 @@ TEST_F(NavigationEarlyHintsManagerTest, ResponseExistsInDiskCache) {
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = kPreloadBody.size();
   status.error_code = net::OK;
-  loader_factory()->AddResponse(GURL(kPreloadPath), std::move(head),
-                                kPreloadBody, status);
+  loader_factory().AddResponse(GURL(kPreloadPath), std::move(head),
+                               kPreloadBody, status);
 
   early_hints_manager().HandleEarlyHints(CreateEarlyHintWithPreload(),
                                          CreateNavigationResourceRequest());
