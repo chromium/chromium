@@ -112,12 +112,22 @@ fyi_goma_rbe_canary_builder(
 
 fyi_goma_rbe_canary_builder(
     name = "Win Builder (dbg) Goma RBE Canary",
-    goma_enable_ats = True,
     os = os.WINDOWS_DEFAULT,
 )
 
 fyi_goma_rbe_canary_builder(
     name = "Win Builder Goma RBE Canary",
+    os = os.WINDOWS_DEFAULT,
+)
+
+fyi_goma_rbe_canary_builder(
+    name = "Win Builder (dbg) Goma RBE ATS Canary",
+    goma_enable_ats = True,
+    os = os.WINDOWS_DEFAULT,
+)
+
+fyi_goma_rbe_canary_builder(
+    name = "Win Builder Goma RBE ATS Canary",
     goma_enable_ats = True,
     os = os.WINDOWS_DEFAULT,
 )

@@ -37,7 +37,18 @@
       "use_goma": true
     }
   },
-  "Win Builder (dbg) Goma RBE Canary Client": {
+  "Win Builder (dbg) Goma RBE ATS Canary": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "Win Builder (dbg) Goma RBE Canary": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
@@ -59,7 +70,18 @@
       "use_goma": true
     }
   },
-  "Win Builder Goma RBE Canary Client": {
+  "Win Builder Goma RBE ATS Canary": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "Win Builder Goma RBE Canary": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,

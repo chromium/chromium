@@ -60,5 +60,15 @@ luci.console_view(
             builder = "goma/Win Builder (dbg) Goma RBE Canary",
             category = "rbe|win|dbg",
         ),
+        luci.console_view_entry(
+            builder = "goma/Win Builder Goma RBE ATS Canary",
+            category = "rbe|win|rel",
+            short_name = "ats",
+        ),
+        luci.console_view_entry(
+            builder = "goma/Win Builder (dbg) Goma RBE ATS Canary",
+            category = "rbe|win|dbg",
+            short_name = "ats",
+        ),
     ],
 )
