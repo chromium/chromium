@@ -67,8 +67,6 @@ class AssistantOptInDialog : public SystemWebDialogDelegate {
   void OnDialogClosed(const std::string& json_retval) override;
 
  private:
-  GURL CreateAssistantOptInURL(ash::FlowType type);
-
   AssistantOptInUI* assistant_ui_ = nullptr;
 
   // Callback to run if the flow is completed.

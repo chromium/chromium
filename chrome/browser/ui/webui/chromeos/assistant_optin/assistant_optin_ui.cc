@@ -61,8 +61,15 @@ constexpr gfx::Insets kDialogInsets =
 
 constexpr char kFlowTypeParamKey[] = "flow-type";
 constexpr char kCaptionBarHeightParamKey[] = "caption-bar-height";
-constexpr char kOobeDialogHeightParamKey[] = "oobe-dialog-height";
-constexpr char kOobeDialogWidthParamKey[] = "oobe-dialog-width";
+
+GURL CreateAssistantOptInURL(ash::FlowType type) {
+  GURL gurl(chrome::kChromeUIAssistantOptInURL);
+  gurl = net::AppendQueryParameter(
+      gurl, kFlowTypeParamKey, base::NumberToString(static_cast<int>(type)));
+  gurl = net::AppendQueryParameter(gurl, kCaptionBarHeightParamKey,
+                                   base::NumberToString(kCaptionBarHeight));
+  return gurl;
+}
 
 }  // namespace
 
@@ -180,21 +187,6 @@ AssistantOptInDialog::~AssistantOptInDialog() {
 void AssistantOptInDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->z_order = ui::ZOrderLevel::kNormal;
-}
-
-GURL AssistantOptInDialog::CreateAssistantOptInURL(ash::FlowType type) {
-  GURL gurl(chrome::kChromeUIAssistantOptInURL);
-  gurl = net::AppendQueryParameter(
-      gurl, kFlowTypeParamKey, base::NumberToString(static_cast<int>(type)));
-  gurl = net::AppendQueryParameter(gurl, kCaptionBarHeightParamKey,
-                                   base::NumberToString(kCaptionBarHeight));
-  gfx::Size size;
-  GetDialogSize(&size);
-  gurl = net::AppendQueryParameter(gurl, kOobeDialogHeightParamKey,
-                                   base::NumberToString(size.height()));
-  gurl = net::AppendQueryParameter(gurl, kOobeDialogWidthParamKey,
-                                   base::NumberToString(size.width()));
-  return gurl;
 }
 
 void AssistantOptInDialog::GetDialogSize(gfx::Size* size) const {
