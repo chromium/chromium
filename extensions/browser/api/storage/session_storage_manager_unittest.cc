@@ -51,7 +51,7 @@ class SessionStorageManagerUnittest : public testing::Test {
   std::unique_ptr<SessionStorageManager> manager_;
 };
 
-TEST_F(SessionStorageManagerUnittest, SetAndGetOneExtensionSuccessful) {
+TEST_F(SessionStorageManagerUnittest, SetGetAndRemoveOneExtensionSuccessful) {
   {
     // Store individual value.
     ValueChangeList changes;
@@ -92,9 +92,39 @@ TEST_F(SessionStorageManagerUnittest, SetAndGetOneExtensionSuccessful) {
   EXPECT_EQ(*all_values["key2"], value_string_);
   EXPECT_EQ(*all_values["key3"], value_list_);
   EXPECT_EQ(*all_values["key4"], value_dict_);
+
+  {
+    // Remove one value from storage.
+    ValueChangeList changes;
+    manager_->Remove(kTestExtensionId1, "key1", changes);
+    ASSERT_EQ(manager_->Get(kTestExtensionId1, "key1"), nullptr);
+  }
+
+  {
+    // Remove multiple values from storage.
+    ValueChangeList changes;
+    manager_->Remove(kTestExtensionId1, {"key2", "key3", "invalid key", "key4"},
+                     changes);
+    ASSERT_EQ(manager_->Get(kTestExtensionId1, "key2"), nullptr);
+    ASSERT_EQ(manager_->Get(kTestExtensionId1, "key3"), nullptr);
+    ASSERT_EQ(manager_->Get(kTestExtensionId1, "invalid key"), nullptr);
+    ASSERT_EQ(manager_->Get(kTestExtensionId1, "key4"), nullptr);
+  }
+
+  {
+    // Check that a value can be added after removing previous values.
+    ValueChangeList changes;
+    std::map<std::string, base::Value> values;
+    values.emplace("key1", value_string_.Clone());
+    values.emplace("key5", value_list_.Clone());
+    EXPECT_TRUE(manager_->Set(kTestExtensionId1, std::move(values), changes));
+    EXPECT_EQ(*manager_->Get(kTestExtensionId1, "key1"), value_string_);
+    EXPECT_EQ(*manager_->Get(kTestExtensionId1, "key5"), value_list_);
+  }
 }
 
-TEST_F(SessionStorageManagerUnittest, SetAndGetMultipleExtensionsSuccessful) {
+TEST_F(SessionStorageManagerUnittest,
+       SetGetAndRemovetMultipleExtensionsSuccessful) {
   {
     ValueChangeList changes;
     std::map<std::string, base::Value> values;
@@ -113,9 +143,13 @@ TEST_F(SessionStorageManagerUnittest, SetAndGetMultipleExtensionsSuccessful) {
   // values.
   EXPECT_EQ(*manager_->Get(kTestExtensionId1, "key1"), value_int_);
   EXPECT_EQ(*manager_->Get(kTestExtensionId2, "key1"), value_string_);
+  ValueChangeList changes;
+  manager_->Remove(kTestExtensionId1, "key1", changes);
+  EXPECT_EQ(manager_->Get(kTestExtensionId1, "key1"), nullptr);
+  EXPECT_EQ(*manager_->Get(kTestExtensionId2, "key1"), value_string_);
 }
 
-TEST_F(SessionStorageManagerUnittest, ChangeValueOfExistentKey) {
+TEST_F(SessionStorageManagerUnittest, ChangeValueOfExistentKeys) {
   {
     // New key and value are stored, and change is added to
     // changes list.
@@ -156,6 +190,41 @@ TEST_F(SessionStorageManagerUnittest, ChangeValueOfExistentKey) {
     EXPECT_TRUE(manager_->Set(kTestExtensionId1, std::move(values), changes));
     EXPECT_EQ(*manager_->Get(kTestExtensionId1, "key1"), value_string_);
     EXPECT_TRUE(changes.empty());
+  }
+
+  {
+    // Value pointed by an existing key is removed, and change is added to
+    // changes list.
+    ValueChangeList changes;
+    manager_->Remove(kTestExtensionId1, "key1", changes);
+    ASSERT_EQ(changes.size(), 1u);
+    EXPECT_EQ(changes[0].key, "key1");
+    ASSERT_TRUE(changes[0].old_value.has_value());
+    EXPECT_EQ(changes[0].old_value.value(), value_string_);
+    EXPECT_EQ(changes[0].new_value, nullptr);
+  }
+
+  {
+    // Values pointed by existing keys are removed, and changes are added to
+    // changes list.
+    ValueChangeList set_changes;
+    std::map<std::string, base::Value> values;
+    values.emplace("key2", value_string_.Clone());
+    values.emplace("key3", value_list_.Clone());
+    manager_->Set(kTestExtensionId1, std::move(values), set_changes);
+
+    ValueChangeList remove_changes;
+    std::vector<std::string> keys{"key2", "key3"};
+    manager_->Remove(kTestExtensionId1, keys, remove_changes);
+    ASSERT_EQ(remove_changes.size(), 2u);
+    EXPECT_EQ(remove_changes[0].key, "key2");
+    ASSERT_TRUE(remove_changes[0].old_value.has_value());
+    EXPECT_EQ(remove_changes[0].old_value.value(), value_string_);
+    EXPECT_EQ(remove_changes[0].new_value, nullptr);
+    EXPECT_EQ(remove_changes[1].key, "key3");
+    ASSERT_TRUE(remove_changes[1].old_value.has_value());
+    EXPECT_EQ(remove_changes[1].old_value.value(), value_list_);
+    EXPECT_EQ(remove_changes[1].new_value, nullptr);
   }
 }
 
