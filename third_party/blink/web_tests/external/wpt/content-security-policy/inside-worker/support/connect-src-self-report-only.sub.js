@@ -6,7 +6,7 @@ function new_spv_promise(test, url) {
     self.addEventListener("securitypolicyviolation", test.step_func(e => {
       if (e.blockedURI !== url)
         return;
-      assert_equals(e.disposition, "enforce");
+      assert_equals(e.disposition, "report");
       resolve();
     }));
   });
@@ -18,7 +18,7 @@ promise_test(t => {
   assert_no_csp_event_for_url(t, url);
 
   return fetch(url)
-    .then(t.step_func(r => assert_equals(r.status, 200)));
+      .then(t.step_func(r => assert_equals(r.status, 200)));
 }, "Same-origin 'fetch()' in " + self.location.protocol + self.location.search);
 
 promise_test(t => {
@@ -41,8 +41,6 @@ promise_test(t => {
   return Promise.all([
     new_spv_promise(t, url),
     fetch(url)
-      .then(t.step_func(_ => assert_unreached("cross-origin fetch should have thrown.")))
-      .catch(t.step_func(e => assert_true(e instanceof TypeError)))
   ]);
 }, "Cross-origin 'fetch()' in " + self.location.protocol + self.location.search);
 
@@ -54,8 +52,8 @@ promise_test(t => {
     new Promise((resolve, reject) => {
       var xhr = new XMLHttpRequest();
       xhr.open("GET", url);
-      xhr.onload = t.step_func(_ => reject("xhr.open should have thrown."));
-      xhr.onerror = t.step_func(resolve);
+      xhr.onload = t.step_func(resolve);
+      xhr.onerror = t.step_func(_ => reject("xhr.open should not have thrown."));
       xhr.send();
     })
   ]);
@@ -68,8 +66,6 @@ promise_test(t => {
   return Promise.all([
     new_spv_promise(t, url),
     fetch(url)
-      .then(t.step_func(_ => assert_unreached("cross-origin redirect should have thrown.")))
-      .catch(t.step_func(e => assert_true(e instanceof TypeError)))
   ]);
 }, "Same-origin => cross-origin 'fetch()' in " + self.location.protocol + self.location.search);
 

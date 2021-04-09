@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/securitypolicyviolation_disposition_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -979,9 +980,10 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
   init->setViolatedDirective(effective_directive);
   init->setEffectiveDirective(effective_directive);
   init->setOriginalPolicy(header);
-  init->setDisposition(header_type == ContentSecurityPolicyType::kEnforce
-                           ? "enforce"
-                           : "report");
+  init->setDisposition(
+      header_type == ContentSecurityPolicyType::kEnforce
+          ? securitypolicyviolation_disposition_names::kEnforce
+          : securitypolicyviolation_disposition_names::kReport);
   init->setStatusCode(0);
 
   // See https://w3c.github.io/webappsec-csp/#create-violation-for-global.

@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/securitypolicyviolation_disposition_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/timezone/timezone_controller.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
@@ -136,6 +137,7 @@ void CoreInitializer::Initialize() {
   media_type_names::Init();
   performance_entry_names::Init();
   shadow_element_names::Init();
+  securitypolicyviolation_disposition_names::Init();
 
   MediaQueryEvaluator::Init();
   CSSParserTokenRange::InitStaticEOFToken();
