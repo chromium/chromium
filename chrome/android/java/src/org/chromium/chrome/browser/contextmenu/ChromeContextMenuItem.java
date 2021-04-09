@@ -40,7 +40,8 @@ class ChromeContextMenuItem {
             Item.SEARCH_BY_IMAGE, Item.SEARCH_WITH_GOOGLE_LENS, Item.SHOP_SIMILAR_PRODUCTS,
             Item.SHOP_IMAGE_WITH_GOOGLE_LENS, Item.SEARCH_SIMILAR_PRODUCTS, Item.SHARE_IMAGE,
             Item.DIRECT_SHARE_IMAGE, Item.CALL, Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY,
-            Item.SAVE_VIDEO, Item.OPEN_IN_CHROME, Item.OPEN_IN_NEW_TAB_IN_GROUP})
+            Item.SAVE_VIDEO, Item.OPEN_IN_CHROME, Item.OPEN_IN_NEW_TAB_IN_GROUP,
+            Item.SHARE_HIGHLIGHT, Item.REMOVE_HIGHLIGHT, Item.LEARN_MORE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
         // Values are numerated from 0 and can't have gaps.
@@ -84,9 +85,12 @@ class ChromeContextMenuItem {
         int SAVE_VIDEO = 31;
         // Other
         int OPEN_IN_CHROME = 32;
-
+        // Shared Highlighting options
+        int SHARE_HIGHLIGHT = 33;
+        int REMOVE_HIGHLIGHT = 34;
+        int LEARN_MORE = 35;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 33;
+        int NUM_ENTRIES = 36;
     }
 
     /**
@@ -126,6 +130,9 @@ class ChromeContextMenuItem {
             R.id.contextmenu_copy, // Item.COPY
             R.id.contextmenu_save_video, // Item.SAVE_VIDEO
             R.id.contextmenu_open_in_chrome, // Item.OPEN_IN_CHROME
+            R.id.contextmenu_share_highlighting, // Item.SHARE_HIGHLIGHT
+            R.id.contextmenu_remove_highlighting, // Item.REMOVE_HIGHLIGHT
+            R.id.contextmenu_learn_more, // Item.LEARN_MORE
     };
 
     /**
@@ -167,6 +174,9 @@ class ChromeContextMenuItem {
             R.string.contextmenu_copy, // Item.COPY:
             R.string.contextmenu_save_video, // Item.SAVE_VIDEO:
             R.string.menu_open_in_chrome, // Item.OPEN_IN_CHROME:
+            R.string.contextmenu_share_highlighting, // Item.SHARE_HIGHLIGHT
+            R.string.contextmenu_remove_highlighting, // Item.REMOVE_HIGHLIGHT
+            R.string.contextmenu_learn_more, // Item.LEARN_MORE
     };
 
     /**

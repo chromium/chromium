@@ -81,6 +81,11 @@
     <item type="id" name="contextmenu_add_to_contacts" />
     <item type="id" name="contextmenu_copy" />
 
+    <!-- Shared Highlighting Group -->
+    <item type="id" name="contextmenu_share_highlighting" />
+    <item type="id" name="contextmenu_remove_highlighting" />
+    <item type="id" name="contextmenu_learn_more" />
+
     <!-- Other Group -->
     <item type="id" name="contextmenu_save_video" />
 

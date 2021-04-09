@@ -39,6 +39,8 @@ public class ContextMenuParams {
 
     private final int mSourceType;
 
+    private final boolean mOpenedFromHighlight;
+
     @CalledByNative
     private long getNativePointer() {
         return mNativePtr;
@@ -163,11 +165,18 @@ public class ContextMenuParams {
         }
     }
 
+    /**
+     * @return Whether or not the context menu was opened from ighlight.
+     */
+    public boolean getOpenedFromHighlight() {
+        return mOpenedFromHighlight;
+    }
+
     @VisibleForTesting
     public ContextMenuParams(long nativePtr, @ContextMenuDataMediaType int mediaType, GURL pageUrl,
             GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl, String titleText,
             Referrer referrer, boolean canSaveMedia, int triggeringTouchXDp, int triggeringTouchYDp,
-            @MenuSourceType int sourceType) {
+            @MenuSourceType int sourceType, boolean openedFromHighlight) {
         mNativePtr = nativePtr;
         mPageUrl = pageUrl;
         mLinkUrl = linkUrl;
@@ -184,19 +193,21 @@ public class ContextMenuParams {
         mTriggeringTouchXDp = triggeringTouchXDp;
         mTriggeringTouchYDp = triggeringTouchYDp;
         mSourceType = sourceType;
+        mOpenedFromHighlight = openedFromHighlight;
     }
 
     @CalledByNative
     private static ContextMenuParams create(long nativePtr, @ContextMenuDataMediaType int mediaType,
             GURL pageUrl, GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl,
             String titleText, GURL sanitizedReferrer, int referrerPolicy, boolean canSaveMedia,
-            int triggeringTouchXDp, int triggeringTouchYDp, @MenuSourceType int sourceType) {
+            int triggeringTouchXDp, int triggeringTouchYDp, @MenuSourceType int sourceType,
+            boolean openedFromHighlight) {
         // TODO(https://crbug.com/783819): Convert Referrer to use GURL.
         Referrer referrer = sanitizedReferrer.isEmpty()
                 ? null
                 : new Referrer(sanitizedReferrer.getSpec(), referrerPolicy);
         return new ContextMenuParams(nativePtr, mediaType, pageUrl, linkUrl, linkText,
                 unfilteredLinkUrl, srcUrl, titleText, referrer, canSaveMedia, triggeringTouchXDp,
-                triggeringTouchYDp, sourceType);
+                triggeringTouchYDp, sourceType, openedFromHighlight);
     }
 }

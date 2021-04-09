@@ -69,7 +69,7 @@ public class RevampedContextMenuHeaderMediatorTest {
                         .build();
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 url, JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH), "", GURL.emptyGURL(),
-                GURL.emptyGURL(), "", null, false, 0, 0, 0);
+                GURL.emptyGURL(), "", null, false, 0, 0, 0, false);
         final RevampedContextMenuHeaderMediator mediator =
                 new RevampedContextMenuHeaderMediator(mActivity, model,
                         PerformanceClass.PERFORMANCE_FAST, params, mProfile, mNativeDelegate);
@@ -88,7 +88,7 @@ public class RevampedContextMenuHeaderMediatorTest {
                         .build();
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 url, JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH), "", GURL.emptyGURL(),
-                GURL.emptyGURL(), "", null, false, 0, 0, 0);
+                GURL.emptyGURL(), "", null, false, 0, 0, 0, false);
         final RevampedContextMenuHeaderMediator mediator =
                 new RevampedContextMenuHeaderMediator(mActivity, model,
                         PerformanceClass.PERFORMANCE_FAST, params, mProfile, mNativeDelegate);
@@ -107,7 +107,7 @@ public class RevampedContextMenuHeaderMediatorTest {
                         .build();
         final ContextMenuParams params =
                 new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE, url, GURL.emptyGURL(), "",
-                        GURL.emptyGURL(), GURL.emptyGURL(), "", null, false, 0, 0, 0);
+                        GURL.emptyGURL(), GURL.emptyGURL(), "", null, false, 0, 0, 0, false);
         final RevampedContextMenuHeaderMediator mediator =
                 new RevampedContextMenuHeaderMediator(mActivity, model,
                         PerformanceClass.PERFORMANCE_FAST, params, mProfile, mNativeDelegate);

@@ -33,7 +33,7 @@ public class ContextMenuUtilsTest {
         ContextMenuParams params = new ContextMenuParams(0,
                 org.chromium.blink_public.common.ContextMenuDataMediaType.IMAGE, GURL.emptyGURL(),
                 GURL.emptyGURL(), sLinkText, GURL.emptyGURL(), new GURL(sSrcUrl), sTitleText, null,
-                false, 0, 0, 0);
+                false, 0, 0, 0, false);
 
         assertEquals(sTitleText, ContextMenuUtils.getTitle(params));
     }
@@ -43,7 +43,7 @@ public class ContextMenuUtilsTest {
     public void getTitle_noTitleTextHasLinkText() {
         ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 GURL.emptyGURL(), GURL.emptyGURL(), sLinkText, GURL.emptyGURL(), new GURL(sSrcUrl),
-                "", null, false, 0, 0, 0);
+                "", null, false, 0, 0, 0, false);
 
         assertEquals(sLinkText, ContextMenuUtils.getTitle(params));
     }
@@ -53,7 +53,7 @@ public class ContextMenuUtilsTest {
     public void getTitle_noTitleTextOrLinkText() {
         ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), new GURL(sSrcUrl), "",
-                null, false, 0, 0, 0);
+                null, false, 0, 0, 0, false);
 
         assertEquals(URLUtil.guessFileName(sSrcUrl, null, null), ContextMenuUtils.getTitle(params));
     }
@@ -63,7 +63,7 @@ public class ContextMenuUtilsTest {
     public void getTitle_noShareParams() {
         ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.NONE,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
-                null, false, 0, 0, 0);
+                null, false, 0, 0, 0, false);
 
         assertEquals("", ContextMenuUtils.getTitle(params));
     }
