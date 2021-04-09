@@ -87,8 +87,10 @@ network::mojom::RequestDestination LinkAsAttributeToRequestDestination(
   return network::mojom::RequestDestination::kEmpty;
 }
 
+// Used to determine a priority for a speculative subresource request.
 // TODO(crbug.com/671310): This is almost the same as GetRequestPriority() in
-// loading_predictor_tab_helper.cc. Merge them.
+// loading_predictor_tab_helper.cc and the purpose is the same. Consider merging
+// them if the logic starts to be more mature.
 net::RequestPriority CalculateRequestPriority(
     const network::mojom::LinkHeaderPtr& link) {
   switch (link->as) {
