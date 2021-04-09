@@ -47,27 +47,34 @@ std::unique_ptr<ClientPhishingRequest> GetMatchingVisualTargetsHelper(
     const ClientSideModel& model,
     std::unique_ptr<ClientPhishingRequest> request) {
   DCHECK(!content::RenderThread::IsMainThread());
-  for (const VisualTarget& target : model.vision_model().targets()) {
-    base::Optional<VisionMatchResult> result =
-        visual_utils::IsVisualMatch(bitmap, target);
-    if (result.has_value()) {
-      *request->add_vision_match() = result.value();
+
+  VisualFeatures::BlurredImage blurred_image;
+  // Obtaining a blurred image is essential for both adding a vision match or
+  // populating telemetry.
+  if (!visual_utils::GetBlurredImage(bitmap, &blurred_image)) {
+    return request;
+  }
+  const std::string blurred_image_hash =
+      visual_utils::GetHashFromBlurredImage(blurred_image);
+
+  VisualFeatures::ColorHistogram histogram;
+  if (visual_utils::GetHistogramForImage(bitmap, &histogram)) {
+    for (const VisualTarget& target : model.vision_model().targets()) {
+      base::Optional<VisionMatchResult> result = visual_utils::IsVisualMatch(
+          bitmap, blurred_image_hash, histogram, target);
+      if (result.has_value()) {
+        *request->add_vision_match() = result.value();
+      }
     }
   }
 
-  if (model.has_vision_model()) {
-    // Populate these fields for telementry purposes. They will be filtered in
-    // the browser process if they are not needed.
-    VisualFeatures::BlurredImage blurred_image;
-    if (visual_utils::GetBlurredImage(bitmap, &blurred_image)) {
-      std::string raw_digest = crypto::SHA256HashString(blurred_image.data());
-      request->set_screenshot_digest(
-          base::HexEncode(raw_digest.data(), raw_digest.size()));
-      request->set_screenshot_phash(
-          visual_utils::GetHashFromBlurredImage(blurred_image));
-      request->set_phash_dimension_size(48);
-    }
-  }
+  // Populate these fields for telemetry purposes. They will be filtered in
+  // the browser process if they are not needed.
+  std::string raw_digest = crypto::SHA256HashString(blurred_image.data());
+  request->set_screenshot_digest(
+      base::HexEncode(raw_digest.data(), raw_digest.size()));
+  request->set_screenshot_phash(blurred_image_hash);
+  request->set_phash_dimension_size(48);
 
   return request;
 }

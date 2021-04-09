@@ -68,6 +68,20 @@ class VisualUtilsTest : public testing::Test {
     base::DiscardableMemoryAllocator::SetInstance(nullptr);
   }
 
+  std::string GetBlurredBitmapHash() {
+    VisualFeatures::BlurredImage blurred_image;
+    EXPECT_TRUE(visual_utils::GetBlurredImage(bitmap_, &blurred_image));
+    std::string blurred_image_hash =
+        visual_utils::GetHashFromBlurredImage(blurred_image);
+    return blurred_image_hash;
+  }
+
+  VisualFeatures::ColorHistogram GetBitmapHistogram() {
+    VisualFeatures::ColorHistogram histogram;
+    EXPECT_TRUE(GetHistogramForImage(bitmap_, &histogram));
+    return histogram;
+  }
+
   // A test bitmap to work with. Initialized to be 1000x1000 in the Rec 2020
   // color space.
   SkBitmap bitmap_;
@@ -77,7 +91,7 @@ class VisualUtilsTest : public testing::Test {
   base::TestDiscardableMemoryAllocator test_allocator_;
 };
 
-TEST_F(VisualUtilsTest, TestSkColorToQuantizedColor) {
+TEST_F(VisualUtilsTest, TestkColorToQuantizedColor) {
   // Test quantization
   EXPECT_EQ(SkColorToQuantizedColor(SkColorSetRGB(0, 0, 31)), 0u);
   EXPECT_EQ(SkColorToQuantizedColor(SkColorSetRGB(0, 0, 32)), 1u);
@@ -294,7 +308,9 @@ TEST_F(VisualUtilsTest, IsVisualMatchHash) {
     VisualTarget target;
     target.set_hash(target_hash.data(), target_hash.size());
     target.mutable_match_config()->add_match_rule()->set_hash_distance(0.0);
-    EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+    EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                              GetBitmapHistogram(), target)
+                    .has_value());
   }
 
   {
@@ -314,7 +330,9 @@ TEST_F(VisualUtilsTest, IsVisualMatchHash) {
     target.set_hash(target_hash.data(), target_hash.size());
 
     target.mutable_match_config()->add_match_rule()->set_hash_distance(0.0);
-    EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+    EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                              GetBitmapHistogram(), target)
+                    .has_value());
   }
 }
 
@@ -338,9 +356,13 @@ TEST_F(VisualUtilsTest, IsVisualMatchHashPartialMatch) {
   VisualTarget target;
   target.set_hash(target_hash.data(), target_hash.size());
   target.mutable_match_config()->add_match_rule()->set_hash_distance(23.0);
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
   target.mutable_match_config()->add_match_rule()->set_hash_distance(24.0);
-  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                            GetBitmapHistogram(), target)
+                  .has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchHashStrideComparison) {
@@ -356,11 +378,15 @@ TEST_F(VisualUtilsTest, IsVisualMatchHashStrideComparison) {
   VisualTarget target;
   target.set_hash(target_hash.data(), target_hash.size());
   target.mutable_match_config()->add_match_rule()->set_hash_distance(0.0);
-  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                            GetBitmapHistogram(), target)
+                  .has_value());
 
   target_hash[0] = '\x00';
   target.set_hash(target_hash.data(), target_hash.size());
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchHistogramOnly) {
@@ -380,7 +406,9 @@ TEST_F(VisualUtilsTest, IsVisualMatchHistogramOnly) {
     bin->set_quantized_b(7);
     bin->set_weight(1.0);
     target.mutable_match_config()->add_match_rule()->set_color_distance(0.0);
-    EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+    EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                              GetBitmapHistogram(), target)
+                    .has_value());
   }
 
   {
@@ -397,10 +425,14 @@ TEST_F(VisualUtilsTest, IsVisualMatchHistogramOnly) {
 
     MatchRule* match_rule = target.mutable_match_config()->add_match_rule();
     match_rule->set_color_distance(0.5);
-    EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+    EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                              GetBitmapHistogram(), target)
+                    .has_value());
 
     match_rule->set_color_distance(0.4);
-    EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+    EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                               GetBitmapHistogram(), target)
+                     .has_value());
   }
 
   {
@@ -417,10 +449,14 @@ TEST_F(VisualUtilsTest, IsVisualMatchHistogramOnly) {
 
     MatchRule* match_rule = target.mutable_match_config()->add_match_rule();
     match_rule->set_color_distance(0.2);
-    EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+    EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                              GetBitmapHistogram(), target)
+                    .has_value());
 
     match_rule->set_color_distance(0.1);
-    EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+    EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                               GetBitmapHistogram(), target)
+                     .has_value());
   }
 }
 
@@ -440,21 +476,29 @@ TEST_F(VisualUtilsTest, IsVisualMatchColorRange) {
   color_range->set_high(target_hue);
 
   // Blue hue present
-  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                            GetBitmapHistogram(), target)
+                  .has_value());
 
   // Color range too high
   color_range->set_low(target_hue + 1);
   color_range->set_high(target_hue + 1);
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 
   // Color range too low
   color_range->set_low(target_hue - 1);
   color_range->set_high(target_hue - 1);
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 
   // No blue hue present
   *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kWhite, 1);
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchMultipleColorRanges) {
@@ -480,20 +524,28 @@ TEST_F(VisualUtilsTest, IsVisualMatchMultipleColorRanges) {
   color_range->set_high(green_hue);
 
   // Both hues present
-  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                            GetBitmapHistogram(), target)
+                  .has_value());
 
   // No blue hue present
   *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kWhite, 1);
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 
   // No green hue present
   *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kBlue, 1);
   *bitmap_.getAddr32(1, 0) = AddNoiseToLowerBits(kWhite, 1);
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 
   // Neither hue present
   *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kWhite, 1);
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchMultipleMatchRules) {
@@ -522,20 +574,28 @@ TEST_F(VisualUtilsTest, IsVisualMatchMultipleMatchRules) {
   color_range->set_high(green_hue);
 
   // Both hues present
-  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                            GetBitmapHistogram(), target)
+                  .has_value());
 
   // No blue hue present
   *bitmap_.getAddr32(0, 0) = kWhite;
-  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                            GetBitmapHistogram(), target)
+                  .has_value());
 
   // No green hue present
   *bitmap_.getAddr32(0, 0) = kBlue;
   *bitmap_.getAddr32(1, 0) = kWhite;
-  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                            GetBitmapHistogram(), target)
+                  .has_value());
 
   // Neither hue present
   *bitmap_.getAddr32(0, 0) = kWhite;
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchFloatColorRange) {
@@ -557,21 +617,29 @@ TEST_F(VisualUtilsTest, IsVisualMatchFloatColorRange) {
   color_range->set_high(target_hue);
 
   // Blue hue present
-  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                            GetBitmapHistogram(), target)
+                  .has_value());
 
   // Color range too high
   color_range->set_low(target_hue + 0.1);
   color_range->set_high(target_hue + 0.1);
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 
   // Color range too low
   color_range->set_low(target_hue - 0.1);
   color_range->set_high(target_hue - 0.1);
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 
   // No blue hue present
   *bitmap_.getAddr32(0, 0) = kWhite;
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchMultipleFloatColorRanges) {
@@ -597,20 +665,28 @@ TEST_F(VisualUtilsTest, IsVisualMatchMultipleFloatColorRanges) {
   color_range->set_high(green_hue);
 
   // Both hues present
-  EXPECT_TRUE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                            GetBitmapHistogram(), target)
+                  .has_value());
 
   // No blue hue present
   *bitmap_.getAddr32(0, 0) = kWhite;
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 
   // No green hue present
   *bitmap_.getAddr32(0, 0) = kBlue;
   *bitmap_.getAddr32(1, 0) = kWhite;
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 
   // Neither hue present
   *bitmap_.getAddr32(0, 0) = kWhite;
-  EXPECT_FALSE(IsVisualMatch(bitmap_, target).has_value());
+  EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
+                             GetBitmapHistogram(), target)
+                   .has_value());
 }
 
 }  // namespace visual_utils

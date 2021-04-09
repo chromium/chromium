@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/optional.h"
 #include "components/safe_browsing/core/common/visual_utils.h"
 
 #include "base/check_op.h"
@@ -67,6 +68,7 @@ opencv::PointDistribution HistogramBinsToPointDistribution(
         bins) {
   opencv::PointDistribution distribution;
   distribution.dimensions = 5;
+  distribution.positions.reserve(bins.size());
   for (const VisualFeatures::ColorHistogramBin& bin : bins) {
     distribution.weights.push_back(bin.weight());
     std::vector<float> position(5);
@@ -145,36 +147,71 @@ int GetQuantizedB(QuantizedColor color) {
   return color & 7;
 }
 
+struct ColorStats {
+  int color_to_count = 0;
+  double color_to_total_x = 0.0;
+  double color_to_total_y = 0.0;
+
+  base::Optional<QuantizedColor> quantized_color;
+};
+
 bool GetHistogramForImage(const SkBitmap& image,
                           VisualFeatures::ColorHistogram* histogram) {
   if (image.drawsNothing())
     return false;
-
-  std::unordered_map<QuantizedColor, int> color_to_count;
-  std::unordered_map<QuantizedColor, double> color_to_total_x;
-  std::unordered_map<QuantizedColor, double> color_to_total_y;
-  for (int x = 0; x < image.width(); x++) {
-    for (int y = 0; y < image.height(); y++) {
-      QuantizedColor color = SkColorToQuantizedColor(image.getColor(x, y));
-      color_to_count[color]++;
-      color_to_total_x[color] += static_cast<float>(x) / image.width();
-      color_to_total_y[color] += static_cast<float>(y) / image.height();
-    }
-  }
 
   int normalization_factor;
   if (!base::CheckMul(image.width(), image.height())
            .AssignIfValid(&normalization_factor))
     return false;
 
-  for (const auto& entry : color_to_count) {
-    const QuantizedColor& color = entry.first;
-    int count = entry.second;
+  // Indexed with colors in rgba order.
+  std::unordered_map<uint32_t, ColorStats> stats_map;
+  auto it = stats_map.end();
+
+  // The mask that will be applied needs the image in a specific format.
+  DCHECK_EQ(image.colorType(), SkColorType::kRGBA_8888_SkColorType);
+
+  for (int x = 0; x < image.width(); x++) {
+    for (int y = 0; y < image.height(); y++) {
+      // The conversions to QuantizedColor are avoided when possible to save
+      // cycles but colors still need to be grouped in the same way they would
+      // with the conversion. To achieve this mask out the bits that would be
+      // ignored in the conversion.
+      constexpr uint32_t kMask = 0xe0e0e000;
+      uint32_t rgba = *image.getAddr32(x, y) & kMask;
+
+      // If we're updating the same color as the last don't fetch uselessly
+      // in the map and reuse the iterator we have.
+      if (it == stats_map.end() || it->first != rgba) {
+        it = stats_map.insert({rgba, ColorStats{}}).first;
+      }
+
+      // Update the color stats with the information from the current pixel.
+      ColorStats& stats = it->second;
+      stats.color_to_count++;
+      stats.color_to_total_x += static_cast<float>(x);
+      stats.color_to_total_y += static_cast<float>(y);
+
+      // If we've never encountered this color before do the conversion. Avoid
+      // it otherwise to save the overhead.
+      if (!stats.quantized_color.has_value()) {
+        stats.quantized_color.emplace(
+            SkColorToQuantizedColor(image.getColor(x, y)));
+      }
+    }
+  }
+
+  for (const auto& entry : stats_map) {
+    QuantizedColor color = entry.second.quantized_color.value();
+
+    const ColorStats& stats = entry.second;
+    int count = entry.second.color_to_count;
 
     VisualFeatures::ColorHistogramBin* bin = histogram->add_bins();
     bin->set_weight(static_cast<float>(count) / normalization_factor);
-    bin->set_centroid_x(color_to_total_x[color] / count);
-    bin->set_centroid_y(color_to_total_y[color] / count);
+    bin->set_centroid_x(stats.color_to_total_x / count / image.width());
+    bin->set_centroid_y(stats.color_to_total_y / count / image.height());
     bin->set_quantized_r(GetQuantizedR(color));
     bin->set_quantized_g(GetQuantizedG(color));
     bin->set_quantized_b(GetQuantizedB(color));
@@ -213,10 +250,12 @@ bool GetBlurredImage(const SkBitmap& image,
 
   blurred_image->set_width(blurred->width());
   blurred_image->set_height(blurred->height());
-  blurred_image->clear_data();
 
   const uint32_t* rgba = blurred->getAddr32(0, 0);
-  for (int i = 0; i < blurred->width() * blurred->height(); i++) {
+  const int data_size = blurred->width() * blurred->height();
+  blurred_image->mutable_data()->reserve(data_size);
+
+  for (int i = 0; i < data_size; i++) {
     // Data is stored in BGR order.
     *blurred_image->mutable_data() += static_cast<char>((rgba[i] >> 0) & 0xff);
     *blurred_image->mutable_data() += static_cast<char>((rgba[i] >> 8) & 0xff);
@@ -255,9 +294,10 @@ std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
       int y_end = std::min(y_start + block_size, image.height());
       for (int i = x_start; i < x_end; i++) {
         for (int j = y_start; j < y_end; j++) {
-          r_total += SkColorGetR(image.getColor(i, j));
-          g_total += SkColorGetG(image.getColor(i, j));
-          b_total += SkColorGetB(image.getColor(i, j));
+          const QuantizedColor color = image.getColor(i, j);
+          r_total += SkColorGetR(color);
+          g_total += SkColorGetG(color);
+          b_total += SkColorGetB(color);
           sample_count++;
         }
       }
@@ -322,18 +362,14 @@ std::string GetHashFromBlurredImage(
   return output;
 }
 
-base::Optional<VisionMatchResult> IsVisualMatch(const SkBitmap& image,
-                                                const VisualTarget& target) {
-  VisualFeatures::BlurredImage blurred_image;
-  if (!GetBlurredImage(image, &blurred_image))
-    return base::nullopt;
-  std::string hash = GetHashFromBlurredImage(blurred_image);
+base::Optional<VisionMatchResult> IsVisualMatch(
+    const SkBitmap& image,
+    const std::string& blurred_image_hash,
+    const VisualFeatures::ColorHistogram& histogram,
+    const VisualTarget& target) {
   size_t hash_distance;
-  bool has_hash_distance = GetHashDistance(hash, target.hash(), &hash_distance);
-
-  VisualFeatures::ColorHistogram histogram;
-  if (!GetHistogramForImage(image, &histogram))
-    return base::nullopt;
+  bool has_hash_distance =
+      GetHashDistance(blurred_image_hash, target.hash(), &hash_distance);
 
   opencv::PointDistribution point_distribution =
       HistogramBinsToPointDistribution(histogram.bins());
