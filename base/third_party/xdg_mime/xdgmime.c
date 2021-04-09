@@ -136,7 +136,7 @@ xdg_dir_time_list_free (XdgDirTimeList *list)
 }
 
 static int
-xdg_mime_init_from_directory (const char *directory, void *user_data)
+xdg_mime_init_from_directory (const char *directory)
 {
   char *file_name;
   struct stat st;
@@ -340,9 +340,8 @@ xdg_check_file (const char *file_path,
 
 static int
 xdg_check_dir (const char *directory,
-	       void       *user_data)
+	       int        *invalid_dir_list)
 {
-  int *invalid_dir_list = user_data;
   int invalid, exists;
   char *file_name;
 
@@ -399,7 +398,8 @@ xdg_check_dirs (void)
   for (list = dir_time_list; list; list = list->next)
     list->checked = XDG_CHECKED_UNCHECKED;
 
-  xdg_run_command_on_dirs (xdg_check_dir, &invalid_dir_list);
+  xdg_run_command_on_dirs ((XdgDirectoryFunc) xdg_check_dir,
+			   &invalid_dir_list);
 
   if (invalid_dir_list)
     return TRUE;
@@ -455,7 +455,8 @@ xdg_mime_init (void)
       icon_list = _xdg_mime_icon_list_new ();
       generic_icon_list = _xdg_mime_icon_list_new ();
 
-      xdg_run_command_on_dirs (xdg_mime_init_from_directory, NULL);
+      xdg_run_command_on_dirs ((XdgDirectoryFunc) xdg_mime_init_from_directory,
+			       NULL);
 
       need_reread = FALSE;
     }
@@ -470,7 +471,8 @@ xdg_mime_get_mime_type_for_data (const void *data,
 
   if (len == 0)
     {
-      *result_prio = 100;
+      if (result_prio != NULL)
+        *result_prio = 100;
       return XDG_MIME_TYPE_EMPTY;
     }
 
@@ -557,12 +559,12 @@ xdg_mime_get_mime_type_for_file (const char  *file_name,
   mime_type = _xdg_mime_magic_lookup_data (global_magic, data, bytes_read, NULL,
 					   mime_types, n);
 
-  fclose (file);
-
   if (!mime_type)
-    mime_type = _xdg_binary_or_text_fallback(data, bytes_read);
+    mime_type = _xdg_binary_or_text_fallback (data, bytes_read);
 
   free (data);
+  fclose (file);
+
   return mime_type;
 }
 
@@ -740,18 +742,27 @@ xdg_mime_media_type_equal (const char *mime_a,
 
 #if 1
 static int
-xdg_mime_is_super_type (const char *mime)
+ends_with (const char *str,
+           const char *suffix)
 {
   int length;
-  const char *type;
+  int suffix_length;
 
-  length = strlen (mime);
-  type = &(mime[length - 2]);
+  length = strlen (str);
+  suffix_length = strlen (suffix);
+  if (length < suffix_length)
+    return 0;
 
-  if (strcmp (type, "/*") == 0)
+  if (strcmp (str + length - suffix_length, suffix) == 0)
     return 1;
 
   return 0;
+}
+
+static int
+xdg_mime_is_super_type (const char *mime)
+{
+  return ends_with (mime, "/*");
 }
 #endif
 
@@ -783,7 +794,8 @@ _xdg_mime_mime_type_subclass (const char *mime,
       strncmp (umime, "text/", 5) == 0)
     return 1;
 
-  if (strcmp (ubase, "application/octet-stream") == 0)
+  if (strcmp (ubase, "application/octet-stream") == 0 &&
+      strncmp (umime, "inode/", 6) != 0)
     return 1;
   
   parents = _xdg_mime_parent_list_lookup (parent_list, umime);
