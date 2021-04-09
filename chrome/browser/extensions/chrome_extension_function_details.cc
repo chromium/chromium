@@ -27,10 +27,6 @@ ChromeExtensionFunctionDetails::ChromeExtensionFunctionDetails(
 ChromeExtensionFunctionDetails::~ChromeExtensionFunctionDetails() {
 }
 
-Profile* ChromeExtensionFunctionDetails::GetProfile() const {
-  return Profile::FromBrowserContext(function_->browser_context());
-}
-
 Browser* ChromeExtensionFunctionDetails::GetCurrentBrowser() const {
   // If the delegate has an associated browser, return it.
   if (function_->dispatcher()) {
