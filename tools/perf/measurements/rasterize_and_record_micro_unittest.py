@@ -17,7 +17,7 @@ class RasterizeAndRecordMicroUnitTest(legacy_page_test_case.LegacyPageTestCase):
   """
 
   # Fails or flaky on some bots.  See http://crbug.com/956798
-  @decorators.Disabled('win', 'chromeos', 'linux', 'win7')
+  @decorators.Disabled('win', 'chromeos', 'linux', 'win7', 'mac')
   def testRasterizeAndRecordMicro(self):
     pate_test = rasterize_and_record_micro.RasterizeAndRecordMicro(
         rasterize_repeat=1, record_repeat=1, start_wait_time=0.0,
