@@ -93,6 +93,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
+using page_load_metrics::PageEndReason;
 using page_load_metrics::PageLoadMetricsTestWaiter;
 using TimingField = page_load_metrics::PageLoadMetricsTestWaiter::TimingField;
 using WebFeature = blink::mojom::WebFeature;
@@ -3099,10 +3100,15 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PortalActivation) {
   content::WebContents* portal_contents = contents_observer.GetWebContents();
 
   {
-    // The portal is not activated, so nothing should be recorded.
+    // The portal is not activated, so no page end metrics should be recorded
+    // (although the outer contents may have recorded FCP).
     auto entries = test_ukm_recorder_->GetMergedEntriesByName(
         ukm::builders::PageLoad::kEntryName);
-    EXPECT_EQ(0u, entries.size());
+    for (const auto& kv : entries) {
+      EXPECT_FALSE(ukm::TestUkmRecorder::EntryHasMetric(
+          kv.second.get(),
+          ukm::builders::PageLoad::kNavigation_PageEndReason3Name));
+    }
   }
 
   // Activate the portal.
@@ -3127,10 +3133,17 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PortalActivation) {
   EXPECT_NE(portal_contents, outer_contents);
 
   {
-    // The portal is activated, so there should be a PageLoad entry.
+    // The portal is activated, so there should be a PageLoad entry showing
+    // that the outer contents was closed.
     auto entries = test_ukm_recorder_->GetMergedEntriesByName(
         ukm::builders::PageLoad::kEntryName);
     EXPECT_EQ(1u, entries.size());
+    for (const auto& kv : entries) {
+      ukm::TestUkmRecorder::ExpectEntryMetric(
+          kv.second.get(),
+          ukm::builders::PageLoad::kNavigation_PageEndReason3Name,
+          PageEndReason::END_CLOSE);
+    }
   }
   {
     // The portal is activated, also check the portal entry.
