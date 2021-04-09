@@ -17,14 +17,21 @@ struct Feature;
 class Profile;
 class PrefRegistrySimple;
 
-// This service manages snooze and dismiss of in-product help promo.
+// This service manages snooze and dismiss of snoozable in-product help promo.
 //
-// An IPH controller notifies this service when an IPH is snoozed or dismissed.
-// When the snooze period expires, this service will approve controller's
-// request to retrigger the IPH.
-// If an IPH is dismissed, this service will reject controller's request.
+// Before showing an IPH, the IPH controller should ask if the IPH is blocked.
+// The controller should also notify after the IPH is shown and after the user
+// clicks the snooze/dismiss button.
 class FeaturePromoSnoozeService {
  public:
+  // Policies to handler users who don't interact with the IPH.
+  enum class NonClickerPolicy {
+    // Permanently dismiss the IPH. Equivalent to clicking the dismiss button.
+    kDismiss = 0,
+    // Reshow the IPH later after at least 14 days.
+    kLongSnooze
+  };
+
   // Maximum count of snoozes to track in UMA histogram.
   // Snooze counts that are equal or larger than this value will be conflated.
   static const int kUmaMaxSnoozeCount;
@@ -48,6 +55,9 @@ class FeaturePromoSnoozeService {
   // after a fixed amount of time.
   void OnUserDismiss(const base::Feature& iph_feature);
 
+  // The IPH controller must call this method after an IPH is shown.
+  void OnPromoShown(const base::Feature& iph_feature);
+
   // The IPH controller must call this method to check if an IPH is blocked by
   // dismiss or snooze. An IPH will be approved if it is not snoozed or the
   // snoozing period has timed out.
@@ -70,9 +80,11 @@ class FeaturePromoSnoozeService {
   // in_product_help.snoozed_feature.[iph_name] in PerfService.
   struct SnoozeData {
     bool is_dismissed = false;
+    base::Time last_show_time = base::Time();
     base::Time last_snooze_time = base::Time();
     base::TimeDelta last_snooze_duration = base::TimeDelta();
     int snooze_count = 0;
+    int show_count = 0;
   };
 
   base::Optional<SnoozeData> ReadSnoozeData(const base::Feature& iph_feature);
