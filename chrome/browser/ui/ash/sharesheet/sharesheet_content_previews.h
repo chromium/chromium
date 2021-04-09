@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_CONTENT_PREVIEWS_H_
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_CONTENT_PREVIEWS_H_
 
-#include "chrome/browser/ui/ash/sharesheet/sharesheet_image_decoder.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/views/view.h"
 
@@ -48,12 +48,8 @@ class SharesheetContentPreviews : public views::View {
   // from share_target_utils.h to a common place and reuse the function here.
   std::vector<std::string> ExtractShareText();
 
-  // Invokes the image decoder to run tasks
-  // which will decode the image preview.
-  void ExecuteImageDecoder();
-
-  // Adds the image preview to the view.
-  void OnImageDecoded(gfx::ImageSkia image);
+  void LoadImage();
+  void OnImageLoaded(const SkBitmap* bitmap, base::File::Error error);
 
   // Contains the share title and text preview views.
   views::View* content_view_ = nullptr;
@@ -61,7 +57,7 @@ class SharesheetContentPreviews : public views::View {
 
   Profile* profile_;
   apps::mojom::IntentPtr intent_;
-  SharesheetImageDecoder image_decoder_;
+  ash::ThumbnailLoader thumbnail_loader_;
 
   base::WeakPtrFactory<SharesheetContentPreviews> weak_ptr_factory_{this};
 };

@@ -35,7 +35,7 @@ constexpr char HoldingSpacePersistenceDelegate::kPersistencePath[];
 HoldingSpacePersistenceDelegate::HoldingSpacePersistenceDelegate(
     Profile* profile,
     HoldingSpaceModel* model,
-    HoldingSpaceThumbnailLoader* thumbnail_loader,
+    ThumbnailLoader* thumbnail_loader,
     ItemRestoredCallback item_restored_callback,
     PersistenceRestoredCallback persistence_restored_callback)
     : HoldingSpaceKeyedServiceDelegate(profile, model),

@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -152,13 +152,13 @@ GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path) {
 }
 
 std::unique_ptr<HoldingSpaceImage> ResolveImage(
-    HoldingSpaceThumbnailLoader* thumbnail_loader,
+    ThumbnailLoader* thumbnail_loader,
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return std::make_unique<HoldingSpaceImage>(
       HoldingSpaceImage::GetMaxSizeForType(type), file_path,
       base::BindRepeating(
-          [](const base::WeakPtr<HoldingSpaceThumbnailLoader>& thumbnail_loader,
+          [](const base::WeakPtr<ThumbnailLoader>& thumbnail_loader,
              const base::FilePath& file_path, const gfx::Size& size,
              HoldingSpaceImage::BitmapCallback callback) {
             if (thumbnail_loader)

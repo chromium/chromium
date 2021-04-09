@@ -19,7 +19,7 @@ class PrefRegistrySyncable;
 namespace ash {
 
 class HoldingSpaceItem;
-class HoldingSpaceThumbnailLoader;
+class ThumbnailLoader;
 
 using HoldingSpaceItemPtr = std::unique_ptr<HoldingSpaceItem>;
 
@@ -45,7 +45,7 @@ class HoldingSpacePersistenceDelegate
   HoldingSpacePersistenceDelegate(
       Profile* profile,
       HoldingSpaceModel* model,
-      HoldingSpaceThumbnailLoader* thumbnail_loader,
+      ThumbnailLoader* thumbnail_loader,
       ItemRestoredCallback item_restored_callback,
       PersistenceRestoredCallback persistence_restored_callback);
   HoldingSpacePersistenceDelegate(const HoldingSpacePersistenceDelegate&) =
@@ -70,7 +70,7 @@ class HoldingSpacePersistenceDelegate
   void RestoreModelFromPersistence();
 
   // Owned by `HoldingSpaceKeyedService`.
-  HoldingSpaceThumbnailLoader* const thumbnail_loader_;
+  ThumbnailLoader* const thumbnail_loader_;
 
   // Callback to invoke when an item has been restored from persistence.
   ItemRestoredCallback item_restored_callback_;

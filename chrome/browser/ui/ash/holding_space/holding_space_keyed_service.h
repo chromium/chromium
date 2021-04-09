@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -99,9 +99,7 @@ class HoldingSpaceKeyedService : public KeyedService,
     return &holding_space_model_;
   }
 
-  HoldingSpaceThumbnailLoader* thumbnail_loader_for_testing() {
-    return &thumbnail_loader_;
-  }
+  ThumbnailLoader* thumbnail_loader_for_testing() { return &thumbnail_loader_; }
 
  private:
   // KeyedService:
@@ -139,7 +137,7 @@ class HoldingSpaceKeyedService : public KeyedService,
   HoldingSpaceClientImpl holding_space_client_;
   HoldingSpaceModel holding_space_model_;
 
-  HoldingSpaceThumbnailLoader thumbnail_loader_;
+  ThumbnailLoader thumbnail_loader_;
 
   // The `HoldingSpaceKeyedService` owns a collection of `delegates_` which are
   // each tasked with an independent area of responsibility on behalf of the

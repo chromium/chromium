@@ -7,13 +7,22 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
+#include "base/files/file_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/chromeos/file_manager/app_id.h"
+#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -21,21 +30,21 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-constexpr char kImagePrefix[] = "image/";
 
 constexpr SkColor kTitlePreviewColor = gfx::kGoogleGrey700;
 
 // This is the left inset used for the distance between the Share text and the
 // image preview.
 constexpr int kSmallSpacing = 10;
-constexpr int kImagePreviewSize = 50;
 }  // namespace
 
 SharesheetContentPreviews::SharesheetContentPreviews(
     apps::mojom::IntentPtr intent,
     Profile* profile,
     std::unique_ptr<views::Label> share_title)
-    : profile_(profile), intent_(std::move(intent)) {
+    : profile_(profile),
+      intent_(std::move(intent)),
+      thumbnail_loader_(profile) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       /* inside_border_insets */ gfx::Insets(),
@@ -58,15 +67,10 @@ SharesheetContentPreviews::SharesheetContentPreviews(
                   SharesheetBubbleView::kSpacing));
   ShowTextPreview();
 
-  // Decode image if the intent contains an image.
-  if ((intent_->mime_type.has_value()) &&
-      base::StartsWith(intent_->mime_type.value(), kImagePrefix,
-                       base::CompareCase::SENSITIVE)) {
-    ExecuteImageDecoder();
+  if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty()) {
+    LoadImage();
   } else {
-    // TODO(crbug.com/2650014): call a function that determines what icon is
-    // displayed based on the content type.
-    // The code below provides a temporary placeholder icon.
+    // TODO(crbug.com/2650014): Update to text icon.
     image_preview_->SetImage(gfx::CreateVectorIcon(kAddIcon));
   }
 }
@@ -84,7 +88,8 @@ void SharesheetContentPreviews::InitaliseImageView() {
                                           SharesheetBubbleView::kSpacing,
                                           SharesheetBubbleView::kSpacing, 0));
   image_preview_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
-  image_preview_->SetImageSize(gfx::Size(kImagePreviewSize, kImagePreviewSize));
+  image_preview_->SetImageSize(
+      gfx::Size(sharesheet::kIconSize, sharesheet::kIconSize));
 }
 
 void SharesheetContentPreviews::ShowTextPreview() {
@@ -94,6 +99,8 @@ void SharesheetContentPreviews::ShowTextPreview() {
 
   // TODO(crbug.com/2650014): Handle case for sharing multiple files. Add an
   // enumeration string to reflect how many files are being sent.
+
+  // TODO(crbug.com/2650014): Handle drive_share_url and share_title fields.
 
   std::vector<std::string> share_fields;
   if (intent_->share_text.has_value() &&
@@ -162,15 +169,37 @@ std::vector<std::string> SharesheetContentPreviews::ExtractShareText() {
   return result;
 }
 
-void SharesheetContentPreviews::ExecuteImageDecoder() {
-  // Invokes the image decoder and executes OnImageDecoded
-  // upon completion.
-  image_decoder_.DecodeImage(
-      intent_->Clone(), profile_,
-      base::BindOnce(&SharesheetContentPreviews::OnImageDecoded,
+// TODO(crbug.com/2650014) Optimise to load several images.
+void SharesheetContentPreviews::LoadImage() {
+  base::FilePath file_path;
+  storage::FileSystemContext* fs_context =
+      file_manager::util::GetFileSystemContextForExtensionId(
+          profile_, file_manager::kFileManagerAppId);
+  storage::FileSystemURL fs_url =
+      fs_context->CrackURL(intent_->file_urls.value().front());
+  file_path = fs_url.path();
+
+  // This works for all shares right now because currently when we share data
+  // that is not from the Files app (web share and ARC),
+  // those files are being temporarily saved to disk before being shared.
+  // If those implementations change, this will need to be updated.
+  thumbnail_loader_.Load(
+      {file_path, gfx::Size(sharesheet::kIconSize, sharesheet::kIconSize)},
+      base::BindOnce(&SharesheetContentPreviews::OnImageLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SharesheetContentPreviews::OnImageDecoded(gfx::ImageSkia image) {
-  image_preview_->SetImage(image);
+void SharesheetContentPreviews::OnImageLoaded(const SkBitmap* bitmap,
+                                              base::File::Error error) {
+  if (error != base::File::FILE_OK) {
+    // TODO(crbug.com/2650014): Handle error case:
+    // Add placeholder icons for each mimetype.
+    image_preview_->SetImage(gfx::CreateVectorIcon(kAddIcon));
+    return;
+  }
+
+  // TODO(crbug.com/1189945): Update to use custom ImageSkiaSource so that
+  // image will scale with device scale factor.
+  image_preview_->SetImage(
+      gfx::Image::CreateFrom1xBitmap(*bitmap).AsImageSkia());
 }

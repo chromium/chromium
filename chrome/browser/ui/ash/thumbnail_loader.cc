@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
 
 #include "ash/public/cpp/image_downloader.h"
 #include "base/bind.h"
@@ -135,8 +135,7 @@ class ThumbnailLoaderNativeMessageHost : public extensions::NativeMessageHost {
 }  // namespace
 
 // Converts a data URL to bitmap.
-class HoldingSpaceThumbnailLoader::ThumbnailDecoder
-    : public BitmapFetcherDelegate {
+class ThumbnailLoader::ThumbnailDecoder : public BitmapFetcherDelegate {
  public:
   explicit ThumbnailDecoder(Profile* profile) : profile_(profile) {}
 
@@ -149,8 +148,7 @@ class HoldingSpaceThumbnailLoader::ThumbnailDecoder
     std::move(callback_).Run(bitmap, base::File::FILE_OK);
   }
 
-  void Start(const std::string& data,
-             HoldingSpaceThumbnailLoader::ImageCallback callback) {
+  void Start(const std::string& data, ThumbnailLoader::ImageCallback callback) {
     DCHECK(!callback_);
     DCHECK(!bitmap_fetcher_);
 
@@ -179,29 +177,27 @@ class HoldingSpaceThumbnailLoader::ThumbnailDecoder
 
  private:
   Profile* const profile_;
-  HoldingSpaceThumbnailLoader::ImageCallback callback_;
+  ThumbnailLoader::ImageCallback callback_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
 };
 
-HoldingSpaceThumbnailLoader::HoldingSpaceThumbnailLoader(Profile* profile)
-    : profile_(profile) {}
+ThumbnailLoader::ThumbnailLoader(Profile* profile) : profile_(profile) {}
 
-HoldingSpaceThumbnailLoader::~HoldingSpaceThumbnailLoader() = default;
+ThumbnailLoader::~ThumbnailLoader() = default;
 
-HoldingSpaceThumbnailLoader::ThumbnailRequest::ThumbnailRequest(
+ThumbnailLoader::ThumbnailRequest::ThumbnailRequest(
     const base::FilePath& item_path,
     const gfx::Size& size)
     : item_path(item_path), size(size) {}
 
-HoldingSpaceThumbnailLoader::ThumbnailRequest::~ThumbnailRequest() = default;
+ThumbnailLoader::ThumbnailRequest::~ThumbnailRequest() = default;
 
-base::WeakPtr<HoldingSpaceThumbnailLoader>
-HoldingSpaceThumbnailLoader::GetWeakPtr() {
+base::WeakPtr<ThumbnailLoader> ThumbnailLoader::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void HoldingSpaceThumbnailLoader::Load(const ThumbnailRequest& request,
-                                       ImageCallback callback) {
+void ThumbnailLoader::Load(const ThumbnailRequest& request,
+                           ImageCallback callback) {
   // Get the item's last modified time - this will be used for cache lookup in
   // the image loader extension.
   file_manager::util::GetMetadataForPath(
@@ -210,11 +206,11 @@ void HoldingSpaceThumbnailLoader::Load(const ThumbnailRequest& request,
       request.item_path,
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
           storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
-      base::BindOnce(&HoldingSpaceThumbnailLoader::LoadForFileWithMetadata,
+      base::BindOnce(&ThumbnailLoader::LoadForFileWithMetadata,
                      weak_factory_.GetWeakPtr(), request, std::move(callback)));
 }
 
-void HoldingSpaceThumbnailLoader::LoadForFileWithMetadata(
+void ThumbnailLoader::LoadForFileWithMetadata(
     const ThumbnailRequest& request,
     ImageCallback callback,
     base::File::Error result,
@@ -263,6 +259,7 @@ void HoldingSpaceThumbnailLoader::LoadForFileWithMetadata(
   request_value.SetKey("taskId", base::Value(request_id.ToString()));
   request_value.SetKey("url", base::Value(thumbnail_url.spec()));
   request_value.SetKey("timestamp", util::TimeToValue(file_info.last_modified));
+  // TODO(crbug.com/2650014) : Add an arg to set this to false for sharesheet.
   request_value.SetBoolKey("cache", true);
   request_value.SetBoolKey("crop", true);
   request_value.SetKey("priority", base::Value(1));
@@ -276,7 +273,7 @@ void HoldingSpaceThumbnailLoader::LoadForFileWithMetadata(
   // the image loader request.
   auto native_message_host = std::make_unique<ThumbnailLoaderNativeMessageHost>(
       request_id.ToString(), request_message,
-      base::BindOnce(&HoldingSpaceThumbnailLoader::OnThumbnailLoaded,
+      base::BindOnce(&ThumbnailLoader::OnThumbnailLoaded,
                      weak_factory_.GetWeakPtr(), request_id, request.size));
   const extensions::PortId port_id(base::UnguessableToken::Create(),
                                    1 /* port_number */, true /* is_opener */);
@@ -290,7 +287,7 @@ void HoldingSpaceThumbnailLoader::LoadForFileWithMetadata(
       GURL(), std::string() /* channel_name */);
 }
 
-void HoldingSpaceThumbnailLoader::OnThumbnailLoaded(
+void ThumbnailLoader::OnThumbnailLoaded(
     const base::UnguessableToken& request_id,
     const gfx::Size& requested_size,
     const std::string& data) {
@@ -308,15 +305,14 @@ void HoldingSpaceThumbnailLoader::OnThumbnailLoaded(
   thumbnail_decoders_.emplace(request_id, std::move(thumbnail_decoder));
   thumbnail_decoder_ptr->Start(
       data,
-      base::BindOnce(&HoldingSpaceThumbnailLoader::RespondToRequest,
+      base::BindOnce(&ThumbnailLoader::RespondToRequest,
                      weak_factory_.GetWeakPtr(), request_id, requested_size));
 }
 
-void HoldingSpaceThumbnailLoader::RespondToRequest(
-    const base::UnguessableToken& request_id,
-    const gfx::Size& requested_size,
-    const SkBitmap* bitmap,
-    base::File::Error error) {
+void ThumbnailLoader::RespondToRequest(const base::UnguessableToken& request_id,
+                                       const gfx::Size& requested_size,
+                                       const SkBitmap* bitmap,
+                                       base::File::Error error) {
   thumbnail_decoders_.erase(request_id);
   auto request_it = requests_.find(request_id);
   if (request_it == requests_.end())

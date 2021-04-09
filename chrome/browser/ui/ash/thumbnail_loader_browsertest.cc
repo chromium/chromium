@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
 
 #include <memory>
 
-#include "ash/public/cpp/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -17,8 +16,6 @@
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -81,17 +78,12 @@ class ScopedExternalMountPoint {
 
 }  // namespace
 
-class HoldingSpaceThumbnailLoaderTest : public InProcessBrowserTest {
+class ThumbnailLoaderTest : public InProcessBrowserTest {
  public:
-  HoldingSpaceThumbnailLoaderTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kTemporaryHoldingSpace);
-  }
-  HoldingSpaceThumbnailLoaderTest(const HoldingSpaceThumbnailLoaderTest&) =
-      delete;
-  HoldingSpaceThumbnailLoaderTest& operator=(
-      const HoldingSpaceThumbnailLoaderTest&) = delete;
-  ~HoldingSpaceThumbnailLoaderTest() override = default;
+  ThumbnailLoaderTest() = default;
+  ThumbnailLoaderTest(const ThumbnailLoaderTest&) = delete;
+  ThumbnailLoaderTest& operator=(const ThumbnailLoaderTest&) = delete;
+  ~ThumbnailLoaderTest() override = default;
 
   // InProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override {
@@ -102,6 +94,8 @@ class HoldingSpaceThumbnailLoaderTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     test_mount_point_ = std::make_unique<ScopedExternalMountPoint>(
         browser()->profile(), "test_downloads");
+    thumbnail_loader_ =
+        std::make_unique<ash::ThumbnailLoader>(browser()->profile());
     ASSERT_TRUE(test_mount_point_->IsValid());
     SetUpTestDirStructure();
   }
@@ -110,11 +104,7 @@ class HoldingSpaceThumbnailLoaderTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  ash::HoldingSpaceThumbnailLoader* GetThumbnailLoader() {
-    return ash::HoldingSpaceKeyedServiceFactory::GetInstance()
-        ->GetService(browser()->profile())
-        ->thumbnail_loader_for_testing();
-  }
+  ash::ThumbnailLoader* GetThumbnailLoader() { return thumbnail_loader_.get(); }
 
   base::FilePath GetTestDataFilePath(const std::string& file_name) {
     // Get the path to file manager's test data directory.
@@ -161,15 +151,15 @@ class HoldingSpaceThumbnailLoaderTest : public InProcessBrowserTest {
 
   std::unique_ptr<ScopedExternalMountPoint> test_mount_point_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ash::ThumbnailLoader> thumbnail_loader_;
 };
 
-IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadNonExistentItem) {
-  ash::HoldingSpaceThumbnailLoader* loader = GetThumbnailLoader();
+IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, LoadNonExistentItem) {
+  ash::ThumbnailLoader* loader = GetThumbnailLoader();
   ASSERT_TRUE(loader);
 
   base::RunLoop run_loop;
-  ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
+  ash::ThumbnailLoader::ThumbnailRequest request(
       GetTestPath(TestPath::kNonExistent), gfx::Size(48, 48));
   loader->Load(request,
                base::BindLambdaForTesting([&run_loop](const SkBitmap* bitmap,
@@ -181,12 +171,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadNonExistentItem) {
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadFolder) {
-  ash::HoldingSpaceThumbnailLoader* loader = GetThumbnailLoader();
+IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, LoadFolder) {
+  ash::ThumbnailLoader* loader = GetThumbnailLoader();
   ASSERT_TRUE(loader);
 
   base::RunLoop run_loop;
-  ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
+  ash::ThumbnailLoader::ThumbnailRequest request(
       GetTestPath(TestPath::kEmptyDir), gfx::Size(48, 48));
   loader->Load(request,
                base::BindLambdaForTesting([&run_loop](const SkBitmap* bitmap,
@@ -198,14 +188,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadFolder) {
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadJpg) {
-  ash::HoldingSpaceThumbnailLoader* loader = GetThumbnailLoader();
+IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, LoadJpg) {
+  ash::ThumbnailLoader* loader = GetThumbnailLoader();
   ASSERT_TRUE(loader);
 
   SkBitmap bitmap;
   base::RunLoop run_loop;
-  ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
-      GetTestPath(TestPath::kJpg), gfx::Size(48, 48));
+  ash::ThumbnailLoader::ThumbnailRequest request(GetTestPath(TestPath::kJpg),
+                                                 gfx::Size(48, 48));
   loader->Load(request, base::BindOnce(&CopyBitmapAndRunClosure,
                                        run_loop.QuitClosure(), &bitmap));
   run_loop.Run();
@@ -215,12 +205,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadJpg) {
   EXPECT_EQ(48, bitmap.height());
 }
 
-IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadBrokenJpg) {
-  ash::HoldingSpaceThumbnailLoader* loader = GetThumbnailLoader();
+IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, LoadBrokenJpg) {
+  ash::ThumbnailLoader* loader = GetThumbnailLoader();
   ASSERT_TRUE(loader);
 
   base::RunLoop run_loop;
-  ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
+  ash::ThumbnailLoader::ThumbnailRequest request(
       GetTestPath(TestPath::kBrokenJpg), gfx::Size(48, 48));
   loader->Load(request,
                base::BindLambdaForTesting([&run_loop](const SkBitmap* bitmap,
@@ -232,14 +222,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadBrokenJpg) {
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadPng) {
-  ash::HoldingSpaceThumbnailLoader* loader = GetThumbnailLoader();
+IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, LoadPng) {
+  ash::ThumbnailLoader* loader = GetThumbnailLoader();
   ASSERT_TRUE(loader);
 
   SkBitmap bitmap;
   base::RunLoop run_loop;
-  ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
-      GetTestPath(TestPath::kPng), gfx::Size(48, 48));
+  ash::ThumbnailLoader::ThumbnailRequest request(GetTestPath(TestPath::kPng),
+                                                 gfx::Size(48, 48));
   loader->Load(request, base::BindOnce(&CopyBitmapAndRunClosure,
                                        run_loop.QuitClosure(), &bitmap));
   run_loop.Run();
@@ -248,12 +238,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, LoadPng) {
   EXPECT_EQ(48, bitmap.height());
 }
 
-IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, RepeatedLoads) {
-  ash::HoldingSpaceThumbnailLoader* loader = GetThumbnailLoader();
+IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, RepeatedLoads) {
+  ash::ThumbnailLoader* loader = GetThumbnailLoader();
   ASSERT_TRUE(loader);
 
-  ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request(
-      GetTestPath(TestPath::kPng), gfx::Size(48, 48));
+  ash::ThumbnailLoader::ThumbnailRequest request(GetTestPath(TestPath::kPng),
+                                                 gfx::Size(48, 48));
 
   SkBitmap bitmap1;
   base::RunLoop run_loop1;
@@ -288,28 +278,28 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, RepeatedLoads) {
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(bitmap1, bitmap3));
 }
 
-IN_PROC_BROWSER_TEST_F(HoldingSpaceThumbnailLoaderTest, ConcurentLoads) {
-  ash::HoldingSpaceThumbnailLoader* loader = GetThumbnailLoader();
+IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, ConcurentLoads) {
+  ash::ThumbnailLoader* loader = GetThumbnailLoader();
   ASSERT_TRUE(loader);
 
   SkBitmap bitmap1;
-  ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request1(
-      GetTestPath(TestPath::kPng), gfx::Size(48, 48));
+  ash::ThumbnailLoader::ThumbnailRequest request1(GetTestPath(TestPath::kPng),
+                                                  gfx::Size(48, 48));
   base::RunLoop run_loop1;
   loader->Load(request1, base::BindOnce(&CopyBitmapAndRunClosure,
                                         run_loop1.QuitClosure(), &bitmap1));
 
   SkBitmap bitmap2;
-  ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request2(
-      GetTestPath(TestPath::kPng), gfx::Size(96, 96));
+  ash::ThumbnailLoader::ThumbnailRequest request2(GetTestPath(TestPath::kPng),
+                                                  gfx::Size(96, 96));
   base::RunLoop run_loop2;
   loader->Load(request2, base::BindOnce(&CopyBitmapAndRunClosure,
                                         run_loop2.QuitClosure(), &bitmap2));
 
   SkBitmap bitmap3;
   base::RunLoop run_loop3;
-  ash::HoldingSpaceThumbnailLoader::ThumbnailRequest request3(
-      GetTestPath(TestPath::kJpg), gfx::Size(48, 48));
+  ash::ThumbnailLoader::ThumbnailRequest request3(GetTestPath(TestPath::kJpg),
+                                                  gfx::Size(48, 48));
   loader->Load(request3, base::BindOnce(&CopyBitmapAndRunClosure,
                                         run_loop3.QuitClosure(), &bitmap3));
 

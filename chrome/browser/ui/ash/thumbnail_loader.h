@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_THUMBNAIL_LOADER_H_
-#define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_THUMBNAIL_LOADER_H_
+#ifndef CHROME_BROWSER_UI_ASH_THUMBNAIL_LOADER_H_
+#define CHROME_BROWSER_UI_ASH_THUMBNAIL_LOADER_H_
 
 #include <map>
 #include <memory>
@@ -28,13 +28,12 @@ namespace ash {
 // connection to the image loader extension (also used to generate thumbnails
 // for the file manager), and sends it an image request for a file path.
 // It decodes data returned by the extension into a bitmap.
-class HoldingSpaceThumbnailLoader {
+class ThumbnailLoader {
  public:
-  explicit HoldingSpaceThumbnailLoader(Profile* profile);
-  HoldingSpaceThumbnailLoader(const HoldingSpaceThumbnailLoader&) = delete;
-  HoldingSpaceThumbnailLoader& operator=(const HoldingSpaceThumbnailLoader&) =
-      delete;
-  ~HoldingSpaceThumbnailLoader();
+  explicit ThumbnailLoader(Profile* profile);
+  ThumbnailLoader(const ThumbnailLoader&) = delete;
+  ThumbnailLoader& operator=(const ThumbnailLoader&) = delete;
+  ~ThumbnailLoader();
 
   // Thumbnail request data that will be forwarded to the image loader.
   struct ThumbnailRequest {
@@ -49,7 +48,7 @@ class HoldingSpaceThumbnailLoader {
   };
 
   // Returns a weak pointer to this instance.
-  base::WeakPtr<HoldingSpaceThumbnailLoader> GetWeakPtr();
+  base::WeakPtr<ThumbnailLoader> GetWeakPtr();
 
   using ImageCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
@@ -95,9 +94,9 @@ class HoldingSpaceThumbnailLoader {
   std::map<base::UnguessableToken, std::unique_ptr<ThumbnailDecoder>>
       thumbnail_decoders_;
 
-  base::WeakPtrFactory<HoldingSpaceThumbnailLoader> weak_factory_{this};
+  base::WeakPtrFactory<ThumbnailLoader> weak_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_THUMBNAIL_LOADER_H_
+#endif  // CHROME_BROWSER_UI_ASH_THUMBNAIL_LOADER_H_

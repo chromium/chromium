@@ -22,7 +22,7 @@ class FilePath;
 namespace ash {
 
 class HoldingSpaceImage;
-class HoldingSpaceThumbnailLoader;
+class ThumbnailLoader;
 
 // A utility for holding space.
 namespace holding_space_util {
@@ -70,7 +70,7 @@ GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path);
 
 // Resolves the image associated with the specified `file_path`.
 std::unique_ptr<HoldingSpaceImage> ResolveImage(
-    HoldingSpaceThumbnailLoader* thumbnail_loader,
+    ThumbnailLoader* thumbnail_loader,
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path);
 
