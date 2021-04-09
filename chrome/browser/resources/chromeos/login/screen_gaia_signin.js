@@ -1028,14 +1028,16 @@ Polymer({
       // somewhere in the middle of animations.
       if (this.screenMode_ == AuthMode.DEFAULT)
         this.authenticator_.resetWebview();
+
+      // It might show the OOBE screen id=SCREEN_CONFIRM_PASSWORD.
+      // Ensures showing the screen id=SCREEN_GAIA_SIGNIN.
+      Oobe.showScreen({id: SCREEN_GAIA_SIGNIN});
+      this.$['gaia-allowlist-error'].submitButton.focus();
+    } else {
+      Oobe.showSigninUI();
     }
 
     this.isAllowlistErrorShown_ = show;
-
-    if (show)
-      this.$['gaia-allowlist-error'].submitButton.focus();
-    else
-      Oobe.showSigninUI();
   },
 
   /**
