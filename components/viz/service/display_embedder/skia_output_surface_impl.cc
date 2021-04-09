@@ -1015,9 +1015,9 @@ void SkiaOutputSurfaceImpl::FlushGpuTasks(bool wait_for_finish) {
     // Note that the usage of base::Unretained() with the impl_on_gpu_ is
     // considered safe as it is also owned by |callback| and share the same
     // lifetime.
-    reporting_callback =
-        base::Bind(&SkiaOutputSurfaceImplOnGpu::SetDependenciesResolvedTimings,
-                   base::Unretained(impl_on_gpu_.get()));
+    reporting_callback = base::BindOnce(
+        &SkiaOutputSurfaceImplOnGpu::SetDependenciesResolvedTimings,
+        base::Unretained(impl_on_gpu_.get()));
   }
 
   gpu_task_scheduler_->ScheduleGpuTask(std::move(callback),
