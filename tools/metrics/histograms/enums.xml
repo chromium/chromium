@@ -19875,6 +19875,10 @@ Called by update_document_policy_enum.py.-->
 <enum name="DownloadCancelReason">
   <int value="0" label="Existing download path"/>
   <int value="1" label="Target confirmation result"/>
+  <int value="2" label="No valid path"/>
+  <int value="3" label="Mixed content"/>
+  <int value="4" label="Failed path reservation"/>
+  <int value="5" label="Empty local path"/>
 </enum>
 
 <enum name="DownloadConnectionSecurity">

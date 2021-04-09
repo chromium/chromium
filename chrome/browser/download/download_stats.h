@@ -102,7 +102,15 @@ enum class DownloadCancelReason {
   kExistingDownloadPath = 0,
   // Canceled due to download target determiner confirmation result.
   kTargetConfirmationResult = 1,
-  kMaxValue = kTargetConfirmationResult
+  // Canceled due to no valid virtual path.
+  kNoValidPath = 2,
+  // Canceled due to no mixed content.
+  kMixedContent = 3,
+  // Canceled due to failed path reservacation.
+  kFailedPathReservation = 4,
+  // Canceled due to empty local path.
+  kEmptyLocalPath = 5,
+  kMaxValue = kEmptyLocalPath
 };
 
 // Increment one of the above counts.

@@ -210,6 +210,7 @@ DownloadTargetDeterminer::Result
       // target determination process and wait for self deletion.
       RecordDownloadPathGeneration(DownloadPathGenerationEvent::NO_VALID_PATH,
                                    true);
+      RecordDownloadCancelReason(DownloadCancelReason::kNoValidPath);
       ScheduleCallbackAndDeleteSelf(
           download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
       return QUIT_DOLOOP;
@@ -350,6 +351,7 @@ void DownloadTargetDeterminer::GetMixedContentStatusDone(
   mixed_content_status_ = status;
 
   if (status == download::DownloadItem::MixedContentStatus::SILENT_BLOCK) {
+    RecordDownloadCancelReason(DownloadCancelReason::kMixedContent);
     ScheduleCallbackAndDeleteSelf(
         download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
     return;
@@ -459,6 +461,8 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
       case download::PathValidationResult::PATH_NOT_WRITABLE:
       case download::PathValidationResult::NAME_TOO_LONG:
       case download::PathValidationResult::CONFLICT:
+        RecordDownloadCancelReason(
+            DownloadCancelReason::kFailedPathReservation);
         ScheduleCallbackAndDeleteSelf(
             download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
         return;
@@ -600,6 +604,7 @@ void DownloadTargetDeterminer::DetermineLocalPathDone(
     // Google Drive logic (e.g. filesystem error while trying to create the
     // cache file). We are going to return a generic error here since a more
     // specific one is unlikely to be helpful to the user.
+    RecordDownloadCancelReason(DownloadCancelReason::kEmptyLocalPath);
     ScheduleCallbackAndDeleteSelf(
         download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
     return;
