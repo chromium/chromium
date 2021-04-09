@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/relocatable_position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
@@ -175,15 +176,15 @@ void ApplyBlockElementCommand::FormatSelection(
   VisiblePosition end_of_current_paragraph = EndOfParagraph(start_of_selection);
   const VisiblePosition& visible_end_of_last_paragraph =
       EndOfParagraph(end_of_selection);
-  const Position& end_of_next_last_paragraph =
+  RelocatablePosition end_of_next_last_paragraph(
       EndOfParagraph(NextPositionOf(visible_end_of_last_paragraph))
-          .DeepEquivalent();
+          .DeepEquivalent());
   Position end_of_last_paragraph =
       visible_end_of_last_paragraph.DeepEquivalent();
 
   bool at_end = false;
   while (end_of_current_paragraph.DeepEquivalent() !=
-             end_of_next_last_paragraph &&
+             end_of_next_last_paragraph.GetPosition() &&
          !at_end) {
     if (end_of_current_paragraph.DeepEquivalent() == end_of_last_paragraph)
       at_end = true;
@@ -194,37 +195,46 @@ void ApplyBlockElementCommand::FormatSelection(
     end_of_current_paragraph = CreateVisiblePosition(end);
 
     Node* enclosing_cell = EnclosingNodeOfType(start, &IsTableCell);
-    PositionWithAffinity end_of_next_paragraph =
+    Position end_of_next_paragraph =
         EndOfNextParagrahSplittingTextNodesIfNeeded(
             end_of_current_paragraph, end_of_last_paragraph, start, end)
-            .ToPositionWithAffinity();
+            .DeepEquivalent();
+    RelocatablePosition relocatable_end_of_next_paragraph(
+        end_of_next_paragraph);
+    RelocatablePosition relocatable_end(end);
 
     FormatRange(start, end, end_of_last_paragraph, blockquote_for_next_indent,
                 editing_state);
     if (editing_state->IsAborted())
       return;
 
+    // FormatRange altered the DOM, potentially making end_of_next_paragraph
+    // invalid. That's why we used a relocatable position, which will remain
+    // valid. However, relocatable positions lose the anchor type, which can
+    // affect the resulting VisiblePosition. So keep the original position
+    // if it's equivalent to the relocatable one.
+    if (!end_of_next_paragraph.IsConnected() ||
+        !relocatable_end_of_next_paragraph.GetPosition().IsEquivalent(
+            end_of_next_paragraph))
+      end_of_next_paragraph = relocatable_end_of_next_paragraph.GetPosition();
+
+    // Sometimes FormatRange can format beyond end. If the relocated end is now
+    // the equivalent to end_of_next_paragraph, abort to avoid redoing the same
+    // work in the next step.
+    if (relocatable_end.GetPosition().IsEquivalent(end_of_next_paragraph))
+      break;
+
     // Don't put the next paragraph in the blockquote we just created for this
     // paragraph unless the next paragraph is in the same cell.
     if (enclosing_cell &&
         enclosing_cell !=
-            EnclosingNodeOfType(end_of_next_paragraph.GetPosition(),
-                                &IsTableCell))
+            EnclosingNodeOfType(end_of_next_paragraph, &IsTableCell))
       blockquote_for_next_indent = nullptr;
 
-    // indentIntoBlockquote could move more than one paragraph if the paragraph
-    // is in a list item or a table. As a result,
-    // |endOfNextLastParagraph| could refer to a position no longer in the
-    // document.
-    if (end_of_next_last_paragraph.IsNotNull() &&
-        !end_of_next_last_paragraph.IsConnected())
-      break;
-    // Sanity check: Make sure our moveParagraph calls didn't remove
-    // endOfNextParagraph.anchorNode() If somehow, e.g. mutation
-    // event handler, we did, return to prevent crashes.
-    if (end_of_next_paragraph.IsNotNull() &&
-        !end_of_next_paragraph.IsConnected())
-      return;
+    DCHECK(end_of_next_last_paragraph.GetPosition().IsNull() ||
+           end_of_next_last_paragraph.GetPosition().IsConnected());
+    DCHECK(end_of_next_paragraph.IsNull() ||
+           end_of_next_paragraph.IsConnected());
 
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     end_of_current_paragraph = CreateVisiblePosition(end_of_next_paragraph);

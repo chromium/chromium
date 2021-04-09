@@ -127,9 +127,9 @@ TEST_F(ApplyBlockElementCommandTest, InsertPlaceHolderAtDisconnectedPosition) {
   auto* command = MakeGarbageCollected<FormatBlockCommand>(GetDocument(),
                                                            html_names::kPreTag);
   // Crash happens here.
-  EXPECT_FALSE(command->Apply());
+  EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "<pre>|<input></pre><input class=\"input\" style=\"position:absolute\">",
+      "<pre>^<input>|</pre><input class=\"input\" style=\"position:absolute\">",
       GetSelectionTextFromBody());
 }
 
@@ -212,6 +212,26 @@ TEST_F(ApplyBlockElementCommandTest, OutdentEmptyBlockquote) {
     command->Apply();
     EXPECT_EQ(expectations[i], GetSelectionTextFromBody());
   }
+}
+
+// This is a regression test for https://crbug.com/1188871
+TEST_F(ApplyBlockElementCommandTest, IndentSVGWithTable) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(SetSelectionTextToBody("<svg><foreignObject>|"
+                                                  "<table>&#x20;</table>&#x20;x"
+                                                  "</foreignObject></svg>"),
+                           SetSelectionOptions());
+  auto* command = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+
+  // Shouldn't crash here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "<svg><foreignObject><table>| </table></foreignObject></svg>"
+      "</blockquote>"
+      "<svg><foreignObject>x</foreignObject></svg>",
+      GetSelectionTextFromBody());
 }
 
 }  // namespace blink
