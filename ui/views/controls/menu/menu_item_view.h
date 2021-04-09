@@ -372,6 +372,12 @@ class VIEWS_EXPORT MenuItemView : public View {
   // item.
   bool IsTraversableByKeyboard() const;
 
+  // Set the color for minor icon. If this method is not called or called with
+  // base::nullopt, the default color is used for minor icon.
+  void SetMinorIconColor(base::Optional<SkColor> color) {
+    minor_icon_color_override_ = color;
+  }
+
  protected:
   // Creates a MenuItemView. This is used by the various AddXXX methods.
   MenuItemView(MenuItemView* parent, int command, Type type);
@@ -393,7 +399,8 @@ class VIEWS_EXPORT MenuItemView : public View {
   friend class internal::MenuRunnerImpl;        // For access to ~MenuItemView.
   friend class test::TestMenuItemViewShown;     // for access to |submenu_|;
   friend class test::TestMenuItemViewNotShown;  // for access to |submenu_|;
-  friend class TestMenuItemView;  // For access to AddEmptyMenus();
+  friend class TestMenuItemView;  // For access to AddEmptyMenus() and
+                                  // GetMinorIconColor();
 
   enum class PaintButtonMode { kNormal, kForDrag };
 
@@ -505,6 +512,9 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   void invalidate_dimensions() { dimensions_.height = 0; }
   bool is_dimensions_valid() const { return dimensions_.height > 0; }
+
+  SkColor GetMinorIconColor(
+      const MenuDelegate::LabelStyle& default_style) const;
 
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
@@ -619,6 +629,8 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Whether this menu item is rendered differently to draw attention to it.
   bool is_alerted_ = false;
+
+  base::Optional<SkColor> minor_icon_color_override_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuItemView);
 };

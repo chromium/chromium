@@ -197,6 +197,27 @@ TEST_F(MenuItemViewUnitTest, NotifiesSelectedChanged) {
   EXPECT_FALSE(is_selected);
 }
 
+TEST_F(MenuItemViewUnitTest, MinorIconColor) {
+  views::TestMenuItemView root_menu;
+  MenuDelegate::LabelStyle default_style;
+  default_style.foreground = SK_ColorRED;
+
+  // Test that we properly fallback to the default one if no minor icon color
+  // is set
+  EXPECT_EQ(root_menu.GetMinorIconColor(default_style),
+            default_style.foreground);
+
+  // Test that minor icon color is overridden properly
+  const auto override_color = SK_ColorGREEN;
+  root_menu.SetMinorIconColor(override_color);
+  EXPECT_EQ(root_menu.GetMinorIconColor(default_style), override_color);
+
+  // Test that minor icon color override is cleared properly
+  root_menu.SetMinorIconColor(base::nullopt);
+  EXPECT_EQ(root_menu.GetMinorIconColor(default_style),
+            default_style.foreground);
+}
+
 class TouchableMenuItemViewTest : public ViewsTestBase {
  public:
   TouchableMenuItemViewTest() = default;
