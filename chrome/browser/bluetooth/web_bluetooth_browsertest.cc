@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/chooser_bubble_testapi.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -238,16 +237,11 @@ class TestBluetoothDelegate : public ChromeBluetoothDelegate {
     device_to_select_ = device_address;
   }
 
-  void UseRealChooser() { use_real_chooser_ = true; }
-
  protected:
   // content::BluetoothDelegate implementation:
   std::unique_ptr<content::BluetoothChooser> RunBluetoothChooser(
       content::RenderFrameHost* frame,
       const content::BluetoothChooser::EventHandler& event_handler) override {
-    if (use_real_chooser_) {
-      return ChromeBluetoothDelegate::RunBluetoothChooser(frame, event_handler);
-    }
     return std::make_unique<FakeBluetoothChooser>(event_handler,
                                                   device_to_select_);
   }
@@ -261,9 +255,7 @@ class TestBluetoothDelegate : public ChromeBluetoothDelegate {
     return nullptr;
   }
 
- private:
   base::Optional<std::string> device_to_select_;
-  bool use_real_chooser_ = false;
 };
 
 class TestContentBrowserClient : public ChromeContentBrowserClient {
@@ -361,10 +353,6 @@ class WebBluetoothTest : public InProcessBrowserTest {
 
   void SetDeviceToSelect(const std::string& device_address) {
     browser_client_.bluetooth_delegate()->SetDeviceToSelect(device_address);
-  }
-
-  void UseRealChooser() {
-    browser_client_.bluetooth_delegate()->UseRealChooser();
   }
 
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
@@ -476,29 +464,17 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, BlocklistShouldBlock) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NavigateWithChooserCrossOrigin) {
-  UseRealChooser();
   content::TestNavigationObserver observer(
       web_contents_, 1 /* number_of_navigations */,
       content::MessageLoopRunner::QuitMode::DEFERRED);
 
-  auto waiter = test::ChooserBubbleUiWaiter::Create();
-
-  EXPECT_TRUE(content::ExecJs(
+  EXPECT_TRUE(content::ExecuteScript(
       web_contents_,
-      "navigator.bluetooth.requestDevice({filters: [{name: 'Hello'}]})",
-      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-
-  // Wait for the chooser to be displayed before navigating to avoid a race
-  // between the two IPCs.
-  waiter->WaitForChange();
-  EXPECT_TRUE(waiter->has_shown());
-
-  EXPECT_TRUE(content::ExecJs(web_contents_,
-                              "document.location.href = 'https://google.com'"));
+      "navigator.bluetooth.requestDevice({filters: [{name: 'Hello'}]});"
+      "document.location.href = \"https://google.com\";"));
 
   observer.Wait();
-  waiter->WaitForChange();
-  EXPECT_TRUE(waiter->has_closed());
+  EXPECT_FALSE(chrome::IsDeviceChooserShowingForTesting(browser()));
   EXPECT_EQ(GURL("https://google.com"), web_contents_->GetLastCommittedURL());
 }
 
