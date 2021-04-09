@@ -159,4 +159,21 @@ TEST_F(InsertListCommandTest, UnlistifyParagraphWithNonEditable) {
   EXPECT_EQ("<ul><li>a|<div contenteditable=\"false\">b</div></li></ul><br>",
             GetSelectionTextFromBody());
 }
+
+// Refer https://crbug.com/1188327
+TEST_F(InsertListCommandTest, NestedSpansJustInsideBody) {
+  InsertStyleElement("span { appearance: checkbox; }");
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<span><span><span>a</span></span></span>|b"),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kUnorderedList);
+
+  // Crash happens here.
+  EXPECT_FALSE(command->Apply());
+  EXPECT_EQ(
+      "<ul><li><br>a</li></ul><span><span><span>^a</span></span></span>b|",
+      GetSelectionTextFromBody());
+}
 }
