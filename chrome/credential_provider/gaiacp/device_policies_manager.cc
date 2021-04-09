@@ -204,7 +204,12 @@ void DevicePoliciesManager::GetDevicePolicies(DevicePolicies* device_policies) {
   // Read allowed domains cloud policy.
   std::vector<base::string16> domains_from_policy;
   if (GetAllowedDomainsToLoginFromCloudPolicy(&domains_from_policy)) {
-    device_policies->domains_allowed_to_login = domains_from_policy;
+    if (!domains_from_policy.empty()) {
+      device_policies->domains_allowed_to_login = domains_from_policy;
+    } else {
+      LOGFN(VERBOSE) << "Allowed domains cloud policy is empty. Falling back "
+                        "to device registry settings.";
+    }
   } else {
     LOGFN(VERBOSE) << "Allowed domains cloud policy not found";
   }

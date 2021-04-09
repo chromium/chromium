@@ -323,6 +323,10 @@ TEST_P(GcpDevicePoliciesOmahaDomainsWinTest, TestConflict) {
   base::string16 domains_registry_str(std::get<1>(GetParam()));
   base::string16 domains_from_omaha_str(std::get<2>(GetParam()));
 
+
+  std::vector<std::wstring> allowed_domains_registry = base::SplitString(
+      domains_registry_str, L",", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
   std::vector<base::string16> allowed_domains_omaha = base::SplitString(
       domains_from_omaha_str, L",", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
@@ -340,7 +344,12 @@ TEST_P(GcpDevicePoliciesOmahaDomainsWinTest, TestConflict) {
   DevicePolicies device_policies;
   DevicePoliciesManager::Get()->GetDevicePolicies(&device_policies);
 
-  ASSERT_EQ(allowed_domains_omaha, device_policies.domains_allowed_to_login);
+  if (!allowed_domains_omaha.empty()) {
+    ASSERT_EQ(allowed_domains_omaha, device_policies.domains_allowed_to_login);
+  } else {
+    ASSERT_EQ(allowed_domains_registry,
+              device_policies.domains_allowed_to_login);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
