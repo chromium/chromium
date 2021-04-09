@@ -218,52 +218,44 @@ void ThreadCacheRegistry::PeriodicPurge() {
   if (!periodic_purge_running_)
     return;
 
-  // Summing across all threads can be slow, but is necessary. Otherwise we rely
-  // on the assumption that the current thread is a good proxy for overall
-  // allocation activity. This is not the case for all process types.
-  //
-  // Since there is no synchronization with other threads, the value is stale,
-  // which is fine.
-  uint64_t all_allocations_approx = 0;
-  {
-    PartitionAutoLock scoped_locker(GetLock());
-    ThreadCache* tcache = list_head_;
-    // Can run when there is no thread cache, in which case there is nothing to
-    // do, and the task should not be rescheduled. This would typically indicate
-    // a case where the thread cache was never enabled, or got disabled.
-    if (!tcache)
-      return;
+  ThreadCache* tcache = ThreadCache::Get();
+  // Can run when there is no thread cache, in which case there is nothing to
+  // do, and the task should not be rescheduled. This would typically indicate a
+  // case where the thread cache was never enabled, or got disabled.
+  if (!ThreadCache::IsValid(tcache))
+    return;
 
-    while (tcache) {
-      all_allocations_approx += tcache->allocations_;
-      tcache = tcache->next_;
-    }
-  }
-
+  uint64_t allocations = tcache->stats_.alloc_count;
   uint64_t allocations_since_last_purge =
-      all_allocations_approx - allocations_at_last_purge_;
+      allocations - allocations_at_last_purge_;
 
+  // Purge should not run when there is little activity in the process. We
+  // assume that the main thread is a reasonable proxy for the process activity,
+  // where the main thread is the current one.
+  //
   // If there were not enough allocations since the last purge, back off. On the
   // other hand, if there were many allocations, make purge more frequent, but
   // always in a set frequency range.
   //
   // There is a potential drawback: a process that was idle for a long time and
-  // suddenly becomes very active will take some time to go back to regularly
+  // suddenly becomes very actve will take some time to go back to regularly
   // scheduled purge with a small enough interval. This is the case for instance
   // of a renderer moving to foreground. To mitigate that, if the number of
   // allocations since the last purge was very large, make a greater leap to
   // faster purging.
-  if (allocations_since_last_purge > 10 * kMinAllocationsForPurging) {
+  if (allocations_since_last_purge > 10 * kMinMainThreadAllocationsForPurging) {
     purge_interval_ = std::min(kDefaultPurgeInterval, purge_interval_ / 2);
-  } else if (allocations_since_last_purge > 2 * kMinAllocationsForPurging) {
+  } else if (allocations_since_last_purge >
+             2 * kMinMainThreadAllocationsForPurging) {
     purge_interval_ = std::max(kMinPurgeInterval, purge_interval_ / 2);
-  } else if (allocations_since_last_purge < kMinAllocationsForPurging) {
+  } else if (allocations_since_last_purge <
+             kMinMainThreadAllocationsForPurging) {
     purge_interval_ = std::min(kMaxPurgeInterval, purge_interval_ * 2);
   }
 
   PurgeAll();
 
-  allocations_at_last_purge_ = all_allocations_approx;
+  allocations_at_last_purge_ = allocations;
   PostDelayedPurgeTask();
 }
 
@@ -544,8 +536,6 @@ void ThreadCache::FreeAfter(PartitionFreelistEntry* head) {
 }
 
 void ThreadCache::ResetForTesting() {
-  allocations_ = 0;
-
   stats_.alloc_count = 0;
   stats_.alloc_hits = 0;
   stats_.alloc_misses = 0;
