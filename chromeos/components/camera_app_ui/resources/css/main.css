@@ -965,11 +965,12 @@ body.mirror:not(.streaming) #preview-video {
 }
 
 body:not(.streaming) #expert-controls,
-body:not(.streaming) #preview-grid,
-body:not(.streaming) #preview-focus,
 body:not(.streaming) #open-settings,
-body:not(.streaming) #toggle-mic,
-body:not(.streaming) #options-group {
+body:not(.streaming) #options-group,
+body:not(.streaming) #preview-focus,
+body:not(.streaming) #preview-grid,
+body:not(.streaming) #toggle-barcode,
+body:not(.streaming) #toggle-mic {
   visibility: hidden;
 }
 
