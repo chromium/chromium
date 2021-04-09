@@ -81,7 +81,7 @@ class OfflineSigninLimiterTest : public testing::Test {
   base::MockOneShotTimer* timer_;  // Not owned.
 
   OfflineSigninLimiter* limiter_;  // Owned.
-  base::PowerMonitorTestSource* power_source_;
+  base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
 
   TestingPrefServiceSimple testing_local_state_;
   base::test::ScopedFeatureList feature_list_;
@@ -96,9 +96,6 @@ OfflineSigninLimiterTest::OfflineSigninLimiterTest()
       limiter_(nullptr) {
   feature_list_.InitAndEnableFeature(
       features::kEnableSamlReauthenticationOnLockscreen);
-  auto power_source = std::make_unique<base::PowerMonitorTestSource>();
-  power_source_ = power_source.get();
-  base::PowerMonitor::Initialize(std::move(power_source));
 }
 
 OfflineSigninLimiterTest::~OfflineSigninLimiterTest() {
@@ -110,7 +107,6 @@ OfflineSigninLimiterTest::~OfflineSigninLimiterTest() {
   // Finish any pending tasks before deleting the TestingBrowserProcess.
   task_environment_.RunUntilIdle();
   TestingBrowserProcess::DeleteInstance();
-  base::PowerMonitor::ShutdownForTesting();
 }
 
 void OfflineSigninLimiterTest::DestroyLimiter() {
@@ -741,7 +737,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLLimitExpiredWhileSuspended) {
   limiter_->SignedIn(UserContext::AUTH_FLOW_GAIA_WITH_SAML);
 
   // Suspend for 4 weeks.
-  power_source_->GenerateSuspendEvent();
+  test_power_monitor_source_.GenerateSuspendEvent();
   clock_.Advance(base::TimeDelta::FromDays(28));  // 4 weeks.
 
   // Resume power. Verify that the flag enforcing online login is set.
@@ -752,7 +748,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLLimitExpiredWhileSuspended) {
   EXPECT_CALL(*user_manager_,
               SaveForceOnlineSignin(test_saml_account_id_, true))
       .Times(1);
-  power_source_->GenerateResumeEvent();
+  test_power_monitor_source_.GenerateResumeEvent();
 }
 
 TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithOnLockReauth) {
@@ -1245,7 +1241,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaLimitExpiredWhileSuspended) {
   limiter_->SignedIn(UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML);
 
   // Suspend for 4 weeks.
-  power_source_->GenerateSuspendEvent();
+  test_power_monitor_source_.GenerateSuspendEvent();
   clock_.Advance(base::TimeDelta::FromDays(28));  // 4 weeks.
 
   // Resume power. Verify that the flag enforcing online login is set.
@@ -1256,7 +1252,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaLimitExpiredWhileSuspended) {
   EXPECT_CALL(*user_manager_,
               SaveForceOnlineSignin(test_gaia_account_id_, true))
       .Times(1);
-  power_source_->GenerateResumeEvent();
+  test_power_monitor_source_.GenerateResumeEvent();
 }
 
 TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithOnLockReauth) {

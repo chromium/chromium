@@ -92,10 +92,6 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     // Enable media controls.
     feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
 
-    auto power_source = std::make_unique<base::PowerMonitorTestSource>();
-    power_source_ = power_source.get();
-    base::PowerMonitor::Initialize(std::move(power_source));
-
     LoginTestBase::SetUp();
 
     lock_contents_view_ = new LockContentsView(
@@ -124,8 +120,6 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     actions_.clear();
 
     LoginTestBase::TearDown();
-
-    base::PowerMonitor::ShutdownForTesting();
   }
 
   void EnableAllActions() {
@@ -255,10 +249,9 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     return media_controls_view_->GetArtworkClipPath();
   }
 
-  base::PowerMonitorTestSource& GetTestPowerSource() { return *power_source_; }
-
   LockScreenMediaControlsView* media_controls_view_ = nullptr;
   AnimationWaiter* animation_waiter_ = nullptr;
+  base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
 
  private:
   void NotifyUpdatedActions() {
@@ -271,7 +264,6 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   LockContentsView* lock_contents_view_ = nullptr;
   std::unique_ptr<TestMediaController> media_controller_;
   std::set<MediaSessionAction> actions_;
-  base::PowerMonitorTestSource* power_source_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(LockScreenMediaControlsViewTest);
 };
@@ -1170,7 +1162,7 @@ TEST_F(LockScreenMediaControlsViewTest, Histogram_Hide_DeviceSleep) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
-  GetTestPowerSource().GenerateSuspendEvent();
+  test_power_monitor_source_.GenerateSuspendEvent();
 
   SimulateSessionUnlock();
 

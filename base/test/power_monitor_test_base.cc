@@ -22,6 +22,10 @@ ScopedPowerMonitorTestSource::~ScopedPowerMonitorTestSource() {
   base::PowerMonitor::ShutdownForTesting();
 }
 
+bool ScopedPowerMonitorTestSource::IsOnBatteryPower() {
+  return power_monitor_test_source_->IsOnBatteryPower();
+}
+
 void ScopedPowerMonitorTestSource::Suspend() {
   power_monitor_test_source_->Suspend();
 }
@@ -32,6 +36,14 @@ void ScopedPowerMonitorTestSource::Resume() {
 
 void ScopedPowerMonitorTestSource::SetOnBatteryPower(bool on_battery_power) {
   power_monitor_test_source_->SetOnBatteryPower(on_battery_power);
+}
+
+void ScopedPowerMonitorTestSource::GenerateSuspendEvent() {
+  power_monitor_test_source_->GenerateSuspendEvent();
+}
+
+void ScopedPowerMonitorTestSource::GenerateResumeEvent() {
+  power_monitor_test_source_->GenerateResumeEvent();
 }
 
 void ScopedPowerMonitorTestSource::GeneratePowerStateEvent(

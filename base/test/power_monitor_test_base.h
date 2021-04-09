@@ -34,11 +34,15 @@ class ScopedPowerMonitorTestSource {
   ScopedPowerMonitorTestSource& operator=(const ScopedPowerMonitorTestSource&) =
       delete;
 
+  bool IsOnBatteryPower();
+
   // Sends asynchronous notifications to registered observers.
   void Suspend();
   void Resume();
   void SetOnBatteryPower(bool on_battery_power);
 
+  void GenerateSuspendEvent();
+  void GenerateResumeEvent();
   void GeneratePowerStateEvent(bool on_battery_power);
 
  private:

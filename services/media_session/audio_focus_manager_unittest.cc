@@ -42,10 +42,6 @@ class AudioFocusManagerTest
   AudioFocusManagerTest() = default;
 
   void SetUp() override {
-    auto power_source = std::make_unique<base::PowerMonitorTestSource>();
-    power_source_ = power_source.get();
-    base::PowerMonitor::Initialize(std::move(power_source));
-
     // Create an instance of the MediaSessionService.
     service_ = std::make_unique<MediaSessionServiceImpl>();
     service_->BindAudioFocusManager(
@@ -64,7 +60,6 @@ class AudioFocusManagerTest
     base::RunLoop().RunUntilIdle();
 
     service_.reset();
-    base::PowerMonitor::ShutdownForTesting();
   }
 
   AudioFocusManager::RequestId GetAudioFocusedSession() {
@@ -206,7 +201,7 @@ class AudioFocusManagerTest
     return GetParam() != mojom::EnforcementMode::kSingleSession;
   }
 
-  base::PowerMonitorTestSource& GetTestPowerSource() { return *power_source_; }
+  void GenerateSuspendEvent() { power_source_.GenerateSuspendEvent(); }
 
   mojo::Remote<mojom::MediaControllerManager>& controller_manager() {
     return controller_manager_remote_;
@@ -285,7 +280,7 @@ class AudioFocusManagerTest
   mojo::Remote<mojom::AudioFocusManagerDebug> audio_focus_debug_remote_;
   mojo::Remote<mojom::MediaControllerManager> controller_manager_remote_;
 
-  base::PowerMonitorTestSource* power_source_;
+  base::test::ScopedPowerMonitorTestSource power_source_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioFocusManagerTest);
 };
@@ -1467,7 +1462,7 @@ TEST_P(AudioFocusManagerTest, SuspendAllSessionOnPowerSuspend) {
   test::MockMediaSessionMojoObserver observer_1(media_session_1);
   test::MockMediaSessionMojoObserver observer_2(media_session_2);
 
-  GetTestPowerSource().GenerateSuspendEvent();
+  GenerateSuspendEvent();
 
   observer_1.WaitForState(mojom::MediaSessionInfo::SessionState::kSuspended);
   observer_2.WaitForState(mojom::MediaSessionInfo::SessionState::kSuspended);

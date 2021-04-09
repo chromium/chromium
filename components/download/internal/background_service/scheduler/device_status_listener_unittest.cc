@@ -85,10 +85,6 @@ class DeviceStatusListenerTest : public testing::Test {
   DeviceStatusListenerTest() {}
 
   void SetUp() override {
-    auto power_source = std::make_unique<base::PowerMonitorTestSource>();
-    power_source_ = power_source.get();
-    base::PowerMonitor::Initialize(std::move(power_source));
-
     auto battery_listener = std::make_unique<TestBatteryStatusListener>();
     test_battery_listener_ = battery_listener.get();
 
@@ -102,7 +98,6 @@ class DeviceStatusListenerTest : public testing::Test {
 
   void TearDown() override {
     listener_.reset();
-    base::PowerMonitor::ShutdownForTesting();
   }
 
  protected:
@@ -135,7 +130,7 @@ class DeviceStatusListenerTest : public testing::Test {
 
   // Simulates a battery change call.
   void SimulateBatteryChange(bool on_battery_power) {
-    power_source_->GeneratePowerStateEvent(on_battery_power);
+    power_source_.GeneratePowerStateEvent(on_battery_power);
   }
 
   void ChangeBatteryPercentage(int percentage) {
@@ -148,7 +143,7 @@ class DeviceStatusListenerTest : public testing::Test {
 
   // Needed for network change notifier and power monitor.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::PowerMonitorTestSource* power_source_;
+  base::test::ScopedPowerMonitorTestSource power_source_;
   TestBatteryStatusListener* test_battery_listener_;
 };
 

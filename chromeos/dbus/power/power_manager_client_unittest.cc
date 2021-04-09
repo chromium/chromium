@@ -645,11 +645,9 @@ TEST_F(PowerManagerClientTest, ChangeAmbientColorTemperature) {
 
 // Tests that base::PowerMonitor observers are notified about thermal event.
 TEST_F(PowerManagerClientTest, ChangeThermalState) {
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
   PowerMonitorTestObserverLocal observer;
   base::PowerMonitor::AddPowerThermalObserver(&observer);
-
-  base::PowerMonitor::Initialize(
-      std::make_unique<base::PowerMonitorTestSource>());
 
   typedef struct {
     power_manager::ThermalEvent::ThermalState dbus_state;
@@ -694,7 +692,6 @@ TEST_F(PowerManagerClientTest, ChangeThermalState) {
   }
 
   base::PowerMonitor::RemovePowerThermalObserver(&observer);
-  base::PowerMonitor::ShutdownForTesting();
 }
 
 }  // namespace chromeos
