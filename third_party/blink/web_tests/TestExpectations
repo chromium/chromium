@@ -4765,6 +4765,10 @@ crbug.com/874837 [ Win ] ietestcenter/css3/bordersbackgrounds/background-attachm
 crbug.com/874931 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/mousewheel-scroll.html [ Pass Failure Crash ]
 crbug.com/875003 [ Win ] editing/caret/caret-is-hidden-when-no-focus.html [ Pass Failure ]
 
+# Sheiff failures 2021-04-09
+crbug.com/1197444 [ Linux ] virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Failure ]
+crbug.com/1197444 [ Linux ] virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/two-background-color-animation-diff-length3.html [ Failure ]
+
 crbug.com/715718 external/wpt/media-source/mediasource-remove.html [ Failure Pass ]
 
 # New failure when importing css-variables:
