@@ -193,8 +193,8 @@ int OpenCount(gfx::NativeWindow parent,
                    incognito_context);
 }
 
-bool ConfirmDeleteBookmarkNode(const BookmarkNode* node,
-                               gfx::NativeWindow window) {
+bool ConfirmDeleteBookmarkNode(gfx::NativeWindow window,
+                               const BookmarkNode* node) {
   DCHECK(node && node->is_folder() && !node->children().empty());
   return ShowQuestionMessageBoxSync(
              window, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
