@@ -6,16 +6,19 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
 #include "ppapi/c/dev/pp_cursor_type_dev.h"
 #include "ppapi/cpp/input_event.h"
 #include "ppapi/cpp/var.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -200,6 +203,28 @@ std::unique_ptr<blink::WebMouseEvent> GetWebMouseEvent(
   return mouse_event;
 }
 
+std::unique_ptr<blink::WebKeyboardEvent> GetWebKeyboardEvent(
+    const pp::KeyboardInputEvent& event) {
+  const blink::WebInputEvent::Type type = GetWebInputEventType(event.GetType());
+  DCHECK(blink::WebInputEvent::IsKeyboardEventType(type));
+
+  auto keyboard_event = std::make_unique<blink::WebKeyboardEvent>(
+      type, event.GetModifiers(),
+      base::TimeTicks() + base::TimeDelta::FromSecondsD(event.GetTimeStamp()));
+
+  keyboard_event->windows_key_code = event.GetKeyCode();
+
+  const std::u16string text16 =
+      base::UTF8ToUTF16(event.GetCharacterText().AsString());
+  const size_t text_len =
+      std::min(blink::WebKeyboardEvent::kTextLengthCap, text16.size());
+  std::copy_n(text16.begin(), text_len, keyboard_event->text);
+  std::fill_n(keyboard_event->text + text_len,
+              blink::WebKeyboardEvent::kTextLengthCap - text_len, L'\0');
+
+  return keyboard_event;
+}
+
 }  // namespace
 
 InputEvent::InputEvent(InputEventType event_type,
@@ -316,8 +341,7 @@ std::unique_ptr<blink::WebInputEvent> GetWebInputEvent(
     case blink::WebInputEvent::Type::kRawKeyDown:
     case blink::WebInputEvent::Type::kKeyUp:
     case blink::WebInputEvent::Type::kChar:
-      // TODO(crbug.com/1191817): Convert keyboard events.
-      return nullptr;
+      return GetWebKeyboardEvent(pp::KeyboardInputEvent(event));
     case blink::WebInputEvent::Type::kTouchStart:
     case blink::WebInputEvent::Type::kTouchMove:
     case blink::WebInputEvent::Type::kTouchEnd:

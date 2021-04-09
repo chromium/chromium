@@ -6,6 +6,8 @@
 
 namespace blink {
 
+const size_t WebKeyboardEvent::kTextLengthCap;
+
 std::unique_ptr<WebInputEvent> WebKeyboardEvent::Clone() const {
   return std::make_unique<WebKeyboardEvent>(*this);
 }
