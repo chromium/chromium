@@ -3,6 +3,7 @@
  * found in the LICENSE file. */
 
 #panel-container {
+  backdrop-filter: blur(10px);
   background: rgba(32, 33, 36, 0.9);
   border-radius: 4px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
