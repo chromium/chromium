@@ -41,7 +41,9 @@ void LabelButtonLabel::SetColorForEnableState() {
       GetEnabled() ? requested_enabled_color_ : requested_disabled_color_;
   if (color) {
     Label::SetEnabledColor(*color);
-  } else {
+  } else if (GetWidget()) {
+    // If there is no widget, we can't actually get the colors here.
+    // An OnThemeChanged() will fire once a widget is available.
     int style = GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED;
     Label::SetEnabledColor(style::GetColor(*this, GetTextContext(), style));
   }
