@@ -228,9 +228,11 @@ TEST_F(PageTestBase, CSPForWorld) {
 
   // Set a CSP for the main world.
   const char* kMainWorldCSP = "connect-src https://google.com;";
-  GetFrame().DomWindow()->GetContentSecurityPolicy()->DidReceiveHeader(
-      kMainWorldCSP, *(GetFrame().DomWindow()->GetSecurityOrigin()),
-      ContentSecurityPolicyType::kEnforce, ContentSecurityPolicySource::kHTTP);
+  GetFrame().DomWindow()->GetContentSecurityPolicy()->AddPolicies(
+      ParseContentSecurityPolicies(
+          kMainWorldCSP, ContentSecurityPolicyType::kEnforce,
+          ContentSecurityPolicySource::kHTTP,
+          *(GetFrame().DomWindow()->GetSecurityOrigin())));
   const Vector<
       network::mojom::blink::ContentSecurityPolicyPtr>& parsed_main_world_csp =
       GetFrame().DomWindow()->GetContentSecurityPolicy()->GetParsedPolicies();

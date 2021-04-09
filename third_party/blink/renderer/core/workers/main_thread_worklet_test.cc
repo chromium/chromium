@@ -54,9 +54,9 @@ class MainThreadWorkletTest : public PageTestBase {
     // MainThreadWorklet inherits the owner Document's CSP.
     auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
     scoped_refptr<SecurityOrigin> self_origin = SecurityOrigin::Create(url);
-    csp->DidReceiveHeader(csp_header, *(self_origin),
-                          network::mojom::ContentSecurityPolicyType::kEnforce,
-                          network::mojom::ContentSecurityPolicySource::kHTTP);
+    csp->AddPolicies(ParseContentSecurityPolicies(
+        csp_header, network::mojom::ContentSecurityPolicyType::kEnforce,
+        network::mojom::ContentSecurityPolicySource::kHTTP, *(self_origin)));
     window->SetContentSecurityPolicy(csp);
 
     reporting_proxy_ =

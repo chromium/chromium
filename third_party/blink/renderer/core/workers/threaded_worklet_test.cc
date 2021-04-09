@@ -310,10 +310,11 @@ TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
   // Set up the CSP for Document before starting ThreadedWorklet because
   // ThreadedWorklet inherits the owner Document's CSP.
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp->DidReceiveHeader("script-src 'self' https://allowed.example.com",
-                        *(GetExecutionContext()->GetSecurityOrigin()),
-                        network::mojom::ContentSecurityPolicyType::kEnforce,
-                        network::mojom::ContentSecurityPolicySource::kHTTP);
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "script-src 'self' https://allowed.example.com",
+      network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(GetExecutionContext()->GetSecurityOrigin())));
   GetExecutionContext()->SetContentSecurityPolicy(csp);
 
   MessagingProxy()->Start();
@@ -328,10 +329,10 @@ TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
 
 TEST_F(ThreadedWorkletTest, InvalidContentSecurityPolicy) {
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp->DidReceiveHeader("invalid-csp",
-                        *(GetExecutionContext()->GetSecurityOrigin()),
-                        network::mojom::ContentSecurityPolicyType::kEnforce,
-                        network::mojom::ContentSecurityPolicySource::kHTTP);
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "invalid-csp", network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(GetExecutionContext()->GetSecurityOrigin())));
   GetExecutionContext()->SetContentSecurityPolicy(csp);
 
   MessagingProxy()->Start();

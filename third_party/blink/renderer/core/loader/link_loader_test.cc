@@ -378,11 +378,11 @@ TEST_P(LinkLoaderPreloadNonceTest, Preload) {
   dummy_page_holder_->GetFrame()
       .DomWindow()
       ->GetContentSecurityPolicy()
-      ->DidReceiveHeader(
+      ->AddPolicies(ParseContentSecurityPolicies(
           test_case.content_security_policy,
-          *(dummy_page_holder_->GetFrame().DomWindow()->GetSecurityOrigin()),
           network::mojom::ContentSecurityPolicyType::kEnforce,
-          network::mojom::ContentSecurityPolicySource::kHTTP);
+          network::mojom::ContentSecurityPolicySource::kHTTP,
+          *(dummy_page_holder_->GetFrame().DomWindow()->GetSecurityOrigin())));
   LinkLoadParameters params(
       LinkRelAttribute("preload"), kCrossOriginAttributeNotSet, String(),
       "script", String(), test_case.nonce, String(), String(),

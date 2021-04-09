@@ -160,14 +160,16 @@ class BaseFetchContextTest : public testing::Test {
 TEST_F(BaseFetchContextTest, CanRequest) {
   ContentSecurityPolicy* policy =
       execution_context_->GetContentSecurityPolicy();
-  policy->DidReceiveHeader("script-src https://foo.test",
-                           *(execution_context_->GetSecurityOrigin()),
-                           network::mojom::ContentSecurityPolicyType::kEnforce,
-                           network::mojom::ContentSecurityPolicySource::kHTTP);
-  policy->DidReceiveHeader("script-src https://bar.test",
-                           *(execution_context_->GetSecurityOrigin()),
-                           network::mojom::ContentSecurityPolicyType::kReport,
-                           network::mojom::ContentSecurityPolicySource::kHTTP);
+  policy->AddPolicies(ParseContentSecurityPolicies(
+      "script-src https://foo.test",
+      network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(execution_context_->GetSecurityOrigin())));
+  policy->AddPolicies(ParseContentSecurityPolicies(
+      "script-src https://bar.test",
+      network::mojom::ContentSecurityPolicyType::kReport,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(execution_context_->GetSecurityOrigin())));
 
   KURL url(NullURL(), "http://baz.test");
   ResourceRequest resource_request(url);
@@ -187,14 +189,16 @@ TEST_F(BaseFetchContextTest, CanRequest) {
 TEST_F(BaseFetchContextTest, CheckCSPForRequest) {
   ContentSecurityPolicy* policy =
       execution_context_->GetContentSecurityPolicy();
-  policy->DidReceiveHeader("script-src https://foo.test",
-                           *(execution_context_->GetSecurityOrigin()),
-                           network::mojom::ContentSecurityPolicyType::kEnforce,
-                           network::mojom::ContentSecurityPolicySource::kHTTP);
-  policy->DidReceiveHeader("script-src https://bar.test",
-                           *(execution_context_->GetSecurityOrigin()),
-                           network::mojom::ContentSecurityPolicyType::kReport,
-                           network::mojom::ContentSecurityPolicySource::kHTTP);
+  policy->AddPolicies(ParseContentSecurityPolicies(
+      "script-src https://foo.test",
+      network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(execution_context_->GetSecurityOrigin())));
+  policy->AddPolicies(ParseContentSecurityPolicies(
+      "script-src https://bar.test",
+      network::mojom::ContentSecurityPolicyType::kReport,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(execution_context_->GetSecurityOrigin())));
 
   KURL url(NullURL(), "http://baz.test");
 
@@ -305,10 +309,10 @@ TEST_F(BaseFetchContextTest, UACSSTest) {
 TEST_F(BaseFetchContextTest, UACSSTest_BypassCSP) {
   ContentSecurityPolicy* policy =
       execution_context_->GetContentSecurityPolicy();
-  policy->DidReceiveHeader("default-src 'self'",
-                           *(execution_context_->GetSecurityOrigin()),
-                           network::mojom::ContentSecurityPolicyType::kEnforce,
-                           network::mojom::ContentSecurityPolicySource::kHTTP);
+  policy->AddPolicies(ParseContentSecurityPolicies(
+      "default-src 'self'", network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(execution_context_->GetSecurityOrigin())));
 
   KURL data_url("data:image/png;base64,test");
 

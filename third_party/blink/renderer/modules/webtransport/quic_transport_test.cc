@@ -380,10 +380,11 @@ TEST_F(QuicTransportTest, FailByCSP) {
   auto& exception_state = scope.GetExceptionState();
   scope.GetExecutionContext()
       ->GetContentSecurityPolicyForCurrentWorld()
-      ->DidReceiveHeader("connect-src 'none'",
-                         *(scope.GetExecutionContext()->GetSecurityOrigin()),
-                         network::mojom::ContentSecurityPolicyType::kEnforce,
-                         network::mojom::ContentSecurityPolicySource::kHTTP);
+      ->AddPolicies(ParseContentSecurityPolicies(
+          "connect-src 'none'",
+          network::mojom::ContentSecurityPolicyType::kEnforce,
+          network::mojom::ContentSecurityPolicySource::kHTTP,
+          *(scope.GetExecutionContext()->GetSecurityOrigin())));
   QuicTransport::Create(scope.GetScriptState(),
                         String("quic-transport://example.com/"), EmptyOptions(),
                         exception_state);
@@ -402,10 +403,11 @@ TEST_F(QuicTransportTest, PassCSP) {
   auto& exception_state = scope.GetExceptionState();
   scope.GetExecutionContext()
       ->GetContentSecurityPolicyForCurrentWorld()
-      ->DidReceiveHeader("connect-src quic-transport://example.com",
-                         *(scope.GetExecutionContext()->GetSecurityOrigin()),
-                         network::mojom::ContentSecurityPolicyType::kEnforce,
-                         network::mojom::ContentSecurityPolicySource::kHTTP);
+      ->AddPolicies(ParseContentSecurityPolicies(
+          "connect-src quic-transport://example.com",
+          network::mojom::ContentSecurityPolicyType::kEnforce,
+          network::mojom::ContentSecurityPolicySource::kHTTP,
+          *(scope.GetExecutionContext()->GetSecurityOrigin())));
   QuicTransport::Create(scope.GetScriptState(),
                         String("quic-transport://example.com/"), EmptyOptions(),
                         exception_state);
