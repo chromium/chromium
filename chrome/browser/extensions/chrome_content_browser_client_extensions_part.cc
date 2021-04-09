@@ -13,6 +13,8 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
@@ -322,13 +324,45 @@ bool ChromeContentBrowserClientExtensionsPart::ShouldLockProcessToSite(
   const Extension* extension = ExtensionRegistry::Get(browser_context)
                                    ->enabled_extensions()
                                    .GetExtensionOrAppByURL(effective_site_url);
-  if (!extension)
+  if (!extension) {
+    // TODO(https://crbug.com/1197360): Remove the ad-hoc diagnostics below
+    // after the bug is understood and/or fixed.
+    //
+    // To avoid a flood of DwoC reports, we only cover the 2 extensions that are
+    // identified as unexpectedly locked in https://crbug.com/1197360#c10
+    if ((effective_site_url.host_piece() ==
+         "jkghodnilhceideoidjikpgommlajknk") ||
+        (effective_site_url.host_piece() ==
+         "nckgahadagoaajjgafhacjanaoiihapd")) {
+      SCOPED_CRASH_KEY_STRING32("ShouldLockProcessToSite", "flavor",
+                                "not-enabled");
+      SCOPED_CRASH_KEY_STRING256("ShouldLockProcessToSite", "site_url",
+                                 effective_site_url.possibly_invalid_spec());
+      base::debug::DumpWithoutCrashing();
+    }
     return true;
+  }
 
   // Hosted apps should be locked to their web origin. See
   // https://crbug.com/794315.
-  if (extension->is_hosted_app())
+  if (extension->is_hosted_app()) {
+    // TODO(https://crbug.com/1197360): Remove the ad-hoc diagnostics below
+    // after the bug is understood and/or fixed.
+    //
+    // To avoid a flood of DwoC reports, we only cover the 2 extensions that are
+    // identified as unexpectedly locked in https://crbug.com/1197360#c10
+    if ((effective_site_url.host_piece() ==
+         "jkghodnilhceideoidjikpgommlajknk") ||
+        (effective_site_url.host_piece() ==
+         "nckgahadagoaajjgafhacjanaoiihapd")) {
+      SCOPED_CRASH_KEY_STRING32("ShouldLockProcessToSite", "flavor",
+                                "hosted-app");
+      SCOPED_CRASH_KEY_STRING256("ShouldLockProcessToSite", "site_url",
+                                 effective_site_url.possibly_invalid_spec());
+      base::debug::DumpWithoutCrashing();
+    }
     return true;
+  }
 
   // Other extensions are allowed to share processes, even in
   // --site-per-process currently. See https://crbug.com/600441#c1 for some
