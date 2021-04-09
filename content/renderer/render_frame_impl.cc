@@ -2446,7 +2446,8 @@ void RenderFrameImpl::JavaScriptExecuteRequestForTests(
         WebScriptSource(WebString::FromUTF16(javascript)));
   } else {
     result = frame_->ExecuteScriptInIsolatedWorldAndReturnValue(
-        world_id, WebScriptSource(WebString::FromUTF16(javascript)));
+        world_id, WebScriptSource(WebString::FromUTF16(javascript)),
+        blink::BackForwardCacheAware::kAllow);
   }
 
   if (!weak_this)
@@ -2481,7 +2482,8 @@ void RenderFrameImpl::JavaScriptExecuteRequestInIsolatedWorld(
   JavaScriptIsolatedWorldRequest* request = new JavaScriptIsolatedWorldRequest(
       weak_factory_.GetWeakPtr(), wants_result, std::move(callback));
   frame_->RequestExecuteScriptInIsolatedWorld(
-      world_id, &script, 1, false, WebLocalFrame::kSynchronous, request);
+      world_id, &script, 1, false, WebLocalFrame::kSynchronous, request,
+      blink::BackForwardCacheAware::kAllow);
 }
 
 RenderFrameImpl::JavaScriptIsolatedWorldRequest::JavaScriptIsolatedWorldRequest(

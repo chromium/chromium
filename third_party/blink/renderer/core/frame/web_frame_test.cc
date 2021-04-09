@@ -4602,7 +4602,7 @@ TEST_F(WebFrameTest, ContextNotificationsIsolatedWorlds) {
   int32_t isolated_world_id = 42;
   WebScriptSource script_source("hi!");
   web_view_helper.LocalMainFrame()->ExecuteScriptInIsolatedWorld(
-      isolated_world_id, script_source);
+      isolated_world_id, script_source, BackForwardCacheAware::kAllow);
 
   // We should now have a new create notification.
   ASSERT_EQ(1u, create_notifications.size());
