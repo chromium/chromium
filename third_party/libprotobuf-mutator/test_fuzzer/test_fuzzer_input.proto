@@ -1,0 +1,22 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Depended on by lpm_test_fuzzer. Tests whether fuzzable_proto_library is
+// working since without it builds will fail because of the optimize_for
+// LITE_RUNTIME option this file has set. Also imports a file that does the same
+// thing.
+
+syntax = "proto2";
+
+// This line is essentially the purpose of this test fuzzer. The build rule, if
+// working, ignores this line. If it is not working or isn't used, then this
+// build will fail.
+option optimize_for = LITE_RUNTIME;
+
+package lpm_test_fuzzer;
+import "imported.proto";
+
+message TestFuzzerInput {
+  required Imported imported = 1;
+}

@@ -6,7 +6,7 @@
 # non-fuzzer builds (ie: use_libfuzzer=false). However, in fuzzer builds, the
 # proto_library is built with the full protobuf runtime and any "optimize_for =
 # LITE_RUNTIME" options are ignored. This is done because libprotobuf-mutator
-# needs the full protobuf runtime, but proto_libraries shipped in chrome must
+# needs the full protobuf runtime, but proto_libraries shipped in Chrome must
 # use the optimize for LITE_RUNTIME option which is incompatible with the full
 # protobuf runtime. tl;dr: A fuzzable_proto_library is a proto_library that can
 # be fuzzed with libprotobuf-mutator and shipped in Chrome.
@@ -14,6 +14,7 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+# TODO(https://crbug.com/1197634): Fold this into proto_library.
 template("fuzzable_proto_library") {
   # Only make the proto library fuzzable if we are doing a build that we can
   # use LPM on (i.e. libFuzzer not on Chrome OS).
@@ -21,20 +22,9 @@ template("fuzzable_proto_library") {
     proto_library("proto_library_" + target_name) {
       forward_variables_from(invoker, "*")
       assert(current_toolchain == host_toolchain)
-      if (!defined(proto_deps)) {
-        proto_deps = []
-      }
-      proto_deps +=
-          [ "//third_party/libprotobuf-mutator:override_lite_runtime_plugin" ]
-      generator_plugin_label =
-          "//third_party/libprotobuf-mutator:override_lite_runtime_plugin"
-      generator_plugin_suffix = ".pb"
 
-      # The plugin will generate cc, so don't ask for it to be done by protoc.
-      generate_cc = false
-      if (!defined(invoker.generate_python)) {
-        generate_python = false
-      }
+      # Override LITE_RUNTIME settings in the protobuf files.
+      cc_generator_options = "speed"
       extra_configs = [ "//third_party/protobuf:protobuf_config" ]
     }
 

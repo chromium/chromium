@@ -40,39 +40,18 @@ source_set("libprotobuf-mutator") {
   }
 }
 
-# This protoc plugin, like the compiler, should only be built for the host
-# architecture.
-if (current_toolchain == host_toolchain) {
-  # This plugin will be needed to fuzz most protobuf code in Chromium. That's
-  # because production protobuf code must contain the line:
-  # "option optimize_for = LITE_RUNTIME", which instructs the proto compiler not
-  # to compile the proto using the full protobuf runtime. This allows Chromium
-  # not to depend on the full protobuf library, but prevents
-  # libprotobuf-mutator from fuzzing because the lite runtime lacks needed
-  # features (such as reflection).  The plugin simply compiles a proto library
-  # as normal but ensures that is compiled with the full protobuf runtime.
-  executable("override_lite_runtime_plugin") {
-    sources = [ "protoc_plugin/protoc_plugin.cc" ]
-    deps = [ "//third_party/protobuf:protoc_lib" ]
-    public_configs = [ "//third_party/protobuf:protobuf_config" ]
-  }
-  # To use the plugin in a proto_library you want to fuzz, change the build
-  # target to fuzzable_proto_library (defined in
-  # //third_party/libprotobuf-mutator/fuzzable_proto_library.gni)
-}
-
 # The CQ will try building this target without "use_libfuzzer" if it is defined.
 # That will cause the build to fail, so don't define it when "use_libfuzzer" is
 # is false.
 if (use_libfuzzer) {
-  # Test that override_lite_runtime_plugin is working when built. This target
-  # contains files that are optimized for LITE_RUNTIME and which import other
-  # files that are also optimized for LITE_RUNTIME.
-  fuzzer_test("override_lite_runtime_plugin_test_fuzzer") {
-    sources = [ "protoc_plugin/test_fuzzer.cc" ]
+  # Test that fuzzable_proto_library works. This target contains files that are
+  # optimized for LITE_RUNTIME and which import other files that are also
+  # optimized for LITE_RUNTIME.
+  fuzzer_test("lpm_test_fuzzer") {
+    sources = [ "test_fuzzer/test_fuzzer.cc" ]
     deps = [
       ":libprotobuf-mutator",
-      ":override_lite_runtime_plugin_test_fuzzer_proto",
+      ":lpm_test_fuzzer_proto",
     ]
 
     # Don't actually run this on CF. It's only a test to ensure builds work.
@@ -80,12 +59,12 @@ if (use_libfuzzer) {
   }
 }
 
-# Proto library for override_lite_runtime_plugin_test_fuzzer
-fuzzable_proto_library("override_lite_runtime_plugin_test_fuzzer_proto") {
+# Proto library for lpm_test_fuzzer
+fuzzable_proto_library("lpm_test_fuzzer_proto") {
   sources = [
-    "protoc_plugin/imported.proto",
-    "protoc_plugin/imported_publicly.proto",
-    "protoc_plugin/test_fuzzer_input.proto",
+    "test_fuzzer/imported.proto",
+    "test_fuzzer/imported_publicly.proto",
+    "test_fuzzer/test_fuzzer_input.proto",
   ]
 }
 
