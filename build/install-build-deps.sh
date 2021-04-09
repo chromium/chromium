@@ -141,7 +141,7 @@ fi
 apt_package_list=$(build_apt_package_list)
 
 # Packages needed for chromeos only
-chromeos_dev_list="libbluetooth-dev libxkbcommon-dev"
+chromeos_dev_list="libbluetooth-dev libxkbcommon-dev mesa-common-dev"
 
 if package_exists realpath; then
   chromeos_dev_list="${chromeos_dev_list} realpath"
@@ -191,7 +191,9 @@ dev_list="\
   libsqlite3-dev
   libssl-dev
   libudev-dev
+  libva-dev
   libwww-perl
+  libxshmfence-dev
   libxslt1-dev
   libxss-dev
   libxt-dev
