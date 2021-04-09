@@ -78,21 +78,21 @@ class BASE_EXPORT PartitionAddressSpace {
 
  private:
   // Partition Alloc Address Space
-  // Reserves 32GiB address space for one pool that supports BackupRefPtr and
-  // one that doesn't, 16GiB each.
+  // Reserves 16GiB address space for one pool that supports BackupRefPtr and
+  // one that doesn't, 8GiB each.
   // TODO(bartekn): Look into devices with 39-bit address space that have 256GiB
-  // user-mode space. Libraries loaded at random addresses may stand in the way
-  // of reserving a contiguous 48GiB region (even though we're requesting only
-  // 32GiB, AllocPages may under the covers reserve extra 16GiB to satisfy the
-  // alignment requirements).
+  // user-mode space (most ARM64 Android devices as of 2021). Libraries loaded
+  // at random addresses may stand in the way of reserving a contiguous 24GiB
+  // region (even though we're requesting only 16GiB, AllocPages may under the
+  // covers reserve extra 8GiB to satisfy the alignment requirements).
   //
-  // +----------------+ reserved_base_address_ (16GiB aligned)
+  // +----------------+ reserved_base_address_ (8GiB aligned)
   // |    non-BRP     |     == non_brp_pool_base_address_
   // |      pool      |
-  // +----------------+ reserved_base_address_ + 16GiB
+  // +----------------+ reserved_base_address_ + 8GiB
   // |      BRP       |     == brp_pool_base_address_
   // |      pool      |
-  // +----------------+ reserved_base_address_ + 32GiB
+  // +----------------+ reserved_base_address_ + 16GiB
   //
   // NOTE! On 64-bit systems with BackupRefPtr enabled, the non-BRP pool must
   // precede the BRP pool. This is to prevent a pointer immediately past a
@@ -107,10 +107,11 @@ class BASE_EXPORT PartitionAddressSpace {
   // the shift from the beginning of the region (for clarity, the pool sizes are
   // declared in the order the pools are allocated).
   //
-  // For example, [16GiB,8GiB] would work, but [8GiB,16GiB] wouldn't (the 2nd
-  // pool is aligned on 8GiB but needs 16GiB), and [8GiB,8GiB,16GiB,1GiB] would.
-  static constexpr size_t kNonBRPPoolSize = 16 * kGigaBytes;
-  static constexpr size_t kBRPPoolSize = 16 * kGigaBytes;
+  // For example, [8GiB,4GiB,4GiB], [8GiB,4GiB,2GiB,1GiB] would work, but
+  // [4GiB,8GiB] wouldn't (the 2nd pool is aligned on 4GiB but needs 8GiB),
+  // and [4GiB,4GiB,8GiB] would.
+  static constexpr size_t kNonBRPPoolSize = 8 * kGigaBytes;
+  static constexpr size_t kBRPPoolSize = 8 * kGigaBytes;
 
   static constexpr size_t kDesiredAddressSpaceSize =
       kNonBRPPoolSize + kBRPPoolSize;

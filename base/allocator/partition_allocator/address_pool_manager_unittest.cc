@@ -45,7 +45,7 @@ class AddressPoolManagerTest : public testing::Test {
 
   AddressPoolManager* GetAddressPoolManager() { return manager_.get(); }
 
-  static constexpr size_t kPageCnt = 8192;
+  static constexpr size_t kPageCnt = 4096;
   static constexpr size_t kPoolSize = kSuperPageSize * kPageCnt;
 
   std::unique_ptr<AddressPoolManagerForTesting> manager_;

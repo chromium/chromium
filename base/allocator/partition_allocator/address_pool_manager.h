@@ -45,7 +45,8 @@ class BASE_EXPORT AddressPoolManager {
  public:
   static constexpr uint64_t kBRPPoolMaxSize =
 #if defined(PA_HAS_64_BITS_POINTERS)
-      16 * kGiB;
+      // TODO(bartekn): Use kBRPPoolSize from partition_address_space.h
+      8 * kGiB;
 #else
       4 * kGiB;
 #endif
