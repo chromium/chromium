@@ -28,7 +28,8 @@ class DriveService : public KeyedService {
   DriveService(const DriveService&) = delete;
   DriveService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      const std::string& application_locale);
   ~DriveService() override;
 
   using GetFilesCallback = drive::mojom::DriveHandler::GetFilesCallback;
@@ -49,6 +50,7 @@ class DriveService : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::vector<GetFilesCallback> callbacks_;
   signin::IdentityManager* identity_manager_;
+  std::string application_locale_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveService> weak_factory_{this};
 };

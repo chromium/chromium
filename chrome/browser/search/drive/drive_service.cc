@@ -30,13 +30,14 @@ constexpr char kPlatform[] = "UNSPECIFIED_PLATFORM";
 #endif
 // TODO(crbug/1178869): Add language code to request.
 constexpr char kRequestBody[] = R"({
-  'client_info': {
-    'platform_type': '%s',
-    'scenario_type': 'CHROME_NTP_FILES',
-    'request_type': 'LIVE_REQUEST'
+  "client_info": {
+    "platform_type": "%s",
+    "scenario_type": "CHROME_NTP_FILES",
+    "language_code": "%s",
+    "request_type": "LIVE_REQUEST"
   },
-  'max_suggestions': 3,
-  'type_detail_fields': 'drive_item.title,drive_item.mimeType'
+  "max_suggestions": 3,
+  "type_detail_fields": "drive_item.title,drive_item.mimeType"
 })";
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
@@ -84,9 +85,11 @@ DriveService::~DriveService() = default;
 
 DriveService::DriveService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    const std::string& application_locale)
     : url_loader_factory_(std::move(url_loader_factory)),
-      identity_manager_(identity_manager) {}
+      identity_manager_(identity_manager),
+      application_locale_(application_locale) {}
 
 void DriveService::GetDriveFiles(GetFilesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -134,7 +137,8 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
                                                  kTrafficAnnotation);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
   url_loader_->AttachStringForUpload(
-      base::StringPrintf(kRequestBody, kPlatform), "application/json");
+      base::StringPrintf(kRequestBody, kPlatform, application_locale_.c_str()),
+      "application/json");
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&DriveService::OnJsonReceived, weak_factory_.GetWeakPtr()),

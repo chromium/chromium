@@ -38,5 +38,6 @@ KeyedService* DriveServiceFactory::BuildServiceInstanceFor(
           ->GetURLLoaderFactoryForBrowserProcess();
   return new DriveService(url_loader_factory,
                           IdentityManagerFactory::GetForProfile(
-                              Profile::FromBrowserContext(context)));
+                              Profile::FromBrowserContext(context)),
+                          g_browser_process->GetApplicationLocale());
 }

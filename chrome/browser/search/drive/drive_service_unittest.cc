@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/search/drive/drive_service.h"
+#include "base/json/json_reader.h"
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -23,7 +24,7 @@ class DriveServiceTest : public testing::Test {
     service_ = std::make_unique<DriveService>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        identity_test_env.identity_manager());
+        identity_test_env.identity_manager(), "en-US");
     identity_test_env.MakePrimaryAccountAvailable("example@google.com");
   }
 
@@ -55,7 +56,16 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "foo", base::Time());
-
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  auto request_body = test_url_loader_factory_.pending_requests()
+                          ->at(0)
+                          .request.request_body->elements()
+                          ->at(0)
+                          .As<network::DataElementBytes>()
+                          .AsStringPiece()
+                          .as_string();
+  auto body_value = base::JSONReader::Read(request_body);
+  EXPECT_EQ("en-US", *body_value->FindStringPath("client_info.language_code"));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "https://appsitemsuggest-pa.googleapis.com/v1/items",
       R"(
