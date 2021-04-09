@@ -41,12 +41,13 @@ class EmojiGroupComponent extends PolymerElement {
 
   onClearClick(ev) {
     ev.preventDefault();
+    ev.stopPropagation();
     this.showClearRecents = true;
-    console.error('clear clicked');
   }
 
   onClearRecentsClick(ev) {
     ev.preventDefault();
+    ev.stopPropagation();
     this.showClearRecents = false;
     this.dispatchEvent(createCustomEvent(EMOJI_CLEAR_RECENTS_CLICK, {}));
   }

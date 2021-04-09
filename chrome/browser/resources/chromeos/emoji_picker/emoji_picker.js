@@ -165,7 +165,7 @@ export class EmojiPicker extends PolymerElement {
         EMOJI_VARIANTS_SHOWN,
         ev => this.onShowEmojiVariants(
             /** @type {!EmojiVariantsShownEvent} */ (ev)));
-    this.addEventListener('click', () => this.hideEmojiVariants());
+    this.addEventListener('click', () => this.hideDialogs());
     this.apiProxy_.showUI();
     this.getHistory();
   }
@@ -361,6 +361,15 @@ export class EmojiPicker extends PolymerElement {
     }
   }
 
+
+  hideDialogs() {
+    this.hideEmojiVariants();
+    if (this.history.emoji.length > 0) {
+      this.shadowRoot.querySelector(`div[data-group="history"]`)
+          .querySelector('emoji-group')
+          .showClearRecents = false;
+    }
+  }
 
   hideEmojiVariants() {
     if (this.activeVariant) {
