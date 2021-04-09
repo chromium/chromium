@@ -465,7 +465,8 @@ void Navigator::DidNavigate(
         site_instance);
   }
 
-  // Back-forward cache navigations do not create a new document.
+  // Navigations that activate an existing bfcached or prerendered document do
+  // not create a new document.
   //
   // |was_within_same_document| (controlled by the renderer) also needs to be
   // considered: in some cases, the browser and renderer can disagree. While
@@ -482,6 +483,7 @@ void Navigator::DidNavigate(
   // legitimately disagree as described above.
   bool did_create_new_document =
       !navigation_request->IsServedFromBackForwardCache() &&
+      !navigation_request->IsPrerenderedPageActivation() &&
       !is_same_document_navigation && !was_within_same_document;
 
   // Store some information for recording WebPlatform security metrics. These
