@@ -50,12 +50,8 @@ class CastContentWindowAndroid : public CastContentWindow {
   void OnVisibilityChange(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& jcaller,
                           int visibility_type);
-  base::android::ScopedJavaLocalRef<jstring> GetId(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller);
 
  private:
-  const std::string activity_id_;
   bool web_contents_attached_;
   base::android::ScopedJavaGlobalRef<jobject> java_window_;
 

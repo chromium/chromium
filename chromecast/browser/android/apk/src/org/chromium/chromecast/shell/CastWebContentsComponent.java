@@ -203,12 +203,12 @@ public class CastWebContentsComponent {
 
     public CastWebContentsComponent(String sessionId,
             OnComponentClosedHandler onComponentClosedHandler,
-            SurfaceEventHandler surfaceEventHandler, boolean isHeadless, boolean enableTouchInput,
+            SurfaceEventHandler surfaceEventHandler, boolean enableTouchInput,
             boolean isRemoteControlMode, boolean turnOnScreen) {
         if (DEBUG) {
             Log.d(TAG,
-                    "New CastWebContentsComponent. Instance ID: " + sessionId + "; isHeadless: "
-                            + isHeadless + "; enableTouchInput:" + enableTouchInput
+                    "New CastWebContentsComponent. Instance ID: " + sessionId
+                            + "; enableTouchInput:" + enableTouchInput
                             + "; isRemoteControlMode:" + isRemoteControlMode);
         }
 
@@ -218,17 +218,6 @@ public class CastWebContentsComponent {
         mSurfaceEventHandler = surfaceEventHandler;
         mIsRemoteControlMode = isRemoteControlMode;
         mTurnOnScreen = turnOnScreen;
-
-        if (BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE || isHeadless) {
-            if (DEBUG) Log.d(TAG, "Creating service delegate...");
-            mDelegate = new ServiceDelegate();
-        } else if (BuildConfig.ENABLE_CAST_FRAGMENT) {
-            if (DEBUG) Log.d(TAG, "Creating fragment delegate...");
-            mDelegate = new FragmentDelegate();
-        } else {
-            if (DEBUG) Log.d(TAG, "Creating activity delegate...");
-            mDelegate = new ActivityDelegate();
-        }
 
         mHasWebContentsState.subscribe(x -> {
             final IntentFilter filter = new IntentFilter();
@@ -289,12 +278,22 @@ public class CastWebContentsComponent {
         return mStarted;
     }
 
-    @VisibleForTesting
-    void setDelegate(Delegate delegate) {
-        mDelegate = delegate;
+    public void start(StartParams params, boolean isHeadless) {
+        if (BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE || isHeadless) {
+            if (DEBUG) Log.d(TAG, "Creating service delegate...");
+            start(params, new ServiceDelegate());
+        } else if (BuildConfig.ENABLE_CAST_FRAGMENT) {
+            if (DEBUG) Log.d(TAG, "Creating fragment delegate...");
+            start(params, new FragmentDelegate());
+        } else {
+            if (DEBUG) Log.d(TAG, "Creating activity delegate...");
+            start(params, new ActivityDelegate());
+        }
     }
 
-    public void start(StartParams params) {
+    @VisibleForTesting
+    void start(StartParams params, Delegate delegate) {
+        mDelegate = delegate;
         if (DEBUG) {
             Log.d(TAG,
                     "Starting WebContents with delegate: " + mDelegate.getClass().getSimpleName()
@@ -310,18 +309,17 @@ public class CastWebContentsComponent {
     }
 
     public void stop(Context context) {
+        if (!mStarted) return;
         if (DEBUG) {
             Log.d(TAG,
                     "stop with delegate: " + mDelegate.getClass().getSimpleName()
                             + "; Instance ID: " + mSessionId);
         }
-        if (mStarted) {
-            mAudioFocusRequestState.reset();
-            mHasWebContentsState.reset();
-            if (DEBUG) Log.d(TAG, "Call delegate to stop");
-            mDelegate.stop(context);
-            mStarted = false;
-        }
+        mAudioFocusRequestState.reset();
+        mHasWebContentsState.reset();
+        if (DEBUG) Log.d(TAG, "Call delegate to stop");
+        mDelegate.stop(context);
+        mStarted = false;
     }
 
     public void requestVisibilityPriority(int visibilityPriority) {
