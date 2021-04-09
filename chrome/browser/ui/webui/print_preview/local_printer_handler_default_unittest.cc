@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <utility>
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
@@ -27,17 +28,15 @@ namespace printing {
 
 namespace {
 
-// Used as a callback to `GetDefaultPrinter` in tests.
-// Increases `call_count` and records value returned by `GetDefaultPrinter`.
-void RecordGetDefaultPrinter(bool& default_printer_set,
-                             std::string& default_printer_out,
+// Used as a callback to `GetDefaultPrinter()` in tests.
+// Records value returned by `GetDefaultPrinter()`.
+void RecordGetDefaultPrinter(std::string& default_printer_out,
                              const std::string& default_printer) {
   default_printer_out = default_printer;
-  default_printer_set = true;
 }
 
-// Used as a callback to `StartGetPrinters` in tests.
-// Increases `call_count` and records values returned by `StartGetPrinters`.
+// Used as a callback to `StartGetPrinters()` in tests.
+// Increases `call_count` and records values returned by `StartGetPrinters()`.
 // TODO(crbug.com/1171579) Get rid of use of base::ListValue.
 void RecordPrinterList(size_t& call_count,
                        std::unique_ptr<base::ListValue>& printers_out,
@@ -52,11 +51,9 @@ void RecordPrintersDone(bool& is_done_out) {
   is_done_out = true;
 }
 
-void RecordGetCapability(bool& capabilities_set,
-                         base::Value& capabilities_out,
+void RecordGetCapability(base::Value& capabilities_out,
                          base::Value capability) {
-  capabilities_out = capability.Clone();
-  capabilities_set = true;
+  capabilities_out = std::move(capability);
 }
 
 // Converts JSON string to base::ListValue object.
@@ -127,6 +124,7 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
   }
 
  private:
+  // Must outlive `profile_`.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> initiator_;
@@ -147,30 +145,24 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetDefaultPrinter) {
   AddPrinter("printer2", "non-default2", "description2", false);
   AddPrinter("printer3", "non-default3", "description3", false);
 
-  bool did_get_default_printer = false;
   std::string default_printer;
-  local_printer_handler()->GetDefaultPrinter(base::BindOnce(
-      &RecordGetDefaultPrinter, std::ref(did_get_default_printer),
-      std::ref(default_printer)));
+  local_printer_handler()->GetDefaultPrinter(
+      base::BindOnce(&RecordGetDefaultPrinter, std::ref(default_printer)));
 
   RunUntilIdle();
 
-  ASSERT_TRUE(did_get_default_printer);
   EXPECT_EQ(default_printer, "printer1");
 }
 
 // Tests that getting default printer gives empty string when no printers are
 // installed.
 TEST_P(LocalPrinterHandlerDefaultTest, GetDefaultPrinterNoneInstalled) {
-  bool did_get_default_printer = false;
-  std::string default_printer;
-  local_printer_handler()->GetDefaultPrinter(base::BindOnce(
-      &RecordGetDefaultPrinter, std::ref(did_get_default_printer),
-      std::ref(default_printer)));
+  std::string default_printer = "dummy";
+  local_printer_handler()->GetDefaultPrinter(
+      base::BindOnce(&RecordGetDefaultPrinter, std::ref(default_printer)));
 
   RunUntilIdle();
 
-  ASSERT_TRUE(did_get_default_printer);
   EXPECT_TRUE(default_printer.empty());
 }
 
@@ -246,15 +238,12 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetPrintersNoneRegistered) {
 TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityValidPrinter) {
   AddPrinter("printer1", "default1", "description1", true);
 
-  bool did_fetch_caps = false;
   base::Value fetched_caps;
   local_printer_handler()->StartGetCapability(
-      "printer1", base::BindOnce(&RecordGetCapability, std::ref(did_fetch_caps),
-                                 std::ref(fetched_caps)));
+      "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  ASSERT_TRUE(did_fetch_caps);
   ASSERT_TRUE(fetched_caps.is_dict());
   EXPECT_TRUE(fetched_caps.FindKey(kSettingCapabilities));
   EXPECT_TRUE(fetched_caps.FindKey(kPrinter));
@@ -263,16 +252,13 @@ TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityValidPrinter) {
 // Tests that fetching capabilities bails early when the provided printer
 // can't be found.
 TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityInvalidPrinter) {
-  bool did_fetch_caps = false;
-  base::Value fetched_caps;
+  base::Value fetched_caps("dummy");
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"invalid printer",
-      base::BindOnce(&RecordGetCapability, std::ref(did_fetch_caps),
-                     std::ref(fetched_caps)));
+      base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  ASSERT_TRUE(did_fetch_caps);
   EXPECT_TRUE(fetched_caps.is_none());
 }
 
