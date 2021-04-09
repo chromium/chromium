@@ -6795,3 +6795,9 @@ crbug.com/1195295 fast/events/touch/multi-touch-timestamp.html [ Pass Failure ]
 
 crbug.com/1197296 [ Mac10.15 ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Pass Failure ]
 crbug.com/1197296 [ Mac10.15 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Pass Failure ]
+
+# Will be fixed by PlzDedicatedWorker.
+crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-frame-owner.https.html [ Timeout ]
+# These timeout because COEP reporting to a worker is not implemented.
+crbug.com/1197041 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
+crbug.com/1197041 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]

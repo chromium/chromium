@@ -47,6 +47,8 @@ class StoragePartitionImpl;
 // A host for a single dedicated worker. It deletes itself upon Mojo
 // disconnection from the worker in the renderer or when the RenderProcessHost
 // of the worker is destroyed. This lives on the UI thread.
+// TODO(crbug.com/1177652): Align this class's lifetime with the associated
+// frame.
 class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
                                   public RenderProcessHostObserver {
  public:
@@ -60,8 +62,8 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
       const url::Origin& creator_origin,
       const net::IsolationInfo& isolation_info,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter,
+      base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
+      base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter,
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host);
   ~DedicatedWorkerHost() final;
 
@@ -189,6 +191,8 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
       network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
       network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy);
 
+  base::WeakPtr<CrossOriginEmbedderPolicyReporter> GetWorkerCoepReporter();
+
   DedicatedWorkerServiceImpl* const service_;
 
   // The renderer generated ID of this worker, unique across all processes.
@@ -256,14 +260,20 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   mojo::Remote<blink::mojom::SubresourceLoaderUpdater>
       subresource_loader_updater_;
 
-  // The endpoint of this mojo interface is the RenderFrameHostImpl's COEP
-  // reporter. The COEP endpoint is correct, but the context_url is the
-  // Document's URL.
-  // TODO(arthursonzogni): After landing PlzDedicatedWorker, make the
-  // DedicatedWorkerHost to have its own COEP reporter using the right
-  // context_url.
-  mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_;  // Never null.
+  // For the PlzDedicatedWorker case. `coep_reporter_` is valid after
+  // DidStartScriptLoad() and remains non-null for the lifetime of `this`.
+  std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
+  // TODO(crbug.com/1177652): Remove `creator_coep_reporter_` after this class's
+  // lifetime is aligned with the associated frame.
+  base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter_;
+
+  // For the non-PlzDedicatedWorker case. Sending reports to the ancestor frame
+  // is not the behavior defined in the spec, but keep the current behavior and
+  // not to lose reports.
+  // TODO(crbug.com/906991): Remove `ancestor_coep_reporter_` once
+  // PlzDedicatedWorker is enabled by default.
+  base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
+
   // Will be set once the worker script started loading.
   base::Optional<GURL> final_response_url_;
 
