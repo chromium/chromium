@@ -788,17 +788,6 @@ void DocumentLoader::SetHistoryItemStateForCommit(
     WebFrameLoadType load_type,
     HistoryNavigationType navigation_type,
     CommitReason commit_reason) {
-  if (old_item && (commit_reason == CommitReason::kJavascriptUrl ||
-                   commit_reason == CommitReason::kXSLT)) {
-    // If this is a javascript: URL or XSLT commit and we already have a
-    // HistoryItem, we should reuse it, because even though the Document and
-    // DocumentLoader changed, all other state (URL, origin, history, etc.)
-    // should stay the same.
-    history_item_ = old_item;
-    return;
-  }
-  DCHECK_NE(commit_reason, CommitReason::kXSLT);
-
   if (!history_item_ || !IsBackForwardLoadType(load_type))
     history_item_ = MakeGarbageCollected<HistoryItem>();
 
