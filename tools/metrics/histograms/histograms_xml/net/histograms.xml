@@ -557,6 +557,141 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsConfig.Nsswitch.Compatible" enum="BooleanValid"
+    expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether or not the DNS configuration read from a nsswitch.conf file is
+    considered compatible with Chrome, that is that the configuration did not
+    contain any options that Chrome is unable to support using the built-in
+    resolver. Reported whenever a nsswitch.conf file is read by Chrome.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Nsswitch.FileChange" enum="BooleanChanged"
+    expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Counter enum recorded whenever `net::DnsConfigService` detects a change to
+    the nsswitch.conf DNS configuration file.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Nsswitch.HostsFound" enum="BooleanFound"
+    expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether or not the &quot;hosts:&quot; database was found in an nsswitch.conf
+    DNS configuration file. Reported whenever Chrome has successfully read the
+    nsswitch.conf file and is beginning to attempt to parse it.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Nsswitch.IncompatibleReason"
+    enum="NsswitchIncompatibleReason" expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Reason enumeration of why a read and parsed nsswitch.conf DNS configuration
+    file was considered incompatible with Chrome, leading to Chrome's built-in
+    DNS resolver being disabled.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Nsswitch.IncompatibleService"
+    enum="NsswitchService" expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Enumeration of the nsswitch.conf service that caused a compatibility issue,
+    leading to the nsswitch.conf DNS configuration being considered incompatible
+    with Chrome. Only emitted when a specific token is present in the
+    nsswitch.conf file, causing the incompatibility, e.g. because the service is
+    always incompatible with Chrome or because the service is configured with
+    incompatible actions.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Nsswitch.NumServices" units="#services"
+    expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Number of services parsed from the nsswitch.conf DNS configuration file.
+    Reported whenever the file is read and parsed.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Nsswitch.Read" enum="BooleanReceived"
+    expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether or not an attempt to read nsswitch.conf succeeded. May fail due to
+    missing file or filesystem issues, but does not consider it a failure if the
+    file is larger than the size limit (see Net.DNS.DnsConfig.Nsswitch.TooLarge
+    for that case). Reported for all attempts to read nsswitch.conf.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Nsswitch.TooLarge" enum="BooleanExceeded"
+    expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether or not an attempt to read nsswitch.conf failed due to the file size
+    being unreasonably large. Reported for all attempts to read nsswitch.conf.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Resolv.Compatible" enum="BooleanValid"
+    expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether or not the DNS configuration read from a resolv.conf file is
+    considered compatible with Chrome, that is that the configuration did not
+    contain any options that Chrome is unable to support using the built-in
+    resolver. Reported whenever a resolv.conf file is successfully read by
+    Chrome.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Resolv.FileChange" enum="BooleanChanged"
+    expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Counter enum recorded whenever `net::DnsConfigService` detects a change to
+    the resolv.conf DNS configuration file.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Resolv.Read" enum="BooleanReceived"
+    expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether or not an attempt to read resolv.conf succeeded and produced a
+    `__res_state` struct for Chrome to attempt to use. Reported on all attempts
+    to read the configuration.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsConfig.Resolv.Valid" enum="BooleanValid"
+    expires_after="2022-01-15">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether or not the DNS configuration read from a resolv.conf file is
+    considered &quot;valid&quot;, that is that it contains at least one DNS
+    server. Reported whenever a resolv.conf file is successfully read by Chrome.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.DnsConfig.SecureDnsMode" enum="SecureDnsModeDetails"
     expires_after="2021-09-05">
   <owner>ericorth@chromium.org</owner>

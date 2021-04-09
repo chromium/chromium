@@ -56019,6 +56019,33 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="H2 pings"/>
 </enum>
 
+<enum name="NsswitchIncompatibleReason">
+  <int value="0" label="&quot;files&quot; missing"/>
+  <int value="1" label="Multiple &quot;files&quot;"/>
+  <int value="2" label="Bad &quot;files&quot; actions"/>
+  <int value="3" label="&quot;dns&quot; missing"/>
+  <int value="4" label="Bad &quot;dns&quot; actions"/>
+  <int value="5" label="Bad &quot;mdns*_minimal&quot; actions"/>
+  <int value="6" label="Bad other-service actions"/>
+  <int value="7" label="Unknown service"/>
+  <int value="8" label="Incompatible service"/>
+</enum>
+
+<enum name="NsswitchService">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="&quot;files&quot;"/>
+  <int value="2" label="&quot;dns&quot;"/>
+  <int value="3" label="&quot;mdns&quot;"/>
+  <int value="4" label="&quot;mdns4&quot;"/>
+  <int value="5" label="&quot;mdns6&quot;"/>
+  <int value="6" label="&quot;mdns_minimal&quot;"/>
+  <int value="7" label="&quot;mdns4_minimal&quot;"/>
+  <int value="8" label="&quot;mdns6_minimal&quot;"/>
+  <int value="9" label="&quot;myhostname&quot;"/>
+  <int value="10" label="&quot;resolve&quot;"/>
+  <int value="11" label="&quot;nis&quot;"/>
+</enum>
+
 <enum name="NTPBackgroundCustomizationAvailability">
   <obsolete>
     Removed 2019-08.

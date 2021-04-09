@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -40,11 +41,17 @@ constexpr size_t kMaxFileSize = 1024 * 1024;
 
 std::string ReadNsswitch() {
   std::string file;
-  if (!base::ReadFileToStringWithMaxSize(base::FilePath(kNsswitchPath), &file,
-                                         kMaxFileSize))
-    return "";
+  bool result = base::ReadFileToStringWithMaxSize(base::FilePath(kNsswitchPath),
+                                                  &file, kMaxFileSize);
+  UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.Read",
+                        result || file.size() == kMaxFileSize);
+  UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.TooLarge",
+                        !result && file.size() == kMaxFileSize);
 
-  return file;
+  if (result)
+    return file;
+
+  return "";
 }
 
 base::StringPiece SkipRestOfLine(base::StringPiece text) {
@@ -297,6 +304,8 @@ NsswitchReader::ReadAndParseHosts() {
     return GetDefaultHosts();
 
   base::StringPiece hosts = FindDatabase(file, "hosts:");
+  UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.HostsFound",
+                        !hosts.empty());
   if (hosts.empty())
     return GetDefaultHosts();
 
