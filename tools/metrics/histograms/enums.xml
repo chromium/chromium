@@ -55533,6 +55533,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="23" label="NOT_AUTHENTICATED"/>
   <int value="24" label="TOO_MANY_STAS"/>
   <int value="25" label="DISCONNECT_FAILURE"/>
+  <int value="26" label="SIM_LOCKED"/>
 </enum>
 
 <enum name="NetworkStatus">
