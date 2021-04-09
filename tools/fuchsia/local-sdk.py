@@ -46,8 +46,8 @@ def BuildForArch(arch):
       '--args=is_debug=false',
       '--args=build_sdk_archives=true',
       # Increase the size of the image to allow multiple test runs.
-      # 1 GiB (1024 * 1024 * 1024).
-      '--args=fvm_image_size=1073741824')
+      # 512 MiB (512 * 1024 * 1024).
+      '--args=fvm_image_size=536870912')
   Run('scripts/fx', 'build', 'sdk', 'build/images')
 
 
