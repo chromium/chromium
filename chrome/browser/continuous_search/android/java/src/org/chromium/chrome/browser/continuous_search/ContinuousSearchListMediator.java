@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.continuous_search;
 
 import android.content.res.Resources;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
@@ -117,20 +118,23 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private PropertyModel generateListItem(String text, GURL url, int position) {
         int backgroundColor =
                 getBackgroundColorForParentBackgroundColor(mThemeColorProvider.getThemeColor());
-        boolean useDarkTextColors = shouldUseDarkTextColors(backgroundColor);
+        boolean useDarkColors = shouldUseDarkElementColors(backgroundColor);
         return new PropertyModel.Builder(ContinuousSearchListProperties.ALL_KEYS)
                 .with(ContinuousSearchListProperties.LABEL, text)
                 .with(ContinuousSearchListProperties.URL, url)
                 .with(ContinuousSearchListProperties.IS_SELECTED, false)
+                .with(ContinuousSearchListProperties.BORDER_COLOR,
+                        useDarkColors ? getColor(R.color.default_icon_color_dark)
+                                      : getColor(R.color.default_icon_color_light))
                 .with(ContinuousSearchListProperties.CLICK_LISTENER,
                         (view) -> handleResultClick(url, position))
                 .with(ContinuousSearchListProperties.BACKGROUND_COLOR, backgroundColor)
                 .with(ContinuousSearchListProperties.TITLE_TEXT_STYLE,
-                        useDarkTextColors ? R.style.TextAppearance_TextMedium_Primary_Dark
-                                          : R.style.TextAppearance_TextMedium_Primary_Light)
+                        useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
+                                      : R.style.TextAppearance_TextMedium_Primary_Light)
                 .with(ContinuousSearchListProperties.DESCRIPTION_TEXT_STYLE,
-                        useDarkTextColors ? R.style.TextAppearance_TextMedium_Secondary_Dark
-                                          : R.style.TextAppearance_TextMedium_Secondary_Light)
+                        useDarkColors ? R.style.TextAppearance_TextMedium_Secondary_Dark
+                                      : R.style.TextAppearance_TextMedium_Secondary_Light)
                 .build();
     }
 
@@ -158,15 +162,18 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     void onThemeColorChanged(int color, boolean shouldAnimate) {
         // TODO(crbug.com/1192781): Animate the color change if necessary.
         int bgColor = getBackgroundColorForParentBackgroundColor(color);
-        boolean useDarkTextColors = shouldUseDarkTextColors(bgColor);
+        boolean useDarkColors = shouldUseDarkElementColors(bgColor);
         for (ListItem listItem : mModelList) {
             listItem.model.set(ContinuousSearchListProperties.BACKGROUND_COLOR, bgColor);
             listItem.model.set(ContinuousSearchListProperties.TITLE_TEXT_STYLE,
-                    useDarkTextColors ? R.style.TextAppearance_TextMedium_Primary_Dark
-                                      : R.style.TextAppearance_TextMedium_Primary_Light);
+                    useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
+                                  : R.style.TextAppearance_TextMedium_Primary_Light);
             listItem.model.set(ContinuousSearchListProperties.DESCRIPTION_TEXT_STYLE,
-                    useDarkTextColors ? R.style.TextAppearance_TextMedium_Secondary_Dark
-                                      : R.style.TextAppearance_TextMedium_Secondary_Light);
+                    useDarkColors ? R.style.TextAppearance_TextMedium_Secondary_Dark
+                                  : R.style.TextAppearance_TextMedium_Secondary_Light);
+            listItem.model.set(ContinuousSearchListProperties.BORDER_COLOR,
+                    useDarkColors ? getColor(R.color.default_icon_color_dark)
+                                  : getColor(R.color.default_icon_color_light));
         }
     }
 
@@ -176,7 +183,11 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                 mResources, parentColor, false);
     }
 
-    private boolean shouldUseDarkTextColors(int backgroundColor) {
+    private boolean shouldUseDarkElementColors(int backgroundColor) {
         return !ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
+    }
+
+    private int getColor(int id) {
+        return ApiCompatibilityUtils.getColor(mResources, id);
     }
 }

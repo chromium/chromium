@@ -33,6 +33,7 @@ class ContinuousSearchListProperties {
     public static final WritableObjectPropertyKey<String> LABEL = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<GURL> URL = new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
+    public static final WritableIntPropertyKey BORDER_COLOR = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
@@ -40,6 +41,6 @@ class ContinuousSearchListProperties {
     public static final WritableIntPropertyKey DESCRIPTION_TEXT_STYLE =
             new WritableIntPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {LABEL, URL, IS_SELECTED, CLICK_LISTENER,
-            BACKGROUND_COLOR, TITLE_TEXT_STYLE, DESCRIPTION_TEXT_STYLE};
+    public static final PropertyKey[] ALL_KEYS = {LABEL, URL, IS_SELECTED, BORDER_COLOR,
+            CLICK_LISTENER, BACKGROUND_COLOR, TITLE_TEXT_STYLE, DESCRIPTION_TEXT_STYLE};
 }

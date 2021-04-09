@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
-import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,6 +18,8 @@ import org.chromium.url.GURL;
  * Responsible for binding the {@link PropertyModel} for a search result item to a View.
  */
 class ContinuousSearchListViewBinder {
+    private static final int BORDER_WIDTH = 5;
+
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (ContinuousSearchListProperties.LABEL == propertyKey) {
             TextView textView = view.findViewById(R.id.continuous_search_list_item_text);
@@ -33,13 +35,16 @@ class ContinuousSearchListViewBinder {
             }
             textView.setText(domain);
         } else if (ContinuousSearchListProperties.IS_SELECTED == propertyKey) {
-            view.setSelected(model.get(ContinuousSearchListProperties.IS_SELECTED));
+            setBorder(model, view);
+        } else if (ContinuousSearchListProperties.BORDER_COLOR == propertyKey) {
+            setBorder(model, view);
         } else if (ContinuousSearchListProperties.CLICK_LISTENER == propertyKey) {
             view.setOnClickListener(model.get(ContinuousSearchListProperties.CLICK_LISTENER));
         } else if (ContinuousSearchListProperties.BACKGROUND_COLOR == propertyKey) {
             if (view.getBackground() != null) {
-                view.getBackground().setColorFilter(
-                        model.get(ContinuousSearchListProperties.BACKGROUND_COLOR), Mode.SRC_IN);
+                GradientDrawable drawable = (GradientDrawable) view.getBackground();
+                drawable.mutate();
+                drawable.setColor(model.get(ContinuousSearchListProperties.BACKGROUND_COLOR));
             }
         } else if (ContinuousSearchListProperties.TITLE_TEXT_STYLE == propertyKey) {
             TextView textTitle = view.findViewById(R.id.continuous_search_list_item_text);
@@ -55,5 +60,14 @@ class ContinuousSearchListViewBinder {
                         model.get(ContinuousSearchListProperties.DESCRIPTION_TEXT_STYLE));
             }
         }
+    }
+
+    private static void setBorder(PropertyModel model, View view) {
+        if (view.getBackground() == null) return;
+
+        GradientDrawable drawable = (GradientDrawable) view.getBackground();
+        drawable.mutate();
+        drawable.setStroke(model.get(ContinuousSearchListProperties.IS_SELECTED) ? BORDER_WIDTH : 0,
+                model.get(ContinuousSearchListProperties.BORDER_COLOR));
     }
 }

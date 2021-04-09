@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
@@ -73,6 +76,11 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     public void onError(int errorCode) {
         // TODO: Handle errors.
         mProducer = null;
+    }
+
+    @Override
+    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+        // Intentionally do nothing to prevent automatic observer removal on detachment.
     }
 
     private void resetProducer() {
