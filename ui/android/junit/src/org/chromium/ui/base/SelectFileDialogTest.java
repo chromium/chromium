@@ -166,9 +166,13 @@ public class SelectFileDialogTest {
         SelectFileDialog selectFileDialog = new SelectFileDialog(0);
         PathUtils.setPrivateDataDirectorySuffix("test");
         String dataDir = new File(PathUtils.getDataDirectory()).getCanonicalPath();
-
+        String appDir = new File(PathUtils.getAppDirectory()).getCanonicalPath();
         SelectFileDialog.FilePathSelectedTask task = selectFileDialog.new FilePathSelectedTask(
                 ContextUtils.getApplicationContext(), dataDir, null);
+        assertFalse(task.doInBackground());
+
+        task = selectFileDialog.new FilePathSelectedTask(
+                ContextUtils.getApplicationContext(), appDir, null);
         assertFalse(task.doInBackground());
 
         task = selectFileDialog.new FilePathSelectedTask(
@@ -176,7 +180,15 @@ public class SelectFileDialogTest {
         assertFalse(task.doInBackground());
 
         task = selectFileDialog.new FilePathSelectedTask(
+                ContextUtils.getApplicationContext(), appDir + "/tmp/xyz.jpg", null);
+        assertFalse(task.doInBackground());
+
+        task = selectFileDialog.new FilePathSelectedTask(
                 ContextUtils.getApplicationContext(), dataDir + "/../xyz.jpg", null);
+        assertFalse(task.doInBackground());
+
+        task = selectFileDialog.new FilePathSelectedTask(
+                ContextUtils.getApplicationContext(), appDir + "/../xyz.jpg", null);
         assertTrue(task.doInBackground());
 
         task = selectFileDialog.new FilePathSelectedTask(
@@ -184,10 +196,14 @@ public class SelectFileDialogTest {
         assertFalse(task.doInBackground());
 
         task = selectFileDialog.new FilePathSelectedTask(
+                ContextUtils.getApplicationContext(), appDir + "/tmp/../xyz.jpg", null);
+        assertFalse(task.doInBackground());
+
+        task = selectFileDialog.new FilePathSelectedTask(
                 ContextUtils.getApplicationContext(), "/data/local/tmp.jpg", null);
         assertTrue(task.doInBackground());
 
-        Path path = new File(dataDir).toPath();
+        Path path = new File(appDir).toPath();
         String parent = path.getParent().toString();
         String lastComponent = path.getName(path.getNameCount() - 1).toString();
         task = selectFileDialog.new FilePathSelectedTask(ContextUtils.getApplicationContext(),
@@ -195,7 +211,7 @@ public class SelectFileDialogTest {
         assertFalse(task.doInBackground());
 
         task = selectFileDialog.new FilePathSelectedTask(ContextUtils.getApplicationContext(),
-                dataDir + "/../" + lastComponent + "/xyz.jpg", null);
+                appDir + "/../" + lastComponent + "/xyz.jpg", null);
         assertFalse(task.doInBackground());
     }
 

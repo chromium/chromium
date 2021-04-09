@@ -43,7 +43,8 @@ public abstract class PathUtils {
     private static final int DATA_DIRECTORY = 0;
     private static final int THUMBNAIL_DIRECTORY = 1;
     private static final int CACHE_DIRECTORY = 2;
-    private static final int NUM_DIRECTORIES = 3;
+    private static final int APP_DIRECTORY = 3;
+    private static final int NUM_DIRECTORIES = 4;
     private static final AtomicBoolean sInitializationStarted = new AtomicBoolean();
     private static FutureTask<String[]> sDirPathFetchTask;
 
@@ -124,6 +125,7 @@ public abstract class PathUtils {
                 chmod(paths[CACHE_DIRECTORY], 02700);
             }
         }
+        paths[APP_DIRECTORY] = appContext.getApplicationInfo().dataDir;
         return paths;
     }
 
@@ -196,6 +198,14 @@ public abstract class PathUtils {
     public static String getThumbnailCacheDirectory() {
         assert sDirPathFetchTask != null : "setDataDirectorySuffix must be called first.";
         return getDirectoryPath(THUMBNAIL_DIRECTORY);
+    }
+
+    /**
+     * @return App directory, which is the parent dir of data, cache and shared preferences.
+     */
+    public static String getAppDirectory() {
+        assert sDirPathFetchTask != null : "setDataDirectorySuffix must be called first.";
+        return getDirectoryPath(APP_DIRECTORY);
     }
 
     /**
