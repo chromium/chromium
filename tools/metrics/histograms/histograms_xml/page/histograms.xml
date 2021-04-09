@@ -21,6 +21,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="Gap">
+  <variant name="1000ms"/>
+</variants>
+
+<variants name="MaxWindowSize">
+  <variant name="5000ms"/>
+</variants>
+
 <variants name="RequestDestination">
   <variant name="audio"/>
   <variant name="audioworklet"/>
@@ -44,6 +52,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="webbundle"/>
   <variant name="worker"/>
   <variant name="xslt"/>
+</variants>
+
+<variants name="Window">
+  <variant name="SessionWindow"/>
+  <variant name="SessionWindowByInputs"/>
 </variants>
 
 <histogram name="PageActionController.ExtensionsWithPageActions" units="units"
@@ -452,6 +465,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This histogram has incomplete data. It expired after M78 and was re-added in
     M90.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore.Subframe.{Navigation}{Window}.Gap{Gap}.Max{MaxWindowSize}"
+    units="scorex10" expires_after="M97">
+  <owner>hbsong@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
+    occurred in a {Window}, in the AMP subframe. The gap between two consecutive
+    shifts in a window is not bigger than {Gap} and the maximum window size is
+    {MaxWindowSize}. This metric's integral value is 100x the fractional
+    cumulative layout shift score described in the explainer. If the
+    {Navigation} is FullNavigation, we record the metric for non same-document
+    AMP navigations in the main frame, at the end of the AMP document lifetime,
+    such as when the document is being navigated away from. Otherwise, only
+    same-document navigations are included.
+  </summary>
+  <token key="Navigation">
+    <variant name=""/>
+    <variant name="FullNavigation."/>
+  </token>
+  <token key="Window" variants="Window">
+    <variant name=""/>
+  </token>
+  <token key="Gap" variants="Gap">
+    <variant name=""/>
+  </token>
+  <token key="MaxWindowSize" variants="MaxWindowSize">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
@@ -2044,6 +2088,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     cache. Recorded when the user navigates away or closes the page after the
     page was restored from back-forward cache.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.{Bfcache}{Window}.Gap{Gap}.Max{MaxWindowSize}"
+    units="scorex10" expires_after="2021-12-29">
+  <owner>hbsong@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
+    occurred in a {Window}. The gap between two consecutive shifts in a window
+    is not bigger than {Gap} and the maximum window size is {MaxWindowSize}.
+    This metric's integral value is 100x the fractional cumulative layout shift
+    score described in the explainer. If {Bfcache} is triggered, we record the
+    metric when the user navigates away or closes the page after the page was
+    restored from back-forward cache. Otherwise, we record it at the end of the
+    page lifetime, such as when the page is being navigated away from or when a
+    tab is being closed.
+  </summary>
+  <token key="Window" variants="Window">
+    <variant name=""/>
+  </token>
+  <token key="Bfcache">
+    <variant name=""/>
+    <variant name="AfterBackForwardCacheRestore."/>
+  </token>
+  <token key="Gap" variants="Gap">
+    <variant name=""/>
+  </token>
+  <token key="MaxWindowSize" variants="MaxWindowSize">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="PageLoad.Memory.Aggregate.Max" units="KiB"
