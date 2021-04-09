@@ -221,6 +221,48 @@ bool PrivacySandboxSettings::ShouldSendConversionReport(
                                            conversion_origin, cookie_settings);
 }
 
+bool PrivacySandboxSettings::IsFledgeAllowed(
+    const url::Origin& top_frame_origin,
+    const GURL& auction_party) {
+  ContentSettingsForOneType cookie_settings;
+  cookie_settings_->GetCookieSettings(&cookie_settings);
+
+  return IsPrivacySandboxAllowedForContext(auction_party, top_frame_origin,
+                                           cookie_settings);
+}
+
+std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
+    const url::Origin& top_frame_origin,
+    const std::vector<GURL>& auction_parties) {
+  ContentSettingsForOneType cookie_settings;
+  cookie_settings_->GetCookieSettings(&cookie_settings);
+
+  std::vector<GURL> allowed_parties;
+
+  // Cookie setting exceptions are rare, in most cases |cookie_settings| will
+  // have a length of 1 and only contain the default setting (which is ignored
+  // for determining if the Privacy Sandbox is allowed). If this is the case
+  // either all |auction_parties|, or none, are allowed based on the Privacy
+  // Sandbox preference, and invidiually checking each auction party can be
+  // avoided.
+  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings) &&
+      cookie_settings.size() == 1) {
+    if (pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled)) {
+      allowed_parties.insert(allowed_parties.begin(), auction_parties.begin(),
+                             auction_parties.end());
+    }
+    return allowed_parties;
+  }
+
+  for (const auto& party : auction_parties) {
+    if (IsPrivacySandboxAllowedForContext(party, top_frame_origin,
+                                          cookie_settings)) {
+      allowed_parties.push_back(party);
+    }
+  }
+  return allowed_parties;
+}
+
 bool PrivacySandboxSettings::IsPrivacySandboxAllowed() {
   if (!PrivacySandboxSettingsFunctional()) {
     // Simply respect 3rd-party cookies blocking settings if the UI is not
