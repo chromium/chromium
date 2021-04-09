@@ -414,6 +414,7 @@ source_set("unit_tests") {
     "clipboard/arc_clipboard_bridge_unittest.cc",
     "compat_mode/arc_resize_lock_manager_unittest.cc",
     "compat_mode/resize_confirmation_dialog_unittest.cc",
+    "crash_collector/arc_crash_collector_bridge_unittest.cc",
     "dark_theme/arc_dark_theme_bridge_unittest.cc",
     "disk_quota/arc_disk_quota_bridge_unittest.cc",
     "enterprise/arc_data_remove_requested_pref_handler_unittest.cc",

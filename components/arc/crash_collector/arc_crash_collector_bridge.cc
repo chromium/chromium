@@ -112,6 +112,14 @@ ArcCrashCollectorBridge* ArcCrashCollectorBridge::GetForBrowserContext(
   return ArcCrashCollectorBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcCrashCollectorBridge*
+ArcCrashCollectorBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcCrashCollectorBridgeFactory::GetForBrowserContextForTesting(
+      context);
+}
+
 ArcCrashCollectorBridge::ArcCrashCollectorBridge(
     content::BrowserContext* context,
     ArcBridgeService* bridge_service)

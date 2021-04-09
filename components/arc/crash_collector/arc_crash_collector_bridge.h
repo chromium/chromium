@@ -28,6 +28,8 @@ class ArcCrashCollectorBridge
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcCrashCollectorBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcCrashCollectorBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcCrashCollectorBridge(content::BrowserContext* context,
                           ArcBridgeService* bridge);
