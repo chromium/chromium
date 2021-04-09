@@ -3948,16 +3948,14 @@ if (enable_java_templates) {
       final_apk_path = "$root_build_dir/${apk_name}_apk/${apk_name}-debug.apk"
 
       if (!defined(use_default_launcher) || use_default_launcher) {
-        deps += [
-          "//base:base_java",
-          "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
-          "//testing/android/native_test:native_test_java",
-        ]
+        deps += [ "//testing/android/native_test:native_test_java" ]
       }
       shared_libraries = [ invoker.shared_library ]
       deps += [
         ":${target_name}__secondary_abi_shared_library_list",
         ":${target_name}__shared_library_list",
+        "//base:base_java",
+        "//testing/android/reporter:reporter_java",
       ]
     }
   }
