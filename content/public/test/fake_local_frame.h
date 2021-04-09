@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
@@ -100,6 +101,10 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       bool had_redirect,
       network::mojom::SourceLocationPtr source_location) override;
   void ActivateForPrerendering() override;
+  void BindDevToolsAgent(
+      mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver)
+      override;
 #if defined(OS_ANDROID)
   void ExtractSmartClipData(const gfx::Rect& rect,
                             ExtractSmartClipDataCallback callback) override;

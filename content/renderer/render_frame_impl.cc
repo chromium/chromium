@@ -3482,12 +3482,6 @@ void RenderFrameImpl::UpdateSubresourceLoaderFactories(
   }
 }
 
-void RenderFrameImpl::BindDevToolsAgent(
-    mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
-    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver) {
-  frame_->BindDevToolsAgent(std::move(host), std::move(receiver));
-}
-
 // blink::WebLocalFrameClient implementation
 // ----------------------------------------
 blink::BrowserInterfaceBrokerProxy*

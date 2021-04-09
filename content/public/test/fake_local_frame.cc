@@ -131,6 +131,10 @@ void FakeLocalFrame::MixedContentFound(
 
 void FakeLocalFrame::ActivateForPrerendering() {}
 
+void FakeLocalFrame::BindDevToolsAgent(
+    mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver) {}
+
 #if defined(OS_ANDROID)
 void FakeLocalFrame::ExtractSmartClipData(
     const gfx::Rect& rect,

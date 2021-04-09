@@ -3576,6 +3576,13 @@ void LocalFrame::ActivateForPrerendering() {
                                       WrapPersistent(GetDocument())));
 }
 
+void LocalFrame::BindDevToolsAgent(
+    mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
+    mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {
+  DCHECK(Client());
+  Client()->BindDevToolsAgent(std::move(host), std::move(receiver));
+}
+
 #if defined(OS_ANDROID)
 void LocalFrame::ExtractSmartClipData(const gfx::Rect& rect,
                                       ExtractSmartClipDataCallback callback) {

@@ -28,6 +28,7 @@ import "third_party/blink/public/mojom/choosers/popup_menu.mojom";
 import "third_party/blink/public/mojom/context_menu/context_menu.mojom";
 import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
+import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 import "third_party/blink/public/mojom/devtools/inspector_issue.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/favicon/favicon_url.mojom";
@@ -746,6 +747,15 @@ interface LocalFrame {
   // The document in the frame updates `document.prerendering` and dispatches
   // the prerenderingchange event.
   ActivateForPrerendering();
+
+  // Returns a DevToolsAgent interface for this frame, used for
+  // remote debugging. See DevToolsAgent for details.
+  // Returned DevToolsAgent must be associated with navigation control,
+  // due to various ordering dependencies between DevTools protocol and
+  // navigation.
+  BindDevToolsAgent(
+      pending_associated_remote<blink.mojom.DevToolsAgentHost> agent_host,
+      pending_associated_receiver<blink.mojom.DevToolsAgent> agent);
 
   // Samsung Galaxy Note-specific "smart clip" stylus text getter.
   // Extracts the data at the given rect.

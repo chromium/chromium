@@ -28,7 +28,6 @@ import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
-import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 import "third_party/blink/public/mojom/frame/frame.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
@@ -341,15 +340,6 @@ interface Frame {
   // receiver's existing bundle.
   UpdateSubresourceLoaderFactories(
       blink.mojom.URLLoaderFactoryBundle subresource_loader_factories);
-
-  // Returns a DevToolsAgent interface for this frame, used for
-  // remote debugging. See DevToolsAgent for details.
-  // Returned DevToolsAgent must be associated with navigation control,
-  // due to various ordering dependencies between DevTools protocol and
-  // navigation.
-  BindDevToolsAgent(
-      pending_associated_remote<blink.mojom.DevToolsAgentHost> agent_host,
-      pending_associated_receiver<blink.mojom.DevToolsAgent> agent);
 
   // Request for the renderer to execute a given JavaScript method on a given
   // object (both identified by name) in the frame's context.

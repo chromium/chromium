@@ -424,14 +424,6 @@ class WebLocalFrame : public WebFrame {
   virtual WebString Prompt(const WebString& message,
                            const WebString& default_value) = 0;
 
-  // Debugging -----------------------------------------------------------
-
-  virtual void BindDevToolsAgent(
-      CrossVariantMojoAssociatedRemote<mojom::DevToolsAgentHostInterfaceBase>
-          devtools_agent_host_remote,
-      CrossVariantMojoAssociatedReceiver<mojom::DevToolsAgentInterfaceBase>
-          devtools_agent_receiver) = 0;
-
   // Editing -------------------------------------------------------------
   virtual void UnmarkText() = 0;
   virtual bool HasMarkedText() const = 0;

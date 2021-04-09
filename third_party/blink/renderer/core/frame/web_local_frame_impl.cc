@@ -2740,19 +2740,6 @@ WebDevToolsAgentImpl* WebLocalFrameImpl::DevToolsAgentImpl() {
   return dev_tools_agent_;
 }
 
-void WebLocalFrameImpl::BindDevToolsAgent(
-    CrossVariantMojoAssociatedRemote<
-        mojom::blink::DevToolsAgentHostInterfaceBase>
-        devtools_agent_host_remote,
-    CrossVariantMojoAssociatedReceiver<mojom::blink::DevToolsAgentInterfaceBase>
-        devtools_agent_receiver) {
-  WebDevToolsAgentImpl* agent = DevToolsAgentImpl();
-  if (!agent)
-    return;
-  agent->BindReceiver(std::move(devtools_agent_host_remote),
-                      std::move(devtools_agent_receiver));
-}
-
 void WebLocalFrameImpl::WasHidden() {
   if (frame_)
     frame_->WasHidden();

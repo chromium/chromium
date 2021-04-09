@@ -7386,7 +7386,7 @@ void RenderFrameHostImpl::ClearFocusedElement() {
 void RenderFrameHostImpl::BindDevToolsAgent(
     mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
     mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver) {
-  GetMojomFrameInRenderer()->BindDevToolsAgent(std::move(host),
+  GetAssociatedLocalFrame()->BindDevToolsAgent(std::move(host),
                                                std::move(receiver));
 }
 
