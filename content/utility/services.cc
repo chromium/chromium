@@ -18,6 +18,8 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/utility/content_utility_client.h"
 #include "content/public/utility/utility_thread.h"
+#include "content/services/auction_worklet/auction_worklet_service_impl.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -140,6 +142,13 @@ auto RunNetworkService(
       /*delay_initialization_until_set_client=*/true);
 }
 
+auto RunAuctionWorkletService(
+    mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+        receiver) {
+  return std::make_unique<auction_worklet::AuctionWorkletServiceImpl>(
+      std::move(receiver));
+}
+
 auto RunAudio(mojo::PendingReceiver<audio::mojom::AudioService> receiver) {
 #if defined(OS_MAC)
   // Don't connect to launch services when running sandboxed
@@ -258,6 +267,7 @@ void RegisterIOThreadServices(mojo::ServiceFactory& services) {
 }
 
 void RegisterMainThreadServices(mojo::ServiceFactory& services) {
+  services.Add(RunAuctionWorkletService);
   services.Add(RunAudio);
 
   services.Add(RunDataDecoder);

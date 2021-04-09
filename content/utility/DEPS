@@ -2,7 +2,7 @@ include_rules = [
   "+components/services/storage",
   "+content/child",
   "+content/public/utility",
-  "+content/services/isolated_xr_device",
+  "+content/services",
   "+chromeos/services/ime",
   "+chromeos/services/tts",
   "+device/vr/buildflags",
