@@ -1023,6 +1023,8 @@ suite('input page', () => {
 
   suite('add spell check languages dialog', () => {
     let dialog;
+    let suggestedLanguages;
+    let allLanguages;
     let cancelButton;
     let actionButton;
 
@@ -1042,6 +1044,11 @@ suite('input page', () => {
       assertTrue(!!dialog);
       assertTrue(dialog.$.dialog.open);
 
+      suggestedLanguages = dialog.$$('#suggestedLanguages');
+      assertTrue(!!suggestedLanguages);
+      allLanguages = dialog.$$('#allLanguages');
+      assertTrue(!!allLanguages);
+
       actionButton = dialog.$$('.action-button');
       assertTrue(!!actionButton);
       cancelButton = dialog.$$('.cancel-button');
@@ -1050,7 +1057,8 @@ suite('input page', () => {
 
     test('action button is enabled and disabled when necessary', () => {
       // Mimic $$, but with a querySelectorAll instead of querySelector.
-      const checkboxes = dialog.root.querySelectorAll('cr-checkbox');
+      const checkboxes = allLanguages.querySelectorAll('cr-checkbox');
+      assertTrue(checkboxes.length > 0);
 
       // By default, no languages have been selected so the action button is
       // disabled.
@@ -1070,24 +1078,41 @@ suite('input page', () => {
     });
 
     test('initial expected layout', () => {
+      // As Swahili is an enabled language, it should be shown as a suggested
+      // language.
+      const suggestedListItems =
+          suggestedLanguages.querySelectorAll('.list-item');
+      assertEquals(suggestedListItems.length, 1);
+      assertTrue(suggestedListItems[0].textContent.includes('Swahili'));
+
       // There are four languages with spell check enabled in
       // fake_language_settings_private.js: en-US, en-CA, sw, nb.
       // en-US shouldn't be displayed as it is already enabled.
-      const listItems = dialog.root.querySelectorAll('.list-item');
-      assertTrue(listItems[0].textContent.includes('English (Canada)'));
-      assertTrue(listItems[1].textContent.includes('Swahili'));
-      assertTrue(listItems[2].textContent.includes('Norwegian Bokmål'));
+      const allListItems = allLanguages.querySelectorAll('.list-item');
+      assertEquals(allListItems.length, 3);
+      assertTrue(allListItems[0].textContent.includes('English (Canada)'));
+      assertTrue(allListItems[1].textContent.includes('Swahili'));
+      assertTrue(allListItems[2].textContent.includes('Norwegian Bokmål'));
 
       // By default, all checkboxes should not be disabled, and should not be
       // checked.
-      const checkboxes =
-          [...listItems].map(listItem => listItem.querySelector('cr-checkbox'));
+      const checkboxes = [...suggestedListItems, ...allListItems].map(
+          listItem => listItem.querySelector('cr-checkbox'));
       assertTrue(checkboxes.every(checkbox => !checkbox.disabled));
       assertTrue(checkboxes.every(checkbox => !checkbox.checked));
+
+      // There should be a label for both sections.
+      const suggestedLabel = suggestedLanguages.querySelector('.label');
+      assertTrue(!!suggestedLabel);
+      assertFalse(suggestedLabel.hidden);
+
+      const allLanguagesLabel = allLanguages.querySelector('.label');
+      assertTrue(!!allLanguagesLabel);
+      assertFalse(allLanguagesLabel.hidden);
     });
 
     test('can add single language and uncheck language', () => {
-      const checkboxes = dialog.root.querySelectorAll('cr-checkbox');
+      const checkboxes = allLanguages.querySelectorAll('cr-checkbox');
       const swCheckbox = checkboxes[1];
       const nbCheckbox = checkboxes[2];
 
@@ -1112,7 +1137,7 @@ suite('input page', () => {
     });
 
     test('can add multiple languages', () => {
-      const checkboxes = dialog.root.querySelectorAll('cr-checkbox');
+      const checkboxes = allLanguages.querySelectorAll('cr-checkbox');
 
       assertDeepEquals(
           ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
@@ -1142,7 +1167,7 @@ suite('input page', () => {
       languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['sw']);
       Polymer.dom.flush();
 
-      const listItems = dialog.root.querySelectorAll('.list-item');
+      const listItems = allLanguages.querySelectorAll('.list-item');
       const swListItem = listItems[1];
       const swCheckbox = swListItem.querySelector('cr-checkbox');
       const swPolicyIcon = swListItem.querySelector('iron-icon');
@@ -1150,6 +1175,45 @@ suite('input page', () => {
       assertTrue(swCheckbox.disabled);
       assertFalse(swCheckbox.checked);
       assertTrue(!!swPolicyIcon);
+    });
+
+    test('labels do not appear if there are no suggested languages', () => {
+      // Disable sw, the only default suggested language, as a web language.
+      languageHelper.disableLanguage('sw');
+      Polymer.dom.flush();
+
+      /**
+       * @param {!HTMLElement|null} el
+       * @return {boolean}
+       */
+      function isHidden(el) {
+        return !el || el.hidden || getComputedStyle(el).display === 'none' ||
+            getComputedStyle(el).visibility === 'hidden';
+      }
+
+      // Suggested languages should not show up whatsoever.
+      assertTrue(isHidden(suggestedLanguages));
+      // The label for all languages should not appear either.
+      assertTrue(isHidden(allLanguages.querySelector('.label')));
+    });
+
+    test('input method languages appear as suggested languages', () => {
+      // Remove en-US from the dictionary list AND the enabled languages list.
+      languageHelper.setPrefValue('spellcheck.dictionaries', []);
+      languageHelper.disableLanguage('en-US');
+      Polymer.dom.flush();
+
+      // Both Swahili (as it is an enabled language) and English (US) (as it is
+      // enabled as an input method) should appear in the list.
+      const suggestedListItems =
+          suggestedLanguages.querySelectorAll('.list-item');
+      assertEquals(suggestedListItems.length, 2);
+      assertTrue(suggestedListItems[0].textContent.includes(
+          'English (United States)'));
+      assertTrue(suggestedListItems[1].textContent.includes('Swahili'));
+
+      // en-US should also appear in the all languages list now.
+      assertEquals(allLanguages.querySelectorAll('.list-item').length, 4);
     });
   });
 });

@@ -363,6 +363,12 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_ADD_SPELL_CHECK_LANGUAGES_TITLE" translateable="false" desc="Title for the dialog that allows users to select new languages to add to their list of spell check languages.">
     Add spell check languages
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_SUGGESTED_SPELL_CHECK_LANGUAGES_LABEL" translateable="false" desc="Title of the list of spell check languages suggested to users.">
+    Suggested
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_ALL_SPELL_CHECK_LANGUAGES_LABEL" translateable="false" desc="Title of the list of all spell check languages.">
+    All languages
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGE_NOT_ALLOWED" translateable="false" desc="Tooltip for policy icon when a spell check language is not allowed.">
     Your administrator doesn't allow this spell check language
   </message>

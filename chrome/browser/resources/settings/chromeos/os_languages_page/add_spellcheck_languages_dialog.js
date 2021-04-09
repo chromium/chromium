@@ -50,6 +50,21 @@ Polymer({
       },
     },
 
+    /** @private {!Array<!chrome.languageSettingsPrivate.InputMethod>} */
+    suggestedLanguages_: {
+      type: Array,
+      value: [],
+      computed: `getSuggestedLanguages_(languages.spellCheckOffLanguages.*,
+          languages.enabled.*, languages.inputMethods.enabled.*)`,
+    },
+
+    /** @private */
+    showSuggestedList_: {
+      type: Boolean,
+      value: false,
+      computed: 'shouldShowSuggestedList_(suggestedLanguages_)'
+    },
+
     /** @private */
     disableActionButton_: {
       type: Boolean,
@@ -84,6 +99,31 @@ Polymer({
     }
     // Polymer doesn't notify changes to set size.
     this.notifyPath('languageCodesToAdd_.size');
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowSuggestedList_() {
+    return this.suggestedLanguages_.length > 0;
+  },
+
+  /**
+   * Get suggested languages based on enabled languages and input methods.
+   * @return {!Array<!SpellCheckLanguageState>}
+   * @private
+   */
+  getSuggestedLanguages_() {
+    const languageCodes = new Set([
+      ...this.languages.inputMethods.enabled.flatMap(
+          inputMethod => inputMethod.languageCodes),
+      ...this.languageHelper.getEnabledLanguageCodes(),
+    ]);
+    return this.languages.spellCheckOffLanguages.filter(
+        spellCheckLanguage =>
+            languageCodes.has(spellCheckLanguage.language.code) &&
+            !spellCheckLanguage.isManaged);
   },
 
   /**
