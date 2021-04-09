@@ -10,17 +10,16 @@
 
 namespace blink {
 
-scoped_refptr<const NGTableBorders> NGTableNode::GetTableBorders() const {
-  LayoutNGTable* layout_table = To<LayoutNGTable>(box_);
-  scoped_refptr<const NGTableBorders> table_borders =
-      layout_table->GetCachedTableBorders();
+const NGTableBorders* NGTableNode::GetTableBorders() const {
+  LayoutNGTable* layout_table = To<LayoutNGTable>(box_.Get());
+  const NGTableBorders* table_borders = layout_table->GetCachedTableBorders();
   if (!table_borders) {
     table_borders = NGTableBorders::ComputeTableBorders(*this);
-    layout_table->SetCachedTableBorders(table_borders.get());
+    layout_table->SetCachedTableBorders(table_borders);
   } else {
 #if DCHECK_IS_ON()
     // TODO(crbug.com/1191742) remove these DCHECKs as soon as bug is found.
-    auto duplicate_table_borders = NGTableBorders::ComputeTableBorders(*this);
+    auto* duplicate_table_borders = NGTableBorders::ComputeTableBorders(*this);
     DCHECK(*duplicate_table_borders == *table_borders);
 #endif
   }
@@ -34,12 +33,12 @@ const NGBoxStrut& NGTableNode::GetTableBordersStrut() const {
 scoped_refptr<const NGTableTypes::Columns> NGTableNode::GetColumnConstraints(
     const NGTableGroupedChildren& grouped_children,
     const NGBoxStrut& border_padding) const {
-  LayoutNGTable* layout_table = To<LayoutNGTable>(box_);
+  LayoutNGTable* layout_table = To<LayoutNGTable>(box_.Get());
   scoped_refptr<const NGTableTypes::Columns> column_constraints =
       layout_table->GetCachedTableColumnConstraints();
   if (!column_constraints) {
     column_constraints = NGTableAlgorithmUtils::ComputeColumnConstraints(
-        *this, grouped_children, *GetTableBorders().get(), border_padding);
+        *this, grouped_children, *GetTableBorders(), border_padding);
     layout_table->SetCachedTableColumnConstraints(column_constraints.get());
   }
   return column_constraints;

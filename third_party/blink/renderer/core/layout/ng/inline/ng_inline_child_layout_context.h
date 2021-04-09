@@ -32,12 +32,12 @@ class CORE_EXPORT NGInlineChildLayoutContext {
     DCHECK(!items_builder_ || !builder);
     items_builder_ = builder;
     if (builder)
-      builder->AddLogicalLineItemsPool(&logical_line_items_);
+      builder->AddLogicalLineItemsPool(logical_line_items_);
   }
 
   // Returns an instance of |NGLogicalLineItems|. This is reused when laying out
   // the next line.
-  NGLogicalLineItems* LogicalLineItems() { return &logical_line_items_; }
+  NGLogicalLineItems* LogicalLineItems() { return logical_line_items_; }
 
   // Returns the NGInlineLayoutStateStack in this context.
   bool HasBoxStates() const { return box_states_.has_value(); }
@@ -50,34 +50,35 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   // To determine this, callers must call |SetItemIndex| to set the end of the
   // current line.
   NGInlineLayoutStateStack* BoxStatesIfValidForItemIndex(
-      const Vector<NGInlineItem>& items,
+      const HeapVector<NGInlineItem>& items,
       unsigned item_index);
-  void SetItemIndex(const Vector<NGInlineItem>& items, unsigned item_index) {
+  void SetItemIndex(const HeapVector<NGInlineItem>& items,
+                    unsigned item_index) {
     items_ = &items;
     item_index_ = item_index;
   }
 
-  const Vector<scoped_refptr<const NGBlockBreakToken>>& PropagatedBreakTokens()
+  const HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens()
       const {
     return propagated_float_break_tokens_;
   }
   void ClearPropagatedBreakTokens();
-  void PropagateBreakToken(scoped_refptr<const NGBlockBreakToken>);
+  void PropagateBreakToken(const NGBlockBreakToken*);
 
  private:
   // TODO(kojii): Probably better to own |NGInlineChildLayoutContext|. While we
   // transit, allocating separately is easier.
   NGFragmentItemsBuilder* items_builder_ = nullptr;
 
-  NGLogicalLineItems logical_line_items_;
+  NGLogicalLineItems* logical_line_items_;
 
   base::Optional<NGInlineLayoutStateStack> box_states_;
 
   // The items and its index this context is set up for.
-  const Vector<NGInlineItem>* items_ = nullptr;
+  const HeapVector<NGInlineItem>* items_ = nullptr;
   unsigned item_index_ = 0;
 
-  Vector<scoped_refptr<const NGBlockBreakToken>> propagated_float_break_tokens_;
+  HeapVector<Member<const NGBlockBreakToken>> propagated_float_break_tokens_;
 };
 
 }  // namespace blink

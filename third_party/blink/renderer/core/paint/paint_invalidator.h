@@ -22,21 +22,25 @@ struct CORE_EXPORT PaintInvalidatorContext {
 
  public:
   class ParentContextAccessor {
+    DISALLOW_NEW();
+
    public:
     ParentContextAccessor() = default;
     ParentContextAccessor(PrePaintTreeWalk* tree_walk,
                           wtf_size_t parent_context_index)
         : tree_walk_(tree_walk), parent_context_index_(parent_context_index) {}
     const PaintInvalidatorContext* ParentContext() const;
+    void Trace(Visitor* visitor) const;
 
    private:
-    PrePaintTreeWalk* tree_walk_ = nullptr;
+    Member<PrePaintTreeWalk> tree_walk_;
     wtf_size_t parent_context_index_ = 0u;
   };
 
   PaintInvalidatorContext() = default;
 
-  PaintInvalidatorContext(const ParentContextAccessor& parent_context_accessor)
+  explicit PaintInvalidatorContext(
+      const ParentContextAccessor& parent_context_accessor)
       : parent_context_accessor_(parent_context_accessor),
         subtree_flags(ParentContext()->subtree_flags),
         directly_composited_container(
@@ -55,6 +59,8 @@ struct CORE_EXPORT PaintInvalidatorContext {
   const PaintInvalidatorContext* ParentContext() const {
     return parent_context_accessor_.ParentContext();
   }
+
+  void Trace(Visitor* visitor) const;
 
  private:
   // Parent context accessor has to be initialized first, so inject the private
@@ -85,21 +91,21 @@ struct CORE_EXPORT PaintInvalidatorContext {
 
   // The current directly composited  container for normal flow objects.
   // It is the enclosing composited object.
-  const LayoutBoxModelObject* directly_composited_container = nullptr;
+  Member<const LayoutBoxModelObject> directly_composited_container;
 
   // The current directly composited container for stacked contents (stacking
   // contexts or positioned objects). It is the nearest ancestor composited
   // object which establishes a stacking context. For more information, see:
   // https://chromium.googlesource.com/chromium/src.git/+/master/third_party/blink/renderer/core/paint/README.md#Stacked-elements-and-stacking-contexts
-  const LayoutBoxModelObject*
-      directly_composited_container_for_stacked_contents = nullptr;
+  Member<const LayoutBoxModelObject>
+      directly_composited_container_for_stacked_contents;
 
-  PaintLayer* painting_layer = nullptr;
+  Member<PaintLayer> painting_layer = nullptr;
 
   // The previous PaintOffset of FragmentData.
   PhysicalOffset old_paint_offset;
 
-  const FragmentData* fragment_data = nullptr;
+  Member<const FragmentData> fragment_data = nullptr;
 
  private:
   friend class PaintInvalidator;
@@ -125,6 +131,8 @@ class PaintInvalidator {
   // See the definition of PaintInvalidationDelayedFull for more details.
   void ProcessPendingDelayedPaintInvalidations();
 
+  void Trace(Visitor*) const;
+
  private:
   friend struct PaintInvalidatorContext;
   friend class PrePaintTreeWalk;
@@ -143,7 +151,7 @@ class PaintInvalidator {
       const PaintPropertyTreeBuilderFragmentContext&,
       PaintInvalidatorContext&);
 
-  Vector<const LayoutObject*> pending_delayed_paint_invalidations_;
+  HeapVector<Member<const LayoutObject>> pending_delayed_paint_invalidations_;
 };
 
 }  // namespace blink

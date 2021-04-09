@@ -161,24 +161,24 @@ TextDecorationInfo::TextDecorationInfo(
     const ComputedStyle& style,
     const base::Optional<AppliedTextDecoration> selection_text_decoration,
     const ComputedStyle* decorating_box_style)
-    : style_(style),
+    : style_(&style),
       selection_text_decoration_(selection_text_decoration),
       baseline_type_(baseline_type),
       width_(width),
-      font_data_(style_.GetFont().PrimaryFont()),
+      font_data_(style_->GetFont().PrimaryFont()),
       baseline_(font_data_ ? font_data_->GetFontMetrics().FloatAscent() : 0),
-      underline_position_(ResolveUnderlinePosition(style_, baseline_type_)),
+      underline_position_(ResolveUnderlinePosition(*style_, baseline_type_)),
       local_origin_(FloatPoint(local_origin)),
       antialias_(ShouldSetDecorationAntialias(style)),
       decoration_index_(kUndefinedDecorationIndex) {
   DCHECK(font_data_);
 
   for (const AppliedTextDecoration& decoration :
-       style_.AppliedTextDecorations()) {
+       style_->AppliedTextDecorations()) {
     applied_decorations_thickness_.push_back(ComputeUnderlineThickness(
         decoration.Thickness(), decorating_box_style));
   }
-  DCHECK_EQ(style_.AppliedTextDecorations().size(),
+  DCHECK_EQ(style_->AppliedTextDecorations().size(),
             applied_decorations_thickness_.size());
 }
 
@@ -200,19 +200,19 @@ void TextDecorationInfo::SetPerLineData(TextDecoration line,
 }
 
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
-  return style_.AppliedTextDecorations()[decoration_index_].Style();
+  return style_->AppliedTextDecorations()[decoration_index_].Style();
 }
 
 Color TextDecorationInfo::LineColor() const {
   // Find the matched normal and selection |AppliedTextDecoration|
   // and use the text-decoration-color from selection when it is.
   if (selection_text_decoration_ &&
-      style_.AppliedTextDecorations()[decoration_index_].Lines() ==
+      style_->AppliedTextDecorations()[decoration_index_].Lines() ==
           selection_text_decoration_.value().Lines()) {
     return selection_text_decoration_.value().GetColor();
   }
 
-  return style_.AppliedTextDecorations()[decoration_index_].GetColor();
+  return style_->AppliedTextDecorations()[decoration_index_].GetColor();
 }
 
 FloatPoint TextDecorationInfo::StartPoint(TextDecoration line) const {
@@ -236,8 +236,8 @@ float TextDecorationInfo::ComputeUnderlineThickness(
        ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto) ||
       underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont) {
-    thickness = ComputeDecorationThickness(applied_decoration_thickness, style_,
-                                           style_.GetFont().PrimaryFont());
+    thickness = ComputeDecorationThickness(
+        applied_decoration_thickness, *style_, style_->GetFont().PrimaryFont());
   } else {
     // Compute decorating box. Position and thickness are computed from the
     // decorating box.
@@ -248,8 +248,9 @@ float TextDecorationInfo::ComputeUnderlineThickness(
           applied_decoration_thickness, *decorating_box_style,
           decorating_box_style->GetFont().PrimaryFont());
     } else {
-      thickness = ComputeDecorationThickness(
-          applied_decoration_thickness, style_, style_.GetFont().PrimaryFont());
+      thickness =
+          ComputeDecorationThickness(applied_decoration_thickness, *style_,
+                                     style_->GetFont().PrimaryFont());
     }
   }
   return thickness;

@@ -41,8 +41,7 @@ class CORE_EXPORT PseudoElement : public Element {
 
   PseudoElement(Element*, PseudoId);
 
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
-      const StyleRecalcContext&) override;
+  ComputedStyle* CustomStyleForLayoutObject(const StyleRecalcContext&) override;
   void AttachLayoutTree(AttachContext&) override;
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
   bool CanGeneratePseudoElement(PseudoId) const override;
@@ -50,8 +49,7 @@ class CORE_EXPORT PseudoElement : public Element {
   bool CanStartSelection() const override { return false; }
   bool CanContainRangeEndPoint() const override { return false; }
   PseudoId GetPseudoId() const override { return pseudo_id_; }
-  scoped_refptr<ComputedStyle> LayoutStyleForDisplayContents(
-      const ComputedStyle&);
+  ComputedStyle* LayoutStyleForDisplayContents(const ComputedStyle&);
 
   static const AtomicString& PseudoElementNameForEvents(PseudoId);
   static bool IsWebExposed(PseudoId, const Node*);
@@ -72,7 +70,7 @@ class CORE_EXPORT PseudoElement : public Element {
 
    private:
     PseudoElement* element_;
-    scoped_refptr<const ComputedStyle> original_style_;
+    const ComputedStyle* original_style_ = nullptr;
   };
 
   PseudoId pseudo_id_;

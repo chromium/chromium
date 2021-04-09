@@ -69,7 +69,7 @@ void SVGClipPathElement::ChildrenChanged(const ChildrenChange& change) {
 
 LayoutObject* SVGClipPathElement::CreateLayoutObject(const ComputedStyle&,
                                                      LegacyLayout) {
-  return new LayoutSVGResourceClipper(this);
+  return MakeGarbageCollected<LayoutSVGResourceClipper>(this);
 }
 
 }  // namespace blink

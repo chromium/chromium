@@ -485,7 +485,7 @@ void SVGUseElement::DetachShadowTree() {
 
 LayoutObject* SVGUseElement::CreateLayoutObject(const ComputedStyle& style,
                                                 LegacyLayout) {
-  return new LayoutSVGTransformableContainer(this);
+  return MakeGarbageCollected<LayoutSVGTransformableContainer>(this);
 }
 
 static bool IsDirectReference(const SVGElement& element) {

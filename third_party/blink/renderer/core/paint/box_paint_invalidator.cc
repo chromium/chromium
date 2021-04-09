@@ -233,7 +233,7 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
   bool background_size_changed =
       new_background_rect.size != old_background_rect.size;
   if (background_location_changed || background_size_changed) {
-    for (auto* object :
+    for (const auto& object :
          layout_view.GetFrameView()->BackgroundAttachmentFixedObjects())
       object->SetBackgroundNeedsFullPaintInvalidation();
   }

@@ -110,7 +110,7 @@ class CORE_EXPORT NGLayoutInputNode {
   }
   bool ListMarkerOccupiesWholeLine() const {
     DCHECK(IsListMarker());
-    return To<LayoutNGOutsideListMarker>(box_)->NeedsOccupyWholeLine();
+    return To<LayoutNGOutsideListMarker>(box_.Get())->NeedsOccupyWholeLine();
   }
   bool IsButton() const { return IsBlock() && box_->IsLayoutNGButton(); }
   bool IsFieldsetContainer() const {
@@ -188,7 +188,7 @@ class CORE_EXPORT NGLayoutInputNode {
   // Returns true if this node should pass its percentage resolution block-size
   // to its children. Typically only quirks-mode, auto block-size, block nodes.
   bool UseParentPercentageResolutionBlockSizeForChildren() const {
-    auto* layout_block = DynamicTo<LayoutBlock>(box_);
+    auto* layout_block = DynamicTo<LayoutBlock>(box_.Get());
     if (IsBlock() && layout_block) {
       return LayoutBoxUtils::SkipContainingBlockForPercentHeightCalculation(
           layout_block);
@@ -313,6 +313,8 @@ class CORE_EXPORT NGLayoutInputNode {
   void ShowNodeTree() const;
 #endif
 
+  void Trace(Visitor* visitor) const { visitor->Trace(box_); }
+
  protected:
   NGLayoutInputNode(LayoutBox* box, NGLayoutInputNodeType type)
       : box_(box), type_(type) {}
@@ -321,7 +323,7 @@ class CORE_EXPORT NGLayoutInputNode {
       base::Optional<LayoutUnit>* computed_inline_size,
       base::Optional<LayoutUnit>* computed_block_size) const;
 
-  LayoutBox* box_;
+  Member<LayoutBox> box_;
 
   unsigned type_ : 1;  // NGLayoutInputNodeType
 };

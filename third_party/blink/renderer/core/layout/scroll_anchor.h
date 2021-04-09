@@ -44,6 +44,7 @@ class CORE_EXPORT ScrollAnchor final {
   ScrollAnchor();
   explicit ScrollAnchor(ScrollableArea*);
   ~ScrollAnchor();
+  void Trace(Visitor* visitor) const;
 
   // The scroller that is scrolled to componsate for layout movements. Note
   // that the scroller can only be initialized once.
@@ -99,8 +100,6 @@ class CORE_EXPORT ScrollAnchor final {
   // Notifies us that an object will be removed from the layout tree.
   void NotifyRemoved(LayoutObject*);
 
-  void Trace(Visitor* visitor) const { visitor->Trace(scroller_); }
-
  private:
   void FindAnchor();
   // Returns true if searching should stop. Stores result in m_anchorObject.
@@ -143,7 +142,7 @@ class CORE_EXPORT ScrollAnchor final {
   Member<ScrollableArea> scroller_;
 
   // The LayoutObject we should anchor to.
-  LayoutObject* anchor_object_;
+  Member<LayoutObject> anchor_object_;
 
   // Which corner of m_anchorObject's bounding box to anchor to.
   Corner corner_;

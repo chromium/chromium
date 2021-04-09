@@ -113,10 +113,11 @@ void ElementAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(effect_stack_);
   visitor->Trace(animations_);
   visitor->Trace(worklet_animations_);
+  visitor->Trace(base_computed_style_);
 }
 
 const ComputedStyle* ElementAnimations::BaseComputedStyle() const {
-  return base_computed_style_.get();
+  return base_computed_style_;
 }
 
 const CSSBitset* ElementAnimations::BaseImportantSet() const {

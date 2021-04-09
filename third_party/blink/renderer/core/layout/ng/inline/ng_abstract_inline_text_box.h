@@ -51,7 +51,7 @@ class CORE_EXPORT NGAbstractInlineTextBox final : public AbstractInlineTextBox {
 
   const NGFragmentItem* fragment_item_;
   // |root_box_fragment_| owns |fragment_item_|.
-  scoped_refptr<const NGPhysicalBoxFragment> root_box_fragment_;
+  Persistent<const NGPhysicalBoxFragment> root_box_fragment_;
 };
 
 }  // namespace blink

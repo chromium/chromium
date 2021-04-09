@@ -118,6 +118,10 @@ static const int kDefaultMinimumHeightForResizing = 15;
 
 PaintLayerScrollableAreaRareData::PaintLayerScrollableAreaRareData() = default;
 
+void PaintLayerScrollableAreaRareData::Trace(Visitor* visitor) const {
+  visitor->Trace(sticky_constraints_map_);
+}
+
 const int kResizerControlExpandRatioForTouch = 2;
 
 PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
@@ -186,7 +190,7 @@ void PaintLayerScrollableArea::DidScroll(const FloatPoint& position) {
 }
 
 void PaintLayerScrollableArea::DisposeImpl() {
-  rare_data_.reset();
+  rare_data_.Clear();
 
   GetLayoutBox()->GetDocument().GetSnapCoordinator().RemoveSnapContainer(
       *GetLayoutBox());
@@ -270,9 +274,13 @@ void PaintLayerScrollableArea::SetTickmarksOverride(Vector<IntRect> tickmarks) {
 
 void PaintLayerScrollableArea::Trace(Visitor* visitor) const {
   visitor->Trace(scrollbar_manager_);
+  visitor->Trace(scroll_corner_);
+  visitor->Trace(resizer_);
   visitor->Trace(scroll_anchor_);
   visitor->Trace(scrolling_background_display_item_client_);
   visitor->Trace(scroll_corner_display_item_client_);
+  visitor->Trace(layer_);
+  visitor->Trace(rare_data_);
   ScrollableArea::Trace(visitor);
 }
 
@@ -1950,11 +1958,11 @@ void PaintLayerScrollableArea::UpdateScrollCornerStyle() {
     return;
   }
   const LayoutObject& style_source = ScrollbarStyleSource(*GetLayoutBox());
-  scoped_refptr<ComputedStyle> corner =
+  ComputedStyle* corner =
       GetLayoutBox()->IsScrollContainer()
           ? style_source.GetUncachedPseudoElementStyle(
                 StyleRequest(kPseudoIdScrollbarCorner, style_source.Style()))
-          : scoped_refptr<ComputedStyle>(nullptr);
+          : nullptr;
   if (corner) {
     if (!scroll_corner_) {
       scroll_corner_ = LayoutCustomScrollbarPart::CreateAnonymous(
@@ -2092,11 +2100,12 @@ void PaintLayerScrollableArea::UpdateResizerStyle(
     return;
 
   const LayoutObject& style_source = ScrollbarStyleSource(*GetLayoutBox());
-  scoped_refptr<ComputedStyle> resizer =
+
+  ComputedStyle* resizer =
       GetLayoutBox()->IsScrollContainer()
           ? style_source.GetUncachedPseudoElementStyle(
                 StyleRequest(kPseudoIdResizer, style_source.Style()))
-          : scoped_refptr<ComputedStyle>(nullptr);
+          : nullptr;
   if (resizer) {
     if (!resizer_) {
       resizer_ = LayoutCustomScrollbarPart::CreateAnonymous(
@@ -2114,12 +2123,12 @@ PaintLayerScrollableArea::GetStickyConstraints(PaintLayer* layer) {
   auto it = EnsureRareData().sticky_constraints_map_.find(layer);
   if (it == EnsureRareData().sticky_constraints_map_.end())
     return nullptr;
-  return &it->value;
+  return it->value;
 }
 
 void PaintLayerScrollableArea::AddStickyConstraints(
     PaintLayer* layer,
-    StickyPositionScrollingConstraints constraints) {
+    StickyPositionScrollingConstraints* constraints) {
   UseCounter::Count(GetLayoutBox()->GetDocument(), WebFeature::kPositionSticky);
   EnsureRareData().sticky_constraints_map_.Set(layer, constraints);
 }
