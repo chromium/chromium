@@ -72,6 +72,8 @@ constexpr base::TimeDelta kInvalidateSurfaceStateDelayAfterTransferDone =
     base::TimeDelta::FromMilliseconds(3000);
 constexpr base::TimeDelta kProcessShutdownPendingTimerDelay =
     base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kProcessNetworkChangeTimerDelay =
+    base::TimeDelta::FromSeconds(1);
 
 // The maximum number of certificate downloads that can be performed during a
 // discovery session.
@@ -287,7 +289,13 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
               ->GetProtoDatabaseProvider(),
           profile->GetPath(),
           http_client_factory_.get())),
-      settings_(prefs, local_device_data_manager_.get()) {
+      settings_(prefs, local_device_data_manager_.get()),
+      on_network_changed_delay_timer_(
+          FROM_HERE,
+          kProcessNetworkChangeTimerDelay,
+          base::BindRepeating(&NearbySharingServiceImpl::
+                                  StopAdvertisingAndInvalidateSurfaceState,
+                              base::Unretained(this))) {
   DCHECK(profile_);
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
@@ -309,6 +317,8 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
 
   nearby_notification_manager_ = std::make_unique<NearbyNotificationManager>(
       notification_display_service, this, prefs, profile_);
+
+  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 
   if (settings_.GetEnabled()) {
     local_device_data_manager_->Start();
@@ -372,6 +382,9 @@ void NearbySharingServiceImpl::Shutdown() {
 
   // |profile_| has now been shut down so we shouldn't use it anymore.
   profile_ = nullptr;
+
+  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  on_network_changed_delay_timer_.Stop();
 }
 
 void NearbySharingServiceImpl::AddObserver(
@@ -1098,6 +1111,12 @@ void NearbySharingServiceImpl::OnIncomingConnection(
                      std::move(placeholder_share_target)));
 }
 
+void NearbySharingServiceImpl::OnNetworkChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
+  NS_LOG(VERBOSE) << __func__ << ": ConnectionType = " << type;
+  on_network_changed_delay_timer_.Reset();
+}
+
 void NearbySharingServiceImpl::FlushMojoForTesting() {
   settings_receiver_.FlushForTesting();
 }
@@ -1133,21 +1152,14 @@ void NearbySharingServiceImpl::OnDataUsageChanged(DataUsage data_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NS_LOG(VERBOSE) << __func__ << ": Nearby sharing data usage changed to "
                   << data_usage;
-
-  if (advertising_power_level_ != PowerLevel::kUnknown)
-    StopAdvertising();
-
-  InvalidateSurfaceState();
+  StopAdvertisingAndInvalidateSurfaceState();
 }
 
 void NearbySharingServiceImpl::OnVisibilityChanged(Visibility new_visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NS_LOG(VERBOSE) << __func__ << ": Nearby sharing visibility changed to "
                   << new_visibility;
-  if (advertising_power_level_ != PowerLevel::kUnknown)
-    StopAdvertising();
-
-  InvalidateSurfaceState();
+  StopAdvertisingAndInvalidateSurfaceState();
 }
 
 void NearbySharingServiceImpl::OnAllowedContactsChanged(
@@ -1990,6 +2002,13 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::StopScanning() {
 
   NS_LOG(VERBOSE) << __func__ << ": Scanning has stopped.";
   return StatusCodes::kOk;
+}
+
+void NearbySharingServiceImpl::StopAdvertisingAndInvalidateSurfaceState() {
+  if (advertising_power_level_ != PowerLevel::kUnknown)
+    StopAdvertising();
+
+  InvalidateSurfaceState();
 }
 
 void NearbySharingServiceImpl::ScheduleRotateBackgroundAdvertisementTimer() {

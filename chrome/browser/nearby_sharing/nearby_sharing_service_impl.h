@@ -45,6 +45,7 @@
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "net/base/network_change_notifier.h"
 
 class FastInitiationManager;
 class NearbyConnectionsManager;
@@ -69,7 +70,8 @@ class NearbySharingServiceImpl
       public NearbyConnectionsManager::IncomingConnectionListener,
       public NearbyConnectionsManager::DiscoveryListener,
       public ash::SessionObserver,
-      public PowerClient::Observer {
+      public PowerClient::Observer,
+      public net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   // The number of unexpected nearby process shutdowns that we allow during a
   // fixed window before deciding not to restart the process.
@@ -132,6 +134,10 @@ class NearbySharingServiceImpl
   void OnIncomingConnection(const std::string& endpoint_id,
                             const std::vector<uint8_t>& endpoint_info,
                             NearbyConnection* connection) override;
+
+  // net::NetworkChangeNotifier::NetworkChangeObserver:
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Test methods
   void FlushMojoForTesting();
@@ -222,6 +228,7 @@ class NearbySharingServiceImpl
   void StopAdvertising();
   void StartScanning();
   StatusCodes StopScanning();
+  void StopAdvertisingAndInvalidateSurfaceState();
   void ScheduleRotateBackgroundAdvertisementTimer();
   void OnRotateBackgroundAdvertisementTimerFired();
   void RemoveOutgoingShareTargetWithEndpointId(const std::string& endpoint_id);
@@ -494,6 +501,9 @@ class NearbySharingServiceImpl
 
   int recent_nearby_process_unexpected_shutdown_count_ = 0;
   base::OneShotTimer clear_recent_nearby_process_shutdown_count_timer_;
+
+  // Used to debounce OnNetworkChanged processing.
+  base::RetainingOneShotTimer on_network_changed_delay_timer_;
 
   // Available free disk space for testing. Using real disk space can introduce
   // flakiness in tests.
