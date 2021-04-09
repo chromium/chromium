@@ -88,11 +88,10 @@ constexpr int kResizeRestoreDragThresholdDp = 5;
 // The UMA histogram that records presentation time for tab dragging between
 // windows in clamshell mode.
 constexpr char kTabDraggingInClamshellModeHistogram[] =
-    "Ash.WorkspaceWindowResizer.TabDragging.PresentationTime.ClamshellMode";
+    "Ash.TabDrag.PresentationTime.ClamshellMode";
 
 constexpr char kTabDraggingInClamshellModeMaxLatencyHistogram[] =
-    "Ash.WorkspaceWindowResizer.TabDragging.PresentationTime.MaxLatency."
-    "ClamshellMode";
+    "Ash.TabDrag.PresentationTime.MaxLatency.ClamshellMode";
 
 // Name of smoothness histograms of the cross fade animation that happens when
 // dragging a maximized window to maximize or unmaximize. Note that for drag

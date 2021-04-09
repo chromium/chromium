@@ -19195,6 +19195,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Ash.LoginAnimation.Smoothness"/>
   <affected-histogram name="Ash.Overview.AnimationSmoothness.Close"/>
   <affected-histogram name="Ash.Overview.WindowDrag.PresentationTime"/>
+  <affected-histogram name="Ash.TabDrag.PresentationTime"/>
+  <affected-histogram name="Ash.TabDrag.PresentationTime.MaxLatency"/>
   <affected-histogram name="Ash.UnlockAnimation.Jank"/>
   <affected-histogram name="Ash.UnlockAnimation.Smoothness"/>
 </histogram_suffixes>

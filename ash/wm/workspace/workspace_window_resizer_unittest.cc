@@ -2168,11 +2168,10 @@ TEST_F(WorkspaceWindowResizerTest, TabDraggingHistogram) {
     resizer.reset(nullptr);
 
     histogram_tester.ExpectTotalCount(
-        "Ash.WorkspaceWindowResizer.TabDragging.PresentationTime.ClamshellMode",
+        "Ash.TabDrag.PresentationTime.ClamshellMode",
         test.expected_latency_count);
     histogram_tester.ExpectTotalCount(
-        "Ash.WorkspaceWindowResizer.TabDragging.PresentationTime.MaxLatency."
-        "ClamshellMode",
+        "Ash.TabDrag.PresentationTime.MaxLatency.ClamshellMode",
         test.expected_max_latency_count);
   }
 }

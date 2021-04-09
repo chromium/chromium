@@ -21,6 +21,7 @@ class OSExchangeData;
 
 namespace ash {
 
+class PresentationTimeRecorder;
 class SplitViewDragIndicators;
 class TabletModeBrowserWindowDragSessionWindowsHider;
 
@@ -75,6 +76,10 @@ class ASH_EXPORT TabDragDropDelegate {
   std::unique_ptr<SplitViewDragIndicators> split_view_drag_indicators_;
   std::unique_ptr<TabletModeBrowserWindowDragSessionWindowsHider>
       windows_hider_;
+
+  // Presentation time recorder for tab dragging in tablet mode with webui
+  // tab strip enable.
+  std::unique_ptr<PresentationTimeRecorder> tab_dragging_recorder_;
 };
 
 }  // namespace ash

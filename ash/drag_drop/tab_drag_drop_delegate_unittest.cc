@@ -23,11 +23,13 @@
 #include "base/pickle.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -265,6 +267,45 @@ TEST_F(TabDragDropDelegateTest, SnappedSourceWindowNotMoved) {
   EXPECT_EQ(source_window.get(),
             split_view_controller->GetSnappedWindow(snap_position));
   EXPECT_EQ(original_bounds, source_window->bounds());
+}
+
+// Make sure metrics is recorded during tab dragging in tablet mode with
+// webui tab strip enable.
+TEST_F(TabDragDropDelegateTest, TabDraggingHistogram) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<aura::Window> source_window = CreateToplevelTestWindow();
+  EXPECT_FALSE(
+      SplitViewController::Get(source_window.get())->InTabletSplitViewMode());
+
+  const gfx::Point drag_start_location = source_window->bounds().CenterPoint();
+
+  // Emulate a drag session ending in a drop to a new window. This should
+  // generate a histogram.
+  TabDragDropDelegate delegate(Shell::GetPrimaryRootWindow(),
+                               source_window.get(), drag_start_location);
+  delegate.DragUpdate(drag_start_location + gfx::Vector2d(1, 0));
+  EXPECT_TRUE(ui::WaitForNextFrameToBePresented(
+      source_window->layer()->GetCompositor()));
+
+  // Check that a new window is requested. Assume the correct drop data
+  // is passed. Return the new window.
+  std::unique_ptr<aura::Window> new_window = CreateToplevelTestWindow();
+  EXPECT_CALL(*mock_shell_delegate(),
+              CreateBrowserForTabDrop(source_window.get(), _))
+      .Times(1)
+      .WillOnce(Return(new_window.get()));
+  delegate.Drop(drag_start_location + gfx::Vector2d(1, 0),
+                ui::OSExchangeData());
+  EXPECT_TRUE(ui::WaitForNextFrameToBePresented(
+      source_window->layer()->GetCompositor()));
+
+  EXPECT_FALSE(
+      SplitViewController::Get(source_window.get())->InTabletSplitViewMode());
+  histogram_tester.ExpectTotalCount("Ash.TabDrag.PresentationTime.TabletMode",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.TabDrag.PresentationTime.MaxLatency.TabletMode", 1);
 }
 
 }  // namespace ash

@@ -2272,6 +2272,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.TabDrag.PresentationTime" units="ms"
+    expires_after="2022-04-07">
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Presentation time in ms when a tab is dragged. In clamshell mode, each time
+    a tab is dragged within a display, the time it takes to present the new
+    frame on screen is recorded. In tablet mode (with webui tab strip enable),
+    dragging between displays is precluded, thus each time a tab is dragged, the
+    time it takes to present the new frame to screen is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Ash.TabDrag.PresentationTime.MaxLatency" units="ms"
+    expires_after="2022-04-07">
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Maximum presentation time recorded during a tab dragging session in both
+    clamshell and tablet mode.
+  </summary>
+</histogram>
+
 <histogram name="Ash.TabletMode.AnimationSmoothness.Enter" units="%"
     expires_after="2021-08-29">
   <owner>oshima@chromium.org</owner>
@@ -2756,6 +2785,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Ash.WorkspaceWindowResizer.TabDragging.PresentationTime.ClamshellMode"
     units="ms" expires_after="2021-10-04">
+  <obsolete>
+    Replaced in 03/2021 by Ash.TabDrag.PresentationTime.ClamshellMode.
+  </obsolete>
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
@@ -2768,6 +2800,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Ash.WorkspaceWindowResizer.TabDragging.PresentationTime.MaxLatency.ClamshellMode"
     units="ms" expires_after="2021-08-09">
+  <obsolete>
+    Replaced in 03/2021 by
+    Ash.TabDrag.PresentationTime.MaxLatency.ClamshellMode.
+  </obsolete>
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
