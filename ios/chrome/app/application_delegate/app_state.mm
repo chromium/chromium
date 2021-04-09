@@ -90,7 +90,7 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 
 #pragma mark - AppState
 
-@interface AppState () <SafeModeCoordinatorDelegate> {
+@interface AppState () <SafeModeCoordinatorDelegate, AppStateObserver> {
   // Browser launcher to launch browser in different states.
   __weak id<BrowserLauncher> _browserLauncher;
   // UIApplicationDelegate for the application.
@@ -129,10 +129,17 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 @property(nonatomic, assign) BOOL shouldPerformAdditionalDelegateHandling;
 
 // This method is the first to be called when user launches the application.
+// This performs the minimal amount of browser initalization that is needed by
+// safe mode.
 // Depending on the background tasks history, the state of the application is
 // INITIALIZATION_STAGE_BACKGROUND so this
 // step cannot be included in the |startUpBrowserToStage:| method.
-- (void)initializeUI;
+- (void)initializeUIPreSafeMode;
+
+// Complete the browser initialization for a regular startup that is needed
+// after safe mode.
+- (void)initializeUIPostSafeMode;
+
 // Saves the current launch details to user defaults.
 - (void)saveLaunchDetailsToDefaults;
 
@@ -202,6 +209,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                  object:nil];
       }
     }
+
+    [self addObserver:self];
   }
   return self;
 }
@@ -235,16 +244,17 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 // Do not use this setter directly, instead use -queueTransitionToInitStage:
 // that provides reentry guards.
-- (void)setInitStage:(InitStage)initStage {
-  DCHECK(initStage >= InitStageStart);
-  DCHECK(initStage <= InitStageFinal);
+- (void)setInitStage:(InitStage)newInitStage {
+  DCHECK(newInitStage >= InitStageStart);
+  DCHECK(newInitStage <= InitStageFinal);
   // It's probably a programming error to set the same init stage twice, except
   // for InitStageStart to kick off the startup.
-  DCHECK(initStage == InitStageStart || _initStage != initStage);
+  DCHECK(newInitStage == InitStageStart || _initStage != newInitStage);
 
-  [self.observers appState:self willTransitionToInitStage:initStage];
-  _initStage = initStage;
-  [self.observers appState:self didTransitionToInitStage:initStage];
+  InitStage previousInitStage = _initStage;
+  [self.observers appState:self willTransitionToInitStage:newInitStage];
+  _initStage = newInitStage;
+  [self.observers appState:self didTransitionFromInitStage:previousInitStage];
 }
 
 #pragma mark - Public methods.
@@ -333,11 +343,23 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 - (void)applicationWillEnterForeground:(UIApplication*)application
                        metricsMediator:(MetricsMediator*)metricsMediator
                           memoryHelper:(MemoryWarningHelper*)memoryHelper {
+  // TODO(crbug.com/1197330): Replace the browser launcher init stage by the
+  // app init stage.
   if ([_browserLauncher browserInitializationStage] <
       INITIALIZATION_STAGE_FOREGROUND) {
+    // Start the initialization in the case it wasn't already done before
+    // foregrounding the app. |initStage| will be greater than InitStageStart if
+    // the initialization was already started.
+    if (self.initStage == InitStageStart) {
+      [self queueTransitionToFirstInitStage];
+    }
+    // TODO(crbug.com/1197330): This function should only be called once
+    // during a specific stage, but this requires non-trivial refactoring, so
+    // for now #initializeUIPreSafeMode will just return early if called more
+    // than once.
     // The application has been launched in background and the initialization
     // is not complete.
-    [self initializeUI];
+    [self initializeUIPreSafeMode];
     return;
   }
   if ([self isInSafeMode] || !_applicationInBackground)
@@ -555,8 +577,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   [self queueTransitionToFirstInitStage];
 
+  // Won't yet initialize the UI at this point when scene startup is supported
+  // in which case |stateBackground| is true.
   if (!stateBackground) {
-    [self initializeUI];
+    [self initializeUIPreSafeMode];
   }
 
   return self.shouldPerformAdditionalDelegateHandling;
@@ -665,11 +689,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // transitioning out of safe mode.
 - (void)coordinatorDidExitSafeMode:(nonnull SafeModeCoordinator*)coordinator {
   [self stopSafeMode];
-  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
-  [self.observers appStateDidExitSafeMode:self];
-
-  [_mainApplicationDelegate
-      applicationDidBecomeActive:[UIApplication sharedApplication]];
+  // Continue the initialization.
+  [self queueTransitionToNextInitStage];
 }
 
 #pragma mark - Internal methods.
@@ -702,14 +723,25 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     _safeModeBlocker.reset();
   }
   self.safeModeCoordinator = nil;
-  self.inSafeMode = NO;
 }
 
-- (void)initializeUI {
+- (void)initializeUIPreSafeMode {
+  // TODO(crbug.com/1197330): Consider replacing this with a DCHECK once we
+  // make sure that #initializeUIPreSafeMode is only called once. This should
+  // be done in a one-line change that is easy to revert.
+  // Only perform the pre-safemode initialization once.
+  if (_userInteracted) {
+    return;
+  }
+
   _userInteracted = YES;
   [self saveLaunchDetailsToDefaults];
 
+  // Continue the initialization.
+  [self queueTransitionToNextInitStage];
+
   // TODO(crbug.com/1178809): Move this logic to the safe mode agent.
+  // Don't go further with the initialization when safe mode is required.
   if ([SafeModeCoordinator shouldStart]) {
     self.inSafeMode = YES;
     if (!base::ios::IsMultiwindowSupported()) {
@@ -720,13 +752,31 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     return;
   }
 
-  // TODO(crbug.com/1178809): Move the logic below to a Final Init Stage agent
-  // to make sure that the logic is only executed when getting out of safe mode.
+  // Continue the initialization.
+  [self queueTransitionToNextInitStage];
+}
 
+- (void)initializeUIPostSafeMode {
+  //  Cache the safe mode status which is needed later on to complete the
+  //  post-safemode initialization.
+  BOOL wasInSafeMode = self.inSafeMode;
+  // Make sure that safe mode is turned off before moving further with the
+  // browser startup.
+  self.inSafeMode = NO;
+
+  // Fully start the browser.
   // Don't add code here. Add it in MainController's
   // -startUpBrowserForegroundInitialization.
   DCHECK([self.startupInformation isColdStart]);
   [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
+
+  if (wasInSafeMode) {
+    // Complete the transition out of safe mode if the app was really in safe
+    // mode.
+    [self.observers appStateDidExitSafeMode:self];
+    [_mainApplicationDelegate
+        applicationDidBecomeActive:[UIApplication sharedApplication]];
+  }
 
   if (EnableSyntheticCrashReportsForUte()) {
     // Must be called after sequenced context creation, which happens in
@@ -807,6 +857,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 }
 
+#pragma mark - Scenes lifecycle
+
 - (void)sceneWillConnect:(NSNotification*)notification {
   DCHECK(base::ios::IsSceneStartupSupported());
   if (@available(iOS 13, *)) {
@@ -818,6 +870,16 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     DCHECK(sceneState);
 
     [self.observers appState:self sceneConnected:sceneState];
+  }
+}
+
+#pragma mark - AppStateObserver
+
+// TODO(crbug.com/1191489): Move this logic to a specific agent.
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  if (previousInitStage == InitStageSafeMode) {
+    [self initializeUIPostSafeMode];
   }
 }
 

@@ -71,6 +71,19 @@
 - (void)coordinatorDidExitSafeMode:(SafeModeCoordinator*)coordinator;
 @end
 
+// App state observer that is used to replace the main controller to transition
+// through stages.
+@interface AppStateObserverToMockMainController : NSObject <AppStateObserver>
+@end
+@implementation AppStateObserverToMockMainController
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  if (appState.initStage == InitStageStart) {
+    [appState queueTransitionToNextInitStage];
+  }
+}
+@end
+
 #pragma mark - Class definition.
 
 namespace {
@@ -135,15 +148,40 @@ class FakeChromeBrowserProvider : public ios::TestChromeBrowserProvider {
   DISALLOW_COPY_AND_ASSIGN(FakeChromeBrowserProvider);
 };
 
+// Sets init stage expected transition calls from |start| to |end|.
+void SetInitStageTransitionExpectations(id mock,
+                                        AppState* app_state,
+                                        InitStage start,
+                                        InitStage end) {
+  ASSERT_LE(end, InitStageFinal);
+  ASSERT_GE(end, InitStageStart);
+
+  InitStage current_stage = start;
+
+  // Handle the particular case of InitStageStart.
+  if (current_stage == InitStageStart) {
+    [[mock expect] appState:app_state willTransitionToInitStage:InitStageStart];
+    [[mock expect] appState:app_state
+        didTransitionFromInitStage:InitStageStart];
+  }
+
+  while (current_stage != end) {
+    InitStage next_stage = static_cast<InitStage>(current_stage + 1);
+    [[mock expect] appState:app_state willTransitionToInitStage:next_stage];
+    [[mock expect] appState:app_state didTransitionFromInitStage:current_stage];
+    current_stage = next_stage;
+  }
+}
+
 }  // namespace
 
 // An app state observer that will call [AppState
 // queueTransitionToNextInitStage] once (when a flag is set) from one of
-// willTransitionToInitStage: and didTransitionToInitStage: Defaults to
+// willTransitionToInitStage: and didTransitionFromInitStage: Defaults to
 // willTransitioin.
 @interface AppStateTransitioningObserver : NSObject <AppStateObserver>
 // When set, will call queueTransitionToNextInitStage on
-// didTransitionToInitStage; otherwise, on willTransitionToInitStage
+// didTransitionFromInitStage; otherwise, on willTransitionToInitStage
 @property(nonatomic, assign) BOOL triggerOnDidTransition;
 // Will do nothing when this is not set.
 // Will call queueTransitionToNextInitStage on correct callback and reset this
@@ -162,7 +200,7 @@ class FakeChromeBrowserProvider : public ios::TestChromeBrowserProvider {
 }
 
 - (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)initStage {
+    willTransitionToInitStage:(InitStage)nextInitStage {
   if (self.needsQueueTransition && !self.triggerOnDidTransition) {
     [appState queueTransitionToNextInitStage];
     self.needsQueueTransition = NO;
@@ -170,7 +208,7 @@ class FakeChromeBrowserProvider : public ios::TestChromeBrowserProvider {
 }
 
 - (void)appState:(AppState*)appState
-    didTransitionToInitStage:(InitStage)initStage {
+    didTransitionFromInitStage:(InitStage)previousInitStage {
   if (self.needsQueueTransition && self.triggerOnDidTransition) {
     [appState queueTransitionToNextInitStage];
     self.needsQueueTransition = NO;
@@ -195,6 +233,9 @@ class AppStateTest : public BlockCleanupTest {
         [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
 
     interface_provider_ = [[StubBrowserInterfaceProvider alloc] init];
+
+    app_state_observer_to_mock_main_controller_ =
+        [AppStateObserverToMockMainController alloc];
   }
 
   void SetUp() override {
@@ -292,6 +333,13 @@ class AppStateTest : public BlockCleanupTest {
     return appState;
   }
 
+  SafeModeAppAgent* getSafeModeAppAgent() {
+    if (!safe_mode_app_agent_) {
+      safe_mode_app_agent_ = [[SafeModeAppAgent alloc] init];
+    }
+    return safe_mode_app_agent_;
+  }
+
   AppState* getAppStateWithMock() {
     if (!app_state_) {
       // The swizzle block needs the scene state before app_state is create, but
@@ -308,6 +356,9 @@ class AppStateTest : public BlockCleanupTest {
 
       main_scene_state_ = [main_scene_state_ initWithAppState:app_state_];
       main_scene_state_.window = getWindowMock();
+
+      [app_state_ addAgent:getSafeModeAppAgent()];
+      [app_state_ addObserver:app_state_observer_to_mock_main_controller_];
     }
     return app_state_;
   }
@@ -328,8 +379,10 @@ class AppStateTest : public BlockCleanupTest {
 
       main_scene_state_ = [main_scene_state_ initWithAppState:app_state_];
       main_scene_state_.window = window;
-
       [window makeKeyAndVisible];
+
+      [app_state_ addAgent:getSafeModeAppAgent()];
+      [app_state_ addObserver:app_state_observer_to_mock_main_controller_];
     }
     return app_state_;
   }
@@ -352,6 +405,9 @@ class AppStateTest : public BlockCleanupTest {
   web::WebTaskEnvironment task_environment_;
   AppState* app_state_;
   FakeSceneState* main_scene_state_;
+  SafeModeAppAgent* safe_mode_app_agent_;
+  AppStateObserverToMockMainController*
+      app_state_observer_to_mock_main_controller_;
   id browser_launcher_mock_;
   id connection_information_mock_;
   id startup_information_mock_;
@@ -405,9 +461,9 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsBackground) {
   EXPECT_TRUE(result);
   EXPECT_OCMOCK_VERIFY(browserLauncherMock);
 
-  // Verify the launch stage is still at the starting point when the app is in
-  // background.
-  EXPECT_EQ(InitStageStart, appState.initStage);
+  // Verify the launch stage is still at the point of initializing the browser
+  // basics when the app is backgrounded.
+  EXPECT_EQ(InitStageBrowserBasic, appState.initStage);
 }
 
 // Tests that if the application is active and Safe Mode should be activated
@@ -434,27 +490,9 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
   ASSERT_FALSE([appState isInSafeMode]);
 
   id appStateObserverMock = getAppStateObserverMock();
-  // Expected app state observer calls when starting the init stages.
-  [[appStateObserverMock expect] appState:appState
-                willTransitionToInitStage:InitStageStart];
-  [[appStateObserverMock expect] appState:appState
-                 didTransitionToInitStage:InitStageStart];
-  // Expected app state observer calls when transitioning from Start to Safe
-  // Mode.
-  [[appStateObserverMock expect] appState:appState
-                willTransitionToInitStage:InitStageSafeMode];
-  [[appStateObserverMock expect] appState:appState
-                 didTransitionToInitStage:InitStageSafeMode];
-  // Expected app state observer calls when transitioning from Safe Mode to
-  // Final.
-  [[appStateObserverMock expect] appState:appState
-                willTransitionToInitStage:InitStageFinal];
-  [[appStateObserverMock expect] appState:appState
-                 didTransitionToInitStage:InitStageFinal];
+  SetInitStageTransitionExpectations(appStateObserverMock, appState,
+                                     InitStageStart, InitStageFinal);
   [appState addObserver:appStateObserverMock];
-
-  [appState addAgent:[[SafeModeAppAgent alloc] init]];
-
   id browserLauncherMock = getBrowserLauncherMock();
   [[browserLauncherMock expect] setLaunchOptions:launchOptions];
 
@@ -514,26 +552,10 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForeground) {
   ASSERT_FALSE([appState isInSafeMode]);
 
   id appStateObserverMock = getAppStateObserverMock();
-  // Expected app state observer calls when starting the init stages.
-  [[appStateObserverMock expect] appState:appState
-                willTransitionToInitStage:InitStageStart];
-  [[appStateObserverMock expect] appState:appState
-                 didTransitionToInitStage:InitStageStart];
-  // Expected app state observer calls when transitioning from Start to Safe
-  // Mode.
-  [[appStateObserverMock expect] appState:appState
-                willTransitionToInitStage:InitStageSafeMode];
-  [[appStateObserverMock expect] appState:appState
-                 didTransitionToInitStage:InitStageSafeMode];
-  // Expected app state observer calls when transitioning from Safe Mode to
-  // Final.
-  [[appStateObserverMock expect] appState:appState
-                willTransitionToInitStage:InitStageFinal];
-  [[appStateObserverMock expect] appState:appState
-                 didTransitionToInitStage:InitStageFinal];
-  [appState addObserver:appStateObserverMock];
+  SetInitStageTransitionExpectations(appStateObserverMock, appState,
+                                     InitStageStart, InitStageFinal);
 
-  [appState addAgent:[[SafeModeAppAgent alloc] init]];
+  [appState addObserver:appStateObserverMock];
 
   id applicationDelegateMock = getApplicationDelegateMock();
   [[applicationDelegateMock expect]
@@ -923,7 +945,6 @@ TEST_F(AppStateTest,
   NSDictionary* launchOptions = @{};
   [[browserLauncherMock expect] setLaunchOptions:launchOptions];
 
-  [appState addAgent:[[SafeModeAppAgent alloc] init]];
   [appState requiresHandlingAfterLaunchWithOptions:launchOptions
                                    stateBackground:YES];
 
@@ -945,7 +966,7 @@ TEST_F(AppStateTest,
   // entering foreground from background.
   EXPECT_TRUE([appState isInSafeMode]);
 
-  EXPECT_EQ(InitStageFinal, appState.initStage);
+  EXPECT_EQ(InitStageSafeMode, appState.initStage);
 }
 
 // Tests that -applicationDidEnterBackground calls the metrics mediator.
@@ -1020,10 +1041,21 @@ TEST_F(AppStateTest, queueTransitionToNextInitStageNotifiesObservers) {
   InitStage secondStage = static_cast<InitStage>(InitStageStart + 1);
   [appState addObserver:observer];
 
-  [[observer expect] appState:appState willTransitionToInitStage:secondStage];
-  [[observer expect] appState:appState didTransitionToInitStage:secondStage];
+  [[[observer expect] andDo:^(NSInvocation*) {
+    // Verify that the init stage isn't yet increased when calling
+    // #willTransitionToInitStage.
+    EXPECT_EQ(InitStageStart, appState.initStage);
+  }] appState:appState willTransitionToInitStage:secondStage];
+  [[[observer expect] andDo:^(NSInvocation*) {
+    // Verify that the init stage is increased when calling
+    // #didTransitionFromInitStage.
+    EXPECT_EQ(secondStage, appState.initStage);
+  }] appState:appState didTransitionFromInitStage:InitStageStart];
 
   [appState queueTransitionToNextInitStage];
+
+  EXPECT_EQ(secondStage, appState.initStage);
+
   [observer verify];
 }
 
@@ -1051,13 +1083,15 @@ TEST_F(AppStateTest,
   // the second stage, then all the notifications for the third stage, despite
   // transitioningObserver queueing a new transition from one of the callbacks.
   [[observer1 expect] appState:appState willTransitionToInitStage:secondStage];
-  [[observer1 expect] appState:appState didTransitionToInitStage:secondStage];
+  [[observer1 expect] appState:appState
+      didTransitionFromInitStage:InitStageStart];
   [[observer2 expect] appState:appState willTransitionToInitStage:secondStage];
-  [[observer2 expect] appState:appState didTransitionToInitStage:secondStage];
+  [[observer2 expect] appState:appState
+      didTransitionFromInitStage:InitStageStart];
   [[observer1 expect] appState:appState willTransitionToInitStage:thirdStage];
-  [[observer1 expect] appState:appState didTransitionToInitStage:thirdStage];
+  [[observer1 expect] appState:appState didTransitionFromInitStage:secondStage];
   [[observer2 expect] appState:appState willTransitionToInitStage:thirdStage];
-  [[observer2 expect] appState:appState didTransitionToInitStage:thirdStage];
+  [[observer2 expect] appState:appState didTransitionFromInitStage:secondStage];
   [observer1 setExpectationOrderMatters:YES];
   [observer2 setExpectationOrderMatters:YES];
 
@@ -1070,7 +1104,7 @@ TEST_F(AppStateTest,
 // call, first completes sending previous updates and doesn't change the init
 // stage, then transitions to the next init stage and sends updates.
 TEST_F(AppStateTest,
-       queueTransitionToNextInitStageReentrantFromDidTransitionToInitStage) {
+       queueTransitionToNextInitStageReentrantFromdidTransitionFromInitStage) {
   // Setup.
   AppState* appState = getAppStateWithMock();
   id observer1 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
@@ -1091,13 +1125,15 @@ TEST_F(AppStateTest,
   // the second stage, then all the notifications for the third stage, despite
   // transitioningObserver queueing a new transition from one of the callbacks.
   [[observer1 expect] appState:appState willTransitionToInitStage:secondStage];
-  [[observer1 expect] appState:appState didTransitionToInitStage:secondStage];
+  [[observer1 expect] appState:appState
+      didTransitionFromInitStage:InitStageStart];
   [[observer2 expect] appState:appState willTransitionToInitStage:secondStage];
-  [[observer2 expect] appState:appState didTransitionToInitStage:secondStage];
+  [[observer2 expect] appState:appState
+      didTransitionFromInitStage:InitStageStart];
   [[observer1 expect] appState:appState willTransitionToInitStage:thirdStage];
-  [[observer1 expect] appState:appState didTransitionToInitStage:thirdStage];
+  [[observer1 expect] appState:appState didTransitionFromInitStage:secondStage];
   [[observer2 expect] appState:appState willTransitionToInitStage:thirdStage];
-  [[observer2 expect] appState:appState didTransitionToInitStage:thirdStage];
+  [[observer2 expect] appState:appState didTransitionFromInitStage:secondStage];
   [observer1 setExpectationOrderMatters:YES];
   [observer2 setExpectationOrderMatters:YES];
 

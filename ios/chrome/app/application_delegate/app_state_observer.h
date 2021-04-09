@@ -16,7 +16,10 @@ typedef NS_ENUM(NSUInteger, InitStage) {
   // The first stage when starting the initialization. The label and value of
   // this enum item should not change.
   InitStageStart = 0,
-  // The app is in safe mode.
+  // The app is starting the minimal basic browser services to support safe
+  // mode.
+  InitStageBrowserBasic,
+  // The app is considering whether safe mode should be used.
   InitStageSafeMode,
   // The final stage before being done with initialization. The label and
   // relative position (always last) of this enum item should not change.
@@ -42,14 +45,14 @@ typedef NS_ENUM(NSUInteger, InitStage) {
 // Called when |AppState.lastTappedWindow| changes.
 - (void)appState:(AppState*)appState lastTappedWindowChanged:(UIWindow*)window;
 
-// Called when the app is about to transition to |initStage|. The init stage of
-// the app at that moment is still |initStage| - 1.
+// Called when the app is about to transition to |nextInitStage|. The init stage
+// of the app at that moment is still |nextInitStage| - 1.
 - (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)initStage;
+    willTransitionToInitStage:(InitStage)nextInitStage;
 
 // Called right after the app is transitioned to the |initStage|.
 - (void)appState:(AppState*)appState
-    didTransitionToInitStage:(InitStage)initStage;
+    didTransitionFromInitStage:(InitStage)previousInitStage;
 
 @end
 

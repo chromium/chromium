@@ -601,9 +601,18 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)appState:(AppState*)appState
-    didTransitionToInitStage:(InitStage)initStage {
-  if (initStage == InitStageStart) {
-    [self startUpBrowserBasicInitialization];
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  switch (appState.initStage) {
+    case InitStageStart:
+      [appState queueTransitionToNextInitStage];
+      break;
+    case InitStageBrowserBasic:
+      [self startUpBrowserBasicInitialization];
+      break;
+    case InitStageSafeMode:
+      break;
+    case InitStageFinal:
+      break;
   }
 }
 

@@ -34,15 +34,8 @@
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionToInitStage:(InitStage)initStage {
-  if (initStage == InitStageStart) {
-    // TODO(crbug.com/1178809): Move this responsibility to a specific agent.
-    // Handle the transition out of the Start stage.
-    [self.appState queueTransitionToNextInitStage];
-  } else if (initStage == InitStageSafeMode) {
-    // TODO(crbug.com/1178809): Trigger safe mode from here.
-    [self.appState queueTransitionToNextInitStage];
-  }
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  // TODO(crbug.com/1178809): Trigger safe mode from here.
 }
 
 @end
