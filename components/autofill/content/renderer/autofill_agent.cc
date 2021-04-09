@@ -698,19 +698,27 @@ void AutofillAgent::SetFocusRequiresScroll(bool require) {
   focus_requires_scroll_ = require;
 }
 
-void AutofillAgent::GetElementFormAndFieldData(
-    const std::vector<std::string>& selectors,
-    GetElementFormAndFieldDataCallback callback) {
+void AutofillAgent::GetElementFormAndFieldDataAtIndex(
+    const std::string& selector,
+    int index,
+    GetElementFormAndFieldDataAtIndexCallback callback) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   if (!frame)
     return;
+
+  blink::WebElement target_element;
+  blink::WebVector<blink::WebElement> elements =
+      render_frame()->GetWebFrame()->GetDocument().QuerySelectorAll(
+          blink::WebString::FromUTF8(selector));
+  if (index >= 0 && static_cast<size_t>(index) < elements.size()) {
+    target_element = elements[index];
+  }
 
   FormData form;
   FormFieldData field;
   form.host_frame = LocalFrameToken(frame->GetLocalFrameToken().value());
   field.host_frame = LocalFrameToken(frame->GetLocalFrameToken().value());
 
-  blink::WebElement target_element = FindUniqueWebElement(selectors);
   if (target_element.IsNull() || !target_element.IsFormControlElement()) {
     return std::move(callback).Run(form, field);
   }
@@ -728,42 +736,6 @@ void AutofillAgent::GetElementFormAndFieldData(
   DCHECK(success);
 
   return std::move(callback).Run(form, field);
-}
-
-blink::WebElement AutofillAgent::FindUniqueWebElement(
-    const std::vector<std::string>& selectors) {
-  DCHECK(selectors.size() > 0);
-
-  blink::WebVector<blink::WebElement> elements =
-      render_frame()->GetWebFrame()->GetDocument().QuerySelectorAll(
-          blink::WebString::FromUTF8(selectors[0]));
-  if (elements.size() != 1) {
-    return blink::WebElement();
-  }
-
-  // Get the unique element in |elements| and match the next selector inside it
-  // if there are remaining selectors haven't been matched.
-  blink::WebElement query_element = elements[0];
-  for (size_t i = 1; i < selectors.size(); i++) {
-    elements = query_element.QuerySelectorAll(
-        blink::WebString::FromUTF8(selectors[i]));
-
-    // Query shadow DOM if necessary.
-    if (elements.size() == 0 && !query_element.ShadowRoot().IsNull()) {
-      // TODO(806868): Query shadow dom when Autofill is available for forms in
-      // shadow DOM (crbug.com/746593).
-      return blink::WebElement();
-    }
-
-    // Return an empty element if there are multiple matching elements.
-    if (elements.size() != 1) {
-      return blink::WebElement();
-    }
-
-    query_element = elements[0];
-  }
-
-  return query_element;
 }
 
 void AutofillAgent::SetAssistantActionState(bool running) {

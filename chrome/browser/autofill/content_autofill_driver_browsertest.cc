@@ -124,14 +124,14 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
     }
   }
 
-  void GetElementFormAndFieldData(const std::vector<std::string>& selectors,
+  void GetElementFormAndFieldData(const std::string& selector,
                                   size_t expected_form_size) {
     base::RunLoop run_loop;
     ContentAutofillDriverFactory::FromWebContents(web_contents())
         ->DriverForFrame(web_contents()->GetMainFrame())
         ->GetAutofillAgent()
-        ->GetElementFormAndFieldData(
-            selectors,
+        ->GetElementFormAndFieldDataAtIndex(
+            selector, 0,
             base::BindOnce(
                 &ContentAutofillDriverBrowserTest::OnGetElementFormAndFieldData,
                 base::Unretained(this), run_loop.QuitClosure(),
@@ -249,25 +249,18 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
       browser(), embedded_test_server()->GetURL(
                      "/autofill/autofill_assistant_test_form.html"));
 
-  std::vector<std::string> selectors;
-  selectors.emplace_back("#testformone");
-  selectors.emplace_back("#NAME_FIRST");
-  GetElementFormAndFieldData(selectors, /*expected_form_size=*/9u);
+  GetElementFormAndFieldData("#testformone #NAME_FIRST",
+                             /*expected_form_size=*/9u);
 
-  selectors.clear();
-  selectors.emplace_back("#testformtwo");
-  selectors.emplace_back("#NAME_FIRST");
-  GetElementFormAndFieldData(selectors, /*expected_form_size=*/7u);
+  GetElementFormAndFieldData("#testformtwo #NAME_FIRST",
+                             /*expected_form_size=*/7u);
 
-  // Multiple corresponding form fields.
-  selectors.clear();
-  selectors.emplace_back("#NAME_FIRST");
-  GetElementFormAndFieldData(selectors, /*expected_form_size=*/0u);
+  // Multiple corresponding form fields. Takes the first as an implementation
+  // detail of this test helper.
+  GetElementFormAndFieldData("#NAME_FIRST", /*expected_form_size=*/9u);
 
   // No corresponding form field.
-  selectors.clear();
-  selectors.emplace_back("#whatever");
-  GetElementFormAndFieldData(selectors, /*expected_form_size=*/0u);
+  GetElementFormAndFieldData("#whatever", /*expected_form_size=*/0u);
 }
 
 }  // namespace autofill

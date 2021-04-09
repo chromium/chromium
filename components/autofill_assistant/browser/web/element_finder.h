@@ -30,7 +30,10 @@ class RenderFrameHost;
 namespace autofill_assistant {
 class DevtoolsClient;
 
-// Worker class to find element(s) matching a selector.
+// Worker class to find element(s) matching a selector. This will keep entering
+// iFrames until the element is found in the last frame, then returns the
+// element together with the owning frame. All subsequent operations should
+// be performed on that frame.
 class ElementFinder : public WebControllerWorker {
  public:
   enum ResultType {

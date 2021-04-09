@@ -74,9 +74,10 @@ interface AutofillAgent {
   // Configures whether AutofillAgent will query password field autofill suggestions. The default is false.
   SetQueryPasswordSuggestion(bool query);
 
-  // Get form element's form and field data.
-  // The form field is given by an path defined by an array of CSS selectors.
-  GetElementFormAndFieldData(array<string> selectors) => (
+  // Get form element's form and field data. The form field is given by a
+  // selector returning an arbitrary number of results and an index for
+  // selecting the specified result.
+  GetElementFormAndFieldDataAtIndex(string selector, int32 index) => (
       autofill.mojom.FormData form, autofill.mojom.FormFieldData field);
 
   // Set whether or not an assistant action is currently running an action.

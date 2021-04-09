@@ -83,19 +83,6 @@ struct Selector {
     proto.add_filters()->set_pseudo_type(pseudo_type);
     return *this;
   }
-
-  // Returns a single CSS selector pointing to the element from the last frame,
-  // to pass to autofill.
-  //
-  // This call returns nothing if the selector contains unsupported filters,
-  // such as innerText or pseudo-element filters.
-  //
-  // AutofillAgent::GetElementFormAndFieldData takes a single CSS selector that
-  // identifies the form. This means that form elements for autofill are limited
-  // to one single CSS selector and no further filtering. TODO(b/155264465):
-  // have ElementFinder specify the element it has found in a format that
-  // Autofill can recognise.
-  base::Optional<std::string> ExtractSingleCssSelectorForAutofill() const;
 };
 
 // Debug output operator for selectors. The output is only useful in

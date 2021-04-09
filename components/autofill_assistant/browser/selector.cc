@@ -198,69 +198,6 @@ bool Selector::empty() const {
   return !has_css_selector;
 }
 
-base::Optional<std::string> Selector::ExtractSingleCssSelectorForAutofill()
-    const {
-  int last_enter_frame_index = -1;
-  for (int i = proto.filters().size() - 1; i >= 0; i--) {
-    if (proto.filters(i).filter_case() == SelectorProto::Filter::kEnterFrame) {
-      last_enter_frame_index = i;
-      break;
-    }
-  }
-  std::string css_selector;
-  for (int i = last_enter_frame_index + 1; i < proto.filters().size(); i++) {
-    const SelectorProto::Filter& filter = proto.filters(i);
-    switch (filter.filter_case()) {
-      case SelectorProto::Filter::kCssSelector:
-        if (css_selector.empty()) {
-          css_selector = filter.css_selector();
-        } else {
-          VLOG(1) << __func__
-                  << " Selector with multiple CSS selectors not supported for "
-                     "autofill: "
-                  << *this;
-          return base::nullopt;
-        }
-        break;
-
-      case SelectorProto::Filter::kBoundingBox:
-      case SelectorProto::Filter::kNthMatch:
-        if (filter.nth_match().index() == 0)
-          break;
-
-        FALLTHROUGH;
-      case SelectorProto::Filter::kInnerText:
-      case SelectorProto::Filter::kValue:
-      case SelectorProto::Filter::kPseudoType:
-      case SelectorProto::Filter::kPseudoElementContent:
-      case SelectorProto::Filter::kCssStyle:
-      case SelectorProto::Filter::kLabelled:
-      case SelectorProto::Filter::kMatchCssSelector:
-      case SelectorProto::Filter::kOnTop:
-        VLOG(1) << __func__
-                << " Selector feature not supported by autofill: " << *this;
-        return base::nullopt;
-
-      case SelectorProto::Filter::FILTER_NOT_SET:
-        VLOG(1) << __func__ << " Unknown filter type in: " << *this;
-        return base::nullopt;
-
-      case SelectorProto::Filter::kEnterFrame:
-        // This cannot possibly happen, since the iteration started after the
-        // last enter_frame.
-        NOTREACHED();
-        break;
-    }
-  }
-  if (css_selector.empty()) {
-    VLOG(1) << __func__
-            << " Selector without CSS selector not supported by autofill: "
-            << *this;
-    return base::nullopt;
-  }
-  return css_selector;
-}
-
 std::ostream& operator<<(std::ostream& out, const Selector& selector) {
   return out << selector.proto;
 }

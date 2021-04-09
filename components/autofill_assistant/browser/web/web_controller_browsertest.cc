@@ -1049,6 +1049,61 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     std::move(done_callback).Run();
   }
 
+  ClientStatus GetElementQueryIndex(const std::string& query_selector,
+                                    const ElementFinder::Result& element,
+                                    int* index) {
+    ClientStatus status;
+
+    base::RunLoop run_loop;
+    web_controller_->GetElementQueryIndex(
+        query_selector, element,
+        base::BindOnce(&WebControllerBrowserTest::OnGetElementQueryIndex,
+                       base::Unretained(this), run_loop.QuitClosure(), &status,
+                       index));
+    run_loop.Run();
+
+    return status;
+  }
+
+  void OnGetElementQueryIndex(base::OnceClosure done_callback,
+                              ClientStatus* result_output,
+                              int* index_output,
+                              const ClientStatus& query_status,
+                              int index) {
+    *result_output = query_status;
+    *index_output = index;
+    std::move(done_callback).Run();
+  }
+
+  ClientStatus GetUniqueElementSelector(const ElementFinder::Result& element,
+                                        std::string* query,
+                                        int* index) {
+    ClientStatus status;
+
+    base::RunLoop run_loop;
+    web_controller_->GetUniqueElementSelector(
+        element,
+        base::BindOnce(&WebControllerBrowserTest::OnGetUniqueElementSelector,
+                       base::Unretained(this), run_loop.QuitClosure(), &status,
+                       query, index));
+    run_loop.Run();
+
+    return status;
+  }
+
+  void OnGetUniqueElementSelector(base::OnceClosure done_callback,
+                                  ClientStatus* result_output,
+                                  std::string* query_output,
+                                  int* index_output,
+                                  const ClientStatus& query_status,
+                                  const std::string& query,
+                                  int index) {
+    *result_output = query_status;
+    *query_output = query;
+    *index_output = index;
+    std::move(done_callback).Run();
+  }
+
   // Show the overlay in the main page, which covers everything.
   void ShowOverlay() {
     EXPECT_TRUE(ExecJs(shell(),
@@ -2762,6 +2817,32 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   ClientStatus status = WaitUntilElementIsStable(
       element, 10, base::TimeDelta::FromMilliseconds(100));
   EXPECT_EQ(UNEXPECTED_JS_ERROR, status.proto_status());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ElementQueryIndex) {
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#input3"}), &element_status, &element);
+  ASSERT_EQ(ACTION_APPLIED, element_status.proto_status());
+
+  int index;
+  EXPECT_EQ(ACTION_APPLIED,
+            GetElementQueryIndex("input", element, &index).proto_status());
+  EXPECT_EQ(2, index);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, UniqueElementSelector) {
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#input3"}), &element_status, &element);
+  ASSERT_EQ(ACTION_APPLIED, element_status.proto_status());
+
+  std::string query;
+  int index;
+  EXPECT_EQ(ACTION_APPLIED,
+            GetUniqueElementSelector(element, &query, &index).proto_status());
+  EXPECT_EQ("INPUT", query);
+  EXPECT_EQ(2, index);
 }
 
 }  // namespace autofill_assistant

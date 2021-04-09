@@ -343,6 +343,10 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
+  void OnJavaScriptResultForInt(
+      base::OnceCallback<void(const ClientStatus&, int)> callback,
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnJavaScriptResultForString(
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback,
@@ -412,6 +416,35 @@ class WebController {
                               const autofill::FormFieldData&)> callback,
       const ClientStatus& element_status,
       std::unique_ptr<ElementFinder::Result> element_result);
+  void GetUniqueElementSelector(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&, const std::string&, int)>
+          callback);
+  void OnGetElementTagForUniqueSelector(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&, const std::string&, int)>
+          callback,
+      const ClientStatus& tag_status,
+      const std::string& tag);
+  void GetElementQueryIndex(
+      const std::string& query_selector,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&, int)> callback);
+  void OnGetElementQueryIndexForUniqueSelector(
+      base::OnceCallback<void(const ClientStatus&, const std::string&, int)>
+          callback,
+      const std::string& query_selector,
+      const ClientStatus& index_status,
+      int index);
+  void OnGetUniqueSelectorForFormAndFieldData(
+      base::OnceCallback<void(const ClientStatus&,
+                              autofill::ContentAutofillDriver* driver,
+                              const autofill::FormData&,
+                              const autofill::FormFieldData&)> callback,
+      std::unique_ptr<ElementFinder::Result> element,
+      const ClientStatus& selector_status,
+      const std::string& query_selector,
+      int index);
   void OnGetFormAndFieldData(
       base::OnceCallback<void(const ClientStatus&,
                               autofill::ContentAutofillDriver* driver,

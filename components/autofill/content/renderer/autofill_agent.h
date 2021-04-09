@@ -100,9 +100,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   void SetSecureContextRequired(bool required) override;
   void SetFocusRequiresScroll(bool require) override;
   void SetQueryPasswordSuggestion(bool required) override;
-  void GetElementFormAndFieldData(
-      const std::vector<std::string>& selectors,
-      GetElementFormAndFieldDataCallback callback) override;
+  void GetElementFormAndFieldDataAtIndex(
+      const std::string& selector,
+      int index,
+      GetElementFormAndFieldDataAtIndexCallback callback) override;
   void SetAssistantActionState(bool running) override;
   void EnableHeavyFormDataScraping() override;
 
@@ -286,12 +287,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // properties of the form (name, number of fields), or fields (name, id,
   // label, visibility, control type) have changed after an autofill.
   void TriggerRefillIfNeeded(const FormData& form);
-
-  // Find the unique element given by |selectors| in the associated web frame.
-  // Empty blink::WebElement is returned if there is no matching element or
-  // there are multiple matching elements.
-  blink::WebElement FindUniqueWebElement(
-      const std::vector<std::string>& selectors);
 
   // Formerly cached forms for all frames, now only caches forms for the current
   // frame.
