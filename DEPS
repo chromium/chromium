@@ -389,7 +389,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'highway_revision': '0f94401cdfb5a06b88423e46592dfeb0146e96ec',
+  'highway_revision': '6cf3e578ee3f3c8f61668e0cb7c0f12f4b8d876e',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.

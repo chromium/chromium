@@ -6,18 +6,6 @@
 config("libhwy_external_config") {
   include_dirs = [ "src" ]
   defines = []
-  if (is_win) {
-    # Compiling AVX2/3 on Windows produces a warning and disabled those targets.
-    # TODO(deymo): Validate if these targets are actually broken in Windows.
-    defines += [ "HWY_BROKEN_TARGETS=(HWY_AVX2|HWY_AVX3)" ]
-    if (target_cpu == "arm64") {
-      # TODO(richard.townsend@arm.com): investigate why these flags are needed.
-      cflags = [
-        "-Wno-uninitialized",
-        "-Wno-unused-const-variable",
-      ]
-    }
-  }
 }
 
 source_set("libhwy") {

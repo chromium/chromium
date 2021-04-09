@@ -1,9 +1,9 @@
 Name: Descriptive name of the package
 Short Name: highway
 URL: https://github.com/google/highway
-Version: 0.11
-Date: 2020-02-19
-Revision: 18191faa5c5e617ea8e5ea92f497435bb6a6dd60
+Version: 0.11.x
+Date: 2020-04-08
+Revision: 6cf3e578ee3f3c8f61668e0cb7c0f12f4b8d876e
 License: Apache 2.0
 Security Critical: yes
 CPEPrefix: unknown
