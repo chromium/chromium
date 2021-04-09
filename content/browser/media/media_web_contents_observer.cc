@@ -163,6 +163,7 @@ void MediaWebContentsObserver::WebContentsDestroyed() {
   media_player_remotes_.clear();
 
   session_controllers_manager_.reset();
+  fullscreen_player_.reset();
 }
 
 void MediaWebContentsObserver::RenderFrameDeleted(
@@ -593,6 +594,10 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
         observer->player_info_map_.erase(player_id);
         observer->media_player_remotes_.erase(player_id);
         observer->session_controllers_manager_->OnEnd(player_id);
+        if (observer->fullscreen_player_ &&
+            *observer->fullscreen_player_ == player_id) {
+          observer->fullscreen_player_.reset();
+        }
         observer->web_contents_impl()->MediaDestroyed(player_id);
       },
       base::Unretained(this), player_id));
@@ -618,8 +623,7 @@ void MediaWebContentsObserver::OnExperimentStateChanged(MediaPlayerId id,
                                                         bool is_starting) {
   use_after_free_checker_.check();
 
-  GetMediaPlayerRemote(*fullscreen_player_)
-      ->SetPowerExperimentState(is_starting);
+  GetMediaPlayerRemote(id)->SetPowerExperimentState(is_starting);
 }
 
 base::WeakPtr<MediaWebContentsObserver>
