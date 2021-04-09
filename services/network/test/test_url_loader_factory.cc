@@ -131,8 +131,10 @@ void TestURLLoaderFactory::CreateLoaderAndStart(
 
   PendingRequest pending_request;
   pending_request.client = std::move(client_remote);
-  pending_request.request = url_request;
+  pending_request.request_id = request_id;
   pending_request.options = options;
+  pending_request.request = url_request;
+  pending_request.traffic_annotation = traffic_annotation;
   pending_requests_.push_back(std::move(pending_request));
 }
 
