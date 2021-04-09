@@ -963,10 +963,30 @@ URLPattern::Component* URLPattern::CompilePattern(
       String(regexp_string.data(), regexp_string.size()), case_sensitive,
       kMultilineDisabled, ScriptRegexp::UTF16);
   if (!regexp->IsValid()) {
-    // TODO: Figure out which embedded regex expression caused the failure
-    //       by compiling each pattern kRegex part individually.
+    // The regular expression failed to compile.  This means that some
+    // custom regexp group within the pattern is illegal.  Attempt to
+    // compile each regexp group individually in order to identify the
+    // culprit.
+    for (auto& part : parse_result.value().PartList()) {
+      if (part.type != liburlpattern::PartType::kRegex)
+        continue;
+      DCHECK(base::IsStringASCII(part.value));
+      String group_value(part.value.data(), part.value.size());
+      regexp = MakeGarbageCollected<ScriptRegexp>(
+          group_value, case_sensitive, kMultilineDisabled, ScriptRegexp::UTF16);
+      if (regexp->IsValid())
+        continue;
+      exception_state.ThrowTypeError("Invalid " + component + " pattern '" +
+                                     pattern +
+                                     "'. Custom regular expression group '" +
+                                     group_value + "' is invalid.");
+      return nullptr;
+    }
+    // We couldn't find a bad regexp group, but we still have an overall
+    // error.  This shouldn't happen, but we handle it anyway.
     exception_state.ThrowTypeError("Invalid " + component + " pattern '" +
-                                   pattern + "'.");
+                                   pattern +
+                                   "'. An unexpected error has occurred.");
     return nullptr;
   }
 
