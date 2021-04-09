@@ -192,4 +192,11 @@ Polymer({
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$['agree-button'].focus());
   },
+
+  /**
+   * Returns the text for subtitle.
+   */
+  getSubtitleMessage_(locale) {
+    return this.i18nAdvanced('assistantVoiceMatchMessage');
+  },
 });

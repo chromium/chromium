@@ -26,8 +26,7 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'assistantVoiceMatchTitle')]]
       </h1>
-      <div slot="subtitle"
-          inner-h-t-m-l="[[i18nAdvanced('assistantVoiceMatchMessage')]]">
+      <div slot="subtitle" inner-h-t-m-l="[[getSubtitleMessage_(locale)]]">
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
         <div id="voice-match-animation">
