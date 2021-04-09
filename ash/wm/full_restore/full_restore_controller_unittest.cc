@@ -147,13 +147,18 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   // Adds an entry to the fake full restore file. Calling
   // If `CreateTestFullRestoreWidget` is called with a matching
   // `restore_window_id`, it will read and set the values set here.
-  void AddEntryToFakeFile(int restore_window_id,
-                          const gfx::Rect& bounds,
-                          chromeos::WindowStateType window_state_type) {
+  void AddEntryToFakeFile(
+      int restore_window_id,
+      const gfx::Rect& bounds,
+      chromeos::WindowStateType window_state_type,
+      int32_t activation_index = -1,
+      int64_t display_id = WindowTreeHostManager::GetPrimaryDisplayId()) {
     DCHECK(!fake_full_restore_file_.contains(restore_window_id));
     auto window_info = std::make_unique<full_restore::WindowInfo>();
     window_info->current_bounds = bounds;
     window_info->window_state_type = window_state_type;
+    window_info->activation_index = activation_index;
+    window_info->display_id = display_id;
     fake_full_restore_file_[restore_window_id].info = std::move(window_info);
   }
 
@@ -631,6 +636,91 @@ TEST_F(FullRestoreControllerTest, ClamshellSnapWindow) {
   right_window_state->Restore();
   EXPECT_EQ(restored_bounds, left_window->GetBoundsInScreen());
   EXPECT_EQ(restored_bounds, right_window->GetBoundsInScreen());
+}
+
+// Tests full restore behavior when a display is disconnected before
+// restoration.
+TEST_F(FullRestoreControllerTest, DisconnectedDisplay) {
+  UpdateDisplay("800x800");
+  const gfx::Rect display_1_bounds(0, 0, 200, 200);
+  const gfx::Rect display_2_bounds(801, 0, 200, 200);
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  const int64_t disconnected_id = primary_id + 1;
+  auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
+      Shell::Get()->GetPrimaryRootWindow());
+  const chromeos::WindowStateType window_state =
+      chromeos::WindowStateType::kNormal;
+
+  // Add three entries to our fake restore file. They will all be on the primary
+  // display.
+  AddEntryToFakeFile(/*restore_window_id=*/1, display_1_bounds, window_state,
+                     /*activation_index=*/1, primary_id);
+  AddEntryToFakeFile(/*restore_window_id=*/3, display_1_bounds, window_state,
+                     /*activation_index=*/3, primary_id);
+  AddEntryToFakeFile(/*restore_window_id=*/5, display_1_bounds, window_state,
+                     /*activation_index=*/5, primary_id);
+
+  // Add three entries to our fake restore file. They will all be on the
+  // disconnected display.
+  AddEntryToFakeFile(/*restore_window_id=*/2, display_2_bounds, window_state,
+                     /*activation_index=*/2, disconnected_id);
+  AddEntryToFakeFile(/*restore_window_id=*/4, display_2_bounds, window_state,
+                     /*activation_index=*/4, disconnected_id);
+  AddEntryToFakeFile(/*restore_window_id=*/6, display_2_bounds, window_state,
+                     /*activation_index=*/6, disconnected_id);
+
+  // Simulate restoring windows out-of-order, starting with `window_3`.
+  ASSERT_EQ(0u, desk_container->children().size());
+  auto* window_3 =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
+          ->GetNativeWindow();
+  EXPECT_EQ(1u, desk_container->children().size());
+  EXPECT_EQ(desk_container, window_3->parent());
+  EXPECT_EQ(window_3, desk_container->children()[0]);
+
+  // Restore `window_4`.
+  auto* window_4 =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/4)
+          ->GetNativeWindow();
+  EXPECT_EQ(2u, desk_container->children().size());
+  EXPECT_EQ(desk_container, window_4->parent());
+  EXPECT_EQ(window_4, desk_container->children()[0]);
+
+  // Restore `window_2`.
+  auto* window_2 =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
+          ->GetNativeWindow();
+  EXPECT_EQ(3u, desk_container->children().size());
+  EXPECT_EQ(desk_container, window_2->parent());
+  EXPECT_EQ(window_2, desk_container->children()[2]);
+
+  // Restore `window_1`.
+  auto* window_1 =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1)
+          ->GetNativeWindow();
+  EXPECT_EQ(4u, desk_container->children().size());
+  EXPECT_EQ(desk_container, window_1->parent());
+  EXPECT_EQ(window_1, desk_container->children()[3]);
+
+  // Restore `window_6`.
+  auto* window_6 =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/6)
+          ->GetNativeWindow();
+  EXPECT_EQ(5u, desk_container->children().size());
+  EXPECT_EQ(desk_container, window_6->parent());
+  EXPECT_EQ(window_6, desk_container->children()[0]);
+
+  // Restore `window_5`.
+  auto* window_5 =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/5)
+          ->GetNativeWindow();
+  EXPECT_EQ(6u, desk_container->children().size());
+  EXPECT_EQ(desk_container, window_5->parent());
+  EXPECT_EQ(window_5, desk_container->children()[1]);
+
+  // Verify final stacking order.
+  VerifyStackingOrder(desk_container, {window_6, window_5, window_4, window_3,
+                                       window_2, window_1});
 }
 
 }  // namespace ash
