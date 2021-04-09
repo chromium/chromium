@@ -169,6 +169,9 @@ template("test") {
         "use_native_activity",
       ]
 
+      _use_default_launcher =
+          !defined(invoker.use_default_launcher) || invoker.use_default_launcher
+
       # Adds the unwind tables from unstripped binary as an asset file in the
       # apk, if |add_unwind_tables_in_apk| is specified by the test.
       if (defined(invoker.add_unwind_tables_in_apk) &&
@@ -204,8 +207,7 @@ template("test") {
           }
         }
 
-        if (!defined(invoker.use_default_launcher) ||
-            invoker.use_default_launcher) {
+        if (_use_default_launcher) {
           deps += [ "//testing/android/native_test:native_test_native_code" ]
         }
       }
@@ -225,7 +227,9 @@ template("test") {
         }
 
         # Add the Java classes so that each target does not have to do it.
-        deps += [ "//base/test:test_support_java" ]
+        if (_use_default_launcher) {
+          deps += [ "//base/test:test_support_java" ]
+        }
 
         if (defined(_unwind_table_asset_name)) {
           deps += [ ":${_unwind_table_asset_name}" ]
