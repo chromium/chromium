@@ -215,7 +215,7 @@ class VIEWS_EXPORT TreeView : public View,
   friend class TreeViewTest;
 
   // Enumeration of possible changes to tree view state when the UI is updated.
-  enum SelectionType {
+  enum class SelectionType {
     // Active state is being set to a tree item.
     kActive,
 

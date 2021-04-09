@@ -245,7 +245,7 @@ TreeModelNode* TreeView::GetEditingNode() {
 }
 
 void TreeView::SetSelectedNode(TreeModelNode* model_node) {
-  UpdateSelection(model_node, kActiveAndSelected);
+  UpdateSelection(model_node, SelectionType::kActiveAndSelected);
 }
 
 const TreeModelNode* TreeView::GetSelectedNode() const {
@@ -253,7 +253,7 @@ const TreeModelNode* TreeView::GetSelectedNode() const {
 }
 
 void TreeView::SetActiveNode(TreeModelNode* model_node) {
-  UpdateSelection(model_node, kActive);
+  UpdateSelection(model_node, SelectionType::kActive);
 }
 
 const TreeModelNode* TreeView::GetActiveNode() const {
@@ -272,9 +272,9 @@ void TreeView::Collapse(ui::TreeModelNode* model_node) {
   bool was_expanded = IsExpanded(model_node);
   if (node->is_expanded()) {
     if (selected_node_ && selected_node_->HasAncestor(node))
-      UpdateSelection(model_node, kActiveAndSelected);
+      UpdateSelection(model_node, SelectionType::kActiveAndSelected);
     else if (active_node_ && active_node_->HasAncestor(node))
-      UpdateSelection(model_node, kActive);
+      UpdateSelection(model_node, SelectionType::kActive);
     node->set_is_expanded(false);
   }
   if (was_expanded) {
@@ -355,9 +355,9 @@ void TreeView::SetRootShown(bool root_shown) {
     const auto& children = model_->GetChildren(root_.model_node());
     TreeModelNode* first_child = children.empty() ? nullptr : children.front();
     if (selected_node_ == &root_)
-      UpdateSelection(first_child, kActiveAndSelected);
+      UpdateSelection(first_child, SelectionType::kActiveAndSelected);
     else if (active_node_ == &root_)
-      UpdateSelection(first_child, kActive);
+      UpdateSelection(first_child, SelectionType::kActive);
   }
 
   AXVirtualView* ax_view = root_.accessibility_view();
@@ -581,9 +581,9 @@ void TreeView::TreeNodesRemoved(TreeModel* model,
       nearest_node = parent;
     }
     if (reset_selected_node)
-      UpdateSelection(nearest_node, kActiveAndSelected);
+      UpdateSelection(nearest_node, SelectionType::kActiveAndSelected);
     else if (reset_active_node)
-      UpdateSelection(nearest_node, kActive);
+      UpdateSelection(nearest_node, SelectionType::kActive);
   }
 
   if (IsExpanded(parent)) {
@@ -788,8 +788,9 @@ void TreeView::UpdateSelection(TreeModelNode* model_node,
   // Force update if old value was nullptr to handle case of TreeNodesRemoved
   // explicitly resetting selected_node_ or active_node_ before invoking this.
   bool active_changed = (!active_node_ || active_node_ != node);
-  bool selection_changed = (selection_type == kActiveAndSelected &&
-                            (!selected_node_ || selected_node_ != node));
+  bool selection_changed =
+      (selection_type == SelectionType::kActiveAndSelected &&
+       (!selected_node_ || selected_node_ != node));
 
   // Update tree view states to new values.
   if (active_changed)
