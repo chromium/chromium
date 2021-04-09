@@ -24,27 +24,8 @@ namespace embedder_support {
 
 namespace {
 
-static const char* const g_supported_schemes[] = {
-    "about", "data", "file", "http", "https", "inline", "javascript", nullptr};
-
-static const char* const g_downloadable_schemes[] = {
-    "data", "blob", "file", "filesystem", "http", "https", nullptr};
-
 GURL JNI_UrlUtilities_ConvertJavaStringToGURL(JNIEnv* env, jstring url) {
   return url ? GURL(ConvertJavaStringToUTF8(env, url)) : GURL();
-}
-
-bool CheckSchemeBelongsToList(JNIEnv* env,
-                              const GURL& gurl,
-                              const char* const* scheme_list) {
-  if (gurl.is_valid()) {
-    for (size_t i = 0; scheme_list[i]; i++) {
-      if (gurl.scheme() == scheme_list[i]) {
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 net::registry_controlled_domains::PrivateRegistryFilter GetRegistryFilter(
@@ -185,20 +166,6 @@ static jboolean JNI_UrlUtilities_UrlsFragmentsDiffer(
   if (!gurl.is_valid() || !gurl2.is_valid())
     return true;
   return gurl.ref() != gurl2.ref();
-}
-
-static jboolean JNI_UrlUtilities_IsAcceptedScheme(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
-  GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
-  return CheckSchemeBelongsToList(env, gurl, g_supported_schemes);
-}
-
-static jboolean JNI_UrlUtilities_IsDownloadable(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& url) {
-  return CheckSchemeBelongsToList(
-      env, *url::GURLAndroid::ToNativeGURL(env, url), g_downloadable_schemes);
 }
 
 static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_EscapeQueryParamValue(

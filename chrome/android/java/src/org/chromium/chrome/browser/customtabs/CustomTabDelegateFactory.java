@@ -116,6 +116,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             // Note: This method will not be called if shouldDisableExternalIntentRequestsForUrl()
             // returns false.
 
+            // TODO(https://crbug.com/1194706): This should probably be using intent#getData
+            // instead.
             boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(intent.toUri(0));
             boolean hasDefaultHandler = hasDefaultHandler(intent);
             try {

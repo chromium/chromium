@@ -562,10 +562,8 @@ public class ExternalNavigationHandler {
         // TODO(https://crbug.com/783819): Pass a GURL into this function.
         GURL alternateUrl = new GURL(alternateUri);
 
-        // TODO(https://crbug.com/783819): Convert UrlUtilities functions to GURL.
-        boolean isPrimaryUrlValid =
-                (primaryUrl != null) ? UrlUtilities.isAcceptedScheme(primaryUrl.getSpec()) : false;
-        boolean isAlternateUrlValid = UrlUtilities.isAcceptedScheme(alternateUrl.getSpec());
+        boolean isPrimaryUrlValid = UrlUtilities.isAcceptedScheme(primaryUrl);
+        boolean isAlternateUrlValid = UrlUtilities.isAcceptedScheme(alternateUrl);
 
         if (!isPrimaryUrlValid && !isAlternateUrlValid) return false;
 
@@ -1153,7 +1151,7 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl().getSpec());
+        boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
 
         if (isInternalPdfDownload(isExternalProtocol, params)) {
             return OverrideUrlLoadingResult.forNoOverride();

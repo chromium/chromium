@@ -18,7 +18,10 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.GURLUtils;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -36,6 +39,15 @@ public class UrlUtilities {
     /** Regular expression for prefixes to strip from publisher hostnames. */
     private static final Pattern HOSTNAME_PREFIX_PATTERN =
             Pattern.compile("^(www[0-9]*|web|ftp|wap|home|mobile|amp)\\.");
+
+    private static final List<String> SUPPORTED_SCHEMES = new ArrayList<String>(
+            Arrays.asList(ContentUrlConstants.ABOUT_SCHEME, UrlConstants.DATA_SCHEME,
+                    UrlConstants.FILE_SCHEME, UrlConstants.HTTP_SCHEME, UrlConstants.HTTPS_SCHEME,
+                    UrlConstants.INLINE_SCHEME, UrlConstants.JAVASCRIPT_SCHEME));
+
+    private static final List<String> DOWNLOADABLE_SCHEMES = new ArrayList<String>(Arrays.asList(
+            UrlConstants.DATA_SCHEME, UrlConstants.BLOB_SCHEME, UrlConstants.FILE_SCHEME,
+            UrlConstants.FILESYSTEM_SCHEME, UrlConstants.HTTP_SCHEME, UrlConstants.HTTPS_SCHEME));
 
     /**
      * URI schemes that are internal to Chrome.
@@ -71,18 +83,31 @@ public class UrlUtilities {
      * @param uri A URI.
      *
      * @return True if the URI's scheme is one that ContentView can handle.
+     * @deprecated use {@link #isAcceptedScheme(GURL)} instead.
      */
+    @Deprecated
     public static boolean isAcceptedScheme(String uri) {
-        return UrlUtilitiesJni.get().isAcceptedScheme(uri);
+        return isAcceptedScheme(new GURL(uri));
     }
 
     /**
-     * @param uri A URI.
+     * @param url A GURL.
      *
-     * @return True if the URI's scheme is one that Chrome can download.
+     * @return True if the GURL's scheme is one that ContentView can handle.
+     */
+    public static boolean isAcceptedScheme(GURL url) {
+        if (GURL.isEmptyOrInvalid(url)) return false;
+        return SUPPORTED_SCHEMES.contains(url.getScheme());
+    }
+
+    /**
+     * @param url A GURL.
+     *
+     * @return True if the GURL's scheme is one that Chrome can download.
      */
     public static boolean isDownloadableScheme(@NonNull GURL url) {
-        return UrlUtilitiesJni.get().isDownloadable(url);
+        if (!url.isValid()) return false;
+        return DOWNLOADABLE_SCHEMES.contains(url.getScheme());
     }
 
     /**
@@ -283,8 +308,6 @@ public class UrlUtilities {
 
     @NativeMethods
     public interface Natives {
-        boolean isDownloadable(GURL url);
-        boolean isAcceptedScheme(String url);
         boolean sameDomainOrHost(
                 String primaryUrl, String secondaryUrl, boolean includePrivateRegistries);
         String getDomainAndRegistry(String url, boolean includePrivateRegistries);
