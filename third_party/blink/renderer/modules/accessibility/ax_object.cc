@@ -4976,11 +4976,11 @@ bool AXObject::RequestShowContextMenuAction() {
   return OnNativeShowContextMenuAction();
 }
 
-bool AXObject::InternalClearAccessibilityFocusAction() {
+bool AXObject::InternalSetAccessibilityFocusAction() {
   return false;
 }
 
-bool AXObject::InternalSetAccessibilityFocusAction() {
+bool AXObject::InternalClearAccessibilityFocusAction() {
   return false;
 }
 

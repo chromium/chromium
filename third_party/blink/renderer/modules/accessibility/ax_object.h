@@ -1221,8 +1221,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // to keep track of nodes that gain or lose accessibility focus, but
   // this isn't exposed to the open web so they're explicitly marked as
   // internal so it's clear that these should not dispatch DOM events.
-  bool InternalClearAccessibilityFocusAction();
-  bool InternalSetAccessibilityFocusAction();
+  virtual bool InternalSetAccessibilityFocusAction();
+  virtual bool InternalClearAccessibilityFocusAction();
 
   // Native implementations of actions that aren't handled by AOM
   // event listeners. These all return true if handled.
