@@ -97,8 +97,16 @@ class WebAppIntegrationBrowserTest
   WebAppIntegrationBrowserTestBase helper_;
 };
 
+// This test is a part of the web app integration test suite, which is
+// documented in //chrome/browser/ui/views/web_apps/README.md. For information
+// about diagnosing, debugging and/or disabling tests, please look to the
+// README file.
 IN_PROC_BROWSER_TEST_P(WebAppIntegrationBrowserTest, Default) {
   helper_.ParseParams(GetParam());
+  // Since this test framework differs from traditional browser tests, print
+  // some useful information for sheriffs and developers to help identify,
+  // diagnose, and disable failing tests.
+  LOG(INFO) << helper_.BuildLogForTest(helper_.testing_actions(), IsSyncTest());
 
   for (auto& action : helper_.testing_actions()) {
     helper_.ExecuteAction(action);

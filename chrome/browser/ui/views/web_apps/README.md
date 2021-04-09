@@ -6,12 +6,14 @@ series of "testing actions", and test cases are read from a csv file.
 
 ### Identifying and Diagnosing Failed Tests
 
-Every test failure will log a message that will give:
+Every test will log a message that will give:
 
  * the failing test case
- * the failing action
  * the line to add to the TestExpectations file to disable the test
  * the command line argument to specify to run the given test locally
+
+In addition to this, every testing action will be printed to console before it
+is executed, giving insight into where test failures are occurring.
 
 ### Test Input Files
 
@@ -35,7 +37,7 @@ test case added to this file.
 
 ## How It Works
 
-The way in which this works is by using a script to generate a minimal set of
+This testing framework uses a script to generate a minimal set of
 test cases that produce the maximum amount of code coverage, and reading in that
 script output in these test implementations.
 
@@ -53,7 +55,7 @@ as input:
  * A list of testing actions currently supported by the testing framework
  * A list of all testing journeys that we need coverage for
 
-These lists will be checked in via tsv files with the above-linked CL, but the
+These lists will be checked in via csv files with the above-linked CL, but the
 source of truth lives in this [spreadsheet](https://docs.google.com/spreadsheets/d/1d3iAOAnojp4_WrPky9exz1-mjkeulOJVUav5QYG99MQ).
 See "Test Input Files" section for location of test case files.
 

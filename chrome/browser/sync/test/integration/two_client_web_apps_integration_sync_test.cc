@@ -125,6 +125,10 @@ class TwoClientWebAppsIntegrationSyncTest
 // README file.
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsIntegrationSyncTest, Default) {
   helper_.ParseParams(GetParam());
+  // Since this test framework differs from traditional browser tests, print
+  // some useful information for sheriffs and developers to help identify,
+  // diagnose, and disable failing tests.
+  LOG(INFO) << helper_.BuildLogForTest(helper_.testing_actions(), IsSyncTest());
 
   for (const auto& action : helper_.testing_actions()) {
     helper_.ExecuteAction(action);

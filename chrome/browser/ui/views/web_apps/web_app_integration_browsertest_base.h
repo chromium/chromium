@@ -186,6 +186,8 @@ class WebAppIntegrationBrowserTestBase {
   void AssertWindowDisplayMode(blink::mojom::DisplayMode display_mode);
 
   // Helpers
+  std::string BuildLogForTest(const std::vector<std::string>& testing_actions,
+                              bool is_sync_test);
   std::vector<std::string>& testing_actions() { return testing_actions_; }
   std::vector<AppId> GetAppIdsForProfile(Profile* profile);
 
