@@ -19,7 +19,6 @@
 #include "third_party/libaddressinput/messages.h"
 #include "ui/base/l10n/l10n_util.h"
 
-
 AddressEditorController::AddressEditorController(
     const autofill::AutofillProfile& profile_to_edit,
     content::WebContents* web_contents)
@@ -56,8 +55,8 @@ void AddressEditorController::UpdateEditorFields() {
   if (chosen_country_index_ < countries_.size())
     chosen_country_code = countries_[chosen_country_index_].first;
 
-  std::unique_ptr<base::ListValue> components(new base::ListValue);
-  autofill::GetAddressComponents(chosen_country_code, locale_, components.get(),
+  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
+  autofill::GetAddressComponents(chosen_country_code, locale_, &components,
                                  &language_code_);
   profile_to_edit_.set_language_code(language_code_);
 
@@ -67,49 +66,24 @@ void AddressEditorController::UpdateEditorFields() {
       l10n_util::GetStringUTF16(IDS_LIBADDRESSINPUT_COUNTRY_OR_REGION_LABEL),
       EditorField::LengthHint::HINT_SHORT, EditorField::ControlType::COMBOBOX);
 
-  for (size_t line_index = 0; line_index < components->GetSize();
-       ++line_index) {
-    const base::ListValue* line = nullptr;
-    if (!components->GetList(line_index, &line)) {
-      NOTREACHED();
-      return;
-    }
-    DCHECK_NE(nullptr, line);
-    for (size_t component_index = 0; component_index < line->GetSize();
-         ++component_index) {
-      const base::DictionaryValue* component = nullptr;
-      if (!line->GetDictionary(component_index, &component)) {
-        NOTREACHED();
-        return;
-      }
-      std::string field_type;
-      if (!component->GetString(autofill::kFieldTypeKey, &field_type)) {
-        NOTREACHED();
-        return;
-      }
-      std::string field_name;
-      if (!component->GetString(autofill::kFieldNameKey, &field_name)) {
-        NOTREACHED();
-        return;
-      }
-      bool field_length;
-      if (!component->GetBoolean(autofill::kFieldLengthKey, &field_length)) {
-        NOTREACHED();
-        return;
-      }
+  for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
+       components) {
+    for (const ::i18n::addressinput::AddressUiComponent& component : line) {
       EditorField::LengthHint length_hint =
-          field_length == autofill::kLongField
+          component.length_hint ==
+                  i18n::addressinput::AddressUiComponent::HINT_LONG
               ? EditorField::LengthHint::HINT_LONG
               : EditorField::LengthHint::HINT_SHORT;
       autofill::ServerFieldType server_field_type =
-          autofill::GetFieldTypeFromString(field_type);
+          autofill::AddressFieldToServerFieldType(component.field);
       EditorField::ControlType control_type =
-          EditorField::ControlType::TEXTFIELD;
-      if (server_field_type == autofill::ADDRESS_HOME_COUNTRY)
-        control_type = EditorField::ControlType::COMBOBOX;
+          server_field_type == autofill::ADDRESS_HOME_COUNTRY
+              ? EditorField::ControlType::COMBOBOX
+              : EditorField::ControlType::TEXTFIELD;
+
       editor_fields_.emplace_back(server_field_type,
-                                  base::UTF8ToUTF16(field_name), length_hint,
-                                  control_type);
+                                  base::UTF8ToUTF16(component.name),
+                                  length_hint, control_type);
     }
   }
   // Always add phone number and email at the end.

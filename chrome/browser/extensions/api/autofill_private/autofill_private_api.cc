@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,6 +47,65 @@ static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
 // profile.
 constexpr auto kUserVerified =
     autofill::structured_address::VerificationStatus::kUserVerified;
+
+// Dictionary keys used for serializing AddressUiComponent. Those values
+// are used as keys in JavaScript code and shouldn't be modified.
+constexpr char kFieldTypeKey[] = "field";
+constexpr char kFieldLengthKey[] = "isLongField";
+constexpr char kFieldNameKey[] = "fieldName";
+
+// Field names for the address components.
+constexpr char kFullNameField[] = "FULL_NAME";
+constexpr char kCompanyNameField[] = "COMPANY_NAME";
+constexpr char kAddressLineField[] = "ADDRESS_LINES";
+constexpr char kDependentLocalityField[] = "ADDRESS_LEVEL_3";
+constexpr char kCityField[] = "ADDRESS_LEVEL_2";
+constexpr char kStateField[] = "ADDRESS_LEVEL_1";
+constexpr char kPostalCodeField[] = "POSTAL_CODE";
+constexpr char kSortingCodeField[] = "SORTING_CODE";
+constexpr char kCountryField[] = "COUNTY_CODE";
+
+// Converts an autofill::ServerFieldType to string format. Used in serilization
+// of field type info to be used in JavaScript code, and hence those values
+// shouldn't be modified.
+const char* GetStringFromAddressField(i18n::addressinput::AddressField type) {
+  switch (type) {
+    case i18n::addressinput::RECIPIENT:
+      return kFullNameField;
+    case i18n::addressinput::ORGANIZATION:
+      return kCompanyNameField;
+    case i18n::addressinput::STREET_ADDRESS:
+      return kAddressLineField;
+    case i18n::addressinput::DEPENDENT_LOCALITY:
+      return kDependentLocalityField;
+    case i18n::addressinput::LOCALITY:
+      return kCityField;
+    case i18n::addressinput::ADMIN_AREA:
+      return kStateField;
+    case i18n::addressinput::POSTAL_CODE:
+      return kPostalCodeField;
+    case i18n::addressinput::SORTING_CODE:
+      return kSortingCodeField;
+    case i18n::addressinput::COUNTRY:
+      return kCountryField;
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
+// Serializes the AddressUiComponent a map from string to base::Value().
+base::flat_map<std::string, base::Value> AddressUiComponentAsValueMap(
+    const i18n::addressinput::AddressUiComponent& address_ui_component) {
+  base::flat_map<std::string, base::Value> info;
+  info.emplace(kFieldNameKey, address_ui_component.name);
+  info.emplace(kFieldTypeKey,
+               GetStringFromAddressField(address_ui_component.field));
+  info.emplace(kFieldLengthKey,
+               address_ui_component.length_hint ==
+                   i18n::addressinput::AddressUiComponent::HINT_LONG);
+  return info;
+}
 
 // Searches the |list| for the value at |index|.  If this value is present in
 // any of the rest of the list, then the item (at |index|) is removed. The
@@ -254,25 +314,29 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
           api::autofill_private::GetAddressComponents::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  auto components = std::make_unique<base::ListValue>();
-  std::string language_code_;
+  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> lines;
+  std::string language_code;
 
   autofill::GetAddressComponents(parameters->country_code,
                                  g_browser_process->GetApplicationLocale(),
-                                 components.get(), &language_code_);
-
-  // Convert ListValue to AddressComponents
+                                 &lines, &language_code);
+  // Convert std::vector<std::vector<::i18n::addressinput::AddressUiComponent>>
+  // to AddressComponents
   base::Value address_components(base::Value::Type::DICTIONARY);
   base::Value rows(base::Value::Type::LIST);
 
-  for (auto& component : components->GetList()) {
+  for (auto& line : lines) {
+    std::vector<base::Value> row_values;
+    for (const ::i18n::addressinput::AddressUiComponent& component : line) {
+      row_values.emplace_back(AddressUiComponentAsValueMap(component));
+    }
     base::Value row(base::Value::Type::DICTIONARY);
-    row.SetKey("row", std::move(component));
+    row.SetKey("row", base::Value(std::move(row_values)));
     rows.Append(std::move(row));
   }
 
   address_components.SetKey("components", std::move(rows));
-  address_components.SetKey("languageCode", base::Value(language_code_));
+  address_components.SetKey("languageCode", base::Value(language_code));
 
   return RespondNow(OneArgument(std::move(address_components)));
 }

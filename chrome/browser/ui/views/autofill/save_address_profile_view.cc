@@ -103,38 +103,22 @@ std::unique_ptr<views::View> CreateStreetAddressView(
   const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
   const std::u16string& country_code = profile.GetInfo(kCountryCode, locale);
 
-  base::ListValue components;
+  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
   // TODO(crbug.com/1167060): Update this implementation after
   // GetAddressComponents() is adjusted to return address separators (e.g.
   // commas).
   autofill::GetAddressComponents(base::UTF16ToUTF8(country_code), locale,
                                  &components, nullptr);
 
-  for (size_t line_index = 0; line_index < components.GetSize(); ++line_index) {
+  for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
+       components) {
     std::unique_ptr<views::View> line_view = CreateAddressLineView();
     std::vector<std::u16string> components_str;
-    const base::ListValue* line = nullptr;
-    components.GetList(line_index, &line);
-    DCHECK(line);
-    for (size_t component_index = 0; component_index < line->GetSize();
-         ++component_index) {
-      const base::DictionaryValue* component = nullptr;
-      if (!line->GetDictionary(component_index, &component)) {
-        NOTREACHED();
-        return nullptr;
-      }
-
-      std::string field_type;
-      if (!component->GetString(autofill::kFieldTypeKey, &field_type)) {
-        NOTREACHED();
-        return nullptr;
-      }
-
-      autofill::ServerFieldType server_field_type =
-          autofill::GetFieldTypeFromString(field_type);
-      std::u16string component_str = profile.GetInfo(server_field_type, locale);
-      if (!component_str.empty())
-        line_view->AddChildView(CreateAddressComponentLabel(component_str));
+    for (const ::i18n::addressinput::AddressUiComponent& component : line) {
+      std::u16string field_value = profile.GetInfo(
+          autofill::AddressFieldToServerFieldType(component.field), locale);
+      if (!field_value.empty())
+        line_view->AddChildView(CreateAddressComponentLabel(field_value));
     }
     if (!line_view->children().empty())
       address_view->AddChildView(std::move(line_view));

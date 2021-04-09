@@ -431,10 +431,10 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
   if (chosen_country_index_ < countries_.size())
     chosen_country_code = countries_[chosen_country_index_].first;
 
-  std::unique_ptr<base::ListValue> components(new base::ListValue);
+  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
   autofill::GetAddressComponents(chosen_country_code,
-                                 state()->GetApplicationLocale(),
-                                 components.get(), &language_code_);
+                                 state()->GetApplicationLocale(), &components,
+                                 &language_code_);
 
   // Insert the Country combobox at the top.
   editor_fields_.emplace_back(
@@ -443,43 +443,18 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
       EditorField::LengthHint::HINT_SHORT, /*required=*/true,
       EditorField::ControlType::COMBOBOX);
 
-  for (size_t line_index = 0; line_index < components->GetSize();
-       ++line_index) {
-    const base::ListValue* line = nullptr;
-    if (!components->GetList(line_index, &line)) {
-      NOTREACHED();
-      return;
-    }
-    DCHECK_NE(nullptr, line);
-    for (size_t component_index = 0; component_index < line->GetSize();
-         ++component_index) {
-      const base::DictionaryValue* component = nullptr;
-      if (!line->GetDictionary(component_index, &component)) {
-        NOTREACHED();
-        return;
-      }
-      std::string field_type;
-      if (!component->GetString(autofill::kFieldTypeKey, &field_type)) {
-        NOTREACHED();
-        return;
-      }
-      std::string field_name;
-      if (!component->GetString(autofill::kFieldNameKey, &field_name)) {
-        NOTREACHED();
-        return;
-      }
-      bool field_length;
-      if (!component->GetBoolean(autofill::kFieldLengthKey, &field_length)) {
-        NOTREACHED();
-        return;
-      }
-      EditorField::LengthHint length_hint = EditorField::LengthHint::HINT_SHORT;
-      if (field_length == autofill::kLongField)
-        length_hint = EditorField::LengthHint::HINT_LONG;
-      else
-        DCHECK_EQ(autofill::kShortField, field_length);
+  for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
+       components) {
+    for (const ::i18n::addressinput::AddressUiComponent& component : line) {
+      EditorField::LengthHint length_hint =
+          component.length_hint ==
+                  i18n::addressinput::AddressUiComponent::HINT_LONG
+              ? EditorField::LengthHint::HINT_LONG
+              : EditorField::LengthHint::HINT_SHORT;
+
       autofill::ServerFieldType server_field_type =
-          autofill::GetFieldTypeFromString(field_type);
+          autofill::AddressFieldToServerFieldType(component.field);
+
       EditorField::ControlType control_type =
           EditorField::ControlType::TEXTFIELD;
       if (server_field_type == autofill::ADDRESS_HOME_COUNTRY ||
@@ -487,12 +462,12 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
            !failed_to_load_region_data_)) {
         control_type = EditorField::ControlType::COMBOBOX;
       }
-      editor_fields_.emplace_back(server_field_type,
-                                  base::UTF8ToUTF16(field_name), length_hint,
-                                  autofill::i18n::IsFieldRequired(
-                                      server_field_type, chosen_country_code) ||
-                                      server_field_type == autofill::NAME_FULL,
-                                  control_type);
+      editor_fields_.emplace_back(
+          server_field_type, base::UTF8ToUTF16(component.name), length_hint,
+          autofill::i18n::IsFieldRequired(server_field_type,
+                                          chosen_country_code) ||
+              server_field_type == autofill::NAME_FULL,
+          control_type);
     }
   }
   // Always add phone number at the end.
