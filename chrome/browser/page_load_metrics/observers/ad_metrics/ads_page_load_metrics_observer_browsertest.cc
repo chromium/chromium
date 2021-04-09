@@ -1134,7 +1134,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       "video.onplaying = () => { "
       "window.domAutomationController.send('true'); };"
       "video.play();";
-  EXPECT_EQ("true", content::EvalJsWithManualReply(ad_frame, play_script));
+  EXPECT_EQ("true", content::EvalJs(ad_frame, play_script,
+                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
 

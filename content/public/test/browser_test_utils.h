@@ -445,7 +445,7 @@ class ToRenderFrameHost {
 RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_view_host);
 RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents);
 
-// Semi-deprecated: in new code, prefer ExecJs() -- it works the same, but has
+// Deprecated: in new code, prefer ExecJs() -- it works the same, but has
 // better error handling. (Note: still use ExecuteScript() on pages with a
 // Content Security Policy).
 //
@@ -490,9 +490,7 @@ void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
 // the executed script. They return true on success, false if the script
 // execution failed or did not evaluate to the expected type.
 //
-// Semi-deprecated: Consider using EvalJs() or EvalJsWithManualReply() instead,
-// which handle errors better and don't require an out-param. If the target
-// document doesn't have a CSP. See the comment on EvalJs() for migration tips.
+// Deprecated: Use EvalJs().
 bool ExecuteScriptAndExtractDouble(const ToRenderFrameHost& adapter,
                                    const std::string& script,
                                    double* result) WARN_UNUSED_RESULT;
@@ -788,8 +786,8 @@ enum EvalJsOptions {
 //     * Preferred, but more rewriting: Use EvalJs with a Promise which
 //       resolves to the value you previously passed to send().
 //     * Less rewriting of |script|, but with some drawbacks: Use
-//       EXECUTE_SCRIPT_USE_MANUAL_REPLY in |options|, or EvalJsWithManualReply.
-//       When specified, this means that |script| must continue to call
+//       EXECUTE_SCRIPT_USE_MANUAL_REPLY in |options|. When specified, this
+//       means that |script| must continue to call
 //       domAutomationController.send(). Note that this option option disables
 //       some error-catching safeguards, but you still get the benefit of having
 //       an EvalJsResult that can be passed to EXPECT.
@@ -817,15 +815,6 @@ EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
                     const std::string& script,
                     int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                     int32_t world_id = ISOLATED_WORLD_ID_GLOBAL)
-    WARN_UNUSED_RESULT;
-
-// Like EvalJs(), except that |script| must call domAutomationController.send()
-// itself. This is the same as specifying the EXECUTE_SCRIPT_USE_MANUAL_REPLY
-// option to EvalJs.
-EvalJsResult EvalJsWithManualReply(const ToRenderFrameHost& execution_target,
-                                   const std::string& script,
-                                   int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL)
     WARN_UNUSED_RESULT;
 
 // Like EvalJs(), but runs |raf_script| inside a requestAnimationFrame handler,

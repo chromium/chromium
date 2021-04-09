@@ -72,17 +72,18 @@ class PaymentHandlerChangeShippingAddressOptionTest
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerChangeShippingAddressOptionTest, Test) {
   EXPECT_EQ("instruments.set(): Payment handler installed.",
-            content::EvalJsWithManualReply(
+            content::EvalJs(
                 GetActiveWebContents(),
-                "install('change_shipping_" + getTestType() + "_app.js');"));
+                "install('change_shipping_" + getTestType() + "_app.js');",
+                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   EXPECT_TRUE(
       content::ExecJs(GetActiveWebContents(), GetParam().init_test_code));
 
   std::string actual_output =
-      content::EvalJsWithManualReply(
-          GetActiveWebContents(),
-          "outputChangeShippingAddressOptionReturnValue(request);")
+      content::EvalJs(GetActiveWebContents(),
+                      "outputChangeShippingAddressOptionReturnValue(request);",
+                      content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
           .ExtractString();
 
   // The test expectations are hard-coded, but the embedded test server changes

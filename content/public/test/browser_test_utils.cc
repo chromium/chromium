@@ -1601,10 +1601,11 @@ EvalJsResult EvalRunnerScript(const ToRenderFrameHost& execution_target,
           << "['" << token << "', [result]]; but got instead: " << *response
           << " ... This is potentially because a script tried to call "
              "domAutomationController.send itself -- that is only allowed "
-             "when using EvalJsWithManualReply().  When using EvalJs(), result "
-             "values are just the result of calling eval() on the script -- "
-             "the completion value is the value of the last executed "
-             "statement.  When using ExecJs(), there is no result value.";
+             "when using EXECUTE_SCRIPT_USE_MANUAL_REPLY.  When using "
+             "EvalJs(), result values are just the result of calling eval() on "
+             "the script -- the completion value is the value of the last "
+             "executed statement.  When using ExecJs(), there is no result "
+             "value.";
     }
   }
 
@@ -1696,14 +1697,6 @@ EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
 
   return EvalRunnerScript(execution_target, runner_script, options, world_id,
                           token);
-}
-
-EvalJsResult EvalJsWithManualReply(const ToRenderFrameHost& execution_target,
-                                   const std::string& script,
-                                   int options,
-                                   int32_t world_id) {
-  return EvalJs(execution_target, script,
-                options | EXECUTE_SCRIPT_USE_MANUAL_REPLY, world_id);
 }
 
 EvalJsResult EvalJsAfterLifecycleUpdate(

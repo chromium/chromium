@@ -164,10 +164,11 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, WorksAfterDelayedIFrameLoad) {
     iframe.srcdoc = 'inner page';
     document.body.appendChild(iframe);
   )";
-  EXPECT_EQ(content::EvalJsWithManualReply(
-                browser()->tab_strip_model()->GetActiveWebContents(), script)
-                .ExtractString(),
-            "success");
+  EXPECT_EQ(
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+          .ExtractString(),
+      "success");
 
   InstallShortcutAppForCurrentUrl();
 }

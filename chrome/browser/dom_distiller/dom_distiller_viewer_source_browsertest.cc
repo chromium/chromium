@@ -368,10 +368,9 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(contents));
 
   // Execute in isolated world; where all distiller scripts are run.
-  EXPECT_EQ(true, content::EvalJsWithManualReply(
-                      contents, kTestDistillerObject,
-                      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                      ISOLATED_WORLD_ID_CHROME_INTERNAL));
+  EXPECT_EQ(true, content::EvalJs(contents, kTestDistillerObject,
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY,
+                                  ISOLATED_WORLD_ID_CHROME_INTERNAL));
 }
 
 IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,

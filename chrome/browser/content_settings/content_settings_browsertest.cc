@@ -310,7 +310,7 @@ class CookieSettingsTest
 
   // Read a cookie with JavaScript cookie-store API
   std::string JSAsyncReadCookie(Browser* browser) {
-    return content::EvalJsWithManualReply(
+    return content::EvalJs(
                browser->tab_strip_model()->GetActiveWebContents(),
                "async function doGet() {"
                "  const cookies = await window.cookieStore.getAll();"
@@ -319,7 +319,8 @@ class CookieSettingsTest
                "    cookie_str += `${cookie.name}=${cookie.value};`;"
                "  window.domAutomationController.send(cookie_str);"
                "}"
-               "doGet()")
+               "doGet()",
+               content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
         .ExtractString();
   }
 
@@ -343,17 +344,18 @@ class CookieSettingsTest
 
   // Set a cookie with JavaScript cookie-store api.
   void JSAsyncWriteCookie(Browser* browser) {
-    content::EvalJsResult result = content::EvalJsWithManualReply(
-        browser->tab_strip_model()->GetActiveWebContents(),
-        "async function doSet() {"
-        "  await window.cookieStore.set("
-        "       { name: 'name',"
-        "         value: 'Good',"
-        "         expires: Date.now() + 3600*1000,"
-        "         sameSite: 'none' });"
-        "  window.domAutomationController.send(true);"
-        "}"
-        "doSet()");
+    content::EvalJsResult result =
+        content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                        "async function doSet() {"
+                        "  await window.cookieStore.set("
+                        "       { name: 'name',"
+                        "         value: 'Good',"
+                        "         expires: Date.now() + 3600*1000,"
+                        "         sameSite: 'none' });"
+                        "  window.domAutomationController.send(true);"
+                        "}"
+                        "doSet()",
+                        content::EXECUTE_SCRIPT_USE_MANUAL_REPLY);
     // Failure ignored here since some tests purposefully try to set disallowed
     // cookies.
   }

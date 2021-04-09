@@ -14759,7 +14759,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
   GURL out_of_view_url(
       embedded_test_server()->GetURL("a.com", "/iframe_out_of_view.html"));
   EXPECT_TRUE(NavigateToURL(shell(), out_of_view_url));
-  EXPECT_EQ("LOADED", EvalJsWithManualReply(shell(), "notifyWhenLoaded();"));
+  EXPECT_EQ("LOADED", EvalJs(shell(), "notifyWhenLoaded();",
+                             EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   NavigateIframeToURL(web_contents(), "test_iframe",
                       embedded_test_server()->GetURL("b.com", "/title1.html"));
 
@@ -15801,18 +15802,19 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
   GURL cross_origin(embedded_test_server()->GetURL("b.com", "/title1.html"));
   std::string msg =
-      EvalJsWithManualReply(
-          shell(), JsReplace("var object = document.createElement('object');"
-                             "document.body.appendChild(object);"
-                             "object.data = $1;"
-                             "object.type='text/html';"
-                             "object.notify = true;"
-                             "object.onload = () => {"
-                             "  if (!object.notify) return;"
-                             "  object.notify = false;"
-                             "  window.domAutomationController.send('done');"
-                             "};",
-                             cross_origin))
+      EvalJs(shell(),
+             JsReplace("var object = document.createElement('object');"
+                       "document.body.appendChild(object);"
+                       "object.data = $1;"
+                       "object.type='text/html';"
+                       "object.notify = true;"
+                       "object.onload = () => {"
+                       "  if (!object.notify) return;"
+                       "  object.notify = false;"
+                       "  window.domAutomationController.send('done');"
+                       "};",
+                       cross_origin),
+             EXECUTE_SCRIPT_USE_MANUAL_REPLY)
           .ExtractString();
   ASSERT_EQ("done", msg);
   // To track the frame's visibility an EmbeddedContentView is needed. The

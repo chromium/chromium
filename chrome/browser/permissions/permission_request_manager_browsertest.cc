@@ -883,15 +883,16 @@ IN_PROC_BROWSER_TEST_F(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ONCE);
 
   // Request 'geolocation' permission.
-  std::string result = content::EvalJsWithManualReply(GetActiveMainFrame(),
-                                                      kQueryCurrentPosition)
-                           .ExtractString();
+  std::string result =
+      content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition,
+                      content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+          .ExtractString();
   EXPECT_EQ("success", result);
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
 
   // Request 'geolocation' permission. There should not be a 2nd prompt.
-  result = content::EvalJsWithManualReply(GetActiveMainFrame(),
-                                          kQueryCurrentPosition)
+  result = content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition,
+                           content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                .ExtractString();
   EXPECT_EQ("success", result);
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
@@ -909,8 +910,8 @@ IN_PROC_BROWSER_TEST_F(
               GetPermissionRequestManager()));
 
   // Request 'geolocation' permission.
-  result = content::EvalJsWithManualReply(GetActiveMainFrame(),
-                                          kQueryCurrentPosition)
+  result = content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition,
+                           content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                .ExtractString();
   EXPECT_EQ("success", result);
   // There should be no permission prompt.
@@ -946,8 +947,8 @@ IN_PROC_BROWSER_TEST_F(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ONCE);
 
   // Request 'geolocation' permission. We should get a prompt.
-  result = content::EvalJsWithManualReply(GetActiveMainFrame(),
-                                          kQueryCurrentPosition)
+  result = content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition,
+                           content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                .ExtractString();
   EXPECT_EQ("success", result);
 

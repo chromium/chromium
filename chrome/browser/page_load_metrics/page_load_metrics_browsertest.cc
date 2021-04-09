@@ -3121,11 +3121,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PortalActivation) {
   EXPECT_TRUE(
       ExecJs(outer_contents, "document.querySelector('portal').activate()"));
 
-  EXPECT_EQ(true,
-            EvalJsWithManualReply(portal_contents,
+  EXPECT_EQ(true, content::EvalJs(portal_contents,
                                   "activatePromise.then(r => { "
                                   "  window.domAutomationController.send(r);"
-                                  "});"));
+                                  "});",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // The activated portal contents should be the currently active contents.
   EXPECT_EQ(portal_contents,
