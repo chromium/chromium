@@ -17,7 +17,6 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
 #include "chromeos/services/multidevice_setup/android_sms_app_installing_status_observer.h"
-#include "chromeos/services/multidevice_setup/device_reenroller.h"
 #include "chromeos/services/multidevice_setup/eligible_host_devices_provider_impl.h"
 #include "chromeos/services/multidevice_setup/feature_state_manager_impl.h"
 #include "chromeos/services/multidevice_setup/grandfathered_easy_unlock_host_disabler.h"
@@ -148,9 +147,6 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
           android_sms_pairing_state_tracker,
           wifi_sync_feature_manager_.get(),
           is_secondary_user)),
-      device_reenroller_(
-          DeviceReenroller::Factory::Create(device_sync_client,
-                                            gcm_device_info_provider)),
       android_sms_app_installing_host_observer_(
           android_sms_app_helper_delegate
               ? AndroidSmsAppInstallingStatusObserver::Factory::Create(

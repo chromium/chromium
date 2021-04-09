@@ -16,7 +16,6 @@
 #include "chromeos/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 #include "chromeos/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
 #include "chromeos/services/multidevice_setup/android_sms_app_installing_status_observer.h"
-#include "chromeos/services/multidevice_setup/device_reenroller.h"
 #include "chromeos/services/multidevice_setup/eligible_host_devices_provider_impl.h"
 #include "chromeos/services/multidevice_setup/fake_account_status_change_delegate.h"
 #include "chromeos/services/multidevice_setup/fake_account_status_change_delegate_notifier.h"
@@ -76,7 +75,7 @@ base::Optional<multidevice::RemoteDevice> RefToRaw(
 class FakeEligibleHostDevicesProviderFactory
     : public EligibleHostDevicesProviderImpl::Factory {
  public:
-  FakeEligibleHostDevicesProviderFactory(
+  explicit FakeEligibleHostDevicesProviderFactory(
       device_sync::FakeDeviceSyncClient* expected_device_sync_client)
       : expected_device_sync_client_(expected_device_sync_client) {}
 
@@ -468,36 +467,6 @@ class FakeAccountStatusChangeDelegateNotifierFactory
   DISALLOW_COPY_AND_ASSIGN(FakeAccountStatusChangeDelegateNotifierFactory);
 };
 
-class FakeDeviceReenrollerFactory : public DeviceReenroller::Factory {
- public:
-  FakeDeviceReenrollerFactory(
-      device_sync::FakeDeviceSyncClient* expected_device_sync_client,
-      const device_sync::FakeGcmDeviceInfoProvider*
-          expected_gcm_device_info_provider)
-      : expected_device_sync_client_(expected_device_sync_client),
-        expected_gcm_device_info_provider_(expected_gcm_device_info_provider) {}
-
-  ~FakeDeviceReenrollerFactory() override = default;
-
- private:
-  // DeviceReenroller::Factory:
-  std::unique_ptr<DeviceReenroller> CreateInstance(
-      device_sync::DeviceSyncClient* device_sync_client,
-      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
-      std::unique_ptr<base::OneShotTimer> timer) override {
-    EXPECT_EQ(expected_device_sync_client_, device_sync_client);
-    EXPECT_EQ(expected_gcm_device_info_provider_, gcm_device_info_provider);
-    // Only check inputs and return nullptr. We do not want to trigger the
-    // DeviceReenroller logic in these unit tests.
-    return nullptr;
-  }
-
-  device_sync::FakeDeviceSyncClient* expected_device_sync_client_;
-  const device_sync::GcmDeviceInfoProvider* expected_gcm_device_info_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceReenrollerFactory);
-};
-
 class FakeAndroidSmsAppInstallingStatusObserverFactory
     : public AndroidSmsAppInstallingStatusObserver::Factory {
  public:
@@ -631,13 +600,6 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     AccountStatusChangeDelegateNotifierImpl::Factory::SetFactoryForTesting(
         fake_account_status_change_delegate_notifier_factory_.get());
 
-    fake_device_reenroller_factory_ =
-        std::make_unique<FakeDeviceReenrollerFactory>(
-            fake_device_sync_client_.get(),
-            fake_gcm_device_info_provider_.get());
-    DeviceReenroller::Factory::SetFactoryForTesting(
-        fake_device_reenroller_factory_.get());
-
     fake_android_sms_app_installing_status_observer_factory_ =
         std::make_unique<FakeAndroidSmsAppInstallingStatusObserverFactory>(
             fake_host_status_provider_factory_.get(),
@@ -664,7 +626,6 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     HostDeviceTimestampManagerImpl::Factory::SetFactoryForTesting(nullptr);
     AccountStatusChangeDelegateNotifierImpl::Factory::SetFactoryForTesting(
         nullptr);
-    DeviceReenroller::Factory::SetFactoryForTesting(nullptr);
     AndroidSmsAppInstallingStatusObserver::Factory::SetFactoryForTesting(
         nullptr);
     WifiSyncFeatureManagerImpl::Factory::SetFactoryForTesting(nullptr);
@@ -999,7 +960,6 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
       fake_host_device_timestamp_manager_factory_;
   std::unique_ptr<FakeAccountStatusChangeDelegateNotifierFactory>
       fake_account_status_change_delegate_notifier_factory_;
-  std::unique_ptr<FakeDeviceReenrollerFactory> fake_device_reenroller_factory_;
   std::unique_ptr<FakeAndroidSmsAppInstallingStatusObserverFactory>
       fake_android_sms_app_installing_status_observer_factory_;
   std::unique_ptr<FakeAndroidSmsAppHelperDelegate>
