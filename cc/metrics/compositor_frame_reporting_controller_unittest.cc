@@ -167,25 +167,25 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     last_activated_id_ = current_id_;
   }
 
-  void SimulateSubmitCompositorFrame(uint32_t frame_token,
-                                     EventMetricsSet events_metrics) {
+  void SimulateSubmitCompositorFrame(EventMetricsSet events_metrics) {
     if (!reporting_controller_.reporters()
              [CompositorFrameReportingController::PipelineStage::kActivate])
       SimulateActivate();
     CHECK(reporting_controller_.reporters()
               [CompositorFrameReportingController::PipelineStage::kActivate]);
     submit_time_ = AdvanceNowByMs(10);
+    ++current_token_;
     reporting_controller_.DidSubmitCompositorFrame(
-        frame_token, current_id_, last_activated_id_, std::move(events_metrics),
+        *current_token_, current_id_, last_activated_id_,
+        std::move(events_metrics),
         /*has_missing_content=*/false);
   }
 
   void SimulatePresentCompositorFrame() {
-    ++next_token_;
-    SimulateSubmitCompositorFrame(*next_token_, {});
+    SimulateSubmitCompositorFrame({});
     viz::FrameTimingDetails details = {};
     details.presentation_feedback.timestamp = AdvanceNowByMs(10);
-    reporting_controller_.DidPresentCompositorFrame(*next_token_, details);
+    reporting_controller_.DidPresentCompositorFrame(*current_token_, details);
   }
 
   viz::BeginFrameArgs SimulateBeginFrameArgs(viz::BeginFrameId frame_id) {
@@ -286,7 +286,7 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   base::TimeTicks begin_activation_time_;
   base::TimeTicks end_activation_time_;
   base::TimeTicks submit_time_;
-  viz::FrameTokenGenerator next_token_;
+  viz::FrameTokenGenerator current_token_;
   DroppedFrameCounter dropped_counter_;
   TotalFrameCounter total_frame_counter_;
 };
@@ -1130,14 +1130,13 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.
-  ++next_token_;
-  SimulateSubmitCompositorFrame(*next_token_, {std::move(events_metrics), {}});
+  SimulateSubmitCompositorFrame({std::move(events_metrics), {}});
 
   // Present the submitted compositor frame to the user.
   const base::TimeTicks presentation_time = AdvanceNowByMs(10);
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = presentation_time;
-  reporting_controller_.DidPresentCompositorFrame(*next_token_, details);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_, details);
 
   // Verify that EventLatency histograms are recorded.
   struct {
@@ -1200,8 +1199,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.
-  ++next_token_;
-  SimulateSubmitCompositorFrame(*next_token_, {std::move(events_metrics), {}});
+  SimulateSubmitCompositorFrame({std::move(events_metrics), {}});
 
   // Present the submitted compositor frame to the user.
   viz::FrameTimingDetails details;
@@ -1210,7 +1208,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   details.swap_timings.swap_start = AdvanceNowByMs(10);
   details.swap_timings.swap_end = AdvanceNowByMs(10);
   details.presentation_feedback.timestamp = AdvanceNowByMs(10);
-  reporting_controller_.DidPresentCompositorFrame(*next_token_, details);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_, details);
 
   // Verify that EventLatency histograms are recorded.
   struct {
@@ -1276,19 +1274,17 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.
-  ++next_token_;
-  SimulateSubmitCompositorFrame(*next_token_, {std::move(events_metrics), {}});
+  SimulateSubmitCompositorFrame({std::move(events_metrics), {}});
 
   // Submit another compositor frame.
-  ++next_token_;
   IncrementCurrentId();
-  SimulateSubmitCompositorFrame(*next_token_, {});
+  SimulateSubmitCompositorFrame({});
 
   // Present the second compositor frame to the user, dropping the first one.
   const base::TimeTicks presentation_time = AdvanceNowByMs(10);
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = presentation_time;
-  reporting_controller_.DidPresentCompositorFrame(*next_token_, details);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_, details);
 
   // Verify that EventLatency histograms for the first frame (dropped) are
   // recorded using the presentation time of the second frame (presented).
