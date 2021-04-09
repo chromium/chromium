@@ -232,6 +232,8 @@ const string kFingerprintSubpagePathV2 = "osPrivacy/lockScreen/fingerprint";
 
 // Languages and Input section.
 const string kLanguagesAndInputSectionPath = "osLanguages";
+// TODO(crbug.com/1097328): Delete kLanguagesAndInputDetailsSubpagePath and
+//     kManageInputMethodsSubpagePath as they are unused.
 const string kLanguagesAndInputDetailsSubpagePath = "osLanguages/details";
 const string kManageInputMethodsSubpagePath = "osLanguages/inputMethods";
 const string kSmartInputsSubpagePath = "osLanguages/smartInputs";

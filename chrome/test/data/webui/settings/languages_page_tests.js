@@ -41,10 +41,6 @@ suite('languages page', function() {
                                      'intl.accept_languages';
 
   suiteSetup(function() {
-    // TODO(crbug/1109431): Update this test once migration is completed.
-    loadTimeData.overrideValues({
-      isChromeOSLanguagesSettingsUpdate: false,
-    });
     testing.Test.disableAnimationsAndTransitions();
     PolymerTest.clearBody();
     CrSettingsPrefs.deferInitialization = true;
@@ -65,6 +61,8 @@ suite('languages page', function() {
       languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
       languagesPage = document.createElement('settings-languages-page');
+      // TODO(crbug/1109431): Update this test once migration is completed.
+      languagesPage.isChromeOSLanguagesSettingsUpdate_ = false;
 
       // Prefs would normally be data-bound to settings-languages-page.
       languagesPage.prefs = settingsPrefs.prefs;
@@ -373,13 +371,12 @@ suite(languages_page_tests.TestNames.RestructuredLanguageSettings, function() {
   });
 });
 
+// TODO(crbug/1109431): Delete this.
 suite(
     languages_page_tests.TestNames.ChromeOSLanguagesSettingsUpdate, function() {
       test('shows correct structure if update is true', () => {
-        loadTimeData.overrideValues({
-          isChromeOSLanguagesSettingsUpdate: true,
-        });
         const page = document.createElement('settings-languages-page');
+        page.isChromeOSLanguagesSettingsUpdate_ = true;
         document.body.appendChild(page);
         flush();
 
@@ -391,10 +388,8 @@ suite(
       });
 
       test('shows correct structure if update is false', () => {
-        loadTimeData.overrideValues({
-          isChromeOSLanguagesSettingsUpdate: false,
-        });
         const page = document.createElement('settings-languages-page');
+        page.isChromeOSLanguagesSettingsUpdate_ = false;
         document.body.appendChild(page);
         flush();
 

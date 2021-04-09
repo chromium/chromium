@@ -27,9 +27,6 @@ suite('LanguagesPageMetricsChromeOS', function() {
   let languagesMetricsProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isChromeOSLanguagesSettingsUpdate: false,
-    });
     CrSettingsPrefs.deferInitialization = true;
   });
 
@@ -54,6 +51,8 @@ suite('LanguagesPageMetricsChromeOS', function() {
 
       languagesPage = /** @type {!SettingsLanguagesPageElement} */ (
           document.createElement('settings-languages-page'));
+      /** @suppress {visibility} Temporary while removal is completed. */
+      languagesPage.isChromeOSLanguagesSettingsUpdate_ = false;
 
       // Prefs would normally be data-bound to settings-languages-page.
       languagesPage.prefs = settingsPrefs.prefs;

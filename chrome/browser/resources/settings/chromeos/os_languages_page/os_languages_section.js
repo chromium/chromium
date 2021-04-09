@@ -41,6 +41,7 @@ Polymer({
       },
     },
 
+    // TODO(crbug.com/1097328): Delete this.
     /**
      * This is enabled when language settings update feature flag is enabled.
      * @private
@@ -48,7 +49,7 @@ Polymer({
     languageSettingsV2Enabled_: {
       type: Boolean,
       value() {
-        return loadTimeData.getBoolean('enableLanguageSettingsV2');
+        return true;
       },
     },
 

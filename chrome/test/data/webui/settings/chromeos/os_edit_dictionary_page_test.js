@@ -62,7 +62,6 @@ suite('edit dictionary page', () => {
 
   suiteSetup(() => {
     CrSettingsPrefs.deferInitialization = true;
-    loadTimeData.overrideValues({enableLanguageSettingsV2: true});
   });
 
   setup(() => {

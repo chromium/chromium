@@ -112,11 +112,12 @@ Polymer({
       },
     },
 
+    // TODO(crbug.com/1097328): Delete this.
     /** @private */
     isChromeOSLanguagesSettingsUpdate_: {
       type: Boolean,
       value() {
-        return loadTimeData.getBoolean('isChromeOSLanguagesSettingsUpdate');
+        return true;
       },
     },
     // </if>

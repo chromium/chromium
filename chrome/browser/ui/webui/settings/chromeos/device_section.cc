@@ -852,8 +852,6 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isDemoSession",
                           chromeos::DemoSession::IsDeviceInDemoMode());
-  // TODO(crbug.com/1097328): Delete this.
-  html_source->AddBoolean("enableLanguageSettingsV2", true);
 
   AddDevicePointersStrings(html_source);
   AddDeviceKeyboardStrings(html_source);

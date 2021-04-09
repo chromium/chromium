@@ -6,6 +6,8 @@
 
 /**
  * Specifies all possible os routes in settings.
+ * TODO(crbug.com/1097328): Delete OS_LANGUAGES_DETAILS and
+ *     OS_LANGUAGES_INPUT_METHODS as they are unused.
  *
  * @typedef {{
  *   ABOUT: !settings.Route,

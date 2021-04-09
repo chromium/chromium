@@ -157,16 +157,10 @@ suite('settings-languages', function() {
       languageHelper.addInputMethod(swUS);
       assertEquals(3, languageHelper.languages.inputMethods.enabled.length);
 
-      // Disable Swahili. The Swahili-only keyboard should be removed.
+      // Disable Swahili. The Swahili-only keyboard should NOT be removed,
+      // as enabled languages and input methods are decoupled.
       languageHelper.disableLanguage('sw');
-      assertEquals(2, languageHelper.languages.inputMethods.enabled.length);
-
-      // The US Swahili keyboard should still be enabled, because it supports
-      // English which is still enabled.
-      assertTrue(languageHelper.languages.inputMethods.enabled.some(function(
-          inputMethod) {
-        return inputMethod.id === swUS;
-      }));
+      assertEquals(3, languageHelper.languages.inputMethods.enabled.length);
     });
   }
 });

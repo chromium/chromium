@@ -900,16 +900,13 @@ Polymer({
     this.languageSettingsPrivate_.disableLanguage(languageCode);
   },
 
+  // TODO(crbug.com/1097328): Delete this.
   /**
    * @return {boolean}
    * @private
    */
   isChromeOSLanguageSettingsV2_() {
-    if (!isChromeOS) {
-      return false;
-    }
-    return loadTimeData.valueExists('enableLanguageSettingsV2') &&
-        loadTimeData.getBoolean('enableLanguageSettingsV2');
+    return isChromeOS;
   },
 
   // <if expr="chromeos">
