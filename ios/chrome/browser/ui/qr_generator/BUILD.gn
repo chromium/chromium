@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/test:test_support",

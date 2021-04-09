@@ -19,6 +19,7 @@ class BookmarkModel;
 @class ChromeActivityImageSource;
 @protocol ChromeActivityItemSource;
 @class ChromeActivityURLSource;
+@class DefaultBrowserPromoNonModalScheduler;
 @protocol FindInPageCommands;
 class PrefService;
 @protocol QRGenerationCommands;
@@ -40,6 +41,9 @@ class PrefService;
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
+
+// Scheduler to notify about events happening in this activity.
+@property(nonatomic, weak) DefaultBrowserPromoNonModalScheduler* promoScheduler;
 
 // Generates an array of activity items to be shared via an activity view for
 // the given |data|.

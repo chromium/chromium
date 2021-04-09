@@ -44,6 +44,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/bookmarks:edit",
     "//ios/chrome/browser/ui/bookmarks:test_support",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test:test_support",

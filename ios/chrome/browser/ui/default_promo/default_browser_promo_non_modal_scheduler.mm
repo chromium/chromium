@@ -13,4 +13,7 @@
 - (void)logUserPastedInOmnibox {
 }
 
+- (void)logUserFinishedActivityFlow {
+}
+
 @end

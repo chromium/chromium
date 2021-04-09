@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -26,9 +28,11 @@ class QRGeneratorCoordinatorTest : public PlatformTest {
  protected:
   QRGeneratorCoordinatorTest()
       : test_url_("https://www.google.com/"),
-        browser_(std::make_unique<TestBrowser>()) {
+        browser_(std::make_unique<TestBrowser>()),
+        scene_state_([[SceneState alloc] initWithAppState:nil]) {
     base_view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
 
   void SetUp() override {
@@ -54,6 +58,7 @@ class QRGeneratorCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
+  SceneState* scene_state_;
 
   QRGeneratorCoordinator* coordinator_;
 };

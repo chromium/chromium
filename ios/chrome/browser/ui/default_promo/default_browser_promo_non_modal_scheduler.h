@@ -14,6 +14,9 @@
 // Handles the user pasting in the omnibox and schedules a promo if necessary.
 - (void)logUserPastedInOmnibox;
 
+// Handles the user finishing a share and schedules a promo if necessary.
+- (void)logUserFinishedActivityFlow;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_PROMO_NON_MODAL_SCHEDULER_H_

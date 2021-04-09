@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -173,6 +174,7 @@
         activity_type_util::TypeFromString(activityType);
     activity_type_util::RecordMetricForActivity(type);
     RecordActivityForScenario(type, scenario);
+    [self.promoScheduler logUserFinishedActivityFlow];
   } else {
     // Share action was cancelled.
     base::RecordAction(base::UserMetricsAction("MobileShareMenuCancel"));
