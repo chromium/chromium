@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
@@ -93,6 +95,9 @@ DEFINE_BINARY_PROTO_FUZZER(
     page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
     return page_holder.release();
   }();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kJXL);
 
   //
   // NOTE: GC objects that need to survive iterations of the loop below
