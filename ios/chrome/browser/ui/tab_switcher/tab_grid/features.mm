@@ -11,6 +11,26 @@
 const base::Feature kEnableCloseAllTabsConfirmation{
     "EnableCloseAllTabsConfirmation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kTabGridContextMenu{"TabGridContextMenu",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kTabsBulkActions{"TabsBulkActions",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsCloseAllTabsConfirmationEnabled() {
   return base::FeatureList::IsEnabled(kEnableCloseAllTabsConfirmation);
+}
+
+bool IsTabGridContextMenuEnabled() {
+  if (@available(iOS 13, *)) {
+    return base::FeatureList::IsEnabled(kTabGridContextMenu);
+  }
+  return false;
+}
+
+bool IsTabsBulkActionsEnabled() {
+  if (@available(iOS 13, *)) {
+    return base::FeatureList::IsEnabled(kTabsBulkActions);
+  }
+  return false;
 }

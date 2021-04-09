@@ -725,6 +725,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kInterestFeedV2ClickAndViewActionsConditionalUploadDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(feed::kInterestFeedV2ClicksAndViewsConditionalUpload)},
+    {"tabs-bulkactions-ios", flag_descriptions::kTabsBulkActionsName,
+     flag_descriptions::kTabsBulkActionsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabsBulkActions)},
+    {"tabgrid-context-menu-ios", flag_descriptions::kTabGridContextMenuName,
+     flag_descriptions::kTabGridContextMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGridContextMenu)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

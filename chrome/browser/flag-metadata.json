@@ -4986,6 +4986,16 @@
     "expiry_milestone": 82
   },
   {
+    "name": "tabgrid-context-menu-ios",
+    "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
+    "name": "tabs-bulkactions-ios",
+    "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "text-fragment-color-change",
     "owners": [ "cheickcisse@google.com" ],
     "expiry_milestone": 92

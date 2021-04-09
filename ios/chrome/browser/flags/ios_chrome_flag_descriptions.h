@@ -382,6 +382,14 @@ extern const char kStartSurfaceDescription[];
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 
+// Title and description for the flag to enable context menu in the Tab grid.
+extern const char kTabGridContextMenuName[];
+extern const char kTabGridContextMenuDescription[];
+
+// Title and description for the flag to enable tabs bulk actions feature.
+extern const char kTabsBulkActionsName[];
+extern const char kTabsBulkActionsDescription[];
+
 // Title and description for the flag to enable the toolbar container
 // implementation.
 extern const char kToolbarContainerName[];

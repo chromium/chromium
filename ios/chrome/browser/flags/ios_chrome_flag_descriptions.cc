@@ -450,6 +450,15 @@ const char kStartSurfaceDescription[] =
     "Enable showing the Start Surface when launching Chrome via clicking the "
     "icon or the app switcher.";
 
+const char kTabGridContextMenuName[] = "Enable Tab Grid context menu";
+const char kTabGridContextMenuDescription[] =
+    "Enables the context menu for long press on tabs on the tab grid.";
+
+const char kTabsBulkActionsName[] = "Enable Tab Grid Bulk Actions";
+const char kTabsBulkActionsDescription[] =
+    "Enables the selection mode in the Tab grid where users can perform "
+    "actions on multiple tabs at once for iOS 13 and above.";
+
 const char kToolbarContainerName[] = "Use Toolbar Containers";
 const char kToolbarContainerDescription[] =
     "When enabled, the toolbars and their fullscreen animations will be "
