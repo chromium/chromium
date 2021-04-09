@@ -332,6 +332,8 @@ void ConversationController::StartScreenContextInteraction(
   if (!assistant_manager_internal_)
     return;
 
+  MaybeStopPreviousInteraction();
+
   std::vector<std::string> context_protos;
   // Screen context can have the |assistant_structure|, or |assistant_extra| and
   // |assistant_tree| set to nullptr. This happens in the case where the screen
