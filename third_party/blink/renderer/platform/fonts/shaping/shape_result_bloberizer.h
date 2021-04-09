@@ -69,7 +69,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 
     pending_glyphs_.push_back(glyph);
     pending_offsets_.push_back(h_offset);
-    if (!current_text_.IsNull()) {
+    if (UNLIKELY(!current_text_.IsNull())) {
       DVLOG(5) << "  Appending glyph " << glyph << " with start index "
                << character_index;
       current_character_indexes_.push_back(character_index);
@@ -101,7 +101,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
     pending_offsets_.push_back(offset.X() +
                                pending_vertical_baseline_x_offset_);
     pending_offsets_.push_back(offset.Y());
-    if (!current_text_.IsNull()) {
+    if (UNLIKELY(!current_text_.IsNull())) {
       DVLOG(5) << "  Appending glyph " << glyph << " with start index "
                << character_index;
       current_character_indexes_.push_back(character_index);
@@ -183,10 +183,12 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   Vector<Glyph, 1024> pending_glyphs_;
   Vector<float, 1024> pending_offsets_;
 
-  Vector<uint8_t, 1024> pending_utf8_;
-  Vector<uint32_t, 1024> pending_utf8_character_indexes_;
-  Vector<unsigned, 1024> current_character_indexes_;
-  Vector<unsigned, 1024> cluster_ends_;
+  // Reserve a small amount of space for the common case when printing.
+  // Allowing this class to grow larger than ~7k impacts user perf.
+  Vector<uint8_t, 64> pending_utf8_;
+  Vector<uint32_t, 64> pending_utf8_character_indexes_;
+  Vector<unsigned, 64> current_character_indexes_;
+  Vector<unsigned, 64> cluster_ends_;
   unsigned cluster_ends_offset_ = 0;
   StringView current_text_;
 
