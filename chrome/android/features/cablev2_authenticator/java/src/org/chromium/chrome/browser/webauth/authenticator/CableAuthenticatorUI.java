@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.webauth.authenticator;
 import android.Manifest.permission;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,6 +18,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -26,11 +30,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
@@ -54,8 +61,6 @@ public class CableAuthenticatorUI
     // for before being replaced with a prompt to connect via USB cable.
     private static final int USB_PROMPT_TIMEOUT_SECS = 20;
 
-    private static final String ACTIVITY_CLASS_NAME_EXTRA =
-            "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName";
     private static final String FCM_EXTRA = "org.chromium.chrome.modules.cablev2_authenticator.FCM";
     private static final String NETWORK_CONTEXT_EXTRA =
             "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext";
@@ -65,6 +70,12 @@ public class CableAuthenticatorUI
             "org.chromium.chrome.modules.cablev2_authenticator.Secret";
     private static final String SERVER_LINK_EXTRA =
             "org.chromium.chrome.browser.webauth.authenticator.ServerLink";
+    private static final String NOTIFICATION_CHANNEL_ID =
+            "chrome.android.features.cablev2_authenticator";
+
+    // ID is used when Android APIs demand a process-wide unique ID. This number
+    // is a random int.
+    private static final int ID = 424386536;
 
     private enum Mode {
         QR, // Triggered from Settings; can scan QR code to start handshake.
@@ -86,6 +97,11 @@ public class CableAuthenticatorUI
     // is enabled.
     private String mPendingQRCode;
     private boolean mPendingShouldLink;
+
+    // mNeedToSignalBluetoothReady is true if a cloud message is pending
+    // Bluetooth enabling and this class should prompt the user to enable
+    // Bluetooth once the UI is showing.
+    private boolean mNeedToSignalBluetoothReady;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -110,13 +126,21 @@ public class CableAuthenticatorUI
 
         final long networkContext = arguments.getLong(NETWORK_CONTEXT_EXTRA);
         final long registration = arguments.getLong(REGISTRATION_EXTRA);
-        final String activityClassName = arguments.getString(ACTIVITY_CLASS_NAME_EXTRA);
         final byte[] secret = arguments.getByteArray(SECRET_EXTRA);
 
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(
                 new WeakReference<Activity>((Activity) context));
         mAuthenticator = new CableAuthenticator(getContext(), this, networkContext, registration,
-                activityClassName, secret, mMode == Mode.FCM, accessory, serverLink);
+                secret, mMode == Mode.FCM, accessory, serverLink);
+
+        if (mMode == Mode.FCM) {
+            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+            if (adapter.isEnabled()) {
+                mAuthenticator.onBluetoothReadyForCloudMessage();
+            } else {
+                mNeedToSignalBluetoothReady = true;
+            }
+        }
     }
 
     @Override
@@ -182,6 +206,17 @@ public class CableAuthenticatorUI
 
         top.addView(v);
         return top;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (mNeedToSignalBluetoothReady) {
+            mNeedToSignalBluetoothReady = false;
+            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+                    ENABLE_BLUETOOTH_REQUEST_CODE);
+        }
     }
 
     /**
@@ -326,14 +361,30 @@ public class CableAuthenticatorUI
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ENABLE_BLUETOOTH_REQUEST_CODE) {
-            String qrCode = mPendingQRCode;
-            mPendingQRCode = null;
-            mAuthenticator.onQRCode(qrCode, mPendingShouldLink);
+        if (requestCode != ENABLE_BLUETOOTH_REQUEST_CODE) {
+            mAuthenticator.onActivityResult(requestCode, resultCode, data);
             return;
         }
 
-        mAuthenticator.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) {
+            getActivity().finish();
+            return;
+        }
+
+        switch (mMode) {
+            case QR:
+                String qrCode = mPendingQRCode;
+                mPendingQRCode = null;
+                mAuthenticator.onQRCode(qrCode, mPendingShouldLink);
+                break;
+
+            case FCM:
+                mAuthenticator.onBluetoothReadyForCloudMessage();
+                break;
+
+            default:
+                assert false;
+        }
     }
 
     void onAuthenticatorConnected() {}
@@ -399,19 +450,61 @@ public class CableAuthenticatorUI
     }
 
     /**
-     * onCloudMessage is called by {@link CableAuthenticatorModuleProvider} when a GCM message is
-     * received.
+     * onCloudMessage is called by {@link CableAuthenticatorModuleProvider} when a GCM message
+     * is received.
      */
+    @SuppressLint("SetTextI18n")
     public static void onCloudMessage(long event, long systemNetworkContext, long registration,
             String activityClassName, byte[] secret) {
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (adapter.isEnabled()) {
-            CableAuthenticator.onCloudMessage(event, systemNetworkContext, registration,
-                    activityClassName, secret, /*needToDisableBluetooth=*/false);
+        CableAuthenticator.onCloudMessage(event, systemNetworkContext, registration, secret);
+
+        // Show a notification to the user. If tapped then an instance of this
+        // class will be created in FCM mode.
+        Context context = ContextUtils.getApplicationContext();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Register a channel for this notification. Registering the same
+            // channel twice is harmless.
+            CharSequence name = "Security key activations";
+            // TODO: finalise string and translate.
+            String description =
+                    "Notifications that appear when you attempt to log in on another device";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel =
+                    new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager =
+                    context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        Intent intent;
+        try {
+            intent = new Intent(context, Class.forName(activityClassName));
+        } catch (ClassNotFoundException e) {
+            Log.e(TAG, "Failed to find class " + activityClassName);
             return;
         }
 
-        new PendingCloudMessage(
-                adapter, event, systemNetworkContext, registration, activityClassName, secret);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("org.chromium.chrome.modules.cablev2_authenticator.FCM", true);
+        intent.putExtra("show_fragment_args", bundle);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(context, ID, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+                        .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                        // TODO: finalise string and translate.
+                        .setContentTitle("Press to log in")
+                        .setContentText("A paired device is attempting to log in")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.notify(NOTIFICATION_CHANNEL_ID, ID, builder.build());
     }
 }

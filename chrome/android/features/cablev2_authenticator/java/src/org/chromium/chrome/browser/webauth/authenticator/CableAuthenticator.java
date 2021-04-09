@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.webauth.authenticator;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -17,9 +14,6 @@ import android.hardware.usb.UsbAccessory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.gms.fido.Fido;
 import com.google.android.gms.fido.common.Transport;
@@ -42,7 +36,6 @@ import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType;
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialUserEntity;
 import com.google.android.gms.tasks.Task;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -61,11 +54,6 @@ class CableAuthenticator {
     private static final String TAG = "CableAuthenticator";
     private static final String FIDO2_KEY_CREDENTIAL_EXTRA = "FIDO2_CREDENTIAL_EXTRA";
     private static final double TIMEOUT_SECONDS = 20;
-    private static final String NOTIFICATION_CHANNEL_ID =
-            "chrome.android.features.cablev2_authenticator";
-    // ID is used when Android APIs demand a process-wide unique ID. This number
-    // is a random int.
-    private static final int ID = 424386536;
 
     private static final int REGISTER_REQUEST_CODE = 1;
     private static final int SIGN_REQUEST_CODE = 2;
@@ -92,8 +80,8 @@ class CableAuthenticator {
     }
 
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
-            long registration, String activityClassName, byte[] secret, boolean isFcmNotification,
-            UsbAccessory accessory, byte[] serverLink) {
+            long registration, byte[] secret, boolean isFcmNotification, UsbAccessory accessory,
+            byte[] serverLink) {
         mContext = context;
         mUi = ui;
 
@@ -102,7 +90,7 @@ class CableAuthenticator {
         mTaskRunner = PostTask.createSingleThreadTaskRunner(UiThreadTaskTraits.USER_VISIBLE);
         assert mTaskRunner.belongsToCurrentThread();
 
-        CableAuthenticatorJni.get().setup(registration, activityClassName, networkContext, secret);
+        CableAuthenticatorJni.get().setup(registration, networkContext, secret);
 
         if (accessory != null) {
             // USB mode can start immediately.
@@ -110,16 +98,11 @@ class CableAuthenticator {
                     this, new USBHandler(context, mTaskRunner, accessory));
         }
 
-        if (isFcmNotification) {
-            // The user tapped a notification that resulted from an FCM message.
-            mHandle = CableAuthenticatorJni.get().onInteractionReady(this);
-        }
-
         if (serverLink != null) {
             mHandle = CableAuthenticatorJni.get().startServerLink(this, serverLink);
         }
 
-        // Otherwise wait for a QR scan.
+        // Otherwise wait for |onQRCode| or |onBluetoothReadyForCloudMessage|.
     }
 
     // Calls from native code.
@@ -433,6 +416,14 @@ class CableAuthenticator {
         // that indicates that the QR code was invalid.
     }
 
+    /**
+     * Called to indicate that Bluetooth is now enabled and a cloud message can be processed.
+     */
+    void onBluetoothReadyForCloudMessage() {
+        assert mTaskRunner.belongsToCurrentThread();
+        mHandle = CableAuthenticatorJni.get().startCloudMessage(this);
+    }
+
     void unlinkAllDevices() {
         Log.i(TAG, "Unlinking devices");
         CableAuthenticatorJni.get().unlink();
@@ -454,79 +445,10 @@ class CableAuthenticator {
     /**
      * onCloudMessage is called by {@link CableAuthenticatorUI} when a GCM message is received.
      */
-    static void onCloudMessage(long event, long systemNetworkContext, long registration,
-            String activityClassName, byte[] secret, boolean needToDisableBluetooth) {
-        CableAuthenticatorJni.get().setup(
-                registration, activityClassName, systemNetworkContext, secret);
-        CableAuthenticatorJni.get().onCloudMessage(event, needToDisableBluetooth);
-    }
-
-    /**
-     * showNotification is called by the C++ code to show an Android
-     * notification. When pressed, the notification will activity the given
-     * Activity and Fragment.
-     */
-    // TODO: localize
-    @SuppressLint("SetTextI18n")
-    @CalledByNative
-    public static void showNotification(String activityClassName) {
-        Context context = ContextUtils.getApplicationContext();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Register a channel for this notification. Registering the same
-            // channel twice is harmless.
-            CharSequence name = "Security key activations";
-            String description =
-                    "Notifications that appear when you attempt to log in on another device";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel =
-                    new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager =
-                    context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        Intent intent;
-        try {
-            intent = new Intent(context, Class.forName(activityClassName));
-        } catch (ClassNotFoundException e) {
-            Log.e(TAG, "Failed to find class " + activityClassName);
-            return;
-        }
-
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("org.chromium.chrome.modules.cablev2_authenticator.FCM", true);
-        intent.putExtra("show_fragment_args", bundle);
-        PendingIntent pendingIntent =
-                PendingIntent.getActivity(context, ID, intent, PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                        .setContentTitle("Press to log in")
-                        .setContentText("A paired device is attempting to log in")
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setAutoCancel(true)
-                        .setContentIntent(pendingIntent)
-                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(NOTIFICATION_CHANNEL_ID, ID, builder.build());
-    }
-
-    @CalledByNative
-    public static void dropNotification() {
-        Context context = ContextUtils.getApplicationContext();
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.cancel(NOTIFICATION_CHANNEL_ID, ID);
-    }
-
-    @CalledByNative
-    public static void disableBluetooth() {
-        Log.i(TAG, "Operation complete. Disabling Bluetooth.");
-        BluetoothAdapter.getDefaultAdapter().disable();
+    static void onCloudMessage(
+            long event, long systemNetworkContext, long registration, byte[] secret) {
+        CableAuthenticatorJni.get().setup(registration, systemNetworkContext, secret);
+        CableAuthenticatorJni.get().onCloudMessage(event);
     }
 
     @NativeMethods
@@ -536,7 +458,7 @@ class CableAuthenticator {
          * one-time setup operations. It may be called several times, but subsequent calls are
          * ignored.
          */
-        void setup(long registration, String activityClassName, long networkContext, byte[] secret);
+        void setup(long registration, long networkContext, byte[] secret);
 
         /**
          * Called to instruct the C++ code to start a new transaction using |usbDevice|. Returns an
@@ -562,6 +484,12 @@ class CableAuthenticator {
         long startServerLink(CableAuthenticator cableAuthenticator, byte[] serverLinkData);
 
         /**
+         * Called when a GCM message is received and the user has tapped on the resulting
+         * notification. This is called after |onCloudMessage| has been called to stash the Event.
+         */
+        long startCloudMessage(CableAuthenticator cableAuthenticator);
+
+        /**
          * unlink causes the linking FCM token to be rotated. This prevents all previously linked
          * devices from being able to contact this device in the future -- they'll have to go via
          * the QR-scanning path again.
@@ -569,27 +497,19 @@ class CableAuthenticator {
         void unlink();
 
         /**
-         * Called after the notification created by {@link showNotification} has been pressed and
-         * the {@link CableAuthenticatorUI} Fragment is now in the foreground for showing UI.
-         * Returns an opaque value that can be passed to |stop| to cancel this transaction.
-         */
-        long onInteractionReady(CableAuthenticator cableAuthenticator);
-
-        /**
          * Called to alert the C++ code to stop any ongoing transactions. Takes an opaque handle
-         * value that was returned by one of the |start*| functions or |onInteractionReady|.
+         * value that was returned by one of the |start*| functions.
          */
         void stop(long handle);
 
         /**
-         * Called when a GCM message is received. The |event| argument is a
-         * pointer to a |device::cablev2::authenticator::Registration::Event|
-         * object that the native code takes ownership of.
-         * |needToDisableBluetooth| is true if Bluetooth was enabled for the
-         * purposes of processing this event and thus |disableBluetooth| should
-         * be called once complete.
+         * Called when the process is running in the background and has a cloud message to store. If
+         * the user taps on a notification then |startCloudMessage| will be called to implicitly
+         * start processing this event. The |event| argument is a pointer to a
+         * |device::cablev2::authenticator::Registration::Event| object that the native code takes
+         * ownership of.
          */
-        void onCloudMessage(long event, boolean needToDisableBluetooth);
+        void onCloudMessage(long event);
 
         /**
          * Called to alert native code of a response to a makeCredential request.

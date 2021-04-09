@@ -40,8 +40,6 @@ public class CableAuthenticatorModuleProvider extends Fragment {
             "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext";
     private static final String REGISTRATION_KEY =
             "org.chromium.chrome.modules.cablev2_authenticator.Registration";
-    private static final String ACTIVITY_CLASS_NAME_KEY =
-            "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName";
     private static final String ACTIVITY_CLASS_NAME =
             "org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity";
     private static final String SECRET_KEY =
@@ -83,7 +81,6 @@ public class CableAuthenticatorModuleProvider extends Fragment {
                 CableAuthenticatorModuleProviderJni.get().getSystemNetworkContext());
         arguments.putLong(
                 REGISTRATION_KEY, CableAuthenticatorModuleProviderJni.get().getRegistration());
-        arguments.putString(ACTIVITY_CLASS_NAME_KEY, ACTIVITY_CLASS_NAME);
         arguments.putByteArray(SECRET_KEY, CableAuthenticatorModuleProviderJni.get().getSecret());
         fragment.setArguments(arguments);
         transaction.replace(getId(), fragment);
