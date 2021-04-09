@@ -27,6 +27,8 @@ class ArcStorageManager : public KeyedService {
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcStorageManager* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcStorageManager* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcStorageManager(content::BrowserContext* context,
                     ArcBridgeService* bridge_service);

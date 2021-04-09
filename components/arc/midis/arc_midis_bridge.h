@@ -30,6 +30,8 @@ class ArcMidisBridge : public KeyedService,
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcMidisBridge* GetForBrowserContext(content::BrowserContext* context);
+  static ArcMidisBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcMidisBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);

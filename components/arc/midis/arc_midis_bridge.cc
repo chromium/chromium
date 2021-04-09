@@ -46,6 +46,12 @@ ArcMidisBridge* ArcMidisBridge::GetForBrowserContext(
   return ArcMidisBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcMidisBridge* ArcMidisBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcMidisBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcMidisBridge::ArcMidisBridge(content::BrowserContext* context,
                                ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {

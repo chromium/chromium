@@ -42,6 +42,12 @@ ArcStorageManager* ArcStorageManager::GetForBrowserContext(
   return ArcStorageManagerFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcStorageManager* ArcStorageManager::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcStorageManagerFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcStorageManager::ArcStorageManager(content::BrowserContext* context,
                                      ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {}

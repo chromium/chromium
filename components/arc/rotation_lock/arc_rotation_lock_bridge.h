@@ -33,6 +33,8 @@ class ArcRotationLockBridge
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcRotationLockBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcRotationLockBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcRotationLockBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);

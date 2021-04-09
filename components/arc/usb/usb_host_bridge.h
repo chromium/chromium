@@ -53,6 +53,8 @@ class ArcUsbHostBridge : public KeyedService,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcUsbHostBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcUsbHostBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   // The constructor will register an Observer with ArcBridgeService.
   ArcUsbHostBridge(content::BrowserContext* context,

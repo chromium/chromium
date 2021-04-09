@@ -43,6 +43,12 @@ ArcRotationLockBridge* ArcRotationLockBridge::GetForBrowserContext(
   return ArcRotationLockBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcRotationLockBridge* ArcRotationLockBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcRotationLockBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcRotationLockBridge::ArcRotationLockBridge(content::BrowserContext* context,
                                              ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {

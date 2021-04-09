@@ -54,6 +54,12 @@ ArcMediaSessionBridge* ArcMediaSessionBridge::GetForBrowserContext(
   return ArcMediaSessionBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcMediaSessionBridge* ArcMediaSessionBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcMediaSessionBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcMediaSessionBridge::ArcMediaSessionBridge(content::BrowserContext* context,
                                              ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {

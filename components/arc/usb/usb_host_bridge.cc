@@ -97,9 +97,16 @@ std::string GetDevicePath(const device::mojom::UsbDeviceInfo& device_info) {
 
 }  // namespace
 
+// static
 ArcUsbHostBridge* ArcUsbHostBridge::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcUsbHostBridgeFactory::GetForBrowserContext(context);
+}
+
+// static
+ArcUsbHostBridge* ArcUsbHostBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcUsbHostBridgeFactory::GetForBrowserContextForTesting(context);
 }
 
 ArcUsbHostBridge::ArcUsbHostBridge(content::BrowserContext* context,
