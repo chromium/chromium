@@ -223,11 +223,17 @@ cast_source_set("rate_adjuster") {
 cast_source_set("test_support") {
   testonly = true
 
-  sources = [ "mock_audio_input_callback.h" ]
+  sources = [
+    "mock_audio_input_callback.h",
+    "mock_cast_audio_manager_helper_delegate.h",
+  ]
 
   public_deps = [ "//testing/gmock" ]
 
-  deps = [ "//media" ]
+  deps = [
+    ":audio",
+    "//media",
+  ]
 }
 
 cast_source_set("unittests") {

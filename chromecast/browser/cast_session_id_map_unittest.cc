@@ -32,46 +32,47 @@ class CastSessionIdMapTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::SetUp();
 
     // Create the map.
-    CastSessionIdMap::GetInstance(task_runner_.get());
+    cast_session_id_map_ = CastSessionIdMap::GetInstance(task_runner_.get());
   }
 
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<content::TestContentClientInitializer> initializer_;
+  CastSessionIdMap* cast_session_id_map_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CastSessionIdMapTest);
 };
 
 TEST_F(CastSessionIdMapTest, DefaultsToEmptyString) {
-  std::string saved_session_id = CastSessionIdMap::GetSessionId("");
+  std::string saved_session_id = cast_session_id_map_->GetSessionId("");
   EXPECT_EQ(saved_session_id, "");
 }
 
 TEST_F(CastSessionIdMapTest, CanRetrieveSessionId) {
   auto web_contents = CreateTestWebContents();
   base::UnguessableToken group_id = web_contents->GetAudioGroupId();
-  CastSessionIdMap::SetAppProperties(kTestSessionId, false /* is_audio_app */,
-                                     web_contents.get());
+  cast_session_id_map_->SetAppProperties(
+      kTestSessionId, false /* is_audio_app */, web_contents.get());
   task_runner_->RunUntilIdle();
 
   std::string saved_session_id =
-      CastSessionIdMap::GetSessionId(group_id.ToString());
+      cast_session_id_map_->GetSessionId(group_id.ToString());
   EXPECT_EQ(saved_session_id, kTestSessionId);
 }
 
 TEST_F(CastSessionIdMapTest, RemovesMappingOnWebContentsDestroyed) {
   auto web_contents = CreateTestWebContents();
   base::UnguessableToken group_id = web_contents->GetAudioGroupId();
-  CastSessionIdMap::SetAppProperties(kTestSessionId, false /* is_audio_app */,
-                                     web_contents.get());
+  cast_session_id_map_->SetAppProperties(
+      kTestSessionId, false /* is_audio_app */, web_contents.get());
   task_runner_->RunUntilIdle();
 
   web_contents.reset();
   task_runner_->RunUntilIdle();
 
   std::string saved_session_id =
-      CastSessionIdMap::GetSessionId(group_id.ToString());
+      cast_session_id_map_->GetSessionId(group_id.ToString());
   EXPECT_EQ(saved_session_id, "");
 }
 
@@ -82,30 +83,30 @@ TEST_F(CastSessionIdMapTest, CanHoldMultiple) {
   auto web_contents_1 = CreateTestWebContents();
   auto web_contents_2 = CreateTestWebContents();
   auto web_contents_3 = CreateTestWebContents();
-  CastSessionIdMap::SetAppProperties(
+  cast_session_id_map_->SetAppProperties(
       test_session_id_1, false /* is_audio_app */, web_contents_1.get());
-  CastSessionIdMap::SetAppProperties(
+  cast_session_id_map_->SetAppProperties(
       test_session_id_2, false /* is_audio_app */, web_contents_2.get());
-  CastSessionIdMap::SetAppProperties(
+  cast_session_id_map_->SetAppProperties(
       test_session_id_3, false /* is_audio_app */, web_contents_3.get());
   task_runner_->RunUntilIdle();
 
   std::string saved_session_id = "";
   base::UnguessableToken group_id = web_contents_1->GetAudioGroupId();
   if (group_id) {
-    saved_session_id = CastSessionIdMap::GetSessionId(group_id.ToString());
+    saved_session_id = cast_session_id_map_->GetSessionId(group_id.ToString());
     EXPECT_EQ(saved_session_id, test_session_id_1);
   }
 
   group_id = web_contents_2->GetAudioGroupId();
   if (group_id) {
-    saved_session_id = CastSessionIdMap::GetSessionId(group_id.ToString());
+    saved_session_id = cast_session_id_map_->GetSessionId(group_id.ToString());
     EXPECT_EQ(saved_session_id, test_session_id_2);
   }
 
   group_id = web_contents_3->GetAudioGroupId();
   if (group_id) {
-    saved_session_id = CastSessionIdMap::GetSessionId(group_id.ToString());
+    saved_session_id = cast_session_id_map_->GetSessionId(group_id.ToString());
     EXPECT_EQ(saved_session_id, test_session_id_3);
   }
 }

@@ -14,18 +14,18 @@ namespace media {
 
 CastAudioManagerHelper::CastAudioManagerHelper(
     ::media::AudioManagerBase* audio_manager,
+    Delegate* delegate,
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-    GetSessionIdCallback get_session_id_callback,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector)
     : audio_manager_(audio_manager),
+      delegate_(delegate),
       backend_factory_getter_(std::move(backend_factory_getter)),
-      get_session_id_callback_(std::move(get_session_id_callback)),
       media_task_runner_(std::move(media_task_runner)),
       pending_connector_(std::move(connector)) {
   DCHECK(audio_manager_);
+  DCHECK(delegate_);
   DCHECK(backend_factory_getter_);
-  DCHECK(get_session_id_callback_);
   DCHECK(pending_connector_);
 }
 
@@ -39,7 +39,11 @@ CmaBackendFactory* CastAudioManagerHelper::GetCmaBackendFactory() {
 
 std::string CastAudioManagerHelper::GetSessionId(
     const std::string& audio_group_id) {
-  return get_session_id_callback_.Run(audio_group_id);
+  return delegate_->GetSessionId(audio_group_id);
+}
+
+bool CastAudioManagerHelper::IsAudioOnlySession(const std::string& session_id) {
+  return delegate_->IsAudioOnlySession(session_id);
 }
 
 chromecast::mojom::ServiceConnector* CastAudioManagerHelper::GetConnector() {

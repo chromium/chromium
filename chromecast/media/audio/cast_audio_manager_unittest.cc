@@ -18,6 +18,7 @@
 #include "chromecast/common/mojom/service_connector.mojom.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/test/mock_cma_backend.h"
+#include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"
 #include "chromecast/media/cma/test/mock_cma_backend_factory.h"
 #include "chromecast/media/cma/test/mock_multiroom_manager.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
@@ -60,10 +61,6 @@ int OnMoreData(base::TimeDelta delay,
                ::media::AudioBus* dest) {
   dest->Zero();
   return kDefaultAudioParams.frames_per_buffer();
-}
-
-std::string DummyGetSessionId(const std::string& /* audio_group_id */) {
-  return "";
 }
 
 }  // namespace
@@ -122,9 +119,9 @@ class CastAudioManagerTest : public testing::Test,
     mock_backend_factory_ = std::make_unique<MockCmaBackendFactory>();
     audio_manager_ = base::WrapUnique(new CastAudioManager(
         std::make_unique<::media::TestAudioThread>(), &fake_audio_log_factory_,
+        &mock_delegate_,
         base::BindRepeating(&CastAudioManagerTest::GetCmaBackendFactory,
                             base::Unretained(this)),
-        base::BindRepeating(&DummyGetSessionId),
         task_environment_.GetMainThreadTaskRunner(),
         audio_thread_.task_runner(), CreateConnector(), use_mixer,
         true /* force_use_cma_backend_for_output*/
@@ -170,6 +167,7 @@ class CastAudioManagerTest : public testing::Test,
   base::Thread audio_thread_;
   base::test::TaskEnvironment task_environment_;
   ::media::FakeAudioLogFactory fake_audio_log_factory_;
+  MockCastAudioManagerHelperDelegate mock_delegate_;
   std::unique_ptr<MockCmaBackendFactory> mock_backend_factory_;
   ::media::MockAudioSourceCallback mock_source_callback_;
   std::unique_ptr<MockCmaBackend> mock_cma_backend_;

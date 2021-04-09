@@ -18,17 +18,11 @@ namespace media {
 
 class CastAudioManagerAndroid : public ::media::AudioManagerAndroid {
  public:
-  // Callback to get whether the session is audio-only for the provided session
-  // ID.
-  using GetApplicationCapabilityCallback =
-      base::RepeatingCallback<bool(const std::string&)>;
-
   CastAudioManagerAndroid(
       std::unique_ptr<::media::AudioThread> audio_thread,
       ::media::AudioLogFactory* audio_log_factory,
+      CastAudioManagerHelper::Delegate* delegate,
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-      CastAudioManagerHelper::GetSessionIdCallback get_session_id_callback,
-      GetApplicationCapabilityCallback get_application_capability_callback,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector);
   ~CastAudioManagerAndroid() override;
@@ -69,7 +63,6 @@ class CastAudioManagerAndroid : public ::media::AudioManagerAndroid {
       const ::media::AudioManager::LogCallback& log_callback) override;
 
   CastAudioManagerHelper helper_;
-  GetApplicationCapabilityCallback get_application_capability_callback_;
 
   CastAudioManagerAndroid(const CastAudioManagerAndroid&) = delete;
   CastAudioManagerAndroid& operator=(const CastAudioManagerAndroid&) = delete;

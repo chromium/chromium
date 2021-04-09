@@ -212,6 +212,7 @@ cast_source_set("browser_base") {
     "//chromecast/graphics",
     "//chromecast/media",
     "//chromecast/media:libcast_media",
+    "//chromecast/media/audio",
     "//chromecast/media/base:media_codec_support",
     "//chromecast/media/base:video_plane_controller",
     "//chromecast/media/cdm:cdm_origin_provider",

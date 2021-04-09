@@ -30,14 +30,21 @@ class CmaBackendFactory;
 // Helper class to share common logic between different AudioManager.
 class CastAudioManagerHelper {
  public:
-  // Callback to get session ID from group ID.
-  using GetSessionIdCallback =
-      base::RepeatingCallback<std::string(const std::string&)>;
+  class Delegate {
+   public:
+    // Get session ID for the provided group ID.
+    virtual std::string GetSessionId(const std::string& group_id) = 0;
+    // Get whether the session is audio-only for the provided session ID.
+    virtual bool IsAudioOnlySession(const std::string& session_id) = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
 
   CastAudioManagerHelper(
       ::media::AudioManagerBase* audio_manager,
+      Delegate* delegate,
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-      GetSessionIdCallback get_session_id_callback,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector);
   ~CastAudioManagerHelper();
@@ -50,12 +57,13 @@ class CastAudioManagerHelper {
 
   CmaBackendFactory* GetCmaBackendFactory();
   std::string GetSessionId(const std::string& audio_group_id);
+  bool IsAudioOnlySession(const std::string& session_id);
   chromecast::mojom::ServiceConnector* GetConnector();
 
  private:
   ::media::AudioManagerBase* const audio_manager_;
+  Delegate* const delegate_;
   base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter_;
-  GetSessionIdCallback get_session_id_callback_;
   CmaBackendFactory* cma_backend_factory_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 

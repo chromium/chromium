@@ -48,7 +48,6 @@ CastSessionIdMap* CastSessionIdMap::GetInstance(
   return map.get();
 }
 
-// static
 void CastSessionIdMap::SetAppProperties(std::string session_id,
                                         bool is_audio_app,
                                         content::WebContents* web_contents) {
@@ -59,18 +58,8 @@ void CastSessionIdMap::SetAppProperties(std::string session_id,
                                            base::Unretained(GetInstance()));
   auto group_observer = std::make_unique<GroupObserver>(
       web_contents, std::move(destroyed_callback));
-  GetInstance()->SetAppPropertiesInternal(session_id, is_audio_app, group_id,
-                                          std::move(group_observer));
-}
-
-// static
-std::string CastSessionIdMap::GetSessionId(const std::string& group_id) {
-  return GetInstance()->GetSessionIdInternal(group_id);
-}
-
-// static
-bool CastSessionIdMap::IsAudioOnlySession(const std::string& session_id) {
-  return GetInstance()->IsAudioOnlySessionInternal(session_id);
+  SetAppPropertiesInternal(session_id, is_audio_app, group_id,
+                           std::move(group_observer));
 }
 
 CastSessionIdMap::CastSessionIdMap(base::SequencedTaskRunner* task_runner)
@@ -99,7 +88,7 @@ void CastSessionIdMap::SetAppPropertiesInternal(
 
   // This check is required to bind to the current sequence.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(GetSessionIdInternal(group_id.ToString()).empty());
+  DCHECK(GetSessionId(group_id.ToString()).empty());
   DCHECK(group_observer);
 
   DVLOG(1) << "Mapping session_id=" << session_id
@@ -109,8 +98,7 @@ void CastSessionIdMap::SetAppPropertiesInternal(
   application_capability_mapping_.emplace(session_id, is_audio_app);
 }
 
-std::string CastSessionIdMap::GetSessionIdInternal(
-    const std::string& group_id) {
+std::string CastSessionIdMap::GetSessionId(const std::string& group_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = mapping_.find(group_id);
   if (it != mapping_.end())
@@ -118,8 +106,7 @@ std::string CastSessionIdMap::GetSessionIdInternal(
   return std::string();
 }
 
-bool CastSessionIdMap::IsAudioOnlySessionInternal(
-    const std::string& session_id) {
+bool CastSessionIdMap::IsAudioOnlySession(const std::string& session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = application_capability_mapping_.find(session_id);
   if (it != application_capability_mapping_.end())

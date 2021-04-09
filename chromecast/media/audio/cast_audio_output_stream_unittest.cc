@@ -23,12 +23,12 @@
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_mixer.h"
+#include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"
 #include "chromecast/media/base/default_monotonic_clock.h"
 #include "chromecast/media/cma/test/mock_cma_backend_factory.h"
 #include "chromecast/media/cma/test/mock_multiroom_manager.h"
 #include "chromecast/public/task_runner.h"
 #include "chromecast/public/volume_control.h"
-#include "content/public/test/browser_task_environment.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,12 +40,11 @@
 using testing::_;
 using testing::Invoke;
 using testing::NiceMock;
+using testing::Return;
 
 namespace {
 
-std::string DummyGetSessionId(const std::string& /* audio_group_id */) {
-  return "AABBCCDDEE";
-}
+constexpr char kSessionId[] = "01234567-89ab-cdef-0123-456789abcdef";
 
 }  // namespace
 
@@ -278,10 +277,9 @@ class CastAudioOutputStreamTest : public ::testing::Test,
     CHECK(audio_thread_.StartAndWaitForTesting());
     mock_backend_factory_ = std::make_unique<MockCmaBackendFactory>();
     audio_manager_ = base::WrapUnique(new CastAudioManager(
-        std::make_unique<::media::TestAudioThread>(), nullptr,
+        std::make_unique<::media::TestAudioThread>(), nullptr, &delegate_,
         base::BindRepeating(&CastAudioOutputStreamTest::GetCmaBackendFactory,
                             base::Unretained(this)),
-        base::BindRepeating(&DummyGetSessionId),
         task_environment_.GetMainThreadTaskRunner(),
         audio_thread_.task_runner(), CreateConnector(), use_mixer,
         true /* force_use_cma_backend_for_output*/));
@@ -358,6 +356,7 @@ class CastAudioOutputStreamTest : public ::testing::Test,
   std::unique_ptr<MockCmaBackendFactory> mock_backend_factory_;
 
   FakeCmaBackend* cma_backend_ = nullptr;
+  MockCastAudioManagerHelperDelegate delegate_;
   std::unique_ptr<CastAudioManager> audio_manager_;
   mojo::ReceiverSet<chromecast::mojom::ServiceConnector> connector_receivers_;
   MockMultiroomManager multiroom_manager_;
@@ -961,6 +960,7 @@ TEST_F(CastAudioOutputStreamTest, SessionId) {
   format_ = ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY;
   ::media::AudioOutputStream* stream = audio_manager_->MakeAudioOutputStream(
       GetAudioParams(), "DummyGroupId", ::media::AudioManager::LogCallback());
+  EXPECT_CALL(delegate_, GetSessionId(_)).WillOnce(Return(kSessionId));
   ASSERT_TRUE(stream);
   ASSERT_TRUE(stream->Open());
   RunThreadsUntilIdle();
@@ -977,11 +977,10 @@ TEST_F(CastAudioOutputStreamTest, SessionId) {
   // TODO(awolter, b/111669896): Verify that the session id is correct after
   // piping has been added. For now, we want to verify that the session id is
   // empty, so that basic MZ continues to work.
-  std::string session_id = DummyGetSessionId("");
   ASSERT_TRUE(cma_backend_);
-  EXPECT_EQ(multiroom_manager_.GetLastSessionId(), session_id);
+  EXPECT_EQ(multiroom_manager_.GetLastSessionId(), kSessionId);
   MediaPipelineDeviceParams params = cma_backend_->params();
-  EXPECT_EQ(params.session_id, session_id);
+  EXPECT_EQ(params.session_id, kSessionId);
 
   stream->Stop();
   stream->Close();

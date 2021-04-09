@@ -12,6 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
+#include "chromecast/media/audio/cast_audio_manager_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace media {
@@ -32,8 +33,8 @@ class CastAudioManagerAlsa : public CastAudioManager {
   CastAudioManagerAlsa(
       std::unique_ptr<::media::AudioThread> audio_thread,
       ::media::AudioLogFactory* audio_log_factory,
+      CastAudioManagerHelper::Delegate* delegate,
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-      CastAudioManagerHelper::GetSessionIdCallback get_session_id_callback,
       scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector,

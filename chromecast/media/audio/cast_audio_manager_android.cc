@@ -39,19 +39,16 @@ bool ShouldUseCastAudioOutputStream(bool is_audio_app,
 CastAudioManagerAndroid::CastAudioManagerAndroid(
     std::unique_ptr<::media::AudioThread> audio_thread,
     ::media::AudioLogFactory* audio_log_factory,
+    CastAudioManagerHelper::Delegate* delegate,
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-    CastAudioManagerHelper::GetSessionIdCallback get_session_id_callback,
-    GetApplicationCapabilityCallback get_application_capability_callback,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector)
     : ::media::AudioManagerAndroid(std::move(audio_thread), audio_log_factory),
       helper_(this,
+              delegate,
               std::move(backend_factory_getter),
-              std::move(get_session_id_callback),
               std::move(media_task_runner),
-              std::move(connector)),
-      get_application_capability_callback_(
-          std::move(get_application_capability_callback)) {}
+              std::move(connector)) {}
 
 CastAudioManagerAndroid::~CastAudioManagerAndroid() = default;
 
@@ -151,7 +148,7 @@ void CastAudioManagerAndroid::GetAudioOutputDeviceNames(
     const std::string& device_id_or_group_id,
     const ::media::AudioManager::LogCallback& log_callback) {
   DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
-  bool is_audio_app = get_application_capability_callback_.Run(
+  bool is_audio_app = helper_.IsAudioOnlySession(
       helper_.GetSessionId(GetGroupId(device_id_or_group_id)));
   if (ShouldUseCastAudioOutputStream(is_audio_app, params)) {
     return new CastAudioOutputStream(
@@ -177,8 +174,8 @@ void CastAudioManagerAndroid::GetAudioOutputDeviceNames(
 ::media::AudioOutputStream* CastAudioManagerAndroid::MakeAudioOutputStreamProxy(
     const ::media::AudioParameters& params,
     const std::string& device_id) {
-  bool is_audio_app = get_application_capability_callback_.Run(
-      helper_.GetSessionId(GetGroupId(device_id)));
+  bool is_audio_app =
+      helper_.IsAudioOnlySession(helper_.GetSessionId(GetGroupId(device_id)));
   if (ShouldUseCastAudioOutputStream(is_audio_app, params)) {
     // Override to use MakeAudioOutputStream to prevent the audio output stream
     // from closing during pause/stop.

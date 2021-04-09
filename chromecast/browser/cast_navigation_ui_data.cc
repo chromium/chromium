@@ -34,7 +34,8 @@ void CastNavigationUIData::SetAppPropertiesForWebContents(
   DCHECK(web_contents);
   web_contents->SetUserData(kUserDataKey,
                             std::make_unique<SessionIdUserData>(session_id));
-  CastSessionIdMap::SetAppProperties(session_id, is_audio_app, web_contents);
+  CastSessionIdMap::GetInstance()->SetAppProperties(session_id, is_audio_app,
+                                                    web_contents);
 }
 
 // static

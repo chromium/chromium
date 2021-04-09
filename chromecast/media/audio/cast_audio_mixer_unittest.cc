@@ -18,6 +18,7 @@
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_output_stream.h"
+#include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/test_audio_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,10 +31,6 @@ mojo::PendingRemote<chromecast::mojom::ServiceConnector> CreateConnector() {
   mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector;
   ignore_result(connector.InitWithNewPipeAndPassReceiver());
   return connector;
-}
-
-std::string DummyGetSessionId(const std::string& /* audio_group_id */) {
-  return "";
 }
 
 }  // namespace
@@ -110,13 +107,14 @@ class MockMediaAudioOutputStream : public ::media::AudioOutputStream {
 class MockCastAudioManager : public CastAudioManager {
  public:
   explicit MockCastAudioManager(
+      CastAudioManagerHelper::Delegate* delegate,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
       : CastAudioManager(
             std::make_unique<::media::TestAudioThread>(),
             nullptr,
+            delegate,
             base::BindRepeating(&MockCastAudioManager::GetCmaBackendFactory,
                                 base::Unretained(this)),
-            base::BindRepeating(&DummyGetSessionId),
             media_task_runner,
             media_task_runner,
             CreateConnector(),
@@ -149,7 +147,7 @@ class CastAudioMixerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     mock_manager_.reset(new StrictMock<MockCastAudioManager>(
-        task_environment_.GetMainThreadTaskRunner()));
+        &delegate_, task_environment_.GetMainThreadTaskRunner()));
     mock_mixer_stream_.reset(new StrictMock<MockMediaAudioOutputStream>());
 
     ON_CALL(*mock_manager_, MakeMixerOutputStream(_))
@@ -178,6 +176,7 @@ class CastAudioMixerTest : public ::testing::Test {
 
   // Saved params passed to |mock_mixer_stream_|.
   ::media::AudioOutputStream::AudioSourceCallback* source_callback_;
+  MockCastAudioManagerHelperDelegate delegate_;
 };
 
 TEST_F(CastAudioMixerTest, Volume) {
