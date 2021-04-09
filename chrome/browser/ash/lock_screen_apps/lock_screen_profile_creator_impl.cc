@@ -38,7 +38,7 @@ void LockScreenProfileCreatorImpl::OnPreferredNoteTakingAppUpdated(
     return;
 
   std::unique_ptr<chromeos::NoteTakingAppInfo> note_taking_app =
-      chromeos::NoteTakingHelper::Get()->GetPreferredChromeAppInfo(
+      chromeos::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
           primary_profile_);
 
   if (!note_taking_app || !note_taking_app->preferred ||

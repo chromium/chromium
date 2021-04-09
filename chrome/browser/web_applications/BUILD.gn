@@ -210,6 +210,7 @@ source_set("web_applications_test_support") {
     "//components/keyed_service/content:content",
     "//components/services/app_service/public/cpp:app_url_handling",
     "//components/sync:test_support_model",
+    "//components/webapps/browser",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/webui:webui",

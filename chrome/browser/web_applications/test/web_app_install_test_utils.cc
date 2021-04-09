@@ -10,19 +10,35 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace web_app {
 namespace test {
+namespace {
+
+void WaitUntilReady(WebAppProvider* provider) {
+  if (provider->on_registry_ready().is_signaled())
+    return;
+
+  base::RunLoop run_loop;
+  provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+}  // namespace
 
 void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -73,6 +89,31 @@ AppId InstallDummyWebApp(Profile* profile,
               }));
   run_loop.Run();
 
+  return app_id;
+}
+
+AppId InstallWebApp(Profile* profile,
+                    std::unique_ptr<WebApplicationInfo> web_app_info) {
+  // The sync system requires that sync entity name is never empty.
+  if (web_app_info->title.empty())
+    web_app_info->title = u"WebApplicationInfo App Name";
+
+  AppId app_id;
+  base::RunLoop run_loop;
+  auto* provider = WebAppProvider::Get(profile);
+  DCHECK(provider);
+  WaitUntilReady(provider);
+  provider->install_manager().InstallWebAppFromInfo(
+      std::move(web_app_info), ForInstallableSite::kYes,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, InstallResultCode code) {
+            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+            app_id = installed_app_id;
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
   return app_id;
 }
 

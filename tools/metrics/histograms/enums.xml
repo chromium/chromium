@@ -55749,6 +55749,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Couldn't convert path to Android URL"/>
   <int value="6" label="No app specified"/>
   <int value="7" label="No apps available"/>
+  <int value="8" label="Web app launched successfully"/>
+  <int value="9" label="Web app missing"/>
 </enum>
 
 <enum name="NotificationActionType">

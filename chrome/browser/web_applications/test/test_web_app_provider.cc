@@ -62,6 +62,12 @@ void TestWebAppProvider::SetRunSubsystemStartupTasks(
   run_subsystem_startup_tasks_ = run_subsystem_startup_tasks;
 }
 
+void TestWebAppProvider::SetMigrationManager(
+    std::unique_ptr<WebAppMigrationManager> migration_manager) {
+  CheckNotStarted();
+  migration_manager_ = std::move(migration_manager);
+}
+
 void TestWebAppProvider::SetRegistrar(std::unique_ptr<AppRegistrar> registrar) {
   CheckNotStarted();
   registrar_ = std::move(registrar);

@@ -135,6 +135,7 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   SetWebAppFileHandlers(web_app_info.file_handlers, web_app);
   web_app.SetShareTarget(web_app_info.share_target);
   SetWebAppProtocolHandlers(web_app_info.protocol_handlers, web_app);
+  web_app.SetNoteTakingNewNoteUrl(web_app_info.note_taking_new_note_url);
   web_app.SetUrlHandlers(web_app_info.url_handlers);
 
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&

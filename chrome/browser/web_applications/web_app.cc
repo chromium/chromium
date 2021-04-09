@@ -129,13 +129,19 @@ void WebApp::SetDescription(const std::string& description) {
 }
 
 void WebApp::SetStartUrl(const GURL& start_url) {
-  DCHECK(!start_url.is_empty() && start_url.is_valid());
+  DCHECK(start_url.is_valid());
   start_url_ = start_url;
 }
 
 void WebApp::SetScope(const GURL& scope) {
   DCHECK(scope.is_empty() || scope.is_valid());
   scope_ = scope;
+}
+
+void WebApp::SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url) {
+  DCHECK(note_taking_new_note_url.is_empty() ||
+         note_taking_new_note_url.is_valid());
+  note_taking_new_note_url_ = note_taking_new_note_url;
 }
 
 void WebApp::SetThemeColor(base::Optional<SkColor> theme_color) {
@@ -386,6 +392,8 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
        app.protocol_handlers_) {
     out << "  protocol_handler: " << protocol_handler << std::endl;
   }
+  out << "  note_taking_new_note_url: " << app.note_taking_new_note_url_
+      << std::endl;
   for (const apps::UrlHandlerInfo& url_handler : app.url_handlers_)
     out << "  url_handler: " << url_handler << std::endl;
   out << "  capture_links: " << app.capture_links_ << std::endl;
@@ -452,6 +460,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.share_target_,
         app.additional_search_terms_,
         app.protocol_handlers_,
+        app.note_taking_new_note_url_,
         app.last_badging_time_,
         app.last_launch_time_,
         app.install_time_,

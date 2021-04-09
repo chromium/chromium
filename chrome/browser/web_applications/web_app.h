@@ -133,6 +133,13 @@ class WebApp {
     return protocol_handlers_;
   }
 
+  // URL within scope to launch for a "new note" action. Valid iff this is
+  // considered a note-taking app.
+  // TODO(crbug.com/1185678): Persist this in the database.
+  const GURL& note_taking_new_note_url() const {
+    return note_taking_new_note_url_;
+  }
+
   const apps::UrlHandlers& url_handlers() const { return url_handlers_; }
 
   RunOnOsLoginMode run_on_os_login_mode() const {
@@ -195,7 +202,7 @@ class WebApp {
 
   void SetName(const std::string& name);
   void SetDescription(const std::string& description);
-  void SetStartUrl(const GURL& launch_url);
+  void SetStartUrl(const GURL& start_url);
   void SetLaunchQueryParams(base::Optional<std::string> launch_query_params);
   void SetScope(const GURL& scope);
   void SetThemeColor(base::Optional<SkColor> theme_color);
@@ -222,6 +229,7 @@ class WebApp {
       std::vector<std::string> additional_search_terms);
   void SetProtocolHandlers(
       std::vector<apps::ProtocolHandlerInfo> protocol_handlers);
+  void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
   void SetLastBadgingTime(const base::Time& time);
   void SetLastLaunchTime(const base::Time& time);
@@ -276,6 +284,7 @@ class WebApp {
   base::Optional<apps::ShareTarget> share_target_;
   std::vector<std::string> additional_search_terms_;
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
+  GURL note_taking_new_note_url_;
   base::Time last_badging_time_;
   base::Time last_launch_time_;
   base::Time install_time_;
