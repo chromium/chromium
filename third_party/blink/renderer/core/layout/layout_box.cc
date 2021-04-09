@@ -2625,6 +2625,10 @@ bool LayoutBox::ForegroundIsKnownToBeOpaqueInRect(
     if (child_local_rect.Bottom() > child_box->Size().Height() ||
         child_local_rect.Right() > child_box->Size().Width())
       continue;
+    if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+        child->Style()->HasCurrentBackgroundColorAnimation()) {
+      return false;
+    }
     if (child_box->BackgroundIsKnownToBeOpaqueInRect(child_local_rect))
       return true;
     if (child_box->ForegroundIsKnownToBeOpaqueInRect(child_local_rect,
