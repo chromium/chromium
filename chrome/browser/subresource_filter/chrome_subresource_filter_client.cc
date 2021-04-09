@@ -34,8 +34,7 @@ GetDatabaseManagerFromSafeBrowsingService() {
 
 ChromeSubresourceFilterClient::ChromeSubresourceFilterClient(
     content::WebContents* web_contents)
-    : web_contents_(web_contents),
-      database_manager_(GetDatabaseManagerFromSafeBrowsingService()) {
+    : web_contents_(web_contents) {
   DCHECK(web_contents_);
 }
 
@@ -55,7 +54,7 @@ void ChromeSubresourceFilterClient::
           std::make_unique<ChromeSubresourceFilterClient>(web_contents),
           SubresourceFilterProfileContextFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-          dealer);
+          GetDatabaseManagerFromSafeBrowsingService(), dealer);
 }
 
 void ChromeSubresourceFilterClient::ShowNotification() {
@@ -64,9 +63,4 @@ void ChromeSubresourceFilterClient::ShowNotification() {
         InfoBarService::FromWebContents(web_contents_);
     subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_service);
 #endif
-}
-
-const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-ChromeSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
-  return database_manager_;
 }

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "components/safe_browsing/core/db/database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "url/gurl.h"
 
@@ -43,15 +42,6 @@ class SubresourceFilterClientImpl
 
   // SubresourceFilterClient:
   void ShowNotification() override;
-  const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-  GetSafeBrowsingDatabaseManager() override;
-
-  // Sets the SafeBrowsingDatabaseManager instance used to |database_manager|.
-  void set_database_manager_for_testing(
-      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-          database_manager) {
-    database_manager_ = std::move(database_manager);
-  }
 
  private:
   // This member is only used on Android, so it's necessary to ifdef it to avoid
@@ -61,7 +51,6 @@ class SubresourceFilterClientImpl
 #endif
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
-  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 };
 
 }  // namespace weblayer

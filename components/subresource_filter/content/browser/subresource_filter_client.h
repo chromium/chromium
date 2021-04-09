@@ -7,10 +7,6 @@
 
 #include "base/memory/scoped_refptr.h"
 
-namespace safe_browsing {
-class SafeBrowsingDatabaseManager;
-}
-
 namespace subresource_filter {
 
 class SubresourceFilterClient {
@@ -20,11 +16,6 @@ class SubresourceFilterClient {
   // Informs the embedder to show some UI indicating that resources are being
   // blocked. This method will be called at most once per main-frame navigation.
   virtual void ShowNotification() = 0;
-
-  // Returns the SafeBrowsingDatabaseManager instance associated with this
-  // client, or null if there is no such instance.
-  virtual const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-  GetSafeBrowsingDatabaseManager() = 0;
 };
 
 }  // namespace subresource_filter

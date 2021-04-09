@@ -88,9 +88,10 @@ void SubresourceFilterTestHarness::SetUp() {
       ruleset_service_.get()->GetRulesetDealer();
   auto client = std::make_unique<TestSubresourceFilterClient>(web_contents());
   client_ = client.get();
-  client_->CreateSafeBrowsingDatabaseManager();
+  database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents(), std::move(client), client_->profile_context(), dealer);
+      web_contents(), std::move(client), client_->profile_context(),
+      database_manager_, dealer);
 
   // Observe web_contents() to add subresource filter navigation throttles at
   // the start of navigations.

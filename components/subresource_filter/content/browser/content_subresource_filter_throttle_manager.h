@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/supports_user_data.h"
+#include "components/safe_browsing/core/db/database_manager.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_filtering_throttle.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
@@ -97,6 +98,8 @@ class ContentSubresourceFilterThrottleManager
       content::WebContents* web_contents,
       std::unique_ptr<SubresourceFilterClient> client,
       SubresourceFilterProfileContext* profile_context,
+      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+          database_manager,
       VerifiedRulesetDealer::Handle* dealer_handle);
 
   static ContentSubresourceFilterThrottleManager* FromWebContents(
@@ -105,6 +108,8 @@ class ContentSubresourceFilterThrottleManager
   ContentSubresourceFilterThrottleManager(
       std::unique_ptr<SubresourceFilterClient> client,
       SubresourceFilterProfileContext* profile_context,
+      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+          database_manager,
       VerifiedRulesetDealer::Handle* dealer_handle,
       content::WebContents* web_contents);
   ~ContentSubresourceFilterThrottleManager() override;
@@ -153,6 +158,13 @@ class ContentSubresourceFilterThrottleManager
 
   void SetIsAdSubframeForTesting(content::RenderFrameHost* render_frame_host,
                                  bool is_ad_subframe);
+
+  // Sets the SafeBrowsingDatabaseManager instance used to |database_manager|.
+  void set_database_manager_for_testing(
+      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+          database_manager) {
+    database_manager_ = std::move(database_manager);
+  }
 
   // Returns the matching FrameAdEvidence for the frame indicated by
   // `render_frame_host` or `base::nullopt` if there is none (i.e. the frame is
@@ -317,6 +329,7 @@ class ContentSubresourceFilterThrottleManager
   VerifiedRulesetDealer::Handle* dealer_handle_;
 
   std::unique_ptr<SubresourceFilterClient> client_;
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 
   std::unique_ptr<ProfileInteractionManager> profile_interaction_manager_;
 

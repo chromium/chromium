@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "components/safe_browsing/core/db/database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 
 namespace content {
@@ -35,15 +34,12 @@ class ChromeSubresourceFilterClient
 
   // SubresourceFilterClient:
   void ShowNotification() override;
-  const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-  GetSafeBrowsingDatabaseManager() override;
 
  private:
   content::WebContents* web_contents_;
 
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
-  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeSubresourceFilterClient);
 };

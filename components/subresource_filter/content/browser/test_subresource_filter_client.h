@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 
@@ -30,19 +29,9 @@ class TestSubresourceFilterClient : public SubresourceFilterClient {
 
   // SubresourceFilterClient:
   void ShowNotification() override;
-  const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-  GetSafeBrowsingDatabaseManager() override;
-
-  // GetSafeBrowsingDatabaseManager() returns null by default. Invoke this
-  // method to change that behavior.
-  void CreateSafeBrowsingDatabaseManager();
 
   SubresourceFilterProfileContext* profile_context() {
     return profile_context_.get();
-  }
-
-  FakeSafeBrowsingDatabaseManager* fake_safe_browsing_database_manager() {
-    return database_manager_.get();
   }
 
   // Turns on/off the smart UI feature (currently enabled in production on
@@ -55,7 +44,6 @@ class TestSubresourceFilterClient : public SubresourceFilterClient {
   }
 
  private:
-  scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<SubresourceFilterProfileContext> profile_context_;

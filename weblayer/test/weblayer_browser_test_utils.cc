@@ -108,11 +108,10 @@ void ActivateSubresourceFilterInWebContentsForURL(
   database_manager->AddBlocklistedUrl(
       url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
 
-  auto* client_impl = static_cast<SubresourceFilterClientImpl*>(
-      subresource_filter::ContentSubresourceFilterThrottleManager::
-          FromWebContents(web_contents)
-              ->client());
-  client_impl->set_database_manager_for_testing(std::move(database_manager));
+  auto* throttle_manager = subresource_filter::
+      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
+  throttle_manager->set_database_manager_for_testing(
+      std::move(database_manager));
 }
 
 OneShotNavigationObserver::OneShotNavigationObserver(Shell* shell)

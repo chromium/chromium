@@ -91,6 +91,7 @@ void ContentSubresourceFilterThrottleManager::CreateForWebContents(
     content::WebContents* web_contents,
     std::unique_ptr<SubresourceFilterClient> client,
     SubresourceFilterProfileContext* profile_context,
+    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
     VerifiedRulesetDealer::Handle* dealer_handle) {
   if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter))
     return;
@@ -101,7 +102,8 @@ void ContentSubresourceFilterThrottleManager::CreateForWebContents(
   web_contents->SetUserData(
       kContentSubresourceFilterThrottleManagerWebContentsUserDataKey,
       std::make_unique<ContentSubresourceFilterThrottleManager>(
-          std::move(client), profile_context, dealer_handle, web_contents));
+          std::move(client), profile_context, database_manager, dealer_handle,
+          web_contents));
 }
 
 // static
@@ -117,12 +119,15 @@ ContentSubresourceFilterThrottleManager::
     ContentSubresourceFilterThrottleManager(
         std::unique_ptr<SubresourceFilterClient> client,
         SubresourceFilterProfileContext* profile_context,
+        scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+            database_manager,
         VerifiedRulesetDealer::Handle* dealer_handle,
         content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       receiver_(web_contents, this),
       dealer_handle_(dealer_handle),
       client_(std::move(client)),
+      database_manager_(std::move(database_manager)),
       profile_interaction_manager_(
           std::make_unique<subresource_filter::ProfileInteractionManager>(
               web_contents,
@@ -472,13 +477,11 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
   DCHECK(!navigation_handle->IsSameDocument());
   DCHECK(!ShouldInheritActivation(navigation_handle->GetURL()));
 
-  if (navigation_handle->IsInMainFrame() &&
-      client_->GetSafeBrowsingDatabaseManager()) {
+  if (navigation_handle->IsInMainFrame() && database_manager_) {
     throttles->push_back(
         std::make_unique<SubresourceFilterSafeBrowsingActivationThrottle>(
             navigation_handle, profile_interaction_manager_.get(),
-            content::GetIOThreadTaskRunner({}),
-            client_->GetSafeBrowsingDatabaseManager()));
+            content::GetIOThreadTaskRunner({}), database_manager_));
   }
 
   if (!dealer_handle_)

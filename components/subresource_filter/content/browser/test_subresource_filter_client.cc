@@ -40,15 +40,6 @@ void TestSubresourceFilterClient::ShowNotification() {
   ++disallowed_notification_count_;
 }
 
-const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-TestSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
-  return database_manager_;
-}
-
-void TestSubresourceFilterClient::CreateSafeBrowsingDatabaseManager() {
-  database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
-}
-
 void TestSubresourceFilterClient::SetShouldUseSmartUI(bool enabled) {
   profile_context_->settings_manager()->set_should_use_smart_ui_for_testing(
       enabled);

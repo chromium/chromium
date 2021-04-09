@@ -72,7 +72,7 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
   }
 
   FakeSafeBrowsingDatabaseManager* fake_safe_browsing_database() {
-    return client_->fake_safe_browsing_database_manager();
+    return database_manager_.get();
   }
 
   void SetIsAdSubframe(content::RenderFrameHost* render_frame_host,
@@ -100,6 +100,7 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
   base::ScopedTempDir ruleset_service_dir_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   testing::ScopedSubresourceFilterConfigurator scoped_configuration_;
+  scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager_;
   TestSubresourceFilterClient* client_;
   std::unique_ptr<RulesetService> ruleset_service_;
 };

@@ -26,6 +26,10 @@
 #include "weblayer/browser/infobar_service.h"
 #endif
 
+namespace safe_browsing {
+class SafeBrowsingDatabaseManager;
+}
+
 namespace weblayer {
 
 namespace {
@@ -50,11 +54,10 @@ GetDatabaseManagerFromSafeBrowsingService() {
 
 SubresourceFilterClientImpl::SubresourceFilterClientImpl(
     content::WebContents* web_contents)
-    :
 #if defined(OS_ANDROID)
-      web_contents_(web_contents),
+    : web_contents_(web_contents)
 #endif
-      database_manager_(GetDatabaseManagerFromSafeBrowsingService()) {
+{
 }
 
 SubresourceFilterClientImpl::~SubresourceFilterClientImpl() = default;
@@ -72,7 +75,7 @@ void SubresourceFilterClientImpl::CreateThrottleManagerWithClientForWebContents(
           std::make_unique<SubresourceFilterClientImpl>(web_contents),
           SubresourceFilterProfileContextFactory::GetForBrowserContext(
               web_contents->GetBrowserContext()),
-          dealer);
+          GetDatabaseManagerFromSafeBrowsingService(), dealer);
 }
 
 void SubresourceFilterClientImpl::ShowNotification() {
@@ -80,11 +83,6 @@ void SubresourceFilterClientImpl::ShowNotification() {
   subresource_filter::AdsBlockedInfobarDelegate::Create(
       InfoBarService::FromWebContents(web_contents_));
 #endif
-}
-
-const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-SubresourceFilterClientImpl::GetSafeBrowsingDatabaseManager() {
-  return database_manager_;
 }
 
 }  // namespace weblayer
