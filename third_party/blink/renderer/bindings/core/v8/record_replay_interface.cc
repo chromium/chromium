@@ -802,17 +802,6 @@ static void SendMessageToFrontend(const v8_inspector::StringView& message) {
   CHECK(!rv.IsEmpty());
 }
 
-extern "C" void V8RecordReplayGetDefaultContext(v8::Isolate* isolate, v8::Local<v8::Context>* cx);
-
-struct InspectorClient : public v8_inspector::V8InspectorClient {
-  v8::Local<v8::Context> ensureDefaultContextInGroup(int context_group_id) final {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    v8::Local<v8::Context> rv;
-    V8RecordReplayGetDefaultContext(isolate, &rv);
-    return rv;
-  }
-};
-
 struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
   void sendResponse(int callId,
                     std::unique_ptr<v8_inspector::StringBuffer> message) final {
@@ -824,28 +813,28 @@ struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
   void flushProtocolNotifications() final {}
 };
 
-const int CONTEXT_GROUP_ID = 1;
-
 static v8_inspector::V8Inspector* gInspector;
 static v8_inspector::V8InspectorSession* gInspectorSession;
 
+void RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector) {
+  if (v8::IsMainThread()) {
+    gInspector = inspector;
+
+    // For now we only connect to the first frame.
+    static int ContextGroupId = 1;
+
+    gInspectorSession = gInspector->connect(ContextGroupId,
+                                            new InspectorChannel(),
+                                            v8_inspector::StringView()).release();
+  }
+}
+
 static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(v8::IsMainThread());
+  CHECK(gInspectorSession);
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "must be called with a single string");
   v8::String::Utf8Value message(args.GetIsolate(), args[0]);
-
-  if (!gInspectorSession) {
-    v8::Local<v8::Context> context = args.GetIsolate()->GetCurrentContext();
-
-    gInspector = v8_inspector::V8Inspector::create(args.GetIsolate(),
-                                                   new InspectorClient()).release();
-
-    v8_inspector::V8ContextInfo context_info(context, CONTEXT_GROUP_ID, v8_inspector::StringView());
-    gInspector->contextCreated(context_info);
-
-    gInspectorSession = gInspector->connect(CONTEXT_GROUP_ID, new InspectorChannel(),
-                                            v8_inspector::StringView()).release();
-  }
 
   std::string nmessage(*message);
   v8_inspector::StringView messageView((const uint8_t*)nmessage.c_str(), nmessage.length());

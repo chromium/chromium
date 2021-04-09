@@ -135,6 +135,11 @@ extern "C" void V8RecordReplaySetPaintCallback(char* (*callback)(const char*, in
 const SkPixmap* gCurrentPixmap;
 
 static char* PaintCallback(const char* mime_type, int jpeg_quality) {
+  if (recordreplay::HasDivergedFromRecording()) {
+    // NYI
+    return nullptr;
+  }
+
   CHECK(gCurrentPixmap);
 
   if (strcmp(mime_type, "image/jpeg")) {

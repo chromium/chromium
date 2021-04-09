@@ -8,6 +8,7 @@
 
 #include "base/rand_util.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -40,7 +41,9 @@ namespace blink {
 
 ThreadDebugger::ThreadDebugger(v8::Isolate* isolate)
     : isolate_(isolate),
-      v8_inspector_(v8_inspector::V8Inspector::create(isolate, this)) {}
+      v8_inspector_(v8_inspector::V8Inspector::create(isolate, this)) {
+  RecordReplayRegisterV8Inspector(v8_inspector_.get());
+}
 
 ThreadDebugger::~ThreadDebugger() = default;
 
