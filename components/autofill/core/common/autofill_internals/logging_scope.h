@@ -30,7 +30,11 @@ class LogBuffer;
   /* Metrics collection. */                                            \
   T(Metrics)                                                           \
   /* Import of address profiles from form submissions. */              \
-  T(AddressProfileFormImport)
+  T(AddressProfileFormImport)                                          \
+  /* If credit card upload is either enabled or disabled. */           \
+  T(CreditCardUploadStatus)                                            \
+  /* Whether or not card upload was offered to the user. */            \
+  T(CardUploadDecision)
 
 // Define a bunch of logging scopes: kContext, kParsing, ...
 #define AUTOFILL_TEMPLATE(NAME) k##NAME,

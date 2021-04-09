@@ -1579,10 +1579,12 @@ class AutofillMetrics {
       size_t number_of_accepted_fields,
       size_t number_of_corrected_fields);
 
+  // The total number of values in the |CardUploadDecisionMetric| enum. Must be
+  // updated each time a new value is added.
+  static const int kNumCardUploadDecisionMetrics = 19;
+
  private:
   static void Log(AutocompleteEvent event);
-
-  static const int kNumCardUploadDecisionMetrics = 19;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(AutofillMetrics);
 };

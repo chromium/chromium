@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/strike_database.h"
@@ -40,6 +41,8 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -949,6 +952,94 @@ void CreditCardSaveManager::LogCardUploadDecisions(
       client_->GetUkmRecorder(), client_->GetUkmSourceId(),
       pending_upload_request_origin_.GetURL(), upload_decision_metrics);
   pending_upload_request_origin_ = url::Origin();
+  LogCardUploadDecisionsToAutofillInternals(upload_decision_metrics);
+}
+
+void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
+    int upload_decision_metrics) {
+  LogManager* log_manager = client_->GetLogManager();
+  if (!log_manager)
+    return;
+
+  auto final_decision =
+      (upload_decision_metrics_ & AutofillMetrics::UPLOAD_OFFERED)
+          ? LogMessage::kCardUploadDecisionUploadOffered
+          : LogMessage::kCardUploadDecisionUploadNotOffered;
+
+  auto buffer = log_manager->Log();
+  buffer << LoggingScope::kCardUploadDecision << final_decision;
+  buffer << Tag{"div"} << Attrib{"class", "form"} << Tag{"tr"} << Tag{"td"}
+         << "Decision Metrics:" << CTag{"td"} << Tag{"td"} << Tag{"table"};
+
+  for (int i = 0; i < AutofillMetrics::kNumCardUploadDecisionMetrics; i++) {
+    AutofillMetrics::CardUploadDecisionMetric currentBitmaskValue =
+        static_cast<AutofillMetrics::CardUploadDecisionMetric>(1 << i);
+    if (!(upload_decision_metrics & currentBitmaskValue))
+      continue;
+
+    std::string result;
+    switch (currentBitmaskValue) {
+      case AutofillMetrics::UPLOAD_OFFERED:
+        result = "UPLOAD_OFFERED";
+        break;
+      case AutofillMetrics::CVC_FIELD_NOT_FOUND:
+        result = "CVC_FIELD_NOT_FOUND";
+        break;
+      case AutofillMetrics::CVC_VALUE_NOT_FOUND:
+        result = "CVC_VALUE_NOT_FOUND";
+        break;
+      case AutofillMetrics::INVALID_CVC_VALUE:
+        result = "INVALID_CVC_VALUE";
+        break;
+      case AutofillMetrics::FOUND_POSSIBLE_CVC_VALUE_IN_NON_CVC_FIELD:
+        result = "FOUND_POSSIBLE_CVC_VALUE_IN_NON_CVC_FIELD";
+        break;
+      case AutofillMetrics::UPLOAD_NOT_OFFERED_NO_ADDRESS_PROFILE:
+        result = "UPLOAD_NOT_OFFERED_NO_ADDRESS_PROFILE";
+        break;
+      case AutofillMetrics::UPLOAD_NOT_OFFERED_NO_RECENTLY_USED_ADDRESS:
+        result = "UPLOAD_NOT_OFFERED_NO_RECENTLY_USED_ADDRESS";
+        break;
+      case AutofillMetrics::UPLOAD_NOT_OFFERED_NO_ZIP_CODE:
+        result = "UPLOAD_NOT_OFFERED_NO_ZIP_CODE";
+        break;
+      case AutofillMetrics::UPLOAD_NOT_OFFERED_CONFLICTING_ZIPS:
+        result = "UPLOAD_NOT_OFFERED_CONFLICTING_ZIPS";
+        break;
+      case AutofillMetrics::UPLOAD_NOT_OFFERED_NO_NAME:
+        result = "UPLOAD_NOT_OFFERED_NO_NAME";
+        break;
+      case AutofillMetrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES:
+        result = "UPLOAD_NOT_OFFERED_CONFLICTING_NAMES";
+        break;
+      case AutofillMetrics::UPLOAD_NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED:
+        result = "UPLOAD_NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED";
+        break;
+      case AutofillMetrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME:
+        result = "USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME";
+        break;
+      case AutofillMetrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE:
+        result = "UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE";
+        break;
+      case AutofillMetrics::USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE:
+        result = "USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE";
+        break;
+      case AutofillMetrics::UPLOAD_OFFERED_FROM_NON_FOCUSABLE_FIELD:
+        result = "UPLOAD_OFFERED_FROM_NON_FOCUSABLE_FIELD";
+        break;
+      case AutofillMetrics::UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE:
+        result = "UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE";
+        break;
+      case AutofillMetrics::UPLOAD_OFFERED_FROM_DYNAMIC_CHANGE_FORM:
+        result = "UPLOAD_OFFERED_FROM_DYNAMIC_CHANGE_FORM";
+        break;
+      case AutofillMetrics::UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE:
+        result = "UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE";
+        break;
+    }
+    buffer << Tr{} << result;
+  }
+  buffer << CTag{"table"} << CTag{"td"} << CTag{"tr"} << CTag{"div"};
 }
 
 void CreditCardSaveManager::LogSaveCardRequestExpirationDateReasonMetric() {
