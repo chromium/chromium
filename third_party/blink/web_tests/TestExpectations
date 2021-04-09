@@ -6102,9 +6102,6 @@ crbug.com/1093026 [ Linux ] http/tests/security/offscreencanvas-placeholder-read
 crbug.com/1093026 [ Win10 ] http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html [ Pass Failure ]
 
 # Ecosystem-Infra Rotation 2020-06-15
-# Flake Portal seem to be reporting crashes as failures, so we expect that as well.
-crbug.com/1094930 external/wpt/webrtc/receiver-track-live.https.html [ Pass Crash Failure ]
-
 crbug.com/924472 external/wpt/css/css-transforms/transform-box/cssbox-content-box.html [ Failure ]
 crbug.com/924472 external/wpt/css/css-transforms/transform-box/cssbox-border-box.html [ Failure ]
 crbug.com/924472 external/wpt/css/css-transforms/transform-box/cssbox-stroke-box.html [ Failure ]
