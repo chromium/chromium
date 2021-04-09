@@ -79,8 +79,9 @@ class ProtoToJSONRuleConverter {
         << "Converted rule can't be parsed " << json_rule_;
 
     IndexedRule indexed_rule;
-    ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GURL() /* base_url */, &indexed_rule);
+    ParseResult result =
+        IndexedRule::CreateIndexedRule(std::move(rule), GURL() /* base_url */,
+                                       kMinValidStaticRulesetID, &indexed_rule);
 
     auto get_non_ascii_error = [this](const std::string& context) {
       return base::StringPrintf(

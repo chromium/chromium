@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "net/base/escape.h"
@@ -31,6 +32,8 @@ using FlatVectorOffset = FlatOffset<flatbuffers::Vector<FlatOffset<T>>>;
 using FlatStringOffset = FlatOffset<flatbuffers::String>;
 using FlatStringListOffset = FlatVectorOffset<flatbuffers::String>;
 
+using FlatIntListOffset = FlatOffset<flatbuffers::Vector<int32_t>>;
+
 // Writes to |builder| a flatbuffer vector of shared strings corresponding to
 // |container| and returns the offset to it. If |container| is empty, returns an
 // empty offset.
@@ -46,6 +49,15 @@ FlatStringListOffset BuildVectorOfSharedStrings(
   for (const std::string& str : container)
     offsets.push_back(builder->CreateSharedString(str));
   return builder->CreateVector(offsets);
+}
+
+FlatIntListOffset BuildIntVector(flatbuffers::FlatBufferBuilder* builder,
+                                 const base::flat_set<int>& input) {
+  if (input.empty())
+    return FlatIntListOffset();
+
+  return builder->CreateVector(
+      std::vector<int32_t>(input.begin(), input.end()));
 }
 
 std::vector<std::unique_ptr<url_pattern_index::UrlPatternIndexBuilder>>
@@ -188,6 +200,36 @@ FlatVectorOffset<flat::ModifyHeaderInfo> BuildModifyHeaderInfoOffset(
   return builder->CreateVector(flat_modify_header_list);
 }
 
+FlatOffset<flatbuffers::Vector<uint8_t>> BuildEmbedderConditionsOffset(
+    flatbuffers::FlatBufferBuilder* builder,
+    const IndexedRule& indexed_rule) {
+  if (indexed_rule.tab_ids.empty() && indexed_rule.excluded_tab_ids.empty())
+    return FlatOffset<flatbuffers::Vector<uint8_t>>();
+
+  // Build a nested Flatbuffer for the `flat::EmbedderConditions` table.
+  flatbuffers::FlatBufferBuilder nested_builder;
+  {
+    FlatIntListOffset tab_ids_included_offset =
+        BuildIntVector(&nested_builder, indexed_rule.tab_ids);
+    FlatIntListOffset tab_ids_excluded_offset =
+        BuildIntVector(&nested_builder, indexed_rule.excluded_tab_ids);
+
+    auto nested_flatbuffer_root_offset = flat::CreateEmbedderConditions(
+        nested_builder, tab_ids_included_offset, tab_ids_excluded_offset);
+    nested_builder.Finish(nested_flatbuffer_root_offset,
+                          kEmbedderConditionsBufferIdentifier);
+  }
+
+  // Now we can store the buffer in the parent. Note that by default, vectors
+  // are only aligned to their elements or size field, so in this case if the
+  // buffer contains 64-bit elements, they may not be correctly aligned. We fix
+  // that with:
+  builder->ForceVectorAlignment(nested_builder.GetSize(), sizeof(uint8_t),
+                                nested_builder.GetBufferMinAlignment());
+  return builder->CreateVector(nested_builder.GetBufferPointer(),
+                               nested_builder.GetSize());
+}
+
 }  // namespace
 
 FlatRulesetIndexer::FlatRulesetIndexer()
@@ -206,6 +248,8 @@ void FlatRulesetIndexer::AddUrlRule(const IndexedRule& indexed_rule) {
       BuildVectorOfSharedStrings(&builder_, indexed_rule.excluded_domains);
   FlatStringOffset url_pattern_offset =
       builder_.CreateSharedString(indexed_rule.url_pattern);
+  auto embedder_conditions_offset =
+      BuildEmbedderConditionsOffset(&builder_, indexed_rule);
 
   FlatOffset<flat_rule::UrlRule> offset = flat_rule::CreateUrlRule(
       builder_, indexed_rule.options, indexed_rule.element_types,
@@ -213,7 +257,7 @@ void FlatRulesetIndexer::AddUrlRule(const IndexedRule& indexed_rule) {
       indexed_rule.url_pattern_type, indexed_rule.anchor_left,
       indexed_rule.anchor_right, domains_included_offset,
       domains_excluded_offset, url_pattern_offset, indexed_rule.id,
-      indexed_rule.priority);
+      indexed_rule.priority, embedder_conditions_offset);
 
   if (indexed_rule.url_pattern_type !=
       url_pattern_index::flat::UrlPatternType_REGEXP) {

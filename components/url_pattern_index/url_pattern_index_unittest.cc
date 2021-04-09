@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
@@ -35,6 +37,8 @@ using testing::kSubdomain;
 using testing::kSubstring;
 using testing::kThirdParty;
 using testing::MakeUrlRule;
+using EmbedderConditionsMatcher =
+    UrlPatternIndexMatcher::EmbedderConditionsMatcher;
 
 class UrlPatternIndexTest : public ::testing::Test {
  public:
@@ -50,13 +54,16 @@ class UrlPatternIndexTest : public ::testing::Test {
     return !!offset.o;
   }
 
-  void AddSimpleUrlRule(std::string pattern,
+  void AddSimpleUrlRule(const std::string& pattern,
                         uint32_t id,
                         uint32_t priority,
                         uint8_t options,
                         uint16_t element_types,
-                        uint16_t request_methods_mask) {
+                        uint16_t request_methods_mask,
+                        const std::vector<uint8_t>& embedder_conditions = {}) {
     auto pattern_offset = flat_builder_->CreateString(pattern);
+    auto embedder_conditions_offset =
+        flat_builder_->CreateVector(embedder_conditions);
 
     flat::UrlRuleBuilder rule_builder(*flat_builder_);
     rule_builder.add_options(options);
@@ -65,6 +72,8 @@ class UrlPatternIndexTest : public ::testing::Test {
     rule_builder.add_priority(priority);
     rule_builder.add_element_types(element_types);
     rule_builder.add_request_methods(request_methods_mask);
+    rule_builder.add_embedder_conditions(embedder_conditions_offset);
+
     auto rule_offset = rule_builder.Finish();
 
     index_builder_->IndexUrlRule(rule_offset);
@@ -95,21 +104,26 @@ class UrlPatternIndexTest : public ::testing::Test {
     return index_matcher_->FindMatch(
         url, document_origin, element_type, activation_type,
         testing::IsThirdParty(url, document_origin), disable_generic_rules,
+        UrlPatternIndexMatcher::EmbedderConditionsMatcher(),
         UrlPatternIndexMatcher::FindRuleStrategy::kAny);
   }
 
-  const flat::UrlRule* FindMatch(base::StringPiece url_string,
-                                 base::StringPiece document_origin_string,
-                                 flat::ElementType element_type,
-                                 flat::ActivationType activation_type,
-                                 flat::RequestMethod request_method,
-                                 bool disable_generic_rules) const {
+  const flat::UrlRule* FindMatch(
+      base::StringPiece url_string,
+      base::StringPiece document_origin_string,
+      flat::ElementType element_type,
+      flat::ActivationType activation_type,
+      flat::RequestMethod request_method,
+      bool disable_generic_rules,
+      const EmbedderConditionsMatcher& embedder_conditions_matcher =
+          EmbedderConditionsMatcher()) const {
     const GURL url(url_string);
     const url::Origin document_origin =
         testing::GetOrigin(document_origin_string);
     return index_matcher_->FindMatch(
         url, document_origin, element_type, activation_type, request_method,
         testing::IsThirdParty(url, document_origin), disable_generic_rules,
+        embedder_conditions_matcher,
         UrlPatternIndexMatcher::FindRuleStrategy::kAny);
   }
 
@@ -124,7 +138,8 @@ class UrlPatternIndexTest : public ::testing::Test {
         testing::GetOrigin(document_origin_string);
     return index_matcher_->FindAllMatches(
         url, document_origin, element_type, activation_type,
-        testing::IsThirdParty(url, document_origin), disable_generic_rules);
+        testing::IsThirdParty(url, document_origin), disable_generic_rules,
+        UrlPatternIndexMatcher::EmbedderConditionsMatcher());
   }
 
   const flat::UrlRule* FindHighestPriorityMatch(
@@ -133,6 +148,7 @@ class UrlPatternIndexTest : public ::testing::Test {
         GURL(url_string), url::Origin(), testing::kOther /*element_type*/,
         kNoActivation /*activation_type*/, true /*is_third_party*/,
         false /*disable_generic_rules*/,
+        UrlPatternIndexMatcher::EmbedderConditionsMatcher(),
         UrlPatternIndexMatcher::FindRuleStrategy::
             kHighestPriority /*strategy*/);
   }
@@ -981,6 +997,64 @@ TEST_F(UrlPatternIndexTest, RequestMethod) {
     for (size_t j = 0; j < base::size(request_methods); j++) {
       EXPECT_EQ(i == j, !!FindMatch(url, origin, other_element, no_activation,
                                     request_methods[j].request_method, false));
+    }
+  }
+}
+
+TEST_F(UrlPatternIndexTest, EmbedderConditions) {
+  const std::vector<uint8_t> embedder_data_1 = {1, 2, 3};
+  const std::string url_1 = "http://foo.com";
+  AddSimpleUrlRule("foo", 1 /* id */, 0 /* priority */, flat::OptionFlag_ANY,
+                   flat::ElementType_ANY, flat::RequestMethod_ANY,
+                   embedder_data_1);
+  const std::vector<uint8_t> embedder_data_2 = {4, 5};
+  const std::string url_2 = "http://bar.com";
+  AddSimpleUrlRule("bar", 2 /* id */, 0 /* priority */, flat::OptionFlag_ANY,
+                   flat::ElementType_ANY, flat::RequestMethod_ANY,
+                   embedder_data_2);
+  Finish();
+
+  EmbedderConditionsMatcher match_first_element_one =
+      base::BindRepeating([](const flatbuffers::Vector<uint8_t>& conditions) {
+        return conditions.size() >= 1 && conditions[0] == 1;
+      });
+  EmbedderConditionsMatcher match_first_element_three =
+      base::BindRepeating([](const flatbuffers::Vector<uint8_t>& conditions) {
+        return conditions.size() >= 1 && conditions[0] == 3;
+      });
+  EmbedderConditionsMatcher match_has_evens =
+      base::BindRepeating([](const flatbuffers::Vector<uint8_t>& conditions) {
+        return base::ranges::any_of(conditions,
+                                    [](int i) { return i % 2 == 0; });
+      });
+
+  struct {
+    const std::string url;
+    const EmbedderConditionsMatcher matcher;
+    const bool expect_match;
+    // Fields below are valid iff `expect_match` is true.
+    const uint32_t expected_id = 0;
+    const base::Optional<std::vector<uint8_t>> expected_embedder_data;
+  } cases[] = {{url_1, match_first_element_one, true, 1, embedder_data_1},
+               {url_1, match_has_evens, true, 1, embedder_data_1},
+               {url_1, match_first_element_three, false},
+               {url_2, match_first_element_one, false},
+               {url_2, match_has_evens, true, 2, embedder_data_2},
+               {url_2, match_first_element_three, false},
+               {"http://abc.com", match_first_element_one, false}};
+
+  for (size_t i = 0; i < base::size(cases); ++i) {
+    SCOPED_TRACE(::testing::Message() << "Testing case " << i);
+    bool disable_generic_rules = false;
+    const flat::UrlRule* rule = FindMatch(
+        cases[i].url, "", flat::ElementType_OTHER, flat::ActivationType_NONE,
+        flat::RequestMethod_GET, disable_generic_rules, cases[i].matcher);
+    EXPECT_EQ(cases[i].expect_match, !!rule);
+    if (cases[i].expect_match) {
+      EXPECT_EQ(cases[i].expected_id, rule->id());
+      EXPECT_EQ(cases[i].expected_embedder_data,
+                std::vector<uint8_t>(rule->embedder_conditions()->begin(),
+                                     rule->embedder_conditions()->end()));
     }
   }
 }

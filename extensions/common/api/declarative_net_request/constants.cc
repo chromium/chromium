@@ -60,6 +60,8 @@ const char kResponseHeadersPath[] = "action.responseHeaders";
 const char kHeaderNameKey[] = "header";
 const char kHeaderOperationKey[] = "operation";
 const char kHeaderValueKey[] = "value";
+const char kTabIdsKey[] = "tabIds";
+const char kExcludedTabIdsKey[] = "excludedTabIds";
 
 }  // namespace declarative_net_request
 }  // namespace extensions

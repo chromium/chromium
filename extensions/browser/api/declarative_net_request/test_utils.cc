@@ -286,6 +286,15 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED:
       output << "ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED";
       break;
+    case ParseResult::ERROR_EMPTY_TAB_IDS_LIST:
+      output << "ERROR_EMPTY_TAB_IDS_LIST";
+      break;
+    case ParseResult::ERROR_TAB_IDS_ON_NON_SESSION_RULE:
+      output << "ERROR_TAB_IDS_ON_NON_SESSION_RULE";
+      break;
+    case ParseResult::ERROR_TAB_ID_DUPLICATED:
+      output << "ERROR_TAB_ID_DUPLICATED";
+      break;
   }
   return output;
 }

@@ -162,8 +162,7 @@ namespace declarativeNetRequest {
      DOMString? regexSubstitution;
   };
 
-  [noinline_doc]
-  dictionary RuleCondition {
+  [noinline_doc] dictionary RuleCondition {
 
     // The pattern which is matched against the network request url.
     // Supported constructs:
@@ -275,6 +274,17 @@ namespace declarativeNetRequest {
     // the domain from which it originated. If omitted, all requests are
     // accepted.
     DomainType? domainType;
+
+    // List of $(ref:tabs.Tab.id) which the rule should match. An ID of
+    // $(ref:tabs.TAB_ID_NONE) matches requests which don't originate from a
+    // tab. An empty list is not allowed. Only supported for session-scoped
+    // rules.
+    long[]? tabIds;
+
+    // List of $(ref:tabs.Tab.id) which the rule should not match. An ID of
+    // $(ref:tabs.TAB_ID_NONE) excludes requests which don't originate from a
+    // tab. Only supported for session-scoped rules.
+    long[]? excludedTabIds;
   };
 
   dictionary ModifyHeaderInfo {
