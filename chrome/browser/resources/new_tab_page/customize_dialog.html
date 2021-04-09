@@ -48,7 +48,7 @@
 
   #leftTitleSpacer,
   #menuContainer {
-    flex-basis: 232px;
+    flex-basis: 218px;
   }
 
   #title {
@@ -61,6 +61,13 @@
   #title,
   #pagesContainer {
     flex-grow: 1;
+  }
+
+  /* We pad the pages to allow content to overflow horizontally. We can't use
+   * overflow-x: visible since that will be ignored if overflow-y: auto. */
+  #title,
+  #pages {
+    padding-inline-start: 14px;
   }
 
   #menu,
