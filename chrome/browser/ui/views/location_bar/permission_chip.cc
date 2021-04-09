@@ -263,7 +263,9 @@ void PermissionChip::StartDismissTimer() {
 }
 
 void PermissionChip::Dismiss() {
-  delegate_->Closing();
+  if (delegate_) {
+    delegate_->Closing();
+  }
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_EXPIRED_SCREENREADER_ANNOUNCEMENT));
 }
