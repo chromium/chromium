@@ -741,7 +741,7 @@ void UDPSocketWin::LogRead(int result,
                           bytes, address);
   }
 
-  NetworkActivityMonitor::GetInstance()->IncrementBytesReceived(result);
+  activity_monitor::IncrementBytesReceived(result);
 }
 
 void UDPSocketWin::LogWrite(int result,

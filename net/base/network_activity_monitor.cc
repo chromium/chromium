@@ -4,32 +4,38 @@
 
 #include "net/base/network_activity_monitor.h"
 
+#include <atomic>
+#include <type_traits>
+
 namespace net {
+namespace activity_monitor {
 
 namespace {
 
-base::LazyInstance<NetworkActivityMonitor>::Leaky g_network_activity_monitor =
-    LAZY_INSTANCE_INITIALIZER;
+std::atomic<uint64_t> g_bytes_received{0};
+
+static_assert(
+    std::is_trivially_constructible<decltype(g_bytes_received)>::value,
+    "g_bytes_received generates a static initializer");
+static_assert(std::is_trivially_destructible<decltype(g_bytes_received)>::value,
+              "g_bytes_received generates a static destructor");
 
 }  // namespace
 
-NetworkActivityMonitor::NetworkActivityMonitor() : bytes_received_(0) {}
-
-NetworkActivityMonitor::~NetworkActivityMonitor() = default;
-
-// static
-NetworkActivityMonitor* NetworkActivityMonitor::GetInstance() {
-  return g_network_activity_monitor.Pointer();
+void IncrementBytesReceived(uint64_t bytes_received) {
+  // std::memory_order_relaxed is used because no other operation on
+  // |bytes_received_| depends on memory operations that happened before this
+  // increment.
+  g_bytes_received.fetch_add(bytes_received, std::memory_order_relaxed);
 }
 
-void NetworkActivityMonitor::IncrementBytesReceived(uint64_t bytes_received) {
-  base::AutoLock lock(lock_);
-  bytes_received_ += bytes_received;
+uint64_t GetBytesReceived() {
+  return g_bytes_received.load(std::memory_order_relaxed);
 }
 
-uint64_t NetworkActivityMonitor::GetBytesReceived() const {
-  base::AutoLock lock(lock_);
-  return bytes_received_;
+void ResetBytesReceivedForTesting() {
+  g_bytes_received = 0;
 }
 
+}  // namespace activity_monitor
 }  // namespace net

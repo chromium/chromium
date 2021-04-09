@@ -380,7 +380,7 @@ void ThroughputAnalyzer::SetUseLocalHostRequestsForTesting(
 
 int64_t ThroughputAnalyzer::GetBitsReceived() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return NetworkActivityMonitor::GetInstance()->GetBytesReceived() * 8;
+  return activity_monitor::GetBytesReceived() * 8;
 }
 
 size_t ThroughputAnalyzer::CountActiveInFlightRequests() const {

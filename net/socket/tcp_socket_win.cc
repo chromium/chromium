@@ -525,7 +525,7 @@ int TCPSocketWin::ReadIfReady(IOBuffer* buf,
   } else {
     net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_RECEIVED, rv,
                                   buf->data());
-    NetworkActivityMonitor::GetInstance()->IncrementBytesReceived(rv);
+    activity_monitor::IncrementBytesReceived(rv);
     return rv;
   }
 

@@ -237,7 +237,7 @@ void UDPSocketPosix::ReceivedActivityMonitor::Increment(uint32_t bytes) {
 void UDPSocketPosix::ReceivedActivityMonitor::Update() {
   if (!bytes_)
     return;
-  NetworkActivityMonitor::GetInstance()->IncrementBytesReceived(bytes_);
+  activity_monitor::IncrementBytesReceived(bytes_);
   bytes_ = 0;
 }
 
