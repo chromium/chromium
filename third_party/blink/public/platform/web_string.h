@@ -56,6 +56,7 @@ namespace blink {
 // * WebString::FromASCII(const std::string& ascii)
 // * WebString::FromLatin1(const std::string& latin1)
 // * WebString::FromUTF8(const std::string& utf8)
+// * WebString::FromUTF16(const char16_t* utf16)
 // * WebString::FromUTF16(const std::u16string& utf16)
 // * WebString::FromUTF16(const base::Optional<std::u16string>& utf16)
 //
@@ -135,6 +136,7 @@ class WebString {
     return base::Latin1OrUTF16ToUTF16(length(), Data8(), Data16());
   }
 
+  BLINK_PLATFORM_EXPORT static WebString FromUTF16(const char16_t*);
   BLINK_PLATFORM_EXPORT static WebString FromUTF16(const std::u16string&);
   BLINK_PLATFORM_EXPORT static WebString FromUTF16(
       const base::Optional<std::u16string>&);

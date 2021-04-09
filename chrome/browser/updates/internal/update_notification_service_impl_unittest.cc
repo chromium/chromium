@@ -26,8 +26,8 @@ namespace {
 using testing::_;
 using ::testing::Invoke;
 
-const auto kTestTitle = base::UTF8ToUTF16("hello");
-const auto kTestMessage = base::UTF8ToUTF16("world");
+constexpr char16_t kTestTitle[] = u"hello";
+constexpr char16_t kTestMessage[] = u"world";
 
 class UpdateNotificationServiceImplTest : public testing::Test {
  public:

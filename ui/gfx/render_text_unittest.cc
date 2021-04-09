@@ -3095,8 +3095,7 @@ TEST_F(RenderTextTest, MoveCursor_UpDown) {
 
   std::vector<size_t> expected_lines;
   std::vector<Range> expected_range;
-  for (auto text :
-       {ASCIIToUTF16("123 456 123 456 "), UTF8ToUTF16("אבג דהו זחט זחט ")}) {
+  for (auto* text : {u"123 456 123 456 ", u"אבג דהו זחט זחט "}) {
     render_text->SetText(text);
     EXPECT_EQ(2U, render_text->GetNumLines());
 

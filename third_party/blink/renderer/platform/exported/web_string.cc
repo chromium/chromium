@@ -90,6 +90,10 @@ WebString WebString::FromUTF8(const char* data, size_t length) {
   return String::FromUTF8(data, length);
 }
 
+WebString WebString::FromUTF16(const char16_t* s) {
+  return WebString(s, std::char_traits<char16_t>::length(s));
+}
+
 WebString WebString::FromUTF16(const std::u16string& s) {
   return WebString(s.data(), s.length());
 }

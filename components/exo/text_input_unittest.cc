@@ -256,7 +256,7 @@ TEST_F(TextInputTest, CompositionTextEmpty) {
 TEST_F(TextInputTest, CommitCompositionText) {
   SetCompositionText("composition");
 
-  EXPECT_CALL(*delegate(), Commit(base::UTF8ToUTF16("composition"))).Times(1);
+  EXPECT_CALL(*delegate(), Commit(std::u16string(u"composition"))).Times(1);
   const uint32_t composition_text_length =
       text_input()->ConfirmCompositionText(/** keep_selection */ false);
   EXPECT_EQ(composition_text_length, static_cast<uint32_t>(11));

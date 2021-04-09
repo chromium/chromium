@@ -880,8 +880,7 @@ TEST_F(PasswordAutofillAgentTest,
 TEST_F(PasswordAutofillAgentTest, AutocompleteForPrefilledUsernameValue) {
   // Set the username element to a value from the prefilled values list.
   // Comparison should be insensitive to leading and trailing whitespaces.
-  username_element_.SetValue(
-      WebString::FromUTF16(base::UTF8ToUTF16(" User Name ")));
+  username_element_.SetValue(WebString::FromUTF16(u" User Name "));
 
   // Simulate the browser sending back the login info, it triggers the
   // autocomplete.
@@ -908,8 +907,7 @@ TEST_F(PasswordAutofillAgentTest, AutocompleteForPrefilledUsernameValue) {
 TEST_F(PasswordAutofillAgentTest, MetricsOnlyLoggedOnce) {
   // Set the username element to a value from the prefilled values list.
   // Comparison should be insensitive to leading and trailing whitespaces.
-  username_element_.SetValue(
-      WebString::FromUTF16(base::UTF8ToUTF16(" User Name ")));
+  username_element_.SetValue(WebString::FromUTF16(u" User Name "));
 
   // Simulate the browser sending back the login info multiple tims.
   // This triggers the autocomplete.
