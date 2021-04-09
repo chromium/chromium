@@ -39,9 +39,15 @@ static void JNI_UmaUtils_RecordMetricsReportingDefaultOptIn(
     jboolean opt_in) {
   DCHECK(g_browser_process);
   PrefService* local_state = g_browser_process->local_state();
-  metrics::RecordMetricsReportingDefaultState(
-      local_state, opt_in ? metrics::EnableMetricsDefault::OPT_IN
-                          : metrics::EnableMetricsDefault::OPT_OUT);
+
+  // Users can easily accept ToS multiple times by using the back button, only
+  // report the first time. See https://crbug.com/741003.
+  if (metrics::GetMetricsReportingDefaultState(local_state) ==
+      metrics::EnableMetricsDefault::DEFAULT_UNKNOWN) {
+    metrics::RecordMetricsReportingDefaultState(
+        local_state, opt_in ? metrics::EnableMetricsDefault::OPT_IN
+                            : metrics::EnableMetricsDefault::OPT_OUT);
+  }
 }
 
 }  // namespace android
