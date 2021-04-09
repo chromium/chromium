@@ -41,7 +41,7 @@ class NearbyConnectionsManagerImpl
                         PowerLevel power_level,
                         DataUsage data_usage,
                         ConnectionsCallback callback) override;
-  void StopAdvertising() override;
+  void StopAdvertising(ConnectionsCallback callback) override;
   void StartDiscovery(DiscoveryListener* listener,
                       DataUsage data_usage,
                       ConnectionsCallback callback) override;
