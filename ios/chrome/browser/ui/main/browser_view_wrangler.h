@@ -12,6 +12,7 @@
 
 @protocol ApplicationCommands;
 @protocol BrowsingDataCommands;
+class Browser;
 class ChromeBrowserState;
 @class SceneState;
 
@@ -38,11 +39,18 @@ class ChromeBrowserState;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Creates the main Browser used by the receiver, using the browser state
-// it was configured with. The main interface is then created; until this
+// it was configured with.
+// Returns the created browser. The browser's internals, e.g.
+// the dispatcher, can now be accessed. But createMainCoordinatorAndInterface
+// should be called shortly after.
+- (Browser*)createMainBrowser;
+
+// Creates the main interface; until this
 // method is called, the main and incognito interfaces will be nil. This should
 // be done before the main interface is accessed, usually immediately after
 // initialization.
-- (void)createMainBrowser;
+// -createMainBrowser MUST be called before calling this method.
+- (void)createMainCoordinatorAndInterface;
 
 // Tells the receiver to clean up all the state that is tied to the incognito
 // BrowserState. This method should be called before the incognito BrowserState

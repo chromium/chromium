@@ -751,30 +751,32 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
        applicationCommandEndpoint:self
       browsingDataCommandEndpoint:self.browsingDataCommandsHandler];
 
-  // Add the DefaultBrowserSceneAgent before creating main browser because some
-  // coordinators therein require it.
-  [self.sceneState addAgent:[[DefaultBrowserSceneAgent alloc] init]];
-
-  // Ensure the main browser is created. This also creates the BVC.
-  [self.browserViewWrangler createMainBrowser];
-
-  // Now that the main browser's command dispatcher is fully configured, inject
-  // it into the PolicyWatcherBrowserAgent so it can start monitoring
-  // UI-impacting policy changes.
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.mainInterface.browser->GetCommandDispatcher(), ApplicationCommands);
-  PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser)
-      ->SetApplicationCommandsHandler(handler);
-
-  // Add CommandDispatcher to scene agents that require it.
-  [DefaultBrowserSceneAgent agentFromScene:self.sceneState].dispatcher =
-      self.mainInterface.browser->GetCommandDispatcher();
+  // Ensure the main browser is created.
+  Browser* mainBrowser = [self.browserViewWrangler createMainBrowser];
+  CommandDispatcher* mainCommandDispatcher =
+      mainBrowser->GetCommandDispatcher();
 
   // Add scene agents that require CommandDispatcher.
+  DefaultBrowserSceneAgent* defaultBrowserAgent =
+      [[DefaultBrowserSceneAgent alloc] init];
+  [self.sceneState addAgent:defaultBrowserAgent];
+  defaultBrowserAgent.dispatcher = mainCommandDispatcher;
+
   [self.sceneState
       addAgent:[[PolicySignoutSceneAgent alloc]
-                   initWithCommandDispatcher:self.mainInterface.browser
-                                                 ->GetCommandDispatcher()]];
+                   initWithCommandDispatcher:mainCommandDispatcher]];
+
+  // Create and start the BVC.
+  [self.browserViewWrangler createMainCoordinatorAndInterface];
+
+  // Now that the main browser's command dispatcher is created and the newly
+  // started UI coordinators have registered with it, inject it into the
+  // PolicyWatcherBrowserAgent so it can start monitoring UI-impacting policy
+  // changes.
+  id<ApplicationCommands> handler =
+      HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);
+  PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser)
+      ->SetApplicationCommandsHandler(handler);
 
   if (@available(iOS 14, *)) {
     if (base::ios::IsSceneStartupSupported() &&

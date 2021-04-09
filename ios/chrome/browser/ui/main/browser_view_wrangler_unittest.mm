@@ -88,6 +88,7 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
          applicationCommandEndpoint:(id<ApplicationCommands>)nil
         browsingDataCommandEndpoint:nil];
     [wrangler createMainBrowser];
+    [wrangler createMainCoordinatorAndInterface];
     // Test that BVC is created on demand.
     UIViewController* bvc = wrangler.mainInterface.viewController;
     EXPECT_NE(bvc, nil);
@@ -131,6 +132,7 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
   // After creating the main browser, it should have been added to the browser
   // list.
   [wrangler createMainBrowser];
+  [wrangler createMainCoordinatorAndInterface];
   EXPECT_EQ(wrangler.mainInterface.browser, observer.GetLastAddedBrowser());
   EXPECT_EQ(1UL, browser_list->AllRegularBrowsers().size());
   // The lazy OTR browser creation should involve an addition to the browser
