@@ -2,7 +2,7 @@ Name: Crashpad
 Short Name: crashpad
 URL: https://crashpad.chromium.org/
 Version: unknown
-Revision: b1c36e7478c3a44bcff3d379ae7e27220b409350
+Revision: f1943fcb571c211418657dc614e1cf6f74a2334e
 License: Apache 2.0
 License File: crashpad/LICENSE
 Security Critical: yes
@@ -42,6 +42,3 @@ Local Modifications:
  - MemoryMap.SelfLargeMapFile, SelfBasic, SelfLargeFiles are disabled when
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1163794
    (crashpad/util/BUILD.gn, crashpad/util/linux/memory_map_test.cc)
- - Exclude //build/config/mac:sdk_inputs dependency from iOS builds
- - MultiprocessDeathTest.* (multiprocess_posix_test.cc) explicitly use the
-   "fast" gtest death-test style, rather than "threadsafe".
