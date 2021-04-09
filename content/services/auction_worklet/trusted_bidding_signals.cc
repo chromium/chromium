@@ -52,7 +52,7 @@ TrustedBiddingSignals::TrustedBiddingSignals(
   GURL final_url = trusted_bidding_signals_url.ReplaceComponents(replacements);
 
   auction_downloader_ = std::make_unique<AuctionDownloader>(
-      url_loader_factory, final_url,
+      url_loader_factory, final_url, AuctionDownloader::MimeType::kJson,
       base::BindOnce(&TrustedBiddingSignals::OnDownloadComplete,
                      base::Unretained(this),
                      std::move(trusted_bidding_signals_keys)));

@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -274,20 +275,22 @@ class AuctionRunnerTest : public testing::Test {
 
 // An auction with two successful bids.
 TEST_F(AuctionRunnerTest, Basic) {
-  url_loader_factory_.AddResponse(
-      kBidder1Url.spec(),
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
       MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
                     true /* has_signals */, "k1", "a"));
-  url_loader_factory_.AddResponse(
-      kBidder2Url.spec(),
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
       MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
                     true /* has_signals */, "l2", "b"));
-  url_loader_factory_.AddResponse(kSellerUrl.spec(), kAuctionScript);
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2",
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
       R"({"k1":"a", "k2": "b", "extra": "c"})");
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2",
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
       R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   Result res = RunStandardAuction();
@@ -311,17 +314,19 @@ TEST_F(AuctionRunnerTest, Basic) {
 
 // An auction where one bid is successful, another's script 404s.
 TEST_F(AuctionRunnerTest, OneBidOne404) {
-  url_loader_factory_.AddResponse(
-      kBidder1Url.spec(),
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
       MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
                     true /* has_signals */, "k1", "a"));
   url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
-  url_loader_factory_.AddResponse(kSellerUrl.spec(), kAuctionScript);
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2",
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
       R"({"k1":"a", "k2": "b", "extra": "c"})");
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2",
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
       R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   Result res = RunStandardAuction();
@@ -346,19 +351,21 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
 // An auction where one bid is successful, another's script does not provide a
 // bidding function.
 TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
-  url_loader_factory_.AddResponse(
-      kBidder1Url.spec(),
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
       MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
                     true /* has_signals */, "k1", "a"));
 
   // The auction script doesn't make any bids.
-  url_loader_factory_.AddResponse(kBidder2Url.spec(), kAuctionScript);
-  url_loader_factory_.AddResponse(kSellerUrl.spec(), kAuctionScript);
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2",
+  AddJavascriptResponse(&url_loader_factory_, kBidder2Url, kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
       R"({"k1":"a", "k2": "b", "extra": "c"})");
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2",
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
       R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   Result res = RunStandardAuction();
@@ -384,12 +391,14 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
 TEST_F(AuctionRunnerTest, NoBids) {
   url_loader_factory_.AddResponse(kBidder1Url.spec(), "", net::HTTP_NOT_FOUND);
   url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
-  url_loader_factory_.AddResponse(kSellerUrl.spec(), kAuctionScript);
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2",
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
       R"({"k1":"a", "k2":"b", "extra":"c"})");
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2",
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
       R"({"l1":"a", "l2": "b", "extra":"c"})");
 
   Result res = RunStandardAuction();
@@ -406,14 +415,16 @@ TEST_F(AuctionRunnerTest, NoBids) {
 // An auction where none of the bidding scripts has a valid bidding function.
 TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
   // kAuctionScript is a valid script that doesn't have a bidding function.
-  url_loader_factory_.AddResponse(kBidder1Url.spec(), kAuctionScript);
-  url_loader_factory_.AddResponse(kBidder2Url.spec(), kAuctionScript);
-  url_loader_factory_.AddResponse(kSellerUrl.spec(), kAuctionScript);
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2",
+  AddJavascriptResponse(&url_loader_factory_, kBidder1Url, kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kBidder2Url, kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
       R"({"k1":"a", "k2":"b", "extra":"c"})");
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2",
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
       R"({"l1":"a", "l2": "b", "extra":"c"})");
 
   Result res = RunStandardAuction();
@@ -432,19 +443,21 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
   std::string bid_script1 =
       MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
                     true /* has_signals */, "k1", "a");
-  url_loader_factory_.AddResponse(kBidder1Url.spec(), bid_script1);
-  url_loader_factory_.AddResponse(
-      kBidder2Url.spec(),
+  AddJavascriptResponse(&url_loader_factory_, kBidder1Url, bid_script1);
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
       MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
                     true /* has_signals */, "l2", "b"));
 
   // No seller scoring function in a bid script.
-  url_loader_factory_.AddResponse(kSellerUrl.spec(), bid_script1);
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2",
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, bid_script1);
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
       R"({"k1":"a", "k2":"b", "extra":"c"})");
-  url_loader_factory_.AddResponse(
-      kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2",
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
       R"({"l1":"a", "l2": "b", "extra":"c"})");
 
   Result res = RunStandardAuction();
@@ -478,15 +491,15 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
 
 // An auction where bidders don't requested trusted bidding signals.
 TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
-  url_loader_factory_.AddResponse(
-      kBidder1Url.spec(),
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
       MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
                     false /* has_signals */, "k1", "a"));
-  url_loader_factory_.AddResponse(
-      kBidder2Url.spec(),
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
       MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
                     false /* has_signals */, "l2", "b"));
-  url_loader_factory_.AddResponse(kSellerUrl.spec(), kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
 
   std::vector<mojom::BiddingInterestGroupPtr> bidders;
   bidders.push_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
@@ -523,12 +536,12 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
 
 // An auction where trusted bidding signals are requested, but the fetch 404s.
 TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
-  url_loader_factory_.AddResponse(
-      kBidder1Url.spec(),
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
       MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
                     false /* has_signals */, "k1", "a"));
-  url_loader_factory_.AddResponse(
-      kBidder2Url.spec(),
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
       MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
                     false /* has_signals */, "l2", "b"));
   url_loader_factory_.AddResponse(
@@ -537,7 +550,7 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
   url_loader_factory_.AddResponse(
       kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2", "",
       net::HTTP_NOT_FOUND);
-  url_loader_factory_.AddResponse(kSellerUrl.spec(), kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
 
   Result res = RunStandardAuction();
   EXPECT_EQ("https://ad2.com/", res.ad_url.spec());

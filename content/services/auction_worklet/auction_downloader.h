@@ -24,6 +24,13 @@ namespace auction_worklet {
 // blocks responses.
 class AuctionDownloader {
  public:
+  // Mime type to use for Accept header. Any response without a matching
+  // Content-Type header is rejected.
+  enum class MimeType {
+    kJavascript,
+    kJson,
+  };
+
   // Passes in nullptr on failure. Always invoked asynchronously.
   //
   // TODO(mmenke): Pass along some sort of error string on failure, to make
@@ -35,6 +42,7 @@ class AuctionDownloader {
   // asynchronously once the data has been fetched or an error has occurred.
   AuctionDownloader(network::mojom::URLLoaderFactory* url_loader_factory,
                     const GURL& source_url,
+                    MimeType mime_type,
                     AuctionDownloaderCallback auction_downloader_callback);
   explicit AuctionDownloader(const AuctionDownloader&) = delete;
   AuctionDownloader& operator=(const AuctionDownloader&) = delete;
@@ -47,6 +55,7 @@ class AuctionDownloader {
                   const network::mojom::URLResponseHead& response_head,
                   std::vector<std::string>* removed_headers);
 
+  const MimeType mime_type_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   AuctionDownloaderCallback auction_downloader_callback_;
 };

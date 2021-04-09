@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,8 +50,9 @@ class WorkletLoaderTest : public testing::Test {
 };
 
 TEST_F(WorkletLoaderTest, NetworkError) {
-  url_loader_factory_.AddResponse(url_.spec(), kValidScript,
-                                  net::HTTP_NOT_FOUND);
+  // Make this look like a valid response in all ways except the response code.
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, base::nullopt,
+              kValidScript, net::HTTP_NOT_FOUND);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, &v8_helper_,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
@@ -60,7 +62,7 @@ TEST_F(WorkletLoaderTest, NetworkError) {
 }
 
 TEST_F(WorkletLoaderTest, CompileError) {
-  url_loader_factory_.AddResponse(url_.spec(), kInvalidScript);
+  AddJavascriptResponse(&url_loader_factory_, url_, kInvalidScript);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, &v8_helper_,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
@@ -70,7 +72,7 @@ TEST_F(WorkletLoaderTest, CompileError) {
 }
 
 TEST_F(WorkletLoaderTest, Success) {
-  url_loader_factory_.AddResponse(url_.spec(), kValidScript);
+  AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, &v8_helper_,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
@@ -83,7 +85,7 @@ TEST_F(WorkletLoaderTest, Success) {
 // success, so that the loader and helper can be torn down without crashing
 // during the callback.
 TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
-  url_loader_factory_.AddResponse(url_.spec(), kValidScript);
+  AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   auto v8_helper = std::make_unique<AuctionV8Helper>();
   base::RunLoop run_loop;
   std::unique_ptr<WorkletLoader> worklet_loader =
@@ -105,7 +107,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
 // compile failure, so that the loader and helper can be torn down without
 // crashing during the callback.
 TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
-  url_loader_factory_.AddResponse(url_.spec(), kInvalidScript);
+  AddJavascriptResponse(&url_loader_factory_, url_, kInvalidScript);
   auto v8_helper = std::make_unique<AuctionV8Helper>();
   base::RunLoop run_loop;
   std::unique_ptr<WorkletLoader> worklet_loader =

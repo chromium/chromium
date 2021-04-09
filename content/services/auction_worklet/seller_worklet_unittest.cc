@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,7 +96,7 @@ class SellerWorkletTest : public testing::Test {
   void RunScoreBidWithJavascriptExpectingResult(const std::string& javascript,
                                                 double expected_score) {
     SCOPED_TRACE(javascript);
-    url_loader_factory_.AddResponse(url_.spec(), javascript);
+    AddJavascriptResponse(&url_loader_factory_, url_, javascript);
     RunScoreBidExpectingResult(expected_score);
   }
 
@@ -133,7 +134,7 @@ class SellerWorkletTest : public testing::Test {
       const std::string& javascript,
       const SellerWorklet::Report& expected_report) {
     SCOPED_TRACE(javascript);
-    url_loader_factory_.AddResponse(url_.spec(), javascript);
+    AddJavascriptResponse(&url_loader_factory_, url_, javascript);
     RunReportResultExpectingResult(expected_report);
   }
 
@@ -215,7 +216,7 @@ TEST_F(SellerWorkletTest, NetworkError) {
 }
 
 TEST_F(SellerWorkletTest, CompileError) {
-  url_loader_factory_.AddResponse(url_.spec(), "Invalid Javascript");
+  AddJavascriptResponse(&url_loader_factory_, url_, "Invalid Javascript");
   EXPECT_FALSE(CreateWorklet());
 }
 
@@ -551,8 +552,8 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
   // Use arrays so that all values are references, to catch both the case where
   // variables are persisted, and the case where what they refer to is
   // persisted, but variables are overwritten between runs.
-  url_loader_factory_.AddResponse(url_.spec(),
-                                  R"(
+  AddJavascriptResponse(&url_loader_factory_, url_,
+                        R"(
         // Globally scoped variable.
         if (!globalThis.var1)
           globalThis.var1 = [1];
