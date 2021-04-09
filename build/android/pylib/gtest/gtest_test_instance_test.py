@@ -134,7 +134,7 @@ class GtestTestInstanceTests(unittest.TestCase):
     actual = gtest_test_instance.ParseGTestOutput(raw_output, None, None)
     self.assertEquals(1, len(actual))
     self.assertEquals('FooTest.Bar', actual[0].GetName())
-    self.assertEquals(0, actual[0].GetDuration())
+    self.assertIsNone(actual[0].GetDuration())
     self.assertEquals(base_test_result.ResultType.CRASH, actual[0].GetType())
 
   def testParseGTestOutput_fatalDcheck(self):
@@ -145,7 +145,7 @@ class GtestTestInstanceTests(unittest.TestCase):
     actual = gtest_test_instance.ParseGTestOutput(raw_output, None, None)
     self.assertEquals(1, len(actual))
     self.assertEquals('FooTest.Bar', actual[0].GetName())
-    self.assertEquals(0, actual[0].GetDuration())
+    self.assertIsNone(actual[0].GetDuration())
     self.assertEquals(base_test_result.ResultType.CRASH, actual[0].GetType())
 
   def testParseGTestOutput_unknown(self):

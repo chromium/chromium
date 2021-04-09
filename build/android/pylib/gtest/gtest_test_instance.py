@@ -215,10 +215,10 @@ def ParseGTestOutput(output, symbolizer, device_abi):
       if currently_running_matcher:
         test_name = currently_running_matcher.group(1)
         result_type = base_test_result.ResultType.CRASH
-        duration = 0  # Don't know.
+        duration = None  # Don't know. Not using 0 as this is unknown vs 0.
       elif dcheck_matcher:
         result_type = base_test_result.ResultType.CRASH
-        duration = 0 # Don't know.
+        duration = None  # Don't know.  Not using 0 as this is unknown vs 0.
 
     if log is not None:
       if not matcher and _STACK_LINE_RE.match(l):

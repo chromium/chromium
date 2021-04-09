@@ -91,10 +91,6 @@ class ResultSinkClient(object):
       test_log_formatted = '<pre>' + test_log_escaped + '</pre>'
 
     tr = {
-        # Duration must be formatted to avoid scientific notation in case
-        # number is too small or too large. Result_db takes seconds, not ms.
-        'duration':
-        '%.9fs' % (duration / 1000.0),
         'expected':
         expected,
         'status':
@@ -121,6 +117,12 @@ class ResultSinkClient(object):
       artifacts.update({'Test Log': {'contents': base64.b64encode(test_log)}})
     if artifacts:
       tr['artifacts'] = artifacts
+
+    if duration is not None:
+      # Duration must be formatted to avoid scientific notation in case
+      # number is too small or too large. Result_db takes seconds, not ms.
+      # Need to use float() otherwise it does substitution first then divides.
+      tr['duration'] = '%.9fs' % float(duration / 1000.0)
 
     if test_file and str(test_file).startswith('//'):
       tr['testMetadata'] = {
