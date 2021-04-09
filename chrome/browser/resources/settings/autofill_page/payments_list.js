@@ -45,6 +45,26 @@ Polymer({
         return loadTimeData.getBoolean('showUpiIdSettings');
       },
     },
+
+    /**
+     * True iff both credit cards and UPI IDs will be shown.
+     */
+    showCreditCardUpiSeparator_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeShowCreditCardUpiSeparator_(' +
+          'creditCards, upiIds, enableUpiIds_)',
+    },
+
+    /**
+     * True iff any payment methods will be shown.
+     */
+    showAnyPaymentMethods_: {
+      type: Boolean,
+      value: false,
+      computed:
+          'computeShowAnyPaymentMethods_(creditCards, upiIds, enableUpiIds_)',
+    },
   },
 
   /**
@@ -71,7 +91,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  showCreditCardUpiSeparator_() {
+  computeShowCreditCardUpiSeparator_() {
     return this.showCreditCards_() && this.showUpiIds_();
   },
 
@@ -89,7 +109,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  showAnyPaymentMethods_() {
+  computeShowAnyPaymentMethods_() {
     return this.showCreditCards_() || this.showUpiIds_();
   },
 });
