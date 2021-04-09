@@ -413,7 +413,20 @@ export class EmojiPicker extends PolymerElement {
     const shift = EMOJI_ICON_SIZE * Math.ceil(overflowWidth / EMOJI_ICON_SIZE);
     // negative value means we are already within bounds, so no shift needed.
     variants.style.marginLeft = `-${Math.max(shift, 0)}px`;
-    variants.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    // Now, examine vertical scrolling and scroll if needed. Not quire sure why
+    // we need listcontainer.offsetTop, but it makes things work.
+    const groups = this.shadowRoot.getElementById('groups');
+    const scrollTop = groups.scrollTop;
+    const variantTop = variants.offsetTop;
+    const variantBottom = variantTop + variants.offsetHeight;
+    const listTop = this.shadowRoot.getElementById('listContainer').offsetTop;
+    if (variantBottom > scrollTop + groups.offsetHeight + listTop) {
+      groups.scrollTo({
+        top: variantBottom - groups.offsetHeight - listTop,
+        left: 0,
+        behavior: 'smooth',
+      });
+    }
   }
 
   onEmojiDataLoaded(data) {
