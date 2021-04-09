@@ -23,8 +23,6 @@ class UserEducationInternalsPageHandlerImpl
   UserEducationInternalsPageHandlerImpl& operator=(
       const UserEducationInternalsPageHandlerImpl&) = delete;
 
-  static void AddPageResources(content::WebUIDataSource* source);
-
  private:
   // Profile* profile_ = nullptr;
 };

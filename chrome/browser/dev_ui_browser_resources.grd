@@ -84,12 +84,6 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_UKM_INTERNALS_HTML" file="../../components/ukm/debug/ukm_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_JS" file="../../components/ukm/debug/ukm_internals.js" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_CSS" file="../../components/ukm/debug/ukm_internals.css" type="BINDATA" />
-
-      <if expr="not is_android">
-        <include name="IDR_USER_EDUCATION_INTERNALS_HTML" file="resources/internals/user_education/index.html" type="BINDATA" />
-        <include name="IDR_USER_EDUCATION_INTERNALS_JS" file="${root_gen_dir}/chrome/browser/resources/internals/user_education/user_education_internals.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_USER_EDUCATION_INTERNALS_MOJOM_WEBUI_JS" file="${root_gen_dir}/mojom-webui/chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom-webui.js" resource_path="chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      </if>
     </includes>
   </release>
 </grit>

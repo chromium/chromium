@@ -27,6 +27,7 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   source_ = content::WebUIDataSource::Create(chrome::kChromeUIInternalsHost);
   source_->AddResourcePaths(
       base::make_span(kInternalsResources, kInternalsResourcesSize));
+  source_->DisableTrustedTypesCSP();
 
   // Add your sub-URL internals WebUI here.
   // Keep this set of sub-URLs in sync with |kChromeInternalsPathURLs|.
@@ -43,10 +44,11 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
     AddQueryTilesInternals(web_ui);
 #else
   source_->AddResourcePath("hello-ts", IDR_HELLO_TS_HELLO_TS_HTML);
+  source_->AddResourcePath("user-education",
+                           IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
 
   // chrome://internals/web-app
   WebAppInternalsPageHandlerImpl::AddPageResources(source_);
-  UserEducationInternalsPageHandlerImpl::AddPageResources(source_);
 #endif  // defined(OS_ANDROID)
 
   content::WebUIDataSource::Add(profile_, source_);

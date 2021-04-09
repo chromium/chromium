@@ -16,18 +16,3 @@ UserEducationInternalsPageHandlerImpl::UserEducationInternalsPageHandlerImpl(
 
 UserEducationInternalsPageHandlerImpl::
     ~UserEducationInternalsPageHandlerImpl() = default;
-
-// static
-void UserEducationInternalsPageHandlerImpl::AddPageResources(
-    content::WebUIDataSource* source) {
-  static const webui::ResourcePath kResources[] = {
-      {"user-education", IDR_USER_EDUCATION_INTERNALS_HTML},
-      {"user_education_internals.js", IDR_USER_EDUCATION_INTERNALS_JS},
-      {"chrome/browser/ui/webui/internals/user_education/"
-       "user_education_internals.mojom-webui.js",
-       IDR_USER_EDUCATION_INTERNALS_MOJOM_WEBUI_JS},
-  };
-
-  source->DisableTrustedTypesCSP();
-  source->AddResourcePaths(kResources);
-}
