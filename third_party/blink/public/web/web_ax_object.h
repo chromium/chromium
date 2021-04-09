@@ -367,6 +367,10 @@ class WebAXObject {
   BLINK_EXPORT void HandleAutofillStateChanged(
       const WebAXAutofillState state) const;
 
+  // For testing only, returns whether or not we have the permission to
+  // call AOM event listeners.
+  BLINK_EXPORT bool CanCallAOMEventListenersForTesting() const;
+
 #if INSIDE_BLINK
   BLINK_EXPORT WebAXObject(AXObject*);
   WebAXObject& operator=(AXObject*);

@@ -1278,6 +1278,13 @@ void WebAXObject::HandleAutofillStateChanged(
   private_->HandleAutofillStateChanged(state);
 }
 
+bool WebAXObject::CanCallAOMEventListenersForTesting() const {
+  if (IsDetached())
+    return false;
+
+  return private_->AXObjectCache().CanCallAOMEventListeners();
+}
+
 WebString WebAXObject::ToString(bool verbose) const {
   return private_->ToString(verbose);
 }
