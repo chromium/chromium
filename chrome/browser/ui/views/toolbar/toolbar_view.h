@@ -253,8 +253,6 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void OnTouchUiChanged();
 
-  void AppMenuButtonPressed(const ui::Event& event);
-
   gfx::SlideAnimation size_animation_{this};
 
   // Controls. Most of these can be null, e.g. in popup windows. Only

@@ -25,7 +25,7 @@ enum class InProductHelpFeature;
 class BrowserAppMenuButton : public AppMenuButton {
  public:
   METADATA_HEADER(BrowserAppMenuButton);
-  BrowserAppMenuButton(PressedCallback callback, ToolbarView* toolbar_view);
+  explicit BrowserAppMenuButton(ToolbarView* toolbar_view);
   BrowserAppMenuButton(const BrowserAppMenuButton&) = delete;
   BrowserAppMenuButton& operator=(const BrowserAppMenuButton&) = delete;
   ~BrowserAppMenuButton() override;
@@ -51,6 +51,8 @@ class BrowserAppMenuButton : public AppMenuButton {
 
  private:
   void OnTouchUiChanged();
+
+  void ButtonPressed(const ui::Event& event);
 
   void UpdateTextAndHighlightColor();
 

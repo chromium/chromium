@@ -324,10 +324,7 @@ void ToolbarView::Init() {
     avatar_->SetVisible(show_avatar_toolbar_button);
   }
 
-  auto app_menu_button = std::make_unique<BrowserAppMenuButton>(
-      base::BindRepeating(&ToolbarView::AppMenuButtonPressed,
-                          base::Unretained(this)),
-      this);
+  auto app_menu_button = std::make_unique<BrowserAppMenuButton>(this);
   app_menu_button->SetFlipCanvasOnPaintForRTLUI(true);
   app_menu_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_APP));
@@ -927,12 +924,6 @@ void ToolbarView::OnTouchUiChanged() {
     LoadImages();
     PreferredSizeChanged();
   }
-}
-
-void ToolbarView::AppMenuButtonPressed(const ui::Event& event) {
-  app_menu_button_->ShowMenu(event.IsKeyEvent()
-                                 ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
-                                 : views::MenuRunner::NO_FLAGS);
 }
 
 BEGIN_METADATA(ToolbarView, views::AccessiblePaneView)

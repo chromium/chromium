@@ -50,9 +50,10 @@
 // static
 bool BrowserAppMenuButton::g_open_app_immediately_for_testing = false;
 
-BrowserAppMenuButton::BrowserAppMenuButton(PressedCallback callback,
-                                           ToolbarView* toolbar_view)
-    : AppMenuButton(std::move(callback)), toolbar_view_(toolbar_view) {
+BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
+    : AppMenuButton(base::BindRepeating(&BrowserAppMenuButton::ButtonPressed,
+                                        base::Unretained(this))),
+      toolbar_view_(toolbar_view) {
   SetInkDropMode(InkDropMode::ON);
   SetHorizontalAlignment(gfx::ALIGN_RIGHT);
 
@@ -178,6 +179,11 @@ BrowserAppMenuButton::CreateInkDropHighlight() const {
 void BrowserAppMenuButton::OnTouchUiChanged() {
   UpdateColorsAndInsets();
   PreferredSizeChanged();
+}
+
+void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
+  ShowMenu(event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
+                              : views::MenuRunner::NO_FLAGS);
 }
 
 BEGIN_METADATA(BrowserAppMenuButton, AppMenuButton)
