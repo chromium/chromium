@@ -1131,8 +1131,10 @@ void AccessibilityControllerImpl::StopPointScan() {
 
 void AccessibilityControllerImpl::SetPointScanSpeedDipsPerSecond(
     int point_scan_speed_dips_per_second) {
-  point_scan_controller_->SetSpeedDipsPerSecond(
-      point_scan_speed_dips_per_second);
+  if (point_scan_controller_) {
+    point_scan_controller_->SetSpeedDipsPerSecond(
+        point_scan_speed_dips_per_second);
+  }
 }
 
 void AccessibilityControllerImpl::
