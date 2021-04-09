@@ -315,12 +315,12 @@ class Git(object):
 
     def _remote_branch_ref(self):
         # Use references so that we can avoid collisions, e.g. we don't want to operate on refs/heads/trunk if it exists.
-        remote_master_ref = 'refs/remotes/origin/master'
-        if not self._branch_ref_exists(remote_master_ref):
+        remote_main_ref = 'refs/remotes/origin/main'
+        if not self._branch_ref_exists(remote_main_ref):
             raise ScriptError(
                 message="Can't find a branch to diff against. %s does not exist"
-                % remote_master_ref)
-        return remote_master_ref
+                % remote_main_ref)
+        return remote_main_ref
 
     def commit_locally_with_message(self, message):
         command = ['commit', '--all', '-F', '-']
@@ -330,8 +330,8 @@ class Git(object):
         return self.run(['log', '-1', '--format=%H']).strip()
 
     def git_commits_since(self, commit):
-        return self.run(
-            ['log', commit + '..master', '--format=%H', '--reverse']).split()
+        return self.run(['log', commit + '..main', '--format=%H',
+                         '--reverse']).split()
 
     def git_commit_detail(self, commit, format=None):  # pylint: disable=redefined-builtin
         args = ['log', '-1', commit]
