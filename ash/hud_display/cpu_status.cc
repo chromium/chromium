@@ -42,7 +42,7 @@ CpuStats GetProcStatCPU() {
 
   // Parse first line only.
   // Format is described in [man 5 proc] and in kernel source proc/stat.c .
-  // https://github.com/torvalds/linux/blob/master/fs/proc/stat.c#L150-L160
+  // https://github.com/torvalds/linux/blob/v5.11/fs/proc/stat.c#L153-L163
 
   CpuStats stats;
   int assigned =

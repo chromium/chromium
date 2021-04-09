@@ -115,9 +115,11 @@ DemoModeApp GetAppFromPackageName(const std::string& package_name) {
   if (package_name == "com.chucklefish.stardewvalley" ||
       package_name == "com.chucklefish.stardewvalleydemo")
     return DemoModeApp::kStardewValley;
-  if (package_name == "com.nexstreaming.app.kinemasterfree" ||
-      package_name == "com.nexstreaming.app.kinemasterfree.demo.chromebook")
-    return DemoModeApp::kKinemaster;
+  if (package_name == "com.nexstreaming.app.kinemasterfree" ||  // nocheck
+      package_name ==
+          "com.nexstreaming.app.kinemasterfree.demo.chromebook") {  // nocheck
+    return DemoModeApp::kKinemaster;                                // nocheck
+  }
   if (package_name == "com.pixlr.express" ||
       package_name == "com.pixlr.express.chromebook.demo")
     return DemoModeApp::kPixlr;

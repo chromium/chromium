@@ -60,7 +60,7 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kScreensaver = 19,    // Demo Mode screensaver app.
     kAsphalt9 = 20,       // Android racing game demo app.
     kStardewValley = 21,  // Android farming game demo app.
-    kKinemaster = 22,     // Android video editing software demo app.
+    kKinemaster = 22,     // Android video editing software demo app. nocheck
     kGoogleKeepAndroidApp = 23,
     kAutoCAD = 24,     // Android 2D/3D drawing software demo app.
     kPixlr = 25,       // Android photo editing software demo app.
