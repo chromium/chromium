@@ -100,8 +100,9 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
     disabled.SetBoolean("popular", false);
     disabled.SetBoolean("customLinks", false);
     disabled.SetBoolean("allowlist", false);
-    client_->CallJavascriptFunction(
-        "chrome.ntp_tiles_internals.receiveSourceInfo", disabled);
+    client_->CallJavascriptFunction("cr.webUIListenerCallback",
+                                    base::Value("receive-source-info"),
+                                    disabled);
     SendTiles(NTPTilesVector(), FaviconResultMap());
     return;
   }
@@ -243,8 +244,8 @@ void NTPTilesInternalsMessageHandler::SendSourceInfo() {
     value.SetBoolean("popular", false);
   }
 
-  client_->CallJavascriptFunction(
-      "chrome.ntp_tiles_internals.receiveSourceInfo", value);
+  client_->CallJavascriptFunction("cr.webUIListenerCallback",
+                                  base::Value("receive-source-info"), value);
 }
 
 void NTPTilesInternalsMessageHandler::SendTiles(
@@ -285,8 +286,8 @@ void NTPTilesInternalsMessageHandler::SendTiles(
 
   base::DictionaryValue result;
   result.Set("sites", std::move(sites_list));
-  client_->CallJavascriptFunction("chrome.ntp_tiles_internals.receiveSites",
-                                  result);
+  client_->CallJavascriptFunction("cr.webUIListenerCallback",
+                                  base::Value("receive-sites"), result);
 }
 
 void NTPTilesInternalsMessageHandler::OnURLsAvailable(
