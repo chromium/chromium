@@ -124,6 +124,10 @@
     transition: all 200ms;
     width:  calc(312px / var(--emoji-per-row));
   }
+
+  .fake {
+    --cr-icon-button-hover-background-color: transparent;
+  }
 </style>
 
 <div class="sr-only" aria-live="polite">
@@ -155,16 +159,16 @@
       </template>
       <!--Fake group button to increase maximum scrolling, need an icon to
         render as invisible-->
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]"
+      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
         tabindex="-1">
       </emoji-group-button>
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]"
+      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
         tabindex="-1">
       </emoji-group-button>
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]"
+      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
         tabindex="-1">
       </emoji-group-button>
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]"
+      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
         tabindex="-1">
       </emoji-group-button>
       <emoji-group-button id="RightChevronScrollTarget"
