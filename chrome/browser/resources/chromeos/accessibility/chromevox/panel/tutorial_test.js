@@ -744,3 +744,33 @@ TEST_F('ChromeVoxTutorialTest', 'DISABLED_TouchOrientation', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxTutorialTest', 'GeneralTouchNudges', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getTutorial();
+    const giveNudge = () => {
+      tutorial.giveNudge();
+    };
+    mockFeedback.expectSpeech('ChromeVox tutorial');
+    mockFeedback.call(() => {
+      tutorial.medium = 'touch';
+      tutorial.initializeNudges('general');
+    });
+    for (let i = 0; i < 3; ++i) {
+      mockFeedback.call(giveNudge).expectSpeech(
+          'ChromeVox tutorial', 'Heading 1');
+    }
+    mockFeedback.call(giveNudge)
+        .expectSpeech('Hint: Swipe left or right with one finger to navigate.')
+        .call(giveNudge)
+        .expectSpeech(
+            'Hint: Double-tap with one finger to activate the current item.')
+        .call(giveNudge)
+        .expectSpeech(
+            'Hint: Swipe from right to left with two fingers if you would ' +
+            'like to exit this tutorial.')
+        .replay();
+  });
+});

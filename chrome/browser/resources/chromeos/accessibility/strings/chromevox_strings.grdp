@@ -3249,6 +3249,15 @@
   <message desc="A spoken announcement given in the tutorial if the user becomes inactive." name="IDS_CHROMEVOX_TUTORIAL_HINT_EXIT" is_accessibility_with_no_ui="true">
     Hint: Press Escape if you would like to exit this tutorial.
   </message>
+  <message desc="A spoken announcement given in the tutorial if the user becomes inactive. Only given for touch devices." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_HINT_NAVIGATE" is_accessibility_with_no_ui="true">
+    Hint: Swipe left or right with one finger to navigate.
+  </message>
+  <message desc="A spoken announcement given in the tutorial if the user becomes inactive. Only given for touch devices." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_HINT_CLICK" is_accessibility_with_no_ui="true">
+    Hint: Double-tap with one finger to activate the current item.
+  </message>
+  <message desc="A spoken announcement given in the tutorial if the user becomes inactive. Only given for touch devices." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_HINT_EXIT" is_accessibility_with_no_ui="true">
+    Hint: Swipe from right to left with two fingers if you would like to exit this tutorial.
+  </message>
   <message desc="Title for the intro lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_INTRO_TITLE">
     ChromeVox touch tutorial
   </message>
