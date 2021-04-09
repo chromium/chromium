@@ -10,6 +10,7 @@
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
 #include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_observer.h"
 #include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#include "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,21 +109,21 @@ TEST_F(BreakpadHelperTest, HasReportToUpload) {
 
 TEST_F(BreakpadHelperTest, IsUploadingEnabled) {
   crash_helper::SetUserEnabledUploading(true);
-  EXPECT_TRUE(crash_helper::UserEnabledUploading());
+  EXPECT_TRUE(crash_helper::common::UserEnabledUploading());
   crash_helper::SetEnabled(false);
-  EXPECT_TRUE(crash_helper::UserEnabledUploading());
+  EXPECT_TRUE(crash_helper::common::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] start:NO];
   crash_helper::SetEnabled(true);
-  EXPECT_TRUE(crash_helper::UserEnabledUploading());
+  EXPECT_TRUE(crash_helper::common::UserEnabledUploading());
 
   crash_helper::SetUserEnabledUploading(false);
-  EXPECT_FALSE(crash_helper::UserEnabledUploading());
+  EXPECT_FALSE(crash_helper::common::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] stop];
   crash_helper::SetEnabled(false);
-  EXPECT_FALSE(crash_helper::UserEnabledUploading());
+  EXPECT_FALSE(crash_helper::common::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] start:NO];
   crash_helper::SetEnabled(true);
-  EXPECT_FALSE(crash_helper::UserEnabledUploading());
+  EXPECT_FALSE(crash_helper::common::UserEnabledUploading());
 }
 
 TEST_F(BreakpadHelperTest, StartUploadingReportsInRecoveryMode) {

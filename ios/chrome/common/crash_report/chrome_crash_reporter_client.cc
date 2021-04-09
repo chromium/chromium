@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/chrome_crash_reporter_client.h"
+#include "ios/chrome/common/crash_report/chrome_crash_reporter_client.h"
 
-#include "base/path_service.h"
-#include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/crash_report/crash_helper.h"
+#include "base/files/file_path.h"
+#include "ios/chrome/common/crash_report/crash_helper.h"
 
 void ChromeCrashReporterClient::Create() {
   static base::NoDestructor<ChromeCrashReporterClient> crash_client;
@@ -19,11 +18,12 @@ ChromeCrashReporterClient::~ChromeCrashReporterClient() {}
 
 bool ChromeCrashReporterClient::GetCrashDumpLocation(
     base::FilePath* crash_dir) {
-  return base::PathService::Get(ios::DIR_CRASH_DUMPS, crash_dir);
+  *crash_dir = crash_helper::common::CrashpadDumpLocation();
+  return true;
 }
 
 bool ChromeCrashReporterClient::GetCollectStatsConsent() {
-  return crash_helper::UserEnabledUploading();
+  return crash_helper::common::UserEnabledUploading();
 }
 
 bool ChromeCrashReporterClient::IsRunningUnattended() {

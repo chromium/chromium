@@ -21,6 +21,7 @@ source_set("safe_mode") {
     "//ios/chrome/browser/safe_mode",
     "//ios/chrome/browser/ui/fancy_ui",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ui/colors",
     "//ui/gfx",
   ]

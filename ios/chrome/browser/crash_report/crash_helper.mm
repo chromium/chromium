@@ -27,11 +27,12 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/reporter_running_ios.h"
 #include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/crash_report/chrome_crash_reporter_client.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
 #include "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/channel_info.h"
+#include "ios/chrome/common/crash_report/crash_helper.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -41,15 +42,6 @@
 namespace crash_helper {
 
 namespace {
-
-// Key in NSUserDefaults for a Boolean value that stores whether to upload
-// crash reports.
-NSString* const kCrashReportsUploadingEnabledKey =
-    @"CrashReportsUploadingEnabled";
-
-// Key in NSUserDefaults for a Boolean value that stores the last feature
-// value of kCrashpadIOS.
-NSString* const kCrashpadStartOnNextRun = @"CrashpadStartOnNextRun";
 
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
 const char kUploadedInRecoveryMode[] = "uploaded_in_recovery_mode";
@@ -113,14 +105,6 @@ void UploadResultHandler(NSString* report_id, NSError* error) {
   base::UmaHistogramSparse("CrashReport.BreakpadIOSUploadOutcome", error.code);
 }
 
-// Check and cache the NSUserDefault value synced from the associated
-// kCrashpadIOS feature.
-bool CanCrashpadStart() {
-  static bool can_crashpad_start = [[NSUserDefaults standardUserDefaults]
-      boolForKey:kCrashpadStartOnNextRun];
-  return can_crashpad_start;
-}
-
 // Returns the uptime, the difference between now and start time.
 int64_t GetUptimeMilliseconds() {
   struct timeval tv;
@@ -140,9 +124,9 @@ int64_t GetUptimeMilliseconds() {
 }  // namespace
 
 void SyncCrashpadEnabledOnNextRun() {
-  [[NSUserDefaults standardUserDefaults]
+  [app_group::GetGroupUserDefaults()
       setBool:base::FeatureList::IsEnabled(kCrashpadIOS) ? YES : NO
-       forKey:kCrashpadStartOnNextRun];
+       forKey:base::SysUTF8ToNSString(common::kCrashpadStartOnNextRun)];
 }
 
 void Start() {
@@ -150,22 +134,23 @@ void Start() {
   DCHECK(!crash_reporter::IsCrashpadRunning());
 
   // Notifying the PathService on the location of the crashes so that crashes
-  // can be displayed to the user on the about:crashes page.
-  NSArray* cachesDirectories = NSSearchPathForDirectoriesInDomains(
-      NSCachesDirectory, NSUserDomainMask, YES);
-  NSString* cachePath = [cachesDirectories objectAtIndex:0];
-  NSString* dumpDirectory =
-      [cachePath stringByAppendingPathComponent:@kDefaultLibrarySubdirectory];
-  base::PathService::Override(
-      ios::DIR_CRASH_DUMPS,
-      base::FilePath(base::SysNSStringToUTF8(dumpDirectory)));
-
+  // can be displayed to the user on the about:crashes page.  Use the app group
+  // so crashes can be shared by plugins.
   logging::SetLogMessageHandler(&FatalMessageHandler);
-  if (CanCrashpadStart()) {
-    ChromeCrashReporterClient::Create();
-    crash_reporter::InitializeCrashpad(true, "");
+  if (common::CanCrashpadStart()) {
+    base::PathService::Override(ios::DIR_CRASH_DUMPS,
+                                common::CrashpadDumpLocation());
+    common::StartCrashpad();
     crash_reporter::SetCrashpadRunning(true);
   } else {
+    NSArray* cachesDirectories = NSSearchPathForDirectoriesInDomains(
+        NSCachesDirectory, NSUserDomainMask, YES);
+    NSString* cachePath = [cachesDirectories objectAtIndex:0];
+    NSString* dumpDirectory =
+        [cachePath stringByAppendingPathComponent:@kDefaultLibrarySubdirectory];
+    base::PathService::Override(
+        ios::DIR_CRASH_DUMPS,
+        base::FilePath(base::SysNSStringToUTF8(dumpDirectory)));
     [[BreakpadController sharedInstance] start:YES];
     crash_reporter::SetBreakpadRunning(true);
 
@@ -215,11 +200,12 @@ void SetBreakpadUploadingEnabled(bool enabled) {
 }
 
 // Caches the uploading flag in NSUserDefaults, so that we can access the value
-// in safe mode.
+// immediately on startup, such as in safe mode or extensions.
 void SetUserEnabledUploading(bool uploading_enabled) {
-  [[NSUserDefaults standardUserDefaults]
+  [app_group::GetGroupUserDefaults()
       setBool:uploading_enabled ? YES : NO
-       forKey:kCrashReportsUploadingEnabledKey];
+       forKey:base::SysUTF8ToNSString(
+                  common::kCrashReportsUploadingEnabledKey)];
 }
 
 void SetUploadingEnabled(bool enabled) {
@@ -241,11 +227,6 @@ void SetUploadingEnabled(bool enabled) {
           SetBreakpadUploadingEnabled(enabled);
         }];
   }
-}
-
-bool UserEnabledUploading() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kCrashReportsUploadingEnabledKey];
 }
 
 void CleanupCrashReports(BOOL after_upgrade) {

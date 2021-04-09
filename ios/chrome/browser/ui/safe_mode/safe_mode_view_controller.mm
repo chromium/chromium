@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#include "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
@@ -85,7 +86,7 @@ const NSTimeInterval kUploadTotalTime = 5;
   // If uploading is enabled and more than one report has stacked up, then we
   // assume that the app may be in a state that is preventing crash report
   // uploads before crashing again.
-  return crash_helper::UserEnabledUploading() &&
+  return crash_helper::common::UserEnabledUploading() &&
          crash_helper::GetPendingCrashReportCount() > 1;
 }
 

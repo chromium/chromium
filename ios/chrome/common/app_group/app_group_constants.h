@@ -150,6 +150,9 @@ NSURL* ExternalCommandsItemsFolder();
 // stored.
 NSURL* ContentWidgetFaviconsFolder();
 
+// Gets the shared folder URL in which Crashpad reports are stored.
+NSURL* CrashpadFolder();
+
 // Returns an autoreleased pointer to the shared user defaults if an
 // application group is defined. If not (i.e. on simulator, or if entitlements
 // do not allow it) returns [NSUserDefaults standardUserDefaults].

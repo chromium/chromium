@@ -26,9 +26,6 @@ void SetUploadingEnabled(bool enabled);
 // next startup to check if safe mode must be started.
 void SetUserEnabledUploading(bool enabled);
 
-// Returns true if uploading crash reports is enabled in the settings.
-bool UserEnabledUploading();
-
 // For breakpad, if |after_upgrade| is true, delete all pending reports.  For
 // crashpad, regardless of |after_upgrade|, process pending intermediate dumps.
 void CleanupCrashReports(bool after_upgrade);

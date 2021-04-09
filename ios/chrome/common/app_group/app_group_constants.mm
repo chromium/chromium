@@ -140,4 +140,14 @@ NSURL* ContentWidgetFaviconsFolder() {
   return contentWidgetFaviconsURL;
 }
 
+NSURL* CrashpadFolder() {
+  NSURL* groupURL = [[NSFileManager defaultManager]
+      containerURLForSecurityApplicationGroupIdentifier:ApplicationGroup()];
+  NSURL* chromeURL = [groupURL URLByAppendingPathComponent:@"Chrome"
+                                               isDirectory:YES];
+  NSURL* crashpadURL = [chromeURL URLByAppendingPathComponent:@"Crashpad"
+                                                  isDirectory:YES];
+  return crashpadURL;
+}
+
 }  // namespace app_group
