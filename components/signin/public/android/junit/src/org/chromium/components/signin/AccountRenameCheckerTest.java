@@ -34,22 +34,24 @@ import java.util.Map;
 public class AccountRenameCheckerTest {
     @Implements(GoogleAuthUtil.class)
     static final class ShadowGoogleAuthUtil {
-        private static final Map<String, String> sEvents = new HashMap<>();
+        private static final Map<String, List<AccountChangeEvent>> sEvents = new HashMap<>();
 
         @Implementation
         public static List<AccountChangeEvent> getAccountChangeEvents(
                 Context context, int eventIndex, String accountEmail) {
-            if (sEvents.containsKey(accountEmail)) {
-                final AccountChangeEvent event = new AccountChangeEvent(0L, accountEmail,
-                        GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_RENAMED_TO, 0,
-                        sEvents.get(accountEmail));
-                return List.of(event);
-            }
-            return Collections.emptyList();
+            return sEvents.getOrDefault(accountEmail, Collections.emptyList());
         }
 
         static void insertRenameEvent(String from, String to) {
-            sEvents.put(from, to);
+            addEvent(from,
+                    new AccountChangeEvent(
+                            0L, from, GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_RENAMED_TO, 0, to));
+        }
+
+        static void addEvent(String email, AccountChangeEvent event) {
+            final List<AccountChangeEvent> events = sEvents.getOrDefault(email, new ArrayList<>());
+            events.add(event);
+            sEvents.put(email, events);
         }
 
         static void clearAllEvents() {
@@ -66,6 +68,15 @@ public class AccountRenameCheckerTest {
 
     @Test
     public void newNameIsValidWhenTheRenamedAccountIsPresent() {
+        ShadowGoogleAuthUtil.insertRenameEvent("A", "B");
+
+        Assert.assertEquals("B", mChecker.getNewNameOfRenamedAccount("A", getAccounts("B")));
+    }
+
+    @Test
+    public void newNameIsValidWhenOldAccountIsRemovedAndThenRenamed() {
+        ShadowGoogleAuthUtil.addEvent("A",
+                new AccountChangeEvent(0L, "A", GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_REMOVED, 0, ""));
         ShadowGoogleAuthUtil.insertRenameEvent("A", "B");
 
         Assert.assertEquals("B", mChecker.getNewNameOfRenamedAccount("A", getAccounts("B")));
