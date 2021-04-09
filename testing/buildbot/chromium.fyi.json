@@ -18614,7 +18614,8 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "headless_browsertests",
         "test_id_prefix": "ninja://headless:headless_browsertests/"
@@ -19023,7 +19024,8 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "web_engine_browsertests",
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_browsertests/"

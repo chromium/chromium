@@ -1575,6 +1575,13 @@
     ],
   },
   'headless_browsertests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
     ],
@@ -2797,6 +2804,15 @@
     'remove_from': [
       'linux-chromeos-dbg',  # https://crbug.com/859307
     ],
+  },
+  'web_engine_browsertests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
   },
   'webdriver_tests_suite': {
     'remove_from': [
