@@ -85,6 +85,7 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK, false);
             put(ChromeFeatureList.CCT_INCOGNITO, true);
             put(ChromeFeatureList.EXPERIMENTS_FOR_AGSA, true);
+            put(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION, false);
         }
     };
 

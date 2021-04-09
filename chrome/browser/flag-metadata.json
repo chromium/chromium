@@ -145,6 +145,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "app-menu-mobile-site-option",
+    "owners": [ "gangwu" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "app-service-adaptive-icon",
     "owners": [ "//components/services/app_service/OWNERS" ],
     "expiry_milestone": 93

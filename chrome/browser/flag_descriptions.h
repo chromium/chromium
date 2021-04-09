@@ -1633,6 +1633,9 @@ extern const char kAutofillAssistantProactiveHelpDescription[];
 extern const char kAutofillUseMobileLabelDisambiguationName[];
 extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 
+extern const char kAppMenuMobileSiteOptionName[];
+extern const char kAppMenuMobileSiteOptionDescription[];
+
 extern const char kBackgroundTaskComponentUpdateName[];
 extern const char kBackgroundTaskComponentUpdateDescription[];
 

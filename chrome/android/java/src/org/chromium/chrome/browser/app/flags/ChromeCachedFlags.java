@@ -67,6 +67,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
                 ChromeFeatureList.ANDROID_MANAGED_BY_MENU_ITEM,
                 ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE,
+                ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION,
                 ChromeFeatureList.BOOKMARK_BOTTOM_SHEET,
                 ChromeFeatureList.CCT_INCOGNITO,
                 ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY,
