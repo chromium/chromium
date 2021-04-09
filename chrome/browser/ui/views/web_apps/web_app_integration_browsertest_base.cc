@@ -451,6 +451,8 @@ void WebAppIntegrationBrowserTestBase::ExecuteAction(
     UninstallFromMenu();
   } else if (action_base == "uninstall_internal") {
     UninstallInternal(action_param);
+  } else if (action_base == "manifest_update_display_standalone") {
+    ManifestUpdateDisplay(action_param, blink::mojom::DisplayMode::kStandalone);
   } else if (action_base == "manifest_update_display_minimal") {
     ManifestUpdateDisplay(action_param, blink::mojom::DisplayMode::kMinimalUi);
   } else if (action_base == "user_signin_internal") {
@@ -771,8 +773,10 @@ void WebAppIntegrationBrowserTestBase::ManifestUpdateDisplay(
     const std::string& action_scope,
     DisplayMode display_mode) {
   // TODO(jarrydg): Create a map of supported manifest updates keyed on scope.
-  ASSERT_EQ("site_a", action_scope);
-  ASSERT_EQ(blink::mojom::DisplayMode::kMinimalUi, display_mode);
+  ASSERT_TRUE(("site_a" == action_scope &&
+               blink::mojom::DisplayMode::kMinimalUi == display_mode) ||
+              ("site_b" == action_scope &&
+               blink::mojom::DisplayMode::kStandalone == display_mode));
   ForceUpdateManifestContents(action_scope,
                               GetAppURLForManifest(action_scope, display_mode));
 }
@@ -1095,6 +1099,8 @@ GURL WebAppIntegrationBrowserTestBase::GetAppURLForManifest(
   std::string str_template = "/web_apps/%s/basic.html";
   if (display_mode == blink::mojom::DisplayMode::kMinimalUi) {
     str_template += "?manifest=manifest_minimal_ui.json";
+  } else if (display_mode == blink::mojom::DisplayMode::kStandalone) {
+    str_template += "?manifest=manifest_standalone.json";
   }
   return embedded_test_server()->GetURL(
       base::StringPrintf(str_template.c_str(), action_scope.c_str()));
