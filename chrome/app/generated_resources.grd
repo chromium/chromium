@@ -6992,6 +6992,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_SEARCH_A11Y_FOUND_TABS_FOR" desc="Plural form of a11y message after user changes search field when search filed is not empty.">
         Found <ph name="NUM">$1<ex>2</ex></ph> Tabs For '<ph name="SEARCH_TEXT">$2<ex>google</ex></ph>'
       </message>
+      <message name="IDS_TAB_SEARCH_A11Y_OPEN_TAB" desc="Singular form of a11y message announced after user selects an open tab.">
+        Open Tab
+      </message>
+      <message name="IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB" desc="Singular form of a11y message announced after user selects a recently closed tab.">
+        Recently Closed Tab
+      </message>
       <message name="IDS_TAB_SEARCH_OPEN_TABS" desc="The label on the tab search list section corresponding to open tabs.">
         Open Tabs
       </message>

@@ -572,7 +572,7 @@ export class TabSearchAppElement extends PolymerElement {
     tabData.tab = tab;
     tabData.type = type;
     tabData.a11yTypeText = loadTimeData.getStringF(
-        type === TabItemType.OPEN ? 'openTabs' : 'recentlyClosedTabs');
+        type === TabItemType.OPEN ? 'a11yOpenTab' : 'a11yRecentlyClosedTab');
     return tabData;
   }
 
