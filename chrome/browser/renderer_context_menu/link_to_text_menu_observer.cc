@@ -70,8 +70,11 @@ void LinkToTextMenuObserver::InitMenu(
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT));
   }
 
-  if (ShouldPreemptivelyGenerateLink())
+  // Start link generation only if the flag is enabled, and the context menu was
+  // not opened from an existing highlight.
+  if (ShouldPreemptivelyGenerateLink() && !params.opened_from_highlight) {
     RequestLinkGeneration();
+  }
 }
 
 bool LinkToTextMenuObserver::IsCommandIdSupported(int command_id) {
