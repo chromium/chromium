@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -705,7 +706,8 @@ void ValidateAndConvertPaymentMethodData(
     KURL url(payment_method_data->supportedMethod());
     if (url.IsValid() &&
         !execution_context.GetContentSecurityPolicy()->AllowConnectToSource(
-            url, url, RedirectStatus::kNoRedirect)) {
+            url, url, RedirectStatus::kNoRedirect,
+            ReportingDisposition::kSuppressReporting)) {
       UseCounter::Count(&execution_context,
                         WebFeature::kPaymentRequestCSPViolation);
     }
