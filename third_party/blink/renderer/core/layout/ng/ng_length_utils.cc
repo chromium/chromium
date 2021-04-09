@@ -604,8 +604,7 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
 
   LogicalSize ratio = style.LogicalAspectRatio();
   MinMaxSizes block_min_max =
-      ComputeMinMaxBlockSizes(constraint_space, style, border_padding,
-                              /* intrinsic_size */ kIndefiniteSize);
+      ComputeMinMaxBlockSizes(constraint_space, style, border_padding);
   return ComputeTransferredMinMaxInlineSizes(
       ratio, block_min_max, border_padding, style.BoxSizingForAspectRatio());
 }

@@ -58,8 +58,7 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().BlockSum();
     const MinMaxSizes sizes = ComputeMinMaxBlockSizes(
-        ConstraintSpace(), Style(), container_builder_.BorderPadding(),
-        kIndefiniteSize);
+        ConstraintSpace(), Style(), container_builder_.BorderPadding());
 
     grid_min_available_size_.block_size =
         (sizes.min_size - border_scrollbar_padding).ClampNegativeToZero();
