@@ -16,6 +16,7 @@
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/trusted_bidding_signals.h"
 #include "content/services/auction_worklet/worklet_loader.h"
@@ -90,7 +91,8 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
     const std::string& browser_signal_seller,
     int browser_signal_join_count,
     int browser_signal_bid_count,
-    const std::vector<PreviousWin>& browser_signal_prev_wins) {
+    const std::vector<mojo::StructPtr<mojom::PreviousWin>>&
+        browser_signal_prev_wins) {
   // Can't make a bid without any ads.
   if (!interest_group.ads)
     return BidResult();
@@ -166,9 +168,9 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
   std::vector<v8::Local<v8::Value>> prev_wins_v8;
   for (const auto& prev_win : browser_signal_prev_wins) {
     v8::Local<v8::Value> win_values[2];
-    if (!v8::Date::New(context, prev_win.time.ToJsTimeIgnoringNull())
+    if (!v8::Date::New(context, prev_win->time.ToJsTimeIgnoringNull())
              .ToLocal(&win_values[0]) ||
-        !v8_helper_->CreateValueFromJson(context, prev_win.ad_json)
+        !v8_helper_->CreateValueFromJson(context, prev_win->ad_json)
              .ToLocal(&win_values[1])) {
       return BidResult();
     }

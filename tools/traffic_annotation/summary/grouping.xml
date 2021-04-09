@@ -16,6 +16,7 @@ hidden="true" so that these annotations don't show up in the document.
     <sender name="Unsorted Sender">
       <!-- TODO(nicolaso): do a pass through some of the recent ones, and find
            them a new home -->
+      <traffic_annotation unique_id="auction_downloader"/>
       <traffic_annotation unique_id="prefetch_proxy_canary_check"/>
       <traffic_annotation unique_id="nearby_webrtc_connection"/>
       <traffic_annotation unique_id="proxy_config_windows_resolver"/>

@@ -128,13 +128,6 @@ void AuctionRunner::MaybeRunBid(BidState* state) {
 
 void AuctionRunner::RunBid(BidState* state) {
   base::TimeTicks start = base::TimeTicks::Now();
-  std::vector<BidderWorklet::PreviousWin> previous_wins;
-  for (const auto& pw_in : state->bidder->signals->prev_wins) {
-    BidderWorklet::PreviousWin pw;
-    pw.time = pw_in->time;
-    pw.ad_json = pw_in->ad_json;
-    previous_wins.push_back(std::move(pw));
-  }
   state->bid_result = state->bidder_worklet->GenerateBid(
       *state->bidder->group, auction_config_->auction_signals,
       PerBuyerSignals(state),
@@ -143,7 +136,7 @@ void AuctionRunner::RunBid(BidState* state) {
       state->trusted_bidding_signals.get(),
       browser_signals_->top_frame_origin.host(),
       browser_signals_->seller.Serialize(), state->bidder->signals->join_count,
-      state->bidder->signals->bid_count, std::move(previous_wins));
+      state->bidder->signals->bid_count, state->bidder->signals->prev_wins);
   state->bid_duration = base::TimeTicks::Now() - start;
 }
 

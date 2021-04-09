@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
@@ -30,12 +31,6 @@ class WorkletLoader;
 // bidder worklet's Javascript.
 class BidderWorklet {
  public:
-  // TODO(mmenke): Replace this with a mojo struct.
-  struct PreviousWin {
-    base::Time time;
-    std::string ad_json;
-  };
-
   struct BidResult {
     // Constructor for when there is no bid, either due to an error or the
     // script not offering one.
@@ -111,7 +106,8 @@ class BidderWorklet {
       const std::string& browser_signal_seller,
       int browser_signal_join_count,
       int browser_signal_bid_count,
-      const std::vector<PreviousWin>& browser_signal_prev_wins);
+      const std::vector<mojo::StructPtr<mojom::PreviousWin>>&
+          browser_signal_prev_wins);
 
   // Calls reportWin(), and returns reporting information. May only be called
   // once the worklet has successfully loaded.
