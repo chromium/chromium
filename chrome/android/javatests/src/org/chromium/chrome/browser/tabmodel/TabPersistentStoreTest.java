@@ -29,7 +29,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
@@ -48,6 +47,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTabAttributes;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -729,7 +729,6 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature({"TabPersistentStore"})
-    @DisableIf.Build(sdk_is_greater_than = 25, message = "https://crbug.com/1017732")
     public void testUndoCloseAllTabsWritesTabListFile() throws Exception {
         final TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V5_NO_M18;
         mMockDirectory.writeTabModelFiles(info, true);
@@ -754,14 +753,32 @@ public class TabPersistentStoreTest {
 
             // Load up each TabState and confirm that values are still correct.
             for (int j = 0; j < info.numRegularTabs; j++) {
-                TabState currentState = TabStateFileManager.restoreTabState(
-                        mMockDirectory.getDataDirectory(), info.contents[j].tabId);
-                Assert.assertEquals(info.contents[j].title,
-                        currentState.contentsState.getDisplayTitleFromState());
-                Assert.assertEquals(
-                        info.contents[j].url, currentState.contentsState.getVirtualUrlFromState());
+                if (restoredFromDisk(selector.getModel(false).getTabAt(j))) {
+                    TabState currentState = TabStateFileManager.restoreTabState(
+                            mMockDirectory.getDataDirectory(), info.contents[j].tabId);
+                    Assert.assertEquals(info.contents[j].title,
+                            currentState.contentsState.getDisplayTitleFromState());
+                    Assert.assertEquals(info.contents[j].url,
+                            currentState.contentsState.getVirtualUrlFromState());
+                }
             }
         }
+    }
+
+    /**
+     * Determines if {@link Tab} was restored from disk or not. Assumes the {@link Tab} was
+     * restored from disk if there was not record of how it was created.
+     */
+    private static boolean restoredFromDisk(Tab tab) throws ExecutionException {
+        return TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                if (tab.getUserDataHost().getUserData(MockTabAttributes.class) == null) {
+                    return true;
+                }
+                return tab.getUserDataHost().getUserData(MockTabAttributes.class).restoredFromDisk;
+            }
+        });
     }
 
     @Test
@@ -822,6 +839,7 @@ public class TabPersistentStoreTest {
         mockObserver.initializedCallback.waitForCallback(0, 1);
         Assert.assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
         mockObserver.detailsReadCallback.waitForCallback(0, info.contents.length);
+
         Assert.assertEquals(numExpectedTabs, mockObserver.details.size());
 
         // Restore the TabStates, check that things were restored correctly, in the right tab order.
@@ -837,9 +855,18 @@ public class TabPersistentStoreTest {
         int tabInfoIndex = info.numIncognitoTabs;
         for (int i = 0; i < info.numRegularTabs; i++) {
             Tab tab = selector.getModel(false).getTabAt(i);
+
             if (expectMatchingIds) {
-                Assert.assertEquals("Incorrect regular tab at position " + i,
-                        info.contents[tabInfoIndex].tabId, tab.getId());
+                if (restoredFromDisk(tab)) {
+                    Assert.assertEquals("Incorrect regular tab at position " + i,
+                            info.contents[tabInfoIndex].tabId, tab.getId());
+                } else {
+                    String url = TestThreadUtils.runOnUiThreadBlocking(() -> {
+                        return CriticalPersistedTabData.from(tab).getUrl().getSpec();
+                    });
+                    Assert.assertEquals(
+                            "Unexpected URL on Tab", info.contents[tabInfoIndex].url, url);
+                }
             }
             tabInfoIndex++;
         }
@@ -847,8 +874,16 @@ public class TabPersistentStoreTest {
         for (int i = 0; i < numIncognitoExpected; i++) {
             Tab tab = selector.getModel(true).getTabAt(i);
             if (expectMatchingIds) {
-                Assert.assertEquals("Incorrect incognito tab at position " + i,
-                        info.contents[i].tabId, tab.getId());
+                if (restoredFromDisk(tab)) {
+                    Assert.assertEquals("Incorrect incognito tab at position " + i,
+                            info.contents[i].tabId, tab.getId());
+                } else {
+                    String url = TestThreadUtils.runOnUiThreadBlocking(() -> {
+                        return CriticalPersistedTabData.from(tab).getUrl().getSpec();
+                    });
+                    Assert.assertEquals(
+                            "Unexpected URL on Tab", info.contents[tabInfoIndex].url, url);
+                }
             }
         }
 

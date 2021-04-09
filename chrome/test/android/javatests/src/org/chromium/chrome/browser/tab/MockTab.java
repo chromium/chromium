@@ -9,11 +9,13 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * Tab used for various testing purposes.
  */
 public class MockTab extends TabImpl {
+    private GURL mGurlOverride;
     /**
      * Create a new Tab for testing and initializes Tab UserData objects.
      */
@@ -57,7 +59,19 @@ public class MockTab extends TabImpl {
             LoadUrlParams loadUrlParams, WebContents webContents,
             @Nullable TabDelegateFactory delegateFactory, boolean initiallyHidden,
             TabState tabState) {
+        if (loadUrlParams != null) {
+            mGurlOverride = new GURL(loadUrlParams.getUrl());
+            CriticalPersistedTabData.from(this).setUrl(mGurlOverride);
+        }
         TabHelpers.initTabHelpers(this, parent);
+    }
+
+    @Override
+    public GURL getUrl() {
+        if (mGurlOverride == null) {
+            return super.getUrl();
+        }
+        return mGurlOverride;
     }
 
     public void broadcastOnLoadStopped(boolean toDifferentDocument) {

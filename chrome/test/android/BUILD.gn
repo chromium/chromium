@@ -195,6 +195,7 @@ android_library("chrome_java_test_support") {
     "javatests/src/org/chromium/chrome/browser/history/StubbedHistoryProvider.java",
     "javatests/src/org/chromium/chrome/browser/history/TestBrowsingHistoryObserver.java",
     "javatests/src/org/chromium/chrome/browser/tab/MockTab.java",
+    "javatests/src/org/chromium/chrome/browser/tab/MockTabAttributes.java",
     "javatests/src/org/chromium/chrome/browser/tab/TabTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/toolbar/top/ButtonHighlightMatcher.java",
     "javatests/src/org/chromium/chrome/test/ChromeActivityTestRule.java",

@@ -847,7 +847,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      *        whether or not the newly created {@link WebContents} will be hidden or not.
      * @param tabState State containing information about this Tab, if it was persisted.
      */
-    void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
             LoadUrlParams loadUrlParams, WebContents webContents,
             @Nullable TabDelegateFactory delegateFactory, boolean initiallyHidden,
             TabState tabState) {
