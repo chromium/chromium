@@ -114,9 +114,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   TrayEventFilter* tray_event_filter() { return tray_event_filter_.get(); }
   Shelf* shelf() { return shelf_; }
 
-  // Updates the arrow visibility based on the launcher visibility.
-  void UpdateBubbleViewArrow(TrayBubbleView* bubble_view);
-
   // Updates the visibility of this tray's separator.
   void set_separator_visibility(bool visible) { separator_visible_ = visible; }
 

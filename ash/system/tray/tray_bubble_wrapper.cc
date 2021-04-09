@@ -23,7 +23,6 @@ TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
   bubble_widget_->AddObserver(this);
 
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
-  tray_->UpdateBubbleViewArrow(bubble_view_);
   bubble_view_->InitializeAndShowBubble();
 
   tray->tray_event_filter()->AddBubble(this);

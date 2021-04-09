@@ -544,10 +544,6 @@ void TrayBackgroundView::SetIsActive(bool is_active) {
                  nullptr);
 }
 
-void TrayBackgroundView::UpdateBubbleViewArrow(TrayBubbleView* bubble_view) {
-  // Nothing to do here.
-}
-
 views::View* TrayBackgroundView::GetBubbleAnchor() const {
   return tray_container_;
 }
