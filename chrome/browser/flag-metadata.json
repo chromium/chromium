@@ -3205,6 +3205,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "incognito-brand-consistency-for-android",
+    "owners": [ "sideyilmaz", "rhalavati", "chrome-incognito@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "incognito-brand-consistency-for-desktop",
     "owners": [ "roagarwal", "rhalavati", "chrome-incognito@google.com" ],
     "expiry_milestone": 95

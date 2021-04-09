@@ -527,6 +527,12 @@ const base::Feature kIncompatibleApplicationsWarning{
     "IncompatibleApplicationsWarning", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_ANDROID)
+// When enabled, keeps Incognito UI consistent regardless of any selected theme.
+const base::Feature kIncognitoBrandConsistencyForAndroid{
+    "IncognitoBrandConsistencyForAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
 // When enabled, removes any theme or background customization done by the user

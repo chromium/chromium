@@ -1376,6 +1376,12 @@ const char kImpulseScrollAnimationsDescription[] =
     "Replaces the default scroll animation with Impulse-style scroll "
     "animations.";
 
+const char kIncognitoBrandConsistencyForAndroidName[] =
+    "Enable Incognito brand consistency in Android.";
+const char kIncognitoBrandConsistencyForAndroidDescription[] =
+    "When enabled, keeps Incognito UI consistent regardless of any selected "
+    "theme.";
+
 const char kIncognitoBrandConsistencyForDesktopName[] =
     "Enable Incognito brand consistency in desktop.";
 const char kIncognitoBrandConsistencyForDesktopDescription[] =
