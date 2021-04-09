@@ -439,6 +439,11 @@ template("lacros_tast_test") {
       "//third_party/breakpad:minidump_stackwalk",
     ]
 
-    data = [ "//components/crash/content/tools/generate_breakpad_symbols.py" ]
+    data = [
+      "//components/crash/content/tools/generate_breakpad_symbols.py",
+
+      # A script needed to launch Lacros in Lacros Tast tests.
+      "//build/lacros/mojo_connection_lacros_launcher.py",
+    ]
   }
 }

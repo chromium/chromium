@@ -163,6 +163,8 @@ class TastTests(TestRunnerTest):
               '--tast',
               'lacros.Basic',
               '--deploy-lacros',
+              '--lacros-launcher-script',
+              test_runner.LACROS_LAUNCHER_SCRIPT_PATH,
           ]
 
       self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])

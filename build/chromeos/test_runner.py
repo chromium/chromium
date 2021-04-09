@@ -46,6 +46,10 @@ CHROMITE_PATH = os.path.abspath(
 CROS_RUN_TEST_PATH = os.path.abspath(
     os.path.join(CHROMITE_PATH, 'bin', 'cros_run_test'))
 
+LACROS_LAUNCHER_SCRIPT_PATH = os.path.abspath(
+    os.path.join(CHROMIUM_SRC_PATH, 'build', 'lacros',
+                 'mojo_connection_lacros_launcher.py'))
+
 # This is a special hostname that resolves to a different DUT in the lab
 # depending on which lab machine you're on.
 LAB_DUT_HOSTNAME = 'variable_chromeos_device_hostname'
@@ -308,8 +312,10 @@ class TastTest(RemoteTest):
         ]
 
     # Lacros deployment mounts itself by default.
-    self._test_cmd.extend(
-        ['--deploy-lacros'] if self._deploy_lacros else ['--deploy', '--mount'])
+    self._test_cmd.extend([
+        '--deploy-lacros', '--lacros-launcher-script',
+        LACROS_LAUNCHER_SCRIPT_PATH
+    ] if self._deploy_lacros else ['--deploy', '--mount'])
     self._test_cmd += [
         '--build-dir',
         os.path.relpath(self._path_to_outdir, CHROMIUM_SRC_PATH)
