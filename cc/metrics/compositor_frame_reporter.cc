@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/frame_sequence_tracker.h"
@@ -1056,7 +1057,8 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
                                                      args_.frame_time);
   }
 
-  const auto trace_track = perfetto::Track(reinterpret_cast<uint64_t>(this));
+  const auto trace_track =
+      perfetto::Track(base::trace_event::GetNextGlobalTraceId());
   TRACE_EVENT_BEGIN(
       "cc,benchmark", "PipelineReporter", trace_track, args_.frame_time,
       [&](perfetto::EventContext context) {
