@@ -38,6 +38,10 @@ _IGNORE_WARNINGS = (
     r'Missing class com.google.errorprone.annotations.RestrictedInheritance',
     # Caused by internal protobuf package: https://crbug.com/1183971
     r'referenced from: com.google.protobuf.GeneratedMessageLite$GeneratedExtension',  # pylint: disable=line-too-long
+    # Caused by using Bazel desugar instead of D8 for desugar, since Bazel
+    # desugar doesn't preserve interfaces in the same way. This should be
+    # removed when D8 is used for desugaring.
+    r'Warning: Cannot emulate interface ',
 )
 
 

@@ -8,8 +8,8 @@ import com.android.tools.r8.CompilationFailedException;
 import com.android.tools.r8.D8;
 import com.android.tools.r8.D8Command;
 import com.android.tools.r8.DesugarGraphConsumer;
-import com.android.tools.r8.internal.FlagFile;
 import com.android.tools.r8.origin.Origin;
+import com.android.tools.r8.utils.FlagFile;
 
 import java.io.IOException;
 import java.io.PrintWriter;
