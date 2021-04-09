@@ -84,7 +84,6 @@ enum class ResourceType : uint8_t {
   kXSLStyleSheet,
   kLinkPrefetch,
   kTextTrack,
-  kImportResource,
   kAudio,
   kVideo,
   kManifest,

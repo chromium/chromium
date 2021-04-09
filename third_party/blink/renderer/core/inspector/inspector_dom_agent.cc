@@ -63,8 +63,6 @@
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
-#include "third_party/blink/renderer/core/html/imports/html_import_child.h"
-#include "third_party/blink/renderer/core/html/imports/html_import_loader.h"
 #include "third_party/blink/renderer/core/html/portal/document_portals.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/html/portal/portal_contents.h"
@@ -346,11 +344,6 @@ void InspectorDOMAgent::Unbind(Node* node) {
       Unbind(element->GetPseudoElement(kPseudoIdAfter));
     if (element->GetPseudoElement(kPseudoIdMarker))
       Unbind(element->GetPseudoElement(kPseudoIdMarker));
-
-    if (auto* link_element = DynamicTo<HTMLLinkElement>(*element)) {
-      if (link_element->IsImport() && link_element->import())
-        Unbind(link_element->import());
-    }
   }
 
   NotifyWillRemoveDOMNode(node);
@@ -1623,14 +1616,8 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
       force_push_children = true;
     }
 
-    if (auto* link_element = DynamicTo<HTMLLinkElement>(*element)) {
-      if (link_element->IsImport() && link_element->import() &&
-          InnerParentNode(link_element->import()) == link_element) {
-        value->setImportedDocument(BuildObjectForNode(
-            link_element->import(), 0, pierce, nodes_map, flatten_result));
-      }
+    if (auto* link_element = DynamicTo<HTMLLinkElement>(*element))
       force_push_children = true;
-    }
 
     if (auto* template_element = DynamicTo<HTMLTemplateElement>(*element)) {
       // The inspector should not try to access the .content() property of
@@ -1836,8 +1823,6 @@ unsigned InspectorDOMAgent::InnerChildNodeCount(Node* node) {
 // static
 Node* InspectorDOMAgent::InnerParentNode(Node* node) {
   if (auto* document = DynamicTo<Document>(node)) {
-    if (HTMLImportLoader* loader = document->ImportLoader())
-      return loader->FirstImport()->Link();
     return document->LocalOwner();
   }
   return node->ParentOrShadowHostNode();
@@ -1875,13 +1860,6 @@ void InspectorDOMAgent::CollectNodes(
     ShadowRoot* root = element->GetShadowRoot();
     if (pierce && root)
       CollectNodes(root, depth, pierce, filter, result);
-
-    if (auto* link_element = DynamicTo<HTMLLinkElement>(*element)) {
-      if (link_element->IsImport() && link_element->import() &&
-          InnerParentNode(link_element->import()) == link_element) {
-        CollectNodes(link_element->import(), depth, pierce, filter, result);
-      }
-    }
   }
 
   for (Node* child = InnerFirstChild(node); child;

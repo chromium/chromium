@@ -156,22 +156,7 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
   Element* element = nullptr;
   {
     v8::TryCatch try_catch(script_state_->GetIsolate());
-
-    if (document.IsHTMLImport()) {
-      // V8HTMLElement::constructorCustom() can only refer to
-      // window.document() which is not the import document. Create
-      // elements in import documents ahead of time so they end up in
-      // the right document. This subtly violates recursive
-      // construction semantics, but only in import documents.
-      element = CreateElementForConstructor(document);
-      DCHECK(!try_catch.HasCaught());
-
-      ConstructionStackScope construction_stack_scope(*this, *element);
-      element = CallConstructor();
-    } else {
-      element = CallConstructor();
-    }
-
+    element = CallConstructor();
     if (try_catch.HasCaught()) {
       exception_state.RethrowV8Exception(try_catch.Exception());
       return HandleCreateElementSyncException(document, tag_name, isolate,

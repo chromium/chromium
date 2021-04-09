@@ -54,8 +54,6 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
-#include "third_party/blink/renderer/core/html/imports/html_import_loader.h"
-#include "third_party/blink/renderer/core/html/imports/html_imports_controller.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
@@ -158,15 +156,6 @@ Resource* CachedResource(LocalFrame* frame,
     return nullptr;
   Resource* cached_resource = document->Fetcher()->CachedResource(url);
   if (!cached_resource) {
-    HeapVector<Member<Document>> all_imports =
-        InspectorPageAgent::ImportsForFrame(frame);
-    for (Document* import : all_imports) {
-      cached_resource = import->Fetcher()->CachedResource(url);
-      if (cached_resource)
-        break;
-    }
-  }
-  if (!cached_resource) {
     cached_resource = GetMemoryCache()->ResourceForURL(
         url, document->Fetcher()->GetCacheIdentifier(url));
   }
@@ -238,8 +227,7 @@ static bool HasTextContent(const Resource* cached_resource) {
   ResourceType type = cached_resource->GetType();
   return type == ResourceType::kCSSStyleSheet ||
          type == ResourceType::kXSLStyleSheet ||
-         type == ResourceType::kScript || type == ResourceType::kRaw ||
-         type == ResourceType::kImportResource;
+         type == ResourceType::kScript || type == ResourceType::kRaw;
 }
 
 static std::unique_ptr<TextResourceDecoder> CreateResourceTextDecoder(
@@ -458,8 +446,6 @@ InspectorPageAgent::ResourceType InspectorPageAgent::ToResourceType(
       return InspectorPageAgent::kStylesheetResource;
     case blink::ResourceType::kScript:
       return InspectorPageAgent::kScriptResource;
-    case blink::ResourceType::kImportResource:
-      return InspectorPageAgent::kDocumentResource;
     default:
       break;
   }
@@ -702,32 +688,10 @@ static void CachedResourcesForDocument(Document* document,
 }
 
 // static
-HeapVector<Member<Document>> InspectorPageAgent::ImportsForFrame(
-    LocalFrame* frame) {
-  HeapVector<Member<Document>> result;
-  Document* root_document = frame->GetDocument();
-
-  if (HTMLImportsController* controller = root_document->ImportsController()) {
-    for (wtf_size_t i = 0; i < controller->LoaderCount(); ++i) {
-      if (Document* document = controller->LoaderAt(i)->GetDocument())
-        result.push_back(document);
-    }
-  }
-
-  return result;
-}
-
 static HeapVector<Member<Resource>> CachedResourcesForFrame(LocalFrame* frame,
                                                             bool skip_xhrs) {
   HeapVector<Member<Resource>> result;
-  Document* root_document = frame->GetDocument();
-  HeapVector<Member<Document>> loaders =
-      InspectorPageAgent::ImportsForFrame(frame);
-
-  CachedResourcesForDocument(root_document, result, skip_xhrs);
-  for (wtf_size_t i = 0; i < loaders.size(); ++i)
-    CachedResourcesForDocument(loaders[i], result, skip_xhrs);
-
+  CachedResourcesForDocument(frame->GetDocument(), result, skip_xhrs);
   return result;
 }
 
@@ -1306,18 +1270,6 @@ InspectorPageAgent::BuildObjectForResourceTree(LocalFrame* frame) {
       resource_object->setCanceled(true);
     else if (cached_resource->GetStatus() == ResourceStatus::kLoadError)
       resource_object->setFailed(true);
-    subresources->emplace_back(std::move(resource_object));
-  }
-
-  HeapVector<Member<Document>> all_imports =
-      InspectorPageAgent::ImportsForFrame(frame);
-  for (Document* import : all_imports) {
-    std::unique_ptr<protocol::Page::FrameResource> resource_object =
-        protocol::Page::FrameResource::create()
-            .setUrl(UrlWithoutFragment(import->Url()).GetString())
-            .setType(ResourceTypeJson(InspectorPageAgent::kDocumentResource))
-            .setMimeType(import->SuggestedMIMEType())
-            .build();
     subresources->emplace_back(std::move(resource_object));
   }
 

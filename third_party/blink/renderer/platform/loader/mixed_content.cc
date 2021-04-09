@@ -68,7 +68,6 @@ MixedContent::ContextTypeFromRequestContext(
     case mojom::RequestContextType::HYPERLINK:
     case mojom::RequestContextType::IFRAME:
     case mojom::RequestContextType::IMAGE_SET:
-    case mojom::RequestContextType::IMPORT:
     case mojom::RequestContextType::INTERNAL:
     case mojom::RequestContextType::LOCATION:
     case mojom::RequestContextType::MANIFEST:

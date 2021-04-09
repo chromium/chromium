@@ -296,10 +296,6 @@ class PLATFORM_EXPORT ResourceFetcher
                                speculative_preload_type, is_link_preload);
   }
 
-  void SetShouldLogRequestAsInvalidInImportedDocument() {
-    should_log_request_as_invalid_in_imported_document_ = true;
-  }
-
   void SetThrottleOptionOverride(
       ResourceLoadScheduler::ThrottleOptionOverride throttle_option_override) {
     scheduler_->SetThrottleOptionOverride(throttle_option_override);
@@ -482,14 +478,12 @@ class PLATFORM_EXPORT ResourceFetcher
   // This is not in the bit field below because we want to use AutoReset.
   bool is_in_request_resource_ = false;
 
-  // 26 bits left
+  // 27 bits left
   bool auto_load_images_ : 1;
   bool images_enabled_ : 1;
   bool allow_stale_resources_ : 1;
   bool image_fetched_ : 1;
   bool stale_while_revalidate_enabled_ : 1;
-  // for https://crbug.com/961614
-  bool should_log_request_as_invalid_in_imported_document_ : 1;
 
   static constexpr uint32_t kKeepaliveInflightBytesQuota = 64 * 1024;
 

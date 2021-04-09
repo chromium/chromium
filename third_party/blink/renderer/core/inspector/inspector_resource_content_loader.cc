@@ -80,7 +80,6 @@ void InspectorResourceContentLoader::Start() {
     if (frame->GetDocument()->IsInitialEmptyDocument())
       continue;
     documents.push_back(frame->GetDocument());
-    documents.AppendVector(InspectorPageAgent::ImportsForFrame(frame));
   }
   for (Document* document : documents) {
     HashSet<String> urls_to_fetch;
@@ -103,13 +102,6 @@ void InspectorResourceContentLoader::Start() {
     }
 
     ResourceFetcher* fetcher = document->Fetcher();
-    if (document->ImportsController()) {
-      // For @imports from HTML imported Documents, we use the
-      // context document for getting origin and ResourceFetcher to use the
-      // main Document's origin, while using the element document for
-      // CompleteURL() to use imported Documents' base URLs.
-      fetcher = document->GetExecutionContext()->Fetcher();
-    }
 
     scoped_refptr<const DOMWrapperWorld> world =
         document->GetExecutionContext()->GetCurrentWorld();

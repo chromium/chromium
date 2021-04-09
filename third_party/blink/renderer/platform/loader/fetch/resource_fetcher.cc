@@ -119,7 +119,6 @@ static constexpr base::TimeDelta kUnusedPreloadTimeout =
     DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, CSSStyleSheet)  \
     DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Font)           \
     DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Image)          \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, ImportResource) \
     DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, LinkPrefetch)   \
     DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Manifest)       \
     DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Audio)          \
@@ -142,7 +141,6 @@ ResourceLoadPriority TypeToPriority(ResourceType type) {
       DCHECK(RuntimeEnabledFeatures::XSLTEnabled());
       FALLTHROUGH;
     case ResourceType::kRaw:
-    case ResourceType::kImportResource:
     case ResourceType::kScript:
       // Also visible resources/images (set explicitly in loadPriority)
       return ResourceLoadPriority::kHigh;
@@ -337,8 +335,6 @@ mojom::blink::RequestContextType ResourceFetcher::DetermineRequestContext(
       return mojom::blink::RequestContextType::IMAGE;
     case ResourceType::kRaw:
       return mojom::blink::RequestContextType::SUBRESOURCE;
-    case ResourceType::kImportResource:
-      return mojom::blink::RequestContextType::IMPORT;
     case ResourceType::kLinkPrefetch:
       return mojom::blink::RequestContextType::PREFETCH;
     case ResourceType::kTextTrack:
@@ -383,7 +379,6 @@ network::mojom::RequestDestination ResourceFetcher::DetermineRequestDestination(
     case ResourceType::kManifest:
       return network::mojom::RequestDestination::kManifest;
     case ResourceType::kRaw:
-    case ResourceType::kImportResource:
     case ResourceType::kLinkPrefetch:
     case ResourceType::kMock:
       return network::mojom::RequestDestination::kEmpty;
@@ -542,8 +537,7 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
       auto_load_images_(true),
       images_enabled_(true),
       allow_stale_resources_(false),
-      image_fetched_(false),
-      should_log_request_as_invalid_in_imported_document_(false) {
+      image_fetched_(false) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceFetcherCounter);
   if (IsMainThread())
     MainThreadFetchersSet().insert(this);
@@ -966,11 +960,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
                                            const ResourceFactory& factory,
                                            ResourceClient* client) {
   base::AutoReset<bool> r(&is_in_request_resource_, true);
-
-  if (should_log_request_as_invalid_in_imported_document_) {
-    DCHECK(properties_->IsDetached());
-    base::debug::DumpWithoutCrashing();
-  }
 
   // If detached, we do very early return here to skip all processing below.
   if (properties_->IsDetached()) {

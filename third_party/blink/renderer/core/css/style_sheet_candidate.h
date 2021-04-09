@@ -33,7 +33,6 @@
 
 namespace blink {
 
-class Document;
 class Node;
 class StyleSheet;
 
@@ -46,7 +45,6 @@ class StyleSheetCandidate {
   StyleSheetCandidate(Node& node) : node_(&node), type_(TypeOf(node)) {}
 
   bool IsXSL() const;
-  bool IsImport() const;
   bool IsAlternate() const;
   bool IsEnabledViaScript() const;
   bool IsEnabledAndLoading() const;
@@ -55,7 +53,6 @@ class StyleSheetCandidate {
 
   StyleSheet* Sheet() const;
   AtomicString Title() const;
-  Document* ImportedDocument() const;
 
  private:
   bool IsElement() const { return type_ != kPi; }

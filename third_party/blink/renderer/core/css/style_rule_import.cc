@@ -112,17 +112,7 @@ void StyleRuleImport::RequestStyleSheet() {
   if (!document)
     return;
 
-  Document* document_for_origin = document;
-  if (document->ImportsController()) {
-    // For @imports from HTML imported Documents, we use the
-    // context document for getting origin and ResourceFetcher to use the main
-    // Document's origin, while using the element document for CompleteURL() to
-    // use imported Documents' base URLs.
-    document_for_origin =
-        To<LocalDOMWindow>(document->GetExecutionContext())->document();
-  }
-
-  ResourceFetcher* fetcher = document_for_origin->Fetcher();
+  ResourceFetcher* fetcher = document->Fetcher();
   if (!fetcher)
     return;
 

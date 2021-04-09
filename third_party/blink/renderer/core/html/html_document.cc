@@ -66,7 +66,7 @@ HTMLDocument::HTMLDocument(const DocumentInit& initializer,
                            DocumentClassFlags extended_document_classes)
     : Document(initializer, kHTMLDocumentClass | extended_document_classes) {
   ClearXMLVersion();
-  if (IsSrcdocDocument() || initializer.ImportsController()) {
+  if (IsSrcdocDocument()) {
     DCHECK(InNoQuirksMode());
     LockCompatibilityMode();
   }

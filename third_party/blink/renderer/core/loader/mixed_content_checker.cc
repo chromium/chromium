@@ -113,8 +113,6 @@ const char* RequestContextName(mojom::blink::RequestContextType context) {
       return "image";
     case mojom::blink::RequestContextType::IMAGE_SET:
       return "image";
-    case mojom::blink::RequestContextType::IMPORT:
-      return "HTML Import";
     case mojom::blink::RequestContextType::INTERNAL:
       return "resource";
     case mojom::blink::RequestContextType::LOCATION:

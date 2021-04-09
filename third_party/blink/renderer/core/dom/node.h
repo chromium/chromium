@@ -930,6 +930,12 @@ class CORE_EXPORT Node : public EventTarget {
     ClearFlag(kNeedsInheritDirectionalityFromParent);
   }
 
+  // TODO(masonf): This is needed to avoid devtools-frontend missing
+  // the |importedDocument| property, which apparently came from the now-
+  // removed LinkImport object. ImportedDocument used to point to the
+  // document imported by an HTML Imports <link rel=import>.
+  Document* ImportedDocument() const { return nullptr; }
+
   void Trace(Visitor*) const override;
 
  private:

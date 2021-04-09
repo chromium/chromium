@@ -150,7 +150,6 @@ mojom::ResourceType RequestContextToResourceType(
       return mojom::ResourceType::kPrefetch;
 
     // Script
-    case mojom::blink::RequestContextType::IMPORT:
     case mojom::blink::RequestContextType::SCRIPT:
       return mojom::ResourceType::kScript;
 

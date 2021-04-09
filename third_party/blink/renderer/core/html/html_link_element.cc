@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
-#include "third_party/blink/renderer/core/html/imports/link_import.h"
 #include "third_party/blink/renderer/core/html/link_manifest.h"
 #include "third_party/blink/renderer/core/html/link_web_bundle.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -94,21 +93,6 @@ void HTMLLinkElement::ParseAttribute(
   const AtomicString& value = params.new_value;
   if (name == html_names::kRelAttr) {
     rel_attribute_ = LinkRelAttribute(value);
-    if (rel_attribute_.IsImport()) {
-      // Show a warning that HTML Imports (<link rel=import>) were detected,
-      // but HTML Imports have been disabled. Without this, the failure would
-      // be silent.
-      if (LocalDOMWindow* window = GetDocument().ExecutingWindow()) {
-        window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kRendering,
-            mojom::blink::ConsoleMessageLevel::kWarning,
-            "HTML Imports is deprecated and has now been removed as of "
-            "M80. See "
-            "https://www.chromestatus.com/features/5144752345317376 "
-            "and https://developers.google.com/web/updates/2019/07/"
-            "web-components-time-to-upgrade for more details."));
-      }
-    }
     if (rel_attribute_.IsMonetization() && !GetDocument().ParentDocument()) {
       // TODO(1031476): The Web Monetization specification is an unofficial
       // draft, available at https://webmonetization.org/specification.html
@@ -197,8 +181,7 @@ bool HTMLLinkElement::ShouldLoadLink() {
     // Load:
     // - <link> tags for stylesheets regardless of its document state
     //   (TODO: document why this is the case. kouhei@ doesn't know.)
-    // - <link> tags on html import documents.
-    if (!rel_attribute_.IsStyleSheet() && !GetDocument().IsHTMLImport())
+    if (!rel_attribute_.IsStyleSheet())
       return false;
   }
 
@@ -237,11 +220,7 @@ LinkResource* HTMLLinkElement::LinkResourceToProcess() {
   }
 
   if (!link_) {
-    if (rel_attribute_.IsImport()) {
-      // TODO(crbug.com/937746): HTML Imports is removed, so just return here.
-      // This will be cleaned up once the removal has stabilized for a bit.
-      return nullptr;
-    } else if (rel_attribute_.IsWebBundle()) {
+    if (rel_attribute_.IsWebBundle()) {
       // Only create a webbundle link when SubresourceWebBundles are enabled.
       if (!LinkWebBundle::IsFeatureEnabled(GetExecutionContext())) {
         return nullptr;
@@ -266,18 +245,6 @@ LinkStyle* HTMLLinkElement::GetLinkStyle() const {
   if (!link_ || link_->GetType() != LinkResource::kStyle)
     return nullptr;
   return static_cast<LinkStyle*>(link_.Get());
-}
-
-LinkImport* HTMLLinkElement::GetLinkImport() const {
-  if (!link_ || link_->GetType() != LinkResource::kImport)
-    return nullptr;
-  return static_cast<LinkImport*>(link_.Get());
-}
-
-Document* HTMLLinkElement::import() const {
-  if (LinkImport* link = GetLinkImport())
-    return link->ImportedDocument();
-  return nullptr;
 }
 
 void HTMLLinkElement::Process() {

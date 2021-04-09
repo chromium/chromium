@@ -65,8 +65,6 @@ void TreeScopeStyleSheetCollection::UpdateStyleSheetList() {
   for (Node* node : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*node);
     DCHECK(!candidate.IsXSL());
-    if (candidate.IsImport())
-      continue;
     if (candidate.IsEnabledAndLoading())
       continue;
     if (StyleSheet* sheet = candidate.Sheet())

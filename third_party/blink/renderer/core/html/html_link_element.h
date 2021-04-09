@@ -43,7 +43,6 @@
 namespace blink {
 
 class KURL;
-class LinkImport;
 class LinkLoader;
 struct LinkLoadParameters;
 
@@ -82,11 +81,9 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   CSSStyleSheet* sheet() const {
     return GetLinkStyle() ? GetLinkStyle()->Sheet() : nullptr;
   }
-  Document* import() const;
 
   bool StyleSheetIsLoading() const;
 
-  bool IsImport() const { return GetLinkImport(); }
   bool IsDisabled() const {
     return GetLinkStyle() && GetLinkStyle()->IsDisabled();
   }
@@ -131,7 +128,6 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
 
  private:
   LinkStyle* GetLinkStyle() const;
-  LinkImport* GetLinkImport() const;
   LinkResource* LinkResourceToProcess();
 
   void Process();

@@ -71,7 +71,6 @@ proto::ElementType ToElementType(
 
     case blink::mojom::RequestContextType::CSP_REPORT:
     case blink::mojom::RequestContextType::DOWNLOAD:
-    case blink::mojom::RequestContextType::IMPORT:
     case blink::mojom::RequestContextType::MANIFEST:
     case blink::mojom::RequestContextType::UNSPECIFIED:
     default:

@@ -34,7 +34,6 @@
 
 namespace blink {
 
-class Document;
 class StyleSheet;
 class StyleSheetCollection;
 
@@ -48,30 +47,20 @@ class DocumentStyleSheetCollector {
   friend class ImportedDocumentStyleSheetCollector;
 
   DocumentStyleSheetCollector(StyleSheetCollection*,
-                              HeapVector<Member<StyleSheet>>*,
-                              HeapHashSet<Member<Document>>*);
+                              HeapVector<Member<StyleSheet>>*);
 
   void AppendActiveStyleSheet(const ActiveStyleSheet&);
   void AppendSheetForList(StyleSheet*);
 
-  bool HasVisited(Document* document) const {
-    return visited_documents_->Contains(document);
-  }
-  void WillVisit(Document* document) { visited_documents_->insert(document); }
-
  private:
   StyleSheetCollection* collection_;
   HeapVector<Member<StyleSheet>>* style_sheets_for_style_sheet_list_;
-  HeapHashSet<Member<Document>>* visited_documents_;
 };
 
 class ActiveDocumentStyleSheetCollector final
     : public DocumentStyleSheetCollector {
  public:
   ActiveDocumentStyleSheetCollector(StyleSheetCollection&);
-
- private:
-  HeapHashSet<Member<Document>> visited_documents_;
 };
 
 class ImportedDocumentStyleSheetCollector final

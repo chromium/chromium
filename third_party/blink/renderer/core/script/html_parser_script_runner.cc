@@ -131,11 +131,8 @@ static KURL DocumentURLForScriptExecution(Document* document) {
   if (!document)
     return KURL();
 
-  if (!document->GetFrame()) {
-    if (document->ImportsController())
-      return document->Url();
+  if (!document->GetFrame())
     return KURL();
-  }
 
   // Use the URL of the currently active document for this frame.
   return document->GetFrame()->GetDocument()->Url();

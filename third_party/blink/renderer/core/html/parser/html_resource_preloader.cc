@@ -72,7 +72,6 @@ void HTMLResourcePreloader::Preload(std::unique_ptr<PreloadRequest> preload) {
   if (!AllowPreloadRequest(preload.get())) {
     return;
   }
-  // TODO(yoichio): Should preload if document is imported.
   if (!document_->Loader())
     return;
 
@@ -110,7 +109,6 @@ bool HTMLResourcePreloader::AllowPreloadRequest(PreloadRequest* preload) const {
     case ResourceType::kXSLStyleSheet:
     case ResourceType::kLinkPrefetch:
     case ResourceType::kTextTrack:
-    case ResourceType::kImportResource:
     case ResourceType::kAudio:
     case ResourceType::kVideo:
     case ResourceType::kManifest:

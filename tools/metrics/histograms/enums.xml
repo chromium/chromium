@@ -28553,7 +28553,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="460" label="EditingApplePasteAsQuotation"/>
   <int value="461" label="EditingAppleStyleSpanClass"/>
   <int value="462" label="EditingAppleTabSpanClass"/>
-  <int value="463" label="HTMLImportsAsyncAttribute"/>
+  <int value="463" label="OBSOLETE_HTMLImportsAsyncAttribute"/>
   <int value="464" label="FontFaceSetReady"/>
   <int value="465" label="XMLHttpRequestSynchronous"/>
   <int value="466" label="CSSSelectorPseudoUnresolved"/>

@@ -207,15 +207,6 @@ void SVGUseElement::UpdateTargetReference() {
   }
 
   auto* context_document = &GetDocument();
-  if (GetDocument().ImportsController()) {
-    // For @imports from HTML imported Documents, we use the
-    // context document for getting origin and ResourceFetcher to use the
-    // main Document's origin, while using the element document for
-    // CompleteURL() to use imported Documents' base URLs.
-    context_document =
-        To<LocalDOMWindow>(GetDocument().GetExecutionContext())->document();
-  }
-
   ExecutionContext* execution_context = context_document->GetExecutionContext();
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = localName();

@@ -53,19 +53,6 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
     StyleSheetCandidate candidate(*n);
 
     DCHECK(!candidate.IsXSL());
-    if (candidate.IsImport()) {
-      Document* document = candidate.ImportedDocument();
-      if (!document)
-        continue;
-      if (collector.HasVisited(document))
-        continue;
-      collector.WillVisit(document);
-
-      document->GetStyleEngine().UpdateActiveStyleSheetsInImport(engine,
-                                                                 collector);
-      continue;
-    }
-
     if (candidate.IsEnabledAndLoading())
       continue;
 

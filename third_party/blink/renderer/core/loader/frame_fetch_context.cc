@@ -70,7 +70,6 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
-#include "third_party/blink/renderer/core/html/imports/html_imports_controller.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -400,8 +399,7 @@ void FrameFetchContext::PrepareRequest(
 }
 
 void FrameFetchContext::AddResourceTiming(const ResourceTimingInfo& info) {
-  // Normally, |document_| is cleared on Document shutdown. However, Documents
-  // for HTML imports will also not have a LocalFrame set: in that case, also
+  // Normally, |document_| is cleared on Document shutdown. In that case,
   // early return, as there is nothing to report the resource timing to.
   if (GetResourceFetcherProperties().IsDetached())
     return;

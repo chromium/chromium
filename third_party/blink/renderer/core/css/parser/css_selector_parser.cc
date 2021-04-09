@@ -536,7 +536,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeId(
       std::make_unique<CSSParserSelector>();
   selector->SetMatch(CSSSelector::kId);
   AtomicString value = range.Consume().Value().ToAtomicString();
-  selector->SetValue(value, IsQuirksModeBehavior(context_->MatchMode()));
+  selector->SetValue(value, IsQuirksModeBehavior(context_->Mode()));
   context_->Count(WebFeature::kHasIDClassTagAttribute);
   return selector;
 }
@@ -552,7 +552,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeClass(
       std::make_unique<CSSParserSelector>();
   selector->SetMatch(CSSSelector::kClass);
   AtomicString value = range.Consume().Value().ToAtomicString();
-  selector->SetValue(value, IsQuirksModeBehavior(context_->MatchMode()));
+  selector->SetValue(value, IsQuirksModeBehavior(context_->Mode()));
   context_->Count(WebFeature::kHasIDClassTagAttribute);
   return selector;
 }

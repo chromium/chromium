@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
-#include "third_party/blink/renderer/core/html/imports/html_import.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -644,11 +643,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         //
         // Fetch a classic script given url, settings object, options, classic
         // script CORS setting, and encoding.</spec>
-        Document* document_for_origin = &element_document;
-        if (element_document.ImportsController()) {
-          document_for_origin = context_window->document();
-        }
-        FetchClassicScript(url, *document_for_origin, options, cross_origin,
+        FetchClassicScript(url, element_document, options, cross_origin,
                            encoding);
         break;
       }

@@ -41,7 +41,6 @@ namespace blink {
 
 class Document;
 class ExecutionContext;
-class HTMLImportsController;
 class LocalDOMWindow;
 class LocalFrame;
 class PluginData;
@@ -93,11 +92,6 @@ class CORE_EXPORT DocumentInit final {
 
   // Actually constructs the Document based on the provided state.
   Document* CreateDocument() const;
-
-  DocumentInit& WithImportsController(HTMLImportsController*);
-  HTMLImportsController* ImportsController() const {
-    return imports_controller_;
-  }
 
   bool IsSrcdocDocument() const;
   bool ShouldSetURL() const;
@@ -153,7 +147,6 @@ class CORE_EXPORT DocumentInit final {
   bool is_initial_empty_document_ = false;
   String mime_type_;
   LocalDOMWindow* window_ = nullptr;
-  HTMLImportsController* imports_controller_ = nullptr;
   ExecutionContext* execution_context_ = nullptr;
   KURL url_;
   Document* owner_document_ = nullptr;

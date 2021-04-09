@@ -450,11 +450,8 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
   // Create preloader only when the document is:
   // - attached to a frame (likely the prefetched resources will be loaded
   // soon),
-  // - a HTML import document (blocks rendering and also resources will be
-  // loaded soon), or
   // - is for no-state prefetch (made specifically for running preloader).
-  if (!document.GetFrame() && !document.IsHTMLImport() &&
-      !document.IsPrefetchOnly())
+  if (!document.GetFrame() && !document.IsPrefetchOnly())
     return;
 
   if (prefetch_policy == kAllowPrefetching)

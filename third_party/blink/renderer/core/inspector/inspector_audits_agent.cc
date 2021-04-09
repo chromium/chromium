@@ -415,8 +415,6 @@ protocol::String BuildMixedContentResourceType(
       return protocol::Audits::MixedContentResourceTypeEnum::Image;
     case blink::mojom::blink::RequestContextType::IMAGE_SET:
       return protocol::Audits::MixedContentResourceTypeEnum::Image;
-    case blink::mojom::blink::RequestContextType::IMPORT:
-      return protocol::Audits::MixedContentResourceTypeEnum::Import;
     case blink::mojom::blink::RequestContextType::INTERNAL:
       return protocol::Audits::MixedContentResourceTypeEnum::Resource;
     case blink::mojom::blink::RequestContextType::LOCATION:

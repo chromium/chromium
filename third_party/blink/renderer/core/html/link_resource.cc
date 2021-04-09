@@ -43,7 +43,7 @@ LinkResource::LinkResource(HTMLLinkElement* owner) : owner_(owner) {
 LinkResource::~LinkResource() = default;
 
 bool LinkResource::ShouldLoadResource() const {
-  return GetDocument().GetFrame() || GetDocument().ImportsController();
+  return GetDocument().GetFrame();
 }
 
 LocalFrame* LinkResource::LoadingFrame() const {

@@ -51,15 +51,6 @@ RawResource* RawResource::FetchSynchronously(FetchParameters& params,
       params, RawResourceFactory(ResourceType::kRaw), client));
 }
 
-RawResource* RawResource::FetchImport(FetchParameters& params,
-                                      ResourceFetcher* fetcher,
-                                      RawResourceClient* client) {
-  params.SetRequestContext(mojom::blink::RequestContextType::IMPORT);
-  params.SetRequestDestination(network::mojom::RequestDestination::kEmpty);
-  return ToRawResource(fetcher->RequestResource(
-      params, RawResourceFactory(ResourceType::kImportResource), client));
-}
-
 RawResource* RawResource::Fetch(FetchParameters& params,
                                 ResourceFetcher* fetcher,
                                 RawResourceClient* client) {

@@ -585,9 +585,6 @@ bool CSSStyleSheet::CanBeActivated(
     if (IsA<HTMLStyleElement>(owner_node_.Get()) ||
         IsA<SVGStyleElement>(owner_node_.Get()))
       return true;
-    auto* html_link_element = DynamicTo<HTMLLinkElement>(owner_node_.Get());
-    if (html_link_element && html_link_element->IsImport())
-      return !IsAlternate();
   }
 
   auto* html_link_element = DynamicTo<HTMLLinkElement>(owner_node_.Get());

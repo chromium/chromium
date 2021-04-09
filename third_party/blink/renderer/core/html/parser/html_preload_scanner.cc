@@ -155,7 +155,6 @@ class TokenPreloadScanner::StartTagScanner {
         link_is_preconnect_(false),
         link_is_preload_(false),
         link_is_modulepreload_(false),
-        link_is_import_(false),
         link_is_webbundle_(false),
         matched_(true),
         input_is_image_(false),
@@ -497,7 +496,6 @@ class TokenPreloadScanner::StartTagScanner {
       link_is_preconnect_ = rel.IsPreconnect();
       link_is_preload_ = rel.IsLinkPreload();
       link_is_modulepreload_ = rel.IsModulePreload();
-      link_is_import_ = rel.IsImport();
       link_is_webbundle_ = rel.IsWebBundle();
     } else if (Match(attribute_name, html_names::kMediaAttr)) {
       matched_ &= MediaAttributeMatches(*media_values_, attribute_value);
@@ -675,8 +673,6 @@ class TokenPreloadScanner::StartTagScanner {
       return ResourceType::kCSSStyleSheet;
     if (link_is_preconnect_)
       return ResourceType::kRaw;
-    if (Match(tag_impl_, html_names::kLinkTag) && link_is_import_)
-      return ResourceType::kImportResource;
     NOTREACHED();
     return ResourceType::kRaw;
   }
@@ -720,13 +716,11 @@ class TokenPreloadScanner::StartTagScanner {
                type_from_attribute))) {
         return false;
       }
+      return true;
     } else if (link_is_modulepreload_) {
       return true;
-    } else if (!link_is_import_) {
-      return false;
     }
-
-    return true;
+    return false;
   }
 
   bool ShouldPreload(base::Optional<ResourceType>& type) const {
@@ -805,7 +799,6 @@ class TokenPreloadScanner::StartTagScanner {
   bool link_is_preconnect_;
   bool link_is_preload_;
   bool link_is_modulepreload_;
-  bool link_is_import_;
   bool link_is_webbundle_;
   bool matched_;
   bool input_is_image_;

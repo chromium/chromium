@@ -88,7 +88,6 @@ class CORE_EXPORT InspectorPageAgent final
     kOtherResource
   };
 
-  static HeapVector<Member<Document>> ImportsForFrame(LocalFrame*);
   static bool CachedResourceContent(const Resource*,
                                     String* result,
                                     bool* base64_encoded);

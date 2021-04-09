@@ -1149,8 +1149,6 @@ const char* Resource::ResourceTypeToString(
       return "Link prefetch resource";
     case ResourceType::kTextTrack:
       return "Text track";
-    case ResourceType::kImportResource:
-      return "Imported resource";
     case ResourceType::kAudio:
       return "Audio";
     case ResourceType::kVideo:
@@ -1172,7 +1170,6 @@ bool Resource::IsLoadEventBlockingResourceType() const {
     case ResourceType::kFont:
     case ResourceType::kSVGDocument:
     case ResourceType::kXSLStyleSheet:
-    case ResourceType::kImportResource:
       return true;
     case ResourceType::kRaw:
     case ResourceType::kLinkPrefetch:

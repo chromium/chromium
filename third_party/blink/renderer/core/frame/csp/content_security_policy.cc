@@ -604,7 +604,6 @@ static base::Optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::IFRAME:
       return CSPDirectiveName::FrameSrc;
 
-    case mojom::blink::RequestContextType::IMPORT:
     case mojom::blink::RequestContextType::SCRIPT:
     case mojom::blink::RequestContextType::XSLT:
       return CSPDirectiveName::ScriptSrcElem;

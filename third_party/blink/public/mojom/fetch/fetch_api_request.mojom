@@ -39,7 +39,6 @@ enum RequestContextType {
   IFRAME,
   IMAGE,
   IMAGE_SET,
-  IMPORT,
   INTERNAL,
   LOCATION,
   MANIFEST,

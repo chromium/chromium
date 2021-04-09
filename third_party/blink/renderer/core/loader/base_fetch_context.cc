@@ -76,7 +76,7 @@ BaseFetchContext::CanRequestBasedOnSubresourceFilterOnly(
     ReportingDisposition reporting_disposition,
     const base::Optional<ResourceRequest::RedirectInfo>& redirect_info) const {
   auto* subresource_filter = GetSubresourceFilter();
-  if (subresource_filter && type != ResourceType::kImportResource &&
+  if (subresource_filter &&
       !subresource_filter->AllowLoad(url, resource_request.GetRequestContext(),
                                      reporting_disposition)) {
     if (reporting_disposition == ReportingDisposition::kReport) {
@@ -475,7 +475,7 @@ BaseFetchContext::CanRequestInternal(
     return ResourceRequestBlockedReason::kCSP;
   }
 
-  if (type == ResourceType::kScript || type == ResourceType::kImportResource) {
+  if (type == ResourceType::kScript) {
     if (!AllowScriptFromSource(url)) {
       // TODO(estark): Use a different ResourceRequestBlockedReason here, since
       // this check has nothing to do with CSP. https://crbug.com/600795
@@ -528,7 +528,7 @@ BaseFetchContext::CanRequestInternal(
 
   // Let the client have the final say into whether or not the load should
   // proceed.
-  if (GetSubresourceFilter() && type != ResourceType::kImportResource) {
+  if (GetSubresourceFilter()) {
     if (!GetSubresourceFilter()->AllowLoad(url, request_context,
                                            reporting_disposition)) {
       return ResourceRequestBlockedReason::kSubresourceFilter;

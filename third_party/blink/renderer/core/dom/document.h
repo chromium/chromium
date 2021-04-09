@@ -149,8 +149,6 @@ class HTMLDialogElement;
 class HTMLElement;
 class HTMLFrameOwnerElement;
 class HTMLHeadElement;
-class HTMLImportLoader;
-class HTMLImportsController;
 class HTMLLinkElement;
 class HTMLPopupElement;
 class HTMLScriptElementOrSVGScriptElement;
@@ -324,8 +322,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool IsPrerendering() const { return is_prerendering_; }
 
-  // Gets the associated LocalDOMWindow even if this Document is associated with
-  // an HTMLImportsController.
   LocalDOMWindow* ExecutingWindow() const;
 
   network::mojom::ReferrerPolicy GetReferrerPolicy() const;
@@ -523,7 +519,7 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   bool IsScriptExecutionReady() const {
-    return HaveImportsLoaded() && HaveScriptBlockingStylesheetsLoaded();
+    return HaveScriptBlockingStylesheetsLoaded();
   }
 
   bool IsForExternalHandler() const { return is_for_external_handler_; }
@@ -547,8 +543,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   LocalFrameView* View() const;  // can be null
   LocalFrame* GetFrame() const;  // can be null
-  // Returns frame_ for current document, or if this is an HTML import,
-  // tree_root document's frame_, if any.  Can be null.
+  // Returns frame_ for current document.  Can be null.
   // TODO(kochi): Audit usage of this interface (crbug.com/746150).
   LocalFrame* GetFrameOfTreeRootDocument() const;
   Page* GetPage() const;          // can be null
@@ -1328,17 +1323,7 @@ class CORE_EXPORT Document : public ContainerNode,
                               const ElementRegistrationOptions*,
                               ExceptionState&);
 
-  void ClearImportsController();
-  HTMLImportsController* EnsureImportsController();
-  HTMLImportsController* ImportsController() const {
-    return imports_controller_;
-  }
-  HTMLImportLoader* ImportLoader() const;
-
-  bool IsHTMLImport() const;
   Document& TreeRootDocument() const;
-
-  void DidLoadAllImports();
 
   void AdjustFloatQuadsForScrollAndAbsoluteZoom(Vector<FloatQuad>&,
                                                 const LayoutObject&) const;
@@ -1814,8 +1799,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void SendDidEditFieldInInsecureContext();
 
-  bool HaveImportsLoaded() const;
-
   void UpdateActiveState(bool is_active, bool update_active_chain, Element*);
   void UpdateHoverState(Element*);
 
@@ -1859,7 +1842,6 @@ class CORE_EXPORT Document : public ContainerNode,
   PendingSheetLayout pending_sheet_layout_;
 
   Member<LocalDOMWindow> dom_window_;
-  Member<HTMLImportsController> imports_controller_;
 
   // For Documents given a dom_window_ at creation that are not Shutdown(),
   // execution_context_ and dom_window_ will be equal.

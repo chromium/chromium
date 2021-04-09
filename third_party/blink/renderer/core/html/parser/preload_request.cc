@@ -121,10 +121,6 @@ Resource* PreloadRequest::Start(Document* document) {
   FetchParameters params(std::move(resource_request), options);
 
   auto* origin = document->domWindow()->GetSecurityOrigin();
-  if (resource_type_ == ResourceType::kImportResource) {
-    params.SetCrossOriginAccessControl(origin, kCrossOriginAttributeAnonymous);
-  }
-
   if (script_type_ == mojom::blink::ScriptType::kModule) {
     DCHECK_EQ(resource_type_, ResourceType::kScript);
     params.SetCrossOriginAccessControl(
@@ -148,8 +144,7 @@ Resource* PreloadRequest::Start(Document* document) {
     DCHECK_EQ(resource_type_, ResourceType::kScript);
     params.SetDecoderOptions(TextResourceDecoderOptions::CreateUTF8Decode());
   } else if (resource_type_ == ResourceType::kScript ||
-             resource_type_ == ResourceType::kCSSStyleSheet ||
-             resource_type_ == ResourceType::kImportResource) {
+             resource_type_ == ResourceType::kCSSStyleSheet) {
     params.SetCharset(charset_.IsEmpty() ? document->Encoding()
                                          : WTF::TextEncoding(charset_));
   }

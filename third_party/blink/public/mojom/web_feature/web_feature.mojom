@@ -264,7 +264,7 @@ enum WebFeature {
   kEditingAppleConvertedSpace = 459,
   kEditingApplePasteAsQuotation = 460,
   kEditingAppleStyleSpanClass = 461,
-  kHTMLImportsAsyncAttribute = 463,
+  kOBSOLETE_HTMLImportsAsyncAttribute = 463,
   kXMLHttpRequestSynchronous = 465,
   kCSSSelectorPseudoUnresolved = 466,
   kOBSOLETE_CSSSelectorPseudoShadow = 467,
