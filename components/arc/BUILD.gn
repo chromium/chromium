@@ -370,6 +370,8 @@ static_library("arc_test_support") {
     "test/fake_power_instance.h",
     "test/fake_snapshot_reboot_notification.cc",
     "test/fake_snapshot_reboot_notification.h",
+    "test/fake_storage_manager_instance.cc",
+    "test/fake_storage_manager_instance.h",
     "test/fake_timer_instance.cc",
     "test/fake_timer_instance.h",
     "test/fake_wake_lock_instance.cc",
