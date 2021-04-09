@@ -86,12 +86,15 @@ class SingleClientWebAppsSyncTest : public SyncTest {
     apps_helper::AwaitWebAppQuiescence(GetAllProfiles());
   }
 
-  void InjectWebAppEntityToFakeServer(const std::string& app_id,
-                                      const GURL& url) {
+  void InjectWebAppEntityToFakeServer(
+      const std::string& app_id,
+      const GURL& url,
+      base::Optional<std::string> manifest_id = base::nullopt) {
     web_app::WebApp app(app_id);
     app.SetName(app_id);
     app.SetStartUrl(url);
     app.SetUserDisplayMode(web_app::DisplayMode::kBrowser);
+    app.SetManifestId(manifest_id);
 
     web_app::WebApp::SyncFallbackData sync_fallback_data;
     sync_fallback_data.name = app_id;
@@ -100,6 +103,7 @@ class SingleClientWebAppsSyncTest : public SyncTest {
     sync_pb::EntitySpecifics entity_specifics;
 
     *(entity_specifics.mutable_web_app()) = web_app::WebAppToSyncProto(app);
+
     fake_server_->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             /*non_unique_name=*/"", app_id, entity_specifics, kDefaultTime,
@@ -226,6 +230,66 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                                 .AsWebAppRegistrar();
 
   EXPECT_FALSE(web_app_registrar->IsInstalled(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
+                       AppWithIdSpecifiedSyncInstalled) {
+  const base::Optional<std::string> manifest_id("explicit_id");
+  GURL url("https://example.com/start");
+  const std::string app_id = web_app::GenerateAppId(manifest_id, url);
+
+  InjectWebAppEntityToFakeServer(app_id, url, manifest_id);
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  auto* web_app_registrar = web_app::WebAppProvider::Get(GetProfile(0))
+                                ->registrar()
+                                .AsWebAppRegistrar();
+
+  EXPECT_TRUE(web_app_registrar->IsInstalled(app_id));
+
+  WebApplicationInfo info;
+  std::string name = "Test name";
+  info.title = base::UTF8ToUTF16(app_id);
+  info.description = base::UTF8ToUTF16("Test description");
+  info.start_url = url;
+  info.scope = url;
+  const web_app::AppId installed_app_id =
+      apps_helper::InstallWebApp(GetProfile(0), info);
+
+  const std::string expected_app_id =
+      web_app::GenerateAppIdFromURL(GURL("https://example.com/explicit_id"));
+  EXPECT_EQ(expected_app_id, installed_app_id);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
+                       AppWithIdSpecifiedAsEmptyStringSyncInstalled) {
+  const base::Optional<std::string> manifest_id("");
+  GURL url("https://example.com/start");
+  const std::string app_id = web_app::GenerateAppId(manifest_id, url);
+
+  InjectWebAppEntityToFakeServer(app_id, url, manifest_id);
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  auto* web_app_registrar = web_app::WebAppProvider::Get(GetProfile(0))
+                                ->registrar()
+                                .AsWebAppRegistrar();
+
+  EXPECT_TRUE(web_app_registrar->IsInstalled(app_id));
+
+  WebApplicationInfo info;
+  std::string name = "Test name";
+  info.title = base::UTF8ToUTF16(app_id);
+  info.description = base::UTF8ToUTF16("Test description");
+  info.start_url = url;
+  info.scope = url;
+  const web_app::AppId installed_app_id =
+      apps_helper::InstallWebApp(GetProfile(0), info);
+
+  const std::string expected_app_id =
+      web_app::GenerateAppIdFromURL(GURL("https://example.com/"));
+  EXPECT_EQ(expected_app_id, installed_app_id);
 }
 
 // bookmark app should be sync installed when kSyncBookmarkApps is

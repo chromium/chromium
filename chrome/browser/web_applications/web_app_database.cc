@@ -170,7 +170,6 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   DCHECK(!start_url.is_empty() && start_url.is_valid());
 
   DCHECK(!web_app.app_id().empty());
-  DCHECK_EQ(web_app.app_id(), GenerateAppIdFromURL(start_url));
 
   // Set sync data to sync proto.
   *(local_data->mutable_sync_data()) = WebAppToSyncProto(web_app);
@@ -389,10 +388,16 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     return nullptr;
   }
 
-  const AppId app_id = GenerateAppIdFromURL(start_url);
+  base::Optional<std::string> manifest_id = base::nullopt;
+  if (sync_data.has_manifest_id())
+    manifest_id = base::Optional<std::string>(sync_data.manifest_id());
+
+  const AppId app_id = GenerateAppId(manifest_id, start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
+
+  web_app->SetManifestId(manifest_id);
 
   // Required fields:
   if (!local_data.has_sources()) {

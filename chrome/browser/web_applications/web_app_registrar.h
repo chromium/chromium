@@ -36,6 +36,10 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
   bool is_empty() const { return registry_.empty(); }
 
   const WebApp* GetAppById(const AppId& app_id) const;
+
+  // TODO(https://crbug.com/1182363): should be removed when id is introduced to
+  // manifest.
+  const WebApp* GetAppByStartUrl(const GURL& start_url) const;
   std::vector<AppId> GetAppsInSyncInstall();
 
   // AppRegistrar:

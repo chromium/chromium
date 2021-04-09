@@ -58,4 +58,7 @@ message WebAppSpecifics {
   // Used to store the in-page ranking for ordering apps in its given
   // |user_page_ordinal| page.
   optional string user_launch_ordinal = 8;
+
+  // Used to store id specified in the manifest.
+  optional string manifest_id = 9;
 }

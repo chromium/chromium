@@ -9,6 +9,7 @@
 
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 
 class GURL;
 class Profile;
@@ -45,6 +46,9 @@ AppId GetAppIdFromApplicationName(const std::string& app_name);
 //
 // App ID and App Key match Extension ID and Extension Key for migration.
 AppId GenerateAppIdFromURL(const GURL& url);
+AppId GenerateAppId(const base::Optional<std::string>& manifest_id,
+                    const GURL& start_url);
+
 std::string GenerateAppKeyFromURL(const GURL& url);
 
 // Returns whether the given |app_url| is a valid web app url.

@@ -499,7 +499,9 @@ void WebAppInstallTask::ApplyParamsToWebApplicationInfo(
     web_app_info.open_as_window =
         install_params.user_display_mode != DisplayMode::kBrowser;
   }
-
+  if (!install_params.override_manifest_id.has_value()) {
+    web_app_info.manifest_id = install_params.override_manifest_id;
+  }
   // If `additional_search_terms` was a manifest property, it would be
   // sanitized while parsing the manifest. Since it's not, we sanitize it
   // here.
@@ -541,7 +543,8 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
   if (manifest)
     UpdateWebAppInfoFromManifest(*manifest, manifest_url, web_app_info.get());
 
-  AppId app_id = GenerateAppIdFromURL(web_app_info->start_url);
+  AppId app_id =
+      GenerateAppId(web_app_info->manifest_id, web_app_info->start_url);
 
   // Do the app_id expectation check if requested.
   if (expected_app_id_.has_value() && *expected_app_id_ != app_id) {

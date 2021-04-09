@@ -136,11 +136,18 @@ void WebAppInstallFinalizer::FinalizeInstall(
   const auto source =
       InferSourceFromMetricsInstallSource(options.install_source);
 
-  const AppId app_id = GenerateAppIdFromURL(web_app_info.start_url);
+  AppId app_id =
+      GenerateAppId(web_app_info.manifest_id, web_app_info.start_url);
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
-
+  // A web app might be sync installed with id received from WebAppSpecifics
+  // that's different from start_url hash, in this case we look up the app by
+  // start_url and respect the app_id from the existing WebApp.
+  if (!existing_web_app)
+    existing_web_app =
+        GetWebAppRegistrar().GetAppByStartUrl(web_app_info.start_url);
   std::unique_ptr<WebApp> web_app;
   if (existing_web_app) {
+    app_id = existing_web_app->app_id();
     // Prepare copy-on-write:
     DCHECK_EQ(web_app_info.start_url, existing_web_app->start_url());
     web_app = std::make_unique<WebApp>(*existing_web_app);
@@ -154,6 +161,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
     // New app.
     web_app = std::make_unique<WebApp>(app_id);
     web_app->SetStartUrl(web_app_info.start_url);
+    web_app->SetManifestId(web_app_info.manifest_id);
     web_app->SetIsLocallyInstalled(options.locally_installed);
     if (options.locally_installed)
       web_app->SetInstallTime(base::Time::Now());
@@ -293,7 +301,8 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     InstallFinalizedCallback callback) {
   CHECK(started_);
 
-  const AppId app_id = GenerateAppIdFromURL(web_app_info.start_url);
+  const AppId app_id =
+      GenerateAppId(web_app_info.manifest_id, web_app_info.start_url);
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
 
   if (!existing_web_app || existing_web_app->is_in_sync_install() ||
