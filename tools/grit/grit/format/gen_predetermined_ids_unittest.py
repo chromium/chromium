@@ -38,9 +38,12 @@ class GenPredeterminedIdsUnittest(unittest.TestCase):
 ''')
     resources = {}
     gen_predetermined_ids.ReadResourceIdsFromFile(f, resources)
-    self.assertEqual({12500: 'IDS_BOOKMARKS_OPEN_ALL',
-                      12501: 'IDS_BOOKMARKS_OPEN_ALL_INCOGNITO',
-                      12502: 'IDS_BOOKMARK_X'}, resources)
+    self.assertEqual(
+        {
+            12500: 'IDS_BOOKMARKS_NO_ITEMS',
+            12501: 'IDS_BOOKMARK_BAR_IMPORT_LINK',
+            12502: 'IDS_BOOKMARK_X'
+        }, resources)
 
 if __name__ == '__main__':
   unittest.main()
