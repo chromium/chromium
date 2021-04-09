@@ -1516,10 +1516,6 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
 
   base::Optional<gfx::PointF> fallback_target_location;
 
-  // Adding crash logs to track the reason of stale pointer value of |target|.
-  LogTouchscreenGestureTargetCrashKeys(
-      "RWHIER::DispatchTouchscreenGestureEvent target set from caller");
-
   if (gesture_event.unique_touch_event_id == 0) {
     // On Android it is possible for touchscreen gesture events to arrive that
     // are not associated with touch events, because non-synthetic events can be
@@ -1547,18 +1543,10 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
     // this is the best we can do until we fix https://crbug.com/595422.
     target = result.view;
 
-    // Adding crash logs to track the reason of stale pointer value of |target|.
-    LogTouchscreenGestureTargetCrashKeys(
-        "RWHIER::DispatchTouchscreenGestureEvent target from "
-        "FindViewAtLocation");
     fallback_target_location = transformed_point;
   } else if (is_gesture_start) {
     target = gesture_target_it->second.get();
 
-    // Adding crash logs to track the reason of stale pointer value of |target|.
-    LogTouchscreenGestureTargetCrashKeys(
-        "RWHIER::DispatchTouchscreenGestureEvent target from "
-        "touchscreen_gesture_target_map_");
     touchscreen_gesture_target_map_.erase(gesture_target_it);
 
     // Abort any scroll bubbling in progress to avoid double entry.
@@ -1987,13 +1975,6 @@ void RenderWidgetHostInputEventRouter::SetMouseCaptureTarget(
 void RenderWidgetHostInputEventRouter::SetAutoScrollInProgress(
     bool is_autoscroll_in_progress) {
   event_targeter_->SetIsAutoScrollInProgress(is_autoscroll_in_progress);
-}
-
-void RenderWidgetHostInputEventRouter::LogTouchscreenGestureTargetCrashKeys(
-    const std::string& log_message) {
-  static auto* target_crash_key = base::debug::AllocateCrashKeyString(
-      "target_crash_key", base::debug::CrashKeySize::Size256);
-  base::debug::SetCrashKeyString(target_crash_key, log_message);
 }
 
 }  // namespace content

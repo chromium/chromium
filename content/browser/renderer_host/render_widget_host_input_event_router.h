@@ -332,9 +332,6 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   void SetTouchscreenGestureTarget(RenderWidgetHostViewBase* target,
                                    bool moved_recently = false);
 
-  // TODO(crbug.com/1155297): Remove when bug investigation is complete.
-  void LogTouchscreenGestureTargetCrashKeys(const std::string& log_message);
-
   FrameSinkIdOwnerMap owner_map_;
   TargetMap touchscreen_gesture_target_map_;
   RenderWidgetHostViewBase* touch_target_ = nullptr;
