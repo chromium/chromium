@@ -146,24 +146,26 @@
           break;
         }
 
-        const clientX = touch.clientX;
-        const clientY = touch.clientY;
+        if (!this.tapStarted_) {
+          break;
+        }
 
-        const moveX = this.lastTouchX_ - clientX;
-        const moveY = this.lastTouchY_ - clientY;
-        this.totalMoveX_ += Math.abs(moveX);
-        this.totalMoveY_ += Math.abs(moveY);
-        this.lastTouchX_ = clientX;
-        this.lastTouchY_ = clientY;
+        this.totalMoveX_ += Math.abs(this.lastTouchX_ - touch.clientX);
+        this.totalMoveY_ += Math.abs(this.lastTouchY_ - touch.clientY);
 
-        const couldBeTap =
-            this.totalMoveY_ <= FileTapHandler.MAX_TRACKING_FOR_TAP_ ||
-            this.totalMoveX_ <= FileTapHandler.MAX_TRACKING_FOR_TAP_;
+        // Allow some movement for two-finger taps, and none otherwise.
+        let moveLimit = 0;
+        if (this.isTwoFingerTap_) {
+          moveLimit = FileTapHandler.MAX_TRACKING_FOR_TAP_;
+        }
 
-        if (!couldBeTap) {
-          // If the pointer is slided, it is a drag. It is no longer a tap.
+        // If the touch has moved outside limits, it's no longer a tap.
+        if (this.totalMoveX_ > moveLimit || this.totalMoveY_ > moveLimit) {
           this.tapStarted_ = false;
         }
+
+        this.lastTouchX_ = touch.clientX;
+        this.lastTouchY_ = touch.clientY;
       } break;
 
       case 'touchend': {
