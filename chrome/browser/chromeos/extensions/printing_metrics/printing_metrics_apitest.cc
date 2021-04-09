@@ -122,8 +122,9 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
 // warning if they request the printingMetrics permission in the manifest and
 // that such extensions don't see the chrome.printingMetrics namespace.
 IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, IsRestrictedToPolicyExtension) {
-  ASSERT_TRUE(RunExtensionSubtest("printing_metrics", "api_not_available.html",
-                                  kFlagIgnoreManifestWarnings, kFlagNone));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "printing_metrics", .page_url = "api_not_available.html"},
+      {.ignore_manifest_warnings = true}));
 
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("printing_metrics");
