@@ -185,9 +185,10 @@ ContentSecurityPolicy* IsolatedWorldCSP::CreateIsolatedWorldCSP(
           window, self_origin, world_id,
           policy.IsEmpty() ? CSPType::kEmpty : CSPType::kNonEmpty);
   csp->BindToDelegate(*delegate);
-  csp->DidReceiveHeader(policy, *self_origin,
-                        network::mojom::ContentSecurityPolicyType::kEnforce,
-                        network::mojom::ContentSecurityPolicySource::kHTTP);
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      policy, network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+      network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+      *(self_origin)));
 
   return csp;
 }
