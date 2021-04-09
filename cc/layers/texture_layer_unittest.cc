@@ -1109,7 +1109,14 @@ class TextureLayerChangeInvisibleMailboxTest
   int commit_count_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(TextureLayerChangeInvisibleMailboxTest);
+// TODO(crbug.com/1197350): Test fails on chromeos-amd64-generic-rel.
+#if defined(OS_CHROMEOS)
+#define MAYBE_SINGLE_AND_MULTI_THREAD_TEST_F MULTI_THREAD_TEST_F
+#else
+#define MAYBE_SINGLE_AND_MULTI_THREAD_TEST_F SINGLE_AND_MULTI_THREAD_TEST_F
+#endif
+
+MAYBE_SINGLE_AND_MULTI_THREAD_TEST_F(TextureLayerChangeInvisibleMailboxTest);
 
 // Test that TextureLayerImpl::ReleaseResources can be called which releases
 // the resource back to TextureLayerClient.
