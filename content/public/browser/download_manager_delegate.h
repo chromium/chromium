@@ -214,7 +214,7 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   GetQuarantineConnectionCallback();
 
   // Gets a handler to perform the rename for a download item.  If no special
-  // rename handling is required, don’t override this, as the default
+  // rename handling is required, don't override this, as the default
   // implementation returns null, which indicates that the default rename
   // handling should be performed.
   virtual std::unique_ptr<download::DownloadItemRenameHandler>
