@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">Öneri: <ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
 <translation id="257674075312929031">Grup</translation>
 <translation id="2613747923081026172">Grup oluştur</translation>
+<translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan</translation>
 <translation id="2671423594960767771">Grubu paylaş</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> adlı <ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu genişletin.</translation>
+<translation id="2801787514987684416">Mağaza bilgileri görüntülensin mi?</translation>
 <translation id="2977480621796371840">Gruptan kaldır</translation>
+<translation id="3194464645767632461">puan</translation>
 <translation id="3291470810748040983">Açık bir sekmede daha düşük fiyat varsa uyarı alırsınız</translation>
 <translation id="3328308545011660196">Öneri: <ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu daralt.}}</translation>
 <translation id="3882834874697329510">Açık bir sekmede daha düşük fiyat olduğunda uyarı almak için Ayarlar'da bildirimleri açın.</translation>
 <translation id="3940195383040445971">Sekmelerde fiyatları takip et</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">Göz atmaya devam edin</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
 <translation id="4648718555153979859">Sekmeleriniz burada gruplandırılır</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> yorum)}other{(<ph name="REVIEWS_COUNT_MANY" /> yorum)}}</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="492284538114688557">Fiyat düşüşü belirlendi</translation>
 <translation id="5007392906805964215">İncele</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">Grup oluşturarak sayfaları hızlıca karşılaştırın. Başlamak için bir bağlantıya dokunup basılı tutun.</translation>
 <translation id="5490235265819901748">Sekme grubu genişletildi</translation>
 <translation id="5533021382642990449">Daha sonra göster</translation>
+<translation id="5556417849629758491">Mağaza bilgilerini görüntüleme seçeneği, ekranın üst kısmına yakın bir yerdedir</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu kapat</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> sekme gruplandı</translation>
 <translation id="575494663145460764">Fiyat düşüşü uyarıları alınsın mı?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">Grubun sekmelerini tam ekran ızgarada gösterir</translation>
 <translation id="7792771145871471484">Önerileri inceleyin.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi gruplandır}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi gruplandır}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan, <ph name="REVIEWS_COUNT_ONE" /> yorum}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan, <ph name="REVIEWS_COUNT_MANY" /> yorum}}</translation>
 <translation id="7885132941432959125">Sekmeyi sağa taşı</translation>
 <translation id="7966321538264951561">Önerileri kapat.</translation>
 <translation id="814503310257431685">Tümünü göster</translation>

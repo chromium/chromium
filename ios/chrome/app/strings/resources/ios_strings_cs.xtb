@@ -422,6 +422,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5489208564673669003">Chcete-li spravovat cookies pro všechny weby, přejděte do <ph name="BEGIN_LINK" />Nastavení souborů cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
 <translation id="5508435575041083207">Odhlásit se a vymazat z tohoto zařízení data</translation>
+<translation id="5513681519188741830">Před <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Vytvořit heslovou frázi</translation>
 <translation id="5548760955356983418">Handoff umožňuje začít web procházet v tomto zařízení a poté snadno pokračovat na počítači Mac. Akutální otevřený web se zobrazí v doku vašeho počítače Mac.
 
@@ -787,6 +788,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9152539721251340337">Vytvořit QR kód</translation>
 <translation id="9157836665414082580">Potlačit dialogová okna</translation>
 <translation id="9188680907066685419">Odhlásit se ze spravovaného účtu</translation>
+<translation id="9200875785104711666">před <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Zpráva o selhání byla odeslána.</translation>
 <translation id="952704832371081537">Zrušit</translation>

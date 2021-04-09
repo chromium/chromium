@@ -62,6 +62,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3130323860337406239">Chromium používá váš mikrofon.</translation>
 <translation id="3155163173539279776">Restartovat Chromium</translation>
 <translation id="3179665906251668410">Otevřít odkaz v &amp;anonymním okně prohlížeče Chromium</translation>
+<translation id="3185330573522821672">Přizpůsobte si svůj nový profil Chromium</translation>
 <translation id="3190315855212034486">Ouha! Prohlížeč Chromium spadl. Chcete jej znovu spustit?</translation>
 <translation id="3229526316128325841">Chromium chce exportovat vaše hesla.</translation>
 <translation id="3258596308407688501">Chromium nemůže číst ani zapisovat do svého datového adresáře:
@@ -76,6 +77,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3430503420100763906">Pomocí profilů Chromium můžete všechny své údaje v prohlížeči Chromium uchovávat odděleně. Vytvořte profily pro přátele a rodinu nebo rozdělte činnosti mezi práci a zábavu.</translation>
 <translation id="347328004046849135">Pokud se přihlásíte pomocí prolomeného hesla, Chromium vám to oznámí</translation>
 <translation id="3474745554856756813">Z tohoto zařízení bude smazán následující počet položek: <ph name="ITEMS_COUNT" />. Budete-li chtít své údaje později načíst, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931">Zkratkou <ph name="SHORTCUT" /> lze přepínat mezi profily Chromium</translation>
 <translation id="3509308970982693815">Zavřete prosím všechna okna prohlížeče Chromium a zkuste to znovu.</translation>
 <translation id="3575459661164320785">Máte v počítači škodlivý software. Chromium ho může odstranit, obnovit vaše nastavení a zakázat rozšíření, aby prohlížeč opět fungoval jako obvykle.</translation>
 <translation id="3639635944603682591">Ze zařízení budou smazány údaje této osoby o prohlížení. Budete-li je chtít znovu získat, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
@@ -156,6 +158,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="6120345080069858279">Chromium vám toto heslo uloží do účtu Google. Nebudete si ho muset pamatovat.</translation>
 <translation id="6129621093834146363">Soubor <ph name="FILE_NAME" /> je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
 <translation id="6134968993075716475">Bezpečné prohlížení je vypnuté. Chromium ho doporučuje zapnout.</translation>
+<translation id="6145820983052037069">Zde můžete přepínat mezi profily Chromium</translation>
 <translation id="6183079672144801177">Zkontrolujte, zda jste v zařízení <ph name="TARGET_DEVICE_NAME" /> přihlášeni do prohlížeče Chromium, a potom zkuste číslo odeslat znovu.</translation>
 <translation id="6212496753309875659">V tomto počítači je již nainstalována novější verze prohlížeče Chromium. Jestliže tento software nefunguje, odinstalujte Chromium a zkuste to znovu.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se nyní restartuje}=1{Chromium se za 1 sekundu restartuje}few{Chromium se za # sekundy restartuje}many{Chromium se za # sekundy restartuje}other{Chromium se za # sekund restartuje}}</translation>

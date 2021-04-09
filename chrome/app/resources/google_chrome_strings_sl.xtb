@@ -18,6 +18,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">V tem računalniku je že nameščena novejša različica Google Chroma. Če programska oprema ne deluje, odstranite Google Chrome in poskusite znova.</translation>
 <translation id="1434626383986940139">Delovne različice aplikacij za Chrome</translation>
+<translation id="1507198376417198979">Prilagajanje novega profila v Chromu</translation>
 <translation id="1516530951338665275">Google Chrome potrebuje dostop do Bluetootha za nadaljevanje 
  seznanjanja. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Posodobi Chrome</translation>
@@ -219,6 +220,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6943584222992551122">Podatki brskanja te osebe bodo izbrisani iz te naprave. Če želite podatke obnoviti, se prijavite v Chrome kot <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Pravilo za dohodni promet za Google Chrome Beta, ki dovoli promet mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome je posodobljen, a ga niste uporabljali že vsaj 30 dni.</translation>
+<translation id="7025800014283535195">Med profili v Chromu lahko preklapljate tukaj</translation>
 <translation id="7062128746136194023">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome. Dodajanje tega ni dovoljeno: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome uporablja vaš mikrofon.</translation>
 <translation id="7106741999175697885">Upravitelj opravil – Google Chrome</translation>
@@ -296,4 +298,5 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="922152298093051471">Prilagodi Chrome</translation>
 <translation id="940313311831216333">Če želite do stvari v Chromu dostopati v vseh svojih napravah, se prijavite in nato vklopite sinhronizacijo.</translation>
 <translation id="989369509083708165">Google Chrome je privzeti brskalnik</translation>
+<translation id="989816563149873169">Bližnjica <ph name="SHORTCUT" /> omogoča preklop med profili v Chromu</translation>
 </translationbundle>

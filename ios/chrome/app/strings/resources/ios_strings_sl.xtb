@@ -422,6 +422,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5489208564673669003">Če želite upravljati piškotke za vsa spletna mesta, si oglejte <ph name="BEGIN_LINK" />Nastavitve piškotkov<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokiraj vse piškotke (ni priporočljivo)</translation>
 <translation id="5508435575041083207">Odjava in brisanje podatkov iz te naprave</translation>
+<translation id="5513681519188741830">Pred <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Ustvarjanje gesla</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
@@ -787,6 +788,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9152539721251340337">Ustvari kodo QR</translation>
 <translation id="9157836665414082580">Onemogoči pogovorna okna</translation>
 <translation id="9188680907066685419">Odjava iz upravljanega računa</translation>
+<translation id="9200875785104711666">pred <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Poročilo o zrušitvi poslano.</translation>
 <translation id="952704832371081537">Preklic</translation>

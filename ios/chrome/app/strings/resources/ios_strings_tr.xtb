@@ -422,6 +422,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5489208564673669003">Çerezlerin tüm siteler için nasıl yönetileceğini <ph name="BEGIN_LINK" />Çerez Ayarları<ph name="END_LINK" /> sayfasından öğrenebilirsiniz.</translation>
 <translation id="5490005495580364134">Tüm çerezleri engelle (Önerilmez)</translation>
 <translation id="5508435575041083207">Oturumu Kapat ve Bu Cihazdaki Verileri Temizle</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> sa. önce</translation>
 <translation id="5525269841082836315">Parola oluşturma</translation>
 <translation id="5548760955356983418">Handoff, web sitelerine göz atmaya bu cihazda başlamanıza ve sonra kolayca Mac'te devam etmenize olanak sağlar. Geçerli olarak açık olan web sitesi Mac bilgisayarınızın Dock bölümünde görünür.
 
@@ -787,6 +788,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9152539721251340337">QR Kodu oluşturma</translation>
 <translation id="9157836665414082580">İletişim Kutularını Gizle</translation>
 <translation id="9188680907066685419">Yönetilen hesabın oturumunu kapat</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> gün önce</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Kilitlenme raporu gönderildi.</translation>
 <translation id="952704832371081537">İptal</translation>

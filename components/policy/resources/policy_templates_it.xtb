@@ -2088,7 +2088,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3758249152301468420">Disabilita Strumenti per sviluppatori</translation>
 <translation id="3760148113224469113">Richiedi sempre agli utenti di confermare i messaggi relativi ai protocolli esterni</translation>
 <translation id="3760231600118073732">La sessione corrente viene bloccata</translation>
-<translation id="3761222804122755011">WebRTC utilizzerà l'interfaccia solo se si connette a una rete pubblica, ma potrà connettersi utilizzando indirizzi IP privati.</translation>
+<translation id="3761222804122755011">WebRTC utilizzerà l'interfaccia solo se si connette a una rete pubblica, ma potrà anche connettersi utilizzando indirizzi IP privati.</translation>
 <translation id="3762520180381586267">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> attiva il riavvio quando gli utenti arrestano il dispositivo. <ph name="PRODUCT_OS_NAME" /> sostituisce tutti i pulsanti di arresto nell'UI con quelli di riavvio. Se gli utenti arrestano i dispositivi utilizzando il tasto di accensione, non verrà eseguito alcun riavvio automatico, nemmeno se il criterio è stato attivato.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agli utenti di arrestare il dispositivo.</translation>

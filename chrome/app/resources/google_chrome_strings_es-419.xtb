@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Este equipo ya cuenta con una versión más reciente de Google Chrome. Si el software no funciona, desinstala Google Chrome y descárgalo nuevamente.</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
+<translation id="1507198376417198979">Personaliza tu nuevo perfil de Chrome.</translation>
 <translation id="1516530951338665275">Google Chrome necesita acceso a la conexión Bluetooth para continuar con la 
  vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
@@ -211,6 +212,7 @@
 <translation id="6943584222992551122">Los datos de navegación de esta persona se borrarán de este dispositivo. Para recuperarlos, accede a Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regla de entrada para que Google Chrome Beta permita el tráfico mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome fue actualizado, pero no lo has utilizado en los últimos 30 días.</translation>
+<translation id="7025800014283535195">Puedes alternar entre los perfiles de Chrome aquí</translation>
 <translation id="7062128746136194023">Tu padre o madre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chrome. No se permite agregar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome está usando tu micrófono.</translation>
 <translation id="7106741999175697885">Administrador de tareas - Google Chrome</translation>
@@ -288,4 +290,5 @@
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="940313311831216333">A fin de ver tu contenido de Chrome en todos tus dispositivos, accede a tu cuenta y activa la sincronización.</translation>
 <translation id="989369509083708165">Google Chrome es tu navegador predeterminado</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> permite alternar de un perfil de Chrome a otro</translation>
 </translationbundle>

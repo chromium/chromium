@@ -1026,6 +1026,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="211144231511833662">Effacer les types</translation>
 <translation id="2111670510994270194">Nouvel onglet à droite</translation>
 <translation id="2111810003053064883">Les annonceurs peuvent étudier l'efficacité des annonces sans vous suivre sur tous les sites.</translation>
+<translation id="2112554630428445878">Bienvenue, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2113479184312716848">Ouvrir un &amp;fichier...</translation>
 <translation id="2113921862428609753">Accès à l'information de l'autorité</translation>
@@ -2643,6 +2644,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3882165008614329320">Vidéo existante de la caméra ou du fichier</translation>
 <translation id="3884152383786131369">Le contenu Web offert en plusieurs langues utilisera la première langue prise en charge de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">C'est votre administrateur qui gère les mises à jour</translation>
 <translation id="3886446263141354045">Votre demande d'accès à ce site a été envoyée à <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Prendre des notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Ces données nous aident à mieux comprendre le problème que vous éprouvez avec votre Assistant. Elles sont stockées pendant 90 jours, et l'accès est limité aux équipes d'ingénierie et de rétroaction appropriées.</translation>

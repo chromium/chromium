@@ -422,6 +422,7 @@
 <translation id="5489208564673669003">すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />Cookie の設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5490005495580364134">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="5508435575041083207">ログアウトしてこのデバイスからデータを消去</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> 時間前</translation>
 <translation id="5525269841082836315">パスフレーズの作成</translation>
 <translation id="5548760955356983418">Handoffを使うと、このデバイスで見ているウェブサイトの続きをMacで見ることができます。現在開いているウェブサイトはMacのDockに表示されます。
 
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">QR コードを作成</translation>
 <translation id="9157836665414082580">ダイアログを表示しない</translation>
 <translation id="9188680907066685419">管理対象アカウントからログアウトする</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> 日前</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">クラッシュレポートを送信しました。</translation>
 <translation id="952704832371081537">キャンセル</translation>

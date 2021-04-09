@@ -1028,6 +1028,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="211144231511833662">Vymazat typy</translation>
 <translation id="2111670510994270194">Nová karta napravo</translation>
 <translation id="2111810003053064883">Inzerenti mohou posuzovat efektivitu reklam způsobem, který nebude sledovat váš pohyb napříč weby.</translation>
+<translation id="2112554630428445878">Vítejte, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Připnout kartu</translation>
 <translation id="2113479184312716848">&amp;Otevřít soubor...</translation>
 <translation id="2113921862428609753">Přístup k informacím autority</translation>
@@ -2643,6 +2644,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3881478300875776315">Zobrazit méně řádků</translation>
 <translation id="3882165008614329320">Existující video z fotoaparátu nebo soubor</translation>
 <translation id="3884152383786131369">U webového obsahu, který je k dispozici v několika jazycích, se použije první jazyk v seznamu. Tyto předvolby jsou synchronizovány s nastavením prohlížeče. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Aktualizace spravuje administrátor</translation>
 <translation id="3886446263141354045">Vaše žádost o přístup k tomuto webu byla odeslána uživateli <ph name="NAME" />.</translation>
 <translation id="3888550877729210209">Pořizování poznámek pomocí aplikace <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Tyto informace nám pomohou lépe porozumět problému, který s Asistentem máte. Zůstanou uloženy až 90 dní a budou k nim mít přístup jen příslušné týmy vývojářů a pracovníků, kteří zpracovávají zpětnou vazbu.</translation>

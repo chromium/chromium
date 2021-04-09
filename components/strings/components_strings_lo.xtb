@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1003222766972176318">ການແຈ້ງເຕືອນ: ມີຂໍ້ສະເໜີທີ່ບັນທຶກໄວ້</translation>
 <translation id="1008557486741366299">ບໍ່ແມ່ນດຽວນີ້</translation>
 <translation id="100957008357583611">ໃຊ້ສະຖານທີ່ຂອງທ່ານບໍ?</translation>
 <translation id="1010200102790553230">ໂຫຼດໜ້າໃນພາຍຫຼັງ</translation>
@@ -254,6 +255,7 @@
 <translation id="1807246157184219062">ແສງ​</translation>
 <translation id="1807528111851433570">ແຜ່ນວຽກເລີ່ມຕົ້ນ</translation>
 <translation id="1812527064848182527">ແນວນອນ</translation>
+<translation id="1814698615734239189">ແອັບນີ້ຖືກອອກແບບມາສຳລັບອຸປະກອນມືຖື. ມັນກຳລັງເຮັດວຽກໃນໂໝດຄວາມເຂົ້າກັນໄດ້. ການອະນຸຍາດໃຫ້ມີການປັບຂະໜາດອາດພົບບັນຫາຕ່າງໆ ຮວມທັງການຣີສະຕາດແອັບນຳ.</translation>
 <translation id="1821930232296380041">ການຮ້ອງຂໍ ຫຼືພາຣາມີເຕີການຮ້ອງຂໍໃຊ້ບໍ່ໄດ້</translation>
 <translation id="1822540298136254167">ເວັບໄຊທີທ່ານເຂົ້າເຖິງ ແລະ ເວລາທີ່ໃຊ້ໃນເວັບໄຊເຫຼົ່ານັ້ນ</translation>
 <translation id="1826516787628120939">ກໍາລັງກວດເບິ່ງ</translation>
@@ -602,6 +604,7 @@
 <translation id="3268451620468152448">ເປີດ​ແຖບ</translation>
 <translation id="3270847123878663523">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3282085321714087552">ອົງການຂອງທ່ານ, <ph name="ENROLLMENT_DOMAIN" />, ໄດ້ສົ່ງຂໍ້ມູນຈຳນວນໜຶ່ງໄປໃຫ້ເວັບໄຊຕໍ່ໄປນີ້ແລ້ວ ເຊັ່ນ: ການຕັ້ງຄ່າ ຫຼື ນະໂຍບາຍ.</translation>
 <translation id="3282497668470633863">ເພີ່ມຊື່ໃນບັດ</translation>
 <translation id="3286372614333682499">ແນວຕັ້ງ</translation>
 <translation id="3287510313208355388">ດາວໂຫຼດເມື່ອອອນລາຍ</translation>
@@ -935,6 +938,7 @@
 <translation id="4434045419905280838">ປັອບອັບ ແລະ ການປ່ຽນເສັ້ນທາງ</translation>
 <translation id="4435702339979719576">ໂພສກາດ)</translation>
 <translation id="443673843213245140">ການໃຊ້ພຣັອກຊີປິດໃຊ້ງານແລ້ວ ແຕ່ການປັບຕັ້ງພຣັອກຊີຈະແຈ້ງໄດ້ຮັບການລະບຸ.</translation>
+<translation id="4464826014807964867">ເວັບໄຊພ້ອມຂໍ້ມູນຈາກອົງການຂອງທ່ານ</translation>
 <translation id="4466881336512663640">ການປ່ຽນແປງໃນແບບຟອມຈະເສຍໄປ. ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການສືບຕໍ່?</translation>
 <translation id="4476953670630786061">ແບບຟອມບໍ່ປອດໄພ. ລະບົບໄດ້ປິດການຕື່ມຂໍ້ມູນອັດຕະໂນມັດແລ້ວ.</translation>
 <translation id="4477350412780666475">ເພງຕໍ່ໄປ</translation>
@@ -1884,6 +1888,7 @@
 <translation id="8157295877370077682">ອອກຈາກເວັບໄຊ</translation>
 <translation id="8163866351304776260">ເຈາະຮູຢູ່ເບື້ອງຍ້າຍສີ່ຮູ</translation>
 <translation id="8175796834047840627">Chrome ກຳລັງສະເໜີບັນທຶກບັດຂອງທ່ານໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ເພາະວ່າທ່ານເຂົ້າສູ່ລະບົບຢູ່. ທ່ານສາມາດປ່ຽນລັກສະນະການນໍາໃຊ້ນີ້ໄດ້ໃນການຕັ້ງຄ່າ.</translation>
+<translation id="8176440868214972690">ຜູ້ເບິ່ງແຍງລະບົບຂອງອຸປະກອນນີ້ໄດ້ສົ່ງຂໍ້ມູນຈຳນວນໜຶ່ງໄປໃຫ້ເວັບໄຊຕໍ່ໄປນີ້ແລ້ວ ເຊັ່ນ: ການຕັ້ງຄ່າ ຫຼື ນະໂຍບາຍ.</translation>
 <translation id="8184538546369750125">ໃຊ້ຄ່າມາດຕະຖານທົ່ວ​ໂລກ (ອະນຸຍາດ​)</translation>
 <translation id="8194797478851900357">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງຍ້າຍ</translation>
 <translation id="8201077131113104583">URL ອັບ​ເດດ​ໃຊ້​ບໍ່​ໄດ້​ສຳ​ລັບ​ສ່ວນ​ຂະ​ຫຍາຍ​ກັບ ID "<ph name="EXTENSION_ID" />".</translation>
@@ -1898,6 +1903,7 @@
 <translation id="8225771182978767009">ບຸກຄົນຜູ້ທີ່ຕັ້ງຄ່າຄອມພິວເຕີນີ້ໄດ້ເລືອກບລັອກເວັບໄຊນີ້ໄວ້.</translation>
 <translation id="8228419419708659934">ມຸມມອງສອງໜ້າ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230159728600632642">ບໍ່ຕ້ອງຖາມຂ້ອຍອີກສຳລັບແອັບນີ້</translation>
 <translation id="8232343881378637145">ອຸນຫະພູມຂອງແພລດຟອມ</translation>
 <translation id="8238581221633243064">ເປີດໜ້າເວັບໃນແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="8241707690549784388">ໜ້າທີ່ທ່ານກໍາລັງຊອກຫາຂໍ້ມູນໃຊ້ແລ້ວທີ່ທ່ານປ້ອນເຂົ້າໄປ. ການກັບຄືນມາຫາໜ້ານັ້ນອາດຈະເຮັດໃຫ້ການກະທໍາໃດໜຶ່ງທີ່ທ່ານເຮັດແລ້ວຖືກເຮັດຊໍ້າຄືນ. ທ່ານຕ້ອງການສືບຕໍ່ບໍ?</translation>
@@ -2051,6 +2057,7 @@
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
 <translation id="8805819170075074995">ບອກລາຍການ "<ph name="LANGUAGE_ID" />": ລາຍການຖືກລະເລີຍ ເພາະວ່າມັນຮວມມີຢູ່ໃນນະໂຍບາຍ SpellcheckLanguage ນຳ.</translation>
 <translation id="8807160976559152894">ຕັດອອກຫຼັງຈາກແຕ່ລະໜ້າ</translation>
+<translation id="881292005876822445">ເປີດການນຳໃຊ້ການປັບຂະໜາດສູງສຸດບໍ່?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນ Enter ເພື່ອອັບເດດ Chrome ຈາກການຕັ້ງຄ່າ Chrome ຂອງທ່ານ</translation>
 <translation id="8820817407110198400">ບຸກມາກ</translation>
 <translation id="883848425547221593">ບຸກມາກສ໌ອື່ນໆ</translation>

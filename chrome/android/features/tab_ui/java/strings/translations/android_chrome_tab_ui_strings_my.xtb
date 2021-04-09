@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">အကြံပြုချက်- သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို အခုတစ်လော အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
 <translation id="257674075312929031">အုပ်စု</translation>
 <translation id="2613747923081026172">အုပ်စုဖွဲ့ရန်</translation>
+<translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်</translation>
 <translation id="2671423594960767771">အုပ်စုကို မျှဝေရန်</translation>
 <translation id="2759453070259087442">တဘ် <ph name="NUMBER_OF_TABS" /> ခုဖြင့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ချဲ့ပါ။</translation>
+<translation id="2801787514987684416">ဆိုင်အချက်အလက် ကြည့်မလား။</translation>
 <translation id="2977480621796371840">အဖွဲ့မှ ဖယ်ရှားပါ</translation>
+<translation id="3194464645767632461">အဆင့်သတ်မှတ်ခြင်း</translation>
 <translation id="3291470810748040983">ဖွင့်ထားသောတဘ်တွင် ဈေးကျသွားသည့်အခါ သတိပေးချက် ရရှိပါမည်</translation>
 <translation id="3328308545011660196">အကြံပြုချက်- တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> တဘ်ကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုဖြင့် အုပ်စုဖွဲ့ထားသည့် <ph name="TITLE_OF_GROUP" /> တဘ်ကို ပြန်ခေါက်ပါ။}}</translation>
 <translation id="3882834874697329510">ဖွင့်ထားသောတဘ်တွင် ဈေးကျသွားသည့်အခါ သတိပေးချက်ရရှိရန် ‘ဆက်တင်များ’ တွင် အကြောင်းကြားချက်များကို ဖွင့်ပါ။</translation>
 <translation id="3940195383040445971">တဘ်များတွင် ဈေးနှုန်းများစောင့်ကြည့်ရန်</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">ဆက်တိုက် ရှာကြည့်ခြင်း</translation>
 <translation id="4450893287417543264">ထပ်မပြပါနှင့်</translation>
 <translation id="4648718555153979859">သင့်တဘ်များကို ဤနေရာတွင် အုပ်စုဖွဲ့ထားသည်</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု)}other{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု)}}</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="492284538114688557">ဈေးကျသွားသည်ကို တွေ့သည်</translation>
 <translation id="5007392906805964215">ပြန်ကြည့်ရန်</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">အဖွဲ့ဖွဲ့ခြင်းဖြင့် စာမျက်နှာများကို အမြန်နှိုင်းယှဉ်ပါ။ စတင်ရန် လင့်ခ်ကို ထိပြီး ဖိထားပါ။</translation>
 <translation id="5490235265819901748">တဘ်အုပ်စုကို ချဲ့ထားသည်</translation>
 <translation id="5533021382642990449">နောက်မှ ပြရန်</translation>
+<translation id="5556417849629758491">ဆိုင်အချက်အလက် ကြည့်ရန် ရွေးချယ်စရာကို ဖန်သားပြင်ထိပ်ပိုင်းအနီးတွင် ရနိုင်သည်</translation>
 <translation id="5558362125926932819">တဘ် <ph name="NUMBER_OF_TABS" /> ခုပါသော တဘ်အုပ်စုကို ပိတ်ရန်</translation>
 <translation id="5580090775658607195">တဘ် <ph name="TAB_COUNT" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="575494663145460764">ဈေးကျသွားသည်များအတွက် သတိပေးချက် ရယူမလား။</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">မျက်နှာပြင်ပြည့် ဇယားကွက်အတွင်း အုပ်စု၏ တဘ်များကို ပြရန်</translation>
 <translation id="7792771145871471484">အကြံပြုချက်များကို စစ်ဆေးရန်။</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖွဲ့ရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖွဲ့ရန်}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်၊ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်၊ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု}}</translation>
 <translation id="7885132941432959125">တဘ်ကို ညာဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="7966321538264951561">အကြံပြုချက်များကို ပယ်ပါ။</translation>
 <translation id="814503310257431685">အားလုံးကြည့်ရန်</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1003222766972176318">リマインダー: 保存済みのクーポンを利用できます</translation>
 <translation id="1008557486741366299">後で</translation>
 <translation id="100957008357583611">位置情報を使用しますか？</translation>
 <translation id="1010200102790553230">後でページを読み込む</translation>
@@ -250,6 +251,7 @@
 <translation id="1807246157184219062">明</translation>
 <translation id="1807528111851433570">開始シート</translation>
 <translation id="1812527064848182527">横向き</translation>
+<translation id="1814698615734239189">このアプリはモバイル デバイス向けに設計されているため、互換モードで実行されています。サイズ変更を許可すると、アプリの再起動などの問題が発生する可能性があります。</translation>
 <translation id="1821930232296380041">無効なリクエストまたはリクエスト パラメータです</translation>
 <translation id="1822540298136254167">アクセスしたウェブサイトと閲覧時間</translation>
 <translation id="1826516787628120939">確認中</translation>
@@ -596,6 +598,7 @@
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3270847123878663523">順序変更の取り消し（&amp;U）</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3282085321714087552">あなたの組織（<ph name="ENROLLMENT_DOMAIN" />）は次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>
 <translation id="3282497668470633863">名義人名を追加</translation>
 <translation id="3286372614333682499">縦向き</translation>
 <translation id="3287510313208355388">オンライン時にダウンロード</translation>
@@ -924,6 +927,7 @@
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
 <translation id="4435702339979719576">ポストカード</translation>
 <translation id="443673843213245140">プロキシの使用は無効ですが、プロキシの設定が明示的に指定されています。</translation>
+<translation id="4464826014807964867">組織の情報を使用しているウェブサイト</translation>
 <translation id="4466881336512663640">フォームの変更内容は破棄されます。続行してもよろしいですか？</translation>
 <translation id="4476953670630786061">このフォームは安全ではないため、自動入力をオフにしました。</translation>
 <translation id="4477350412780666475">次の曲</translation>
@@ -1873,6 +1877,7 @@
 <translation id="8157295877370077682">このサイトから離れる</translation>
 <translation id="8163866351304776260">4 穴パンチ（左）</translation>
 <translation id="8175796834047840627">ログインしている場合は、その Google アカウントにカードを保存できます。この動作は設定で変更できます。</translation>
+<translation id="8176440868214972690">このデバイスの管理者は、次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>
 <translation id="8184538546369750125">グローバルのデフォルト値（[許可]）を使用</translation>
 <translation id="8194797478851900357">移動の取り消し（&amp;U）</translation>
 <translation id="8201077131113104583">ID「<ph name="EXTENSION_ID" />」の拡張機能に対する無効な更新 URL です。</translation>
@@ -1887,6 +1892,7 @@
 <translation id="8225771182978767009">このサイトは、このパソコンを設定したユーザーによってブロックされています。</translation>
 <translation id="8228419419708659934">2 ページ表示</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
+<translation id="8230159728600632642">このアプリでは今後表示しない</translation>
 <translation id="8232343881378637145">プラットフォームの温度</translation>
 <translation id="8238581221633243064">ページを新しいシークレット タブで開く</translation>
 <translation id="8241707690549784388">検索しているページは、入力した情報を使用しています。このページに戻った場合、操作のやり直しが発生する可能性があります。続行しますか？</translation>
@@ -2041,6 +2047,7 @@
 <translation id="8798099450830957504">既定</translation>
 <translation id="8805819170075074995">リスト項目「<ph name="LANGUAGE_ID" />」: SpellcheckLanguage ポリシーにも含まれているため、この項目は無視されます。</translation>
 <translation id="8807160976559152894">トリミング（ページ単位）</translation>
+<translation id="881292005876822445">最大化を有効にしますか？</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Chrome を更新します</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="883848425547221593">その他のブックマーク</translation>

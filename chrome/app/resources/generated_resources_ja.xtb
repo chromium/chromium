@@ -1026,6 +1026,7 @@
 <translation id="211144231511833662">タイプの選択をすべて解除</translation>
 <translation id="2111670510994270194">右隣に新しいタブを開く</translation>
 <translation id="2111810003053064883">広告主は、サイトをまたいでユーザーをトラッキングすることなく、広告の成果を把握できます。</translation>
+<translation id="2112554630428445878">ようこそ、<ph name="USERNAME" /> さん</translation>
 <translation id="21133533946938348">タブを固定</translation>
 <translation id="2113479184312716848">ファイルを開く（&amp;F）...</translation>
 <translation id="2113921862428609753">認証局アクセス情報</translation>
@@ -2642,6 +2643,7 @@
 <translation id="3881478300875776315">表示する行数を減らす</translation>
 <translation id="3882165008614329320">カメラやファイルに保存されている動画</translation>
 <translation id="3884152383786131369">複数の言語に対応しているウェブ コンテンツでは、次のリストの最初にある対応言語が使用されます。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">更新は管理者によって管理されています</translation>
 <translation id="3886446263141354045">このサイトへのアクセス リクエストを <ph name="NAME" /> さんに送信しました</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> でメモをとる</translation>
 <translation id="3888586133700543064">アシスタントで発生した問題を詳しく把握するために、情報の提供をお願いいたします。ご提供いただいた情報は最大 90 日間保存され、エンジニアリングとフィードバックの担当者のみが閲覧します。</translation>

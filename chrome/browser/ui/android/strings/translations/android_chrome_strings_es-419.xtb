@@ -751,6 +751,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5982307838673692400">Abrir una pestaña de incógnito</translation>
 <translation id="6000066717592683814">Seguir usando Google</translation>
 <translation id="6000203700195075278">Volver a seguir</translation>
+<translation id="6002623704405939939">Para borrar la <ph name="BEGIN_LINK1" />búsqueda<ph name="END_LINK1" /> o algún otro tipo de historial, visita <ph name="BEGIN_LINK2" />Mi actividad de Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Contraseña sugerida</translation>
 <translation id="6036057147555329831">ICU adicional</translation>
 <translation id="6039379616847168523">Ir a la pestaña siguiente</translation>
@@ -924,6 +925,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7088681679121566888">Chrome está actualizado</translation>
 <translation id="7106762743910369165">Tu organización administra el navegador.</translation>
 <translation id="7121362699166175603">Borra el historial y las sugerencias de autocompletado en la barra de direcciones. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="7134993907760847334">Borra el historial de todos los dispositivos en los que accediste a tu cuenta.</translation>
 <translation id="7138678301420049075">Otros</translation>
 <translation id="7146622961999026732">Estos sitios y apps parecen importantes para ti:</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>

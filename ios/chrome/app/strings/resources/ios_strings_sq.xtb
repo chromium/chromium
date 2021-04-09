@@ -214,6 +214,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 
 Në modalitetin "i fshehtë", sajtet nuk mund t'i përdorin kukit për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, për shembull, për të personalizuar reklamat.</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
+<translation id="3222343486469566063">I paidentifikuar</translation>
 <translation id="3224641773458703735">Për të eksportuar fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="3240426699337459095">Lidhja u kopjua</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -421,6 +422,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5489208564673669003">Për të menaxhuar kukit për të gjitha sajtet, shiko <ph name="BEGIN_LINK" />Cilësimet e kukive<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blloko të gjitha kukit (nuk rekomandohet)</translation>
 <translation id="5508435575041083207">Dil dhe pastro të dhënat nga kjo pajisje</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> orë më parë</translation>
 <translation id="5525269841082836315">Krijo fjalëkalim</translation>
 <translation id="5548760955356983418">Handoff të lejon të fillosh të shfletosh një faqe interneti në këtë pajisje dhe pastaj me lehtësi të vazhdosh në kompjuterin tënd Mac. Faqja aktuale e hapur e internetit do të shfaqet në Dock të kompjuterit tënd Mac.
 
@@ -786,6 +788,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9152539721251340337">Krijo një kod QR</translation>
 <translation id="9157836665414082580">Fshih dialogjet</translation>
 <translation id="9188680907066685419">Dil nga llogaria e menaxhuar</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> ditë më parë</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Raporti i ndërprerjes aksidentale u dërgua.</translation>
 <translation id="952704832371081537">Anulo</translation>

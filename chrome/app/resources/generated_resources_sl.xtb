@@ -1029,6 +1029,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="211144231511833662">Počisti vrste</translation>
 <translation id="2111670510994270194">Novi zavihek na desni</translation>
 <translation id="2111810003053064883">Oglaševalci lahko preučujejo učinkovitost oglasov na način, ki vam ne sledi na spletnih mestih.</translation>
+<translation id="2112554630428445878">Pozdravljeni, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Pripni zavihek</translation>
 <translation id="2113479184312716848">Odpri &amp;datoteko ...</translation>
 <translation id="2113921862428609753">Dostop do informacij urada</translation>
@@ -2645,6 +2646,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3881478300875776315">Pokaži manj vrstic</translation>
 <translation id="3882165008614329320">Obstoječi videoposnetek iz fotoaparata ali datoteke</translation>
 <translation id="3884152383786131369">Za spletno vsebino, ki je na voljo v več jezikih, bo uporabljen prvi podprti jezik s tega seznama. Te nastavitve se sinhronizirajo z nastavitvami brskalnika. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Posodobitve upravlja skrbnik.</translation>
 <translation id="3886446263141354045">Vaša zahteva za dostop do tega mesta je poslana uporabniku <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Ustvarjanje zapiskov z aplikacijo <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">S temi podatki si pomagamo pri razumevanju vaše težave s Pomočnikom. Shranjeni so do 90 dni in dostop je omogočen samo ustreznim skupinam inženirjev in skupinam za povratne informacije.</translation>

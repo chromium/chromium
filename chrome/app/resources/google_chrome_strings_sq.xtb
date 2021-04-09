@@ -18,6 +18,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Ky kompjuter e ka tashmë një version më të ri të Google Chrome. Nëse softueri nuk punon, çinstaloje Google Chrome dhe provo sërish.</translation>
 <translation id="1434626383986940139">Aplikacionet e Chrome Canary</translation>
+<translation id="1507198376417198979">Personalizo profilin tënd të ri të Chrome</translation>
 <translation id="1516530951338665275">Google Chrome i nevojitet leje te Bluetooth-i për të vazhduar me çiftimin. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chrome. Kjo do të krijojë një profil të ri të Chrome për <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -218,6 +219,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6943584222992551122">Të dhënat e shfletimit të këtij personi do të fshihen nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Rregulli hyrës për Google Chrome Beta për të lejuar trafikun mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome është përditësuar, por nuk e ke përdorur për të paktën 30 ditë.</translation>
+<translation id="7025800014283535195">Këtu mund të kalosh nga një profil i Chrome te një tjetër</translation>
 <translation id="7062128746136194023">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chrome. Nuk lejohet shtimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome po përdor mikrofonin tënd.</translation>
 <translation id="7106741999175697885">Menaxheri i detyrave - Google Chrome</translation>
@@ -295,4 +297,5 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="922152298093051471">Personalizo Chrome</translation>
 <translation id="940313311831216333">Për t'u qasur te gjërat e Chrome nëpër të gjitha pajisjet, identifikohu dhe më pas aktivizo sinkronizimin.</translation>
 <translation id="989369509083708165">Google Chrome është shfletuesi yt i parazgjedhur</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> mund të kalojë nga një profil i Chrome te një tjetër</translation>
 </translationbundle>

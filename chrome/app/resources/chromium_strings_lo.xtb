@@ -62,6 +62,7 @@
 <translation id="3130323860337406239">Chromium ກໍາລັງໃຊ້​ໄມໂຄຣໂຟນຂອງ​ທ່ານ​.</translation>
 <translation id="3155163173539279776">ປິດແລ້ວເປີດ Chromium ຄືນໃໝ່</translation>
 <translation id="3179665906251668410">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>
+<translation id="3185330573522821672">ປັບແຕ່ງໂປຣໄຟລ໌ Chromium ໃໝ່ຂອງທ່ານ</translation>
 <translation id="3190315855212034486">ໂຮ້! Chromium ​ເກີດ​ຂັດຂ້ອງ. ເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
 <translation id="3229526316128325841">Chromium ຕ້ອງການສົ່ງອອກລະຫັດຜ່ານຂອງທ່ານ.</translation>
 <translation id="3258596308407688501">Chromium ບໍ່ສາມາດອ່ານ ແລະຂຽນໄປໃສ່ໄດເຣັກຕໍຣີຂໍ້ມູນຂອງມັນໄດ້:
@@ -76,6 +77,7 @@
 <translation id="3430503420100763906">ດ້ວຍໂປຣໄຟລ໌ Chromium ທ່ານສາມາດແຍກເນື້ອຫາ Chromium ຂອງທ່ານທັງໝົດໄດ້. ສ້າງໂປຣໄຟລ໌ສຳລັບໝູ່ ແລະ ຄອບຄົວ ຫຼື ແຍກຈາກກັນລະຫວ່າງວຽກ ແລະ ຄວາມມ່ວນ.</translation>
 <translation id="347328004046849135">Chromium ຈະແຈ້ງບອກທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍລະຫັດຜ່ານທີ່ຖືກລະເມີດ</translation>
 <translation id="3474745554856756813">ນີ້ຈະລຶບ <ph name="ITEMS_COUNT" /> ລາຍການອອກຈາກອຸປະກອນນີ້. ເພື່ອກູ້ຂໍ້ມູນຂອງທ່ານຄືນໃນພາຍຫຼັງ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ເປັນ <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> ສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chromium ໄດ້</translation>
 <translation id="3509308970982693815">ກະລຸນາປິດທຸກໜ້າຕ່າງ Chromium ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="3575459661164320785">ມີຊອບແວອັນຕະລາຍໃນຄອມພິວເຕີຂອງທ່ານ. Chromium ສາມາດລຶບມັນອອກ, ກູ້ຄືນການຕັ້ງຄ່າຂອງທ່ານ ແລະ ປິດນໍາໃຊ້ສ່ວນຂະຫຍາຍເພື່ອເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໃຊ້ໄດ້ເປັນປົກກະຕິອີກຄັ້ງ.</translation>
 <translation id="3639635944603682591">ຂໍ້ມູນການທ່ອງເວັບຂອງບຸກຄົນນີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ເພື່ອກູ້ຂໍ້ມູນຄືນມາ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ເປັນ <ph name="USER_EMAIL" />.</translation>
@@ -156,6 +158,7 @@
 <translation id="6120345080069858279">Chromium ຈະບັນທຶກລະຫັດຜ່ານນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານ. ທ່ານຈະບໍ່ຈຳເປັນຕ້ອງຈື່ມັນ.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> ອັນຕະລາຍ, ສະນັ້ນ Chromium ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>
 <translation id="6134968993075716475">Safe Browsing ປິດຢູ່. Chromium ຂໍແນະນຳໃຫ້ເປີດມັນ.</translation>
+<translation id="6145820983052037069">ທ່ານສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chromium ໄດ້ຢູ່ບ່ອນນີ້</translation>
 <translation id="6183079672144801177">ກວດໃຫ້ແນ່ໃຈວ່າທ່ານໄດ້ເຂົ້າສູ່ລະບົບ Chrome ໃນ <ph name="TARGET_DEVICE_NAME" /> ຂອງທ່ານ ແລ້ວລອງສົ່ງໃໝ່.</translation>
 <translation id="6212496753309875659">ຄອມພິວເຕີນີ້ມີ Chromium ລຸ້ນໃໝ່ກ່ວາຢູ່ຮຽບຮ້ອຍແລ້ວ. ຖ້າຊອບແວບໍ່ເຮັດວຽກ, ກະລຸນາຖອນຕິດຕັ້ງ Chromium ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ຈະເປີດຄືນໃໝ່ດຽວນີ້}=1{Chromium ຈະເປີດຄືນໃໝ່ໃນ 1 ວິນາທີ}other{Chromium ຈະເປີດຄືນໃໝ່ໃນ # ວິນາທີ}}</translation>

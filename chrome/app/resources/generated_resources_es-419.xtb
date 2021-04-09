@@ -1023,6 +1023,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nueva pestaña a la derecha</translation>
 <translation id="2111810003053064883">Los anunciantes pueden analizar la eficacia de los anuncios sin que estos hagan un seguimiento de los sitios que visitas.</translation>
+<translation id="2112554630428445878">Te damos la bienvenida, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2113479184312716848">Abrir &amp;archivo...</translation>
 <translation id="2113921862428609753">Acceso a la información de la autoridad</translation>
@@ -2639,6 +2640,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3881478300875776315">Mostrar menos líneas</translation>
 <translation id="3882165008614329320">Video existente de la cámara o archivo</translation>
 <translation id="3884152383786131369">El contenido web disponible en múltiples idiomas usará el primer idioma compatible de esta lista. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">El administrador gestiona las actualizaciones</translation>
 <translation id="3886446263141354045">Tu solicitud de acceso a este sitio se envió a <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Tomar notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Esta información nos permite entender mejor tu problema con Asistente. Estos datos se almacenan por 90 días. El acceso a esta información está restringido a los equipos de ingeniería y comentarios correspondientes.</translation>
