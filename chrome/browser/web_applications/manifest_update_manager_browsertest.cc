@@ -681,6 +681,44 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             SkColorSetARGB(0xFF, 0xFF, 0x00, 0x00));
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
+                       CheckFindsManifestUrlChange) {
+  // This matches the content of chrome/test/data/banners/manifest_one_icon.json
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Manifest test app",
+      "icons": [
+          {
+            "src": "image-512px.png",
+            "sizes": "512x512",
+            "type": "image/png"
+          }
+      ],
+      "start_url": "manifest_test_page.html",
+      "display": "standalone",
+      "orientation": "landscape"
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {});
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ(GetProvider().registrar().GetAppManifestUrl(app_id),
+            GetManifestURL());
+
+  // Load a page which contains the same manifest content but at a new manifest
+  // URL.
+  url::Replacements<char> replacements;
+  std::string query = "manifest=/banners/manifest_one_icon.json";
+  replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
+  GURL app_url_with_new_manifest = GetAppURL().ReplaceComponents(replacements);
+  EXPECT_EQ(GetResultAfterPageLoad(app_url_with_new_manifest, &app_id),
+            ManifestUpdateResult::kAppUpdated);
+
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  EXPECT_EQ(GetProvider().registrar().GetAppManifestUrl(app_id),
+            http_server_.GetURL("/banners/manifest_one_icon.json"));
+}
+
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest, CheckKeepsSameName) {
   constexpr char kManifestTemplate[] = R"(
     {

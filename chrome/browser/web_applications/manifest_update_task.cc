@@ -295,7 +295,11 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
-  // TODO(crbug.com/1072058): Check the manifest URL.
+  if (web_application_info_->manifest_url !=
+      registrar_.GetAppManifestUrl(app_id_)) {
+    return true;
+  }
+
   // TODO(crbug.com/926083): Check more manifest fields.
   return false;
 }
