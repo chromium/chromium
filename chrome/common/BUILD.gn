@@ -119,8 +119,6 @@ static_library("common") {
     "google_url_loader_throttle.h",
     "logging_chrome.cc",
     "logging_chrome.h",
-    "media/cdm_registration.cc",
-    "media/cdm_registration.h",
     "media/media_resource_provider.cc",
     "media/media_resource_provider.h",
     "media_galleries/metadata_types.h",
