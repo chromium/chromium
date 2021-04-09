@@ -37,6 +37,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   void FireSelectedEvent(BrowserAccessibility* node);
   void FireEnabledChangedEvent(BrowserAccessibility* node);
   void FireExpandedEvent(BrowserAccessibility* node, bool is_expanded);
+  void FireShowingEvent(BrowserAccessibility* node, bool is_showing);
   void FireInvalidStatusChangedEvent(BrowserAccessibility* node);
   void FireAriaCurrentChangedEvent(BrowserAccessibility* node);
   void FireLoadingEvent(BrowserAccessibility* node, bool is_loading);

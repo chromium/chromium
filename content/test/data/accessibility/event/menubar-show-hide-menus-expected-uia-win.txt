@@ -1,0 +1,31 @@
+AriaProperties changed on role=menu, name=File
+AriaProperties changed on role=menuitem, name=File
+AriaProperties changed on role=menuitem, name=New
+ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
+ExpandCollapseExpandCollapseState changed on role=menuitem, name=New
+MenuOpened on role=menu, name=File
+MenuOpened on role=menu, name=New
+=== Start Continuation ===
+AriaProperties changed on role=menuitem, name=File
+ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
+MenuClosed 
+MenuClosed 
+MenuClosed 
+MenuClosed 
+=== Start Continuation ===
+=== Start Continuation ===
+AriaProperties changed on role=menu, name=File
+AriaProperties changed on role=menuitem, name=File
+AriaProperties changed on role=menuitem, name=New
+ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
+ExpandCollapseExpandCollapseState changed on role=menuitem, name=New
+MenuOpened on role=menu, name=File
+MenuOpened on role=menu, name=New
+=== Start Continuation ===
+MenuClosed 
+MenuClosed 
+MenuClosed 
+MenuClosed 
+=== Start Continuation ===
+AriaProperties changed on role=menubar
+AriaProperties changed on role=menuitem, name=File

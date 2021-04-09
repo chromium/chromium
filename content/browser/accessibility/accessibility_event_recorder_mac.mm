@@ -70,6 +70,8 @@ AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
   AddNotification(@"AXMenuItemSelected");
   AddNotification(@"AXRowCollapsed");
   AddNotification(@"AXRowExpanded");
+  AddNotification((NSString*)kAXMenuClosedNotification);
+  AddNotification((NSString*)kAXMenuOpenedNotification);
   AddNotification(NSAccessibilityFocusedUIElementChangedNotification);
   AddNotification(NSAccessibilityRowCollapsedNotification);
   AddNotification(NSAccessibilityRowCountChangedNotification);

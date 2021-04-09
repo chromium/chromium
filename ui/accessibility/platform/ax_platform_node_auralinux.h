@@ -203,6 +203,7 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   void OnCheckedStateChanged();
   void OnEnabledChanged();
   void OnExpandedStateChanged(bool is_expanded);
+  void OnShowingStateChanged(bool is_showing);
   void OnFocused();
   void OnWindowActivated();
   void OnWindowDeactivated();

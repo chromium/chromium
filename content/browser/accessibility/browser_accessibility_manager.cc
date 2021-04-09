@@ -1374,6 +1374,11 @@ void BrowserAccessibilityManager::OnNodeWillBeDeleted(ui::AXTree* tree,
   if (BrowserAccessibility* wrapper = GetFromAXNode(node)) {
     if (wrapper == GetLastFocusedNode())
       SetLastFocusedNode(nullptr);
+
+    // We fire these here, immediately, to ensure we can send platform
+    // notifications prior to the actual destruction of the object.
+    if (node->data().role == ax::mojom::Role::kMenu)
+      FireGeneratedEvent(ui::AXEventGenerator::Event::MENU_POPUP_END, wrapper);
   }
 }
 
