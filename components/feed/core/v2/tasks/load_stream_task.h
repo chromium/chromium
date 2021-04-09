@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/public/types.h"
@@ -88,6 +89,10 @@ class LoadStreamTask : public offline_pages::Task {
   void LoadFromStoreComplete(LoadStreamFromStoreTask::Result result);
   void UploadActionsComplete(UploadActionsTask::Result result);
   void QueryRequestComplete(FeedNetwork::QueryRequestResult result);
+  void WebFeedListContentsComplete(
+      FeedNetwork::ApiResult<feedwire::Response> result);
+  void ProcessNetworkResponse(std::unique_ptr<feedwire::Response> response,
+                              NetworkResponseInfo response_info);
   void Done(LoadStreamStatus status);
 
   LoadType load_type_;

@@ -250,6 +250,7 @@ class TestFeedNetwork : public FeedNetwork {
   void SendResponse();
 
   base::Optional<feedwire::Request> query_request_sent;
+  // Number of FeedQuery requests sent (including Web Feed ListContents).
   int send_query_call_count = 0;
   std::string consistency_token;
   bool forced_signed_out_request = false;

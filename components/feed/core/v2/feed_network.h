@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
@@ -41,7 +42,6 @@ struct ListWebFeedsDiscoverApi {
   static const NetworkRequestType kRequestType =
       NetworkRequestType::kListWebFeeds;
   static base::StringPiece Method() { return "GET"; }
-  // TODO(harringtond): Path TDB.
   static base::StringPiece RequestPath() { return "v1/webFeeds"; }
 };
 
@@ -60,7 +60,6 @@ struct FollowWebFeedDiscoverApi {
   static const NetworkRequestType kRequestType =
       NetworkRequestType::kFollowWebFeed;
   static base::StringPiece Method() { return "POST"; }
-  // TODO(harringtond): Path TDB.
   static base::StringPiece RequestPath() { return "v1:followWebFeed"; }
 };
 
@@ -70,8 +69,16 @@ struct UnfollowWebFeedDiscoverApi {
   static const NetworkRequestType kRequestType =
       NetworkRequestType::kUnfollowWebFeed;
   static base::StringPiece Method() { return "POST"; }
-  // TODO(harringtond): Path TDB.
   static base::StringPiece RequestPath() { return "v1:unfollowWebFeed"; }
+};
+
+struct WebFeedListContentsDiscoverApi {
+  using Request = feedwire::Request;
+  using Response = feedwire::Response;
+  static const NetworkRequestType kRequestType =
+      NetworkRequestType::kWebFeedListContents;
+  static base::StringPiece Method() { return "POST"; }
+  static base::StringPiece RequestPath() { return "v1/contents"; }
 };
 
 class FeedNetwork {

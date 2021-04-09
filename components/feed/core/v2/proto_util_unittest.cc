@@ -10,6 +10,7 @@
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
@@ -49,7 +50,8 @@ TEST(ProtoUtilTest, CreateClientInfo) {
 
 TEST(ProtoUtilTest, DefaultCapabilities) {
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(feedwire::FeedQuery::MANUAL_REFRESH,
+      CreateFeedQueryRefreshRequest(kForYouStream,
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
           .feed_request();
@@ -73,7 +75,8 @@ TEST(ProtoUtilTest, HeartsEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kInterestFeedV2Hearts}, {});
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(feedwire::FeedQuery::MANUAL_REFRESH,
+      CreateFeedQueryRefreshRequest(kForYouStream,
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
           .feed_request();
@@ -86,7 +89,8 @@ TEST(ProtoUtilTest, ShareEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeedShare}, {});
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(feedwire::FeedQuery::MANUAL_REFRESH,
+      CreateFeedQueryRefreshRequest(kForYouStream,
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
           .feed_request();
@@ -105,7 +109,8 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
   OverrideConfigWithFinchForTesting();
 
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(feedwire::FeedQuery::MANUAL_REFRESH,
+      CreateFeedQueryRefreshRequest(kForYouStream,
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
           .feed_request();
@@ -128,7 +133,7 @@ TEST(ProtoUtilTest, NoticeCardAcknowledged) {
   RequestMetadata request_metadata;
   request_metadata.notice_card_acknowledged = true;
   feedwire::Request request = CreateFeedQueryRefreshRequest(
-      feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+      kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
       /*consistency_token=*/std::string());
 
   EXPECT_TRUE(request.feed_request()
@@ -141,7 +146,7 @@ TEST(ProtoUtilTest, NoticeCardNotAcknowledged) {
   RequestMetadata request_metadata;
   request_metadata.notice_card_acknowledged = false;
   feedwire::Request request = CreateFeedQueryRefreshRequest(
-      feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+      kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
       /*consistency_token=*/std::string());
 
   EXPECT_FALSE(request.feed_request()

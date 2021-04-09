@@ -11,6 +11,7 @@
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/types.h"
 
 namespace feedwire {
@@ -50,6 +51,7 @@ class ContentCompareFunctor {
 feedwire::ClientInfo CreateClientInfo(const RequestMetadata& request_metadata);
 
 feedwire::Request CreateFeedQueryRefreshRequest(
+    const StreamType& stream_type,
     feedwire::FeedQuery::RequestReason request_reason,
     const RequestMetadata& request_metadata,
     const std::string& consistency_token);

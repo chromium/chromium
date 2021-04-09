@@ -19,8 +19,13 @@ message FeedQuery {
     MANUAL_REFRESH = 1;
     SCHEDULED_REFRESH = 2;
     NEXT_PAGE_SCROLL = 3;
+    PREFETCHED_WEB_FEED = 8;
+    INTERACTIVE_WEB_FEED = 9;
   }
-  oneof token { Token next_page_token = 3; }
+  oneof token {
+    Token next_page_token = 3;
+    Token web_feed_token = 4;
+  }
   optional RequestReason reason = 1;
   optional FeedEntryPointData feed_entry_point_data = 9;
   optional ChromeFulfillmentInfo chrome_fulfillment_info = 341477699;

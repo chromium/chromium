@@ -83,6 +83,10 @@ struct Config {
   // Eviction task is performed after this many bytes are written.
   int persistent_kv_store_cleanup_interval_in_written_bytes = 1000000;
 
+  // Until we get the new list contents API working, keep using FeedQuery.
+  // TODO(crbug/1152592): turn this off when possible.
+  bool use_feed_query_requests_for_web_feeds = true;
+
   // Set of optional capabilities included in requests. See
   // CreateFeedQueryRequest() for required capabilities.
   base::flat_set<feedwire::Capability> experimental_capabilities = {

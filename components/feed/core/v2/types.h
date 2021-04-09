@@ -68,7 +68,7 @@ class LoadLatencyTimes {
     // Time spent querying for and uploading stored actions. Recorded even if
     // no actions are uploaded.
     kUploadActions,
-    // Time spent making the FeedQuery request.
+    // Time spent making the FeedQuery (or WebFeed List Contents) request.
     kQueryRequest,
     // A view was reported in the stream, indicating the stream was shown.
     kStreamViewed,

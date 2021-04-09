@@ -12,8 +12,10 @@
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
+#include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
@@ -29,12 +31,16 @@ namespace {
 using LoadType = LoadStreamTask::LoadType;
 using Result = LoadStreamTask::Result;
 
-feedwire::FeedQuery::RequestReason GetRequestReason(LoadType load_type) {
+feedwire::FeedQuery::RequestReason GetRequestReason(
+    const StreamType& stream_type,
+    LoadType load_type) {
   switch (load_type) {
     case LoadType::kInitialLoad:
-      return feedwire::FeedQuery::MANUAL_REFRESH;
+      return stream_type.IsForYou() ? feedwire::FeedQuery::MANUAL_REFRESH
+                                    : feedwire::FeedQuery::INTERACTIVE_WEB_FEED;
     case LoadType::kBackgroundRefresh:
-      return feedwire::FeedQuery::SCHEDULED_REFRESH;
+      return stream_type.IsForYou() ? feedwire::FeedQuery::SCHEDULED_REFRESH
+                                    : feedwire::FeedQuery::PREFETCHED_WEB_FEED;
   }
 }
 
@@ -140,30 +146,53 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   upload_actions_result_ =
       std::make_unique<UploadActionsTask::Result>(std::move(result));
   latencies_->StepComplete(LoadLatencyTimes::kUploadActions);
-  // TODO(crbug/1152592): Send a different network request type for WebFeeds.
-  stream_->GetNetwork()->SendQueryRequest(
-      NetworkRequestType::kFeedQuery,
-      CreateFeedQueryRefreshRequest(
-          GetRequestReason(load_type_),
-          stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/false),
-          stream_->GetMetadata().consistency_token()),
-      force_signed_out_request, stream_->GetSyncSignedInGaia(),
-      base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
+
+  feedwire::Request request = CreateFeedQueryRefreshRequest(
+      stream_type_, GetRequestReason(stream_type_, load_type_),
+      stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/false),
+      stream_->GetMetadata().consistency_token());
+  std::string gaia = stream_->GetSyncSignedInGaia();
+
+  if (stream_type_.IsForYou() ||
+      GetFeedConfig().use_feed_query_requests_for_web_feeds) {
+    stream_->GetNetwork()->SendQueryRequest(
+        NetworkRequestType::kFeedQuery, request, force_signed_out_request, gaia,
+        base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
+  } else {
+    DCHECK(stream_type_.IsWebFeed());
+    stream_->GetNetwork()->SendApiRequest<WebFeedListContentsDiscoverApi>(
+        std::move(request), gaia,
+        base::BindOnce(&LoadStreamTask::WebFeedListContentsComplete,
+                       GetWeakPtr()));
+  }
 }
 
 void LoadStreamTask::QueryRequestComplete(
     FeedNetwork::QueryRequestResult result) {
+  ProcessNetworkResponse(std::move(result.response_body),
+                         std::move(result.response_info));
+}
+
+void LoadStreamTask::WebFeedListContentsComplete(
+    FeedNetwork::ApiResult<feedwire::Response> result) {
+  ProcessNetworkResponse(std::move(result.response_body),
+                         std::move(result.response_info));
+}
+
+void LoadStreamTask::ProcessNetworkResponse(
+    std::unique_ptr<feedwire::Response> response_body,
+    NetworkResponseInfo response_info) {
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
 
   DCHECK(!stream_->GetModel(stream_type_));
 
-  network_response_info_ = result.response_info;
+  network_response_info_ = response_info;
 
-  if (result.response_info.status_code != 200)
+  if (response_info.status_code != 200)
     return Done(LoadStreamStatus::kNetworkFetchFailed);
 
-  if (!result.response_body) {
-    if (result.response_info.response_body_bytes > 0)
+  if (!response_body) {
+    if (response_info.response_body_bytes > 0)
       return Done(LoadStreamStatus::kCannotParseNetworkResponseBody);
     else
       return Done(LoadStreamStatus::kNoResponseBody);
@@ -171,9 +200,8 @@ void LoadStreamTask::QueryRequestComplete(
 
   RefreshResponseData response_data =
       stream_->GetWireResponseTranslator()->TranslateWireResponse(
-          *result.response_body,
-          StreamModelUpdateRequest::Source::kNetworkUpdate,
-          result.response_info.was_signed_in, base::Time::Now());
+          *response_body, StreamModelUpdateRequest::Source::kNetworkUpdate,
+          response_info.was_signed_in, base::Time::Now());
   if (!response_data.model_update_request)
     return Done(LoadStreamStatus::kProtoTranslationFailed);
 
