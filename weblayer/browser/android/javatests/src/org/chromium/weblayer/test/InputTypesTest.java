@@ -35,7 +35,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -52,7 +51,6 @@ public class InputTypesTest {
             new InstrumentationActivityTestRule();
 
     private File mTempFile;
-    private File mTestDir;
     private int mCameraPermission = PackageManager.PERMISSION_GRANTED;
 
     private class FileIntentInterceptor implements InstrumentationActivity.IntentInterceptor {
@@ -150,9 +148,7 @@ public class InputTypesTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { activity.loadWebLayerSync(activity.getApplicationContext()); });
         mActivityTestRule.navigateAndWait(mActivityTestRule.getTestDataURL("input_types.html"));
-        mTestDir = new File(UrlUtils.getIsolatedTestFilePath("weblayer"));
-        if (!mTestDir.exists()) mTestDir.mkdir();
-        mTempFile = File.createTempFile("file", null, mTestDir);
+        mTempFile = File.createTempFile("file", null);
         activity.setIntentInterceptor(mIntentInterceptor);
         ActivityCompat.setPermissionCompatDelegate(mPermissionCompatDelegate);
 
@@ -164,7 +160,6 @@ public class InputTypesTest {
     @After
     public void tearDown() {
         mTempFile.delete();
-        mTestDir.delete();
         ActivityCompat.setPermissionCompatDelegate(null);
     }
 
@@ -264,7 +259,7 @@ public class InputTypesTest {
         Intent response = new Intent();
         ClipData clipData = ClipData.newUri(mActivityTestRule.getActivity().getContentResolver(),
                 "uris", Uri.fromFile(mTempFile));
-        File otherTempFile = File.createTempFile("file2", null, mTestDir);
+        File otherTempFile = File.createTempFile("file2", null);
         clipData.addItem(new ClipData.Item(Uri.fromFile(otherTempFile)));
         response.setClipData(clipData);
         mIntentInterceptor.setResponse(Activity.RESULT_OK, response);

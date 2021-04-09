@@ -894,10 +894,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         @Override
         public Boolean doInBackground() {
             File file = new File(mFilePath);
-            File appDir = new File(PathUtils.getAppDirectory());
+            File dataDir = new File(PathUtils.getDataDirectory());
             try {
                 // Don't allow files under private data dir to be uploaded.
-                if (!file.getCanonicalPath().startsWith(appDir.getCanonicalPath())) {
+                if (!file.getCanonicalPath().startsWith(dataDir.getCanonicalPath())) {
                     return true;
                 }
             } catch (Exception e) {
