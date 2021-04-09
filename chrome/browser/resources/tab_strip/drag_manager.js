@@ -533,6 +533,12 @@ export class DragManager {
       return;
     }
 
+    // If we are dragging a tab element ensure its touch pressed state is reset
+    // to avoid any associated css effects making it onto the drag image.
+    if (isTabElement(draggedItem)) {
+      /** @private {!TabElement} */ (draggedItem).setTouchPressed(false);
+    }
+
     if (this.delegate_.shouldPreventDrag()) {
       event.preventDefault();
       return;

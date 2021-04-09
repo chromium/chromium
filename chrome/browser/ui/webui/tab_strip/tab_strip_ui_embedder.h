@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_EMBEDDER_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_EMBEDDER_H_
 
+#include "base/callback_forward.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -25,7 +26,8 @@ class TabStripUIEmbedder {
 
   virtual void ShowContextMenuAtPoint(
       gfx::Point point,
-      std::unique_ptr<ui::MenuModel> menu_model) = 0;
+      std::unique_ptr<ui::MenuModel> menu_model,
+      base::RepeatingClosure on_menu_closed_callback) = 0;
 
   virtual void CloseContextMenu() = 0;
 

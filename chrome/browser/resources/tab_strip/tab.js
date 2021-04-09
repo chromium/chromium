@@ -298,6 +298,11 @@ export class TabElement extends CustomElement {
     return this.hasAttribute('dragged-out_');
   }
 
+  /** @param {boolean} isTouchPressed */
+  setTouchPressed(isTouchPressed) {
+    this.toggleAttribute('touch_pressed_', isTouchPressed);
+  }
+
   /**
    * @return {!Promise}
    */
