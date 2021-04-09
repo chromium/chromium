@@ -387,6 +387,20 @@ TEST_P(TextIteratorTest, FullyClipsContents) {
   EXPECT_EQ("", Iterate<FlatTree>());
 }
 
+// http://crbug.com/1194349
+// See also CachedTextInputInfoTest.PlaceholderBRInTextArea
+TEST_P(TextIteratorTest, PlaceholderBRInTextArea) {
+  SetBodyContent("<textarea id=target>abc\n</textarea>");
+  auto& target = *To<TextControlElement>(GetElementById("target"));
+
+  // innerEditor is "<div>abc\n<br></div>"
+  const auto& range =
+      EphemeralRange::RangeOfContents(*target.InnerEditorElement());
+  EXPECT_EQ("[abc\n][\n]",
+            IteratePartial<DOMTree>(range.StartPosition(), range.EndPosition()))
+      << "The placeholder <br> emits [\\n].";
+}
+
 TEST_P(TextIteratorTest, IgnoresContainerClip) {
   static const char* body_content =
       "<div style='overflow: hidden; width: 200px; height: 0;'>"

@@ -7,11 +7,34 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+namespace {
+
+EphemeralRange ComputeWholeContentRange(const ContainerNode& container) {
+  const auto& range = EphemeralRange::RangeOfContents(container);
+  auto* const text_control_element = EnclosingTextControl(&container);
+  if (!text_control_element)
+    return range;
+  auto* const inner_editor = text_control_element->InnerEditorElement();
+  if (container != inner_editor)
+    return range;
+  auto* const last_child = inner_editor->lastChild();
+  if (!IsA<HTMLBRElement>(last_child))
+    return range;
+  // We ignore placeholder <br> in <textarea> added by
+  // |TextControlElement::AddPlaceholderBreakElementIfNecessary()|.
+  // See http://crbug.com/1194349
+  return EphemeralRange(Position::FirstPositionInNode(container),
+                        Position::AfterNode(*last_child->previousSibling()));
+}
+
+}  // namespace
 
 // static
 TextIteratorBehavior CachedTextInputInfo::Behavior() {
@@ -60,8 +83,8 @@ void CachedTextInputInfo::EnsureCached(const ContainerNode& container) const {
   selection_.Clear();
   text_ = g_empty_string;
 
-  TextIteratorAlgorithm<EditingStrategy> it(
-      EphemeralRange::RangeOfContents(container), Behavior());
+  TextIteratorAlgorithm<EditingStrategy> it(ComputeWholeContentRange(container),
+                                            Behavior());
   if (it.AtEnd())
     return;
 
