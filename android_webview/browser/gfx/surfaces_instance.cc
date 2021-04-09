@@ -246,8 +246,8 @@ void SurfacesInstance::SetSolidColorRootFrame() {
 }
 
 void SurfacesInstance::DidReceiveCompositorFrameAck(
-    const std::vector<viz::ReturnedResource>& resources) {
-  ReclaimResources(resources);
+    std::vector<viz::ReturnedResource> resources) {
+  ReclaimResources(std::move(resources));
 }
 
 std::vector<viz::SurfaceRange> SurfacesInstance::GetChildIdsRanges() {
@@ -262,7 +262,7 @@ void SurfacesInstance::OnBeginFrame(
     const viz::FrameTimingDetailsMap& timing_details) {}
 
 void SurfacesInstance::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   // Root surface should have no resources to return.
   CHECK(resources.empty());
 }

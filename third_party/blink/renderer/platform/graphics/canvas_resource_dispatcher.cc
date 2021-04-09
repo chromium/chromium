@@ -178,7 +178,7 @@ void CanvasResourceDispatcher::DispatchFrameSync(
   sink_->SubmitCompositorFrameSync(
       parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
       std::move(frame), base::nullopt, 0, &resources);
-  DidReceiveCompositorFrameAck(resources);
+  DidReceiveCompositorFrameAck(std::move(resources));
 }
 
 void CanvasResourceDispatcher::DispatchFrame(
@@ -305,8 +305,8 @@ bool CanvasResourceDispatcher::PrepareFrame(
 }
 
 void CanvasResourceDispatcher::DidReceiveCompositorFrameAck(
-    const WTF::Vector<viz::ReturnedResource>& resources) {
-  ReclaimResources(resources);
+    WTF::Vector<viz::ReturnedResource> resources) {
+  ReclaimResources(std::move(resources));
   pending_compositor_frames_--;
   DCHECK_GE(pending_compositor_frames_, 0);
 }
@@ -389,7 +389,7 @@ void CanvasResourceDispatcher::OnBeginFrame(
 }
 
 void CanvasResourceDispatcher::ReclaimResources(
-    const WTF::Vector<viz::ReturnedResource>& resources) {
+    WTF::Vector<viz::ReturnedResource> resources) {
   for (const auto& resource : resources) {
     auto it = resources_.find(resource.id);
 

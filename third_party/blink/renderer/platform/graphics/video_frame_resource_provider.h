@@ -58,7 +58,7 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
       const WebVector<viz::ResourceId>& resource_ids,
       WebVector<viz::TransferableResource>* transferable_resources);
   virtual void ReceiveReturnsFromParent(
-      const Vector<viz::ReturnedResource>& transferable_resources);
+      Vector<viz::ReturnedResource> transferable_resources);
 
  private:
   const cc::LayerTreeSettings settings_;

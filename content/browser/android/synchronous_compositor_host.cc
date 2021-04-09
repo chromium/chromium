@@ -466,11 +466,12 @@ void SynchronousCompositorHost::SendZeroMemory() {
 
 void SynchronousCompositorHost::ReturnResources(
     uint32_t layer_tree_frame_sink_id,
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   DCHECK(!resources.empty());
   if (blink::mojom::SynchronousCompositor* compositor =
           GetSynchronousCompositor())
-    compositor->ReclaimResources(layer_tree_frame_sink_id, resources);
+    compositor->ReclaimResources(layer_tree_frame_sink_id,
+                                 std::move(resources));
 }
 
 void SynchronousCompositorHost::DidPresentCompositorFrames(

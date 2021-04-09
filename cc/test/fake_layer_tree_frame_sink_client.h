@@ -27,8 +27,8 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const viz::FrameTimingDetails& details) override {}
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override {}
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
+  }
   void DidLoseLayerTreeFrameSink() override;
   void SetExternalTilePriorityConstraints(
       const gfx::Rect& viewport_rect_for_tile_priority,

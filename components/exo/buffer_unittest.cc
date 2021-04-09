@@ -68,12 +68,10 @@ TEST_F(BufferTest, ReleaseCallback) {
   ASSERT_TRUE(rv);
 
   // Release buffer.
-  viz::ReturnedResource returned_resource;
-  returned_resource.id = resource.id;
-  returned_resource.sync_token = resource.mailbox_holder.sync_token;
-  returned_resource.lost = false;
-  std::vector<viz::ReturnedResource> resources = {returned_resource};
-  frame_sink_holder->ReclaimResources(resources);
+  std::vector<viz::ReturnedResource> resources;
+  resources.emplace_back(resource.id, resource.mailbox_holder.sync_token,
+                         /*count=*/0, /*lost=*/false);
+  frame_sink_holder->ReclaimResources(std::move(resources));
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(release_call_count, 0);
@@ -110,13 +108,10 @@ TEST_F(BufferTest, IsLost) {
   }
 
   // Release buffer.
-  bool is_lost = true;
-  viz::ReturnedResource returned_resource;
-  returned_resource.id = resource.id;
-  returned_resource.sync_token = gpu::SyncToken();
-  returned_resource.lost = is_lost;
-  std::vector<viz::ReturnedResource> resources = {returned_resource};
-  frame_sink_holder->ReclaimResources(resources);
+  std::vector<viz::ReturnedResource> resources;
+  resources.emplace_back(resource.id, gpu::SyncToken(),
+                         /*count=*/0, /*lost=*/true);
+  frame_sink_holder->ReclaimResources(std::move(resources));
   base::RunLoop().RunUntilIdle();
 
   // Producing a new texture transferable resource for the contents of the
@@ -127,12 +122,10 @@ TEST_F(BufferTest, IsLost) {
   ASSERT_TRUE(rv);
   buffer->OnDetach();
 
-  viz::ReturnedResource returned_resource2;
-  returned_resource2.id = new_resource.id;
-  returned_resource2.sync_token = gpu::SyncToken();
-  returned_resource2.lost = false;
-  std::vector<viz::ReturnedResource> resources2 = {returned_resource2};
-  frame_sink_holder->ReclaimResources(resources2);
+  std::vector<viz::ReturnedResource> resources2;
+  resources.emplace_back(new_resource.id, gpu::SyncToken(),
+                         /*count=*/0, /*lost=*/false);
+  frame_sink_holder->ReclaimResources(std::move(resources2));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -258,13 +251,10 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
 
     // Try to release buffer in last frame. This can happen during a resize
     // when frame sink id changes.
-    viz::ReturnedResource returned_resource;
-    returned_resource.id = resource.id;
-    returned_resource.sync_token = resource.mailbox_holder.sync_token;
-    returned_resource.lost = false;
-
-    std::vector<viz::ReturnedResource> resources = {returned_resource};
-    frame_sink_holder->ReclaimResources(resources);
+    std::vector<viz::ReturnedResource> resources;
+    resources.emplace_back(resource.id, resource.mailbox_holder.sync_token,
+                           /*count=*/0, /*lost=*/false);
+    frame_sink_holder->ReclaimResources(std::move(resources));
   }
 
   base::RunLoop().RunUntilIdle();

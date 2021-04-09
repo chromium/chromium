@@ -108,7 +108,7 @@ void FakeLayerTreeFrameSink::ReturnResourcesHeldByParent() {
     for (const auto& resource : resources_held_by_parent_)
       resources.push_back(resource.ToReturnedResource());
     resources_held_by_parent_.clear();
-    client_->ReclaimResources(resources);
+    client_->ReclaimResources(std::move(resources));
   }
 }
 

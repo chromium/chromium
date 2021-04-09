@@ -251,7 +251,7 @@ TEST_F(ResourcePoolTest, LostResource) {
       viz::TransferableResource::ReturnResources(transferable_resources);
   ASSERT_EQ(1u, returned_resources.size());
   returned_resources[0].lost = true;
-  resource_provider_->ReceiveReturnsFromParent(returned_resources);
+  resource_provider_->ReceiveReturnsFromParent(std::move(returned_resources));
 
   EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
   resource_pool_->ReleaseResource(std::move(resource));

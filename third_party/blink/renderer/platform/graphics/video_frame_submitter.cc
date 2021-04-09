@@ -183,9 +183,9 @@ void VideoFrameSubmitter::OnContextLost() {
 }
 
 void VideoFrameSubmitter::DidReceiveCompositorFrameAck(
-    const WTF::Vector<viz::ReturnedResource>& resources) {
+    WTF::Vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  ReclaimResources(resources);
+  ReclaimResources(std::move(resources));
   waiting_for_compositor_ack_ = false;
 }
 
@@ -281,9 +281,9 @@ void VideoFrameSubmitter::OnBeginFrame(
 }
 
 void VideoFrameSubmitter::ReclaimResources(
-    const WTF::Vector<viz::ReturnedResource>& resources) {
+    WTF::Vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  resource_provider_->ReceiveReturnsFromParent(resources);
+  resource_provider_->ReceiveReturnsFromParent(std::move(resources));
 }
 
 void VideoFrameSubmitter::DidAllocateSharedBitmap(

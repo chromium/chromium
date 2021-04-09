@@ -225,7 +225,9 @@ void DisplayResourceProvider::ReceiveFromChild(
         resource.mailbox_holder.mailbox.IsZero()) {
       TRACE_EVENT0(
           "viz", "DisplayResourceProvider::ReceiveFromChild dropping invalid");
-      child_info.return_callback.Run({resource.ToReturnedResource()});
+      std::vector<ReturnedResource> returned;
+      returned.push_back(resource.ToReturnedResource());
+      child_info.return_callback.Run(std::move(returned));
       continue;
     }
 
@@ -377,7 +379,7 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
       DeleteAndReturnUnusedResourcesToChildImpl(child_info, style, unused);
 
   if (!to_return.empty())
-    child_info.return_callback.Run(to_return);
+    child_info.return_callback.Run(std::move(to_return));
 
   if (child_info.marked_for_deletion &&
       child_info.child_to_parent_map.empty()) {

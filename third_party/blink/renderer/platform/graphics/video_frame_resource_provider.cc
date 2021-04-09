@@ -136,9 +136,11 @@ void VideoFrameResourceProvider::PrepareSendToParent(
 }
 
 void VideoFrameResourceProvider::ReceiveReturnsFromParent(
-    const Vector<viz::ReturnedResource>& transferable_resources) {
-  resource_provider_->ReceiveReturnsFromParent(
-      WebVector<viz::ReturnedResource>(transferable_resources).ReleaseVector());
+    Vector<viz::ReturnedResource> transferable_resources) {
+  std::vector<viz::ReturnedResource> returned_resources(
+      std::make_move_iterator(transferable_resources.begin()),
+      std::make_move_iterator(transferable_resources.end()));
+  resource_provider_->ReceiveReturnsFromParent(std::move(returned_resources));
 }
 
 }  // namespace blink

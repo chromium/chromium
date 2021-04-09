@@ -741,10 +741,13 @@ TEST_F(SurfaceSynchronizationTest, ResourcesOnlyReturnedOnce) {
   EXPECT_FALSE(parent_surface()->HasPendingFrame());
   EXPECT_THAT(parent_surface()->activation_dependencies(), IsEmpty());
 
-  std::vector<ReturnedResource> returned_resources = {
-      resource.ToReturnedResource()};
-  EXPECT_CALL(support_client_,
-              DidReceiveCompositorFrameAck(returned_resources));
+  std::vector<ReturnedResource> returned_resources;
+  ResourceId id = resource.ToReturnedResource().id;
+  EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_))
+      .WillOnce([=](std::vector<ReturnedResource> got) {
+        EXPECT_EQ(1u, got.size());
+        EXPECT_EQ(id, got[0].id);
+      });
 
   // The parent submits a CompositorFrame without any dependencies. That
   // frame should activate immediately, replacing the earlier frame. The
@@ -1280,11 +1283,13 @@ TEST_F(SurfaceSynchronizationTest, ReturnResourcesWithAck) {
       parent_id.local_surface_id(),
       MakeCompositorFrame(empty_surface_ids(), empty_surface_ranges(),
                           {resource}));
-  std::vector<ReturnedResource> returned_resources =
-      TransferableResource::ReturnResources({resource});
+  ResourceId id = resource.ToReturnedResource().id;
   EXPECT_CALL(support_client_, ReclaimResources(_)).Times(0);
-  EXPECT_CALL(support_client_,
-              DidReceiveCompositorFrameAck(Eq(returned_resources)));
+  EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_))
+      .WillOnce([=](std::vector<ReturnedResource> got) {
+        EXPECT_EQ(1u, got.size());
+        EXPECT_EQ(id, got[0].id);
+      });
   parent_support().SubmitCompositorFrame(parent_id.local_surface_id(),
                                          MakeDefaultCompositorFrame());
 }
@@ -1337,9 +1342,12 @@ TEST_F(SurfaceSynchronizationTest, SubmitToDestroyedSurface) {
                                          MakeDefaultCompositorFrame());
 
   {
-    std::vector<ReturnedResource> returned_resources =
-        TransferableResource::ReturnResources({resource});
-    EXPECT_CALL(support_client_, ReclaimResources(Eq(returned_resources)));
+    ResourceId id = resource.ToReturnedResource().id;
+    EXPECT_CALL(support_client_, ReclaimResources(_))
+        .WillOnce([=](std::vector<ReturnedResource> got) {
+          EXPECT_EQ(1u, got.size());
+          EXPECT_EQ(id, got[0].id);
+        });
     frame_sink_manager().surface_manager()->GarbageCollectSurfaces();
     testing::Mock::VerifyAndClearExpectations(&support_client_);
   }

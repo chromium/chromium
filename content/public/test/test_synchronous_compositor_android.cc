@@ -38,11 +38,11 @@ TestSynchronousCompositor::DemandDrawHwAsync(
 
 void TestSynchronousCompositor::ReturnResources(
     uint32_t layer_tree_frame_sink_id,
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   ReturnedResources returned_resources;
   returned_resources.layer_tree_frame_sink_id = layer_tree_frame_sink_id;
-  returned_resources.resources = resources;
-  frame_ack_array_.push_back(returned_resources);
+  returned_resources.resources = std::move(resources);
+  frame_ack_array_.push_back(std::move(returned_resources));
 }
 
 void TestSynchronousCompositor::SwapReturnedResources(FrameAckArray* array) {
@@ -69,7 +69,7 @@ TestSynchronousCompositor::ReturnedResources::ReturnedResources()
     : layer_tree_frame_sink_id(0u) {}
 
 TestSynchronousCompositor::ReturnedResources::ReturnedResources(
-    const ReturnedResources& other) = default;
+    ReturnedResources&&) = default;
 
 TestSynchronousCompositor::ReturnedResources::~ReturnedResources() {}
 

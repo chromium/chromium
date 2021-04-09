@@ -300,7 +300,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   bool IsRootSurface(const Surface* surface) const;
 
   static void UnrefResources(base::WeakPtr<SurfaceClient> surface_client,
-                             const std::vector<ReturnedResource>& resources);
+                             std::vector<ReturnedResource> resources);
 
   // This method transforms the delegated ink metadata to be in the root target
   // space, so that it can eventually be drawn onto the back buffer in the

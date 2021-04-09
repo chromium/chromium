@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -49,13 +50,11 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
       const std::vector<TransferableResource>& resources) = 0;
 
   // Decrements the reference count on resources specified by |resources|.
-  virtual void UnrefResources(
-      const std::vector<ReturnedResource>& resources) = 0;
+  virtual void UnrefResources(std::vector<ReturnedResource> resources) = 0;
 
   // ReturnResources gets called when the display compositor is done using the
   // resources so that the client can use them.
-  virtual void ReturnResources(
-      const std::vector<ReturnedResource>& resources) = 0;
+  virtual void ReturnResources(std::vector<ReturnedResource> resources) = 0;
 
   // Increments the reference count of resources received from a child
   // compositor.

@@ -13,9 +13,12 @@ ReturnedResource::ReturnedResource(ResourceId id,
     : id(id), sync_token(sync_token), count(count), lost(lost) {}
 
 ReturnedResource::ReturnedResource() = default;
-ReturnedResource::ReturnedResource(const ReturnedResource& other) = default;
 
-ReturnedResource& ReturnedResource::operator=(const ReturnedResource& other) =
+ReturnedResource::~ReturnedResource() = default;
+
+ReturnedResource::ReturnedResource(ReturnedResource&& other) = default;
+
+ReturnedResource& ReturnedResource::operator=(ReturnedResource&& other) =
     default;
 
 }  // namespace viz

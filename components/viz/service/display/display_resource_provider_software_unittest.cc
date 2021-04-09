@@ -47,8 +47,9 @@ class MockReleaseCallback {
 };
 
 static void CollectResources(std::vector<ReturnedResource>* array,
-                             const std::vector<ReturnedResource>& returned) {
-  array->insert(array->end(), returned.begin(), returned.end());
+                             std::vector<ReturnedResource> returned) {
+  array->insert(array->end(), std::make_move_iterator(returned.begin()),
+                std::make_move_iterator(returned.end()));
 }
 
 static SharedBitmapId CreateAndFillSharedBitmap(SharedBitmapManager* manager,
@@ -143,7 +144,8 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
   // being in use.
   resource_provider_->DeclareUsedResourcesFromChild(child_id, ResourceIdSet());
   EXPECT_EQ(1u, returned_to_child.size());
-  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  child_resource_provider_->ReceiveReturnsFromParent(
+      std::move(returned_to_child));
 
   EXPECT_CALL(release, Released(_, false));
   child_resource_provider_->RemoveImportedResource(resource_id);

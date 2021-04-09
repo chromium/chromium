@@ -11,7 +11,7 @@
 namespace viz {
 
 using ReturnCallback =
-    base::RepeatingCallback<void(const std::vector<ReturnedResource>&)>;
+    base::RepeatingCallback<void(std::vector<ReturnedResource>)>;
 
 }  // namespace viz
 

@@ -29,7 +29,7 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
   void Reset();
   void ReceiveFromChild(const std::vector<TransferableResource>& resources);
   void RefResources(const std::vector<TransferableResource>& resources);
-  void UnrefResources(const std::vector<ReturnedResource>& resources);
+  void UnrefResources(std::vector<ReturnedResource> resources);
 
  private:
   SurfaceResourceHolderClient* client_;

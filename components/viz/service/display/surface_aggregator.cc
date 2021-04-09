@@ -424,9 +424,9 @@ bool SurfaceAggregator::RenderPassNeedsFullDamage(
 // static
 void SurfaceAggregator::UnrefResources(
     base::WeakPtr<SurfaceClient> surface_client,
-    const std::vector<ReturnedResource>& resources) {
+    std::vector<ReturnedResource> resources) {
   if (surface_client)
-    surface_client->UnrefResources(resources);
+    surface_client->UnrefResources(std::move(resources));
 }
 
 bool SurfaceAggregator::CanPotentiallyMergePass(

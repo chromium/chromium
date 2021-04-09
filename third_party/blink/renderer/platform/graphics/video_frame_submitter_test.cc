@@ -143,9 +143,8 @@ class MockVideoFrameResourceProvider
   MOCK_METHOD2(PrepareSendToParent,
                void(const WebVector<viz::ResourceId>&,
                     WebVector<viz::TransferableResource>*));
-  MOCK_METHOD1(
-      ReceiveReturnsFromParent,
-      void(const Vector<viz::ReturnedResource>& transferable_resources));
+  MOCK_METHOD1(ReceiveReturnsFromParent,
+               void(Vector<viz::ReturnedResource> transferable_resources));
   MOCK_METHOD0(ObtainContextProvider, void());
 
  private:
@@ -223,7 +222,7 @@ class VideoFrameSubmitterTest : public testing::Test {
   void AckSubmittedFrame() {
     WTF::Vector<viz::ReturnedResource> resources;
     EXPECT_CALL(*resource_provider_, ReceiveReturnsFromParent(_));
-    submitter_->DidReceiveCompositorFrameAck(resources);
+    submitter_->DidReceiveCompositorFrameAck(std::move(resources));
   }
 
  protected:

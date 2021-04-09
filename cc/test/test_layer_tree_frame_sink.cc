@@ -227,8 +227,8 @@ void TestLayerTreeFrameSink::DidDeleteSharedBitmap(
 }
 
 void TestLayerTreeFrameSink::DidReceiveCompositorFrameAck(
-    const std::vector<viz::ReturnedResource>& resources) {
-  ReclaimResources(resources);
+    std::vector<viz::ReturnedResource> resources) {
+  ReclaimResources(std::move(resources));
   // In synchronous mode, we manually send acks and this method should not be
   // used.
   if (!display_->has_scheduler())
@@ -245,8 +245,8 @@ void TestLayerTreeFrameSink::OnBeginFrame(
 }
 
 void TestLayerTreeFrameSink::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {
-  client_->ReclaimResources(resources);
+    std::vector<viz::ReturnedResource> resources) {
+  client_->ReclaimResources(std::move(resources));
 }
 
 void TestLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {}

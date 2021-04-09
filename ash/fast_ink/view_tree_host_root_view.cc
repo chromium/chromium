@@ -146,8 +146,7 @@ class ViewTreeHostRootView::LayerTreeViewTreeFrameSinkHolder
   base::Optional<viz::HitTestRegionList> BuildHitTestData() override {
     return {};
   }
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override {
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
     if (delete_pending_)
       return;
     for (auto& entry : resources) {

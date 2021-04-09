@@ -23,9 +23,12 @@ struct VIZ_COMMON_EXPORT ReturnedResource {
                    bool lost);
 
   ReturnedResource();
-  ReturnedResource(const ReturnedResource& other);
+  ~ReturnedResource();
+  ReturnedResource(ReturnedResource&& other);
+  ReturnedResource& operator=(ReturnedResource&& other);
 
-  ReturnedResource& operator=(const ReturnedResource& other);
+  ReturnedResource(const ReturnedResource& other) = delete;
+  ReturnedResource& operator=(const ReturnedResource& other) = delete;
 
   bool operator==(const ReturnedResource& other) const {
     return id == other.id && sync_token == other.sync_token &&

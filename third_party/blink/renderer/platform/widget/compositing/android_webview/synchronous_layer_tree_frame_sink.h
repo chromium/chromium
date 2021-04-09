@@ -109,12 +109,11 @@ class SynchronousLayerTreeFrameSink
 
   // viz::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      const Vector<viz::ReturnedResource>& resources) override;
+      Vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const HashMap<uint32_t, viz::FrameTimingDetails>&
                         timing_details) override;
-  void ReclaimResources(
-      const Vector<viz::ReturnedResource>& resources) override;
+  void ReclaimResources(Vector<viz::ReturnedResource> resources) override;
   void OnBeginFramePausedChanged(bool paused) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
@@ -129,7 +128,7 @@ class SynchronousLayerTreeFrameSink
   void SetBeginFrameSourcePaused(bool paused);
   void SetMemoryPolicy(size_t bytes_limit);
   void ReclaimResources(uint32_t layer_tree_frame_sink_id,
-                        const Vector<viz::ReturnedResource>& resources);
+                        Vector<viz::ReturnedResource> resources);
   void DemandDrawHw(const gfx::Size& viewport_size,
                     const gfx::Rect& viewport_rect_for_tile_priority,
                     const gfx::Transform& transform_for_tile_priority,

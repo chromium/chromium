@@ -84,7 +84,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
   void ZoomBy(float zoom_delta, const gfx::Point& anchor, ZoomByCallback) final;
   void SetMemoryPolicy(uint32_t bytes_limit) final;
   void ReclaimResources(uint32_t layer_tree_frame_sink_id,
-                        const Vector<viz::ReturnedResource>& resources) final;
+                        Vector<viz::ReturnedResource> resources) final;
   void SetScroll(const gfx::ScrollOffset& total_scroll_offset) final;
   void BeginFrame(const viz::BeginFrameArgs& args,
                   const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&

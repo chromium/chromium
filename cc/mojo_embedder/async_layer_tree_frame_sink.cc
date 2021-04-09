@@ -232,9 +232,9 @@ void AsyncLayerTreeFrameSink::DidDeleteSharedBitmap(
 }
 
 void AsyncLayerTreeFrameSink::DidReceiveCompositorFrameAck(
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  client_->ReclaimResources(resources);
+  client_->ReclaimResources(std::move(resources));
   client_->DidReceiveCompositorFrameAck();
 }
 
@@ -272,9 +272,9 @@ void AsyncLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {
 }
 
 void AsyncLayerTreeFrameSink::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  client_->ReclaimResources(resources);
+  client_->ReclaimResources(std::move(resources));
 }
 
 void AsyncLayerTreeFrameSink::OnCompositorFrameTransitionDirectiveProcessed(

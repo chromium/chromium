@@ -73,10 +73,9 @@ class HardwareRenderer {
   explicit HardwareRenderer(RenderThreadManager* state);
 
   void ReturnChildFrame(std::unique_ptr<ChildFrame> child_frame);
-  void ReturnResourcesToCompositor(
-      const std::vector<viz::ReturnedResource>& resources,
-      const viz::FrameSinkId& frame_sink_id,
-      uint32_t layer_tree_frame_sink_id);
+  void ReturnResourcesToCompositor(std::vector<viz::ReturnedResource> resources,
+                                   const viz::FrameSinkId& frame_sink_id,
+                                   uint32_t layer_tree_frame_sink_id);
 
   void ReportDrawMetric(const HardwareRendererDrawParams& params);
 

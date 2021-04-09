@@ -161,8 +161,8 @@ void HardwareRendererSingleThread::DestroySurface() {
 }
 
 void HardwareRendererSingleThread::DidReceiveCompositorFrameAck(
-    const std::vector<viz::ReturnedResource>& resources) {
-  ReturnResourcesToCompositor(resources, child_frame_sink_id_,
+    std::vector<viz::ReturnedResource> resources) {
+  ReturnResourcesToCompositor(std::move(resources), child_frame_sink_id_,
                               last_submitted_layer_tree_frame_sink_id_);
 }
 
@@ -173,8 +173,8 @@ void HardwareRendererSingleThread::OnBeginFrame(
 }
 
 void HardwareRendererSingleThread::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {
-  ReturnResourcesToCompositor(resources, child_frame_sink_id_,
+    std::vector<viz::ReturnedResource> resources) {
+  ReturnResourcesToCompositor(std::move(resources), child_frame_sink_id_,
                               last_submitted_layer_tree_frame_sink_id_);
 }
 

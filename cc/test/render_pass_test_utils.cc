@@ -301,9 +301,8 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
           plane_resources[2], plane_resources[3]};
 }
 
-static void CollectResources(
-    std::vector<viz::ReturnedResource>* array,
-    const std::vector<viz::ReturnedResource>& returned) {}
+static void CollectResources(std::vector<viz::ReturnedResource>* array,
+                             std::vector<viz::ReturnedResource> returned) {}
 
 void AddOneOfEveryQuadTypeInDisplayResourceProvider(
     viz::AggregatedRenderPass* to_pass,

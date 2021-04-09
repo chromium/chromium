@@ -170,9 +170,9 @@ class CompositorFrameSinkSupportTest : public testing::Test {
       resource.sync_token = consumer_sync_token_;
       resource.id = ids_to_unref[i];
       resource.count = counts_to_unref[i];
-      unref_array.push_back(resource);
+      unref_array.push_back(std::move(resource));
     }
-    support_->UnrefResources(unref_array);
+    support_->UnrefResources(std::move(unref_array));
   }
 
   void CheckReturnedResourcesMatchExpected(ResourceId* expected_returned_ids,
@@ -181,8 +181,7 @@ class CompositorFrameSinkSupportTest : public testing::Test {
         fake_support_client_.returned_resources();
     ASSERT_EQ(expected_resources, actual_resources.size());
     for (size_t i = 0; i < expected_resources; ++i) {
-      ReturnedResource resource = actual_resources[i];
-      EXPECT_EQ(expected_returned_ids[i], resource.id);
+      EXPECT_EQ(expected_returned_ids[i], actual_resources[i].id);
     }
     fake_support_client_.clear_returned_resources();
   }
@@ -195,7 +194,7 @@ class CompositorFrameSinkSupportTest : public testing::Test {
         fake_support_client_.returned_resources();
     ASSERT_EQ(expected_resources, actual_resources.size());
     for (size_t i = 0; i < expected_resources; ++i) {
-      ReturnedResource resource = actual_resources[i];
+      const auto& resource = actual_resources[i];
       EXPECT_EQ(expected_sync_token, resource.sync_token);
       EXPECT_EQ(expected_returned_ids[i], resource.id);
       EXPECT_EQ(expected_returned_counts[i], resource.count);
@@ -711,11 +710,13 @@ TEST_F(CompositorFrameSinkSupportTest, EvictLastActivatedSurface) {
             local_surface_id);
   local_surface_id_ = LocalSurfaceId();
 
-  std::vector<ReturnedResource> returned_resources = {
-      resource.ToReturnedResource()};
+  ResourceId returned_id = resource.ToReturnedResource().id;
   EXPECT_TRUE(GetSurfaceForId(id));
-  EXPECT_CALL(mock_client, DidReceiveCompositorFrameAck(returned_resources))
-      .Times(1);
+  EXPECT_CALL(mock_client, DidReceiveCompositorFrameAck(_))
+      .WillOnce([=](std::vector<ReturnedResource> got) {
+        EXPECT_EQ(1u, got.size());
+        EXPECT_EQ(returned_id, got[0].id);
+      });
   support->EvictSurface(local_surface_id);
   ExpireAllTemporaryReferences();
   manager_.surface_manager()->GarbageCollectSurfaces();

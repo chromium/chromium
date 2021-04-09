@@ -52,8 +52,9 @@ MATCHER_P(MatchesSyncToken, sync_token, "") {
 }
 
 static void CollectResources(std::vector<ReturnedResource>* array,
-                             const std::vector<ReturnedResource>& returned) {
-  array->insert(array->end(), returned.begin(), returned.end());
+                             std::vector<ReturnedResource> returned) {
+  array->insert(array->end(), std::make_move_iterator(returned.begin()),
+                std::make_move_iterator(returned.end()));
 }
 
 class ResourceProviderGLES2Interface : public TestGLES2Interface {
@@ -201,7 +202,8 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockCountStopsReturnToChildOrDelete) {
   }
 
   EXPECT_EQ(1u, returned_to_child.size());
-  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  child_resource_provider_->ReceiveReturnsFromParent(
+      std::move(returned_to_child));
 
   // No need to wait for the sync token here -- it will be returned to the
   // client on delete.
@@ -272,7 +274,8 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockFenceStopsReturnToChildOrDelete) {
   resource_provider_->DeclareUsedResourcesFromChild(child_id, ResourceIdSet());
   EXPECT_EQ(1u, returned_to_child.size());
 
-  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  child_resource_provider_->ReceiveReturnsFromParent(
+      std::move(returned_to_child));
   EXPECT_CALL(release, Released(_, _));
   child_resource_provider_->RemoveImportedResource(id1);
 }
@@ -334,7 +337,8 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockFenceDestroyChild) {
   EXPECT_EQ(returned_to_child[0].lost, returned_to_child[0].id == id1);
   EXPECT_EQ(returned_to_child[1].lost, returned_to_child[1].id == id1);
 
-  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  child_resource_provider_->ReceiveReturnsFromParent(
+      std::move(returned_to_child));
   EXPECT_CALL(release, Released(_, _)).Times(2);
   child_resource_provider_->RemoveImportedResource(id1);
   child_resource_provider_->RemoveImportedResource(id2);
@@ -395,7 +399,8 @@ TEST_F(DisplayResourceProviderGLTest,
     EXPECT_EQ(0u, returned_to_child.size());
   }
   EXPECT_EQ(1u, returned_to_child.size());
-  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  child_resource_provider_->ReceiveReturnsFromParent(
+      std::move(returned_to_child));
   returned_to_child.clear();
 
   // Return all locked resources.
@@ -417,7 +422,8 @@ TEST_F(DisplayResourceProviderGLTest,
   for (const auto& resource : returned_to_child)
     EXPECT_EQ(resource.sync_token, returned_to_child[0].sync_token);
 
-  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  child_resource_provider_->ReceiveReturnsFromParent(
+      std::move(returned_to_child));
   returned_to_child.clear();
 
   // Returns from destroying the child is also batched.
@@ -428,7 +434,8 @@ TEST_F(DisplayResourceProviderGLTest,
     EXPECT_EQ(0u, returned_to_child.size());
   }
   EXPECT_EQ(1u, returned_to_child.size());
-  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  child_resource_provider_->ReceiveReturnsFromParent(
+      std::move(returned_to_child));
   returned_to_child.clear();
 
   EXPECT_CALL(release, Released(_, _)).Times(kTotalResources);
@@ -549,7 +556,8 @@ class ResourceProviderTestImportedResourceGLFilters {
     // being in use.
     resource_provider->DeclareUsedResourcesFromChild(child_id, ResourceIdSet());
     EXPECT_EQ(1u, returned_to_child.size());
-    child_resource_provider->ReceiveReturnsFromParent(returned_to_child);
+    child_resource_provider->ReceiveReturnsFromParent(
+        std::move(returned_to_child));
 
     gpu::SyncToken released_sync_token;
     {
@@ -662,7 +670,8 @@ TEST_F(DisplayResourceProviderGLTest, ReceiveGLTextureExternalOES) {
   // being in use.
   resource_provider->DeclareUsedResourcesFromChild(child_id, ResourceIdSet());
   EXPECT_EQ(1u, returned_to_child.size());
-  child_resource_provider->ReceiveReturnsFromParent(returned_to_child);
+  child_resource_provider->ReceiveReturnsFromParent(
+      std::move(returned_to_child));
 
   child_resource_provider->RemoveImportedResource(resource_id);
 }
@@ -783,7 +792,8 @@ TEST_F(DisplayResourceProviderGLTest, OverlayPromotionHint) {
   // cleared when resources are deleted.
   resource_provider_->DeclareUsedResourcesFromChild(child_id, ResourceIdSet());
   EXPECT_EQ(2u, returned_to_child.size());
-  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  child_resource_provider_->ReceiveReturnsFromParent(
+      std::move(returned_to_child));
 
   EXPECT_EQ(0u, resource_provider_->CountPromotionHintRequestsForTesting());
   EXPECT_FALSE(resource_provider_->DoAnyResourcesWantPromotionHints());

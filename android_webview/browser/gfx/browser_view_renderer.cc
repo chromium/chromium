@@ -403,12 +403,12 @@ void BrowserViewRenderer::ReturnUnusedResource(
 }
 
 void BrowserViewRenderer::ReturnUsedResources(
-    const std::vector<viz::ReturnedResource>& resources,
+    std::vector<viz::ReturnedResource> resources,
     const viz::FrameSinkId& frame_sink_id,
     uint32_t layer_tree_frame_sink_id) {
   content::SynchronousCompositor* compositor = FindCompositor(frame_sink_id);
   if (compositor && !resources.empty())
-    compositor->ReturnResources(layer_tree_frame_sink_id, resources);
+    compositor->ReturnResources(layer_tree_frame_sink_id, std::move(resources));
   has_rendered_frame_ = true;
 }
 
@@ -889,7 +889,8 @@ void BrowserViewRenderer::ReturnResourcesFromViz(
     viz::FrameSinkId frame_sink_id,
     uint32_t layer_tree_frame_sink_id,
     std::vector<viz::ReturnedResource> resources) {
-  ReturnUsedResources(resources, frame_sink_id, layer_tree_frame_sink_id);
+  ReturnUsedResources(std::move(resources), frame_sink_id,
+                      layer_tree_frame_sink_id);
 }
 
 void BrowserViewRenderer::OnInputEvent() {

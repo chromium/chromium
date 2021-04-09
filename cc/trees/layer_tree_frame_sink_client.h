@@ -45,7 +45,7 @@ class CC_EXPORT LayerTreeFrameSinkClient {
 
   // Returns resources sent to SubmitCompositorFrame to be reused or freed.
   virtual void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) = 0;
+      std::vector<viz::ReturnedResource> resources) = 0;
 
   // If set, |callback| will be called subsequent to each new tree activation,
   // regardless of the compositor visibility or damage. |callback| must remain

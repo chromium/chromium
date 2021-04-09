@@ -32,10 +32,10 @@ class MockCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
 
   // mojom::CompositorFrameSinkClient implementation.
   MOCK_METHOD1(DidReceiveCompositorFrameAck,
-               void(const std::vector<ReturnedResource>&));
+               void(std::vector<ReturnedResource>));
   MOCK_METHOD2(OnBeginFrame,
                void(const BeginFrameArgs&, const FrameTimingDetailsMap&));
-  MOCK_METHOD1(ReclaimResources, void(const std::vector<ReturnedResource>&));
+  MOCK_METHOD1(ReclaimResources, void(std::vector<ReturnedResource>));
   MOCK_METHOD2(WillDrawSurface, void(const LocalSurfaceId&, const gfx::Rect&));
   MOCK_METHOD1(OnBeginFramePausedChanged, void(bool paused));
   MOCK_METHOD1(OnCompositorFrameTransitionDirectiveProcessed,

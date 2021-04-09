@@ -55,10 +55,9 @@ class RenderThreadManager : public CompositorFrameConsumer {
       const viz::FrameSinkId& frame_sink_id,
       viz::FrameTimingDetailsMap timing_details,
       uint32_t frame_token);
-  void InsertReturnedResourcesOnRT(
-      const std::vector<viz::ReturnedResource>& resources,
-      const viz::FrameSinkId& frame_sink_id,
-      uint32_t layer_tree_frame_sink_id);
+  void InsertReturnedResourcesOnRT(std::vector<viz::ReturnedResource> resources,
+                                   const viz::FrameSinkId& frame_sink_id,
+                                   uint32_t layer_tree_frame_sink_id);
 
   void CommitFrameOnRT();
   void SetVulkanContextProviderOnRT(AwVulkanContextProvider* context_provider);

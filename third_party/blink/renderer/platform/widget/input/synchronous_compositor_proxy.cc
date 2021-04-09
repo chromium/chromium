@@ -292,10 +292,11 @@ void SynchronousCompositorProxy::SetMemoryPolicy(uint32_t bytes_limit) {
 
 void SynchronousCompositorProxy::ReclaimResources(
     uint32_t layer_tree_frame_sink_id,
-    const Vector<viz::ReturnedResource>& resources) {
+    Vector<viz::ReturnedResource> resources) {
   if (!layer_tree_frame_sink_)
     return;
-  layer_tree_frame_sink_->ReclaimResources(layer_tree_frame_sink_id, resources);
+  layer_tree_frame_sink_->ReclaimResources(layer_tree_frame_sink_id,
+                                           std::move(resources));
 }
 
 void SynchronousCompositorProxy::SetSharedMemory(

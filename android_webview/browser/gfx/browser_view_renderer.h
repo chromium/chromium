@@ -160,7 +160,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   base::WeakPtr<CompositorFrameProducer> GetWeakPtr() override;
   void RemoveCompositorFrameConsumer(
       CompositorFrameConsumer* consumer) override;
-  void ReturnUsedResources(const std::vector<viz::ReturnedResource>& resources,
+  void ReturnUsedResources(std::vector<viz::ReturnedResource> resources,
                            const viz::FrameSinkId& frame_sink_id,
                            uint32_t layer_tree_frame_sink_id) override;
   void OnParentDrawDataUpdated(

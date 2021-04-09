@@ -96,10 +96,7 @@ mojom("mojom") {
         {
           mojom = "viz.mojom.ReturnedResource"
           cpp = "::viz::ReturnedResource"
-        },
-        {
-          mojom = "viz.mojom.ReturnedResourceArray"
-          cpp = "::viz::ReturnedResourceArray"
+          move_only = true
         },
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/returned_resource_mojom_traits.h" ]

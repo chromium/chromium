@@ -163,7 +163,7 @@ void DemoClient::InitializeOnThread(
 }
 
 void DemoClient::DidReceiveCompositorFrameAck(
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   // See documentation in mojom for how this can be used.
 }
 
@@ -181,6 +181,6 @@ void DemoClient::OnBeginFrame(
 }
 void DemoClient::OnBeginFramePausedChanged(bool paused) {}
 void DemoClient::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {}
+    std::vector<viz::ReturnedResource> resources) {}
 
 }  // namespace demo

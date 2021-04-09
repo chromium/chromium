@@ -95,7 +95,7 @@ class CONTENT_EXPORT SynchronousCompositor {
   // Note that all resources must be returned before ReleaseHwDraw.
   virtual void ReturnResources(
       uint32_t layer_tree_frame_sink_id,
-      const std::vector<viz::ReturnedResource>& resources) = 0;
+      std::vector<viz::ReturnedResource> resources) = 0;
 
   virtual void DidPresentCompositorFrames(
       viz::FrameTimingDetailsMap timing_details,

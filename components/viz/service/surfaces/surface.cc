@@ -734,7 +734,7 @@ void Surface::UnrefFrameResourcesAndRunCallbacks(
   // No point in returning same sync token to sender.
   for (auto& resource : resources)
     resource.sync_token.Clear();
-  surface_client_->UnrefResources(resources);
+  surface_client_->UnrefResources(std::move(resources));
 
   if (!frame_data->frame_acked)
     surface_client_->OnSurfaceProcessed(this);

@@ -216,7 +216,7 @@ void ArCompositorFrameSink::DidNotProduceFrame(WebXrFrame* xr_frame) {
 }
 
 void ArCompositorFrameSink::DidReceiveCompositorFrameAck(
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   DVLOG(3) << __func__;
   // Notify that we've received the Ack for this frame first. It may be that the
   // most recently submitted frame is also dropped, so updating the parent that
@@ -229,11 +229,11 @@ void ArCompositorFrameSink::DidReceiveCompositorFrameAck(
   // resources. However, it's all timing dependent as to which one gets called
   // with the actual freed resources.
   DVLOG(3) << __func__ << " Reclaiming Resources";
-  ReclaimResources(resources);
+  ReclaimResources(std::move(resources));
 }
 
 void ArCompositorFrameSink::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   DVLOG(3) << __func__ << " resources.size()=" << resources.size();
   for (const auto& resource : resources) {
     DVLOG(3) << __func__ << " Reclaimed: " << resource.id;

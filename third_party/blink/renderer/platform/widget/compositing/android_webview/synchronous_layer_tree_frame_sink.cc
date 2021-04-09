@@ -80,14 +80,13 @@ class SoftwareCompositorFrameSinkClient
   ~SoftwareCompositorFrameSinkClient() override = default;
 
   void DidReceiveCompositorFrameAck(
-      const std::vector<viz::ReturnedResource>& resources) override {
+      std::vector<viz::ReturnedResource> resources) override {
     DCHECK(resources.empty());
   }
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& timing_details) override {
   }
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override {
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
     DCHECK(resources.empty());
   }
   void OnBeginFramePausedChanged(bool paused) override {}
@@ -517,13 +516,14 @@ void SynchronousLayerTreeFrameSink::InvokeComposite(
 
 void SynchronousLayerTreeFrameSink::ReclaimResources(
     uint32_t layer_tree_frame_sink_id,
-    const Vector<viz::ReturnedResource>& resources) {
+    Vector<viz::ReturnedResource> resources) {
   // Ignore message if it's a stale one coming from a different output surface
   // (e.g. after a lost context).
   if (layer_tree_frame_sink_id != layer_tree_frame_sink_id_)
     return;
-  client_->ReclaimResources(
-      std::vector<viz::ReturnedResource>(resources.begin(), resources.end()));
+  client_->ReclaimResources(std::vector<viz::ReturnedResource>(
+      std::make_move_iterator(resources.begin()),
+      std::make_move_iterator(resources.end())));
 }
 
 void SynchronousLayerTreeFrameSink::SetMemoryPolicy(size_t bytes_limit) {
@@ -555,11 +555,12 @@ void SynchronousLayerTreeFrameSink::DidActivatePendingTree() {
 }
 
 void SynchronousLayerTreeFrameSink::DidReceiveCompositorFrameAck(
-    const Vector<viz::ReturnedResource>& resources) {
+    Vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(viz_frame_submission_enabled_);
-  client_->ReclaimResources(
-      std::vector<viz::ReturnedResource>(resources.begin(), resources.end()));
+  client_->ReclaimResources(std::vector<viz::ReturnedResource>(
+      std::make_move_iterator(resources.begin()),
+      std::make_move_iterator(resources.end())));
   // client_->DidReceiveCompositorFrameAck() is called just after frame
   // submission so cc won't be throttled on actual draw which can happen late
   // (or not happen at all) for WebView.
@@ -582,11 +583,12 @@ void SynchronousLayerTreeFrameSink::OnBeginFrame(
 }
 
 void SynchronousLayerTreeFrameSink::ReclaimResources(
-    const Vector<viz::ReturnedResource>& resources) {
+    Vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(viz_frame_submission_enabled_);
-  client_->ReclaimResources(
-      std::vector<viz::ReturnedResource>(resources.begin(), resources.end()));
+  client_->ReclaimResources(std::vector<viz::ReturnedResource>(
+      std::make_move_iterator(resources.begin()),
+      std::make_move_iterator(resources.end())));
 }
 
 void SynchronousLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {

@@ -157,15 +157,15 @@ bool RenderThreadManager::IsInsideHardwareRelease() const {
 }
 
 void RenderThreadManager::InsertReturnedResourcesOnRT(
-    const std::vector<viz::ReturnedResource>& resources,
+    std::vector<viz::ReturnedResource> resources,
     const viz::FrameSinkId& frame_sink_id,
     uint32_t layer_tree_frame_sink_id) {
   if (resources.empty())
     return;
   ui_loop_->PostTask(
       FROM_HERE, base::BindOnce(&CompositorFrameProducer::ReturnUsedResources,
-                                producer_weak_ptr_, resources, frame_sink_id,
-                                layer_tree_frame_sink_id));
+                                producer_weak_ptr_, std::move(resources),
+                                frame_sink_id, layer_tree_frame_sink_id));
 }
 
 void RenderThreadManager::CommitFrameOnRT() {

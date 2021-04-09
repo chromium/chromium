@@ -288,21 +288,24 @@ void CompositorFrameSinkSupport::RefResources(
 }
 
 void CompositorFrameSinkSupport::UnrefResources(
-    const std::vector<ReturnedResource>& resources) {
+    std::vector<ReturnedResource> resources) {
+  // |surface_animation_manager_| allocates ResourceIds in a different range
+  // than the client so it can process returned resources before
+  // |surface_resource_holder_|.
   surface_animation_manager_.UnrefResources(resources);
-  surface_resource_holder_.UnrefResources(resources);
+  surface_resource_holder_.UnrefResources(std::move(resources));
 }
 
 void CompositorFrameSinkSupport::ReturnResources(
-    const std::vector<ReturnedResource>& resources) {
+    std::vector<ReturnedResource> resources) {
   if (resources.empty())
     return;
   if (!ack_pending_count_ && client_) {
-    client_->ReclaimResources(resources);
+    client_->ReclaimResources(std::move(resources));
     return;
   }
 
-  std::copy(resources.begin(), resources.end(),
+  std::move(resources.begin(), resources.end(),
             std::back_inserter(surface_returned_resources_));
 }
 
@@ -658,7 +661,7 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
     return;
   }
 
-  client_->DidReceiveCompositorFrameAck(surface_returned_resources_);
+  client_->DidReceiveCompositorFrameAck(std::move(surface_returned_resources_));
   surface_returned_resources_.clear();
 }
 
@@ -707,7 +710,7 @@ void CompositorFrameSinkSupport::DidRejectCompositorFrame(
 
   std::vector<ReturnedResource> resources =
       TransferableResource::ReturnResources(frame_resource_list);
-  ReturnResources(resources);
+  ReturnResources(std::move(resources));
   DidReceiveCompositorFrameAck();
   DidPresentCompositorFrame(frame_token, base::TimeTicks(), gfx::SwapTimings(),
                             gfx::PresentationFeedback::Failure());
