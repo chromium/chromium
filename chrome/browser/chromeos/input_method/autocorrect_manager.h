@@ -13,6 +13,19 @@
 
 namespace chromeos {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Needs to match ImeAutocorrectActions
+// in enums.xml.
+enum class AutocorrectActions {
+  kWindowShown = 0,
+  kUnderlined = 1,
+  kReverted = 2,
+  kUserAcceptedAutocorrect = 3,
+  kUserActionClearedUnderline = 4,
+  kUserExitedTextFieldWithUnderline = 5,
+  kMaxValue = kUserExitedTextFieldWithUnderline,
+};
+
 // Implements functionality for chrome.input.ime.autocorrect() extension API.
 // This function shows UI to indicate that autocorrect has happened and allows
 // it to be undone easily.

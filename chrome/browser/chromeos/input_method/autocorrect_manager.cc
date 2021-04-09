@@ -21,19 +21,6 @@
 namespace chromeos {
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Needs to match ImeAutocorrectActions
-// in enums.xml.
-enum class AutocorrectActions {
-  kWindowShown = 0,
-  kUnderlined = 1,
-  kReverted = 2,
-  kUserAcceptedAutocorrect = 3,
-  kUserActionClearedUnderline = 4,
-  kUserExitedTextFieldWithUnderline = 5,
-  kMaxValue = kUserExitedTextFieldWithUnderline,
-};
-
 bool IsCurrentInputMethodExperimentalMultilingual() {
   auto* input_method_manager = input_method::InputMethodManager::Get();
   if (!input_method_manager) {
