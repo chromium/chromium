@@ -99,6 +99,12 @@ ArcCameraBridge* ArcCameraBridge::GetForBrowserContext(
   return ArcCameraBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcCameraBridge* ArcCameraBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcCameraBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcCameraBridge::ArcCameraBridge(content::BrowserContext* context,
                                  ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {
