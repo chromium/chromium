@@ -90,6 +90,8 @@ source_set("client_side_detection") {
     "client_side_detection_host.h",
     "client_side_detection_service.cc",
     "client_side_detection_service.h",
+    "client_side_phishing_model.cc",
+    "client_side_phishing_model.h",
   ]
   deps = [
     ":client_side_model_loader",

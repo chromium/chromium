@@ -39,6 +39,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
@@ -345,6 +346,9 @@ void SafeBrowsingService::Start() {
               GetURLLoaderFactory()),
           std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
               g_browser_process->shared_url_loader_factory())));
+
+  ClientSidePhishingModel::GetInstance()->Start(
+      g_browser_process->shared_url_loader_factory());
 }
 
 void SafeBrowsingService::Stop(bool shutdown) {
@@ -353,6 +357,7 @@ void SafeBrowsingService::Stop(bool shutdown) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&SafeBrowsingService::StopOnIOThread, this, shutdown));
+  ClientSidePhishingModel::GetInstance()->Stop();
 }
 
 void SafeBrowsingService::OnProfileAdded(Profile* profile) {

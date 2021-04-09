@@ -23,6 +23,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "components/safe_browsing/content/browser/client_side_model_loader.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -46,22 +47,6 @@ using ::testing::_;
 using content::BrowserThread;
 
 namespace safe_browsing {
-namespace {
-
-class MockModelLoader : public ModelLoader {
- public:
-  explicit MockModelLoader(const std::string& model_name)
-      : ModelLoader(base::RepeatingClosure(), nullptr, model_name) {}
-  ~MockModelLoader() override {}
-
-  MOCK_METHOD1(ScheduleFetch, void(int64_t));
-  MOCK_METHOD0(CancelFetcher, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockModelLoader);
-};
-
-}  // namespace
 
 class ClientSideDetectionServiceTest : public testing::Test {
  public:
@@ -390,53 +375,6 @@ TEST_F(ClientSideDetectionServiceTest, IsPrivateIPAddress) {
   EXPECT_TRUE(csd_service_->IsPrivateIPAddress("blah"));
 }
 
-TEST_F(ClientSideDetectionServiceTest, SetEnabledAndRefreshState) {
-  // Check that the model isn't downloaded until the service is enabled.
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
-  csd_service_ = std::make_unique<ClientSideDetectionService>(
-      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
-  EXPECT_FALSE(csd_service_->enabled());
-  EXPECT_TRUE(csd_service_->model_loader_ == nullptr);
-
-  // Inject mock loader.
-  csd_service_->SetModelLoaderFactoryForTesting(base::BindLambdaForTesting([] {
-    auto loader = std::make_unique<StrictMock<MockModelLoader>>("model1");
-    return std::unique_ptr<ModelLoader>(std::move(loader));
-  }));
-
-  EXPECT_FALSE(csd_service_->enabled());
-
-  // Check that initial ScheduleFetch() calls are made.
-  csd_service_->SetModelLoaderFactoryForTesting(base::BindLambdaForTesting([] {
-    auto loader = std::make_unique<StrictMock<MockModelLoader>>("model1");
-    EXPECT_CALL(
-        *loader,
-        ScheduleFetch(
-            ClientSideDetectionService::kInitialClientModelFetchDelayMs));
-
-    // Whenever this model is torn down, CancelFetcher will be called.
-    EXPECT_CALL(*loader, CancelFetcher());
-    return std::unique_ptr<ModelLoader>(std::move(loader));
-  }));
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  base::RunLoop().RunUntilIdle();
-
-  // Check that enabling again doesn't request the model.
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  // No calls expected.
-  base::RunLoop().RunUntilIdle();
-
-  // Check that disabling the service cancels pending requests. CancelFetch will
-  // be called here.
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
-  base::RunLoop().RunUntilIdle();
-
-  // Check that disabling again doesn't request the model.
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
-  // No calls expected.
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_F(ClientSideDetectionServiceTest, TestModelFollowsPrefs) {
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
@@ -446,26 +384,11 @@ TEST_F(ClientSideDetectionServiceTest, TestModelFollowsPrefs) {
       std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
 
   // Safe Browsing is not enabled.
-  EXPECT_EQ(csd_service_->model_loader_, nullptr);
+  EXPECT_FALSE(csd_service_->enabled());
 
   // Safe Browsing is enabled.
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  ASSERT_NE(csd_service_->model_loader_, nullptr);
-  EXPECT_EQ(csd_service_->model_loader_->name(),
-            "client_model_v5_variation_6.pb");
-
-  // Safe Browsing extended reporting is enabled
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
-                                   true);
-  ASSERT_NE(csd_service_->model_loader_, nullptr);
-  EXPECT_EQ(csd_service_->model_loader_->name(),
-            "client_model_v5_ext_variation_6.pb");
-
-  // Safe Browsing enhanced protection is enabled.
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  ASSERT_NE(csd_service_->model_loader_, nullptr);
-  EXPECT_EQ(csd_service_->model_loader_->name(),
-            "client_model_v5_ext_variation_6.pb");
+  EXPECT_TRUE(csd_service_->enabled());
 }
 
 }  // namespace safe_browsing

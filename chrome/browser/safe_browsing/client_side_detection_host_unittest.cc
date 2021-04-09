@@ -119,18 +119,6 @@ MATCHER(CallbackIsNull, "") {
   return arg.is_null();
 }
 
-class MockModelLoader : public ModelLoader {
- public:
-  MockModelLoader() : ModelLoader(base::RepeatingClosure(), nullptr, false) {}
-  ~MockModelLoader() override = default;
-
-  MOCK_METHOD1(ScheduleFetch, void(int64_t));
-  MOCK_METHOD0(CancelFetcher, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockModelLoader);
-};
-
 class MockClientSideDetectionService : public ClientSideDetectionService {
  public:
   MockClientSideDetectionService() : ClientSideDetectionService(nullptr) {}
@@ -1099,8 +1087,6 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
 }
 
 TEST_F(ClientSideDetectionHostTest, TestSendModelToRenderFrame) {
-  StrictMock<MockModelLoader> loader;
-  loader.SetModelStrForTesting("standard");
   EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("standard"));
   csd_host_->SendModelToRenderFrame();
   base::RunLoop().RunUntilIdle();

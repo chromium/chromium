@@ -435,15 +435,4 @@ TEST_F(ModelLoaderTest, ModelHasValidHashIds) {
   EXPECT_TRUE(ModelLoader::ModelHasValidHashIds(model));
 }
 
-TEST_F(ModelLoaderTest, FetchesFromCacheAtStartup) {
-  ModelLoader model_loader(base::DoNothing(), shared_loader_factory(),
-                           /*is_extended_reporting=*/false);
-  ASSERT_NE(test_url_loader_factory()->GetPendingRequest(0), nullptr);
-
-  // Check the request does not use the network
-  int load_flags =
-      test_url_loader_factory()->GetPendingRequest(0)->request.load_flags;
-  EXPECT_NE((load_flags & net::LOAD_ONLY_FROM_CACHE), 0);
-}
-
 }  // namespace safe_browsing

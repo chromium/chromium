@@ -129,7 +129,6 @@ ModelLoader::ModelLoader(
       url_loader_factory_(url_loader_factory),
       last_client_model_status_(ClientModelStatus::MODEL_NEVER_FETCHED) {
   DCHECK(url_.is_valid());
-  StartFetch(/*only_from_cache=*/true);
 }
 
 // For testing only

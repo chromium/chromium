@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -52,7 +53,6 @@ using content::BrowserThread;
 
 namespace safe_browsing {
 
-const int ClientSideDetectionService::kInitialClientModelFetchDelayMs = 10000;
 const int ClientSideDetectionService::kReportsIntervalDays = 1;
 const int ClientSideDetectionService::kMaxReportsPerInterval = 3;
 const int ClientSideDetectionService::kNegativeCacheIntervalDays = 1;
@@ -120,25 +120,12 @@ void ClientSideDetectionService::OnPrefsUpdated() {
   extended_reporting_ = extended_reporting;
 
   if (enabled_) {
-    if (!model_factory_.is_null()) {
-      model_loader_ = model_factory_.Run();
-    } else {
-      model_loader_ = std::make_unique<ModelLoader>(
-          base::BindRepeating(&ClientSideDetectionService::SendModelToRenderers,
-                              base::Unretained(this)),
-          delegate_->GetURLLoaderFactory(), extended_reporting_);
-    }
-    // Refresh the models when the service is enabled.  This can happen when
-    // either of the preferences are toggled, or early during startup if
-    // safe browsing is already enabled. In a lot of cases the model will be
-    // in the cache so it  won't actually be fetched from the network.
-    // We delay the first model fetches to avoid slowing down browser startup.
-    model_loader_->ScheduleFetch(kInitialClientModelFetchDelayMs);
+    update_model_subscription_ =
+        ClientSidePhishingModel::GetInstance()->RegisterCallback(
+            base::BindRepeating(
+                &ClientSideDetectionService::SendModelToRenderers,
+                base::Unretained(this)));
   } else {
-    if (model_loader_) {
-      // Cancel model loads in progress.
-      model_loader_->CancelFetcher();
-    }
     // Invoke pending callbacks with a false verdict.
     for (auto& client_phishing_report : client_phishing_reports_) {
       ClientPhishingReportInfo* info = client_phishing_report.second.get();
@@ -223,7 +210,8 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   }
 
   // Fill in metadata about which model we used.
-  request->set_model_filename(model_loader_->name());
+  request->set_model_filename(
+      ClientSidePhishingModel::GetInstance()->GetModelName());
   *request->mutable_population() = delegate_->GetUserPopulation();
 
   std::string request_data;
@@ -444,20 +432,8 @@ GURL ClientSideDetectionService::GetClientReportUrl(
   return url;
 }
 
-ModelLoader::ClientModelStatus
-ClientSideDetectionService::GetLastModelStatus() {
-  // |model_loader_| can be null in tests
-  return model_loader_ ? model_loader_->last_client_model_status()
-                       : ModelLoader::MODEL_NEVER_FETCHED;
-}
-
 std::string ClientSideDetectionService::GetModelStr() {
-  return model_loader_ ? model_loader_->model_str() : "";
-}
-
-void ClientSideDetectionService::SetModelLoaderFactoryForTesting(
-    base::RepeatingCallback<std::unique_ptr<ModelLoader>()> factory) {
-  model_factory_ = factory;
+  return ClientSidePhishingModel::GetInstance()->GetModelStr();
 }
 
 void ClientSideDetectionService::SetURLLoaderFactoryForTesting(

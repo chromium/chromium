@@ -29,7 +29,6 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/safe_browsing/content/browser/client_side_model_loader.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_observer.h"
@@ -124,17 +123,9 @@ class ClientSideDetectionService : public KeyedService {
   // Sends a model to each renderer.
   virtual void SendModelToRenderers();
 
-  // Get the model status for the given client-side model.
-  ModelLoader::ClientModelStatus GetLastModelStatus();
-
   // Returns the model string. Virtual so that mock implementation can override
   // it.
   virtual std::string GetModelStr();
-
-  // Makes ModelLoaders be constructed by calling |factory| rather than the
-  // default constructor.
-  void SetModelLoaderFactoryForTesting(
-      base::RepeatingCallback<std::unique_ptr<ModelLoader>()> factory);
 
   // Overrides the SharedURLLoaderFactory
   void SetURLLoaderFactoryForTesting(
@@ -163,7 +154,6 @@ class ClientSideDetectionService : public KeyedService {
 
   static const char kClientReportPhishingUrl[];
   static const int kMaxReportsPerInterval;
-  static const int kInitialClientModelFetchDelayMs;
   static const int kReportsIntervalDays;
   static const int kNegativeCacheIntervalDays;
   static const int kPositiveCacheIntervalMinutes;
@@ -215,8 +205,6 @@ class ClientSideDetectionService : public KeyedService {
   // choice of model.
   bool extended_reporting_ = false;
 
-  std::unique_ptr<ModelLoader> model_loader_;
-
   // Map of client report phishing request to the corresponding callback that
   // has to be invoked when the request is done.
   struct ClientPhishingReportInfo;
@@ -244,10 +232,9 @@ class ClientSideDetectionService : public KeyedService {
 
   std::vector<ClientSideDetectionHost*> csd_hosts_;
 
-  // Factory used for constructing ModelLoaders
-  base::RepeatingCallback<std::unique_ptr<ModelLoader>()> model_factory_;
-
   std::unique_ptr<Delegate> delegate_;
+
+  base::CallbackListSubscription update_model_subscription_;
 
   // Used to asynchronously call the callbacks for
   // SendClientReportPhishingRequest.

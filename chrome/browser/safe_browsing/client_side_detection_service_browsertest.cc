@@ -12,6 +12,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
@@ -25,28 +26,6 @@ using ::testing::_;
 using ::testing::ReturnRef;
 using ::testing::StrictMock;
 
-namespace {
-
-class FakeModelLoader : public ModelLoader {
- public:
-  explicit FakeModelLoader(std::string model_str)
-      : ModelLoader(base::RepeatingClosure(),
-                    nullptr,
-                    /*is_extended_reporting=*/false) {
-    model_str_ = model_str;
-  }
-  ~FakeModelLoader() override = default;
-
-  void ScheduleFetch(int64_t delay) override {}
-  void CancelFetcher() override {}
-};
-
-std::unique_ptr<ModelLoader> CreateFakeModelLoader(std::string model_str) {
-  return std::make_unique<FakeModelLoader>(model_str);
-}
-
-}  // namespace
-
 class ClientSideDetectionServiceBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {}
 };
@@ -55,16 +34,12 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
                        NewHostGetsModel) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
                                                false);
-  ClientSideDetectionService* csd_service =
-      ClientSideDetectionServiceFactory::GetForProfile(browser()->profile());
-
   ClientSideModel model;
   model.set_max_words_per_term(0);
   std::string model_str;
   model.SerializeToString(&model_str);
 
-  csd_service->SetModelLoaderFactoryForTesting(
-      base::BindRepeating(&CreateFakeModelLoader, model_str));
+  ClientSidePhishingModel::GetInstance()->SetModelStrForTesting(model_str);
 
   // Enable Safe Browsing and the CSD service.
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
