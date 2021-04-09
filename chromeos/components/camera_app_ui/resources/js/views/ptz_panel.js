@@ -184,7 +184,10 @@ export class PTZPanel extends View {
             return;
           }
           const current = getCurrent();
-          const next = Math.max(min, Math.min(max, current + delta));
+          const mirrorFactor =
+              attr === 'pan' && state.get(state.State.MIRROR) ? -1 : 1;
+          const next =
+              Math.max(min, Math.min(max, current + delta * mirrorFactor));
           if (current === next) {
             return;
           }
