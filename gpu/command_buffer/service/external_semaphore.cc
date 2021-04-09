@@ -5,9 +5,7 @@
 #include "gpu/command_buffer/service/external_semaphore.h"
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -28,16 +26,6 @@ namespace {
 GLuint ImportSemaphoreHandleToGLSemaphore(SemaphoreHandle handle) {
   if (!handle.is_valid())
     return 0;
-
-  RecordImportingVKSemaphoreIntoGL();
-  base::ScopedClosureRunner uma_runner(base::BindOnce(
-      [](base::Time time) {
-        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-            "GPU.Vulkan.ImportVkSemaphoreIntoGL", base::Time::Now() - time,
-            base::TimeDelta::FromMicroseconds(1),
-            base::TimeDelta::FromMicroseconds(200), 50);
-      },
-      base::Time::Now()));
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   if (handle.vk_handle_type() !=

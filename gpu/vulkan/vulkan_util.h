@@ -93,9 +93,6 @@ CreateGraphicsPipelinesHook(VkDevice device,
                             const VkAllocationCallbacks* pAllocator,
                             VkPipeline* pPipelines);
 
-COMPONENT_EXPORT(VULKAN)
-VKAPI_ATTR void RecordImportingVKSemaphoreIntoGL();
-
 COMPONENT_EXPORT(VULKAN) void ReportUMAPerSwapBuffers();
 
 COMPONENT_EXPORT(VULKAN)

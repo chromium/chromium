@@ -4,24 +4,13 @@
 
 #include "gpu/vulkan/vulkan_util.h"
 
-#include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
 namespace gpu {
 
 VkSemaphore ImportVkSemaphoreHandle(VkDevice vk_device,
                                     SemaphoreHandle handle) {
-  base::ScopedClosureRunner uma_runner(base::BindOnce(
-      [](base::Time time) {
-        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-            "GPU.Vulkan.ImportVkSemaphoreHandle", base::Time::Now() - time,
-            base::TimeDelta::FromMicroseconds(1),
-            base::TimeDelta::FromMicroseconds(200), 50);
-      },
-      base::Time::Now()));
-
   auto handle_type = handle.vk_handle_type();
   if (!handle.is_valid() ||
 
@@ -58,15 +47,6 @@ SemaphoreHandle GetVkSemaphoreHandle(
     VkDevice vk_device,
     VkSemaphore vk_semaphore,
     VkExternalSemaphoreHandleTypeFlagBits handle_type) {
-  base::ScopedClosureRunner uma_runner(base::BindOnce(
-      [](base::Time time) {
-        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-            "GPU.Vulkan.GetVkSemaphoreHandle", base::Time::Now() - time,
-            base::TimeDelta::FromMicroseconds(1),
-            base::TimeDelta::FromMicroseconds(200), 50);
-      },
-      base::Time::Now()));
-
   VkSemaphoreGetWin32HandleInfoKHR info = {
       .sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR,
       .semaphore = vk_semaphore,

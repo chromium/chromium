@@ -22,8 +22,8 @@
 
 namespace gpu {
 namespace {
+
 uint64_t g_submit_count = 0u;
-uint64_t g_import_semaphore_into_gl_count = 0u;
 
 #if defined(OS_ANDROID)
 int GetEMUIVersion() {
@@ -91,15 +91,6 @@ bool SubmitWaitVkSemaphore(VkQueue vk_queue,
 VkSemaphore CreateExternalVkSemaphore(
     VkDevice vk_device,
     VkExternalSemaphoreHandleTypeFlags handle_types) {
-  base::ScopedClosureRunner uma_runner(base::BindOnce(
-      [](base::Time time) {
-        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-            "GPU.Vulkan.CreateExternalVkSemaphore", base::Time::Now() - time,
-            base::TimeDelta::FromMicroseconds(1),
-            base::TimeDelta::FromMicroseconds(200), 50);
-      },
-      base::Time::Now()));
-
   VkExportSemaphoreCreateInfo export_info = {
       .sType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO,
       .handleTypes = handle_types,
@@ -155,20 +146,11 @@ VkResult CreateGraphicsPipelinesHook(
                                    pCreateInfos, pAllocator, pPipelines);
 }
 
-void RecordImportingVKSemaphoreIntoGL() {
-  g_import_semaphore_into_gl_count++;
-}
-
 void ReportUMAPerSwapBuffers() {
   static uint64_t last_submit_count = 0u;
-  static uint64_t last_semaphore_count = 0u;
   UMA_HISTOGRAM_CUSTOM_COUNTS("GPU.Vulkan.QueueSubmitPerSwapBuffers",
                               g_submit_count - last_submit_count, 1, 50, 50);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "GPU.Vulkan.ImportSemaphoreGLPerSwapBuffers",
-      g_import_semaphore_into_gl_count - last_semaphore_count, 1, 50, 50);
   last_submit_count = g_submit_count;
-  last_semaphore_count = g_import_semaphore_into_gl_count;
 }
 
 bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
