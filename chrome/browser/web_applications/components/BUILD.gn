@@ -132,6 +132,7 @@ source_set("components") {
       "app_shim_registry_mac.cc",
       "app_shim_registry_mac.h",
       "web_app_file_handler_registration_mac.cc",
+      "web_app_protocol_handler_registration_mac.cc",
       "web_app_run_on_os_login_mac.mm",
       "web_app_shortcut_mac.h",
       "web_app_shortcut_mac.mm",
@@ -244,6 +245,7 @@ source_set("unit_tests") {
   if (is_mac) {
     sources += [
       "app_shim_registry_mac_unittest.cc",
+      "web_app_protocol_handler_registration_mac_unittest.cc",
       "web_app_run_on_os_login_mac_unittest.mm",
       "web_app_shortcut_mac_unittest.mm",
     ]

@@ -1179,6 +1179,22 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
               forKey:app_mode::kCFBundleDocumentTypesKey];
   }
 
+  // 4. Fill in protocol handlers
+  if (!info_->protocol_handlers.empty()) {
+    base::scoped_nsobject<NSMutableArray> handlers(
+        [[NSMutableArray alloc] init]);
+    for (const auto& protocol_handler : info_->protocol_handlers)
+      [handlers addObject:base::SysUTF8ToNSString(protocol_handler)];
+
+    [plist
+        setObject:@[ @{
+          app_mode::kCFBundleURLNameKey :
+              base::SysUTF8ToNSString(GetBundleIdentifier(info_->extension_id)),
+          app_mode::kCFBundleURLSchemesKey : handlers
+        } ]
+           forKey:app_mode::kCFBundleURLTypesKey];
+  }
+
   if (IsMultiProfile()) {
     [plist setObject:base::SysUTF16ToNSString(info_->title)
               forKey:base::mac::CFToNSCast(kCFBundleNameKey)];

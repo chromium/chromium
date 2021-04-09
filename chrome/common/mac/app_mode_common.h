@@ -72,6 +72,9 @@ extern NSString* const kCFBundleTypeIconFileKey;
 extern NSString* const kCFBundleTypeNameKey;
 extern NSString* const kCFBundleTypeMIMETypesKey;
 extern NSString* const kCFBundleTypeRoleKey;
+extern NSString* const kCFBundleURLNameKey;
+extern NSString* const kCFBundleURLSchemesKey;
+extern NSString* const kCFBundleURLTypesKey;
 extern NSString* const kBundleTypeRoleViewer;
 
 // The display name of the bundle as shown in Finder and the Dock. For localized
