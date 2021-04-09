@@ -99,7 +99,7 @@ public class AccountManagerFacadeImplTest {
         addTestAccount("test@gmail.com");
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         CallbackHelper callbackHelper = new CallbackHelper();
-        facade.runAfterCacheIsPopulated(() -> callbackHelper.notifyCalled());
+        facade.tryGetGoogleAccounts(accounts -> callbackHelper.notifyCalled());
         try {
             callbackHelper.waitForFirst();
         } catch (TimeoutException e) {

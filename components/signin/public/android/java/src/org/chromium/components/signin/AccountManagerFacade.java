@@ -48,17 +48,6 @@ public interface AccountManagerFacade {
     void removeObserver(AccountsChangeObserver observer);
 
     /**
-     * Runs a callback after the account list cache is populated. In the callback
-     * {@link #getGoogleAccounts()} and similar methods are guaranteed to return instantly
-     * (without blocking and waiting for the cache to be populated). If the cache has already
-     * been populated, the callback will be posted on UI thread.
-     * @param runnable The callback to call after cache is populated. Invoked on the main
-     *         thread.
-     */
-    @MainThread
-    void runAfterCacheIsPopulated(Runnable runnable);
-
-    /**
      * Returns whether the account cache has already been populated. {@link #getGoogleAccounts()}
      * and similar methods will return instantly if the cache has been populated, otherwise these
      * methods may block waiting for the cache to be populated.
@@ -99,9 +88,7 @@ public interface AccountManagerFacade {
      * Asynchronous version of {@link #tryGetGoogleAccounts()}.
      */
     @MainThread
-    default void tryGetGoogleAccounts(final Callback<List<Account>> callback) {
-        runAfterCacheIsPopulated(() -> callback.onResult(tryGetGoogleAccounts()));
-    }
+    void tryGetGoogleAccounts(final Callback<List<Account>> callback);
 
     /**
      * @return Whether or not there is an account authenticator for Google accounts.

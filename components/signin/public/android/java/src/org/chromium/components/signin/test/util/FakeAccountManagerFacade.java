@@ -72,11 +72,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public void runAfterCacheIsPopulated(Runnable runnable) {
-        runnable.run();
-    }
-
-    @Override
     public boolean isCachePopulated() {
         return true;
     }
@@ -95,6 +90,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public void getGoogleAccounts(Callback<AccountManagerResult<List<Account>>> callback) {
         callback.onResult(new AccountManagerResult<>(getGoogleAccounts()));
+    }
+
+    @Override
+    public void tryGetGoogleAccounts(Callback<List<Account>> callback) {
+        callback.onResult(getGoogleAccounts());
     }
 
     @Override

@@ -116,23 +116,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
-     * Runs a callback after the account list cache is populated. In the callback
-     * {@link #getGoogleAccounts()} and similar methods are guaranteed to return instantly (without
-     * blocking and waiting for the cache to be populated). If the cache has already been populated,
-     * the callback will be posted on UI thread.
-     * @param runnable The callback to call after cache is populated. Invoked on the main thread.
-     */
-    @Override
-    public void runAfterCacheIsPopulated(Runnable runnable) {
-        ThreadUtils.assertOnUiThread();
-        if (isCachePopulated()) {
-            ThreadUtils.postOnUiThread(runnable);
-            return;
-        }
-        mCallbacksWaitingForCachePopulation.add(runnable);
-    }
-
-    /**
      * Returns whether the account cache has already been populated. {@link #getGoogleAccounts()}
      * and similar methods will return instantly if the cache has been populated, otherwise these
      * methods may block waiting for the cache to be populated.
@@ -175,6 +158,14 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public void getGoogleAccounts(Callback<AccountManagerResult<List<Account>>> callback) {
         runAfterCacheIsPopulated(() -> callback.onResult(mFilteredAccounts.get()));
+    }
+
+    /**
+     * Asynchronous version of {@link #tryGetGoogleAccounts()}.
+     */
+    @Override
+    public void tryGetGoogleAccounts(Callback<List<Account>> callback) {
+        runAfterCacheIsPopulated(() -> callback.onResult(tryGetGoogleAccounts()));
     }
 
     /**
@@ -316,6 +307,18 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public boolean isGooglePlayServicesAvailable() {
         return mDelegate.isGooglePlayServicesAvailable();
+    }
+
+    /**
+     * Runs a callback after the account list cache is populated.
+     */
+    private void runAfterCacheIsPopulated(Runnable runnable) {
+        ThreadUtils.assertOnUiThread();
+        if (isCachePopulated()) {
+            ThreadUtils.postOnUiThread(runnable);
+        } else {
+            mCallbacksWaitingForCachePopulation.add(runnable);
+        }
     }
 
     private void updateAccounts() {
