@@ -166,14 +166,17 @@ void ScrollableAreaPainter::PaintOverflowControls(
   if (properties)
     clip = properties->OverflowControlsClip();
 
-  const TransformPaintPropertyNode* transform = nullptr;
+  const TransformPaintPropertyNodeOrAlias* transform = nullptr;
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
       box.IsGlobalRootScroller()) {
     LocalFrameView* frame_view = box.GetFrameView();
     DCHECK(frame_view);
     const auto* page = frame_view->GetPage();
     const auto& viewport = page->GetVisualViewport();
-    transform = viewport.GetOverscrollElasticityTransformNode();
+    if (const auto* overscroll_transform =
+            viewport.GetOverscrollElasticityTransformNode()) {
+      transform = overscroll_transform->Parent();
+    }
   }
 
   base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;

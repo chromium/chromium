@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
@@ -1651,6 +1652,97 @@ TEST_P(PaintLayerScrollableAreaTest, ScrollTimelineInvalidation) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(scroll_timeline->Invalidated());
   scroll_timeline->ResetInvalidated();
+}
+
+TEST_P(PaintLayerScrollableAreaTest,
+       RootScrollbarShouldUseParentOfOverscrollNodeAsTransformNode) {
+  auto& document = GetDocument();
+  document.GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
+      true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    ::-webkit-scrollbar {
+      width: 12px;
+      background: darkblue;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: white;
+    }
+    #scroller {
+      height: 100px;
+      overflow-y: scroll;
+    }
+    .big {
+      height: 1000px;
+    }
+    </style>
+
+    <div class='big'></div>
+    <div id='scroller'>
+      <div class='big'></div>
+    </div>
+  )HTML");
+
+  {
+    const auto* root_scrollable = document.View()->LayoutViewport();
+    const auto& visual_viewport =
+        document.View()->GetPage()->GetVisualViewport();
+
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      const auto& paint_chunks = ContentPaintChunks();
+      bool found_root_scrollbar = false;
+      for (const auto& chunk : paint_chunks) {
+        if (chunk.id == PaintChunk::Id(*root_scrollable->VerticalScrollbar(),
+                                       DisplayItem::kCustomScrollbarHitTest)) {
+          EXPECT_EQ(
+              &chunk.properties.Transform(),
+              visual_viewport.GetOverscrollElasticityTransformNode()->Parent());
+          found_root_scrollbar = true;
+        }
+      }
+      EXPECT_TRUE(found_root_scrollbar);
+    } else {
+      auto* vertical_scrollbar_layer =
+          root_scrollable->GraphicsLayerForVerticalScrollbar();
+      ASSERT_TRUE(vertical_scrollbar_layer);
+      EXPECT_EQ(
+          &vertical_scrollbar_layer->GetPropertyTreeState().Transform(),
+          visual_viewport.GetOverscrollElasticityTransformNode()->Parent());
+    }
+  }
+
+  // Non root scrollbar should use scroller's transform node.
+  {
+    PaintLayer* scroller_layer = GetPaintLayerByElementId("scroller");
+    PaintLayerScrollableArea* scrollable_area =
+        scroller_layer->GetScrollableArea();
+    ASSERT_TRUE(scrollable_area);
+
+    auto paint_properties = scroller_layer->GetLayoutObject()
+                                .FirstFragment()
+                                .LocalBorderBoxProperties();
+
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      const auto& paint_chunks = ContentPaintChunks();
+      bool found_subscroller_scrollbar = false;
+      for (const auto& chunk : paint_chunks) {
+        if (chunk.id == PaintChunk::Id(*scrollable_area->VerticalScrollbar(),
+                                       DisplayItem::kCustomScrollbarHitTest)) {
+          EXPECT_EQ(&chunk.properties.Transform(),
+                    &paint_properties.Transform());
+
+          found_subscroller_scrollbar = true;
+        }
+      }
+      EXPECT_TRUE(found_subscroller_scrollbar);
+    } else {
+      auto* vertical_scrollbar_layer =
+          scrollable_area->GraphicsLayerForVerticalScrollbar();
+      ASSERT_TRUE(vertical_scrollbar_layer);
+      EXPECT_EQ(&vertical_scrollbar_layer->GetPropertyTreeState().Transform(),
+                &paint_properties.Transform());
+    }
+  }
 }
 
 }  // namespace blink
