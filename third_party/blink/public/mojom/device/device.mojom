@@ -51,9 +51,11 @@ interface DeviceAPIService {
 interface ManagedConfigurationService {
   // Requests from browser the managed configuration mapped by |keys| provided
   // by the device administrator. Returns a dictionary, containing JSON
-  // serialized value of the keys that were found in that configuration.
+  // serialized value of the keys that were found in that configuration, or
+  // null if there is no managed configuration for the active document's
+  // origin.
   GetManagedConfiguration(array<string> keys) =>
-                          (map<string, string> configurations);
+                          (map<string, string>? configurations);
   // Allows to subscribe to the managed configuration updates.
   SubscribeToManagedConfiguration(
     pending_remote<ManagedConfigurationObserver> observer);
