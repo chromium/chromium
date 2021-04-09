@@ -217,6 +217,9 @@ NearbyConnections::NearbyConnections(
     : nearby_connections_(this, std::move(nearby_connections)),
       on_disconnect_(std::move(on_disconnect)),
       thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+  location::nearby::api::LogMessage::SetMinLogSeverity(
+      dependencies->min_log_severity);
+
   nearby_connections_.set_disconnect_handler(base::BindOnce(
       &NearbyConnections::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
       MojoDependencyName::kNearbyConnections));

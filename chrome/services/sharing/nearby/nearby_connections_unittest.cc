@@ -194,7 +194,7 @@ class NearbyConnectionsTest : public testing::Test {
         webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote());
     auto dependencies = mojom::NearbyConnectionsDependencies::New(
         bluetooth_adapter_.adapter_.BindNewPipeAndPassRemote(),
-        std::move(webrtc_dependencies));
+        std::move(webrtc_dependencies), api::LogMessage::Severity::kInfo);
     auto service_controller =
         std::make_unique<testing::NiceMock<MockServiceController>>();
     service_controller_ptr_ = service_controller.get();
