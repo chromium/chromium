@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 
 #include "base/record_replay.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "v8/include/v8-inspector.h"
 
 namespace v8 {
@@ -791,6 +792,11 @@ static void SendMessageToFrontend(const v8_inspector::StringView& message) {
   CHECK(!message.is8Bit());
 
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  if (!isolate->InContext() || ScriptForbiddenScope::IsScriptForbidden()) {
+    // We're never interested in messages sent at these times.
+    return;
+  }
+
   v8::HandleScope scope(isolate);
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
