@@ -2625,7 +2625,7 @@
   },
   {
     "name": "enable-web-payments-experimental-features",
-    "owners": [ "danyao", "rouslan", "paymentrequest@google.com" ],
+    "owners": [ "rouslan", "web-payments-team@google.com" ],
     // This flag is used by early adoption partners to test new Web Payments
     // features in each release.
     "expiry_milestone": -1

@@ -324,7 +324,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.FinishedNavigationHasContext" enum="Boolean"
     expires_after="2019-05-01">
-  <owner>danyao@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     When a navigation is finished, it should have a non-null NavigationContext.
     This histogram counts the frequency of this invariant holding at the time
@@ -337,7 +338,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.FinishedNavigationHasItem" enum="Boolean"
     expires_after="2019-05-01">
-  <owner>danyao@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     When a navigation is finished, it should have a non-null NavigationItem.
     This histogram counts the frequency of this invariant holding at the time
@@ -705,13 +707,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.PageLoadCount.Counts"
     enum="IOSPageLoadCountNavigationType" expires_after="2021-08-15">
-  <owner>danyao@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>The number of navigation started events by navigation type.</summary>
 </histogram>
 
 <histogram name="IOS.PageLoadCount.LoadingStarted" units="units"
     expires_after="2021-08-22">
-  <owner>danyao@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     The &quot;true&quot; value of this boolean histogram counts the number of
     page loading started events. The &quot;false&quot; value will never be seen.
@@ -1067,7 +1071,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.WKWebViewFinishBeforeCommit" enum="Boolean"
     expires_after="M77">
-  <owner>danyao@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     WKWebView should notify navigation commit before navigation finish, but
     exceptions have been observed. This histogram counts the frequency of this

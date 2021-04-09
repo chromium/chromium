@@ -1492,12 +1492,6 @@
                   '|third_party/blink/public/platform/modules/payments'\
                   '|third_party/blink/renderer/modules/payments'
     },
-    'payments_ios': {
-      'filepath': 'ios/web/payments'\
-                  '|ios/chrome/browser/payments'\
-                  '|ios/chrome/browser/ui/payments'\
-                  '|ios/web/public/payments'
-    },
     'pdf': {
       'filepath': 'components/pdf/'\
                   '|chrome/browser/pdf/'\
@@ -2646,10 +2640,8 @@
     'payments': ['rouslan+payments@chromium.org',
                  'gogerald+paymentswatch@chromium.org',
                  'anthonyvd+paymentswatch@chromium.org',
-                 'danyao+paymentswatch@chromium.org',
-                 'sahel+paymentswatch@chromium.org'],
-    'payments_ios': ['danyao+paymentswatch@chromium.org',
-                     'sahel+paymentswatch@chromium.org'],
+                 'maxlg+paymentswatch@chromium.org',
+                 'nburris+paymentswatch@chromium.org'],
     'pdf': ['pdf-reviews@chromium.org'],
     'pepper_api': ['binji+watch@chromium.org',
                    'bradnelson+warch@chromium.org',
