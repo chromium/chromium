@@ -96,7 +96,8 @@ ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
 }
 
 ArcVolumeMounterBridge::~ArcVolumeMounterBridge() {
-  DiskMountManager::GetInstance()->RemoveObserver(this);
+  if (DiskMountManager::GetInstance())  // for testing
+    DiskMountManager::GetInstance()->RemoveObserver(this);
   arc_bridge_service_->volume_mounter()->SetHost(nullptr);
   arc_bridge_service_->volume_mounter()->RemoveObserver(this);
 }
@@ -131,8 +132,8 @@ void ArcVolumeMounterBridge::SendMountEventForMyFiles() {
   // TODO(niwa): Add a new DeviceType enum value for MyFiles.
   chromeos::DeviceType device_type = chromeos::DeviceType::DEVICE_TYPE_SD;
 
-  // Conditionally set MyFiles to be visible for P and invisible for R. In R, we use IsVisibleRead
-  // so this is not needed.
+  // Conditionally set MyFiles to be visible for P and invisible for R. In R, we
+  // use IsVisibleRead so this is not needed.
   volume_mounter_instance->OnMountEvent(mojom::MountPointInfo::New(
       DiskMountManager::MOUNTING, kMyFilesPath, kMyFilesPath, kMyFilesUuid,
       device_label, device_type, !IsArcVmEnabled()));

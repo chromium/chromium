@@ -456,6 +456,7 @@ source_set("unit_tests") {
     "timer/arc_timer_bridge_unittest.cc",
     "usb/usb_host_bridge_unittest.cc",
     "video_accelerator/arc_video_accelerator_util_unittest.cc",
+    "volume_mounter/arc_volume_mounter_bridge_unittest.cc",
     "wake_lock/arc_wake_lock_bridge_unittest.cc",
   ]
 
