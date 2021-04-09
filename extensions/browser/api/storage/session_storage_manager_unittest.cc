@@ -123,6 +123,45 @@ TEST_F(SessionStorageManagerUnittest, SetGetAndRemoveOneExtensionSuccessful) {
   }
 }
 
+TEST_F(SessionStorageManagerUnittest, ClearOneExtensionSuccessful) {
+  {
+    ValueChangeList changes;
+    std::map<std::string, base::Value> values;
+    values.emplace("key1", value_int_.Clone());
+    values.emplace("key2", value_string_.Clone());
+    manager_->Set(kTestExtensionId1, std::move(values), changes);
+  }
+
+  {
+    ValueChangeList changes;
+    std::map<std::string, base::Value> values;
+    values.emplace("key1", value_int_.Clone());
+    values.emplace("key2", value_string_.Clone());
+    manager_->Set(kTestExtensionId2, std::move(values), changes);
+  }
+
+  ValueChangeList remove_changes;
+  manager_->Clear(kTestExtensionId1, remove_changes);
+  EXPECT_TRUE(manager_->GetAll(kTestExtensionId1).empty());
+
+  // Check kTestExtensionId1 got all its values removed.
+  ASSERT_EQ(remove_changes.size(), 2u);
+
+  EXPECT_EQ(remove_changes[0].key, "key1");
+  ASSERT_TRUE(remove_changes[0].old_value.has_value());
+  EXPECT_EQ(remove_changes[0].old_value.value(), value_int_);
+  EXPECT_EQ(remove_changes[0].new_value, nullptr);
+
+  EXPECT_EQ(remove_changes[1].key, "key2");
+  ASSERT_TRUE(remove_changes[1].old_value.has_value());
+  EXPECT_EQ(remove_changes[1].old_value.value(), value_string_);
+  EXPECT_EQ(remove_changes[1].new_value, nullptr);
+
+  // Check kTestExtensionId2 still has all its values.
+  ASSERT_EQ(*manager_->Get(kTestExtensionId2, "key1"), value_int_);
+  ASSERT_EQ(*manager_->Get(kTestExtensionId2, "key2"), value_string_);
+}
+
 TEST_F(SessionStorageManagerUnittest,
        SetGetAndRemovetMultipleExtensionsSuccessful) {
   {
