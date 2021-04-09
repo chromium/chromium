@@ -172,7 +172,6 @@ void AvatarToolbarButton::UpdateText() {
                                               guest_window_count);
       break;
     }
-    case State::kGenericProfile:
     case State::kNormal:
       if (delegate_->IsHighlightAnimationVisible()) {
         color = AdjustHighlightColorForContrast(
@@ -272,8 +271,6 @@ std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP);
     case State::kGuestSession:
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_GUEST_TOOLTIP);
-    case State::kGenericProfile:
-      return l10n_util::GetStringUTF16(IDS_GENERIC_USER_AVATAR_LABEL);
     case State::kAnimatedUserIdentity:
       return delegate_->GetShortProfileName();
     case State::kPasswordsOnlySyncError:
@@ -307,7 +304,6 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
                                             icon_size);
     case State::kGuestSession:
       return profiles::GetGuestAvatar(icon_size);
-    case State::kGenericProfile:
     case State::kAnimatedUserIdentity:
     case State::kPasswordsOnlySyncError:
     case State::kSyncError:

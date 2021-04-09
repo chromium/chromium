@@ -27,7 +27,6 @@ class AvatarToolbarButton : public ToolbarButton,
   enum class State {
     kIncognitoProfile,
     kGuestSession,
-    kGenericProfile,
     kAnimatedUserIdentity,
     kSyncPaused,
     kSyncError,

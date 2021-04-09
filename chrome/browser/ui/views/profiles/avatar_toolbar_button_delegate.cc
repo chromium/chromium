@@ -42,11 +42,6 @@ ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
       profile->GetPath());
 }
 
-bool IsGenericProfile(const ProfileAttributesEntry& entry) {
-  return entry.GetAvatarIconIndex() == 0 &&
-         GetProfileAttributesStorage().GetNumberOfProfiles() == 1;
-}
-
 // Returns the avatar image for the current profile. May be called only in
 // "normal" states where the user is guaranteed to have an avatar image (i.e.
 // not kGuestSession and not kIncognitoProfile).
@@ -177,21 +172,13 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
   if (profile_->IsOffTheRecord())
     return AvatarToolbarButton::State::kIncognitoProfile;
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile_);
-  if (!entry ||  // This can happen if the user deletes the current profile.
-      (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-       IsGenericProfile(*entry))) {
-    return AvatarToolbarButton::State::kGenericProfile;
-  }
-
   if (identity_animation_state_ == IdentityAnimationState::kShowing) {
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
   }
 
   if (!ProfileSyncServiceFactory::IsSyncAllowed(profile_) ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+      !IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync)) {
     return AvatarToolbarButton::State::kNormal;
   }
 
