@@ -567,4 +567,36 @@ TEST(JPEGImageDecoderTest, PartialDataWithoutSize) {
   EXPECT_FALSE(decoder->Failed());
 }
 
+TEST(JPEGImageDecoderTest, PartialRgbDecodeBlocksYuvDecoding) {
+  const char* jpeg_file = "/images/resources/non-interleaved_progressive.jpg";
+  scoped_refptr<SharedBuffer> full_data = ReadFile(jpeg_file);
+  ASSERT_TRUE(full_data);
+
+  {
+    auto yuv_decoder = CreateJPEGDecoder();
+    yuv_decoder->SetData(full_data.get(), true);
+    EXPECT_TRUE(yuv_decoder->IsSizeAvailable());
+    EXPECT_FALSE(yuv_decoder->Failed());
+    EXPECT_TRUE(yuv_decoder->CanDecodeToYUV());
+  }
+
+  const size_t kJustEnoughDataToStartHeaderParsing =
+      (full_data->size() + 1) / 2;
+  auto partial_data = SharedBuffer::Create(full_data->Data(),
+                                           kJustEnoughDataToStartHeaderParsing);
+  ASSERT_TRUE(partial_data);
+
+  auto decoder = CreateJPEGDecoder();
+  decoder->SetData(partial_data.get(), false);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_FALSE(decoder->CanDecodeToYUV());
+
+  const ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_NE(frame->GetStatus(), ImageFrame::kFrameComplete);
+  decoder->SetData(full_data.get(), true);
+  EXPECT_FALSE(decoder->CanDecodeToYUV());
+}
+
 }  // namespace blink
