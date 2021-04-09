@@ -4434,6 +4434,15 @@ static_library("ui") {
       ]
     }
 
+    if (is_win || is_mac || is_linux) {
+      sources += [
+        "views/web_apps/web_app_hover_button.cc",
+        "views/web_apps/web_app_hover_button.h",
+        "views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.cc",
+        "views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h",
+      ]
+    }
+
     if (use_aura) {
       # These files can do Gtk+-based theming for builds with gtk enabled.
       if (is_linux || is_chromeos_lacros) {

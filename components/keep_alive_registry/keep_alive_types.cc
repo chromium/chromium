@@ -66,6 +66,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "CREDENTIAL_PROVIDER_SIGNIN_DIALOG";
     case KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT:
       return out << "NATIVE_MESSAGING_HOST_ERROR_REPORT";
+    case KeepAliveOrigin::WEB_APP_INTENT_PICKER:
+      return out << "WEB_APP_INTENT_PICKER";
   }
 
   NOTREACHED();

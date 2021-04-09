@@ -23,6 +23,7 @@
 
 class Browser;
 class ChooserController;
+class GURL;
 class LoginHandler;
 class Profile;
 struct WebApplicationInfo;
@@ -32,6 +33,7 @@ class SettingsOverriddenDialogController;
 #endif
 
 namespace base {
+class CommandLine;
 class FilePath;
 }
 
@@ -118,6 +120,16 @@ using AppInstallationAcceptanceCallback =
 void ShowWebAppInstallDialog(content::WebContents* web_contents,
                              std::unique_ptr<WebApplicationInfo> web_app_info,
                              AppInstallationAcceptanceCallback callback);
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// Shows the Web App Protocol Handler Intent Picker view.
+// |close_callback| may be null.
+void ShowWebAppProtocolHandlerIntentPicker(
+    const GURL& url,
+    Profile* profile,
+    const base::CommandLine& command_line,
+    base::OnceCallback<void(bool accepted)> close_callback);
+#endif
 
 // Sets whether |ShowWebAppDialog| should accept immediately without any
 // user interaction. |auto_open_in_window| sets whether the open in window

@@ -292,6 +292,11 @@ are declared in tools/grit/grit_rule.gni.
       <!-- Profiles specific strings -->
       <part file="profiles_strings.grdp" />
 
+      <!-- Web app intent picker strings -->
+      <if expr="is_win or is_macosx or is_linux">
+        <part file="protocol_handler_intent_picker_strings.grdp" />
+      </if>
+
       <!-- Chrome-OS-specific strings -->
       <if expr="chromeos">
         <part file="chromeos_strings.grdp" />

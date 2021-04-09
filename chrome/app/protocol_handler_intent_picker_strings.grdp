@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Protocol-Handler-Intent-Picker strings (included from generated_resources.grd). -->
+<grit-part>
+  <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_MULTI_TITLE" desc="Title for the protocol handler intent picker when there is more than one web app choice">
+    Which application do you want to use?
+  </message>
+  <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_SINGLE_TITLE" desc="Title for the protocol handler intent picker when there is one web app choice">
+    Do you want to use this application?
+  </message>
+  <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_REMEMBER_SELECTION" desc="Label for the checkbox in the protocol handler intent picker to save the current selection so that the protocol handler intent picker will not be shown again.">
+    Remember my choice
+  </message>
+  <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_MULTI_OK_BUTTON_TEXT" desc="Label for the button in the protocol handler intent picker dialog that dismisses the dialog and launches an application when there is more than one web app choice">
+    Open
+  </message>
+  <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_SINGLE_OK_BUTTON_TEXT" desc="Label for the button in the protocol handler intent picker dialog that dismisses the dialog and launches an application when there is one web app choice">
+    Allow
+  </message>
+  <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_MULTI_CANCEL_BUTTON_TEXT" desc="Label for the button in the protocol handler intent picker dialog that dismisses the dialog and does not launch an application">
+    Cancel
+  </message>
+  <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_SINGLE_CANCEL_BUTTON_TEXT" desc="Label for the button in the protocol handler intent picker dialog that dismisses the dialog and does not launch an application when there is one web app choice">
+    Block
+  </message>
+  <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_APP_ORIGIN_LABEL" desc="Label for the url origin of each item in the web app list in the protocol handler intent picker dialog">
+    Publisher: <ph name="APP_ORIGIN">$1<ex>google.com</ex></ph>
+  </message>
+</grit-part>
