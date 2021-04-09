@@ -291,27 +291,59 @@ int RenderFrameHostImpl::max_accessibility_resets_ = 0;
 int RenderFrameHostImpl::max_accessibility_resets_ = 4;
 #endif  // AX_FAIL_FAST_BUILD
 
-// TODO(crbug.com/1181748): This should use absl::variant
-struct RenderFrameHostOrProxy {
-  RenderFrameHostImpl* const frame;
-  RenderFrameProxyHost* const proxy;
-
+class RenderFrameHostOrProxy {
+ public:
   RenderFrameHostOrProxy(RenderFrameHostImpl* frame,
-                         RenderFrameProxyHost* proxy)
-      : frame(frame), proxy(proxy) {
+                         RenderFrameProxyHost* proxy) {
     DCHECK(!frame || !proxy)
         << "Both frame and proxy can't be non-null at the same time";
+    if (proxy) {
+      frame_or_proxy_ = proxy;
+      return;
+    }
+    if (frame) {
+      frame_or_proxy_ = frame;
+      return;
+    }
   }
 
-  explicit operator bool() { return frame || proxy; }
+  explicit operator bool() { return frame_or_proxy_.index() > 0; }
 
   FrameTreeNode* GetFrameTreeNode() {
-    if (frame)
-      return frame->frame_tree_node();
-    if (proxy)
+    if (auto* proxy = GetProxy()) {
       return proxy->frame_tree_node();
+    } else if (auto* frame = GetFrame()) {
+      return frame->frame_tree_node();
+    }
     return nullptr;
   }
+
+  RenderFrameHostImpl* GetCurrentFrameHost() {
+    if (auto* proxy = GetProxy()) {
+      return proxy->frame_tree_node()->current_frame_host();
+    } else if (auto* frame = GetFrame()) {
+      return frame;
+    }
+    return nullptr;
+  }
+
+ private:
+  RenderFrameProxyHost* GetProxy() {
+    if (auto** proxy = absl::get_if<RenderFrameProxyHost*>(&frame_or_proxy_)) {
+      return *proxy;
+    }
+    return nullptr;
+  }
+
+  RenderFrameHostImpl* GetFrame() {
+    if (auto** frame = absl::get_if<RenderFrameHostImpl*>(&frame_or_proxy_)) {
+      return *frame;
+    }
+    return nullptr;
+  }
+
+  absl::variant<absl::monostate, RenderFrameHostImpl*, RenderFrameProxyHost*>
+      frame_or_proxy_;
 };
 
 namespace {
@@ -4271,10 +4303,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChildInternal(
     bad_message::ReceivedBadMessage(GetProcess(), reason);
     return nullptr;
   }
-  return child_frame_or_proxy.proxy
-             ? child_frame_or_proxy.proxy->frame_tree_node()
-                   ->current_frame_host()
-             : child_frame_or_proxy.frame;
+  return child_frame_or_proxy.GetCurrentFrameHost();
 }
 
 void RenderFrameHostImpl::UpdateTitle(
@@ -7895,10 +7924,7 @@ void RenderFrameHostImpl::AccessibilityHitTestCallback(
 
   auto frame_or_proxy = LookupRenderFrameHostOrProxy(
       GetProcess()->GetID(), hit_test_response->hit_frame_token);
-  RenderFrameHostImpl* hit_frame =
-      frame_or_proxy.proxy
-          ? frame_or_proxy.proxy->frame_tree_node()->current_frame_host()
-          : frame_or_proxy.frame;
+  RenderFrameHostImpl* hit_frame = frame_or_proxy.GetCurrentFrameHost();
 
   if (!hit_frame || hit_frame->IsInactiveAndDisallowActivation()) {
     if (opt_callback)

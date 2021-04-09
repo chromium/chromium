@@ -227,6 +227,7 @@ class PresentationServiceImpl;
 class PushMessagingManager;
 class RenderFrameHostDelegate;
 class RenderFrameHostImpl;
+class RenderFrameHostOrProxy;
 class RenderFrameProxyHost;
 class RenderProcessHost;
 class RenderViewHostImpl;
@@ -243,7 +244,7 @@ class WebBundleHandle;
 class SubresourceWebBundleNavigationInfo;
 class WebBundleHandleTracker;
 struct PendingNavigation;
-struct RenderFrameHostOrProxy;
+
 struct ResourceTimingInfo;
 struct SubresourceLoaderParams;
 
