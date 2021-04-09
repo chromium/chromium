@@ -1526,8 +1526,10 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
                   SFT_PLATFORM_ERROR);
   }
   gl_image->DisableInUseByWindowServer();
+
   gfx::ColorSpace color_space = GetImageBufferColorSpace(frame.image);
   gl_image->SetColorSpaceForYUVToRGBConversion(color_space);
+  gl_image->SetColorSpaceShallow(color_space);
 
   scoped_refptr<Picture::ScopedSharedImage> scoped_shared_image;
   if (picture_info->uses_shared_images) {
