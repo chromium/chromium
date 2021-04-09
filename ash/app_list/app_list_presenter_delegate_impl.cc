@@ -110,12 +110,11 @@ void AppListPresenterDelegateImpl::ShowForDisplay(
 
   // App list needs to know the new shelf layout in order to calculate its
   // UI layout when AppListView visibility changes.
-  Shell::GetPrimaryRootWindowController()
-      ->GetShelfLayoutManager()
-      ->UpdateAutoHideState();
-
   Shelf* shelf =
       Shelf::ForWindow(view_->GetWidget()->GetNativeView()->GetRootWindow());
+  shelf->shelf_layout_manager()->UpdateAutoHideState();
+
+  // Observe the shelf for changes to rounded corners.
   if (!shelf_observation_.IsObservingSource(shelf))
     shelf_observation_.AddObservation(shelf);
 
