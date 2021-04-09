@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <lib/fdio/directory.h>
+#include <lib/fdio/namespace.h>
 #include <lib/vfs/cpp/pseudo_dir.h>
 #include <lib/vfs/cpp/vmo_file.h>
 
@@ -43,20 +44,41 @@ void AddFileToPseudoDir(base::StringPiece data,
   ASSERT_EQ(status, ZX_OK);
 }
 
-// Serves |dir| as a ContentDirectory under the path |name|.
-void ServePseudoDir(base::StringPiece name, vfs::PseudoDir* dir) {
-  fuchsia::web::ContentDirectoryProvider provider;
-  provider.set_name(std::string(name));
-  fidl::InterfaceHandle<fuchsia::io::Directory> directory_channel;
-  dir->Serve(
-      fuchsia::io::OPEN_FLAG_DIRECTORY | fuchsia::io::OPEN_RIGHT_READABLE,
-      directory_channel.NewRequest().TakeChannel());
-  provider.set_directory(std::move(directory_channel));
-  std::vector<fuchsia::web::ContentDirectoryProvider> providers;
-  providers.emplace_back(std::move(provider));
-  ContentDirectoryLoaderFactory::SetContentDirectoriesForTest(
-      std::move(providers));
-}
+// Sets the specified directory as a ContentDirectory under the path |name|.
+class ScopedBindContentDirectory {
+ public:
+  ScopedBindContentDirectory(base::StringPiece name, vfs::PseudoDir* pseudo_dir)
+      : ScopedBindContentDirectory(name, ServePseudoDir(pseudo_dir)) {}
+  ScopedBindContentDirectory(
+      base::StringPiece name,
+      fidl::InterfaceHandle<fuchsia::io::Directory> directory_channel)
+      : path_(base::FilePath(
+                  ContentDirectoryLoaderFactory::kContentDirectoriesPath)
+                  .Append(name)) {
+    zx_status_t status = fdio_ns_get_installed(&namespace_);
+    ZX_CHECK(status == ZX_OK, status);
+    status = fdio_ns_bind(namespace_, path_.value().data(),
+                          directory_channel.TakeChannel().release());
+    ZX_CHECK(status == ZX_OK, status);
+  }
+  ~ScopedBindContentDirectory() {
+    zx_status_t status = fdio_ns_unbind(namespace_, path_.value().data());
+    ZX_CHECK(status == ZX_OK, status);
+  }
+
+ private:
+  fidl::InterfaceHandle<fuchsia::io::Directory> ServePseudoDir(
+      vfs::PseudoDir* pseudo_dir) {
+    fidl::InterfaceHandle<fuchsia::io::Directory> handle;
+    pseudo_dir->Serve(
+        fuchsia::io::OPEN_FLAG_DIRECTORY | fuchsia::io::OPEN_RIGHT_READABLE,
+        handle.NewRequest().TakeChannel());
+    return handle;
+  }
+
+  const base::FilePath path_;
+  fdio_ns_t* namespace_ = nullptr;
+};
 
 class ContentDirectoryTest : public cr_fuchsia::WebEngineBrowserTest {
  public:
@@ -67,7 +89,7 @@ class ContentDirectoryTest : public cr_fuchsia::WebEngineBrowserTest {
     // Set this flag early so that the fuchsia-dir:// scheme will be
     // registered at browser startup.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kContentDirectories);
+        switches::kEnableContentDirectories);
 
     // Scheme initialization for the WebEngineContentClient depends on the above
     // command line modification, which won't have been present when the schemes
@@ -80,28 +102,17 @@ class ContentDirectoryTest : public cr_fuchsia::WebEngineBrowserTest {
   void SetUpOnMainThread() override {
     std::vector<fuchsia::web::ContentDirectoryProvider> providers;
 
-    fuchsia::web::ContentDirectoryProvider provider;
-    provider.set_name("testdata");
     base::FilePath pkg_path;
-    base::PathService::Get(base::DIR_ASSETS, &pkg_path);
-    provider.set_directory(base::OpenDirectoryHandle(
-        pkg_path.AppendASCII("fuchsia/engine/test/data")));
-    providers.emplace_back(std::move(provider));
+    CHECK(base::PathService::Get(base::DIR_ASSETS, &pkg_path));
 
-    provider = {};
-    provider.set_name("alternate");
-    provider.set_directory(base::OpenDirectoryHandle(
-        pkg_path.AppendASCII("fuchsia/engine/test/data")));
-    providers.emplace_back(std::move(provider));
-
-    ContentDirectoryLoaderFactory::SetContentDirectoriesForTest(
-        std::move(providers));
+    testdata_content_directory_ = std::make_unique<ScopedBindContentDirectory>(
+        "testdata", base::OpenDirectoryHandle(
+                        pkg_path.AppendASCII("fuchsia/engine/test/data")));
+    alternate_content_directory_ = std::make_unique<ScopedBindContentDirectory>(
+        "alternate", base::OpenDirectoryHandle(
+                         pkg_path.AppendASCII("fuchsia/engine/test/data")));
 
     cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
-  }
-
-  void TearDown() override {
-    ContentDirectoryLoaderFactory::SetContentDirectoriesForTest({});
   }
 
  protected:
@@ -114,6 +125,9 @@ class ContentDirectoryTest : public cr_fuchsia::WebEngineBrowserTest {
 
  private:
   url::ScopedSchemeRegistryForTests scoped_registry_;
+
+  std::unique_ptr<ScopedBindContentDirectory> testdata_content_directory_;
+  std::unique_ptr<ScopedBindContentDirectory> alternate_content_directory_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentDirectoryTest);
 };
@@ -183,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, FromVfsPseudoDir) {
 
   vfs::PseudoDir pseudo_dir;
   AddFileToPseudoDir(contents, base::FilePath("title1.html"), &pseudo_dir);
-  ServePseudoDir("pseudo-dir", &pseudo_dir);
+  ScopedBindContentDirectory test_directory("pseudo-dir", &pseudo_dir);
 
   // Access the VmoFile under the PseudoDir.
   const GURL kUrl("fuchsia-dir://pseudo-dir/title1.html");
@@ -271,8 +285,7 @@ IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, BigFilesAreSniffable) {
   // zeroes to the end of an existing HTML file.
   contents.resize(1000000, ' ');
   AddFileToPseudoDir(contents, base::FilePath("blob.bin"), &pseudo_dir);
-
-  ServePseudoDir("pseudo-dir", &pseudo_dir);
+  ScopedBindContentDirectory test_directory("pseudo-dir", &pseudo_dir);
 
   // Access the VmoFile under the PseudoDir.
   const GURL kUrl("fuchsia-dir://pseudo-dir/test.html");

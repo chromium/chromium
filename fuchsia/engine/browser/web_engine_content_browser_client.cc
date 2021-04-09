@@ -145,7 +145,7 @@ void WebEngineContentBrowserClient::
         ukm::SourceIdObj ukm_source_id,
         NonNetworkURLLoaderFactoryMap* factories) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kContentDirectories)) {
+          switches::kEnableContentDirectories)) {
     factories->emplace(cr_fuchsia::kFuchsiaDirScheme,
                        ContentDirectoryLoaderFactory::Create());
   }
@@ -157,7 +157,7 @@ void WebEngineContentBrowserClient::
         int render_frame_id,
         NonNetworkURLLoaderFactoryMap* factories) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kContentDirectories)) {
+          switches::kEnableContentDirectories)) {
     factories->emplace(cr_fuchsia::kFuchsiaDirScheme,
                        ContentDirectoryLoaderFactory::Create());
   }
@@ -176,10 +176,10 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
     int child_process_id) {
   // TODO(https://crbug.com/1083520): Pass based on process type.
   constexpr char const* kSwitchesToCopy[] = {
-      switches::kContentDirectories,
       switches::kCorsExemptHeaders,
       switches::kDisableSoftwareVideoDecoders,
       switches::kEnableCastStreamingReceiver,
+      switches::kEnableContentDirectories,
       switches::kEnableProtectedVideoBuffers,
       switches::kEnableWidevine,
       switches::kForceProtectedVideoOutputBuffers,

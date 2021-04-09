@@ -8,10 +8,9 @@
 // Switches used by the ContextProviderImpl to configure each Context process.
 namespace switches {
 
-// Register custom content directories under the fuchsia-dir:// scheme. Value
-// is a comma-separated list of key=value pairs mapping a directory name to a
-// fuchsia.io.Directory handle Id, e.g. foo=1234,bar=5678
-extern const char kContentDirectories[];
+// Enables use of custom content directories under the fuchsia-dir:// scheme.
+// Directories will be mounted under a directory in the browser's namespace.
+extern const char kEnableContentDirectories[];
 
 // Prevents the use of video codecs that are not hardware-accelerated.
 extern const char kDisableSoftwareVideoDecoders[];

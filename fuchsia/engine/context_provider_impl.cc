@@ -90,41 +90,51 @@ zx::channel ValidateDirectoryAndTakeChannel(
   return zx::channel();
 }
 
-// Populates a CommandLine with content directory name/handle pairs.
-bool SetContentDirectoriesInCommandLine(
+// File names must not contain directory separators, nor match the special
+// current- nor parent-directory filenames.
+bool IsValidContentDirectoryName(base::StringPiece file_name) {
+  if (file_name.find_first_of(base::FilePath::kSeparators, 0,
+                              base::FilePath::kSeparatorsLength - 1) !=
+      base::StringPiece::npos) {
+    return false;
+  }
+  return file_name != base::FilePath::kCurrentDirectory &&
+         file_name != base::FilePath::kParentDirectory;
+}
+
+// Maps content directories into the LaunchOptions and adds the enable flag
+// to the CommandLine.
+bool SetContentDirectoriesInLaunchOptions(
     std::vector<fuchsia::web::ContentDirectoryProvider> directories,
     base::CommandLine* command_line,
     base::LaunchOptions* launch_options) {
   DCHECK(command_line);
   DCHECK(launch_options);
+  DCHECK(!directories.empty());
 
-  std::vector<std::string> directory_pairs;
   for (size_t i = 0; i < directories.size(); ++i) {
     fuchsia::web::ContentDirectoryProvider& directory = directories[i];
 
-    if (directory.name().find('=') != std::string::npos ||
-        directory.name().find(',') != std::string::npos) {
-      DLOG(ERROR) << "Invalid character in directory name: "
-                  << directory.name();
+    if (!IsValidContentDirectoryName(directory.name())) {
+      DLOG(ERROR) << "Invalid directory name: " << directory.name();
       return false;
     }
 
-    if (!directory.directory().is_valid()) {
+    zx::channel validated_channel = ValidateDirectoryAndTakeChannel(
+        std::move(*directory.mutable_directory()));
+    if (!validated_channel.is_valid()) {
       DLOG(ERROR) << "Service directory handle not valid for directory: "
                   << directory.name();
       return false;
     }
 
-    uint32_t directory_handle_id = base::LaunchOptions::AddHandleToTransfer(
-        &launch_options->handles_to_transfer,
-        directory.mutable_directory()->TakeChannel().release());
-    directory_pairs.emplace_back(
-        base::StrCat({directory.name().c_str(), "=",
-                      base::NumberToString(directory_handle_id)}));
+    const base::FilePath kContentDirectories("/content-directories");
+    launch_options->paths_to_transfer.emplace_back(base::PathToTransfer{
+        .path = kContentDirectories.Append(directory.name()),
+        .handle = validated_channel.release()});
   }
 
-  command_line->AppendSwitchASCII(switches::kContentDirectories,
-                                  base::JoinString(directory_pairs, ","));
+  command_line->AppendSwitch(switches::kEnableContentDirectories);
 
   return true;
 }
@@ -564,7 +574,7 @@ void ContextProviderImpl::Create(
   }
 
   if (params.has_content_directories() &&
-      !SetContentDirectoriesInCommandLine(
+      !SetContentDirectoriesInLaunchOptions(
           std::move(*params.mutable_content_directories()), &launch_command,
           &launch_options)) {
     LOG(ERROR) << "Invalid content directories specified.";
