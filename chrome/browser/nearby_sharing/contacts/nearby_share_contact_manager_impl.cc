@@ -319,6 +319,8 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
   // contacts. It is also marked as a selected contact.
   base::Optional<std::string> user_name =
       profile_info_provider_->GetProfileUserName();
+  base::UmaHistogramBoolean("Nearby.Share.Contacts.CanGetProfileUserName",
+                            user_name.has_value());
   if (!user_name) {
     NS_LOG(WARNING) << __func__
                     << ": Profile user name is not valid; could not "

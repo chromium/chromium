@@ -356,6 +356,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.Contacts.CanGetProfileUserName"
+    enum="BooleanSuccess" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records whether or not we able to retrieve the profile user name--think
+    email address--from the Chromebook's profile data. This value is sent to the
+    Nearby Share server to allow sharing with other devices logged in with the
+    same account. Emitted every time contacts are downloaded for use in Nearby
+    Share. Because contacts are not stored locally, contacts are periodically
+    downloaded for users with Nearby Share enabled and additionally whenever a
+    user enters Nearby Share settings or participates in a sharing flow.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.Contacts.DownloadPageCount.{Result}"
     units="pages" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
