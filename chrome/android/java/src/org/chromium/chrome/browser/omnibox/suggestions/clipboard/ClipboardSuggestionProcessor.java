@@ -109,4 +109,16 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
             fetchSuggestionFavicon(model, suggestion.getUrl(), mIconBridgeSupplier.get(), null);
         }
     }
+
+    @Override
+    protected void onSuggestionClicked(AutocompleteMatch suggestion, int position) {
+        if (!suggestion.getUrl().isEmpty()) {
+            super.onSuggestionClicked(suggestion, position);
+            return;
+        }
+
+        // Retrieve suggestion content before propagating the Click event.
+        suggestion.updateWithClipboardContent(
+                () -> { super.onSuggestionClicked(suggestion, position); });
+    }
 }

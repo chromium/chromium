@@ -341,6 +341,10 @@ base::Optional<AutocompleteMatch> ClipboardProvider::CreateURLMatch(
     const AutocompleteInput& input,
     bool* read_clipboard_content) {
   *read_clipboard_content = false;
+  if (base::FeatureList::IsEnabled(
+          omnibox::kClipboardSuggestionContentHidden)) {
+    return base::nullopt;
+  }
   // The clipboard does not contain a URL worth suggesting.
   base::Optional<GURL> optional_gurl =
       clipboard_content_->GetRecentURLFromClipboard();
@@ -362,6 +366,11 @@ base::Optional<AutocompleteMatch> ClipboardProvider::CreateTextMatch(
     const AutocompleteInput& input,
     bool* read_clipboard_content) {
   *read_clipboard_content = false;
+  if (base::FeatureList::IsEnabled(
+          omnibox::kClipboardSuggestionContentHidden)) {
+    return base::nullopt;
+  }
+
   base::Optional<std::u16string> optional_text =
       clipboard_content_->GetRecentTextFromClipboard();
   if (!optional_text)
@@ -383,6 +392,11 @@ base::Optional<AutocompleteMatch> ClipboardProvider::CreateTextMatch(
 }
 
 bool ClipboardProvider::CreateImageMatch(const AutocompleteInput& input) {
+  if (base::FeatureList::IsEnabled(
+          omnibox::kClipboardSuggestionContentHidden)) {
+    return false;
+  }
+
   if (!clipboard_content_->HasRecentImageFromClipboard()) {
     return false;
   }
@@ -443,18 +457,8 @@ AutocompleteMatch ClipboardProvider::NewClipboardURLMatch(GURL url) {
 
   AutocompleteMatch match = NewBlankURLMatch();
 
-  match.destination_url = url;
+  UpdateClipboardURLContent(url, &match);
 
-  // Because the user did not type a related input to get this clipboard
-  // suggestion, preserve the subdomain so the user has extra context.
-  auto format_types = AutocompleteMatch::GetFormatTypes(false, true);
-  match.contents.assign(url_formatter::FormatUrl(
-      url, format_types, net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-  if (!match.contents.empty())
-    match.contents_class.push_back({0, ACMatchClassification::URL});
-  match.fill_into_edit =
-      AutocompleteInput::FormattedStringWithEquivalentMeaning(
-          url, match.contents, client_->GetSchemeClassifier(), nullptr);
   return match;
 }
 
@@ -473,32 +477,10 @@ AutocompleteMatch ClipboardProvider::NewBlankTextMatch() {
 
 base::Optional<AutocompleteMatch> ClipboardProvider::NewClipboardTextMatch(
     std::u16string text) {
-  // The text in the clipboard is a url. We don't want to prompt the user to
-  // search for a url.
-  if (GURL(text).is_valid())
-    return base::nullopt;
-
   AutocompleteMatch match = NewBlankTextMatch();
-  match.fill_into_edit = text;
 
-  TemplateURLService* url_service = client_->GetTemplateURLService();
-  const TemplateURL* default_url = url_service->GetDefaultSearchProvider();
-  if (!default_url)
+  if (!UpdateClipboardTextContent(text, &match))
     return base::nullopt;
-
-  DCHECK(!default_url->url().empty());
-  DCHECK(default_url->url_ref().IsValid(url_service->search_terms_data()));
-  TemplateURLRef::SearchTermsArgs search_args(text);
-  GURL result(default_url->url_ref().ReplaceSearchTerms(
-      search_args, url_service->search_terms_data()));
-
-  match.destination_url = result;
-  match.contents.assign(l10n_util::GetStringFUTF16(
-      IDS_COPIED_TEXT_FROM_CLIPBOARD, AutocompleteMatch::SanitizeString(text)));
-  if (!match.contents.empty())
-    match.contents_class.push_back({0, ACMatchClassification::NONE});
-
-  match.keyword = default_url->keyword();
 
   return match;
 }
@@ -542,6 +524,28 @@ void ClipboardProvider::NewClipboardImageMatch(
                      std::move(callback)));
 }
 
+void ClipboardProvider::UpdateClipboardMatchWithContent(
+    AutocompleteMatch* match,
+    ClipboardMatchCallback callback) {
+  DCHECK(match);
+  if (match->type == AutocompleteMatchType::CLIPBOARD_URL) {
+    clipboard_content_->GetRecentURLFromClipboard(base::BindOnce(
+        &ClipboardProvider::OnReceiveURLForMatchWithContent,
+        callback_weak_ptr_factory_.GetWeakPtr(), std::move(callback), match));
+    return;
+  } else if (match->type == AutocompleteMatchType::CLIPBOARD_TEXT) {
+    clipboard_content_->GetRecentTextFromClipboard(base::BindOnce(
+        &ClipboardProvider::OnReceiveTextForMatchWithContent,
+        callback_weak_ptr_factory_.GetWeakPtr(), std::move(callback), match));
+    return;
+  } else if (match->type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
+    clipboard_content_->GetRecentImageFromClipboard(base::BindOnce(
+        &ClipboardProvider::OnReceiveImageForMatchWithContent,
+        callback_weak_ptr_factory_.GetWeakPtr(), std::move(callback), match));
+    return;
+  }
+}
+
 scoped_refptr<base::RefCountedMemory> ClipboardProvider::EncodeClipboardImage(
     gfx::ImageSkia image_skia) {
   gfx::Image resized_image =
@@ -576,4 +580,112 @@ void ClipboardProvider::ConstructImageMatchCallback(
       std::make_unique<TemplateURLRef::PostContent>(post_content);
 
   std::move(callback).Run(match);
+}
+
+void ClipboardProvider::OnReceiveURLForMatchWithContent(
+    ClipboardMatchCallback callback,
+    AutocompleteMatch* match,
+    base::Optional<GURL> optional_gurl) {
+  if (!optional_gurl)
+    return;
+
+  GURL url = std::move(optional_gurl).value();
+  UpdateClipboardURLContent(url, match);
+  std::move(callback).Run();
+}
+
+void ClipboardProvider::OnReceiveTextForMatchWithContent(
+    ClipboardMatchCallback callback,
+    AutocompleteMatch* match,
+    base::Optional<std::u16string> optional_text) {
+  if (!optional_text)
+    return;
+
+  std::u16string text = std::move(optional_text).value();
+  if (!UpdateClipboardTextContent(text, match))
+    return;
+
+  std::move(callback).Run();
+}
+
+void ClipboardProvider::OnReceiveImageForMatchWithContent(
+    ClipboardMatchCallback callback,
+    AutocompleteMatch* match,
+    base::Optional<gfx::Image> optional_image) {
+  if (!optional_image)
+    return;
+
+  gfx::Image image = std::move(optional_image).value();
+  NewClipboardImageMatch(
+      image,
+      base::BindOnce(&ClipboardProvider::OnReceiveImageMatchForMatchWithContent,
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback), match));
+}
+
+void ClipboardProvider::OnReceiveImageMatchForMatchWithContent(
+    ClipboardMatchCallback callback,
+    AutocompleteMatch* match,
+    base::Optional<AutocompleteMatch> optional_match) {
+  DCHECK(match);
+  if (!optional_match)
+    return;
+
+  match->destination_url = std::move(optional_match->destination_url);
+  match->post_content = std::move(optional_match->post_content);
+  match->search_terms_args = std::move(optional_match->search_terms_args);
+
+  std::move(callback).Run();
+}
+
+void ClipboardProvider::UpdateClipboardURLContent(const GURL& url,
+                                                  AutocompleteMatch* match) {
+  DCHECK(url.is_valid());
+  DCHECK(match);
+
+  match->destination_url = url;
+
+  // Because the user did not type a related input to get this clipboard
+  // suggestion, preserve the subdomain so the user has extra context.
+  auto format_types = AutocompleteMatch::GetFormatTypes(false, true);
+  match->contents.assign(url_formatter::FormatUrl(
+      url, format_types, net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+  if (!match->contents.empty())
+    match->contents_class.push_back({0, ACMatchClassification::URL});
+  match->fill_into_edit =
+      AutocompleteInput::FormattedStringWithEquivalentMeaning(
+          url, match->contents, client_->GetSchemeClassifier(), nullptr);
+}
+
+bool ClipboardProvider::UpdateClipboardTextContent(const std::u16string& text,
+                                                   AutocompleteMatch* match) {
+  DCHECK(match);
+
+  // The text in the clipboard is a url. We don't want to prompt the user to
+  // search for a url.
+  if (GURL(text).is_valid())
+    return false;
+
+  match->fill_into_edit = text;
+
+  TemplateURLService* url_service = client_->GetTemplateURLService();
+  const TemplateURL* default_url = url_service->GetDefaultSearchProvider();
+  if (!default_url)
+    return false;
+
+  DCHECK(!default_url->url().empty());
+  DCHECK(default_url->url_ref().IsValid(url_service->search_terms_data()));
+  TemplateURLRef::SearchTermsArgs search_args(text);
+  GURL result(default_url->url_ref().ReplaceSearchTerms(
+      search_args, url_service->search_terms_data()));
+
+  match->destination_url = result;
+  match->contents.assign(l10n_util::GetStringFUTF16(
+      IDS_COPIED_TEXT_FROM_CLIPBOARD, AutocompleteMatch::SanitizeString(text)));
+  if (!match->contents.empty())
+    match->contents_class.push_back({0, ACMatchClassification::NONE});
+
+  match->keyword = default_url->keyword();
+
+  return true;
 }
