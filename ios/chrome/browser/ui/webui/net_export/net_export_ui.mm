@@ -41,6 +41,7 @@ web::WebUIIOSDataSource* CreateNetExportHTMLSource() {
       web::WebUIIOSDataSource::Create(kChromeUINetExportHost);
 
   source->UseStringsJs();
+  source->AddResourcePath(net_log::kNetExportUICSS, IDR_NET_LOG_NET_EXPORT_CSS);
   source->AddResourcePath(net_log::kNetExportUIJS, IDR_NET_LOG_NET_EXPORT_JS);
   source->SetDefaultResource(IDR_NET_LOG_NET_EXPORT_HTML);
   return source;
@@ -202,9 +203,10 @@ void NetExportMessageHandler::NotifyUIWithState(
   DCHECK(web_ui());
 
   base::Value state = file_writer_state->Clone();
+  base::Value event(net_log::kNetLogInfoChangedEvent);
 
-  std::vector<const base::Value*> args{&state};
-  web_ui()->CallJavascriptFunction(net_log::kOnExportNetLogInfoChanged, args);
+  std::vector<const base::Value*> args{&event, &state};
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
 }  // namespace

@@ -63,6 +63,7 @@ content::WebUIDataSource* CreateNetExportHTMLSource() {
       content::WebUIDataSource::Create(chrome::kChromeUINetExportHost);
 
   source->UseStringsJs();
+  source->AddResourcePath(net_log::kNetExportUICSS, IDR_NET_LOG_NET_EXPORT_CSS);
   source->AddResourcePath(net_log::kNetExportUIJS, IDR_NET_LOG_NET_EXPORT_JS);
   source->SetDefaultResource(IDR_NET_LOG_NET_EXPORT_HTML);
   return source;
@@ -128,7 +129,7 @@ class NetExportMessageHandler
   // UI.
   static bool UsingMobileUI();
 
-  // Calls NetExportView.onExportNetLogInfoChanged JavaScript function in the
+  // Fires net-log-info-changed event to update the JavaScript UI in the
   // renderer.
   void NotifyUIWithState(std::unique_ptr<base::DictionaryValue> state);
 
@@ -202,6 +203,7 @@ void NetExportMessageHandler::RegisterMessages() {
 // state changes.
 void NetExportMessageHandler::OnEnableNotifyUIWithState(
     const base::ListValue* list) {
+  AllowJavascript();
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!state_observation_manager_.IsObserving()) {
     state_observation_manager_.Observe(file_writer_);
@@ -349,8 +351,7 @@ void NetExportMessageHandler::NotifyUIWithState(
     std::unique_ptr<base::DictionaryValue> state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(web_ui());
-  web_ui()->CallJavascriptFunctionUnsafe(net_log::kOnExportNetLogInfoChanged,
-                                         *state);
+  FireWebUIListener(net_log::kNetLogInfoChangedEvent, *state);
 }
 
 void NetExportMessageHandler::ShowSelectFileDialog(

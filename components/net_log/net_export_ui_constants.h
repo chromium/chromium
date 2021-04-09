@@ -9,6 +9,7 @@ namespace net_log {
 
 // Resource paths.
 // Must match the resource file names.
+extern const char kNetExportUICSS[];
 extern const char kNetExportUIJS[];
 
 // Message handlers.
@@ -21,7 +22,7 @@ extern const char kStopNetLogHandler[];
 
 // Other values.
 // Must match the constants used in the resource files.
-extern const char kOnExportNetLogInfoChanged[];
+extern const char kNetLogInfoChangedEvent[];
 
 }  // namespace net_log
 

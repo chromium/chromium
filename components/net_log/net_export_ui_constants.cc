@@ -7,6 +7,7 @@
 namespace net_log {
 
 // Resource paths.
+const char kNetExportUICSS[] = "net_export.css";
 const char kNetExportUIJS[] = "net_export.js";
 
 // Message handlers.
@@ -17,7 +18,6 @@ const char kStartNetLogHandler[] = "startNetLog";
 const char kStopNetLogHandler[] = "stopNetLog";
 
 // Other values.
-const char kOnExportNetLogInfoChanged[] =
-    "NetExportView.getInstance().onExportNetLogInfoChanged";
+const char kNetLogInfoChangedEvent[] = "net-log-info-changed";
 
 }  // namespace net_log
