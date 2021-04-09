@@ -6,21 +6,18 @@ import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer
 import {createCustomEvent, EMOJI_VARIANTS_SHOWN} from './events.js';
 import {Emoji} from './types.js';
 
-const GENDER_FEMALE = 9792;       // U+2640 FEMALE_SIGN
-const SKIN_TONE_MEDIUM = 127997;  // U+1F3FD EMOJI MODIFIER FITZPATRICK TYPE-4
-const FAMILY = 128106;            // U+1F46A FAMILY
-const COUPLE = 128107;            // U+1F46B MAN AND WOMAN HOLDING HANDS
+const SKIN_TONE_MEDIUM = '🏽';  // U+1F3FD EMOJI MODIFIER FITZPATRICK TYPE-4
+const FAMILY = '👪';           // U+1F46A FAMILY
 
 /**
  * Determines if the given list of variants has any variant which contains
  * the given codepoint.
  * @param {!Array<!Emoji>} variants
- * @param {!number} codepoint
+ * @param {!string} codepoint
  * @return {boolean}
  */
 function hasVariation(variants, codepoint) {
-  const codepointString = String.fromCodePoint(codepoint);
-  return variants.findIndex(x => x.string.includes(codepointString)) !== -1;
+  return variants.findIndex(x => x.string.includes(codepoint)) !== -1;
 }
 
 
@@ -79,7 +76,8 @@ export class EmojiVariants extends PolymerElement {
     super.ready();
 
     // family picker is basic 5x5 grid.
-    const isFamily = this.variants.length === 26 && this.variants[0] == FAMILY;
+    const isFamily =
+        this.variants.length === 26 && this.variants[0].string === FAMILY;
     // two people is 5x5 grid with 5 skin tones per person.
     const isTwoPeople = this.variants.length === 26 &&
         hasVariation(this.variants, SKIN_TONE_MEDIUM);
