@@ -1432,6 +1432,7 @@ void BrowserView::FullscreenStateChanging() {
           ? GetExclusiveAccessManager()->GetExclusiveAccessExitBubbleType()
           : EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
       display::kInvalidDisplayId);
+  frame_->GetFrameView()->OnFullscreenStateChanged();
 }
 
 void BrowserView::FullscreenStateChanged() {
@@ -3376,7 +3377,6 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   // Undo our anti-jankiness hacks and force a re-layout.
   in_process_fullscreen_ = false;
   ToolbarSizeChanged(false);
-  frame_->GetFrameView()->OnFullscreenStateChanged();
 }
 
 bool BrowserView::ShouldUseImmersiveFullscreenForUrl(const GURL& url) const {
