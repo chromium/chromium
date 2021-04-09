@@ -402,8 +402,7 @@ class DevToolsWindow::OwnedMainWebContents {
       : keep_alive_(KeepAliveOrigin::DEVTOOLS_WINDOW,
                     KeepAliveRestartOption::DISABLED),
         web_contents_(std::move(web_contents)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    Profile* profile = GetProfileForDevToolsWindow(web_contents_.get());
     DCHECK(profile);
     if (!profile->IsOffTheRecord()) {
       // ScopedProfileKeepAlive does not support OTR profiles.
@@ -717,6 +716,17 @@ DevToolsWindow* DevToolsWindow::OpenNodeFrontendWindow(Profile* profile) {
 }
 
 // static
+Profile* DevToolsWindow::GetProfileForDevToolsWindow(
+    content::WebContents* web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (profile->IsPrimaryOTRProfile()) {
+    return profile;
+  }
+  return profile->GetOriginalProfile();
+}
+
+// static
 void DevToolsWindow::ToggleDevToolsWindow(
     content::WebContents* inspected_web_contents,
     bool force_open,
@@ -728,8 +738,7 @@ void DevToolsWindow::ToggleDevToolsWindow(
   DevToolsWindow* window = FindDevToolsWindow(agent.get());
   bool do_open = force_open;
   if (!window) {
-    Profile* profile = Profile::FromBrowserContext(
-        inspected_web_contents->GetBrowserContext());
+    Profile* profile = GetProfileForDevToolsWindow(inspected_web_contents);
     base::RecordAction(base::UserMetricsAction("DevTools_InspectRenderer"));
     std::string panel;
     switch (action.type()) {

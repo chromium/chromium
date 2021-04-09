@@ -335,6 +335,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
       const DevToolsToggleAction& action,
       const std::string& settings,
       DevToolsOpenedByAction opened_by = DevToolsOpenedByAction::kUnknown);
+  static Profile* GetProfileForDevToolsWindow(
+      content::WebContents* web_contents);
 
   // content::WebContentsDelegate:
   void ActivateContents(content::WebContents* contents) override;
