@@ -290,6 +290,11 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
+  if (web_application_info_->background_color !=
+      registrar_.GetAppBackgroundColor(app_id_)) {
+    return true;
+  }
+
   // TODO(crbug.com/1072058): Check the manifest URL.
   // TODO(crbug.com/926083): Check more manifest fields.
   return false;
