@@ -1,9 +1,11 @@
 include_rules = [
-  # Restricting uses of ChromeActivity in favor of direct dependency aquisition. Code that lives
+  # Restricting uses of Chrome*Activity in favor of direct dependency aquisition. Code that lives
   # under java/src/.../chrome/browser has a seperate exception under that same directory.
-  # Exceptions can be found under "specific_include_rules" below. Valid ChromeActivity dependents
+  # Exceptions can be found under "specific_include_rules"below. Valid Chrome*Activity dependents
   # should add an allow rule to a DEPS file in the relevant directory.
   "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
+  "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity2.java",
 
   # Allow dependencies on chrome/browser modules
   "+chrome/browser",
@@ -72,14 +74,15 @@ specific_include_rules = {
   # testing directory.
   ".*Test\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   ],
   ".*TestRule\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   ],
 
-  # Exceptions to the ChromeActivity dependency restriction. These will all eventually be removed
-  # new code should rely on acceptable dependency aquisition patterns. These are sorted by package,
-  # but the package to work with the filename matching done by checkdeps.
+  # Exceptions to the Chrome*Activity dependency restriction. These will all eventually be removed
+  # new code should rely on acceptable dependency aquisition patterns.
   "AssistantCoordinator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
@@ -148,5 +151,26 @@ specific_include_rules = {
   ],
   "VrShellDelegate\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+
+  # Exceptions to the Chrome*Activity dependency restriction. These will all eventually be removed
+  # new code should rely on acceptable dependency aquisition patterns.
+  "TabGroupUtils\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "TabGroupUiCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "TabSwitcherCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "VrDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "VrShell\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "VrShellDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
 }

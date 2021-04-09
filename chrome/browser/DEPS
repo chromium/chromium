@@ -5,10 +5,12 @@ include_rules = [
   "+cc/paint",
   "+cc/test",
 
-  # Restricting uses of ChromeActivity in favor of direct dependency aquisition. Code that lives
+  # Restricting uses of Chrome*Activity in favor of direct dependency aquisition. Code that lives
   # under java/src/.../chrome/browser has a seperate exception under that same directory.
   # Exceptions can be found under "specific_include_rules" below.
   "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
+  "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity2.java",
 
   "+chrome/android/native_j_unittests_jni_headers",
   "+chrome/android/chrome_jni_headers",
@@ -495,6 +497,7 @@ specific_include_rules = {
     # Android instrumentation tests depend on the whole app.
     "+chrome/android",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   ],
   "platform_util_linux.cc": [
     # The following is used to call the org.freedesktop.FileManager1

@@ -18,11 +18,13 @@ specific_include_rules = {
     "+chrome/android/feed/core/java",
     "+chrome/android/java/src/org/chromium/chrome/browser",
     "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
     "+chrome/browser/ui/android/toolbar",
   ],
   'ToolbarButtonInProductHelpController.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser",
     "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   ],
   'LocationBarModel.java': [
     "+chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
