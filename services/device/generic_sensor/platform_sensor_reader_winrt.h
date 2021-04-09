@@ -203,7 +203,7 @@ class PlatformSensorReaderWinrtGyrometer final
               Microsoft::WRL::FtmBase>,
           ABI::Windows::Devices::Sensors::IGyrometerReadingChangedEventArgs> {
  public:
-  static constexpr double kDegreeThreshold = 5.0;
+  static constexpr double kDegreeThreshold = 0.1;
 
   static std::unique_ptr<PlatformSensorReaderWinBase> Create();
 
@@ -242,7 +242,7 @@ class PlatformSensorReaderWinrtMagnetometer final
           ABI::Windows::Devices::Sensors::
               IMagnetometerReadingChangedEventArgs> {
  public:
-  static constexpr double kMicroteslaThreshold = 5.0f;
+  static constexpr double kMicroteslaThreshold = 0.1;
 
   static std::unique_ptr<PlatformSensorReaderWinBase> Create();
 
@@ -281,7 +281,7 @@ class PlatformSensorReaderWinrtAbsOrientationEulerAngles final
           ABI::Windows::Devices::Sensors::
               IInclinometerReadingChangedEventArgs> {
  public:
-  static constexpr double kDegreeThreshold = 5.0f;
+  static constexpr double kDegreeThreshold = 0.1;
 
   static std::unique_ptr<PlatformSensorReaderWinBase> Create();
 
@@ -320,7 +320,7 @@ class PlatformSensorReaderWinrtAbsOrientationQuaternion final
           ABI::Windows::Devices::Sensors::
               IOrientationSensorReadingChangedEventArgs> {
  public:
-  static constexpr double kRadianThreshold = gfx::DegToRad(5.0);
+  static constexpr double kRadianThreshold = gfx::DegToRad(0.1);
 
   static std::unique_ptr<PlatformSensorReaderWinBase> Create();
 
