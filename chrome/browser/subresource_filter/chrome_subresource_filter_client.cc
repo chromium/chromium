@@ -18,9 +18,24 @@
 #include "components/subresource_filter/android/ads_blocked_infobar_delegate.h"
 #endif
 
+namespace {
+
+// Returns a scoped refptr to the SafeBrowsingService's database manager, if
+// available. Otherwise returns nullptr.
+const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+GetDatabaseManagerFromSafeBrowsingService() {
+  safe_browsing::SafeBrowsingService* safe_browsing_service =
+      g_browser_process->safe_browsing_service();
+  return safe_browsing_service ? safe_browsing_service->database_manager()
+                               : nullptr;
+}
+
+}  // namespace
+
 ChromeSubresourceFilterClient::ChromeSubresourceFilterClient(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+    : web_contents_(web_contents),
+      database_manager_(GetDatabaseManagerFromSafeBrowsingService()) {
   DCHECK(web_contents_);
 }
 
@@ -53,8 +68,5 @@ void ChromeSubresourceFilterClient::ShowNotification() {
 
 const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 ChromeSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
-  safe_browsing::SafeBrowsingService* safe_browsing_service =
-      g_browser_process->safe_browsing_service();
-  return safe_browsing_service ? safe_browsing_service->database_manager()
-                               : nullptr;
+  return database_manager_;
 }
