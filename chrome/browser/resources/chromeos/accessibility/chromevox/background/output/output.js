@@ -676,7 +676,6 @@ Output = class {
     let speechProps = params['opt_speechProps'];
 
     let formatTrees = [];
-    const args = null;
 
     // Hacky way to support args.
     if (typeof (format) === 'string') {
@@ -768,10 +767,6 @@ Output = class {
           this.formatAsFieldAccessor_(node, token, buff, options, ruleStr);
         } else if (Output.STATE_INFO_[token]) {
           this.formatAsStateValue_(node, token, buff, options, ruleStr);
-        } else if (token === 'posInSet') {
-          this.formatPosInSetFallback_(node, token, buff, ruleStr);
-        } else if (token === 'setSize') {
-          this.formatSetSizeFallback_(node, token, buff, ruleStr);
         } else if (token === 'phoneticReading') {
           this.formatPhoneticReading_(node, buff);
         } else if (tree.firstChild) {
@@ -1416,41 +1411,6 @@ Output = class {
     const msg = Msgs.getMsg(msgId);
     this.append_(buff, msg, options);
     ruleStr.writeTokenWithValue(token, msg);
-  }
-
-  /**
-   * @param {AutomationNode} node
-   * @param {string} token
-   * @param {!Array<Spannable>} buff
-   * @param {!OutputRulesStr} ruleStr
-   */
-  formatPosInSetFallback_(node, token, buff, ruleStr) {
-    if (node.posInSet !== undefined) {
-      // Unexpected case.
-      this.append_(buff, String(node.posInSet));
-      ruleStr.writeTokenWithValue(token, String(node.posInSet));
-    } else {
-      ruleStr.writeToken(token);
-      this.format_({
-        node,
-        outputFormat: '$indexInParent',
-        outputBuffer: buff,
-        outputRuleString: ruleStr
-      });
-    }
-  }
-
-  /**
-   * @param {AutomationNode} node
-   * @param {string} token
-   * @param {!Array<Spannable>} buff
-   * @param {!OutputRulesStr} ruleStr
-   */
-  formatSetSizeFallback_(node, token, buff, ruleStr) {
-    // Size is always expected to be 0.
-    const size = node.setSize ? node.setSize : 0;
-    this.append_(buff, String(size));
-    ruleStr.writeTokenWithValue(token, String(node.setSize));
   }
 
   /**
