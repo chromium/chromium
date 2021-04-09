@@ -265,22 +265,10 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
 
 // HoldingSpaceTrayTest --------------------------------------------------------
 
-// Parameterized by whether the previews feature is enabled.
-class HoldingSpaceTrayTest : public AshTestBase,
-                             public testing::WithParamInterface<bool> {
+class HoldingSpaceTrayTest : public AshTestBase {
  public:
   HoldingSpaceTrayTest() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
-
-    enabled_features.push_back(features::kTemporaryHoldingSpace);
-
-    if (IsPreviewsFeatureEnabled())
-      enabled_features.push_back(features::kTemporaryHoldingSpacePreviews);
-    else
-      disabled_features.push_back(features::kTemporaryHoldingSpacePreviews);
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
   }
 
   // AshTestBase:
@@ -394,8 +382,6 @@ class HoldingSpaceTrayTest : public AshTestBase,
         user_account, nullptr, nullptr);
   }
 
-  bool IsPreviewsFeatureEnabled() const { return GetParam(); }
-
   HoldingSpaceTestApi* test_api() { return test_api_.get(); }
 
   testing::NiceMock<MockHoldingSpaceClient>* client() {
@@ -427,7 +413,7 @@ class HoldingSpaceTrayTest : public AshTestBase,
 
 // Tests -----------------------------------------------------------------------
 
-TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
+TEST_F(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   StartSession(/*pre_mark_time_of_first_add=*/false);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
 
@@ -441,10 +427,8 @@ TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   MarkTimeOfFirstAdd();
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_EQ(IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   // Show the bubble - both the pinned files and recent files child bubbles
   // should be shown.
@@ -478,7 +462,7 @@ TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 }
 
-TEST_P(HoldingSpaceTrayTest, HideButtonWhenModelDetached) {
+TEST_F(HoldingSpaceTrayTest, HideButtonWhenModelDetached) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -489,10 +473,8 @@ TEST_P(HoldingSpaceTrayTest, HideButtonWhenModelDetached) {
   // Add a download item - the button should be shown.
   AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_EQ(IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   SwitchToSecondaryUser("user@secondary", /*client=*/nullptr,
                         /*model=*/nullptr);
@@ -502,7 +484,7 @@ TEST_P(HoldingSpaceTrayTest, HideButtonWhenModelDetached) {
   UnregisterModelForUser("user@secondary");
 }
 
-TEST_P(HoldingSpaceTrayTest, HideButtonOnChangeToEmptyModel) {
+TEST_F(HoldingSpaceTrayTest, HideButtonOnChangeToEmptyModel) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -513,10 +495,8 @@ TEST_P(HoldingSpaceTrayTest, HideButtonOnChangeToEmptyModel) {
   // Add a download item - the button should be shown.
   AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_EQ(IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   HoldingSpaceModel secondary_holding_space_model;
   SwitchToSecondaryUser("user@secondary", /*client=*/nullptr,
@@ -529,15 +509,13 @@ TEST_P(HoldingSpaceTrayTest, HideButtonOnChangeToEmptyModel) {
                  base::FilePath("/tmp/fake_2"));
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_EQ(IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   UnregisterModelForUser("user@secondary");
 }
 
-TEST_P(HoldingSpaceTrayTest, HideButtonOnChangeToNonEmptyModel) {
+TEST_F(HoldingSpaceTrayTest, HideButtonOnChangeToNonEmptyModel) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -556,15 +534,13 @@ TEST_P(HoldingSpaceTrayTest, HideButtonOnChangeToNonEmptyModel) {
                         /*model=*/&secondary_holding_space_model);
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 
-  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_EQ(IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   UnregisterModelForUser("user@secondary");
 }
 
-TEST_P(HoldingSpaceTrayTest, HideButtonOnUserAddingScreen) {
+TEST_F(HoldingSpaceTrayTest, HideButtonOnUserAddingScreen) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -585,7 +561,7 @@ TEST_P(HoldingSpaceTrayTest, HideButtonOnUserAddingScreen) {
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 }
 
-TEST_P(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
+TEST_F(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -598,10 +574,8 @@ TEST_P(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
       AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_EQ(IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   // Remove the only item - the button should be hidden.
   model()->RemoveItem(item_1->id());
@@ -612,10 +586,8 @@ TEST_P(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
   HoldingSpaceItem* item_2 =
       AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_2"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_EQ(IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   // Remove the only item - the button should be hidden.
   model()->RemoveItem(item_2->id());
@@ -627,10 +599,8 @@ TEST_P(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
       AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_3"));
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_EQ(IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   // Remove the only item - the button should be hidden.
   model()->RemoveItem(item_3->id());
@@ -638,7 +608,7 @@ TEST_P(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 }
 
-TEST_P(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
+TEST_F(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -666,10 +636,8 @@ TEST_P(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
 
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_EQ(IsPreviewsFeatureEnabled(),
-            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   // Remove the finalized item - the shelf button should get hidden.
   model()->RemoveItem(item_2->id());
@@ -678,7 +646,7 @@ TEST_P(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
 }
 
 // Tests that the tray icon size changes on in-app shelf.
-TEST_P(HoldingSpaceTrayTest, UpdateTrayIconSizeForInAppShelf) {
+TEST_F(HoldingSpaceTrayTest, UpdateTrayIconSizeForInAppShelf) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -691,15 +659,9 @@ TEST_P(HoldingSpaceTrayTest, UpdateTrayIconSizeForInAppShelf) {
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
 
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-  if (IsPreviewsFeatureEnabled()) {
     ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
     EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
               test_api()->GetPreviewsTrayIcon()->size());
-  } else {
-    ASSERT_TRUE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
-    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
-              test_api()->GetDefaultTrayIcon()->size());
-  }
 
   TabletModeControllerTestApi().EnterTabletMode();
 
@@ -708,33 +670,21 @@ TEST_P(HoldingSpaceTrayTest, UpdateTrayIconSizeForInAppShelf) {
   ASSERT_TRUE(widget);
 
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-  if (IsPreviewsFeatureEnabled()) {
     ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
     EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconSmallPreviewSize, kTrayItemSize),
               test_api()->GetPreviewsTrayIcon()->size());
-  } else {
-    ASSERT_TRUE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
-    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
-              test_api()->GetDefaultTrayIcon()->size());
-  }
 
   // Transition to home screen.
   widget->Minimize();
 
-  if (IsPreviewsFeatureEnabled()) {
     ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
     EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
               test_api()->GetPreviewsTrayIcon()->size());
-  } else {
-    ASSERT_TRUE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
-    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
-              test_api()->GetDefaultTrayIcon()->size());
-  }
 }
 
 // Tests that a shelf config change just after an item has been removed does
 // not cause a crash.
-TEST_P(HoldingSpaceTrayTest, ShelfConfigChangeWithDelayedItemRemoval) {
+TEST_F(HoldingSpaceTrayTest, ShelfConfigChangeWithDelayedItemRemoval) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -768,11 +718,7 @@ TEST_P(HoldingSpaceTrayTest, ShelfConfigChangeWithDelayedItemRemoval) {
 
 // Tests that a shelf alignment change will behave as expected when there are
 // multiple displays (and therefore multiple shelves/trays).
-TEST_P(HoldingSpaceTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
-  // This test is only relevant when previews are enabled.
-  if (!IsPreviewsFeatureEnabled())
-    return;
-
+TEST_F(HoldingSpaceTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -863,7 +809,7 @@ TEST_P(HoldingSpaceTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
 
 // Tests how download chips are updated during item addition, removal and
 // finalization.
-TEST_P(HoldingSpaceTrayTest, DownloadsSection) {
+TEST_F(HoldingSpaceTrayTest, DownloadsSection) {
   StartSession();
 
   test_api()->Show();
@@ -953,7 +899,7 @@ TEST_P(HoldingSpaceTrayTest, DownloadsSection) {
 
 // Verifies the downloads section is shown and orders items as expected when the
 // model contains a number of finalized items prior to showing UI.
-TEST_P(HoldingSpaceTrayTest, DownloadsSectionWithFinalizedItemsOnly) {
+TEST_F(HoldingSpaceTrayTest, DownloadsSectionWithFinalizedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -983,7 +929,7 @@ TEST_P(HoldingSpaceTrayTest, DownloadsSectionWithFinalizedItemsOnly) {
   test_api()->Close();
 }
 
-TEST_P(HoldingSpaceTrayTest, FinalizingDownloadItemThatShouldBeInvisible) {
+TEST_F(HoldingSpaceTrayTest, FinalizingDownloadItemThatShouldBeInvisible) {
   StartSession();
   test_api()->Show();
 
@@ -1036,7 +982,7 @@ TEST_P(HoldingSpaceTrayTest, FinalizingDownloadItemThatShouldBeInvisible) {
 
 // Tests that a partially initialized download item does not get shown if a full
 // download item gets removed from the holding space.
-TEST_P(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingADownloadItem) {
+TEST_F(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingADownloadItem) {
   StartSession();
   test_api()->Show();
 
@@ -1075,7 +1021,7 @@ TEST_P(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingADownloadItem) {
 
 // Tests how screen captures section is updated during item addition, removal
 // and finalization.
-TEST_P(HoldingSpaceTrayTest, ScreenCapturesSection) {
+TEST_F(HoldingSpaceTrayTest, ScreenCapturesSection) {
   StartSession();
   test_api()->Show();
   EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
@@ -1175,7 +1121,7 @@ TEST_P(HoldingSpaceTrayTest, ScreenCapturesSection) {
 
 // Verifies the screen captures section is shown and orders items as expected
 // when the model contains a number of finalized items prior to showing UI.
-TEST_P(HoldingSpaceTrayTest, ScreenCapturesSectionWithFinalizedItemsOnly) {
+TEST_F(HoldingSpaceTrayTest, ScreenCapturesSectionWithFinalizedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -1205,7 +1151,7 @@ TEST_P(HoldingSpaceTrayTest, ScreenCapturesSectionWithFinalizedItemsOnly) {
   test_api()->Close();
 }
 
-TEST_P(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
+TEST_F(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
   StartSession();
   test_api()->Show();
 
@@ -1276,7 +1222,7 @@ TEST_P(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
 
 // Tests that a partially initialized screenshot item does not get shown if a
 // fully initialized screenshot item gets removed from the holding space.
-TEST_P(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingAScreenCapture) {
+TEST_F(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingAScreenCapture) {
   StartSession();
   test_api()->Show();
 
@@ -1322,7 +1268,7 @@ TEST_P(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingAScreenCapture) {
 
 // Tests how the pinned item section is updated during item addition, removal
 // and finalization.
-TEST_P(HoldingSpaceTrayTest, PinnedFilesSection) {
+TEST_F(HoldingSpaceTrayTest, PinnedFilesSection) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -1427,7 +1373,7 @@ TEST_P(HoldingSpaceTrayTest, PinnedFilesSection) {
 
 // Verifies the pinned files bubble is not shown if it only contains partially
 // initialized items.
-TEST_P(HoldingSpaceTrayTest,
+TEST_F(HoldingSpaceTrayTest,
        PinnedFilesBubbleWithPartiallyInitializedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
@@ -1469,7 +1415,7 @@ TEST_P(HoldingSpaceTrayTest,
 
 // Verifies the pinned items section is shown and orders items as expected when
 // the model contains a number of finalized items prior to showing UI.
-TEST_P(HoldingSpaceTrayTest, PinnedFilesSectionWithFinalizedItemsOnly) {
+TEST_F(HoldingSpaceTrayTest, PinnedFilesSectionWithFinalizedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -1500,7 +1446,7 @@ TEST_P(HoldingSpaceTrayTest, PinnedFilesSectionWithFinalizedItemsOnly) {
 
 // Tests that as nearby shared files are added to the model, they show on the
 // downloads section.
-TEST_P(HoldingSpaceTrayTest, DownloadsSectionWithNearbySharedFiles) {
+TEST_F(HoldingSpaceTrayTest, DownloadsSectionWithNearbySharedFiles) {
   StartSession();
 
   test_api()->Show();
@@ -1551,7 +1497,7 @@ TEST_P(HoldingSpaceTrayTest, DownloadsSectionWithNearbySharedFiles) {
 
 // Tests that a partially initialized nearby share item does not get shown if a
 // full download item gets removed from the holding space.
-TEST_P(HoldingSpaceTrayTest, PartialNearbyShareItemWithExistingDownloadItems) {
+TEST_F(HoldingSpaceTrayTest, PartialNearbyShareItemWithExistingDownloadItems) {
   StartSession();
   test_api()->Show();
 
@@ -1631,7 +1577,7 @@ TEST_P(HoldingSpaceTrayTest, PartialNearbyShareItemWithExistingDownloadItems) {
 
 // Tests that a partially initialized download item does not get shown if a
 // full download item gets removed from the holding space.
-TEST_P(HoldingSpaceTrayTest, PartialDownloadItemWithExistingNearbyShareItems) {
+TEST_F(HoldingSpaceTrayTest, PartialDownloadItemWithExistingNearbyShareItems) {
   StartSession();
   test_api()->Show();
 
@@ -1688,7 +1634,7 @@ TEST_P(HoldingSpaceTrayTest, PartialDownloadItemWithExistingNearbyShareItems) {
 
 // Right clicking the holding space tray should show a context menu if the
 // previews feature is enabled. Otherwise it should do nothing.
-TEST_P(HoldingSpaceTrayTest, ShouldMaybeShowContextMenuOnRightClick) {
+TEST_F(HoldingSpaceTrayTest, ShouldMaybeShowContextMenuOnRightClick) {
   StartSession();
 
   views::View* tray = test_api()->GetTray();
@@ -1702,13 +1648,12 @@ TEST_P(HoldingSpaceTrayTest, ShouldMaybeShowContextMenuOnRightClick) {
   event_generator.MoveMouseTo(tray->GetBoundsInScreen().CenterPoint());
   event_generator.ClickRightButton();
 
-  EXPECT_EQ(!!views::MenuController::GetActiveInstance(),
-            IsPreviewsFeatureEnabled());
+  EXPECT_TRUE(views::MenuController::GetActiveInstance());
 }
 
 // Tests that as screen recording files are added to the model, they show in the
 // screen captures section.
-TEST_P(HoldingSpaceTrayTest, ScreenCapturesSectionWithScreenRecordingFiles) {
+TEST_F(HoldingSpaceTrayTest, ScreenCapturesSectionWithScreenRecordingFiles) {
   StartSession();
 
   test_api()->Show();
@@ -1760,7 +1705,7 @@ TEST_P(HoldingSpaceTrayTest, ScreenCapturesSectionWithScreenRecordingFiles) {
 
 // Tests that a partially initialized screen recording item shows in the UI in
 // the reverse order from added time rather than finalization time.
-TEST_P(HoldingSpaceTrayTest,
+TEST_F(HoldingSpaceTrayTest,
        PartialScreenRecordingItemWithExistingScreenshotItems) {
   StartSession();
   test_api()->Show();
@@ -1858,7 +1803,7 @@ TEST_P(HoldingSpaceTrayTest,
 
 // Tests that partially initialized screenshot item shows in the UI in the
 // reverse order from added time rather than finalization time.
-TEST_P(HoldingSpaceTrayTest,
+TEST_F(HoldingSpaceTrayTest,
        PartialScreenshotItemWithExistingScreenRecordingItems) {
   StartSession();
   test_api()->Show();
@@ -1925,7 +1870,7 @@ TEST_P(HoldingSpaceTrayTest,
 }
 
 // Screen recordings should have an overlaying play icon.
-TEST_P(HoldingSpaceTrayTest, PlayIconForScreenRecordings) {
+TEST_F(HoldingSpaceTrayTest, PlayIconForScreenRecordings) {
   StartSession();
   test_api()->Show();
 
@@ -1953,7 +1898,7 @@ TEST_P(HoldingSpaceTrayTest, PlayIconForScreenRecordings) {
 
 // Until the user has pinned an item, a placeholder should exist in the pinned
 // files bubble which contains a chip to open the Files app.
-TEST_P(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
+TEST_F(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
   StartSession(/*pre_mark_time_of_first_add=*/false);
 
   // The tray button should *not* be shown for users that have never added
@@ -1998,7 +1943,7 @@ TEST_P(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
 
 // User should be able to open the Downloads folder in the Files app by pressing
 // the enter key on the Downloads section header.
-TEST_P(HoldingSpaceTrayTest, EnterKeyOpensDownloads) {
+TEST_F(HoldingSpaceTrayTest, EnterKeyOpensDownloads) {
   StartSession();
 
   // Add a download item.
@@ -2029,7 +1974,7 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensDownloads) {
 
 // User should be able to launch selected holding space items by pressing the
 // enter key.
-TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
+TEST_F(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   StartSession();
 
   // Add three holding space items.
@@ -2092,7 +2037,7 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
 }
 
 // Clicking on tote bubble background should deselect any selected items.
-TEST_P(HoldingSpaceTrayTest, ClickBackgroundToDeselectItems) {
+TEST_F(HoldingSpaceTrayTest, ClickBackgroundToDeselectItems) {
   StartSession();
 
   // Add two items.
@@ -2131,7 +2076,7 @@ TEST_P(HoldingSpaceTrayTest, ClickBackgroundToDeselectItems) {
 }
 
 // It should be possible to select multiple items in clamshell mode.
-TEST_P(HoldingSpaceTrayTest, MultiselectInClamshellMode) {
+TEST_F(HoldingSpaceTrayTest, MultiselectInClamshellMode) {
   StartSession();
 
   // Add a few holding space items to populate each section.
@@ -2275,7 +2220,7 @@ TEST_P(HoldingSpaceTrayTest, MultiselectInClamshellMode) {
 }
 
 // It should be possible to select multiple items in touch mode.
-TEST_P(HoldingSpaceTrayTest, MultiselectInTouchMode) {
+TEST_F(HoldingSpaceTrayTest, MultiselectInTouchMode) {
   StartSession();
 
   // Add a few holding space items.
@@ -2358,7 +2303,7 @@ TEST_P(HoldingSpaceTrayTest, MultiselectInTouchMode) {
 
 // Verifies that selection UI is correctly represented depending on device state
 // and the number of selected holding space item views.
-TEST_P(HoldingSpaceTrayTest, SelectionUi) {
+TEST_F(HoldingSpaceTrayTest, SelectionUi) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -2493,7 +2438,7 @@ TEST_P(HoldingSpaceTrayTest, SelectionUi) {
 
 // Verifies that attempting to open holding space items via double click works
 // as expected with event modifiers.
-TEST_P(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
+TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -2586,7 +2531,7 @@ TEST_P(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
 }
 
 // Verifies that the holding space tray animates in and out as expected.
-TEST_P(HoldingSpaceTrayTest, EnterAndExitAnimations) {
+TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -2694,7 +2639,5 @@ TEST_P(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   // Clean up.
   UnregisterModelForUser(kSecondaryUserId);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());
 
 }  // namespace ash

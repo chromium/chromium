@@ -4537,14 +4537,6 @@ const char kHoldingSpaceDescription[] =
     "screenshots and downloads from the shelf. Pin important files with the "
     "Files App context menu to keep them one click away.";
 
-const char kHoldingSpacePreviewsName[] =
-    "Support showing previews of quick access screenshots, downloads, and "
-    "files";
-const char kHoldingSpacePreviewsDescription[] =
-    "Enables support for showing previews of quick access screenshots, "
-    "downloads, and imporant files in the shelf. Note that this has no effect "
-    "unless #enable-holding-space is also enabled.";
-
 const char kImeAssistAutocorrectName[] = "Enable assistive autocorrect";
 const char kImeAssistAutocorrectDescription[] =
     "Enable assistive auto-correct features for native IME";

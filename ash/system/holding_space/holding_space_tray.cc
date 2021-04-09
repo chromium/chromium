@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -145,8 +144,7 @@ std::vector<base::FilePath> ExtractUnpinnedFilePaths(
 // Returns whether previews are enabled.
 bool IsPreviewsEnabled() {
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-  return features::IsTemporaryHoldingSpacePreviewsEnabled() && prefs &&
-         holding_space_prefs::IsPreviewsEnabled(prefs);
+  return prefs && holding_space_prefs::IsPreviewsEnabled(prefs);
 }
 
 // Returns whether the holding space model contains any finalized items.
@@ -249,17 +247,16 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   session_observer_.Observe(Shell::Get()->session_controller());
   SetVisible(false);
 
-  // Icon.
+  // Default icon.
   default_tray_icon_ = tray_container()->AddChildView(CreateDefaultTrayIcon());
 
-  if (features::IsTemporaryHoldingSpacePreviewsEnabled()) {
-    previews_tray_icon_ = tray_container()->AddChildView(
-        std::make_unique<HoldingSpaceTrayIcon>(shelf));
-    previews_tray_icon_->SetVisible(false);
+  // Previews icon.
+  previews_tray_icon_ = tray_container()->AddChildView(
+      std::make_unique<HoldingSpaceTrayIcon>(shelf));
+  previews_tray_icon_->SetVisible(false);
 
-    // Enable context menu, which supports an action to toggle item previews.
-    set_context_menu_controller(this);
-  }
+  // Enable context menu, which supports an action to toggle item previews.
+  set_context_menu_controller(this);
 
   // Drop target overlay.
   // NOTE: The `drop_target_overlay_` will only be visible when:
@@ -275,16 +272,12 @@ HoldingSpaceTray::~HoldingSpaceTray() = default;
 void HoldingSpaceTray::Initialize() {
   TrayBackgroundView::Initialize();
 
-  if (features::IsTemporaryHoldingSpacePreviewsEnabled()) {
-    DCHECK(previews_tray_icon_);
-    UpdatePreviewsVisibility();
+  UpdatePreviewsVisibility();
 
-    // If previews feature is enabled, the preview icon is displayed
-    // conditionally, depending on user prefs state.
-    auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-    if (prefs)
-      ObservePrefService(prefs);
-  }
+  // The preview icon is displayed conditionally, depending on user prefs state.
+  auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+  if (prefs)
+    ObservePrefService(prefs);
 
   // It's possible that this holding space tray was created after login, such as
   // would occur if the user connects an external display. In such situations
@@ -550,7 +543,6 @@ void HoldingSpaceTray::OnHoldingSpaceItemFinalized(
 }
 
 void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
-  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
   switch (static_cast<HoldingSpaceCommandId>(command_id)) {
     case HoldingSpaceCommandId::kHidePreviews:
       holding_space_metrics::RecordPodAction(
@@ -578,8 +570,6 @@ void HoldingSpaceTray::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
-
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kShowContextMenu);
 
@@ -645,9 +635,6 @@ void HoldingSpaceTray::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void HoldingSpaceTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
-  if (!features::IsTemporaryHoldingSpacePreviewsEnabled())
-    return;
-
   UpdatePreviewsState();
   ObservePrefService(prefs);
 }
@@ -687,9 +674,8 @@ void HoldingSpaceTray::UpdatePreviewsVisibility() {
 
   if (PreviewsShown() == show_previews)
     return;
-  default_tray_icon_->SetVisible(!show_previews);
 
-  DCHECK(previews_tray_icon_);
+  default_tray_icon_->SetVisible(!show_previews);
   previews_tray_icon_->SetVisible(show_previews);
 
   if (!show_previews) {
@@ -714,8 +700,7 @@ void HoldingSpaceTray::SchedulePreviewsIconUpdate() {
 
 void HoldingSpaceTray::UpdatePreviewsIcon() {
   if (!PreviewsShown()) {
-    if (previews_tray_icon_)
-      previews_tray_icon_->Clear();
+    previews_tray_icon_->Clear();
     return;
   }
 
@@ -734,7 +719,7 @@ void HoldingSpaceTray::UpdatePreviewsIcon() {
 }
 
 bool HoldingSpaceTray::PreviewsShown() const {
-  return previews_tray_icon_ && previews_tray_icon_->GetVisible();
+  return previews_tray_icon_->GetVisible();
 }
 
 void HoldingSpaceTray::UpdateDropTargetState(const ui::DropTargetEvent* event) {
@@ -777,8 +762,7 @@ void HoldingSpaceTray::UpdateDropTargetState(const ui::DropTargetEvent* event) {
 
 void HoldingSpaceTray::SetShouldAnimate(bool should_animate) {
   set_use_bounce_in_animation(should_animate);
-  if (previews_tray_icon_)
-    previews_tray_icon_->set_should_animate_updates(should_animate);
+  previews_tray_icon_->set_should_animate_updates(should_animate);
 }
 
 BEGIN_METADATA(HoldingSpaceTray, TrayBackgroundView)

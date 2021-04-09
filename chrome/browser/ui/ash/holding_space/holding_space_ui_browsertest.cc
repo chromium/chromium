@@ -1125,22 +1125,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, UnpinItem) {
   ASSERT_EQ(kNumPinnedItems - 1, pinned_file_chips.size());
 }
 
-// Base class for holding space UI browser tests that test previews.
-class HoldingSpaceUiPreviewsBrowserTest : public HoldingSpaceUiBrowserTest {
- public:
-  HoldingSpaceUiPreviewsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kTemporaryHoldingSpace,
-                              features::kTemporaryHoldingSpacePreviews},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Verifies that previews can be toggled via context menu.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, TogglePreviews) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 

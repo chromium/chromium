@@ -137,9 +137,6 @@ const base::Feature kNotificationsInContextMenu{
 const base::Feature kTemporaryHoldingSpace{"TemporaryHoldingSpace",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kTemporaryHoldingSpacePreviews{
-    "TemporaryHoldingSpacePreviews", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -316,11 +313,6 @@ bool IsNotificationsInContextMenuEnabled() {
 
 bool IsTemporaryHoldingSpaceEnabled() {
   return base::FeatureList::IsEnabled(kTemporaryHoldingSpace);
-}
-
-bool IsTemporaryHoldingSpacePreviewsEnabled() {
-  return base::FeatureList::IsEnabled(kTemporaryHoldingSpace) &&
-         base::FeatureList::IsEnabled(kTemporaryHoldingSpacePreviews);
 }
 
 bool IsDragUnpinnedAppToPinEnabled() {

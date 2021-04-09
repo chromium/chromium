@@ -191,10 +191,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kNotificationsInContextMenu;
 // later.
 ASH_PUBLIC_EXPORT extern const base::Feature kTemporaryHoldingSpace;
 
-// Enables previews in the shelf for the `kTemporaryHoldingSpace` feature. Note
-// that this has no effect if the `kTemporaryHoldingSpace` feature is disabled.
-ASH_PUBLIC_EXPORT extern const base::Feature kTemporaryHoldingSpacePreviews;
-
 // Enables dragging an unpinned open app to pinned app side to pin.
 ASH_PUBLIC_EXPORT extern const base::Feature kDragUnpinnedAppToPin;
 
@@ -279,8 +275,6 @@ ASH_PUBLIC_EXPORT bool IsDisplayAlignmentAssistanceEnabled();
 ASH_PUBLIC_EXPORT bool IsNotificationsInContextMenuEnabled();
 
 ASH_PUBLIC_EXPORT bool IsTemporaryHoldingSpaceEnabled();
-
-ASH_PUBLIC_EXPORT bool IsTemporaryHoldingSpacePreviewsEnabled();
 
 ASH_PUBLIC_EXPORT bool IsDragUnpinnedAppToPinEnabled();
 
