@@ -25,7 +25,7 @@ struct InputDeviceSettingsEvdev {
   bool tap_dragging_enabled = false;
   bool natural_scroll_enabled = false;
   bool tap_to_click_paused = false;
-  bool touch_event_logging_enabled = true;
+  bool touch_event_logging_enabled = false;
   bool mouse_reverse_scroll_enabled = false;
   bool mouse_acceleration_enabled = true;
   bool mouse_scroll_acceleration_enabled = true;
