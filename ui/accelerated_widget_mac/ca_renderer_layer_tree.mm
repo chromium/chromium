@@ -492,6 +492,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       switch (IOSurfaceGetPixelFormat(io_surface)) {
         case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
           type = CALayerType::kVideo;
+          video_type_can_downgrade = !io_surface_color_space.IsHDR();
           break;
         case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
           type = CALayerType::kVideo;
