@@ -275,12 +275,12 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
         root->UseBRPPool() ? GetBRPPool() : GetNonBRPPool(), requested_address,
         kSuperPageSize);
 
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_GIGACAGE_BLOCKLIST)
+#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
     if (root->UseBRPPool()) {
       constexpr int kMaxRandomAddressTries = 10;
       for (int i = 0; i < kMaxRandomAddressTries; ++i) {
         if (!super_page ||
-            AddressPoolManagerBitmap::IsAllowedSuperPageForGigaCage(super_page))
+            AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page))
           break;
         AddressPoolManager::GetInstance()->UnreserveAndDecommit(
             GetBRPPool(), super_page, kSuperPageSize);
@@ -298,7 +298,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
       // scan passes through it, but we accept the risk.
       for (uintptr_t ptr = kSuperPageSize; ptr != 0; ptr += kSuperPageSize) {
         if (!super_page ||
-            AddressPoolManagerBitmap::IsAllowedSuperPageForGigaCage(super_page))
+            AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page))
           break;
         AddressPoolManager::GetInstance()->UnreserveAndDecommit(
             GetBRPPool(), super_page, kSuperPageSize);
@@ -307,8 +307,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
       }
 
       if (super_page &&
-          !AddressPoolManagerBitmap::IsAllowedSuperPageForGigaCage(
-              super_page)) {
+          !AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page)) {
         AddressPoolManager::GetInstance()->UnreserveAndDecommit(
             GetBRPPool(), super_page, kSuperPageSize);
         super_page = nullptr;

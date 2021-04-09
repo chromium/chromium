@@ -77,22 +77,35 @@ class BASE_EXPORT AddressPoolManagerBitmap {
         .test(address_as_uintptr >> kBitShiftOfBRPPoolBitmap);
   }
 
-#if BUILDFLAG(USE_GIGACAGE_BLOCKLIST)
-  static void IncrementNonGigacagePtrRefCount(const void* address) {
+#if BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+  static void IncrementOutsideOfBRPPoolPtrRefCount(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
 
-    non_gigcage_refcount_map_[address_as_uintptr >> kSuperPageShift].fetch_add(
+#if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
+    brp_forbidden_super_page_map_[address_as_uintptr >> kSuperPageShift].store(
+        true, std::memory_order_relaxed);
+#else
+    super_page_refcount_map_[address_as_uintptr >> kSuperPageShift].fetch_add(
         1, std::memory_order_relaxed);
+#endif
   }
 
-  static void DecrementNonGigacagePtrRefCount(const void* address) {
+  static void DecrementOutsideOfBRPPoolPtrRefCount(const void* address) {
+#if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
+    // No-op. In this mode, we only use one bit per super-page and, therefore,
+    // can't tell if there's more than one associated CheckedPtr at a given
+    // time. There's a small risk is that we may exhaust the entire address
+    // space. On the other hand, a single relaxed store (in the above function)
+    // is much less expensive than two CAS operations.
+#else
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
 
-    non_gigcage_refcount_map_[address_as_uintptr >> kSuperPageShift].fetch_sub(
+    super_page_refcount_map_[address_as_uintptr >> kSuperPageShift].fetch_sub(
         1, std::memory_order_relaxed);
+#endif
   }
 
-  static bool IsAllowedSuperPageForGigaCage(const void* address) {
+  static bool IsAllowedSuperPageForBRPPool(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
 
     // The only potentially dangerous scenario, in which this check is used, is
@@ -107,10 +120,15 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // reserving the super-page region and, thus, having the race condition.
     // Since we rely on that external synchronization, the relaxed memory
     // ordering should be sufficient.
-    return non_gigcage_refcount_map_[address_as_uintptr >> kSuperPageShift]
-               .load(std::memory_order_relaxed) == 0;
-  }
+#if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
+    return !brp_forbidden_super_page_map_[address_as_uintptr >> kSuperPageShift]
+                .load(std::memory_order_relaxed);
+#else
+    return super_page_refcount_map_[address_as_uintptr >> kSuperPageShift].load(
+               std::memory_order_relaxed) == 0;
 #endif
+  }
+#endif  // BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
 
  private:
   friend class AddressPoolManager;
@@ -119,10 +137,14 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 
   static std::bitset<kNonBRPPoolBits> non_brp_pool_bits_ GUARDED_BY(GetLock());
   static std::bitset<kBRPPoolBits> brp_pool_bits_ GUARDED_BY(GetLock());
-#if BUILDFLAG(USE_GIGACAGE_BLOCKLIST)
-  static std::array<std::atomic_uint32_t, kBRPPoolBits>
-      non_gigcage_refcount_map_;
+#if BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
+  static std::array<std::atomic_bool, kAddressSpaceSize / kSuperPageSize>
+      brp_forbidden_super_page_map_;
 #endif
+  static std::array<std::atomic_uint32_t, kAddressSpaceSize / kSuperPageSize>
+      super_page_refcount_map_;
+#endif  // BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
 };
 
 }  // namespace internal
