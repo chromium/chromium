@@ -332,8 +332,8 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
   }
 }
 
-// Flaky on Linux, crbug.com/1185680
-#if defined(OS_LINUX)
+// TODO(crbug.com/1185680): Flaky on Linux and lacros.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CaptureLinksNewClient DISABLED_CaptureLinksNewClient
 #else
 #define MAYBE_CaptureLinksNewClient CaptureLinksNewClient
