@@ -16,6 +16,10 @@ Action::Action(ActionDelegate* delegate, const ActionProto& proto)
 
 Action::~Action() {}
 
+bool Action::ShouldInterruptOnPause() const {
+  return false;
+}
+
 void Action::ProcessAction(ProcessActionCallback callback) {
   action_stopwatch_.StartActiveTime();
   processed_action_proto_ = std::make_unique<ProcessedActionProto>();

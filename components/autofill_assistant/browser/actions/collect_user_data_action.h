@@ -30,6 +30,9 @@ class CollectUserDataAction : public Action,
                                  const ActionProto& proto);
   ~CollectUserDataAction() override;
 
+  // Overrides Action:
+  bool ShouldInterruptOnPause() const override;
+
   // From autofill::PersonalDataManagerObserver.
   void OnPersonalDataChanged() override;
 

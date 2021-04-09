@@ -447,10 +447,6 @@ class ScriptExecutor : public ActionDelegate,
       base::TimeDelta wait_time);
   void OnResume();
 
-  // Actions that can manipulate the UserActions should be interrupted, such
-  // that they do not overwrite the paused state.
-  bool ShouldInterruptOnPause(const ActionProto& proto);
-
   // Maybe shows the message specified in a callout, depending on the current
   // state and client settings.
   bool MaybeShowSlowWarning(const std::string& message, bool enabled);

@@ -182,65 +182,11 @@ void ScriptExecutor::OnNavigationStateChanged() {
   }
 }
 
-bool ScriptExecutor::ShouldInterruptOnPause(const ActionProto& proto) {
-  switch (proto.action_info_case()) {
-    case ActionProto::ActionInfoCase::kPrompt:
-    case ActionProto::ActionInfoCase::kCollectUserData:
-    case ActionProto::ActionInfoCase::kShowGenericUi:
-      return true;
-    case ActionProto::ActionInfoCase::kClick:
-    case ActionProto::ActionInfoCase::kTell:
-    case ActionProto::ActionInfoCase::kShowCast:
-    case ActionProto::ActionInfoCase::kUseAddress:
-    case ActionProto::ActionInfoCase::kUseCard:
-    case ActionProto::ActionInfoCase::kWaitForDom:
-    case ActionProto::ActionInfoCase::kSelectOption:
-    case ActionProto::ActionInfoCase::kNavigate:
-    case ActionProto::ActionInfoCase::kStop:
-    case ActionProto::ActionInfoCase::kHighlightElement:
-    case ActionProto::ActionInfoCase::kUploadDom:
-    case ActionProto::ActionInfoCase::kShowDetails:
-    case ActionProto::ActionInfoCase::kSetFormValue:
-    case ActionProto::ActionInfoCase::kShowProgressBar:
-    case ActionProto::ActionInfoCase::kSetAttribute:
-    case ActionProto::ActionInfoCase::kShowInfoBox:
-    case ActionProto::ActionInfoCase::kExpectNavigation:
-    case ActionProto::ActionInfoCase::kWaitForNavigation:
-    case ActionProto::ActionInfoCase::kConfigureBottomSheet:
-    case ActionProto::ActionInfoCase::kShowForm:
-    case ActionProto::ActionInfoCase::kPopupMessage:
-    case ActionProto::ActionInfoCase::kWaitForDocument:
-    case ActionProto::ActionInfoCase::kGeneratePasswordForFormField:
-    case ActionProto::ActionInfoCase::kSaveGeneratedPassword:
-    case ActionProto::ActionInfoCase::kConfigureUiState:
-    case ActionProto::ActionInfoCase::kPresaveGeneratedPassword:
-    case ActionProto::ActionInfoCase::kGetElementStatus:
-    case ActionProto::ActionInfoCase::kScrollIntoView:
-    case ActionProto::ActionInfoCase::kWaitForDocumentToBecomeInteractive:
-    case ActionProto::ActionInfoCase::kWaitForDocumentToBecomeComplete:
-    case ActionProto::ActionInfoCase::kSendClickEvent:
-    case ActionProto::ActionInfoCase::kSendTapEvent:
-    case ActionProto::ActionInfoCase::kJsClick:
-    case ActionProto::ActionInfoCase::kSendKeystrokeEvents:
-    case ActionProto::ActionInfoCase::kSendChangeEvent:
-    case ActionProto::ActionInfoCase::kSetElementAttribute:
-    case ActionProto::ActionInfoCase::kSelectFieldValue:
-    case ActionProto::ActionInfoCase::kFocusField:
-    case ActionProto::ActionInfoCase::kWaitForElementToBecomeStable:
-    case ActionProto::ActionInfoCase::kCheckElementIsOnTop:
-    case ActionProto::ActionInfoCase::kReleaseElements:
-    case ActionProto::ActionInfoCase::kDispatchJsEvent:
-    case ActionProto::ActionInfoCase::kSendKeyEvent:
-    case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
-      return false;
-  }
-}
-
 void ScriptExecutor::OnPause(const std::string& message,
                              const std::string& button_label) {
   if (current_action_index_.has_value()) {
     DCHECK_LT(*current_action_index_, actions_.size());
-    if (ShouldInterruptOnPause(actions_[*current_action_index_]->proto())) {
+    if (actions_[*current_action_index_]->ShouldInterruptOnPause()) {
       actions_[*current_action_index_] = ProtocolUtils::CreateAction(
           this, actions_[*current_action_index_]->proto());
       current_action_data_ = CurrentActionData();

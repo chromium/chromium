@@ -27,6 +27,10 @@ PromptAction::PromptAction(ActionDelegate* delegate, const ActionProto& proto)
 
 PromptAction::~PromptAction() {}
 
+bool PromptAction::ShouldInterruptOnPause() const {
+  return true;
+}
+
 void PromptAction::InternalProcessAction(ProcessActionCallback callback) {
   callback_ = std::move(callback);
   if (proto_.prompt().choices_size() == 0) {

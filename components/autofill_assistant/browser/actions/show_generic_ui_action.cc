@@ -113,6 +113,10 @@ ShowGenericUiAction::~ShowGenericUiAction() {
   delegate_->GetPersonalDataManager()->RemoveObserver(this);
 }
 
+bool ShowGenericUiAction::ShouldInterruptOnPause() const {
+  return true;
+}
+
 void ShowGenericUiAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);

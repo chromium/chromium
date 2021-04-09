@@ -36,6 +36,10 @@ class Action {
 
   const ActionProto& proto() const { return proto_; }
 
+  // Actions that can manipulate the UserActions should be interrupted, such
+  // that they do not overwrite the paused state.
+  virtual bool ShouldInterruptOnPause() const;
+
  protected:
   // |delegate| must remain valid for the lifetime of this instance.
   explicit Action(ActionDelegate* delegate, const ActionProto& proto);

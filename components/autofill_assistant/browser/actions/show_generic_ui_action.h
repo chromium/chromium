@@ -31,6 +31,9 @@ class ShowGenericUiAction : public Action,
   ShowGenericUiAction(const ShowGenericUiAction&) = delete;
   ShowGenericUiAction& operator=(const ShowGenericUiAction&) = delete;
 
+  // Overrides Action:
+  bool ShouldInterruptOnPause() const override;
+
   // Overrides WaitForDomObserver:
   void OnInterruptStarted() override;
   void OnInterruptFinished() override;

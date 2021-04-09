@@ -28,6 +28,9 @@ class PromptAction : public Action {
   explicit PromptAction(ActionDelegate* delegate, const ActionProto& proto);
   ~PromptAction() override;
 
+  // Overrides Action:
+  bool ShouldInterruptOnPause() const override;
+
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;

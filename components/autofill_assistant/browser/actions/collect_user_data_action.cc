@@ -441,6 +441,10 @@ CollectUserDataAction::~CollectUserDataAction() {
   }
 }
 
+bool CollectUserDataAction::ShouldInterruptOnPause() const {
+  return true;
+}
+
 void CollectUserDataAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);
