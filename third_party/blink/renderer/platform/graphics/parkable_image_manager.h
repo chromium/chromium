@@ -115,7 +115,7 @@ class PLATFORM_EXPORT ParkableImageManager
   WTF::HashSet<ParkableImage*> on_disk_images_ GUARDED_BY(lock_);
 
   bool has_pending_parking_task_ GUARDED_BY(lock_) = false;
-  bool has_posted_accounting_task_ = false;
+  bool has_posted_accounting_task_ GUARDED_BY(lock_) = false;
 
   base::TimeDelta total_disk_read_time_ GUARDED_BY(lock_) = base::TimeDelta();
   base::TimeDelta total_disk_write_time_ GUARDED_BY(lock_) = base::TimeDelta();

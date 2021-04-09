@@ -221,10 +221,12 @@ sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
 class ParkableImageSegmentReader : public SegmentReader {
  public:
   explicit ParkableImageSegmentReader(scoped_refptr<ParkableImage> image);
-  ~ParkableImageSegmentReader() override;
+  ~ParkableImageSegmentReader() override = default;
   size_t size() const override;
   size_t GetSomeData(const char*& data, size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
+  void LockData() override;
+  void UnlockData() override;
 
  private:
   scoped_refptr<ParkableImage> parkable_image_;
@@ -242,12 +244,6 @@ ParkableImageSegmentReader::ParkableImageSegmentReader(
   MutexLocker lock(parkable_image_->lock_);
   parkable_image_->Unpark();
   DCHECK(parkable_image_->rw_buffer_);
-  parkable_image_->Lock();
-}
-
-ParkableImageSegmentReader::~ParkableImageSegmentReader() {
-  MutexLocker lock(parkable_image_->lock_);
-  parkable_image_->Unlock();
 }
 
 size_t ParkableImageSegmentReader::size() const {
@@ -260,7 +256,7 @@ size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
     return 0;
 
   MutexLocker lock(parkable_image_->lock_);
-  parkable_image_->Unpark();
+  DCHECK(parkable_image_->is_locked());
 
   RWBuffer::ROIter iter(parkable_image_->rw_buffer_.get(), available_);
   size_t position_of_block = 0;
@@ -281,6 +277,19 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
   // the case that everything is already in a single allocation. Double-check
   // this and fix it to match ROBufferSegmentReader.
   return BufferCopyAsSkData(iter, available_);
+}
+
+void ParkableImageSegmentReader::LockData() {
+  MutexLocker lock(parkable_image_->lock_);
+  parkable_image_->Unpark();
+
+  parkable_image_->Lock();
+}
+
+void ParkableImageSegmentReader::UnlockData() {
+  MutexLocker lock(parkable_image_->lock_);
+
+  parkable_image_->Unlock();
 }
 
 // SegmentReader ---------------------------------------------------------------

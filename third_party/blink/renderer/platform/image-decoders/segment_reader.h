@@ -52,6 +52,8 @@ class PLATFORM_EXPORT SegmentReader
   virtual size_t size() const = 0;
   virtual size_t GetSomeData(const char*& data, size_t position) const = 0;
   virtual sk_sp<SkData> GetAsSkData() const = 0;
+  virtual void LockData() {}
+  virtual void UnlockData() {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SegmentReader);
