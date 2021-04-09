@@ -981,16 +981,16 @@ bool OmniboxEditModel::AcceptKeyword(
     StartAutocomplete(false, true);
   }
 
-  // When entering keyword mode via tab, the new text to show is whatever the
-  // newly-selected match in the dropdown is.  When entering via space, however,
-  // we should make sure to use the actual |user_text_| as the basis for the new
+  // When entering keyword mode via tab (or if keyword search button is enabled,
+  // when the user text is empty), the new text to show is whatever the
+  // newly-selected match in the dropdown is.  When entering via space (or, if
+  // keyword button is enabled, when user text is not empty), however, we should
+  // make sure to use the actual |user_text_| as the basis for the new
   // text.  This ensures that if the user types "<keyword><space>" and the
   // default match would have inline autocompleted a further string (e.g.
   // because there's a past multi-word search beginning with this keyword), the
   // inline autocompletion doesn't get filled in as the keyword search query
-  // text. When the Keyword Search Button is enabled, the keyword hint/button is
-  // visible even if their query looks like "<keyword><space><user text>",
-  // so treat it as a space in this instance.
+  // text.
   //
   // We also treat tabbing into keyword mode like tabbing through the popup in
   // that we set |has_temporary_text_|, whereas pressing space is treated like
@@ -1001,9 +1001,11 @@ bool OmniboxEditModel::AcceptKeyword(
   // which we don't want to switch back to when exiting keyword mode; see
   // comments in ClearKeyword().
   const AutocompleteMatch& match = CurrentMatch(nullptr);
-  if (entry_method == OmniboxEventProto::TAB &&
-      (!OmniboxFieldTrial::IsKeywordSearchButtonEnabled() ||
-       user_text_.empty())) {
+  const bool can_overwrite_user_text =
+      OmniboxFieldTrial::IsKeywordSearchButtonEnabled()
+          ? user_text_.empty()
+          : entry_method == OmniboxEventProto::TAB;
+  if (can_overwrite_user_text) {
     // Ensure the current selection is saved before showing keyword mode
     // so that moving to another line and then reverting the text will restore
     // the current state properly.
@@ -1509,8 +1511,8 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   // |allow_exact_keyword_match_| will be used by StartAutocomplete() method,
   // which will be called by |view_->UpdatePopup()|; so after that returns we
   // can safely reset this flag.
-  // Entering keyword mode by space is disabled if the keyword button is
-  // enabled, so do not set |allow_exact_keyword_match_| in that case.
+  // If entering keyword mode by space is disabled, do not set
+  // |allow_exact_keyword_match_|.
   allow_exact_keyword_match_ =
       (OmniboxFieldTrial::GetKeywordSpaceTrigger() !=
        OmniboxFieldTrial::SPACE_TRIGGERING_DISABLED) &&
@@ -1699,8 +1701,6 @@ bool OmniboxEditModel::ShouldPreventElision() const {
 
 bool OmniboxEditModel::MaybeAcceptKeywordBySpace(
     const std::u16string& new_text) {
-  // Entering keyword mode by space is disabled when the keyword button is
-  // enabled, so do not accept keyword.
   if (OmniboxFieldTrial::GetKeywordSpaceTrigger() ==
       OmniboxFieldTrial::SPACE_TRIGGERING_DISABLED)
     return false;
