@@ -20,6 +20,7 @@ ChromeLabsButton::ChromeLabsButton(Browser* browser,
                                         base::Unretained(this))),
       browser_(browser),
       model_(model) {
+  SetVectorIcons(kChromeLabsIcon, kChromeLabsTouchIcon);
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CHROMELABS_BUTTON));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_CHROMELABS_BUTTON));
   button_controller()->set_notify_action(
@@ -31,13 +32,6 @@ ChromeLabsButton::ChromeLabsButton(Browser* browser,
 ChromeLabsButton::~ChromeLabsButton() {
   // Make sure the bubble is destroyed if the button is being destroyed.
   ChromeLabsBubbleView::Hide();
-}
-
-void ChromeLabsButton::UpdateIcon() {
-  const gfx::VectorIcon& chrome_labs_image =
-      ui::TouchUiController::Get()->touch_ui() ? kChromeLabsTouchIcon
-                                               : kChromeLabsIcon;
-  UpdateIconsWithStandardColors(chrome_labs_image);
 }
 
 void ChromeLabsButton::ButtonPressed() {

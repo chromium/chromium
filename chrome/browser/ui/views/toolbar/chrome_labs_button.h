@@ -20,9 +20,6 @@ class ChromeLabsButton : public ToolbarButton {
   ChromeLabsButton& operator=(const ChromeLabsButton&) = delete;
   ~ChromeLabsButton() override;
 
-  // ToolbarButton:
-  void UpdateIcon() override;
-
   static bool ShouldShowButton(const ChromeLabsBubbleViewModel* model);
 
  private:
