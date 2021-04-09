@@ -16431,6 +16431,56 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ("DONE", EvalJs(cc_frame, set_status_done).ExtractString());
 }
 
+// If the NavigationEntry |is_overriding_user_agent_| attribute is updated and
+// the entry reloaded, the new document will load with the user agent
+// overridden. Consecutive navigation will continue with the user agent
+// overridden.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       OverrideUserAgentThenReload) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/empty.html")));
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+
+  // Update the entry and load it.
+  controller.GetLastCommittedEntry()->SetIsOverridingUserAgent(true);
+  EXPECT_TRUE(controller.GetLastCommittedEntry()->GetIsOverridingUserAgent());
+  controller.Reload(ReloadType::ORIGINAL_REQUEST_URL, true);
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(controller.GetLastCommittedEntry()->GetIsOverridingUserAgent());
+
+  // Consecutive same-document navigation uses the new state.
+  EXPECT_TRUE(ExecJs(shell(), "history.pushState('', 'test', '#foo2')"));
+  EXPECT_TRUE(controller.GetLastCommittedEntry()->GetIsOverridingUserAgent());
+
+  // Consecutive cross-document same-origin navigation uses the new state.
+  EXPECT_TRUE(ExecJs(shell(), "location.href = '/title1.html';"));
+  EXPECT_TRUE(controller.GetLastCommittedEntry()->GetIsOverridingUserAgent());
+
+  // Consecutive cross-document cross-origin navigation uses the new state.
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("location.href = $1;", embedded_test_server()->GetURL(
+                                                    "b.com", "/empty.html"))));
+  EXPECT_TRUE(controller.GetLastCommittedEntry()->GetIsOverridingUserAgent());
+}
+
+// If the NavigationEntry |is_overriding_user_agent_| attribute is updated and
+// the document is still the one loaded without overriding user agent, then
+// committing a same-document navigation will restore the value used by the
+// document.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       OverrideUserAgentThenSameDocument) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/empty.html")));
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+
+  controller.GetLastCommittedEntry()->SetIsOverridingUserAgent(true);
+  EXPECT_TRUE(controller.GetLastCommittedEntry()->GetIsOverridingUserAgent());
+  EXPECT_TRUE(ExecJs(shell(), "history.pushState('', 'test', '#foo1')"));
+  EXPECT_FALSE(controller.GetLastCommittedEntry()->GetIsOverridingUserAgent());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          NavigationControllerAlertDialogBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()),

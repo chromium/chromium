@@ -9211,7 +9211,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   }
 
   if (!is_same_document_navigation) {
-    DCHECK_EQ(navigation_request->IsOverridingUserAgent() &&
+    DCHECK_EQ(navigation_request->is_overriding_user_agent() &&
                   frame_tree_node_->IsMainFrame(),
               params->is_overriding_user_agent);
   } else {
@@ -9336,7 +9336,7 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   is_mhtml_document_ = navigation_request->IsWaitingToCommit() &&
                        navigation_request->IsMhtmlOrSubframe();
 
-  is_overriding_user_agent_ = navigation_request->IsOverridingUserAgent() &&
+  is_overriding_user_agent_ = navigation_request->is_overriding_user_agent() &&
                               frame_tree_node_->IsMainFrame();
 
   // Mark whether the document is loaded with loadDataWithBaseURL or not. If

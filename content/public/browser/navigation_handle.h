@@ -422,7 +422,6 @@ class CONTENT_EXPORT NavigationHandle {
   // Store whether or not we're overriding the user agent. This may only be
   // called from DidStartNavigation().
   virtual void SetIsOverridingUserAgent(bool override_ua) = 0;
-  virtual bool GetIsOverridingUserAgent() = 0;
 
   // Suppress any errors during a navigation and behave as if the user cancelled
   // the navigation: no error page will commit.

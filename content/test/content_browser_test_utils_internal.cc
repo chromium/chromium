@@ -742,7 +742,7 @@ void FrameNavigateParamsCapturer::DidFinishNavigation(
   is_renderer_initiateds_.push_back(navigation_handle->IsRendererInitiated());
   has_user_gestures_.push_back(navigation_handle->HasUserGesture());
   is_overriding_user_agents_.push_back(
-      navigation_handle->GetIsOverridingUserAgent());
+      NavigationRequest::From(navigation_handle)->is_overriding_user_agent());
   if (!navigations_remaining_ &&
       (!web_contents()->IsLoading() || !wait_for_load_))
     loop_.Quit();

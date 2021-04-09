@@ -840,6 +840,9 @@ void Navigator::OnBeginNavigation(
   const bool override_user_agent =
       delegate_ &&
       delegate_->ShouldOverrideUserAgentForRendererInitiatedNavigation();
+  if (navigation_entry)
+    navigation_entry->SetIsOverridingUserAgent(override_user_agent);
+
   frame_tree_node->CreatedNavigationRequest(
       NavigationRequest::CreateRendererInitiated(
           frame_tree_node, navigation_entry, std::move(common_params),

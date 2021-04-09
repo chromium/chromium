@@ -156,7 +156,6 @@ class MockNavigationHandle : public NavigationHandle {
               ForceEnableOriginTrials,
               (const std::vector<std::string>& trials));
   MOCK_METHOD(void, SetIsOverridingUserAgent, (bool));
-  MOCK_METHOD(bool, GetIsOverridingUserAgent, ());
   MOCK_METHOD(void, SetSilentlyIgnoreErrors, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsToCommit, ());
   MOCK_METHOD(bool, IsWaitingToCommit, ());

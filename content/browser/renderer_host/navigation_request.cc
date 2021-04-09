@@ -1317,7 +1317,11 @@ NavigationRequest::NavigationRequest(
     if (entry == controller->GetPendingEntry())
       pending_entry_ref_ = controller->ReferencePendingEntry();
 
-    entry_overrides_ua_ = entry->GetIsOverridingUserAgent();
+    // |commit_params->is_overriding_user_agent| is the single source of truth
+    // in NavigationRequest. For history navigations, callers of this
+    // constructor must not provide conflicting requirements. Only
+    // |commit_params->is_overriding_user_agent| will be taken into account.
+    DCHECK_EQ(is_overriding_user_agent(), entry->GetIsOverridingUserAgent());
   }
 
   net::HttpRequestHeaders headers;
@@ -1331,7 +1335,7 @@ NavigationRequest::NavigationRequest(
       net::HttpRequestHeaders client_hints_headers;
       AddNavigationRequestClientHintsHeaders(
           common_params_->url, &client_hints_headers, browser_context,
-          client_hints_delegate, IsOverridingUserAgent(), frame_tree_node_);
+          client_hints_delegate, is_overriding_user_agent(), frame_tree_node_);
       headers.MergeFrom(client_hints_headers);
     }
 
@@ -3530,9 +3534,7 @@ void NavigationRequest::OnRedirectChecksComplete(
         browser_context, client_hints_delegate, frame_tree_node_);
     AddNavigationRequestClientHintsHeaders(
         common_params_->url, &client_hints_extra_headers, browser_context,
-        client_hints_delegate,
-        commit_params_->is_overriding_user_agent || entry_overrides_ua_,
-        frame_tree_node_);
+        client_hints_delegate, is_overriding_user_agent(), frame_tree_node_);
     modified_headers.MergeFrom(client_hints_extra_headers);
   }
 
@@ -5847,21 +5849,13 @@ void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
   if (is_for_commit_)
     return;
 
-  was_set_overriding_user_agent_called_ = true;
-
-  // Don't early out if entry_overrides_ua_ == override_ua as the user-agent
-  // may have changed.
-
   // This code assumes it is only called from DidStartNavigation().
   DCHECK(!ua_change_requires_reload_);
 
-  entry_overrides_ua_ = override_ua;
-  NavigationEntry* entry = GetNavigationEntry();
-  // A NavigationEntry may not have been created yet.
-  if (entry)
-    entry->SetIsOverridingUserAgent(override_ua);
-
-  commit_params_->is_overriding_user_agent = entry_overrides_ua_;
+  commit_params_->is_overriding_user_agent = override_ua;
+  // The new document, created by this navigation, will be honoring the new
+  // value. It will be reflected into its NavigationEntry's when committing the
+  // new document at DidCommitNavigation time.
 
   net::HttpRequestHeaders headers;
   headers.AddHeadersFromString(begin_params_->headers);
@@ -5876,17 +5870,13 @@ void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
       browser_context->GetClientHintsControllerDelegate();
   if (client_hints_delegate) {
     UpdateNavigationRequestClientUaHeaders(
-        common_params_->url, client_hints_delegate, entry_overrides_ua_,
+        common_params_->url, client_hints_delegate, is_overriding_user_agent(),
         frame_tree_node_, &headers);
   }
   begin_params_->headers = headers.ToString();
   // |request_headers_| comes from |begin_params_|. Clear |request_headers_| now
   // so that if |request_headers_| are needed, they will be updated.
   request_headers_.reset();
-}
-
-bool NavigationRequest::GetIsOverridingUserAgent() {
-  return entry_overrides_ua_;
 }
 
 void NavigationRequest::SetSilentlyIgnoreErrors() {
@@ -6042,11 +6032,11 @@ NavigationRequest::BuildClientSecurityState() {
 }
 
 std::string NavigationRequest::GetUserAgentOverride() {
-  return IsOverridingUserAgent() ? frame_tree_node_->navigator()
-                                       .GetDelegate()
-                                       ->GetUserAgentOverride()
-                                       .ua_string_override
-                                 : std::string();
+  return is_overriding_user_agent() ? frame_tree_node_->navigator()
+                                          .GetDelegate()
+                                          ->GetUserAgentOverride()
+                                          .ua_string_override
+                                    : std::string();
 }
 
 NavigationControllerImpl* NavigationRequest::GetNavigationController() {

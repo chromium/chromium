@@ -1339,14 +1339,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
   details->is_main_frame = !rfh->GetParent();
   details->http_status_code = params.http_status_code;
 
-  // If the NavigationRequest was created without a NavigationEntry and
-  // SetIsOverridingUserAgent() was called, it needs to be applied to the
-  // NavigationEntry now.
-  if (!navigation_request->nav_entry_id() &&
-      navigation_request->was_set_overriding_user_agent_called()) {
-    active_entry->SetIsOverridingUserAgent(
-        navigation_request->entry_overrides_ua());
-  }
+  active_entry->SetIsOverridingUserAgent(
+      navigation_request->is_overriding_user_agent());
 
   NotifyNavigationEntryCommitted(details);
 
@@ -1674,7 +1668,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     new_entry->SetOriginalRequestURL(request->GetOriginalRequestURL());
 
     if (!is_same_document) {
-      DCHECK_EQ(request->IsOverridingUserAgent() && !rfh->GetParent(),
+      DCHECK_EQ(request->is_overriding_user_agent() && !rfh->GetParent(),
                 params.is_overriding_user_agent);
     } else {
       DCHECK_EQ(rfh->is_overriding_user_agent(),
