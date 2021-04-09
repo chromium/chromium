@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+async function fileReaderReady(reader) {
+  return new Promise(function(resolve, reject) {
+    reader.onload = function() {
+      resolve(reader.result);
+    }
+    reader.onerror = function() {
+      reject(reader.error);
+    }
+  })
+}
+
+function readBlobAsText(blob) {
+  const reader = new FileReader();
+  reader.readAsText(blob);
+  return fileReaderReady(reader);
+}
+
+async function fetchBlob() {
+  const bc = new BroadcastChannel('prerender-channel');
+  assert_true(document.prerendering);
+
+  const response = await fetch('cache.txt');
+  const bodyAsBlob = await response.blob();
+  const body = await readBlobAsText(bodyAsBlob);
+
+  bc.postMessage(body);
+  bc.close();
+}
+
+fetchBlob();
+</script>
