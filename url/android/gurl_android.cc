@@ -104,6 +104,16 @@ static void JNI_GURL_GetOrigin(JNIEnv* env,
   InitFromGURL(env, gurl->GetOrigin(), target);
 }
 
+static jboolean JNI_GURL_DomainIs(JNIEnv* env,
+                                  const JavaParamRef<jstring>& j_spec,
+                                  jboolean is_valid,
+                                  jlong parsed_ptr,
+                                  const JavaParamRef<jstring>& j_domain) {
+  std::unique_ptr<GURL> gurl = FromJavaGURL(env, j_spec, is_valid, parsed_ptr);
+  const std::string& domain = ConvertJavaStringToUTF8(env, j_domain);
+  return gurl->DomainIs(domain);
+}
+
 static void JNI_GURL_Init(JNIEnv* env,
                           const base::android::JavaParamRef<jstring>& uri,
                           const base::android::JavaParamRef<jobject>& target) {

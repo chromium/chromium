@@ -27,6 +27,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /**
@@ -56,7 +57,7 @@ import org.chromium.url.Origin;
 
         @Override
         protected void startAutofillAssistantWithIntent(
-                Intent targetIntent, String browserFallbackUrl) {
+                Intent targetIntent, GURL browserFallbackUrl) {
             mWasAutofillAssistantStarted = true;
         }
 
@@ -76,7 +77,7 @@ import org.chromium.url.Origin;
                 return false;
             }
 
-            String fallbackUrl = "https://www.example.com";
+            GURL fallbackUrl = new GURL("https://www.example.com");
 
             return handleWithAutofillAssistant(params, intent, fallbackUrl, isGoogleReferrer);
         }
@@ -213,12 +214,12 @@ import org.chromium.url.Origin;
     @Test
     @SmallTest
     public void testMaybeSetPendingReferrer() {
-        String url = "http://www.example.com";
+        String url = "http://www.example.com/";
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
 
-        String referrerUrl = "http://www.example-referrer.com";
-        mExternalNavigationDelegateImpl.maybeSetPendingReferrer(intent, referrerUrl);
+        String referrerUrl = "http://www.example-referrer.com/";
+        mExternalNavigationDelegateImpl.maybeSetPendingReferrer(intent, new GURL(referrerUrl));
 
         Assert.assertEquals(
                 Uri.parse(referrerUrl), intent.getParcelableExtra(Intent.EXTRA_REFERRER));
@@ -234,7 +235,7 @@ import org.chromium.url.Origin;
     testHandleWithAutofillAssistant_TriggersFromSearch() {
         ExternalNavigationParams params =
                 new ExternalNavigationParams
-                        .Builder(AUTOFILL_ASSISTANT_INTENT_URL, /*isIncognito=*/false)
+                        .Builder(new GURL(AUTOFILL_ASSISTANT_INTENT_URL), /*isIncognito=*/false)
                         .build();
 
         Assert.assertTrue(mExternalNavigationDelegateImplForTesting.handleWithAutofillAssistant(
@@ -250,7 +251,7 @@ import org.chromium.url.Origin;
     testHandleWithAutofillAssistant_DoesNotTriggerFromSearchInIncognito() {
         ExternalNavigationParams params =
                 new ExternalNavigationParams
-                        .Builder(AUTOFILL_ASSISTANT_INTENT_URL, /*isIncognito=*/true)
+                        .Builder(new GURL(AUTOFILL_ASSISTANT_INTENT_URL), /*isIncognito=*/true)
                         .build();
 
         Assert.assertFalse(mExternalNavigationDelegateImplForTesting.handleWithAutofillAssistant(
@@ -266,7 +267,7 @@ import org.chromium.url.Origin;
     testHandleWithAutofillAssistant_DoesNotTriggerFromDifferentOrigin() {
         ExternalNavigationParams params =
                 new ExternalNavigationParams
-                        .Builder(AUTOFILL_ASSISTANT_INTENT_URL, /*isIncognito=*/false)
+                        .Builder(new GURL(AUTOFILL_ASSISTANT_INTENT_URL), /*isIncognito=*/false)
                         .build();
 
         Assert.assertFalse(mExternalNavigationDelegateImplForTesting.handleWithAutofillAssistant(
@@ -282,7 +283,7 @@ import org.chromium.url.Origin;
     testHandleWithAutofillAssistant_DoesNotTriggerWhenFeatureDisabled() {
         ExternalNavigationParams params =
                 new ExternalNavigationParams
-                        .Builder(AUTOFILL_ASSISTANT_INTENT_URL, /*isIncognito=*/false)
+                        .Builder(new GURL(AUTOFILL_ASSISTANT_INTENT_URL), /*isIncognito=*/false)
                         .build();
 
         Assert.assertFalse(mExternalNavigationDelegateImplForTesting.handleWithAutofillAssistant(

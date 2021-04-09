@@ -6,6 +6,7 @@ package org.chromium.components.external_intents;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /**
@@ -13,13 +14,13 @@ import org.chromium.url.Origin;
  */
 public class ExternalNavigationParams {
     /** The URL which we are navigating to. */
-    private final String mUrl;
+    private final GURL mUrl;
 
     /** Whether we are currently in an incognito context. */
     private final boolean mIsIncognito;
 
     /** The referrer URL for the current navigation. */
-    private final String mReferrerUrl;
+    private final GURL mReferrerUrl;
 
     /** The page transition type for the current navigation. */
     private final int mPageTransition;
@@ -70,7 +71,7 @@ public class ExternalNavigationParams {
      */
     private Origin mInitiatorOrigin;
 
-    private ExternalNavigationParams(String url, boolean isIncognito, String referrerUrl,
+    private ExternalNavigationParams(GURL url, boolean isIncognito, GURL referrerUrl,
             int pageTransition, boolean isRedirect, boolean appMustBeInForeground,
             RedirectHandler redirectHandler, boolean openInNewTab,
             boolean isBackgroundTabNavigation, boolean intentLaunchesAllowedInBackgroundTabs,
@@ -78,9 +79,10 @@ public class ExternalNavigationParams {
             boolean shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent,
             boolean isRendererInitiated, @Nullable Origin initiatorOrigin) {
         mUrl = url;
+        assert mUrl != null;
         mIsIncognito = isIncognito;
         mPageTransition = pageTransition;
-        mReferrerUrl = referrerUrl;
+        mReferrerUrl = (referrerUrl == null) ? GURL.emptyGURL() : referrerUrl;
         mIsRedirect = isRedirect;
         mApplicationMustBeInForeground = appMustBeInForeground;
         mRedirectHandler = redirectHandler;
@@ -97,7 +99,7 @@ public class ExternalNavigationParams {
     }
 
     /** @return The URL to potentially open externally. */
-    public String getUrl() {
+    public GURL getUrl() {
         return mUrl;
     }
 
@@ -107,7 +109,7 @@ public class ExternalNavigationParams {
     }
 
     /** @return The referrer URL. */
-    public String getReferrerUrl() {
+    public GURL getReferrerUrl() {
         return mReferrerUrl;
     }
 
@@ -193,13 +195,13 @@ public class ExternalNavigationParams {
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
         /** The URL which we are navigating to. */
-        private String mUrl;
+        private GURL mUrl;
 
         /** Whether we are currently in an incognito context. */
         private boolean mIsIncognito;
 
         /** The referrer URL for the current navigation. */
-        private String mReferrerUrl;
+        private GURL mReferrerUrl;
 
         /** The page transition type for the current navigation. */
         private int mPageTransition;
@@ -250,12 +252,12 @@ public class ExternalNavigationParams {
          */
         private Origin mInitiatorOrigin;
 
-        public Builder(String url, boolean isIncognito) {
+        public Builder(GURL url, boolean isIncognito) {
             mUrl = url;
             mIsIncognito = isIncognito;
         }
 
-        public Builder(String url, boolean isIncognito, String referrer, int pageTransition,
+        public Builder(GURL url, boolean isIncognito, GURL referrer, int pageTransition,
                 boolean isRedirect) {
             mUrl = url;
             mIsIncognito = isIncognito;

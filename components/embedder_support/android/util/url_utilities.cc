@@ -11,6 +11,7 @@
 #include "components/google/core/common/google_util.h"
 #include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -28,9 +29,6 @@ static const char* const g_supported_schemes[] = {
 
 static const char* const g_downloadable_schemes[] = {
     "data", "blob", "file", "filesystem", "http", "https", nullptr};
-
-static const char* const g_fallback_valid_schemes[] = {"http", "https",
-                                                       nullptr};
 
 GURL JNI_UrlUtilities_ConvertJavaStringToGURL(JNIEnv* env, jstring url) {
   return url ? GURL(ConvertJavaStringToUTF8(env, url)) : GURL();
@@ -196,13 +194,6 @@ static jboolean JNI_UrlUtilities_IsAcceptedScheme(
   return CheckSchemeBelongsToList(env, gurl, g_supported_schemes);
 }
 
-static jboolean JNI_UrlUtilities_IsValidForIntentFallbackNavigation(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
-  GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
-  return CheckSchemeBelongsToList(env, gurl, g_fallback_valid_schemes);
-}
-
 static jboolean JNI_UrlUtilities_IsDownloadable(
     JNIEnv* env,
     const JavaParamRef<jobject>& url) {
@@ -217,6 +208,21 @@ static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_EscapeQueryParamValue(
   return ConvertUTF8ToJavaString(
       env, net::EscapeQueryParamValue(
                base::android::ConvertJavaStringToUTF8(url), use_plus));
+}
+
+static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetValueForKeyInQuery(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_url,
+    const JavaParamRef<jstring>& j_key) {
+  DCHECK(j_url);
+  DCHECK(j_key);
+  const std::string& key = ConvertJavaStringToUTF8(env, j_key);
+  std::string out;
+  if (!net::GetValueForKeyInQuery(*url::GURLAndroid::ToNativeGURL(env, j_url),
+                                  key, &out)) {
+    return ScopedJavaLocalRef<jstring>();
+  }
+  return base::android::ConvertUTF8ToJavaString(env, out);
 }
 
 }  // namespace embedder_support

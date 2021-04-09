@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /** A launcher for Instant Apps. */
 public class InstantAppsHandler {
@@ -231,13 +232,14 @@ public class InstantAppsHandler {
      * App banner.
      * @return Whether an Instant App intent was started.
      */
-    public boolean handleNavigation(Context context, String url, Uri referrer, Tab tab) {
+    public boolean handleNavigation(Context context, GURL url, GURL referrer, Tab tab) {
         boolean urlIsInstantAppDefault =
                 InstantAppsSettings.isInstantAppDefault(tab.getWebContents(), url);
+        Uri referrerUri = referrer.isEmpty() ? null : Uri.parse(referrer.getSpec());
         if (shouldLaunchInstantApp(tab.getWebContents(), url, referrer, urlIsInstantAppDefault)) {
-            return launchInstantAppForNavigation(context, url, referrer);
+            return launchInstantAppForNavigation(context, url.getSpec(), referrerUri);
         }
-        maybeShowInstantAppBanner(context, url, referrer, tab, urlIsInstantAppDefault);
+        maybeShowInstantAppBanner(context, url.getSpec(), referrerUri, tab, urlIsInstantAppDefault);
         return false;
     }
 
@@ -250,7 +252,7 @@ public class InstantAppsHandler {
      * @return Whether we should launch the instant app.
      */
     private boolean shouldLaunchInstantApp(
-            WebContents webContents, String url, Uri referrer, boolean urlIsInstantAppDefault) {
+            WebContents webContents, GURL url, GURL referrer, boolean urlIsInstantAppDefault) {
         // Launch the instant app automatically on these conditions:
         // a) The host of the current URL and referrer are different, and the user has chosen to
         //    launch this instant app in the past.
@@ -258,10 +260,8 @@ public class InstantAppsHandler {
         //    handled by an instant app and the current one is.
         if (!urlIsInstantAppDefault) return false;
 
-        String urlHost = Uri.parse(url).getHost();
-        boolean sameHosts =
-                referrer != null && urlHost != null && urlHost.equals(referrer.getHost());
-        return (sameHosts && getInstantAppIntentForUrl(referrer.toString()) == null) || !sameHosts;
+        boolean sameHosts = !referrer.isEmpty() && url.getHost().equals(referrer.getHost());
+        return (sameHosts && getInstantAppIntentForUrl(referrer.getSpec()) == null) || !sameHosts;
     }
 
     /**

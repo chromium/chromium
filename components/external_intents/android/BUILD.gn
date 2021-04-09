@@ -23,6 +23,7 @@ android_library("java") {
     "//base:base_java",
     "//components/embedder_support/android:util_java",
     "//components/navigation_interception/android:navigation_interception_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//components/webapk/android/libs/client:java",
     "//content/public/android:content_java",
     "//services/network/public/mojom:url_loader_base_java",

@@ -404,6 +404,12 @@ TabAndroid::TabLoadStatus TabAndroid::LoadUrl(
   if (gurl.is_empty())
     return PAGE_LOAD_FAILED;
 
+  // TODO(https://crbug.com/783819): Don't fix up all URLs. Documentation on
+  // FixupURL explicitly says not to use it on URLs coming from untrustworthy
+  // sources, like other apps. Once migrations of Java code to GURL are complete
+  // and incoming URLs are converted to GURLs at their source, we can make
+  // decisions of whether or not to fix up GURLs on a case-by-case basis based
+  // on trustworthiness of the incoming URL.
   GURL fixed_url(
       url_formatter::FixupURL(gurl.possibly_invalid_spec(), std::string()));
   if (!fixed_url.is_valid())

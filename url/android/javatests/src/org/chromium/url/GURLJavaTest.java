@@ -271,4 +271,20 @@ public class GURLJavaTest {
         url = GURL.deserialize(corruptedVersion);
         Assert.assertEquals(GURL.emptyGURL(), url);
     }
+
+    // Test that domainIs is hooked up correctly.
+    @SmallTest
+    @Test
+    public void testDomainIs() {
+        GURL url1 = new GURL("https://www.google.com");
+        GURL url2 = new GURL("https://www.notgoogle.com");
+
+        Assert.assertTrue(url1.domainIs("com"));
+        Assert.assertTrue(url2.domainIs("com"));
+        Assert.assertTrue(url1.domainIs("google.com"));
+        Assert.assertFalse(url2.domainIs("google.com"));
+
+        Assert.assertTrue(url1.domainIs("www.google.com"));
+        Assert.assertFalse(url1.domainIs("images.google.com"));
+    }
 }

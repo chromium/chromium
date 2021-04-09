@@ -63,6 +63,7 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.net.HttpUtil;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
@@ -1383,10 +1384,10 @@ public class IntentHandler {
      * @param intent The intent to which we add a referrer.
      * @param url The referrer URL.
      */
-    public static void setPendingReferrer(Intent intent, String url) {
-        intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse(url));
+    public static void setPendingReferrer(Intent intent, GURL url) {
+        intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse(url.getSpec()));
         intent.putExtra(IntentHandler.EXTRA_REFERRER_ID, ++sReferrerId);
-        sPendingReferrer = new Pair<Integer, String>(sReferrerId, url);
+        sPendingReferrer = new Pair<Integer, String>(sReferrerId, url.getSpec());
     }
 
     /**

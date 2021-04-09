@@ -19,6 +19,7 @@ import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /**
@@ -48,7 +49,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean shouldDisableExternalIntentRequestsForUrl(String url) {
+    public boolean shouldDisableExternalIntentRequestsForUrl(GURL url) {
         return false;
     }
 
@@ -90,7 +91,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     // This method should never be invoked as WebLayer does not handle incoming intents.
     @Override
     public OverrideUrlLoadingResult handleIncognitoIntentTargetingSelf(
-            final Intent intent, final String referrerUrl, final String fallbackUrl) {
+            final Intent intent, final GURL referrerUrl, final GURL fallbackUrl) {
         assert false;
         return OverrideUrlLoadingResult.forNoOverride();
     }
@@ -121,7 +122,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public void loadUrlInNewTab(final String url, final boolean launchIncognito) {
+    public void loadUrlInNewTab(final GURL url, final boolean launchIncognito) {
         // Should never be invoked based on the implementation of supportsCreatingNewTabs().
         assert false;
     }
@@ -153,7 +154,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     // This is relevant only if the intent ends up being handled by this app, which does not happen
     // for WebLayer.
-    public void maybeSetPendingReferrer(Intent intent, String referrerUrl) {}
+    public void maybeSetPendingReferrer(Intent intent, GURL referrerUrl) {}
 
     @Override
     // This is relevant only if the intent ends up being handled by this app, which does not happen
@@ -162,7 +163,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean maybeLaunchInstantApp(
-            String url, String referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer) {
+            GURL url, GURL referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer) {
         return false;
     }
 
@@ -204,7 +205,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean handleWithAutofillAssistant(ExternalNavigationParams params, Intent targetIntent,
-            String browserFallbackUrl, boolean isGoogleReferrer) {
+            GURL browserFallbackUrl, boolean isGoogleReferrer) {
         return false;
     }
 

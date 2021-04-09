@@ -141,22 +141,6 @@ public class UrlUtilitiesUnitTest {
 
     @Test
     @SmallTest
-    public void testIsValidForIntentFallbackUrl() {
-        Assert.assertTrue(UrlUtilities.isValidForIntentFallbackNavigation(
-                "https://user:pass@awesome.com:9000/bad-scheme:#fake:"));
-        Assert.assertTrue(
-                UrlUtilities.isValidForIntentFallbackNavigation("http://awesome.example.com/"));
-        Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation("inline:skates.co.uk"));
-        Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation("javascript:alert(1)"));
-        Assert.assertFalse(
-                UrlUtilities.isValidForIntentFallbackNavigation("file://hostname/path/to/file"));
-        Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation("data:data"));
-        Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation("about:awesome"));
-        Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation(""));
-    }
-
-    @Test
-    @SmallTest
     public void testIsUrlWithinScope() {
         String scope = "http://www.example.com/sub";
         Assert.assertTrue(UrlUtilities.isUrlWithinScope(scope, scope));
@@ -252,5 +236,18 @@ public class UrlUtilitiesUnitTest {
         Assert.assertEquals("foo", UrlUtilities.escapeQueryParamValue("foo", true));
         Assert.assertEquals("foo+bar", UrlUtilities.escapeQueryParamValue("foo bar", true));
         Assert.assertEquals("foo%2B%2B", UrlUtilities.escapeQueryParamValue("foo++", true));
+    }
+
+    // Note that this just tests the plumbing of the Java code to the native
+    // net::GetValueForKeyInQuery function, which is tested much more thoroughly there.
+    @Test
+    @SmallTest
+    public void testGetValueForKeyInQuery() {
+        GURL url = new GURL("https://www.example.com/?q1=foo&q2=bar&q11=#q2=notbar&q3=baz");
+        Assert.assertEquals("foo", UrlUtilities.getValueForKeyInQuery(url, "q1"));
+        Assert.assertEquals("bar", UrlUtilities.getValueForKeyInQuery(url, "q2"));
+        Assert.assertEquals("", UrlUtilities.getValueForKeyInQuery(url, "q11"));
+        Assert.assertNull(UrlUtilities.getValueForKeyInQuery(url, "1"));
+        Assert.assertNull(UrlUtilities.getValueForKeyInQuery(url, "q3"));
     }
 }

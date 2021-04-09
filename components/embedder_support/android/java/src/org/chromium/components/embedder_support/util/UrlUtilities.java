@@ -79,15 +79,6 @@ public class UrlUtilities {
     /**
      * @param uri A URI.
      *
-     * @return True if the URI is valid for Intent fallback navigation.
-     */
-    public static boolean isValidForIntentFallbackNavigation(String uri) {
-        return UrlUtilitiesJni.get().isValidForIntentFallbackNavigation(uri);
-    }
-
-    /**
-     * @param uri A URI.
-     *
      * @return True if the URI's scheme is one that Chrome can download.
      */
     public static boolean isDownloadableScheme(@NonNull GURL url) {
@@ -270,10 +261,29 @@ public class UrlUtilities {
         return BidiFormatter.getInstance().unicodeWrap(trimmedPublisher);
     }
 
+    /**
+     * See native url_util::GetValueForKeyInQuery().
+     *
+     * Equivalent to {@link Uri#getQueryParameter(String)}.
+     *
+     * @return null if the key doesn't exist in the query string for the URL. Otherwise, returns the
+     * value for the key in the query string.
+     */
+    public static String getValueForKeyInQuery(GURL url, String key) {
+        return UrlUtilitiesJni.get().getValueForKeyInQuery(url, key);
+    }
+
+    /**
+     * @return true if |url|'s scheme is for an Android intent.
+     */
+    public static boolean hasIntentScheme(GURL url) {
+        return url.getScheme().equals(UrlConstants.APP_INTENT_SCHEME)
+                || url.getScheme().equals(UrlConstants.INTENT_SCHEME);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isDownloadable(GURL url);
-        boolean isValidForIntentFallbackNavigation(String url);
         boolean isAcceptedScheme(String url);
         boolean sameDomainOrHost(
                 String primaryUrl, String secondaryUrl, boolean includePrivateRegistries);
@@ -295,5 +305,6 @@ public class UrlUtilities {
         boolean urlsFragmentsDiffer(String url, String url2);
 
         String escapeQueryParamValue(String url, boolean usePlus);
+        String getValueForKeyInQuery(GURL url, String key);
     }
 }

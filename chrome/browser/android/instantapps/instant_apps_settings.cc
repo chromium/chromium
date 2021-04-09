@@ -13,6 +13,7 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -80,16 +81,14 @@ static void JNI_InstantAppsSettings_SetInstantAppDefault(
 static jboolean JNI_InstantAppsSettings_GetInstantAppDefault(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jstring>& jurl) {
+    const JavaParamRef<jobject>& jurl) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
-  std::string url(ConvertJavaStringToUTF8(env, jurl));
-
   base::Optional<base::Time> added_time =
       webapps::AppBannerSettingsHelper::GetSingleBannerEvent(
-          web_contents, GURL(url),
+          web_contents, *url::GURLAndroid::ToNativeGURL(env, jurl),
           webapps::AppBannerSettingsHelper::kInstantAppsKey,
           webapps::AppBannerSettingsHelper::
               APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN);

@@ -72,6 +72,15 @@ public class LoadUrlParams {
      * @param url the url to be loaded
      * @param transitionType the PageTransitionType constant corresponding to the load
      */
+    public LoadUrlParams(GURL url, int transitionType) {
+        this(url.getSpec(), transitionType);
+    }
+
+    /**
+     * Creates an instance with the given page transition type.
+     * @param url the url to be loaded
+     * @param transitionType the PageTransitionType constant corresponding to the load
+     */
     public LoadUrlParams(String url, int transitionType) {
         mUrl = url;
         mTransitionType = transitionType;

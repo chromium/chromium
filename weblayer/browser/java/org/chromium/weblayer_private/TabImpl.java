@@ -501,6 +501,11 @@ public final class TabImpl extends ITab.Stub {
         String url = loadUrlParams.getUrl();
         if (url == null || url.isEmpty()) return;
 
+        // TODO(https://crbug.com/783819): Don't fix up all URLs. Documentation on FixupURL
+        // explicitly says not to use it on URLs coming from untrustworthy sources, like other apps.
+        // Once migrations of Java code to GURL are complete and incoming URLs are converted to
+        // GURLs at their source, we can make decisions of whether or not to fix up GURLs on a
+        // case-by-case basis based on trustworthiness of the incoming URL.
         GURL fixedUrl = UrlFormatter.fixupUrl(url);
         if (!fixedUrl.isValid()) return;
 

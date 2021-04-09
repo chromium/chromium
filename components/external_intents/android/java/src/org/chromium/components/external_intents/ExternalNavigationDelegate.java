@@ -8,13 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
@@ -44,7 +44,7 @@ public interface ExternalNavigationDelegate {
     /**
      * Returns whether to disable forwarding URL requests to external intents for the passed-in URL.
      */
-    boolean shouldDisableExternalIntentRequestsForUrl(String url);
+    boolean shouldDisableExternalIntentRequestsForUrl(GURL url);
 
     /**
      * Returns whether the embedder has custom integration with InstantApps (most embedders will not
@@ -103,7 +103,7 @@ public interface ExternalNavigationDelegate {
      * @return The OverrideUrlLoadingResult for the action taken by the embedder.
      */
     OverrideUrlLoadingResult handleIncognitoIntentTargetingSelf(
-            Intent intent, String referrerUrl, String fallbackUrl);
+            Intent intent, GURL referrerUrl, GURL fallbackUrl);
 
     /**
      * Loads a URL as specified by |loadUrlParams| if possible. May fail in exceptional conditions
@@ -116,7 +116,7 @@ public interface ExternalNavigationDelegate {
     void maybeSetWindowId(Intent intent);
 
     /** Records the pending referrer if desired. */
-    void maybeSetPendingReferrer(Intent intent, @NonNull String referrerUrl);
+    void maybeSetPendingReferrer(Intent intent, GURL referrerUrl);
 
     /**
      * Adjusts any desired extras related to intents to instant apps based on the value of
@@ -152,7 +152,7 @@ public interface ExternalNavigationDelegate {
      * @return Whether we launched an instant app.
      */
     boolean maybeLaunchInstantApp(
-            String url, String referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer);
+            GURL url, GURL referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer);
 
     /**
      * @return The WindowAndroid instance associated with this delegate instance.
@@ -190,7 +190,7 @@ public interface ExternalNavigationDelegate {
      * @param url The URL to load.
      * @param launchIncognito whether the new tab should be incognito.
      */
-    void loadUrlInNewTab(final String url, final boolean launchIncognito);
+    void loadUrlInNewTab(final GURL url, final boolean launchIncognito);
 
     /**
      * @return whether it's possible to load a URL in the current tab.
@@ -225,5 +225,5 @@ public interface ExternalNavigationDelegate {
      * Gives the embedder a chance to handle the intent via the autofill assistant.
      */
     boolean handleWithAutofillAssistant(ExternalNavigationParams params, Intent targetIntent,
-            String browserFallbackUrl, boolean isGoogleReferrer);
+            GURL browserFallbackUrl, boolean isGoogleReferrer);
 }

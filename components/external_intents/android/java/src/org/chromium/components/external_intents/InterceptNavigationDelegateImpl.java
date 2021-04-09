@@ -84,9 +84,7 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
         }
 
         ExternalNavigationParams params =
-                new ExternalNavigationParams.Builder(url.getSpec(), incognito)
-                        .setOpenInNewTab(true)
-                        .build();
+                new ExternalNavigationParams.Builder(url, incognito).setOpenInNewTab(true).build();
         mLastOverrideUrlLoadingResultType =
                 mExternalNavHandler.shouldOverrideUrlLoading(params).getResultType();
         return mLastOverrideUrlLoadingResultType
@@ -179,11 +177,9 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
                 mClient.wasTabLaunchedFromLongPressInBackground() && shouldCloseTab;
         // http://crbug.com/448977: If a new tab is closed by this overriding, we should open an
         // Intent in a new tab when Chrome receives it again.
-        // TODO(https://crbug.com/783819): Covert ExternalNavigationParams to GURL.
         return new ExternalNavigationParams
-                .Builder(navigationParams.url.getSpec(), mClient.isIncognito(),
-                        navigationParams.referrer.getSpec(), navigationParams.pageTransitionType,
-                        navigationParams.isRedirect)
+                .Builder(navigationParams.url, mClient.isIncognito(), navigationParams.referrer,
+                        navigationParams.pageTransitionType, navigationParams.isRedirect)
                 .setApplicationMustBeInForeground(true)
                 .setRedirectHandler(redirectHandler)
                 .setOpenInNewTab(shouldCloseTab)
