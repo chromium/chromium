@@ -444,10 +444,10 @@ class Profile : public content::BrowserContext {
   // TODO(https://crbug.com/1125474): After auditing all use cases of
   // |IsGuestSession| on all platforms and removal of all calls to
   // |IsGuestSession|, rename to |IsGuestProfile|.
-  virtual bool IsEphemeralGuestProfile() const;
+  bool IsEphemeralGuestProfile() const;
 
   // Returns whether it is a system profile.
-  virtual bool IsSystemProfile() const;
+  bool IsSystemProfile() const;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns `true` if this is the first/initial Profile in Lacros, and - for
@@ -525,14 +525,6 @@ class Profile : public content::BrowserContext {
   virtual void RecordMainFrameNavigation() = 0;
 
  protected:
-  void set_is_guest_profile(bool is_guest_profile) {
-    is_guest_profile_ = is_guest_profile;
-  }
-
-  void set_is_system_profile(bool is_system_profile) {
-    is_system_profile_ = is_system_profile;
-  }
-
   // Creates an OffTheRecordProfile which points to this Profile.
   static std::unique_ptr<Profile> CreateOffTheRecordProfile(
       Profile* parent,
@@ -566,11 +558,6 @@ class Profile : public content::BrowserContext {
   // increment and decrement the level, respectively, rather than set it to
   // true or false, so that calls can be nested.
   int accessibility_pause_level_ = 0;
-
-  bool is_guest_profile_ = false;
-
-  // A non-browsing profile not associated to a user. Sample use: User-Manager.
-  bool is_system_profile_ = false;
 
   base::ObserverList<ProfileObserver> observers_;
 

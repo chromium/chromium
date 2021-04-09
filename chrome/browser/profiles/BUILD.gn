@@ -40,6 +40,7 @@ source_set("profile") {
     "//components/language/core/browser",
     "//components/media_router/common",
     "//components/pref_registry",
+    "//components/profile_metrics",
     "//components/sync/driver",
     "//components/variations",
     "//content/public/browser",

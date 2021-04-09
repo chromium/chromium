@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/components/account_manager",
+  "+components/profile_metrics",
 ]
 
 specific_include_rules = {

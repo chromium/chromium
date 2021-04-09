@@ -370,7 +370,6 @@ class TestingProfile : public Profile {
   void set_last_selected_directory(const base::FilePath& path) override;
   bool WasCreatedByVersionOrLater(const std::string& version) override;
   bool IsGuestSession() const override;
-  bool IsEphemeralGuestProfile() const override;
   bool IsNewProfile() const override;
   void SetExitType(ExitType exit_type) override {}
   ExitType GetLastSessionExitType() const override;
@@ -431,9 +430,7 @@ class TestingProfile : public Profile {
   // Finishes initialization when a profile is created asynchronously.
   void FinishInit();
 
-  // TODO(https://crbug.com/1169142): Update when profile type variables are
-  // removed (is_guest_session_, is_system_profile_, ...)
-  void UpdateBrowserProfileType();
+  void InitializeProfileType();
 
   // Creates a TestingPrefService and associates it with the TestingProfile.
   void CreateTestingPrefService();

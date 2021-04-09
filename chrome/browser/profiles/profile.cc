@@ -23,6 +23,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
@@ -363,13 +364,14 @@ std::string Profile::GetDebugName() const {
 }
 
 bool Profile::IsRegularProfile() const {
+  // TODO(https://crbug.com/1142370): Update to return false for the non-otr
+  // profile of Guest and System profiles.
   return !IsOffTheRecord();
 }
 
 bool Profile::IsIncognitoProfile() const {
-  // TODO(https://1169142): Replace logic of this function and other
-  // IsXProfile functions with GetBrowserProfileType().
-  return IsPrimaryOTRProfile() && !IsGuestSession() && !IsSystemProfile();
+  return profile_metrics::GetBrowserContextType(this) ==
+         profile_metrics::BrowserProfileType::kIncognito;
 }
 
 // static
@@ -401,16 +403,19 @@ bool Profile::IsGuestSession() const {
                ->session_type == crosapi::mojom::SessionType::kGuestSession;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return is_guest_profile_ && !IsEphemeralGuestProfileEnabled();
+  return profile_metrics::GetBrowserContextType(this) ==
+         profile_metrics::BrowserProfileType::kGuest;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool Profile::IsEphemeralGuestProfile() const {
-  return is_guest_profile_ && IsEphemeralGuestProfileEnabled();
+  return profile_metrics::GetBrowserContextType(this) ==
+         profile_metrics::BrowserProfileType::kEphemeralGuest;
 }
 
 bool Profile::IsSystemProfile() const {
-  return is_system_profile_;
+  return profile_metrics::GetBrowserContextType(this) ==
+         profile_metrics::BrowserProfileType::kSystem;
 }
 
 bool Profile::IsPrimaryOTRProfile() const {

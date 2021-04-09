@@ -501,19 +501,15 @@ ProfileImpl::ProfileImpl(
       &ProfileImpl::EnsureSessionServiceCreated);
 #endif
 
-  set_is_guest_profile(path == ProfileManager::GetGuestProfilePath());
-  set_is_system_profile(path == ProfileManager::GetSystemProfilePath());
-
-  // TODO(https://1169142): Replace this part with setting the
-  // BrowserContextType as the main reference for profile type and replacing the
-  // IsXProfile functions implementations with checking for this value.
-  if (IsGuestSession()) {
-    profile_metrics::SetBrowserContextType(
-        this, profile_metrics::BrowserProfileType::kGuest);
-  } else if (IsEphemeralGuestProfile()) {
-    profile_metrics::SetBrowserContextType(
-        this, profile_metrics::BrowserProfileType::kEphemeralGuest);
-  } else if (IsSystemProfile()) {
+  if (path == ProfileManager::GetGuestProfilePath()) {
+    if (IsEphemeralGuestProfileEnabled()) {
+      profile_metrics::SetBrowserContextType(
+          this, profile_metrics::BrowserProfileType::kEphemeralGuest);
+    } else {
+      profile_metrics::SetBrowserContextType(
+          this, profile_metrics::BrowserProfileType::kGuest);
+    }
+  } else if (path == ProfileManager::GetSystemProfilePath()) {
     profile_metrics::SetBrowserContextType(
         this, profile_metrics::BrowserProfileType::kSystem);
   } else {
