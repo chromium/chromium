@@ -20,7 +20,7 @@
 
 namespace gfx {
 class PointF;
-class Vector2d;
+class Vector2dF;
 }
 
 namespace ui {
@@ -59,7 +59,7 @@ std::unique_ptr<blink::WebInputEvent> ScaleWebInputEvent(
 // Otherwise, returns the transformed version of |event|.
 std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     const blink::WebInputEvent& event,
-    const gfx::Vector2d& delta,
+    const gfx::Vector2dF& delta,
     float scale);
 
 blink::WebInputEvent::Type ToWebMouseEventType(MotionEvent::Action action);

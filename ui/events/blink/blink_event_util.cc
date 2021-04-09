@@ -26,7 +26,8 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/angle_conversions.h"
-#include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/transform.h"
 
 using blink::WebGestureDevice;
@@ -473,12 +474,12 @@ WebGestureEvent CreateWebGestureEventFromGestureEventData(
 std::unique_ptr<blink::WebInputEvent> ScaleWebInputEvent(
     const blink::WebInputEvent& event,
     float scale) {
-  return TranslateAndScaleWebInputEvent(event, gfx::Vector2d(0, 0), scale);
+  return TranslateAndScaleWebInputEvent(event, gfx::Vector2dF(0, 0), scale);
 }
 
 std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     const blink::WebInputEvent& event,
-    const gfx::Vector2d& delta,
+    const gfx::Vector2dF& delta,
     float scale) {
   std::unique_ptr<blink::WebInputEvent> scaled_event;
   if (scale == 1.f && delta.IsZero())
@@ -487,9 +488,8 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     blink::WebMouseWheelEvent* wheel_event = new blink::WebMouseWheelEvent;
     scaled_event.reset(wheel_event);
     *wheel_event = static_cast<const blink::WebMouseWheelEvent&>(event);
-    float x = (wheel_event->PositionInWidget().x() + delta.x()) * scale;
-    float y = (wheel_event->PositionInWidget().y() + delta.y()) * scale;
-    wheel_event->SetPositionInWidget(x, y);
+    wheel_event->SetPositionInWidget(
+        gfx::ScalePoint(wheel_event->PositionInWidget() + delta, scale));
     if (wheel_event->delta_units != ui::ScrollGranularity::kScrollByPage) {
       wheel_event->delta_x *= scale;
       wheel_event->delta_y *= scale;
@@ -500,9 +500,8 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     blink::WebMouseEvent* mouse_event = new blink::WebMouseEvent;
     scaled_event.reset(mouse_event);
     *mouse_event = static_cast<const blink::WebMouseEvent&>(event);
-    float x = (mouse_event->PositionInWidget().x() + delta.x()) * scale;
-    float y = (mouse_event->PositionInWidget().y() + delta.y()) * scale;
-    mouse_event->SetPositionInWidget(x, y);
+    mouse_event->SetPositionInWidget(
+        gfx::ScalePoint(mouse_event->PositionInWidget() + delta, scale));
     // Do not scale movement of raw movement events.
     if (!mouse_event->is_raw_movement_event) {
       mouse_event->movement_x *= scale;
@@ -513,9 +512,8 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     scaled_event.reset(touch_event);
     *touch_event = static_cast<const blink::WebTouchEvent&>(event);
     for (unsigned i = 0; i < touch_event->touches_length; i++) {
-      touch_event->touches[i].SetPositionInWidget(
-          (touch_event->touches[i].PositionInWidget().x() + delta.x()) * scale,
-          (touch_event->touches[i].PositionInWidget().y() + delta.y()) * scale);
+      touch_event->touches[i].SetPositionInWidget(gfx::ScalePoint(
+          touch_event->touches[i].PositionInWidget() + delta, scale));
       touch_event->touches[i].radius_x *= scale;
       touch_event->touches[i].radius_y *= scale;
     }
@@ -523,9 +521,8 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     blink::WebGestureEvent* gesture_event = new blink::WebGestureEvent;
     scaled_event.reset(gesture_event);
     *gesture_event = static_cast<const blink::WebGestureEvent&>(event);
-    gesture_event->SetPositionInWidget(gfx::PointF(
-        (gesture_event->PositionInWidget().x() + delta.x()) * scale,
-        (gesture_event->PositionInWidget().y() + delta.y()) * scale));
+    gesture_event->SetPositionInWidget(
+        gfx::ScalePoint(gesture_event->PositionInWidget() + delta, scale));
     switch (gesture_event->GetType()) {
       case blink::WebInputEvent::Type::kGestureScrollUpdate:
         if (gesture_event->data.scroll_update.delta_units ==
