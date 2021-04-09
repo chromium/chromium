@@ -61,7 +61,6 @@ class OrdinalNumber;
 
 namespace blink {
 
-class ContentSecurityPolicyResponseHeaders;
 class ConsoleMessage;
 class DOMWrapperWorld;
 class Element;
@@ -184,21 +183,12 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   static const size_t kMaxSampleLength = 40;
 
-  // Parse raw Content Security Policy strings into mojo types.
-  static WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-  ParseHeaders(const ContentSecurityPolicyResponseHeaders& headers);
-
   ContentSecurityPolicy();
   ~ContentSecurityPolicy();
   void Trace(Visitor*) const;
 
   bool IsBound();
   void BindToDelegate(ContentSecurityPolicyDelegate&);
-
-  // Parse and store Content Security Policies from the received headers. Return
-  // a copy of the policies which have just been parsed.
-  Vector<network::mojom::blink::ContentSecurityPolicyPtr> DidReceiveHeaders(
-      const ContentSecurityPolicyResponseHeaders&);
 
   // Parse and store Content Security Policies from a raw string. Return
   // a copy of the policies which have just been parsed.

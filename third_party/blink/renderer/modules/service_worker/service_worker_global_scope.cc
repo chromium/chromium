@@ -558,7 +558,7 @@ void ServiceWorkerGlobalScope::LoadAndRunInstalledClassicScript(
 
   RunClassicScript(
       script_url, referrer_policy, script_data->GetResponseAddressSpace(),
-      ContentSecurityPolicy::ParseHeaders(
+      ParseContentSecurityPolicyHeaders(
           script_data->GetContentSecurityPolicyResponseHeaders()),
       script_data->CreateOriginTrialTokens().get(),
       script_data->TakeSourceText(), script_data->TakeMetaData(), stack_id);

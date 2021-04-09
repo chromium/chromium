@@ -828,4 +828,24 @@ ParseContentSecurityPolicies(
   return ParseContentSecurityPolicies(raw_policies, type, source, base_url);
 }
 
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicyHeaders(
+    const ContentSecurityPolicyResponseHeaders& headers) {
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_csps =
+      ParseContentSecurityPolicies(
+          headers.ContentSecurityPolicy(),
+          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+          headers.ResponseUrl());
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> report_only_csps =
+      ParseContentSecurityPolicies(
+          headers.ContentSecurityPolicyReportOnly(),
+          network::mojom::blink::ContentSecurityPolicyType::kReport,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+          headers.ResponseUrl());
+  parsed_csps.AppendRange(std::make_move_iterator(report_only_csps.begin()),
+                          std::make_move_iterator(report_only_csps.end()));
+  return parsed_csps;
+}
+
 }  // namespace blink

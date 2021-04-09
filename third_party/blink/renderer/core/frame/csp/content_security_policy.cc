@@ -62,7 +62,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
-#include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -287,43 +286,6 @@ ContentSecurityPolicy::~ContentSecurityPolicy() = default;
 void ContentSecurityPolicy::Trace(Visitor* visitor) const {
   visitor->Trace(delegate_);
   visitor->Trace(console_messages_);
-}
-
-Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-ContentSecurityPolicy::DidReceiveHeaders(
-    const ContentSecurityPolicyResponseHeaders& headers) {
-  scoped_refptr<SecurityOrigin> self_origin =
-      SecurityOrigin::Create(headers.ResponseUrl());
-
-  if (RuntimeEnabledFeatures::WebAssemblyCSPEnabled() ||
-      headers.ShouldParseWasmEval())
-    supports_wasm_eval_ = true;
-
-  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies;
-  if (!headers.ContentSecurityPolicy().IsEmpty()) {
-    parsed_policies = Parse(headers.ContentSecurityPolicy(), *self_origin,
-                            ContentSecurityPolicyType::kEnforce,
-                            ContentSecurityPolicySource::kHTTP);
-  }
-  if (!headers.ContentSecurityPolicyReportOnly().IsEmpty()) {
-    for (auto& policy : Parse(headers.ContentSecurityPolicyReportOnly(),
-                              *self_origin, ContentSecurityPolicyType::kReport,
-                              ContentSecurityPolicySource::kHTTP)) {
-      parsed_policies.push_back(std::move(policy));
-    }
-  }
-
-  AddPolicies(mojo::Clone(parsed_policies));
-  return parsed_policies;
-}
-
-// static
-WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-ContentSecurityPolicy::ParseHeaders(
-    const ContentSecurityPolicyResponseHeaders& headers) {
-  auto* content_security_policy = MakeGarbageCollected<ContentSecurityPolicy>();
-  content_security_policy->DidReceiveHeaders(headers);
-  return std::move(content_security_policy->policies_);
 }
 
 Vector<network::mojom::blink::ContentSecurityPolicyPtr>

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -169,7 +170,7 @@ void WorkerModuleScriptFetcher::NotifyClient(
     // Step 12.3-12.6 are implemented in Initialize().
     global_scope_->Initialize(
         response_url, response_referrer_policy, response.AddressSpace(),
-        ContentSecurityPolicy::ParseHeaders(
+        ParseContentSecurityPolicyHeaders(
             ContentSecurityPolicyResponseHeaders(response)),
         response_origin_trial_tokens.get(), response.AppCacheID());
   }
