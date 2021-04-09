@@ -65,7 +65,9 @@ def main(args):
         parser=parser,
         argv=args,
         isolate=['installer_test.*'],  # InstallerTest must be serialized.
-        top_level_dir=CUR_DIR)
+        top_level_dir=CUR_DIR,
+        retry_limit=3,  # Retry failures by default since the tests are flaky.
+    )
     if parser.exit_status is not None:
         return parser.exit_status
 
