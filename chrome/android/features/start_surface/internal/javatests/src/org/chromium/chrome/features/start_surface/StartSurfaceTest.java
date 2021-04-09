@@ -76,6 +76,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -419,6 +420,9 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single/home_button_on_grid_tab_switcher/false"})
     public void testShow_SingleAsHomepage() {
+        // TODO(https://crbug.com/1196473): Re-enable the test once it is fixed.
+        Assume.assumeFalse(mUseInstantStart && mImmediateReturn);
+
         if (!mImmediateReturn) {
             pressHomePageButton();
         }
