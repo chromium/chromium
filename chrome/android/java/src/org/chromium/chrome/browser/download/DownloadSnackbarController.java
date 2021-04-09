@@ -44,8 +44,8 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
     @Override
     public void onAction(Object actionData) {
         if (!(actionData instanceof ActionDataInfo)) {
-            DownloadManagerService.openDownloadsPage(
-                    ContextUtils.getApplicationContext(), DownloadOpenSource.SNACK_BAR);
+            DownloadManagerService.openDownloadsPage(ContextUtils.getApplicationContext(),
+                    /*otrProfileID=*/null, DownloadOpenSource.SNACK_BAR);
             return;
         }
 

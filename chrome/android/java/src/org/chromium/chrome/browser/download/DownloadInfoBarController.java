@@ -1061,7 +1061,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
                 recordLinkClicked(true /*openItem*/);
             } else {
                 DownloadManagerService.openDownloadsPage(
-                        getContext(), DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR);
+                        getContext(), mOtrProfileID, DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR);
                 recordLinkClicked(false /*openItem*/);
             }
             closePreviousInfoBar();

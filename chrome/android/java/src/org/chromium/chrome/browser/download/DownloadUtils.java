@@ -97,7 +97,7 @@ public class DownloadUtils {
      * @param activity The current activity is available.
      * @param tab The current tab if it exists.
      * @param otrProfileID The {@link OTRProfileID} to determine whether download home should be
-     * opened in incognito mode. If null, download page will be opened in normal profile.
+     * opened in incognito mode. Only used when no valid current or recent tab presents.
      * @param source The source where the user action is coming from.
      * @param showPrefetchedContent Whether the manager should start with prefetched content section
      * expanded.
@@ -119,6 +119,12 @@ public class DownloadUtils {
         } else {
             Context displayContext = activity != null ? activity : appContext;
             isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(displayContext);
+        }
+
+        // Use tab's profile if a valid tab exists.
+        if (tab != null) {
+            Profile profile = Profile.fromWebContents(tab.getWebContents());
+            otrProfileID = profile != null ? profile.getOTRProfileID() : otrProfileID;
         }
 
         if (isTablet) {
