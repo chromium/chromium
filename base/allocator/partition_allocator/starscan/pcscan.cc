@@ -1265,7 +1265,7 @@ class PCScanTask::ScanLoop final {
 };
 
 PCScanTask::PCScanTask(PCScan& pcscan)
-    : pcscan_epoch_(pcscan.quarantine_data_.epoch()),
+    : pcscan_epoch_(pcscan.epoch()),
       stats_(PCScanInternal::Instance().process_name()),
       pcscan_(pcscan) {}
 
@@ -1356,14 +1356,16 @@ void PCScanTask::SweepQuarantine() {
 
 void PCScanTask::FinishScanner() {
   stats_.ReportTracesAndHists();
-  LogStats(stats_.swept_size(), pcscan_.quarantine_data_.last_size(),
-           stats_.survived_quarantine_size());
+  LogStats(
+      stats_.swept_size(),
+      pcscan_.scheduler_.scheduling_backend().GetQuarantineData().last_size,
+      stats_.survived_quarantine_size());
 
   const size_t total_pa_heap_size =
       PCScanInternal::Instance().CalculateTotalHeapSize();
 
-  pcscan_.quarantine_data_.Account(stats_.survived_quarantine_size());
-  pcscan_.quarantine_data_.GrowLimitIfNeeded(total_pa_heap_size);
+  pcscan_.scheduler_.AccountFreed(stats_.survived_quarantine_size());
+  pcscan_.scheduler_.scheduling_backend().GrowLimitIfNeeded(total_pa_heap_size);
 
   PCScanInternal::Instance().reset_current_pcscan_task();
   // Check that concurrent task can't be scheduled twice.
@@ -1487,23 +1489,6 @@ class PCScan::PCScanThread final {
   TaskHandle posted_task_;
 };
 
-constexpr size_t PCScan::QuarantineData::kQuarantineSizeMinLimit;
-
-void PCScan::QuarantineData::ResetAndAdvanceEpoch() {
-  last_size_ = current_size_.exchange(0, std::memory_order_relaxed);
-  epoch_.fetch_add(1, std::memory_order_relaxed);
-}
-
-void PCScan::QuarantineData::GrowLimitIfNeeded(size_t heap_size) {
-  static constexpr double kQuarantineSizeFraction = 0.1;
-  // |heap_size| includes the current quarantine size, we intentionally leave
-  // some slack till hitting the limit.
-  size_limit_.store(
-      std::max(kQuarantineSizeMinLimit,
-               static_cast<size_t>(kQuarantineSizeFraction * heap_size)),
-      std::memory_order_relaxed);
-}
-
 void PCScan::PerformScan(InvocationMode invocation_mode) {
 #if DCHECK_IS_ON()
   const auto& internal = PCScanInternal::Instance();
@@ -1526,7 +1511,8 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
       return;
   }
 
-  quarantine_data_.ResetAndAdvanceEpoch();
+  scheduler_.scheduling_backend().ScanStarted();
+  epoch_.fetch_add(1, std::memory_order_relaxed);
 
   // Create PCScan task.
   auto task = base::MakeRefCounted<PCScanTask>(*this);
@@ -1559,7 +1545,9 @@ void PCScan::PerformScanIfNeeded(InvocationMode invocation_mode) {
   if (!PCScanInternal::Instance().scannable_roots().size())
     return;
   if (invocation_mode == InvocationMode::kForcedBlocking ||
-      quarantine_data_.MinimumScanningThresholdReached())
+      scheduler_.scheduling_backend()
+          .GetQuarantineData()
+          .MinimumScanningThresholdReached())
     PerformScan(invocation_mode);
 }
 

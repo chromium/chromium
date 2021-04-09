@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 
@@ -94,35 +95,6 @@ class BASE_EXPORT PCScan final {
   friend class PCScanTask;
   friend class PCScanTest;
 
-  class QuarantineData final {
-   public:
-    inline constexpr QuarantineData();
-
-    // Account freed bytes. Returns true if limit was reached.
-    ALWAYS_INLINE bool Account(size_t bytes);
-
-    void GrowLimitIfNeeded(size_t heap_size);
-    void ResetAndAdvanceEpoch();
-
-    size_t epoch() const { return epoch_.load(std::memory_order_relaxed); }
-    size_t size() const {
-      return current_size_.load(std::memory_order_relaxed);
-    }
-    size_t last_size() const { return last_size_; }
-
-    bool MinimumScanningThresholdReached() const {
-      return size() > kQuarantineSizeMinLimit;
-    }
-
-   private:
-    static constexpr size_t kQuarantineSizeMinLimit = 1 * 1024 * 1024;
-
-    std::atomic<size_t> current_size_{0u};
-    std::atomic<size_t> size_limit_{kQuarantineSizeMinLimit};
-    std::atomic<size_t> epoch_{0u};
-    size_t last_size_ = 0;
-  };
-
   enum class State : uint8_t {
     // PCScan task is not scheduled.
     kNotRunning,
@@ -150,20 +122,15 @@ class BASE_EXPORT PCScan final {
   // Reinitialize internal structures (e.g. card table).
   void ReinitForTesting();
 
+  size_t epoch() const { return epoch_.load(std::memory_order_relaxed); }
+
   // PA_CONSTINIT for fast access (avoiding static thread-safe initialization).
   static PCScan instance_ PA_CONSTINIT;
 
-  QuarantineData quarantine_data_{};
+  PCScanScheduler scheduler_{};
+  std::atomic<size_t> epoch_{0u};
   std::atomic<State> state_{State::kNotRunning};
 };
-
-// To please Chromium's clang plugin.
-constexpr PCScan::QuarantineData::QuarantineData() = default;
-
-ALWAYS_INLINE bool PCScan::QuarantineData::Account(size_t size) {
-  size_t size_before = current_size_.fetch_add(size, std::memory_order_relaxed);
-  return size_before + size > size_limit_.load(std::memory_order_relaxed);
-}
 
 // To please Chromium's clang plugin.
 constexpr PCScan::PCScan() = default;
@@ -184,14 +151,14 @@ ALWAYS_INLINE void PCScan::JoinScanIfNeeded() {
 }
 
 ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr, size_t slot_size) {
-  auto* quarantine = QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
-                                                 quarantine_data_.epoch(), ptr);
+  auto* quarantine =
+      QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator, epoch(), ptr);
   const bool is_double_freed =
       quarantine->SetBit(reinterpret_cast<uintptr_t>(ptr));
   if (UNLIKELY(is_double_freed))
     DoubleFreeAttempt();
 
-  const bool is_limit_reached = quarantine_data_.Account(slot_size);
+  const bool is_limit_reached = scheduler_.AccountFreed(slot_size);
   if (UNLIKELY(is_limit_reached)) {
     // Perform a quick check if another scan is already in progress.
     if (IsInProgress())

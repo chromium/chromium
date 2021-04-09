@@ -1903,6 +1903,8 @@ component("base") {
         "allocator/partition_allocator/starscan/object_bitmap.h",
         "allocator/partition_allocator/starscan/pcscan.cc",
         "allocator/partition_allocator/starscan/pcscan.h",
+        "allocator/partition_allocator/starscan/pcscan_scheduling.cc",
+        "allocator/partition_allocator/starscan/pcscan_scheduling.h",
         "allocator/partition_allocator/thread_cache.cc",
         "allocator/partition_allocator/thread_cache.h",
         "allocator/partition_allocator/yield_processor.h",
@@ -3452,6 +3454,7 @@ if (build_base_unittests) {
         "allocator/partition_allocator/partition_alloc_unittest.cc",
         "allocator/partition_allocator/partition_lock_unittest.cc",
         "allocator/partition_allocator/starscan/object_bitmap_unittest.cc",
+        "allocator/partition_allocator/starscan/pcscan_scheduling_unittest.cc",
         "allocator/partition_allocator/starscan/pcscan_unittest.cc",
         "allocator/partition_allocator/thread_cache_unittest.cc",
       ]

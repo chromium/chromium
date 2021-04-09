@@ -55,9 +55,8 @@ class PCScanTest : public testing::Test {
   void FinishPCScanAsScanner() { PCScan::Instance().FinishScanForTesting(); }
 
   bool IsInQuarantine(void* ptr) const {
-    return QuarantineBitmapFromPointer(
-               QuarantineBitmapType::kMutator,
-               PCScan::Instance().quarantine_data_.epoch(), ptr)
+    return QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
+                                       PCScan::Instance().epoch(), ptr)
         ->CheckBit(reinterpret_cast<uintptr_t>(ptr));
   }
 
