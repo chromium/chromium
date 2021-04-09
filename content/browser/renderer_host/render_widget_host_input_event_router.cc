@@ -1964,7 +1964,7 @@ void RenderWidgetHostInputEventRouter::OnAggregatedHitTestRegionListUpdated(
     const std::vector<viz::AggregatedHitTestRegion>& hit_test_data) {
   for (auto& region : hit_test_data) {
     auto iter = owner_map_.find(region.frame_sink_id);
-    if (iter != owner_map_.end())
+    if (iter != owner_map_.end() && iter->second)
       iter->second->NotifyHitTestRegionUpdated(region);
   }
 }
