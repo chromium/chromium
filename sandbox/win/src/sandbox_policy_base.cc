@@ -274,7 +274,7 @@ void PolicyBase::DestroyAlternateDesktop() {
 }
 
 ResultCode PolicyBase::SetIntegrityLevel(IntegrityLevel integrity_level) {
-  if (app_container_profile_)
+  if (app_container_)
     return SBOX_ERROR_BAD_PARAMS;
   integrity_level_ = integrity_level;
   return SBOX_ALL_OK;
@@ -295,7 +295,7 @@ ResultCode PolicyBase::SetLowBox(const wchar_t* sid) {
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(sid);
-  if (lowbox_sid_ || app_container_profile_)
+  if (lowbox_sid_ || app_container_)
     return SBOX_ERROR_BAD_PARAMS;
 
   if (!ConvertStringSidToSid(sid, &lowbox_sid_))
@@ -308,7 +308,7 @@ ResultCode PolicyBase::SetProcessMitigations(MitigationFlags flags) {
   // Prior to Win10 RS5 CreateProcess fails when AppContainer and mitigation
   // flags are enabled. Return an error on downlevel platforms if trying to
   // set new mitigations.
-  if (app_container_profile_ &&
+  if (app_container_ &&
       base::win::GetVersion() < base::win::Version::WIN10_RS5) {
     return SBOX_ERROR_BAD_PARAMS;
   }
@@ -641,19 +641,19 @@ ResultCode PolicyBase::AddAppContainerProfile(const wchar_t* package_name,
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(package_name);
-  if (lowbox_sid_ || app_container_profile_ ||
+  if (lowbox_sid_ || app_container_ ||
       integrity_level_ != INTEGRITY_LEVEL_LAST) {
     return SBOX_ERROR_BAD_PARAMS;
   }
 
   if (create_profile) {
-    app_container_profile_ = AppContainerProfileBase::Create(
+    app_container_ = AppContainerBase::CreateProfile(
         package_name, L"Chrome Sandbox", L"Profile for Chrome Sandbox");
   } else {
-    app_container_profile_ = AppContainerProfileBase::Open(package_name);
+    app_container_ = AppContainerBase::Open(package_name);
   }
-  if (!app_container_profile_)
-    return SBOX_ERROR_CREATE_APPCONTAINER_PROFILE;
+  if (!app_container_)
+    return SBOX_ERROR_CREATE_APPCONTAINER;
 
   // A bug exists in CreateProcess where enabling an AppContainer profile and
   // passing a set of mitigation flags will generate ERROR_INVALID_PARAMETER.
@@ -671,8 +671,8 @@ ResultCode PolicyBase::AddAppContainerProfile(const wchar_t* package_name,
   return SBOX_ALL_OK;
 }
 
-scoped_refptr<AppContainerProfile> PolicyBase::GetAppContainerProfile() {
-  return GetAppContainerProfileBase();
+scoped_refptr<AppContainer> PolicyBase::GetAppContainer() {
+  return GetAppContainerBase();
 }
 
 void PolicyBase::SetEffectiveToken(HANDLE token) {
@@ -680,9 +680,8 @@ void PolicyBase::SetEffectiveToken(HANDLE token) {
   effective_token_ = token;
 }
 
-scoped_refptr<AppContainerProfileBase>
-PolicyBase::GetAppContainerProfileBase() {
-  return app_container_profile_;
+scoped_refptr<AppContainerBase> PolicyBase::GetAppContainerBase() {
+  return app_container_;
 }
 
 ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {

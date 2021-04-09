@@ -16,7 +16,7 @@
 
 namespace sandbox {
 
-class AppContainerProfile;
+class AppContainer;
 class PolicyInfo;
 
 class TargetPolicy {
@@ -261,8 +261,8 @@ class TargetPolicy {
   virtual ResultCode AddAppContainerProfile(const wchar_t* package_name,
                                             bool create_profile) = 0;
 
-  // Get the configured AppContainerProfile.
-  virtual scoped_refptr<AppContainerProfile> GetAppContainerProfile() = 0;
+  // Get the configured AppContainer.
+  virtual scoped_refptr<AppContainer> GetAppContainer() = 0;
 
   // Set effective token that will be used for creating the initial and
   // lockdown tokens. The token the caller passes must remain valid for the

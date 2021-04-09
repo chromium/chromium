@@ -42,7 +42,7 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "sandbox/policy/win/sandbox_diagnostics.h"
-#include "sandbox/win/src/app_container_profile.h"
+#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/job.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
@@ -649,7 +649,7 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
   return base::UTF8ToWide(profile_name);
 }
 
-ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
+ResultCode SetupAppContainerProfile(AppContainer* container,
                                     const base::CommandLine& command_line,
                                     SandboxType sandbox_type) {
   if (sandbox_type != SandboxType::kMediaFoundationCdm &&
@@ -662,54 +662,52 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
          base::FeatureList::IsEnabled(features::kNetworkServiceSandboxLPAC));
 
   if (sandbox_type == SandboxType::kGpu &&
-      !profile->AddImpersonationCapability(L"chromeInstallFiles")) {
-    DLOG(ERROR) << "AppContainerProfile::AddImpersonationCapability("
+      !container->AddImpersonationCapability(L"chromeInstallFiles")) {
+    DLOG(ERROR) << "AppContainer::AddImpersonationCapability("
                    "chromeInstallFiles) failed";
-    return SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
+    return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
   }
 
   if ((sandbox_type == SandboxType::kXrCompositing ||
        sandbox_type == SandboxType::kGpu) &&
-      !profile->AddCapability(L"lpacPnpNotifications")) {
-    DLOG(ERROR)
-        << "AppContainerProfile::AddCapability(lpacPnpNotifications) failed";
-    return SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
+      !container->AddCapability(L"lpacPnpNotifications")) {
+    DLOG(ERROR) << "AppContainer::AddCapability(lpacPnpNotifications) failed";
+    return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
   }
 
   if (sandbox_type == SandboxType::kXrCompositing &&
-      !profile->AddCapability(L"chromeInstallFiles")) {
-    DLOG(ERROR)
-        << "AppContainerProfile::AddCapability(chromeInstallFiles) failed";
-    return SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
+      !container->AddCapability(L"chromeInstallFiles")) {
+    DLOG(ERROR) << "AppContainer::AddCapability(chromeInstallFiles) failed";
+    return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
   }
 
   if (sandbox_type == SandboxType::kMediaFoundationCdm) {
     // Please refer to the following design doc on why we add the capabilities:
     // https://docs.google.com/document/d/19Y4Js5v3BlzA5uSuiVTvcvPNIOwmxcMSFJWtuc1A-w8/edit#heading=h.iqvhsrml3gl9
-    if (!profile->AddCapability(
+    if (!container->AddCapability(
             sandbox::WellKnownCapabilities::kPrivateNetworkClientServer) ||
-        !profile->AddCapability(
+        !container->AddCapability(
             sandbox::WellKnownCapabilities::kInternetClient)) {
       DLOG(ERROR)
-          << "AppContainerProfile::AddCapability() - "
+          << "AppContainer::AddCapability() - "
           << "SandboxType::kMediaFoundationCdm internet capabilities failed";
-      return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
+      return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
     }
 
-    if (!profile->AddCapability(L"lpacCom") ||
-        !profile->AddCapability(L"lpacIdentityServices") ||
-        !profile->AddCapability(L"lpacMedia") ||
-        !profile->AddCapability(L"lpacPnPNotifications") ||
-        !profile->AddCapability(L"lpacServicesManagement") ||
-        !profile->AddCapability(L"lpacSessionManagement") ||
-        !profile->AddCapability(L"lpacAppExperience") ||
-        !profile->AddCapability(L"lpacInstrumentation") ||
-        !profile->AddCapability(L"lpacCryptoServices") ||
-        !profile->AddCapability(L"lpacEnterprisePolicyChangeNotifications")) {
+    if (!container->AddCapability(L"lpacCom") ||
+        !container->AddCapability(L"lpacIdentityServices") ||
+        !container->AddCapability(L"lpacMedia") ||
+        !container->AddCapability(L"lpacPnPNotifications") ||
+        !container->AddCapability(L"lpacServicesManagement") ||
+        !container->AddCapability(L"lpacSessionManagement") ||
+        !container->AddCapability(L"lpacAppExperience") ||
+        !container->AddCapability(L"lpacInstrumentation") ||
+        !container->AddCapability(L"lpacCryptoServices") ||
+        !container->AddCapability(L"lpacEnterprisePolicyChangeNotifications")) {
       DLOG(ERROR)
-          << "AppContainerProfile::AddCapability() - "
+          << "AppContainer::AddCapability() - "
           << "SandboxType::kMediaFoundationCdm lpac capabilities failed";
-      return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
+      return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
     }
   }
 
@@ -733,32 +731,32 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
   }
 
   for (const auto& cap : base_caps) {
-    if (!profile->AddCapability(cap.c_str())) {
-      DLOG(ERROR) << "AppContainerProfile::AddCapability() failed";
-      return SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
+    if (!container->AddCapability(cap.c_str())) {
+      DLOG(ERROR) << "AppContainer::AddCapability() failed";
+      return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
     }
   }
 
   // Enable LPAC for GPU process, but not for XRCompositor service.
   if (sandbox_type == SandboxType::kGpu &&
       base::FeatureList::IsEnabled(features::kGpuLPAC)) {
-    profile->SetEnableLowPrivilegeAppContainer(true);
+    container->SetEnableLowPrivilegeAppContainer(true);
   }
 
   // Enable LPAC for Network service.
   if (sandbox_type == SandboxType::kNetwork) {
-    profile->AddCapability(
+    container->AddCapability(
         sandbox::WellKnownCapabilities::kPrivateNetworkClientServer);
-    profile->AddCapability(sandbox::WellKnownCapabilities::kInternetClient);
-    profile->AddCapability(
+    container->AddCapability(sandbox::WellKnownCapabilities::kInternetClient);
+    container->AddCapability(
         sandbox::WellKnownCapabilities::kEnterpriseAuthentication);
-    profile->AddCapability(L"lpacIdentityServices");
-    profile->AddCapability(L"lpacCryptoServices");
-    profile->SetEnableLowPrivilegeAppContainer(true);
+    container->AddCapability(L"lpacIdentityServices");
+    container->AddCapability(L"lpacCryptoServices");
+    container->SetEnableLowPrivilegeAppContainer(true);
   }
 
   if (sandbox_type == SandboxType::kMediaFoundationCdm)
-    profile->SetEnableLowPrivilegeAppContainer(true);
+    container->SetEnableLowPrivilegeAppContainer(true);
 
   return SBOX_ALL_OK;
 }
@@ -891,20 +889,21 @@ ResultCode SandboxWin::AddAppContainerProfileToPolicy(
   if (result != SBOX_ALL_OK)
     return result;
 
-  scoped_refptr<AppContainerProfile> profile = policy->GetAppContainerProfile();
-  result = SetupAppContainerProfile(profile.get(), command_line, sandbox_type);
+  scoped_refptr<AppContainer> container = policy->GetAppContainer();
+  result =
+      SetupAppContainerProfile(container.get(), command_line, sandbox_type);
   if (result != SBOX_ALL_OK)
     return result;
 
   DWORD granted_access;
   BOOL granted_access_status;
   bool access_check =
-      profile->AccessCheck(command_line.GetProgram().value().c_str(),
-                           SE_FILE_OBJECT, GENERIC_READ | GENERIC_EXECUTE,
-                           &granted_access, &granted_access_status) &&
+      container->AccessCheck(command_line.GetProgram().value().c_str(),
+                             SE_FILE_OBJECT, GENERIC_READ | GENERIC_EXECUTE,
+                             &granted_access, &granted_access_status) &&
       granted_access_status;
   if (!access_check)
-    return SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_ACCESS_CHECK;
+    return SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK;
 
   return SBOX_ALL_OK;
 }

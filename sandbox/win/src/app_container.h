@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_APP_CONTAINER_PROFILE_H_
-#define SANDBOX_SRC_APP_CONTAINER_PROFILE_H_
+#ifndef SANDBOX_WIN_SRC_APP_CONTAINER_H_
+#define SANDBOX_WIN_SRC_APP_CONTAINER_H_
 
 #include <windows.h>
 
@@ -15,7 +15,7 @@
 
 namespace sandbox {
 
-class AppContainerProfile {
+class AppContainer {
  public:
   // Increments the reference count of this object. The reference count must
   // be incremented if this interface is given to another component.
@@ -71,4 +71,4 @@ class AppContainerProfile {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_APP_CONTAINER_PROFILE_H_
+#endif  // SANDBOX_WIN_SRC_APP_CONTAINER_H_

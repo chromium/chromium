@@ -15,7 +15,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/windows_version.h"
-#include "sandbox/win/src/app_container_profile_base.h"
+#include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/sync_policy_test.h"
 #include "sandbox/win/src/win_utils.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -137,7 +137,7 @@ void CheckLpacToken(HANDLE process) {
   ASSERT_EQ(DWORD{2}, granted_access);
 }
 
-class AppContainerProfileTest : public ::testing::Test {
+class AppContainerTest : public ::testing::Test {
  public:
   void SetUp() override {
     if (base::win::GetVersion() < base::win::Version::WIN8)
@@ -150,15 +150,15 @@ class AppContainerProfileTest : public ::testing::Test {
     ASSERT_EQ(SBOX_ALL_OK,
               policy_->AddAppContainerProfile(package_name_.c_str(), true));
     // For testing purposes we known the base class so cast directly.
-    profile_ = static_cast<AppContainerProfileBase*>(
-        policy_->GetAppContainerProfile().get());
+    container_ =
+        static_cast<AppContainerBase*>(policy_->GetAppContainer().get());
   }
 
   void TearDown() override {
     if (scoped_process_info_.IsValid())
       ::TerminateProcess(scoped_process_info_.process_handle(), 0);
-    if (profile_)
-      AppContainerProfileBase::Delete(package_name_.c_str());
+    if (container_)
+      AppContainerBase::Delete(package_name_.c_str());
   }
 
  protected:
@@ -179,15 +179,14 @@ class AppContainerProfileTest : public ::testing::Test {
 
   std::wstring package_name_;
   BrokerServices* broker_services_;
-  scoped_refptr<AppContainerProfileBase> profile_;
+  scoped_refptr<AppContainerBase> container_;
   scoped_refptr<TargetPolicy> policy_;
   base::win::ScopedProcessInformation scoped_process_info_;
 };
 
 }  // namespace
 
-
-TEST(AppContainerTest, DenyOpenEventForLowBox) {
+TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
   if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
@@ -208,8 +207,8 @@ TEST(AppContainerTest, DenyOpenEventForLowBox) {
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(L"Event_Open f test"));
 }
 
-TEST_F(AppContainerProfileTest, CheckIncompatibleOptions) {
-  if (!profile_)
+TEST_F(AppContainerTest, CheckIncompatibleOptions) {
+  if (!container_)
     return;
   EXPECT_EQ(SBOX_ERROR_BAD_PARAMS,
             policy_->SetIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED));
@@ -231,15 +230,15 @@ TEST_F(AppContainerProfileTest, CheckIncompatibleOptions) {
             policy_->SetProcessMitigations(MITIGATION_HEAP_TERMINATE));
 }
 
-TEST_F(AppContainerProfileTest, NoCapabilities) {
-  if (!profile_)
+TEST_F(AppContainerTest, NoCapabilities) {
+  if (!container_)
     return;
 
   policy_->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   policy_->SetJobLevel(JOB_NONE, 0);
 
   CreateProcess();
-  auto security_capabilities = profile_->GetSecurityCapabilities();
+  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), FALSE);
@@ -247,15 +246,15 @@ TEST_F(AppContainerProfileTest, NoCapabilities) {
                    security_capabilities.get(), FALSE);
 }
 
-TEST_F(AppContainerProfileTest, NoCapabilitiesRestricted) {
-  if (!profile_)
+TEST_F(AppContainerTest, NoCapabilitiesRestricted) {
+  if (!container_)
     return;
 
   policy_->SetTokenLevel(USER_LOCKDOWN, USER_RESTRICTED_SAME_ACCESS);
   policy_->SetJobLevel(JOB_NONE, 0);
 
   CreateProcess();
-  auto security_capabilities = profile_->GetSecurityCapabilities();
+  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), TRUE);
@@ -263,17 +262,17 @@ TEST_F(AppContainerProfileTest, NoCapabilitiesRestricted) {
                    security_capabilities.get(), TRUE);
 }
 
-TEST_F(AppContainerProfileTest, WithCapabilities) {
-  if (!profile_)
+TEST_F(AppContainerTest, WithCapabilities) {
+  if (!container_)
     return;
 
-  profile_->AddCapability(kInternetClient);
-  profile_->AddCapability(kInternetClientServer);
+  container_->AddCapability(kInternetClient);
+  container_->AddCapability(kInternetClientServer);
   policy_->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   policy_->SetJobLevel(JOB_NONE, 0);
 
   CreateProcess();
-  auto security_capabilities = profile_->GetSecurityCapabilities();
+  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), FALSE);
@@ -281,17 +280,17 @@ TEST_F(AppContainerProfileTest, WithCapabilities) {
                    security_capabilities.get(), FALSE);
 }
 
-TEST_F(AppContainerProfileTest, WithCapabilitiesRestricted) {
-  if (!profile_)
+TEST_F(AppContainerTest, WithCapabilitiesRestricted) {
+  if (!container_)
     return;
 
-  profile_->AddCapability(kInternetClient);
-  profile_->AddCapability(kInternetClientServer);
+  container_->AddCapability(kInternetClient);
+  container_->AddCapability(kInternetClientServer);
   policy_->SetTokenLevel(USER_LOCKDOWN, USER_RESTRICTED_SAME_ACCESS);
   policy_->SetJobLevel(JOB_NONE, 0);
 
   CreateProcess();
-  auto security_capabilities = profile_->GetSecurityCapabilities();
+  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), TRUE);
@@ -299,38 +298,38 @@ TEST_F(AppContainerProfileTest, WithCapabilitiesRestricted) {
                    security_capabilities.get(), TRUE);
 }
 
-TEST_F(AppContainerProfileTest, WithImpersonationCapabilities) {
-  if (!profile_)
+TEST_F(AppContainerTest, WithImpersonationCapabilities) {
+  if (!container_)
     return;
 
-  profile_->AddCapability(kInternetClient);
-  profile_->AddCapability(kInternetClientServer);
-  profile_->AddImpersonationCapability(kPrivateNetworkClientServer);
-  profile_->AddImpersonationCapability(kPicturesLibrary);
+  container_->AddCapability(kInternetClient);
+  container_->AddCapability(kInternetClientServer);
+  container_->AddImpersonationCapability(kPrivateNetworkClientServer);
+  container_->AddImpersonationCapability(kPicturesLibrary);
   policy_->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   policy_->SetJobLevel(JOB_NONE, 0);
 
   CreateProcess();
-  auto security_capabilities = profile_->GetSecurityCapabilities();
+  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), FALSE);
   SecurityCapabilities impersonation_security_capabilities(
-      profile_->GetPackageSid(), profile_->GetImpersonationCapabilities());
+      container_->GetPackageSid(), container_->GetImpersonationCapabilities());
   CheckThreadToken(scoped_process_info_.thread_handle(),
                    &impersonation_security_capabilities, FALSE);
 }
 
-TEST_F(AppContainerProfileTest, NoCapabilitiesLPAC) {
+TEST_F(AppContainerTest, NoCapabilitiesLPAC) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
 
-  profile_->SetEnableLowPrivilegeAppContainer(true);
+  container_->SetEnableLowPrivilegeAppContainer(true);
   policy_->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   policy_->SetJobLevel(JOB_NONE, 0);
 
   CreateProcess();
-  auto security_capabilities = profile_->GetSecurityCapabilities();
+  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), FALSE);

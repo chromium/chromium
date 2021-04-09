@@ -16,7 +16,7 @@
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
-#include "sandbox/win/src/app_container_profile.h"
+#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_factory.h"
 
 namespace {

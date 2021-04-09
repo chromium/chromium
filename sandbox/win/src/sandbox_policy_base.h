@@ -20,7 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/win/scoped_handle.h"
-#include "sandbox/win/src/app_container_profile_base.h"
+#include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/handle_closer.h"
 #include "sandbox/win/src/ipc_tags.h"
@@ -77,12 +77,12 @@ class PolicyBase final : public TargetPolicy {
   void AddRestrictingRandomSid() override;
   ResultCode AddAppContainerProfile(const wchar_t* package_name,
                                     bool create_profile) override;
-  scoped_refptr<AppContainerProfile> GetAppContainerProfile() override;
+  scoped_refptr<AppContainer> GetAppContainer() override;
   void SetEffectiveToken(HANDLE token) override;
   std::unique_ptr<PolicyInfo> GetPolicyInfo() override;
 
   // Get the AppContainer profile as its internal type.
-  scoped_refptr<AppContainerProfileBase> GetAppContainerProfileBase();
+  scoped_refptr<AppContainerBase> GetAppContainerBase();
 
   // Creates a Job object with the level specified in a previous call to
   // SetJobLevel().
@@ -191,7 +191,7 @@ class PolicyBase final : public TargetPolicy {
   // shared with the target at times.
   base::HandlesToInheritVector handles_to_share_;
 
-  scoped_refptr<AppContainerProfileBase> app_container_profile_;
+  scoped_refptr<AppContainerBase> app_container_;
 
   HANDLE effective_token_;
 

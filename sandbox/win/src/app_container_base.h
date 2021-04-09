@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_APP_CONTAINER_PROFILE_BASE_H_
-#define SANDBOX_SRC_APP_CONTAINER_PROFILE_BASE_H_
+#ifndef SANDBOX_WIN_SRC_APP_CONTAINER_BASE_H_
+#define SANDBOX_WIN_SRC_APP_CONTAINER_BASE_H_
 
 #include <windows.h>
 
@@ -15,13 +15,13 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/scoped_handle.h"
-#include "sandbox/win/src/app_container_profile.h"
+#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/security_capabilities.h"
 #include "sandbox/win/src/sid.h"
 
 namespace sandbox {
 
-class AppContainerProfileBase final : public AppContainerProfile {
+class AppContainerBase final : public AppContainer {
  public:
   void AddRef() override;
   void Release() override;
@@ -57,24 +57,24 @@ class AppContainerProfileBase final : public AppContainerProfile {
   // a more privileged token to start.
   const std::vector<Sid>& GetImpersonationCapabilities();
 
-  // Creates a new AppContainerProfile object. This will create a new profile
+  // Creates a new AppContainer object. This will create a new profile
   // if it doesn't already exist. The profile must be deleted manually using
   // the Delete method if it's no longer required.
-  static AppContainerProfileBase* Create(const wchar_t* package_name,
+  static AppContainerBase* CreateProfile(const wchar_t* package_name,
                                          const wchar_t* display_name,
                                          const wchar_t* description);
 
-  // Opens an AppContainerProfile object. No checks will be made on
+  // Opens an AppContainer object. No checks will be made on
   // whether the package exists or not.
-  static AppContainerProfileBase* Open(const wchar_t* package_name);
+  static AppContainerBase* Open(const wchar_t* package_name);
 
   // Delete a profile based on name. Returns true if successful, or if the
   // package doesn't already exist.
   static bool Delete(const wchar_t* package_name);
 
  private:
-  AppContainerProfileBase(const Sid& package_sid);
-  ~AppContainerProfileBase();
+  AppContainerBase(const Sid& package_sid);
+  ~AppContainerBase();
 
   bool BuildLowBoxToken(base::win::ScopedHandle* token);
   bool AddCapability(const Sid& capability_sid, bool impersonation_only);
@@ -86,9 +86,9 @@ class AppContainerProfileBase final : public AppContainerProfile {
   std::vector<Sid> capabilities_;
   std::vector<Sid> impersonation_capabilities_;
 
-  DISALLOW_COPY_AND_ASSIGN(AppContainerProfileBase);
+  DISALLOW_COPY_AND_ASSIGN(AppContainerBase);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_APP_CONTAINER_PROFILE_BASE_H_
+#endif  // SANDBOX_WIN_SRC_APP_CONTAINER_BASE_H_

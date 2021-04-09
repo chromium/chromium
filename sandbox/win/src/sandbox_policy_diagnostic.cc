@@ -378,17 +378,18 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
 
   desired_mitigations_ = policy->mitigations_ | policy->delayed_mitigations_;
 
-  if (policy->app_container_profile_) {
+  if (policy->app_container_) {
     app_container_sid_ =
-        std::make_unique<Sid>(policy->app_container_profile_->GetPackageSid());
-    for (const auto& sid : policy->app_container_profile_->GetCapabilities()) {
+        std::make_unique<Sid>(policy->app_container_->GetPackageSid());
+    for (const auto& sid : policy->app_container_->GetCapabilities()) {
       capabilities_.push_back(sid);
     }
     for (const auto& sid :
-         policy->app_container_profile_->GetImpersonationCapabilities()) {
+         policy->app_container_->GetImpersonationCapabilities()) {
       initial_capabilities_.push_back(sid);
     }
   }
+
   if (policy->lowbox_sid_)
     lowbox_sid_ = std::make_unique<Sid>(policy->lowbox_sid_);
 

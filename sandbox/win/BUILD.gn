@@ -13,9 +13,9 @@ static_library("sandbox") {
   sources = [
     "src/acl.cc",
     "src/acl.h",
-    "src/app_container_profile.h",
-    "src/app_container_profile_base.cc",
-    "src/app_container_profile_base.h",
+    "src/app_container.h",
+    "src/app_container_base.cc",
+    "src/app_container_base.h",
     "src/broker_services.cc",
     "src/broker_services.h",
     "src/crosscall_client.h",

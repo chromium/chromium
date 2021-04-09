@@ -19,7 +19,7 @@
 #include "base/win/scoped_process_information.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
-#include "sandbox/win/src/app_container_profile.h"
+#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
@@ -505,10 +505,10 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   for (HANDLE handle : policy_handle_list)
     startup_info->AddInheritedHandle(handle);
 
-  scoped_refptr<AppContainerProfileBase> profile =
-      policy_base->GetAppContainerProfileBase();
-  if (profile)
-    startup_info->SetAppContainerProfile(profile);
+  scoped_refptr<AppContainerBase> container =
+      policy_base->GetAppContainerBase();
+  if (container)
+    startup_info->SetAppContainer(container);
 
   // On Win10, jobs are associated via startup_info.
   if (base::win::GetVersion() >= base::win::Version::WIN10 && job.IsValid()) {
@@ -524,7 +524,8 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   std::unique_ptr<TargetProcess> target = std::make_unique<TargetProcess>(
       std::move(initial_token), std::move(lockdown_token), job.Get(),
       thread_pool_,
-      profile ? profile->GetImpersonationCapabilities() : std::vector<Sid>());
+      container ? container->GetImpersonationCapabilities()
+                : std::vector<Sid>());
 
   result = target->Create(exe_path, command_line, std::move(startup_info),
                           &process_info, last_error);

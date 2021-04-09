@@ -10,7 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_handle.h"
-#include "sandbox/win/src/app_container_profile_base.h"
+#include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/win_utils.h"
 
@@ -79,10 +79,9 @@ class ScopedImpersonation {
 }  // namespace
 
 // static
-AppContainerProfileBase* AppContainerProfileBase::Create(
-    const wchar_t* package_name,
-    const wchar_t* display_name,
-    const wchar_t* description) {
+AppContainerBase* AppContainerBase::CreateProfile(const wchar_t* package_name,
+                                                  const wchar_t* display_name,
+                                                  const wchar_t* description) {
   static auto create_app_container_profile =
       reinterpret_cast<CreateAppContainerProfileFunc*>(GetProcAddress(
           GetModuleHandle(L"userenv"), "CreateAppContainerProfile"));
@@ -98,12 +97,11 @@ AppContainerProfileBase* AppContainerProfileBase::Create(
   if (FAILED(hr))
     return nullptr;
   std::unique_ptr<void, FreeSidDeleter> sid_deleter(package_sid);
-  return new AppContainerProfileBase(Sid(package_sid));
+  return new AppContainerBase(Sid(package_sid));
 }
 
 // static
-AppContainerProfileBase* AppContainerProfileBase::Open(
-    const wchar_t* package_name) {
+AppContainerBase* AppContainerBase::Open(const wchar_t* package_name) {
   static auto derive_app_container_sid =
       reinterpret_cast<DeriveAppContainerSidFromAppContainerNameFunc*>(
           GetProcAddress(GetModuleHandle(L"userenv"),
@@ -117,11 +115,11 @@ AppContainerProfileBase* AppContainerProfileBase::Open(
     return nullptr;
 
   std::unique_ptr<void, FreeSidDeleter> sid_deleter(package_sid);
-  return new AppContainerProfileBase(Sid(package_sid));
+  return new AppContainerBase(Sid(package_sid));
 }
 
 // static
-bool AppContainerProfileBase::Delete(const wchar_t* package_name) {
+bool AppContainerBase::Delete(const wchar_t* package_name) {
   static auto delete_app_container_profile =
       reinterpret_cast<DeleteAppContainerProfileFunc*>(GetProcAddress(
           GetModuleHandle(L"userenv"), "DeleteAppContainerProfile"));
@@ -131,19 +129,19 @@ bool AppContainerProfileBase::Delete(const wchar_t* package_name) {
   return SUCCEEDED(delete_app_container_profile(package_name));
 }
 
-AppContainerProfileBase::AppContainerProfileBase(const Sid& package_sid)
+AppContainerBase::AppContainerBase(const Sid& package_sid)
     : ref_count_(0),
       package_sid_(package_sid),
       enable_low_privilege_app_container_(false) {}
 
-AppContainerProfileBase::~AppContainerProfileBase() {}
+AppContainerBase::~AppContainerBase() {}
 
-void AppContainerProfileBase::AddRef() {
+void AppContainerBase::AddRef() {
   // ref_count starts at 0 for this class so can increase from 0 (once).
   CHECK(::InterlockedIncrement(&ref_count_) > 0);
 }
 
-void AppContainerProfileBase::Release() {
+void AppContainerBase::Release() {
   LONG result = ::InterlockedDecrement(&ref_count_);
   CHECK(result >= 0);
   if (result == 0) {
@@ -151,9 +149,8 @@ void AppContainerProfileBase::Release() {
   }
 }
 
-bool AppContainerProfileBase::GetRegistryLocation(
-    REGSAM desired_access,
-    base::win::ScopedHandle* key) {
+bool AppContainerBase::GetRegistryLocation(REGSAM desired_access,
+                                           base::win::ScopedHandle* key) {
   static GetAppContainerRegistryLocationFunc*
       get_app_container_registry_location =
           reinterpret_cast<GetAppContainerRegistryLocationFunc*>(GetProcAddress(
@@ -173,7 +170,7 @@ bool AppContainerProfileBase::GetRegistryLocation(
   return true;
 }
 
-bool AppContainerProfileBase::GetFolderPath(base::FilePath* file_path) {
+bool AppContainerBase::GetFolderPath(base::FilePath* file_path) {
   static GetAppContainerFolderPathFunc* get_app_container_folder_path =
       reinterpret_cast<GetAppContainerFolderPathFunc*>(GetProcAddress(
           GetModuleHandle(L"userenv"), "GetAppContainerFolderPath"));
@@ -189,8 +186,8 @@ bool AppContainerProfileBase::GetFolderPath(base::FilePath* file_path) {
   return true;
 }
 
-bool AppContainerProfileBase::GetPipePath(const wchar_t* pipe_name,
-                                          base::FilePath* pipe_path) {
+bool AppContainerBase::GetPipePath(const wchar_t* pipe_name,
+                                   base::FilePath* pipe_path) {
   std::wstring sddl_str;
   if (!package_sid_.ToSddlString(&sddl_str))
     return false;
@@ -199,11 +196,11 @@ bool AppContainerProfileBase::GetPipePath(const wchar_t* pipe_name,
   return true;
 }
 
-bool AppContainerProfileBase::AccessCheck(const wchar_t* object_name,
-                                          SE_OBJECT_TYPE object_type,
-                                          DWORD desired_access,
-                                          DWORD* granted_access,
-                                          BOOL* access_status) {
+bool AppContainerBase::AccessCheck(const wchar_t* object_name,
+                                   SE_OBJECT_TYPE object_type,
+                                   DWORD desired_access,
+                                   DWORD* granted_access,
+                                   BOOL* access_status) {
   GENERIC_MAPPING generic_mapping;
   if (!GetGenericMappingForType(object_type, &generic_mapping))
     return false;
@@ -256,20 +253,20 @@ bool AppContainerProfileBase::AccessCheck(const wchar_t* object_name,
                          access_status);
 }
 
-bool AppContainerProfileBase::AddCapability(const wchar_t* capability_name) {
+bool AppContainerBase::AddCapability(const wchar_t* capability_name) {
   return AddCapability(Sid::FromNamedCapability(capability_name), false);
 }
 
-bool AppContainerProfileBase::AddCapability(WellKnownCapabilities capability) {
+bool AppContainerBase::AddCapability(WellKnownCapabilities capability) {
   return AddCapability(Sid::FromKnownCapability(capability), false);
 }
 
-bool AppContainerProfileBase::AddCapabilitySddl(const wchar_t* sddl_sid) {
+bool AppContainerBase::AddCapabilitySddl(const wchar_t* sddl_sid) {
   return AddCapability(Sid::FromSddlString(sddl_sid), false);
 }
 
-bool AppContainerProfileBase::AddCapability(const Sid& capability_sid,
-                                            bool impersonation_only) {
+bool AppContainerBase::AddCapability(const Sid& capability_sid,
+                                     bool impersonation_only) {
   if (!capability_sid.IsValid())
     return false;
   if (!impersonation_only)
@@ -278,49 +275,46 @@ bool AppContainerProfileBase::AddCapability(const Sid& capability_sid,
   return true;
 }
 
-bool AppContainerProfileBase::AddImpersonationCapability(
+bool AppContainerBase::AddImpersonationCapability(
     const wchar_t* capability_name) {
   return AddCapability(Sid::FromNamedCapability(capability_name), true);
 }
 
-bool AppContainerProfileBase::AddImpersonationCapability(
+bool AppContainerBase::AddImpersonationCapability(
     WellKnownCapabilities capability) {
   return AddCapability(Sid::FromKnownCapability(capability), true);
 }
 
-bool AppContainerProfileBase::AddImpersonationCapabilitySddl(
-    const wchar_t* sddl_sid) {
+bool AppContainerBase::AddImpersonationCapabilitySddl(const wchar_t* sddl_sid) {
   return AddCapability(Sid::FromSddlString(sddl_sid), true);
 }
 
-const std::vector<Sid>& AppContainerProfileBase::GetCapabilities() {
+const std::vector<Sid>& AppContainerBase::GetCapabilities() {
   return capabilities_;
 }
 
-const std::vector<Sid>&
-AppContainerProfileBase::GetImpersonationCapabilities() {
+const std::vector<Sid>& AppContainerBase::GetImpersonationCapabilities() {
   return impersonation_capabilities_;
 }
 
-Sid AppContainerProfileBase::GetPackageSid() const {
+Sid AppContainerBase::GetPackageSid() const {
   return package_sid_;
 }
 
-void AppContainerProfileBase::SetEnableLowPrivilegeAppContainer(bool enable) {
+void AppContainerBase::SetEnableLowPrivilegeAppContainer(bool enable) {
   enable_low_privilege_app_container_ = enable;
 }
 
-bool AppContainerProfileBase::GetEnableLowPrivilegeAppContainer() {
+bool AppContainerBase::GetEnableLowPrivilegeAppContainer() {
   return enable_low_privilege_app_container_;
 }
 
 std::unique_ptr<SecurityCapabilities>
-AppContainerProfileBase::GetSecurityCapabilities() {
-  return std::unique_ptr<SecurityCapabilities>(
-      new SecurityCapabilities(package_sid_, capabilities_));
+AppContainerBase::GetSecurityCapabilities() {
+  return std::make_unique<SecurityCapabilities>(package_sid_, capabilities_);
 }
 
-bool AppContainerProfileBase::BuildLowBoxToken(base::win::ScopedHandle* token) {
+bool AppContainerBase::BuildLowBoxToken(base::win::ScopedHandle* token) {
   return CreateLowBoxToken(nullptr, IMPERSONATION,
                            GetSecurityCapabilities().get(), nullptr, 0,
                            token) == ERROR_SUCCESS;

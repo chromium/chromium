@@ -42788,9 +42788,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="41" label="SBOX_ERROR_CANNOT_RESOLVE_INTERCEPTION_THUNK"/>
   <int value="42" label="SBOX_ERROR_CANNOT_WRITE_INTERCEPTION_THUNK"/>
   <int value="43" label="SBOX_ERROR_CANNOT_FIND_BASE_ADDRESS"/>
-  <int value="44" label="SBOX_ERROR_CREATE_APPCONTAINER_PROFILE"/>
-  <int value="45" label="SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_ACCESS_CHECK"/>
-  <int value="46" label="SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY"/>
+  <int value="44" label="SBOX_ERROR_CREATE_APPCONTAINER"/>
+  <int value="45" label="SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK"/>
+  <int value="46" label="SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY"/>
   <int value="47" label="SBOX_ERROR_CANNOT_INIT_JOB"/>
   <int value="48" label="SBOX_ERROR_INVALID_LOWBOX_SID"/>
   <int value="49" label="SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN"/>
