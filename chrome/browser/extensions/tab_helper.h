@@ -120,10 +120,6 @@ class TabHelper : public content::WebContentsObserver,
                            UnloadedExtensionReason reason) override;
 
   // Message handlers.
-  void OnGetAppInstallState(content::RenderFrameHost* host,
-                            const GURL& requestor_url,
-                            int return_route_id,
-                            int callback_id);
   void OnContentScriptsExecuting(content::RenderFrameHost* host,
                                  const ExecutingScriptsMap& extension_ids,
                                  const GURL& on_url);

@@ -18,6 +18,7 @@
 #include "extensions/renderer/bindings/api_request_handler.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/dispatcher.h"
+#include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
@@ -52,40 +53,10 @@ void IsInstalledGetterCallback(
 
 }  // namespace
 
-AppHooksDelegate::IPCHelper::IPCHelper(AppHooksDelegate* owner)
-    : owner_(owner) {}
-AppHooksDelegate::IPCHelper::~IPCHelper() = default;
-
-void AppHooksDelegate::IPCHelper::SendGetAppInstallStateMessage(
-    content::RenderFrame* render_frame,
-    const GURL& url,
-    int request_id) {
-  Send(new ExtensionHostMsg_GetAppInstallState(
-      render_frame->GetRoutingID(), url, GetRoutingID(), request_id));
-}
-
-bool AppHooksDelegate::IPCHelper::OnMessageReceived(
-    const IPC::Message& message) {
-  IPC_BEGIN_MESSAGE_MAP(AppHooksDelegate::IPCHelper, message)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_GetAppInstallStateResponse,
-                        OnAppInstallStateResponse)
-    IPC_MESSAGE_UNHANDLED(CHECK(false) << "Unhandled IPC message")
-  IPC_END_MESSAGE_MAP()
-  return true;
-}
-
-void AppHooksDelegate::IPCHelper::OnAppInstallStateResponse(
-    const std::string& state,
-    int request_id) {
-  owner_->OnAppInstallStateResponse(state, request_id);
-}
-
 AppHooksDelegate::AppHooksDelegate(Dispatcher* dispatcher,
                                    APIRequestHandler* request_handler)
-    : dispatcher_(dispatcher),
-      request_handler_(request_handler),
-      ipc_helper_(this) {}
-AppHooksDelegate::~AppHooksDelegate() {}
+    : dispatcher_(dispatcher), request_handler_(request_handler) {}
+AppHooksDelegate::~AppHooksDelegate() = default;
 
 bool AppHooksDelegate::GetIsInstalled(ScriptContext* script_context) const {
   const Extension* extension = script_context->extension();
@@ -186,9 +157,12 @@ void AppHooksDelegate::GetInstallState(ScriptContext* script_context,
   content::RenderFrame* render_frame = script_context->GetRenderFrame();
   CHECK(render_frame);
 
-  ipc_helper_.SendGetAppInstallStateMessage(
-      render_frame, script_context->web_frame()->GetDocument().Url(),
-      request_id);
+  ExtensionFrameHelper::Get(render_frame)
+      ->GetLocalFrameHost()
+      ->GetAppInstallState(
+          script_context->web_frame()->GetDocument().Url(),
+          base::BindOnce(&AppHooksDelegate::OnAppInstallStateResponse,
+                         weak_factory_.GetWeakPtr(), request_id));
 }
 
 const char* AppHooksDelegate::GetRunningState(
@@ -225,8 +199,8 @@ const char* AppHooksDelegate::GetRunningState(
   return state;
 }
 
-void AppHooksDelegate::OnAppInstallStateResponse(const std::string& state,
-                                                 int request_id) {
+void AppHooksDelegate::OnAppInstallStateResponse(int request_id,
+                                                 const std::string& state) {
   // Note: it's kind of lame that we serialize the install state to a
   // base::Value here when we're just going to later convert it to v8, but it's
   // not worth the specialization on APIRequestHandler for this oddball API.

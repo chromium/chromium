@@ -302,8 +302,6 @@ bool TabHelper::OnMessageReceived(const IPC::Message& message,
                                   content::RenderFrameHost* sender) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(TabHelper, message, sender)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_GetAppInstallState,
-                        OnGetAppInstallState)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_ContentScriptsExecuting,
                         OnContentScriptsExecuting)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -326,30 +324,6 @@ void TabHelper::WebContentsDestroyed() {
   InvokeForContentRulesRegistries([this](ContentRulesRegistry* registry) {
     registry->WebContentsDestroyed(web_contents());
   });
-}
-
-void TabHelper::OnGetAppInstallState(content::RenderFrameHost* host,
-                                     const GURL& requestor_url,
-                                     int return_route_id,
-                                     int callback_id) {
-  ExtensionRegistry* registry =
-      ExtensionRegistry::Get(web_contents()->GetBrowserContext());
-  const ExtensionSet& extensions = registry->enabled_extensions();
-  const ExtensionSet& disabled_extensions = registry->disabled_extensions();
-
-  std::string state;
-  if (extensions.GetHostedAppByURL(requestor_url))
-    state = extension_misc::kAppStateInstalled;
-  else if (disabled_extensions.GetHostedAppByURL(requestor_url))
-    state = extension_misc::kAppStateDisabled;
-  else
-    state = extension_misc::kAppStateNotInstalled;
-
-  // We use the |host| to send the message because using
-  // WebContentsObserver::Send() defaults to using the main RenderView, which
-  // might be in a different process if the request came from a frame.
-  host->Send(new ExtensionMsg_GetAppInstallStateResponse(return_route_id, state,
-                                                         callback_id));
 }
 
 void TabHelper::OnContentScriptsExecuting(

@@ -4,6 +4,8 @@
 
 #include "extensions/browser/extension_frame_host.h"
 
+#include <string>
+
 namespace extensions {
 
 ExtensionFrameHost::ExtensionFrameHost(content::WebContents* web_contents)
@@ -17,6 +19,12 @@ void ExtensionFrameHost::RequestScriptInjectionPermission(
     mojom::RunLocation run_location,
     RequestScriptInjectionPermissionCallback callback) {
   std::move(callback).Run(false);
+}
+
+void ExtensionFrameHost::GetAppInstallState(
+    const GURL& requestor_url,
+    GetAppInstallStateCallback callback) {
+  std::move(callback).Run(std::string());
 }
 
 }  // namespace extensions

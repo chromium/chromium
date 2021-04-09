@@ -294,8 +294,6 @@ static_library("renderer") {
       "extensions/chrome_extensions_dispatcher_delegate.h",
       "extensions/chrome_extensions_renderer_client.cc",
       "extensions/chrome_extensions_renderer_client.h",
-      "extensions/chrome_v8_extension_handler.cc",
-      "extensions/chrome_v8_extension_handler.h",
       "extensions/extension_hooks_delegate.cc",
       "extensions/extension_hooks_delegate.h",
       "extensions/extension_localization_peer.cc",

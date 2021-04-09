@@ -5,6 +5,10 @@
 #include "chrome/browser/extensions/chrome_extension_frame_host.h"
 
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/common/extensions/extension_constants.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_set.h"
+#include "url/gurl.h"
 
 namespace extensions {
 
@@ -27,6 +31,25 @@ void ChromeExtensionFrameHost::RequestScriptInjectionPermission(
   }
   runner->OnRequestScriptInjectionPermission(extension_id, script_type,
                                              run_location, std::move(callback));
+}
+
+void ChromeExtensionFrameHost::GetAppInstallState(
+    const GURL& requestor_url,
+    GetAppInstallStateCallback callback) {
+  ExtensionRegistry* registry =
+      ExtensionRegistry::Get(web_contents_->GetBrowserContext());
+  const ExtensionSet& extensions = registry->enabled_extensions();
+  const ExtensionSet& disabled_extensions = registry->disabled_extensions();
+
+  std::string state;
+  if (extensions.GetHostedAppByURL(requestor_url))
+    state = extension_misc::kAppStateInstalled;
+  else if (disabled_extensions.GetHostedAppByURL(requestor_url))
+    state = extension_misc::kAppStateDisabled;
+  else
+    state = extension_misc::kAppStateNotInstalled;
+
+  std::move(callback).Run(state);
 }
 
 }  // namespace extensions

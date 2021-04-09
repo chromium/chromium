@@ -127,4 +127,8 @@ interface LocalFrameHost {
   RequestScriptInjectionPermission(string extension_id,
                       InjectionType script_type,
                       RunLocation run_location) => (bool granted);
+
+  // Gets the install state for the app when a web page is checking if its app
+  // is installed. The reply is sent back to the renderer with |state|.
+  GetAppInstallState(url.mojom.Url url) => (string state);
 };

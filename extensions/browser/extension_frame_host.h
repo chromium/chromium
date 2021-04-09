@@ -32,6 +32,8 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
       mojom::InjectionType script_type,
       mojom::RunLocation run_location,
       RequestScriptInjectionPermissionCallback callback) override;
+  void GetAppInstallState(const GURL& requestor_url,
+                          GetAppInstallStateCallback callback) override;
 
  private:
   content::WebContentsFrameReceiverSet<mojom::LocalFrameHost> receivers_;

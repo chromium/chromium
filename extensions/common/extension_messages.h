@@ -509,11 +509,6 @@ IPC_MESSAGE_CONTROL2(ExtensionMsg_WakeEventPageResponse,
                      int /* request_id */,
                      bool /* success */)
 
-// Response to the renderer for ExtensionHostMsg_GetAppInstallState.
-IPC_MESSAGE_ROUTED2(ExtensionMsg_GetAppInstallStateResponse,
-                    std::string /* state */,
-                    int32_t /* callback_id */)
-
 // Check whether the Port for extension messaging exists in a frame or a Service
 // Worker. If the port ID is unknown, the frame replies with
 // ExtensionHostMsg_CloseMessagePort.
@@ -675,12 +670,6 @@ IPC_SYNC_MESSAGE_CONTROL1_1(
 IPC_MESSAGE_ROUTED2(ExtensionHostMsg_ContentScriptsExecuting,
                     ExecutingScriptsMap,
                     GURL /* url of the _topmost_ frame */)
-
-// Sent by the renderer when a web page is checking if its app is installed.
-IPC_MESSAGE_ROUTED3(ExtensionHostMsg_GetAppInstallState,
-                    GURL /* requestor_url */,
-                    int32_t /* return_route_id */,
-                    int32_t /* callback_id */)
 
 // Optional Ack message sent to the browser to notify that the response to a
 // function has been processed.
