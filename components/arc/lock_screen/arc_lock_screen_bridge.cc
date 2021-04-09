@@ -44,6 +44,12 @@ ArcLockScreenBridge* ArcLockScreenBridge::GetForBrowserContext(
   return ArcLockScreenBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcLockScreenBridge* ArcLockScreenBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcLockScreenBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcLockScreenBridge::ArcLockScreenBridge(content::BrowserContext* context,
                                          ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {

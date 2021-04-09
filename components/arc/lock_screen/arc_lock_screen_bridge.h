@@ -30,6 +30,8 @@ class ArcLockScreenBridge
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcLockScreenBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcLockScreenBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcLockScreenBridge(content::BrowserContext* context,
                       ArcBridgeService* bridge_service);
