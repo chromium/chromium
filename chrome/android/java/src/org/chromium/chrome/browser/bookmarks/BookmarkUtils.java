@@ -92,7 +92,7 @@ public class BookmarkUtils {
             return;
         }
 
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.READ_LATER)) {
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET)) {
             // Show a bottom sheet to let the user select target bookmark folder.
             showBookmarkBottomSheet(bookmarkModel, tab, snackbarManager, bottomSheetController,
                     activity, fromCustomTab, callback);

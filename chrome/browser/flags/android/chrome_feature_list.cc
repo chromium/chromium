@@ -140,6 +140,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kAppLaunchpad,
     &kBackgroundThreadPool,
     &kBentoOffline,
+    &kBookmarkBottomSheet,
     &kCastDeviceFilter,
     &kCloseTabSuggestions,
     &kCriticalPersistedTabData,
@@ -369,6 +370,9 @@ const base::Feature kBackgroundThreadPool{"BackgroundThreadPool",
 
 const base::Feature kBentoOffline{"BentoOffline",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kBookmarkBottomSheet{"BookmarkBottomSheet",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kConditionalTabStripAndroid{
     "ConditionalTabStripAndroid", base::FEATURE_DISABLED_BY_DEFAULT};

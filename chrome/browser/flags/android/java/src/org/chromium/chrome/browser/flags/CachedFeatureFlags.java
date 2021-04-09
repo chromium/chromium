@@ -50,6 +50,7 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, false);
             put(ChromeFeatureList.ANDROID_MANAGED_BY_MENU_ITEM, true);
             put(ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE, true);
+            put(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, false);
             put(ChromeFeatureList.CHROME_STARTUP_DELEGATE, false);
             put(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID, false);
             put(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH, false);
