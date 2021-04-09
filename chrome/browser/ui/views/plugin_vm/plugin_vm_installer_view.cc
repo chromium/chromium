@@ -499,7 +499,9 @@ void PluginVmInstallerView::AddedToWidget() {
 }
 
 void PluginVmInstallerView::OnStateUpdated() {
-  LOG_FUNCTION_CALL() << " with state_ = " << static_cast<int>(state_);
+  LOG_FUNCTION_CALL() << " with state_ = " << static_cast<int>(state_)
+                      << ", installing_state_ = "
+                      << static_cast<int>(installing_state_);
   SetTitleLabel();
   SetMessageLabel();
   SetBigImage();
