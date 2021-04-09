@@ -58,14 +58,6 @@ bool IsNewShortcutMappingEnabled() {
          base::FeatureList::IsEnabled(kNewShortcutMapping);
 }
 
-// This feature supercedes kNewShortcutMapping.
-const base::Feature kImprovedKeyboardShortcuts = {
-    "ImprovedKeyboardShortcuts", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsImprovedKeyboardShortcutsEnabled() {
-  return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
-}
-
 const base::Feature kDeprecateAltClick = {"DeprecateAltClick",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -179,6 +171,16 @@ bool IsUsingWMPointerForTouch() {
 const base::Feature kPrecisionTouchpadLogging{
     "PrecisionTouchpadLogging", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN)
+
+#if defined(OS_CHROMEOS)
+// This feature supercedes kNewShortcutMapping.
+const base::Feature kImprovedKeyboardShortcuts = {
+    "ImprovedKeyboardShortcuts", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsImprovedKeyboardShortcutsEnabled() {
+  return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
+}
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)

@@ -31,7 +31,7 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 #include "ui/base/ui_base_features.h"
 #endif
 
@@ -108,6 +108,20 @@ Accelerator::Accelerator(KeyboardCode key_code,
       time_stamp_(time_stamp),
       interrupted_by_mouse_event_(false) {}
 
+#if defined(OS_CHROMEOS)
+Accelerator::Accelerator(KeyboardCode key_code,
+                         DomCode code,
+                         int modifiers,
+                         KeyState key_state,
+                         base::TimeTicks time_stamp)
+    : key_code_(key_code),
+      code_(code),
+      key_state_(key_state),
+      modifiers_(modifiers & kInterestingFlagsMask),
+      time_stamp_(time_stamp),
+      interrupted_by_mouse_event_(false) {}
+#endif
+
 Accelerator::Accelerator(const KeyEvent& key_event)
     : key_code_(key_event.key_code()),
       key_state_(key_event.type() == ET_KEY_PRESSED ? KeyState::PRESSED
@@ -117,8 +131,15 @@ Accelerator::Accelerator(const KeyEvent& key_event)
       time_stamp_(key_event.time_stamp()),
       interrupted_by_mouse_event_(false),
       source_device_id_(key_event.source_device_id()) {
+#if defined(OS_CHROMEOS)
+  if (features::IsImprovedKeyboardShortcutsEnabled()) {
+    code_ = key_event.code();
+  }
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (features::IsNewShortcutMappingEnabled()) {
+    DCHECK(!features::IsImprovedKeyboardShortcutsEnabled());
     DomKey dom_key = key_event.GetDomKey();
     if (!dom_key.IsCharacter())
       return;
@@ -154,7 +175,11 @@ KeyEvent Accelerator::ToKeyEvent() const {
   return KeyEvent(key_state() == Accelerator::KeyState::PRESSED
                       ? ET_KEY_PRESSED
                       : ET_KEY_RELEASED,
-                  key_code(), modifiers(), time_stamp());
+                  key_code(),
+#if defined(OS_CHROMEOS)
+                  code(),
+#endif
+                  modifiers(), time_stamp());
 }
 
 bool Accelerator::operator<(const Accelerator& rhs) const {

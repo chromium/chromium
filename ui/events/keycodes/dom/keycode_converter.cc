@@ -178,6 +178,60 @@ int KeycodeConverter::DomCodeToEvdevCode(DomCode code) {
 }
 #endif
 
+#if defined(OS_CHROMEOS)
+// static
+DomCode KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(
+    KeyboardCode key_code) {
+  // VKEY Mapping: http://kbdlayout.info/kbdus/overview+virtualkeys
+  // DomCode Mapping:
+  //     https://www.w3.org/TR/DOM-Level-3-Events-code/#writing-system-keys
+  switch (key_code) {
+    case VKEY_OEM_MINUS:
+      return DomCode::MINUS;
+    case VKEY_OEM_PLUS:
+      return DomCode::EQUAL;
+    case VKEY_OEM_2:
+      return DomCode::SLASH;
+    case VKEY_OEM_4:
+      return DomCode::BRACKET_LEFT;
+    case VKEY_OEM_6:
+      return DomCode::BRACKET_RIGHT;
+    case VKEY_OEM_COMMA:
+      return DomCode::COMMA;
+    case VKEY_OEM_PERIOD:
+      return DomCode::PERIOD;
+    default:
+      return DomCode::NONE;
+  }
+}
+
+// static
+KeyboardCode KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
+    DomCode code) {
+  // VKEY Mapping: http://kbdlayout.info/kbdus/overview+virtualkeys
+  // DomCode Mapping:
+  //     https://www.w3.org/TR/DOM-Level-3-Events-code/#writing-system-keys
+  switch (code) {
+    case DomCode::MINUS:
+      return VKEY_OEM_MINUS;
+    case DomCode::EQUAL:
+      return VKEY_OEM_PLUS;
+    case DomCode::SLASH:
+      return VKEY_OEM_2;
+    case DomCode::BRACKET_LEFT:
+      return VKEY_OEM_4;
+    case DomCode::BRACKET_RIGHT:
+      return VKEY_OEM_6;
+    case DomCode::COMMA:
+      return VKEY_OEM_COMMA;
+    case DomCode::PERIOD:
+      return VKEY_OEM_PERIOD;
+    default:
+      return VKEY_UNKNOWN;
+  }
+}
+#endif
+
 // static
 DomCode KeycodeConverter::CodeStringToDomCode(const std::string& code) {
   if (code.empty())

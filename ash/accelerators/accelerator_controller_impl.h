@@ -22,6 +22,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/accelerator_map.h"
 
 namespace ui {
 class AcceleratorManager;
@@ -230,7 +231,7 @@ class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
 
  private:
   // A map for looking up actions from accelerators.
-  using AcceleratorActionMap = std::map<ui::Accelerator, AcceleratorAction>;
+  using AcceleratorActionMap = ui::AcceleratorMap<AcceleratorAction>;
 
   // Initializes the accelerators this class handles as a target.
   void Init();

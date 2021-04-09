@@ -12,6 +12,10 @@
 #include "build/build_config.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
+#if defined(OS_CHROMEOS)
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#endif
+
 // For reference, the W3C UI Event spec is located at:
 // http://www.w3.org/TR/uievents/
 
@@ -71,6 +75,20 @@ class KeycodeConverter {
 
   // Convert a DomCode into an evdev code.
   static int DomCodeToEvdevCode(DomCode code);
+#endif
+
+#if defined(OS_CHROMEOS)
+  // If |key_code| is one of the keys (plus, minus, brackets, period, comma),
+  // that are treated positionally for keyboard shortcuts, this returns the
+  // DomCode of that key in the US layout. Any other key returns
+  // |DomCode::NONE|.
+  static DomCode MapUSPositionalShortcutKeyToDomCode(KeyboardCode key_code);
+
+  // If |code| is one of the keys (plus, minus, brackets, period, comma) that
+  // are treated positionally for keyboard shortcuts, this returns the
+  // KeyboardCode (aka VKEY) of that key in the US layout. Any other key
+  // returns |VKEY_UNKNOWN|
+  static KeyboardCode MapPositionalDomCodeToUSShortcutKey(DomCode code);
 #endif
 
   // Convert a UI Events |code| string value into a DomCode.

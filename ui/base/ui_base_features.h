@@ -65,6 +65,14 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) extern const base::Feature kTSFImeSupport;
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUsingWMPointerForTouch();
 #endif  // defined(OS_WIN)
 
+#if defined(OS_CHROMEOS)
+// This flag is intended to supercede kNewShortcutMapping.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kImprovedKeyboardShortcuts;
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsImprovedKeyboardShortcutsEnabled();
+#endif  // defined(OS_CHROMEOS)
+
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -109,13 +117,6 @@ extern const base::Feature kNewShortcutMapping;
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsNewShortcutMappingEnabled();
-
-// This flag is intended to supercede kNewShortcutMapping above.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kImprovedKeyboardShortcuts;
-
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-bool IsImprovedKeyboardShortcutsEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kDeprecateAltClick;

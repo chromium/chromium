@@ -20,25 +20,24 @@ void AcceleratorManager::Register(
   DCHECK(target);
 
   for (const ui::Accelerator& accelerator : accelerators) {
-    accelerators_[accelerator].RegisterWithPriority(target, priority);
+    accelerators_.GetOrInsertDefault(accelerator)
+        .RegisterWithPriority(target, priority);
   }
 }
 
 void AcceleratorManager::Unregister(const Accelerator& accelerator,
                                     AcceleratorTarget* target) {
   DCHECK(target);
-  auto map_iter = accelerators_.find(accelerator);
-  DCHECK(map_iter != accelerators_.end())
-      << "Unregistering non-existing accelerator";
+  AcceleratorTargetInfo* target_info = accelerators_.Find(accelerator);
+  DCHECK(target_info) << "Unregistering non-existing accelerator";
 
-  AcceleratorTargetInfo& target_info = map_iter->second;
-  const bool was_registered = target_info.Unregister(target);
+  const bool was_registered = target_info->Unregister(target);
   DCHECK(was_registered) << "Unregistering accelerator for wrong target";
 
   // If the last target for the accelerator is removed, then erase the
   // entry from the map.
-  if (!target_info.HasTargets())
-    accelerators_.erase(map_iter);
+  if (!target_info->HasTargets())
+    accelerators_.Erase(accelerator);
 }
 
 void AcceleratorManager::UnregisterAll(AcceleratorTarget* target) {
@@ -49,7 +48,9 @@ void AcceleratorManager::UnregisterAll(AcceleratorTarget* target) {
     // Unregister the target and remove the entry if it was the last target.
     const bool was_registered = target_info.Unregister(target);
     if (was_registered && !target_info.HasTargets()) {
-      map_iter = accelerators_.erase(map_iter);
+      Accelerator key_to_remove = map_iter->first;
+      ++map_iter;
+      accelerators_.Erase(key_to_remove);
       continue;
     }
 
@@ -59,35 +60,31 @@ void AcceleratorManager::UnregisterAll(AcceleratorTarget* target) {
 }
 
 bool AcceleratorManager::IsRegistered(const Accelerator& accelerator) const {
-  auto map_iter = accelerators_.find(accelerator);
+  const AcceleratorTargetInfo* target_info = accelerators_.Find(accelerator);
 
   // If the accelerator is in the map, the target list should not be empty.
-  DCHECK(map_iter == accelerators_.end() || map_iter->second.HasTargets());
-  return map_iter != accelerators_.end();
+  DCHECK(!target_info || target_info->HasTargets());
+  return target_info != nullptr;
 }
 
 bool AcceleratorManager::Process(const Accelerator& accelerator) {
-  auto map_iter = accelerators_.find(accelerator);
-  if (map_iter == accelerators_.end())
+  const AcceleratorTargetInfo* target_info = accelerators_.Find(accelerator);
+  if (!target_info)
     return false;
 
   // If the accelerator is in the map, the target list should not be empty.
-  AcceleratorTargetInfo& target_info = map_iter->second;
-  DCHECK(target_info.HasTargets());
+  DCHECK(target_info->HasTargets());
 
   // We have to copy the target list here, because processing the accelerator
   // event handler may modify the list.
-  AcceleratorTargetInfo target_info_copy(target_info);
+  AcceleratorTargetInfo target_info_copy(*target_info);
   return target_info_copy.TryProcess(accelerator);
 }
 
 bool AcceleratorManager::HasPriorityHandler(
     const Accelerator& accelerator) const {
-  auto map_iter = accelerators_.find(accelerator);
-  if (map_iter == accelerators_.end())
-    return false;
-
-  return map_iter->second.HasPriorityHandler();
+  const AcceleratorTargetInfo* target_info = accelerators_.Find(accelerator);
+  return target_info && target_info->HasPriorityHandler();
 }
 
 AcceleratorManager::AcceleratorTargetInfo::AcceleratorTargetInfo() = default;

@@ -329,6 +329,7 @@ component("base") {
       "accelerators/accelerator.h",
       "accelerators/accelerator_manager.cc",
       "accelerators/accelerator_manager.h",
+      "accelerators/accelerator_map.h",
       "accelerators/media_keys_listener.cc",
       "accelerators/media_keys_listener.h",
       "accelerators/media_keys_util.cc",
@@ -462,6 +463,7 @@ component("base") {
     # iOS does not use Chromium-specific code for event handling.
     public_deps += [
       "//ui/base/clipboard:file_info",
+      "//ui/events:dom_keycode_converter",
       "//ui/events:events_base",
       "//ui/events/platform",
     ]
@@ -966,6 +968,7 @@ test("ui_base_unittests") {
   } else {  # !is_ios
     sources += [
       "accelerators/accelerator_manager_unittest.cc",
+      "accelerators/accelerator_map_unittest.cc",
       "accelerators/accelerator_unittest.cc",
       "accelerators/menu_label_accelerator_util_unittest.cc",
       "models/dialog_model_unittest.cc",

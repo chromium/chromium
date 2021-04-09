@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/accelerator_map.h"
 
 namespace ui {
 
@@ -112,13 +113,16 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorManager {
     // Returns true if there are registered targets.
     bool HasTargets() const { return !targets_.empty(); }
 
+    // Returns the number of targets for this accelerator.
+    size_t size() const { return targets_.size(); }
+
    private:
     std::list<AcceleratorTarget*> targets_;
     bool has_priority_handler_ = false;
   };
 
   // The accelerators and associated targets.
-  std::map<Accelerator, AcceleratorTargetInfo> accelerators_;
+  AcceleratorMap<AcceleratorTargetInfo> accelerators_;
 };
 
 }  // namespace ui

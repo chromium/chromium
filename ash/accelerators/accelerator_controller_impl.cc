@@ -1720,8 +1720,8 @@ void AcceleratorControllerImpl::UnregisterAll(ui::AcceleratorTarget* target) {
 
 bool AcceleratorControllerImpl::IsActionForAcceleratorEnabled(
     const ui::Accelerator& accelerator) const {
-  auto it = accelerators_.find(accelerator);
-  return it != accelerators_.end() && CanPerformAction(it->second, accelerator);
+  const AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  return action_ptr && CanPerformAction(*action_ptr, accelerator);
 }
 
 bool AcceleratorControllerImpl::Process(const ui::Accelerator& accelerator) {
@@ -1747,12 +1747,9 @@ bool AcceleratorControllerImpl::OnMenuAccelerator(
     const ui::Accelerator& accelerator) {
   accelerator_history()->StoreCurrentAccelerator(accelerator);
 
-  auto itr = accelerators_.find(accelerator);
-  if (itr == accelerators_.end())
-    return false;  // Menu shouldn't be closed for an invalid accelerator.
-
-  AcceleratorAction action = itr->second;
-  return !base::Contains(actions_keeping_menu_open_, action);
+  // Menu shouldn't be closed for an invalid accelerator.
+  AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  return action_ptr && !base::Contains(actions_keeping_menu_open_, *action_ptr);
 }
 
 bool AcceleratorControllerImpl::IsRegistered(
@@ -1766,20 +1763,14 @@ AcceleratorHistoryImpl* AcceleratorControllerImpl::GetAcceleratorHistory() {
 
 bool AcceleratorControllerImpl::IsPreferred(
     const ui::Accelerator& accelerator) const {
-  auto iter = accelerators_.find(accelerator);
-  if (iter == accelerators_.end())
-    return false;  // not an accelerator.
-
-  return base::Contains(preferred_actions_, iter->second);
+  const AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  return action_ptr && base::Contains(preferred_actions_, *action_ptr);
 }
 
 bool AcceleratorControllerImpl::IsReserved(
     const ui::Accelerator& accelerator) const {
-  auto iter = accelerators_.find(accelerator);
-  if (iter == accelerators_.end())
-    return false;  // not an accelerator.
-
-  return base::Contains(reserved_actions_, iter->second);
+  const AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  return action_ptr && base::Contains(reserved_actions_, *action_ptr);
 }
 
 AcceleratorControllerImpl::AcceleratorProcessingRestriction
@@ -1792,9 +1783,7 @@ AcceleratorControllerImpl::GetCurrentAcceleratorRestriction() {
 
 bool AcceleratorControllerImpl::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
-  auto it = accelerators_.find(accelerator);
-  DCHECK(it != accelerators_.end());
-  AcceleratorAction action = it->second;
+  AcceleratorAction action = accelerators_.Get(accelerator);
   if (!CanPerformAction(action, accelerator))
     return false;
 
@@ -1891,7 +1880,8 @@ void AcceleratorControllerImpl::RegisterAccelerators(
         CreateAccelerator(accelerators[i].keycode, accelerators[i].modifiers,
                           accelerators[i].trigger_on_press);
     ui_accelerators.push_back(accelerator);
-    accelerators_.insert(std::make_pair(accelerator, accelerators[i].action));
+    accelerators_.InsertNew(
+        std::make_pair(accelerator, accelerators[i].action));
   }
   Register(ui_accelerators, this);
 }
@@ -1910,7 +1900,8 @@ void AcceleratorControllerImpl::RegisterDeprecatedAccelerators() {
                           accelerator_data.trigger_on_press);
 
     ui_accelerators.push_back(deprecated_accelerator);
-    accelerators_[deprecated_accelerator] = accelerator_data.action;
+    accelerators_.InsertNew(
+        std::make_pair(deprecated_accelerator, accelerator_data.action));
     deprecated_accelerators_.insert(deprecated_accelerator);
   }
   Register(ui_accelerators, this);
