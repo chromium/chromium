@@ -192,6 +192,7 @@ export class EmojiPicker extends PolymerElement {
     xhr.send();
 
     this.updateStyles({
+      '--emoji-group-button-size': EMOJI_GROUP_SIZE_PX,
       '--emoji-picker-width': EMOJI_PICKER_WIDTH_PX,
       '--emoji-picker-height': EMOJI_PICKER_HEIGHT_PX,
       '--emoji-size': EMOJI_SIZE_PX,
