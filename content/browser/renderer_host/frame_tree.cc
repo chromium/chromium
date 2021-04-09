@@ -625,7 +625,6 @@ void FrameTree::StopLoading() {
     node->StopLoading();
 }
 
-
 void FrameTree::Shutdown() {
 #if DCHECK_IS_ON()
   DCHECK(!was_shut_down_);
@@ -634,11 +633,19 @@ void FrameTree::Shutdown() {
 
   RenderFrameHostManager* root_manager = root_->render_manager();
 
-  // If the page has been moved out due to MPArch activation do nothing.
-  // TODO(https://crbug.com/1176148): It might make sense to do some of the
-  // things here like delete RFHs pending shutdown.
-  if (!root_manager->current_frame_host())
+  if (!root_manager->current_frame_host()) {
+    // The page has been transferred out during an activation. There is little
+    // left to do.
+    // TODO(https://crbug.com/1170277): If we decide that pending delete RFHs
+    // need to be moved along during activation replace this line with a DCHECK
+    // that there are no pending delete instances.
+    root_manager->ClearRFHsPendingShutdown();
+    DCHECK_EQ(0u, root_manager->GetProxyCount());
+    DCHECK(!root_->navigation_request());
+    DCHECK(!root_manager->speculative_frame_host());
+    manager_delegate_->OnFrameTreeNodeDestroyed(root_);
     return;
+  }
 
   for (FrameTreeNode* node : Nodes()) {
     // Delete all RFHs pending shutdown, which will lead the corresponding RVHs

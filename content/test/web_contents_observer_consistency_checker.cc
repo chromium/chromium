@@ -126,6 +126,7 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
   CHECK(GetRoutingPair(old_host) != GetRoutingPair(new_host));
 
   if (old_host) {
+    CHECK(base::Contains(frame_tree_node_ids_, new_host->GetFrameTreeNodeId()));
     EnsureStableParentValue(old_host);
     CHECK_EQ(old_host->GetParent(), new_host->GetParent());
     GlobalRoutingID routing_pair = GetRoutingPair(old_host);
@@ -138,6 +139,8 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
           << "RenderFrameHostChanged called with old host that did not exist:"
           << Format(old_host);
     }
+  } else {
+    CHECK(frame_tree_node_ids_.insert(new_host->GetFrameTreeNodeId()).second);
   }
 
   auto* new_host_impl = static_cast<RenderFrameHostImpl*>(new_host);
@@ -186,6 +189,8 @@ void WebContentsObserverConsistencyChecker::FrameDeleted(
   // A frame can be deleted before RenderFrame in the renderer process is
   // created, so there is not much that can be enforced here.
   CHECK(!web_contents_destroyed_);
+
+  CHECK(frame_tree_node_ids_.erase(frame_tree_node_id));
 
   RenderFrameHostImpl* render_frame_host =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id)->current_frame_host();
@@ -356,6 +361,7 @@ void WebContentsObserverConsistencyChecker::WebContentsDestroyed() {
   CHECK(ongoing_navigations_.empty());
   CHECK(active_media_players_.empty());
   CHECK(live_routes_.empty());
+  CHECK(frame_tree_node_ids_.empty());
 }
 
 void WebContentsObserverConsistencyChecker::DidStartLoading() {
