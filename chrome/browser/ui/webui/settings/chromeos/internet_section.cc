@@ -32,6 +32,15 @@ namespace chromeos {
 namespace settings {
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused. They describe the discovery
+// state of a network.
+enum class NetworkDiscoveryState {
+  kExistingNetwork = 0,
+  kNewNetwork = 1,
+  kMaxValue = kNewNetwork,
+};
+
 const std::vector<SearchConcept>& GetNetworkSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_NETWORK_SETTINGS,
@@ -838,7 +847,14 @@ bool InternetSection::LogMetric(mojom::Setting setting,
       base::UmaHistogramBoolean("ChromeOS.Settings.Wifi.Hidden",
                                 value.GetBool());
       return true;
-
+    case mojom::Setting::kWifiAddNetwork:
+      // An added wifi network an empty GUID means the user manually
+      // configured and added a new wifi.
+      base::UmaHistogramEnumeration(
+          "ChromeOS.Settings.Wifi.AddNetwork",
+          value.GetString().empty() ? NetworkDiscoveryState::kNewNetwork
+                                    : NetworkDiscoveryState::kExistingNetwork);
+      return true;
     default:
       return false;
   }

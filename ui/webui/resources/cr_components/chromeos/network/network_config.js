@@ -445,6 +445,7 @@ Polymer({
                 response.success, response.errorMessage, connect);
           });
     }
+    this.fire('properties-set');
   },
 
   /** @private */

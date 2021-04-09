@@ -1616,7 +1616,14 @@ Polymer({
       // A forgotten network no longer has a valid GUID, close the subpage.
       this.close();
     });
-    settings.recordSettingChange();
+
+    if (this.managedProperties_.type ===
+        chromeos.networkConfig.mojom.NetworkType.kWiFi) {
+      settings.recordSettingChange(
+          chromeos.settings.mojom.Setting.kForgetWifiNetwork);
+    } else {
+      settings.recordSettingChange();
+    }
   },
 
   /** @private */

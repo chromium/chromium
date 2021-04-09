@@ -43,6 +43,8 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
   FRIEND_TEST_ALL_PREFIXES(SettingsUserActionTrackerTest,
                            TestRecordSettingChangedInt);
   FRIEND_TEST_ALL_PREFIXES(SettingsUserActionTrackerTest,
+                           TestRecordSettingChangedString);
+  FRIEND_TEST_ALL_PREFIXES(SettingsUserActionTrackerTest,
                            TestRecordSettingChangedBoolPref);
   FRIEND_TEST_ALL_PREFIXES(SettingsUserActionTrackerTest,
                            TestRecordSettingChangedIntPref);

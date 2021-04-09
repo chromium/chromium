@@ -1286,6 +1286,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Wifi.AddNetwork"
+    enum="NetworkDiscoveryState" expires_after="2022-03-30">
+  <owner>jonmann@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>tnagel@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <owner>cros-privacy-core@google.com</owner>
+  <summary>
+    Recorded when the user adds a WiFi network that has not been added before.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Wifi.Hidden" enum="BooleanToggled"
     expires_after="2022-03-30">
   <owner>jonmann@chromium.org</owner>

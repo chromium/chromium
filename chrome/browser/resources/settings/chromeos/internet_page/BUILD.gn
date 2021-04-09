@@ -67,6 +67,7 @@ js_library("internet_config.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:i18n_behavior.m",

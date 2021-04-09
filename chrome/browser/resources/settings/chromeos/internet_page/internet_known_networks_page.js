@@ -270,7 +270,14 @@ Polymer({
         console.error('Froget network failed for: ' + this.selectedGuid_);
       }
     });
-    settings.recordSettingChange();
+
+    if (this.networkType === chromeos.networkConfig.mojom.NetworkType.kWiFi) {
+      settings.recordSettingChange(
+          chromeos.settings.mojom.Setting.kForgetWifiNetwork);
+    } else {
+      settings.recordSettingChange();
+    }
+
     /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
   },
 

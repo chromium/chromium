@@ -32,7 +32,10 @@ Polymer({
      * The GUID when an existing network is being configured. This will be
      * empty when configuring a new network.
      */
-    guid: String,
+    guid: {
+      type: String,
+      value: '',
+    },
 
     /**
      * The type of network to be configured as a string. May be set initially or
@@ -119,15 +122,38 @@ Polymer({
     this.close();
   },
 
-  /** @private */
+  /**
+   * Note that onSaveTap_ will only be called if the user explicitly clicks
+   * on the 'Save' button.
+   * @private
+   */
   onSaveTap_() {
     /** @type {!NetworkConfigElement} */ (this.$.networkConfig).save();
-    settings.recordSettingChange();
   },
 
-  /** @private */
+  /**
+   * Note that onConnectTap_ will only be called if the user explicitly clicks
+   * on the 'Connect' button.
+   * @private
+   */
   onConnectTap_() {
-    this.$.networkConfig.connect();
-    settings.recordSettingChange();
+    /** @type {!NetworkConfigElement} */ (this.$.networkConfig).connect();
+  },
+
+  /**
+   * A connect or save may be initiated within the NetworkConfigElement instead
+   * of onConnectTap_() or onSaveTap_() (e.g on an enter event).
+   * @private
+   */
+  onPropertiesSet_() {
+    if (this.type ===
+        OncMojo.getNetworkTypeString(
+            chromeos.networkConfig.mojom.NetworkType.kWiFi)) {
+      settings.recordSettingChange(
+          chromeos.settings.mojom.Setting.kWifiAddNetwork,
+          {stringValue: this.guid});
+    } else {
+      settings.recordSettingChange();
+    }
   },
 });

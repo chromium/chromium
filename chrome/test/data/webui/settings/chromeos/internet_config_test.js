@@ -9,6 +9,8 @@
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {FakeUserActionRecorder} from './fake_user_action_recorder.m.js';
+// #import {setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 // clang-format on
 
 suite('InternetConfig', function() {
@@ -17,6 +19,9 @@ suite('InternetConfig', function() {
 
   /** @type {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote|undefined} */
   let mojoApi_;
+
+  /** @type {?chromeos.settings.mojom.UserActionRecorderInterface} */
+  let userActionRecorder;
 
   suiteSetup(function() {
     mojoApi_ = new FakeNetworkConfig();
@@ -29,6 +34,9 @@ suite('InternetConfig', function() {
         chromeos.networkConfig.mojom.NetworkType.kWiFi);
     document.body.appendChild(internetConfig);
     Polymer.dom.flush();
+
+    userActionRecorder = new settings.FakeUserActionRecorder();
+    settings.setUserActionRecorderForTesting(userActionRecorder);
   });
 
   test('Cancel button closes the dialog', function() {
@@ -37,5 +45,35 @@ suite('InternetConfig', function() {
 
     internetConfig.$$('cr-button.cancel-button').click();
     assertFalse(internetConfig.$.dialog.open);
+  });
+
+  test('Connect button click increments settings change count', function() {
+    internetConfig.open();
+    internetConfig.showConnect = true;
+    Polymer.dom.flush();
+
+    const connectBtn = internetConfig.$$('#connectButton');
+    connectBtn.disabled = false;
+    Polymer.dom.flush();
+
+    assertFalse(connectBtn.disabled);
+    assertEquals(userActionRecorder.settingChangeCount, 0);
+    internetConfig.$$('cr-button.action-button').click();
+    assertEquals(userActionRecorder.settingChangeCount, 1);
+  });
+
+  test('Save button click increments settings change count', function() {
+    internetConfig.open();
+    internetConfig.showConnect = false;
+    Polymer.dom.flush();
+
+    const saveBtn = internetConfig.$$('#saveButton');
+    saveBtn.disabled = false;
+    Polymer.dom.flush();
+
+    assertFalse(saveBtn.disabled);
+    assertEquals(userActionRecorder.settingChangeCount, 0);
+    internetConfig.$$('cr-button.action-button').click();
+    assertEquals(userActionRecorder.settingChangeCount, 1);
   });
 });

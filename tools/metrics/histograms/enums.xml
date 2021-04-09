@@ -55350,6 +55350,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="User Disconnect"/>
 </enum>
 
+<enum name="NetworkDiscoveryState">
+  <int value="0"
+      label="A scanned network that is in range and in the discovered list."/>
+  <int value="1"
+      label="A network that has not been discovered and was manually
+             configured."/>
+</enum>
+
 <enum name="NetworkEligibilityStatus">
   <int value="0" label="Network Is Eligible"/>
   <int value="1" label="No Metedata"/>
