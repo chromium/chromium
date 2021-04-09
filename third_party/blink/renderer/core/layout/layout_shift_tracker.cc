@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -494,14 +495,17 @@ double LayoutShiftTracker::SubframeWeightingFactor() const {
   // Map the subframe view rect into the coordinate space of the local root.
   FloatClipRect subframe_cliprect =
       FloatClipRect(FloatRect(FloatPoint(), FloatSize(frame_view_->Size())));
+  const LocalFrame& local_root = frame.LocalFrameRoot();
   GeometryMapper::LocalToAncestorVisualRect(
       frame_view_->GetLayoutView()->FirstFragment().LocalBorderBoxProperties(),
-      PropertyTreeState::Root(), subframe_cliprect);
+      local_root.ContentLayoutObject()
+          ->FirstFragment()
+          .LocalBorderBoxProperties(),
+      subframe_cliprect);
   auto subframe_rect = PhysicalRect::EnclosingRect(subframe_cliprect.Rect());
 
   // Intersect with the portion of the local root that overlaps the main frame.
-  frame.LocalFrameRoot().View()->MapToVisualRectInRemoteRootFrame(
-      subframe_rect);
+  local_root.View()->MapToVisualRectInRemoteRootFrame(subframe_rect);
   IntSize subframe_visible_size = subframe_rect.PixelSnappedSize();
   IntSize main_frame_size = frame.GetPage()->GetVisualViewport().Size();
 
@@ -541,7 +545,8 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
     VLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url() << ", viewport was "
             << (impact_fraction * 100) << "% impacted with distance fraction "
-            << move_distance_factor;
+            << move_distance_factor << " and subframe weighting factor "
+            << SubframeWeightingFactor();
   }
 
   if (pointerdown_pending_data_.saw_pointerdown) {
