@@ -2958,11 +2958,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "force-enable-privet-printing",
-    "owners": [ "thestig", "rbpotter", "dhoss" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "force-secure-payment-confirmation-dialog",
     "owners": [ "//components/payments/OWNERS" ],
     "expiry_milestone": 90
