@@ -10,7 +10,16 @@ export class AsyncJobQueue {
    * @public
    */
   constructor() {
+    /**
+     * @private {!Promise}
+     */
     this.promise_ = Promise.resolve();
+
+    /**
+     * Flag for canceling all future jobs.
+     * @private {boolean}
+     */
+    this.clearing_ = false;
   }
 
   /**
@@ -19,7 +28,12 @@ export class AsyncJobQueue {
    * @return {!Promise} Resolved when the job is finished.
    */
   push(job) {
-    this.promise_ = this.promise_.then(() => job());
+    this.promise_ = this.promise_.then(() => {
+      if (this.clearing_) {
+        return;
+      }
+      return job();
+    });
     return this.promise_;
   }
 
@@ -29,5 +43,14 @@ export class AsyncJobQueue {
    */
   async flush() {
     await this.promise_;
+  }
+
+  /**
+   * Clears all not-yet-scheduled jobs and waits for current job finished.
+   */
+  async clear() {
+    this.clearing_ = true;
+    await this.flush();
+    this.clearing_ = false;
   }
 }

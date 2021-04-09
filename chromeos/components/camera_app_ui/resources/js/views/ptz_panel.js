@@ -12,6 +12,75 @@ import {ViewName} from '../type.js';
 import {View} from './view.js';
 
 /**
+ * Detects hold gesture on UI and triggers corresponding handler.
+ * @param {{
+ *   button: !HTMLButtonElement,
+ *   handlePress: function(): *,
+ *   handleHold: function(): *,
+ *   handleRelease: function(): *,
+ *   pressTimeout: number,
+ *   holdInterval: number,
+ * }} params For the first press, triggers |handlePress| handler once. When
+ * holding UI for more than |pressTimeout| ms, triggers |handleHold| handler
+ * every |holdInterval| ms. Triggers |handleRelease| once the user releases the
+ * button.
+ */
+function detectHoldGesture({
+  button,
+  handlePress,
+  handleHold,
+  handleRelease,
+  pressTimeout,
+  holdInterval,
+}) {
+  let timeoutId = null;
+  let intervalId = null;
+
+  const clear = () => {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    if (intervalId !== null) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  };
+
+  const press = () => {
+    clear();
+    handlePress();
+    timeoutId = setTimeout(() => {
+      handleHold();
+      intervalId = setInterval(() => {
+        handleHold();
+      }, holdInterval);
+    }, pressTimeout);
+  };
+
+  const release = () => {
+    clear();
+    handleRelease();
+  };
+
+  button.onpointerdown = press;
+  button.onpointerleave = release;
+  button.onpointerup = release;
+  button.onkeydown = ({key}) => {
+    if (key === 'Enter' || key === ' ') {
+      press();
+    }
+  };
+  button.onkeyup = ({key}) => {
+    if (key === 'Enter' || key === ' ') {
+      release();
+    }
+  };
+  // Prevent context menu popping out when touch hold buttons.
+  button.oncontextmenu = () => false;
+}
+
+/**
  * View controller for PTZ panel.
  */
 export class PTZPanel extends View {
@@ -96,15 +165,27 @@ export class PTZPanel extends View {
     checkDisabled();
 
     const queue = new AsyncJobQueue();
-    const onClick = (delta) => {
+
+    /**
+     * Returns a function triggering |attr| change of preview moving toward
+     * +1/-1 direction with |deltaInPercent|.
+     * @param {number} deltaInPercent Change rate in percent with respect to
+     *     min/max range.
+     * @param {number} direction Change in +1 or -1 direction.
+     * @return {function(): undefined}
+     */
+    const onTrigger = (deltaInPercent, direction) => {
+      const delta =
+          Math.max(Math.round((max - min) / step * deltaInPercent / 100), 1) *
+          step * direction;
       return () => {
         queue.push(async () => {
           if (this.track_.readyState !== 'live') {
             return;
           }
-          // TODO(b/172881094): Normalize steps to at most 10.
-          const next = getCurrent() + delta;
-          if (next < min || next > max) {
+          const current = getCurrent();
+          const next = Math.max(min, Math.min(max, current + delta));
+          if (current === next) {
             return;
           }
           await this.track_.applyConstraints({advanced: [{[attr]: next}]});
@@ -113,9 +194,26 @@ export class PTZPanel extends View {
       };
     };
 
-    // TODO(b/183661327): Polish holding button behavior.
-    incBtn.onclick = onClick(step);
-    decBtn.onclick = onClick(-step);
+    const pressTimeout = 500;
+    const holdInterval = 200;
+    const pressStepPercent = attr === 'zoom' ? 10 : 1;
+    const holdStepPercent = holdInterval / 1000;  // Move 1% in 1000 ms.
+    detectHoldGesture({
+      button: incBtn,
+      handlePress: onTrigger(pressStepPercent, 1),
+      handleHold: onTrigger(holdStepPercent, 1),
+      handleRelease: () => queue.clear(),
+      pressTimeout,
+      holdInterval,
+    });
+    detectHoldGesture({
+      button: decBtn,
+      handlePress: onTrigger(pressStepPercent, -1),
+      handleHold: onTrigger(holdStepPercent, -1),
+      handleRelease: () => queue.clear(),
+      pressTimeout,
+      holdInterval,
+    });
   }
 
   /**

@@ -84,3 +84,10 @@ MediaTrackSettings.prototype.pan;
 
 /** @type {number} */
 MediaTrackSettings.prototype.tilt;
+
+// TODO(b/172881094): Upstream the externs of pointer event to Closure Compiler.
+// https://www.w3.org/TR/pointerevents2/#dom-globaleventhandlers-onpointerdown
+
+/** @type {?function (Event)} */ Element.prototype.onpointerdown;
+/** @type {?function (Event)} */ Element.prototype.onpointerup;
+/** @type {?function (Event)} */ Element.prototype.onpointerleave;
