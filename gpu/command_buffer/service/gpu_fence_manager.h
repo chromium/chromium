@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "gpu/gpu_gles2_export.h"
+#include "ui/gfx/gpu_fence_handle.h"
 
 namespace gfx {
 struct GpuFenceHandle;
@@ -37,6 +38,11 @@ class GPU_GLES2_EXPORT GpuFenceManager {
 
    private:
     friend class GpuFenceManager;
+    // TODO(crbug.com/1196892): We defer creation of GL fences from fence file
+    // descriptors because some drivers wait on the context set at the time of
+    // GL fence creation from a file descriptor, rather than the context set
+    // at the time the wait is issued.
+    gfx::GpuFenceHandle fence_handle_;
     std::unique_ptr<gl::GLFence> gl_fence_;
 
     DISALLOW_COPY_AND_ASSIGN(GpuFenceEntry);
