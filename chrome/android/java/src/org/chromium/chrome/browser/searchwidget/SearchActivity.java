@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -178,11 +179,11 @@ public class SearchActivity extends AsyncInitializationActivity
             return true;
         };
         mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, anchorView,
-                mProfileSupplier, mSearchBoxDataProvider, null, new WindowDelegate(getWindow()),
-                getWindowAndroid(), /*activityTabSupplier=*/() -> null,
-                getModalDialogManagerSupplier(), /*shareDelegateSupplier=*/null,
-                /*incognitoStateProvider=*/null, getLifecycleDispatcher(),
-                overrideUrlLoadingDelegate, /*backKeyBehavior=*/this,
+                mProfileSupplier, PrivacyPreferencesManagerImpl.getInstance(),
+                mSearchBoxDataProvider, null, new WindowDelegate(getWindow()), getWindowAndroid(),
+                /*activityTabSupplier=*/() -> null, getModalDialogManagerSupplier(),
+                /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
+                getLifecycleDispatcher(), overrideUrlLoadingDelegate, /*backKeyBehavior=*/this,
                 SearchEngineLogoUtils.getInstance(), /*launchAssistanceSettingsAction=*/() -> {},
                 /*pageInfoAction=*/(tab, permission) -> {});
         mLocationBarCoordinator.setUrlBarFocusable(true);

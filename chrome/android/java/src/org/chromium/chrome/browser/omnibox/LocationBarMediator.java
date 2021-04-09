@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -124,7 +124,7 @@ class LocationBarMediator
     private OmniboxPrerender mOmniboxPrerender;
     private UrlBarCoordinator mUrlCoordinator;
     private ObservableSupplier<Profile> mProfileSupplier;
-    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+    private PrivacyPreferencesManager mPrivacyPreferencesManager;
     private CallbackController mCallbackController = new CallbackController();
     private final OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
     private final LocaleManager mLocaleManager;
@@ -160,7 +160,7 @@ class LocationBarMediator
             @NonNull LocationBarLayout locationBarLayout,
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull PrivacyPreferencesManagerImpl privacyPreferencesManager,
+            @NonNull PrivacyPreferencesManager privacyPreferencesManager,
             @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull LocaleManager localeManager,
             @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,

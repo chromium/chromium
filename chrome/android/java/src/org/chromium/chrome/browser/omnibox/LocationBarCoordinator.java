@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -97,6 +97,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param locationBarLayout Inflated {@link LocationBarLayout}.
      *         {@code LocationBarCoordinator} takes ownership and will destroy this object.
      * @param profileObservableSupplier The supplier of the active profile.
+     * @param privacyPreferencesManager Privacy preference settings manager.
      * @param locationBarDataProvider {@link LocationBarDataProvider} to be used for accessing
      *         Toolbar state.
      * @param actionModeCallback The default callback for text editing action bar to use.
@@ -116,6 +117,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      */
     public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
+            PrivacyPreferencesManager privacyPreferencesManager,
             LocationBarDataProvider locationBarDataProvider, ActionMode.Callback actionModeCallback,
             WindowDelegate windowDelegate, WindowAndroid windowAndroid,
             @NonNull Supplier<Tab> activityTabSupplier,
@@ -139,9 +141,9 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         // of using the singleton.
         mLocationBarMediator = new LocationBarMediator(mLocationBarLayout.getContext(),
                 mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
-                PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
-                LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior,
-                windowAndroid, isTablet() && isTabletLayout(), searchEngineLogoUtils,
+                privacyPreferencesManager, overrideUrlLoadingDelegate, LocaleManager.getInstance(),
+                mTemplateUrlServiceSupplier, backKeyBehavior, windowAndroid,
+                isTablet() && isTabletLayout(), searchEngineLogoUtils,
                 AppHooks.get().getLensController(), launchAssistanceSettingsAction);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
