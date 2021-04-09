@@ -251,6 +251,7 @@ if (enable_pdf) {
       "//ppapi/cpp:objects",
       "//skia",
       "//third_party/blink/public:blink",
+      "//third_party/blink/public/common:headers",
       "//ui/base",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/gfx",

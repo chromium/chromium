@@ -6,6 +6,8 @@
 #define PDF_PPAPI_MIGRATION_INPUT_EVENT_CONVERSIONS_H_
 
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 
 #include "ppapi/c/dev/pp_cursor_type_dev.h"
@@ -13,7 +15,12 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 
+namespace blink {
+class WebInputEvent;
+}  // namespace blink
+
 namespace pp {
+class InputEvent;
 class KeyboardInputEvent;
 class MouseInputEvent;
 class TouchInputEvent;
@@ -225,6 +232,9 @@ KeyboardInputEvent GetKeyboardInputEvent(const pp::KeyboardInputEvent& event);
 MouseInputEvent GetMouseInputEvent(const pp::MouseInputEvent& event);
 
 TouchInputEvent GetTouchInputEvent(const pp::TouchInputEvent& event);
+
+std::unique_ptr<blink::WebInputEvent> GetWebInputEvent(
+    const pp::InputEvent& event);
 
 PP_CursorType_Dev PPCursorTypeFromCursorType(ui::mojom::CursorType cursor_type);
 
