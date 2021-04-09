@@ -1601,5 +1601,32 @@ TEST_F(CompositorFrameReportingControllerTest,
             dropped_counter_.total_smoothness_dropped());
 }
 
+TEST_F(CompositorFrameReportingControllerTest,
+       SkippedFramesFromClientRequestedThrottlingAreDropped) {
+  // Submit and present two compositor frames.
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(1u, dropped_counter_.total_frames());
+  EXPECT_EQ(0u, dropped_counter_.total_main_dropped());
+  EXPECT_EQ(0u, dropped_counter_.total_compositor_dropped());
+
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(2u, dropped_counter_.total_frames());
+  EXPECT_EQ(0u, dropped_counter_.total_main_dropped());
+  EXPECT_EQ(0u, dropped_counter_.total_compositor_dropped());
+
+  // Now skip over a few frames, and submit + present another frame.
+  const uint32_t kTotalFrames = 5;
+  const uint64_t kThrottledFrames = 4;
+  for (uint32_t i = 0; i < kTotalFrames; ++i)
+    IncrementCurrentId();
+  args_.frames_throttled_since_last = kThrottledFrames;
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(3u + kTotalFrames - kThrottledFrames,
+            dropped_counter_.total_frames());
+  EXPECT_EQ(0u, dropped_counter_.total_main_dropped());
+  EXPECT_EQ(kTotalFrames - kThrottledFrames,
+            dropped_counter_.total_compositor_dropped());
+}
+
 }  // namespace
 }  // namespace cc

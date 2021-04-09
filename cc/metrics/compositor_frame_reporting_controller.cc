@@ -597,10 +597,12 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
     const viz::BeginFrameArgs& old_args,
     const viz::BeginFrameArgs& new_args) const {
   DCHECK_EQ(new_args.frame_id.source_id, old_args.frame_id.source_id);
-  DCHECK_GE(new_args.frame_id.sequence_number,
-            old_args.frame_id.sequence_number);
-  const uint32_t interval =
-      new_args.frame_id.sequence_number - old_args.frame_id.sequence_number;
+  DCHECK_GE(
+      new_args.frame_id.sequence_number - new_args.frames_throttled_since_last,
+      old_args.frame_id.sequence_number);
+  const uint32_t interval = new_args.frame_id.sequence_number -
+                            old_args.frame_id.sequence_number -
+                            new_args.frames_throttled_since_last;
 
   // Up to 100 frames will be reported (100 closest frames to new_args).
   const uint32_t kMaxFrameCount = 100;
