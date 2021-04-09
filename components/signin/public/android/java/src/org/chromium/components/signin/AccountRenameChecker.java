@@ -16,6 +16,8 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.Promise;
+import org.chromium.base.task.AsyncTask;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.List;
  */
 public final class AccountRenameChecker {
     private static final String TAG = "AccountRenameChecker";
+    private static AccountRenameChecker sInstance;
 
     private static final class SystemDelegate {
         /**
@@ -53,17 +56,47 @@ public final class AccountRenameChecker {
 
     private final SystemDelegate mDelegate;
 
-    public AccountRenameChecker() {
+    private AccountRenameChecker() {
         mDelegate = new SystemDelegate();
     }
 
     /**
-     * Gets the new account name of the renamed account.
-     * @return If the old account email is renamed to an account that exists in the given list of
-     *         accounts, the renamed-to account name will be returned. Otherwise it returns null.
+     * @return The Singleton instance of {@link AccountRenameChecker}.
      */
+    public static AccountRenameChecker get() {
+        if (sInstance == null) {
+            sInstance = new AccountRenameChecker();
+        }
+        return sInstance;
+    }
+
+    /**
+     * Gets the new account name of the renamed account asynchronously.
+     *
+     * If the old account is renamed to an account that exists in the given list of
+     * accounts, the callback will be executed with the renamed-to account name.
+     *
+     * Otherwise the callback will be executed with null.
+     */
+    public Promise<String> getNewNameOfRenamedAccountAsync(
+            String oldAccountEmail, List<Account> accounts) {
+        final Promise<String> newNamePromise = new Promise<>();
+        new AsyncTask<String>() {
+            @Override
+            protected String doInBackground() {
+                return getNewNameOfRenamedAccount(oldAccountEmail, accounts);
+            }
+
+            @Override
+            protected void onPostExecute(String newAccountName) {
+                newNamePromise.fulfill(newAccountName);
+            }
+        }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        return newNamePromise;
+    }
+
     @WorkerThread
-    public @Nullable String getNewNameOfRenamedAccount(
+    private @Nullable String getNewNameOfRenamedAccount(
             String oldAccountEmail, List<Account> accounts) {
         String newAccountEmail = mDelegate.getNewNameOfRenamedAccount(oldAccountEmail);
         while (newAccountEmail != null) {

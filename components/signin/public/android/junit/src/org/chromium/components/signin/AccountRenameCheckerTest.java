@@ -18,6 +18,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.ArrayList;
@@ -25,12 +26,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * JUnit tests of the class {@link AccountRenameChecker}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {AccountRenameCheckerTest.ShadowGoogleAuthUtil.class})
+@Config(shadows = {AccountRenameCheckerTest.ShadowGoogleAuthUtil.class,
+                CustomShadowAsyncTask.class})
 public class AccountRenameCheckerTest {
     @Implements(GoogleAuthUtil.class)
     static final class ShadowGoogleAuthUtil {
@@ -59,7 +62,7 @@ public class AccountRenameCheckerTest {
         }
     }
 
-    private final AccountRenameChecker mChecker = new AccountRenameChecker();
+    private final AccountRenameChecker mChecker = AccountRenameChecker.get();
 
     @After
     public void tearDown() {
@@ -69,8 +72,11 @@ public class AccountRenameCheckerTest {
     @Test
     public void newNameIsValidWhenTheRenamedAccountIsPresent() {
         ShadowGoogleAuthUtil.insertRenameEvent("A", "B");
+        final AtomicReference<String> newAccountName = new AtomicReference<>();
 
-        Assert.assertEquals("B", mChecker.getNewNameOfRenamedAccount("A", getAccounts("B")));
+        mChecker.getNewNameOfRenamedAccountAsync("A", getAccounts("B")).then(newAccountName::set);
+
+        Assert.assertEquals("B", newAccountName.get());
     }
 
     @Test
@@ -78,30 +84,42 @@ public class AccountRenameCheckerTest {
         ShadowGoogleAuthUtil.addEvent("A",
                 new AccountChangeEvent(0L, "A", GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_REMOVED, 0, ""));
         ShadowGoogleAuthUtil.insertRenameEvent("A", "B");
+        final AtomicReference<String> newAccountName = new AtomicReference<>();
 
-        Assert.assertEquals("B", mChecker.getNewNameOfRenamedAccount("A", getAccounts("B")));
+        mChecker.getNewNameOfRenamedAccountAsync("A", getAccounts("B")).then(newAccountName::set);
+
+        Assert.assertEquals("B", newAccountName.get());
     }
 
     @Test
     public void newNameIsNullWhenTheOldAccountIsNotRenamed() {
         ShadowGoogleAuthUtil.insertRenameEvent("B", "C");
+        final AtomicReference<String> newAccountName = new AtomicReference<>();
 
-        Assert.assertNull(mChecker.getNewNameOfRenamedAccount("A", getAccounts("D")));
+        mChecker.getNewNameOfRenamedAccountAsync("A", getAccounts("D")).then(newAccountName::set);
+
+        Assert.assertNull(newAccountName.get());
     }
 
     @Test
     public void newNameIsNullWhenTheRenamedAccountIsNotPresent() {
         ShadowGoogleAuthUtil.insertRenameEvent("B", "C");
+        final AtomicReference<String> newAccountName = new AtomicReference<>();
 
-        Assert.assertNull(mChecker.getNewNameOfRenamedAccount("B", getAccounts("D")));
+        mChecker.getNewNameOfRenamedAccountAsync("B", getAccounts("D")).then(newAccountName::set);
+
+        Assert.assertNull(newAccountName.get());
     }
 
     @Test
     public void newNameIsValidWhenTheOldAccountIsRenamedTwice() {
         ShadowGoogleAuthUtil.insertRenameEvent("A", "B");
         ShadowGoogleAuthUtil.insertRenameEvent("B", "C");
+        final AtomicReference<String> newAccountName = new AtomicReference<>();
 
-        Assert.assertEquals("C", mChecker.getNewNameOfRenamedAccount("A", getAccounts("C")));
+        mChecker.getNewNameOfRenamedAccountAsync("A", getAccounts("C")).then(newAccountName::set);
+
+        Assert.assertEquals("C", newAccountName.get());
     }
 
     @Test
@@ -112,8 +130,11 @@ public class AccountRenameCheckerTest {
         ShadowGoogleAuthUtil.insertRenameEvent("Y", "X"); // Unrelated.
         ShadowGoogleAuthUtil.insertRenameEvent("B", "C");
         ShadowGoogleAuthUtil.insertRenameEvent("C", "D");
+        final AtomicReference<String> newAccountName = new AtomicReference<>();
 
-        Assert.assertEquals("D", mChecker.getNewNameOfRenamedAccount("A", getAccounts("D")));
+        mChecker.getNewNameOfRenamedAccountAsync("A", getAccounts("D")).then(newAccountName::set);
+
+        Assert.assertEquals("D", newAccountName.get());
     }
 
     @Test
@@ -125,8 +146,12 @@ public class AccountRenameCheckerTest {
         ShadowGoogleAuthUtil.insertRenameEvent("B", "C");
         ShadowGoogleAuthUtil.insertRenameEvent("C", "D");
         ShadowGoogleAuthUtil.insertRenameEvent("D", "A"); // Looped.
+        final AtomicReference<String> newAccountName = new AtomicReference<>();
 
-        Assert.assertEquals("D", mChecker.getNewNameOfRenamedAccount("A", getAccounts("D", "X")));
+        mChecker.getNewNameOfRenamedAccountAsync("A", getAccounts("D", "X"))
+                .then(newAccountName::set);
+
+        Assert.assertEquals("D", newAccountName.get());
     }
 
     private List<Account> getAccounts(String... names) {

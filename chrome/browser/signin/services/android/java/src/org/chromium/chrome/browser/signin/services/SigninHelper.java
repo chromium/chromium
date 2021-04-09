@@ -9,7 +9,6 @@ import android.accounts.Account;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.task.AsyncTask;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountRenameChecker;
 import org.chromium.components.signin.AccountTrackerService;
@@ -29,7 +28,6 @@ import java.util.List;
 public class SigninHelper implements ApplicationStatus.ApplicationStateListener {
     private final SigninManager mSigninManager;
     private final AccountTrackerService mAccountTrackerService;
-    private final AccountRenameChecker mAccountRenameChecker;
 
     /**
      * Please use SigninHelperProvider to get SigninHelper instance instead of creating it
@@ -42,7 +40,6 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
     public SigninHelper(SigninManager signinManager, AccountTrackerService accountTrackerService) {
         mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
-        mAccountRenameChecker = new AccountRenameChecker();
         ApplicationStatus.registerApplicationStateListener(this);
     }
 
@@ -58,38 +55,27 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
     private void validateSignedInAccountExists(List<Account> accounts) {
         final CoreAccountInfo oldAccount =
                 mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC);
-        if (oldAccount == null) {
+        if (oldAccount == null
+                || AccountUtils.findAccountByName(accounts, oldAccount.getEmail()) != null) {
+            // Do nothing if user is not signed in or if the primary account is still on device
             return;
         }
-
-        if (AccountUtils.findAccountByName(accounts, oldAccount.getEmail()) != null) {
-            // Do nothing if the signed-in account is still on device
-            return;
-        }
-
-        // If the signed-in account is no longer on device, check if it is renamed to
-        // another account existing on device.
-        new AsyncTask<String>() {
-            @Override
-            protected String doInBackground() {
-                return mAccountRenameChecker.getNewNameOfRenamedAccount(
-                        oldAccount.getEmail(), accounts);
-            }
-
-            @Override
-            protected void onPostExecute(String newAccountName) {
-                if (newAccountName != null) {
-                    // Sign in to the new account if the current account is renamed
-                    // to a new account
-                    mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
-                        mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
-                                AccountUtils.createAccountFromName(newAccountName), null);
-                    }, false);
-                } else {
-                    mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
-                }
-            }
-        }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        // Check whether the primary account is renamed to another account when it is not on device
+        AccountRenameChecker.get()
+                .getNewNameOfRenamedAccountAsync(oldAccount.getEmail(), accounts)
+                .then(newAccountName -> {
+                    if (newAccountName != null) {
+                        // Sign in to the new account if the current primary account is renamed
+                        // to a new account
+                        mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
+                            mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
+                                    AccountUtils.createAccountFromName(newAccountName), null);
+                        }, false);
+                    } else {
+                        // Sign out if the current primary account is not renamed
+                        mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
+                    }
+                });
     }
 
     /**
