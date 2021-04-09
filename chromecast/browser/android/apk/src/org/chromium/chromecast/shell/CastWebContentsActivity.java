@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -108,12 +107,7 @@ public class CastWebContentsActivity extends Activity {
         });
         createdAndNotTestingState.subscribe(Observers.onEnter(x -> {
             // Do this in onCreate() only if not testing.
-            if (!CastBrowserHelper.initializeBrowser(getApplicationContext())) {
-                Toast.makeText(this, R.string.browser_process_initialization_failed,
-                             Toast.LENGTH_SHORT)
-                        .show();
-                mIsFinishingState.set("Failed to initialize browser");
-            }
+            CastBrowserHelper.initializeBrowser(getApplicationContext());
 
             setContentView(R.layout.cast_web_contents_activity);
 

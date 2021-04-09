@@ -11,7 +11,6 @@ import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -32,8 +31,8 @@ public class CastBrowserHelper {
      *
      * @return whether or not the process started successfully
      */
-    public static boolean initializeBrowser(Context context) {
-        if (sIsBrowserInitialized) return true;
+    public static void initializeBrowser(Context context) {
+        if (sIsBrowserInitialized) return;
 
         Log.d(TAG, "Performing one-time browser initialization");
 
@@ -45,20 +44,14 @@ public class CastBrowserHelper {
 
         DeviceUtils.addDeviceSpecificUserAgentSwitch();
 
-        try {
-            LibraryLoader.getInstance().ensureInitialized();
+        LibraryLoader.getInstance().ensureInitialized();
 
-            Log.d(TAG, "Loading BrowserStartupController...");
-            BrowserStartupController.getInstance().startBrowserProcessesSync(
-                    LibraryProcessType.PROCESS_BROWSER, false);
-            NetworkChangeNotifier.init();
-            // Cast shell always expects to receive notifications to track network state.
-            NetworkChangeNotifier.registerToReceiveNotificationsAlways();
-            sIsBrowserInitialized = true;
-            return true;
-        } catch (ProcessInitException e) {
-            Log.e(TAG, "Unable to launch browser process.", e);
-            return false;
-        }
+        Log.d(TAG, "Loading BrowserStartupController...");
+        BrowserStartupController.getInstance().startBrowserProcessesSync(
+                LibraryProcessType.PROCESS_BROWSER, false);
+        NetworkChangeNotifier.init();
+        // Cast shell always expects to receive notifications to track network state.
+        NetworkChangeNotifier.registerToReceiveNotificationsAlways();
+        sIsBrowserInitialized = true;
     }
 }

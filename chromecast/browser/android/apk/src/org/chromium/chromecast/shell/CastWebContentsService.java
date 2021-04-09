@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
@@ -77,11 +76,7 @@ public class CastWebContentsService extends Service {
     public void onCreate() {
         super.onCreate();
         if (DEBUG) Log.d(TAG, "onCreate");
-        if (!CastBrowserHelper.initializeBrowser(getApplicationContext())) {
-            Toast.makeText(this, R.string.browser_process_initialization_failed, Toast.LENGTH_SHORT)
-                    .show();
-            stopSelf();
-        }
+        CastBrowserHelper.initializeBrowser(getApplicationContext());
         createNotificationChannel();
     }
 
