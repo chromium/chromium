@@ -81,7 +81,7 @@ TEST_F(SchedulerTest, ScheduledTasksRunAfterReporting) {
                         ran = true;
                       }),
                       std::vector<SyncToken>(),
-                      base::Bind(
+                      base::BindOnce(
                           [&](bool& ran, bool& reported, base::TimeTicks t) {
                             EXPECT_FALSE(ran);
                             reported = true;
