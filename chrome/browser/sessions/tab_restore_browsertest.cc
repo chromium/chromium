@@ -626,12 +626,23 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
       gfx::Range(0, 1));
 }
 
+// https://crbug.com/1196530: Test is flaky on Linux, disabled for
+// investigation.
+#if defined(OS_LINUX)
+#define MAYBE_RestoreGroupWithUnloadHandlerRejected \
+  DISABLED_RestoreGroupWithUnloadHandlerRejected
+#else
+#define MAYBE_RestoreGroupWithUnloadHandlerRejected \
+  RestoreGroupWithUnloadHandlerRejected
+#endif
+
 // Close a group that contains a tab with an unload handler. Reject the
 // unload handler, resulting in the tab not closing while the group does. Then
 // restore the group. The group should restore intact and duplicate the
 // still-open tab.
 // TODO(crbug.com/1181521): Run unload handlers before the group is closed.
-IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerRejected) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       MAYBE_RestoreGroupWithUnloadHandlerRejected) {
   const char kUnloadHTML[] =
       "<html><body>"
       "<script>window.onbeforeunload=function(e){return 'foo';}</script>"
