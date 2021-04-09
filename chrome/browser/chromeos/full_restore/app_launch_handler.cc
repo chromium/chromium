@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
@@ -246,7 +247,10 @@ void AppLaunchHandler::LaunchArcApp(
 
   for (const auto& it : launch_list) {
     DCHECK(it.second->event_flag.has_value());
-    apps::mojom::WindowInfoPtr window_info = it.second->GetAppWindowInfo();
+    int64_t display_id =
+        it.second->display_id.value_or(display::kInvalidDisplayId);
+    apps::mojom::WindowInfoPtr window_info =
+        ConvertToArcBounds(display_id, it.second->GetAppWindowInfo());
 
     // Set an ARC session id to find the restore window id based on the new
     // created ARC task id in FullRestoreReadHandler.
