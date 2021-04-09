@@ -143,20 +143,28 @@ void ScriptProcessorHandler::Initialize() {
 }
 
 void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
-  TRACE_EVENT_BEGIN0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-                     "ScriptProcessorHandler::Process");
+  // The main thread might be accessing the shared buffers. If so, silience
+  // the output and return.
+  MutexTryLocker try_locker(process_event_lock_);
+  if (!try_locker.Locked()) {
+    Output(0).Bus()->Zero();
+    return;
+  }
 
+  // Discussion about inputs and outputs:
   // As in other AudioNodes, ScriptProcessorNode uses an AudioBus for its input
-  // and output (i.e. |input_bus| and |output_bus|). Additionally, there is a
-  // double-buffering for input and output that are exposed directly to
-  // JavaScript (i.e. |inputBuffer| and |outputBuffer| in
-  // |AudioProcessingEvent|). This node is the producer for |inputBuffer| and
-  // the consumer for |outputBuffer|. The |AudioProcessingEvent| is the
-  // consumer of |inputBuffer| and the producer for |outputBuffer|.
+  // and output (see inputBus and outputBus below).  Additionally, there is a
+  // double-buffering for input and output which is exposed directly to
+  // JavaScript (see inputBuffer and outputBuffer below).  This node is the
+  // producer for inputBuffer and the consumer for outputBuffer.  The JavaScript
+  // code is the consumer of inputBuffer and the producer for outputBuffer.
 
+  // Get input and output busses.
   scoped_refptr<AudioBus> input_bus = Input(0).Bus();
   AudioBus* output_bus = Output(0).Bus();
 
+  // Get input and output buffers. We double-buffer both the input and output
+  // sides.
   uint32_t double_buffer_index = this->DoubleBufferIndex();
   DCHECK_LT(double_buffer_index, 2u);
   DCHECK_LT(double_buffer_index, shared_input_buffers_.size());
@@ -167,71 +175,52 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
   SharedAudioBuffer* shared_output_buffer =
       shared_output_buffers_.at(double_buffer_index).get();
 
+  // Check the consistency of input and output buffers.
+  uint32_t number_of_input_channels = internal_input_bus_->NumberOfChannels();
   bool buffers_are_good =
       shared_output_buffer && BufferSize() == shared_output_buffer->length() &&
       buffer_read_write_index_ + frames_to_process <= BufferSize();
 
+  // If the number of input channels is zero, it's ok to have inputBuffer = 0.
   if (internal_input_bus_->NumberOfChannels()) {
-    // If the number of input channels is zero, the zero length |inputBuffer|
-    // is fine.
-    buffers_are_good = buffers_are_good &&
-      shared_input_buffer && BufferSize() == shared_input_buffer->length();
+    buffers_are_good = buffers_are_good && shared_input_buffer &&
+                       BufferSize() == shared_input_buffer->length();
   }
 
   DCHECK(buffers_are_good);
 
-  // |BufferSize()| should be evenly divisible by |frames_to_process|.
+  // We assume that bufferSize() is evenly divisible by framesToProcess - should
+  // always be true, but we should still check.
   DCHECK_GT(frames_to_process, 0u);
   DCHECK_GE(BufferSize(), frames_to_process);
   DCHECK_EQ(BufferSize() % frames_to_process, 0u);
 
-  uint32_t number_of_input_channels = internal_input_bus_->NumberOfChannels();
   uint32_t number_of_output_channels = output_bus->NumberOfChannels();
+
   DCHECK_EQ(number_of_input_channels, number_of_input_channels_);
   DCHECK_EQ(number_of_output_channels, number_of_output_channels_);
 
-  {
-    MutexTryLocker try_locker(GetBufferLock());
-    if (!try_locker.Locked()) {
-      // Failed to acquire the output buffer, so output silence.
-      TRACE_EVENT_INSTANT0(
-          TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-          "ScriptProcessorHandler::Process - tryLock failed (output)",
-          TRACE_EVENT_SCOPE_THREAD);
-      TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-                       "ScriptProcessorHandler::Process");
-      Output(0).Bus()->Zero();
-      return;
-    }
+  for (uint32_t i = 0; i < number_of_input_channels; ++i)
+    internal_input_bus_->SetChannelMemory(
+        i,
+        static_cast<float*>(shared_input_buffer->channels()[i].Data()) +
+            buffer_read_write_index_,
+        frames_to_process);
 
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-                 "ScriptProcessorHandler::Process - data copy under lock",
-                 "double_buffer_index", double_buffer_index);
+  if (number_of_input_channels)
+    internal_input_bus_->CopyFrom(*input_bus);
 
-    for (uint32_t i = 0; i < number_of_input_channels; ++i) {
-      float* destination =
-          static_cast<float*>(shared_input_buffer->channels()[i].Data()) +
-          buffer_read_write_index_;
-      const float* source = input_bus->Channel(i)->Data();
-      memcpy(destination, source, sizeof(float) * frames_to_process);
-    }
-
-    for (uint32_t i = 0; i < number_of_output_channels; ++i) {
-      float* destination = output_bus->Channel(i)->MutableData();
-      const float* source =
-          static_cast<float*>(shared_output_buffer->channels()[i].Data()) +
-          buffer_read_write_index_;
-      memcpy(destination, source, sizeof(float) * frames_to_process);
-    }
+  // Copy from the output buffer to the output.
+  for (uint32_t i = 0; i < number_of_output_channels; ++i) {
+    memcpy(output_bus->Channel(i)->MutableData(),
+           static_cast<float*>(shared_output_buffer->channels()[i].Data()) +
+               buffer_read_write_index_,
+           sizeof(float) * frames_to_process);
   }
 
-  // Update the buffer index for wrap-around.
+  // Update the buffering index.
   buffer_read_write_index_ =
       (buffer_read_write_index_ + frames_to_process) % BufferSize();
-  TRACE_EVENT_INSTANT1(
-      TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-      "ScriptProcessorHandler::Process", TRACE_EVENT_SCOPE_THREAD,
-      "buffer_read_write_index_", buffer_read_write_index_);
 
   // Fire an event and swap buffers when |buffer_read_write_index_| wraps back
   // around to 0. It means the current input and output buffers are full.
@@ -255,7 +244,6 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
       waitable_event->Wait();
     }
 
-    // Update the double-buffering index.
     SwapBuffers();
   }
 }
@@ -270,6 +258,9 @@ void ScriptProcessorHandler::FireProcessEvent(uint32_t double_buffer_index) {
 
   // Avoid firing the event if the document has already gone away.
   if (GetNode()) {
+    // This synchronizes with process().
+    MutexLocker process_locker(process_event_lock_);
+
     // Calculate a playbackTime with the buffersize which needs to be processed
     // each time onaudioprocess is called.  The outputBuffer being passed to JS
     // will be played after exhuasting previous outputBuffer by
@@ -522,89 +513,58 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
                                         uint32_t double_buffer_index) {
   DCHECK(IsMainThread());
 
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-               "ScriptProcessorNode::DispatchEvent");
+  AudioBuffer* backing_input_buffer =
+      input_buffers_.at(double_buffer_index).Get();
 
-  ScriptProcessorHandler& handler =
-      static_cast<ScriptProcessorHandler&>(Handler());
+  // The backing buffer can be nullptr, when the number of input channels is 0.
+  if (backing_input_buffer) {
+    // Also the author code might have transferred |external_input_buffer| to
+    // other threads or replaced it with a different AudioBuffer object. Then
+    // re-create a new buffer instance.
+    if (IsAudioBufferDetached(external_input_buffer_) ||
+        !BufferTopologyMatches(backing_input_buffer,
+                               external_input_buffer_)) {
+      external_input_buffer_ = AudioBuffer::Create(
+          backing_input_buffer->numberOfChannels(),
+          backing_input_buffer->length(),
+          backing_input_buffer->sampleRate());
+    }
 
-  {
-    MutexLocker locker(handler.GetBufferLock());
-    TRACE_EVENT1(
-        TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-        "ScriptProcessorNode::DispatchEvent (copy input under lock)",
-        "double_buffer_index", double_buffer_index);
-
-    AudioBuffer* backing_input_buffer =
-        input_buffers_.at(double_buffer_index).Get();
-
-    // The backing buffer can be |nullptr|, when the number of input channels
-    // is 0.
-    if (backing_input_buffer) {
-      // Also the author code might have transferred |external_input_buffer| to
-      // other threads or replaced it with a different AudioBuffer object. Then
-      // re-create a new buffer instance.
-      if (IsAudioBufferDetached(external_input_buffer_) ||
-          !BufferTopologyMatches(backing_input_buffer,
-                                external_input_buffer_)) {
-        TRACE_EVENT0(
-            TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-            "ScriptProcessorNode::DispatchEvent (create input AudioBuffer)");
-        external_input_buffer_ = AudioBuffer::Create(
-            backing_input_buffer->numberOfChannels(),
-            backing_input_buffer->length(),
-            backing_input_buffer->sampleRate());
-      }
-
-      for (unsigned channel = 0;
-          channel < backing_input_buffer->numberOfChannels(); ++channel) {
-        const float* source = static_cast<float*>(
-            backing_input_buffer->getChannelData(channel)->buffer()->Data());
-        float* destination = static_cast<float*>(
-            external_input_buffer_->getChannelData(channel)->buffer()->Data());
-        memcpy(destination, source,
-               backing_input_buffer->length() * sizeof(float));
-      }
+    for (unsigned channel = 0;
+         channel < backing_input_buffer->numberOfChannels(); ++channel) {
+      const float* source = static_cast<float*>(
+          backing_input_buffer->getChannelData(channel)->buffer()->Data());
+      float* destination = static_cast<float*>(
+          external_input_buffer_->getChannelData(channel)->buffer()->Data());
+      memcpy(destination, source,
+             backing_input_buffer->length() * sizeof(float));
     }
   }
-
-  external_output_buffer_->Zero();
 
   AudioNode::DispatchEvent(*AudioProcessingEvent::Create(
       external_input_buffer_, external_output_buffer_, playback_time));
 
-  {
-    MutexLocker locker(handler.GetBufferLock());
-    TRACE_EVENT1(
-        TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-        "ScriptProcessorNode::DispatchEvent (copy output under lock)",
-        "double_buffer_index", double_buffer_index);
+  AudioBuffer* backing_output_buffer =
+      output_buffers_.at(double_buffer_index).Get();
 
-    AudioBuffer* backing_output_buffer =
-        output_buffers_.at(double_buffer_index).Get();
+  if (backing_output_buffer) {
+    if (IsAudioBufferDetached(external_output_buffer_) ||
+        !BufferTopologyMatches(backing_output_buffer,
+                               external_output_buffer_)) {
+      external_output_buffer_ = AudioBuffer::Create(
+          backing_output_buffer->numberOfChannels(),
+          backing_output_buffer->length(),
+          backing_output_buffer->sampleRate());
+    }
 
-    if (backing_output_buffer) {
-      if (IsAudioBufferDetached(external_output_buffer_) ||
-          !BufferTopologyMatches(backing_output_buffer,
-                                 external_output_buffer_)) {
-        TRACE_EVENT0(
-            TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-            "ScriptProcessorNode::DispatchEvent (create output AudioBuffer)");
-        external_output_buffer_ = AudioBuffer::Create(
-            backing_output_buffer->numberOfChannels(),
-            backing_output_buffer->length(),
-            backing_output_buffer->sampleRate());
-      }
-
-      for (unsigned channel = 0;
-          channel < backing_output_buffer->numberOfChannels(); ++channel) {
-        const float* source = static_cast<float*>(
-            external_output_buffer_->getChannelData(channel)->buffer()->Data());
-        float* destination = static_cast<float*>(
-            backing_output_buffer->getChannelData(channel)->buffer()->Data());
-        memcpy(destination, source,
-               backing_output_buffer->length() * sizeof(float));
-      }
+    for (unsigned channel = 0;
+         channel < backing_output_buffer->numberOfChannels(); ++channel) {
+      const float* source = static_cast<float*>(
+          external_output_buffer_->getChannelData(channel)->buffer()->Data());
+      float* destination = static_cast<float*>(
+          backing_output_buffer->getChannelData(channel)->buffer()->Data());
+      memcpy(destination, source,
+             backing_output_buffer->length() * sizeof(float));
     }
   }
 }
