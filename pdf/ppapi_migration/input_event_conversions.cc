@@ -21,6 +21,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -225,6 +226,30 @@ std::unique_ptr<blink::WebKeyboardEvent> GetWebKeyboardEvent(
   return keyboard_event;
 }
 
+std::unique_ptr<blink::WebTouchEvent> GetWebTouchEvent(
+    const pp::TouchInputEvent& event) {
+  const blink::WebInputEvent::Type type = GetWebInputEventType(event.GetType());
+  DCHECK(blink::WebInputEvent::IsTouchEventType(type));
+  DCHECK_NE(type, blink::WebInputEvent::Type::kTouchScrollStarted);
+
+  auto touch_event = std::make_unique<blink::WebTouchEvent>(
+      type, event.GetModifiers(),
+      base::TimeTicks() + base::TimeDelta::FromSecondsD(event.GetTimeStamp()));
+
+  // The PDF plugin only cares about the first touch and the number of touches,
+  // but copy over all the touches so that `touch_event->touches_length`
+  // accurately stores the length of `touches`.
+  touch_event->touches_length =
+      std::min<uint32_t>(blink::WebTouchEvent::kTouchesLengthCap,
+                         event.GetTouchCount(PP_TOUCHLIST_TYPE_TARGETTOUCHES));
+  for (size_t i = 0; i < touch_event->touches_length; ++i) {
+    touch_event->touches[i].SetPositionInWidget(PointFFromPPFloatPoint(
+        event.GetTouchByIndex(PP_TOUCHLIST_TYPE_TARGETTOUCHES, i).position()));
+  }
+
+  return touch_event;
+}
+
 }  // namespace
 
 InputEvent::InputEvent(InputEventType event_type,
@@ -346,8 +371,7 @@ std::unique_ptr<blink::WebInputEvent> GetWebInputEvent(
     case blink::WebInputEvent::Type::kTouchMove:
     case blink::WebInputEvent::Type::kTouchEnd:
     case blink::WebInputEvent::Type::kTouchCancel:
-      // TODO(crbug.com/1191817): Convert touch events.
-      return nullptr;
+      return GetWebTouchEvent(pp::TouchInputEvent(event));
     default:
       // Don't bother converting event types not handled by the PDF plugin.
       return nullptr;
