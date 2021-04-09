@@ -54,7 +54,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The number of times the Content Extension was displayed since last Chrome
-    foregrounding. Reported when Chrome is put in foregrounded.
+    foregrounding. Reported when Chrome is put in foregrounded. Note: events
+    where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -111,7 +112,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user copied a Password since
-    last Chrome foregrounding. Reported when Chrome is put in foreground.
+    last Chrome foregrounding. Reported when Chrome is put in foreground. Note:
+    events where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -121,7 +123,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user copied a URL since last
-    Chrome foregrounding. Reported when Chrome is put in foreground.
+    Chrome foregrounding. Reported when Chrome is put in foreground. Note:
+    events where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -131,7 +134,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user copied a Username since
-    last Chrome foregrounding. Reported when Chrome is put in foreground.
+    last Chrome foregrounding. Reported when Chrome is put in foreground. Note:
+    events where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -141,7 +145,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension was displayed since last Chrome
-    foregrounding. Reported when Chrome is put in foreground.
+    foregrounding. Reported when Chrome is put in foreground. Note: events where
+    the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -152,7 +157,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of times the Credential Extension password util failed to look up
     for a password since last Chrome foregrounding. Reported when Chrome is put
-    in foreground.
+    in foreground. Note: events where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -163,7 +168,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of times the Credential Extension pasword util was queried with a
     nil argument since last Chrome foregrounding. Reported when Chrome is put in
-    foreground.
+    foreground. Note: events where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -174,6 +179,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of times the Credential Extension user selected for a Password
     since last Chrome foregrounding. Reported when Chrome is put in foreground.
+    Note: events where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -184,7 +190,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of times the Credential Extension selected a Password without
     user intervention since last Chrome foregrounding. Reported when Chrome is
-    put in foreground.
+    put in foreground. Note: events where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -195,6 +201,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of times the Credential Extension needed user reauthentication
     since last Chrome foregrounding. Reported when Chrome is put in foreground.
+    Note: events where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -205,6 +212,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of times the Credential Extension user searched for a Password
     since last Chrome foregrounding. Reported when Chrome is put in foreground.
+    Note: events where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -227,6 +235,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of times the Credential Extension user unobfuscated a Password
     since last Chrome foregrounding. Reported when Chrome is put in foreground.
+    Note: events where the count is zero were removed in M91.
   </summary>
 </histogram>
 
@@ -827,7 +836,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The number of times the Search Extension was displayed since last Chrome
-    foregrounding. Reported when Chrome is put in foreground.
+    foregrounding. Reported when Chrome is put in foreground. Note: events where
+    the count is zero were removed in M91.
   </summary>
 </histogram>
 
