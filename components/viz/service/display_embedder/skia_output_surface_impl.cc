@@ -1181,4 +1181,14 @@ void SkiaOutputSurfaceImpl::PreserveChildSurfaceControls() {
                  /*need_framebuffer=*/false);
 }
 
+void SkiaOutputSurfaceImpl::InitDelegatedInkPointRendererReceiver(
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+        pending_receiver) {
+  auto task = base::BindOnce(
+      &SkiaOutputSurfaceImplOnGpu::InitDelegatedInkPointRendererReceiver,
+      base::Unretained(impl_on_gpu_.get()), std::move(pending_receiver));
+  EnqueueGpuTask(std::move(task), {}, /*make_current=*/false,
+                 /*need_framebuffer=*/false);
+}
+
 }  // namespace viz

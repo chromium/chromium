@@ -14,7 +14,7 @@
 #include "components/viz/service/display/delegated_ink_trail_data.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/viz/public/mojom/compositing/delegated_ink_point_renderer.mojom.h"
+#include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 
 namespace gfx {
 class DelegatedInkMetadata;
@@ -31,7 +31,7 @@ namespace viz {
 // For more information on the feature, please see the explainer:
 // https://github.com/WICG/ink-enhancement/blob/master/README.md
 class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
-    : public mojom::DelegatedInkPointRenderer {
+    : public gfx::mojom::DelegatedInkPointRenderer {
  public:
   DelegatedInkPointRendererBase();
   ~DelegatedInkPointRendererBase() override;
@@ -40,7 +40,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
       const DelegatedInkPointRendererBase&) = delete;
 
   void InitMessagePipeline(
-      mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver);
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver);
 
   void StoreDelegatedInkPoint(const gfx::DelegatedInkPoint& point) override;
   virtual void SetDelegatedInkMetadata(
@@ -88,7 +88,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   // of points to use when drawing the delegated ink trail.
   std::unordered_map<int32_t, DelegatedInkTrailData> pointer_ids_;
 
-  mojo::Receiver<mojom::DelegatedInkPointRenderer> receiver_{this};
+  mojo::Receiver<gfx::mojom::DelegatedInkPointRenderer> receiver_{this};
 };
 
 }  // namespace viz

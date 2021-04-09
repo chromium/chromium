@@ -23,9 +23,16 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/ipc/in_process_command_buffer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/skia/include/core/SkDeferredDisplayListRecorder.h"
 #include "third_party/skia/include/core/SkOverdrawCanvas.h"
 #include "third_party/skia/include/core/SkSurfaceCharacterization.h"
+
+namespace gfx {
+namespace mojom {
+class DelegatedInkPointRenderer;
+}  // namespace mojom
+}  // namespace gfx
 
 namespace viz {
 
@@ -151,6 +158,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       bool maybe_concurrent_reads,
       const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space) override;
+
+  void InitDelegatedInkPointRendererReceiver(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+          pending_receiver) override;
 
   // Set the fields of |capabilities_| and propagates to |impl_on_gpu_|. Should
   // be called after BindToClient().

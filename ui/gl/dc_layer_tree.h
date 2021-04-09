@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dc_renderer_layer_params.h"
@@ -20,6 +21,9 @@
 #include "ui/gl/hdr_metadata_helper_win.h"
 
 namespace gfx {
+namespace mojom {
+class DelegatedInkPointRenderer;
+}  // namespace mojom
 class DelegatedInkMetadata;
 }  // namespace gfx
 
@@ -116,6 +120,10 @@ class DCLayerTree {
 
   void SetDelegatedInkTrailStartPoint(
       std::unique_ptr<gfx::DelegatedInkMetadata>);
+
+  void InitDelegatedInkPointRendererReceiver(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+          pending_receiver);
 
  private:
   // This will add an ink visual to the visual tree to enable delegated ink

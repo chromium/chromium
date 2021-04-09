@@ -191,7 +191,7 @@ class InProcessContextFactory::PerCompositorData
 #endif
 
   void SetDelegatedInkPointRenderer(
-      mojo::PendingReceiver<viz::mojom::DelegatedInkPointRenderer> receiver)
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override {}
 
   void SetSurfaceHandle(gpu::SurfaceHandle surface_handle) {

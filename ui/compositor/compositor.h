@@ -61,6 +61,9 @@ class TaskGraphRunner;
 }
 
 namespace gfx {
+namespace mojom {
+class DelegatedInkPointRenderer;
+}  // namespace mojom
 struct PresentationFeedback;
 class Rect;
 class ScrollOffset;
@@ -75,7 +78,6 @@ namespace viz {
 namespace mojom {
 class DisplayPrivate;
 class ExternalBeginFrameController;
-class DelegatedInkPointRenderer;
 }  // namespace mojom
 class ContextProvider;
 class HostFrameSinkManager;
@@ -410,7 +412,7 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   }
 
   virtual void SetDelegatedInkPointRenderer(
-      mojo::PendingReceiver<viz::mojom::DelegatedInkPointRenderer> receiver);
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver);
 
  private:
   friend class base::RefCounted<Compositor>;

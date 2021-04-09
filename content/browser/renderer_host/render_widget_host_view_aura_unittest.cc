@@ -119,7 +119,7 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/mojom/delegated_ink_point.mojom.h"
+#include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/wm/core/window_util.h"
 
@@ -6730,10 +6730,10 @@ TEST_F(RenderWidgetHostViewAuraKeyboardTest,
 // Mock the DelegatedInkPointRenderer to grab the delegated ink points as they
 // are shipped off to viz from the browser process.
 class MockDelegatedInkPointRenderer
-    : public viz::mojom::DelegatedInkPointRenderer {
+    : public gfx::mojom::DelegatedInkPointRenderer {
  public:
   explicit MockDelegatedInkPointRenderer(
-      mojo::PendingReceiver<viz::mojom::DelegatedInkPointRenderer> receiver)
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       : receiver_(this, std::move(receiver)) {}
 
   void StoreDelegatedInkPoint(const gfx::DelegatedInkPoint& point) override {
@@ -6763,7 +6763,7 @@ class MockDelegatedInkPointRenderer
   bool ReceiverIsBound() { return receiver_.is_bound(); }
 
  private:
-  mojo::Receiver<viz::mojom::DelegatedInkPointRenderer> receiver_;
+  mojo::Receiver<gfx::mojom::DelegatedInkPointRenderer> receiver_;
   base::Optional<gfx::DelegatedInkPoint> delegated_ink_point_;
   bool prediction_reset_ = false;
 };
@@ -6781,7 +6781,7 @@ class MockCompositor : public ui::Compositor {
                        compositor->is_pixel_canvas()) {}
 
   void SetDelegatedInkPointRenderer(
-      mojo::PendingReceiver<viz::mojom::DelegatedInkPointRenderer> receiver)
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override {
     delegated_ink_point_renderer_ =
         std::make_unique<MockDelegatedInkPointRenderer>(std::move(receiver));

@@ -14,7 +14,7 @@ DelegatedInkPointRendererBase::DelegatedInkPointRendererBase() = default;
 DelegatedInkPointRendererBase::~DelegatedInkPointRendererBase() = default;
 
 void DelegatedInkPointRendererBase::InitMessagePipeline(
-    mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver) {
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver) {
   // The remote end of this pipeline exists on a per-tab basis, so if tab A
   // is using the feature and then tab B starts trying to use it, a new
   // PendingReceiver will arrive here while |receiver_| is still bound to the

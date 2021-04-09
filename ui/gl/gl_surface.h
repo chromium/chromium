@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -29,6 +30,9 @@
 #include "ui/gl/gl_surface_format.h"
 
 namespace gfx {
+namespace mojom {
+class DelegatedInkPointRenderer;
+}  // namespace mojom
 class ColorSpace;
 class GpuFence;
 class VSyncProvider;
@@ -325,6 +329,9 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   virtual bool SupportsDelegatedInk();
   virtual void SetDelegatedInkTrailStartPoint(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {}
+  virtual void InitDelegatedInkPointRendererReceiver(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+          pending_receiver);
 
  protected:
   virtual ~GLSurface();
@@ -424,6 +431,9 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool SupportsDelegatedInk() override;
   void SetDelegatedInkTrailStartPoint(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
+  void InitDelegatedInkPointRendererReceiver(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+          pending_receiver) override;
 
   GLSurface* surface() const { return surface_.get(); }
 

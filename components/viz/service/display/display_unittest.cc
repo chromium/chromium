@@ -5108,4 +5108,27 @@ TEST_P(DelegatedInkDisplayTest, MetadataOnlySentToSkiaRendererOrOutputSurface) {
     EXPECT_FALSE(skia_output_surface_->last_delegated_ink_metadata());
 }
 
+// Check that a pending delegated ink point renderer sent to the display
+// correctly goes to either the renderer or the output surface depending on if
+// the platform supports delegated ink and the feature flag is enabled or not.
+TEST_P(DelegatedInkDisplayTest,
+       InkRendererRemoteGoesToSkiaRendererOrOutputSurface) {
+  SetUpGpuDisplay();
+
+  mojo::Remote<gfx::mojom::DelegatedInkPointRenderer> ink_renderer_remote;
+  display_->InitDelegatedInkPointRendererReceiver(
+      ink_renderer_remote.BindNewPipeAndPassReceiver());
+
+  if (GetParam() == DelegatedInkType::kPlatformInk) {
+    EXPECT_TRUE(skia_output_surface_
+                    ->ContainsDelegatedInkPointRendererReceiverForTesting());
+    EXPECT_FALSE(ink_renderer());
+  } else {
+    EXPECT_FALSE(skia_output_surface_
+                     ->ContainsDelegatedInkPointRendererReceiverForTesting());
+    EXPECT_TRUE(ink_renderer());
+    EXPECT_TRUE(ink_renderer_remote.is_bound());
+  }
+}
+
 }  // namespace viz

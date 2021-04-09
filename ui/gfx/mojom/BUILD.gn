@@ -14,6 +14,7 @@ mojom("mojom") {
     "color_space.mojom",
     "delegated_ink_metadata.mojom",
     "delegated_ink_point.mojom",
+    "delegated_ink_point_renderer.mojom",
     "display_color_spaces.mojom",
     "font_render_params.mojom",
     "gpu_extra_info.mojom",

@@ -376,4 +376,10 @@ void FakeSkiaOutputSurface::ScheduleGpuTaskForTesting(
   NOTIMPLEMENTED();
 }
 
+void FakeSkiaOutputSurface::InitDelegatedInkPointRendererReceiver(
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+        pending_receiver) {
+  delegated_ink_renderer_receiver_arrived_ = true;
+}
+
 }  // namespace viz

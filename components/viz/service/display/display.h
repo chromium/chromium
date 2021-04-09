@@ -49,7 +49,6 @@ class ScopedAllowScheduleGpuTask;
 
 namespace viz {
 class AggregatedFrame;
-class DelegatedInkPointRendererBase;
 class DirectRenderer;
 class DisplayClient;
 class DisplayResourceProvider;
@@ -195,11 +194,16 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   bool IsRootFrameMissing() const;
   bool HasPendingSurfaces(const BeginFrameArgs& args) const;
 
-  // Return the delegated ink point renderer from |renderer_|, creating it if
-  // one doesn't exist. Should only be used when the delegated ink trails web
-  // API has been used.
-  DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer(
-      bool create_if_necessary);
+  bool DoesPlatformSupportDelegatedInk() const {
+    return output_surface_->capabilities().supports_delegated_ink;
+  }
+
+  // If the platform supports delegated ink trails, then forward the pending
+  // receiver to the gpu main thread where it will be bound so that points can
+  // be sent directly there from the browser process and bypass viz.
+  void InitDelegatedInkPointRendererReceiver(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+          pending_receiver);
 
  private:
   friend class DisplayTest;

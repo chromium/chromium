@@ -168,9 +168,11 @@ component("gl") {
     ":buildflags",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
+    "//mojo/public/cpp/bindings",
 
     # ANGLE includes are used cross-platform.
     "//third_party/angle:includes",
+    "//ui/gfx/mojom",
   ]
   public_deps = [
     "//base",

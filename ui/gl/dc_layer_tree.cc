@@ -356,4 +356,12 @@ void DCLayerTree::SetDelegatedInkTrailStartPoint(
   ink_renderer_->SetDelegatedInkTrailStartPoint(std::move(metadata));
 }
 
+void DCLayerTree::InitDelegatedInkPointRendererReceiver(
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+        pending_receiver) {
+  DCHECK(SupportsDelegatedInk());
+
+  ink_renderer_->InitMessagePipeline(std::move(pending_receiver));
+}
+
 }  // namespace gl

@@ -178,7 +178,7 @@ class StubCompositorFrameSink
       mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer)
       override {}
   void SetDelegatedInkPointRenderer(
-      mojo::PendingReceiver<viz::mojom::DelegatedInkPointRenderer> receiver)
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override {}
 
   // mojom::CompositorFrameSink:

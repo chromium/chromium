@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
-#include "components/viz/service/display/delegated_ink_point_renderer_base.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
@@ -321,11 +320,8 @@ void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
 }
 
 void RootCompositorFrameSinkImpl::SetDelegatedInkPointRenderer(
-    mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver) {
-  if (auto* ink_renderer = display_->GetDelegatedInkPointRenderer(
-          /*create_if_necessary=*/true)) {
-    ink_renderer->InitMessagePipeline(std::move(receiver));
-  }
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver) {
+  display_->InitDelegatedInkPointRendererReceiver(std::move(receiver));
 }
 
 void RootCompositorFrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {

@@ -12,7 +12,9 @@
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/delegated_ink_metadata.h"
+#include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 
 // Required for SFINAE to check if these Win10 types exist.
 // TODO(1171374): Remove this when the types are available in the Win10 SDK.
@@ -53,6 +55,11 @@ class DelegatedInkPointRendererGpu {
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
     NOTREACHED();
   }
+
+  void InitMessagePipeline(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver) {
+    NOTREACHED();
+  }
 };
 
 // This class will call the OS delegated ink trail APIs when they become
@@ -72,10 +79,25 @@ template <typename InkTrailDevice, typename DelegatedInkTrail>
 class DelegatedInkPointRendererGpu<InkTrailDevice,
                                    DelegatedInkTrail,
                                    decltype(typeid(InkTrailDevice), void()),
-                                   decltype(typeid(DelegatedInkTrail),
-                                            void())> {
+                                   decltype(typeid(DelegatedInkTrail), void())>
+    : public gfx::mojom::DelegatedInkPointRenderer {
  public:
   DelegatedInkPointRendererGpu() = default;
+
+  void InitMessagePipeline(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+          pending_receiver) {
+    // The remote end of this pipeline exists on a per-tab basis, so if tab A
+    // is using the feature and then tab B starts trying to use it, a new
+    // PendingReceiver will arrive here while |receiver_| is still bound to the
+    // remote in tab A. Because of this possibility, we unconditionally reset
+    // |receiver_| before trying to bind anything here. This is fine to do
+    // because we only ever need to actively receive points from one tab as only
+    // one tab can be in the foreground and actively inking at a time.
+    receiver_.reset();
+
+    receiver_.Bind(std::move(pending_receiver));
+  }
 
   bool Initialize(
       const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device2,
@@ -153,6 +175,15 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     // ink trail.
   }
 
+  void StoreDelegatedInkPoint(const gfx::DelegatedInkPoint& point) override {
+    TRACE_EVENT1("gpu", "DelegatedInkPointRendererGpu::StoreDelegatedInkPoint",
+                 "delegated ink point", point.ToString());
+    // TODO(1052145): Start using OS APIs to draw |point| as part of the
+    // delegated ink trail.
+  }
+
+  void ResetPrediction() override {}
+
  private:
   // Note that this returns true if the HRESULT is anything other than S_OK,
   // meaning that it returns true when an event is traced (because of a
@@ -183,6 +214,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   // them when it isn't necessary.
   IDCompositionDevice2* dcomp_device_ = nullptr;
   IDXGISwapChain1* swap_chain_ = nullptr;
+
+  mojo::Receiver<gfx::mojom::DelegatedInkPointRenderer> receiver_{this};
 };
 
 }  // namespace gl

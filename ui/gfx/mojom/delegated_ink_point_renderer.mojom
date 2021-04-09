@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module viz.mojom;
+module gfx.mojom;
 
 import "ui/gfx/mojom/delegated_ink_point.mojom";
 
@@ -16,7 +16,7 @@ import "ui/gfx/mojom/delegated_ink_point.mojom";
 interface DelegatedInkPointRenderer {
   // Used to send the DelegatedInkPoint that was created in the browser process
   // to viz in order to be drawn as part of the delegated ink trail.
-  StoreDelegatedInkPoint(gfx.mojom.DelegatedInkPoint point);
+  StoreDelegatedInkPoint(DelegatedInkPoint point);
 
   // Used to reset prediction and prediction metrics that have been generated
   // by previously received points. Used by the browser process when a delegated

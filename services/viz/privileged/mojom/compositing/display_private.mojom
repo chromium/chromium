@@ -7,6 +7,7 @@ module viz.mojom;
 import "gpu/ipc/common/context_result.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
+import "ui/gfx/mojom/delegated_ink_point_renderer.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/gfx/mojom/transform.mojom";
@@ -14,7 +15,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/latency/mojom/latency_info.mojom";
 import "services/viz/privileged/mojom/compositing/layered_window_updater.mojom";
 import "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom";
-import "services/viz/public/mojom/compositing/delegated_ink_point_renderer.mojom";
 
 // The DisplayPrivate is used by privileged clients to talk to Display.
 interface DisplayPrivate {
@@ -81,7 +81,7 @@ interface DisplayPrivate {
   // Bind an interface between browser process and viz for ink points to be
   // sent to viz and stored, to be used when drawing a delegated ink trail.
   SetDelegatedInkPointRenderer(
-    pending_receiver<DelegatedInkPointRenderer> receiver);
+    pending_receiver<gfx.mojom.DelegatedInkPointRenderer> receiver);
 };
 
 interface DisplayClient {

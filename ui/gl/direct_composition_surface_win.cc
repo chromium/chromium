@@ -928,6 +928,13 @@ void DirectCompositionSurfaceWin::SetDelegatedInkTrailStartPoint(
   layer_tree_->SetDelegatedInkTrailStartPoint(std::move(metadata));
 }
 
+void DirectCompositionSurfaceWin::InitDelegatedInkPointRendererReceiver(
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+        pending_receiver) {
+  layer_tree_->InitDelegatedInkPointRendererReceiver(
+      std::move(pending_receiver));
+}
+
 scoped_refptr<base::TaskRunner>
 DirectCompositionSurfaceWin::GetWindowTaskRunnerForTesting() {
   return child_window_.GetTaskRunnerForTesting();

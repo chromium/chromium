@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/transform.h"
 #include "ui/gl/child_window_win.h"
 #include "ui/gl/gl_export.h"
@@ -20,6 +21,9 @@
 #include "ui/gl/vsync_observer.h"
 
 namespace gfx {
+namespace mojom {
+class DelegatedInkPointRenderer;
+}  // namespace mojom
 class DelegatedInkMetadata;
 }  // namespace gfx
 
@@ -171,6 +175,9 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   bool SupportsDelegatedInk() override;
   void SetDelegatedInkTrailStartPoint(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
+  void InitDelegatedInkPointRendererReceiver(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+          pending_receiver) override;
 
   HWND window() const { return window_; }
 

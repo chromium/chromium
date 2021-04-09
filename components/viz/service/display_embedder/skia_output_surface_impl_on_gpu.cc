@@ -1854,4 +1854,13 @@ SkiaOutputSurfaceImplOnGpu::GetOrCreateRenderPassOverlayBacking(
 }
 #endif
 
+void SkiaOutputSurfaceImplOnGpu::InitDelegatedInkPointRendererReceiver(
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+        pending_receiver) {
+  if (gl_surface_) {
+    gl_surface_->InitDelegatedInkPointRendererReceiver(
+        std::move(pending_receiver));
+  }
+}
+
 }  // namespace viz

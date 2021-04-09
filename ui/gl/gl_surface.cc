@@ -255,6 +255,12 @@ bool GLSurface::SupportsDelegatedInk() {
   return false;
 }
 
+void GLSurface::InitDelegatedInkPointRendererReceiver(
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+        pending_receiver) {
+  NOTREACHED();
+}
+
 void GLSurface::SetGpuVSyncEnabled(bool enabled) {}
 
 GLSurface* GLSurface::GetCurrent() {
@@ -550,6 +556,12 @@ bool GLSurfaceAdapter::SupportsDelegatedInk() {
 void GLSurfaceAdapter::SetDelegatedInkTrailStartPoint(
     std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   surface_->SetDelegatedInkTrailStartPoint(std::move(metadata));
+}
+
+void GLSurfaceAdapter::InitDelegatedInkPointRendererReceiver(
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+        pending_receiver) {
+  surface_->InitDelegatedInkPointRendererReceiver(std::move(pending_receiver));
 }
 
 GLSurfaceAdapter::~GLSurfaceAdapter() = default;

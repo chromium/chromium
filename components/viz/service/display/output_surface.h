@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gpu_task_scheduler_helper.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/overlay_transform.h"
@@ -30,6 +31,9 @@
 #include "ui/latency/latency_info.h"
 
 namespace gfx {
+namespace mojom {
+class DelegatedInkPointRenderer;
+}  // namespace mojom
 class ColorSpace;
 class Rect;
 class Size;
@@ -276,6 +280,12 @@ class VIZ_SERVICE_EXPORT OutputSurface {
 
   // Notifies the OutputSurface of rate of content updates in frames per second.
   virtual void SetFrameRate(float frame_rate) {}
+
+  // Sends the pending delegated ink renderer receiver to GPU Main to allow the
+  // browser process to send points directly there.
+  virtual void InitDelegatedInkPointRendererReceiver(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+          pending_receiver);
 
  protected:
   struct OutputSurface::Capabilities capabilities_;

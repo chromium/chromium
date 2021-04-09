@@ -19,7 +19,6 @@ mojom("mojom") {
     "compositing/compositor_render_pass_id.mojom",
     "compositing/copy_output_request.mojom",
     "compositing/copy_output_result.mojom",
-    "compositing/delegated_ink_point_renderer.mojom",
     "compositing/filter_operation.mojom",
     "compositing/filter_operations.mojom",
     "compositing/frame_deadline.mojom",

@@ -81,7 +81,7 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
       mojo::PendingRemote<mojom::VSyncParameterObserver> observer) override;
 
   void SetDelegatedInkPointRenderer(
-      mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver)
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override;
 
   // mojom::CompositorFrameSink:

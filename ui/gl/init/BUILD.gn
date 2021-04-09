@@ -25,6 +25,7 @@ component("init") {
 
   deps = [
     "//base",
+    "//mojo/public/cpp/bindings",
     "//ui/gfx",
     "//ui/gl:buildflags",
   ]

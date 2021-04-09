@@ -31,12 +31,16 @@
 #include "gpu/ipc/service/context_url.h"
 #include "gpu/ipc/service/display_context.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 
 namespace gfx {
+namespace mojom {
+class DelegatedInkPointRenderer;
+}  // namespace mojom
 class ColorSpace;
 }
 
@@ -216,6 +220,10 @@ class SkiaOutputSurfaceImplOnGpu
   void ReleaseFenceSync(uint64_t sync_fence_release);
 
   void PreserveChildSurfaceControls();
+
+  void InitDelegatedInkPointRendererReceiver(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+          pending_receiver);
 
  private:
   class OffscreenSurface;

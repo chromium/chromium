@@ -811,7 +811,7 @@ void Compositor::ReportMetricsForTracker(
 }
 
 void Compositor::SetDelegatedInkPointRenderer(
-    mojo::PendingReceiver<viz::mojom::DelegatedInkPointRenderer> receiver) {
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver) {
   if (display_private_)
     display_private_->SetDelegatedInkPointRenderer(std::move(receiver));
 }

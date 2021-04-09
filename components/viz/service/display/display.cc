@@ -1337,9 +1337,17 @@ void Display::PreserveChildSurfaceControls() {
   }
 }
 
-DelegatedInkPointRendererBase* Display::GetDelegatedInkPointRenderer(
-    bool create_if_necessary) {
-  return renderer_->GetDelegatedInkPointRenderer(create_if_necessary);
+void Display::InitDelegatedInkPointRendererReceiver(
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+        pending_receiver) {
+  if (DoesPlatformSupportDelegatedInk() &&
+      features::ShouldUsePlatformDelegatedInk()) {
+    output_surface_->InitDelegatedInkPointRendererReceiver(
+        std::move(pending_receiver));
+  } else {
+    renderer_->GetDelegatedInkPointRenderer(/*create_if_necessary=*/true)
+        ->InitMessagePipeline(std::move(pending_receiver));
+  }
 }
 
 }  // namespace viz
