@@ -11,12 +11,12 @@ preprocess_folder = "preprocessed"
 preprocess_if_expr("preprocess_ts") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "hello_ts.ts" ]
+  in_files = [ "app.ts" ]
 }
 
 ts_library("build") {
   root_dir = "$target_gen_dir/$preprocess_folder"
-  sources = [ "hello_ts.ts" ]
+  sources = [ "app.ts" ]
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [ ":preprocess_ts" ]
 }

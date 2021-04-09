@@ -63,9 +63,13 @@ template("ts_library") {
       deps += extra_deps
     }
 
-    path_mappings =
-        [ "chrome://resources/*|" +
-          rebase_path("$root_gen_dir/ui/webui/resources/*", target_gen_dir) ]
+    path_mappings = [
+      "chrome://resources/*|" +
+          rebase_path("$root_gen_dir/ui/webui/resources/*", target_gen_dir),
+      "chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
+              "//third_party/polymer/v3_0/components-chromium/polymer/polymer-element.d.ts",
+              target_gen_dir),
+    ]
     args += [ "--path_mappings" ] + path_mappings
     if (defined(invoker.path_mappings)) {
       args += invoker.path_mappings
