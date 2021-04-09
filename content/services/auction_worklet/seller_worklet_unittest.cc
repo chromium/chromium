@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +69,7 @@ class SellerWorkletTest : public testing::Test {
   void SetDefaultParameters() {
     ad_metadata_ = "[1]";
     bid_ = 1;
-    auction_config_ = "[1]";
+    auction_config_ = blink::mojom::AuctionAdConfig::New();
     browser_signal_top_window_hostname_ = "top_window_hostname";
     browser_signal_interest_group_owner_ =
         url::Origin::Create(GURL("https://foo.test/"));
@@ -104,7 +105,7 @@ class SellerWorkletTest : public testing::Test {
     ASSERT_TRUE(seller_worket);
 
     SellerWorklet::ScoreResult actual_result =
-        seller_worket->ScoreAd(ad_metadata_, bid_, auction_config_,
+        seller_worket->ScoreAd(ad_metadata_, bid_, *auction_config_,
                                browser_signal_top_window_hostname_,
                                browser_signal_interest_group_owner_,
                                browser_signal_interest_group_name_,
@@ -143,7 +144,7 @@ class SellerWorkletTest : public testing::Test {
     ASSERT_TRUE(seller_worket);
 
     SellerWorklet::Report actual_result = seller_worket->ReportResult(
-        auction_config_, browser_signal_top_window_hostname_,
+        *auction_config_, browser_signal_top_window_hostname_,
         browser_signal_interest_group_owner_,
         browser_signal_interest_group_name_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, bid_,
@@ -188,7 +189,7 @@ class SellerWorkletTest : public testing::Test {
   // This is a browser signal for report_result(), but a direct parameter for
   // score_bid().
   double bid_;
-  std::string auction_config_;
+  blink::mojom::AuctionAdConfigPtr auction_config_;
   std::string browser_signal_top_window_hostname_;
   url::Origin browser_signal_interest_group_owner_;
   std::string browser_signal_interest_group_name_;
@@ -257,11 +258,6 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
           "adMetadata",
           true /* is_json */,
           &ad_metadata_,
-      },
-      {
-          "auctionConfig",
-          true /* is_json */,
-          &auction_config_,
       },
       {
           "browserSignals.topWindowHostname",
@@ -336,6 +332,22 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
       base::StringPrintf("browserSignals.biddingDurationMsec"), 2);
 }
 
+// Test that auction config gets into scoreAd. More detailed handling of
+// (shared) construction of actual object is in ReportResultAuctionConfigParam,
+// as that worklet is easier to get things out of.
+TEST_F(SellerWorkletTest, ScoreAdAuctionConfigParam) {
+  // Default value, no URL
+  RunScoreBidWithReturnValueExpectingResult(
+      "auctionConfig.decisionLogicUrl.length", 0);
+
+  std::string url = "https://example.com/auction.js";
+  auction_config_ = blink::mojom::AuctionAdConfig::New();
+  auction_config_->seller = url::Origin::Create(GURL("https://example.com"));
+  auction_config_->decision_logic_url = GURL(url);
+  RunScoreBidWithReturnValueExpectingResult(
+      "auctionConfig.decisionLogicUrl.length", url.length());
+}
+
 // Tests parsing of return values.
 TEST_F(SellerWorkletTest, ReportResult) {
   RunReportResultCreatedScriptExpectingResult(
@@ -396,11 +408,6 @@ TEST_F(SellerWorkletTest, ReportResultParameters) {
     // Pointer to location at which the string can be modified.
     std::string* value_ptr;
   } kStringTestCases[] = {
-      {
-          "auctionConfig",
-          true /* is_json */,
-          &auction_config_,
-      },
       {
           "browserSignals.topWindowHostname",
           false /* is_json */,
@@ -484,6 +491,60 @@ TEST_F(SellerWorkletTest, ReportResultParameters) {
   SetDefaultParameters();
 }
 
+TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
+  // Empty AuctionAdConfig, with nothing filled in.
+  RunReportResultCreatedScriptExpectingResult(
+      "auctionConfig", std::string() /* extra_code */,
+      SellerWorklet::Report(R"({"seller":"null","decisionLogicUrl":""})",
+                            GURL()));
+
+  // Everything filled in.
+  auction_config_ = blink::mojom::AuctionAdConfig::New();
+  auction_config_->seller = url::Origin::Create(GURL("https://example.com"));
+  auction_config_->decision_logic_url = GURL("https://example.com/auction.js");
+  auction_config_->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewAllBuyers(
+          blink::mojom::AllBuyers::New());
+  auction_config_->auction_signals = R"({"is_auction_signals": true})";
+  auction_config_->seller_signals = R"({"is_seller_signals": true})";
+  base::flat_map<url::Origin, std::string> per_buyer_signals;
+  per_buyer_signals[url::Origin::Create(GURL("https://a.com"))] =
+      R"({"signals_a": "A"})";
+  per_buyer_signals[url::Origin::Create(GURL("https://b.com"))] =
+      R"({"signals_b": "B"})";
+  auction_config_->per_buyer_signals = std::move(per_buyer_signals);
+
+  const char kExpectedJson[] =
+      R"({"seller":"https://example.com",)"
+      R"("decisionLogicUrl":"https://example.com/auction.js",)"
+      R"("interestGroupBuyers":"*",)"
+      R"("auctionSignals":{"is_auction_signals":true},)"
+      R"("sellerSignals":{"is_seller_signals":true},)"
+      R"("perBuyerSignals":{"a.com":{"signals_a":"A"},)"
+      R"("b.com":{"signals_b":"B"}}})";
+  RunReportResultCreatedScriptExpectingResult(
+      "auctionConfig", std::string() /* extra_code */,
+      SellerWorklet::Report(kExpectedJson, GURL()));
+
+  // Array option for interest_group_buyers. Everything else optional
+  // unpopulated.
+  std::vector<url::Origin> buyers;
+  buyers.push_back(url::Origin::Create(GURL("https://buyer1.com")));
+  buyers.push_back(url::Origin::Create(GURL("https://another-buyer.com")));
+  auction_config_ = blink::mojom::AuctionAdConfig::New();
+  auction_config_->seller = url::Origin::Create(GURL("https://example.com"));
+  auction_config_->decision_logic_url = GURL("https://example.com/auction.js");
+  auction_config_->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers(std::move(buyers));
+  const char kExpectedJson2[] =
+      R"({"seller":"https://example.com",)"
+      R"("decisionLogicUrl":"https://example.com/auction.js",)"
+      R"("interestGroupBuyers":["buyer1.com","another-buyer.com"]})";
+  RunReportResultCreatedScriptExpectingResult(
+      "auctionConfig", std::string() /* extra_code */,
+      SellerWorklet::Report(kExpectedJson2, GURL()));
+}
+
 // Subsequent runs of the same script should not affect each other. Same is true
 // for different scripts, but it follows from the single script case.
 TEST_F(SellerWorkletTest, ScriptIsolation) {
@@ -516,7 +577,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     // other.
     for (int j = 0; j < 2; ++j) {
       SellerWorklet::ScoreResult score_result =
-          seller_worket->ScoreAd(ad_metadata_, bid_, auction_config_,
+          seller_worket->ScoreAd(ad_metadata_, bid_, *auction_config_,
                                  browser_signal_top_window_hostname_,
                                  browser_signal_interest_group_owner_,
                                  browser_signal_interest_group_name_,
@@ -528,7 +589,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
 
     for (int j = 0; j < 2; ++j) {
       SellerWorklet::Report report = seller_worket->ReportResult(
-          auction_config_, browser_signal_top_window_hostname_,
+          *auction_config_, browser_signal_top_window_hostname_,
           browser_signal_interest_group_owner_,
           browser_signal_interest_group_name_, browser_signal_render_url_,
           browser_signal_ad_render_fingerprint_, bid_,

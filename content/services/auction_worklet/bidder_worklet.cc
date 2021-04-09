@@ -29,6 +29,24 @@
 
 namespace auction_worklet {
 
+namespace {
+
+bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
+                           v8::Local<v8::Context> context,
+                           const base::Optional<std::string>& maybe_json,
+                           std::vector<v8::Local<v8::Value>>* args) {
+  v8::Isolate* isolate = v8_helper->isolate();
+  if (maybe_json.has_value()) {
+    if (!v8_helper->AppendJsonValue(context, maybe_json.value(), args))
+      return false;
+  } else {
+    args->push_back(v8::Null(isolate));
+  }
+  return true;
+}
+
+}  // namespace
+
 BidderWorklet::BidResult::BidResult() = default;
 
 BidderWorklet::BidResult::BidResult(std::string ad, double bid, GURL render_url)
@@ -64,8 +82,8 @@ BidderWorklet::~BidderWorklet() = default;
 
 BidderWorklet::BidResult BidderWorklet::GenerateBid(
     const blink::mojom::InterestGroup& interest_group,
-    const std::string& auction_signals_json,
-    const std::string& per_buyer_signals_json,
+    const base::Optional<std::string>& auction_signals_json,
+    const base::Optional<std::string>& per_buyer_signals_json,
     const std::vector<std::string>& trusted_bidding_signals_keys,
     TrustedBiddingSignals* trusted_bidding_signals,
     const std::string& browser_signal_top_window_hostname,
@@ -119,8 +137,10 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
 
   args.push_back(std::move(interest_group_object));
 
-  if (!v8_helper_->AppendJsonValue(context, auction_signals_json, &args) ||
-      !v8_helper_->AppendJsonValue(context, per_buyer_signals_json, &args)) {
+  if (!AppendJsonValueOrNull(v8_helper_, context, auction_signals_json,
+                             &args) ||
+      !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json,
+                             &args)) {
     return BidResult();
   }
 
@@ -202,8 +222,8 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
 }
 
 BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
-    const std::string& auction_signals_json,
-    const std::string& per_buyer_signals_json,
+    const base::Optional<std::string>& auction_signals_json,
+    const base::Optional<std::string>& per_buyer_signals_json,
     const std::string& seller_signals_json,
     const std::string& browser_signal_top_window_hostname,
     const url::Origin& browser_signal_interest_group_owner,
@@ -225,8 +245,10 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
   v8::Context::Scope context_scope(context);
 
   std::vector<v8::Local<v8::Value>> args;
-  if (!v8_helper_->AppendJsonValue(context, auction_signals_json, &args) ||
-      !v8_helper_->AppendJsonValue(context, per_buyer_signals_json, &args) ||
+  if (!AppendJsonValueOrNull(v8_helper_, context, auction_signals_json,
+                             &args) ||
+      !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json,
+                             &args) ||
       !v8_helper_->AppendJsonValue(context, seller_signals_json, &args)) {
     return ReportWinResult();
   }

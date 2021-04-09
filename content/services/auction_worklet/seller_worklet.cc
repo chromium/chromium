@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "gin/converter.h"
@@ -24,6 +25,87 @@
 #include "v8/include/v8.h"
 
 namespace auction_worklet {
+
+namespace {
+
+// Converts `auction_config` back to JSON format, and appends to args.
+// Returns true if conversion succeeded.
+//
+// The resulting object will look something like this (based on example from
+// explainer):
+//
+// {
+//  'seller': 'https://www.example-ssp.com/',
+//  'decisionLogicUrl': 'https://www.example-ssp.com/seller.js',
+//  'trustedScoringSignalsUrl': ...,
+//  'interestGroupBuyers': ['www.example-dsp.com', 'buyer2.com', ...],
+//  'auctionSignals': {...},
+//  'sellerSignals': {...},
+//  'perBuyerSignals': {'www.example-dsp.com': {...},
+//                      'www.another-buyer.com': {...},
+//                       ...}
+// }
+bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
+                         v8::Local<v8::Context> context,
+                         const blink::mojom::AuctionAdConfig& auction_config,
+                         std::vector<v8::Local<v8::Value>>* args) {
+  // TODO(morlovich): Unclear on .Serialize vs .host() conventions.
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Object> auction_config_value = v8::Object::New(isolate);
+  gin::Dictionary auction_config_dict(isolate, auction_config_value);
+  if (!auction_config_dict.Set("seller", auction_config.seller.Serialize()) ||
+      !auction_config_dict.Set("decisionLogicUrl",
+                               auction_config.decision_logic_url.spec())) {
+    return false;
+  }
+
+  if (auction_config.interest_group_buyers) {
+    if (auction_config.interest_group_buyers->is_all_buyers()) {
+      if (!auction_config_dict.Set("interestGroupBuyers", std::string("*")))
+        return false;
+    } else {
+      std::vector<v8::Local<v8::Value>> interest_group_buyers;
+      for (const url::Origin& buyer :
+           auction_config.interest_group_buyers->get_buyers()) {
+        v8::Local<v8::String> v8_buyer;
+        if (!v8_helper->CreateUtf8String(buyer.host()).ToLocal(&v8_buyer))
+          return false;
+        interest_group_buyers.push_back(v8_buyer);
+      }
+      auction_config_dict.Set("interestGroupBuyers", interest_group_buyers);
+    }
+  }
+
+  if (auction_config.auction_signals.has_value() &&
+      !v8_helper->InsertJsonValue(context, "auctionSignals",
+                                  auction_config.auction_signals.value(),
+                                  auction_config_value)) {
+    return false;
+  }
+
+  if (auction_config.seller_signals.has_value() &&
+      !v8_helper->InsertJsonValue(context, "sellerSignals",
+                                  auction_config.seller_signals.value(),
+                                  auction_config_value)) {
+    return false;
+  }
+
+  if (auction_config.per_buyer_signals.has_value()) {
+    v8::Local<v8::Object> per_buyer_value = v8::Object::New(isolate);
+    for (const auto& kv : auction_config.per_buyer_signals.value()) {
+      if (!v8_helper->InsertJsonValue(context, kv.first.host(), kv.second,
+                                      per_buyer_value)) {
+        return false;
+      }
+    }
+    auction_config_dict.Set("perBuyerSignals", per_buyer_value);
+  }
+
+  args->push_back(std::move(auction_config_value));
+  return true;
+}
+
+}  // namespace
 
 SellerWorklet::ScoreResult::ScoreResult() = default;
 
@@ -57,7 +139,7 @@ SellerWorklet::~SellerWorklet() = default;
 SellerWorklet::ScoreResult SellerWorklet::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
-    const std::string& auction_config_json,
+    const blink::mojom::AuctionAdConfig& auction_config,
     const std::string& browser_signal_top_window_hostname,
     const url::Origin& browser_signal_interest_group_owner,
     const std::string& browser_signal_interest_group_name,
@@ -76,7 +158,7 @@ SellerWorklet::ScoreResult SellerWorklet::ScoreAd(
 
   args.push_back(gin::ConvertToV8(isolate, bid));
 
-  if (!v8_helper_->AppendJsonValue(context, auction_config_json, &args))
+  if (!AppendAuctionConfig(v8_helper_, context, auction_config, &args))
     return ScoreResult();
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
@@ -113,7 +195,7 @@ SellerWorklet::ScoreResult SellerWorklet::ScoreAd(
 }
 
 SellerWorklet::Report SellerWorklet::ReportResult(
-    const std::string& auction_config_json,
+    const blink::mojom::AuctionAdConfig& auction_config,
     const std::string& browser_signal_top_window_hostname,
     const url::Origin& browser_signal_interest_group_owner,
     const std::string& browser_signal_interest_group_name,
@@ -135,7 +217,7 @@ SellerWorklet::Report SellerWorklet::ReportResult(
   v8::Context::Scope context_scope(context);
 
   std::vector<v8::Local<v8::Value>> args;
-  if (!v8_helper_->AppendJsonValue(context, auction_config_json, &args))
+  if (!AppendAuctionConfig(v8_helper_, context, auction_config, &args))
     return Report();
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
