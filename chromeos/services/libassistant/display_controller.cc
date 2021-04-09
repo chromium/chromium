@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/display_connection_impl.h"
@@ -50,7 +51,8 @@ DisplayController::DisplayController(
           event_observer_.get(),
           /*feedback_ui_enabled=*/true,
           assistant::features::IsMediaSessionIntegrationEnabled())),
-      speech_recognition_observers_(*speech_recognition_observers) {
+      speech_recognition_observers_(*speech_recognition_observers),
+      mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(speech_recognition_observers);
 }
 
