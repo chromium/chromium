@@ -303,8 +303,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
 }
 
 // Covers detecting content script injection into 'about:blank'.
-IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
-                       ContentScriptDeclarationInExtensionManifest_AboutBlank) {
+IN_PROC_BROWSER_TEST_F(
+    ContentScriptTrackerBrowserTest,
+    ContentScriptDeclarationInExtensionManifest_AboutBlankPopup) {
   // Install a test extension.
   TestExtensionDir dir;
   const char kManifestTemplate[] = R"(
@@ -367,6 +368,88 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
       first_tab->GetMainFrame(), extension->id()));
   EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       popup->GetMainFrame(), extension->id()));
+}
+
+// Covers detecting content script injection into an initial empty document.
+IN_PROC_BROWSER_TEST_F(
+    ContentScriptTrackerBrowserTest,
+    ContentScriptDeclarationInExtensionManifest_SubframeWithInitialEmptyDoc) {
+  // Install a test extension.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ContentScriptTrackerBrowserTest - Declarative",
+        "version": "1.0",
+        "manifest_version": 2,
+        "permissions": [ "tabs", "<all_urls>" ],
+        "content_scripts": [{
+          "all_frames": true,
+          "match_about_blank": true,
+          "matches": ["*://bar.com/*"],
+          "js": ["content_script.js"]
+        }]
+      } )";
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+                document.body.innerText = 'content script has run';
+                chrome.test.sendMessage('Hello from content script!'); )");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to a test page that *is* covered by `content_scripts.matches`
+  // manifest entry above.
+  {
+    GURL injected_url =
+        embedded_test_server()->GetURL("bar.com", "/title1.html");
+    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ui_test_utils::NavigateToURL(browser(), injected_url);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Verify that ContentScriptTracker properly covered the initial frame.
+  content::WebContents* first_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ("content script has run",
+            content::EvalJs(first_tab, "document.body.innerText"));
+  EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
+      first_tab->GetMainFrame(), extension->id()));
+
+  // Add a new subframe with `src=javascript:...` attribute.  This will leave
+  // the subframe at the initial empty document (no navigation / no
+  // ReadyToCommit), but still end up injecting the content script.
+  {
+    ExtensionTestMessageListener listener("Hello from content script!", false);
+    const char kScript[] = R"(
+        let iframe = document.createElement('iframe');
+        iframe.src = 'javascript:"something"';
+        document.body.appendChild(iframe);
+    )";
+    ExecuteScriptAsync(first_tab, kScript);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Verify expected properties of the test scenario - the `child_frame` should
+  // have stayed at the initial empty document.
+  content::RenderFrameHost* main_frame = first_tab->GetMainFrame();
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
+  EXPECT_EQ(main_frame->GetLastCommittedOrigin().Serialize(),
+            content::EvalJs(child_frame, "origin"));
+  // Renderer-side and browser-side do not exactly agree on the URL of the child
+  // frame...
+  EXPECT_EQ("about:blank", content::EvalJs(child_frame, "location.href"));
+  EXPECT_EQ(GURL(), child_frame->GetLastCommittedURL());
+
+  // Verify that ContentScriptTracker properly covered the new child frame (and
+  // continues to correctly cover the initial frame).
+  EXPECT_EQ("content script has run",
+            content::EvalJs(main_frame, "document.body.innerText"));
+  EXPECT_EQ("content script has run",
+            content::EvalJs(child_frame, "document.body.innerText"));
+  EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
+      main_frame, extension->id()));
+  EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
+      child_frame, extension->id()));
 }
 
 // Tests tracking of content scripts injected/declared via

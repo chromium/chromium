@@ -48,6 +48,25 @@ ExtensionIdSet& GetOrCreateExtensionIdSet(content::RenderFrameHost* frame) {
   return frame_to_extension_id_set[frame->GetGlobalFrameRoutingId()];
 }
 
+// Returns whether the "match_about_blank" manifest entry would match `url`.
+// Despite the name, this matches not only "about:blank" but also "about:srcdoc"
+// (and also needs to match the initial empty URLs).
+bool MatchesAboutBlank(const GURL& url) {
+  // ContentScriptDeclarationInExtensionManifest_SubframeWithInitialEmptyDoc
+  // shows that the renderer process might see `location.href` set to
+  // "about:blank", but the browser process might see an empty, initial GURL in
+  // RenderFrameHost::GetLastCommittedURL.  Because of this, MatchesAboutBlank
+  // needs to return true for empty URLs.  (GetLastCommittedURL can be an empty
+  // GURL only for the initial empty document.)
+  if (url.is_empty())
+    return true;
+
+  // Otherwise we replicate the scheme check from
+  // ScriptContext::GetEffectiveDocumentURLForInjection() from the renderer
+  // side.
+  return url.SchemeIs(url::kAboutScheme);
+}
+
 // If `match_about_blank` is true, then traverses parent/opener chain until the
 // first non-about-scheme document and returns its url.  Otherwise, simply
 // returns `document_url`.
@@ -65,7 +84,7 @@ GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
   // Common scenario. If `match_about_blank` is false (as is the case in most
   // extensions), or if the frame is not an about:-page, just return
   // `document_url` (supposedly the URL of the frame).
-  if (!match_about_blank || !document_url.SchemeIs(url::kAboutScheme))
+  if (!match_about_blank || !MatchesAboutBlank(document_url))
     return document_url;
 
   // Non-sandboxed about:blank and about:srcdoc pages inherit their security
@@ -83,9 +102,8 @@ GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
     // The loop should only execute (and consider the parent chain) if the
     // currently considered frame has about: scheme.
     DCHECK(match_about_blank);
-    DCHECK(
-        ((found_frame == frame) && document_url.SchemeIs(url::kAboutScheme)) ||
-        (found_frame->GetLastCommittedURL().SchemeIs(url::kAboutScheme)));
+    DCHECK(((found_frame == frame) && MatchesAboutBlank(document_url)) ||
+           MatchesAboutBlank(found_frame->GetLastCommittedURL()));
 
     // Attempt to find `next_candidate` - either a parent of opener of
     // `found_frame`.
@@ -100,7 +118,7 @@ GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
     }
 
     found_frame = next_candidate;
-  } while (found_frame->GetLastCommittedURL().SchemeIs(url::kAboutScheme));
+  } while (MatchesAboutBlank(found_frame->GetLastCommittedURL()));
 
   if (found_frame == frame)
     return document_url;  // Not committed yet at ReadyToCommitNavigation time.
@@ -212,7 +230,7 @@ bool ContentScriptTracker::DidFrameRunContentScriptFromExtension(
   // therefore ContentScriptTracker looks at the last committed URL rather than
   // monitoring DidCommit IPCs.)
   const GURL& url = frame->GetLastCommittedURL();
-  if (url.SchemeIs(url::kAboutScheme)) {
+  if (MatchesAboutBlank(url)) {
     const ExtensionRegistry* registry =
         ExtensionRegistry::Get(frame->GetBrowserContext());
     DCHECK(registry);  // This method shouldn't be called during shutdown.
