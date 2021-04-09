@@ -280,14 +280,4 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
   return false;
 }
 
-bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
-  auto utility_sub_type =
-      cmd_line_.GetSwitchValueASCII(switches::kUtilitySubType);
-  // TODO(crbug.com/1173700) CDM loads widevinecdm.dll
-  // which is not CET-compliant.
-  if (utility_sub_type == media::mojom::CdmService::Name_)
-    return false;
-  return true;
-}
-
 }  // namespace content
