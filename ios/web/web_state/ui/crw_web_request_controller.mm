@@ -421,11 +421,11 @@ enum class BackForwardNavigationType {
 
   if (context) {
     if (context->IsRendererInitiated()) {
-      UMA_HISTOGRAM_TIMES("PLT.iOS.RendererInitiatedPageLoadTime",
-                          context->GetElapsedTimeSinceCreation());
+      UMA_HISTOGRAM_MEDIUM_TIMES("PLT.iOS.RendererInitiatedPageLoadTime2",
+                                 context->GetElapsedTimeSinceCreation());
     } else {
-      UMA_HISTOGRAM_TIMES("PLT.iOS.BrowserInitiatedPageLoadTime",
-                          context->GetElapsedTimeSinceCreation());
+      UMA_HISTOGRAM_MEDIUM_TIMES("PLT.iOS.BrowserInitiatedPageLoadTime2",
+                                 context->GetElapsedTimeSinceCreation());
     }
   }
 }
