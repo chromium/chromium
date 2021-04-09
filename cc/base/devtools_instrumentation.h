@@ -177,10 +177,12 @@ inline void CC_BASE_EXPORT DidActivateLayerTree(int layer_tree_host_id,
                        internal::kFrameId, frame_id);
 }
 
-inline void CC_BASE_EXPORT DidBeginFrame(int layer_tree_host_id) {
-  TRACE_EVENT_INSTANT1(internal::CategoryName::kTimelineFrame,
-                       internal::kBeginFrame, TRACE_EVENT_SCOPE_THREAD,
-                       internal::kLayerTreeId, layer_tree_host_id);
+inline void CC_BASE_EXPORT
+DidBeginFrame(int layer_tree_host_id, base::TimeTicks begin_frame_timestamp) {
+  TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
+      internal::CategoryName::kTimelineFrame, internal::kBeginFrame,
+      TRACE_EVENT_SCOPE_THREAD, begin_frame_timestamp, internal::kLayerTreeId,
+      layer_tree_host_id);
 }
 
 constexpr uint64_t GetUniqueIDFromLayerTreeHostIdAndFrameToken(

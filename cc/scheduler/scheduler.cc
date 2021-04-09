@@ -669,7 +669,8 @@ void Scheduler::BeginImplFrame(const viz::BeginFrameArgs& args,
 
     begin_impl_frame_tracker_.Start(args);
     state_machine_.OnBeginImplFrame(args.frame_id, args.animate_only);
-    devtools_instrumentation::DidBeginFrame(layer_tree_host_id_);
+    devtools_instrumentation::DidBeginFrame(layer_tree_host_id_,
+                                            args.frame_time);
     compositor_timing_history_->WillBeginImplFrame(args, now);
     bool has_damage =
         client_->WillBeginImplFrame(begin_impl_frame_tracker_.Current());
@@ -800,9 +801,8 @@ void Scheduler::DrawIfPossible() {
   state_machine_.WillDraw();
   DrawResult result = client_->ScheduledActionDrawIfPossible();
   state_machine_.DidDraw(result);
-  compositor_timing_history_->DidDraw(
-      drawing_with_new_active_tree,
-      client_->HasCustomPropertyAnimations());
+  compositor_timing_history_->DidDraw(drawing_with_new_active_tree,
+                                      client_->HasCustomPropertyAnimations());
 }
 
 void Scheduler::DrawForced() {
@@ -815,9 +815,8 @@ void Scheduler::DrawForced() {
   state_machine_.WillDraw();
   DrawResult result = client_->ScheduledActionDrawForced();
   state_machine_.DidDraw(result);
-  compositor_timing_history_->DidDraw(
-      drawing_with_new_active_tree,
-      client_->HasCustomPropertyAnimations());
+  compositor_timing_history_->DidDraw(drawing_with_new_active_tree,
+                                      client_->HasCustomPropertyAnimations());
 }
 
 void Scheduler::SetDeferBeginMainFrame(bool defer_begin_main_frame) {
