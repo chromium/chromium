@@ -9,7 +9,7 @@ import {Action, Entity, ViewModel} from 'chrome://commander/types.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {assertDeepEquals, assertEquals, assertGT} from '../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGT} from '../chai_assert.js';
 import {flushTasks} from '../test_util.m.js';
 
 import {TestCommanderBrowserProxy} from './test_commander_browser_proxy.js';
@@ -50,7 +50,10 @@ suite('CommanderWebUIBrowserTest', () => {
     assertGT(elements.length, 0);
     Array.from(elements).forEach((element, index) => {
       const isFocused = element.classList.contains('focused');
+      const isAriaSelected =
+          element.getAttribute('aria-selected') === 'true' ? true : false;
       assertEquals(index === focusedIndex, isFocused);
+      assertEquals(isFocused, isAriaSelected);
     });
   }
 
@@ -202,5 +205,22 @@ suite('CommanderWebUIBrowserTest', () => {
     input.value = '';
     keyDownOn(input, 0, [], 'Backspace');
     assertEquals(1, testProxy.getCallCount('promptCancelled'));
+  });
+  test('focusing options updates aria-activedescendant', async () => {
+    const input = app.$.input;
+    const inputRow = app.shadowRoot.querySelector('#inputRow');
+    assertEquals(null, inputRow.getAttribute('aria-selected'));
+
+    webUIListenerCallback('view-model-updated', createStubViewModel(42, [
+                            'William of Orange', 'Orangutan', 'Orange Juice'
+                          ]));
+    await flushTasks();
+
+    const optionElements = app.shadowRoot.querySelectorAll('commander-option');
+    assertEquals(
+        optionElements[0].id, inputRow.getAttribute('aria-activedescendant'));
+    keyDownOn(input, 0, [], 'ArrowDown');
+    assertEquals(
+        optionElements[1].id, inputRow.getAttribute('aria-activedescendant'));
   });
 });

@@ -27,7 +27,11 @@ export class CommanderAppElement extends PolymerElement {
       /** @private {!Array<!Option>} */
       options_: Array,
       /** @private */
-      focusedIndex_: Number,
+      focusedIndex_: {
+        type: Number,
+        notify: true,
+        observer: 'onFocusedIndexChanged_',
+      },
       /** @private {?string} */
       promptText_: String,
     };
@@ -140,6 +144,19 @@ export class CommanderAppElement extends PolymerElement {
   }
 
   /**
+   *  Used to set `aria-activedescendant` when the focused option changes.
+   * @private
+   */
+  onFocusedIndexChanged_() {
+    if (this.focusedIndex_ === -1) {
+      this.$.inputRow.removeAttribute('aria-activedescendant');
+    } else {
+      this.$.inputRow.setAttribute(
+          'aria-activedescendant', this.getOptionId_(this.focusedIndex_));
+    }
+  }
+
+  /**
    * Informs the browser that the option at |index| was selected.
    * @param {number} index
    * @private
@@ -160,10 +177,33 @@ export class CommanderAppElement extends PolymerElement {
   }
 
   /**
+   * An id is required for aria-activedescendant
+   * @return {string}
+   * @param {number} index
+   */
+  getOptionId_(index) {
+    return 'option-' + index;
+  }
+
+  /**
    * @return {boolean}
    */
   computeShowChip_() {
     return this.promptText_ !== null;
+  }
+
+  /**
+   * @return {string}
+   */
+  computeExpanded_() {
+    return this.options_.length > 0 ? 'true' : 'false';
+  }
+
+  /**
+   * @return {string}
+   */
+  computeAriaSelected_(index) {
+    return index === this.focusedIndex_ ? 'true' : 'false';
   }
 }
 customElements.define(CommanderAppElement.is, CommanderAppElement);
