@@ -1220,6 +1220,11 @@ class CONTENT_EXPORT NavigationRequest
 
   base::Optional<network::mojom::BlockedByResponseReason> EnforceCOEP();
 
+  // Check the COOP value of the page is compatible with the COEP value of each
+  // of its documents. COOP:kSameOriginPlusCoep is incompatible with COEP:kNone.
+  // If they aren't, this returns false and emits a crash report.
+  bool CoopCoepSanityCheck();
+
   // Returns the user-agent override, or an empty string if one isn't set.
   std::string GetUserAgentOverride();
 

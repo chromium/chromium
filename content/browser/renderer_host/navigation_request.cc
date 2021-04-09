@@ -3770,6 +3770,9 @@ void NavigationRequest::CommitNavigation() {
   // processed.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
 
+  if (!CoopCoepSanityCheck())
+    return;
+
   UpdateCommitNavigationParamsHistory();
   DCHECK(NeedsUrlLoader() == !!response_head_ ||
          (was_redirected_ && common_params_->url.IsAboutBlank()));
@@ -5992,6 +5995,23 @@ NavigationRequest::EnforceCOEP() {
       *response_head_, parent_frame->GetLastCommittedOrigin(),
       request_destination(), parent_frame->cross_origin_embedder_policy(),
       parent_frame->coep_reporter());
+}
+
+bool NavigationRequest::CoopCoepSanityCheck() {
+  network::mojom::CrossOriginOpenerPolicyValue coop_value =
+      IsInMainFrame() ? coop_status_.current_coop().value
+                      : render_frame_host_->GetMainFrame()
+                            ->cross_origin_opener_policy()
+                            .value;
+  if (coop_value ==
+          network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep &&
+      cross_origin_embedder_policy_.value !=
+          network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
+    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  return true;
 }
 
 std::unique_ptr<PeakGpuMemoryTracker>
