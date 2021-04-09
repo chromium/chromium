@@ -169,6 +169,7 @@ RenderViewContextMenuBase::RenderViewContextMenuBase(
       render_frame_id_(render_frame_host->GetRoutingID()),
       render_frame_token_(render_frame_host->GetFrameToken()),
       render_process_id_(render_frame_host->GetProcess()->GetID()),
+      site_instance_(render_frame_host->GetSiteInstance()),
       command_executed_(false) {}
 
 RenderViewContextMenuBase::~RenderViewContextMenuBase() {
@@ -475,6 +476,8 @@ void RenderViewContextMenuBase::OpenURLWithExtraHeaders(
   open_url_params.initiator_frame_token = render_frame_token_;
   open_url_params.initiator_process_id = render_process_id_;
   open_url_params.initiator_origin = url::Origin::Create(referring_url);
+
+  open_url_params.source_site_instance = site_instance_;
 
   if (disposition != WindowOpenDisposition::OFF_THE_RECORD)
     open_url_params.impression = params_.impression;

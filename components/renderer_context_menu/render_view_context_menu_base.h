@@ -19,6 +19,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/site_instance.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -190,6 +191,9 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
 
   // The RenderFrameHost's IDs.
   const int render_process_id_;
+
+  // Renderer's frame SiteInstance.
+  scoped_refptr<content::SiteInstance> site_instance_;
 
   // Our observers.
   mutable base::ObserverList<RenderViewContextMenuObserver>::Unchecked

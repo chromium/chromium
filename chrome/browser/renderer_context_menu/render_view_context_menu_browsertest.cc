@@ -835,6 +835,64 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, RealMenu) {
   EXPECT_EQ(GURL("about:blank"), tab->GetURL());
 }
 
+// Verify that "Open Link in New Tab" doesn't crash for about:blank.
+// This is a regression test for https://crbug.com/1197027.
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenAboutBlankInNewTab) {
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL page(embedded_test_server()->GetURL("/title1.html"));
+
+  ui_test_utils::NavigateToURL(browser(), page);
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.link_url = GURL("about:blank");
+  context_menu_params.page_url = page;
+
+  // Select "Open Link in New Tab" and wait for the new tab to be added.
+  TestRenderViewContextMenu menu(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it's the correct tab.
+  EXPECT_EQ(GURL("about:blank"), tab->GetURL());
+}
+
+// Verify that "Open Link in New Tab" doesn't crash for data: URLs.
+// This is a regression test for https://crbug.com/1197027.
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenDataURLInNewTab) {
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL page(embedded_test_server()->GetURL("/title1.html"));
+
+  ui_test_utils::NavigateToURL(browser(), page);
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.link_url = GURL("data:text/html,hello");
+  context_menu_params.page_url = page;
+
+  // Select "Open Link in New Tab" and wait for the new tab to be added.
+  TestRenderViewContextMenu menu(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Main frame navigations to data: URLs are blocked, so we don't check the
+  // final URL of the new tab.
+}
+
 // Verify that "Open Link in New Tab" doesn't send URL fragment as referrer.
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenInNewTabReferrer) {
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
