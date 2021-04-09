@@ -52,6 +52,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -96,6 +97,24 @@ SkColor GetAltColor(SkColor color) {
       .color;
 }
 
+gfx::Rect GetDefaultBoundsForEche() {
+  // Ensures the Eche bounds is always 16:9 portrait aspect ratio and not more
+  // than half of the windows.
+  const float aspect_ratio = 16.0f / 9.0f;
+  const gfx::Size min_size(240, 240);
+
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  const float bounds_aspect_ratio = bounds.width() / bounds.height();
+  const bool is_landscape = (bounds_aspect_ratio >= 1);
+  auto new_width = is_landscape ? (bounds.height() / 2) : bounds.width() / 2;
+  if (min_size.width() > new_width) {
+    new_width = min_size.width();
+  }
+  bounds.ClampToCenteredSize(gfx::Size(new_width, new_width * aspect_ratio));
+  return bounds;
+}
+
 }  // namespace
 
 namespace web_app {
@@ -109,7 +128,6 @@ constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
 constexpr gfx::Size CAMERA_WINDOW_DEFAULT_SIZE(kChromeCameraAppDefaultWidth,
                                                kChromeCameraAppDefaultHeight +
                                                    32);
-constexpr gfx::Size ECHE_DEFAULT_SIZE(480, 640);
 }  // namespace
 
 // static
@@ -401,10 +419,7 @@ gfx::Rect AppBrowserController::GetDefaultBounds() const {
     bounds.ClampToCenteredSize(CAMERA_WINDOW_DEFAULT_SIZE);
     return bounds;
   } else if (system_app_type_ == SystemAppType::ECHE) {
-    gfx::Rect bounds =
-        display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-    bounds.ClampToCenteredSize(ECHE_DEFAULT_SIZE);
-    return bounds;
+    return GetDefaultBoundsForEche();
   }
   return gfx::Rect();
 }
