@@ -14,6 +14,7 @@
 #include "ui/base/window_open_disposition.h"
 
 @protocol BrowserCommands;
+@class DefaultBrowserPromoNonModalScheduler;
 @class OmniboxPopupPresenter;
 class FaviconLoader;
 class WebStateList;
@@ -58,6 +59,8 @@ class OmniboxPopupMediatorDelegate {
 
 @property(nonatomic, weak) id<BrowserCommands> dispatcher;
 @property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
+// Scheduler to notify about events happening in this popup.
+@property(nonatomic, weak) DefaultBrowserPromoNonModalScheduler* promoScheduler;
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;
 // Whether the popup is open.
 @property(nonatomic, assign, getter=isOpen) BOOL open;
@@ -85,6 +88,7 @@ class OmniboxPopupMediatorDelegate {
 
 // Updates the popup with the |results|.
 - (void)updateWithResults:(const AutocompleteResult&)results;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_POPUP_MEDIATOR_H_

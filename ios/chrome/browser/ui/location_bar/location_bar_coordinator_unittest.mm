@@ -18,6 +18,8 @@
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
@@ -62,7 +64,9 @@ namespace {
 
 class LocationBarCoordinatorTest : public PlatformTest {
  protected:
-  LocationBarCoordinatorTest() : web_state_list_(&web_state_list_delegate_) {}
+  LocationBarCoordinatorTest()
+      : web_state_list_(&web_state_list_delegate_),
+        scene_state_([[SceneState alloc] initWithAppState:nil]) {}
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -95,6 +99,8 @@ class LocationBarCoordinatorTest : public PlatformTest {
         std::make_unique<TestBrowser>(browser_state_.get(), &web_state_list_);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
+
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(browser_state_.get());
@@ -131,6 +137,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   std::unique_ptr<Browser> browser_;
+  SceneState* scene_state_;
   TestToolbarCoordinatorDelegate* delegate_;
 };
 

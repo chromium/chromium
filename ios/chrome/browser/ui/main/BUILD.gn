@@ -47,6 +47,25 @@ source_set("scene_state_header") {
   ]
 }
 
+source_set("default_browser_scene_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "default_browser_scene_agent.h",
+    "default_browser_scene_agent.mm",
+  ]
+  deps = [
+    ":observing_scene_agent",
+    ":scene_state_header",
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/default_promo",
+    "//ios/chrome/browser/ui/default_promo:utils",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("incognito_blocker_scene_agent") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -64,8 +83,6 @@ source_set("scene") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "connection_information.h",
-    "default_browser_scene_agent.h",
-    "default_browser_scene_agent.mm",
     "policy_signout_scene_agent.h",
     "policy_signout_scene_agent.mm",
     "scene_controller.h",
@@ -78,6 +95,7 @@ source_set("scene") {
   ]
 
   deps = [
+    ":default_browser_scene_agent",
     ":incognito_blocker_scene_agent",
     ":main",
     ":observing_scene_agent",
@@ -124,7 +142,6 @@ source_set("scene") {
     "//ios/chrome/browser/ui/blocking_overlay",
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/commands:commands",
-    "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/first_run:field_trial",

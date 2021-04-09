@@ -10,4 +10,7 @@
 
 @implementation DefaultBrowserPromoNonModalScheduler
 
+- (void)logUserPastedInOmnibox {
+}
+
 @end

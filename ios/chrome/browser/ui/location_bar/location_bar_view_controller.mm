@@ -665,7 +665,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   // A search using clipboard link is activity that should indicate a user
   // that would be interested in setting Chrome as the default browser.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
-  RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.VisitCopiedLink"));
+  [self.delegate locationBarVisitCopyLinkTapped];
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
       base::BindOnce(^(base::Optional<GURL> optionalURL) {
         if (!optionalURL) {

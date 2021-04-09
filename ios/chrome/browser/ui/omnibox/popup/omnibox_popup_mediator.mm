@@ -15,6 +15,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
@@ -126,6 +127,11 @@ const CGFloat kOmniboxIconSize = 16;
   // make sure it stays alive until the call completes.
   const AutocompleteMatch& match =
       ((const AutocompleteResult&)_currentResult).match_at(row);
+
+  // Don't log pastes in incognito.
+  if (!self.incognito && match.type == AutocompleteMatchType::CLIPBOARD_URL) {
+    [self.promoScheduler logUserPastedInOmnibox];
+  }
 
   _delegate->OnMatchSelected(match, row, WindowOpenDisposition::CURRENT_TAB);
 }

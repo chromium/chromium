@@ -20,7 +20,10 @@
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
+#import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_mediator.h"
@@ -215,6 +218,20 @@
 - (void)omniboxViewControllerTextInputModeDidChange:
     (OmniboxViewController*)omniboxViewController {
   _editView->UpdatePopupAppearance();
+}
+
+- (void)omniboxViewControllerUserDidVisitCopiedLink:
+    (OmniboxViewController*)omniboxViewController {
+  // Don't log pastes in incognito.
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    return;
+  }
+
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  DefaultBrowserSceneAgent* agent =
+      [DefaultBrowserSceneAgent agentFromScene:sceneState];
+  [agent.nonModalScheduler logUserPastedInOmnibox];
 }
 
 #pragma mark - private

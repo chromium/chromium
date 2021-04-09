@@ -10,6 +10,10 @@
 // A scheduler that determines when to show the non-modal default browser
 // promo based on many sources of data.
 @interface DefaultBrowserPromoNonModalScheduler : NSObject
+
+// Handles the user pasting in the omnibox and schedules a promo if necessary.
+- (void)logUserPastedInOmnibox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_PROMO_NON_MODAL_SCHEDULER_H_

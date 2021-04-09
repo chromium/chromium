@@ -751,6 +751,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
        applicationCommandEndpoint:self
       browsingDataCommandEndpoint:self.browsingDataCommandsHandler];
 
+  // Add the DefaultBrowserSceneAgent before creating main browser because some
+  // coordinators therein require it.
+  [self.sceneState addAgent:[[DefaultBrowserSceneAgent alloc] init]];
+
   // Ensure the main browser is created. This also creates the BVC.
   [self.browserViewWrangler createMainBrowser];
 
@@ -762,11 +766,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser)
       ->SetApplicationCommandsHandler(handler);
 
+  // Add CommandDispatcher to scene agents that require it.
+  [DefaultBrowserSceneAgent agentFromScene:self.sceneState].dispatcher =
+      self.mainInterface.browser->GetCommandDispatcher();
+
   // Add scene agents that require CommandDispatcher.
-  [self.sceneState
-      addAgent:[[DefaultBrowserSceneAgent alloc]
-                   initWithCommandDispatcher:self.mainInterface.browser
-                                                 ->GetCommandDispatcher()]];
   [self.sceneState
       addAgent:[[PolicySignoutSceneAgent alloc]
                    initWithCommandDispatcher:self.mainInterface.browser
