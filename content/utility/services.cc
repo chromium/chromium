@@ -81,8 +81,15 @@ namespace content {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if defined(OS_WIN)
+void EnsureSandboxedWin() {
+  // |g_utility_target_services| can be null if --no-sandbox is specified.
+  if (g_utility_target_services)
+    g_utility_target_services->LowerToken();
+}
+#endif  // defined(OS_WIN)
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 std::unique_ptr<media::CdmAuxiliaryHelper> CreateCdmHelper(
     media::mojom::FrameInterfaceFactory* interface_provider) {
   return std::make_unique<media::MojoCdmHelper>(interface_provider);
@@ -95,9 +102,7 @@ class ContentCdmServiceClient final : public media::CdmService::Client {
 
   void EnsureSandboxed() override {
 #if defined(OS_WIN)
-    // |g_utility_target_services| can be null if --no-sandbox is specified.
-    if (g_utility_target_services)
-      g_utility_target_services->LowerToken();
+    EnsureSandboxedWin();
 #endif
   }
 
@@ -226,7 +231,8 @@ auto RunDataDecoder(
 #if defined(OS_WIN)
 auto RunMediaFoundationService(
     mojo::PendingReceiver<media::mojom::MediaFoundationService> receiver) {
-  return std::make_unique<media::MediaFoundationService>(std::move(receiver));
+  return std::make_unique<media::MediaFoundationService>(
+      std::move(receiver), base::BindOnce(&EnsureSandboxedWin));
 }
 #endif  // defined(OS_WIN)
 

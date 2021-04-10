@@ -18,6 +18,7 @@
 #include "media/base/cdm_config.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/win/media_foundation_cdm.h"
+#include "media/cdm/win/media_foundation_cdm_module.h"
 
 namespace media {
 
@@ -130,7 +131,7 @@ MediaFoundationCdmFactory::MediaFoundationCdmFactory() = default;
 
 MediaFoundationCdmFactory::~MediaFoundationCdmFactory() = default;
 
-void MediaFoundationCdmFactory::SetCreateCdmFactoryCallback(
+void MediaFoundationCdmFactory::SetCreateCdmFactoryCallbackForTesting(
     const std::string& key_system,
     CreateCdmFactoryCB create_cdm_factory_cb) {
   DCHECK(!create_cdm_factory_cbs_.count(key_system));
@@ -166,7 +167,7 @@ void MediaFoundationCdmFactory::Create(
   BindToCurrentLoop(std::move(cdm_created_cb)).Run(cdm, "");
 }
 
-HRESULT MediaFoundationCdmFactory::CreateMFCdmFactory(
+HRESULT MediaFoundationCdmFactory::GetCdmFactory(
     const std::string& key_system,
     Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory>& cdm_factory) {
   // Use key system specific `create_cdm_factory_cb` if there's one registered.
@@ -180,14 +181,9 @@ HRESULT MediaFoundationCdmFactory::CreateMFCdmFactory(
     return S_OK;
   }
 
-  // Otherwise, use the default creation.
-  ComPtr<IMFMediaEngineClassFactory4> class_factory;
-  RETURN_IF_FAILED(CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr,
-                                    CLSCTX_INPROC_SERVER,
-                                    IID_PPV_ARGS(&class_factory)));
-  auto key_system_str = base::UTF8ToWide(key_system);
-  RETURN_IF_FAILED(class_factory->CreateContentDecryptionModuleFactory(
-      key_system_str.c_str(), IID_PPV_ARGS(&cdm_factory)));
+  // Otherwise, use the one in MediaFoundationCdmModule.
+  RETURN_IF_FAILED(MediaFoundationCdmModule::GetInstance()->GetCdmFactory(
+      key_system, cdm_factory));
   return S_OK;
 }
 
@@ -196,7 +192,7 @@ HRESULT MediaFoundationCdmFactory::CreateCdmInternal(
     const CdmConfig& cdm_config,
     ComPtr<IMFContentDecryptionModule>& mf_cdm) {
   ComPtr<IMFContentDecryptionModuleFactory> cdm_factory;
-  RETURN_IF_FAILED(CreateMFCdmFactory(key_system, cdm_factory));
+  RETURN_IF_FAILED(GetCdmFactory(key_system, cdm_factory));
 
   auto key_system_str = base::UTF8ToWide(key_system);
   if (!cdm_factory->IsTypeSupported(key_system_str.c_str(), nullptr)) {

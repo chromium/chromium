@@ -5,7 +5,6 @@
 #ifndef MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_SERVICE_H_
 #define MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_SERVICE_H_
 
-#include "build/build_config.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
@@ -23,13 +22,16 @@ namespace media {
 class MEDIA_MOJO_EXPORT MediaFoundationService final
     : public mojom::MediaFoundationService {
  public:
-  explicit MediaFoundationService(
-      mojo::PendingReceiver<mojom::MediaFoundationService> receiver);
+  // The MediaFoundationService process is NOT sandboxed after startup. The
+  // `ensure_sandboxed_cb` must be called after necessary initialization to
+  // ensure the process is sandboxed.
+  MediaFoundationService(
+      mojo::PendingReceiver<mojom::MediaFoundationService> receiver,
+      base::OnceClosure ensure_sandboxed_cb);
   MediaFoundationService(const MediaFoundationService&) = delete;
   MediaFoundationService operator=(const MediaFoundationService&) = delete;
   ~MediaFoundationService() final;
 
- private:
   // mojom::MediaFoundationService implementation:
   void Initialize(const base::FilePath& cdm_path) final;
   void IsKeySystemSupported(const std::string& key_system,
@@ -38,7 +40,9 @@ class MEDIA_MOJO_EXPORT MediaFoundationService final
       mojo::PendingReceiver<mojom::InterfaceFactory> receiver,
       mojo::PendingRemote<mojom::FrameInterfaceFactory> frame_interfaces) final;
 
+ private:
   mojo::Receiver<mojom::MediaFoundationService> receiver_;
+  base::OnceClosure ensure_sandboxed_cb_;
   MediaFoundationMojoMediaClient mojo_media_client_;
   mojo::UniqueReceiverSet<mojom::InterfaceFactory> interface_factory_receivers_;
 };

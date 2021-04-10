@@ -30,8 +30,9 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
   // support different key systems and for testing.
   using CreateCdmFactoryCB = base::RepeatingCallback<HRESULT(
       Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory>& factory)>;
-  void SetCreateCdmFactoryCallback(const std::string& key_system,
-                                   CreateCdmFactoryCB create_cdm_factory_cb);
+  void SetCreateCdmFactoryCallbackForTesting(
+      const std::string& key_system,
+      CreateCdmFactoryCB create_cdm_factory_cb);
 
   // CdmFactory implementation.
   void Create(const std::string& key_system,
@@ -43,7 +44,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
               CdmCreatedCB cdm_created_cb) final;
 
  private:
-  HRESULT CreateMFCdmFactory(
+  HRESULT GetCdmFactory(
       const std::string& key_system,
       Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory>& cdm_factory);
   HRESULT CreateCdmInternal(

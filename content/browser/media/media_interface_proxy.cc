@@ -478,7 +478,7 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
   DCHECK(thread_checker_.CalledOnValidThread());
   DVLOG(1) << __func__ << ": this=" << this;
 
-  InterfaceFactory* factory = GetMediaFoundationServiceInterfaceFactory();
+  auto* factory = GetMediaFoundationServiceInterfaceFactory(base::FilePath());
   if (factory) {
     factory->CreateMediaFoundationRenderer(
         std::move(receiver), std::move(renderer_extension_receiver));
@@ -514,7 +514,8 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
 #if defined(OS_WIN)
   DVLOG(1) << __func__ << ": this=" << this << " key_system=" << key_system;
   if (ShouldUseMediaFoundationServiceForCdm(key_system, cdm_config)) {
-    InterfaceFactory* factory = GetMediaFoundationServiceInterfaceFactory();
+    // TODO(xhwang): Refactor CdmInfo to provide the CDM path here.
+    auto* factory = GetMediaFoundationServiceInterfaceFactory(base::FilePath());
     if (factory)
       factory->CreateCdm(key_system, cdm_config, std::move(callback));
     return;
@@ -552,8 +553,9 @@ MediaInterfaceProxy::GetFrameServices(const std::string& cdm_file_system_id) {
 
 #if defined(OS_WIN)
 media::mojom::InterfaceFactory*
-MediaInterfaceProxy::GetMediaFoundationServiceInterfaceFactory() {
-  DVLOG(3) << __func__ << ": this=" << this;
+MediaInterfaceProxy::GetMediaFoundationServiceInterfaceFactory(
+    const base::FilePath& cdm_path) {
+  DVLOG(3) << __func__ << ": this=" << this << ", cdm_path=" << cdm_path;
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // TODO(xhwang): Also check protected media identifier content setting.
@@ -563,18 +565,24 @@ MediaInterfaceProxy::GetMediaFoundationServiceInterfaceFactory() {
   }
 
   if (!mf_interface_factory_remote_)
-    ConnectToMediaFoundationService();
+    ConnectToMediaFoundationService(cdm_path);
 
   return mf_interface_factory_remote_.get();
 }
 
-void MediaInterfaceProxy::ConnectToMediaFoundationService() {
-  DVLOG(1) << __func__ << ": this=" << this;
+void MediaInterfaceProxy::ConnectToMediaFoundationService(
+    const base::FilePath& cdm_path) {
+  DVLOG(1) << __func__ << ": this=" << this << ", cdm_path=" << cdm_path;
   DCHECK(!mf_interface_factory_remote_);
-  DCHECK(!mf_service_ptr_);
 
-  mf_service_ptr_ = &GetMediaFoundationService();
-  mf_service_ptr_->CreateInterfaceFactory(
+  auto& mf_service = GetMediaFoundationService();
+
+  // Must always call Initialize() after connecting to service.
+  mf_service.Initialize(cdm_path);
+
+  // Passing empty arguments to GetFrameServices() as MediaFoundation-based
+  // CDMs don't use CdmStorage currently.
+  mf_service.CreateInterfaceFactory(
       mf_interface_factory_remote_.BindNewPipeAndPassReceiver(),
       GetFrameServices());
 
@@ -590,7 +598,6 @@ void MediaInterfaceProxy::OnMediaFoundationServiceConnectionError() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   mf_interface_factory_remote_.reset();
-  mf_service_ptr_ = nullptr;
 }
 
 bool MediaInterfaceProxy::ShouldUseMediaFoundationServiceForCdm(

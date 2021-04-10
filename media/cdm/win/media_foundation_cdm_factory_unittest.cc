@@ -48,8 +48,8 @@ class MediaFoundationCdmFactoryTest : public testing::Test {
     return S_OK;
   }
 
-  void SetCreateCdmFactoryCallback(bool expect_success) {
-    cdm_factory_.SetCreateCdmFactoryCallback(
+  void SetCreateCdmFactoryCallbackForTesting(bool expect_success) {
+    cdm_factory_.SetCreateCdmFactoryCallbackForTesting(
         kClearKeyKeySystem,
         base::BindRepeating(&MediaFoundationCdmFactoryTest::GetMockCdmFactory,
                             base::Unretained(this), expect_success));
@@ -82,7 +82,7 @@ class MediaFoundationCdmFactoryTest : public testing::Test {
 };
 
 TEST_F(MediaFoundationCdmFactoryTest, Create) {
-  SetCreateCdmFactoryCallback(/*expect_success=*/true);
+  SetCreateCdmFactoryCallbackForTesting(/*expect_success=*/true);
 
   COM_EXPECT_CALL(mf_cdm_factory_, IsTypeSupported(NotNull(), IsNull()))
       .WillOnce(Return(TRUE));
@@ -97,14 +97,14 @@ TEST_F(MediaFoundationCdmFactoryTest, Create) {
 }
 
 TEST_F(MediaFoundationCdmFactoryTest, CreateCdmFactoryFail) {
-  SetCreateCdmFactoryCallback(/*expect_success=*/false);
+  SetCreateCdmFactoryCallbackForTesting(/*expect_success=*/false);
 
   EXPECT_CALL(cdm_created_cb_, Run(IsNull(), _));
   Create();
 }
 
 TEST_F(MediaFoundationCdmFactoryTest, IsTypeSupportedFail) {
-  SetCreateCdmFactoryCallback(/*expect_success=*/true);
+  SetCreateCdmFactoryCallbackForTesting(/*expect_success=*/true);
 
   COM_EXPECT_CALL(mf_cdm_factory_, IsTypeSupported(NotNull(), IsNull()))
       .WillOnce(Return(FALSE));
@@ -114,7 +114,7 @@ TEST_F(MediaFoundationCdmFactoryTest, IsTypeSupportedFail) {
 }
 
 TEST_F(MediaFoundationCdmFactoryTest, CreateCdmAccessFail) {
-  SetCreateCdmFactoryCallback(/*expect_success=*/true);
+  SetCreateCdmFactoryCallbackForTesting(/*expect_success=*/true);
 
   COM_EXPECT_CALL(mf_cdm_factory_, IsTypeSupported(NotNull(), IsNull()))
       .WillOnce(Return(TRUE));
@@ -127,7 +127,7 @@ TEST_F(MediaFoundationCdmFactoryTest, CreateCdmAccessFail) {
 }
 
 TEST_F(MediaFoundationCdmFactoryTest, CreateCdmFail) {
-  SetCreateCdmFactoryCallback(/*expect_success=*/true);
+  SetCreateCdmFactoryCallbackForTesting(/*expect_success=*/true);
 
   COM_EXPECT_CALL(mf_cdm_factory_, IsTypeSupported(NotNull(), IsNull()))
       .WillOnce(Return(TRUE));

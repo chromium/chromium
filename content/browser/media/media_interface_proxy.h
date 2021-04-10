@@ -134,16 +134,16 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
 #if defined(OS_WIN)
   // Gets the InterfaceFactory from MediaFoundationService. May return null if
   // MediaFoundationService cannot be used or connection failed.
-  InterfaceFactory* GetMediaFoundationServiceInterfaceFactory();
+  InterfaceFactory* GetMediaFoundationServiceInterfaceFactory(
+      const base::FilePath& cdm_path);
 
-  void ConnectToMediaFoundationService();
+  void ConnectToMediaFoundationService(const base::FilePath& cdm_path);
   void OnMediaFoundationServiceConnectionError();
   bool ShouldUseMediaFoundationServiceForCdm(
       const std::string& key_system,
       const media::CdmConfig& cdm_config);
 
   mojo::Remote<media::mojom::InterfaceFactory> mf_interface_factory_remote_;
-  media::mojom::MediaFoundationService* mf_service_ptr_ = nullptr;
 #endif  // defined(OS_WIN)
 
   // Safe to hold a raw pointer since |this| is owned by RenderFrameHostImpl.
