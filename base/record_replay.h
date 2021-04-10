@@ -9,6 +9,8 @@
 
 #include "base/check.h"
 
+#include <cstdint>
+
 namespace recordreplay {
 
 bool IsRecordingOrReplaying();
