@@ -38,6 +38,7 @@ assert(!use_call_graph || use_order_profiling,
 
 if (current_cpu == "x86") {
   android_app_abi = "x86"
+  android_abi_target = "i686-linux-android"
 } else if (current_cpu == "arm") {
   import("//build/config/arm.gni")
   if (arm_version < 7) {
@@ -45,14 +46,24 @@ if (current_cpu == "x86") {
   } else {
     android_app_abi = "armeabi-v7a"
   }
+  android_abi_target = "arm-linux-androideabi"
 } else if (current_cpu == "mipsel") {
   android_app_abi = "mips"
+  android_abi_target = "mipsel-linux-android"
 } else if (current_cpu == "x64") {
   android_app_abi = "x86_64"
+
+  # Place holder for x64 support, not tested.
+  # TODO: Enable clang support for Android x64. http://crbug.com/539781
+  android_abi_target = "x86_64-linux-android"
 } else if (current_cpu == "arm64") {
   android_app_abi = "arm64-v8a"
+  android_abi_target = "aarch64-linux-android"
 } else if (current_cpu == "mips64el") {
   android_app_abi = "mips64"
+
+  # Place holder for mips64 support, not tested.
+  android_abi_target = "mips64el-linux-android"
 } else {
   assert(false, "Unknown Android ABI: " + current_cpu)
 }

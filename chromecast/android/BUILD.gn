@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/abi.gni")
+import("//build/config/sysroot.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 
@@ -80,4 +82,13 @@ group("internal_android_deps") {
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_tvprovider_tvprovider_java",
   ]
+}
+
+# Util to copy libc++_shared.so to APK.
+copy("copy_libcxx_shared") {
+  sources = [ "${sysroot}/usr/lib/${android_abi_target}/libc++_shared.so" ]
+  outputs = [ "${root_out_dir}/libc++_shared.so" ]
+  metadata = {
+    shared_libraries = [ "${root_out_dir}/libc++_shared.so" ]
+  }
 }
