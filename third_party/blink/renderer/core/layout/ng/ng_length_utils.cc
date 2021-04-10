@@ -716,6 +716,62 @@ LayoutUnit ComputeInitialBlockSizeForFragment(
                                      available_block_size_adjustment);
 }
 
+namespace {
+
+// This takes the aspect-ratio, and natural-sizes and normalizes them returning
+// the border-box natural-size.
+//
+// The following combinations are possible:
+//  - an aspect-ratio with a natural-size
+//  - an aspect-ratio with no natural-size
+//  - no aspect-ratio with a natural-size
+//
+// It is not possible to have no aspect-ratio with no natural-size (as we'll
+// use the default replaced size of 300x150 as a last resort).
+// https://www.w3.org/TR/CSS22/visudet.html#inline-replaced-width
+base::Optional<LogicalSize> ComputeNormalizedNaturalSize(
+    const NGBlockNode& node,
+    const NGBoxStrut& border_padding,
+    const LogicalSize& aspect_ratio) {
+  base::Optional<LayoutUnit> intrinsic_inline;
+  base::Optional<LayoutUnit> intrinsic_block;
+  node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
+
+  // Add the border-padding. If we *don't* have an aspect-ratio use the default
+  // replaced size (300x150).
+  if (intrinsic_inline)
+    intrinsic_inline = *intrinsic_inline + border_padding.InlineSum();
+  else if (aspect_ratio.IsEmpty())
+    intrinsic_inline = LayoutUnit(300) + border_padding.InlineSum();
+
+  if (intrinsic_block)
+    intrinsic_block = *intrinsic_block + border_padding.BlockSum();
+  else if (aspect_ratio.IsEmpty())
+    intrinsic_block = LayoutUnit(150) + border_padding.BlockSum();
+
+  // If we have one natural size reflect via. the aspect-ratio.
+  if (!intrinsic_inline && intrinsic_block) {
+    DCHECK(!aspect_ratio.IsEmpty());
+    intrinsic_inline =
+        InlineSizeFromAspectRatio(border_padding, aspect_ratio,
+                                  EBoxSizing::kContentBox, *intrinsic_block);
+  }
+  if (intrinsic_inline && !intrinsic_block) {
+    DCHECK(!aspect_ratio.IsEmpty());
+    intrinsic_block =
+        BlockSizeFromAspectRatio(border_padding, aspect_ratio,
+                                 EBoxSizing::kContentBox, *intrinsic_inline);
+  }
+
+  DCHECK(intrinsic_inline.has_value() == intrinsic_block.has_value());
+  if (intrinsic_inline && intrinsic_block)
+    return LogicalSize(*intrinsic_inline, *intrinsic_block);
+
+  return base::nullopt;
+}
+
+}  // namespace
+
 // Computes size for a replaced element.
 void ComputeReplacedSize(const NGBlockNode& node,
                          const NGConstraintSpace& space,
@@ -788,44 +844,15 @@ void ComputeReplacedSize(const NGBlockNode& node,
     return;
   }
 
-  base::Optional<LayoutUnit> intrinsic_inline;
-  base::Optional<LayoutUnit> intrinsic_block;
-  node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
+  const LogicalSize aspect_ratio = node.GetAspectRatio();
+  const base::Optional<LogicalSize> natural_size =
+      ComputeNormalizedNaturalSize(node, border_padding, aspect_ratio);
 
-  LogicalSize aspect_ratio = node.GetAspectRatio();
-
-  // Computing intrinsic size is complicated by the fact that
-  // intrinsic_inline, intrinsic_block, and aspect_ratio can all
-  // be empty independent of each other.
-  // https://www.w3.org/TR/CSS22/visudet.html#inline-replaced-width
-  if (intrinsic_inline)
-    intrinsic_inline = *intrinsic_inline + border_padding.InlineSum();
-  else if (aspect_ratio.IsEmpty())
-    intrinsic_inline = LayoutUnit(300) + border_padding.InlineSum();
-  if (intrinsic_block)
-    intrinsic_block = *intrinsic_block + border_padding.BlockSum();
-  else if (aspect_ratio.IsEmpty())
-    intrinsic_block = LayoutUnit(150) + border_padding.BlockSum();
-  if (!intrinsic_inline) {
-    if (intrinsic_block) {
-      intrinsic_inline =
-          InlineSizeFromAspectRatio(border_padding, aspect_ratio,
-                                    EBoxSizing::kContentBox, *intrinsic_block);
-    } else if (!replaced_inline && !replaced_block) {
-      // No sizes available, return only the aspect ratio.
-      *out_aspect_ratio = aspect_ratio;
-      return;
-    }
+  if (!natural_size && !replaced_inline && !replaced_block) {
+    // No sizes available, return only the aspect ratio.
+    *out_aspect_ratio = aspect_ratio;
+    return;
   }
-  if (intrinsic_inline && !intrinsic_block) {
-    DCHECK(!aspect_ratio.IsEmpty());
-    intrinsic_block =
-        BlockSizeFromAspectRatio(border_padding, aspect_ratio,
-                                 EBoxSizing::kContentBox, *intrinsic_inline);
-  }
-
-  DCHECK(intrinsic_inline || intrinsic_block || replaced_inline ||
-         replaced_block);
 
   // If we only know one length, the other length gets computed wrt one we know.
   auto ComputeBlockFromInline = [&replaced_inline, &aspect_ratio,
@@ -849,23 +876,25 @@ void ComputeReplacedSize(const NGBlockNode& node,
   };
   if (replaced_inline) {
     DCHECK(!replaced_block);
-    DCHECK(intrinsic_block || !aspect_ratio.IsEmpty());
-    replaced_block =
-        ComputeBlockFromInline(intrinsic_block.value_or(kIndefiniteSize));
+    DCHECK(natural_size || !aspect_ratio.IsEmpty());
+    replaced_block = ComputeBlockFromInline(
+        natural_size.value_or(LogicalSize(kIndefiniteSize, kIndefiniteSize))
+            .block_size);
     replaced_block = ConstrainByMinMax(*replaced_block, block_min, block_max);
   } else if (replaced_block) {
     DCHECK(!replaced_inline);
-    DCHECK(intrinsic_inline || !aspect_ratio.IsEmpty());
-    replaced_inline =
-        ComputeInlineFromBlock(intrinsic_inline.value_or(kIndefiniteSize));
+    DCHECK(natural_size || !aspect_ratio.IsEmpty());
+    replaced_inline = ComputeInlineFromBlock(
+        natural_size.value_or(LogicalSize(kIndefiniteSize, kIndefiniteSize))
+            .inline_size);
     replaced_inline =
         ConstrainByMinMax(*replaced_inline, inline_min, inline_max);
   } else {
     // If both lengths are unknown, they get defined by intrinsic values.
     DCHECK(!replaced_inline);
     DCHECK(!replaced_block);
-    replaced_inline = *intrinsic_inline;
-    replaced_block = *intrinsic_block;
+    replaced_inline = natural_size->inline_size;
+    replaced_block = natural_size->block_size;
     // If lengths are constrained, keep aspect ratio.
     // The side that shrank the most defines the other side.
     LayoutUnit constrained_inline =
