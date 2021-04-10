@@ -1173,7 +1173,10 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
         // devtools uses margin box.
         item_rect.Expand(flex_item.physical_margins_);
         DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
-        layout_info_for_devtools_->lines.back().items.push_back(item_rect);
+        DevtoolsFlexInfo::Item item;
+        item.rect = item_rect;
+        item.baseline = flex_item.MarginBoxAscent();
+        layout_info_for_devtools_->lines.back().items.push_back(item);
       }
 
       flex_item.ng_input_node_.StoreMargins(flex_item.physical_margins_);

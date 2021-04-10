@@ -17,8 +17,12 @@ namespace blink {
 // anywhere, because neither paint nor ancestor layout needs it. So the NG flex
 // layout algorithm will fill one of these in when devtools requests it.
 struct DevtoolsFlexInfo {
+  struct Item {
+    PhysicalRect rect;
+    LayoutUnit baseline;
+  };
   struct Line {
-    Vector<PhysicalRect> items;
+    Vector<Item> items;
   };
   Vector<Line> lines;
 };

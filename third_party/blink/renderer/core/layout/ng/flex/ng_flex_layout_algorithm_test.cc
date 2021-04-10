@@ -40,8 +40,8 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBasic) {
   )HTML");
   EXPECT_EQ(devtools.lines.size(), 1u);
   EXPECT_EQ(devtools.lines[0].items.size(), 2u);
-  EXPECT_EQ(devtools.lines[0].items[0], PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(devtools.lines[0].items[0], PhysicalRect(0, 0, 50, 50));
+  EXPECT_EQ(devtools.lines[0].items[0].rect, PhysicalRect(0, 0, 50, 50));
+  EXPECT_EQ(devtools.lines[0].items[0].rect, PhysicalRect(0, 0, 50, 50));
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWrap) {
@@ -53,9 +53,9 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWrap) {
   )HTML");
   EXPECT_EQ(devtools.lines.size(), 2u);
   EXPECT_EQ(devtools.lines[0].items.size(), 1u);
-  EXPECT_EQ(devtools.lines[0].items[0], PhysicalRect(0, 0, 100, 50));
+  EXPECT_EQ(devtools.lines[0].items[0].rect, PhysicalRect(0, 0, 100, 50));
   EXPECT_EQ(devtools.lines[1].items.size(), 1u);
-  EXPECT_EQ(devtools.lines[1].items[0], PhysicalRect(0, 50, 100, 90));
+  EXPECT_EQ(devtools.lines[1].items[0].rect, PhysicalRect(0, 50, 100, 90));
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsCoordinates) {
@@ -67,9 +67,9 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsCoordinates) {
   )HTML");
   EXPECT_EQ(devtools.lines.size(), 2u);
   EXPECT_EQ(devtools.lines[0].items.size(), 1u);
-  EXPECT_EQ(devtools.lines[0].items[0], PhysicalRect(8, 5, 100, 50));
+  EXPECT_EQ(devtools.lines[0].items[0].rect, PhysicalRect(8, 5, 100, 50));
   EXPECT_EQ(devtools.lines[1].items.size(), 1u);
-  EXPECT_EQ(devtools.lines[1].items[0], PhysicalRect(8, 55, 100, 90));
+  EXPECT_EQ(devtools.lines[1].items[0].rect, PhysicalRect(8, 55, 100, 90));
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsOverflow) {
@@ -78,7 +78,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsOverflow) {
       <div style="min-width: 150px; height: 75px;"></div>
     </div>
   )HTML");
-  EXPECT_EQ(devtools.lines[0].items[0], PhysicalRect(1, 0, 150, 75));
+  EXPECT_EQ(devtools.lines[0].items[0].rect, PhysicalRect(1, 0, 150, 75));
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWithRelPosItem) {
@@ -97,6 +97,25 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsWithRelPosItem) {
   </div>
   )HTML");
   EXPECT_EQ(devtools.lines.size(), 1u);
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBaseline) {
+  LoadAhem();
+  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+    <div style="display:flex; align-items: baseline; flex-wrap: wrap; width: 250px; margin: 10px;" id=flexbox>
+      <div style="width: 100px; margin: 10px; font: 10px/2 Ahem;">Test</div>
+      <div style="width: 100px; margin: 10px; font: 10px/1 Ahem;">Test</div>
+      <div style="width: 100px; margin: 10px; font: 10px/1 Ahem;">Test</div>
+      <div style="width: 100px; margin: 10px; font: 10px/1 Ahem;">Test</div>
+    </div>
+  )HTML");
+  EXPECT_EQ(devtools.lines.size(), 2u);
+  EXPECT_EQ(devtools.lines[0].items.size(), 2u);
+  EXPECT_GT(devtools.lines[0].items[0].baseline,
+            devtools.lines[0].items[1].baseline);
+  EXPECT_EQ(devtools.lines[1].items.size(), 2u);
+  EXPECT_EQ(devtools.lines[1].items[0].baseline,
+            devtools.lines[1].items[1].baseline);
 }
 
 }  // namespace
