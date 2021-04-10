@@ -357,7 +357,7 @@ cr.define('cellularSetup', function() {
         case PSimUIState.WAITING_FOR_USER_PAYMENT:
           this.forwardButtonLabel = this.i18n('next');
           buttonState = {
-            backward: cellularSetup.ButtonState.ENABLED,
+            backward: cellularSetup.ButtonState.HIDDEN,
             cancel: cellularSetup.ButtonState.ENABLED,
             forward: cellularSetup.ButtonState.DISABLED,
           };
@@ -365,7 +365,7 @@ cr.define('cellularSetup', function() {
         case PSimUIState.TIMEOUT_START_ACTIVATION:
           this.forwardButtonLabel = this.i18n('tryAgain');
           buttonState = {
-            backward: cellularSetup.ButtonState.ENABLED,
+            backward: cellularSetup.ButtonState.HIDDEN,
             cancel: cellularSetup.ButtonState.ENABLED,
             forward: cellularSetup.ButtonState.ENABLED,
           };
@@ -373,7 +373,7 @@ cr.define('cellularSetup', function() {
         case PSimUIState.ACTIVATION_SUCCESS:
           this.forwardButtonLabel = this.i18n('next');
           buttonState = {
-            backward: cellularSetup.ButtonState.ENABLED,
+            backward: cellularSetup.ButtonState.HIDDEN,
             cancel: cellularSetup.ButtonState.ENABLED,
             forward: cellularSetup.ButtonState.ENABLED,
           };
@@ -383,7 +383,7 @@ cr.define('cellularSetup', function() {
         case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
           this.forwardButtonLabel = this.i18n('done');
           buttonState = {
-            backward: cellularSetup.ButtonState.ENABLED,
+            backward: cellularSetup.ButtonState.HIDDEN,
             cancel: cellularSetup.ButtonState.ENABLED,
             forward: cellularSetup.ButtonState.ENABLED,
           };

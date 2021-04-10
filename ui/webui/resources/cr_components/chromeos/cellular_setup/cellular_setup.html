@@ -23,7 +23,7 @@
           forward-button-label="{{forwardButtonLabel_}}">
       </setup-selection-flow>
       <template is="dom-if"
-          if="[[isPSimSelected_(currentPageName)]]" restamp>
+          if="[[shouldShowPsimFlow_(currentPageName)]]" restamp>
         <psim-flow-ui
             button-state="{{buttonState_}}"
             name-of-carrier-pending-setup="{{flowTitle}}"
@@ -33,7 +33,7 @@
         </psim-flow-ui>
       </template>
       <template is="dom-if"
-          if="[[isESimSelected_(currentPageName)]]" restamp>
+          if="[[shouldShowEsimFlow_(currentPageName)]]" restamp>
         <esim-flow-ui
             button-state="{{buttonState_}}"
             delegate="[[delegate]]"
