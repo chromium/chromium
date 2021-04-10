@@ -898,9 +898,6 @@ void LogMessage::Init(const char* file, int line) {
   if (last_slash_pos != base::StringPiece::npos)
     filename.remove_prefix(last_slash_pos + 1);
 
-  // Stores the base name as the null-terminated suffix substring of |filename|.
-  file_basename_ = filename.data();
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (g_log_format == LogFormat::LOG_FORMAT_SYSLOG) {
     InitWithSyslogPrefix(
