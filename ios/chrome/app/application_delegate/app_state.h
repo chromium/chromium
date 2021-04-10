@@ -90,6 +90,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // Timestamp of when a scene was last becoming active. Can be null.
 @property(nonatomic, assign) base::TimeTicks lastTimeInForeground;
 
+// Flag to track when the app is in safe mode.
+@property(nonatomic, assign, getter=isInSafeMode) BOOL inSafeMode;
+
 // The initialization stage the app is currently at.
 @property(nonatomic, readonly) InitStage initStage;
 

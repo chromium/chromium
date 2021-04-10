@@ -49,8 +49,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
-#import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
@@ -90,14 +88,11 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 
 #pragma mark - AppState
 
-@interface AppState () <SafeModeCoordinatorDelegate, AppStateObserver> {
+@interface AppState () <AppStateObserver> {
   // Browser launcher to launch browser in different states.
   __weak id<BrowserLauncher> _browserLauncher;
   // UIApplicationDelegate for the application.
   __weak MainApplicationDelegate* _mainApplicationDelegate;
-
-  // Variables backing properties of same name.
-  SafeModeCoordinator* _safeModeCoordinator;
 
   // YES if the app is currently in the process of terminating.
   BOOL _appIsTerminating;
@@ -108,20 +103,10 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
   BOOL _applicationInBackground;
   // YES if cookies are currently being flushed to disk.
   BOOL _savingCookies;
-
-  // Multiwindow UI blocker used when safe mode is active.
-  std::unique_ptr<ScopedUIBlocker> _safeModeBlocker;
 }
 
 // Container for observers.
 @property(nonatomic, strong) AppStateObserverList* observers;
-
-// Safe mode coordinator. If this is non-nil, the app is displaying the safe
-// mode UI.
-@property(nonatomic, strong) SafeModeCoordinator* safeModeCoordinator;
-
-// Flag to track when the app is in safe mode.
-@property(nonatomic, assign, getter=isInSafeMode) BOOL inSafeMode;
 
 // Return value for -requiresHandlingAfterLaunchWithOptions that determines if
 // UIKit should make followup delegate calls such as
@@ -221,14 +206,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   DCHECK(!_mainSceneState);
   _mainSceneState = mainSceneState;
   [self.observers appState:self sceneConnected:mainSceneState];
-}
-
-- (SafeModeCoordinator*)safeModeCoordinator {
-  return _safeModeCoordinator;
-}
-
-- (void)setSafeModeCoordinator:(SafeModeCoordinator*)safeModeCoordinator {
-  _safeModeCoordinator = safeModeCoordinator;
 }
 
 - (void)setUiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget {
@@ -683,48 +660,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [self.observers appState:self lastTappedWindowChanged:window];
 }
 
-#pragma mark - SafeModeCoordinatorDelegate Implementation
-
-// TODO(crbug.com/1178809): Handle this with an app state agent when
-// transitioning out of safe mode.
-- (void)coordinatorDidExitSafeMode:(nonnull SafeModeCoordinator*)coordinator {
-  [self stopSafeMode];
-  // Continue the initialization.
-  [self queueTransitionToNextInitStage];
-}
-
-#pragma mark - Internal methods.
-
-- (void)startSafeMode {
-  if (!base::ios::IsSceneStartupSupported()) {
-    self.mainSceneState.activationLevel = SceneActivationLevelForegroundActive;
-  }
-  DCHECK(self.foregroundActiveScene);
-  DCHECK(!_safeModeBlocker);
-  SafeModeCoordinator* safeModeCoordinator = [[SafeModeCoordinator alloc]
-      initWithWindow:self.foregroundActiveScene.window];
-
-  self.safeModeCoordinator = safeModeCoordinator;
-  [self.safeModeCoordinator setDelegate:self];
-
-  // Activate the main window, which will prompt the views to load.
-  [self.foregroundActiveScene.window makeKeyAndVisible];
-
-  [self.safeModeCoordinator start];
-
-  if (base::ios::IsMultipleScenesSupported()) {
-    _safeModeBlocker =
-        std::make_unique<ScopedUIBlocker>(self.foregroundActiveScene);
-  }
-}
-
-- (void)stopSafeMode {
-  if (_safeModeBlocker) {
-    _safeModeBlocker.reset();
-  }
-  self.safeModeCoordinator = nil;
-}
-
 - (void)initializeUIPreSafeMode {
   // TODO(crbug.com/1197330): Consider replacing this with a DCHECK once we
   // make sure that #initializeUIPreSafeMode is only called once. This should
@@ -736,21 +671,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   _userInteracted = YES;
   [self saveLaunchDetailsToDefaults];
-
-  // Continue the initialization.
-  [self queueTransitionToNextInitStage];
-
-  // TODO(crbug.com/1178809): Move this logic to the safe mode agent.
-  // Don't go further with the initialization when safe mode is required.
-  if ([SafeModeCoordinator shouldStart]) {
-    self.inSafeMode = YES;
-    if (!base::ios::IsMultiwindowSupported()) {
-      // Start safe mode immediately. Otherwise it should only start when a
-      // scene is connected and activates to allow displaying the safe mode UI.
-      [self startSafeMode];
-    }
-    return;
-  }
 
   // Continue the initialization.
   [self queueTransitionToNextInitStage];
@@ -787,6 +707,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                 kMemoryFootprintRecordingTimeInterval)];
   }
 }
+
+#pragma mark - Internal methods.
 
 - (void)saveLaunchDetailsToDefaults {
   // Reset the failure count on first launch, increment it on other launches.
@@ -843,11 +765,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   if (level >= SceneActivationLevelForegroundActive) {
     if (!self.firstSceneHasActivated) {
       self.firstSceneHasActivated = YES;
-      if (self.isInSafeMode) {
-        // Safe mode can only be started when there's a window, so the actual
-        // safe mode has been postponed until now.
-        [self startSafeMode];
-      } else {
+      if (!self.isInSafeMode) {
         [MetricsMediator logStartupDuration:self.startupInformation
                       connectionInformation:sceneState.controller];
       }

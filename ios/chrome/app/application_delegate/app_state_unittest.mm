@@ -64,11 +64,17 @@
 
 // Exposes private safe mode start/stop methods.
 @interface AppState (Private)
-@property(nonatomic, strong) SafeModeCoordinator* safeModeCoordinator;
 
 - (void)startSafeMode;
 - (void)stopSafeMode;
-- (void)coordinatorDidExitSafeMode:(SafeModeCoordinator*)coordinator;
+- (void)queueTransitionToNextInitStage;
+@end
+
+@interface SafeModeAppAgent (Private) <SceneStateObserver, AppStateObserver>
+
+- (SafeModeCoordinator*)safeModeCoordinator;
+- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState;
+
 @end
 
 // App state observer that is used to replace the main controller to transition
@@ -340,7 +346,7 @@ class AppStateTest : public BlockCleanupTest {
     return safe_mode_app_agent_;
   }
 
-  AppState* getAppStateWithMock() {
+  AppState* getAppStateWithMock(bool with_safe_mode_agent) {
     if (!app_state_) {
       // The swizzle block needs the scene state before app_state is create, but
       // the scene state needs the app state. So this alloc before swizzling
@@ -357,10 +363,23 @@ class AppStateTest : public BlockCleanupTest {
       main_scene_state_ = [main_scene_state_ initWithAppState:app_state_];
       main_scene_state_.window = getWindowMock();
 
-      [app_state_ addAgent:getSafeModeAppAgent()];
+      if (with_safe_mode_agent) {
+        [app_state_ addAgent:getSafeModeAppAgent()];
+        // Retrigger a sceneConnected event for the safe mode agent. This is
+        // needed because the sceneConnected event triggered by the app state is
+        // done before resetting the scene state with initWithAppState which
+        // clears the observers and agents.
+        [getSafeModeAppAgent() appState:app_state_
+                         sceneConnected:main_scene_state_];
+      }
+
       [app_state_ addObserver:app_state_observer_to_mock_main_controller_];
     }
     return app_state_;
+  }
+
+  AppState* getAppStateWithMock() {
+    return getAppStateWithMock(/*with_safe_mode_agent=*/true);
   }
 
   AppState* getAppStateWithRealWindow(UIWindow* window) {
@@ -382,7 +401,15 @@ class AppStateTest : public BlockCleanupTest {
       [window makeKeyAndVisible];
 
       [app_state_ addAgent:getSafeModeAppAgent()];
+
       [app_state_ addObserver:app_state_observer_to_mock_main_controller_];
+
+      // Retrigger a sceneConnected event for the safe mode agent with the real
+      // scene state. This is needed because the sceneConnected event triggered
+      // by the app state is done before resetting the scene state with
+      // initWithAppState which clears the observers and agents.
+      [getSafeModeAppAgent() appState:app_state_
+                       sceneConnected:main_scene_state_];
     }
     return app_state_;
   }
@@ -506,25 +533,21 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
 
   swizzleSafeModeShouldStart(YES);
 
-  appState.mainSceneState.activationLevel =
-      SceneActivationLevelForegroundActive;
 
   // Action.
   BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
                                                  stateBackground:NO];
 
-  if (base::ios::IsMultiwindowSupported()) {
     // Start the safe mode by transitioning the scene to foreground again after
     // #requiresHandlingAfterLaunchWithOptions which starts the safe mode.
     appState.mainSceneState.activationLevel =
         SceneActivationLevelForegroundActive;
-  }
 
   EXPECT_TRUE(result);
   EXPECT_TRUE([appState isInSafeMode]);
 
-  // Stop safe mode.
-  [appState coordinatorDidExitSafeMode:appState.safeModeCoordinator];
+  // Transition out of safe mode.
+  [appState queueTransitionToNextInitStage];
 
   // Verify that the dependencies are called properly during the app journey.
   EXPECT_OCMOCK_VERIFY(windowMock);
@@ -950,14 +973,15 @@ TEST_F(AppStateTest,
 
   // Starting safe mode will call makeKeyAndVisible on the window.
   [[window expect] makeKeyAndVisible];
-  appState.mainSceneState.activationLevel =
-      SceneActivationLevelForegroundActive;
   appState.mainSceneState.window = window;
 
   // Actions.
   [appState applicationWillEnterForeground:application
                            metricsMediator:metricsMediator
                               memoryHelper:memoryHelper];
+  // Transition the activation level to active to trigger the safe mode.
+  appState.mainSceneState.activationLevel =
+      SceneActivationLevelForegroundActive;
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(window);
@@ -1065,7 +1089,7 @@ TEST_F(AppStateTest, queueTransitionToNextInitStageNotifiesObservers) {
 TEST_F(AppStateTest,
        queueTransitionToNextInitStageReentrantFromWillTransitionToInitStage) {
   // Setup.
-  AppState* appState = getAppStateWithMock();
+  AppState* appState = getAppStateWithMock(/*with_safe_mode_agent=*/false);
   id observer1 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
   AppStateTransitioningObserver* transitioningObserver =
       [[AppStateTransitioningObserver alloc] init];
@@ -1106,7 +1130,7 @@ TEST_F(AppStateTest,
 TEST_F(AppStateTest,
        queueTransitionToNextInitStageReentrantFromdidTransitionFromInitStage) {
   // Setup.
-  AppState* appState = getAppStateWithMock();
+  AppState* appState = getAppStateWithMock(/*with_safe_mode_agent=*/false);
   id observer1 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
   AppStateTransitioningObserver* transitioningObserver =
       [[AppStateTransitioningObserver alloc] init];
