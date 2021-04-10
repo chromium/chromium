@@ -5,7 +5,6 @@
 // clang-format off
 // #import 'chrome://os-settings/strings.m.js';
 // #import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup.m.js';
-// #import 'chrome://resources/cr_components/chromeos/cellular_setup/setup_selection_flow.m.js';
 // #import 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
 
 // #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';

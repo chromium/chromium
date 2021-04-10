@@ -219,7 +219,6 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/final_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/provisioning_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/psim_flow_ui_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/setup_selection_flow_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_barcode_detector.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_canvas_context.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/setup_loading_page_test.m.js",

@@ -309,20 +309,8 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_ERROR_MESSAGE" desc="Message displayed under title in final screen of eSIM cellular setup when ChromeOS encountered an error installing eSIM profiles.">
     Unable to connect to a mobile network. For technical support, please contact your carrier.
   </message>
-  <message name="IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_PSIM_LABEL" desc="Label for physical SIM (pSIM) setup flow card radio select button during cellular setup">
-    Physical SIM
-  </message>
-  <message name="IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_PSIM_MESSAGE" desc="Message for physical SIM (pSIM) setup flow card radio select button during cellular setup, informing the user to insert a physical SIM.">
-    Insert SIM before proceeding
-  </message>
-  <message name="IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_ESIM_LABEL" desc="Label for electronic SIM (eSIM) setup flow card radio select button during cellular setup">
-    eSIM setup
-  </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_DETECT_MESSAGE" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles.">
     Looking for available profiles...
-  </message>
-  <message name="IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_ESIM_MESSAGE" desc="Message for electronic SIM (eSIM) setup flow card radio select button during cellular setup, informing the user to establish an internet connection before proceeding.">
-    Establish an internet connection first
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_CONNECTION_WARNING" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles informing the user that cellular setup may disconnect their current cellular network connection.">
     This may cause a brief cellular network disconnection.
