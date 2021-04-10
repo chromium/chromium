@@ -4268,6 +4268,8 @@ static_library("ui") {
       "views/user_education/feature_promo_registry.h",
       "views/user_education/new_badge_label.cc",
       "views/user_education/new_badge_label.h",
+      "views/user_education/scoped_new_badge_tracker.cc",
+      "views/user_education/scoped_new_badge_tracker.h",
       "views/user_education/tip_marquee_view.cc",
       "views/user_education/tip_marquee_view.h",
       "views/web_apps/frame_toolbar/web_app_content_settings_container.cc",
