@@ -324,6 +324,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.Glitches" units="glitches"
+    expires_after="2021-10-08">
+  <owner>henrika@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The number of glitches that were detected at the OS level while an audio
+    input stream was active. A glitch in this case corresponds to a certain
+    error code from the IAudioCaptureClient::GetBuffer() API:
+    AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY. This value is logged when an audio
+    input stream is closed on Windows.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.InitError" enum="Hresult"
     expires_after="2021-10-04">
   <owner>tommi@chromium.org</owner>
@@ -347,12 +360,50 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.MonotonicTimestamps"
+    enum="BooleanSuccess" expires_after="2021-10-08">
+  <owner>henrika@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Each audio frame which is recorded when an audio input stream is active also
+    comes with a timestamp. By design, the sequcence of timestamps should be
+    monotonic. This metric should therefore always result in 'Success', hence
+    'Failure' should never happen and is seen as an error that must be fixed.
+    This value is logged when an audio input stream is closed on Windows.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.Open" enum="AudioStreamOpenResult"
     expires_after="2021-10-04">
   <owner>gudiou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
     Success/error cases for opening an audio input stream on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.TimestampErrors" units="errors"
+    expires_after="2021-10-08">
+  <owner>henrika@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The number of timestamp errors that were detected at the OS level while an
+    audio input stream was active. A timestamp error in this case corresponds to
+    a certain error code from the IAudioCaptureClient::GetBuffer() API:
+    AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR. This value is logged when an audio
+    input stream is closed on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.TimeUntilFirstTimestampError"
+    units="ms" expires_after="2021-10-08">
+  <owner>henrika@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The time from the start of an input audio stream until the first timestamp
+    error is detected. Logged once when the input stream stops but only if at
+    least one error was detected. Only implemented on Windows. See
+    Media.Audio.Capture.Win.TimestampErrors for more details.
   </summary>
 </histogram>
 

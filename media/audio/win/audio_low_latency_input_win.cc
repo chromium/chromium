@@ -36,6 +36,7 @@
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
+#include "media/base/timestamp_constants.h"
 
 using ABI::Windows::Foundation::Collections::IVectorView;
 using ABI::Windows::Media::Devices::IMediaDeviceStatics;
@@ -539,6 +540,19 @@ void WASAPIAudioInputStream::Stop() {
     audio_session_starts_at_zero_volume_ = false;
   }
 
+  SendLogMessage(
+      "%s => (timestamp(n)-timestamp(n-1)=[min: %.3f msec, max: %.3f msec])",
+      __func__, min_timestamp_diff_.InMillisecondsF(),
+      max_timestamp_diff_.InMillisecondsF());
+
+  const bool monotonic_timestamps =
+      min_timestamp_diff_ >= base::TimeDelta::FromMicroseconds(1);
+  if (!monotonic_timestamps) {
+    SendLogMessage("%s => (ERROR: non-monotonic timestamp sequence)", __func__);
+  }
+  base::UmaHistogramBoolean("Media.Audio.Capture.Win.MonotonicTimestamps",
+                            monotonic_timestamps);
+
   started_ = false;
   sink_ = nullptr;
 }
@@ -715,6 +729,9 @@ void WASAPIAudioInputStream::Run() {
   HANDLE wait_array[2] = {stop_capture_event_.Get(),
                           audio_samples_ready_event_.Get()};
 
+  record_start_time_ = base::TimeTicks::Now();
+  last_capture_time_ = base::TimeTicks();
+
   while (recording && !error) {
     // Wait for a close-down event or a new capture event.
     DWORD wait_result = WaitForMultipleObjects(2, wait_array, FALSE, INFINITE);
@@ -754,39 +771,76 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
                "sample rate", input_format_.Format.nSamplesPerSec);
 
   UINT64 last_device_position = 0;
+  UINT32 num_frames_in_next_packet = 0;
+
+  // Get the number of frames in the next data packet in the capture endpoint
+  // buffer. The count reported by GetNextPacketSize matches the count retrieved
+  // in the GetBuffer call that follows this call.
+  HRESULT hr =
+      audio_capture_client_->GetNextPacketSize(&num_frames_in_next_packet);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "WAIS::" << __func__
+               << " => (ERROR: IAudioCaptureClient::GetNextPacketSize=["
+               << ErrorToString(hr).c_str() << "])";
+    return;
+  }
 
   // Pull data from the capture endpoint buffer until it's empty or an error
-  // occurs.
-  while (true) {
+  // occurs. Drains the WASAPI capture buffer fully.
+  while (num_frames_in_next_packet > 0) {
     BYTE* data_ptr = nullptr;
     UINT32 num_frames_to_read = 0;
     DWORD flags = 0;
     UINT64 device_position = 0;
-
-    // Note: The units on this are 100ns intervals. Both GetBuffer() and
-    // GetPosition() will handle the translation from the QPC value, so we just
-    // need to convert from 100ns units into us. Which is just dividing by 10.0
-    // since 10x100ns = 1us.
     UINT64 capture_time_100ns = 0;
 
     // Retrieve the amount of data in the capture endpoint buffer, replace it
     // with silence if required, create callbacks for each packet and store
     // non-delivered data for the next event.
-    HRESULT hr =
+    hr =
         audio_capture_client_->GetBuffer(&data_ptr, &num_frames_to_read, &flags,
                                          &device_position, &capture_time_100ns);
-    if (hr == AUDCLNT_S_BUFFER_EMPTY)
-      break;
-
-    // TODO(grunell): Should we handle different errors explicitly? Perhaps exit
-    // by setting |error = true|. What are the assumptions here that makes us
-    // rely on the next WaitForMultipleObjects? Do we expect the next wait to be
-    // successful sometimes?
+    if (hr == AUDCLNT_S_BUFFER_EMPTY) {
+      DCHECK_EQ(num_frames_to_read, 0u);
+      return;
+    }
     if (FAILED(hr)) {
       LOG(ERROR) << "WAIS::" << __func__
                  << " => (ERROR: IAudioCaptureClient::GetBuffer=["
                  << ErrorToString(hr).c_str() << "])";
-      break;
+      return;
+    }
+
+    // The data in the packet is not correlated with the previous packet's
+    // device position; this is possibly due to a stream state transition or
+    // timing glitch. Note that, usage of this flag was added after the existing
+    // glitch detection in UpdateGlitchCount() and it will be used as a
+    // supplementary scheme initially.
+    // The behavior of the AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY flag is
+    // undefined on the application's first call to GetBuffer after Start and
+    // Windows 7 or later is required for support.
+    if (device_position > 0 && flags & AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) {
+      LOG(WARNING) << "WAIS::" << __func__
+                   << " => (WARNING: AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)";
+      ++num_data_discontinuity_warnings_;
+    }
+
+    // The time at which the device's stream position was recorded is uncertain.
+    // Thus, the client might be unable to accurately set a time stamp for the
+    // current data packet.
+    bool timestamp_error_was_detected = false;
+    if (flags & AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR) {
+      // TODO(https://crbug.com/825744): it might be possible to improve error
+      // handling here and avoid using the counter in |capture_time_100ns|.
+      LOG(WARNING) << "WAIS::" << __func__
+                   << " => (WARNING: AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR)";
+      if (num_timestamp_errors_ == 0) {
+        // Measure the time it took until the first timestamp error was found.
+        time_until_first_timestamp_error_ =
+            base::TimeTicks::Now() - record_start_time_;
+      }
+      ++num_timestamp_errors_;
+      timestamp_error_was_detected = true;
     }
 
     // If the device position has changed, we assume this data belongs to a new
@@ -802,41 +856,48 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
       expected_next_device_position_ += num_frames_to_read;
     }
 
-    // TODO(dalecurtis, olka, grunell): Is this ever false? If it is, should we
-    // handle |flags & AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR|?
-    if (audio_clock_) {
-      // The reported timestamp from GetBuffer is not as reliable as the clock
-      // from the client.  We've seen timestamps reported for USB audio devices,
-      // be off by several days.  Furthermore we've seen them jump back in time
-      // every 2 seconds or so.
-      // TODO(grunell): Using the audio clock as capture time for the currently
-      // processed buffer seems incorrect. http://crbug.com/825744.
-      audio_clock_->GetPosition(&device_position, &capture_time_100ns);
-    }
-
     base::TimeTicks capture_time;
-    if (capture_time_100ns) {
-      // See conversion notes on |capture_time_100ns|.
+    if (!timestamp_error_was_detected) {
+      // Use the latest |capture_time_100ns| since it is marked as valid.
       capture_time +=
           base::TimeDelta::FromMicroseconds(capture_time_100ns / 10.0);
-    } else {
-      // We may not have an IAudioClock or GetPosition() may return zero.
-      capture_time = base::TimeTicks::Now();
     }
+    if (capture_time < last_capture_time_) {
+      // Latest |capture_time_100ns| can't be trusted. Ensure a monotonic time-
+      // stamp sequence by adding one microsecond to the latest timestamp.
+      capture_time = last_capture_time_ + base::TimeDelta::FromMicroseconds(1);
+    }
+
+    // Keep track of max and min time difference between two successive time-
+    // stamps. Currently only used for logging purposes.
+    if (last_capture_time_.is_null()) {
+      max_timestamp_diff_ = base::TimeDelta::Min();
+      min_timestamp_diff_ = base::TimeDelta::Max();
+    } else {
+      const auto delta_ts = capture_time - last_capture_time_;
+      DCHECK_GT(device_position, 0u);
+      DCHECK_GT(delta_ts, base::TimeDelta::Min());
+      if (delta_ts > max_timestamp_diff_) {
+        max_timestamp_diff_ = delta_ts;
+      } else if (delta_ts < min_timestamp_diff_) {
+        min_timestamp_diff_ = delta_ts;
+      }
+    }
+
+    // Store the capture timestamp. Might be used as reference next time if
+    // a new valid timestamp can't be retrieved to always guarantee a monotonic
+    // sequence.
+    last_capture_time_ = capture_time;
 
     // Adjust |capture_time| for the FIFO before pushing.
     capture_time -= AudioTimestampHelper::FramesToTime(
         fifo_->GetAvailableFrames(), input_format_.Format.nSamplesPerSec);
 
-    // TODO(grunell): Since we check |hr == AUDCLNT_S_BUFFER_EMPTY| above,
-    // should we instead assert that |num_frames_to_read != 0|?
-    if (num_frames_to_read != 0) {
-      if (flags & AUDCLNT_BUFFERFLAGS_SILENT) {
-        fifo_->PushSilence(num_frames_to_read);
-      } else {
-        fifo_->Push(data_ptr, num_frames_to_read,
-                    input_format_.Format.wBitsPerSample / 8);
-      }
+    if (flags & AUDCLNT_BUFFERFLAGS_SILENT) {
+      fifo_->PushSilence(num_frames_to_read);
+    } else {
+      fifo_->Push(data_ptr, num_frames_to_read,
+                  input_format_.Format.wBitsPerSample / 8);
     }
 
     hr = audio_capture_client_->ReleaseBuffer(num_frames_to_read);
@@ -844,7 +905,7 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
       LOG(ERROR) << "WAIS::" << __func__
                  << " => (ERROR: IAudioCaptureClient::ReleaseBuffer=["
                  << ErrorToString(hr).c_str() << "])";
-      break;
+      return;
     }
 
     // Get a cached AGC volume level which is updated once every second on the
@@ -862,7 +923,7 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
           // Special case. We need to buffer up more audio before we can convert
           // or else we'll suffer an underrun.
           // TODO(grunell): Verify this is really true.
-          break;
+          return;
         }
         converter_->Convert(convert_bus_.get());
         sink_->OnData(convert_bus_.get(), capture_time, volume);
@@ -878,7 +939,17 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
             packet_size_frames_, input_format_.Format.nSamplesPerSec);
       }
     }
-  }  // while (true)
+
+    // Get the number of frames in the next data packet in the capture endpoint
+    // buffer. Keep reading if more samples exist.
+    hr = audio_capture_client_->GetNextPacketSize(&num_frames_in_next_packet);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "WAIS::" << __func__
+                 << " => (ERROR: IAudioCaptureClient::GetNextPacketSize=["
+                 << ErrorToString(hr).c_str() << "])";
+      return;
+    }
+  }  // while (num_frames_in_next_packet > 0)
 }
 
 void WASAPIAudioInputStream::HandleError(HRESULT err) {
@@ -1463,14 +1534,6 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
   if (FAILED(hr))
     open_result_ = OPEN_RESULT_NO_AUDIO_VOLUME;
 
-  audio_client_->GetService(IID_PPV_ARGS(&audio_clock_));
-  if (!audio_clock_) {
-    SendLogMessage(
-        "%s => (WARNING: IAudioClock unavailable, capture times will be "
-        "inaccurate)",
-        __func__);
-  }
-
   return hr;
 }
 
@@ -1542,10 +1605,31 @@ void WASAPIAudioInputStream::ReportAndResetGlitchStats() {
         50);
   }
 
+  // TODO(https://crbug.com/825744): It can be possible to replace
+  // "Media.Audio.Capture.Glitches" with this new (simplified) metric instead.
+  base::UmaHistogramCounts1M("Media.Audio.Capture.Win.Glitches",
+                             num_data_discontinuity_warnings_);
+  SendLogMessage("%s => (discontinuity warnings=[%" PRIu64 "])", __func__,
+                 num_data_discontinuity_warnings_);
+  base::UmaHistogramCounts1M("Media.Audio.Capture.Win.TimestampErrors",
+                             num_timestamp_errors_);
+  SendLogMessage("%s => (timstamp errors=[%" PRIu64 "])", __func__,
+                 num_timestamp_errors_);
+  if (num_timestamp_errors_ > 0) {
+    base::UmaHistogramLongTimes(
+        "Media.Audio.Capture.Win.TimeUntilFirstTimestampError",
+        time_until_first_timestamp_error_);
+    SendLogMessage("%s => (time until first timestamp error=[%" PRId64 " ms])",
+                   __func__,
+                   time_until_first_timestamp_error_.InMilliseconds());
+  }
+
   expected_next_device_position_ = 0;
   total_glitches_ = 0;
   total_lost_frames_ = 0;
   largest_glitch_frames_ = 0;
+  num_data_discontinuity_warnings_ = 0;
+  num_timestamp_errors_ = 0;
 }
 
 }  // namespace media

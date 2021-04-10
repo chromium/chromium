@@ -266,11 +266,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // from a capture endpoint buffer.
   Microsoft::WRL::ComPtr<IAudioCaptureClient> audio_capture_client_;
 
-  // The IAudioClock interface is used to get the current timestamp, as the
-  // timestamp from IAudioCaptureClient::GetBuffer can be unreliable with some
-  // devices.
-  Microsoft::WRL::ComPtr<IAudioClock> audio_clock_;
-
   // The ISimpleAudioVolume interface enables a client to control the
   // master volume level of an audio session.
   // The volume-level is a value in the range 0.0 to 1.0.
@@ -311,6 +306,21 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   int total_glitches_ = 0;
   UINT64 total_lost_frames_ = 0;
   UINT64 largest_glitch_frames_ = 0;
+
+  // Tracks error messages from IAudioCaptureClient::GetBuffer.
+  UINT64 num_data_discontinuity_warnings_ = 0;
+  UINT64 num_timestamp_errors_ = 0;
+  base::TimeTicks record_start_time_;
+  base::TimeDelta time_until_first_timestamp_error_;
+
+  // Contains the last capture timestamp from IAudioCaptureClient::GetBuffer.
+  base::TimeTicks last_capture_time_;
+
+  // Max and min of difference in time between two successive timestamps.
+  // |min_timestamp_diff_| should always be larger than or equal to one micro-
+  // second.
+  base::TimeDelta max_timestamp_diff_;
+  base::TimeDelta min_timestamp_diff_;
 
   // Enabled if the volume level of the audio session is set to zero when the
   // session starts. Utilized in UMA histogram.

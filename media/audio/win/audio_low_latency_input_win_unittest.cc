@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -398,6 +399,27 @@ TEST_P(WinAudioInputTest, WASAPIAudioInputStreamOpenStartStopAndClose) {
   ais->Start(&sink);
   ais->Stop();
   ais.Close();
+}
+
+// Verify that histograms are created as expected. Only covers the latest
+// histograms.
+TEST_F(WinAudioInputTest, WASAPIAudioInputStreamHistograms) {
+  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
+  base::HistogramTester histogram_tester;
+  ScopedAudioInputStream ais(
+      CreateDefaultAudioInputStream(audio_manager_.get()));
+  EXPECT_TRUE(ais->Open());
+  FakeAudioInputCallback sink;
+  ais->Start(&sink);
+  sink.WaitForData();
+  sink.WaitForData();
+  ais->Stop();
+  ais.Close();
+  histogram_tester.ExpectTotalCount("Media.Audio.Capture.Win.Glitches", 1);
+  histogram_tester.ExpectTotalCount("Media.Audio.Capture.Win.TimestampErrors",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.Win.TimeUntilFirstTimestampError", 0);
 }
 
 // Test some additional calling sequences.
