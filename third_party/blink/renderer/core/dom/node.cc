@@ -1413,6 +1413,19 @@ bool Node::IsInert() const {
   return GetDocument().GetFrame() && GetDocument().GetFrame()->IsInert();
 }
 
+LinkHighlightCandidate Node::IsLinkHighlightCandidate() const {
+  if (const LayoutObject* layout_object = GetLayoutObject()) {
+    const ECursor cursor = layout_object->StyleRef().Cursor();
+    if (cursor == ECursor::kPointer)
+      return LinkHighlightCandidate::kYes;
+    if (cursor != ECursor::kAuto)
+      return LinkHighlightCandidate::kNo;
+    if (EventHandler::UsesHandCursor(this))
+      return LinkHighlightCandidate::kYes;
+  }
+  return LinkHighlightCandidate::kMayBe;
+}
+
 unsigned Node::NodeIndex() const {
   const Node* temp_node = previousSibling();
   unsigned count = 0;

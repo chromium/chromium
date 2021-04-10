@@ -242,7 +242,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   void CapsLockStateMayHaveChanged();  // Only called by FrameSelection
 
-  static bool UsesHandCursor(Node*);
+  static bool UsesHandCursor(const Node*);
 
   void NotifyElementActivated();
 

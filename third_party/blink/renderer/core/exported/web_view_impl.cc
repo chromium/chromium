@@ -775,27 +775,17 @@ void WebViewImpl::ComputeScaleAndScrollForBlockRect(
       GetPage()->GetVisualViewport().ClampDocumentOffsetAtScale(scroll, scale);
 }
 
-static Node* FindCursorDefiningAncestor(Node* node) {
+static Node* FindLinkHighlightAncestor(Node* node) {
   // Go up the tree to find the node that defines a mouse cursor style
   while (node) {
-    if (node->GetLayoutObject()) {
-      ECursor cursor = node->GetLayoutObject()->Style()->Cursor();
-      if (cursor != ECursor::kAuto || EventHandler::UsesHandCursor(node))
-        break;
-    }
+    const LinkHighlightCandidate type = node->IsLinkHighlightCandidate();
+    if (type == LinkHighlightCandidate::kYes)
+      return node;
+    if (type == LinkHighlightCandidate::kNo)
+      return nullptr;
     node = LayoutTreeBuilderTraversal::Parent(*node);
   }
-
-  return node;
-}
-
-static bool ShowsHandCursor(Node* node) {
-  if (!node || !node->GetLayoutObject())
-    return false;
-
-  ECursor cursor = node->GetLayoutObject()->Style()->Cursor();
-  return cursor == ECursor::kPointer ||
-         (cursor == ECursor::kAuto && EventHandler::UsesHandCursor(node));
+  return nullptr;
 }
 
 // This is for tap (link) highlight and is tested in
@@ -824,23 +814,21 @@ Node* WebViewImpl::BestTapNode(
   if (HasEditableStyle(*best_touch_node))
     return nullptr;
 
-  Node* cursor_defining_ancestor = FindCursorDefiningAncestor(best_touch_node);
+  Node* hand_cursor_ancestor = FindLinkHighlightAncestor(best_touch_node);
   // We show a highlight on tap only when the current node shows a hand cursor
-  if (!cursor_defining_ancestor || !ShowsHandCursor(cursor_defining_ancestor)) {
+  if (!hand_cursor_ancestor) {
     return nullptr;
   }
 
   // We should pick the largest enclosing node with hand cursor set. We do this
-  // by first jumping up to cursorDefiningAncestor (which is already known to
-  // have hand cursor set). Then we locate the next cursor-defining ancestor up
-  // in the the tree and repeat the jumps as long as the node has hand cursor
-  // set.
+  // by first jumping up to the closest ancestor with hand cursor set. Then we
+  // locate the next ancestor up in the the tree and repeat the jumps as long as
+  // the node has hand cursor set.
   do {
-    best_touch_node = cursor_defining_ancestor;
-    cursor_defining_ancestor = FindCursorDefiningAncestor(
+    best_touch_node = hand_cursor_ancestor;
+    hand_cursor_ancestor = FindLinkHighlightAncestor(
         LayoutTreeBuilderTraversal::Parent(*best_touch_node));
-  } while (cursor_defining_ancestor &&
-           ShowsHandCursor(cursor_defining_ancestor));
+  } while (hand_cursor_ancestor);
 
   // This happens in cases like:
   // <div style="display: contents; cursor: pointer">Text</div>.

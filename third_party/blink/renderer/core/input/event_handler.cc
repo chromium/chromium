@@ -427,16 +427,15 @@ IntPoint EventHandler::DragDataTransferLocationForTesting() {
   return IntPoint();
 }
 
-static bool IsSubmitImage(Node* node) {
+static bool IsSubmitImage(const Node* node) {
   auto* html_input_element = DynamicTo<HTMLInputElement>(node);
   return html_input_element &&
          html_input_element->type() == input_type_names::kImage;
 }
 
-bool EventHandler::UsesHandCursor(Node* node) {
+bool EventHandler::UsesHandCursor(const Node* node) {
   if (!node)
     return false;
-
   return ((node->IsLink() || IsSubmitImage(node)) && !HasEditableStyle(*node));
 }
 

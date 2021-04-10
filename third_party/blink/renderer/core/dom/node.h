@@ -127,6 +127,16 @@ enum class LegacyLayout {
   kForce
 };
 
+// LinkHighlight determines the largest enclosing node with hand cursor set.
+enum class LinkHighlightCandidate {
+  // This node is with hand cursor set.
+  kYes,
+  // This node is not with hand cursor set.
+  kNo,
+  // |kYes| if its ancestor is |kYes|.
+  kMayBe
+};
+
 // A Node is a base class for all objects in the DOM tree.
 // The spec governing this interface can be found here:
 // https://dom.spec.whatwg.org/#interface-node
@@ -568,6 +578,9 @@ class CORE_EXPORT Node : public EventTarget {
   // This can't be in Element because text nodes must be recognized as
   // inert to prevent text selection.
   bool IsInert() const;
+
+  // Returns how |this| participates to the nodes with hand cursor set.
+  LinkHighlightCandidate IsLinkHighlightCandidate() const;
 
   virtual PhysicalRect BoundingBox() const;
   IntRect PixelSnappedBoundingBox() const;
