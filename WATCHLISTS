@@ -2684,7 +2684,6 @@
     'safety_tips': ['jdeblasio+watch@chromium.org'],
     'sampling_profiler': ['wittman+watch@chromium.org'],
     'scanning': ['gavinwill+scanning-watch@chromium.org',
-                 'jschettler+scanning-watch@chromium.org',
                  'zentaro+scanning-watch@chromium.org'],
     'security': ['security-watchlist@chromium.org'],
     'select_to_speak': ['katie+watch@chromium.org',
