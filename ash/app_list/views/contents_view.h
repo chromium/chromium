@@ -132,8 +132,8 @@ class ASH_EXPORT ContentsView : public views::View,
 
   int NumLauncherPages() const;
 
-  SearchResultPageView* search_results_page_view() const {
-    return search_results_page_view_;
+  SearchResultPageView* search_result_page_view() const {
+    return search_result_page_view_;
   }
   AppsContainerView* apps_container_view() const {
     return apps_container_view_;
@@ -275,7 +275,7 @@ class ASH_EXPORT ContentsView : public views::View,
   // Sub-views of the ContentsView. All owned by the views hierarchy.
   AssistantPageView* assistant_page_view_ = nullptr;
   AppsContainerView* apps_container_view_ = nullptr;
-  SearchResultPageView* search_results_page_view_ = nullptr;
+  SearchResultPageView* search_result_page_view_ = nullptr;
 
   // The child page views. Owned by the views hierarchy.
   std::vector<AppListPage*> app_list_pages_;

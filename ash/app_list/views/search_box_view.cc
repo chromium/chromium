@@ -426,7 +426,7 @@ void SearchBoxView::ProcessAutocomplete() {
     return;
 
   SearchResultBaseView* const first_result_view =
-      contents_view_->search_results_page_view()->first_result_view();
+      contents_view_->search_result_page_view()->first_result_view();
   if (!first_result_view || !first_result_view->selected())
     return;
 
@@ -593,7 +593,7 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
   if (!is_search_box_active())
     return;
 
-  contents_view_->search_results_page_view()
+  contents_view_->search_result_page_view()
       ->result_selection_controller()
       ->ClearSelection();
   a11y_selection_on_search_result_ = false;
@@ -624,11 +624,11 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
   // Nothing to do if no results are available (the rest of the method handles
   // result actions and result traversal). This might happen if zero state
   // suggestions are not enabled, and search box textfield is empty.
-  if (!contents_view_->search_results_page_view()->first_result_view())
+  if (!contents_view_->search_result_page_view()->first_result_view())
     return false;
 
   ResultSelectionController* selection_controller =
-      contents_view_->search_results_page_view()->result_selection_controller();
+      contents_view_->search_result_page_view()->result_selection_controller();
 
   // When search box is active, the focus cycles between close button and the
   // search_box - when close button is focused, traversal keys (arrows and

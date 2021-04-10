@@ -492,7 +492,7 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
                          weak_ptr_factory_.GetWeakPtr()));
       list_view_->app_list_main_view()
           ->contents_view()
-          ->search_results_page_view()
+          ->search_result_page_view()
           ->ShowAnchoredDialog(std::move(dialog));
     } else if (button_action == OmniBoxZeroStateAction::kAppendSuggestion) {
       RecordZeroStateSearchResultUserActionHistogram(

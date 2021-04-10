@@ -145,12 +145,12 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
                                       ->app_list_main_view()
                                       ->contents_view();
     Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
-    contents_view->search_results_page_view()
+    contents_view->search_result_page_view()
         ->GetPrivacyContainerViewForTest()
         ->Update();
 
     SearchResultContainerView* search_result_container_view =
-        contents_view->search_results_page_view()
+        contents_view->search_result_page_view()
             ->GetSearchResultTileItemListViewForTest();
 
     // Request focus on the first tile item view.

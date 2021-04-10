@@ -96,16 +96,16 @@ void ContentsView::Init(AppListModel* model) {
                       AppListState::kStateApps);
 
   // Search results UI.
-  auto search_results_page_view =
+  auto search_result_page_view =
       std::make_unique<SearchResultPageView>(view_delegate->GetSearchModel());
-  search_results_page_view->InitializeContainers(
+  search_result_page_view->InitializeContainers(
       view_delegate, GetAppListMainView(), GetSearchBoxView()->search_box());
 
   expand_arrow_view_ =
       AddChildView(std::make_unique<ExpandArrowView>(this, app_list_view_));
 
-  search_results_page_view_ = AddLauncherPage(
-      std::move(search_results_page_view), AppListState::kStateSearchResults);
+  search_result_page_view_ = AddLauncherPage(std::move(search_result_page_view),
+                                             AppListState::kStateSearchResults);
 
   auto assistant_page_view = std::make_unique<AssistantPageView>(
       view_delegate->GetAssistantViewDelegate());
@@ -148,7 +148,7 @@ void ContentsView::ResetForShow() {
   // Make sure the default visibilities of the pages. This should be done before
   // SetActiveState() since it checks the visibility of the pages.
   apps_container_view_->SetVisible(true);
-  search_results_page_view_->SetVisible(false);
+  search_result_page_view_->SetVisible(false);
   if (assistant_page_view_)
     assistant_page_view_->SetVisible(false);
   SetActiveState(AppListState::kStateApps, /*animate=*/false);
@@ -905,7 +905,7 @@ ContentsView::CreateTransitionAnimationSettings(ui::Layer* layer) const {
 bool ContentsView::ShouldLayoutPage(AppListPage* page,
                                     AppListState current_state,
                                     AppListState target_state) const {
-  if (page == apps_container_view_ || page == search_results_page_view_) {
+  if (page == apps_container_view_ || page == search_result_page_view_) {
     return ((current_state == AppListState::kStateSearchResults &&
              target_state == AppListState::kStateApps) ||
             (current_state == AppListState::kStateApps &&

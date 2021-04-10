@@ -218,7 +218,7 @@ void AppListMainView::SearchBoxFocusChanged(SearchBoxViewBase* sender) {
     return;
 
   SearchResultBaseView* first_result_view =
-      contents_view_->search_results_page_view()->first_result_view();
+      contents_view_->search_result_page_view()->first_result_view();
   if (!first_result_view || !first_result_view->selected())
     return;
   first_result_view->SetSelected(false, base::nullopt);

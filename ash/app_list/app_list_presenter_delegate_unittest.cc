@@ -208,7 +208,7 @@ class AppListPresenterDelegateTest : public AshTestBase,
     return GetAppListView()
         ->app_list_main_view()
         ->contents_view()
-        ->search_results_page_view();
+        ->search_result_page_view();
   }
 
   AppsGridView* apps_grid_view() {
@@ -229,7 +229,7 @@ class AppListPresenterDelegateTest : public AshTestBase,
     return GetAppListView()
         ->app_list_main_view()
         ->contents_view()
-        ->search_results_page_view()
+        ->search_result_page_view()
         ->GetSearchResultListViewForTest()
         ->GetResultViewAt(index);
   }
@@ -494,7 +494,7 @@ TEST_F(AppListPresenterDelegateTest, RemoveSuggestionShowsConfirmDialog) {
   GetAppListView()
       ->app_list_main_view()
       ->contents_view()
-      ->search_results_page_view()
+      ->search_result_page_view()
       ->GetPrivacyContainerViewForTest()
       ->Update();
 

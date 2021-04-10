@@ -506,13 +506,13 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
   SearchResultTileItemListView* GetSearchResultTileItemListView() {
     return contents_view()
-        ->search_results_page_view()
+        ->search_result_page_view()
         ->GetSearchResultTileItemListViewForTest();
   }
 
   SearchResultListView* GetSearchResultListView() {
     return contents_view()
-        ->search_results_page_view()
+        ->search_result_page_view()
         ->GetSearchResultListViewForTest();
   }
 
@@ -636,7 +636,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
                               bool shift_down) {
     ResultSelectionController* selection_controller =
         contents_view()
-            ->search_results_page_view()
+            ->search_result_page_view()
             ->result_selection_controller();
     EXPECT_EQ(view_list[0], selection_controller->selected_result());
     for (size_t i = 1; i < view_list.size(); ++i) {
@@ -981,11 +981,9 @@ TEST_F(AppListViewFocusTest, CloseButtonClearsSearchOnEnter) {
   EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
   EXPECT_EQ(std::u16string(), search_box_view()->search_box()->GetText());
   EXPECT_FALSE(search_box_view()->is_search_box_active());
-  EXPECT_FALSE(contents_view()->search_results_page_view()->GetVisible());
+  EXPECT_FALSE(contents_view()->search_result_page_view()->GetVisible());
   ResultSelectionController* selection_controller =
-      contents_view()
-          ->search_results_page_view()
-          ->result_selection_controller();
+      contents_view()->search_result_page_view()->result_selection_controller();
   EXPECT_EQ(nullptr, selection_controller->selected_result());
 
   // Tab traversal continues with app list folder items.
@@ -1161,7 +1159,7 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInHalfState) {
     forward_view_list.push_back(list_view->GetResultViewAt(i));
 
   contents_view()
-      ->search_results_page_view()
+      ->search_result_page_view()
       ->result_selection_controller()
       ->ResetSelection(nullptr, false);
 
@@ -1435,7 +1433,7 @@ TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
 
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
   EXPECT_EQ(list_view->GetResultViewAt(0),
-            contents_view()->search_results_page_view()->first_result_view());
+            contents_view()->search_result_page_view()->first_result_view());
   EXPECT_TRUE(list_view->GetResultViewAt(0)->selected());
 
   // Populate both fake list results and tile results.
@@ -1445,13 +1443,11 @@ TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
       GetSearchResultTileItemListView()->tile_views_for_test();
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
   EXPECT_EQ(tile_views[0],
-            contents_view()->search_results_page_view()->first_result_view());
+            contents_view()->search_result_page_view()->first_result_view());
   EXPECT_TRUE(tile_views[0]->selected());
 
   ResultSelectionController* selection_controller =
-      contents_view()
-          ->search_results_page_view()
-          ->result_selection_controller();
+      contents_view()->search_result_page_view()->result_selection_controller();
 
   // Ensures the |ResultSelectionController| selects the correct result
   EXPECT_EQ(selection_controller->selected_result(), tile_views[0]);
@@ -1464,7 +1460,7 @@ TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
   SetUpSearchResults(0, 0);
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
   EXPECT_EQ(nullptr,
-            contents_view()->search_results_page_view()->first_result_view());
+            contents_view()->search_result_page_view()->first_result_view());
 }
 
 // Tests hitting Enter key when focus is on search box.
@@ -2519,13 +2515,13 @@ TEST_F(AppListViewTest, AppsGridVisibilityOnResetForShow) {
 
   contents_view()->ShowEmbeddedAssistantUI(true);
   EXPECT_FALSE(contents_view()->apps_container_view()->GetVisible());
-  EXPECT_FALSE(contents_view()->search_results_page_view()->GetVisible());
+  EXPECT_FALSE(contents_view()->search_result_page_view()->GetVisible());
   EXPECT_TRUE(assistant_page_view()->GetVisible());
 
   view_->OnTabletModeChanged(false);
   Show();
   EXPECT_TRUE(contents_view()->apps_container_view()->GetVisible());
-  EXPECT_FALSE(contents_view()->search_results_page_view()->GetVisible());
+  EXPECT_FALSE(contents_view()->search_result_page_view()->GetVisible());
   EXPECT_FALSE(assistant_page_view()->GetVisible());
 }
 

@@ -45,10 +45,10 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
 
     ContentsView* contents_view =
         app_list_view_->app_list_main_view()->contents_view();
-    view_ = contents_view->search_results_page_view();
-    tile_list_view_ = contents_view->search_results_page_view()
+    view_ = contents_view->search_result_page_view();
+    tile_list_view_ = contents_view->search_result_page_view()
                           ->GetSearchResultTileItemListViewForTest();
-    list_view_ = contents_view->search_results_page_view()
+    list_view_ = contents_view->search_result_page_view()
                      ->GetSearchResultListViewForTest();
   }
   void TearDown() override {
