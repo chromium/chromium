@@ -40,6 +40,7 @@ public class SyncTest {
 
     private static final String TAG = "SyncTest";
 
+    @DisabledTest(message = "https://crbug.com/1197554")
     @Test
     @LargeTest
     @Feature({"Sync"})
