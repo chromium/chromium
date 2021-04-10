@@ -606,12 +606,12 @@ class BASE_EXPORT LogMessage {
  private:
   void Init(const char* file, int line);
 
-  LogSeverity severity_;
+  const LogSeverity severity_;
   std::ostringstream stream_;
   size_t message_start_;  // Offset of the start of the message (past prefix
                           // info).
   // The file and line information passed in to the constructor.
-  const char* file_;
+  const char* const file_;
   const int line_;
 
   // This is useful since the LogMessage class uses a lot of Win32 calls
