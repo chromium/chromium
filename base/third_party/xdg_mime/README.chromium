@@ -10,3 +10,5 @@ Run //base/third_party/xdg_mime/roll.py to update this dependency.
 Patches:
 - 000-have-mmap.patch: enable code guarded with HAVE_MMAP since
   Chrome does not run autoconf.
+- 001-fix-casts-for-cfi.patch: remove casting between function
+  pointer types (!!!)
