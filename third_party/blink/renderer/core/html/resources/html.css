@@ -918,6 +918,10 @@ select:-internal-list-box:focus-visible option:-internal-multi-select-focus {
 
 /* selectmenu */
 
+selectmenu {
+    display: inline-block;
+}
+
 /* TODO(crbug.com/1121840) It's deliberate for now that this provides styles
 for <option> but not other element types with part="option".  Could this
 be a mechanism for allowing authors to specify their own styles for

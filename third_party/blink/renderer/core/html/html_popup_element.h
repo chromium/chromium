@@ -10,7 +10,9 @@
 
 namespace blink {
 
+class ComputedStyle;
 class Document;
+class HTMLSelectMenuElement;
 
 // The HTMLPopupElement implements the <popup> HTML element. The popup element
 // can be used to construct a topmost popup dialog. This feature is still
@@ -36,11 +38,22 @@ class HTMLPopupElement final : public HTMLElement {
 
   static void HandleLightDismiss(const Event&);
 
+  // TODO(crbug.com/1197720): The popup position should be provided by the new
+  // anchored positioning scheme.
+  void SetNeedsRepositioningForSelectMenu(bool flag);
+  bool NeedsRepositioningForSelectMenu() const;
+  void SetOwnerSelectMenuElement(HTMLSelectMenuElement*);
+  ComputedStyle* CustomStyleForLayoutObject(const StyleRecalcContext&) final;
+
   void Trace(Visitor*) const override;
 
  private:
   void ScheduleHideEvent();
   void MarkStyleDirty();
+
+  // TODO(crbug.com/1197720): The popup position should be provided by the new
+  // anchored positioning scheme.
+  void AdjustPopupPositionForSelectMenu(ComputedStyle&);
 
   void PushNewPopupElement(HTMLPopupElement*);
   void PopPopupElement(HTMLPopupElement*);
@@ -50,6 +63,9 @@ class HTMLPopupElement final : public HTMLElement {
 
   bool open_;
   WeakMember<Element> invoker_;
+
+  bool needs_repositioning_for_select_menu_;
+  WeakMember<HTMLSelectMenuElement> owner_select_menu_element_;
 };
 
 }  // namespace blink

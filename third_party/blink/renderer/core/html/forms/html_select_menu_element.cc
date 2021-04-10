@@ -211,7 +211,7 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   auto* listbox_slot = MakeGarbageCollected<HTMLSlotElement>(document);
   listbox_slot->setAttribute(html_names::kNameAttr, kListboxPartName);
 
-  listbox_part_ = MakeGarbageCollected<HTMLPopupElement>(document);
+  SetListboxPart(MakeGarbageCollected<HTMLPopupElement>(document));
   listbox_part_->setAttribute(html_names::kPartAttr, kListboxPartName);
 
   auto* options_slot = MakeGarbageCollected<HTMLSlotElement>(document);
@@ -261,6 +261,7 @@ bool HTMLSelectMenuElement::IsOpen() const {
 
 void HTMLSelectMenuElement::Open() {
   if (listbox_part_ != nullptr && !IsOpen()) {
+    listbox_part_->SetNeedsRepositioningForSelectMenu(true);
     listbox_part_->show();
   }
 }
@@ -269,6 +270,18 @@ void HTMLSelectMenuElement::Close() {
   if (listbox_part_ != nullptr && IsOpen()) {
     listbox_part_->hide();
   }
+}
+
+void HTMLSelectMenuElement::SetListboxPart(HTMLPopupElement* listbox_part) {
+  if (listbox_part_ == listbox_part)
+    return;
+
+  if (listbox_part_) {
+    listbox_part_->SetOwnerSelectMenuElement(nullptr);
+    listbox_part_->SetNeedsRepositioningForSelectMenu(false);
+  }
+  listbox_part_ = listbox_part;
+  listbox_part_->SetOwnerSelectMenuElement(this);
 }
 
 bool HTMLSelectMenuElement::IsValidButtonPart(const Element* part,
@@ -421,7 +434,7 @@ void HTMLSelectMenuElement::ListboxPartInserted(Element* new_listbox_part) {
 
   // TODO(crbug.com/1191121) Decide which part gets controller code when there
   // are multiple parts available.
-  listbox_part_ = DynamicTo<HTMLPopupElement>(new_listbox_part);
+  SetListboxPart(DynamicTo<HTMLPopupElement>(new_listbox_part));
   // TODO(crbug.com/1121840) Should the current option parts be revalidated?
 }
 
@@ -447,7 +460,7 @@ void HTMLSelectMenuElement::ListboxPartRemoved(Element* listbox_part) {
     }
   }
 
-  listbox_part_ = DynamicTo<HTMLPopupElement>(new_listbox_part);
+  SetListboxPart(DynamicTo<HTMLPopupElement>(new_listbox_part));
   // TODO(crbug.com/1121840) Should the current option parts be revalidated?
 }
 

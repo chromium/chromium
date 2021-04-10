@@ -60,6 +60,8 @@ class HTMLSelectMenuElement final : public HTMLElement {
   bool IsValidListboxPart(const Element* part, bool show_warning) const;
   bool IsValidOptionPart(const Element* part, bool show_warning) const;
 
+  void SetListboxPart(HTMLPopupElement* listbox_part);
+
   class ButtonPartEventListener : public NativeEventListener {
    public:
     explicit ButtonPartEventListener(HTMLSelectMenuElement* select_menu_element)
