@@ -272,6 +272,11 @@
              "--enable-use-zoom-for-dsf=false"]
   },
   {
+    "prefix": "jxl-enabled",
+    "bases": ["http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js"],
+    "args": ["--enable-features=JXL"]
+  },
+  {
     "prefix": "scalefactor150",
     "bases": ["fast/events/synthetic-events",
               "fast/hidpi/static"],

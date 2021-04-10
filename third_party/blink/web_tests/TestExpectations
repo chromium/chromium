@@ -4711,6 +4711,9 @@ crbug.com/1194557 storage/indexeddb/shared-array-buffer-throws.html [ Failure Ti
 crbug.com/1194557 virtual/shared_array_buffer_on_desktop/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Timeout ]
 crbug.com/1194557 webaudio/dom-exceptions.html [ Failure Timeout ]
 
+# This test passes only when the JXL feature is enabled.
+crbug.com/1161994 http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js [ Pass Failure ]
+
 crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success-and-failure.html [ Timeout ]
 crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success.html [ Timeout ]
 

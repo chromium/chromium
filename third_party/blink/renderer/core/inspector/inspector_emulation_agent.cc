@@ -749,6 +749,7 @@ protocol::Response InspectorEmulationAgent::setDisabledImageTypes(
   namespace DisabledImageTypeEnum = protocol::Emulation::DisabledImageTypeEnum;
   for (protocol::Emulation::DisabledImageType type : *disabled_types) {
     if (DisabledImageTypeEnum::Avif == type ||
+        DisabledImageTypeEnum::Jxl == type ||
         DisabledImageTypeEnum::Webp == type) {
       disabled_image_types_.Set(prefix + type, true);
       continue;
