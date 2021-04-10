@@ -1143,7 +1143,7 @@ class PCScanTask::ScanLoop final {
       const __m128i maybe_ptrs =
           _mm_loadu_si128(reinterpret_cast<__m128i*>(payload));
       const __m128i vand = _mm_and_si128(maybe_ptrs, cage_mask);
-      const __m128d vcmp = _mm_cmpeq_epi64(vand, vbase);
+      const __m128i vcmp = _mm_cmpeq_epi64(vand, vbase);
       const int mask = _mm_movemask_pd(_mm_castsi128_pd(vcmp));
       if (LIKELY(!mask))
         continue;
@@ -1153,15 +1153,14 @@ class PCScanTask::ScanLoop final {
       if (mask & 0b01) {
         quarantine_size +=
             pcscan_task_.TryMarkObjectInNormalBuckets<GigaCageLookupPolicy>(
-                _mm_cvtsi128_si64(_mm_castpd_si128(maybe_ptrs)));
+                _mm_cvtsi128_si64(maybe_ptrs));
       }
       if (mask & 0b10) {
         // Extraction intrinsics for qwords are only supported in SSE4.1, so
         // instead we reshuffle dwords with pshufd. The mask is used to move the
         // 4th and 3rd dwords into the second and first position.
         static constexpr int kSecondWordMask = (3 << 2) | (2 << 0);
-        const __m128i shuffled =
-            _mm_shuffle_epi32(_mm_castpd_si128(maybe_ptrs), kSecondWordMask);
+        const __m128i shuffled = _mm_shuffle_epi32(maybe_ptrs, kSecondWordMask);
         quarantine_size +=
             pcscan_task_.TryMarkObjectInNormalBuckets<GigaCageLookupPolicy>(
                 _mm_cvtsi128_si64(shuffled));
