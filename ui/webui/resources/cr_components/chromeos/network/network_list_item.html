@@ -13,13 +13,14 @@
 <link rel="import" href="../../../html/i18n_behavior.html">
 <link rel="import" href="../../../html/cr/ui/focus_row_behavior.html">
 <link rel="import" href="cr_policy_network_behavior_mojo.html">
+<link rel="import" href="mojo_interface_provider.html">
 <link rel="import" href="network_icon.html">
 <link rel="import" href="network_list_types.html">
 <link rel="import" href="onc_mojo.html">
 
 <dom-module id="network-list-item">
   <template>
-    <style include="cr-shared-style iron-flex">
+    <style include="cr-shared-style internet-shared iron-flex">
       :host {
         display: inline-flex;
         outline: none;
@@ -50,7 +51,9 @@
       :host([disabled_]) #networkStateText,
       :host([disabled_]) #divText,
       :host([is-e-sim-pending-profile_]) #divText,
-      :host([is-e-sim-pending-profile_]) #divIcon {
+      :host([is-e-sim-pending-profile_]) #divIcon,
+      :host([is-p-sim-unactivated-network_]) #divText,
+      :host([is-p-sim-unactivated-network_]) #networkIconContainer {
         opacity: var(--network-list-item-disabled-opacity);
       }
 
@@ -115,6 +118,10 @@
         margin-inline-end: 16px;
         width: 20px;
       }
+
+      .separator {
+        margin: 0 0 0 32px;
+      }
     </style>
     <div id="wrapper" focus-row-container
          class="layout horizontal center flex">
@@ -163,12 +170,22 @@
               networkState.source)]]">
           </cr-policy-indicator>
         </template>
+        <!-- This can only be shown if isUpdatedCellularUiEnabled_ is enabled. -->
+        <template is="dom-if" if="[[isPSimUnactivatedNetwork_]]" restamp>
+          <!-- TODO(crbug.com/1196507) Add on-click listener to button-->
+          <cr-button id="activateButton"
+              aria-label$="[[getActivateBtnA11yLabel_(item)]]"
+              disabled="[[disabled_]]">
+            [[i18n('networkListItemActivate')]]
+          </cr-button>
+          <div class="separator"></div>
+        </template>
         <template is="dom-if"
             if="[[isSubpageButtonVisible_(networkState, showButtons, disabled_,
-              networkState.typeState.cellular.simLocked)]]" restamp>
+              networkState.typeState.cellular.simLocked, isPSimUnactivatedNetwork_)]]" restamp>
           <div>
             <cr-icon-button class="subpage-arrow"
-                id="subpage-button"
+                id="subpageButton"
                 on-click="onSubpageArrowClick_"
                 tabindex$="[[tabindex]]"
                 aria-label$="[[buttonLabel]]"

@@ -40,6 +40,11 @@ suite('CellularNetworksList', function() {
     settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
   });
 
+  teardown(function() {
+    cellularNetworkList.remove();
+    cellularNetworkList = null;
+  });
+
   function init() {
     cellularNetworkList = document.createElement('cellular-networks-list');
     // iron-list will not create list items if the container of the list is of
@@ -50,10 +55,14 @@ suite('CellularNetworksList', function() {
     Polymer.dom.flush();
   }
 
-  function setNetworksForTest(type, networks) {
+  function setManagedPropertiesForTest(type, properties) {
     mojoApi_.resetForTest();
     mojoApi_.setNetworkTypeEnabledState(type, true);
-    mojoApi_.addNetworksForTest(networks);
+    const networks = [];
+    for (let i = 0; i < properties.length; i++) {
+      mojoApi_.setManagedPropertiesForTest(properties[i]);
+      networks.push(OncMojo.managedPropertiesToNetworkState(properties[i]));
+    }
     cellularNetworkList.cellularDeviceState =
         mojoApi_.getDeviceStateForTest(type);
     cellularNetworkList.networks = networks;
@@ -82,19 +91,23 @@ suite('CellularNetworksList', function() {
     browserProxy.setInstantTetheringStateForTest(
         settings.MultiDeviceFeatureState.ENABLED_BY_USER);
 
-    const eSimNetwork1 = OncMojo.getDefaultNetworkState(
+    const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
         mojom.NetworkType.kCellular, 'cellular_esim1');
-    eSimNetwork1.typeState.cellular.eid = '11111111111111111111111111111111';
-    const eSimNetwork2 = OncMojo.getDefaultNetworkState(
+    eSimNetwork1.typeProperties.cellular.eid =
+        '11111111111111111111111111111111';
+    const eSimNetwork2 = OncMojo.getDefaultManagedProperties(
         mojom.NetworkType.kCellular, 'cellular_esim2');
-    eSimNetwork2.typeState.cellular.eid = '22222222222222222222222222222222';
-    setNetworksForTest(mojom.NetworkType.kCellular, [
-      OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular1'),
-      OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular2'),
+    eSimNetwork2.typeProperties.cellular.eid =
+        '22222222222222222222222222222222';
+    setManagedPropertiesForTest(mojom.NetworkType.kCellular, [
+      OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kCellular, 'cellular1'),
+      OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kCellular, 'cellular2'),
       eSimNetwork1,
       eSimNetwork2,
-      OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
-      OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether2'),
+      OncMojo.getDefaultManagedProperties(mojom.NetworkType.kTether, 'tether1'),
+      OncMojo.getDefaultManagedProperties(mojom.NetworkType.kTether, 'tether2'),
     ]);
 
     eSimManagerRemote.addEuiccForTest(2);
@@ -182,10 +195,10 @@ suite('CellularNetworksList', function() {
   });
 
   test('Hide esim section when no EUICC is found', async () => {
-    setNetworksForTest(mojom.NetworkType.kCellular, [
-      OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
-    ]);
     init();
+    setManagedPropertiesForTest(mojom.NetworkType.kCellular, [
+      OncMojo.getDefaultManagedProperties(mojom.NetworkType.kTether, 'tether1'),
+    ]);
     Polymer.dom.flush();
     await flushAsync();
     const esimNetworkList = cellularNetworkList.$$('#esimNetworkList');
@@ -195,8 +208,8 @@ suite('CellularNetworksList', function() {
 
   test('Hide pSIM section when no pSIM slots', async () => {
     init();
-    setNetworksForTest(mojom.NetworkType.kCellular, [
-      OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
+    setManagedPropertiesForTest(mojom.NetworkType.kCellular, [
+      OncMojo.getDefaultManagedProperties(mojom.NetworkType.kTether, 'tether1'),
     ]);
     await flushAsync();
     assertFalse(!!cellularNetworkList.$$('#pSimNoNetworkFound'));

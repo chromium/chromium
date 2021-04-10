@@ -712,6 +712,8 @@
             cellularProperties.roamingState === 'Roaming';
         networkState.typeState.cellular.signalStrength =
             cellularProperties.signalStrength;
+        networkState.typeState.cellular.simLocked =
+            cellularProperties.simLocked;
         break;
       case mojom.NetworkType.kEthernet:
         networkState.typeState.ethernet.authentication =
