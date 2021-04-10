@@ -199,7 +199,9 @@ test("media_unittests") {
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/audio_capabilities.test-cmx",
 
-      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      # TODO(crbug.com/1185811): Figure out why
+      # PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture
+      # crashes without "deprecated-ambient-replace-as-executable".
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",
 
       "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
