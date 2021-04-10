@@ -40,9 +40,8 @@
 
   /**
    * Handles backward navigation within subpage.
-   * @returns {boolean} true if backward navigation was handled.
    */
-  attemptBackwardNavigation() {
+  navigateBackward() {
     assertNotReached();
   },
 };

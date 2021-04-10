@@ -404,7 +404,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
       confirmationCodePage.$$('#confirmationCode').value = 'CONFIRMATION_CODE';
 
-      assertTrue(eSimPage.attemptBackwardNavigation());
+      eSimPage.navigateBackward();
       await flushAsync();
 
       // Should now be at the activation code page.
@@ -413,10 +413,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
       assertEquals(
           activationCodePage.$$('#activationCode').value, 'ACTIVATION_CODE');
-
-      // Navigating backwards should return false since we're at the beginning.
-      assertFalse(eSimPage.attemptBackwardNavigation());
-      await flushAsync();
 
       endFlowAndVerifyResult(
           ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
@@ -529,10 +525,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
       confirmationCodePage.$$('#confirmationCode').value = 'CONFIRMATION_CODE';
 
-      // Navigating backwards should return false since we're at the beginning.
-      assertFalse(eSimPage.attemptBackwardNavigation());
-      await flushAsync();
-
       endFlowAndVerifyResult(
           ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
     });
@@ -632,7 +624,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           assertFalse(focusDefaultButtonEventFired);
 
           // Simulate pressing 'Backward'.
-          assertTrue(eSimPage.attemptBackwardNavigation());
+          eSimPage.navigateBackward();
           await flushAsync();
 
           assertActivationCodePage(
@@ -643,17 +635,13 @@ suite('CrComponentsEsimFlowUiTest', function() {
               activationCodePage.$$('#activationCode').value,
               'ACTIVATION_CODE');
 
-          assertTrue(eSimPage.attemptBackwardNavigation());
+          eSimPage.navigateBackward();
           await flushAsync();
 
           assertProfileDiscoveryPage();
           assertFocusDefaultButtonEventFired();
           assertEquals(
               eSimPage.forwardButtonLabel, 'Skip & Set up new profile');
-
-          // Navigating backwards should return false since we're at the
-          // beginning.
-          assertFalse(eSimPage.attemptBackwardNavigation());
 
           endFlowAndVerifyResult(
               ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
@@ -731,15 +719,11 @@ suite('CrComponentsEsimFlowUiTest', function() {
           confirmationCodePage.$$('#confirmationCode').value =
               'CONFIRMATION_CODE';
 
-          assertTrue(eSimPage.attemptBackwardNavigation());
+          eSimPage.navigateBackward();
           await flushAsync();
 
           assertProfileDiscoveryPage();
           assertEquals(eSimPage.forwardButtonLabel, 'Next');
-
-          // Navigating backwards should return false since we're at the
-          // beginning.
-          assertFalse(eSimPage.attemptBackwardNavigation());
 
           endFlowAndVerifyResult(
               ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);

@@ -602,29 +602,29 @@ cr.define('cellular_setup', function() {
       }
     },
 
-    /**
-     * @returns {boolean} true if backward navigation was handled
-     * SubflowBehavior override
-     */
-    attemptBackwardNavigation() {
+    /** SubflowBehavior override */
+    navigateBackward() {
       if ((this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY ||
            this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_READY) &&
           this.pendingProfiles_.length > 1) {
         this.state_ = ESimUiState.PROFILE_SELECTION;
-        return true;
-      } else if (
-          this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY ||
+        return;
+      }
+
+      if (this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY ||
           this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_READY) {
         if (this.activationCode_) {
           this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY_READY;
+          return;
         } else if (this.pendingProfiles_.length > 1) {
           this.state_ = ESimUiState.PROFILE_SELECTION;
-        } else {
-          return false;
+          return;
         }
-        return true;
       }
-      return false;
+      console.error(
+          'Navigate backward faled for : ' + this.state_ +
+          ' this state does not support backward navigation.');
+      assertNotReached();
     },
 
     /** @private */

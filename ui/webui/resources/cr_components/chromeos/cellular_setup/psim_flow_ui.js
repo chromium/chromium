@@ -329,14 +329,6 @@ cr.define('cellularSetup', function() {
     },
 
     /**
-     * @returns {boolean} true if backward navigation was handled
-     */
-    attemptBackwardNavigation() {
-      // Back navigation for pSIM flow always goes back to selection page
-      return false;
-    },
-
-    /**
      * Sets the function used to initiate a timer.
      * @param {function(Function, number)}
      *     timerFunction
