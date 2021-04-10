@@ -36,6 +36,7 @@ from collections import OrderedDict
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.models import typ_types
+from typ import expectations_parser
 
 ResultType = typ_types.ResultType
 
@@ -317,6 +318,12 @@ class TestExpectations(object):
             # results will show an expected per test field with PASS and whatever the
             # expected results in the second file are.
             if not expected_results.is_default_pass:
+                if expected_results.conflict_resolution == \
+                        expectations_parser.ConflictResolutionTypes.OVERRIDE:
+                    results.clear()
+                    reasons.clear()
+                    is_slow_test = False
+                    trailing_comments = ''
                 results.update(expected_results.results)
             is_slow_test |= expected_results.is_slow_test
             reasons.update(expected_results.reason.split())
