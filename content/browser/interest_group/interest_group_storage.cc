@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/util/values/values_util.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"

@@ -55,6 +55,7 @@
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/gpu/shader_cache_factory.h"
+#include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/native_io/native_io_context_impl.h"
 #include "content/browser/network_context_client_base_impl.h"
@@ -914,6 +915,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       storage::SpecialStoragePolicy* special_storage_policy,
       storage::FileSystemContext* filesystem_context,
       network::mojom::CookieManager* cookie_manager,
+      InterestGroupManager* interest_group_manager,
       ConversionManagerImpl* conversion_manager,
       bool perform_storage_cleanup,
       const base::Time begin,
@@ -1295,6 +1297,11 @@ void StoragePartitionImpl::Initialize(
         this, path, special_storage_policy_);
   }
 
+  if (base::FeatureList::IsEnabled(features::kFledgeInterestGroups)) {
+    interest_group_manager_ =
+        std::make_unique<InterestGroupManager>(path, is_in_memory_);
+  }
+
   GeneratedCodeCacheSettings settings =
       GetContentClient()->browser()->GetGeneratedCodeCacheSettings(
           browser_context_);
@@ -1587,6 +1594,11 @@ ConversionManagerImpl* StoragePartitionImpl::GetConversionManager() {
 FontAccessManagerImpl* StoragePartitionImpl::GetFontAccessManager() {
   DCHECK(initialized_);
   return font_access_manager_.get();
+}
+
+InterestGroupManager* StoragePartitionImpl::GetInterestGroupStorage() {
+  DCHECK(initialized_);
+  return interest_group_manager_.get();
 }
 
 PrerenderHostRegistry* StoragePartitionImpl::GetPrerenderHostRegistry() {
@@ -1977,7 +1989,8 @@ void StoragePartitionImpl::ClearDataImpl(
       std::move(cookie_deletion_filter), GetPath(), dom_storage_context_.get(),
       quota_manager_.get(), special_storage_policy_.get(),
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
-      conversion_manager_.get(), perform_storage_cleanup, begin, end);
+      interest_group_manager_.get(), conversion_manager_.get(),
+      perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2168,6 +2181,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     storage::SpecialStoragePolicy* special_storage_policy,
     storage::FileSystemContext* filesystem_context,
     network::mojom::CookieManager* cookie_manager,
+    InterestGroupManager* interest_group_manager,
     ConversionManagerImpl* conversion_manager,
     bool perform_storage_cleanup,
     const base::Time begin,
@@ -2211,6 +2225,11 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
             // being called.
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                 CreateTaskCompletionClosure(TracingDataType::kCookies))));
+
+    if (interest_group_manager) {
+      interest_group_manager->DeleteInterestGroupData(
+          url::Origin::Create(storage_origin));
+    }
   }
 
   if (remove_mask_ & REMOVE_DATA_MASK_INDEXEDDB ||

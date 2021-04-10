@@ -33,6 +33,7 @@
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_test_utils.h"
 #include "content/browser/gpu/shader_cache_factory.h"
+#include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -146,7 +147,7 @@ class AwaitCompletionHelper {
 class RemoveCookieTester {
  public:
   explicit RemoveCookieTester(StoragePartition* storage_partition)
-      : get_cookie_success_(false), storage_partition_(storage_partition) {}
+      : storage_partition_(storage_partition) {}
 
   // Returns true, if the given cookie exists in the cookie store.
   bool ContainsCookie(const url::Origin& origin) {
@@ -196,6 +197,48 @@ class RemoveCookieTester {
   StoragePartition* storage_partition_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveCookieTester);
+};
+
+class RemoveInterestGroupTester {
+ public:
+  explicit RemoveInterestGroupTester(StoragePartitionImpl* storage_partition)
+      : storage_partition_(storage_partition) {}
+
+  // Returns true, if the given interest group owner has any interest groups in
+  // InterestGroupStorage.
+  bool ContainsInterestGroupOwner(const url::Origin& origin) {
+    get_interest_group_success_ = false;
+    EXPECT_TRUE(storage_partition_->GetInterestGroupStorage());
+    storage_partition_->GetInterestGroupStorage()->GetInterestGroupsForOwner(
+        origin,
+        base::BindOnce(&RemoveInterestGroupTester::GetInterestGroupsCallback,
+                       base::Unretained(this)));
+    await_completion_.BlockUntilNotified();
+    return get_interest_group_success_;
+  }
+
+  void AddInterestGroup(const url::Origin& origin) {
+    EXPECT_TRUE(storage_partition_->GetInterestGroupStorage());
+    blink::mojom::InterestGroupPtr group = blink::mojom::InterestGroup::New();
+    group->owner = origin;
+    group->name = "Name";
+    group->expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+    storage_partition_->GetInterestGroupStorage()->JoinInterestGroup(
+        std::move(group));
+  }
+
+ private:
+  void GetInterestGroupsCallback(
+      std::vector<::auction_worklet::mojom::BiddingInterestGroupPtr> groups) {
+    get_interest_group_success_ = groups.size() > 0;
+    await_completion_.Notify();
+  }
+
+  bool get_interest_group_success_ = false;
+  AwaitCompletionHelper await_completion_;
+  StoragePartitionImpl* storage_partition_;
+
+  DISALLOW_COPY_AND_ASSIGN(RemoveInterestGroupTester);
 };
 
 class RemoveLocalStorageTester {
@@ -770,7 +813,9 @@ class StoragePartitionImplTest : public testing::Test {
     // Configures the Conversion API to run in memory to speed up it's
     // initialization and avoid timeouts. See https://crbug.com/1080764.
     ConversionManagerImpl::RunInMemoryForTesting();
-    feature_list_.InitAndEnableFeature(features::kConversionMeasurement);
+    feature_list_.InitWithFeatures(
+        {features::kConversionMeasurement, features::kFledgeInterestGroups},
+        {});
   }
 
   storage::MockQuotaManager* GetMockManager() {
@@ -1296,6 +1341,25 @@ TEST_F(StoragePartitionImplTest, RemoveCookieWithDeleteInfo) {
                                 CookieDeletionFilter::New(), &run_loop2));
   run_loop2.RunUntilIdle();
   EXPECT_FALSE(tester.ContainsCookie(kOrigin));
+}
+
+TEST_F(StoragePartitionImplTest, RemoveInterestGroupForever) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("http://host1:1/"));
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      BrowserContext::GetDefaultStoragePartition(browser_context()));
+
+  RemoveInterestGroupTester tester(partition);
+  tester.AddInterestGroup(kOrigin);
+  ASSERT_TRUE(tester.ContainsInterestGroupOwner(kOrigin));
+
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ClearCookies, partition, base::Time(),
+                                base::Time::Max(), &run_loop));
+  run_loop.Run();
+
+  EXPECT_FALSE(tester.ContainsInterestGroupOwner(kOrigin));
 }
 
 TEST_F(StoragePartitionImplTest, RemoveUnprotectedLocalStorageForever) {

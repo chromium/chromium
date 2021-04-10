@@ -5,6 +5,8 @@
 #include "content/browser/interest_group/interest_group_service_impl.h"
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 
@@ -12,18 +14,18 @@ namespace content {
 
 namespace {
 
-template <typename T>
-T* DcheckNotNullAndReturn(T* ptr) {
-  DCHECK_NE(nullptr, ptr);
-  return ptr;
-}
+constexpr base::TimeDelta kMaxExpiry = base::TimeDelta::FromDays(30);
 
 }  // namespace
 
 InterestGroupServiceImpl::InterestGroupServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::RestrictedInterestGroupStore> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)) {}
+    : FrameServiceBase(render_frame_host, std::move(receiver)),
+      interest_group_manager_(*static_cast<StoragePartitionImpl*>(
+                                   BrowserContext::GetDefaultStoragePartition(
+                                       render_frame_host->GetBrowserContext()))
+                                   ->GetInterestGroupStorage()) {}
 
 // static
 void InterestGroupServiceImpl::CreateMojoService(
@@ -39,12 +41,31 @@ void InterestGroupServiceImpl::CreateMojoService(
 
 void InterestGroupServiceImpl::JoinInterestGroup(
     blink::mojom::InterestGroupPtr group) {
-  // TODO(crbug.com/1186444): Pass |group| to interest group store service.
+  if (group->owner != origin())
+    return;
+  if (group->bidding_url &&
+      url::Origin::Create(*group->bidding_url) != origin()) {
+    return;
+  }
+  if (group->update_url &&
+      url::Origin::Create(*group->update_url) != origin()) {
+    return;
+  }
+  if (group->trusted_bidding_signals_url &&
+      url::Origin::Create(*group->trusted_bidding_signals_url) != origin()) {
+    return;
+  }
+  base::Time max_expiry = base::Time::Now() + kMaxExpiry;
+  if (group->expiry > max_expiry)
+    group->expiry = max_expiry;
+  interest_group_manager_.JoinInterestGroup(std::move(group));
 }
 
 void InterestGroupServiceImpl::LeaveInterestGroup(const url::Origin& owner,
                                                   const std::string& name) {
-  // TODO(crbug.com/1186444): Pass |group| to interest group store service.
+  if (owner != origin())
+    return;
+  interest_group_manager_.LeaveInterestGroup(owner, name);
 }
 
 InterestGroupServiceImpl::~InterestGroupServiceImpl() = default;
