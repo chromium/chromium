@@ -403,6 +403,7 @@ void GlassBrowserFrameView::Layout() {
   LayoutCaptionButtons();
   LayoutTitleBar();
   LayoutClientView();
+  NonClientFrameView::Layout();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

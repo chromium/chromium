@@ -391,8 +391,20 @@ void BubbleFrameView::Layout() {
     header_bottom = header_view_->bounds().bottom();
   }
 
-  if (bounds.IsEmpty())
+  // Only account for footnote_container_'s height if it's visible, because
+  // content_margins_ adds extra padding even if all child views are invisible.
+  if (footnote_container_ && footnote_container_->GetVisible()) {
+    const int width = contents_bounds.width();
+    const int height = footnote_container_->GetHeightForWidth(width);
+    footnote_container_->SetBounds(
+        contents_bounds.x(), contents_bounds.bottom() - height, width, height);
+  }
+
+  NonClientFrameView::Layout();
+
+  if (bounds.IsEmpty()) {
     return;
+  }
 
   // The buttons are positioned somewhat closer to the edge of the bubble.
   const int close_margin =
@@ -442,15 +454,6 @@ void BubbleFrameView::Layout() {
 
   title_icon_->SetBounds(bounds.x(), bounds.y(), title_icon_pref_size.width(),
                          title_height);
-
-  // Only account for footnote_container_'s height if it's visible, because
-  // content_margins_ adds extra padding even if all child views are invisible.
-  if (footnote_container_ && footnote_container_->GetVisible()) {
-    const int width = contents_bounds.width();
-    const int height = footnote_container_->GetHeightForWidth(width);
-    footnote_container_->SetBounds(
-        contents_bounds.x(), contents_bounds.bottom() - height, width, height);
-  }
 }
 
 void BubbleFrameView::OnThemeChanged() {

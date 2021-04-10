@@ -111,8 +111,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
                   ShellSurfaceBase* shell_surface,
                   bool enabled)
       : NonClientFrameViewAsh(widget), shell_surface_(shell_surface) {
-    SetEnabled(enabled);
-    SetVisible(enabled);
+    SetFrameEnabled(enabled);
     if (!enabled)
       NonClientFrameViewAsh::SetShouldPaintHeader(false);
   }
@@ -121,7 +120,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
 
   // Overridden from ash::NonClientFrameViewAsh:
   void SetShouldPaintHeader(bool paint) override {
-    if (GetVisible()) {
+    if (GetFrameEnabled()) {
       NonClientFrameViewAsh::SetShouldPaintHeader(paint);
       return;
     }
@@ -129,46 +128,46 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
 
   // Overridden from views::NonClientFrameView:
   gfx::Rect GetBoundsForClientView() const override {
-    if (GetVisible())
+    if (GetFrameEnabled())
       return ash::NonClientFrameViewAsh::GetBoundsForClientView();
     return bounds();
   }
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override {
-    if (GetVisible()) {
+    if (GetFrameEnabled()) {
       return ash::NonClientFrameViewAsh::GetWindowBoundsForClientBounds(
           client_bounds);
     }
     return client_bounds;
   }
   int NonClientHitTest(const gfx::Point& point) override {
-    if (GetVisible() || shell_surface_->server_side_resize())
+    if (GetFrameEnabled() || shell_surface_->server_side_resize())
       return ash::NonClientFrameViewAsh::NonClientHitTest(point);
     return GetWidget()->client_view()->NonClientHitTest(point);
   }
   void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {
-    if (GetVisible())
+    if (GetFrameEnabled())
       return ash::NonClientFrameViewAsh::GetWindowMask(size, window_mask);
   }
   void ResetWindowControls() override {
-    if (GetVisible())
+    if (GetFrameEnabled())
       return ash::NonClientFrameViewAsh::ResetWindowControls();
   }
   void UpdateWindowIcon() override {
-    if (GetVisible())
+    if (GetFrameEnabled())
       return ash::NonClientFrameViewAsh::ResetWindowControls();
   }
   void UpdateWindowTitle() override {
-    if (GetVisible())
+    if (GetFrameEnabled())
       return ash::NonClientFrameViewAsh::UpdateWindowTitle();
   }
   void SizeConstraintsChanged() override {
-    if (GetVisible())
+    if (GetFrameEnabled())
       return ash::NonClientFrameViewAsh::SizeConstraintsChanged();
   }
   gfx::Size GetMinimumSize() const override {
     gfx::Size minimum_size = shell_surface_->GetMinimumSize();
-    if (GetVisible()) {
+    if (GetFrameEnabled()) {
       return ash::NonClientFrameViewAsh::GetWindowBoundsForClientBounds(
                  gfx::Rect(minimum_size))
           .size();
@@ -177,7 +176,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
   }
   gfx::Size GetMaximumSize() const override {
     gfx::Size maximum_size = shell_surface_->GetMaximumSize();
-    if (GetVisible() && !maximum_size.IsEmpty()) {
+    if (GetFrameEnabled() && !maximum_size.IsEmpty()) {
       return ash::NonClientFrameViewAsh::GetWindowBoundsForClientBounds(
                  gfx::Rect(maximum_size))
           .size();
@@ -710,11 +709,10 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
 
   CustomFrameView* frame_view =
       static_cast<CustomFrameView*>(widget_->non_client_view()->frame_view());
-  if (frame_view->GetEnabled() == frame_enabled())
+  if (frame_view->GetFrameEnabled() == frame_enabled())
     return;
 
-  frame_view->SetEnabled(frame_enabled());
-  frame_view->SetVisible(frame_enabled());
+  frame_view->SetFrameEnabled(frame_enabled());
   frame_view->SetShouldPaintHeader(frame_enabled());
   widget_->GetRootView()->Layout();
   // TODO(oshima): We probably should wait applying these if the

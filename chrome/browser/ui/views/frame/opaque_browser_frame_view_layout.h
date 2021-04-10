@@ -217,6 +217,8 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;
 
+  views::ClientView* client_view_ = nullptr;
+
   DISALLOW_COPY_AND_ASSIGN(OpaqueBrowserFrameViewLayout);
 };
 

@@ -15,9 +15,11 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/view_targeter_delegate.h"
 
 namespace views {
 class View;
+class ViewTargeterDelegate;
 class Widget;
 }  // namespace views
 
@@ -29,7 +31,8 @@ class WebAppToolbarButtonContainer;
 
 // A container for web app buttons in the title bar.
 class WebAppFrameToolbarView : public views::AccessiblePaneView,
-                               public ToolbarButtonProvider {
+                               public ToolbarButtonProvider,
+                               public views::ViewTargeterDelegate {
  public:
   METADATA_HEADER(WebAppFrameToolbarView);
   WebAppFrameToolbarView(views::Widget* widget, BrowserView* browser_view);
@@ -70,6 +73,10 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
+
+  // views::ViewTargeterDelegate
+  bool DoesIntersectRect(const View* target,
+                         const gfx::Rect& rect) const override;
 
   WebAppNavigationButtonContainer* get_left_container_for_testing() {
     return left_container_;

@@ -18,5 +18,5 @@ declare_args() {
 
   # This may be set by Chromium packagers who do not wish to use the bundled
   # wayland scanner.
-  use_system_wayland_scanner = (host_toolchain == default_toolchain && is_msan)
+  use_system_wayland_scanner = host_toolchain == default_toolchain && is_msan
 }

@@ -327,16 +327,16 @@ gfx::Size NonClientFrameViewAsh::CalculatePreferredSize() const {
 }
 
 void NonClientFrameViewAsh::Layout() {
-  if (!GetEnabled())
-    return;
   views::NonClientFrameView::Layout();
+  if (!GetFrameEnabled())
+    return;
   aura::Window* frame_window = frame_->GetNativeWindow();
   frame_window->SetProperty(aura::client::kTopViewInset,
                             NonClientTopBorderHeight());
 }
 
 gfx::Size NonClientFrameViewAsh::GetMinimumSize() const {
-  if (!GetEnabled())
+  if (!GetFrameEnabled())
     return gfx::Size();
 
   gfx::Size min_client_view_size(frame_->client_view()->GetMinimumSize());
@@ -358,13 +358,6 @@ gfx::Size NonClientFrameViewAsh::GetMaximumSize() const {
   return gfx::Size(width, height);
 }
 
-void NonClientFrameViewAsh::SetVisible(bool visible) {
-  overlay_view_->SetVisible(visible);
-  views::View::SetVisible(visible);
-  // We need to re-layout so that client view will occupy entire window.
-  InvalidateLayout();
-}
-
 void NonClientFrameViewAsh::SetShouldPaintHeader(bool paint) {
   header_view_->SetShouldPaintHeader(paint);
 }
@@ -372,7 +365,7 @@ void NonClientFrameViewAsh::SetShouldPaintHeader(bool paint) {
 int NonClientFrameViewAsh::NonClientTopBorderHeight() const {
   // The frame should not occupy the window area when it's in fullscreen,
   // not visible or disabled.
-  if (frame_->IsFullscreen() || !GetVisible() || !GetEnabled() ||
+  if (frame_->IsFullscreen() || !GetFrameEnabled() ||
       header_view_->in_immersive_mode()) {
     return 0;
   }
@@ -395,6 +388,15 @@ SkColor NonClientFrameViewAsh::GetInactiveFrameColorForTest() const {
   return frame_->GetNativeWindow()->GetProperty(kFrameInactiveColorKey);
 }
 
+void NonClientFrameViewAsh::SetFrameEnabled(bool enabled) {
+  if (enabled == frame_enabled_)
+    return;
+
+  frame_enabled_ = enabled;
+  overlay_view_->SetVisible(frame_enabled_);
+  InvalidateLayout();
+}
+
 void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
   // We may end up here before |header_view_| has been added to the Widget.
   if (header_view_->GetWidget()) {
@@ -410,9 +412,18 @@ void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
 bool NonClientFrameViewAsh::DoesIntersectRect(const views::View* target,
                                               const gfx::Rect& rect) const {
   CHECK_EQ(target, this);
-  // NonClientView hit tests the NonClientFrameView first instead of going in
-  // z-order. Return false so that events get to the OverlayView.
-  return false;
+
+  // Give the OverlayView the first chance to handle events.
+  if (frame_enabled_ && overlay_view_->HitTestRect(rect))
+    return false;
+
+  // Handle the event if it's within the bounds of the ClientView.
+  gfx::RectF rect_in_client_view_coords_f(rect);
+  View::ConvertRectToTarget(this, frame_->client_view(),
+                            &rect_in_client_view_coords_f);
+  gfx::Rect rect_in_client_view_coords =
+      gfx::ToEnclosingRect(rect_in_client_view_coords_f);
+  return frame_->client_view()->HitTestRect(rect_in_client_view_coords);
 }
 
 chromeos::FrameCaptionButtonContainerView*

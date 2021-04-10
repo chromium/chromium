@@ -18,6 +18,7 @@
 #include "ui/gfx/font.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/frame_caption_button.h"
 
@@ -606,10 +607,20 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetPreferredSize(
 
 void OpaqueBrowserFrameViewLayout::ViewAdded(views::View* host,
                                              views::View* view) {
+  if (views::IsViewClass<views::ClientView>(view)) {
+    client_view_ = static_cast<views::ClientView*>(view);
+    return;
+  }
+
   SetView(view->GetID(), view);
 }
 
 void OpaqueBrowserFrameViewLayout::ViewRemoved(views::View* host,
                                                views::View* view) {
+  if (views::IsViewClass<views::ClientView>(view)) {
+    client_view_ = nullptr;
+    return;
+  }
+
   SetView(view->GetID(), nullptr);
 }

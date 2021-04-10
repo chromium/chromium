@@ -3049,7 +3049,7 @@ TEST_F('ChromeVoxBackgroundTest', 'ImageAnnotations', function() {
 
 TEST_F('ChromeVoxBackgroundTest', 'VolumeChanges', function() {
   const mockFeedback = this.createMockFeedback();
-  this.runWithLoadedTree(``, function() {
+  this.runWithLoadedTree('<p>test</p>', function() {
     const bounds = ChromeVoxState.instance.getFocusBounds();
     mockFeedback.call(press(KeyCode.VOLUME_UP))
         .expectSpeech('Volume', 'Slider', /\d+%/)

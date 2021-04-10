@@ -1196,7 +1196,6 @@ test("views_unittests") {
     "window/dialog_delegate_unittest.cc",
     "window/frame_caption_button_unittest.cc",
     "window/hit_test_utils_unittest.cc",
-    "window/non_client_view_unittest.cc",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]

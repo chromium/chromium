@@ -115,7 +115,8 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
     ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
 
     widget_ = new Widget;
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     widget_->Init(std::move(params));
 
@@ -127,7 +128,7 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
     label_->SetID(DEFAULT_VIEW_ID);
     button_->AddChildView(label_);
 
-    widget_->GetContentsView()->AddChildView(button_);
+    widget_->GetRootView()->AddChildView(button_);
     widget_->Show();
   }
 
@@ -163,7 +164,7 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   // child Views.
   View::Views SetUpExtraViews() {
     View* parent_view =
-        widget_->GetContentsView()->AddChildView(std::make_unique<View>());
+        widget_->GetRootView()->AddChildView(std::make_unique<View>());
     View::Views views{parent_view};
     for (int i = 0; i < 4; i++)
       views.push_back(parent_view->AddChildView(std::make_unique<View>()));
@@ -223,7 +224,7 @@ class ViewAXPlatformNodeDelegateTableTest
     auto table =
         std::make_unique<TableView>(model_.get(), columns, TEXT_ONLY, true);
     table_ = table.get();
-    widget_->GetContentsView()->AddChildView(
+    widget_->GetRootView()->AddChildView(
         TableView::CreateScrollViewWithTable(std::move(table)));
   }
 
@@ -536,12 +537,12 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
   ViewAXPlatformNodeDelegate* child_view_3 = view_accessibility(extra_views[3]);
   ViewAXPlatformNodeDelegate* child_view_4 = view_accessibility(extra_views[4]);
 
-  EXPECT_EQ(view_accessibility(widget_->GetContentsView())->GetNativeObject(),
+  EXPECT_EQ(view_accessibility(widget_->GetRootView())->GetNativeObject(),
             parent_view->GetParent());
   EXPECT_EQ(4, parent_view->GetChildCount());
 
-  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(3, parent_view->GetIndexInParent());
+  EXPECT_EQ(0, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(1, parent_view->GetIndexInParent());
 
   EXPECT_EQ(child_view_1->GetNativeObject(), parent_view->ChildAtIndex(0));
   EXPECT_EQ(child_view_2->GetNativeObject(), parent_view->ChildAtIndex(1));
@@ -585,8 +586,6 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   // view is added as the next sibling of the already present button view.
   //
   // Widget
-  // ++NonClientView
-  // ++NonClientFrameView
   // ++Button
   // ++++Label
   // 0 = ++ParentView
@@ -596,7 +595,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   // 4 = ++++ChildView4
   View::Views extra_views = SetUpExtraViews();
   ViewAXPlatformNodeDelegate* contents_view =
-      view_accessibility(widget_->GetContentsView());
+      view_accessibility(widget_->GetRootView());
   ViewAXPlatformNodeDelegate* parent_view = view_accessibility(extra_views[0]);
   ViewAXPlatformNodeDelegate* child_view_1 = view_accessibility(extra_views[1]);
   ViewAXPlatformNodeDelegate* child_view_2 = view_accessibility(extra_views[2]);
@@ -610,12 +609,12 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   parent_view->OverrideIsLeaf(true);
   child_view_2->OverrideIsLeaf(true);
 
-  EXPECT_EQ(4, contents_view->GetChildCount());
+  EXPECT_EQ(2, contents_view->GetChildCount());
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
   EXPECT_EQ(0, parent_view->GetChildCount());
 
-  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(3, parent_view->GetIndexInParent());
+  EXPECT_EQ(0, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(1, parent_view->GetIndexInParent());
 
   EXPECT_FALSE(contents_view->IsIgnored());
   EXPECT_FALSE(parent_view->IsIgnored());
@@ -647,12 +646,12 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   // have no effect.
   parent_view->OverrideIsLeaf(false);
 
-  EXPECT_EQ(4, contents_view->GetChildCount());
+  EXPECT_EQ(2, contents_view->GetChildCount());
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
   EXPECT_EQ(4, parent_view->GetChildCount());
 
-  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(3, parent_view->GetIndexInParent());
+  EXPECT_EQ(0, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(1, parent_view->GetIndexInParent());
 
   EXPECT_FALSE(contents_view->IsIgnored());
   EXPECT_FALSE(parent_view->IsIgnored());
@@ -691,8 +690,6 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   // view is added as the next sibling of the already present button view.
   //
   // Widget
-  // ++NonClientView
-  // ++NonClientFrameView
   // ++Button
   // ++++Label
   // 0 = ++ParentView
@@ -702,7 +699,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   // 4 = ++++ChildView4
   View::Views extra_views = SetUpExtraViews();
   ViewAXPlatformNodeDelegate* contents_view =
-      view_accessibility(widget_->GetContentsView());
+      view_accessibility(widget_->GetRootView());
   ViewAXPlatformNodeDelegate* parent_view = view_accessibility(extra_views[0]);
   ViewAXPlatformNodeDelegate* child_view_1 = view_accessibility(extra_views[1]);
   ViewAXPlatformNodeDelegate* child_view_2 = view_accessibility(extra_views[2]);
@@ -716,7 +713,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
   EXPECT_EQ(3, parent_view->GetChildCount());
 
-  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(0, button_accessibility()->GetIndexInParent());
   EXPECT_EQ(-1, parent_view->GetIndexInParent());
 
   EXPECT_EQ(child_view_1->GetNativeObject(), parent_view->ChildAtIndex(0));
@@ -724,17 +721,17 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   EXPECT_EQ(child_view_4->GetNativeObject(), parent_view->ChildAtIndex(2));
 
   EXPECT_EQ(button_accessibility()->GetNativeObject(),
-            contents_view->ChildAtIndex(2));
-  EXPECT_EQ(child_view_1->GetNativeObject(), contents_view->ChildAtIndex(3));
-  EXPECT_EQ(child_view_3->GetNativeObject(), contents_view->ChildAtIndex(4));
-  EXPECT_EQ(child_view_4->GetNativeObject(), contents_view->ChildAtIndex(5));
+            contents_view->ChildAtIndex(0));
+  EXPECT_EQ(child_view_1->GetNativeObject(), contents_view->ChildAtIndex(1));
+  EXPECT_EQ(child_view_3->GetNativeObject(), contents_view->ChildAtIndex(2));
+  EXPECT_EQ(child_view_4->GetNativeObject(), contents_view->ChildAtIndex(3));
 
   EXPECT_EQ(nullptr, parent_view->GetNextSibling());
   EXPECT_EQ(nullptr, parent_view->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_1->GetParent());
   EXPECT_EQ(0, child_view_1->GetChildCount());
-  EXPECT_EQ(3, child_view_1->GetIndexInParent());
+  EXPECT_EQ(1, child_view_1->GetIndexInParent());
   EXPECT_EQ(child_view_3->GetNativeObject(), child_view_1->GetNextSibling());
   EXPECT_EQ(button_accessibility()->GetNativeObject(),
             child_view_1->GetPreviousSibling());
@@ -747,14 +744,14 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_3->GetParent());
   EXPECT_EQ(0, child_view_3->GetChildCount());
-  EXPECT_EQ(4, child_view_3->GetIndexInParent());
+  EXPECT_EQ(2, child_view_3->GetIndexInParent());
   EXPECT_EQ(child_view_4->GetNativeObject(), child_view_3->GetNextSibling());
   EXPECT_EQ(child_view_1->GetNativeObject(),
             child_view_3->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_4->GetParent());
   EXPECT_EQ(0, child_view_4->GetChildCount());
-  EXPECT_EQ(5, child_view_4->GetIndexInParent());
+  EXPECT_EQ(3, child_view_4->GetIndexInParent());
   EXPECT_EQ(nullptr, child_view_4->GetNextSibling());
   EXPECT_EQ(child_view_3->GetNativeObject(),
             child_view_4->GetPreviousSibling());

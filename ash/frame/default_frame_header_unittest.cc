@@ -277,7 +277,7 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
     LayerDestroyedChecker checker(animating_layer);
 
     // Change the view's stacking order should stop the animation.
-    ASSERT_EQ(2u, frame_view_1->children().size());
+    ASSERT_EQ(3u, frame_view_1->children().size());
     frame_view_1->ReorderChildView(extra_view_1, 0);
 
     EXPECT_EQ(

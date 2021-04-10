@@ -29,6 +29,7 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
   DCHECK(browser_view_);
   DCHECK(web_app::AppBrowserController::IsWebApp(browser_view_->browser()));
   SetID(VIEW_ID_WEB_APP_FRAME_TOOLBAR);
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   {
     // TODO(tluk) fix the need for both LayoutInContainer() and a layout
@@ -217,6 +218,24 @@ ToolbarButton* WebAppFrameToolbarView::GetBackButton() {
 
 ReloadButton* WebAppFrameToolbarView::GetReloadButton() {
   return left_container_ ? left_container_->reload_button() : nullptr;
+}
+
+bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
+                                               const gfx::Rect& rect) const {
+  DCHECK_EQ(target, this);
+  if (!views::ViewTargeterDelegate::DoesIntersectRect(this, rect))
+    return false;
+
+  // If the rect is inside the bounds of the center_container, do not claim it.
+  // There is no actionable content in the center_container, and it overlaps
+  // tabs in tabbed PWA windows.
+  gfx::RectF rect_in_center_container_coords_f(rect);
+  View::ConvertRectToTarget(this, center_container_,
+                            &rect_in_center_container_coords_f);
+  gfx::Rect rect_in_client_view_coords =
+      gfx::ToEnclosingRect(rect_in_center_container_coords_f);
+
+  return !center_container_->HitTestRect(rect_in_client_view_coords);
 }
 
 PageActionIconController*

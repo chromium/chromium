@@ -6,6 +6,7 @@
 
 #include "ash/fast_ink/view_tree_host_root_view.h"
 #include "ash/fast_ink/view_tree_host_widget.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/hud_display/graphs_container_view.h"
 #include "ash/hud_display/hud_constants.h"
 #include "ash/hud_display/hud_header_view.h"
@@ -82,12 +83,11 @@ std::unique_ptr<views::ClientView> MakeClientView(views::Widget* widget) {
 }
 
 void InitializeFrameView(views::WidgetDelegate* delegate) {
-  auto* frame_view = delegate->GetWidget()->non_client_view()->frame_view();
+  auto* frame_view = static_cast<NonClientFrameViewAsh*>(
+      delegate->GetWidget()->non_client_view()->frame_view());
   // TODO(oshima): support component type with TYPE_WINDOW_FLAMELESS widget.
-  if (frame_view) {
-    frame_view->SetEnabled(false);
-    frame_view->SetVisible(false);
-  }
+  if (frame_view)
+    frame_view->SetFrameEnabled(false);
 }
 
 }  // namespace

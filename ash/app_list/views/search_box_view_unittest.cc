@@ -92,9 +92,9 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   }
 
   void TearDown() override {
-    view_.reset();
     app_list_view_->GetWidget()->Close();
     widget_->CloseNow();
+    view_.reset();
     views::test::WidgetTest::TearDown();
   }
 

@@ -401,6 +401,27 @@ void BrowserNonClientFrameViewChromeOS::ChildPreferredSizeChanged(
   }
 }
 
+bool BrowserNonClientFrameViewChromeOS::DoesIntersectRect(
+    const views::View* target,
+    const gfx::Rect& rect) const {
+  DCHECK_EQ(target, this);
+  if (!views::ViewTargeterDelegate::DoesIntersectRect(this, rect)) {
+    // |rect| is outside the frame's bounds.
+    return false;
+  }
+
+  bool should_leave_to_top_container = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // In immersive mode, the caption buttons container is reparented to the
+  // TopContainerView and hence |rect| should not be claimed here.  See
+  // BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted().
+  should_leave_to_top_container =
+      browser_view()->immersive_mode_controller()->IsRevealed();
+#endif
+
+  return !should_leave_to_top_container;
+}
+
 SkColor BrowserNonClientFrameViewChromeOS::GetTitleColor() {
   return browser_view()->GetRegularOrGuestSession()
              ? kNormalWindowTitleTextColor
@@ -561,7 +582,13 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
 }
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
-  AddChildViewAt(caption_button_container_, 0);
+  // Ensure the caption button container receives events before the browser view
+  // by placing it higher in the z-order.
+  // [0] - FrameAnimatorView
+  // [1] - BrowserView
+  // [2] - FrameCaptionButtonContainerView
+  const int kCaptionButtonContainerIndex = 2;
+  AddChildViewAt(caption_button_container_, kCaptionButtonContainerIndex);
   if (web_app_frame_toolbar())
     AddChildViewAt(web_app_frame_toolbar(), 0);
   Layout();
