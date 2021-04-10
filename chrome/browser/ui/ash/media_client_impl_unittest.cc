@@ -8,11 +8,22 @@
 
 #include "ash/public/cpp/media_controller.h"
 #include "base/optional.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/media_player_api.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/accelerators/media_keys_listener.h"
+
+// Gmock matchers and actions that are used below.
+using ::testing::AnyOf;
 
 namespace {
 
@@ -132,6 +143,65 @@ class MediaClientTest : public BrowserWithTestWindowTest {
   DISALLOW_COPY_AND_ASSIGN(MediaClientTest);
 };
 
+class MediaClientAppUsingCameraTest : public testing::Test {
+ public:
+  MediaClientAppUsingCameraTest() = default;
+  MediaClientAppUsingCameraTest(const MediaClientAppUsingCameraTest&) = delete;
+  MediaClientAppUsingCameraTest& operator=(
+      const MediaClientAppUsingCameraTest&) = delete;
+  ~MediaClientAppUsingCameraTest() override = default;
+
+  void SetUp() override {
+    registry_cache_.SetAccountId(account_id_);
+    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_,
+                                                             &registry_cache_);
+    capability_access_cache_.SetAccountId(account_id_);
+    apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
+        account_id_, &capability_access_cache_);
+  }
+
+ protected:
+  static apps::mojom::AppPtr MakeApp(const char* app_id, const char* name) {
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_id = app_id;
+    app->name = name;
+    app->short_name = name;
+    return app;
+  }
+
+  static apps::mojom::CapabilityAccessPtr MakeCapabilityAccess(
+      const char* app_id,
+      apps::mojom::OptionalBool camera) {
+    apps::mojom::CapabilityAccessPtr access =
+        apps::mojom::CapabilityAccess::New();
+    access->app_id = app_id;
+    access->camera = camera;
+    access->microphone = apps::mojom::OptionalBool::kFalse;
+    return access;
+  }
+
+  void LaunchApp(const char* id,
+                 const char* name,
+                 apps::mojom::OptionalBool use_camera) {
+    std::vector<apps::mojom::AppPtr> registry_deltas;
+    registry_deltas.push_back(MakeApp(id, name));
+    registry_cache_.OnApps(std::move(registry_deltas),
+                           apps::mojom::AppType::kUnknown,
+                           /* should_notify_initialized = */ false);
+
+    std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas;
+    capability_access_deltas.push_back(MakeCapabilityAccess(id, use_camera));
+    capability_access_cache_.OnCapabilityAccesses(
+        std::move(capability_access_deltas));
+  }
+
+  const std::string kPrimaryProfileName = "primary_profile";
+  const AccountId account_id_ = AccountId::FromUserEmail(kPrimaryProfileName);
+
+  apps::AppRegistryCache registry_cache_;
+  apps::AppCapabilityAccessCache capability_access_cache_;
+};
+
 TEST_F(MediaClientTest, HandleMediaAccelerators) {
   const struct {
     ui::Accelerator accelerator;
@@ -166,8 +236,8 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
     SCOPED_TRACE(::testing::Message()
                  << "accelerator key:" << test.accelerator.key_code());
 
-    // Enable custom media key handling for the current browser. Ensure that the
-    // client set the override on the controller.
+    // Enable custom media key handling for the current browser. Ensure that
+    // the client set the override on the controller.
     client()->EnableCustomMediaKeyHandler(profile(), delegate());
     EXPECT_TRUE(controller()->force_media_client_key_handling());
 
@@ -191,8 +261,8 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
     test.client_handler.Run();
     EXPECT_EQ(test.accelerator, delegate()->ConsumeLastMediaKey());
 
-    // Disable custom media key handling for the current browser and ensure the
-    // override was disabled.
+    // Disable custom media key handling for the current browser and ensure
+    // the override was disabled.
     client()->DisableCustomMediaKeyHandler(profile(), delegate());
     EXPECT_FALSE(controller()->force_media_client_key_handling());
 
@@ -200,4 +270,46 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
     test.client_handler.Run();
     EXPECT_EQ(base::nullopt, delegate()->ConsumeLastMediaKey());
   }
+}
+
+TEST_F(MediaClientAppUsingCameraTest, NoAppsLaunched) {
+  // Should return an empty string.
+  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+      &capability_access_cache_, &registry_cache_);
+  EXPECT_TRUE(app_name.empty());
+}
+
+TEST_F(MediaClientAppUsingCameraTest, AppLaunchedNotUsingCamaera) {
+  LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kFalse);
+
+  // Should return an empty string.
+  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+      &capability_access_cache_, &registry_cache_);
+  EXPECT_TRUE(app_name.empty());
+}
+
+TEST_F(MediaClientAppUsingCameraTest, AppLaunchedUsingCamera) {
+  LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kTrue);
+
+  // Should return the name of our app.
+  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+      &capability_access_cache_, &registry_cache_);
+  std::string app_name_utf8 = base::UTF16ToUTF8(app_name);
+  EXPECT_STREQ(app_name_utf8.c_str(), "name_rose");
+}
+
+TEST_F(MediaClientAppUsingCameraTest, MultipleAppsLaunchedUsingCamera) {
+  LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kTrue);
+  LaunchApp("id_mars", "name_mars", apps::mojom::OptionalBool::kTrue);
+  LaunchApp("id_zara", "name_zara", apps::mojom::OptionalBool::kTrue);
+  LaunchApp("id_oscar", "name_oscar", apps::mojom::OptionalBool::kFalse);
+
+  // Because AppCapabilityAccessCache::GetAppsAccessingCamera (invoked by
+  // GetNameOfAppAccessingCamera) returns a set, we have no guarantee of
+  // which app will be found first.  So we verify that the app name is one of
+  // our camera-users.
+  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+      &capability_access_cache_, &registry_cache_);
+  std::string app_name_utf8 = base::UTF16ToUTF8(app_name);
+  EXPECT_THAT(app_name_utf8, AnyOf("name_rose", "name_mars", "name_zara"));
 }

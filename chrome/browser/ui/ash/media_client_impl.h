@@ -18,6 +18,11 @@
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
+namespace apps {
+class AppCapabilityAccessCache;
+class AppRegistryCache;
+}  // namespace apps
+
 class MediaClientImpl : public ash::MediaClient,
                         public ash::VmCameraMicManager::Observer,
                         public BrowserListObserver,
@@ -75,6 +80,13 @@ class MediaClientImpl : public ash::MediaClient,
                                    ui::MediaKeysListener::Delegate* delegate);
   void DisableCustomMediaKeyHandler(content::BrowserContext* context,
                                     ui::MediaKeysListener::Delegate* delegate);
+
+  // Returns the (short) name of the app attempting to use the camera, or an
+  // empty string if the short name is not available.  Publicly visible for
+  // testing.
+  static std::u16string GetNameOfAppAccessingCamera(
+      apps::AppCapabilityAccessCache* capability_cache,
+      apps::AppRegistryCache* registry_cache);
 
  private:
   // Sets |is_forcing_media_client_key_handling_| to true if
