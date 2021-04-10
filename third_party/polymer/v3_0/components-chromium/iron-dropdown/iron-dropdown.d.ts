@@ -8,21 +8,21 @@
  *   iron-dropdown.js
  */
 
-import {IronA11yKeysBehavior} from '@polymer/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
+import {IronA11yKeysBehavior} from '../iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
 
-import {IronControlState} from '@polymer/iron-behaviors/iron-control-state.js';
+import {IronControlState} from '../iron-behaviors/iron-control-state.js';
 
-import {IronOverlayBehavior, IronOverlayBehaviorImpl} from '@polymer/iron-overlay-behavior/iron-overlay-behavior.js';
+import {IronOverlayBehavior, IronOverlayBehaviorImpl} from '../iron-overlay-behavior/iron-overlay-behavior.js';
 
-import {NeonAnimationRunnerBehavior} from '@polymer/neon-animation/neon-animation-runner-behavior.js';
+import {NeonAnimationRunnerBehavior} from '../neon-animation/neon-animation-runner-behavior.js';
 
-import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {Polymer} from '../polymer/lib/legacy/polymer-fn.js';
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';
 
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {html} from '../polymer/lib/utils/html-tag.js';
 
-import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mixin.js';
+import {LegacyElementMixin} from '../polymer/lib/legacy/legacy-element-mixin.js';
 
 /**
  * `<iron-dropdown>` is a generalized element that is useful when you have

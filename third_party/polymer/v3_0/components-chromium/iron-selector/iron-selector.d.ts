@@ -8,11 +8,11 @@
  *   iron-selector.js
  */
 
-import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {Polymer} from '../polymer/lib/legacy/polymer-fn.js';
 
 import {IronMultiSelectableBehavior} from './iron-multi-selectable.js';
 
-import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mixin.js';
+import {LegacyElementMixin} from '../polymer/lib/legacy/legacy-element-mixin.js';
 
 interface IronSelectorElement extends IronMultiSelectableBehavior, LegacyElementMixin, HTMLElement {
 }

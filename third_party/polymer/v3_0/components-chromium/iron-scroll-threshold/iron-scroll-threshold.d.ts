@@ -8,13 +8,13 @@
  *   iron-scroll-threshold.js
  */
 
-import {IronScrollTargetBehavior} from '@polymer/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
+import {IronScrollTargetBehavior} from '../iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 
-import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {Polymer} from '../polymer/lib/legacy/polymer-fn.js';
 
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {html} from '../polymer/lib/utils/html-tag.js';
 
-import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mixin.js';
+import {LegacyElementMixin} from '../polymer/lib/legacy/legacy-element-mixin.js';
 
 /**
  * `iron-scroll-threshold` is a utility element that listens for `scroll` events

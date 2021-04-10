@@ -8,13 +8,13 @@
  *   iron-iconset-svg.js
  */
 
-import {IronMeta} from '@polymer/iron-meta/iron-meta.js';
+import {IronMeta} from '../iron-meta/iron-meta.js';
 
-import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {Polymer} from '../polymer/lib/legacy/polymer-fn.js';
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';
 
-import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mixin.js';
+import {LegacyElementMixin} from '../polymer/lib/legacy/legacy-element-mixin.js';
 
 /**
  * The `iron-iconset-svg` element allows users to define their own icon sets

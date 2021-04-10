@@ -8,15 +8,15 @@
  *   iron-icon.js
  */
 
-import {IronMeta} from '@polymer/iron-meta/iron-meta.js';
+import {IronMeta} from '../iron-meta/iron-meta.js';
 
-import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {Polymer} from '../polymer/lib/legacy/polymer-fn.js';
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';
 
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {html} from '../polymer/lib/utils/html-tag.js';
 
-import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mixin.js';
+import {LegacyElementMixin} from '../polymer/lib/legacy/legacy-element-mixin.js';
 
 /**
  * The `iron-icon` element displays an icon. By default an icon renders as a 24px
@@ -41,7 +41,7 @@ import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mix
  * icons, import `iron-icons.js` and use the `icon` attribute to specify an icon:
  *
  *     <script type="module">
- *       import "@polymer/iron-icons/iron-icons.js";
+ *       import "../iron-icons/iron-icons.js";
  *     </script>
  *
  *     <iron-icon icon="menu"></iron-icon>
@@ -51,7 +51,7 @@ import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mix
  * For example, to use a communication icon, you would use:
  *
  *     <script type="module">
- *       import "@polymer/iron-icons/communication-icons.js";
+ *       import "../iron-icons/communication-icons.js";
  *     </script>
  *
  *     <iron-icon icon="communication:email"></iron-icon>

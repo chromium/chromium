@@ -50,6 +50,10 @@ iron-test-helpers/test-helpers.*
 paper-behaviors/paper-button-behavior.*
 paper-behaviors/paper-checked-element-behavior.*
 
+
+# paper-ripple
+paper-ripple/paper-ripple.d.ts
+
 # paper-spinner
 paper-spinner/paper-spinner.*
 

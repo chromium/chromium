@@ -8,9 +8,9 @@
  *   paper-inky-focus-behavior.js
  */
 
-import {IronButtonState} from '@polymer/iron-behaviors/iron-button-state.js';
+import {IronButtonState} from '../iron-behaviors/iron-button-state.js';
 
-import {IronControlState} from '@polymer/iron-behaviors/iron-control-state.js';
+import {IronControlState} from '../iron-behaviors/iron-control-state.js';
 
 import {PaperRippleBehavior} from './paper-ripple-behavior.js';
 

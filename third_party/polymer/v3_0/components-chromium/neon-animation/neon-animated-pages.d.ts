@@ -8,19 +8,19 @@
  *   neon-animated-pages.js
  */
 
-import {IronResizableBehavior} from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
+import {IronResizableBehavior} from '../iron-resizable-behavior/iron-resizable-behavior.js';
 
-import {IronSelectableBehavior} from '@polymer/iron-selector/iron-selectable.js';
+import {IronSelectableBehavior} from '../iron-selector/iron-selectable.js';
 
-import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {Polymer} from '../polymer/lib/legacy/polymer-fn.js';
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';
 
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {html} from '../polymer/lib/utils/html-tag.js';
 
 import {NeonAnimationRunnerBehavior} from './neon-animation-runner-behavior.js';
 
-import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mixin.js';
+import {LegacyElementMixin} from '../polymer/lib/legacy/legacy-element-mixin.js';
 
 /**
  * Material design: [Meaningful

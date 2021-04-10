@@ -8,9 +8,9 @@
  *   iron-button-state.js
  */
 
-import {IronA11yKeysBehavior} from '@polymer/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
+import {IronA11yKeysBehavior} from '../iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';
 
 interface IronButtonState extends IronA11yKeysBehavior {
   keyBindings: object;

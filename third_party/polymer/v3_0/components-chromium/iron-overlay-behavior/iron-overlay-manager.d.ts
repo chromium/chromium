@@ -8,8 +8,8 @@
  *   iron-overlay-manager.js
  */
 
-import {IronA11yKeysBehavior} from '@polymer/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
+import {IronA11yKeysBehavior} from '../iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';
 
-import * as gestures from '@polymer/polymer/lib/utils/gestures.js';
+import * as gestures from '../polymer/lib/utils/gestures.js';

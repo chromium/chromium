@@ -8,9 +8,9 @@
  *   iron-selectable.js
  */
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';
 
-import {dashToCamelCase} from '@polymer/polymer/lib/utils/case-map.js';
+import {dashToCamelCase} from '../polymer/lib/utils/case-map.js';
 
 import {IronSelection} from './iron-selection.js';
 

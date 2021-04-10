@@ -8,4 +8,4 @@
  *   shadow.js
  */
 
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {html} from '../polymer/lib/utils/html-tag.js';

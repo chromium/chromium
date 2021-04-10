@@ -8,4 +8,4 @@
  *   iron-focusables-helper.js
  */
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';

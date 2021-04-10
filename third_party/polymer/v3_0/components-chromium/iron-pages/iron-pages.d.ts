@@ -8,15 +8,15 @@
  *   iron-pages.js
  */
 
-import {IronResizableBehavior} from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
+import {IronResizableBehavior} from '../iron-resizable-behavior/iron-resizable-behavior.js';
 
-import {IronSelectableBehavior} from '@polymer/iron-selector/iron-selectable.js';
+import {IronSelectableBehavior} from '../iron-selector/iron-selectable.js';
 
-import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {Polymer} from '../polymer/lib/legacy/polymer-fn.js';
 
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {html} from '../polymer/lib/utils/html-tag.js';
 
-import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mixin.js';
+import {LegacyElementMixin} from '../polymer/lib/legacy/legacy-element-mixin.js';
 
 /**
  * `iron-pages` is used to select one of its children to show. One use is to cycle

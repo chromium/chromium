@@ -8,31 +8,31 @@
  *   iron-list.js
  */
 
-import {IronResizableBehavior} from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
+import {IronResizableBehavior} from '../iron-resizable-behavior/iron-resizable-behavior.js';
 
-import {IronScrollTargetBehavior} from '@polymer/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
+import {IronScrollTargetBehavior} from '../iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 
-import {OptionalMutableDataBehavior} from '@polymer/polymer/lib/legacy/mutable-data-behavior.js';
+import {OptionalMutableDataBehavior} from '../polymer/lib/legacy/mutable-data-behavior.js';
 
-import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {Polymer} from '../polymer/lib/legacy/polymer-fn.js';
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';
 
-import {Templatizer} from '@polymer/polymer/lib/legacy/templatizer-behavior.js';
+import {Templatizer} from '../polymer/lib/legacy/templatizer-behavior.js';
 
-import {animationFrame, idlePeriod, microTask} from '@polymer/polymer/lib/utils/async.js';
+import {animationFrame, idlePeriod, microTask} from '../polymer/lib/utils/async.js';
 
-import {Debouncer} from '@polymer/polymer/lib/utils/debounce.js';
+import {Debouncer} from '../polymer/lib/utils/debounce.js';
 
-import {enqueueDebouncer, flush} from '@polymer/polymer/lib/utils/flush.js';
+import {enqueueDebouncer, flush} from '../polymer/lib/utils/flush.js';
 
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {html} from '../polymer/lib/utils/html-tag.js';
 
-import {matches, translate} from '@polymer/polymer/lib/utils/path.js';
+import {matches, translate} from '../polymer/lib/utils/path.js';
 
-import {TemplateInstanceBase} from '@polymer/polymer/lib/utils/templatize.js';
+import {TemplateInstanceBase} from '../polymer/lib/utils/templatize.js';
 
-import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mixin.js';
+import {LegacyElementMixin} from '../polymer/lib/legacy/legacy-element-mixin.js';
 
 /**
  * `iron-list` displays a virtual, 'infinite' list. The template inside

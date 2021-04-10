@@ -8,7 +8,7 @@
  *   paper-ripple-behavior.js
  */
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';
 
 export {PaperRippleBehavior};
 
@@ -74,4 +74,4 @@ interface PaperRippleBehavior {
 
 declare const PaperRippleBehavior: object;
 
-import {PaperRippleElement} from '@polymer/paper-ripple/paper-ripple.js';
+import {PaperRippleElement} from '../paper-ripple/paper-ripple.js';

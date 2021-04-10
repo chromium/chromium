@@ -8,7 +8,7 @@
  *   iron-meta.js
  */
 
-import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {Polymer} from '../polymer/lib/legacy/polymer-fn.js';
 
 export {IronMeta};
 
@@ -21,7 +21,7 @@ declare class IronMeta {
   byKey(key: string): any;
 }
 
-import {LegacyElementMixin} from '@polymer/polymer/lib/legacy/legacy-element-mixin.js';
+import {LegacyElementMixin} from '../polymer/lib/legacy/legacy-element-mixin.js';
 
 /**
  * `iron-meta` is a generic element you can use for sharing information across the

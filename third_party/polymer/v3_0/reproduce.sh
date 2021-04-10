@@ -37,9 +37,11 @@ rsync -c --delete --delete-excluded -r -v --prune-empty-dirs \
     "components-chromium/"
 
 # Replace all occurrences of "@polymer/" with "../" or # "../../".
-find components-chromium/ -mindepth 2 -maxdepth 2 -name '*.js' \
+find components-chromium/ -mindepth 2 -maxdepth 2 \
+  \( -name "*.js" -or -name "*.d.ts" \) \
   -exec sed -i 's/@polymer\//..\//g' {} +
-find components-chromium/ -mindepth 3 -maxdepth 3 -name '*.js' \
+find components-chromium/ -mindepth 3 -maxdepth 3 \
+  \( -name "*.js" -or -name "*.d.ts" \) \
   -exec sed -i 's/@polymer\//..\/..\//g' {} +
 
 # Replace all occurrences of "@webcomponents/" with "../".

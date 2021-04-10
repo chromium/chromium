@@ -8,11 +8,11 @@
  *   iron-overlay-behavior.js
  */
 
-import {IronFitBehavior} from '@polymer/iron-fit-behavior/iron-fit-behavior.js';
+import {IronFitBehavior} from '../iron-fit-behavior/iron-fit-behavior.js';
 
-import {IronResizableBehavior} from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
+import {IronResizableBehavior} from '../iron-resizable-behavior/iron-resizable-behavior.js';
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '../polymer/lib/legacy/polymer.dom.js';
 
 import {pushScrollLock, removeScrollLock} from './iron-scroll-manager.js';
 
