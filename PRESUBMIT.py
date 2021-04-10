@@ -1049,6 +1049,16 @@ _BANNED_CPP_FUNCTIONS = (
       False,
       (),
     ),
+    (
+      'RoInitialize',
+      (
+        'Improper use of base::win::RoInitialize() has been implicated in a ',
+        'few COM initialization leaks. Use base::win::ScopedWinrtInitializer ',
+        'instead. See http://crbug.com/1197722 for more information.'
+      ),
+      True,
+      (),
+    ),
 )
 
 # Format: Sequence of tuples containing:
