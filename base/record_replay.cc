@@ -21,6 +21,7 @@ extern "C" bool V8IsRecordingOrReplaying();
 extern "C" bool V8IsRecording();
 extern "C" bool V8IsReplaying();
 extern "C" void V8RecordReplayAssertVA(const char* format, va_list args);
+extern "C" void V8RecordReplayAssertBytes(const char* why, const void* buf, size_t size);
 extern "C" void V8RecordReplayPrintVA(const char* format, va_list args);
 extern "C" uintptr_t V8RecordReplayValue(const char* why, uintptr_t value);
 extern "C" void V8RecordReplayBytes(const char* why, void* buf, size_t size);
@@ -55,6 +56,10 @@ void Assert(const char* format, ...) {
   V8RecordReplayAssertVA(format, ap);
   va_end(ap);
 #endif
+}
+
+void AssertBytes(const char* why, const void* buf, size_t size) {
+  V8RecordReplayAssertBytes(why, buf, size);
 }
 
 void Print(const char* format, ...) {
