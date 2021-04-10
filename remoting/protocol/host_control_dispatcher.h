@@ -35,7 +35,6 @@ class HostControlDispatcher : public ChannelDispatcherBase,
   void DeliverHostMessage(const ExtensionMessage& message) override;
   void SetVideoLayout(const VideoLayout& layout) override;
   void SetTransportInfo(const TransportInfo& transport_info) override;
-  void OpenUrl(const OpenUrlRequest& open_url_request) override;
 
   // ClipboardStub implementation for sending clipboard data to client.
   void InjectClipboardEvent(const ClipboardEvent& event) override;
