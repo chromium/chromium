@@ -58,8 +58,7 @@
 
   // Creates of the copy of this VideoFrame, which needs to be independently
   // destroyed.
-  [CallWith=ScriptState, RaisesException]
-  VideoFrame clone();
+  [RaisesException] VideoFrame clone();
 
   // Create an ImageBitmap from the crop region, scaled to the display size.
   // TODO(sandersd): Should use the global createImageBitmap() instead.

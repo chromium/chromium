@@ -103,7 +103,7 @@ class MODULES_EXPORT EncoderBase
   virtual InternalConfigType* ParseConfig(const ConfigType*,
                                           ExceptionState&) = 0;
   virtual bool VerifyCodecSupport(InternalConfigType*, ExceptionState&) = 0;
-  virtual FrameType* CloneFrame(FrameType*, ExecutionContext*) = 0;
+  virtual FrameType* CloneFrame(FrameType*, ExceptionState&) = 0;
 
   std::unique_ptr<CodecLogger> logger_;
 

@@ -306,8 +306,8 @@ bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
 }
 
 VideoFrame* VideoEncoder::CloneFrame(VideoFrame* frame,
-                                     ExecutionContext* context) {
-  return frame->CloneFromNative(context);
+                                     ExceptionState& exception_state) {
+  return frame->clone(exception_state);
 }
 
 void VideoEncoder::UpdateEncoderLog(std::string encoder_name,

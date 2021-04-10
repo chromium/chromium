@@ -151,8 +151,7 @@ TEST_F(VideoFrameTest, ClonedFrame) {
   VideoFrame* blink_frame =
       CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
 
-  VideoFrame* cloned_frame =
-      blink_frame->clone(scope.GetScriptState(), scope.GetExceptionState());
+  VideoFrame* cloned_frame = blink_frame->clone(scope.GetExceptionState());
 
   // The cloned frame should be referencing the same media::VideoFrame.
   EXPECT_EQ(blink_frame->frame(), cloned_frame->frame());
@@ -175,8 +174,7 @@ TEST_F(VideoFrameTest, CloningClosedFrame) {
 
   blink_frame->close();
 
-  VideoFrame* cloned_frame =
-      blink_frame->clone(scope.GetScriptState(), scope.GetExceptionState());
+  VideoFrame* cloned_frame = blink_frame->clone(scope.GetExceptionState());
 
   // No frame should have been created, and there should be an exception.
   EXPECT_EQ(nullptr, cloned_frame);
@@ -254,8 +252,7 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
     EXPECT_EQ(bitmap_image, original_image);
   }
 
-  auto* clone =
-      video_frame->clone(scope.GetScriptState(), scope.GetExceptionState());
+  auto* clone = video_frame->clone(scope.GetExceptionState());
   EXPECT_EQ(clone->handle()->sk_image(), original_image);
 }
 

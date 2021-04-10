@@ -114,16 +114,9 @@ void EncoderBase<Traits>::encode(FrameType* frame,
     return;
 
   DCHECK(active_config_);
-  auto* context = GetExecutionContext();
-  if (!context) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Context is destroyed.");
-    return;
-  }
 
   // This will fail if |frame| is already closed.
-  auto* internal_frame = CloneFrame(frame, context);
-
+  auto* internal_frame = CloneFrame(frame, exception_state);
   if (!internal_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Cannot encode closed frame.");

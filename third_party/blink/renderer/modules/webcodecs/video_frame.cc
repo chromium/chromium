@@ -253,7 +253,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     if (source.IsVideoFrame()) {
       if (!init || (!init->hasTimestamp() && !init->hasDuration() &&
                     init->alpha() == kAlphaKeep)) {
-        return source.GetAsVideoFrame()->clone(script_state, exception_state);
+        return source.GetAsVideoFrame()->clone(exception_state);
       }
       source_frame = source.GetAsVideoFrame()->frame();
     } else if (source.IsHTMLVideoElement()) {
@@ -721,23 +721,15 @@ void VideoFrame::destroy(ExecutionContext* execution_context) {
   close();
 }
 
-VideoFrame* VideoFrame::clone(ScriptState* script_state,
-                              ExceptionState& exception_state) {
-  VideoFrame* frame = CloneFromNative(ExecutionContext::From(script_state));
-
-  if (!frame) {
+VideoFrame* VideoFrame::clone(ExceptionState& exception_state) {
+  auto handle = handle_->Clone();
+  if (!handle) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot clone closed VideoFrame.");
     return nullptr;
   }
 
-  return frame;
-}
-
-VideoFrame* VideoFrame::CloneFromNative(ExecutionContext* context) {
-  // The returned handle will be nullptr if it was already invalidated.
-  auto handle = handle_->Clone();
-  return handle ? MakeGarbageCollected<VideoFrame>(std::move(handle)) : nullptr;
+  return MakeGarbageCollected<VideoFrame>(std::move(handle));
 }
 
 ScriptPromise VideoFrame::createImageBitmap(ScriptState* script_state,

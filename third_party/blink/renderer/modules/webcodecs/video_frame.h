@@ -89,12 +89,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // Creates a clone of |this|, with a new Handle, referencing the same
   // media::VideoFrame. The cloned frame will not be closed when |this| is,
   // and its lifetime should be independently managed.
-  VideoFrame* clone(ScriptState*, ExceptionState&);
-
-  // TODO(crbug.com/1179109): Remove this method. Internal callers should only
-  // hold onto scoped_refptr objects instead of blink::VideoFrames. Internal
-  // callers should use VideoFrameHandle::CloneForInternalUse().
-  VideoFrame* CloneFromNative(ExecutionContext*);
+  VideoFrame* clone(ExceptionState&);
 
   // TODO(crbug.com/1175907): Remove this method. window.createImageBitmap() is
   // the preferred mechanism.

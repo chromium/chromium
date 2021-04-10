@@ -205,8 +205,7 @@ bool AudioEncoder::CanReconfigure(ParsedConfig& original_config,
          original_config.options.sample_rate == new_config.options.sample_rate;
 }
 
-AudioFrame* AudioEncoder::CloneFrame(AudioFrame* frame,
-                                     ExecutionContext* context) {
+AudioFrame* AudioEncoder::CloneFrame(AudioFrame* frame, ExceptionState&) {
   auto* init = AudioFrameInit::Create();
   init->setTimestamp(frame->timestamp());
 
