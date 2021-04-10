@@ -46,22 +46,6 @@ ax::mojom::blink::Role AXListBoxOption::NativeRoleIgnoringAria() const {
   return ax::mojom::blink::Role::kListBoxOption;
 }
 
-bool AXListBoxOption::IsParentPresentationalRole() const {
-  LayoutObject* parent_layout_object = GetLayoutObject()->Parent();
-  if (!parent_layout_object)
-    return false;
-
-  AXObject* parent = AXObjectCache().GetOrCreate(parent_layout_object);
-  if (!parent)
-    return false;
-
-  if (IsListBox(parent_layout_object) &&
-      parent->HasInheritedPresentationalRole())
-    return true;
-
-  return false;
-}
-
 AccessibilitySelectedState AXListBoxOption::IsSelected() const {
   if (!GetNode() || !CanSetSelectedAttribute())
     return kSelectedStateUndefined;

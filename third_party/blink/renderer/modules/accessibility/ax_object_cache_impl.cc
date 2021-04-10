@@ -136,7 +136,7 @@ bool HasAriaCellRole(Element* elem) {
   if (role_str.IsEmpty())
     return false;
 
-  return ui::IsCellOrTableHeader(AXObject::AriaRoleToWebCoreRole(role_str));
+  return ui::IsCellOrTableHeader(AXObject::AriaRoleStringToRoleEnum(role_str));
 }
 
 // Return true if whitespace is not necessary to keep adjacent_node separate

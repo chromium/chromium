@@ -112,7 +112,6 @@ enum AXIgnoredReason {
   kAXEmptyText,
   kAXInertElement,
   kAXInertSubtree,
-  kAXInheritsPresentation,
   kAXLabelContainer,
   kAXLabelFor,
   kAXNotRendered,

@@ -61,7 +61,6 @@ class AXListBoxOption final : public AXLayoutObject {
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 
   HTMLSelectElement* ListBoxOptionParentNode() const;
-  bool IsParentPresentationalRole() const;
 
   DISALLOW_COPY_AND_ASSIGN(AXListBoxOption);
 };

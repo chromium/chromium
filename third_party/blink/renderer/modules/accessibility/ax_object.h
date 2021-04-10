@@ -565,7 +565,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool LastKnownIsIgnoredValue() const;
   bool LastKnownIsIgnoredButIncludedInTreeValue() const;
   bool LastKnownIsIncludedInTreeValue() const;
-  bool HasInheritedPresentationalRole() const;
   bool CanBeActiveDescendant() const;
   // Some objects, such as table header containers, could be the children of
   // more than one object but have only one primary parent.
@@ -1255,7 +1254,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   static bool HasARIAOwns(Element* element);
   // Is this a widget that requires container widget.
   bool IsSubWidget() const;
-  static ax::mojom::blink::Role AriaRoleToWebCoreRole(const String&);
+  static ax::mojom::blink::Role AriaRoleStringToRoleEnum(const String&);
   static const AtomicString& RoleName(ax::mojom::blink::Role);
   static const AtomicString& InternalRoleName(ax::mojom::blink::Role);
   static void AccessibleNodeListToElementVector(const AccessibleNodeList&,
@@ -1329,9 +1328,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                                 Vector<String>& ids) const;
   String TextFromAriaDescribedby(AXRelatedObjectVector* related_objects,
                                  Vector<String>& ids) const;
-  virtual const AXObject* InheritsPresentationalRoleFrom() const {
-    return nullptr;
-  }
 
   ax::mojom::blink::Role ButtonRoleType() const;
 
@@ -1378,7 +1374,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable bool cached_is_hidden_via_style : 1;
   mutable bool cached_is_descendant_of_leaf_node_ : 1;
   mutable bool cached_is_descendant_of_disabled_node_ : 1;
-  mutable bool cached_has_inherited_presentational_role_ : 1;
   mutable bool cached_is_editable_root_ : 1;
   mutable Member<AXObject> cached_live_region_root_;
   mutable int cached_aria_column_index_;

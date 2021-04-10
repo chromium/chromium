@@ -123,8 +123,6 @@ String IgnoredReasonName(AXIgnoredReason reason) {
       return "inertElement";
     case kAXInertSubtree:
       return "inertSubtree";
-    case kAXInheritsPresentation:
-      return "inheritsPresentation";
     case kAXLabelContainer:
       return "labelContainer";
     case kAXLabelFor:
@@ -733,7 +731,6 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       cached_is_inert_or_aria_hidden_(false),
       cached_is_descendant_of_leaf_node_(false),
       cached_is_descendant_of_disabled_node_(false),
-      cached_has_inherited_presentational_role_(false),
       cached_is_editable_root_(false),
       cached_live_region_root_(nullptr),
       cached_aria_column_index_(0),
@@ -2162,8 +2159,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   }
   cached_is_descendant_of_leaf_node_ = !!LeafNodeAncestor();
   cached_is_descendant_of_disabled_node_ = !!DisabledAncestor();
-  cached_has_inherited_presentational_role_ =
-      !!InheritsPresentationalRoleFrom();
 
   bool is_ignored = ComputeAccessibilityIsIgnored();
   bool is_ignored_but_included_in_tree =
@@ -2683,11 +2678,6 @@ ax::mojom::blink::Role AXObject::DetermineAccessibilityRole() {
   DCHECK(!IsDetached());
 
   return NativeRoleIgnoringAria();
-}
-
-bool AXObject::HasInheritedPresentationalRole() const {
-  UpdateCachedAttributeValuesIfNeeded();
-  return cached_has_inherited_presentational_role_;
 }
 
 bool AXObject::CanSetValueAttribute() const {
@@ -3643,7 +3633,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   if (aria_role.IsNull() || aria_role.IsEmpty())
     return ax::mojom::blink::Role::kUnknown;
 
-  ax::mojom::blink::Role role = AriaRoleToWebCoreRole(aria_role);
+  ax::mojom::blink::Role role = AriaRoleStringToRoleEnum(aria_role);
 
   // ARIA states if an item can get focus, it should not be presentational.
   // It also states user agents should ignore the presentational role if
@@ -5145,7 +5135,7 @@ bool AXObject::HasARIAOwns(Element* element) {
              html_names::kAriaOwnsAttr);
 }
 
-ax::mojom::blink::Role AXObject::AriaRoleToWebCoreRole(const String& value) {
+ax::mojom::blink::Role AXObject::AriaRoleStringToRoleEnum(const String& value) {
   DCHECK(!value.IsEmpty());
 
   static const ARIARoleMap* role_map = CreateARIARoleMap();

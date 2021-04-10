@@ -11,41 +11,38 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 AXRole: AXGenericContainer
     AXRole: AXListItem
-        AXRole: AXListMarker "• "
+        AXRole: AXNone "• "
             AXRole: AXStaticText "• "
                 AXRole: AXInlineTextBox "• "
         AXRole: AXStaticText "Item 1"
             AXRole: AXInlineTextBox "Item 1"
     AXRole: AXListItem
-        AXRole: AXListMarker "• "
+        AXRole: AXNone "• "
             AXRole: AXStaticText "• "
                 AXRole: AXInlineTextBox "• "
         AXRole: AXStaticText "Item 2"
             AXRole: AXInlineTextBox "Item 2"
     AXRole: AXListItem
-        AXRole: AXListMarker "• "
+        AXRole: AXNone "• "
             AXRole: AXStaticText "• "
                 AXRole: AXInlineTextBox "• "
         AXRole: AXStaticText "Item 3"
             AXRole: AXInlineTextBox "Item 3"
-    AXRole: AXListItem
-        AXRole: AXListMarker "• "
-            AXRole: AXStaticText "• "
-                AXRole: AXInlineTextBox "• "
-        AXRole: AXStaticText "Plain Text 1"
-            AXRole: AXInlineTextBox "Plain Text 1"
-    AXRole: AXListItem
-        AXRole: AXListMarker "• "
-            AXRole: AXStaticText "• "
-                AXRole: AXInlineTextBox "• "
-        AXRole: AXStaticText "Plain Text 2"
-            AXRole: AXInlineTextBox "Plain Text 2"
-    AXRole: AXListItem
-        AXRole: AXListMarker "• "
-            AXRole: AXStaticText "• "
-                AXRole: AXInlineTextBox "• "
-        AXRole: AXStaticText "Plain Text 3"
-            AXRole: AXInlineTextBox "Plain Text 3"
+    AXRole: AXNone "• "
+        AXRole: AXStaticText "• "
+            AXRole: AXInlineTextBox "• "
+    AXRole: AXStaticText "Plain Text 1"
+        AXRole: AXInlineTextBox "Plain Text 1"
+    AXRole: AXNone "• "
+        AXRole: AXStaticText "• "
+            AXRole: AXInlineTextBox "• "
+    AXRole: AXStaticText "Plain Text 2"
+        AXRole: AXInlineTextBox "Plain Text 2"
+    AXRole: AXNone "• "
+        AXRole: AXStaticText "• "
+            AXRole: AXInlineTextBox "• "
+    AXRole: AXStaticText "Plain Text 3"
+        AXRole: AXInlineTextBox "Plain Text 3"
 
 PASS successfullyParsed is true
 

@@ -2421,6 +2421,25 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPre) {
   RunHtmlTest(FILE_PATH_LITERAL("pre.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPresentational) {
+  RunAriaTest(FILE_PATH_LITERAL("presentational.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityPresentationalMenu) {
+  RunAriaTest(FILE_PATH_LITERAL("presentational-menu.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityPresentationalOL) {
+  RunAriaTest(FILE_PATH_LITERAL("presentational-ol.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityPresentationalUL) {
+  RunAriaTest(FILE_PATH_LITERAL("presentational-ul.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityProgress) {
   RunHtmlTest(FILE_PATH_LITERAL("progress.html"));
 }

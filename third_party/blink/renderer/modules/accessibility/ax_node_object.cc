@@ -332,16 +332,9 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIgnoreObject;
   }
 
-  if (HasInheritedPresentationalRole()) {
-    if (ignored_reasons) {
-      const AXObject* inherits_from = InheritsPresentationalRoleFrom();
-      if (inherits_from == this) {
-        ignored_reasons->push_back(IgnoredReason(kAXPresentational));
-      } else {
-        ignored_reasons->push_back(
-            IgnoredReason(kAXInheritsPresentation, inherits_from));
-      }
-    }
+  if (IsPresentational()) {
+    if (ignored_reasons)
+      ignored_reasons->push_back(IgnoredReason(kAXPresentational));
     return kIgnoreObject;
   }
 
@@ -591,69 +584,6 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   if (ignored_reasons)
     ignored_reasons->push_back(IgnoredReason(kAXNotRendered));
   return true;
-}
-
-static bool IsListElement(Node* node) {
-  return IsA<HTMLUListElement>(*node) || IsA<HTMLOListElement>(*node) ||
-         IsA<HTMLDListElement>(*node);
-}
-
-static bool IsRequiredOwnedElement(AXObject* parent,
-                                   ax::mojom::blink::Role current_role,
-                                   HTMLElement* current_element) {
-  Node* parent_node = parent->GetNode();
-  auto* parent_html_element = DynamicTo<HTMLElement>(parent_node);
-  if (!parent_html_element)
-    return false;
-
-  if (current_role == ax::mojom::blink::Role::kListItem)
-    return IsListElement(parent_node);
-  if (current_role == ax::mojom::blink::Role::kListMarker)
-    return IsA<HTMLLIElement>(*parent_node);
-
-  if (!current_element)
-    return false;
-  if (IsA<HTMLTableCellElement>(*current_element))
-    return IsA<HTMLTableRowElement>(*parent_node);
-  if (IsA<HTMLTableRowElement>(*current_element))
-    return IsA<HTMLTableSectionElement>(parent_html_element);
-
-  // In case of ListboxRole and its child, ListBoxOptionRole, inheritance of
-  // presentation role is handled in AXListBoxOption because ListBoxOption Role
-  // doesn't have any child.
-  // If it's just ignored because of presentation, we can't see any AX tree
-  // related to ListBoxOption.
-  return false;
-}
-
-const AXObject* AXNodeObject::InheritsPresentationalRoleFrom() const {
-  // ARIA states if an item can get focus, it should not be presentational.
-  if (CanSetFocusAttribute())
-    return nullptr;
-
-  if (IsPresentational())
-    return this;
-
-  // http://www.w3.org/TR/wai-aria/complete#presentation
-  // ARIA spec says that the user agent MUST apply an inherited role of
-  // presentation to any owned elements that do not have an explicit role.
-  if (AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown)
-    return nullptr;
-
-  AXObject* parent = ParentObject();
-  if (!parent)
-    return nullptr;
-
-  auto* element = DynamicTo<HTMLElement>(GetNode());
-  if (!parent->HasInheritedPresentationalRole())
-    return nullptr;
-
-  // ARIA spec says that when a parent object is presentational and this object
-  // is a required owned element of that parent, then this object is also
-  // presentational.
-  if (IsRequiredOwnedElement(parent, RoleValue(), element))
-    return parent;
-  return nullptr;
 }
 
 // There should only be one banner/contentInfo per page. If header/footer are

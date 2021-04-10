@@ -1,12 +1,8 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++tabList horizontal hierarchicalLevel=1
-++++++++listItem hierarchicalLevel=1
-++++++++++tab name='tab1' setSize=5 posInSet=2 selected=false
-++++++++listItem hierarchicalLevel=1
-++++++++++tab name='tab2' setSize=5 posInSet=3 selected=false
-++++++++listItem hierarchicalLevel=1
-++++++++++tab name='tab3' setSize=5 posInSet=4 selected=false
-++++++++listItem hierarchicalLevel=1
-++++++++++tab name='tab4' setSize=5 posInSet=5 selected=false
+++++++tabList horizontal hierarchicalLevel=1 setSize=5
+++++++++tab name='tab1' setSize=5 posInSet=2 selected=false
+++++++++tab name='tab2' setSize=5 posInSet=3 selected=false
+++++++++tab name='tab3' setSize=5 posInSet=4 selected=false
+++++++++tab name='tab4' setSize=5 posInSet=5 selected=false

@@ -38,8 +38,6 @@ String IgnoredReasonName(AXIgnoredReason reason) {
       return "inertElement";
     case kAXInertSubtree:
       return "inertSubtree";
-    case kAXInheritsPresentation:
-      return "inheritsPresentation";
     case kAXLabelContainer:
       return "labelContainer";
     case kAXLabelFor:

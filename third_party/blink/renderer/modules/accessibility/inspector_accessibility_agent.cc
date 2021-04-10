@@ -958,7 +958,7 @@ Response InspectorAccessibilityAgent::queryAXTree(
 
   auto sought_role = ax::mojom::blink::Role::kUnknown;
   if (role.isJust())
-    sought_role = AXObject::AriaRoleToWebCoreRole(role.fromJust());
+    sought_role = AXObject::AriaRoleStringToRoleEnum(role.fromJust());
   const String sought_name = accessible_name.fromMaybe("");
 
   HeapVector<Member<AXObject>> reachable;

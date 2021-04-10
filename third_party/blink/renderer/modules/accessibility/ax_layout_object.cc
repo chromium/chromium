@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "ui/accessibility/ax_role_properties.h"
 
 namespace blink {
 
@@ -166,15 +167,43 @@ static bool IsImageOrAltText(LayoutObject* layout_object, Node* node) {
   return false;
 }
 
+static bool ShouldIgnoreListItem(Node* node) {
+  DCHECK(node);
+
+  // http://www.w3.org/TR/wai-aria/complete#presentation
+  // A list item is presentational if its parent is a native list but
+  // it has an explicit ARIA role set on it that's anything other than "list".
+  Element* parent = FlatTreeTraversal::ParentElement(*node);
+  if (IsA<HTMLMenuElement>(*parent) || IsA<HTMLUListElement>(*parent) ||
+      IsA<HTMLOListElement>(*parent)) {
+    AtomicString role = AccessibleNode::GetPropertyOrARIAAttribute(
+        parent, AOMStringProperty::kRole);
+    if (!role.IsEmpty() && role != "list")
+      return true;
+  }
+  return false;
+}
+
 ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
   DCHECK(layout_object_);
 
   Node* node = GetNode();  // Can be null in the case of pseudo content.
 
-  if (layout_object_->IsListItemIncludingNG() || IsA<HTMLLIElement>(node))
+  if (IsA<HTMLLIElement>(node)) {
+    if (ShouldIgnoreListItem(node))
+      return ax::mojom::blink::Role::kNone;
     return ax::mojom::blink::Role::kListItem;
-  if (layout_object_->IsListMarkerIncludingAll())
+  }
+
+  if (layout_object_->IsListMarkerIncludingAll()) {
+    Node* list_item = layout_object_->GeneratingNode();
+    if (list_item && ShouldIgnoreListItem(list_item))
+      return ax::mojom::blink::Role::kNone;
     return ax::mojom::blink::Role::kListMarker;
+  }
+
+  if (layout_object_->IsListItemIncludingNG())
+    return ax::mojom::blink::Role::kListItem;
   if (layout_object_->IsBR())
     return ax::mojom::blink::Role::kLineBreak;
   if (layout_object_->IsText())

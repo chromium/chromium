@@ -114,14 +114,10 @@ WebArea
     ignored : true
     ignoredReasons : [
         [0] : {
-            name : inheritsPresentation
+            name : presentationalRole
             value : {
-                relatedNodes : [
-                    [0] : {
-                        nodeResult : ol
-                    }
-                ]
-                type : idref
+                type : boolean
+                value : true
             }
         }
     ]
