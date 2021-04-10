@@ -20,14 +20,18 @@
 #include "components/variations/variations_associated_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/box_layout.h"
@@ -125,7 +129,49 @@ class MdIPHBubbleButton : public views::MdTextButton {
   bool has_border_;
 };
 
-BEGIN_METADATA(MdIPHBubbleButton, MdTextButton)
+BEGIN_METADATA(MdIPHBubbleButton, views::MdTextButton)
+END_METADATA
+
+class DotView : public views::View {
+ public:
+  METADATA_HEADER(DotView);
+  DotView(gfx::Size size, SkColor fill_color, SkColor stroke_color)
+      : size_(size), fill_color_(fill_color), stroke_color_(stroke_color) {}
+  ~DotView() override = default;
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override { return size_; }
+
+  void OnPaint(gfx::Canvas* canvas) override {
+    DCHECK_EQ(width(), height());
+
+    const float kStrokeWidth = 1.0f;
+    gfx::RectF local_bounds = gfx::RectF(GetLocalBounds());
+    local_bounds.Inset(gfx::InsetsF(1.0f));
+    const gfx::PointF center_point = local_bounds.CenterPoint();
+    const float radius = local_bounds.width() / 2.0f;
+
+    cc::PaintFlags stroke_flags;
+    stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    stroke_flags.setStrokeWidth(kStrokeWidth);
+    stroke_flags.setAntiAlias(true);
+    stroke_flags.setColor(stroke_color_);
+    canvas->DrawCircle(center_point, radius, stroke_flags);
+
+    cc::PaintFlags fill_flags;
+    fill_flags.setStyle(cc::PaintFlags::kFill_Style);
+    fill_flags.setAntiAlias(true);
+    fill_flags.setColor(fill_color_);
+    canvas->DrawCircle(center_point, radius, fill_flags);
+  }
+
+ private:
+  const gfx::Size size_;
+  const SkColor fill_color_;
+  const SkColor stroke_color_;
+};
+
+BEGIN_METADATA(DotView, views::View)
 END_METADATA
 
 }  // namespace
@@ -187,6 +233,28 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   SetLayoutManager(std::move(box_layout));
+
+  if (params.tutorial_progress_current) {
+    DCHECK(params.tutorial_progress_max);
+    views::View* progress_indicator_container =
+        AddChildView(std::make_unique<views::View>());
+    views::BoxLayout* const box_layout =
+        progress_indicator_container->SetLayoutManager(
+            std::make_unique<views::BoxLayout>(
+                views::BoxLayout::Orientation::kHorizontal));
+    box_layout->set_between_child_spacing(text_vertical_spacing);
+
+    // TODO(crbug.com/1197208): surface progress information in a11y tree
+
+    for (int i = 0; i < params.tutorial_progress_max; ++i) {
+      SkColor fill_color = i < params.tutorial_progress_current
+                               ? SK_ColorWHITE
+                               : SK_ColorTRANSPARENT;
+      // TODO(crbug.com/1197208): formalize dot size
+      progress_indicator_container->AddChildView(std::make_unique<DotView>(
+          gfx::Size(8, 8), fill_color, SK_ColorWHITE));
+    }
+  }
 
   ChromeTextContext body_label_context;
   if (params.title_text.has_value()) {

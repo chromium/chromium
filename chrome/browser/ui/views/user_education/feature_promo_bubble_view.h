@@ -70,6 +70,11 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
     bool focusable = false;
     bool persist_on_blur = false;
 
+    // Determines how progress indicators for tutorials will be rendered. If not
+    // provided, no progress indicator will be visible.
+    base::Optional<int> tutorial_progress_current;
+    base::Optional<int> tutorial_progress_max;
+
     // Changes the bubble timeout. Intended for tests, avoid use.
     base::Optional<base::TimeDelta> timeout_default;
     base::Optional<base::TimeDelta> timeout_short;
