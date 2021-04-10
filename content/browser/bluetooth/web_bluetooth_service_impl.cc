@@ -825,8 +825,6 @@ void WebBluetoothServiceImpl::RequestDevice(
                                std::move(options), std::move(callback)));
       return;
     }
-    RecordRequestDeviceOutcome(
-        UMARequestDeviceOutcome::BLUETOOTH_LOW_ENERGY_NOT_AVAILABLE);
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::BLUETOOTH_LOW_ENERGY_NOT_AVAILABLE,
         nullptr /* device */);
@@ -1845,7 +1843,6 @@ void WebBluetoothServiceImpl::OnGetDeviceSuccess(
       GetAdapter()->GetDevice(device_address);
   if (device == nullptr) {
     DVLOG(1) << "Device " << device_address << " no longer in adapter";
-    RecordRequestDeviceOutcome(UMARequestDeviceOutcome::CHOSEN_DEVICE_VANISHED);
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::CHOSEN_DEVICE_VANISHED,
         nullptr /* device */);
@@ -1873,7 +1870,6 @@ void WebBluetoothServiceImpl::OnGetDeviceSuccess(
   }
   web_bluetooth_device->name = device->GetName();
 
-  RecordRequestDeviceOutcome(UMARequestDeviceOutcome::SUCCESS);
   std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS,
                           std::move(web_bluetooth_device));
 }

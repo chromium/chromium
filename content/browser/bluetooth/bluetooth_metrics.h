@@ -34,45 +34,9 @@ enum class CacheQueryOutcome {
 };
 
 // requestDevice() Metrics
-enum class UMARequestDeviceOutcome {
-  SUCCESS = 0,
-  NO_BLUETOOTH_ADAPTER = 1,
-  NO_RENDER_FRAME = 2,
-  OBSOLETE_DISCOVERY_START_FAILED = 3,
-  OBSOLETE_DISCOVERY_STOP_FAILED = 4,
-  OBSOLETE_NO_MATCHING_DEVICES_FOUND = 5,
-  BLUETOOTH_ADAPTER_NOT_PRESENT = 6,
-  OBSOLETE_BLUETOOTH_ADAPTER_OFF = 7,
-  CHOSEN_DEVICE_VANISHED = 8,
-  BLUETOOTH_CHOOSER_CANCELLED = 9,
-  BLUETOOTH_CHOOSER_DENIED_PERMISSION = 10,
-  BLOCKLISTED_SERVICE_IN_FILTER = 11,
-  BLUETOOTH_OVERVIEW_HELP_LINK_PRESSED = 12,
-  ADAPTER_OFF_HELP_LINK_PRESSED = 13,
-  NEED_LOCATION_HELP_LINK_PRESSED = 14,
-  BLUETOOTH_CHOOSER_POLICY_DISABLED = 15,
-  BLUETOOTH_GLOBALLY_DISABLED = 16,
-  BLUETOOTH_CHOOSER_EVENT_HANDLER_INVALID = 17,
-  BLUETOOTH_LOW_ENERGY_NOT_AVAILABLE = 18,
-  BLUETOOTH_CHOOSER_RESCAN = 19,
-  // NOTE: Add new requestDevice() outcomes immediately above this line. Make
-  // sure to update the enum list in
-  // tools/metrics/histograms/histograms.xml accordingly.
-  COUNT
-};
-
-// There should be a call to this function before every
-// Send(BluetoothMsg_RequestDeviceSuccess...) or
-// Send(BluetoothMsg_RequestDeviceError...).
-CONTENT_EXPORT void RecordRequestDeviceOutcome(UMARequestDeviceOutcome outcome);
 
 // Records stats about the arguments used when calling requestDevice.
-//  - The number of filters used.
-//  - The size of each filter.
-//  - UUID of the services used in filters.
-//  - Number of optional services used.
-//  - UUID of the optional services.
-//  - Size of the union of all services.
+//  - The union of filtered and optional service UUIDs.
 void RecordRequestDeviceOptions(
     const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options);
 
@@ -289,11 +253,6 @@ enum class UMARSSISignalStrengthLevel {
 // called.
 void RecordRSSISignalStrength(int rssi);
 void RecordRSSISignalStrengthLevel(UMARSSISignalStrengthLevel level);
-
-// In the case of not accepting all devices in the options that are given
-// to WebBluetooth requestDevice(), records the number of devices in the
-// chooser when a device is paired.
-void RecordNumOfDevices(bool accept_all_devices, size_t num_of_devices);
 
 }  // namespace content
 

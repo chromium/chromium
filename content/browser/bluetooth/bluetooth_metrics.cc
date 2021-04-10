@@ -41,9 +41,6 @@ int HashUUID(const base::Optional<BluetoothUUID>& uuid) {
   return uuid ? HashUUID(uuid->canonical_value()) : 0;
 }
 
-// The maximum number of devices that needs to be recorded.
-const size_t kMaxNumOfDevices = 100;
-
 }  // namespace
 
 namespace content {
@@ -52,45 +49,7 @@ namespace content {
 
 // requestDevice()
 
-void RecordRequestDeviceOutcome(UMARequestDeviceOutcome outcome) {
-  UMA_HISTOGRAM_ENUMERATION("Bluetooth.Web.RequestDevice.Outcome",
-                            static_cast<int>(outcome),
-                            static_cast<int>(UMARequestDeviceOutcome::COUNT));
-}
-
-static void RecordRequestDeviceFilters(
-    const std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>& filters) {
-  UMA_HISTOGRAM_COUNTS_100("Bluetooth.Web.RequestDevice.Filters.Count",
-                           filters.size());
-  for (const auto& filter : filters) {
-    if (!filter->services) {
-      continue;
-    }
-    UMA_HISTOGRAM_COUNTS_100("Bluetooth.Web.RequestDevice.FilterSize",
-                             filter->services->size());
-    for (const BluetoothUUID& service : filter->services.value()) {
-      // TODO(ortuno): Use a macro to histogram strings.
-      // http://crbug.com/520284
-      base::UmaHistogramSparse("Bluetooth.Web.RequestDevice.Filters.Services",
-                               HashUUID(service));
-    }
-  }
-}
-
-static void RecordRequestDeviceOptionalServices(
-    const std::vector<BluetoothUUID>& optional_services) {
-  UMA_HISTOGRAM_COUNTS_100("Bluetooth.Web.RequestDevice.OptionalServices.Count",
-                           optional_services.size());
-  for (const BluetoothUUID& service : optional_services) {
-    // TODO(ortuno): Use a macro to histogram strings.
-    // http://crbug.com/520284
-    base::UmaHistogramSparse(
-        "Bluetooth.Web.RequestDevice.OptionalServices.Services",
-        HashUUID(service));
-  }
-}
-
-static void RecordUnionOfServices(
+void RecordRequestDeviceOptions(
     const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options) {
   std::unordered_set<std::string> union_of_services;
   for (const BluetoothUUID& service : options->optional_services) {
@@ -108,9 +67,6 @@ static void RecordUnionOfServices(
     }
   }
 
-  UMA_HISTOGRAM_COUNTS_100("Bluetooth.Web.RequestDevice.UnionOfServices.Count",
-                           union_of_services.size());
-
   for (const std::string& service : union_of_services) {
     // TODO(ortuno): Use a macro to histogram strings.
     // http://crbug.com/520284
@@ -118,19 +74,6 @@ static void RecordUnionOfServices(
         "Bluetooth.Web.RequestDevice.UnionOfServices.Services",
         HashUUID(service));
   }
-}
-
-void RecordRequestDeviceOptions(
-    const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options) {
-  UMA_HISTOGRAM_BOOLEAN("Bluetooth.Web.RequestDevice.Options.AcceptAllDevices",
-                        options->accept_all_devices);
-
-  if (options->filters) {
-    RecordRequestDeviceFilters(options->filters.value());
-  }
-
-  RecordRequestDeviceOptionalServices(options->optional_services);
-  RecordUnionOfServices(options);
 }
 
 // GATTServer.Connect
@@ -308,15 +251,6 @@ void RecordRSSISignalStrengthLevel(UMARSSISignalStrengthLevel level) {
       "Bluetooth.Web.RequestDevice.RSSISignalStrengthLevel",
       static_cast<int>(level),
       static_cast<int>(UMARSSISignalStrengthLevel::COUNT));
-}
-
-void RecordNumOfDevices(bool accept_all_devices, size_t num_of_devices) {
-  if (!accept_all_devices) {
-    base::UmaHistogramSparse(
-        "Bluetooth.Web.RequestDevice."
-        "NumOfDevicesInChooserWhenNotAcceptingAllDevices",
-        std::min(num_of_devices, kMaxNumOfDevices));
-  }
 }
 
 }  // namespace content

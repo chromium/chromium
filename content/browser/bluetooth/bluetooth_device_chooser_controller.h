@@ -10,7 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_chooser.h"
@@ -159,9 +158,6 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
   // session. We need to null it when the platform stops discovery.
   // http://crbug.com/611852
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
-
-  // The time when scanning starts.
-  base::Optional<base::TimeTicks> scanning_start_time_;
 
   // The device ids that are currently shown in the chooser.
   std::unordered_set<std::string> device_ids_;
