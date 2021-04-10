@@ -19,13 +19,18 @@ generate_grd("build_grd") {
   grd_prefix = "welcome"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   input_files = [
-    "images/background_svgs/blue_circle.svg",
-    "images/background_svgs/green_rectangle.svg",
-    "images/background_svgs/grey_oval.svg",
-    "images/background_svgs/grey_rounded_rectangle.svg",
-    "images/background_svgs/red_triangle.svg",
-    "images/background_svgs/yellow_dots.svg",
-    "images/background_svgs/yellow_semicircle.svg",
+    "images/background_svgs/bookmarks_background.svg",
+    "images/background_svgs/bookmarks_foreground.svg",
+    "images/background_svgs/devices_check.svg",
+    "images/background_svgs/devices.svg",
+    "images/background_svgs/hexagon.svg",
+    "images/background_svgs/lozenge.svg",
+    "images/background_svgs/password_field.svg",
+    "images/background_svgs/password.svg",
+    "images/background_svgs/square.svg",
+    "images/background_svgs/streamer_circle.svg",
+    "images/background_svgs/streamer_line.svg",
+    "images/background_svgs/triangle.svg",
     "welcome.html",
     "welcome.css",
   ]

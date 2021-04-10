@@ -135,6 +135,11 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
   // Add welcome strings.
   AddStrings(html_source);
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  html_source->AddResourcePath("images/background_svgs/logo.svg",
+                               IDR_PRODUCT_LOGO_24PX_1X);
+#endif
+
 #if defined(OS_WIN)
   html_source->AddBoolean("is_win10",
                           base::win::GetVersion() >= base::win::Version::WIN10);
