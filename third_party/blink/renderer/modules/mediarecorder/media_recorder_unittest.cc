@@ -36,7 +36,7 @@ MediaStream* CreateMediaStream(V8TestingScope* scope) {
 }
 }  // namespace
 
-// This is a regression test for crbug.com/1999203
+// This is a regression test for crbug.com/1040339
 TEST(MediaRecorderTest,
      AcceptsAllTracksEndedEventWhenExecutionContextDestroyed) {
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
@@ -52,6 +52,20 @@ TEST(MediaRecorderTest,
   }
   platform->RunUntilIdle();
   WebHeap::CollectAllGarbageForTesting();
+}
+
+// This is a regression test for crbug.com/1179312
+TEST(MediaRecorderTest, ReturnsNoPendingActivityAfterRecorderStopped) {
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  V8TestingScope scope;
+  MediaStream* stream = CreateMediaStream(&scope);
+  MediaRecorder* recorder = MakeGarbageCollected<MediaRecorder>(
+      scope.GetExecutionContext(), stream, MediaRecorderOptions::Create(),
+      scope.GetExceptionState());
+  recorder->start(scope.GetExceptionState());
+  EXPECT_TRUE(recorder->HasPendingActivity());
+  recorder->stop(scope.GetExceptionState());
+  EXPECT_FALSE(recorder->HasPendingActivity());
 }
 
 }  // namespace blink

@@ -188,7 +188,6 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
     : ExecutionContextLifecycleObserver(context),
       stream_(stream),
       mime_type_(options->mimeType()),
-      stopped_(true),
       audio_bits_per_second_(0),
       video_bits_per_second_(0),
       state_(State::kInactive) {
@@ -219,9 +218,7 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
         DOMExceptionCode::kNotSupportedError,
         "Failed to initialize native MediaRecorder the type provided (" +
             mime_type_ + ") is not supported.");
-    return;
   }
-  stopped_ = false;
 }
 
 MediaRecorder::~MediaRecorder() = default;
@@ -265,7 +262,6 @@ void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kUnknownError,
         "There was an error starting the MediaRecorder.");
-    return;
   }
 }
 
@@ -382,13 +378,15 @@ ExecutionContext* MediaRecorder::GetExecutionContext() const {
 }
 
 void MediaRecorder::ContextDestroyed() {
-  if (stopped_)
-    return;
+  if (blob_data_) {
+    // Cache |blob_data_->length()| because of std::move in argument list.
+    const uint64_t blob_data_length = blob_data_->length();
+    CreateBlobEvent(MakeGarbageCollected<Blob>(BlobDataHandle::Create(
+                        std::move(blob_data_), blob_data_length)),
+                    base::Time::Now().ToDoubleT() * 1000.0);
+  }
 
-  WriteData(nullptr /* data */, 0 /* length */, true /* lastInSlice */,
-            base::Time::Now().ToDoubleT() * 1000.0);
-
-  stopped_ = true;
+  state_ = State::kInactive;
   stream_.Clear();
   recorder_handler_->Stop();
   recorder_handler_ = nullptr;
@@ -404,12 +402,6 @@ void MediaRecorder::WriteData(const char* data,
   // type in that case).
   if (!first_write_received_ && length) {
     mime_type_ = recorder_handler_->ActualMimeType();
-  }
-  if (stopped_ && !last_in_slice) {
-    stopped_ = false;
-    ScheduleDispatchEvent(Event::Create(event_type_names::kStart));
-    first_write_received_ = true;
-  } else if (!first_write_received_ && length) {
     ScheduleDispatchEvent(Event::Create(event_type_names::kStart));
     first_write_received_ = true;
   }
@@ -424,7 +416,7 @@ void MediaRecorder::WriteData(const char* data,
   if (!last_in_slice)
     return;
 
-  // Cache |m_blobData->length()| before release()ng it.
+  // Cache |blob_data_->length()| because of std::move in argument list.
   const uint64_t blob_data_length = blob_data_->length();
   CreateBlobEvent(MakeGarbageCollected<Blob>(BlobDataHandle::Create(
                       std::move(blob_data_), blob_data_length)),

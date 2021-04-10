@@ -75,7 +75,7 @@ class MODULES_EXPORT MediaRecorder
   void ContextDestroyed() override;
 
   // ScriptWrappable
-  bool HasPendingActivity() const final { return !stopped_; }
+  bool HasPendingActivity() const final { return state_ != State::kInactive; }
 
   virtual void WriteData(const char* data,
                          size_t length,
@@ -98,7 +98,6 @@ class MODULES_EXPORT MediaRecorder
 
   Member<MediaStream> stream_;
   String mime_type_;
-  bool stopped_;
   int audio_bits_per_second_;
   int video_bits_per_second_;
 
