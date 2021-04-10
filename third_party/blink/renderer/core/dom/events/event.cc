@@ -246,6 +246,9 @@ void Event::preventDefault() {
 }
 
 void Event::SetTarget(EventTarget* target) {
+  recordreplay::Assert("Event::SetTarget %lu %lu",
+                       recordreplay::PointerId(this), recordreplay::PointerId(target));
+
   if (target_ == target)
     return;
 

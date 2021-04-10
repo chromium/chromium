@@ -59,13 +59,30 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+struct RecordReplayCompareMemberByPointerId {
+  template <typename T>
+  bool operator()(const T& a, const T& b) const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId(a.Get());
+      int idb = recordreplay::PointerId(b.Get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
 namespace blink {
 
 namespace {
 
 void NotifyFinishObservers(
     HeapHashSet<WeakMember<ResourceFinishObserver>>* observers) {
-  for (const auto& observer : *observers)
+  HeapVector<Member<ResourceFinishObserver>> observers_vector;
+  CopyToVector(*observers, observers_vector);
+  std::sort(observers_vector.begin(), observers_vector.end(),
+            RecordReplayCompareMemberByPointerId());
+  for (const auto& observer : observers_vector)
     observer->NotifyFinished();
 }
 

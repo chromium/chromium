@@ -26,6 +26,19 @@
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 
+struct RecordReplayCompareMemberByPointerId {
+  template <typename T>
+  bool operator()(const T& a, const T& b) const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId(a.Get());
+      int idb = recordreplay::PointerId(b.Get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
 namespace blink {
 
 SVGDocumentExtensions::SVGDocumentExtensions(Document* document)
@@ -95,6 +108,8 @@ void SVGDocumentExtensions::PauseAnimations() {
 void SVGDocumentExtensions::DispatchSVGLoadEventToOutermostSVGElements() {
   HeapVector<Member<SVGSVGElement>> time_containers;
   CopyToVector(time_containers_, time_containers);
+  std::sort(time_containers.begin(), time_containers.end(),
+            RecordReplayCompareMemberByPointerId());
   for (const auto& container : time_containers) {
     SVGSVGElement* outer_svg = container.Get();
     if (!outer_svg->IsOutermostSVGSVGElement())

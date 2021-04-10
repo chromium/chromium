@@ -688,6 +688,13 @@ void MacScrollbarAnimatorImpl::DidAddVerticalScrollbar(Scrollbar& scrollbar) {
   if (!painter)
     return;
 
+  // For now we avoid creating BlinkScrollbarPainterDelegate when
+  // recording/replaying. We don't currently replay custom messages,
+  // and scrollbar related state will go out of sync as a result.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    return;
+  }
+
   DCHECK(!vertical_scrollbar_painter_delegate_);
   vertical_scrollbar_painter_delegate_.reset(
       [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar
@@ -715,6 +722,11 @@ void MacScrollbarAnimatorImpl::DidAddHorizontalScrollbar(Scrollbar& scrollbar) {
   ScrollbarPainter painter = ScrollbarPainterForScrollbar(scrollbar);
   if (!painter)
     return;
+
+  // See DidAddVerticalScrollbar.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    return;
+  }
 
   DCHECK(!horizontal_scrollbar_painter_delegate_);
   horizontal_scrollbar_painter_delegate_.reset(

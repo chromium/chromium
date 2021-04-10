@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_FINISH_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_FINISH_OBSERVER_H_
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -22,7 +23,13 @@ namespace blink {
 class PLATFORM_EXPORT ResourceFinishObserver
     : public GarbageCollected<ResourceFinishObserver> {
  public:
-  virtual ~ResourceFinishObserver() = default;
+  ResourceFinishObserver() {
+    // Pointer registration is needed for sorting in NotifyFinishObservers.
+    recordreplay::RegisterPointer(this);
+  }
+  virtual ~ResourceFinishObserver() {
+    recordreplay::UnregisterPointer(this);
+  }
 
   // Called asynchronously when loading finishes.
   // Note that this can be dispatched after removing |this| client from a

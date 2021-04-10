@@ -390,6 +390,7 @@ DataPipeProducerDispatcher::DataPipeProducerDispatcher(
       node_controller_(node_controller),
       control_port_(control_port),
       pipe_id_(pipe_id),
+      lock_("DataPipeProducerDispatcher.lock_"),
       watchers_(this),
       shared_ring_buffer_(std::move(shared_ring_buffer)),
       available_capacity_(options_.capacity_num_bytes) {}

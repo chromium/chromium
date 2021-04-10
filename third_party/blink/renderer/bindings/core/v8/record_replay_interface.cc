@@ -868,7 +868,31 @@ static void DumpCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
+// When JS assertions are enabled, this callback is used to get any pointer ID
+// associated with a given API object.
+static int GetAPIObjectIdCallback(v8::Local<v8::Object> object) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  const WrapperTypeInfo* infos[] = {
+    // ScriptWrappable itself doesn't have wrapper type info, so check subclasses.
+    Node::GetStaticWrapperTypeInfo(),
+    Event::GetStaticWrapperTypeInfo(),
+  };
+  for (const WrapperTypeInfo* info : infos) {
+    if (V8PerIsolateData::From(isolate)->HasInstance(info, object)) {
+      ScriptWrappable* wrappable = ToScriptWrappable(object);
+      int id = recordreplay::PointerId(wrappable);
+      CHECK(id);
+      return id;
+    }
+  }
+  return 0;
+}
+
+extern "C" void V8RecordReplaySetAPIObjectIdCallback(int (*callback)(v8::Local<v8::Object>));
+
 void SetupRecordReplayCommands(v8::Isolate* isolate) {
+  V8RecordReplaySetAPIObjectIdCallback(GetAPIObjectIdCallback);
+
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   v8::Local<v8::String> args_name_string =
