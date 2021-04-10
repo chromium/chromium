@@ -83,6 +83,7 @@ struct PRINTING_EXPORT AdvancedCapability {
   enum class Type : uint8_t { kBoolean, kFloat, kInteger, kString };
 
   AdvancedCapability();
+  AdvancedCapability(const std::string& name, AdvancedCapability::Type type);
   AdvancedCapability(const std::string& name,
                      const std::string& display_name,
                      AdvancedCapability::Type type,

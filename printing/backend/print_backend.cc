@@ -66,6 +66,10 @@ bool AdvancedCapabilityValue::operator==(
 
 AdvancedCapability::AdvancedCapability() = default;
 
+AdvancedCapability::AdvancedCapability(const std::string& name,
+                                       AdvancedCapability::Type type)
+    : name(name), type(type) {}
+
 AdvancedCapability::AdvancedCapability(
     const std::string& name,
     const std::string& display_name,
