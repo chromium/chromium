@@ -299,6 +299,12 @@ class AutofillProfile : public AutofillDataModel {
   // Returns a constant reference to the |address_| field.
   const Address& GetAddress() const { return address_; }
 
+  // Returns the label of the profile.
+  const std::string& profile_label() const { return profile_label_; }
+
+  // Sets the label of the profile.
+  void set_profile_label(const std::string& label) { profile_label_ = label; }
+
  private:
   // FormGroup:
   std::u16string GetInfoImpl(const AutofillType& type,
@@ -345,6 +351,12 @@ class AutofillProfile : public AutofillDataModel {
   CompanyInfo company_;
   PhoneNumber phone_number_;
   Address address_;
+
+  // The label is chosen by the user and can contain an arbitrary value.
+  // However, there are two labels that play a special role to indicate that an
+  // address is either a 'HOME' or a 'WORK' address. In this case, the value of
+  // the label is '$HOME$' or '$WORK$', respectively.
+  std::string profile_label_;
 
   // The BCP 47 language code that can be used to format |address_| for display.
   std::string language_code_;

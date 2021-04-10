@@ -94,6 +94,9 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_guid(entry.guid());
   specifics->set_origin(entry.origin());
 
+  if (!entry.profile_label().empty())
+    specifics->set_profile_label(entry.profile_label());
+
   specifics->set_use_count(entry.use_count());
   specifics->set_use_date(entry.use_date().ToTimeT());
   specifics->set_address_home_language_code(
@@ -252,6 +255,10 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   profile->set_language_code(specifics.address_home_language_code());
   profile->SetClientValidityFromBitfieldValue(
       specifics.validity_state_bitfield());
+
+  // Set the profile label if it exists.
+  if (specifics.has_profile_label())
+    profile->set_profile_label(specifics.profile_label());
 
   // Set repeated fields.
   profile->SetRawInfoWithVerificationStatus(

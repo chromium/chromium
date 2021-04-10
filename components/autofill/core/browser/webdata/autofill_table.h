@@ -63,6 +63,10 @@ struct PaymentsCustomerData;
 //
 //   guid               A guid string to uniquely identify the profile.
 //                      Added in version 31.
+//   label              A user-chosen and user-visible label for the profile to
+//                      help identifying the semantics of the profile. The user
+//                      can choose an arbitrary string in principle, but the
+//                      values '$HOME$' and '$WORK$' indicate a special meaning.
 //   company_name
 //   street_address     The combined lines of the street address.
 //                      Added in version 54.
@@ -683,6 +687,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion90AddNewStructuredAddressColumns();
   bool MigrateToVersion91AddMoreStructuredAddressColumns();
   bool MigrateToVersion92AddNewPrefixedNameColumn();
+  bool MigrateToVersion93AddAutofillProfileLabelColumn();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

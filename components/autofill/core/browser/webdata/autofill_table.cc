@@ -103,6 +103,7 @@ void BindAutofillProfileToStatement(const AutofillProfile& profile,
   s->BindString(index++, profile.language_code());
   s->BindInt64(index++, profile.GetClientValidityBitfieldValue());
   s->BindBool(index++, profile.is_client_validity_states_updated());
+  s->BindString(index++, profile.profile_label());
 }
 
 void AddAutofillProfileDetailsFromStatement(const sql::Statement& s,
@@ -124,6 +125,7 @@ void AddAutofillProfileDetailsFromStatement(const sql::Statement& s,
   profile->set_language_code(s.ColumnString(index++));
   profile->SetClientValidityFromBitfieldValue(s.ColumnInt64(index++));
   profile->set_is_client_validity_states_updated(s.ColumnBool(index++));
+  profile->set_profile_label(s.ColumnString(index++));
 }
 
 void BindEncryptedCardToColumn(sql::Statement* s,
@@ -786,6 +788,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 92:
       *update_compatible_version = false;
       return MigrateToVersion92AddNewPrefixedNameColumn();
+    case 93:
+      *update_compatible_version = false;
+      return MigrateToVersion93AddAutofillProfileLabelColumn();
   }
   return true;
 }
@@ -1128,8 +1133,8 @@ bool AutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
       "(guid, company_name, street_address, dependent_locality, city, state,"
       " zipcode, sorting_code, country_code, use_count, use_date, "
       " date_modified, origin, language_code, validity_bitfield, "
-      " is_client_validity_states_updated)"
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+      " is_client_validity_states_updated, label) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   BindAutofillProfileToStatement(profile, AutofillClock::Now(), &s);
 
   if (!s.Run())
@@ -1159,14 +1164,15 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
       "    city=?, state=?, zipcode=?, sorting_code=?, country_code=?, "
       "    use_count=?, use_date=?, date_modified=?, origin=?, "
       "    language_code=?, validity_bitfield=?, "
-      "    is_client_validity_states_updated=?"
+      "    is_client_validity_states_updated=?, "
+      "    label=? "
       "WHERE guid=?"));
   BindAutofillProfileToStatement(profile,
                                  update_modification_date
                                      ? AutofillClock::Now()
                                      : old_profile->modification_date(),
                                  &s);
-  s.BindString(16, profile.guid());
+  s.BindString(17, profile.guid());
 
   bool result = s.Run();
   DCHECK_GT(db_->GetLastChangeCount(), 0);
@@ -1210,7 +1216,7 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
       "SELECT guid, company_name, street_address, dependent_locality, city,"
       " state, zipcode, sorting_code, country_code, use_count, use_date,"
       " date_modified, origin, language_code, validity_bitfield,"
-      " is_client_validity_states_updated "
+      " is_client_validity_states_updated, label "
       "FROM autofill_profiles "
       "WHERE guid=?"));
   s.BindString(0, guid);
@@ -1218,7 +1224,7 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   if (!s.Step())
     return nullptr;
 
-  std::unique_ptr<AutofillProfile> profile(new AutofillProfile);
+  auto profile = std::make_unique<AutofillProfile>();
   profile->set_guid(s.ColumnString(0));
   DCHECK(base::IsValidGUID(profile->guid()));
 
@@ -3393,6 +3399,14 @@ bool AutofillTable::MigrateToVersion91AddMoreStructuredAddressColumns() {
   return true;
 }
 
+bool AutofillTable::MigrateToVersion93AddAutofillProfileLabelColumn() {
+  if (!db_->DoesTableExist("autofill_profiles"))
+    InitProfileAddressesTable();
+
+  return db_->DoesColumnExist("autofill_profiles", "label") ||
+         db_->Execute("ALTER TABLE autofill_profiles ADD COLUMN label VARCHAR");
+}
+
 bool AutofillTable::
     MigrateToVersion89AddInstrumentIdColumnToMaskedCreditCard() {
   // Add the new instrument_id column to the masked_credit_cards table and set
@@ -3697,7 +3711,8 @@ bool AutofillTable::InitProfilesTable() {
                       "use_date INTEGER NOT NULL DEFAULT 0, "
                       "validity_bitfield UNSIGNED NOT NULL DEFAULT 0, "
                       "is_client_validity_states_updated BOOL NOT NULL DEFAULT "
-                      "FALSE) ")) {
+                      "FALSE, "
+                      "label VARCHAR) ")) {
       NOTREACHED();
       return false;
     }

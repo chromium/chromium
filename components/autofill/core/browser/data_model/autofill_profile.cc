@@ -277,6 +277,8 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   set_guid(profile.guid());
   set_origin(profile.origin());
 
+  set_profile_label(profile.profile_label());
+
   record_type_ = profile.record_type_;
 
   name_ = profile.name_;
@@ -1314,7 +1316,8 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
 
 bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
   return origin() == profile.origin() &&
-         language_code() == profile.language_code() && Compare(profile) == 0;
+         language_code() == profile.language_code() &&
+         profile_label() == profile.profile_label() && Compare(profile) == 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
@@ -1323,6 +1326,7 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
              : base::HexEncode(profile.server_id().data(),
                                profile.server_id().size()))
      << " " << profile.origin() << " "
+     << "label: " << profile.profile_label() << " "
      << profile.GetClientValidityBitfieldValue() << " "
      << profile.has_converted() << " " << profile.use_count() << " "
      << profile.use_date() << " " << profile.language_code() << std::endl;

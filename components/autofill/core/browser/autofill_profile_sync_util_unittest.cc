@@ -42,6 +42,8 @@ AutofillProfile ConstructCompleteProfile() {
   profile.set_use_count(7);
   profile.set_use_date(base::Time::FromTimeT(1423182152));
 
+  profile.set_profile_label("profile_label");
+
   // Set testing values and statuses for the name.
   profile.SetRawInfoWithVerificationStatus(NAME_HONORIFIC_PREFIX, u"Dr.",
                                            VerificationStatus::kObserved);
@@ -134,6 +136,7 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_origin("https://www.example.com/");
   specifics.set_use_count(7);
   specifics.set_use_date(1423182152);
+  specifics.set_profile_label("profile_label");
 
   // Set values and statuses for the names.
   specifics.add_name_honorific("Dr.");

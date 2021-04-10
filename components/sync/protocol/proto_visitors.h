@@ -177,6 +177,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(origin);
   VISIT(use_count);
   VISIT(use_date);
+  VISIT(profile_label);
   VISIT_REP(name_honorific);
   VISIT_REP(name_first);
   VISIT_REP(name_middle);

@@ -53,6 +53,11 @@ message AutofillProfileSpecifics {
   // from the Windows epoch.
   optional int64 use_date = 23;
 
+  // A user chosen profile label that is used to identify the profile.
+  // The value of the label can be freely chosen by the user. Two possible label
+  // values are '$HOME$' or '$WORK$' which have a special meaning.
+  optional string profile_label = 62;
+
   // Contact info name fields.
   repeated string name_honorific = 26;
   repeated string name_first = 2;
@@ -146,7 +151,7 @@ message AutofillProfileSpecifics {
   optional bool is_client_validity_states_updated = 25;
 
   // Deprecated.
-  optional string label = 1 [deprecated = true];
+  optional string deprecated_label = 1 [deprecated = true];
   optional string phone_fax_whole_number = 14 [deprecated = true];
 }
 
