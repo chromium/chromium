@@ -138,17 +138,19 @@ namespace autotestPrivate {
     // Is the screen ready for password?
     boolean isReadyForPassword;
 
-    // Is the logged-in user a regular user?
-    boolean isRegularUser;
-    // Are we logged into the guest account?
-    boolean isGuest;
-    // Are we logged into kiosk-app mode?
-    boolean isKiosk;
+    // Is the logged-in user a regular user? Set only if `isLoggedIn`.
+    boolean? isRegularUser;
+    // Are we logged into the guest account? Set only if `isLoggedIn`.
+    boolean? isGuest;
+    // Are we logged into kiosk-app mode? Set only if `isLoggedIn`.
+    boolean? isKiosk;
 
-    DOMString email;
-    DOMString displayEmail;
-    // User image: 'file', 'profile' or a number.
-    DOMString userImage;
+    // User email. Set only if `isLoggedIn`.
+    DOMString? email;
+    // User display email. Set only if `isLoggedIn`.
+    DOMString? displayEmail;
+    // User image: 'file', 'profile' or a number. Set only if `isLoggedIn`.
+    DOMString? userImage;
   };
   callback LoginStatusCallback = void (LoginStatusDict status);
 
