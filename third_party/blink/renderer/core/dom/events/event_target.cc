@@ -34,7 +34,6 @@
 #include <memory>
 
 #include "base/format_macros.h"
-#include "base/record_replay.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/add_event_listener_options_or_boolean.h"
 #include "third_party/blink/renderer/bindings/core/v8/event_listener_options_or_boolean.h"
@@ -839,6 +838,9 @@ void EventTarget::CountLegacyEvents(
 }
 
 DispatchEventResult EventTarget::FireEventListeners(Event& event) {
+  recordreplay::Assert("EventTarget::FireEventListeners %lu",
+                       recordreplay::PointerId(this));
+
 #if DCHECK_IS_ON()
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif

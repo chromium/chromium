@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 
 #include "base/macros.h"
+#include "base/record_replay.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
@@ -55,7 +56,9 @@ class PLATFORM_EXPORT ScriptWrappable
     : public GarbageCollected<ScriptWrappable>,
       public NameClient {
  public:
-  virtual ~ScriptWrappable() = default;
+  virtual ~ScriptWrappable() {
+    recordreplay::UnregisterPointer(this);
+  }
 
   // The following methods may override lifetime of ScriptWrappable objects when
   // needed. In particular if |HasPendingActivity| or |HasEventListeners|
@@ -144,7 +147,11 @@ class PLATFORM_EXPORT ScriptWrappable
   bool ContainsWrapper() const { return !main_world_wrapper_.IsEmpty(); }
 
  protected:
-  ScriptWrappable() = default;
+  ScriptWrappable() {
+    // Register wrappables so that we have a consistent identifier that can be
+    // used in assertions.
+    recordreplay::RegisterPointer(this);
+  }
 
  private:
   v8::Local<v8::Object> MainWorldWrapper(v8::Isolate* isolate) const {
