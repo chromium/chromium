@@ -786,41 +786,12 @@ void ComputeReplacedSize(const NGBlockNode& node,
   const NGBoxStrut border_padding =
       ComputeBorders(space, node) + ComputePadding(space, style);
 
-  const MinMaxSizes inline_min_max_sizes = {
-      ResolveMinInlineLength(space, style, border_padding, child_min_max_sizes,
-                             style.LogicalMinWidth()),
-      ResolveMaxInlineLength(space, style, border_padding, child_min_max_sizes,
-                             style.LogicalMaxWidth())};
-
+  const Length& block_length = style.LogicalHeight();
   const MinMaxSizes block_min_max_sizes = {
       ResolveMinBlockLength(space, style, border_padding,
                             style.LogicalMinHeight()),
       ResolveMaxBlockLength(space, style, border_padding,
                             style.LogicalMaxHeight())};
-
-  const Length& inline_length = style.LogicalWidth();
-  const Length& block_length = style.LogicalHeight();
-  base::Optional<LayoutUnit> replaced_inline;
-  if (space.IsFixedInlineSize()) {
-    replaced_inline = space.AvailableSize().inline_size;
-    DCHECK_GE(*replaced_inline, 0);
-  } else if (!inline_length.IsAuto() || space.StretchInlineSizeIfAuto()) {
-    Length inline_length_to_resolve = inline_length;
-    if (inline_length_to_resolve.IsAuto()) {
-      // TODO(dgrogan): This code block (and its corresponding block version
-      // below) didn't make any tests pass when written so it may be unnecessary
-      // or untested. Check again when launching ReplacedNG.
-      DCHECK(space.StretchInlineSizeIfAuto());
-      DCHECK(space.AvailableSize().inline_size != kIndefiniteSize);
-      inline_length_to_resolve = Length::FillAvailable();
-    }
-    replaced_inline =
-        ResolveMainInlineLength(space, style, border_padding,
-                                child_min_max_sizes, inline_length_to_resolve);
-    DCHECK(replaced_inline != kIndefiniteSize);
-    replaced_inline =
-        inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
-  }
   base::Optional<LayoutUnit> replaced_block;
   if (space.IsFixedBlockSize()) {
     replaced_block = space.AvailableSize().block_size;
@@ -828,6 +799,9 @@ void ComputeReplacedSize(const NGBlockNode& node,
   } else if (!block_length.IsAuto() || space.StretchBlockSizeIfAuto()) {
     Length block_length_to_resolve = block_length;
     if (block_length_to_resolve.IsAuto()) {
+      // TODO(dgrogan): This code block (and its corresponding inline version
+      // below) didn't make any tests pass when written so it may be unnecessary
+      // or untested. Check again when launching ReplacedNG.
       DCHECK(space.StretchBlockSizeIfAuto());
       DCHECK(space.AvailableSize().block_size != kIndefiniteSize);
       block_length_to_resolve = Length::FillAvailable();
@@ -843,6 +817,32 @@ void ComputeReplacedSize(const NGBlockNode& node,
           block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
     }
   }
+
+  const Length& inline_length = style.LogicalWidth();
+  const MinMaxSizes inline_min_max_sizes = {
+      ResolveMinInlineLength(space, style, border_padding, child_min_max_sizes,
+                             style.LogicalMinWidth()),
+      ResolveMaxInlineLength(space, style, border_padding, child_min_max_sizes,
+                             style.LogicalMaxWidth())};
+  base::Optional<LayoutUnit> replaced_inline;
+  if (space.IsFixedInlineSize()) {
+    replaced_inline = space.AvailableSize().inline_size;
+    DCHECK_GE(*replaced_inline, 0);
+  } else if (!inline_length.IsAuto() || space.StretchInlineSizeIfAuto()) {
+    Length inline_length_to_resolve = inline_length;
+    if (inline_length_to_resolve.IsAuto()) {
+      DCHECK(space.StretchInlineSizeIfAuto());
+      DCHECK(space.AvailableSize().inline_size != kIndefiniteSize);
+      inline_length_to_resolve = Length::FillAvailable();
+    }
+    replaced_inline =
+        ResolveMainInlineLength(space, style, border_padding,
+                                child_min_max_sizes, inline_length_to_resolve);
+    DCHECK(replaced_inline != kIndefiniteSize);
+    replaced_inline =
+        inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
+  }
+
   if (replaced_inline && replaced_block) {
     out_replaced_size->emplace(*replaced_inline, *replaced_block);
     return;
