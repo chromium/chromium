@@ -1,4 +1,5 @@
 2d.transformation:                    "transformations"
+2d.color.space:                       'wide-gamut-canvas'
 2d.composite:                         "compositing"
 2d.coordinatespace:                   "conformance-requirements"
 2d.missingargs:                       "conformance-requirements"
