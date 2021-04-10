@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> แนะนำให้คุณอัปเดต <ph name="DEVICE_TYPE" /> นี้</translation>
 <translation id="1118738876271697201">ระบบระบุรุ่นหรือหมายเลขซีเรียลของอุปกรณ์ไม่สำเร็จ</translation>
 <translation id="1119447706177454957">ข้อผิดพลาดภายใน</translation>
-<translation id="111959947408687873">ใช้ Ctrl + <ph name="SEARCH_KEY_NAME" /> + M เพื่อเปิด/ปิดใช้แว่นขยายทั้งหน้าจอ ใช้แป้น Ctrl + Alt + ลูกศร เพื่อไปยังส่วนต่างๆ ในหน้าจอเมื่อซูมเข้า</translation>
 <translation id="1122068467107743258">งาน</translation>
 <translation id="1122198203221319518">&amp;เครื่องมือ</translation>
 <translation id="1122242684574577509">การตรวจสอบสิทธิ์ล้มเหลว คลิกเพื่อไปที่หน้าการเข้าสู่ระบบสำหรับเครือข่าย Wi-Fi ที่คุณกำลังใช้อยู่ (<ph name="NETWORK_ID" />)</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">เฟรมนี้ถูกป้องกันเนื่องจากมีเนื้อหาบางอย่างที่ไม่ปลอดภัย</translation>
 <translation id="146219525117638703">ONC State</translation>
 <translation id="146220085323579959">อินเทอร์เน็ตถูกตัดการเชื่อมต่อ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
-<translation id="1463051728820430132">ถามเมื่อเว็บแอปต้องการเปิดไฟล์ประเภทต่างๆ ในอุปกรณ์</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> ถูกบล็อกโดยการปกป้องขั้นสูง</translation>
 <translation id="1464044141348608623">ไม่อนุญาตให้เว็บไซต์ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
 <translation id="1464258312790801189">บัญชีของคุณ</translation>
@@ -1092,7 +1090,6 @@
 <translation id="2163470535490402084">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อีก 1 รายการ</translation>
 <translation id="2165421703844373933">เข้าถึง Assistant ได้เพียงพูดว่า "Ok Google" หากต้องการประหยัดแบตเตอรี่ ให้เลือก “เปิด (แนะนำ)” Assistant จะตอบสนองเฉพาะเมื่ออุปกรณ์เสียบปลั๊กหรือชาร์จไฟอยู่</translation>
-<translation id="2166269335975661317">เว็บแอปขอเปิดไฟล์ประเภทต่างๆ จากอุปกรณ์ได้</translation>
 <translation id="2166369534954157698">สุนัขจิ้งจอกที่ปราดเปรียวกระโดดข้ามสุนัขเกียจคร้าน</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">ลงชื่อเข้าใช้ต่อไป</translation>
@@ -4230,7 +4227,6 @@
 <translation id="5715711091495208045">โบรกเกอร์ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">เครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="5719854774000914513">เว็บไซต์สามารถขอเชื่อมต่อกับอุปกรณ์ HID ได้</translation>
-<translation id="5720705177508910913">ผู้ใช้ปัจจุบัน</translation>
 <translation id="572155275267014074">การตั้งค่า Android</translation>
 <translation id="5722086096420375088">สีเขียวและสีขาว</translation>
 <translation id="5722930212736070253">แย่จัง! ที่เก็บ ZIP ถาวรพบข้อผิดพลาด</translation>
@@ -4465,7 +4461,6 @@
 <translation id="5990266201903445068">Wi-Fi เท่านั้น</translation>
 <translation id="5990386583461751448">แปลแล้ว</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{โปรดขอให้ผู้ดูแลระบบนำแอปพลิเคชันนี้ออกเพื่อให้คุณท่องเว็บได้ต่อไป}other{โปรดขอให้ผู้ดูแลระบบนำแอปพลิเคชันนี้ออกเพื่อให้คุณท่องเว็บได้ต่อไป}}</translation>
-<translation id="5992175324932183568">ไม่อนุญาตให้เว็บแอปเปิดไฟล์ประเภทต่างๆ จากอุปกรณ์</translation>
 <translation id="5997337190805127100">ดูข้อมูลเพิ่มเติมเกี่ยวกับการเข้าถึงเว็บไซต์</translation>
 <translation id="6000758707621254961">มีผลการค้นหา "<ph name="SEARCH_TEXT" />" <ph name="RESULT_COUNT" /> รายการ</translation>
 <translation id="6002210667729577411">ย้ายกลุ่มไปยังหน้าต่างใหม่</translation>
@@ -4587,7 +4582,6 @@
 <translation id="6124213551517593835">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ทั้งหมดที่ <ph name="SITE_GROUP_NAME" /> และเว็บไซต์ใดก็ตามภายใต้กลุ่มนี้จัดเก็บไว้</translation>
 <translation id="6124650939968185064">ส่วนขยายต่อไปนี้ต้องพึ่งพาส่วนขยายนี้:</translation>
 <translation id="6124698108608891449">เว็บไซต์นี้ต้องการสิทธิ์เพิ่มเติม</translation>
-<translation id="6125442051901189730">ไม่มีโปรไฟล์ SIM ที่ใช้ได้ ตั้งโปรไฟล์ใหม่<ph name="BEGIN_LINK" />ที่นี่<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">ขออภัย คุณจะต้องเพิ่มบัญชีของคุณลงใน <ph name="DEVICE_TYPE" /> นี้อีกครั้ง</translation>
 <translation id="6129691635767514872">นำข้อมูลที่เลือกออกจาก Chrome และอุปกรณ์ที่ซิงค์แล้ว บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่น เช่น การค้นหาและกิจกรรมจากบริการอื่นๆ ของ Google ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6129938384427316298">ความคิดเห็นเกี่ยวกับใบรับรองของ Netscape</translation>
@@ -6587,8 +6581,6 @@
 <translation id="8368859634510605990">&amp;เปิดบุ๊กมาร์กทั้งหมด</translation>
 <translation id="8370294614544004647">เข้าสู่โหมดสลีปเมื่อปิดแล็ปท็อป</translation>
 <translation id="8371695176452482769">เชิญพูดเลย</translation>
-<translation id="8371749822919332187">ใช้ Ctrl + Alt + เพิ่มความสว่าง เพื่อซูมเข้า
-ใช้ Ctrl + Alt + ลดความสว่าง เพื่อซูมออก</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{ซ่อนเว็บไซต์}other{ซ่อนเว็บไซต์}}</translation>
 <translation id="8372369524088641025">คีย์ WEP ไม่ถูกต้อง</translation>
 <translation id="8373652277231415614">ไดเรกทอรีที่แชร์ใน Crostini</translation>
@@ -7399,7 +7391,6 @@
 <translation id="975893173032473675">ภาษาปลายทาง</translation>
 <translation id="976499800099896273">กล่องโต้ตอบการเลิกทำการแก้ไขอัตโนมัติแสดงอยู่สำหรับ <ph name="TYPED_WORD" /> ที่แก้ไขเป็น <ph name="CORRECTED_WORD" />  กดลูกศรขึ้นเพื่อไปยังกล่องโต้ตอบ หรือกด ESC เพื่อเพิกเฉย</translation>
 <translation id="978146274692397928">ความกว้างเครื่องหมายวรรคตอนเบื้องต้นคือแบบเต็ม</translation>
-<translation id="97883469867914488">บล็อกไม่ให้เว็บแอปเปิดไฟล์ประเภทต่างๆ ในอุปกรณ์</translation>
 <translation id="97905529126098460">หน้าต่างนี้จะปิดเมื่อการยกเลิกเสร็จสมบูรณ์แล้ว</translation>
 <translation id="980731642137034229">ปุ่มเมนูการทำงาน</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>

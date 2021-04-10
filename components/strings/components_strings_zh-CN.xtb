@@ -272,7 +272,6 @@
 <translation id="1914326953223720820">解压缩服务</translation>
 <translation id="1915697529809968049">要改用 Touch ID 来取代银行卡验证码 (CVC) 吗？</translation>
 <translation id="1916770123977586577">要将您更新后的设置应用到此网站，请重新加载此页面</translation>
-<translation id="1917876262703816781">某个网站或应用发生了数据泄露，导致您的密码外泄。Chrome 建议您立即更改您在<ph name="ORIGIN" />上保存的密码。</translation>
 <translation id="1919345977826869612">广告</translation>
 <translation id="1919367280705858090">了解如何解决特定错误消息指出的错误</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{无}=1{1 个网站}other{# 个网站}}</translation>
@@ -905,7 +904,6 @@
 <translation id="4358461427845829800">管理付款方式…</translation>
 <translation id="4359160567981085931">您刚刚在一个诈骗网站中输入了密码。Chrome 可以为您提供帮助。若要更改密码并让 Google 知晓您的帐号可能处于危险状态，请点击“保护帐号”。</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{某个网站或应用发生了数据泄露，导致您为 <ph name="ORIGIN" /> 保存的密码外泄。Chrome 建议您立即更改您在 <ph name="ORIGIN" /> 上保存的密码。}=1{某个网站或应用发生了数据泄露，导致您为 <ph name="ORIGIN" /> 及另外一个网站保存的密码外泄。Chrome 建议您立即检查您保存的密码。}other{某个网站或应用发生了数据泄露，导致您为 <ph name="ORIGIN" /> 及另外 <ph name="SITES_COUNT" /> 个网站保存的密码外泄。Chrome 建议您立即检查您保存的密码。}}</translation>
 <translation id="437058704415269440">帐号余额</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">应使用<ph name="VALUE_TYPE" />值。</translation>
@@ -1146,7 +1144,6 @@
 <translation id="5287456746628258573">此网站使用的安全性配置已过期，这可能会导致您的信息（例如密码或信用卡卡号）在发送至此网站时出现泄露。</translation>
 <translation id="5288108484102287882">政策值验证引发了警告</translation>
 <translation id="5289384342738547352">多文档处理</translation>
-<translation id="5295292838686006428">某个网站或应用发生了数据泄露，导致您的密码外泄。Chrome 建议您立即检查您保存的密码。</translation>
 <translation id="5299298092464848405">解析策略时出错</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5306593769196050043">两个工作表</translation>
@@ -1685,7 +1682,6 @@
 <translation id="7473891865547856676">不，谢谢</translation>
 <translation id="7481312909269577407">前进</translation>
 <translation id="7485870689360869515">找不到数据。</translation>
-<translation id="7495290002932347110">某个网站或应用发生了数据泄露，导致您的密码外泄。Chrome 建议您立即检查并更改您在<ph name="ORIGIN" />上保存的密码。</translation>
 <translation id="7495528107193238112">该内容被屏蔽了。请联系网站所有者以解决此问题。</translation>
 <translation id="7498234416455752244">继续修改</translation>
 <translation id="7503664977220660814">您刚刚在一个诈骗网站中输入了密码。Chromium 建议您立即前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 以及使用此密码的其他网站检查您保存的密码。</translation>

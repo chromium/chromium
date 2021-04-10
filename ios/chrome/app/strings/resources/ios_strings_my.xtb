@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">စာမျက်နှာကို မမျှဝေနိုင်ပါ</translation>
 <translation id="2923448633003185837">ကူးထည့်ပြီး ဖွင့်ရန်</translation>
 <translation id="292639812446257861">မဖတ်ရသေးကြောင်း အမှတ်အသားလုပ်ရန်</translation>
+<translation id="2932085390869194046">စကားဝှက် အကြံပြုပါ…</translation>
 <translation id="2952581218264071393">၁။ 'Chrome ဆက်တင်များ' ဖွင့်ပါ</translation>
 <translation id="2958718410589002129">စကားဝှက်များ</translation>
 <translation id="2964349545761222050">ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို ပိတ်ခြင်း</translation>
@@ -759,7 +760,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8806823403540278281">ကိုယ်ဖျောက်မုဒ်ဖြင့် ဝင်ရောက်ကြည့်ရှုရန် သင့်အဖွဲ့အစည်းက သတ်မှတ်ထားပါသည်။ ‘ရုပ်ဖျက်မုဒ်’ တွင် တဘ်များကို မသိမ်းပါ။
 <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
-<translation id="8823704566850948458">စကားဝှက်ကို အကြံပြုရန်...</translation>
 <translation id="8840513115188359703">Google အကောင့်မှ သင်ထွက်သွားမည် မဟုတ်ပါ။</translation>
 <translation id="8870413625673593573">မကြာမီက ပိတ်ခဲ့</translation>
 <translation id="8881801611828450202">ဤရုပ်ပုံကို <ph name="SEARCH_ENGINE" /> တွင်ရှာရန်</translation>

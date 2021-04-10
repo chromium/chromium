@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> vous recommande de mettre à jour ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Échec de l'identification du modèle ou du numéro de série de l'appareil.</translation>
 <translation id="1119447706177454957">Erreur interne.</translation>
-<translation id="111959947408687873">Appuyez sur Ctrl+<ph name="SEARCH_KEY_NAME" />+M pour activer/désactiver la loupe plein écran. Appuyez sur Ctrl+Alt+Touches fléchées pour vous déplacer après avoir fait un zoom avant.</translation>
 <translation id="1122068467107743258">Travail</translation>
 <translation id="1122198203221319518">&amp;Outils</translation>
 <translation id="1122242684574577509">Échec de l'authentification. Cliquez ici pour accéder à la page de connexion du réseau Wi-Fi que vous utilisez (<ph name="NETWORK_ID" />).</translation>
@@ -427,7 +426,6 @@
 <translation id="146000042969587795">Ce cadre a été bloqué, car il contient des éléments non sécurisés.</translation>
 <translation id="146219525117638703">État ONC</translation>
 <translation id="146220085323579959">Internet a été déconnecté. Veuillez vérifier votre connexion, puis réessayer.</translation>
-<translation id="1463051728820430132">Demander quand une appli Web souhaite ouvrir certains types de fichiers sur votre appareil</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> a été bloqué par la Protection Avancée.</translation>
 <translation id="1464044141348608623">Ne pas autoriser les sites à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="1464258312790801189">Vos comptes</translation>
@@ -1093,7 +1091,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour vous connecter à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre contacteur</translation>
 <translation id="2165421703844373933">Accédez à l'Assistant en disant "Ok Google". Pour économiser la batterie, sélectionnez “Activé (recommandé)”. L'Assistant ne répondra que lorsque votre appareil sera branché ou en charge.</translation>
-<translation id="2166269335975661317">Les applis Web peuvent demander l'autorisation d'ouvrir certains types de fichiers sur votre appareil</translation>
 <translation id="2166369534954157698">Voici à quoi ressemblera votre texte.</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Se connecter quand même</translation>
@@ -4232,7 +4229,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5715711091495208045">Gestionnaire de plug-ins : "<ph name="PLUGIN_NAME" />"</translation>
 <translation id="5719603411793408026">Moteurs de recherche par défaut</translation>
 <translation id="5719854774000914513">Les sites peuvent demander à se connecter à des appareils HID</translation>
-<translation id="5720705177508910913">Utilisateur actuel</translation>
 <translation id="572155275267014074">Paramètres Android</translation>
 <translation id="5722086096420375088">Vert et blanc</translation>
 <translation id="5722930212736070253">Aïe aïe aïe ! Zip Archiver a rencontré une erreur.</translation>
@@ -4467,7 +4463,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5990266201903445068">Wi-Fi uniquement</translation>
 <translation id="5990386583461751448">Traduite</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}one{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}other{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer ces applications.}}</translation>
-<translation id="5992175324932183568">Ne pas autoriser les applis Web à ouvrir certains types de fichiers sur votre appareil</translation>
 <translation id="5997337190805127100">En savoir plus sur l'accès aux sites</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Déplacer le groupe vers une nouvelle fenêtre</translation>
@@ -4589,7 +4584,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6124213551517593835">L'ensemble des données et des cookies stockés par <ph name="SITE_GROUP_NAME" />, ainsi que les sites lui appartenant, seront effacés</translation>
 <translation id="6124650939968185064">Les extensions suivantes dépendent de cette extension :</translation>
 <translation id="6124698108608891449">Ce site a besoin d'autres autorisations.</translation>
-<translation id="6125442051901189730">Aucun profil SIM n'est disponible. Configurez un nouveau profil <ph name="BEGIN_LINK" />ici<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Malheureusement, vous devrez ajouter à nouveau votre compte sur cet appareil <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Les données sélectionnées ont été supprimées de Chrome et des appareils synchronisés. Votre compte Google conserve peut-être d'autres formes d'historique de navigation, comme vos recherches ou vos activités via d'autres services Google sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Commentaire du certificat Netscape</translation>
@@ -6589,8 +6583,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8368859634510605990">&amp;Ouvrir tous les favoris</translation>
 <translation id="8370294614544004647">Mettre en veille lorsque l'ordinateur portable est fermé</translation>
 <translation id="8371695176452482769">Parlez maintenant.</translation>
-<translation id="8371749822919332187">Appuyez sur Ctrl+Alt+Augmenter la luminosité pour faire un zoom avant.
-Appuyez sur Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Couper le son du site}one{Couper le son du site}other{Couper le son des sites}}</translation>
 <translation id="8372369524088641025">Clé WEP incorrecte</translation>
 <translation id="8373652277231415614">Répertoires partagés par Crostini</translation>
@@ -7402,7 +7394,6 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="975893173032473675">Langue cible</translation>
 <translation id="976499800099896273">Le mot "<ph name="TYPED_WORD" />" a été remplacé automatiquement par "<ph name="CORRECTED_WORD" />". Dans la boîte de dialogue qui s'affiche, appuyez sur la flèche vers le haut pour accepter cette correction ou sur la touche Échap pour l'ignorer.</translation>
 <translation id="978146274692397928">La largeur de ponctuation initiale est Complète</translation>
-<translation id="97883469867914488">Empêcher les applis Web d'ouvrir certains types de fichiers sur votre appareil</translation>
 <translation id="97905529126098460">Cette fenêtre se fermera une fois l'installation annulée.</translation>
 <translation id="980731642137034229">Bouton du menu d'actions</translation>
 <translation id="981121421437150478">Hors connexion</translation>

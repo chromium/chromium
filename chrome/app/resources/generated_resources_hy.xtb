@@ -104,7 +104,6 @@
 <translation id="1118549423835582252">Կառավարիչը (<ph name="MANAGER" />) խորհուրդ է տալիս, որ թարմացնեք այս <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="1118738876271697201">Չհաջողվեց որոշել սարքի մոդելը կամ սերիական համարը:</translation>
 <translation id="1119447706177454957">Ներքին սխալ</translation>
-<translation id="111959947408687873">Ctrl+<ph name="SEARCH_KEY_NAME" />+M դյուրանցման միջոցով կարող եք միացնել/անջատել լիաէկրան խոշորացույցը։ Օգտագործեք Ctrl+Alt+սլաքաստեղները՝ մեծացված ռեժիմում էկրանով տեղաշարժվելու համար։</translation>
 <translation id="1122068467107743258">Աշխատանքային</translation>
 <translation id="1122198203221319518">&amp;Գործիքներ</translation>
 <translation id="1122242684574577509">Նույնականացումը չստացվեց: Սեղմեք՝ ձեր օգտագործած Wi-Fi ցանցի էջում մուտք գործելու համար (<ph name="NETWORK_ID" />):</translation>
@@ -428,7 +427,6 @@
 <translation id="146000042969587795">Այս շրջանակն արգելափակված է, քանի որ այն անապահով բովանդակություն է պարունակում:</translation>
 <translation id="146219525117638703">ONC կարգավիճակ</translation>
 <translation id="146220085323579959">Համացանցի կապակցում չկա: Ստուգեք համացանցի կապակցումը և նորից փորձեք:</translation>
-<translation id="1463051728820430132">Հարցնել, երբ որևէ վեբ հավելված ուզենա որոշակի տեսակի ֆայլեր բացել ձեր սարքում</translation>
 <translation id="1463112138205428654">Լրացուցիչ պաշտպանությունն արգելափակել է «<ph name="FILE_NAME" />» ֆայլը։</translation>
 <translation id="1464044141348608623">Թույլ չտալ կայքերին տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը</translation>
 <translation id="1464258312790801189">Ձեր հաշիվները</translation>
@@ -1094,7 +1092,6 @@
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> սարք մուտք գործելու համար միացեք համացանցին:</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ու ևս 1 փոխանջատիչ</translation>
 <translation id="2165421703844373933">Օգտագործեք ձեր Օգնականը՝ ասելով «Ok Google»: Մարտկոցի լիցքը տնտեսելու համար ընտրեք «Միացնել (խորհուրդ է տրվում)» կարգավորումը: Ձեր Օգնականը կպատասխանի, միայն երբ սարքը միացված է սնուցման աղբյուրին կամ լիցքավորվում է:</translation>
-<translation id="2166269335975661317">Վեբ հավելվածները կարող են ձեր սարքում որոշակի տեսակի ֆայլեր բացելու թույլտվություն խնդրել</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Մուտք գործել</translation>
@@ -4235,7 +4232,6 @@
 <translation id="5715711091495208045">Փլագինի միջնորդ՝ <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Կանխադրված որոնման համակարգեր</translation>
 <translation id="5719854774000914513">Կայքերը կարող են HID սարքերին միանալու թույլտվություն հայցել</translation>
-<translation id="5720705177508910913">ընթացիկ օգտատիրոջը</translation>
 <translation id="572155275267014074">Android-ի կարգավորումներ</translation>
 <translation id="5722086096420375088">Կանաչ և սպիտակ</translation>
 <translation id="5722930212736070253">Վա՛յ։ Zip Archiver-ի աշխատանքի ժամանակ սխալ առաջացավ։</translation>
@@ -4470,7 +4466,6 @@
 <translation id="5990266201903445068">Միայն Wi-Fi</translation>
 <translation id="5990386583461751448">Թարգմանված է</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Որպեսզի շարունակեք կայքեր այցելել, խնդրեք ադմինիստրատորին հեռացնել այս հավելվածը։}one{Որպեսզի շարունակեք կայքեր այցելել, խնդրեք ադմինիստրատորին հեռացնել այս հավելվածը։}other{Որպեսզի շարունակեք կայքեր այցելել, խնդրեք ադմինիստրատորին հեռացնել այս հավելվածները։}}</translation>
-<translation id="5992175324932183568">Թույլ չտալ վեբ հավելվածներին որոշակի տեսակի ֆայլեր բացել ձեր սարքում</translation>
 <translation id="5997337190805127100">Մանրամասն կայքերի հասանելիության մասին</translation>
 <translation id="6000758707621254961">«<ph name="SEARCH_TEXT" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
 <translation id="6002210667729577411">Խումբը տեղափոխել նոր պատուհան</translation>
@@ -4592,7 +4587,6 @@
 <translation id="6124213551517593835"><ph name="SITE_GROUP_NAME" /> խմբի կայքերի և դրանց ենթակայքերի պահած բոլոր տվյալներն ու քուքիները կջնջվեն։</translation>
 <translation id="6124650939968185064">Հետևյալ ընդլայնումները կախված են այս ընդլայնումից՝</translation>
 <translation id="6124698108608891449">Այս կայքին անհրաժեշտ են լրացուցիչ թույլտվություններ։</translation>
-<translation id="6125442051901189730">SIM-ի հասանելի պրոֆիլներ չկան։ <ph name="BEGIN_LINK" />Ստեղծեք<ph name="END_LINK" /> նոր պրոֆիլ։</translation>
 <translation id="6125479973208104919">Հարկավոր է նորից ավելացնել հաշիվը <ph name="DEVICE_TYPE" /> սարքում:</translation>
 <translation id="6129691635767514872">Ընտրված տվյալները հեռացվել են Chrome-ից ու համաժամացված սարքերից: Պատմությունը կարող է պահվել նաև ձեր Google հաշվում, օրինակ՝ որոնումների և Google-ի ծառայություններում ձեր գործողությունների տեսքով: Այդ տվյալները կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="6129938384427316298">Netscape-ի վկայագրի մեկնաբանություն</translation>
@@ -6590,8 +6584,6 @@
 <translation id="8368859634510605990">&amp;Բացել բոլոր էջանիշները</translation>
 <translation id="8370294614544004647">Անցնել քնի ռեժիմ, երբ նոթբուքը փակ է</translation>
 <translation id="8371695176452482769">Խոսեք հիմա</translation>
-<translation id="8371749822919332187">Օգտագործեք Ctrl+Alt+Ավելացնել պայծառությունը՝ մասշտաբը մեծացնելու համար։
-Օգտագործեք Ctrl+Alt+Պակասեցնել պայծառությունը՝ մասշտաբը փոքրացնելու համար։</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Անջատել կայքի ձայնը}one{Անջատել կայքի ձայնը}other{Անջատել կայքերի ձայնը}}</translation>
 <translation id="8372369524088641025">WEP բանալին սխալ է</translation>
 <translation id="8373652277231415614">Crostini-ի ընդհանուր գրացուցակներ</translation>
@@ -7403,7 +7395,6 @@
 <translation id="975893173032473675">Թարգմանության լեզուն</translation>
 <translation id="976499800099896273">Ցուցադրվում է ավտոմատ շտկումը հետարկելու երկխոսության պատուհանը <ph name="TYPED_WORD" /> բառի համար, որը ուղղվել և դարձել էր <ph name="CORRECTED_WORD" />։  Բացելու համար սեղմեք վեր սլաքը, անտեսելու համար՝ Escape։</translation>
 <translation id="978146274692397928">Կետադրական նշանների սկզբնական լայնքը՝ լիալայնք</translation>
-<translation id="97883469867914488">Արգելել վեբ հավելվածներին բացել որոշակի տեսակի ֆայլեր ձեր սարքում</translation>
 <translation id="97905529126098460">Այս պատուհանը կփակվի, հենց որ չեղարկման գործընթացն ավարտվի:</translation>
 <translation id="980731642137034229">Գործողությունների ընտրացանկի կոճակ</translation>
 <translation id="981121421437150478">Անցանց</translation>

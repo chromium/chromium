@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> inapendekeza usasishe <ph name="DEVICE_TYPE" /> hii.</translation>
 <translation id="1118738876271697201">Mfumo umeshindwa kutambua muundo wa kifaa wala nambari ya ufuatiliaji.</translation>
 <translation id="1119447706177454957">Hitilafu ya ndani</translation>
-<translation id="111959947408687873">Tumia vitufe vya Ctrl, <ph name="SEARCH_KEY_NAME" /> na herufi M kufungua au kufunga kikuzaji cha skrini nzima. Tumia vitufe vya Ctrl, Alt pamoja na vitufe vya Vishale kusogeza sehemu mbalimbali za skrini ikiwa imevutwa karibu.</translation>
 <translation id="1122068467107743258">Kazini</translation>
 <translation id="1122198203221319518">Zana</translation>
 <translation id="1122242684574577509">Uidhinishaji haujafaulu. Bofya ili kutembelea ukurasa wa kuingia katika akaunti kwa mtandao wa Wi-Fi unaotumia (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Fremu hii imezuiwa kwa sababu ina maudhui mengine yasiyo salama.</translation>
 <translation id="146219525117638703">Hali ya ONC</translation>
 <translation id="146220085323579959">Mtandao umekatizwa. Tafadhali kagua muunganisho wako wa mtandao na ujaribu tena.</translation>
-<translation id="1463051728820430132">Iulize wakati programu ya wavuti inataka kufungua aina za faili kwenye kifaa chako</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> imezuiwa na mipangilio ya Ulinzi wa Hali ya Juu.</translation>
 <translation id="1464044141348608623">Usiruhusu tovuti zijue wakati unatumia kifaa chako</translation>
 <translation id="1464258312790801189">Akaunti Zako</translation>
@@ -1089,7 +1087,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2163470535490402084">Tafadhali unganisha kwenye Intaneti ili uingie katika <ph name="DEVICE_TYPE" /> yako.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> na swichi nyingine moja</translation>
 <translation id="2165421703844373933">Fikia programu yako ya Mratibu unaposema "Ok Google" Ili kuokoa betri, chagua “Washa (Inapendekezwa.)” Programu yako ya Mratibu itafanya kazi tu wakati kifaa chako kimechomekwa kwenye kituo cha umeme au kinachaji.</translation>
-<translation id="2166269335975661317">Programu za wavuti zinaweza kuomba ruhusa ya kufungua aina za faili kwenye kifaa chako</translation>
 <translation id="2166369534954157698">Juma ameanza kuvua papa baharini, naye Fatuma anamsaidia Lawi kuchimba mgodi</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Ingia tu</translation>
@@ -4225,7 +4222,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5715711091495208045">Dalali wa Programu jalizi: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mitambo chaguomsingi ya kutafuta</translation>
 <translation id="5719854774000914513">Tovuti zinaweza kuomba ruhusa ya kuunganisha kwenye vifaa vya HID</translation>
-<translation id="5720705177508910913">Mtumiaji wa sasa</translation>
 <translation id="572155275267014074">Mipangilio ya Android</translation>
 <translation id="5722086096420375088">Kijani na nyeupe</translation>
 <translation id="5722930212736070253">Lahaula! Programu ya Zip Archiver imekumbana na hitilafu.</translation>
@@ -4460,7 +4456,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5990266201903445068">Wi-Fi pekee</translation>
 <translation id="5990386583461751448">Imetafsiriwa</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Ili uhakikishe kuwa unaendelea kuvinjari wavuti, mwombe msimamizi wako aondoe programu hii.}other{Ili uhakikishe kuwa unaendelea kuvinjari wavuti, mwombe msimamizi wako aondoe programu hii.}}</translation>
-<translation id="5992175324932183568">Usiruhusu programu za wavuti zifungue aina za faili kwenye kifaa chako</translation>
 <translation id="5997337190805127100">Pata Maelezo Zaidi kuhusu Ufikiaji wa Tovuti</translation>
 <translation id="6000758707621254961">Matokeo <ph name="RESULT_COUNT" /> ya '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002210667729577411">Hamishia kikundi kwenye dirisha jipya</translation>
@@ -4582,7 +4577,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6124213551517593835">Hatua hii itafuta data na vidakuzi vyote vilivyohifadhiwa na <ph name="SITE_GROUP_NAME" /> na tovuti zozote zilizo chini yake</translation>
 <translation id="6124650939968185064">Viendelezi vinavyofuata vinategemea kiendelezi hiki:</translation>
 <translation id="6124698108608891449">Tovuti hii inahitaji ruhusa zaidi.</translation>
-<translation id="6125442051901189730">Hakuna wasifu wa SIM unaopatikana. Weka wasifu mpya <ph name="BEGIN_LINK" />hapa.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Kwa bahati mbaya, utahitaji kuongeza akaunti yako kwenye kifaa hiki cha <ph name="DEVICE_TYPE" /> tena.</translation>
 <translation id="6129691635767514872">Data uliyochagua imeondolewa kwenye Chrome na kwenye vifaa vilivyosawazishwa. Huenda Akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vile utafutaji na shughuli kutoka huduma nyingine za Google katika <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Kidokezo cha Cheti cha Netscape</translation>
@@ -6584,8 +6578,6 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8368859634510605990">&amp;Fungua alamisho zote</translation>
 <translation id="8370294614544004647">Weka hali tuli wakati kompyuta ya kupakata imefungwa</translation>
 <translation id="8371695176452482769">Ongea sasa</translation>
-<translation id="8371749822919332187">Tumia vitufe vya Ctrl, Alt pamoja na kitufe cha Kuongeza Mwangaza ili uvute karibu.
-Tumia vitufe vya Ctrl, Alt pamoja na kitufe cha Kupunguza Mwangaza ili usogeze mbali.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Zima Sauti ya Tovuti}other{Zima Sauti za Tovuti}}</translation>
 <translation id="8372369524088641025">Kitufe kibovu cha WEP</translation>
 <translation id="8373652277231415614">Saraka za Crostini zinazoshirikiwa</translation>
@@ -7396,7 +7388,6 @@ Bonyeza swichi uliyokabidhi ili uache kuikabidhi.</translation>
 <translation id="975893173032473675">Lugha ya Kutafsiria</translation>
 <translation id="976499800099896273">Kidirisha cha kutendua usahihishaji kiotomatiki kimeonyeshwa kwa ajili ya neno <ph name="TYPED_WORD" /> lililosahihishwa likawa <ph name="CORRECTED_WORD" />.  Bonyeza kishale cha juu ili ufungue kidirisha na kitufe cha "escape" ili upuuze.</translation>
 <translation id="978146274692397928">Upana wa uakifishaji wa kwanza Umejaa</translation>
-<translation id="97883469867914488">Zuia programu za wavuti zisifungue aina za faili kwenye kifaa chako</translation>
 <translation id="97905529126098460">Dirisha hili litafungwa baada ya kukamilisha mchakato wa kughairi.</translation>
 <translation id="980731642137034229">Kitufe cha menyu ya vitendo</translation>
 <translation id="981121421437150478">Nje ya mtandao</translation>

@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">पृष्ठ साझेदारी गर्न सकिदैन</translation>
 <translation id="2923448633003185837">टाँस्नुहोस् र जानुहोस्</translation>
 <translation id="292639812446257861">नपढिएको भनी चिन्ह लगाउनुहोस्</translation>
+<translation id="2932085390869194046">पासवर्ड सिफारिस गर्नुहोस्...</translation>
 <translation id="2952581218264071393">१. Chrome का सेटिङ खोल्नुहोस्</translation>
 <translation id="2958718410589002129">पासवर्डहरू</translation>
 <translation id="2964349545761222050">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
@@ -758,7 +759,6 @@
 <translation id="8806823403540278281">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले गोप्य रूपमा ब्राउज गर्नु पर्ने हुन्छ। इन्कोग्निटो मोडमा ब्राउज गर्दा ट्याबहरू सुरक्षित गरिँदैनन्।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
-<translation id="8823704566850948458">पासवर्ड सिफारिस गर्नुहोस्...</translation>
 <translation id="8840513115188359703">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
 <translation id="8870413625673593573">हालै बन्द गरिएको</translation>
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> मा यो छवि खोज्नुहोस्</translation>
@@ -789,7 +789,7 @@
 <translation id="9203116392574189331">ह्यान्डअफ</translation>
 <translation id="9223358826628549784">क्र्याश रिपोर्ट पठाइयो।</translation>
 <translation id="952704832371081537">रद्द गर्नुहोस्</translation>
-<translation id="988141524645182168">अन्य यन्त्रहरू</translation>
+<translation id="988141524645182168">अन्य डिभाइसहरू</translation>
 <translation id="989988560359834682">इमेल ठेगाना</translation>
 <translation id="994757059139821576">लेखका सुझावहरू</translation>
 </translationbundle>

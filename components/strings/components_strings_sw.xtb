@@ -275,7 +275,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1914326953223720820">Huduma ya Kufungua Faili za Zip</translation>
 <translation id="1915697529809968049">Ungependa kutumia Touch ID badala ya CVC?</translation>
 <translation id="1916770123977586577">Pakia upya ukurasa huu ili mipangilio iliyosasishwa itumike katika tovuti hii</translation>
-<translation id="1917876262703816781">Tukio la ufichuzi haramu wa data kwenye tovuti au programu limefichua nenosiri lako. Chrome inapendekeza ubadilishe nenosiri lako kwenye <ph name="ORIGIN" /> sasa.</translation>
 <translation id="1919345977826869612">Matangazo</translation>
 <translation id="1919367280705858090">Pata usaidizi kwa kutumia ujumbe mahususi kuhusu hitilafu</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Hamna}=1{Tovuti 1}other{Tovuti #}}</translation>
@@ -919,7 +918,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4358461427845829800">Dhibiti njia za kulipa...</translation>
 <translation id="4359160567981085931">Umeweka nenosiri lako kwenye tovuti inayotiliwa shaka. Chrome inaweza kukusaidia. Ili ubadilishe nenosiri lako na uarifu Google kwamba huenda akaunti yako imo hatarini, bofya Linda Akaunti.</translation>
 <translation id="4367563149485757821">Number-12 (Bahasha)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Tukio la ufichuzi haramu wa data kwenye programu au tovuti limefichua nenosiri ulilohifadhi la <ph name="ORIGIN" />. Chrome inapendekeza ubadilishe nenosiri lako kwenye <ph name="ORIGIN" /> sasa.}=1{Tukio la ufichuzi haramu wa data kwenye programu au tovuti limefichua nenosiri ulilohifadhi la <ph name="ORIGIN" /> na tovuti nyingine moja. Chrome inapendekeza ukague manenosiri uliyohifadhi sasa.}other{Tukio la ufichuzi haramu wa data kwenye programu au tovuti limefichua nenosiri ulilohifadhi la <ph name="ORIGIN" /> na tovuti zingine <ph name="SITES_COUNT" />. Chrome inapendekeza ukague manenosiri uliyohifadhi sasa.}}</translation>
 <translation id="437058704415269440">Salio la Akaunti</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Thamani <ph name="VALUE_TYPE" /> inayotarajiwa.</translation>
@@ -1160,7 +1158,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5287456746628258573">Tovuti hii inatumia mipangilio ya usalama iliyopitwa na wakati, hali ambayo inaweza kuonyesha taarifa zako (kwa mfano, manenosiri au nambari za kadi za mikopo) zikitumwa kwenye tovuti hii.</translation>
 <translation id="5288108484102287882">Imethibitisha thamani za sera na kutoa maonyo</translation>
 <translation id="5289384342738547352">Kushughulikia hati nyingi</translation>
-<translation id="5295292838686006428">Tukio la ufichuzi haramu wa data kwenye tovuti au programu limefichua nenosiri lako. Chrome inapendekeza ukague manenosiri uliyohifadhi sasa.</translation>
 <translation id="5299298092464848405">Hitilafu wakati wa kuchanganua sera</translation>
 <translation id="5300589172476337783">Onyesha</translation>
 <translation id="5306593769196050043">Laha zote mbili</translation>
@@ -1698,7 +1695,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7473891865547856676">La Asante</translation>
 <translation id="7481312909269577407">Mbele</translation>
 <translation id="7485870689360869515">Hakuna data iliyopatikana.</translation>
-<translation id="7495290002932347110">Tukio la ufichuzi haramu wa data kwenye tovuti au programu limefichua nenosiri lako. Chrome inapendekeza ukague manenosiri uliyohifadhi na ubadilishe nenosiri lako kwenye <ph name="ORIGIN" /> sasa.</translation>
 <translation id="7495528107193238112">Maudhui haya yamezuiwa. Wasiliana na mmiliki wa tovuti ili asuluhishe tatizo.</translation>
 <translation id="7498234416455752244">Endelea kubadilisha</translation>
 <translation id="7503664977220660814">Umeweka nenosiri lako kwenye tovuti inayotiliwa shaka. Chromium inapendekeza ukague manenosiri uliyohifadhi kwenye <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> na tovuti nyingine unakotumia nenosiri hili kwa sasa.</translation>

@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> 建議你更新這部 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="1118738876271697201">系統無法判別裝置型號或序號。</translation>
 <translation id="1119447706177454957">內部錯誤</translation>
-<translation id="111959947408687873">使用 Ctrl + <ph name="SEARCH_KEY_NAME" /> + M 鍵即可切換全螢幕放大鏡。如要在畫面放大後四處移動，請使用 Ctrl + Alt + 方向鍵。</translation>
 <translation id="1122068467107743258">工作</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">驗證失敗。按一下即可造訪目前所用 Wi-Fi 網路 (<ph name="NETWORK_ID" />) 的登入頁面。</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">此框架由於包含不安全的內容，已被封鎖。</translation>
 <translation id="146219525117638703">ONC 狀態</translation>
 <translation id="146220085323579959">網際網路連線已中斷。請檢查你的網際網路連線，然後再試一次。</translation>
-<translation id="1463051728820430132">網頁應用程式必須先詢問你，才能開啟開啟裝置上特定類型的檔案</translation>
 <translation id="1463112138205428654">進階保護功能已封鎖 <ph name="FILE_NAME" />。</translation>
 <translation id="1464044141348608623">禁止網站偵測你使用裝置的時間</translation>
 <translation id="1464258312790801189">你的帳戶</translation>
@@ -1092,7 +1090,6 @@
 <translation id="2163470535490402084">請連線至網際網路，以登入您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />，以及另外 1 個按鍵</translation>
 <translation id="2165421703844373933">只要說出「Ok Google」就能存取 Google 助理。如要節省電力，請選擇「啟用 (建議設定)」。這樣一來，你的 Google 助理就只會在裝置插上電源或充電時回應你的指令。</translation>
-<translation id="2166269335975661317">網頁應用程式可以要求開啟裝置上特定類型的檔案</translation>
 <translation id="2166369534954157698">狐狗大戰</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">繼續登入</translation>
@@ -4228,7 +4225,6 @@
 <translation id="5715711091495208045">外掛程式代理元件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">預設搜尋引擎</translation>
 <translation id="5719854774000914513">網站可以要求連線至 HID 裝置</translation>
-<translation id="5720705177508910913">目前使用者</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5722086096420375088">綠色與白色</translation>
 <translation id="5722930212736070253">糟糕！Zip 封存工具發生錯誤。</translation>
@@ -4463,7 +4459,6 @@
 <translation id="5990266201903445068">僅限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保你可以持續瀏覽網路，請要求你的管理員移除這個應用程式。}other{為確保你可以持續瀏覽網路，請要求你的管理員移除這些應用程式。}}</translation>
-<translation id="5992175324932183568">禁止網頁應用程式開啟裝置上特定類型的檔案</translation>
 <translation id="5997337190805127100">進一步瞭解網站存取權</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
 <translation id="6002210667729577411">將群組移到新視窗</translation>
@@ -4585,7 +4580,6 @@
 <translation id="6124213551517593835">這會清除 <ph name="SITE_GROUP_NAME" /> 和其底下網站儲存的所有資料和 Cookie</translation>
 <translation id="6124650939968185064">下列擴充功能與這個擴充功能之間有相依關係：</translation>
 <translation id="6124698108608891449">這個網站需要更多權限。</translation>
-<translation id="6125442051901189730">沒有可用的 SIM 卡設定檔。請在<ph name="BEGIN_LINK" />這裡<ph name="END_LINK" />設定新的設定檔。</translation>
 <translation id="6125479973208104919">很抱歉，你需要重新在 <ph name="DEVICE_TYPE" /> 上新增帳戶。</translation>
 <translation id="6129691635767514872">系統已將所選資料從 Chrome 和其他同步的裝置中移除。你的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 查詢)。</translation>
 <translation id="6129938384427316298">Netscape 憑證評論</translation>
@@ -6584,8 +6578,6 @@
 <translation id="8368859634510605990">開啟所有書籤(&amp;O)</translation>
 <translation id="8370294614544004647">闔上筆電時進入休眠狀態</translation>
 <translation id="8371695176452482769">請說話</translation>
-<translation id="8371749822919332187">使用 Ctrl + Alt + 調高亮度鍵即可放大畫面。
-使用 Ctrl + Alt+ 調低亮度鍵則可縮小畫面。</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{關閉網站音訊}other{關閉多個網站的音訊}}</translation>
 <translation id="8372369524088641025">WEP 金鑰有誤</translation>
 <translation id="8373652277231415614">Crostini 共用目錄</translation>
@@ -7396,7 +7388,6 @@
 <translation id="975893173032473675">翻譯目標語言</translation>
 <translation id="976499800099896273">系統將「<ph name="TYPED_WORD" />」更正為「<ph name="CORRECTED_WORD" />」後，已顯示復原自動更正內容的對話方塊。按向上鍵即可選取對話方塊，按 Esc 鍵則為忽略。</translation>
 <translation id="978146274692397928">初始標點符號寬度為全形</translation>
-<translation id="97883469867914488">禁止網頁應用程式開啟裝置上特定類型的檔案</translation>
 <translation id="97905529126098460">此視窗將在完成取消作業後關閉。</translation>
 <translation id="980731642137034229">動作選單按鈕</translation>
 <translation id="981121421437150478">離線</translation>

@@ -399,6 +399,7 @@
 <translation id="363596933471559332">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 인증 요청 메시지가 표시됩니다.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">재설정하면 방문한 사이트 목록을 비롯한 데이터 절약 기록이 삭제됩니다.</translation>
+<translation id="3677911431265050325">모바일 버전으로 보기</translation>
 <translation id="3687645719033307815">페이지의 미리보기를 보는 중입니다.</translation>
 <translation id="3692944402865947621">저장 위치에 연결할 수 없어 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="371230970611282515">위험한 이벤트가 발생하기 전에 이를 예측하여 알립니다.</translation>
@@ -586,6 +587,7 @@
 <translation id="4941179133499732445">마이크를 탭하여 음성으로 검색하세요.</translation>
 <translation id="4943703118917034429">가상 현실</translation>
 <translation id="4943872375798546930">검색결과가 없습니다.</translation>
+<translation id="4957722034734105353">자세히 알아보기...</translation>
 <translation id="4961107849584082341">이 페이지를 원하는 언어로 번역하세요.</translation>
 <translation id="4970824347203572753">현재 위치에서 사용할 수 없습니다.</translation>
 <translation id="4971735654804503942">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 비밀번호 유출에 관해 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
@@ -1148,6 +1150,7 @@
 <translation id="8559990750235505898">다른 언어로 된 페이지의 번역 옵션 제공</translation>
 <translation id="8560602726703398413">북마크에서 읽기 목록 찾기</translation>
 <translation id="8562452229998620586">저장한 비밀번호가 여기에 표시됩니다.</translation>
+<translation id="856481929701340285">데스크톱 버전으로 보기</translation>
 <translation id="8569404424186215731"><ph name="DATE" />부터</translation>
 <translation id="8571213806525832805">지난 4주</translation>
 <translation id="8572344201470131220">이미지 복사됨</translation>

@@ -276,7 +276,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1914326953223720820">Kicsomagolási szolgáltatás</translation>
 <translation id="1915697529809968049">A Touch ID funkciót szeretné használni a CVC helyett?</translation>
 <translation id="1916770123977586577">A frissített beállításoknak a webhelyen történő alkalmazásához töltse be újra az oldalt</translation>
-<translation id="1917876262703816781">Az egyik webhelyen vagy alkalmazásban történt adatvédelmi incidens során nyilvánosságra került az Ön jelszava. A Chrome azt javasolja, hogy azonnal módosítsa a(z) <ph name="ORIGIN" /> webhelyen használt jelszavát.</translation>
 <translation id="1919345977826869612">Hirdetések</translation>
 <translation id="1919367280705858090">Segítség kérése adott hibaüzenet esetén</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nincs}=1{1 webhely}other{# webhely}}</translation>
@@ -916,7 +915,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4358461427845829800">Fizetési módok kezelése…</translation>
 <translation id="4359160567981085931">Megtévesztő webhelyen adta meg jelszavát. A Chrome segíthet. Ha módosítani szeretné jelszavát, és értesíteni szeretné a Google-t arról, hogy fiókja veszélyben lehet, kattintson a Fiók védelme gombra.</translation>
 <translation id="4367563149485757821">Number-12 (boríték)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Az egyik webhelyen vagy alkalmazásban történt adatvédelmi incidens során nyilvánosságra került az Ön következő webhelyhez mentett jelszava: <ph name="ORIGIN" />. A Chrome azt javasolja, hogy azonnal módosítsa a(z) <ph name="ORIGIN" /> webhelyen használt jelszavát.}=1{Az egyik webhelyen vagy alkalmazásban történt adatvédelmi incidens során nyilvánosságra került az Ön következő webhelyhez mentett jelszava: <ph name="ORIGIN" />. Az incidens egy másik webhelyhez tartozó jelszavát is érinti. A Chrome azt javasolja, hogy azonnal ellenőrizze mentett jelszavait.}other{Az egyik webhelyen vagy alkalmazásban történt adatvédelmi incidens során nyilvánosságra került az Ön következő webhelyhez mentett jelszava: <ph name="ORIGIN" />. Az incidens az Ön <ph name="SITES_COUNT" /> másik webhelyhez tartozó jelszavait is érinti. A Chrome azt javasolja, hogy azonnal ellenőrizze mentett jelszavait.}}</translation>
 <translation id="437058704415269440">Számlaegyenleg</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Várt <ph name="VALUE_TYPE" /> érték.</translation>
@@ -1157,7 +1155,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5287456746628258573">Ez a webhely elavult biztonsági konfigurációt használ, ezért előfordulhat, hogy mások látják az Ön adatait (például jelszavait vagy hitelkártyaszámait), amikor elküldi őket a webhelynek.</translation>
 <translation id="5288108484102287882">A házirendértékek ellenőrzése során figyelmeztetések merültek fel</translation>
 <translation id="5289384342738547352">Több dokumentum kezelése</translation>
-<translation id="5295292838686006428">Az egyik webhelyen vagy alkalmazásban történt adatvédelmi incidens során nyilvánosságra került az Ön jelszava. A Chrome azt javasolja, hogy azonnal ellenőrizze mentett jelszavait.</translation>
 <translation id="5299298092464848405">Irányelv-előfeldolgozási hiba</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>
 <translation id="5306593769196050043">Mindkét munkalap</translation>
@@ -1697,7 +1694,6 @@ További részletek:
 <translation id="7473891865547856676">Nem, köszönöm</translation>
 <translation id="7481312909269577407">Előre</translation>
 <translation id="7485870689360869515">Nem található adat.</translation>
-<translation id="7495290002932347110">Az egyik webhelyen vagy alkalmazásban történt adatvédelmi incidens során nyilvánosságra került az Ön jelszava. A Chrome azt javasolja, hogy ellenőrizze mentett jelszavait, és azonnal módosítsa a(z) <ph name="ORIGIN" /> webhelyen használt jelszavát.</translation>
 <translation id="7495528107193238112">Ez a tartalom le van tiltva. Vegye fel a kapcsolatot a webhely tulajdonosával a probléma elhárításához.</translation>
 <translation id="7498234416455752244">Szerkesztés folytatása</translation>
 <translation id="7503664977220660814">Megtévesztő webhelyen adta meg jelszavát. A Chromium azt javasolja, hogy azonnal módosítsa jelszavait azokon a webhelyeken, ahol ezt a jelszót használja (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />).</translation>

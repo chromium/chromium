@@ -189,6 +189,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2921219216347069551">Kan inte dela sidan</translation>
 <translation id="2923448633003185837">Klistra in och öppna</translation>
 <translation id="292639812446257861">Markera som oläst</translation>
+<translation id="2932085390869194046">Föreslå lösenord …</translation>
 <translation id="2952581218264071393">1. Öppna inställningarna för Chrome</translation>
 <translation id="2958718410589002129">Lösenord</translation>
 <translation id="2964349545761222050">Blockera cookies från tredje part</translation>
@@ -760,7 +761,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8806823403540278281">Organisationen kräver att du surfar privat. Flikar sparas inte i inkognitoläge.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bokmärken</translation>
-<translation id="8823704566850948458">Föreslå lösenord …</translation>
 <translation id="8840513115188359703">Du loggas inte ut från Google-kontot.</translation>
 <translation id="8870413625673593573">Nyligen stängda</translation>
 <translation id="8881801611828450202">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>

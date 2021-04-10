@@ -189,6 +189,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2921219216347069551">Nije moguće dijeliti stranicu</translation>
 <translation id="2923448633003185837">Zalijepi i kreni</translation>
 <translation id="292639812446257861">Označi kao nepročitano</translation>
+<translation id="2932085390869194046">Predloži lozinku…</translation>
 <translation id="2952581218264071393">1. Otvorite postavke Chromea</translation>
 <translation id="2958718410589002129">Lozinke</translation>
 <translation id="2964349545761222050">Blokiraj kolačiće trećih strana</translation>
@@ -760,7 +761,6 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8806823403540278281">Vaša organizacija zahtijeva da pregledate privatno. Kartice se ne pohranjuju u anonimnom načinu rada.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Oznake</translation>
-<translation id="8823704566850948458">Predloži lozinku...</translation>
 <translation id="8840513115188359703">Nećete se odjaviti sa svog Google računa.</translation>
 <translation id="8870413625673593573">Nedavno zatvoreno</translation>
 <translation id="8881801611828450202">Pretraži <ph name="SEARCH_ENGINE" /> za ovu sliku</translation>

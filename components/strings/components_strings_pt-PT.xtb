@@ -276,7 +276,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1914326953223720820">Serviço de descompressão de ficheiros</translation>
 <translation id="1915697529809968049">Pretende utilizar o Touch ID em vez do CVC?</translation>
 <translation id="1916770123977586577">Para aplicar as definições atualizadas a este site, atualize esta página</translation>
-<translation id="1917876262703816781">Uma violação de dados num site ou numa aplicação expôs a sua palavra-passe. O Chrome recomenda que altere a sua palavra-passe em <ph name="ORIGIN" /> agora.</translation>
 <translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Obter ajuda relativamente a uma mensagem de erro específica</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}other{# sites}}</translation>
@@ -920,7 +919,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4358461427845829800">Gerir métodos de pagamento…</translation>
 <translation id="4359160567981085931">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome pode ajudar. Para alterar a sua palavra-passe e notificar a Google de que a sua conta pode estar em risco, clique em Proteger conta.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Uma violação de dados num site ou numa app expôs a sua palavra-passe guardada para <ph name="ORIGIN" />. O Chrome recomenda que altere a sua palavra-passe em <ph name="ORIGIN" /> agora.}=1{Uma violação de dados num site ou app expôs a sua palavra-passe guardada para <ph name="ORIGIN" /> e mais um site. O Chrome recomenda que verifique agora as palavras-passe guardadas.}other{Uma violação de dados num site ou app expôs a sua palavra-passe guardada para <ph name="ORIGIN" /> e mais <ph name="SITES_COUNT" /> sites. O Chrome recomenda que verifique agora as palavras-passe guardadas.}}</translation>
 <translation id="437058704415269440">Saldo da conta</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
@@ -1161,7 +1159,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5287456746628258573">Este site utiliza uma configuração de segurança desatualizada, que pode expor as suas informações (por exemplo, palavras-passe ou números de cartões de crédito) quando são enviados para este site.</translation>
 <translation id="5288108484102287882">A validação dos valores da política gerou avisos.</translation>
 <translation id="5289384342738547352">Processamento de vários documentos</translation>
-<translation id="5295292838686006428">Uma violação de dados num site ou numa aplicação expôs a sua palavra-passe. O Chrome recomenda que verifique agora as palavras-passe guardadas.</translation>
 <translation id="5299298092464848405">Erro ao analisar a política</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">Ambas as folhas</translation>
@@ -1700,7 +1697,6 @@ Detalhes adicionais:
 <translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7485870689360869515">Não foram encontrados dados.</translation>
-<translation id="7495290002932347110">Uma violação de dados num site ou numa aplicação expôs a sua palavra-passe. O Chrome recomenda que verifique as palavras-passe guardadas e altere a sua palavra-passe em <ph name="ORIGIN" /> agora.</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Contacte o proprietário do site para corrigir o problema.</translation>
 <translation id="7498234416455752244">Continuar a editar</translation>
 <translation id="7503664977220660814">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda que verifique agora as palavras-passe guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sites em que utilize esta palavra-passe.</translation>

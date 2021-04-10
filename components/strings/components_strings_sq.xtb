@@ -275,7 +275,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1914326953223720820">Shërbimi i shpaketimit</translation>
 <translation id="1915697529809968049">Të përdoret Touch ID në vend të CVC?</translation>
 <translation id="1916770123977586577">Për të aplikuar cilësimet e përparuara në këtë sajt, ringarkoje këtë faqe</translation>
-<translation id="1917876262703816781">Një nxjerrje e paautorizuar të dhënash në një sajt apo në një prej aplikacioneve të tua e ka ekspozuar fjalëkalimin tënd. Chrome rekomandon që ta kontrollosh menjëherë fjalëkalimin tënd në <ph name="ORIGIN" />.</translation>
 <translation id="1919345977826869612">Reklamat</translation>
 <translation id="1919367280705858090">Merr ndihmë për një mesazh specifik gabimi</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Asnjë}=1{1 sajt}other{# sajte}}</translation>
@@ -915,7 +914,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4358461427845829800">Menaxho mënyrat e pagesës...</translation>
 <translation id="4359160567981085931">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome mund të të ndihmojë. Për të ndryshuar fjalëkalimin dhe për të njoftuar Google se llogaria jote mund të jetë në rrezik, kliko te "Mbroje llogarinë".</translation>
 <translation id="4367563149485757821">Number-12 (Zarf)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Një nxjerrje e paautorizuar të dhënash në një sajt apo në një prej aplikacioneve të tua e ka ekspozuar fjalëkalimin tënd të ruajtur për <ph name="ORIGIN" />. Chrome rekomandon që ta kontrollosh menjëherë fjalëkalimin tënd në <ph name="ORIGIN" />.}=1{Një nxjerrje e paautorizuar të dhënash në një sajt apo në një prej aplikacioneve të tua e ka ekspozuar fjalëkalimin tënd të ruajtur për <ph name="ORIGIN" /> dhe një sajt tjetër. Chrome rekomandon që të kontrollosh fjalëkalimet e tua të ruajtura tani.}other{Një nxjerrje e paautorizuar të dhënash në një sajt apo në një prej aplikacioneve të tua e ka ekspozuar fjalëkalimin tënd të ruajtur për <ph name="ORIGIN" /> dhe <ph name="SITES_COUNT" /> sajte të tjera. Chrome rekomandon që të kontrollosh fjalëkalimet e tua të ruajtura tani.}}</translation>
 <translation id="437058704415269440">Balanca e llogarisë</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Pritet një vlerë <ph name="VALUE_TYPE" />.</translation>
@@ -1156,7 +1154,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5287456746628258573">Ky sajt përdor një konfigurim të vjetruar të sigurisë, i cili mund t'i ekspozojë informacionet e tua (p.sh. fjalëkalimin ose numrat e kartës së kreditit) kur dërgohen te ky sajt.</translation>
 <translation id="5288108484102287882">Vërtetimi i vlerave të politikës ka ngritur shqetësime</translation>
 <translation id="5289384342738547352">Menaxhimi i shumë dokumenteve</translation>
-<translation id="5295292838686006428">Një nxjerrje e paautorizuar të dhënash në një sajt apo në një prej aplikacioneve të tua e ka ekspozuar fjalëkalimin tënd. Chrome rekomandon që t’i kontrollosh menjëherë fjalëkalimet e tua të ruajtura.</translation>
 <translation id="5299298092464848405">Gabim gjatë analizimit të politikës</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5306593769196050043">Të dyja fletët</translation>
@@ -1695,7 +1692,6 @@ Detaje shtesë:
 <translation id="7473891865547856676">Jo, faleminderit</translation>
 <translation id="7481312909269577407">Përpara</translation>
 <translation id="7485870689360869515">Nuk u gjetën të dhëna.</translation>
-<translation id="7495290002932347110">Një nxjerrje e paautorizuar të dhënash në një sajt apo në një prej aplikacioneve të tua e ka ekspozuar fjalëkalimin tënd. Chrome rekomandon që t’i kontrollosh menjëherë fjalëkalimet e tua të ruajtura si dhe ta ndryshosh fjalëkalimin tënd në <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Kjo përmbajtje është bllokuar. Kontakto me zotëruesin e sajtit për të rregulluar problemin.</translation>
 <translation id="7498234416455752244">Vazhdo redaktimin</translation>
 <translation id="7503664977220660814">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chromium të rekomandon t'i kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>

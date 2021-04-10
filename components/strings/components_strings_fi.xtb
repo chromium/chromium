@@ -276,7 +276,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1914326953223720820">Purkupalvelu</translation>
 <translation id="1915697529809968049">Käytetäänkö Touch ID:tä CVC:n sijaan?</translation>
 <translation id="1916770123977586577">Päivitä tämä sivu, niin päivitetyt asetuksesi otetaan käyttöön tällä sivustolla.</translation>
-<translation id="1917876262703816781">Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti salasanasi. Chrome suosittelee, että vaihdat salasanan heti (<ph name="ORIGIN" />).</translation>
 <translation id="1919345977826869612">Mainokset</translation>
 <translation id="1919367280705858090">Tiettyjen virheiden korjaaminen</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ei mitään}=1{1 sivusto}other{# sivustoa}}</translation>
@@ -921,7 +920,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4358461427845829800">Hallinnoi maksutapoja…</translation>
 <translation id="4359160567981085931">Lisäsit juuri salasanasi petolliselle sivustolle. Chrome voi auttaa. Valitse Suojaa tili, niin voit vaihtaa salasanasi ja Googlelle ilmoitetaan tilin mahdollisesta vaarantumisesta.</translation>
 <translation id="4367563149485757821">Numero-12 (kirjekuori)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti tallennetun salasanasi (<ph name="ORIGIN" />). Chrome suosittelee, että vaihdat sivuston <ph name="ORIGIN" /> salasanasi heti.}=1{Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti tallennetun salasanasi (<ph name="ORIGIN" /> ja yksi muu sivusto). Chrome suosittelee tarkistamaan tallennetut salasanasi nyt.}other{Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti tallennetun salasanasi (<ph name="ORIGIN" /> ja <ph name="SITES_COUNT" /> muuta sivustoa). Chrome suosittelee tarkistamaan tallennetut salasanasi nyt.}}</translation>
 <translation id="437058704415269440">Tilin saldo</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Odotettu <ph name="VALUE_TYPE" />-arvo.</translation>
@@ -1162,7 +1160,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5287456746628258573">Tämä sivusto käyttää vanhentunutta tietoturvamääritystä, joka voi paljastaa tietosi (esim. salasanat tai credit-korttien numerot), kun ne lähetetään sivustolle.</translation>
 <translation id="5288108484102287882">Käytäntöarvojen vahvistus aiheutti varoituksia</translation>
 <translation id="5289384342738547352">Useiden dokumenttien käsittely</translation>
-<translation id="5295292838686006428">Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti salasanasi. Chrome suosittelee tarkistamaan tallennetut salasanasi nyt.</translation>
 <translation id="5299298092464848405">Virhe jäsennettäessä käytäntöä</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5306593769196050043">Molemmat taulukot</translation>
@@ -1702,7 +1699,6 @@ Lisätietoja:
 <translation id="7473891865547856676">Ei kiitos</translation>
 <translation id="7481312909269577407">Seuraava</translation>
 <translation id="7485870689360869515">Tietoja ei löydy.</translation>
-<translation id="7495290002932347110">Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti salasanasi. Chrome suosittelee, että tarkistat tallennetut salasanasi ja vaihdat salasanan heti (<ph name="ORIGIN" />).</translation>
 <translation id="7495528107193238112">Tämä sisältö on estetty. Pyydä sivuston omistajalta apua ongelman korjaamiseen.</translation>
 <translation id="7498234416455752244">Jatka muokkausta</translation>
 <translation id="7503664977220660814">Lisäsit juuri salasanasi petolliselle sivustolle. Chromium suosittelee tarkistamaan näihin tallentamasi salasanat: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ja muut sivustot, joilla käytät salasanaa tällä hetkellä.</translation>

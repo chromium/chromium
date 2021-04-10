@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">సూచన: మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లను ఇటీవల ఉపయోగించలేదు. వాటిని మూసివేయాలా?</translation>
 <translation id="257674075312929031">గ్రూప్‌గా చేయి</translation>
 <translation id="2613747923081026172">సమూహాన్ని సృష్టించు</translation>
+<translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్</translation>
 <translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను విస్తరించండి.</translation>
+<translation id="2801787514987684416">స్టోర్ సమాచారాన్ని చూడాలా?</translation>
 <translation id="2977480621796371840">గుంపు నుండి తీసివేయి</translation>
+<translation id="3194464645767632461">రేటింగ్</translation>
 <translation id="3291470810748040983">తెరిచి ఉన్న ట్యాబ్‌లో ధర తగ్గినప్పుడు మీరు అలర్ట్‌ను పొందుతారు</translation>
 <translation id="3328308545011660196">సూచన: <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు సంబంధించినవిగా అనిపిస్తున్నాయి. వాటిని గ్రూప్ చేయాలా?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను కుదించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను కుదించండి.}}</translation>
 <translation id="3882834874697329510">తెరిచి ఉన్న ట్యాబ్‌లో ధర తగ్గినప్పుడు అలర్ట్‌ను పొందడానికి, సెట్టింగ్‌లలో నోటిఫికేషన్‌లను ఆన్ చేయండి.</translation>
 <translation id="3940195383040445971">ధరలను ట్యాబ్‌లలో ట్రాక్ చేయండి</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">బ్రౌజింగ్‌ను కొనసాగించండి</translation>
 <translation id="4450893287417543264">మళ్లీ చూపవద్దు</translation>
 <translation id="4648718555153979859">మీ ట్యాబ్‌లు గ్రూప్ చేయబడి, ఇక్కడ ఉన్నాయి</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> రివ్యూ)}other{(<ph name="REVIEWS_COUNT_MANY" /> రివ్యూలు)}}</translation>
 <translation id="4850886885716139402">వీక్షణ</translation>
 <translation id="492284538114688557">ధర తగ్గింపు గుర్తించబడింది</translation>
 <translation id="5007392906805964215">సమీక్షించు</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">పేజీలను సమూహంగా వర్గీకరించడం ద్వారా వేగంగా సరిపోల్చండి. ప్రారంభించడానికి, లింక్‌ను తాకి &amp; అలాగే నొక్కి ఉంచండి.</translation>
 <translation id="5490235265819901748">ట్యాబ్ గ్రూప్ విస్తరించబడింది</translation>
 <translation id="5533021382642990449">తర్వాత చూపించు</translation>
+<translation id="5556417849629758491">స్టోర్ సమాచారాన్ని చూడండి, ఆప్షన్ స్క్రీన్ పైభాగానికి సమీపంలో అందుబాటులో ఉంది</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో ఉన్న ట్యాబ్ గ్రూప్‌ను మూసివేయండి</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ట్యాబ్‌లు గ్రూప్ చేయబడ్డాయి</translation>
 <translation id="575494663145460764">ధర తగ్గింపు అలర్ట్‌లను పొందాలనుకుంటున్నారా?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">సమూహంలోని ట్యాబ్‌లను పూర్తి స్క్రీన్ గ్రిడ్‌లో చూపు</translation>
 <translation id="7792771145871471484">సూచనలను రివ్యూ చేయండి.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{ఎంచుకున్న <ph name="TABS_COUNT_ONE" /> ట్యాబ్ గ్రూప్ చేయబడుతుంది}other{ఎంచుకున్న <ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు గ్రూప్ చేయబడతాయి}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్, <ph name="REVIEWS_COUNT_ONE" /> రివ్యూ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్, <ph name="REVIEWS_COUNT_MANY" /> రివ్యూలు}}</translation>
 <translation id="7885132941432959125">ట్యాబ్‌ను కుడి వైపునకు తరలించు</translation>
 <translation id="7966321538264951561">సూచనలను తీసివేయండి.</translation>
 <translation id="814503310257431685">అన్నింటినీ చూడండి</translation>

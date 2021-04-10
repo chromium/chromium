@@ -15,10 +15,10 @@
 <translation id="2569352796411618312">我有建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近冇用過，係咪要閂咗佢？</translation>
 <translation id="257674075312929031">群組</translation>
 <translation id="2613747923081026172">建立群組</translation>
-<translation id="2662028055331606429"><ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" /> 分)</translation>
+<translation id="2662028055331606429">評分：<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2759453070259087442">用 <ph name="NUMBER_OF_TABS" /> 個分頁展開「<ph name="TITLE_OF_GROUP" />」分頁群組。</translation>
-<translation id="2801787514987684416">要查看商店資訊嗎？</translation>
+<translation id="2801787514987684416">要查看商店資料嗎？</translation>
 <translation id="2977480621796371840">從群組中移除</translation>
 <translation id="3194464645767632461">評分</translation>
 <translation id="3291470810748040983">當開啟的分頁中有產品降價，您就會收到通知</translation>
@@ -40,7 +40,7 @@
 <translation id="5082793167783849073">建立群組以快速比較多個頁面。輕觸並按住連結即可開始建立。</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5533021382642990449">稍後再顯示</translation>
-<translation id="5556417849629758491">商店資訊和可用選項位於靠近畫面頂端的地方</translation>
+<translation id="5556417849629758491">商店資料同可用選項喺螢幕最頂嘅附近</translation>
 <translation id="5558362125926932819">閂有 <ph name="NUMBER_OF_TABS" /> 個分頁嘅分頁群組</translation>
 <translation id="5580090775658607195">已將 <ph name="TAB_COUNT" /> 個分頁加入群組</translation>
 <translation id="575494663145460764">要接收降價快訊嗎？</translation>
@@ -60,7 +60,7 @@
 <translation id="7559245342362162951">用全螢幕網格顯示群組嘅分頁</translation>
 <translation id="7792771145871471484">睇下建議。</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁分組}other{將 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁分組}}</translation>
-<translation id="7854360405711302755">{REVIEWS,plural, =1{<ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" />)，有 <ph name="REVIEWS_COUNT_ONE" /> 則評論}other{<ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" />)，有 <ph name="REVIEWS_COUNT_MANY" /> 則評論}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" /> 分，滿分係 <ph name="RATING_BASELINE" /> 分，有 <ph name="REVIEWS_COUNT_ONE" /> 則評論}other{<ph name="CURRENT_RATING" /> 分，滿分係 <ph name="RATING_BASELINE" /> 分，有 <ph name="REVIEWS_COUNT_MANY" /> 則評論}}</translation>
 <translation id="7885132941432959125">移去右邊</translation>
 <translation id="7966321538264951561">閂建議。</translation>
 <translation id="814503310257431685">查看全部</translation>

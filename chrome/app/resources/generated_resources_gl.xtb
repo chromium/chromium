@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> recomenda que actualices este dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1118738876271697201">Produciuse un erro no sistema e non se puido determinar o modelo do dispositivo ou o número de serie.</translation>
 <translation id="1119447706177454957">Erro interno</translation>
-<translation id="111959947408687873">Preme Ctrl+<ph name="SEARCH_KEY_NAME" />+M para activar/desactivar a lupa de pantalla completa. Se queres moverte pola pantalla cando está ampliada, usa Ctrl+Alt+teclas de frecha.</translation>
 <translation id="1122068467107743258">Traballo</translation>
 <translation id="1122198203221319518">&amp;Ferramentas</translation>
 <translation id="1122242684574577509">Non se puido efectuar a autenticación. Fai clic para visitar a páxina de inicio de sesión da rede wifi que utilizas (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Bloqueouse este marco porque contén algúns contidos non seguros.</translation>
 <translation id="146219525117638703">Estado de ONC</translation>
 <translation id="146220085323579959">Desconectouse Internet. Comproba a túa conexión a Internet e téntao de novo.</translation>
-<translation id="1463051728820430132">Preguntar cando unha aplicación tente abrir tipos de ficheiros no teu dispositivo</translation>
 <translation id="1463112138205428654">A función Protección avanzada bloqueou <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">Non permitir que os sitios saiban cando estás utilizando o dispositivo de maneira activa</translation>
 <translation id="1464258312790801189">As túas contas</translation>
@@ -1091,7 +1089,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2163470535490402084">Conéctate a Internet para iniciar sesión co teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e 1 interruptor máis</translation>
 <translation id="2165421703844373933">Accede ao teu Asistente cando digas "Ok Google". Para aforrar batería, escolle Activado (recomendado). O teu Asistente só responderá cando o dispositivo estea enchufado ou cargando.</translation>
-<translation id="2166269335975661317">As aplicacións web poden pedirche permiso para abrir tipos de ficheiros no teu dispositivo</translation>
 <translation id="2166369534954157698">Necesitamos unha tipografía chuliña de cor kiwi que lle zorregue unha labazada visual á xente</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Iniciar sesión igualmente</translation>
@@ -4229,7 +4226,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5715711091495208045">Axente do plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motores de busca predeterminados</translation>
 <translation id="5719854774000914513">Os sitios poden pedirche permiso para conectarse a dispositivos de interface humana</translation>
-<translation id="5720705177508910913">Usuario actual</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5722086096420375088">Verde e branco</translation>
 <translation id="5722930212736070253">Vaia! O arquivador ZIP detectou un erro.</translation>
@@ -4464,7 +4460,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5990266201903445068">Só por wifi</translation>
 <translation id="5990386583461751448">Páxina traducida</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Para asegurarte de que podes seguir navegando pola web, pídelle ao administrador que elimine esta aplicación.}other{Para asegurarte de que podes seguir navegando pola web, pídelle ao administrador que elimine estas aplicacións.}}</translation>
-<translation id="5992175324932183568">Permitir que as aplicacións web abran tipos de ficheiros no teu dispositivo</translation>
 <translation id="5997337190805127100">Máis información sobre o acceso aos sitios</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Mover grupo a unha ventá nova</translation>
@@ -4586,7 +4581,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6124213551517593835">Ao realizar esta acción, borraranse todos os datos e as cookies que almacenase <ph name="SITE_GROUP_NAME" /> e todos os sitios que formen parte dese grupo</translation>
 <translation id="6124650939968185064">As seguintes extensións dependen desta extensión:</translation>
 <translation id="6124698108608891449">Este sitio necesita máis permisos.</translation>
-<translation id="6125442051901189730">Non hai perfís SIM dispoñibles. Podes <ph name="BEGIN_LINK" />configurar un novo<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Terás que engadir a túa conta a este dispositivo <ph name="DEVICE_TYPE" /> de novo.</translation>
 <translation id="6129691635767514872">Os datos seleccionados elimináronse de Chrome e dos dispositivos sincronizados. É posible que a túa conta de Google teña outras formas do historial de navegación, como buscas e actividade doutros servizos de Google, en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Comentario do certificado de Netscape</translation>
@@ -6585,8 +6579,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8368859634510605990">&amp;Abrir todos os marcadores</translation>
 <translation id="8370294614544004647">Entrar en suspensión ao pechar o ordenador portátil</translation>
 <translation id="8371695176452482769">Fala agora</translation>
-<translation id="8371749822919332187">Para achegar a imaxe, preme Ctrl+Alt+Aumentar brillo.
-Se queres afastala, usa Ctrl+Alt+Reducir brillo.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Silenciar sitio}other{Silenciar sitios}}</translation>
 <translation id="8372369524088641025">Clave WEP incorrecta</translation>
 <translation id="8373652277231415614">Directorios compartidos de Crostini</translation>
@@ -7397,7 +7389,6 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="975893173032473675">Idioma ao que queres traducir o contido</translation>
 <translation id="976499800099896273">Móstrase o cadro de diálogo para desfacer a autocorrección de "<ph name="TYPED_WORD" />", que se cambiou por "<ph name="CORRECTED_WORD" />".  Preme Frecha arriba para acceder ou Escape para ignorar o cadro de diálogo.</translation>
 <translation id="978146274692397928">A largura inicial da puntuación inicial é completa</translation>
-<translation id="97883469867914488">Impedir que as aplicacións web abran tipos de ficheiros no teu dispositivo</translation>
 <translation id="97905529126098460">Esta ventá pecharase unha vez completada a cancelación.</translation>
 <translation id="980731642137034229">Botón de menú de accións</translation>
 <translation id="981121421437150478">Sen conexión</translation>

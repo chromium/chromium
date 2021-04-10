@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> бұл <ph name="DEVICE_TYPE" /> құрылғысын жаңартуды ұсынады.</translation>
 <translation id="1118738876271697201">Жүйе құрылғының үлгісін не сериялық нөмірін анықтай алмады.</translation>
 <translation id="1119447706177454957">Ішкі қате</translation>
-<translation id="111959947408687873">Толық экран ұлғайтқышын қосу және өшіру үшін Ctrl+<ph name="SEARCH_KEY_NAME" />+M тіркесімін пайдаланыңыз. Ұлғайтылған экранда жылжу үшін Ctrl+Alt+бағыттауыш пернелер тіркесімін пайдаланыңыз.</translation>
 <translation id="1122068467107743258">Жұмыс профилі</translation>
 <translation id="1122198203221319518">&amp;Құралдар</translation>
 <translation id="1122242684574577509">Аутентификация сәтсіз аяқталды. Пайдаланып жатқан Wi-Fi желісіне кіру бетіне өту үшін басыңыз (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Бұл жақтауға тыйым салынды, себебі ол кейбір қауіпті мазмұнды қамтиды.</translation>
 <translation id="146219525117638703">ONC күйі</translation>
 <translation id="146220085323579959">Интернет ажыратылды. Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
-<translation id="1463051728820430132">Вебқолданба құрылғыңыздағы белгілі бір файл түрлерін ашуды қалаған кезде сұрау</translation>
 <translation id="1463112138205428654">"Күшейтілген қорғаныс" функциясы <ph name="FILE_NAME" /> файлын бөгеді.</translation>
 <translation id="1464044141348608623">Сайттардың құрылғыңызды белсенді пайдаланатын уақытыңыз туралы білуіне рұқсат бермеу</translation>
 <translation id="1464258312790801189">Есептік жазбаларыңыз</translation>
@@ -1089,7 +1087,6 @@
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> құрылғысына кіру үшін, интернетке қосылыңыз.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> және тағы 1 ауыстырғыш</translation>
 <translation id="2165421703844373933">Assistant қолданбасына "Ok Google" деп кіріңіз. Батарея зарядын үнемдеу үшін "Қосулы" опциясын таңдағаныңыз дұрыс. Құрылғыңыз қуат көзіне қосылғанда немесе зарядталып жатқанда ғана, Assistant жауап береді.</translation>
-<translation id="2166269335975661317">Вебқолданбалар құрылғыңыздан белгілі бір файл түрлерін ашуды сұрайды.</translation>
 <translation id="2166369534954157698">аәбвгғдеёжзийкқлмнңоөпрстуұүфхһцчшщъыіьэюя</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Бәрібір кіру</translation>
@@ -4227,7 +4224,6 @@
 <translation id="5715711091495208045">Плагин делдалы: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Әдепкі іздеу жүйелері</translation>
 <translation id="5719854774000914513">Сайттар HID құрылғыларына қосылуға рұқсат сұрайды</translation>
-<translation id="5720705177508910913">Ағымдағы пайдаланушы</translation>
 <translation id="572155275267014074">Android параметрлері</translation>
 <translation id="5722086096420375088">Жасыл және ақ</translation>
 <translation id="5722930212736070253">Қап! Zip Archiver жұмысында қате шықты.</translation>
@@ -4462,7 +4458,6 @@
 <translation id="5990266201903445068">Тек Wi-Fi</translation>
 <translation id="5990386583461751448">Аударылды</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Браузерді әрі қарай пайдалана беру үшін әкімшіден осы қолданбаны өшіріп тастауын сұраңыз.}other{Браузерді пайдалана беру үшін әкімшіден осы қолданбаларды өшіріп тастауын сұраңыз.}}</translation>
-<translation id="5992175324932183568">Вебқолданбалардың құрылғыңыздан белгілі бір файл түрлерін ашуына рұқсат бермеу</translation>
 <translation id="5997337190805127100">Сайтқа кіру рұқсаты туралы толығырақ мәлімет</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" сұрауы бойынша <ph name="RESULT_COUNT" /> нәтиже шықты</translation>
 <translation id="6002210667729577411">Топты жаңа терезеге жылжыту</translation>
@@ -4584,7 +4579,6 @@
 <translation id="6124213551517593835"><ph name="SITE_GROUP_NAME" /> сайттар тобында және қатысты сайттарда сақталған деректер мен cookie файлдарының барлығы өшіріледі.</translation>
 <translation id="6124650939968185064">Келесі кеңейтімдер осы кеңейтімге байланысты:</translation>
 <translation id="6124698108608891449">Сайтқа қосымша рұқсаттар қажет.</translation>
-<translation id="6125442051901189730">Қолжетімді SIM профильдері жоқ. Жаңа профильді <ph name="BEGIN_LINK" />осы жерден<ph name="END_LINK" /> реттеңіз.</translation>
 <translation id="6125479973208104919">Өкінішке қарай, есептік жазбаны <ph name="DEVICE_TYPE" /> құрылғысына қайта енгізу қажет.</translation>
 <translation id="6129691635767514872">Таңдалған деректер Chrome жүйесінен және синхрондалған құрылғылардан алынып тасталды. Google есептік жазбасының шолу тарихы басқа Google қызметтеріндегі іздеулер мен әрекеттер тізімі түрінде де болуы мүмкін, оларды <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> мекенжайынан табуға болады.</translation>
 <translation id="6129938384427316298">Netscape сертификат пікірі</translation>
@@ -6583,8 +6577,6 @@
 <translation id="8368859634510605990">&amp;Барлық бетбелгілерді ашу</translation>
 <translation id="8370294614544004647">Ноутбук жабылғанда, ұйқы режиміне өту</translation>
 <translation id="8371695176452482769">Айта беріңіз</translation>
-<translation id="8371749822919332187">Ұлғайту үшін Ctrl+Alt+"Жарықтық деңгейін арттыру" пернесі тіркесімін пайдаланыңыз.
-Кішірейту үшін Ctrl+Alt+"Жарықтық деңгейін төмендету" пернесі тіркесімін пайдаланыңыз.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Сайттың дыбысын өшіру}other{Сайттардың дыбысын өшіру}}</translation>
 <translation id="8372369524088641025">WEP кілті дұрыс емес</translation>
 <translation id="8373652277231415614">Crostini ортақ каталогтері</translation>
@@ -7395,7 +7387,6 @@
 <translation id="975893173032473675">Аударма тілі</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> деп теріліп, <ph name="CORRECTED_WORD" /> деп түзетілген сөз үшін автоматты түзетуден бас тарту диалогтік терезесі көрсетілді.  Оны қолдану үшін жоғары бағыттауыш пернені, ал елемеу үшін Escape пернесін басыңыз.</translation>
 <translation id="978146274692397928">Бастапқы пунктуация ені – толық</translation>
-<translation id="97883469867914488">Вебқолданбалардың құрылғыңыздағы белгілі бір файл түрлерін ашуын бөгеу</translation>
 <translation id="97905529126098460">Бас тарту процесі аяқталғаннан кейін, осы терезе жабылады.</translation>
 <translation id="980731642137034229">Әрекеттер мәзірі түймесі</translation>
 <translation id="981121421437150478">Желіден тыс</translation>

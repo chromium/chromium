@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> odporúča, aby ste toto zariadenie <ph name="DEVICE_TYPE" /> aktualizovali.</translation>
 <translation id="1118738876271697201">Systém nedokázal rozpoznať model zariadenia alebo sériové číslo.</translation>
 <translation id="1119447706177454957">Interná chyba</translation>
-<translation id="111959947408687873">Ak chcete prepnúť celoplošnú lupu, stlačte Ctrl + <ph name="SEARCH_KEY_NAME" /> + M. Ak sa chcete pohybovať po obrazovke pri priblížení, stlačte Ctrl + Alt + klávesy so šípkami.</translation>
 <translation id="1122068467107743258">Práca</translation>
 <translation id="1122198203221319518">&amp;Nástroje</translation>
 <translation id="1122242684574577509">Overenie totožnosti zlyhalo. Kliknutím prejdete na prihlasovaciu stránku pre sieť Wi‑Fi, ktorú používate (<ph name="NETWORK_ID" />).</translation>
@@ -428,7 +427,6 @@
 <translation id="146000042969587795">Tento rám je zablokovaný, pretože obsahuje nezabezpečený obsah.</translation>
 <translation id="146219525117638703">Stav ONC</translation>
 <translation id="146220085323579959">Internet je odpojený. Skontrolujte svoje pripojenie k Internetu a skúste znova.</translation>
-<translation id="1463051728820430132">Spýtať sa, keď chce webová aplikácia otvoriť typy súborov vo vašom zariadení</translation>
 <translation id="1463112138205428654">Súbor <ph name="FILE_NAME" /> bol zablokovaný rozšírenou ochranou.</translation>
 <translation id="1464044141348608623">Nepovoliť webom zisťovať, kedy aktívne používate zariadenie</translation>
 <translation id="1464258312790801189">Vaše účty</translation>
@@ -1094,7 +1092,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2163470535490402084">Ak sa chcete prihlásiť do zariadenia <ph name="DEVICE_TYPE" />, pripojte sa k internetu.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 ďalší prepínač</translation>
 <translation id="2165421703844373933">Aktivujte svojho Asistenta vyslovením výrazu „OK Google“. Ak chcete šetriť batériu, vyberte Zapnutý (odporúčané). Váš Asistent bude reagovať iba vtedy, keď bude zariadenie pripojené do zásuvky alebo sa bude nabíjať.</translation>
-<translation id="2166269335975661317">Webové aplikácie môžu žiadať o povolenie otvárať typy súborov z vášho zariadenia</translation>
 <translation id="2166369534954157698">Kŕdeľ ďateľov učí koňa žrať kôru</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Napriek tomu sa prihlásiť</translation>
@@ -4231,7 +4228,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5715711091495208045">Doplnok Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Predvolené vyhľadávače</translation>
 <translation id="5719854774000914513">Weby môžu žiadať o pripojenie k zariadeniam HID</translation>
-<translation id="5720705177508910913">Aktuálny používateľ</translation>
 <translation id="572155275267014074">Nastavenia Androidu</translation>
 <translation id="5722086096420375088">Zelená a biela</translation>
 <translation id="5722930212736070253">Aj, chyba! Program Zip Archiver narazil na chybu.</translation>
@@ -4466,7 +4462,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5990266201903445068">Len Wi‑Fi</translation>
 <translation id="5990386583461751448">Preložené</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie tejto aplikácie.}few{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie týchto aplikácií.}many{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie týchto aplikácií.}other{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie týchto aplikácií.}}</translation>
-<translation id="5992175324932183568">Nepovoliť webovým aplikáciám otvárať typy súborov vo vašom zariadení</translation>
 <translation id="5997337190805127100">Ďalšie informácie o prístupe k webom</translation>
 <translation id="6000758707621254961">Viacero výsledkov (<ph name="RESULT_COUNT" />) pre hľadaný výraz „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6002210667729577411">Presunúť skupinu do nového okna</translation>
@@ -4588,7 +4583,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6124213551517593835">Týmto vymažete všetky dáta a súbory cookie uložené webom <ph name="SITE_GROUP_NAME" /> a jeho podradenými webmi</translation>
 <translation id="6124650939968185064">Od tohto rozšírenia závisia nasledujúce rozšírenia:</translation>
 <translation id="6124698108608891449">Tento web potrebuje ďalšie povolenia.</translation>
-<translation id="6125442051901189730">Nie sú k dispozícii žiadne profily SIM karty. <ph name="BEGIN_LINK" />Tu nastavte nový profil.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Do tohto zariadenia <ph name="DEVICE_TYPE" /> si žiaľ budete musieť znova pridať účet.</translation>
 <translation id="6129691635767514872">Vybrané dáta boli odstránené z Chromu a synchronizovaných zariadení. Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> (napríklad vyhľadávania a aktivity v iných službách Googlu).</translation>
 <translation id="6129938384427316298">Netscape – komentár certifikátu</translation>
@@ -6587,8 +6581,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8368859634510605990">&amp;Otvoriť všetky záložky</translation>
 <translation id="8370294614544004647">Po zavretí laptopu prejsť do režimu spánku</translation>
 <translation id="8371695176452482769">Hovorte…</translation>
-<translation id="8371749822919332187">Ak chcete zobrazenie priblížiť, stlačte Ctrl + Alt + kláves zvýšenia jasu.
-Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + kláves zníženia jasu.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Vypnúť zvuk webu}few{Vypnúť zvuk webov}many{Vypnúť zvuk webov}other{Vypnúť zvuk webov}}</translation>
 <translation id="8372369524088641025">Zlý kľúč WEP</translation>
 <translation id="8373652277231415614">Zdieľané adresáre v systéme Crostini</translation>
@@ -7401,7 +7393,6 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="975893173032473675">Jazyk, do ktorého chcete prekladať</translation>
 <translation id="976499800099896273">Pri slove <ph name="TYPED_WORD" />, ktoré bolo opravené na <ph name="CORRECTED_WORD" />, je zobrazené dialógové okno na zrušenie automatickej opravy.  Stlačením šípky nahor okno aktivujete, stlačením klávesa Escape ho ignorujete.</translation>
 <translation id="978146274692397928">Úvodná šírka interpunkcie: plná</translation>
-<translation id="97883469867914488">Nepovoliť webovým aplikáciám otvárať typy súborov vo vašom zariadení</translation>
 <translation id="97905529126098460">Po dokončení rušenia sa toto okno zavrie.</translation>
 <translation id="980731642137034229">Tlačidlo ponuky akcií</translation>
 <translation id="981121421437150478">Offline</translation>

@@ -276,7 +276,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="1914326953223720820">Uppackningstjänst</translation>
 <translation id="1915697529809968049">Vill du använda Touch ID i stället för CVC?</translation>
 <translation id="1916770123977586577">Läs in sidan igen för att tillämpa dina uppdaterade inställningar för webbplatsen</translation>
-<translation id="1917876262703816781">Ditt lösenord har läckt ut efter ett dataintrång på en webbplats eller i en app. Du rekommenderas att ändra lösenordet på <ph name="ORIGIN" /> nu.</translation>
 <translation id="1919345977826869612">Annonser</translation>
 <translation id="1919367280705858090">Få hjälp med ett specifikt felmeddelande</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ingen}=1{1 webbplats}other{# webbplatser}}</translation>
@@ -920,7 +919,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="4358461427845829800">Hantera betalningsmetoder …</translation>
 <translation id="4359160567981085931">Du angav just ditt lösenord på en bedräglig webbplats. Du kan få hjälp i Chrome. Klicka på Skydda kontot för att ändra ditt lösenord och meddela Google om att kontot kan vara utsatt för fara.</translation>
 <translation id="4367563149485757821">Number-12 (kuvert)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Det sparade lösenordet för <ph name="ORIGIN" /> har exponerats vid ett dataintrång på en webbplats eller i en app. Du rekommenderas att ändra lösenordet på <ph name="ORIGIN" /> nu.}=1{Det sparade lösenordet för <ph name="ORIGIN" /> och en webbplats till har exponerats vid ett dataintrång på en webbplats eller i en app. Du rekommenderas att kontrollera dina sparade lösenord nu.}other{Det sparade lösenordet för <ph name="ORIGIN" /> och <ph name="SITES_COUNT" /> webbplatser till har exponerats vid ett dataintrång på en webbplats eller i en app. Du rekommenderas att kontrollera dina sparade lösenord nu.}}</translation>
 <translation id="437058704415269440">Kontosaldo</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Ett <ph name="VALUE_TYPE" />-värde förväntades.</translation>
@@ -1161,7 +1159,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="5287456746628258573">Den här webbplatsens säkerhetskonfiguration är inaktuell. Det kan leda till att dina uppgifter (till exempel lösenord eller kreditkortsnummer) exponeras när de skickas till den här webbplatsen.</translation>
 <translation id="5288108484102287882">Valideringen av principvärdena har utlöst varningar</translation>
 <translation id="5289384342738547352">Hantering av flera dokument</translation>
-<translation id="5295292838686006428">Ditt lösenord har läckt ut efter ett dataintrång på en webbplats eller i en app. Du rekommenderas att kontrollera dina sparade lösenord nu.</translation>
 <translation id="5299298092464848405">Det uppstod ett fel när policyn analyserades</translation>
 <translation id="5300589172476337783">Visa</translation>
 <translation id="5306593769196050043">Båda</translation>
@@ -1701,7 +1698,6 @@ Mer information.
 <translation id="7473891865547856676">Nej tack</translation>
 <translation id="7481312909269577407">Framåt</translation>
 <translation id="7485870689360869515">Ingen data hittades.</translation>
-<translation id="7495290002932347110">Ditt lösenord har läckt ut efter ett dataintrång på en webbplats eller i en app. Om du har återanvänt lösenordet på andra webbplatser rekommenderas du att återställa lösenordet på <ph name="ORIGIN" /> nu.</translation>
 <translation id="7495528107193238112">Det här innehållet har blockerats. Kontakta webbplatsägaren om du vill åtgärda problemet.</translation>
 <translation id="7498234416455752244">Fortsätt redigera</translation>
 <translation id="7503664977220660814">Du angav just ditt lösenord på en bedräglig webbplats. Chromium rekommenderar att du kontrollerar dina sparade lösenord för <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> och andra webbplatser där du använder lösenordet nu.</translation>

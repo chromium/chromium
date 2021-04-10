@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> तुम्हाला हे <ph name="DEVICE_TYPE" /> अपडेट करण्याची शिफारस करतो.</translation>
 <translation id="1118738876271697201">सिस्टमला डिव्हाइस मॉडेल किंवा सिरीअल नंबर निर्धारित करता आला नाही.</translation>
 <translation id="1119447706177454957">अंतर्गत एरर</translation>
-<translation id="111959947408687873">फुलस्क्रीन मॅग्निफायर टॉगल करण्यासाठी Ctrl+<ph name="SEARCH_KEY_NAME" />+M वापरा. झूम इन केलेले असताना स्क्रीनभोवती हलवण्यासाठी Ctrl+Alt+Arrow की वापरा.</translation>
 <translation id="1122068467107743258">कार्य</translation>
 <translation id="1122198203221319518">&amp;साधने</translation>
 <translation id="1122242684574577509">ऑथेंटिकेशन अयशस्वी. तुम्ही वापरत असलेल्या (<ph name="NETWORK_ID" />) वाय-फाय नेटवर्कसाठी लॉग इन पेजला भेट देण्यासाठी वर क्लिक करा.</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">ही फ्रेम अवरोधित केली होती कारण यात काही असुरक्षित आशय आहे.</translation>
 <translation id="146219525117638703">ONC स्थिती</translation>
 <translation id="146220085323579959">इंटरनेट डिस्कनेक्ट झाले. कृपया तुमचे इंटरनेट कनेक्‍शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="1463051728820430132">वेब अ‍ॅपला तुमच्या डिव्हाइसवरील विविध प्रकारच्या फाइल उघडायच्या असतील तेव्हा विचारा</translation>
 <translation id="1463112138205428654">प्रगत संरक्षणाने <ph name="FILE_NAME" /> ब्लॉक केली होती.</translation>
 <translation id="1464044141348608623">तुम्ही तुमचे डिव्हाइस सक्रियपणे केव्हा वापरता हे साइटना जाणून घेण्याची अनुमती देऊ नका</translation>
 <translation id="1464258312790801189">तुमची खाती</translation>
@@ -1025,6 +1023,7 @@
 <translation id="211144231511833662">प्रकार साफ करा</translation>
 <translation id="2111670510994270194">उजवीकडील नवीन टॅब</translation>
 <translation id="2111810003053064883">जाहिरातदार जाहिरातींच्या परिणामकारकतेचा अशा प्रकारे अभ्यास करू शकतात ज्यामुळे ते तुम्हाला सर्व साइटवर ट्रॅक करत नाहीत.</translation>
+<translation id="2112554630428445878">स्वागत आहे, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">टॅब पिन करा</translation>
 <translation id="2113479184312716848">&amp;फाइल उघडा...</translation>
 <translation id="2113921862428609753">अधिकृतता माहिती ॲक्सेस</translation>
@@ -1090,7 +1089,6 @@
 <translation id="2163470535490402084">कृपया आपल्‍या <ph name="DEVICE_TYPE" /> मध्‍ये साइन इन करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> आणि आणखी एक स्विच</translation>
 <translation id="2165421703844373933">तुम्ही "Ok Google" म्हणता तेव्हा Assistant अ‍ॅक्सेस करा. बॅटरीची बचत करण्यासाठी, “सुरू करा (शिफारस केलेले)” निवडा. तुमचे डिव्हाइस प्लग इन केले असेल तेव्हा किंवा चार्ज होत असेल फक्त तेव्हा Assistant प्रतिसाद देईल.</translation>
-<translation id="2166269335975661317">वेब ॲप्स तुमच्या डिव्हाइसवरील विविध प्रकारच्या फाइल उघडण्यासाठी विचारू शकते</translation>
 <translation id="2166369534954157698">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावर उडी मारली</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">तरीही साइन इन करा</translation>
@@ -2641,6 +2639,7 @@
 <translation id="3881478300875776315">कमी रेषा दाखवा</translation>
 <translation id="3882165008614329320">कॅमेरा किंवा फाइलवरून सद्य व्हिडिओ</translation>
 <translation id="3884152383786131369">एकाहून अधिक भाषांमध्ये उपलब्ध असणारा वेब आशय सूचीमधील सपोर्ट असलेली पहिली भाषा वापरेल. ही प्राधान्ये तुमच्या ब्राउझर सेटिंग्जसह सिंक केली आहेत. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">अपडेट तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्‍थापित केली जातात</translation>
 <translation id="3886446263141354045">या साइट ॲक्सेस करण्याची तुमची विनंती <ph name="NAME" /> कडे पाठवली गेली आहे</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> सोबत टिपा घेणे</translation>
 <translation id="3888586133700543064">Assistant शी संबंधित तुमच्या समस्या आणखी चांगल्या प्रकारे समजून घेण्यात ही माहिती आम्हाला मदत करते. ती ९० दिवसांपर्यंत स्टोअर केली जाते आणि तिचा अ‍ॅक्सेस योग्य इंजिनीयरिंग आणि फीडबॅक टीमपुरता मर्यादित असतो.</translation>
@@ -4225,7 +4224,6 @@
 <translation id="5715711091495208045">प्लगइन ब्रोकर: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">डीफॉल्ट शोध इंजीन</translation>
 <translation id="5719854774000914513">साइट HID डिव्हाइसशी कनेक्ट करण्यासाठी विचारू शकतात</translation>
-<translation id="5720705177508910913">वर्तमान वापरकर्ता</translation>
 <translation id="572155275267014074">Android सेटिंग्ज</translation>
 <translation id="5722086096420375088">हिरवा आणि पांढरा</translation>
 <translation id="5722930212736070253">च्चक! Zip Archiver ला एरर आली.</translation>
@@ -4461,7 +4459,6 @@
 <translation id="5990266201903445068">फक्त वाय-फाय</translation>
 <translation id="5990386583461751448">भाषांतर केले</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{तुमचे वेब ब्राउझिंग सुरू राहावे याची खात्री करण्यासाठी, तुमच्या ॲडमिनिस्ट्रेटरला हे ॲप्लिकेशन काढून टाकण्यास सांगा.}other{तुमचे वेब ब्राउझिंग सुरू राहावे याची खात्री करण्यासाठी, तुमच्या ॲडमिनिस्ट्रेटरला हे ॲप्लिकेशन काढून टाकण्यास सांगा.}}</translation>
-<translation id="5992175324932183568">वेब ॲप्सना तुमच्या डिव्हाइसवरील विविध प्रकारच्या फाइल उघडण्याची अनुमती देऊ नका</translation>
 <translation id="5997337190805127100">साइट ॲक्सेसबद्दल अधिक जाणून घ्या</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' साठी <ph name="RESULT_COUNT" /> परिणाम</translation>
 <translation id="6002210667729577411">गट नवीन विंडोवर हलवा</translation>
@@ -4583,7 +4580,6 @@
 <translation id="6124213551517593835">हे <ph name="SITE_GROUP_NAME" /> ने स्टोअर केलेला सर्व डेटा आणि कुकी व त्याअंतर्गत असलेल्या कोणत्याही साइट साफ करेल</translation>
 <translation id="6124650939968185064">या एक्स्टेंशनवर अवलंबून असलेले खालील एक्स्टेंशन:</translation>
 <translation id="6124698108608891449">या साइटला आणखी परवानग्यांची आवश्यकता आहे.</translation>
-<translation id="6125442051901189730">कोणत्याही सिम प्रोफाइल उपलब्ध नाहीत. नवीन प्रोफाइल <ph name="BEGIN_LINK" />येथे<ph name="END_LINK" /> सेट करा.</translation>
 <translation id="6125479973208104919">दुर्दैवाने, तुम्हाला या <ph name="DEVICE_TYPE" /> वर तुमचे खाते पुन्हा जोडावे लागेल.</translation>
 <translation id="6129691635767514872">निवडलेला डेटा Chrome आणि सिंक केलेल्या डिव्हाइसमधून काढला गेला आहे. तुमच्‍या Google खात्यामध्ये Google च्या इतर सेवांमधील शोध आणि ॲक्टिव्हिटी यासारख्या ब्राउझिंग इतिहासाची इतर स्वरूपे <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर असू शकतात.</translation>
 <translation id="6129938384427316298">Netscape सर्टिफिकेट टिप्पणी</translation>
@@ -6581,8 +6577,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8368859634510605990">सर्व बुकमार्क &amp;उघडा</translation>
 <translation id="8370294614544004647">लॅपटॉप बंद केल्यावर स्लीप मोड ऑन करा</translation>
 <translation id="8371695176452482769">आता बोला</translation>
-<translation id="8371749822919332187">झूम इन करण्यासाठी Ctrl+Alt+Brightness Up वापरा.
-झूम आउट करण्यासाठी Ctrl+Alt+Brightness Down वापरा.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{साइट म्यूट करा}other{साइट म्यूट करा}}</translation>
 <translation id="8372369524088641025">खराब WEP की</translation>
 <translation id="8373652277231415614">Crostini ने शेअर केलेल्या डिरेक्टरी</translation>
@@ -7394,7 +7388,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="975893173032473675">भाषांतर करण्याची भाषा</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> ला दुरुस्त करून <ph name="CORRECTED_WORD" /> केले, ज्यासाठी ऑटोकरेक्ट पहिल्यासारखे करा डायलॉग दाखवला गेला.  अ‍ॅक्सेस करण्यासाठी अप अ‍ॅरो दाबा, दुर्लक्ष करण्यासाठी escape दाबा.</translation>
 <translation id="978146274692397928">आरंभिक विरामचिन्ह रूंदी पूर्ण आहे</translation>
-<translation id="97883469867914488">वेब ॲप्सना तुमच्या डिव्हाइसवरील विविध प्रकारच्या फाइल उघडण्यापासून ब्लॉक करा</translation>
 <translation id="97905529126098460">रद्द करणे पूर्ण झाल्यावर ही विंडो बंद होईल.</translation>
 <translation id="980731642137034229">अ‍ॅक्‍शन मेनू बटण</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>

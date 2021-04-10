@@ -276,7 +276,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1914326953223720820">Usluga za otvaranje zip fajlova</translation>
 <translation id="1915697529809968049">Koristiti Touch ID umjesto CVC-a?</translation>
 <translation id="1916770123977586577">Da primijenite ažurirane postavke na ovoj web lokaciji, ponovo učitajte stranicu.</translation>
-<translation id="1917876262703816781">Došlo je do narušavanja podataka na web lokaciji ili u aplikaciji čime je vaša lozinka izložena. Chrome preporučuje da odmah promijenite lozinku na web lokaciji <ph name="ORIGIN" />.</translation>
 <translation id="1919345977826869612">Oglasi</translation>
 <translation id="1919367280705858090">Potražite pomoć za određene poruke o greškama</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nema}=1{1 web lokacija}one{# web lokacija}few{# web lokacije}other{# web lokacija}}</translation>
@@ -920,7 +919,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4358461427845829800">Upravljajte načinima plaćanja…</translation>
 <translation id="4359160567981085931">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chrome vam može pomoći. Da promijenite lozinku i obavijestite Google da vam je račun možda ugrožen, kliknite Zaštiti račun.</translation>
 <translation id="4367563149485757821">Broj 12 (koverta)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Došlo je do narušavanja podataka na web lokaciji ili u aplikaciji čime je izložena vaša sačuvana lozinka za <ph name="ORIGIN" />. Chrome preporučuje da odmah promijenite lozinku na web lokaciji <ph name="ORIGIN" />.}=1{Došlo je do narušavanja podataka na web lokaciji ili u aplikaciji čime je izložena vaša sačuvana lozinka za <ph name="ORIGIN" /> i još jednu web lokaciju. Chrome vam preporučuje da odmah provjerite sačuvane lozinke.}one{Došlo je do narušavanja podataka na web lokaciji ili u aplikaciji čime je izložena vaša sačuvana lozinka za <ph name="ORIGIN" /> i još <ph name="SITES_COUNT" /> web lokaciju. Chrome vam preporučuje da odmah provjerite sačuvane lozinke.}few{Došlo je do narušavanja podataka na web lokaciji ili u aplikaciji čime je izložena vaša sačuvana lozinka za <ph name="ORIGIN" /> i još <ph name="SITES_COUNT" /> web lokacije. Chrome vam preporučuje da odmah provjerite sačuvane lozinke.}other{Došlo je do narušavanja podataka na web lokaciji ili u aplikaciji čime je izložena vaša sačuvana lozinka za <ph name="ORIGIN" /> i još <ph name="SITES_COUNT" /> web lokacija. Chrome vam preporučuje da odmah provjerite sačuvane lozinke.}}</translation>
 <translation id="437058704415269440">Stanje računa</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Očekivana vrijednost vrste <ph name="VALUE_TYPE" />.</translation>
@@ -1161,7 +1159,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5287456746628258573">Ova web lokacija koristi zastarjelu konfiguraciju sigurnosti, zbog čega može doći do otkrivanja vaših informacija (naprimjer, lozinki ili brojeva kreditnih kartica) kada se šalju na ovu web lokaciju.</translation>
 <translation id="5288108484102287882">Potvrdom vrijednosti pravila aktivirana su upozorenja</translation>
 <translation id="5289384342738547352">Obrada više dokumenata</translation>
-<translation id="5295292838686006428">Došlo je do narušavanja podataka na web lokaciji ili u aplikaciji čime je vaša lozinka izložena. Chrome vam preporučuje da odmah provjerite sačuvane lozinke.</translation>
 <translation id="5299298092464848405">Greška u pravilu raščlanjivanja</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5306593769196050043">Obje tabele</translation>
@@ -1701,7 +1698,6 @@ Dodatni detalji:
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7481312909269577407">Proslijedi</translation>
 <translation id="7485870689360869515">Nije pronađen nijedan rezultat.</translation>
-<translation id="7495290002932347110">Došlo je do narušavanja podataka na web lokaciji ili u aplikaciji čime je vaša lozinka izložena. Chrome vam preporučuje da odmah provjerite sačuvane lozinke i promijenite lozinku na web lokaciji <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Ovaj sadržaj je blokiran. Kontaktirajte vlasnika web lokacije da riješite problem.</translation>
 <translation id="7498234416455752244">Nastavi uređivanje</translation>
 <translation id="7503664977220660814">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chromium preporučuje provjeru sačuvanih lozinki za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i druge web lokacije na kojima sada koristite ovu lozinku.</translation>

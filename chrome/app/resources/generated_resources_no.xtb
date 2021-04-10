@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> anbefaler at du oppdaterer <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Systemet kunne ikke fastslå enhetens modell eller serienummer.</translation>
 <translation id="1119447706177454957">Intern feil</translation>
-<translation id="111959947408687873">Bruk Ctrl + <ph name="SEARCH_KEY_NAME" /> + M for å slå av/på forstørrelse av hele skjermen. Bruk Ctrl + Alt + piltastene for å bevege deg rundt på skjermen når du er zoomet inn.</translation>
 <translation id="1122068467107743258">Jobb</translation>
 <translation id="1122198203221319518">&amp;Verktøy</translation>
 <translation id="1122242684574577509">Autentiseringen mislyktes. Klikk for å gå til påloggingssiden for Wi-Fi-nettverket du bruker (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Denne rammen ble blokkert fordi den inneholder usikkert innhold.</translation>
 <translation id="146219525117638703">ONC-status</translation>
 <translation id="146220085323579959">Internett er ikke tilkoblet. Sjekk Internett-tilkoblingen og prøv på nytt.</translation>
-<translation id="1463051728820430132">Spør når nettprogrammer vil åpne filtyper på enheten din</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> ble blokkert av Avansert beskyttelse.</translation>
 <translation id="1464044141348608623">Ikke la nettsteder få vite når du bruker enheten aktivt</translation>
 <translation id="1464258312790801189">Kontoene dine</translation>
@@ -1089,7 +1087,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2163470535490402084">Koble til Internett for å logge på <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 bryter til</translation>
 <translation id="2165421703844373933">Få tilgang til assistenten når du sier «Ok Google». For å spare batteri, velg «På (anbefales)». Assistenten svarer bare når enheten er koblet til strøm eller står på lading.</translation>
-<translation id="2166269335975661317">Nettprogrammer kan be om å få åpne filtyper på enheten din</translation>
 <translation id="2166369534954157698">Høvdingens kjære squaw får litt pizza i Mexico by</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Logg på likevel</translation>
@@ -4225,7 +4222,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5715711091495208045">Programtilleggsmegler: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standard søkemotorer</translation>
 <translation id="5719854774000914513">Nettsteder kan be om å få koble til HID-enheter</translation>
-<translation id="5720705177508910913">Gjeldende bruker</translation>
 <translation id="572155275267014074">Android-innstillinger</translation>
 <translation id="5722086096420375088">Grønn og hvit</translation>
 <translation id="5722930212736070253">Å nei! Zip Archiver støtte på en feil.</translation>
@@ -4460,7 +4456,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5990266201903445068">Bare Wi-Fi</translation>
 <translation id="5990386583461751448">Oversatt</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{For å sikre at du fortsatt kan surfe på nettet, be administratoren din om å fjerne dette programmet.}other{For å sikre at du fortsatt kan surfe på nettet, be administratoren din om å fjerne disse programmene.}}</translation>
-<translation id="5992175324932183568">Ikke la nettprogrammer åpne filtyper på enheten din</translation>
 <translation id="5997337190805127100">Finn ut mer om nettstedstilgang</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6002210667729577411">Flytt gruppen til et nytt vindu</translation>
@@ -4582,7 +4577,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6124213551517593835">Dette sletter alle dataene og informasjonskapslene som er lagret av <ph name="SITE_GROUP_NAME" /> og eventuelle underordnede nettsteder</translation>
 <translation id="6124650939968185064">Disse utvidelsene er avhengige av denne utvidelsen:</translation>
 <translation id="6124698108608891449">Dette nettstedet trenger flere tillatelser.</translation>
-<translation id="6125442051901189730">Ingen tilgjengelige SIM-kortprofiler. Konfigurer en ny profil <ph name="BEGIN_LINK" />her<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Du må dessverre legge til kontoen din på denne <ph name="DEVICE_TYPE" />-enheten på nytt.</translation>
 <translation id="6129691635767514872">De valgte dataene er fjernet fra Chrome og alle synkroniserte enheter. Det kan hende Google-kontoen din har andre typer nettleserlogger, for eksempel for søk og aktivitet fra andre Google-tjenester, på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Kommentar til Netscape-sertifikat</translation>
@@ -6582,8 +6576,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8368859634510605990">&amp;Åpne alle bokmerker</translation>
 <translation id="8370294614544004647">Gå i hvilemodus når laptopen lukkes</translation>
 <translation id="8371695176452482769">Snakk nå</translation>
-<translation id="8371749822919332187">Bruk Ctrl + Alt + lysstyrke opp for å zoome inn.
-Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Kutt lyden for nettstedet}other{Kutt lyden for nettstedene}}</translation>
 <translation id="8372369524088641025">Feil WEP-nøkkel</translation>
 <translation id="8373652277231415614">Delte kataloger for Crostini</translation>
@@ -7394,7 +7386,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="975893173032473675">Språket du vil oversette til</translation>
 <translation id="976499800099896273">Dialogboksen for angring av autokorrektur vises for <ph name="TYPED_WORD" />, som ble korrigert til <ph name="CORRECTED_WORD" />.  Trykk på oppoverpilen for å åpne eller Escape for å ignorere.</translation>
 <translation id="978146274692397928">Opprinnelig tegnsettingsbredde er satt til Full</translation>
-<translation id="97883469867914488">Blokkér nettprogrammer fra å åpne filtyper på enheten din</translation>
 <translation id="97905529126098460">Dette vinduet lukkes når avbruddet er fullført.</translation>
 <translation id="980731642137034229">Handlingsmenyknapp</translation>
 <translation id="981121421437150478">Uten nett</translation>

@@ -227,7 +227,7 @@
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Mehr als 1 ungelesene Benachrichtigung}other{Mehr als # ungelesene Benachrichtigungen}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{in 1 min}other{in # min}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
-<translation id="8090736967111090568">Zahl von <ph name="ORIGIN" /></translation>
+<translation id="8090736967111090568">Rufnummer von <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 Stunde her}other{# Stunden her}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Noch 1 s}other{Noch # s}}</translation>
 <translation id="8134065097954893699">Diese Seite neu laden</translation>

@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">გვერდის გაზიარება შეუძლებელია</translation>
 <translation id="2923448633003185837">ჩასმა და გადასვლა</translation>
 <translation id="292639812446257861">წაუკითხავად მონიშვნა</translation>
+<translation id="2932085390869194046">პაროლის შემოთავაზება…</translation>
 <translation id="2952581218264071393">1. გახსენით Chrome-ის პარამეტრები</translation>
 <translation id="2958718410589002129">პაროლები</translation>
 <translation id="2964349545761222050">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
@@ -760,7 +761,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8806823403540278281">თქვენი ორგანიზაცია მოითხოვს, რომ ვები კონფიდენციალურ რეჟიმში დაათვალიეროთ. ჩანართები არ ინახება ინკოგნიტო რეჟიმში.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">სანიშნეები</translation>
-<translation id="8823704566850948458">პაროლის შემოთავაზება...</translation>
 <translation id="8840513115188359703">თქვენ არ გამოხვალთ თქვენი Google ანგარიშიდან.</translation>
 <translation id="8870413625673593573">ბოლოს დახურული</translation>
 <translation id="8881801611828450202">ამ სურათის ძიება <ph name="SEARCH_ENGINE" />-ში</translation>

@@ -276,7 +276,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1914326953223720820">Servicio de descompresión</translation>
 <translation id="1915697529809968049">¿Usar Touch ID en lugar de CVC?</translation>
 <translation id="1916770123977586577">Vuelve a cargar esta página para aplicar la configuración actualizada a este sitio web</translation>
-<translation id="1917876262703816781">Se ha producido una quiebra de seguridad de datos en un sitio web o una aplicación y tu contraseña ha quedado expuesta. Chrome recomienda que cambies tu contraseña de <ph name="ORIGIN" /> ahora.</translation>
 <translation id="1919345977826869612">Anuncios</translation>
 <translation id="1919367280705858090">Solucionar un error específico</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ninguno}=1{1 sitio web}other{# sitios}}</translation>
@@ -920,7 +919,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4358461427845829800">Gestiona tus métodos de pago...</translation>
 <translation id="4359160567981085931">Acabas de introducir tu contraseña en un sitio web engañoso. Chrome puede ayudarte. Para cambiar tu contraseña y notificar a Google de que tu cuenta podría estar en peligro, haz clic en Proteger cuenta.</translation>
 <translation id="4367563149485757821">Number-12 (sobre)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Se ha producido una quiebra de seguridad de datos en un sitio web o una aplicación y tu contraseña de <ph name="ORIGIN" /> ha quedado expuesta. Chrome recomienda que cambies tu contraseña de <ph name="ORIGIN" /> ahora.}=1{Se ha producido una quiebra de seguridad de datos en un sitio web o una aplicación y tu contraseña de <ph name="ORIGIN" /> y otro sitio web han quedado expuestas. Chrome te recomienda que revises ahora tus contraseñas guardadas.}other{Se ha producido una quiebra de seguridad de datos en un sitio web o una aplicación y tu contraseña de <ph name="ORIGIN" /> y <ph name="SITES_COUNT" /> otros sitios han quedado expuestas. Chrome te recomienda que revises ahora tus contraseñas guardadas.}}</translation>
 <translation id="437058704415269440">Saldo de cuenta</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Se esperaba un valor <ph name="VALUE_TYPE" />.</translation>
@@ -1161,7 +1159,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5287456746628258573">Este sitio web usa una configuración de seguridad obsoleta y puede que exponga tu información (por ejemplo, las contraseñas o los números de las tarjetas de crédito) cuando se envíe a este sitio web.</translation>
 <translation id="5288108484102287882">La validación de los valores de las políticas ha generado advertencias</translation>
 <translation id="5289384342738547352">Gestión de varios documentos</translation>
-<translation id="5295292838686006428">Se ha producido una quiebra de seguridad de datos en un sitio web o una aplicación y tu contraseña ha quedado expuesta. Chrome recomienda que revises tus contraseñas guardadas ahora.</translation>
 <translation id="5299298092464848405">Error al analizar la política</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">Ambas hojas</translation>
@@ -1701,7 +1698,6 @@ Más información:
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="7485870689360869515">No se han encontrado datos.</translation>
-<translation id="7495290002932347110">Se ha producido una quiebra de seguridad de datos en un sitio web o una aplicación y tu contraseña ha quedado expuesta. Chrome recomienda que revises las contraseñas guardadas y que cambies la de <ph name="ORIGIN" /> ahora.</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Para solucionar el problema, ponte en contacto con el propietario del sitio web.</translation>
 <translation id="7498234416455752244">Seguir editando</translation>
 <translation id="7503664977220660814">Acabas de escribir tu contraseña en un sitio web engañoso. Chromium te recomienda que compruebes las contraseñas que has guardado en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y otros sitios en los que uses esta contraseña.</translation>
@@ -1903,7 +1899,7 @@ Más información:
 <translation id="8225771182978767009">La persona que ha configurado este ordenador ha elegido bloquear este sitio web.</translation>
 <translation id="8228419419708659934">Vista de dos páginas</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> o <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">No volver a preguntar en esta aplicación</translation>
+<translation id="8230159728600632642">No volver a preguntar para esta aplicación</translation>
 <translation id="8232343881378637145">Temperatura de plataforma</translation>
 <translation id="8238581221633243064">Abre una página en una nueva pestaña de incógnito</translation>
 <translation id="8241707690549784388">La página que buscas ha utilizado la información que has especificado. Volver a la página podría provocar la repetición de alguna acción. ¿Quieres continuar?</translation>

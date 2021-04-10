@@ -272,7 +272,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1914326953223720820">Descomprimeix el servei</translation>
 <translation id="1915697529809968049">Vols utilitzar Touch ID en lloc del CVC?</translation>
 <translation id="1916770123977586577">Per aplicar la configuració actualitzada a aquest lloc web, torna a carregar la pàgina</translation>
-<translation id="1917876262703816781">La teva contrasenya ha quedat exposada a causa de la violació de les dades en un lloc web o una aplicació. Chrome et recomana que canviïs la contrasenya per a <ph name="ORIGIN" /> ara.</translation>
 <translation id="1919345977826869612">Anuncis</translation>
 <translation id="1919367280705858090">Obtenir ajuda amb un missatge d'error específic</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Cap}=1{1 lloc}other{# llocs}}</translation>
@@ -909,7 +908,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4358461427845829800">Gestiona les formes de pagament...</translation>
 <translation id="4359160567981085931">Acabes d'introduir la contrasenya en un lloc web enganyós. Chrome pot ajudar-te. Per canviar la contrasenya i notificar a Google que el compte pot estar en perill, fes clic a Protegeix el compte.</translation>
 <translation id="4367563149485757821">Number-12 (sobre)</translation>
-<translation id="4367839622597707614">{1,plural, =0{La contrasenya que tens desada per a <ph name="ORIGIN" /> ha quedat exposada a causa de la violació de les dades en un lloc web o una aplicació. Chrome et recomana que canviïs ara la contrasenya per a <ph name="ORIGIN" />.}=1{La contrasenya que tens desada per a <ph name="ORIGIN" /> i 1 altre lloc web ha quedat exposada a causa de la violació de les dades en un lloc web o una aplicació. Chrome et recomana que comprovis ara les contrasenyes desades.}other{La contrasenya que tens desada per a <ph name="ORIGIN" /> i <ph name="SITES_COUNT" /> llocs web més ha quedat exposada a causa de la violació de les dades en un lloc web o una aplicació. Chrome et recomana que comprovis ara les contrasenyes desades.}}</translation>
 <translation id="437058704415269440">Saldo del compte</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperat.</translation>
@@ -1150,7 +1148,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5287456746628258573">Aquest lloc web utilitza una configuració de seguretat obsoleta i, per tant, la informació que hi enviïs podria quedar exposada (per exemple, les contrasenyes o els números de les targetes de crèdit).</translation>
 <translation id="5288108484102287882">La validació dels valors de la política ha generat advertiments</translation>
 <translation id="5289384342738547352">Gestió de diversos documents</translation>
-<translation id="5295292838686006428">La teva contrasenya ha quedat exposada a causa de la violació de les dades en un lloc web o una aplicació. Chrome et recomana que comprovis les contrasenyes desades ara.</translation>
 <translation id="5299298092464848405">S'ha produït un error en analitzar la política</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5306593769196050043">Tots dos fulls</translation>
@@ -1690,7 +1687,6 @@ Detalls addicionals:
 <translation id="7473891865547856676">No, gràcies</translation>
 <translation id="7481312909269577407">Endavant</translation>
 <translation id="7485870689360869515">No s'han trobat dades.</translation>
-<translation id="7495290002932347110">La teva contrasenya ha quedat exposada a causa de la violació de les dades en un lloc web o una aplicació. Chrome et recomana que comprovis les contrasenyes desades i que canviïs la contrasenya per a <ph name="ORIGIN" /> ara.</translation>
 <translation id="7495528107193238112">Aquest contingut està bloquejat. Contacta amb el propietari del lloc web per resoldre el problema.</translation>
 <translation id="7498234416455752244">Continua editant</translation>
 <translation id="7503664977220660814">Acabes d'introduir la contrasenya en un lloc web enganyós. Chromium et recomana que comprovis les teves contrasenyes desades per a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i altres llocs web en què utilitzis aquesta contrasenya ara.</translation>

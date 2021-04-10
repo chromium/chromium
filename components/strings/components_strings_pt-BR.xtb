@@ -272,7 +272,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1914326953223720820">Serviço Descompactar</translation>
 <translation id="1915697529809968049">Usar o Touch ID em vez do CVC?</translation>
 <translation id="1916770123977586577">Para aplicar as configurações atualizadas a este site, recarregue a página</translation>
-<translation id="1917876262703816781">Sua senha foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, mude a senha imediatamente em <ph name="ORIGIN" />.</translation>
 <translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Receber ajuda com uma mensagem de erro específica</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}one{# site}other{# sites}}</translation>
@@ -909,7 +908,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4358461427845829800">Gerenciar formas de pagamento…</translation>
 <translation id="4359160567981085931">Você acabou de digitar sua senha em um site suspeito. O Chrome pode ajudar. Para mudar a senha e notificar o Google de que sua conta pode estar em risco, clique em "Proteger conta".</translation>
 <translation id="4367563149485757821">Nº 12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Sua senha para <ph name="ORIGIN" /> foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, mude a senha imediatamente em <ph name="ORIGIN" />.}=1{Sua senha para <ph name="ORIGIN" /> e 1 outro site foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, verifique as senhas salvas imediatamente.}one{Sua senha para <ph name="ORIGIN" /> e <ph name="SITES_COUNT" /> outro site foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, verifique as senhas salvas imediatamente.}other{Sua senha para <ph name="ORIGIN" /> e <ph name="SITES_COUNT" /> outros sites foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, verifique as senhas salvas imediatamente.}}</translation>
 <translation id="437058704415269440">Saldo da conta</translation>
 <translation id="4372516964750095882">216 mm x 304 mm</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
@@ -1150,7 +1148,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5287456746628258573">Este site usa uma configuração de segurança desatualizada que pode expor suas informações, como senhas ou números de cartão de crédito, quando elas forem enviadas para o site.</translation>
 <translation id="5288108484102287882">A validação dos valores da política gerou alguns avisos</translation>
 <translation id="5289384342738547352">Gerenciamento de vários documentos</translation>
-<translation id="5295292838686006428">Sua senha foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, verifique as senhas salvas imediatamente.</translation>
 <translation id="5299298092464848405">Política de análise de erros</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">As duas páginas</translation>
@@ -1690,7 +1687,6 @@ Mais detalhes:
 <translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7485870689360869515">Nenhum dado encontrado</translation>
-<translation id="7495290002932347110">Sua senha foi exposta em violação de dados em um site ou app acessado por você. Por recomendação do Chrome, verifique suas senhas salvas e mude-as imediatamente em <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Entre em contato com o proprietário do site para corrigir o problema.</translation>
 <translation id="7498234416455752244">Continuar editando</translation>
 <translation id="7503664977220660814">Você acabou de digitar sua senha em um site suspeito. O Chromium recomenda que você verifique agora suas senhas salvas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sites em que você usa essa senha.</translation>

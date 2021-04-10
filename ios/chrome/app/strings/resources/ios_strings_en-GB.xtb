@@ -189,6 +189,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2921219216347069551">Cannot Share Page</translation>
 <translation id="2923448633003185837">Paste and go</translation>
 <translation id="292639812446257861">Mark Unread</translation>
+<translation id="2932085390869194046">Suggest password...</translation>
 <translation id="2952581218264071393">1. Open Chrome settings</translation>
 <translation id="2958718410589002129">Passwords</translation>
 <translation id="2964349545761222050">Block third-party cookies</translation>
@@ -760,7 +761,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8806823403540278281">Your organisation requires you to browse privately. Tabs aren't saved in Incognito mode.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmarks</translation>
-<translation id="8823704566850948458">Suggest password...</translation>
 <translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
 <translation id="8870413625673593573">Recently Closed</translation>
 <translation id="8881801611828450202">Search <ph name="SEARCH_ENGINE" /> for This Image</translation>

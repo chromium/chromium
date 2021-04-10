@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> te recomienda que actualices este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">El sistema no ha podido determinar el modelo del dispositivo ni el número de serie.</translation>
 <translation id="1119447706177454957">Error interno</translation>
-<translation id="111959947408687873">Usa Ctrl + <ph name="SEARCH_KEY_NAME" /> + M para activar o desactivar la lupa de pantalla completa. Usa Ctrl + Alt + teclas de flecha para desplazarte por la pantalla cuando esté ampliada.</translation>
 <translation id="1122068467107743258">Trabajo</translation>
 <translation id="1122198203221319518">&amp;Herramientas</translation>
 <translation id="1122242684574577509">Error de autenticación. Haz clic para acceder a la página de inicio de sesión de la red Wi-Fi que estés utilizando (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Este marco se ha bloqueado porque incluye contenido no seguro.</translation>
 <translation id="146219525117638703">Estado ONC</translation>
 <translation id="146220085323579959">Internet está desconectado. Comprueba la conexión a Internet y vuelve a intentarlo.</translation>
-<translation id="1463051728820430132">Preguntar cuando una aplicación web quiera abrir ciertos tipos de archivo en tu dispositivo</translation>
 <translation id="1463112138205428654">Protección Avanzada ha bloqueado <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">No permitir que los sitios sepan cuándo usas activamente tu dispositivo</translation>
 <translation id="1464258312790801189">Tus cuentas</translation>
@@ -1092,7 +1090,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2163470535490402084">Conéctate a Internet para iniciar sesión en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y 1 interruptor más</translation>
 <translation id="2165421703844373933">Accede al Asistente cuando digas "Ok Google". Para ahorrar batería, elige “Activado (recomendado)”. El Asistente responderá únicamente cuando tu dispositivo esté conectado o cargando.</translation>
-<translation id="2166269335975661317">Las aplicaciones web pueden solicitar abrir ciertos tipos de archivo desde tu dispositivo</translation>
 <translation id="2166369534954157698">Benjamín pidió una bebida de kiwi y fresa. Noé, sin vergüenza, la más exquisita champaña del menú.</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Iniciar sesión de todas formas</translation>
@@ -4229,7 +4226,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5715711091495208045">Agente de complementos: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Buscadores predeterminados</translation>
 <translation id="5719854774000914513">Los sitios pueden solicitar permiso para conectarse a dispositivos HID</translation>
-<translation id="5720705177508910913">Usuario actual</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5722086096420375088">Verde y blanco</translation>
 <translation id="5722930212736070253">¡Vaya! Zip Archiver ha detectado un error.</translation>
@@ -4464,7 +4460,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5990266201903445068">Solo Wi‑Fi</translation>
 <translation id="5990386583461751448">Traducida</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Para seguir navegando por Internet, pide a tu administrador que quite esta aplicación.}other{Para seguir navegando por Internet, pide a tu administrador que quite estas aplicaciones.}}</translation>
-<translation id="5992175324932183568">No permitir que las aplicaciones web abran ciertos tipos de archivo desde tu dispositivo</translation>
 <translation id="5997337190805127100">Más información sobre el acceso del sitio web</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Mover grupo a una nueva ventana</translation>
@@ -4586,7 +4581,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6124213551517593835">Esta acción borrará todos los datos y las cookies guardados por <ph name="SITE_GROUP_NAME" /> y por los sitios que incluya</translation>
 <translation id="6124650939968185064">Las siguientes extensiones dependen de esta extensión:</translation>
 <translation id="6124698108608891449">Este sitio web necesita más permisos.</translation>
-<translation id="6125442051901189730">No hay ningún perfil de SIM disponible. <ph name="BEGIN_LINK" />Configura un perfil nuevo<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Debes volver a añadir una cuenta a este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Los datos seleccionados se han quitado de Chrome y de los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros tipos de historial de navegación, como búsquedas o actividad de otros servicios de Google, en la página <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Comentario del certificado de Netscape</translation>
@@ -6586,8 +6580,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8368859634510605990">&amp;Abrir todos los marcadores</translation>
 <translation id="8370294614544004647">Suspender cuando el portátil esté cerrado</translation>
 <translation id="8371695176452482769">Habla ahora</translation>
-<translation id="8371749822919332187">Usa Ctrl + Alt + Aumentar el brillo para ampliar la pantalla.
-Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Silenciar sitio web}other{Silenciar sitios}}</translation>
 <translation id="8372369524088641025">Clave WEP incorrecta</translation>
 <translation id="8373652277231415614">Directorios compartidos de Crostini</translation>
@@ -7398,7 +7390,6 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="975893173032473675">Idioma al que se va a traducir</translation>
 <translation id="976499800099896273">Se muestra el cuadro de diálogo para deshacer la autocorrección de <ph name="TYPED_WORD" /> a <ph name="CORRECTED_WORD" />.  Pulsa la flecha hacia arriba para acceder a la palabra y Escape para ignorar.</translation>
 <translation id="978146274692397928">La puntuación inicial de los caracteres es de ancho completo.</translation>
-<translation id="97883469867914488">Impedir que las aplicaciones web abran ciertos tipos de archivo en tu dispositivo</translation>
 <translation id="97905529126098460">Esta ventana se cerrará cuando la cancelación se haya completado.</translation>
 <translation id="980731642137034229">Botón del menú de acciones</translation>
 <translation id="981121421437150478">Sin conexión</translation>

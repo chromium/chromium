@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="DEVICE_TYPE" /> eguneratzeko gomendatzen dizu <ph name="MANAGER" /> kudeatzaileak.</translation>
 <translation id="1118738876271697201">Sistemak ezin izan du zehaztu gailuaren modeloa edo serie-zenbakia.</translation>
 <translation id="1119447706177454957">Barneko errorea</translation>
-<translation id="111959947408687873">Erabili Ktrl + <ph name="SEARCH_KEY_NAME" /> + M pantaila osoko lupa aktibatzeko edo desaktibatzeko. Erabili Ktrl + Alt + gezi-teklak pantailan zehar mugitzeko pantaila handituta dagoenean.</translation>
 <translation id="1122068467107743258">Lanekoa</translation>
 <translation id="1122198203221319518">&amp;Tresnak</translation>
 <translation id="1122242684574577509">Ezin izan da autentifikatu. Erabiltzen ari zaren Wi-Fi sarean (<ph name="NETWORK_ID" />) saioa hasteko orrira joateko, egin klik hemen.</translation>
@@ -426,7 +425,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="146000042969587795">Markoa blokeatu da segurua ez den edukia duelako.</translation>
 <translation id="146219525117638703">ONC egoera</translation>
 <translation id="146220085323579959">Internet deskonektatuta dago. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
-<translation id="1463051728820430132">Galdetu sareko aplikazio batek gailuan fitxategi mota jakin batzuk ireki nahi dituenean</translation>
 <translation id="1463112138205428654">Babes aurreratuak blokeatu du <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">Ez eman gailua noiz erabiltzen ari zaren jakiteko baimena webguneei</translation>
 <translation id="1464258312790801189">Zure kontuak</translation>
@@ -1026,6 +1024,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="211144231511833662">Garbitu motak</translation>
 <translation id="2111670510994270194">Fitxa berria eskuinean</translation>
 <translation id="2111810003053064883">Iragarleek iragarkien eraginkortasuna azter dezakete, webguneetan zehar zure jarraipena egin beharrik gabe.</translation>
+<translation id="2112554630428445878">Ongi etorri, <ph name="USERNAME" />:</translation>
 <translation id="21133533946938348">Ainguratu fitxa</translation>
 <translation id="2113479184312716848">Ireki &amp;fitxategia…</translation>
 <translation id="2113921862428609753">Autoritatearen informaziorako sarbidea</translation>
@@ -1091,7 +1090,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2163470535490402084">Konektatu Internetera <ph name="DEVICE_TYPE" /> gailuan saioa hasteko.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> eta beste erabilerraztasun-etengailu bat</translation>
 <translation id="2165421703844373933">Laguntzailea atzitzeko, esan "Ok Google". Bateria aurrezteko, aukeratu "Aktibatuta (gomendatua)". Gailua entxufatuta dagoenean eta kargatzen ari denean soilik erantzungo du Laguntzailea eginbideak.</translation>
-<translation id="2166269335975661317">Sareko aplikazioek gailuan fitxategi mota jakin batzuk irekitzea eska dezakete</translation>
 <translation id="2166369534954157698">Vaudeville itxurako filmean yogi ñaño bat jipoitzen dute whiski truk Quebec-en.</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Hasi saioa halere</translation>
@@ -2642,6 +2640,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3881478300875776315">Erakutsi lerro gutxiago</translation>
 <translation id="3882165008614329320">Kamerako bideo bat edo bideo-fitxategi bat (lehendik duzuna)</translation>
 <translation id="3884152383786131369">Hizkuntza onartuen zerrendan agertzen den lehenengo hizkuntza erabiliko dute hizkuntza batean baino gehiagotan dauden web-edukiek. Arakatzaileko ezarpenekin sinkronizatuta daude hobespen horiek. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Administratzaileak kudeatzen ditu eguneratzeak</translation>
 <translation id="3886446263141354045">Bidali zaio webgunean sartzeko eskaera <ph name="NAME" /> erabiltzaileari.</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> aplikazioarekin oharrak idaztea</translation>
 <translation id="3888586133700543064">Laguntzailea eginbidearekin duzun arazoa hobeto ulertzeko balio du informazioak. 90 egunez gordeko da, eta ingeniaritza-taldeek nahiz erabiltzaileen iritzien arduradun direnek bakarrik atzitu ahalko dute.</translation>
@@ -4228,7 +4227,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5715711091495208045">Pluginaren bitartekaria: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Bilatzaile lehenetsiak</translation>
 <translation id="5719854774000914513">Webguneek HID gailuetara konektatzea eska dezakete</translation>
-<translation id="5720705177508910913">Uneko erabiltzailea</translation>
 <translation id="572155275267014074">Android-en ezarpenak</translation>
 <translation id="5722086096420375088">Berdea eta zuria</translation>
 <translation id="5722930212736070253">Hutsegite bat izan da. Errore bat gertatu da Zip Archiver aplikazioan.</translation>
@@ -4463,7 +4461,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5990266201903445068">Wifi bidez soilik</translation>
 <translation id="5990386583461751448">Itzulita</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Sarea arakatzen jarrai dezakezula ziurtatzeko, eskatu administratzaileari aplikazio hau kentzeko.}other{Sarea arakatzen jarrai dezakezula ziurtatzeko, eskatu administratzaileari aplikazio hauek kentzeko.}}</translation>
-<translation id="5992175324932183568">Ez eman gailuan fitxategi mota jakin batzuk irekitzeko baimena sareko aplikazioei</translation>
 <translation id="5997337190805127100">Lortu informazio gehiago webguneetarako sarbideari buruz</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" bilaketak <ph name="RESULT_COUNT" /> emaitza ditu</translation>
 <translation id="6002210667729577411">Eraman taldea leiho berri batera</translation>
@@ -4585,7 +4582,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6124213551517593835"><ph name="SITE_GROUP_NAME" /> webguneak eta haren barneko webguneek gorde dituzten datu eta cookie guztiak garbituko dira</translation>
 <translation id="6124650939968185064">Luzapen hauek beste honen menpe daude:</translation>
 <translation id="6124698108608891449">Webgune honek baimen gehiago behar ditu.</translation>
-<translation id="6125442051901189730">Ez dago SIM txartelaren profil eskuragarririk. Konfiguratu beste profil bat <ph name="BEGIN_LINK" />hemen.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Kontua berriro gehitu beharko duzu <ph name="DEVICE_TYPE" /> gailuan.</translation>
 <translation id="6129691635767514872">Kendu dira hautatutako datuak Chrome-tik eta sinkronizatutako gailuetatik. Hala ere, Google-ko kontuaren arakatze-historiako bestelako datu batzuk (adibidez, bilaketak eta Google-ren beste zerbitzu batzuetako jarduerak) gera litezke <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="6129938384427316298">Netscape ziurtagiriaren iruzkina</translation>
@@ -6584,8 +6580,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8368859634510605990">I&amp;reki laster-marka guztiak</translation>
 <translation id="8370294614544004647">Ixtean, ezarri ordenagailu eramangarria inaktibo</translation>
 <translation id="8371695176452482769">Hitz egin</translation>
-<translation id="8371749822919332187">Pantaila handitzeko, erabili Ktrl + Alt + Handitu distira.
-Pantaila txikitzeko, erabili Ktrl + Alt + Txikitu distira.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Desaktibatu webguneko audioa}other{Desaktibatu webguneetako audioa}}</translation>
 <translation id="8372369524088641025">WEP gako okerra</translation>
 <translation id="8373652277231415614">Crostini-ko direktorio partekatuak</translation>
@@ -7396,7 +7390,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="975893173032473675">Itzulpenaren xede-hizkuntza</translation>
 <translation id="976499800099896273">Zuzentzaile automatikoaren aldaketa desegiteko leihoa ageri da, "<ph name="TYPED_WORD" />" hitzaren ordez "<ph name="CORRECTED_WORD" />" idatzi delako.  Sakatu Gora gezi-tekla hura atzitzeko edo Ihes tekla hari ez ikusi egiteko.</translation>
 <translation id="978146274692397928">Hasiera puntuazioaren zabalera osoa da</translation>
-<translation id="97883469867914488">Ez utzi sareko aplikazioei gailuan fitxategi mota jakin batzuk irekitzen</translation>
 <translation id="97905529126098460">Bertan behera uzteko prozesua amaitzen denean itxiko da leihoa.</translation>
 <translation id="980731642137034229">Ekintza-menuaren botoia</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>

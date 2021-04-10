@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">सूचना: तुमच्या टॅबपैकी <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
 <translation id="257674075312929031">गट</translation>
 <translation id="2613747923081026172">गट तयार करा</translation>
+<translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
 <translation id="2671423594960767771">गट शेअर करा</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> टॅब गटाचा <ph name="NUMBER_OF_TABS" /> टॅबसह विस्तार करा.</translation>
+<translation id="2801787514987684416">स्टोअरची माहिती पाहायची आहे का?</translation>
 <translation id="2977480621796371840">गटामधून काढून टाका</translation>
+<translation id="3194464645767632461">रेटिंग</translation>
 <translation id="3291470810748040983">उघड्या टॅबमध्ये किंमत कमी असताना तुम्हाला सूचना मिळेल</translation>
 <translation id="3328308545011660196">सूचना: <ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले <ph name="TITLE_OF_GROUP" /> टॅब कोलॅप्स करा.}}</translation>
 <translation id="3882834874697329510">कमी किंमत उपलब्ध असताना उघड्या टॅबमध्ये सूचना मिळवण्यासाठी, सेंटिंग्ज मध्ये सूचना सुरू करा.</translation>
 <translation id="3940195383040445971">टॅबवर किमती ट्रॅक करा</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">ब्राउझ करणे सुरू ठेवा</translation>
 <translation id="4450893287417543264">पुन्हा दाखवू नका</translation>
 <translation id="4648718555153979859">तुमचे टॅब येथे एकत्रित केले आहेत</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="492284538114688557">किमतीतील घट आढळली</translation>
 <translation id="5007392906805964215">पुनरावलोकन करा</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">गट बनवून त्वरित पेजशी तुलना करा. सुरू करण्यासाठी, लिंकला स्पर्श करा आणि धरून ठेवा.</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5533021382642990449">नंतर दाखवा</translation>
+<translation id="5556417849629758491">स्टोअरची माहिती पाहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> टॅब असलेला टॅब गट बंद करा</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> टॅबची गटामध्ये विभागणी केली आहे</translation>
 <translation id="575494663145460764">किंमत कमी झाल्याच्या सूचना मिळवायच्या आहेत का?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">फुलस्क्रीन ग्रिडमध्ये गटाचे टॅब दाखवा</translation>
 <translation id="7792771145871471484">सूचनांचे पुनरावलोकन करा.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{निवडलेल्या <ph name="TABS_COUNT_ONE" /> टॅबचा गट बनवा}other{निवडलेल्या <ph name="TABS_COUNT_MANY" /> टॅबचा गट बनवा}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_ONE" /> परीक्षण}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> परीक्षणे}}</translation>
 <translation id="7885132941432959125">टॅब उजवीकडे हलवा</translation>
 <translation id="7966321538264951561">सूचना डिसमिस करा.</translation>
 <translation id="814503310257431685">सर्व पाहा</translation>

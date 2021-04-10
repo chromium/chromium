@@ -276,7 +276,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1914326953223720820">Dịch vụ giải nén</translation>
 <translation id="1915697529809968049">Sử dụng Touch ID thay cho CVC?</translation>
 <translation id="1916770123977586577">Để áp dụng các cài đặt đã cập nhật cho trang web này, hãy tải lại trang</translation>
-<translation id="1917876262703816781">Một sự cố rò rỉ dữ liệu xảy ra trên một trang web hoặc ứng dụng đã làm lộ mật khẩu của bạn. Bạn nên đổi mật khẩu dùng trên <ph name="ORIGIN" /> ngay bây giờ.</translation>
 <translation id="1919345977826869612">Quảng cáo</translation>
 <translation id="1919367280705858090">Nhận trợ giúp về thông báo lỗi cụ thể</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Không có}=1{1 trang web}other{# trang web}}</translation>
@@ -920,7 +919,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4358461427845829800">Quản lý phương thức thanh toán...</translation>
 <translation id="4359160567981085931">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chrome có thể trợ giúp bạn. Để đổi mật khẩu và thông báo cho Google biết rằng tài khoản của bạn có thể gặp nguy hiểm, hãy nhấp vào Bảo vệ tài khoản.</translation>
 <translation id="4367563149485757821">Number-12 (Phong bì)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Một sự cố rò rỉ dữ liệu xảy ra trên một trang web hoặc ứng dụng đã làm lộ mật khẩu mà bạn lưu trên <ph name="ORIGIN" />. Bạn nên đổi mật khẩu dùng trên <ph name="ORIGIN" /> ngay bây giờ.}=1{Một sự cố rò rỉ dữ liệu xảy ra trên một trang web hoặc ứng dụng đã làm lộ mật khẩu mà bạn lưu trên <ph name="ORIGIN" /> và một trang web khác. Bạn nên kiểm tra các mật khẩu đã lưu ngay bây giờ.}other{Một sự cố rò rỉ dữ liệu xảy ra trên một trang web hoặc ứng dụng đã làm lộ mật khẩu mà bạn lưu trên <ph name="ORIGIN" /> và <ph name="SITES_COUNT" /> trang web khác. Bạn nên kiểm tra các mật khẩu đã lưu ngay bây giờ.}}</translation>
 <translation id="437058704415269440">Số dư tài khoản</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Giá trị <ph name="VALUE_TYPE" /> mong đợi.</translation>
@@ -1161,7 +1159,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5287456746628258573">Trang web này dùng cấu hình bảo mật lỗi thời nên có thể làm lộ thông tin của bạn (chẳng hạn như mật khẩu hoặc số thẻ tín dụng) trong quá trình gửi các thông tin này đến trang web.</translation>
 <translation id="5288108484102287882">Xuất hiện cảnh báo khi xác thực các giá trị của chính sách</translation>
 <translation id="5289384342738547352">Xử lý nhiều tài liệu</translation>
-<translation id="5295292838686006428">Một sự cố rò rỉ dữ liệu xảy ra trên một trang web hoặc ứng dụng đã làm lộ mật khẩu của bạn. Bạn nên kiểm tra các mật khẩu đã lưu ngay bây giờ.</translation>
 <translation id="5299298092464848405">Lỗi phân tích cú pháp chính sách</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5306593769196050043">Cả hai trang tính</translation>
@@ -1701,7 +1698,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7473891865547856676">Không, cảm ơn</translation>
 <translation id="7481312909269577407">Chuyển tiếp</translation>
 <translation id="7485870689360869515">Không tìm thấy dữ liệu.</translation>
-<translation id="7495290002932347110">Một sự cố rò rỉ dữ liệu xảy ra trên một trang web hoặc ứng dụng đã làm lộ mật khẩu của bạn. Bạn nên kiểm tra các mật khẩu đã lưu và đổi mật khẩu dùng trên <ph name="ORIGIN" /> ngay bây giờ.</translation>
 <translation id="7495528107193238112">Nội dung này bị chặn. Hãy liên hệ với chủ sở hữu trang web để khắc phục sự cố.</translation>
 <translation id="7498234416455752244">Tiếp tục chỉnh sửa</translation>
 <translation id="7503664977220660814">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chromium khuyên bạn nên kiểm tra ngay những mật khẩu bạn đã lưu cho <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> và các trang web khác mà bạn sử dụng mật khẩu này.</translation>

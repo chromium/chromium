@@ -276,7 +276,6 @@
 <translation id="1914326953223720820">Faylların Açılması</translation>
 <translation id="1915697529809968049">CVC əvəzinə Toxunuş ID-i istifadə edilsin?</translation>
 <translation id="1916770123977586577">Yenilənən ayarları bu sayta tətbiq etmək üçün səhifəni təkrar yükləyin</translation>
-<translation id="1917876262703816781">Sayt və ya tətbiqdə data pozulması parolunuzun açıqlanmasına səbəb oldu. Chrome dərhal <ph name="ORIGIN" /> ünvanında parolunuzu dəyişməyi tövsiyə edir.</translation>
 <translation id="1919345977826869612">Reklamlar</translation>
 <translation id="1919367280705858090">Spesifik xəta mesajı ilə bağlı yardım əldə edin</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Yoxdur}=1{1 sayt}other{# sayt}}</translation>
@@ -915,7 +914,6 @@
 <translation id="4358461427845829800">Ödəniş üsullarını idarə edin...</translation>
 <translation id="4359160567981085931">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chrome yardım edə bilər. Parolunuzu dəyişmək və Google'a hesabınızın təhlükədə ola biləcəyini bildirmək üçün "Hesabı Qoruyun" seçiminə toxunun.</translation>
 <translation id="4367563149485757821">Nömrə-12 (Zərf)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Sayt və ya tətbiqdə data pozulması <ph name="ORIGIN" /> üçün yadda saxlanmış parolunuzun ifşa olmasına səbəb oldu. Chrome dərhal <ph name="ORIGIN" /> ünvanında parolunuzu dəyişməyi tövsiyə edir.}=1{Sayt və ya tətbiqdə data pozulması <ph name="ORIGIN" /> və başqa bir sayt üçün yadda saxlanmış parolunuzun ifşa olmasına səbəb oldu. Chrome dərhal yadda saxlanılan parollarınızı yoxlamağı tövsiyə edir.}other{Sayt və ya tətbiqdə data pozulması <ph name="ORIGIN" /> və başqa <ph name="SITES_COUNT" /> sayt üçün yadda saxlanmış parolunuzun ifşa olmasına səbəb oldu. Chrome dərhal yadda saxlanılan parollarınızı yoxlamağı tövsiyə edir.}}</translation>
 <translation id="437058704415269440">Hesab Balansı</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Gözlənilən <ph name="VALUE_TYPE" /> dəyəri.</translation>
@@ -1156,7 +1154,6 @@
 <translation id="5287456746628258573">Bu sayt vaxtı keçmiş təhlükəsizlik konfiqurasiyasından istifadə edir və bu da sayta göndərilən məlumatınızın (məsələn, parol və ya kredit kartı nömrəsi) yayılmasına səbəb ola bilər.</translation>
 <translation id="5288108484102287882">Siyasət dəyərlərinin doğrulanması haqqında xəbərdarlıq var</translation>
 <translation id="5289384342738547352">Çoxsaylı sənədin idarə edilməsi</translation>
-<translation id="5295292838686006428">Sayt və ya tətbiqdə data pozulması parolunuzun açıqlanmasına səbəb oldu. Chrome dərhal yadda saxlanılan parollarınızı yoxlamağı tövsiyə edir.</translation>
 <translation id="5299298092464848405">Siyasət təhlili xətası</translation>
 <translation id="5300589172476337783">Göstərin</translation>
 <translation id="5306593769196050043">Hər iki vərəq</translation>
@@ -1696,7 +1693,6 @@
 <translation id="7473891865547856676">Yox</translation>
 <translation id="7481312909269577407">İrəli</translation>
 <translation id="7485870689360869515">Heç bir data tapılmadı.</translation>
-<translation id="7495290002932347110">Sayt və ya tətbiqdə data pozulması parolunuzun açıqlanmasına səbəb oldu. Chrome <ph name="ORIGIN" /> ünvanında yadda saxlanılan parolları yoxlamağı və parolunuzu dəyişməyi tövsiyə edir.</translation>
 <translation id="7495528107193238112">Bu məzmun bloklanıb. Problemi düzəltmək üçün sayt sahibi ilə əlaqə saxlayın.</translation>
 <translation id="7498234416455752244">Düzəlişə davam edin</translation>
 <translation id="7503664977220660814">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> saytlarında və bu paroldan istifadə etdiyiniz digər saytlarda saxlanılmış parollarınızı indi yoxlamağı tövsiyə edir.</translation>

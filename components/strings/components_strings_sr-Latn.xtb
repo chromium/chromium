@@ -276,7 +276,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1914326953223720820">Usluga za otpakivanje datoteka</translation>
 <translation id="1915697529809968049">Želite li da koristite Touch ID umesto CVC-a?</translation>
 <translation id="1916770123977586577">Da biste primenili ažurirana podešavanja na ovom sajtu, učitajte stranicu ponovo</translation>
-<translation id="1917876262703816781">Vaša lozinka je otkrivena pri upadu u podatke na sajtu ili u aplikaciji. Chrome preporučuje da odmah promenite lozinku na <ph name="ORIGIN" />.</translation>
 <translation id="1919345977826869612">Oglasi</translation>
 <translation id="1919367280705858090">Potražite pomoć u vezi sa određenom porukom o grešci</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{None}=1{1 sajt}one{# sajt}few{# sajta}other{# sajtova}}</translation>
@@ -920,7 +919,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4358461427845829800">Upravljajte načinima plaćanja...</translation>
 <translation id="4359160567981085931">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome može da vam pomogne. Da biste promenili lozinku i obavestili Google da je nalog možda ugrožen, kliknite na Zaštiti nalog.</translation>
 <translation id="4367563149485757821">Broj-12 (koverat)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Sačuvana lozinka za <ph name="ORIGIN" /> otkrivena je pri upadu u podatke na sajtu ili u aplikaciji. Chrome preporučuje da odmah promenite lozinku na <ph name="ORIGIN" />.}=1{Sačuvane lozinke za <ph name="ORIGIN" /> i još jedan sajt otkrivene su pri upadu u podatke na sajtu ili u aplikaciji. Chrome preporučuje da odmah proverite sačuvane lozinke.}one{Sačuvane lozinke za <ph name="ORIGIN" /> i još <ph name="SITES_COUNT" /> sajt otkrivene su pri upadu u podatke na sajtu ili u aplikaciji. Chrome preporučuje da odmah proverite sačuvane lozinke.}few{Sačuvane lozinke za <ph name="ORIGIN" /> i još <ph name="SITES_COUNT" /> sajta otkrivene su pri upadu u podatke na sajtu ili u aplikaciji. Chrome preporučuje da odmah proverite sačuvane lozinke.}other{Sačuvane lozinke za <ph name="ORIGIN" /> i još <ph name="SITES_COUNT" /> sajtova otkrivene su pri upadu u podatke na sajtu ili u aplikaciji. Chrome preporučuje da odmah proverite sačuvane lozinke.}}</translation>
 <translation id="437058704415269440">Stanje na računu</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Očekivana vrednost je <ph name="VALUE_TYPE" />.</translation>
@@ -1161,7 +1159,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5287456746628258573">Ovaj sajt koristi zastarelu bezbednosnu konfiguraciju, koja može da otkrije vaše informacije (na primer, lozinke ili brojeve kreditnih kartica) kada se šalju na njega.</translation>
 <translation id="5288108484102287882">Validacija vrednosti smernica je aktivirala upozorenja</translation>
 <translation id="5289384342738547352">Obrada više dokumenata</translation>
-<translation id="5295292838686006428">Vaša lozinka je otkrivena pri upadu u podatke na sajtu ili u aplikaciji. Chrome preporučuje da odmah proverite sačuvane lozinke.</translation>
 <translation id="5299298092464848405">Greška pri raščlanjivanju smernica</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5306593769196050043">Obe tabele</translation>
@@ -1700,7 +1697,6 @@ Dodatni detalji:
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7481312909269577407">Prosledi</translation>
 <translation id="7485870689360869515">Nisu pronađeni podaci.</translation>
-<translation id="7495290002932347110">Vaša lozinka je otkrivena pri upadu u podatke na sajtu ili u aplikaciji. Chrome preporučuje da proverite sačuvane lozinke i da odmah promenite lozinku na <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Ovaj sadržaj je blokiran. Obratite se vlasniku sajta da biste rešili problem.</translation>
 <translation id="7498234416455752244">Nastavite sa izmenama</translation>
 <translation id="7503664977220660814">Upravo ste uneli lozinku na obmanjujućem sajtu. Chromium vam preporučuje da proverite sačuvane lozinke za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i druge sajtove na kojima trenutno koristite ovu lozinku.</translation>

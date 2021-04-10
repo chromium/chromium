@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> raadt aan deze <ph name="DEVICE_TYPE" /> te updaten.</translation>
 <translation id="1118738876271697201">Het systeem kan het model of serienummer van het apparaat niet bepalen.</translation>
 <translation id="1119447706177454957">Interne fout</translation>
-<translation id="111959947408687873">Gebruik Ctrl + <ph name="SEARCH_KEY_NAME" /> + M om het vergrootglas voor het volledige scherm aan en uit te zetten. Gebruik Ctrl + Alt + pijltjestoetsen om over het ingezoomde scherm te bewegen.</translation>
 <translation id="1122068467107743258">Werk</translation>
 <translation id="1122198203221319518">&amp;Extra</translation>
 <translation id="1122242684574577509">Verificatie mislukt. Klik om naar de loginpagina te gaan van het wifi-netwerk dat je gebruikt (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Dit frame is geblokkeerd omdat het onbeveiligde content bevat.</translation>
 <translation id="146219525117638703">ONC-status</translation>
 <translation id="146220085323579959">Verbinding met internet verbroken. Controleer je internetverbinding en probeer het opnieuw.</translation>
-<translation id="1463051728820430132">Vragen als een web-app bepaalde typen bestanden wil openen op je apparaat</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> is geblokkeerd door Geavanceerde beveiliging.</translation>
 <translation id="1464044141348608623">Niet toestaan dat sites weten wanneer je je apparaat actief gebruikt</translation>
 <translation id="1464258312790801189">Je accounts</translation>
@@ -1092,7 +1090,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2163470535490402084">Maak verbinding met internet om in te loggen op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog 1 schakelaar</translation>
 <translation id="2165421703844373933">Activeer je Assistent als je 'Oké Google' zegt. Als je batterijlading wilt besparen, kies je 'Aan (aanbevolen)'. De Assistent reageert dan alleen als je apparaat is aangesloten op een voedingsbron of wordt opgeladen.</translation>
-<translation id="2166269335975661317">Web-apps kunnen vragen of bepaalde typen bestanden mogen worden geopend vanaf je apparaat</translation>
 <translation id="2166369534954157698">Pa's wijze lynx bezag vroom het fikse aquaduct</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Toch inloggen</translation>
@@ -4230,7 +4227,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5715711091495208045">Plug-inbroker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standaardzoekmachines</translation>
 <translation id="5719854774000914513">Sites kunnen vragen of ze verbinding mogen maken met HID-apparaten</translation>
-<translation id="5720705177508910913">Huidige gebruiker</translation>
 <translation id="572155275267014074">Android-instellingen</translation>
 <translation id="5722086096420375088">Groen/wit</translation>
 <translation id="5722930212736070253">Asjemenou! Er is iets misgegaan met de Zip Archiver.</translation>
@@ -4465,7 +4461,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5990266201903445068">Alleen wifi</translation>
 <translation id="5990386583461751448">Vertaald</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Vraag je beheerder deze app te verwijderen om ervoor te zorgen dat je kunt blijven browsen op het web.}other{Vraag je beheerder deze apps te verwijderen om ervoor te zorgen dat je kunt blijven browsen op het web.}}</translation>
-<translation id="5992175324932183568">Web-apps niet toestaan om bepaalde typen bestanden te openen vanaf je apparaat</translation>
 <translation id="5997337190805127100">Meer informatie over sitetoegang</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultaten voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002210667729577411">Groep verplaatsen naar nieuw venster</translation>
@@ -4587,7 +4582,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6124213551517593835">Hiermee wis je alle gegevens en cookies die zijn opgeslagen door <ph name="SITE_GROUP_NAME" /> en eventuele onderliggende sites</translation>
 <translation id="6124650939968185064">De volgende extensies zijn afhankelijk van deze extensie:</translation>
 <translation id="6124698108608891449">Deze site heeft meer rechten nodig.</translation>
-<translation id="6125442051901189730">Geen beschikbare simkaartprofielen. <ph name="BEGIN_LINK" />Hier<ph name="END_LINK" /> kun je een nieuw profiel instellen.</translation>
 <translation id="6125479973208104919">Je moet je account opnieuw toevoegen aan deze <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">De geselecteerde gegevens zijn verwijderd uit Chrome en van gesynchroniseerde apparaten. Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekopdrachten en activiteit uit andere Google-services) beschikbaar zijn via <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Opmerking van Netscape-certificaat</translation>
@@ -6586,8 +6580,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8368859634510605990">Alle bookmarks &amp;openen</translation>
 <translation id="8370294614544004647">Slaapstand als de laptop wordt gesloten</translation>
 <translation id="8371695176452482769">Begin nu te spreken</translation>
-<translation id="8371749822919332187">Gebruik Ctrl + Alt + Helderheid omhoog om in te zoomen.
-Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Geluid van site uitzetten}other{Geluid van sites uitzetten}}</translation>
 <translation id="8372369524088641025">Slechte WEP-sleutel</translation>
 <translation id="8373652277231415614">Gedeelde directory's voor Crostini</translation>
@@ -7399,7 +7391,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="975893173032473675">Taal om naartoe te vertalen</translation>
 <translation id="976499800099896273">Dialoogvenster voor autocorrectie ongedaan maken wordt getoond voor <ph name="TYPED_WORD" /> dat is gecorrigeerd als <ph name="CORRECTED_WORD" />.  Druk op de pijl-omhoog om te openen of op Escape om te negeren.</translation>
 <translation id="978146274692397928">Standaard interpunctiebreedte is 'volledig'</translation>
-<translation id="97883469867914488">Voorkomen dat web-apps bepaalde typen bestanden openen op je apparaat</translation>
 <translation id="97905529126098460">Dit venster wordt gesloten nadat het annuleren is voltooid.</translation>
 <translation id="980731642137034229">Knop voor actiemenu</translation>
 <translation id="981121421437150478">Offline</translation>

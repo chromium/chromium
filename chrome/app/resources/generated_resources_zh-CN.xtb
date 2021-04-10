@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> 建议您更新此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="1118738876271697201">系统未能确定设备型号或序列号。</translation>
 <translation id="1119447706177454957">内部错误</translation>
-<translation id="111959947408687873">使用 Ctrl+<ph name="SEARCH_KEY_NAME" />+M 可开启/关闭全屏放大镜。使用 Ctrl+Alt+箭头键可在放大后的屏幕上四处移动。</translation>
 <translation id="1122068467107743258">工作</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">身份验证失败。请点击此处访问当前所用 Wi-Fi 网络（“<ph name="NETWORK_ID" />”）的登录页面。</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">此框架因含某些不安全内容而被拦截。</translation>
 <translation id="146219525117638703">ONC 状态</translation>
 <translation id="146220085323579959">互联网连接已断开。请检查您的互联网连接并重试。</translation>
-<translation id="1463051728820430132">在 Web 应用想打开您设备上的各类文件时询问</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> 已被高级保护功能屏蔽。</translation>
 <translation id="1464044141348608623">不允许网站了解您何时在主动使用自己的设备</translation>
 <translation id="1464258312790801189">您的帐号</translation>
@@ -1089,7 +1087,6 @@
 <translation id="2163470535490402084">请连接到互联网，以便登录您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 个开关键</translation>
 <translation id="2165421703844373933">只需说“Ok Google”即可访问您的 Google 助理。要节省电量，请选择“开启（推荐）”。选择这一选项后，只有当您的设备已接通电源或正在充电时，Google 助理才会做出响应。</translation>
-<translation id="2166269335975661317">Web 应用可以请求打开您设备中的各类文件</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">仍然登录</translation>
@@ -4225,7 +4222,6 @@
 <translation id="5715711091495208045">插件代理程序：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">默认搜索引擎</translation>
 <translation id="5719854774000914513">网站可以请求连接到 HID 设备</translation>
-<translation id="5720705177508910913">当前用户</translation>
 <translation id="572155275267014074">Android 设置</translation>
 <translation id="5722086096420375088">绿色和白色</translation>
 <translation id="5722930212736070253">喔唷，崩溃啦！Zip Archiver 遇到了错误。</translation>
@@ -4460,7 +4456,6 @@
 <translation id="5990266201903445068">仅限 WLAN</translation>
 <translation id="5990386583461751448">已翻译</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{为确保您能够继续浏览网页，请让您的管理员卸载这款应用。}other{为确保您能够继续浏览网页，请让您的管理员卸载这些应用。}}</translation>
-<translation id="5992175324932183568">不允许 Web 应用打开您设备中的各类文件</translation>
 <translation id="5997337190805127100">详细了解网站访问权限</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6002210667729577411">将标签页组移至新窗口</translation>
@@ -4582,7 +4577,6 @@
 <translation id="6124213551517593835">此操作会清除 <ph name="SITE_GROUP_NAME" /> 及其下属所有网站存储的所有数据和 Cookie</translation>
 <translation id="6124650939968185064">需先安装此扩展程序，下列扩展程序才能正常使用：</translation>
 <translation id="6124698108608891449">此网站需要更多权限。</translation>
-<translation id="6125442051901189730">无可用的 SIM 卡个人资料。您可在<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />设置一份新的个人资料。</translation>
 <translation id="6125479973208104919">抱歉，您需要再次向此 <ph name="DEVICE_TYPE" /> 添加您的帐号。</translation>
 <translation id="6129691635767514872">系统已从 Chrome 和同步的设备中移除了您所选的数据。不过，您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能还有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
 <translation id="6129938384427316298">Netscape 证书评论</translation>
@@ -6581,8 +6575,6 @@
 <translation id="8368859634510605990">打开所有书签(&amp;O)</translation>
 <translation id="8370294614544004647">合上笔记本电脑后休眠</translation>
 <translation id="8371695176452482769">请开始说话</translation>
-<translation id="8371749822919332187">使用 Ctrl+Alt+“调高亮度”键即可放大。
-使用 Ctrl+Alt+“调低亮度”键即可缩小。</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{将这个网站静音}other{将这些网站静音}}</translation>
 <translation id="8372369524088641025">WEP 密钥错误</translation>
 <translation id="8373652277231415614">Crostini 共享目录</translation>
@@ -7393,7 +7385,6 @@
 <translation id="975893173032473675">要翻译成的语言</translation>
 <translation id="976499800099896273">系统会显示用于撤消自动更正的对话框，以便撤销将“<ph name="TYPED_WORD" />”更正为“<ph name="CORRECTED_WORD" />”的操作。若要访问此对话框，请按向上键；若要忽略，请按 Esc 键。</translation>
 <translation id="978146274692397928">初始标点符号用全角</translation>
-<translation id="97883469867914488">禁止 Web 应用打开您设备上的各类文件</translation>
 <translation id="97905529126098460">此窗口将在取消安装完成后关闭。</translation>
 <translation id="980731642137034229">操作菜单按钮</translation>
 <translation id="981121421437150478">离线</translation>

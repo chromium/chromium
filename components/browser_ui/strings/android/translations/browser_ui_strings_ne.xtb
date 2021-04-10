@@ -32,7 +32,7 @@
 <translation id="1743802530341753419">साइटहरूलाई कुनै यन्त्रमा जडान गर्ने अनुमति दिनुअघि सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="1779089405699405702">छविको डिकोडर</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> लाई AR प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
-<translation id="1887786770086287077">यो यन्त्रको स्थानमाथिको पहुँच निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
+<translation id="1887786770086287077">यो डिभाइसको स्थानमाथिको पहुँच निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
 <translation id="1919345977826869612">विज्ञापनहरू</translation>
 <translation id="1919950603503897840">सम्पर्कहरू चयन गर्नुहोस्</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -61,7 +61,7 @@
 <translation id="2498359688066513246">मद्दत र प्रतिक्रिया</translation>
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{१ कुकीमाथि रोक लगाइयो}other{# कुकीहरूमाथि रोक लगाइयो}}</translation>
-<translation id="2570922361219980984">यो यन्त्रको स्थानमाथिको पहुँच पनि निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
+<translation id="2570922361219980984">यो डिभाइसको स्थानमाथिको पहुँच पनि निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
 <translation id="257931822824936280">विस्तृत गरिएको - संक्षिप्त पार्न क्लिक गर्नुहोस्</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2621115761605608342">कुनै विशेष साइटलाई JavaScript को प्रयोग गर्ने अनुमति दिनुहोस्।</translation>

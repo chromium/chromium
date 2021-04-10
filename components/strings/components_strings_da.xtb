@@ -276,7 +276,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1914326953223720820">Udpakningstjeneste</translation>
 <translation id="1915697529809968049">Vil du bruge Touch ID i stedet for kontrolkoden?</translation>
 <translation id="1916770123977586577">Genindlæs denne side for at anvende dine opdaterede indstillinger på dette website</translation>
-<translation id="1917876262703816781">Som følge af et brud på datasikkerheden på et website eller i en app er din adgangskode blevet afsløret. Chrome anbefaler, at du ændrer din adgangskode på <ph name="ORIGIN" /> med det samme.</translation>
 <translation id="1919345977826869612">Annoncer</translation>
 <translation id="1919367280705858090">Få hjælp til en specifik fejlmeddelelse</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ingen}=1{1 website}one{# website}other{# websites}}</translation>
@@ -920,7 +919,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4358461427845829800">Administrer betalingsmetoder...</translation>
 <translation id="4359160567981085931">Du har lige angivet din adgangskode på et vildledende website. Chrome kan hjælpe. Klik på Beskyt konto for at ændre din adgangskode og underrette Google om, at din konto muligvis er kompromitteret.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Din gemte adgangskode til <ph name="ORIGIN" /> er blevet afsløret som følge af et brud på datasikkerheden på et website eller i en app. Chrome anbefaler, at du ændrer din adgangskode på <ph name="ORIGIN" /> med det samme.}=1{Din gemte adgangskode til <ph name="ORIGIN" /> og ét andet website er blevet afsløret som følge af et brud på datasikkerheden på et website eller i en app. Chrome anbefaler, at du tjekker dine gemte adgangskoder med det samme.}one{Din gemte adgangskode til <ph name="ORIGIN" /> og <ph name="SITES_COUNT" /> andet website er blevet afsløret som følge af et brud på datasikkerheden på et website eller i en app. Chrome anbefaler, at du tjekker dine gemte adgangskoder med det samme.}other{Din gemte adgangskode til <ph name="ORIGIN" /> og <ph name="SITES_COUNT" /> andre websites er blevet afsløret som følge af et brud på datasikkerheden på et website eller i en app. Chrome anbefaler, at du tjekker dine gemte adgangskoder med det samme.}}</translation>
 <translation id="437058704415269440">Kontosaldo</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Forventet <ph name="VALUE_TYPE" />-værdi.</translation>
@@ -1161,7 +1159,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5287456746628258573">Dette website benytter en forældet sikkerhedskonfiguration, der muligvis afslører dine oplysninger (f.eks. adgangskoder eller betalingskortnumre), når de sendes til dette website.</translation>
 <translation id="5288108484102287882">Validering af politikværdier har genereret advarsler</translation>
 <translation id="5289384342738547352">Håndtering af flere dokumenter</translation>
-<translation id="5295292838686006428">Som følge af et brud på datasikkerheden på et website eller i en app er din adgangskode blevet afsløret. Chrome anbefaler, at du tjekker dine gemte adgangskoder med det samme.</translation>
 <translation id="5299298092464848405">Der opstod en fejl ved parsing af politik</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5306593769196050043">Begge ark</translation>
@@ -1701,7 +1698,6 @@ Yderligere oplysninger:
 <translation id="7473891865547856676">Nej tak</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7485870689360869515">Der blev ikke fundet nogen data.</translation>
-<translation id="7495290002932347110">Som følge af et brud på datasikkerheden på et website eller i en app er din adgangskode blevet afsløret. Chrome anbefaler, at du tjekker dine gemte adgangskoder og ændrer din adgangskode på <ph name="ORIGIN" /> med det samme.</translation>
 <translation id="7495528107193238112">Dette indhold er blokeret. Kontakt ejeren af websitet for at løse problemet.</translation>
 <translation id="7498234416455752244">Fortsæt redigering</translation>
 <translation id="7503664977220660814">Du har lige angivet din adgangskode på et vildledende website. Chromium anbefaler, at du straks tjekker dine gemte adgangskoder til <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og andre websites, hvor du bruger denne adgangskode.</translation>

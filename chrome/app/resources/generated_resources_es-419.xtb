@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> te recomienda actualizar este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">El sistema no pudo determinar el modelo del dispositivo ni el número de serie.</translation>
 <translation id="1119447706177454957">Error interno</translation>
-<translation id="111959947408687873">Usa Ctrl+<ph name="SEARCH_KEY_NAME" />+M para activar o desactivar la lupa de pantalla completa. Usa Ctrl+Alt+teclas de flechas para moverte por la pantalla después de acercar la vista.</translation>
 <translation id="1122068467107743258">Trabajo</translation>
 <translation id="1122198203221319518">&amp;Herramientas</translation>
 <translation id="1122242684574577509">Error de autenticación; haz clic para visitar la página de acceso correspondiente a la red Wi-Fi que estás usando (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Este marco se ha bloqueado porque incluye contenido no seguro.</translation>
 <translation id="146219525117638703">Estado de ONC</translation>
 <translation id="146220085323579959">Internet está desconectada. Verifica tu conexión a Internet y vuelve a intentarlo.</translation>
-<translation id="1463051728820430132">Preguntar cuando una aplicación web desea abrir determinados tipos de archivos de tu dispositivo</translation>
 <translation id="1463112138205428654">La "Protección avanzada" bloqueó el archivo <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">No permitir que los sitios sepan en qué momento estás usando activamente el dispositivo</translation>
 <translation id="1464258312790801189">Tus cuentas</translation>
@@ -1089,7 +1087,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2163470535490402084">Conéctate a Internet para acceder a tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y 1 interruptor más</translation>
 <translation id="2165421703844373933">Di "Ok Google" para acceder al Asistente. Para ahorrar batería, elige "Activado (recomendado)". El Asistente responderá únicamente cuando el dispositivo esté conectado a una fuente de energía o se esté cargando.</translation>
-<translation id="2166269335975661317">Las aplicaciones web pueden solicitar permiso para abrir determinados tipos de archivos de tu dispositivo</translation>
 <translation id="2166369534954157698">El veloz murciélago hindú comía feliz cardillo y kiwi</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Acceder de todos modos</translation>
@@ -4227,7 +4224,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5715711091495208045">Agente del complemento: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motores de búsqueda predeterminados</translation>
 <translation id="5719854774000914513">Permitir que los sitios soliciten permiso para conectarse a dispositivos HID</translation>
-<translation id="5720705177508910913">Usuario actual</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5722086096420375088">Verde y blanco</translation>
 <translation id="5722930212736070253">¡Oh, no! Zip Archiver detectó un error.</translation>
@@ -4462,7 +4458,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5990266201903445068">Solo Wi-Fi</translation>
 <translation id="5990386583461751448">Traducida</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Para asegurarte de que puedas seguir navegando en la Web, pídele a tu administrador que quite esta aplicación.}other{Para asegurarte de que puedas seguir navegando en la Web, pídele a tu administrador que quite estas aplicaciones.}}</translation>
-<translation id="5992175324932183568">No permitir que las aplicaciones web abran determinados tipos de archivos de tu dispositivo</translation>
 <translation id="5997337190805127100">Más información sobre el acceso a sitios</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Mover grupo a ventana nueva</translation>
@@ -4584,7 +4579,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6124213551517593835">Esta acción borrará todos los datos y cookies almacenados por <ph name="SITE_GROUP_NAME" /> y sus sitios secundarios</translation>
 <translation id="6124650939968185064">Las siguientes extensiones dependen de esta extensión:</translation>
 <translation id="6124698108608891449">Este sitio necesita más permisos.</translation>
-<translation id="6125442051901189730">No hay perfiles de SIM disponibles. Configura uno nuevo <ph name="BEGIN_LINK" />aquí.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Lamentablemente, debes volver a agregar tu cuenta a este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Los datos seleccionados se quitaron de Chrome y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Comentario sobre el certificado Netscape</translation>
@@ -6584,8 +6578,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8368859634510605990">&amp;Abrir todos los favoritos</translation>
 <translation id="8370294614544004647">Suspender cuando se cierra la laptop</translation>
 <translation id="8371695176452482769">Hablar ahora</translation>
-<translation id="8371749822919332187">Usa Ctrl+Alt+Aumentar brillo para acercarte.
-Usa Ctrl+Alt+Disminuir brillo para alejarte.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Silenciar el sitio}other{Silenciar los sitios}}</translation>
 <translation id="8372369524088641025">Clave de WEP no válida</translation>
 <translation id="8373652277231415614">Directorios compartidos de Crostini</translation>
@@ -7396,7 +7388,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="975893173032473675">Idioma de destino de la traducción</translation>
 <translation id="976499800099896273">Se muestra el diálogo para deshacer la autocorrección de la palabra <ph name="TYPED_WORD" /> corregida a <ph name="CORRECTED_WORD" />.  Presiona la flecha hacia arriba para acceder al botón Deshacer o Esc para ignorar el diálogo.</translation>
 <translation id="978146274692397928">El ancho de la puntuación inicial está completo</translation>
-<translation id="97883469867914488">No permitir que las aplicaciones web abran determinados tipos de archivos de tu dispositivo</translation>
 <translation id="97905529126098460">Cuando se complete la cancelación, se cerrará esta ventana.</translation>
 <translation id="980731642137034229">Botón del menú de Acción</translation>
 <translation id="981121421437150478">Sin conexión</translation>

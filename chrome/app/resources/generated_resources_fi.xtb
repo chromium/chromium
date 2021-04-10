@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> suosittelee, että tämä <ph name="DEVICE_TYPE" /> päivitetään.</translation>
 <translation id="1118738876271697201">Järjestelmä ei havainnut tämän laitteen mallia tai sarjanumeroa.</translation>
 <translation id="1119447706177454957">Sisäinen virhe</translation>
-<translation id="111959947408687873">Laita koko näytön suurennus päälle tai pois päältä painamalla Ctrl + <ph name="SEARCH_KEY_NAME" /> + M. Voit liikkua suurennetulla näytöllä painamalla Ctrl + Alt + haluamasi nuolinäppäin.</translation>
 <translation id="1122068467107743258">Työ</translation>
 <translation id="1122198203221319518">&amp;Työkalut</translation>
 <translation id="1122242684574577509">Todennus epäonnistui. Siirry käyttämäsi Wi-Fi-verkon (<ph name="NETWORK_ID" />) kirjautumissivulle klikkaamalla.</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Kehys estettiin, koska se sisältää suojaamatonta sisältöä.</translation>
 <translation id="146219525117638703">ONC-tila</translation>
 <translation id="146220085323579959">Internetyhteys katkaistu. Tarkista internetyhteytesi ja yritä uudelleen.</translation>
-<translation id="1463051728820430132">Kysy, kun verkkosovellus haluaa avata tietyntyyppisiä tiedostoja laitteellasi</translation>
 <translation id="1463112138205428654">Lisäsuojaus esti tiedoston (<ph name="FILE_NAME" />).</translation>
 <translation id="1464044141348608623">Älä salli sivustojen tietää, milloin käytät laitetta aktiivisesti</translation>
 <translation id="1464258312790801189">Tilisi</translation>
@@ -1092,7 +1090,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2163470535490402084">Kirjaudu laitteelle <ph name="DEVICE_TYPE" /> muodostamalla verkkoyhteys.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ja 1 muu kytkin</translation>
 <translation id="2165421703844373933">Käytä Assistantia sanomalla Ok Google. Jos haluat säästää virtaa, valitse Käytössä (suositus). Assistant vastaa vain, jos laite on kytketty virtalähteeseen tai laturiin.</translation>
-<translation id="2166269335975661317">Verkkosovellukset voivat pyytää lupaa avata tietyntyyppisiä tiedostoja laitteeltasi</translation>
 <translation id="2166369534954157698">Charles Darwin jammaili Åken hevixylofonilla Qatarin yöpub Zeligissä.</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Kirjaudu silti sisään</translation>
@@ -4227,7 +4224,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="5715711091495208045">Laajennuksen välittäjä: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Oletushakukoneet</translation>
 <translation id="5719854774000914513">Sivustot saavat pyytää lupaa yhdistää HID-laitteisiin</translation>
-<translation id="5720705177508910913">Nykyinen käyttäjä</translation>
 <translation id="572155275267014074">Android-asetukset</translation>
 <translation id="5722086096420375088">Vihreä ja valkoinen</translation>
 <translation id="5722930212736070253">Harmin paikka! Zip Archiver havaitsi virheen.</translation>
@@ -4462,7 +4458,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5990266201903445068">Vain Wi-Fi</translation>
 <translation id="5990386583461751448">Käännetty</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Pyydä järjestelmänvalvojaasi poistamaan tämä sovellus, jotta voit varmasti jatkaa verkon selaamista.}other{Pyydä järjestelmänvalvojaasi poistamaan nämä sovellukset, jotta voit varmasti jatkaa verkon selaamista.}}</translation>
-<translation id="5992175324932183568">Älä salli verkkosovellusten avata tietyntyyppisiä tiedostoja laitteeltasi</translation>
 <translation id="5997337190805127100">Lisätietoja sivustojen käyttöoikeuksista</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulosta: <ph name="SEARCH_TEXT" /></translation>
 <translation id="6002210667729577411">Siirrä ryhmä uuteen ikkunaan</translation>
@@ -4584,7 +4579,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6124213551517593835">Tämä poistaa kaiken datan ja kaikki evästeet, jotka <ph name="SITE_GROUP_NAME" /> ja sen alisivustot ovat tallentaneet.</translation>
 <translation id="6124650939968185064">Seuraavat laajennukset ovat riippuvaisia tästä laajennuksesta:</translation>
 <translation id="6124698108608891449">Tämä sivusto tarvitsee lisää käyttöoikeuksia.</translation>
-<translation id="6125442051901189730">Ei SIM-profiileja saatavilla. Luo uusi profiili käyttöön <ph name="BEGIN_LINK" />täällä.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Sinun on lisättävä tilisi laitteelle <ph name="DEVICE_TYPE" /> uudelleen.</translation>
 <translation id="6129691635767514872">Valitut tiedot on poistettu Chromesta ja synkronoiduilta laitteilta. Google-tililläsi voi olla muita selaushistoriatietoja, esimerkiksi hakuja ja toimintaa muista Google-palveluista, osoitteessa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Netscape-varmenteen kommentti</translation>
@@ -6583,8 +6577,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8368859634510605990">Avaa kaikki kirjanmerkit</translation>
 <translation id="8370294614544004647">Lepotila kun kannettava on suljettu</translation>
 <translation id="8371695176452482769">Puhu nyt</translation>
-<translation id="8371749822919332187">Lähennä painamalla Ctrl + Alt + kirkkauden lisäys.
-Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Mykistä sivusto}other{Mykistä sivustot}}</translation>
 <translation id="8372369524088641025">Väärä WEP-avain</translation>
 <translation id="8373652277231415614">Crostinin jaetut hakemistot</translation>
@@ -7395,7 +7387,6 @@ Paina määritettyä kytkintä, niin poistat sen määrityksen.</translation>
 <translation id="975893173032473675">Kieli, jolle käännetään</translation>
 <translation id="976499800099896273">Automaattisen korjauksen kumoamisikkuna: <ph name="TYPED_WORD" /> korjattu muotoon <ph name="CORRECTED_WORD" />.  Avaa korjaus painamalla ylänuolta ja ohita se painamalla Esc.</translation>
 <translation id="978146274692397928">Alkuperäinen välimerkkileveys on Full</translation>
-<translation id="97883469867914488">Estä verkkosovelluksia avaamasta tietyntyyppisiä tiedostoja laitteellasi</translation>
 <translation id="97905529126098460">Tämä ikkuna suljetaan, kun peruutus on valmis.</translation>
 <translation id="980731642137034229">Toimintovalikon painike</translation>
 <translation id="981121421437150478">Offline</translation>

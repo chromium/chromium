@@ -275,7 +275,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1914326953223720820">Servizo de descompresión</translation>
 <translation id="1915697529809968049">Queres usar Touch ID en lugar do CVC?</translation>
 <translation id="1916770123977586577">Para aplicar a túa configuración actualizada a este sitio, volve cargar esta páxina</translation>
-<translation id="1917876262703816781">O teu contrasinal está en risco debido a unha violación da seguranza dos datos dun sitio ou aplicación. Chrome recoméndache que cambies o contrasinal de <ph name="ORIGIN" /> agora.</translation>
 <translation id="1919345977826869612">Anuncios</translation>
 <translation id="1919367280705858090">Obter axuda cando aparece unha mensaxe de erro concreta</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ningún}=1{1 sitio}other{# sitios}}</translation>
@@ -917,7 +916,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4358461427845829800">Xestiona os métodos de pago…</translation>
 <translation id="4359160567981085931">Acabas de escribir o teu contrasinal nun sitio enganoso. Chrome pode axudarche. Para cambiar o teu contrasinal e notificarlle a Google que a túa conta pode estar en risco, fai clic en Protexer conta.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Unha violación da seguranza dos datos dun sitio ou dunha aplicación provocou que o teu contrasinal gardado de <ph name="ORIGIN" /> estea en risco. Chrome recoméndache que cambies agora o contrasinal de <ph name="ORIGIN" />.}=1{Unha violación da seguranza dos datos dun sitio ou dunha aplicación provocou que o teu contrasinal gardado de <ph name="ORIGIN" /> e doutro sitio estea en risco. Chrome recoméndache que comprobes agora os teus contrasinais gardados.}other{Unha violación da seguranza dos datos dun sitio ou dunha aplicación provocou que o teu contrasinal gardado de <ph name="ORIGIN" /> e doutros <ph name="SITES_COUNT" /> sitios estea en risco. Chrome recoméndache que comprobes agora os teus contrasinais gardados.}}</translation>
 <translation id="437058704415269440">Saldo da conta</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
@@ -1158,7 +1156,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5287456746628258573">Este sitio utiliza unha configuración de seguranza obsoleta que pode poñer en risco a túa información (por exemplo, contrasinais ou números de tarxetas de crédito) cando se lle envía.</translation>
 <translation id="5288108484102287882">A validación dos valores da política xerou advertencias</translation>
 <translation id="5289384342738547352">Manipulación de varios documentos</translation>
-<translation id="5295292838686006428">O teu contrasinal está en risco debido a unha violación da seguranza dos datos dun sitio ou aplicación. Chrome recoméndache que comprobes agora os teus contrasinais gardados.</translation>
 <translation id="5299298092464848405">Erro ao analizar a política</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">As dúas follas</translation>
@@ -1698,7 +1695,6 @@ Detalles adicionais:
 <translation id="7473891865547856676">Non, grazas</translation>
 <translation id="7481312909269577407">Adiante</translation>
 <translation id="7485870689360869515">Non se atoparon datos.</translation>
-<translation id="7495290002932347110">O teu contrasinal está en risco debido a unha violación da seguranza dos datos dun sitio ou aplicación. Chrome recoméndache que comprobes os teus contrasinais gardados e que cambies o de <ph name="ORIGIN" /> agora.</translation>
 <translation id="7495528107193238112">Este contido está bloqueado. Ponte en contacto co propietario do sitio para corrixir o problema.</translation>
 <translation id="7498234416455752244">Seguir editando</translation>
 <translation id="7503664977220660814">Acabas de escribir o teu contrasinal nun sitio enganoso. Chromium recomenda comprobar os contrasinais gardados para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sitios nos que esteas a utilizar este contrasinal neste momento.</translation>

@@ -276,7 +276,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1914326953223720820">Utpakkingstjeneste</translation>
 <translation id="1915697529809968049">Vil du bruke Touch ID i stedet for CVC?</translation>
 <translation id="1916770123977586577">Last inn denne siden på nytt for å ta i bruk de oppdaterte innstillingene dine på dette nettstedet.</translation>
-<translation id="1917876262703816781">Et databrudd på et nettsted eller i en app har avdekket passordet ditt. Chrome anbefaler at du endrer passordet ditt på <ph name="ORIGIN" /> nå.</translation>
 <translation id="1919345977826869612">Annonser</translation>
 <translation id="1919367280705858090">Få hjelp med spesifikke feilmeldinger</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ingen}=1{1 nettsted}other{# nettsteder}}</translation>
@@ -920,7 +919,6 @@ brukere av denne nettleseren.</translation>
 <translation id="4358461427845829800">Administrer betalingsmåter…</translation>
 <translation id="4359160567981085931">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome kan hjelpe deg. For å bytte passord og varsle Google om at kontoen din kanskje er i fare, klikk på Beskytt konto.</translation>
 <translation id="4367563149485757821">Number-12 (konvolutt)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Et databrudd på et nettsted eller i en app har avdekket det lagrede passordet ditt for <ph name="ORIGIN" />. Chrome anbefaler at du endrer passordet ditt på <ph name="ORIGIN" /> nå.}=1{Et databrudd på et nettsted eller i en app har avdekket det lagrede passordet ditt for <ph name="ORIGIN" /> og ett nettsted til. Chrome anbefaler at du sjekker de lagrede passordene dine nå.}other{Et databrudd på et nettsted eller i en app har avdekket det lagrede passordet ditt for <ph name="ORIGIN" /> og <ph name="SITES_COUNT" /> nettsteder til. Chrome anbefaler at du sjekker de lagrede passordene dine nå.}}</translation>
 <translation id="437058704415269440">Kontosaldo</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Forventet <ph name="VALUE_TYPE" />-verdi.</translation>
@@ -1161,7 +1159,6 @@ brukere av denne nettleseren.</translation>
 <translation id="5287456746628258573">Dette nettstedet bruker en utdatert sikkerhetskonfigurasjon, som betyr at informasjonen din (for eksempel passord eller kredittkortnumre) kan bli avslørt når den sendes til dette nettstedet.</translation>
 <translation id="5288108484102287882">Det har oppstått advarsler under validering av regelverdier</translation>
 <translation id="5289384342738547352">Håndtering av flere dokumenter</translation>
-<translation id="5295292838686006428">Et databrudd på et nettsted eller i en app har avdekket passordet ditt. Chrome anbefaler at du sjekker de lagrede passordene dine nå.</translation>
 <translation id="5299298092464848405">Feil under analysen av enhetsinnstillingene</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5306593769196050043">Begge arkene</translation>
@@ -1700,7 +1697,6 @@ brukere av denne nettleseren.</translation>
 <translation id="7473891865547856676">Nei takk</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7485870689360869515">Ingen data ble funnet.</translation>
-<translation id="7495290002932347110">Et databrudd på et nettsted eller i en app har avdekket passordet ditt. Chrome anbefaler at du sjekker de lagrede passordene dine og endrer passordet på <ph name="ORIGIN" /> nå.</translation>
 <translation id="7495528107193238112">Dette innholdet er blokkert. Kontakt nettstedseieren for å løse problemet.</translation>
 <translation id="7498234416455752244">Fortsett å endre</translation>
 <translation id="7503664977220660814">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du sjekker de lagrede passordene dine for <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og andre nettsteder der du bruker dette passordet, nå.</translation>

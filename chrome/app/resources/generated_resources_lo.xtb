@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> ແນະນຳໃຫ້ທ່ານອັບເດດ <ph name="DEVICE_TYPE" /> ນີ້.</translation>
 <translation id="1118738876271697201">ລະບົບບໍ່ສາມາດກຳນົດຮຸ່ນອຸປະກອນ ຫຼື ໝາຍເລກຊີຣຽວໄດ້.</translation>
 <translation id="1119447706177454957">ຜິດພາດພາຍໃນ</translation>
-<translation id="111959947408687873">ກົດ Ctrl+<ph name="SEARCH_KEY_NAME" />+M ເພື່ອເປີດ ຫຼື ປິດແວ່ນຂະຫຍາຍເຕັມຈໍ. ກົດປຸ່ມ Ctrl+Alt+ລູກສອນ ເພື່ອເລື່ອນໄປມາຢູ່ໜ້າຈໍໃນເວລາຊູມເຂົ້າ.</translation>
 <translation id="1122068467107743258">ວຽກ</translation>
 <translation id="1122198203221319518">ເຄື່ອງ​ມື​:</translation>
 <translation id="1122242684574577509">ການ​ຮັບ​ຮອງ​ບໍ່​ສຳ​ເລັດ. ຄ​ລິກ​ເພື່ອ​ເຂົ້າ​ເບິ່ງ​ໜ້າ​ເຂົ້າລະບົບ​ສຳ​ລັບ​ເຄືອ​ຂ່າຍ Wi-Fi ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້ (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">ຂອບນີ້ຖືກບລັອກ ເພາະວ່າມັນມີບາງເນື້ອໃນທີ່ບໍ່ປອດໄພ.</translation>
 <translation id="146219525117638703">ສະ​ຖາ​ນະ ONC</translation>
 <translation id="146220085323579959">ອິນເຕີເນັດຕັດເຊື່ອມຕໍ່ແລ້ວ. ກະລຸນາກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ ແລະລອງໃໝ່ອີກ.</translation>
-<translation id="1463051728820430132">ຖາມເມື່ອມີເວັບແອັບຕ້ອງການເປີດປະເພດຂອງໄຟລ໌ຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> ຖືກບລັອກໄວ້ໂດຍການປົກປ້ອງຂັ້ນສູງ.</translation>
 <translation id="1464044141348608623">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຮູ້ເມື່ອທ່ານກຳລັງໃຊ້ອຸປະກອນຂອງທ່ານຢູ່</translation>
 <translation id="1464258312790801189">ບັນ​ຊີ​ຂອງ​ທ່ານ</translation>
@@ -1090,7 +1088,6 @@
 <translation id="2163470535490402084">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດ ເພື່ອ​ລົງຊື່ເຂົ້າໃຊ້​ຫາ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ແລະ ອີກ 1 ປຸ່ມ</translation>
 <translation id="2165421703844373933">ເຂົ້າເຖິງຜູ້ຊ່ວຍຂອງທ່ານເມື່ອທ່ານເວົ້າ "Ok Google." ເພື່ອປະຢັດແບັດເຕີຣີ, ກະລຸນາເລືອກ “ເປີດ (ແນະນຳ)”. ຜູ້ຊ່ວຍຂອງທ່ານຈະຕອບສະໜອງພຽງແຕ່ເມື່ອອຸປະກອນຂອງທ່ານສຽບໄຟ ຫຼື ກຳລັງສາກຢູ່ເທົ່ານັ້ນ.</translation>
-<translation id="2166269335975661317">ເວັບແອັບສາມາດຂໍເປີດປະເພດຂອງໄຟລ໌ຈາກອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">ແນວໃດກໍ່ລົງຊື່ເຂົ້າໃຊ້</translation>
@@ -4228,7 +4225,6 @@
 <translation id="5715711091495208045">ຕົວ​ຈັດ​ຫາ​ປ​ລັກ​ອິນ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນ</translation>
 <translation id="5719854774000914513">ເວັບໄຊສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນ HID ໄດ້</translation>
-<translation id="5720705177508910913">ຜູ້​ໃຊ້​ປະ​ຈຸ​ບັນ</translation>
 <translation id="572155275267014074">ການຕັ້ງຄ່າ Android</translation>
 <translation id="5722086096420375088">ສີຂຽວ ແລະ ສີຂາວ</translation>
 <translation id="5722930212736070253">ອ່າ, ຊວຍແທ້! Zip Archiver ເກີດຄວາມຜິດພາດ.</translation>
@@ -4463,7 +4459,6 @@
 <translation id="5990266201903445068">Wi-Fi ເທົ່ານັ້ນ</translation>
 <translation id="5990386583461751448">ແປແລ້ວ</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{ເພື່ອໃຫ້ແນ່ໃຈວ່າທ່ານສາມາດສືບຕໍ່ທ່ອງເວັບໄດ້, ກະລຸນາຮ້ອງຂໍໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານລຶບແອັບພລິເຄຊັນນີ້ອອກ.}other{ເພື່ອໃຫ້ແນ່ໃຈວ່າທ່ານສາມາດສືບຕໍ່ທ່ອງເວັບໄດ້, ກະລຸນາຮ້ອງຂໍໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານລຶບແອັບພລິເຄຊັນເຫຼົ່ານີ້ອອກ.}}</translation>
-<translation id="5992175324932183568">ບໍ່ອະນຸຍາດໃຫ້ເວັບແອັບເປີດປະເພດຂອງໄຟລ໌ຈາກອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="5997337190805127100">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການເຂົ້າເຖິງເວັບໄຊ</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> ຜົນການຊອກຫາສຳລັບ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002210667729577411">ຍ້າຍກຸ່ມໄປໃສ່ໜ້າຈໍໃໝ່</translation>
@@ -4585,7 +4580,6 @@
 <translation id="6124213551517593835">ນີ້ຈະລຶບລ້າງຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ເກັບໄວ້ໂດຍ <ph name="SITE_GROUP_NAME" /> ແລະ ເວັບໄຊຕ່າງໆທີ່ຢູ່ພາຍໃຕ້ມັນ</translation>
 <translation id="6124650939968185064">ສ່ວນຂະຫຍາຍຕໍ່ໄປນີ້ຂຶ້ນກັບສ່ວນຂະຫຍາຍນີ້:</translation>
 <translation id="6124698108608891449">ເວັບໄຊນີ້ຕ້ອງການມີການອະນຸຍາດເພີ່ມເຕີມ.</translation>
-<translation id="6125442051901189730">ບໍ່ມີໂປຣໄຟລ໌ SIM ທີ່ສາມາດໃຊ້ໄດ້. ຕັ້ງຄ່າໂປຣໄຟລ໌ໃໝ່ <ph name="BEGIN_LINK" />ບ່ອນນີ້.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">ແນວໃດກໍຕາມ, ທ່ານຈະຈຳເປັນຕ້ອງເພີ່ມບັນຊີຂອງທ່ານໃສ່ <ph name="DEVICE_TYPE" /> ນີ້ອີກຄັ້ງ.</translation>
 <translation id="6129691635767514872">ຂໍ້ມູນທີ່ເລືອກໄດ້ຖືກລຶບອອກຈາກ Chrome ແລະ ອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນແລ້ວ. ບັນຊີ Google ຂອງທ່ານອາດຈະມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆ ເຊັ່ນວ່າ ການຊອກຫາ ແລະ ການເຄື່ອນໄຫວຈາກການບໍລິການອື່ນໆຂອງ Google ຢູ່ທີ່ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">ຄໍາຄິດເຫັນໃບຢັ້ງຢືນ Netscape</translation>
@@ -6583,8 +6577,6 @@
 <translation id="8368859634510605990">ເປີດທຸກບຸກມາກສ໌</translation>
 <translation id="8370294614544004647">ນອນເມື່ອປິດແລັບທັອບ</translation>
 <translation id="8371695176452482769">ເວົ້າ​ດຽວນີ້</translation>
-<translation id="8371749822919332187">ກົດ Ctrl+Alt+ເພີ່ມຄວາມສະຫວ່າງ ເພື່ອຊູມເຂົ້າ.
-ກົດ Ctrl+Alt+ຫຼຸດຄວາມສະຫວ່າງ ເພື່ອຊູມອອກ.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{ປິດສຽງເວັບໄຊ}other{ປິດສຽງເວັບໄຊ}}</translation>
 <translation id="8372369524088641025">ປຸ່ມ WEP ບໍ່ດີ</translation>
 <translation id="8373652277231415614">ແຟ້ມທີ່ແບ່ງປັນຂອງ Crostini</translation>
@@ -7395,7 +7387,6 @@
 <translation id="975893173032473675">ພາສາທີ່ຈະແປເປັນ</translation>
 <translation id="976499800099896273">ກ່ອງໂຕ້ຕອບຍົກເລີກການແກ້ໄຂອັດຕະໂນມັດສະແດງຂຶ້ນສຳລັບ <ph name="TYPED_WORD" /> ທີ່ແກ້ໄຂເປັນ <ph name="CORRECTED_WORD" />.  ກົດລູກສອນຂຶ້ນເພື່ອເຂົ້າເຖິງ, Escape ເພື່ອລະເລີຍ.</translation>
 <translation id="978146274692397928">ຄວາມກ້ວາງເຄື່ອງໝາຍວັກຕອນ​ເບື້ອງ​ຕົ້ນເຕັມ</translation>
-<translation id="97883469867914488">ບລັອກເວັບແອັບບໍ່ໃຫ້ເປີດປະເພດຂອງໄຟລ໌ຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="97905529126098460">ໜ້າຈໍນີ້ຈະປິດຫຼັງຈາກສຳເລັດການຍົກເລີກແລ້ວ.</translation>
 <translation id="980731642137034229">ປຸ່ມເມນູຄຳສັ່ງ</translation>
 <translation id="981121421437150478">ອອຟລາຍນ໌</translation>

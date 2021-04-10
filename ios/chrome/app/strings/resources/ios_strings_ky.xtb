@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">Бетти бөлш мүмкн эмс</translation>
 <translation id="2923448633003185837">Чаптоо жана өтүү</translation>
 <translation id="292639812446257861">Окула элек деп белгилөө</translation>
+<translation id="2932085390869194046">Сырсөз сунушталсын…</translation>
 <translation id="2952581218264071393">1. Chrome'дун жөндөөлөрүн ачыңыз</translation>
 <translation id="2958718410589002129">Сырсөздөр</translation>
 <translation id="2964349545761222050">Үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
@@ -710,7 +711,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8281781826761538115">Демейки - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8283172974887967105">Коюу…</translation>
-<translation id="8299417921174340354">Сырсөздөрдү колдонуу үчүн, адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
+<translation id="8299417921174340354">Сырсөздөрдү колдонуу үчүн адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="8319076807703933069">Жаңы издөө</translation>
 <translation id="8323906514956095947">Өтмөктөгү башка параметрлерди көрүү үчүн коё бербей басып туруңуз</translation>
 <translation id="8328777765163860529">Баарын жабуу</translation>
@@ -760,7 +761,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8806823403540278281">Уюмуңуз жекече серептөөнү талап кылат. Жашыруун режимде өтмөктөр сакталбайт.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Кыстармалар</translation>
-<translation id="8823704566850948458">Сырсөз сунушталсын...</translation>
 <translation id="8840513115188359703">Google Каттоо эсебиңизден чыгарылбайсыз.</translation>
 <translation id="8870413625673593573">Жакында жабылган</translation>
 <translation id="8881801611828450202">Бул сүрөттү <ph name="SEARCH_ENGINE" /> издөө каражатынан издөө</translation>

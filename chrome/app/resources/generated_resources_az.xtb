@@ -102,7 +102,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> bu <ph name="DEVICE_TYPE" /> cihazını güncəlləməyinizi tövsiyə edir.</translation>
 <translation id="1118738876271697201">Sistem bu cihazın modelini və ya seriya nömrəsini aşkarlamadı.</translation>
 <translation id="1119447706177454957">Daxili xəta</translation>
-<translation id="111959947408687873">Tam ekran böyüdücüsünə keçmək üçün Ctrl+<ph name="SEARCH_KEY_NAME" />+M düymələrindən istifadə edin. Yaxınlaşdırıldıqda ekranda hərəkət etmək üçün Ctrl+Alt+Ox düymələrindən istifadə edin.</translation>
 <translation id="1122068467107743258">İş</translation>
 <translation id="1122198203221319518">&amp;Alət</translation>
 <translation id="1122242684574577509">Doğrulama alınmadı. İstifadə etdiyiniz Wi-Fi şəbəkəsi üçün login səhifəsinə daxil olun (<ph name="NETWORK_ID" />).</translation>
@@ -424,7 +423,6 @@
 <translation id="146000042969587795">Bu çərçivə güvənsiz kontent içərdiyi üçün bloklandı.</translation>
 <translation id="146219525117638703">ONC Durumu</translation>
 <translation id="146220085323579959">İnternet kəsildi. internet bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
-<translation id="1463051728820430132">Veb tətbiq cihazınızda fayl növlərini açmaq istədikdə soruşulsun</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> Qabaqcıl Qoruma tərəfindən blok edilib</translation>
 <translation id="1464044141348608623">Saytlara cihazınızdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək icazəsi verməyin</translation>
 <translation id="1464258312790801189">Hesablarınız</translation>
@@ -1088,7 +1086,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2163470535490402084">Daxil etmək üçün İnternetə qoşulmaq edin sizin <ph name="DEVICE_TYPE" /> .</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> və daha 1 dəyişdirici</translation>
 <translation id="2165421703844373933">"Ok Google" dedikdə Assistentinizə daxil olun. Enerjiyə qənaət üçün “Aktiv (Tövsiyə olunur)” seçin. Assistentiniz yalnız cihazınız elektrik şəbəkəsinə qoşulduqda və ya batareya doldurulduqda cavab verəcək.</translation>
-<translation id="2166269335975661317">Veb tətbiqlər cihazınızdan fayl növlərinin açılmasını soruşa bilər</translation>
 <translation id="2166369534954157698">Qəhvəyi tülkə tənbəl itin üzərindən qaçaraq hoppanır</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Hər bir halda daxil olun</translation>
@@ -4224,7 +4221,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5715711091495208045">Plaqin Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Defolt axtarış sistemləri</translation>
 <translation id="5719854774000914513">Saytlar HID cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
-<translation id="5720705177508910913">Cari istifadəçi</translation>
 <translation id="572155275267014074">Android ayarları</translation>
 <translation id="5722086096420375088">Yaşıl və ağ</translation>
 <translation id="5722930212736070253">Ehh alınmadı! Zip Archiver'də xəta baş verdi.</translation>
@@ -4457,7 +4453,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5990266201903445068">Yalnız Wi-Fi</translation>
 <translation id="5990386583461751448">Tərcümə edildi</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Vebdə axtarışa davam etmək üçün administratordan bu tətbiqi silməyi tələb edin.}other{Vebdə axtarışa davam etmək üçün administratordan bu tətbiqləri silməyi tələb edin.}}</translation>
-<translation id="5992175324932183568">Veb tətbiqlərin cihazınızdan fayl növlərini açmasına icazə verməyin</translation>
 <translation id="5997337190805127100">Sayta Giriş Barədə Ətraflı Öyrənin</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" üçün <ph name="RESULT_COUNT" /> nəticə</translation>
 <translation id="6002210667729577411">Qrupu yeni pəncərəyə köçürün</translation>
@@ -4579,7 +4574,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6124213551517593835">Bununla <ph name="SITE_GROUP_NAME" /> və oradakı saytlar tərəfindən saxlanılan bütün data və kukilər silinəcək</translation>
 <translation id="6124650939968185064">Aşağıdakı artırmalar bu artırmadan asılıdır:</translation>
 <translation id="6124698108608891449">Bu sayt daha çox icazə tələb edir.</translation>
-<translation id="6125442051901189730">Əlçatan SIM profili yoxdur. <ph name="BEGIN_LINK" />Burada<ph name="END_LINK" /> yeni profil ayarlayın.</translation>
 <translation id="6125479973208104919">Təəssüf ki, hesabı <ph name="DEVICE_TYPE" /> cihazına yenidən əlavə etməlisiniz.</translation>
 <translation id="6129691635767514872">Seçilmiş data Chrome və sinxronizasiya olunmuş cihazlardan silindi. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> bölməsində Google Hesabınızın axtarış tarixçəsinin digər formaları ola bilər.</translation>
 <translation id="6129938384427316298">Netscape Sertifikat Şərhi</translation>
@@ -6577,8 +6571,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8368859634510605990">&amp;Bütün əlfəcinləri açın</translation>
 <translation id="8370294614544004647">Noutbuk bağlandıqda yuxu rejiminə keçsin</translation>
 <translation id="8371695176452482769">İndi Danışın</translation>
-<translation id="8371749822919332187">Yaxınlaşdırmaq üçün Ctrl+Alt+Parlaqlığı Artır düymələrindən istifadə edin.
-Uzaqlaşdırmaq üçün Ctrl+Alt+Parlaqlığı Azalt düymələrindən istifadə edin.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Saytı Susdurun}other{Saytları Susdurun}}</translation>
 <translation id="8372369524088641025">Səhv WEP açarı</translation>
 <translation id="8373652277231415614">Crostini'nin paylaşılan kataloqları</translation>
@@ -7387,7 +7379,6 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="975893173032473675">Tərcümə ediləcək dil</translation>
 <translation id="976499800099896273">Avtodüzəlişin geri qaytarılması dialoqu <ph name="TYPED_WORD" /> sözünün <ph name="CORRECTED_WORD" /> şəklində düzəlişi üçün göstərilir.  Giriş üçün yuxarı oxu, imtina etmək üçün escape düyməsini basın.</translation>
 <translation id="978146274692397928">İnisial punktuasiyası Tamdır</translation>
-<translation id="97883469867914488">Veb tətbiqlərin cihazınızda fayl növlərini açmasını əngəlləyin</translation>
 <translation id="97905529126098460">Ləğvetmə tamamlandıqdan sonra bu pəncərə bağlanacaq.</translation>
 <translation id="980731642137034229">Əməliyyat menyu düyməsi</translation>
 <translation id="981121421437150478">Oflayn</translation>

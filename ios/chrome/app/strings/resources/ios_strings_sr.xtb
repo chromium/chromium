@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">Дељење странице није могуће</translation>
 <translation id="2923448633003185837">Налепи и иди</translation>
 <translation id="292639812446257861">Означи као непрочитано</translation>
+<translation id="2932085390869194046">Предложи лозинку...</translation>
 <translation id="2952581218264071393">1. Отворите подешавања Chrome-а</translation>
 <translation id="2958718410589002129">Лозинке</translation>
 <translation id="2964349545761222050">Блокирај колачиће треће стране</translation>
@@ -760,7 +761,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8806823403540278281">Организација захтева да прегледате приватно. Картице се не чувају у режиму без архивирања.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Обележивачи</translation>
-<translation id="8823704566850948458">Предложи лозинку...</translation>
 <translation id="8840513115188359703">Нећемо вас одјавити са Google налога.</translation>
 <translation id="8870413625673593573">Недавно затворено</translation>
 <translation id="8881801611828450202">Претражи ову слику у <ph name="SEARCH_ENGINE" />-у</translation>

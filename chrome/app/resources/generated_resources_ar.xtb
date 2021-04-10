@@ -104,7 +104,6 @@
 <translation id="1118549423835582252">يقترح <ph name="MANAGER" /> عليك تحديث جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="1118738876271697201">تعذَّر على النظام تحديد طراز الجهاز أو رقمه التسلسلي.</translation>
 <translation id="1119447706177454957">خطأ داخلي</translation>
-<translation id="111959947408687873">‏اضغط على Ctrl+<ph name="SEARCH_KEY_NAME" />+M لتفعيل ميزة "المكبِّر بملء الشاشة" أو إيقافها. واضغط على Ctrl+Alt+مفاتيح الأسهم للتنقّل داخل الشاشة بعد تكبيرها.</translation>
 <translation id="1122068467107743258">العمل</translation>
 <translation id="1122198203221319518">&amp;الأدوات</translation>
 <translation id="1122242684574577509">‏‫فشلت المصادقة‬. انقر للانتقال إلى صفحة تسجيل الدخول لشبكة Wi-Fi التي تستخدمها (<ph name="NETWORK_ID" />).</translation>
@@ -430,7 +429,6 @@
 <translation id="146000042969587795">تمّ حجب هذا الإطار لتضمّنه بعض المحتوى غير الآمن.</translation>
 <translation id="146219525117638703">‏حالة ONC</translation>
 <translation id="146220085323579959">تم قطع الاتصال بالإنترنت. يُرجى التحقق من الاتصال بالإنترنت وإعادة المحاولة.</translation>
-<translation id="1463051728820430132">طلب الإذن عندما يحاول أحد تطبيقات الويب فتح أنواع معيّنة من الملفات على جهازك</translation>
 <translation id="1463112138205428654">تم حظر <ph name="FILE_NAME" /> من خلال برنامج "الحماية المتقدمة".</translation>
 <translation id="1464044141348608623">عدم السماح للمواقع الإلكترونية بمعرفة متى تستخدم جهازك بشكل نشط</translation>
 <translation id="1464258312790801189">حساباتك</translation>
@@ -1096,7 +1094,6 @@
 <translation id="2163470535490402084">يُرجى الاتصال بالإنترنت لتسجيل الدخول إلى <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /> و<ph name="THIRD_SWITCH" /> ومفتاح تبديل آخر</translation>
 <translation id="2165421703844373933">‏الوصول إلى "مساعد Google" عند قول "Ok Google" لتوفير طاقة البطارية، اختَر "تفعيل (مُقترح)". ولن يستجيب "مساعد Google" إلا عند توصيل جهازك بمصدر طاقة أو شحنه.</translation>
-<translation id="2166269335975661317">يمكن أن تطلب تطبيقات الويب الإذن لفتح أنواع معيّنة من الملفات على جهازك.</translation>
 <translation id="2166369534954157698">أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">تسجيل الدخول على أيّ حال</translation>
@@ -4233,7 +4230,6 @@
 <translation id="5715711091495208045">وسيط المكوّن الإضافي: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">محرّكات البحث التلقائية</translation>
 <translation id="5719854774000914513">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة HID</translation>
-<translation id="5720705177508910913">المستخدم الحالي</translation>
 <translation id="572155275267014074">‏إعدادات Android</translation>
 <translation id="5722086096420375088">أخضر وأبيض</translation>
 <translation id="5722930212736070253">‏عذرًا، يواجه Zip Archiver خطأ.</translation>
@@ -4468,7 +4464,6 @@
 <translation id="5990266201903445068">‏Wi-Fi فقط</translation>
 <translation id="5990386583461751448">مترجَمة</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذا التطبيق.}zero{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذه التطبيقات.}two{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذين التطبيقين.}few{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذه التطبيقات.}many{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذه التطبيقات.}other{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذه التطبيقات.}}</translation>
-<translation id="5992175324932183568">عدم السماح لتطبيقات الويب بفتح أنواع معيّنة من الملفات على جهازك</translation>
 <translation id="5997337190805127100">مزيد من المعلومات عن إمكانية الوصول إلى الموقع الإلكتروني</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> من نتائج البحث عن "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">نقل المجموعة إلى نافذة جديدة</translation>
@@ -4590,7 +4585,6 @@
 <translation id="6124213551517593835">سيؤدي هذا الإجراء إلى محو جميع البيانات وملفات تعريف الارتباط المُخزّنة من خلال <ph name="SITE_GROUP_NAME" /> وأيّ مواقع إلكترونية ضمنه.</translation>
 <translation id="6124650939968185064">تعتمد الإضافات التالية على هذه الإضافة:</translation>
 <translation id="6124698108608891449">يحتاج هذا الموقع الإلكتروني إلى مزيد من الأذونات.</translation>
-<translation id="6125442051901189730">‏ما مِن ملفات شخصية متوفِّرة لشريحة SIM. يمكنك إنشاء ملف شخصي جديد <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">عذرًا، ستحتاج إلى إضافة حسابك إلى جهاز <ph name="DEVICE_TYPE" /> هذا مرة أخرى.</translation>
 <translation id="6129691635767514872">‏تمت إزالة البيانات المحددة من Chrome والأجهزة التي تمت مزامنتها. قد يحتوي حسابك على Google على نماذج أخرى من سجل التصفح، مثل عمليات البحث والنشاط من خدمات Google الأخرى في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">‏التعليق على شهادة Netscape</translation>
@@ -6590,8 +6584,6 @@
 <translation id="8368859634510605990">&amp;فتح كل الإشارات المرجعية</translation>
 <translation id="8370294614544004647">السكون عند غلق الكمبيوتر المحمول</translation>
 <translation id="8371695176452482769">تحدث الآن</translation>
-<translation id="8371749822919332187">‏اضغط على Ctrl+Alt+رفع مستوى السطوع لتكبير الشاشة.
-اضغط على Ctrl+Alt+خفض مستوى السطوع لتصغير الشاشة.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{كتم صوت موقع إلكتروني واحد}zero{كتم صوت المواقع الإلكترونية}two{كتم صوت موقعيِّ الويب}few{كتم صوت المواقع الإلكترونية}many{كتم صوت المواقع الإلكترونية}other{كتم صوت المواقع الإلكترونية}}</translation>
 <translation id="8372369524088641025">‏مفتاح WEP غير صالح</translation>
 <translation id="8373652277231415614">‏مجلدات نظام التشغيل Crostini التي تمت مشاركتها</translation>
@@ -7406,7 +7398,6 @@
 <translation id="975893173032473675">اللغة التي تريد الترجمة إليها</translation>
 <translation id="976499800099896273">‏يُظهر مربّع الحوار إمكانية التراجع عن التصحيح التلقائي لكلمة <ph name="TYPED_WORD" /> التي تم تصحيحها بكلمة <ph name="CORRECTED_WORD" />.  اضغط على مفتاح السهم المتّجه للأعلى للتراجع عن التصحيح التلقائي، أو اضغط على مفتاح escape للتجاهل.</translation>
 <translation id="978146274692397928">العرض الأولي لعلامات الترقيم هو عرض بالكامل</translation>
-<translation id="97883469867914488">منع تطبيقات الويب من فتح أنواع معيّنة من الملفات على جهازك</translation>
 <translation id="97905529126098460">سيتم إغلاق هذه النافذة بعد اكتمال عملية الإلغاء.</translation>
 <translation id="980731642137034229">زر قائمة الإجراءات</translation>
 <translation id="981121421437150478">بلا اتصال</translation>

@@ -272,7 +272,6 @@
 <translation id="1914326953223720820">解壓縮服務</translation>
 <translation id="1915697529809968049">要使用 Touch ID 取代信用卡驗證碼嗎？</translation>
 <translation id="1916770123977586577">如要將你更新過的設定套用到這個網站，請重新載入這個網頁</translation>
-<translation id="1917876262703816781">你使用的某個網站或應用程式發生資料侵害事件，因此你的密碼已遭洩露。Chrome 建議你立即變更 <ph name="ORIGIN" /> 上的密碼。</translation>
 <translation id="1919345977826869612">廣告</translation>
 <translation id="1919367280705858090">瞭解如何修正特定錯誤訊息指出的錯誤</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{無}=1{1 個網站}other{# 個網站}}</translation>
@@ -909,7 +908,6 @@
 <translation id="4358461427845829800">管理付款方式...</translation>
 <translation id="4359160567981085931">你剛才在詐騙網站上輸入了密碼。Chrome 能夠幫助你。如要變更密碼並通知 Google 你的帳戶可能面臨風險，請按一下 [保護帳戶]。</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{你使用的某個網站或應用程式發生資料侵害事件，因此你為 <ph name="ORIGIN" /> 儲存的密碼已遭洩露。Chrome 建議你立即變更 <ph name="ORIGIN" /> 上的密碼。}=1{你使用的某個網站或應用程式發生資料侵害事件，因此你為 <ph name="ORIGIN" /> 和另外一個網站儲存的密碼已遭洩露。Chrome 建議你立即檢查已儲存的密碼。}other{你使用的某個網站或應用程式發生資料侵害事件，因此你為 <ph name="ORIGIN" /> 和另外 <ph name="SITES_COUNT" /> 個網站儲存的密碼已遭洩露。Chrome 建議你立即檢查已儲存的密碼。}}</translation>
 <translation id="437058704415269440">帳戶餘額</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">預期的「<ph name="VALUE_TYPE" />」值。</translation>
@@ -1150,7 +1148,6 @@
 <translation id="5287456746628258573">這個網站的安全性設定過舊，因此你傳送給這個網站的的資訊 (例如密碼或信用卡號碼) 可能會外洩。</translation>
 <translation id="5288108484102287882">政策值驗證作業出現警告訊息</translation>
 <translation id="5289384342738547352">多份文件處理</translation>
-<translation id="5295292838686006428">你使用的某個網站或應用程式發生資料侵害事件，因此你的密碼已遭洩露。Chrome 建議你立即檢查已儲存的密碼。</translation>
 <translation id="5299298092464848405">解析政策時發生錯誤</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5306593769196050043">兩份表單</translation>
@@ -1690,7 +1687,6 @@
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7481312909269577407">往前</translation>
 <translation id="7485870689360869515">找不到任何資料。</translation>
-<translation id="7495290002932347110">你使用的某個網站或應用程式發生資料侵害事件，因此你的密碼已遭洩露。Chrome 建議你立即檢查已儲存的密碼，並變更 <ph name="ORIGIN" /> 上的密碼。</translation>
 <translation id="7495528107193238112">這項內容已遭到封鎖，請聯絡網站擁有者以修正問題。</translation>
 <translation id="7498234416455752244">繼續編輯</translation>
 <translation id="7503664977220660814">你剛才在詐騙網站上輸入了密碼。Chromium 建議你立即檢查為以下網站儲存的密碼：<ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />，以及使用這組密碼的其他網站。</translation>

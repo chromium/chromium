@@ -276,7 +276,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1914326953223720820">Dekompakteer diens</translation>
 <translation id="1915697529809968049">Gebruik Touch ID pleks van CVC?</translation>
 <translation id="1916770123977586577">Herlaai hierdie bladsy om jou opgedateerde instellings op hierdie werf toe te pas</translation>
-<translation id="1917876262703816781">'n Dataskending op 'n werf of program het jou wagwoord blootgestel. Chrome beveel aan dat jy jou wagwoord op <ph name="ORIGIN" /> nou verander.</translation>
 <translation id="1919345977826869612">Advertensies</translation>
 <translation id="1919367280705858090">Kry hulp met 'n spesifieke foutboodskap</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Geen}=1{1 werf}other{# werwe}}</translation>
@@ -920,7 +919,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4358461427845829800">Bestuur betaalmetodes …</translation>
 <translation id="4359160567981085931">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chrome kan help. Klik Beskerm Rekening om jou wagwoord te verander en stel Google in kennis dat jou rekening dalk in gevaar is.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{'n Dataskending op 'n werf of program het jou gestoorde wagwoord vir <ph name="ORIGIN" /> blootgestel. Chrome beveel aan dat jy jou wagwoord op <ph name="ORIGIN" /> nou verander.}=1{'n Dataskending op 'n werf of program het jou gestoorde wagwoord vir <ph name="ORIGIN" /> en een ander werf blootgestel. Chrome beveel aan dat jy jou gestoorde wagwoorde nou nagaan.}other{'n Dataskending op 'n werf of program het jou gestoorde wagwoord vir <ph name="ORIGIN" /> en <ph name="SITES_COUNT" /> ander werwe blootgestel. Chrome beveel aan dat jy jou gestoorde wagwoorde nou nagaan.}}</translation>
 <translation id="437058704415269440">Rekeningsaldo</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Verwagte <ph name="VALUE_TYPE" />-waarde.</translation>
@@ -1161,7 +1159,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5287456746628258573">Hierdie werf gebruik 'n verouderde sekuriteitopstelling, wat jou inligting (byvoorbeeld, wagwoorde en kredietkaartnommers) kan blootstel wanneer dit na hierdie werf toe gestuur word.</translation>
 <translation id="5288108484102287882">Bevestiging van beleidswaardes het waarskuwings veroorsaak</translation>
 <translation id="5289384342738547352">Hantering van veelvuldige dokumente</translation>
-<translation id="5295292838686006428">'n Dataskending op 'n werf of program het jou wagwoord blootgestel. Chrome beveel aan dat jy jou gestoorde wagwoorde nou nagaan.</translation>
 <translation id="5299298092464848405">Kon nie beleid ontleed nie</translation>
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5306593769196050043">Albei blaaie</translation>
@@ -1701,7 +1698,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7473891865547856676">Nee, dankie</translation>
 <translation id="7481312909269577407">Vorentoe</translation>
 <translation id="7485870689360869515">Geen data gevind nie.</translation>
-<translation id="7495290002932347110">'n Dataskending op 'n werf of program het jou wagwoord blootgestel. Chrome beveel aan dat jy jou gestoorde wagwoorde nagaan en jou wagwoord op <ph name="ORIGIN" /> nou verander.</translation>
 <translation id="7495528107193238112">Hierdie inhoud is geblokkeer. Kontak die werfeienaar om die kwessie reg te stel.</translation>
 <translation id="7498234416455752244">Hou aan wysig</translation>
 <translation id="7503664977220660814">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chromium beveel aan dat jy jou gestoorde wagwoorde vir <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> en ander werwe waar jy hierdie wagwoord gebruik, nou nagaan.</translation>

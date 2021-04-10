@@ -272,7 +272,6 @@
 <translation id="1914326953223720820">압축 해제 서비스</translation>
 <translation id="1915697529809968049">CVC 대신 Touch ID를 사용하시겠습니까?</translation>
 <translation id="1916770123977586577">이 사이트에 업데이트된 설정을 적용하려면 이 페이지를 다시 로드하세요.</translation>
-<translation id="1917876262703816781">사이트 또는 앱의 정보 유출로 인해 비밀번호가 노출되었습니다. 지금 <ph name="ORIGIN" />의 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="1919345977826869612">광고</translation>
 <translation id="1919367280705858090">특정 오류 메시지에 관한 도움말 보기</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{없음}=1{사이트 1개}other{사이트 #개}}</translation>
@@ -909,7 +908,6 @@
 <translation id="4358461427845829800">결제 수단 관리...</translation>
 <translation id="4359160567981085931">사기성 사이트에 비밀번호를 입력했습니다. Chrome이 계정 보호를 도와드립니다. 비밀번호를 변경하고 계정 보안 위험에 관해 Google에 알리려면 계정 보호를 클릭하세요.</translation>
 <translation id="4367563149485757821">Number-12(봉투)</translation>
-<translation id="4367839622597707614">{1,plural, =0{사이트 또는 앱에서 발생한 정보 유출로 인해 <ph name="ORIGIN" />의 저장된 비밀번호가 노출되었습니다. 지금 <ph name="ORIGIN" />의 비밀번호를 변경하시기 바랍니다.}=1{사이트 또는 앱에서 발생한 정보 유출로 인해 <ph name="ORIGIN" /> 외 사이트 1곳의 저장된 비밀번호가 노출되었습니다. 지금 저장된 비밀번호를 확인해 보시기 바랍니다.}other{사이트 또는 앱에서 발생한 정보 유출로 인해 <ph name="ORIGIN" /> 외 사이트 <ph name="SITES_COUNT" />곳의 저장된 비밀번호가 노출되었습니다. 지금 저장된 비밀번호를 확인해 보시기 바랍니다.}}</translation>
 <translation id="437058704415269440">계정 잔액</translation>
 <translation id="4372516964750095882">Fanfold-미국</translation>
 <translation id="4372948949327679948">예상 <ph name="VALUE_TYPE" /> 값입니다.</translation>
@@ -1150,7 +1148,6 @@
 <translation id="5287456746628258573">이 사이트에서는 오래된 보안 구성을 사용하므로 정보(예: 비밀번호나 신용카드 번호)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
 <translation id="5288108484102287882">정책 값 유효성 검사 결과 경고가 발생했습니다.</translation>
 <translation id="5289384342738547352">여러 문서 처리</translation>
-<translation id="5295292838686006428">사이트 또는 앱의 정보 유출로 인해 비밀번호가 노출되었습니다. 지금 저장된 비밀번호를 확인하는 것이 좋습니다.</translation>
 <translation id="5299298092464848405">정책을 파싱하는 중 오류 발생</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5306593769196050043">모든 시트</translation>
@@ -1689,7 +1686,6 @@
 <translation id="7473891865547856676">건너뛰기</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7485870689360869515">데이터 없음</translation>
-<translation id="7495290002932347110">사이트 또는 앱의 정보 유출로 인해 비밀번호가 노출되었습니다. 지금 저장된 비밀번호를 확인하고 <ph name="ORIGIN" />의 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="7495528107193238112">이 콘텐츠는 차단되어 있습니다. 문제를 해결하려면 사이트 소유자에게 문의하세요.</translation>
 <translation id="7498234416455752244">계속 수정</translation>
 <translation id="7503664977220660814">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> 등 동일한 비밀번호를 사용한 사이트에 저장된 비밀번호를 확인하는 것이 좋습니다.</translation>

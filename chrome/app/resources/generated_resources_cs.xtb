@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> aktualizovali.</translation>
 <translation id="1118738876271697201">Systému se nepodařilo určit model nebo sériové číslo zařízení</translation>
 <translation id="1119447706177454957">Interní chyba</translation>
-<translation id="111959947408687873">Kombinací kláves Ctrl+<ph name="SEARCH_KEY_NAME" />+M můžete přepnout zvětšení obrazovky. Po zvětšené obrazovce se můžete pohybovat stisknutím kláves Ctrl a Alt spolu se šipkami.</translation>
 <translation id="1122068467107743258">Práce</translation>
 <translation id="1122198203221319518">&amp;Nástroje</translation>
 <translation id="1122242684574577509">Ověření selhalo. Kliknutím přejděte na přihlašovací stránku sítě Wi-Fi, kterou používáte (<ph name="NETWORK_ID" />).</translation>
@@ -428,7 +427,6 @@
 <translation id="146000042969587795">Tento rámec byl blokován, protože obsahuje určitý nezabezpečený obsah.</translation>
 <translation id="146219525117638703">Stav ONC</translation>
 <translation id="146220085323579959">Došlo k odpojení internetu. Zkontrolujte prosím připojení k internetu a zkuste to znovu.</translation>
-<translation id="1463051728820430132">Zeptat se, když chce webová aplikace otevírat typy souborů v zařízení</translation>
 <translation id="1463112138205428654">Soubor <ph name="FILE_NAME" /> byla zablokován pokročilou ochranou.</translation>
 <translation id="1464044141348608623">Weby nemohou zjišťovat, kdy aktivně používáte své zařízení</translation>
 <translation id="1464258312790801189">Vaše účty</translation>
@@ -1094,7 +1092,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2163470535490402084">Chcete-li se přihlásit do zařízení <ph name="DEVICE_TYPE" />, připojte se k internetu.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 další přepínač</translation>
 <translation id="2165421703844373933">Aktivovat Asistenta, když řeknete „Ok Google“ Chcete-li ušetřit baterii, vyberte výchozí možnost Zapnout (doporučeno). Asistent vám odpoví jen v případě, že je zařízení připojené ke zdroji napájení nebo se nabíjí.</translation>
-<translation id="2166269335975661317">Webové aplikace mohou žádat o oprávnění otevírat typy souborů ze zařízení</translation>
 <translation id="2166369534954157698">Příliš žluťoučký kůň úpěl ďábelské ódy</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Přesto se přihlásit</translation>
@@ -4230,7 +4227,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5715711091495208045">Zprostředkovatel pluginu: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Výchozí vyhledávače</translation>
 <translation id="5719854774000914513">Weby mohou žádat o připojení k zařízením HID</translation>
-<translation id="5720705177508910913">Aktuální uživatel</translation>
 <translation id="572155275267014074">Nastavení zařízení Android</translation>
 <translation id="5722086096420375088">Zelená a bílá</translation>
 <translation id="5722930212736070253">Aj, chyba! V nástroji Zip Archiver došlo k chybě.</translation>
@@ -4465,7 +4461,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5990266201903445068">Pouze Wi-Fi</translation>
 <translation id="5990386583461751448">Přeloženo</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}few{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}many{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}other{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}}</translation>
-<translation id="5992175324932183568">Nepovolovat webovým aplikacím otevírat typy souborů ze zařízení</translation>
 <translation id="5997337190805127100">Další informace o přístupu k webům</translation>
 <translation id="6000758707621254961">Výsledky pro dotaz <ph name="SEARCH_TEXT" /> (<ph name="RESULT_COUNT" />)</translation>
 <translation id="6002210667729577411">Přesunout skupinu do nového okna</translation>
@@ -4587,7 +4582,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6124213551517593835">Tímto vymažete všechny soubory cookie a data, která uložil web <ph name="SITE_GROUP_NAME" /> a jeho podřízené weby</translation>
 <translation id="6124650939968185064">Na tomto rozšíření závisejí následující rozšíření:</translation>
 <translation id="6124698108608891449">Web potřebuje další oprávnění.</translation>
-<translation id="6125442051901189730">Nejsou k dispozici žádné profily SIM. Nový profil můžete nastavit <ph name="BEGIN_LINK" />zde<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Do zařízení <ph name="DEVICE_TYPE" /> je nutné znovu přidat účet.</translation>
 <translation id="6129691635767514872">Vybraná data byla z Chromu a synchronizovaných zařízení odstraněna. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google, například vyhledávací dotazy a aktivita z ostatních služeb Google.</translation>
 <translation id="6129938384427316298">Komentář certifikátu Netscape</translation>
@@ -6586,8 +6580,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8368859634510605990">&amp;Otevřít všechny záložky</translation>
 <translation id="8370294614544004647">Při zavření notebooku přejít do režimu spánku</translation>
 <translation id="8371695176452482769">Mluvte</translation>
-<translation id="8371749822919332187">Přiblížení provedete stisknutím kláves Ctrl+Alt+Zvýšit jas.
-Oddálení provedete stisknutím kláves Ctrl+Alt+Snížit jas.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Vypnout zvuk webu}few{Vypnout zvuk webů}many{Vypnout zvuk webů}other{Vypnout zvuk webů}}</translation>
 <translation id="8372369524088641025">Chybný klíč WEP</translation>
 <translation id="8373652277231415614">Sdílené adresáře Crostini</translation>
@@ -7400,7 +7392,6 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="975893173032473675">Cílový jazyk překladu</translation>
 <translation id="976499800099896273">Je zobrazeno dialogové okno automatických oprav pro slovo <ph name="TYPED_WORD" /> opravené na <ph name="CORRECTED_WORD" />.  Stisknutím šipky nahoru do něj přejdete, stisknutím klávesy Escape ho ignorujete.</translation>
 <translation id="978146274692397928">Výchozí šířka interpunkce je Plná</translation>
-<translation id="97883469867914488">Bránit webovým aplikacím v otevírání typů souborů v zařízení</translation>
 <translation id="97905529126098460">Až bude zrušení dokončeno, toto okno se zavře.</translation>
 <translation id="980731642137034229">Tlačítko nabídky akcí</translation>
 <translation id="981121421437150478">Offline</translation>

@@ -272,7 +272,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1914326953223720820">Služba rozbalování souborů ZIP</translation>
 <translation id="1915697529809968049">Použít Touch ID namísto CVC?</translation>
 <translation id="1916770123977586577">Chcete-li pro tento web použít aktualizovaná nastavení, načtěte tuto stránku znovu</translation>
-<translation id="1917876262703816781">Vaše heslo bylo vyzrazeno při porušení zabezpečení webu nebo aplikace. Chrome doporučuje okamžitě změnit heslo na webu <ph name="ORIGIN" />.</translation>
 <translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919367280705858090">Nápověda ke konkrétní chybové zprávě</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Žádné}=1{1 web}few{# weby}many{# webu}other{# webů}}</translation>
@@ -905,7 +904,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4358461427845829800">Spravovat platební metody...</translation>
 <translation id="4359160567981085931">Právě jste své heslo zadali na klamavém webu. Chrome vám může pomoci. Chcete-li změnit heslo a oznámit Googlu, že váš účet může být ohrožen, klikněte na Ochránit účet.</translation>
 <translation id="4367563149485757821">Number-12 (obálka)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Při porušení zabezpečení webu nebo aplikace bylo vyzrazeno vaše uložené heslo pro web <ph name="ORIGIN" />. Chrome vám doporučuje okamžitě heslo na webu <ph name="ORIGIN" /> změnit.}=1{Při porušení zabezpečení webu nebo aplikace bylo vyzrazeno vaše uložené heslo pro web <ph name="ORIGIN" /> a jeden další web. Chrome vám doporučuje okamžitě zkontrolovat uložená hesla.}few{Při porušení zabezpečení webu nebo aplikace bylo vyzrazeno vaše uložené heslo pro web <ph name="ORIGIN" /> a <ph name="SITES_COUNT" /> dalších webů. Chrome vám doporučuje okamžitě zkontrolovat uložená hesla.}many{Při porušení zabezpečení webu nebo aplikace bylo vyzrazeno vaše uložené heslo pro web <ph name="ORIGIN" /> a <ph name="SITES_COUNT" /> dalšího webu. Chrome vám doporučuje okamžitě zkontrolovat uložená hesla.}other{Při porušení zabezpečení webu nebo aplikace bylo vyzrazeno vaše uložené heslo pro web <ph name="ORIGIN" /> a <ph name="SITES_COUNT" /> dalších webů. Chrome vám doporučuje okamžitě zkontrolovat uložená hesla.}}</translation>
 <translation id="437058704415269440">Zůstatek na účtu</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Očekávána hodnota <ph name="VALUE_TYPE" />.</translation>
@@ -1146,7 +1144,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5287456746628258573">Tento web používá zastaralou konfiguraci zabezpečení, která vaše informace odesílané na tento web (například hesla nebo čísla kreditních karet) vystavuje riziku odhalení.</translation>
 <translation id="5288108484102287882">Ověření hodnot zásad vygenerovalo upozornění</translation>
 <translation id="5289384342738547352">Zpracování více dokumentů</translation>
-<translation id="5295292838686006428">Vaše heslo bylo vyzrazeno při porušení zabezpečení webu nebo aplikace. Chrome doporučuje okamžitě zkontrolovat uložená hesla.</translation>
 <translation id="5299298092464848405">Při analýze zásady došlo k chybě</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
 <translation id="5306593769196050043">Oba listy</translation>
@@ -1684,7 +1681,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7473891865547856676">Ne, děkuji</translation>
 <translation id="7481312909269577407">Vpřed</translation>
 <translation id="7485870689360869515">Nebyla nalezena žádná data.</translation>
-<translation id="7495290002932347110">Vaše heslo bylo vyzrazeno při porušení zabezpečení webu nebo aplikace. Chrome doporučuje okamžitě zkontrolovat uložená hesla a změnit heslo na webu <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Tento obsah je blokován. Požádejte vlastníka webu, aby tento problém vyřešil.</translation>
 <translation id="7498234416455752244">Pokračovat v úpravách</translation>
 <translation id="7503664977220660814">Právě jste své heslo zadali na klamavém webu. Chromium doporučuje zkontrolovat uložená hesla pro weby <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> a další weby, na nichž toto heslo používáte.</translation>

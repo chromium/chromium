@@ -276,7 +276,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1914326953223720820">Usluga raspakiravanja</translation>
 <translation id="1915697529809968049">Želite li koristiti Touch ID umjesto CVC-a?</translation>
 <translation id="1916770123977586577">Ponovo učitajte stranicu da bi se ažurirane postavke primijenile na ovu web-lokaciju</translation>
-<translation id="1917876262703816781">Vaša je zaporka ugrožena zbog povrede podataka na web-lokaciji ili u aplikaciji. Chrome preporučuje da odmah promijenite zaporku za <ph name="ORIGIN" />.</translation>
 <translation id="1919345977826869612">Oglasi</translation>
 <translation id="1919367280705858090">Pomoć za konkretne poruke pogreške</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nijedna}=1{1 web-lokacija}one{# web-lokacija}few{# web-lokacije}other{# web-lokacija}}</translation>
@@ -920,7 +919,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4358461427845829800">Upravljajte načinima plaćanja...</translation>
 <translation id="4359160567981085931">Upravo ste unijeli zaporku na obmanjujućoj web-lokaciji. Chrome može pomoći. Da biste promijenili zaporku i obavijestili Google da je vaš račun možda ugrožen, kliknite Zaštitite račun.</translation>
 <translation id="4367563149485757821">Number-12 (omotnica)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Spremljena zaporka za <ph name="ORIGIN" /> ugrožena je zbog povrede podataka na web-lokaciji ili u aplikaciji. Chrome preporučuje da odmah promijenite zaporku za <ph name="ORIGIN" />.}=1{Spremljena zaporka za <ph name="ORIGIN" /> i još jednu web-lokaciju ugrožena je zbog povrede podataka na web-lokaciji ili u aplikaciji. Chrome preporučuje da odmah provjerite spremljene zaporke.}one{Spremljena zaporka za <ph name="ORIGIN" /> i još <ph name="SITES_COUNT" /> web-lokaciju ugrožena je zbog povrede podataka na web-lokaciji ili u aplikaciji. Chrome preporučuje da odmah provjerite spremljene zaporke.}few{Spremljena zaporka za <ph name="ORIGIN" /> i još <ph name="SITES_COUNT" /> web-lokacije ugrožena je zbog povrede podataka na web-lokaciji ili u aplikaciji. Chrome preporučuje da odmah provjerite spremljene zaporke.}other{Spremljena zaporka za <ph name="ORIGIN" /> i još <ph name="SITES_COUNT" /> web-lokacija ugrožena je zbog povrede podataka na web-lokaciji ili u aplikaciji. Chrome preporučuje da odmah provjerite spremljene zaporke.}}</translation>
 <translation id="437058704415269440">Stanje računa</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Očekivana vrijednost vrste <ph name="VALUE_TYPE" />.</translation>
@@ -1161,7 +1159,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5287456746628258573">Ta web-lokacija upotrebljava zastarjelu sigurnosnu konfiguraciju, pa bi vaši podaci (na primjer zaporke ili brojevi kreditnih kartica) mogli biti otkriveni kad se šalju na nju.</translation>
 <translation id="5288108484102287882">Potvrđivanje vrijednosti pravila rezultiralo je upozorenjima</translation>
 <translation id="5289384342738547352">Obrada više dokumenata</translation>
-<translation id="5295292838686006428">Vaša je zaporka ugrožena zbog povrede podataka na web-lokaciji ili u aplikaciji. Chrome vam preporučuje da odmah provjerite spremljene zaporke.</translation>
 <translation id="5299298092464848405">Pogreška u pravilu analize</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5306593769196050043">Oba lista</translation>
@@ -1701,7 +1698,6 @@ Dodatne pojedinosti:
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7481312909269577407">Naprijed</translation>
 <translation id="7485870689360869515">Nema pronađenih podataka.</translation>
-<translation id="7495290002932347110">Vaša je zaporka ugrožena zbog povrede podataka na web-lokaciji ili u aplikaciji. Chrome preporučuje da provjerite svoje spremljene zaporke i promijenite ih na <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Ovaj je sadržaj blokiran. Obratite se vlasniku web-lokacije da biste riješili problem.</translation>
 <translation id="7498234416455752244">Nastavi uređivati</translation>
 <translation id="7503664977220660814">Upravo ste unijeli zaporku na obmanjujućoj web-lokaciji. Chromium preporučuje da odmah provjerite spremljene zaporke za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i druge web-lokacije na kojima koristite tu zaporku.</translation>

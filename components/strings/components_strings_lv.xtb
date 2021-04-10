@@ -276,7 +276,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1914326953223720820">Pakalpojums failu izgūšanai no arhīva</translation>
 <translation id="1915697529809968049">Vai vēlaties izmantot Touch ID, nevis CVC?</translation>
 <translation id="1916770123977586577">Lai lietotu atjauninātos iestatījumus šai vietnei, atkārtoti ielādējiet šo lapu</translation>
-<translation id="1917876262703816781">Kādā vietnē vai lietotnē notika datu noplūde un tika atklāta jūsu parole. Chrome iesaka nekavējoties nomainīt vietnē <ph name="ORIGIN" /> izmantoto paroli.</translation>
 <translation id="1919345977826869612">Reklāmas</translation>
 <translation id="1919367280705858090">Palīdzība par konkrētu kļūdas ziņojumu</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nav}=1{1 vietne}zero{# vietnes}one{# vietne}other{# vietnes}}</translation>
@@ -917,7 +916,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4358461427845829800">Pārvaldīt maksājumu veidus...</translation>
 <translation id="4359160567981085931">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chrome var palīdzēt. Lai mainītu paroli un paziņotu uzņēmumam Google, ka jūsu konts, iespējams, ir apdraudēts, noklikšķiniet uz pogas Aizsargāt kontu.</translation>
 <translation id="4367563149485757821">Number-12 (aploksne)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Kādā vietnē vai lietotnē notika datu noplūde, un jūsu saglabātā parole tika atklāta vietnei <ph name="ORIGIN" />. Chrome ieteikums: nekavējoties mainiet vietnē <ph name="ORIGIN" /> izmantoto paroli.}=1{Kādā vietnē vai lietotnē notika datu noplūde, un jūsu saglabātā parole tika atklāta vietnei <ph name="ORIGIN" /> un vēl vienai vietnei. Chrome ieteikums: tūlīt pārbaudiet saglabātās paroles.}zero{Kādā vietnē vai lietotnē notika datu noplūde, un jūsu saglabātā parole tika atklāta vietnei <ph name="ORIGIN" /> un vēl <ph name="SITES_COUNT" /> vietnēm. Chrome ieteikums: tūlīt pārbaudiet saglabātās paroles.}one{Kādā vietnē vai lietotnē notika datu noplūde, un jūsu saglabātā parole tika atklāta vietnei <ph name="ORIGIN" /> un vēl <ph name="SITES_COUNT" /> vietnei. Chrome ieteikums: tūlīt pārbaudiet saglabātās paroles.}other{Kādā vietnē vai lietotnē notika datu noplūde, un jūsu saglabātā parole tika atklāta vietnei <ph name="ORIGIN" /> un vēl <ph name="SITES_COUNT" /> vietnēm. Chrome ieteikums: tūlīt pārbaudiet saglabātās paroles.}}</translation>
 <translation id="437058704415269440">Konta atlikums</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Tika gaidīta vērtība <ph name="VALUE_TYPE" />.</translation>
@@ -1158,7 +1156,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5287456746628258573">Šajā vietnē tiek izmantota novecojusi drošības konfigurācija, tādēļ var tikt atklāta jūsu informācija (piemēram, paroles vai kredītkaršu numuri), kad tā tiek nosūtīta uz šo vietni.</translation>
 <translation id="5288108484102287882">Validējot politikas vērtības, tika konstatētas kļūdas</translation>
 <translation id="5289384342738547352">Vairāku dokumentu apstrāde</translation>
-<translation id="5295292838686006428">Kādā vietnē vai lietotnē notika datu noplūde un tika atklāta jūsu parole. Chrome iesaka nekavējoties pārbaudīt saglabātās paroles.</translation>
 <translation id="5299298092464848405">Parsējot politiku, radās kļūda.</translation>
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5306593769196050043">Abas lapas</translation>
@@ -1698,7 +1695,6 @@ Papildu informācija:
 <translation id="7473891865547856676">Nē, paldies!</translation>
 <translation id="7481312909269577407">Pārsūtīt</translation>
 <translation id="7485870689360869515">Dati netika atrasti.</translation>
-<translation id="7495290002932347110">Kādā vietnē vai lietotnē notika datu noplūde un tika atklāta jūsu parole. Chrome iesaka nekavējoties pārbaudīt saglabātās paroles un nomainīt vietnē <ph name="ORIGIN" /> izmantoto paroli.</translation>
 <translation id="7495528107193238112">Šis saturs ir bloķēts. Lai novērstu problēmu, sazinieties ar vietnes īpašnieku.</translation>
 <translation id="7498234416455752244">Turpināt rediģēšanu</translation>
 <translation id="7503664977220660814">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium ieteikums: tūlīt pārbaudiet saglabātās paroles vietnē <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, kā arī citās vietnēs, kurās izmantojat šo paroli.</translation>

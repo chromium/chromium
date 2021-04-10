@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> beveel aan dat jy hierdie <ph name="DEVICE_TYPE" /> opdateer.</translation>
 <translation id="1118738876271697201">Die stelsel kon nie die toestelmodel of reeksnommer bepaal nie.</translation>
 <translation id="1119447706177454957">Interne fout</translation>
-<translation id="111959947408687873">Gebruik Ctrl+<ph name="SEARCH_KEY_NAME" />+M om die volskermvergrootglas te wissel. Gebruik Ctrl+Alt+pyltjiesleutels om op die skerm rond te beweeg wanneer jy ingezoem het.</translation>
 <translation id="1122068467107743258">Werk</translation>
 <translation id="1122198203221319518">Nutsgoed</translation>
 <translation id="1122242684574577509">Kon nie staaf nie. Klik om die aanmeldbladsy te besoek vir die Wi-Fi-netwerk wat jy tans gebruik (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Hierdie raam is geblokkeer omdat dit onveilige inhoud bevat.</translation>
 <translation id="146219525117638703">ONC-status</translation>
 <translation id="146220085323579959">Internet ontkoppel. Gaan jou internetverbinding na en probeer weer.</translation>
-<translation id="1463051728820430132">Vra wanneer 'n webprogram sekere tipes lêers op jou toestel wil oopmaak</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> is deur Gevorderde Beskerming geblokkeer.</translation>
 <translation id="1464044141348608623">Moenie werwe toelaat om te weet wanneer jy jou toestel aktief gebruik nie</translation>
 <translation id="1464258312790801189">Jou rekeninge</translation>
@@ -1092,7 +1090,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2163470535490402084">Koppel aan die internet om by jou <ph name="DEVICE_TYPE" /> aan te meld.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog 1 skakelaar</translation>
 <translation id="2165421703844373933">Gaan na jou Assistent toe wanneer jy "Ok Google" sê. Kies "Aan (aanbeveel)" om batterykrag te bespaar. Jou Assistent sal net reageer wanneer jou toestel ingeprop is of besig is om te laai.</translation>
-<translation id="2166269335975661317">Webprogramme kan vra om sekere tipes lêers op jou toestel oop te maak</translation>
 <translation id="2166369534954157698">abcde fghij klmno pqrst uvwxyz</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Meld in elk geval aan</translation>
@@ -4231,7 +4228,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5715711091495208045">Inpropagent: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Versteksoekenjins</translation>
 <translation id="5719854774000914513">Werwe kan vra om aan HID-toestelle te koppel</translation>
-<translation id="5720705177508910913">Huidige gebruiker</translation>
 <translation id="572155275267014074">Android-instellings</translation>
 <translation id="5722086096420375088">Groen en wit</translation>
 <translation id="5722930212736070253">O, mapstieks! Die Zip Archiver het 'n fout ondervind.</translation>
@@ -4466,7 +4462,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5990266201903445068">Net Wi-Fi</translation>
 <translation id="5990386583461751448">Vertaal</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Vra jou administrateur om hierdie program te verwyder om te verseker dat jy kan aanhou deur die web blaai.}other{Vra jou administrateur om hierdie programme te verwyder om te verseker dat jy kan aanhou deur die web blaai.}}</translation>
-<translation id="5992175324932183568">Moenie webprogramme toelaat om sekere tipes lêers op jou toestel oop te maak nie</translation>
 <translation id="5997337190805127100">Kom meer te wete oor werftoegang</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultate vir "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Skuif groep na nuwe venster</translation>
@@ -4588,7 +4583,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6124213551517593835">Dit sal alle data en webkoekies uitvee wat deur <ph name="SITE_GROUP_NAME" /> en enige werwe daaronder geberg is</translation>
 <translation id="6124650939968185064">Die volgende uitbreidings is afhanklik van hierdie uitbreiding:</translation>
 <translation id="6124698108608891449">Hierdie werf benodig nog toestemmings.</translation>
-<translation id="6125442051901189730">Geen beskikbare SIM-profiele nie. Stel 'n nuwe profiel <ph name="BEGIN_LINK" />hier<ph name="END_LINK" /> op.</translation>
 <translation id="6125479973208104919">Ongelukkig moet jy weer jou rekening by hierdie <ph name="DEVICE_TYPE" /> voeg.</translation>
 <translation id="6129691635767514872">Die gekose data is van Chrome en gesinkroniseerde toestelle af verwyder. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en aktiwiteit, vanaf ander Google-dienste by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Netscape-sertifikaatkommentaar</translation>
@@ -6587,8 +6581,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8368859634510605990">Maak alle boekmerke oop</translation>
 <translation id="8370294614544004647">Slaap wanneer skootrekenaar toe is</translation>
 <translation id="8371695176452482769">Praat nou</translation>
-<translation id="8371749822919332187">Gebruik Ctrl+Alt+Verhoog Helderheid om in te zoem.
-Gebruik Ctrl+Alt+Verlaag Helderheid om uit te zoem.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Demp werf}other{Demp werwe}}</translation>
 <translation id="8372369524088641025">Swak WEP-sleutel</translation>
 <translation id="8373652277231415614">Gedeelde gidse in Crostini</translation>
@@ -7399,7 +7391,6 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="975893173032473675">Taal om in te vertaal</translation>
 <translation id="976499800099896273">Ontdoendialoog vir outokorrigeer word gewys vir <ph name="TYPED_WORD" />, wat gekorrigeer is na <ph name="CORRECTED_WORD" />.  Druk oppyl om daarheen te gaan, Escape om te ignoreer.</translation>
 <translation id="978146274692397928">Aanvanklike leestekenbreedte is vol</translation>
-<translation id="97883469867914488">Keer webprogramme om sekere tipes lêers op jou toestel oop te maak</translation>
 <translation id="97905529126098460">Hierdie venster sal toemaak sodra kansellasie voltooi is.</translation>
 <translation id="980731642137034229">Handelingkieslysknoppie</translation>
 <translation id="981121421437150478">Vanlyn</translation>

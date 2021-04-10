@@ -189,6 +189,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2921219216347069551">Lehte ei saa jagada</translation>
 <translation id="2923448633003185837">Kleebi ja mine</translation>
 <translation id="292639812446257861">Märgi mitteloetuks</translation>
+<translation id="2932085390869194046">Soovita parooli …</translation>
 <translation id="2952581218264071393">1. Avage Chrome'i seaded.</translation>
 <translation id="2958718410589002129">Paroolid</translation>
 <translation id="2964349545761222050">Kolmanda osapoole küpsisefailide blokeerimine</translation>
@@ -760,7 +761,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8806823403540278281">Teie organisatsioon nõuab, et sirviksite privaatselt. Vahelehti inkognito režiimis ei salvestata.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Järjehoidjad</translation>
-<translation id="8823704566850948458">Soovita parooli …</translation>
 <translation id="8840513115188359703">Teid ei logita teie Google'i kontolt välja.</translation>
 <translation id="8870413625673593573">Viimati suletud</translation>
 <translation id="8881801611828450202">Otsi pilti teenusest <ph name="SEARCH_ENGINE" /></translation>

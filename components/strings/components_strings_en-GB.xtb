@@ -275,7 +275,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1914326953223720820">Unzip Service</translation>
 <translation id="1915697529809968049">Use Touch ID instead of CVC?</translation>
 <translation id="1916770123977586577">To apply your updated settings to this site, reload this page</translation>
-<translation id="1917876262703816781">A data breach on a site or app exposed your password. Chrome recommends changing your password on <ph name="ORIGIN" /> now.</translation>
 <translation id="1919345977826869612">Ads</translation>
 <translation id="1919367280705858090">Get help with a specific error message</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{None}=1{1 site}other{# sites}}</translation>
@@ -919,7 +918,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4358461427845829800">Manage payment methods...</translation>
 <translation id="4359160567981085931">You just entered your password on a deceptive site. Chrome can help. To change your password and notify Google that your account may be at risk, click 'Protect account'.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{A data breach on a site or app exposed your saved password for <ph name="ORIGIN" />. Chrome recommends changing your password on <ph name="ORIGIN" /> now.}=1{A data breach on a site or app exposed your saved password for <ph name="ORIGIN" /> and one other site. Chrome recommends checking your saved passwords now.}other{A data breach on a site or app exposed your saved password for <ph name="ORIGIN" /> and <ph name="SITES_COUNT" /> other sites. Chrome recommends checking your saved passwords now.}}</translation>
 <translation id="437058704415269440">Account balance</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Expected <ph name="VALUE_TYPE" /> value.</translation>
@@ -1160,7 +1158,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5287456746628258573">This site uses an outdated security configuration, which may expose your information (for example, passwords or credit card numbers) when it is sent to this site.</translation>
 <translation id="5288108484102287882">Validation of policy values has raised warnings</translation>
 <translation id="5289384342738547352">Multiple documents handling</translation>
-<translation id="5295292838686006428">A data breach on a site or app exposed your password. Chrome recommends checking your saved passwords now.</translation>
 <translation id="5299298092464848405">Error parsing policy</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5306593769196050043">Both sheets</translation>
@@ -1700,7 +1697,6 @@ Additional details:
 <translation id="7473891865547856676">No, thanks</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7485870689360869515">No data found.</translation>
-<translation id="7495290002932347110">A data breach on a site or app exposed your password. Chrome recommends checking your saved passwords and changing your password on <ph name="ORIGIN" /> now.</translation>
 <translation id="7495528107193238112">This content is blocked. Contact the site owner to fix the issue.</translation>
 <translation id="7498234416455752244">Keep editing</translation>
 <translation id="7503664977220660814">You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> and other sites where you use this password now.</translation>

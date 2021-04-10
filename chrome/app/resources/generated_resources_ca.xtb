@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> et recomana que actualitzis aquest <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">El sistema no ha pogut determinar el model ni el número de sèrie del dispositiu.</translation>
 <translation id="1119447706177454957">Error intern</translation>
-<translation id="111959947408687873">Fes servir Ctrl+<ph name="SEARCH_KEY_NAME" />+M per commutar la lupa de pantalla completa. Fes servir les tecles Ctrl+Alt+fletxa per moure't per la pantalla quan estigui ampliada.</translation>
 <translation id="1122068467107743258">Feina</translation>
 <translation id="1122198203221319518">&amp;Eines</translation>
 <translation id="1122242684574577509">L'autenticació ha fallat. Feu clic per accedir a la pàgina d'inici de sessió de la xarxa Wi-Fi que esteu utilitzant (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">S'ha bloquejat aquest marc perquè inclou contingut no segur.</translation>
 <translation id="146219525117638703">Estat d'ONC</translation>
 <translation id="146220085323579959">S'ha desconnectat Internet. Comproveu la connexió a Internet i torneu-ho a provar.</translation>
-<translation id="1463051728820430132">Pregunta'm quan una aplicació web vulgui obrir tipus de fitxers al dispositiu</translation>
 <translation id="1463112138205428654">La Protecció avançada ha bloquejat <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">No permetis que els llocs web sàpiguen quan estàs utilitzant el dispositiu de manera activa</translation>
 <translation id="1464258312790801189">Els comptes</translation>
@@ -1092,7 +1090,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2163470535490402084">Connecteu-vos a Internet per iniciar la sessió al dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i 1 interruptor més</translation>
 <translation id="2165421703844373933">Accedeix a l'assistent quan diguis "Ok Google". Per estalviar bateria, escull “Activat (opció recomanada)”. El teu Assistent respondrà només quan es connecti o es carregui el dispositiu.</translation>
-<translation id="2166269335975661317">Les aplicacions web poden demanar obrir tipus de fitxers del dispositiu</translation>
 <translation id="2166369534954157698">L'àgil guineu marró salta per sobre del gos mandrós</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Inicia la sessió de tota manera</translation>
@@ -4230,7 +4227,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5715711091495208045">Agent de connectors: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motors de cerca predeterminats</translation>
 <translation id="5719854774000914513">Els llocs web poden demanar permís per connectar-se a dispositius HID</translation>
-<translation id="5720705177508910913">Usuari actual</translation>
 <translation id="572155275267014074">Configuració d'Android</translation>
 <translation id="5722086096420375088">Verd i blanc</translation>
 <translation id="5722930212736070253">Vaja! Zip Archiver ha detectat un error.</translation>
@@ -4465,7 +4461,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5990266201903445068">Només Wi‑Fi</translation>
 <translation id="5990386583461751448">Traduïda</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Per assegurar-te que pots continuar navegant per Internet, demana a l'administrador que suprimeixi aquesta aplicació.}other{Per assegurar-te que pots continuar navegant per Internet, demana a l'administrador que suprimeixi aquestes aplicacions.}}</translation>
-<translation id="5992175324932183568">No permetis que les aplicacions web obrin tipus de fitxers del dispositiu</translation>
 <translation id="5997337190805127100">Més informació sobre l'accés als llocs web</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultats per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Mou el grup a una finestra nova</translation>
@@ -4587,7 +4582,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6124213551517593835">Amb aquesta acció s'esborraran totes les dades i galetes emmagatzemades per <ph name="SITE_GROUP_NAME" /> i per tots els llocs web que contingui</translation>
 <translation id="6124650939968185064">D'aquesta extensió en depenen les extensions següents:</translation>
 <translation id="6124698108608891449">Aquest lloc web necessita més permisos.</translation>
-<translation id="6125442051901189730">No hi ha cap perfil de SIM disponible. <ph name="BEGIN_LINK" />Configura'n un de nou<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Cal que tornis a afegir el teu compte en aquest <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Les dades seleccionades s'han suprimit de Chrome i dels dispositius sincronitzats. És possible que el teu compte de Google tingui altres formes de l'historial de navegació, com ara les cerques i l'activitat d'altres serveis de Google a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Comentari de certificat de Netscape</translation>
@@ -4976,7 +4970,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6562117348069327379">Emmagatzema els registres del sistema al directori Baixades.</translation>
 <translation id="656293578423618167">El camí o el nom del fitxer és massa llarg. Deseu-ho amb un nom més curt o en una altra ubicació.</translation>
 <translation id="6563469144985748109">El teu gestor encara no ho ha aprovat</translation>
-<translation id="6568283005472142698">Cerca a les pestanyes</translation>
+<translation id="6568283005472142698">Cerca de pestanyes</translation>
 <translation id="6569934958368283244">Altres persones</translation>
 <translation id="6573497332121198392">No es pot suprimir la drecera</translation>
 <translation id="657402800789773160">&amp;Torna a carregar aquesta pàgina</translation>
@@ -6587,8 +6581,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8368859634510605990">&amp;Obre totes les adreces d'interès</translation>
 <translation id="8370294614544004647">Posa en repòs quan es tanqui el portàtil</translation>
 <translation id="8371695176452482769">Parla ara</translation>
-<translation id="8371749822919332187">Fes servir Ctrl+Alt+augmenta la brillantor per ampliar.
-Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Silencia el lloc web}other{Silencia els llocs web}}</translation>
 <translation id="8372369524088641025">Clau WEP no vàlida</translation>
 <translation id="8373652277231415614">Directoris compartits de Crostini</translation>
@@ -7399,7 +7391,6 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="975893173032473675">Idioma d'arribada de la traducció</translation>
 <translation id="976499800099896273">Es mostra el quadre de diàleg Desfés de la correcció automàtica per a la paraula <ph name="TYPED_WORD" />, que s'ha corregit com a <ph name="CORRECTED_WORD" />.  Prem la fletxa amunt per accedir i la tecla d'escapada per ignorar.</translation>
 <translation id="978146274692397928">L'amplada inicial de la puntuació és completa</translation>
-<translation id="97883469867914488">Impedeix que les aplicacions web obrin tipus de fitxers al dispositiu</translation>
 <translation id="97905529126098460">Aquesta finestra es tancarà un cop hagi finalitzat la cancel·lació.</translation>
 <translation id="980731642137034229">Botó del menú d'accions</translation>
 <translation id="981121421437150478">Sense connexió</translation>

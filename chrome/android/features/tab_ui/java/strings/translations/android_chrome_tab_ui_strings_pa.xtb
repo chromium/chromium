@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">ਸੁਝਾਅ: ਤੁਹਾਡੀਆਂ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਦੀ ਹਾਲ ਹੀ ਵਿੱਚ ਵਰਤੋਂ ਨਹੀਂ ਹੋਈ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="257674075312929031">ਸਮੂਹ</translation>
 <translation id="2613747923081026172">ਗਰੁੱਪ ਬਣਾਓ</translation>
+<translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ਰੇਟਿੰਗ</translation>
 <translation id="2671423594960767771">ਗਰੁੱਪ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਦਾ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਨਾਲ ਵਿਸਤਾਰ ਕਰੋ।</translation>
+<translation id="2801787514987684416">ਕੀ ਸਟੋਰ ਦੀ ਜਾਣਕਾਰੀ ਦੇਖਣੀ ਹੈ?</translation>
 <translation id="2977480621796371840">ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
+<translation id="3194464645767632461">ਰੇਟਿੰਗ</translation>
 <translation id="3291470810748040983">ਖੁੱਲ੍ਹੀ ਟੈਬ ਵਿੱਚ ਕੀਮਤ ਘੱਟ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੁਚੇਤਨਾ ਪ੍ਰਾਪਤ ਹੋਵੇਗੀ</translation>
 <translation id="3328308545011660196">ਸੁਝਾਅ: <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਸੰਬੰਧਿਤ ਲੱਗਦੀਆਂ ਹਨ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰਨਾ ਹੈ?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ ਨੂੰ ਸਮੇਟੋ।}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ ਵਾਲੇ <ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਸਮੇਟੋ।}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਵਾਲੇ <ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਸਮੇਟੋ।}}</translation>
 <translation id="3882834874697329510">ਖੁੱਲ੍ਹੀ ਟੈਬ ਵਿੱਚ ਕੀਮਤ ਘੱਟ ਹੋਣ 'ਤੇ ਸੁਚੇਤਨਾ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੂਚਨਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="3940195383040445971">ਟੈਬਾਂ ਵਿੱਚ ਕੀਮਤਾਂ 'ਤੇ ਨਜ਼ਰ ਰੱਖੋ</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">ਬ੍ਰਾਊਜ਼ਿੰਗ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="4450893287417543264">ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="4648718555153979859">ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਇੱਥੇ ਇਕੱਠੇ ਗਰੁੱਪਬੱਧ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ਸਮੀਖਿਆ)}one{(<ph name="REVIEWS_COUNT_MANY" /> ਸਮੀਖਿਆ)}other{(<ph name="REVIEWS_COUNT_MANY" /> ਸਮੀਖਿਆਵਾਂ)}}</translation>
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="492284538114688557">ਕੀਮਤ ਘਟਣ ਦਾ ਪਤਾ ਲੱਗਿਆ</translation>
 <translation id="5007392906805964215">ਸਮੀਖਿਆ ਕਰੋ</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">ਗਰੁੱਪ ਬਣਾ ਕੇ ਪੰਨਿਆਂ ਦੀ ਤੁਲਨਾ ਜਲਦੀ ਕਰੋ। ਸ਼ੁਰੂ ਕਰਨ ਲਈ, ਕਿਸੇ ਲਿੰਕ ਨੂੰ ਸਪੱਰਸ਼ ਕਰਕੇ ਰੱਖੋ।</translation>
 <translation id="5490235265819901748">ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5533021382642990449">ਬਾਅਦ ਵਿੱਚ ਦਿਖਾਓ</translation>
+<translation id="5556417849629758491">ਸਟੋਰ ਦੀ ਜਾਣਕਾਰੀ ਦੇਖੋ, ਇਹ ਵਿਕਲਪ ਸਕ੍ਰੀਨ ਦੇ ਸਿਖਰ ਦੇ ਨੇੜੇ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ਟੈਬਾਂ ਗਰੁੱਪਬੱਧ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
 <translation id="575494663145460764">ਕੀਮਤ ਘਟਣ 'ਤੇ ਸੁਚੇਤਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਗ੍ਰਿਡ ਵਿੱਚ ਗਰੁੱਪ ਦੀਆਂ ਟੈਬਾਂ ਦਿਖਾਓ</translation>
 <translation id="7792771145871471484">ਸੁਝਾਵਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ।</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ}one{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ}other{ਚੁਣੀਆਂ ਗਈਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ਰੇਟਿੰਗ, <ph name="REVIEWS_COUNT_ONE" /> ਸਮੀਖਿਆ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ਰੇਟਿੰਗ, <ph name="REVIEWS_COUNT_MANY" /> ਸਮੀਖਿਆ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ਰੇਟਿੰਗ, <ph name="REVIEWS_COUNT_MANY" /> ਸਮੀਖਿਆਵਾਂ}}</translation>
 <translation id="7885132941432959125">ਟੈਬ ਨੂੰ ਸੱਜੇ ਲਿਜਾਓ</translation>
 <translation id="7966321538264951561">ਸੁਝਾਵਾਂ ਨੂੰ ਖਾਰਜ ਕਰੋ।</translation>
 <translation id="814503310257431685">ਸਭ ਦੇਖੋ</translation>

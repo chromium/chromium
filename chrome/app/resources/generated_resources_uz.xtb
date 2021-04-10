@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> ushbu <ph name="DEVICE_TYPE" /> qurilmasi dasturini zudlik bilan yangilashni talab qilmoqda.</translation>
 <translation id="1118738876271697201">Qurilma modeli yoki seriya raqami aniqlanmadi.</translation>
 <translation id="1119447706177454957">Ichki xatolik</translation>
-<translation id="111959947408687873">Butun ekran rejimidagi lupani ochish/yopish uchun Ctrl+<ph name="SEARCH_KEY_NAME" />+M tugmalarini bosing. Ekranni yaqindan kezish uchun Ctrl+Alt+Yon strelkalarni bosing.</translation>
 <translation id="1122068467107743258">Ish</translation>
 <translation id="1122198203221319518">&amp;Asboblar</translation>
 <translation id="1122242684574577509">Haqiqiylik tekshiruvida xatolik yuz berdi. Wi-Fi (<ph name="NETWORK_ID" />) tarmog‘ining kirish sahifasiga qaytish uchun bosing.</translation>
@@ -427,7 +426,6 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="146000042969587795">Bu freym unda havfsiz bo‘lmagan elementlar borligi sababli bloklandi.</translation>
 <translation id="146219525117638703">ONC ahvoli</translation>
 <translation id="146220085323579959">Tarmoqqa ulanib bo‘lmadi. Internetga ulanish sozlamalarini tekshiring va qaytadan urinib ko‘ring.</translation>
-<translation id="1463051728820430132">Veb ilovalar qurilmangizda fayl turlarini ochishdan oldin ruxsat olsin</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> fayli Kengaytirilgan himoya tomonidan bloklandi.</translation>
 <translation id="1464044141348608623">Saytlarning qurilmadan foydalanish axborotidan foydalanishini taqiqlash</translation>
 <translation id="1464258312790801189">Hisoblar</translation>
@@ -1090,7 +1088,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> qurilmasiga kirish uchun internetga ulaning.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> va yana 1 ta kalit tugma</translation>
 <translation id="2165421703844373933">Asistentdan “Ok Google” deb aytib foydalanish Batareya quvvatini tejash uchun “Yoniq” boʻlishi kerak (tavsiya etiladi). Assistent faqatgina qurilma quvvat manbaiga ulanganda yoki quvvatlanayotganda chiqadi.</translation>
-<translation id="2166269335975661317">Veb ilovalar qurilmangizdagi fayl turlarini ochish uchun ruxsat soʻray oladi</translation>
 <translation id="2166369534954157698">Chaqqon malla tulki yalqov itning ustidan sakrab o‘tdi</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Tizimga baribir kirish</translation>
@@ -4228,7 +4225,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5715711091495208045">Vositachi: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standart qidiruv tizimlari</translation>
 <translation id="5719854774000914513">Saytlar HID qurilmalarga ulanishga ruxsat soʻray oladi</translation>
-<translation id="5720705177508910913">Joriy foydalanuvchi</translation>
 <translation id="572155275267014074">Android sozlamalari</translation>
 <translation id="5722086096420375088">Yashil va oq</translation>
 <translation id="5722930212736070253">Ana xolos! Zip formatda arxivlashda xatolik yuz berdi.</translation>
@@ -4463,7 +4459,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5990266201903445068">Faqat Wi-Fi</translation>
 <translation id="5990386583461751448">Tarjima qilindi</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Initernetda ishlashda davom etish uchun administratordan bu ilovani olib tashlashni so‘rang.}other{Initernetda ishlashda davom etish uchun administratordan bu ilovalarni olib tashlashni so‘rang.}}</translation>
-<translation id="5992175324932183568">Veb ilovalarga qurilmadagi fayl turlarini ochishni taqiqlash</translation>
 <translation id="5997337190805127100">Saytga ruxsat haqida batafsil axborot</translation>
 <translation id="6000758707621254961">“<ph name="SEARCH_TEXT" />” uchun <ph name="RESULT_COUNT" /> ta natija</translation>
 <translation id="6002210667729577411">Guruhni yangi oynaga olish</translation>
@@ -4585,7 +4580,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6124213551517593835">Bunda <ph name="SITE_GROUP_NAME" /> saytlar guruhidan saqlangan barcha maʼlumotlar va cookie fayllar tozalab tashlanadi</translation>
 <translation id="6124650939968185064">Bu kengaytma quyidagi kengaytmalar bilan bog‘liq:</translation>
 <translation id="6124698108608891449">Bu saytga yana boshqa ruxsatlar kerak.</translation>
-<translation id="6125442051901189730">SIM karta profillari mavjud emas. <ph name="BEGIN_LINK" />Bu yerdan<ph name="END_LINK" /> yangi profilni sozlang.</translation>
 <translation id="6125479973208104919">Afsuski bu <ph name="DEVICE_TYPE" /> qurilmangizga o‘z hisobingizni qayta qo‘shishingiz zarur.</translation>
 <translation id="6129691635767514872">Belgilangan ma’lumotlar Chrome xotirasidan o‘chirildi va qurilmalarga sinxronlandi. Google hisobingiz orqali bajargan qidiruvlaringiz, brauzer tarixi va boshqa internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> xizmati orqali ko‘rishingiz mumkin.</translation>
 <translation id="6129938384427316298">Netscape sertifikatiga fikr</translation>
@@ -6583,8 +6577,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8368859634510605990">&amp;Barcha xatcho‘plarni ochish</translation>
 <translation id="8370294614544004647">Noutbuk yopilganda uyqu rejimini yoqish</translation>
 <translation id="8371695176452482769">Gapiring</translation>
-<translation id="8371749822919332187">Kattalashtirish uchun Ctrl+Alt+Yorqinlikni oshirish tugmalarini bosing.
-Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Saytni ovozsiz qilish}other{Saytlarni ovozsiz qilish}}</translation>
 <translation id="8372369524088641025">WEP kaliti yaroqsiz</translation>
 <translation id="8373652277231415614">Crostini umumiy kataloglari</translation>
@@ -7396,7 +7388,6 @@ parollar va boshqa sozlamalaringiz Google hisobingizga sinxronlanadi.</translati
 <translation id="975893173032473675">Tarjima qilinadigan til</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> soʻzini <ph name="CORRECTED_WORD" /> soʻziga avtomatik tuzatishni bekor qilish oynasi chiqarildi.  Ochish uchun tepaga, inkor qilish uchun escape tugmasini bosing.</translation>
 <translation id="978146274692397928">Imlo belgilarining boshlang‘ich kengligi - to‘liq</translation>
-<translation id="97883469867914488">Veb ilovalarga qurilmangizdagi fayl turlarini ochishni taqiqlash</translation>
 <translation id="97905529126098460">Bu oyna bekor qilish yakunlangandan keyin yopiladi.</translation>
 <translation id="980731642137034229">Amal menyusi tugmasi</translation>
 <translation id="981121421437150478">Oflayn</translation>

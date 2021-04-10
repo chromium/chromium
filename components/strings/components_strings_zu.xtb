@@ -276,7 +276,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1914326953223720820">Isevisi yokususa i-zip</translation>
 <translation id="1915697529809968049">Sebenzisa i-Touch ID esikhundleni se-CVC?</translation>
 <translation id="1916770123977586577">Ukuze usebenzise izilungiselelo zakho ezithuthukisiwe kuleli sayithi, layisha kabusha leli khasi</translation>
-<translation id="1917876262703816781">Ukuphula isivumelwano sedatha kusayithi noma kuhlelo lokusebenza kudalule iphasiwedi yakho. I-Chrome incoma ukushintsha iphasiwedi yakho ku-<ph name="ORIGIN" /> manje.</translation>
 <translation id="1919345977826869612">Izikhangiso</translation>
 <translation id="1919367280705858090">Thola usizo ngomlayezo wephutha othize</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Lutho}=1{1 isayithi}one{# amasayithi}other{# amasayithi}}</translation>
@@ -917,7 +916,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4358461427845829800">Phatha izindlela zokukhokha...</translation>
 <translation id="4359160567981085931">Usanda kufaka iphasiwedi yakho kusayithi elikhohlisayo. I-Chrome ingasiza. Ukuze ushintshe iphasiwedi yakho futhi wazise i-Google ukuthi i-akhawunti yakho ingaba sengozini, chofoza i-akhawunti y-Protect.</translation>
 <translation id="4367563149485757821">Inombolo-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Ukuphula isivumelwano sedatha kusayithi noma kuhlelo lokusebenza kudalule iphasiwedi yakho elondoloziwe ye-<ph name="ORIGIN" />. I-Chrome incoma ukushintsha iphasiwedi yakho ku-<ph name="ORIGIN" /> manje.}=1{Ukuphula isivumelwano sedatha kusayithi noma kuhlelo lokusebenza kudalule iphasiwedi yakho elondoloziwe ye-<ph name="ORIGIN" /> nakwenye isayithi eyodwa. I-Chrome incoma ukuhlola amaphasiwedi akho alondoloziwe manje.}one{Ukuphula isivumelwano sedatha kusayithi noma kuhlelo lokusebenza kudalule iphasiwedi yakho elondoloziwe ye-<ph name="ORIGIN" /> nakwamanye amasayithi angu-<ph name="SITES_COUNT" />. I-Chrome incoma ukuhlola amaphasiwedi akho alondoloziwe manje.}other{Ukuphula isivumelwano sedatha kusayithi noma kuhlelo lokusebenza kudalule iphasiwedi yakho elondoloziwe ye-<ph name="ORIGIN" /> nakwamanye amasayithi angu-<ph name="SITES_COUNT" />. I-Chrome incoma ukuhlola amaphasiwedi akho alondoloziwe manje.}}</translation>
 <translation id="437058704415269440">Ibhalansi ye-akhawunti</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Inani elilindelwe elingu-<ph name="VALUE_TYPE" />.</translation>
@@ -1158,7 +1156,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5287456746628258573">Leli sayithi lisebenzisa ukulungiselelwa kokuvikela okuphelelwe isikhathi, okungaveza ulwazi lwakho (isibonelo, amaphasiwedi noma izinombolo zekhadi lesikweletu) uma lithunyelwa kuleli sayithi.</translation>
 <translation id="5288108484102287882">Ukuqinisekiswa kwamanani enqubomgomo kunezexwayiso eziphakanyisiwe</translation>
 <translation id="5289384342738547352">Ukusebenza ngamadokhumenti amaningi</translation>
-<translation id="5295292838686006428">Ukuphula isivumelwano sedatha kusayithi noma kuhlelo lokusebenza kudalule iphasiwedi yakho. I-Chrome incoma ukuhlola amaphasiwedi akho alondoloziwe manje.</translation>
 <translation id="5299298092464848405">Iphutha lokudlulisa inqubomgomo</translation>
 <translation id="5300589172476337783">Bonisa</translation>
 <translation id="5306593769196050043">Womabili amashidi</translation>
@@ -1698,7 +1695,6 @@ Imininingwane engeziwe:
 <translation id="7473891865547856676">Cha ngiyabonga</translation>
 <translation id="7481312909269577407">Dlulisela</translation>
 <translation id="7485870689360869515">Ayikho idatha etholiwe.</translation>
-<translation id="7495290002932347110">Ukuphula isivumelwano sedatha kusayithi noma kuhlelo lokusebenza kudalule iphasiwedi yakho. I-Chrome incoma ukuhlola amaphasiwedi alondoloziwe nokushintsha amaphasiwedi akho ku-<ph name="ORIGIN" /> manje.</translation>
 <translation id="7495528107193238112">Lokhu okuqukethwe kuvinjelwe. Xhumana nomnikazi wesayithi ukulungisa inkinga.</translation>
 <translation id="7498234416455752244">Qhubeka nokuhlela</translation>
 <translation id="7503664977220660814">Usanda kufaka iphasiwedi yakho kusayithi elikhohlisayo. I-Chromium incoma ukuhlola amaphasiwedi akho alondoloziwe we-<ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, namanye amasayithi lapho usebenzisa khona le phasiwedi manje.</translation>

@@ -276,7 +276,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1914326953223720820">Service de décompression de fichier</translation>
 <translation id="1915697529809968049">Utiliser Touch ID au lieu du code CVC ?</translation>
 <translation id="1916770123977586577">Pour appliquer vos paramètres mis à jour à ce site, actualisez la page</translation>
-<translation id="1917876262703816781">Votre mot de passe a été compromis à la suite d'une violation de données affectant un site ou une application. Nous vous recommandons de modifier votre mot de passe pour <ph name="ORIGIN" /> immédiatement.</translation>
 <translation id="1919345977826869612">Annonces</translation>
 <translation id="1919367280705858090">Obtenir de l'aide pour un message d'erreur spécifique</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Aucun}=1{1 site}one{# site}other{# sites}}</translation>
@@ -918,7 +917,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4358461427845829800">Gérer les modes de paiement…</translation>
 <translation id="4359160567981085931">Vous venez de saisir votre mot de passe sur un site trompeur. Chrome peut vous aider. Pour modifier votre mot de passe et informer Google que votre compte a peut-être été piraté, cliquez sur "Protéger le compte".</translation>
 <translation id="4367563149485757821">Number-12 (enveloppe)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Votre mot de passe enregistré pour <ph name="ORIGIN" /> a été compromis à la suite d'une violation des données affectant un site ou une application. Chrome vous recommande de le modifier immédiatement pour <ph name="ORIGIN" />.}=1{Votre mot de passe enregistré pour <ph name="ORIGIN" /> et un autre site a été compromis à la suite d'une violation des données affectant un site ou une application. Chrome vous recommande de vérifier immédiatement vos mots de passe enregistrés.}one{Votre mot de passe enregistré pour <ph name="ORIGIN" /> et <ph name="SITES_COUNT" /> autre site a été compromis à la suite d'une violation des données affectant un site ou une application. Chrome vous recommande de vérifier immédiatement vos mots de passe enregistrés.}other{Votre mot de passe enregistré pour <ph name="ORIGIN" /> et <ph name="SITES_COUNT" /> autres sites a été compromis à la suite d'une violation des données affectant un site ou une application. Chrome vous recommande de vérifier immédiatement vos mots de passe enregistrés.}}</translation>
 <translation id="437058704415269440">Solde du compte</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valeur attendue : <ph name="VALUE_TYPE" />.</translation>
@@ -1159,7 +1157,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5287456746628258573">La configuration de sécurité obsolète de ce site peut exposer vos informations, comme vos mots de passe ou vos numéros de carte de crédit, lorsqu'elles lui sont transmises.</translation>
 <translation id="5288108484102287882">La validation des valeurs de règle a renvoyé des avertissements</translation>
 <translation id="5289384342738547352">Gestion de documents multiples</translation>
-<translation id="5295292838686006428">Votre mot de passe a été compromis à la suite d'une violation de données affectant un site ou une application. Nous vous recommandons de vérifier vos mots de passe enregistrés immédiatement.</translation>
 <translation id="5299298092464848405">Erreur d'analyse de la règle.</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5306593769196050043">Les deux feuilles</translation>
@@ -1699,7 +1696,6 @@ Informations supplémentaires :
 <translation id="7473891865547856676">Non, merci</translation>
 <translation id="7481312909269577407">Avancer</translation>
 <translation id="7485870689360869515">Aucune donnée n'a été trouvée.</translation>
-<translation id="7495290002932347110">Votre mot de passe a été compromis à la suite d'une violation de données affectant un site ou une application. Nous vous recommandons de vérifier vos mots de passe enregistrés et de modifier celui utilisé pour <ph name="ORIGIN" /> immédiatement.</translation>
 <translation id="7495528107193238112">Ce contenu est bloqué. Pour résoudre le problème, contactez le propriétaire du site.</translation>
 <translation id="7498234416455752244">Poursuivre les modifications</translation>
 <translation id="7503664977220660814">Vous venez de saisir votre mot de passe sur un site trompeur. Chromium vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" /> et <ph name="WEBSITE_2" />, ainsi que les autres sites pour lesquels vous utilisez ce mot de passe actuellement.</translation>

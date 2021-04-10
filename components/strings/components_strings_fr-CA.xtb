@@ -272,7 +272,6 @@
 <translation id="1914326953223720820">Service de décompression</translation>
 <translation id="1915697529809968049">Utiliser Touch ID au lieu du code CVC?</translation>
 <translation id="1916770123977586577">Pour appliquer à ce site vos paramètres mis à jour, actualisez cette page</translation>
-<translation id="1917876262703816781">Une violation de données sur un site ou dans une application a exposé votre mot de passe. Chrome vous recommande de changer votre mot de passe sur <ph name="ORIGIN" /> maintenant.</translation>
 <translation id="1919345977826869612">Annonces</translation>
 <translation id="1919367280705858090">Obtenir de l'aide pour un message d'erreur spécifique</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Aucun}=1{1 site}one{# site}other{# sites}}</translation>
@@ -909,7 +908,6 @@
 <translation id="4358461427845829800">Gérer les modes de paiement</translation>
 <translation id="4359160567981085931">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome peut vous aider. Pour modifier votre mot de passe et avertir Google que votre compte pourrait être en danger, cliquez sur Protéger le compte.</translation>
 <translation id="4367563149485757821">Enveloppe n° 12</translation>
-<translation id="4367839622597707614">{1,plural, =0{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" />. Chrome vous recommande de changer votre mot de passe sur <ph name="ORIGIN" /> maintenant.}=1{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" /> et un autre site. Chrome vous recommande de vérifier vos mots de passe enregistrés.}one{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" /> et <ph name="SITES_COUNT" /> autre site. Chrome vous recommande de vérifier vos mots de passe enregistrés.}other{Une violation de données sur un site ou dans une application a exposé votre mot de passe enregistré pour <ph name="ORIGIN" /> et <ph name="SITES_COUNT" /> autres sites. Chrome vous recommande de vérifier vos mots de passe enregistrés.}}</translation>
 <translation id="437058704415269440">Solde du compte</translation>
 <translation id="4372516964750095882">Pli en éventail, É-U</translation>
 <translation id="4372948949327679948">Valeur <ph name="VALUE_TYPE" /> attendue.</translation>
@@ -1150,7 +1148,6 @@
 <translation id="5287456746628258573">Ce site utilise une configuration de sécurité obsolète qui pourrait exposer vos données personnelles (par exemple, vos mots de passe ou vos numéros de carte de crédit) lorsqu'elles sont envoyées à ce site.</translation>
 <translation id="5288108484102287882">La validation des valeurs de politique a déclenché des avertissements</translation>
 <translation id="5289384342738547352">Gestion de plusieurs documents</translation>
-<translation id="5295292838686006428">Une violation de données sur un site ou dans une application a exposé votre mot de passe. Chrome vous recommande de vérifier vos mots de passe enregistrés maintenant.</translation>
 <translation id="5299298092464848405">Erreur d'analyse de politique</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5306593769196050043">Les deux feuilles</translation>
@@ -1690,7 +1687,6 @@ Détails supplémentaires :
 <translation id="7473891865547856676">Non merci</translation>
 <translation id="7481312909269577407">Suivant</translation>
 <translation id="7485870689360869515">Aucune donnée trouvée.</translation>
-<translation id="7495290002932347110">Une violation de données sur un site ou dans une application a exposé votre mot de passe. Chrome vous recommande de vérifier vos mots de passe enregistrés et de modifier votre mot de passe sur <ph name="ORIGIN" /> maintenant.</translation>
 <translation id="7495528107193238112">Ce contenu est bloqué. Communiquez avec le propriétaire du site pour corriger le problème.</translation>
 <translation id="7498234416455752244">Poursuivre la modification</translation>
 <translation id="7503664977220660814">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" />, pour <ph name="WEBSITE_2" /> et pour tout autre site sur lequel vous utilisez ce mot de passe maintenant.</translation>

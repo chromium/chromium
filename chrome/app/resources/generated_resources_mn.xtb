@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> танд энэ <ph name="DEVICE_TYPE" />-г шинэчлэхийг санал болгож байна.</translation>
 <translation id="1118738876271697201">Систем төхөөрөмжийн загвар эсвэл серийн дугаарыг тодорхойлж чадсангүй.</translation>
 <translation id="1119447706177454957">Дотоод алдаа</translation>
-<translation id="111959947408687873">Бүтэн дэлгэц томруулагчийг асаах/унтраахын тулд Ctrl+<ph name="SEARCH_KEY_NAME" />+M-г ашиглана уу. Томруулсан үед дэлгэцийн эргэн тойронд шилжихийн тулд Ctrl+Alt+Суман товчнуудыг ашиглана уу.</translation>
 <translation id="1122068467107743258">Ажил</translation>
 <translation id="1122198203221319518">&amp; Хэрэгслүүд</translation>
 <translation id="1122242684574577509">Таниулах үйлдэл амжилтгүй боллоо. Өөрийн ашиглаж байгаа Wi-Fi сүлжээний нэвтрэх хуудас руу орохоор дарна уу (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Аюултай агуулгыг агуулж байгаа учраас энэ хүрээ хаагдсан байна.</translation>
 <translation id="146219525117638703">ONC Төлөв</translation>
 <translation id="146220085323579959">Интернэт салсан байна. Интернетийн холболтоо шалгаад дахин хандана уу.</translation>
-<translation id="1463051728820430132">Веб апп таны төхөөрөмж дээрх файлуудын төрлийг нээхийг хүсэх үед асуух</translation>
 <translation id="1463112138205428654">Дэвшилтэт хамгаалалт <ph name="FILE_NAME" />-г блоклосон байна.</translation>
 <translation id="1464044141348608623">Сайтуудад таныг төхөөрөмжөө хэзээ идэвхтэй ашиглаж буйг мэдэхийг бүү зөвшөөр</translation>
 <translation id="1464258312790801189">Таны данс</translation>
@@ -1088,7 +1086,6 @@
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" />-д нэвтрэхийн тулд интернэтэд холбогдоно уу.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> болон өөр 1 сэлгүүр</translation>
 <translation id="2165421703844373933">"Ok Google" гэж хэлээд Туслахдаа хандаарай. Батарей хэмнэхийн тулд “Асаалттай (Санал болгосон.)”-г сонгоорой. Таны Туслах зөвхөн таны төхөөрөмжийг залгасан эсвэл цэнэглэх үед хариулна.</translation>
-<translation id="2166269335975661317">Веб аппууд таны төхөөрөмжөөс файлуудын төрлийг нээхийг хүсэх боломжтой</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Ямар ч байсан нэвтэр</translation>
@@ -4225,7 +4222,6 @@
 <translation id="5715711091495208045">Нэмэлт өргөтгөлийн зуучлагч: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Өгөгдмөл хайлтын систем</translation>
 <translation id="5719854774000914513">Сайтууд HID төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
-<translation id="5720705177508910913">Одоогийн хэрэглэгч</translation>
 <translation id="572155275267014074">Андройдын тохиргоо</translation>
 <translation id="5722086096420375088">Ногоон ба цагаан</translation>
 <translation id="5722930212736070253">Өө, уучлаарай!  Zip Архивлагчид алдаа гарлаа.</translation>
@@ -4459,7 +4455,6 @@
 <translation id="5990266201903445068">Зөвхөн Wi-Fi-р</translation>
 <translation id="5990386583461751448">Орчуулсан</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Та вебийг үргэлжлүүлэн үзэх боломжтой байхын тулд админаасаа энэ аппыг устгахыг хүснэ үү.}other{Та вебийг үргэлжлүүлэн үзэх боломжтой байхын тулд админаасаа эдгээр аппыг устгахыг хүснэ үү.}}</translation>
-<translation id="5992175324932183568">Веб аппуудад таны төхөөрөмжөөс файлуудын төрлийг нээхийг бүү зөвшөөр</translation>
 <translation id="5997337190805127100">Сайтын хандалтын талаар нэмэлт мэдээлэл авах</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'-н <ph name="RESULT_COUNT" /> илэрц</translation>
 <translation id="6002210667729577411">Бүлгийг шинэ цонх руу зөөх</translation>
@@ -4581,7 +4576,6 @@
 <translation id="6124213551517593835">Энэ нь <ph name="SITE_GROUP_NAME" /> болон үүний доорх аливаа сайтын хадгалсан бүх өгөгдөл, күүкийг арилгана</translation>
 <translation id="6124650939968185064">Дараах өргөтгөлүүд нь энэ өргөтгөлөөс хамаардаг:</translation>
 <translation id="6124698108608891449">Энэ сайтад илүү зөвшөөрөл шаардлагатай.</translation>
-<translation id="6125442051901189730">Боломжтой SIM профайл байхгүй байна. Шинэ профайлыг <ph name="BEGIN_LINK" />энд<ph name="END_LINK" /> тохируулна уу.</translation>
 <translation id="6125479973208104919">Харамсалтай нь та бүртгэлээ <ph name="DEVICE_TYPE" />-д дахин нэмэх шаардлагатай болно.</translation>
 <translation id="6129691635767514872">Сонгосон датаг Chrome болон синк хийсэн төхөөрөмжүүдээс устгасан. Таны Google Бүртгэл <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> дээр Google-н бусад үйлчилгээнээс хайлт, ашиглалт зэрэг хөтчийн түүхийн өөр хэлбэртэй байж болзошгүй.</translation>
 <translation id="6129938384427316298">Нэтскейп гэрчилгээний тайлбар</translation>
@@ -6577,8 +6571,6 @@
 <translation id="8368859634510605990">&amp; Бүх хадгалагдсан хуудсуудыг нээх</translation>
 <translation id="8370294614544004647">Зөөврийн компьютерыг хаасан үед идэвхгүй болох</translation>
 <translation id="8371695176452482769">Одоо ярьж болно</translation>
-<translation id="8371749822919332187">Томруулахын тулд Ctrl+Alt+Гэрэлтүүлэгчийг нэмэгдүүлэхийг ашиглана уу.
-Жижигрүүлэхийн тулд Ctrl+Alt+Гэрэлтүүлэгчийг бууруулахыг ашиглана уу.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Сайтын дууг хаах}other{Сайтуудын дууг хаах}}</translation>
 <translation id="8372369524088641025">WEP сул түлхүүр байна</translation>
 <translation id="8373652277231415614">Crostini-н хуваалцсан лавлахууд</translation>
@@ -7387,7 +7379,6 @@
 <translation id="975893173032473675">Орчуулах хэл</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> үгийг <ph name="CORRECTED_WORD" /> болгон автоматаар засахыг болих харилцах цонхыг харуулсан.  Хандахын тулд дээш сумыг, үл хэрэгсэхийн тулд escape-г дарна уу.</translation>
 <translation id="978146274692397928">Тэмдэгтүүдийн анхны өргөн нь Бүтэн</translation>
-<translation id="97883469867914488">Веб аппуудыг таны төхөөрөмж дээрх файлуудын төрлийг нээхийг блоклох</translation>
 <translation id="97905529126098460">Цуцалж дуусмагц энэ цонхыг хаана.</translation>
 <translation id="980731642137034229">Үйлдлийн цэсийн товчлуур</translation>
 <translation id="981121421437150478">Offline</translation>

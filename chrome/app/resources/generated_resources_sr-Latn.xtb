@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> preporučuje da ažurirate ovaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Sistem nije uspeo da odredi model uređaja ili serijski broj.</translation>
 <translation id="1119447706177454957">Interna greška</translation>
-<translation id="111959947408687873">Koristite Ctrl + <ph name="SEARCH_KEY_NAME" /> + M da biste uključili ili isključili lupu za ceo ekran. Koristite Ctrl + Alt + taster sa strelicom da biste se kretali po ekranu kada je uvećan.</translation>
 <translation id="1122068467107743258">Posao</translation>
 <translation id="1122198203221319518">&amp;Alatke</translation>
 <translation id="1122242684574577509">Potvrda autentičnosti nije uspela. Kliknite da biste posetili stranicu za prijavljivanje za WiFi mrežu koju koristite (<ph name="NETWORK_ID" />).</translation>
@@ -428,7 +427,6 @@
 <translation id="146000042969587795">Ovaj okvir je blokiran jer sadrži neki nebezbedan sadržaj.</translation>
 <translation id="146219525117638703">ONC stanje</translation>
 <translation id="146220085323579959">Veza sa internetom je prekinuta. Proverite internet vezu i pokušajte ponovo.</translation>
-<translation id="1463051728820430132">Pitaj kada veb-aplikacija želi da otvara tipove fajlova na uređaju</translation>
 <translation id="1463112138205428654">Datoteku <ph name="FILE_NAME" /> blokira napredna zaštita.</translation>
 <translation id="1464044141348608623">Ne dozvolite sajtovima da znaju kada aktivno koristite uređaj</translation>
 <translation id="1464258312790801189">Nalozi</translation>
@@ -1091,7 +1089,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2163470535490402084">Povežite se na internet da biste se prijavili na <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i još 1 prekidač</translation>
 <translation id="2165421703844373933">Pristupajte Pomoćniku kada kažete „Ok Google“. Da biste uštedeli bateriju, odaberite „Uključeno (preporučeno)“. Pomoćnik će odgovoriti samo kada je uređaj priključen ili se puni.</translation>
-<translation id="2166269335975661317">Veb-aplikacije mogu da zatraže da otvaraju tipove fajlova sa uređaja</translation>
 <translation id="2166369534954157698">Na vrh brda vrba mrda</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Ipak me prijavi</translation>
@@ -4230,7 +4227,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5715711091495208045">Posrednik dodatne komponente: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Podrazumevani pretraživači</translation>
 <translation id="5719854774000914513">Sajtovi mogu da traže da se povezuju sa HID uređajima</translation>
-<translation id="5720705177508910913">Trenutni korisnik</translation>
 <translation id="572155275267014074">Android podešavanja</translation>
 <translation id="5722086096420375088">Zelena i bela</translation>
 <translation id="5722930212736070253">O, ne! Zip Archiver je naišao na grešku.</translation>
@@ -4465,7 +4461,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5990266201903445068">Samo WiFi</translation>
 <translation id="5990386583461751448">Prevedeno</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Da biste se uverili da možete da nastavite da pregledate veb, zatražite od administratora da ukloni ovu aplikaciju.}one{Da biste se uverili da možete da nastavite da pregledate veb, zatražite od administratora da ukloni ove aplikacije.}few{Da biste se uverili da možete da nastavite da pregledate veb, zatražite od administratora da ukloni ove aplikacije.}other{Da biste se uverili da možete da nastavite da pregledate veb, zatražite od administratora da ukloni ove aplikacije.}}</translation>
-<translation id="5992175324932183568">Ne dozvolite veb-aplikacijama da otvaraju tipove fajlova sa uređaja</translation>
 <translation id="5997337190805127100">Saznajte više o pristupu sajtovima</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultata za „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6002210667729577411">Premesti grupu u novi prozor</translation>
@@ -4587,7 +4582,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6124213551517593835">Ovim brišete sve podatke i kolačiće koje čuvaju sajt <ph name="SITE_GROUP_NAME" /> i svi njemu podređeni sajtovi</translation>
 <translation id="6124650939968185064">Sledeći dodaci zavise od ovog dodatka:</translation>
 <translation id="6124698108608891449">Ovaj sajt traži još dozvola.</translation>
-<translation id="6125442051901189730">Nema dostupnih SIM profila. Podesite novi profil <ph name="BEGIN_LINK" />ovde.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Nažalost, treba ponovo da dodate nalog na ovaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Izabrani podaci su uklonjeni iz Chrome-a i sa sinhronizovanih uređaja. Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i aktivnosti na drugim Google uslugama na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Komentar Netscape sertifikata</translation>
@@ -6587,8 +6581,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8368859634510605990">&amp;Otvori sve obeleživače</translation>
 <translation id="8370294614544004647">Pokrenite stanje spavanja kada se laptop zatvori</translation>
 <translation id="8371695176452482769">Počnite da govorite</translation>
-<translation id="8371749822919332187">Koristite Ctrl + Alt + taster za povećavanje osvetljenosti da biste uvećali prikaz.
-Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili prikaz.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Isključi zvuk sajta}one{Isključi zvuk sajtova}few{Isključi zvuk sajtova}other{Isključi zvuk sajtova}}</translation>
 <translation id="8372369524088641025">Neispravna WEP šifra</translation>
 <translation id="8373652277231415614">Deljeni Crostini direktorijumi</translation>
@@ -7401,7 +7393,6 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="975893173032473675">Jezik na koji želite da prevodite</translation>
 <translation id="976499800099896273">Prikazuje se dijalog za opozivanje automatskog ispravljanja reči <ph name="TYPED_WORD" /> u <ph name="CORRECTED_WORD" />.  Pritisnite strelicu nagore da biste pristupili toj reči ili Escape da biste je ignorisali.</translation>
 <translation id="978146274692397928">Početna širina interpunkcije je „puna“</translation>
-<translation id="97883469867914488">Onemogućite da veb-aplikacije otvaraju tipove fajlova na uređaju</translation>
 <translation id="97905529126098460">Ovaj prozor će se zatvoriti kada se otkazivanje dovrši.</translation>
 <translation id="980731642137034229">Dugme menija sa radnjama</translation>
 <translation id="981121421437150478">Oflajn</translation>

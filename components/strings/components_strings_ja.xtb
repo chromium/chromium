@@ -272,7 +272,6 @@
 <translation id="1914326953223720820">解凍サービス</translation>
 <translation id="1915697529809968049">CVC の代わりに Touch ID を使用しますか？</translation>
 <translation id="1916770123977586577">更新後の設定をこのサイトに適用するには、このページを再読み込みしてください</translation>
-<translation id="1917876262703816781">サイトまたはアプリでのデータ侵害により、パスワード情報が漏洩しました。<ph name="ORIGIN" /> のパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="1919345977826869612">広告</translation>
 <translation id="1919367280705858090">特定のエラー メッセージに関する情報</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{なし}=1{1 件のサイト}other{# 件のサイト}}</translation>
@@ -909,7 +908,6 @@
 <translation id="4358461427845829800">お支払い方法を管理...</translation>
 <translation id="4359160567981085931">偽のサイトでパスワードを入力しました。Chrome を使って不正利用への対策ができます。パスワードを変更し、Google にアカウントの状況を通知するには、[アカウントを保護] をクリックしてください。</translation>
 <translation id="4367563149485757821">Number-12（封筒）</translation>
-<translation id="4367839622597707614">{1,plural, =0{サイトまたはアプリでのデータ侵害により、<ph name="ORIGIN" /> の保存済みパスワードが漏洩しました。<ph name="ORIGIN" /> のパスワードを今すぐ変更することをおすすめします。}=1{サイトまたはアプリでのデータ侵害により、<ph name="ORIGIN" /> とその他 1 サイトの保存済みパスワードが漏洩しました。保存したパスワードをすぐに確認することをおすすめします。}other{サイトまたはアプリでのデータ侵害により、<ph name="ORIGIN" /> とその他 <ph name="SITES_COUNT" /> サイトの保存済みパスワードが漏洩しました。保存したパスワードをすぐに確認することをおすすめします。}}</translation>
 <translation id="437058704415269440">アカウント残高</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948"><ph name="VALUE_TYPE" /> 値が想定されます。</translation>
@@ -1150,7 +1148,6 @@
 <translation id="5287456746628258573">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワードやクレジット カード番号などの情報を送信すると流出する恐れがあります。</translation>
 <translation id="5288108484102287882">ポリシー値の検証で警告が返されました</translation>
 <translation id="5289384342738547352">複数ドキュメントの処理</translation>
-<translation id="5295292838686006428">サイトまたはアプリでのデータ侵害により、パスワード情報が漏洩しました。保存したパスワードを今すぐ確認することをおすすめします。</translation>
 <translation id="5299298092464848405">ポリシーの解析中にエラーが発生しました</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5306593769196050043">両方のシート</translation>
@@ -1690,7 +1687,6 @@
 <translation id="7473891865547856676">スキップ</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7485870689360869515">データが見つかりません。</translation>
-<translation id="7495290002932347110">サイトまたはアプリでのデータ侵害により、パスワード情報が漏洩しました。保存したパスワードを確認し、<ph name="ORIGIN" /> のパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="7495528107193238112">このコンテンツはブロックされました。サイト所有者に連絡して問題を解決してください。</translation>
 <translation id="7498234416455752244">編集を続ける</translation>
 <translation id="7503664977220660814">偽のサイトでパスワードを入力しました。<ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> のほか、このパスワードを使用しているサイトで、保存したパスワードを今すぐ確認することをおすすめします。</translation>

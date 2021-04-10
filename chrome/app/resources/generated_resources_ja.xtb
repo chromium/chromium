@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> がこの <ph name="DEVICE_TYPE" /> の更新をすすめています。</translation>
 <translation id="1118738876271697201">デバイスの機種またはシリアル番号を特定できませんでした。</translation>
 <translation id="1119447706177454957">内部エラー</translation>
-<translation id="111959947408687873">全画面拡大鏡を切り替えるには、Ctrl+<ph name="SEARCH_KEY_NAME" />+M キーを使用します。拡大した状態で画面上を移動するには、Ctrl+Alt+矢印キーを使用します。</translation>
 <translation id="1122068467107743258">仕事</translation>
 <translation id="1122198203221319518">ツール(&amp;T)</translation>
 <translation id="1122242684574577509">認証できませんでした。クリックして、ご利用の Wi-Fi ネットワーク（<ph name="NETWORK_ID" />）のログインページにアクセスしてください。</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">このフレームにはセキュリティで保護されていないコンテンツが含まれているためブロックされました。</translation>
 <translation id="146219525117638703">ONC 状態</translation>
 <translation id="146220085323579959">インターネットが切断されました。お使いのインターネット接続を確認してから、もう一度お試しください。</translation>
-<translation id="1463051728820430132">ウェブアプリがデバイスのファイル形式が関連付けられたプログラムを開くよう求めたときに確認する</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> は高度な保護機能によってブロックされました。</translation>
 <translation id="1464044141348608623">サイトによるデバイスのアクティブ状態の検出を許可しない</translation>
 <translation id="1464258312790801189">お使いのアカウント</translation>
@@ -1092,7 +1090,6 @@
 <translation id="2163470535490402084">お使いの <ph name="DEVICE_TYPE" /> にログインするにはインターネットに接続してください。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />、他 1 個のスイッチ</translation>
 <translation id="2165421703844373933">「OK Google」と話すとアシスタントにアクセスできます。バッテリー消費を抑えるには [オン（推奨）] を選択してください。オンにすると、デバイスが電源または充電器に接続されている場合にのみアシスタントが反応します。</translation>
-<translation id="2166269335975661317">ウェブアプリがデバイスのファイル形式が関連付けられたプログラムを開く際に確認する</translation>
 <translation id="2166369534954157698">あいうえおアイウエオABCabc123漢字</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">このままログインする</translation>
@@ -4230,7 +4227,6 @@
 <translation id="5715711091495208045">プラグイン ブローカー: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">既定の検索エンジン</translation>
 <translation id="5719854774000914513">サイトが HID デバイスへの接続を要求できるようにする</translation>
-<translation id="5720705177508910913">現在のユーザー</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5722086096420375088">緑と白</translation>
 <translation id="5722930212736070253">エラー: Zip アーカイブ ツールでエラーが発生しました。</translation>
@@ -4465,7 +4461,6 @@
 <translation id="5990266201903445068">Wi-Fi のみ</translation>
 <translation id="5990386583461751448">翻訳済み</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{今後もウェブ ブラウジングを続けられるように、管理者にこのアプリケーションの削除を依頼してください。}other{今後もウェブ ブラウジングを続けられるように、管理者にこれらのアプリケーションの削除を依頼してください。}}</translation>
-<translation id="5992175324932183568">ウェブアプリがデバイスのファイル形式が関連付けられたプログラムを開くことを許可しない</translation>
 <translation id="5997337190805127100">サイトアクセスの詳細</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
 <translation id="6002210667729577411">グループを新しいウィンドウに移動</translation>
@@ -4587,7 +4582,6 @@
 <translation id="6124213551517593835"><ph name="SITE_GROUP_NAME" /> とその下位のサイトにより保存されたすべてのデータと Cookie が削除されます</translation>
 <translation id="6124650939968185064">次の拡張機能は、この拡張機能に依存しています:</translation>
 <translation id="6124698108608891449">このサイトが追加の権限をリクエストしています。</translation>
-<translation id="6125442051901189730">SIM プロファイルがありません。<ph name="BEGIN_LINK" />こちら<ph name="END_LINK" />で新しいプロファイルを設定してください。</translation>
 <translation id="6125479973208104919">アカウントをもう一度この <ph name="DEVICE_TYPE" /> に追加する必要があります。</translation>
 <translation id="6129691635767514872">選択したデータが Chrome から削除され、同期されたデバイスからも削除されました。他の Google サービスでの検索や操作など、Google アカウントの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に残ることがあります。</translation>
 <translation id="6129938384427316298">Netscape 証明書コメント</translation>
@@ -6587,8 +6581,6 @@
 <translation id="8368859634510605990">すべてのブックマークを開く(&amp;O)</translation>
 <translation id="8370294614544004647">ノートパソコンを閉じたときにスリープ状態にする</translation>
 <translation id="8371695176452482769">お話しください</translation>
-<translation id="8371749822919332187">拡大するには、Ctrl+Alt+明るさを上げるキーを使用します。
-縮小するには、Ctrl+Alt+明るさを下げるキーを使用します。</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{サイトをミュート}other{サイトをミュート}}</translation>
 <translation id="8372369524088641025">WEP キーが正しくありません</translation>
 <translation id="8373652277231415614">Crostini の共有ディレクトリ</translation>
@@ -7399,7 +7391,6 @@
 <translation id="975893173032473675">翻訳先の言語</translation>
 <translation id="976499800099896273">「<ph name="TYPED_WORD" />」から「<ph name="CORRECTED_WORD" />」への自動修正について、元に戻すかどうかを確認するダイアログが表示されました。ダイアログに移動する場合は上矢印キー、無視する場合は Esc キーを押してください。</translation>
 <translation id="978146274692397928">初期の句読点幅を全角にする</translation>
-<translation id="97883469867914488">ウェブアプリがデバイスのファイル形式が関連付けられたプログラムを開くことをブロックする</translation>
 <translation id="97905529126098460">このウィンドウはキャンセル処理の完了後に閉じられます。</translation>
 <translation id="980731642137034229">操作メニューボタン</translation>
 <translation id="981121421437150478">オフライン</translation>

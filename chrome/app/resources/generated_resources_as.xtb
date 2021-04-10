@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" />এ আপোনাক এই <ph name="DEVICE_TYPE" />টো আপডে’ট কৰিবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="1118738876271697201">ছিষ্টেমটোৱে ডিভাইচৰ ম'ডেল আৰু ক্ৰমিক নম্বৰ নিৰ্ধাৰণ কৰিব নোৱাৰিলে।</translation>
 <translation id="1119447706177454957">আভ্যন্তৰীণ আসোঁৱাহ</translation>
-<translation id="111959947408687873">পূৰ্ণ স্ক্ৰীনৰ বিৱৰ্ধক ট’গল কৰিবলৈ Ctrl+<ph name="SEARCH_KEY_NAME" />+M ব্যৱহাৰ কৰক। জুম ইন হৈ থাকোঁতে স্ক্ৰীনৰ চাৰিওফালে ইফাল সিফাল কৰিবলৈ Ctrl+Alt+এৰ’ কী ব্যৱহাৰ কৰক।</translation>
 <translation id="1122068467107743258">কৰ্মস্থান</translation>
 <translation id="1122198203221319518">&amp;সঁজুলি</translation>
 <translation id="1122242684574577509">বিশ্বাসযোগ্যতাৰ প্ৰমাণ কৰিব পৰা নগ'ল। আপুনি ব্যৱহাৰ কৰি থকা ৱাই-ফাই নেটৱর্কৰ লগ ইন কৰা পৃষ্ঠালৈ যাবলৈ ক্লিক কৰক (<ph name="NETWORK_ID" />)।</translation>
@@ -427,7 +426,6 @@
 <translation id="146000042969587795">এই ফ্রে'মটো অৱৰোধ কৰা হৈছে কাৰণ ইয়াত কিছুমান অসুৰক্ষিত সমল আছে।</translation>
 <translation id="146219525117638703">ONC স্থিতি</translation>
 <translation id="146220085323579959">ইণ্টাৰনেট সংযোগ বিচ্ছিন্ন কৰা হ’ল। অনুগ্ৰহ কৰি আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
-<translation id="1463051728820430132">ৱেব এপে আপোনাৰ ডিভাইচত ফাইলৰ প্ৰকাৰসমূহ খুলিবলৈ বিচাৰিলে সোধক</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" />টো উন্নত সুৰক্ষাৰ দ্বাৰা সুৰক্ষিত নীতিয়ে অৱৰোধ কৰিছে।</translation>
 <translation id="1464044141348608623">ছাইটক আপুনি নিজৰ ডিভাইচটো কেতিয়া সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থাকে সেয়া জানিবলৈ নিদিব</translation>
 <translation id="1464258312790801189">আপোনাৰ একাউণ্ট</translation>
@@ -1090,7 +1088,6 @@
 <translation id="2163470535490402084">আপোনাৰ <ph name="DEVICE_TYPE" />ত ছাইন ইন কৰিবলৈ ইণ্টাৰনেট সংযোগ কৰক।</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> আৰু অন্য ১ টা ছুইচ</translation>
 <translation id="2165421703844373933">"Ok Google" বুলি কৈ আপোনাৰ Assistant এক্সেছ কৰক। বেটাৰী ৰাহি কৰিবলৈ “অন (চুপাৰিছ কৰা)” বাছনি কৰক। আপোনাৰ ডিভাইচটো প্লাগ ইন অথবা চাৰ্জ হৈ থাকিলেহে আপোনাৰ Assistantএ সঁহাৰি জনাব।</translation>
-<translation id="2166269335975661317">ৱেব এপে আপোনাৰ ডিভাইচৰ পৰা ফাইলৰ প্ৰকাৰসমূহ খুলিবলৈ বিচাৰিব পাৰে‌</translation>
 <translation id="2166369534954157698">অ আ ই ঈ উ ঊ ঋ এ ঐ ও ঔ ক খ গ ঘ ঙ</translation>
 <translation id="2167276631610992935">Javascript</translation>
 <translation id="2169062631698640254">যিকোনো প্ৰকাৰে ছাইন ইন কৰক</translation>
@@ -4223,7 +4220,6 @@
 <translation id="5715711091495208045">প্লাগ ইন ব্ৰ’কাৰ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">সন্ধানৰ ডিফ'ল্ট ইঞ্জিন</translation>
 <translation id="5719854774000914513">ছাইটে HID ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
-<translation id="5720705177508910913">বর্তমানৰ ব্যৱহাৰকাৰী</translation>
 <translation id="572155275267014074">Android ছেটিংসমূহ</translation>
 <translation id="5722086096420375088">সেউজীয়া আৰু বগা</translation>
 <translation id="5722930212736070253">আমি দুঃখিত! Zip Archiverএ কিবা আসোঁৱাহৰ সন্মুখীন হৈছে।</translation>
@@ -4457,7 +4453,6 @@
 <translation id="5990266201903445068">কেৱল ৱাই-ফাই</translation>
 <translation id="5990386583461751448">অনুবাদিত</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{আপুনি যাতে ৱেবত ব্ৰাউজ কৰি থাকিব পাৰে সেইটো সুনিশ্চিত কৰিবলৈ আপোনাৰ প্ৰশাসকক এই এপ্লিকেশ্বনটো আঁতৰাবলৈ কওক।}one{আপুনি যাতে ৱেবত ব্ৰাউজ কৰি থাকিব পাৰে সেইটো সুনিশ্চিত কৰিবলৈ আপোনাৰ প্ৰশাসকক এই এপ্লিকেশ্বনবোৰ আঁতৰাবলৈ কওক।}other{আপুনি যাতে ৱেবত ব্ৰাউজ কৰি থাকিব পাৰে সেইটো সুনিশ্চিত কৰিবলৈ আপোনাৰ প্ৰশাসকক এই এপ্লিকেশ্বনবোৰ আঁতৰাবলৈ কওক।}}</translation>
-<translation id="5992175324932183568">ৱেব এপক আপোনাৰ ডিভাইচত ফাইলৰ প্ৰকাৰসমূহ খুলিবলৈ অনুমতি নিদিব</translation>
 <translation id="5997337190805127100">ছাইট এক্সেছৰ বিষয়ে অধিক জানক</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'ৰ বাবে <ph name="RESULT_COUNT" />টা ফলাফল</translation>
 <translation id="6002210667729577411">গোটটোক নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক</translation>
@@ -4579,7 +4574,6 @@
 <translation id="6124213551517593835">এই কাৰ্যই <ph name="SITE_GROUP_NAME" /> আৰু ইয়াৰ অধীনত থকা যিকোনো ছাইটে ষ্ট’ৰ কৰা সকলো ডেটা আৰু কুকি মচিব</translation>
 <translation id="6124650939968185064">তলত উল্লেখ কৰা এক্সটেনশ্বনসমূহে এই এক্সটেনশ্বনৰ ওপৰত নির্ভৰ কৰে :</translation>
 <translation id="6124698108608891449">এই ছাইটটোৰ বাবে অধিক অনুমতিৰ আৱশ্যক।</translation>
-<translation id="6125442051901189730">কোনো ছিমৰ প্ৰ'ফাইল উপলব্ধ নহয়। <ph name="BEGIN_LINK" />ইয়াত<ph name="END_LINK" /> এটা নতুন প্ৰ’ফাইল ছেট আপ কৰক।</translation>
 <translation id="6125479973208104919">দুৰ্ভাগ্যবশতঃ, আপুনি নিজৰ একাউণ্ট <ph name="DEVICE_TYPE" />ত পুনৰ যোগ কৰিব লাগিব।</translation>
 <translation id="6129691635767514872">বাছনি কৰা ডেটাখিনি Chrome আৰু ছিংক কৰি থোৱা ডিভাইচসমূহৰ পৰা আঁতৰোৱা হৈছে। আপোনাৰ Google একাউণ্টৰ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত Googleৰ অন্য সেৱাত কৰা সন্ধান আৰু অন্যান্য কাৰ্যকলাপৰ দৰে ব্ৰাউজিঙৰ ইতিহাস থাকিব পাৰে।</translation>
 <translation id="6129938384427316298">নেটস্কে’প চাৰ্টিফিকেট কমেণ্ট</translation>
@@ -6572,8 +6566,6 @@
 <translation id="8368859634510605990">&amp;সকলো বুকমাৰ্ক খোলক</translation>
 <translation id="8370294614544004647">লেপটপটো বন্ধ কৰিলে সুপ্ত অৱস্থালৈ নিয়ক</translation>
 <translation id="8371695176452482769">এতিয়া কওক</translation>
-<translation id="8371749822919332187">জুম ইন কৰিবলৈ Ctrl+Alt+উজ্জ্বলতা বঢ়োৱা বুটামটো ব্যৱহাৰ কৰক।
-জুম আউট কৰিবলৈ Ctrl+Alt+উজ্জ্বলতা কমোৱা বুটামটো ব্যৱহাৰ কৰক।</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{ছাইট মিউট কৰক}one{ছাইটসমূহ মিউট কৰক}other{ছাইটসমূহ মিউট কৰক}}</translation>
 <translation id="8372369524088641025">বেয়া WEP কী</translation>
 <translation id="8373652277231415614">Crostiniৰ শ্বেয়াৰ কৰা ডাইৰেক্টৰীসমূহ</translation>
@@ -7384,7 +7376,6 @@
 <translation id="975893173032473675">যি ভাষালৈ অনুবাদ কৰিব লাগে সেই ভাষা</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" />ৰ শুধৰণি কৰি <ph name="CORRECTED_WORD" /> কৰাৰ বাবে স্বয়ং শুধৰণি আনডু কৰাৰ ডায়লগ দেখুওৱা হৈছে।  এক্সেছ কৰিবলৈ উপৰমুৱা কাঁড়চিহ্নত টিপক, উপেক্ষা কৰিবলৈ এস্কে’প টিপক।</translation>
 <translation id="978146274692397928">আৰম্ভণিৰ যতিচিহ্নৰ প্ৰস্থ পূৰ্ণ</translation>
-<translation id="97883469867914488">ৱেব এপে আপোনাৰ ডিভাইচত ফাইলৰ প্ৰকাৰসমূহ খোলাটো অৱৰোধ কৰক</translation>
 <translation id="97905529126098460">বাতিল কৰা সম্পূৰ্ণ হ'লে এই ৱিণ্ড'খন বন্ধ হ'ব।</translation>
 <translation id="980731642137034229">কামৰ তালিকাৰ বুটাম</translation>
 <translation id="981121421437150478">অফলাইন</translation>

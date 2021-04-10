@@ -399,6 +399,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Resetting wipes your history of data savings, including the list of visited sites.</translation>
+<translation id="3677911431265050325">Request mobile site</translation>
 <translation id="3687645719033307815">You are viewing a preview of this page</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
 <translation id="371230970611282515">Predicts and warns you about dangerous events before they happen.</translation>
@@ -586,6 +587,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4941179133499732445">Tap the mic to search with your voice</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">No results</translation>
+<translation id="4957722034734105353">Learn more...</translation>
 <translation id="4961107849584082341">Translate this page to any language</translation>
 <translation id="4970824347203572753">Not available in your location</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
@@ -1148,6 +1150,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8559990750235505898">Offer to translate pages in other languages</translation>
 <translation id="8560602726703398413">Find your reading list in Bookmarks</translation>
 <translation id="8562452229998620586">Your saved passwords will appear here.</translation>
+<translation id="856481929701340285">Request desktop site</translation>
 <translation id="8569404424186215731">since <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8572344201470131220">Image copied</translation>

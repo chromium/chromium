@@ -275,7 +275,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1914326953223720820">Lahtipakkimisteenus</translation>
 <translation id="1915697529809968049">Kas kasutada CVC asemel Touch ID-d?</translation>
 <translation id="1916770123977586577">Laadige leht uuesti, et rakendada värskendatud seaded saidile</translation>
-<translation id="1917876262703816781">Mõnel saidil või rakenduses esines andmetega seotud rikkumine, mille käigus avalikustati teie parool. Chrome soovitab teil teenuse <ph name="ORIGIN" /> parooli kohe muuta.</translation>
 <translation id="1919345977826869612">Reklaamid</translation>
 <translation id="1919367280705858090">Konkreetse veateate puhul abi hankimine</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ühtegi}=1{1 sait}other{# saiti}}</translation>
@@ -919,7 +918,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4358461427845829800">Halda makseviise …</translation>
 <translation id="4359160567981085931">Sisestasite äsja oma parooli petturlikule saidile. Chrome saab teid aidata. Oma parooli muutmiseks ja Google'i teavitamiseks sellest, et teie konto võib olla ohus, klõpsake valikul Konto kaitsmine.</translation>
 <translation id="4367563149485757821">Number-12 (ümbrik)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Saidil või rakenduses esinenud andmetega seotud rikkumise käigus avalikustati teie teenuses <ph name="ORIGIN" /> salvestatud parool. Chrome soovitab teil teenuse <ph name="ORIGIN" /> parooli kohe muuta.}=1{Saidil või rakenduses esinenud andmetega seotud rikkumise käigus avalikustati teie teenuses <ph name="ORIGIN" /> ja veel ühel saidil salvestatud parool. Chrome soovitab teil salvestatud paroole kohe kontrollida.}other{Saidil või rakenduses esinenud andmetega seotud rikkumise käigus avalikustati teie teenuses <ph name="ORIGIN" /> ja veel <ph name="SITES_COUNT" /> saidil salvestatud parool. Chrome soovitab teil salvestatud paroole kohe kontrollida.}}</translation>
 <translation id="437058704415269440">Konto saldo</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Oodatud väärtus: <ph name="VALUE_TYPE" />.</translation>
@@ -1160,7 +1158,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5287456746628258573">See sait kasutab vananenud turvaseadistust, mis võib paljastada teie teabe (näiteks paroolid või krediitkaardinumbrid), kui see saadetakse sellele saidile.</translation>
 <translation id="5288108484102287882">Reegli väärtuste valideerimisel ilmnesid hoiatused</translation>
 <translation id="5289384342738547352">Mitme dokumendi käsitlemine</translation>
-<translation id="5295292838686006428">Mõnel saidil või rakenduses esines andmetega seotud rikkumine, mille käigus avalikustati teie parool. Chrome soovitab teil salvestatud paroole kohe kontrollida.</translation>
 <translation id="5299298092464848405">Reegli sõelumisel ilmnes viga</translation>
 <translation id="5300589172476337783">Kuva</translation>
 <translation id="5306593769196050043">Mõlemad lehed</translation>
@@ -1700,7 +1697,6 @@ Lisateave:
 <translation id="7473891865547856676">Tänan, ei</translation>
 <translation id="7481312909269577407">Edasta</translation>
 <translation id="7485870689360869515">Andmeid ei leitud.</translation>
-<translation id="7495290002932347110">Mõnel saidil või rakenduses esines andmetega seotud rikkumine, mille käigus avalikustati teie parool. Chrome soovitab teil salvestatud paroole kontrollida ja teenuse <ph name="ORIGIN" /> parooli kohe muuta.</translation>
 <translation id="7495528107193238112">See sisu on blokeeritud. Probleemi lahendamiseks võtke ühendust saidi omanikuga.</translation>
 <translation id="7498234416455752244">Jätka muutmist</translation>
 <translation id="7503664977220660814">Sisestasite äsja oma parooli kahtlasele saidile. Chromium soovitab teil salvestatud paroole kontrollida saitide <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ja muude saitide puhul, kus praegu seda parooli kasutate.</translation>

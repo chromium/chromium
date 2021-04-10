@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> khuyên bạn nên cập nhật <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="1118738876271697201">Hệ thống không xác định được số sê-ri hoặc kiểu thiết bị.</translation>
 <translation id="1119447706177454957">Lỗi nội bộ</translation>
-<translation id="111959947408687873">Dùng tổ hợp phím Ctrl+<ph name="SEARCH_KEY_NAME" />+M để bật/tắt tính năng phóng to toàn màn hình. Dùng tổ hợp phím Ctrl+Alt+Mũi tên để di chuyển xung quanh màn hình khi đã phóng to.</translation>
 <translation id="1122068467107743258">Công việc</translation>
 <translation id="1122198203221319518">&amp;Công cụ</translation>
 <translation id="1122242684574577509">Xác thực bị lỗi. Nhấp để truy cập trang đăng nhập của mạng Wi-Fi mà bạn đang sử dụng (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Khung này đã bị chặn bởi vì có chứa một số nội dung không an toàn.</translation>
 <translation id="146219525117638703">Trạng thái ONC</translation>
 <translation id="146220085323579959">Internet đã bị ngắt kết nối. Hãy kiểm tra kết nối Internet của bạn và thử lại.</translation>
-<translation id="1463051728820430132">Hỏi khi một ứng dụng web muốn mở các loại tệp trên thiết bị của bạn</translation>
 <translation id="1463112138205428654">Chương trình Bảo vệ nâng cao đã chặn <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">Không cho trang web biết khi bạn đang dùng thiết bị của mình</translation>
 <translation id="1464258312790801189">Tài khoản của bạn</translation>
@@ -1092,7 +1090,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2163470535490402084">Vui lòng kết nối Internet để đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> và 1 công tắc khác</translation>
 <translation id="2165421703844373933">Nói "Ok Google" khi bạn muốn sử dụng Trợ lý. Để tiết kiệm pin, hãy chọn “Bật (Khuyên dùng)”. Trợ lý của bạn sẽ chỉ phản hồi khi thiết bị đã cắm điện hoặc đang sạc.</translation>
-<translation id="2166269335975661317">Ứng dụng web có thể xin phép mở các loại tệp trên thiết bị của bạn</translation>
 <translation id="2166369534954157698">Lươn ngắn lại chê trạch dài</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Đăng nhập bằng mọi cách</translation>
@@ -4230,7 +4227,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5715711091495208045">Trình môi giới plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Công cụ tìm kiếm mặc định</translation>
 <translation id="5719854774000914513">Trang web có thể yêu cầu kết nối với thiết bị HID</translation>
-<translation id="5720705177508910913">Người dùng hiện tại</translation>
 <translation id="572155275267014074">Cài đặt Android</translation>
 <translation id="5722086096420375088">Xanh lục và trắng</translation>
 <translation id="5722930212736070253">Ôi, hỏng! Đã xảy ra lỗi với Zip Archiver.</translation>
@@ -4465,7 +4461,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5990266201903445068">Chỉ Wi-Fi</translation>
 <translation id="5990386583461751448">Đã dịch</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Để đảm bảo có thể tiếp tục duyệt web, hãy yêu cầu quản trị viên xóa ứng dụng này.}other{Để đảm bảo có thể tiếp tục duyệt web, hãy yêu cầu quản trị viên xóa những ứng dụng này.}}</translation>
-<translation id="5992175324932183568">Không cho phép ứng dụng web mở các loại tệp trên thiết bị của bạn</translation>
 <translation id="5997337190805127100">Tìm hiểu thêm về quyền truy cập vào trang web</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002210667729577411">Di chuyển nhóm sang cửa sổ mới</translation>
@@ -4587,7 +4582,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6124213551517593835">Thao tác này sẽ xóa toàn bộ dữ liệu và cookie lưu trữ trong <ph name="SITE_GROUP_NAME" /> cũng như trong mọi trang web thuộc nhóm này</translation>
 <translation id="6124650939968185064">Các tiện ích sau phụ thuộc vào tiện ích này:</translation>
 <translation id="6124698108608891449">Trang web này cần các quyền khác.</translation>
-<translation id="6125442051901189730">Không có hồ sơ SIM nào. Hãy thiết lập một hồ sơ mới <ph name="BEGIN_LINK" />tại đây.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Rất tiếc, bạn sẽ cần phải thêm lại tài khoản của mình vào <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="6129691635767514872">Dữ liệu được chọn đã bị xóa khỏi Chrome và các thiết bị được đồng bộ hóa. Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Nhận xét về Chứng chỉ Netscape</translation>
@@ -6587,8 +6581,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8368859634510605990">&amp;Mở tất cả dấu trang</translation>
 <translation id="8370294614544004647">Chuyển sang chế độ ngủ khi gập máy tính</translation>
 <translation id="8371695176452482769">Nói ngay bây giờ</translation>
-<translation id="8371749822919332187">Dùng tổ hợp phím Ctrl+Alt+Tăng độ sáng để phóng to.
-Dùng tổ hợp phím Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Bật âm thanh trang web}other{Bật âm thanh các trang web}}</translation>
 <translation id="8372369524088641025">Khóa WEP sai</translation>
 <translation id="8373652277231415614">Thư mục do Crostini chia sẻ</translation>
@@ -7399,7 +7391,6 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="975893173032473675">Ngôn ngữ cần dịch sang</translation>
 <translation id="976499800099896273">Hộp thoại hủy thao tác tự động sửa lỗi hiển thị cho từ <ph name="TYPED_WORD" /> đã được sửa thành từ <ph name="CORRECTED_WORD" />.  Nhấn phím mũi tên lên để truy cập hoặc nhấn phím Escape để bỏ qua.</translation>
 <translation id="978146274692397928">Độ rộng dấu câu ban đầu là Đầy đủ</translation>
-<translation id="97883469867914488">Chặn ứng dụng web mở các loại tệp trên thiết bị của bạn</translation>
 <translation id="97905529126098460">Cửa sổ này sẽ đóng sau khi quá trình hủy hoàn tất.</translation>
 <translation id="980731642137034229">Nút trình đơn thao tác</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>

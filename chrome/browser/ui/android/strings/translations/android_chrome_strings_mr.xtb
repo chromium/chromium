@@ -399,6 +399,7 @@
 <translation id="363596933471559332">स्टोअर क्रेडेंशियल वापरून वेबसाइटवर आपोआप साइन इन करा. वैशिष्ट्य बंद असते तेव्हा, वेबसाइटवर साइन इन करण्यापूर्वी दरवेळी तुम्हाला पडताळणीसाठी विचारले जाईल.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">रीसेट केल्याने तुमचा डेटा सेव्हिंग इतिहास, भेट दिलेल्या साइटच्या सूचीसह, मिटवला जातो.</translation>
+<translation id="3677911431265050325">मोबाइल साइटची विनंती करा</translation>
 <translation id="3687645719033307815">तुम्ही या पेजचे पूर्वावलोकन पाहत आहात</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
 <translation id="371230970611282515">धोकादायक घटना घडण्याआधी त्यांचे पूर्वानुमान करतो आणि त्यांबद्दल तुम्हाला चेतावणी देतो.</translation>
@@ -586,6 +587,7 @@
 <translation id="4941179133499732445">तुमचा आवाज वापरून शोधण्यासाठी माइकवर टॅप करा</translation>
 <translation id="4943703118917034429">आभासी वास्तविकता</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
+<translation id="4957722034734105353">अधिक जाणून घ्या...</translation>
 <translation id="4961107849584082341">या पेजचे कोणत्याही भाषेत भाषांतर करा</translation>
 <translation id="4970824347203572753">तुमच्या स्थानामध्ये उपलब्ध नाही</translation>
 <translation id="4971735654804503942">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून अधिक जलद, प्रोअ‍ॅक्टिव्ह संरक्षण. पासवर्ड भंगांबद्दल तुम्हाला चेतावणी देतो. Google ला पाठवला जाण्यासाठी ब्राउझिंग डेटा आवश्यक आहे.</translation>
@@ -751,6 +753,7 @@
 <translation id="5982307838673692400">गुप्त टॅब उघडा</translation>
 <translation id="6000066717592683814">Google ठेवा</translation>
 <translation id="6000203700195075278">पुन्हा फॉलो करा</translation>
+<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />शोध<ph name="END_LINK1" /> किंवा इतिहासाचे इतर प्रकार साफ करण्यासाठी, <ph name="BEGIN_LINK2" />माझी Google अ‍ॅक्टिव्हिटी<ph name="END_LINK2" /> ला भेट द्या</translation>
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
 <translation id="6036057147555329831">अतिरिक्त ICU</translation>
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
@@ -924,6 +927,7 @@
 <translation id="7088681679121566888">Chrome अप टू डेट आहे</translation>
 <translation id="7106762743910369165">तुमचा ब्राउझर तुमच्या संस्थेद्वारे व्यवस्थापित केला जातो</translation>
 <translation id="7121362699166175603">अ‍ॅड्रेस बारवरील इतिहास आणि आपोआप पूर्ण करण्याचे दाखले साफ करते. तुमच्या Google खात्यामध्ये <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर कदाचित ब्राउझिंगचे इतर फॉर्म असतील.</translation>
+<translation id="7134993907760847334">साइन इन केलेल्या सर्व डिव्हाइसवरील इतिहास साफ करते.</translation>
 <translation id="7138678301420049075">इतर</translation>
 <translation id="7146622961999026732">या साइट आणि ही अ‍ॅप्स तुमच्यासाठी महत्त्वाची आहेत असे दिसते:</translation>
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
@@ -1146,6 +1150,7 @@
 <translation id="8559990750235505898">पेज अन्य भाषांमध्ये भाषांतरित करण्यास ऑफर करा</translation>
 <translation id="8560602726703398413">बुकमार्क मध्ये तुमची वाचन सूची शोधा</translation>
 <translation id="8562452229998620586">सेव्ह केलेले पासवर्ड येथे दिसून येतील.</translation>
+<translation id="856481929701340285">डेस्कटॉप साइटची विनंती करा</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> पासून</translation>
 <translation id="8571213806525832805">मागील 4 आठवड्यांमधील</translation>
 <translation id="8572344201470131220">इमेज कॉपी केली</translation>

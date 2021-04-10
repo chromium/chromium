@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> ଆପଣଙ୍କୁ ଏହି <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ୍ କରିବାକୁ ସୁପାରିଶ କରିଥାଏ।</translation>
 <translation id="1118738876271697201">ସିଷ୍ଟମ୍ ଡିଭାଇସ୍ ମୋଡେଲ୍ କିମ୍ବା କ୍ରମାଙ୍କ ସଂଖ୍ୟା ନିର୍ଦ୍ଧାରିତ କରିବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="1119447706177454957">ଇଣ୍ଟର୍ନଲ୍‌ ତ୍ରୁଟି</translation>
-<translation id="111959947408687873">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍ ମ୍ୟାଗ୍ନିଫାୟର୍ ଟୋଗଲ୍ କରିବା ପାଇଁ Ctrl+<ph name="SEARCH_KEY_NAME" />+M କୀ'କୁ ବ୍ୟବହାର କରନ୍ତୁ। ଜୁମ୍ ଇନ୍ କରାଯାଇଥିବା ସମୟରେ ସ୍କ୍ରିନରେ ଚାରିଆଡ଼େ ମୁଭ୍ କରିବା ପାଇଁ Ctrl+Alt+Arrow କୀ'ଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1122068467107743258">କାର୍ଯ୍ୟ</translation>
 <translation id="1122198203221319518">&amp;ଟୁଲ୍</translation>
 <translation id="1122242684574577509">ପ୍ରମାଣିକରଣ ବିଫଳ ହୋ‍ଇଛି। ଆପଣ ବ୍ୟବହାର କରୁଥିବା ୱାଇ-ଫାଇ ନେଟ୍‌ୱର୍କ (<ph name="NETWORK_ID" />) ପାଇଁ ଲଗ୍‌ଇନ୍‍ ପୃଷ୍ଠାକୁ ଯିବାକୁ କ୍ଲିକ୍‌ କରନ୍ତୁ।</translation>
@@ -425,7 +424,6 @@
 <translation id="146000042969587795">ଏହି ଫ୍ରେମଟି ଅବରୋଧିତ ଥିଲା କାରଣ ଏହା କେତେକ ନିରାପତ୍ତାଜନକ ବିଷୟବସ୍ତୁ ଧାରଣକରେ ।</translation>
 <translation id="146219525117638703">ONC ସ୍ଥିତି</translation>
 <translation id="146220085323579959">ଇଣ୍ଟର୍ନେଟ୍‍ ବିଚ୍ଛିନ୍ନ ହୋ‍ଇଛି। ଦୟାକରି, ଆପଣଙ୍କର ଇଣ୍ଟର୍ନେଟ୍‍ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
-<translation id="1463051728820430132">ଏକ ୱେବ୍ ଆପ୍ ଆପଣଙ୍କ ଡିଭାଇସରେ ବିଭିନ୍ନ ପ୍ରକାରର ଫାଇଲ୍ ଖୋଲିବାକୁ ଚାହିଁଲେ ପଚାରନ୍ତୁ</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" />କୁ ଉନ୍ନତ ସୁରକ୍ଷା ଦ୍ୱାରା ବ୍ଲକ୍ କରାଯାଇଥିଲା।</translation>
 <translation id="1464044141348608623">ଆପଣ କେତେବେଳେ ଆପଣଙ୍କ ଡିଭାଇସକୁ ସକ୍ରିୟ ଭାବରେ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ଜାଣିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="1464258312790801189">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ</translation>
@@ -1085,7 +1083,6 @@
 <translation id="2163470535490402084">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />ରେ ସାଇନ୍-ଇନ୍ କରିବା ପାଇଁ ଦୟାକରି ଇଣ୍ଟର୍ନେଟ୍ ସହିତ ସଂଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, ଏବଂ ଅଧିକ 1ଟି ସ୍ୱିଚ୍</translation>
 <translation id="2165421703844373933">"Ok Google" କହି ଆପଣଙ୍କର Assistantକୁ ଆକ୍ସେସ୍ କରନ୍ତୁ। ବ୍ୟାଟେରୀ ସେଭ୍ କରିବା ପାଇଁ, “ଚାଲୁ କରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)”କୁ ବାଛନ୍ତୁ। ଆପଣଙ୍କର ଡିଭାଇସ୍ ପ୍ଲଗ୍ ଇନ୍ ଥିବା କିମ୍ବା ଚାର୍ଜ ହେଉଥିବା ସମୟରେ ହିଁ କେବଳ Assistant ପ୍ରତିକ୍ରିୟା କରିବ।</translation>
-<translation id="2166269335975661317">ୱେବ୍ ଆପଗୁଡ଼ିକ ଆପଣଙ୍କ ଡିଭାଇସରୁ ବିଭିନ୍ନ ପ୍ରକାରର ଫାଇଲ୍ ଖୋଲିବାକୁ ପଚାରିପାରିବ</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">ଯେକୌଣସି ମତେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
@@ -4220,7 +4217,6 @@
 <translation id="5715711091495208045">ପ୍ଲଗ୍‍ଇନ୍ ବ୍ରୋକର୍: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ଡିଫଲ୍ଟ ସନ୍ଧାନ ଇଞ୍ଜିନ୍</translation>
 <translation id="5719854774000914513">ସାଇଟଗୁଡ଼ିକ HID ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ପଚାରିପାରେ</translation>
-<translation id="5720705177508910913">ବର୍ତ୍ତମାନର ଉପଯୋଗକର୍ତ୍ତା</translation>
 <translation id="572155275267014074">Android ସେଟିଂସ୍</translation>
 <translation id="5722086096420375088">ସବୁଜ ଓ ଧଳା</translation>
 <translation id="5722930212736070253">ଇସ, କିଛି ଭୁଲ୍ ହୋଇଛି! Zip Archiverରେ କିଛି ତ୍ରୁଟି ଦେଖାଦେ‍ଇଛି।</translation>
@@ -4455,7 +4451,6 @@
 <translation id="5990266201903445068">କେବଳ ୱାଇ-ଫାଇ</translation>
 <translation id="5990386583461751448">ଅନୁବାଦ ହୋଇଛି</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{ଏହା ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଯେ ଆପଣ ୱେବ୍‌ ବ୍ରାଉଜିଂ ଜାରି ରଖିପାରିବେ, ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କୁ ଏହି ଆପ୍ଲିକେସନ୍‌ କାଢ଼ିବାକୁ କୁହନ୍ତୁ।}other{ଏହା ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଯେ ଆପଣ ୱେବ୍‌ ବ୍ରାଉଜିଂ ଜାରି ରଖିପାରିବେ, ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କୁ ଏହି ଆପ୍ଲିକେସନ୍‌ଗୁଡ଼ିକ କାଢ଼ିବାକୁ କୁହନ୍ତୁ।}}</translation>
-<translation id="5992175324932183568">ୱେବ୍ ଆପଗୁଡ଼ିକୁ ଆପଣଙ୍କ ଡିଭାଇସରୁ ବିଭିନ୍ନ ପ୍ରକାରର ଫାଇଲ୍ ଖୋଲିବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="5997337190805127100">ସାଇଟ୍ ଆକ୍ସେସ୍ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' ପାଇଁ <ph name="RESULT_COUNT" />ଟି ପରିଣାମ</translation>
 <translation id="6002210667729577411">ନୂଆ ୱିଣ୍ଡୋକୁ ଗୋଷ୍ଠୀ ମୁଭ୍ କରନ୍ତୁ</translation>
@@ -4577,7 +4572,6 @@
 <translation id="6124213551517593835">ଏହା <ph name="SITE_GROUP_NAME" /> ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଓ କୁକୀକୁ ଏବଂ ଏହା ଅଧୀନରେ ଥିବା ଯେ କୌଣସି ସାଇଟକୁ ଖାଲି କରିଦେବ</translation>
 <translation id="6124650939968185064">ନିମ୍ନୋକ୍ତ ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍ ଉପରେ ନିର୍ଭରଶୀଳ ଅଟେ:</translation>
 <translation id="6124698108608891449">ଏହି ସାଇଟ୍‍ର ଅଧିକ ଅନୁମତି ଆବଶ୍ୟକ।</translation>
-<translation id="6125442051901189730">କୌଣସି SIM ପ୍ରୋଫାଇଲ୍ ଉପଲବ୍ଧ ନାହିଁ। <ph name="BEGIN_LINK" />ଏଠାରେ<ph name="END_LINK" /> ଏକ ନୂଆ ପ୍ରୋଫାଇଲ୍ ସେଟ୍ ଅପ୍ କରନ୍ତୁ।</translation>
 <translation id="6125479973208104919">ଦୁର୍ଭାଗ୍ୟବଶତଃ, ଆପଣଙ୍କୁ ଆପଣଙ୍କର ଆକାଉଣ୍ଟକୁ ଏହି <ph name="DEVICE_TYPE" />ରେ ପୁଣିଥରେ ଯୋଗ କରିବା ଦରକାର।</translation>
 <translation id="6129691635767514872">ଚୟନିତ ଡାଟାକୁ Chrome ଏବଂ ସିଙ୍କ କରାଯାଇଥିବା ଡିଭାଇସ୍‍ଗୁଡ଼ିକରୁ କାଢ଼ି ଦିଆଯାଇଛି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ଅନ୍ୟ ରୂପରେ ଥାଇପାରେ, ଯେପରିକି <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ଅନ୍ୟ Google ସେବାରୁ ସନ୍ଧାନ ଏବଂ ଗତିବିଧି।</translation>
 <translation id="6129938384427316298">Netscape ସାର୍ଟିଫିକେଟ୍‌ ମନ୍ତବ୍ୟ</translation>
@@ -6576,8 +6570,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8368859634510605990">&amp;ସମସ୍ତ ବୁକ୍‌ମାର୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="8370294614544004647">ଲାପଟପ୍ ଲିଡ୍ ବନ୍ଦ ହେବା ପରେ ସ୍ଲିପ୍ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="8371695176452482769">ବର୍ତ୍ତମାନ କୁହନ୍ତୁ</translation>
-<translation id="8371749822919332187">ଜୁମ୍ ଇନ୍ କରିବାକୁ "Ctrl+Alt+ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ" କୀ'କୁ ବ୍ୟବହାର କରନ୍ତୁ।
-ଜୁମ୍ ଆଉଟ୍ କରିବାକୁ "Ctrl+Alt+ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ" କୀ'କୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{ସାଇଟ୍‌ ମ୍ୟୁଟ୍‌ କରନ୍ତୁ}other{ସାଇଟ୍‌ ମ୍ୟୁଟ୍‌ କରନ୍ତୁ}}</translation>
 <translation id="8372369524088641025">ଖରାପ WEP କୀ</translation>
 <translation id="8373652277231415614">Crostini ଦ୍ୱାରା ସେୟାର୍ କରାଯାଇଥିବା ଡିରେକ୍ଟୋରୀଗୁଡ଼ିକ</translation>
@@ -7388,7 +7380,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="975893173032473675">ଏହି ଭାଷାରେ ଅନୁବାଦ କରାଯିବ</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" />କୁ ସଂଶୋଧନ କରି <ph name="CORRECTED_WORD" /> କରିବା ପାଇଁ 'ସ୍ୱତଃସଂଶୋଧନକୁ ପୂର୍ବବତ୍ କରନ୍ତୁ' ଡାଏଲଗ୍ ଦେଖାଯାଇଛି।  ଆକ୍ସେସ୍ କରିବାକୁ ଅପ୍ ତୀର କୀ, ଅଣଦେଖା କରିବାକୁ Escape କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="978146274692397928">ପ୍ରାରମ୍ଭିକ ବିରାମ ଚିହ୍ନର ଚଉଡ଼ା ପୂର୍ଣ୍ଣ ଅଛି</translation>
-<translation id="97883469867914488">ଆପଣଙ୍କ ଡିଭାଇସରେ ବିଭିନ୍ନ ପ୍ରକାରର ଫାଇଲ୍ ଖୋଲିବାରୁ ୱେବ୍ ଆପଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="97905529126098460">ବାତିଲ୍ ହୋଇସାରିବା ପରେ ଏହି ୱିଣ୍ଡୋ ବନ୍ଦ ହୋଇଯିବ।</translation>
 <translation id="980731642137034229">କାର୍ଯ୍ୟ ମେନୁ ବଟନ୍</translation>
 <translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>
