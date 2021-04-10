@@ -1012,6 +1012,8 @@ source_set("browser") {
     "interest_group/auction_url_loader_factory_proxy.h",
     "interest_group/interest_group_service_impl.cc",
     "interest_group/interest_group_service_impl.h",
+    "interest_group/interest_group_storage.cc",
+    "interest_group/interest_group_storage.h",
     "isolated_origin_util.cc",
     "isolated_origin_util.h",
     "isolation_context.cc",
