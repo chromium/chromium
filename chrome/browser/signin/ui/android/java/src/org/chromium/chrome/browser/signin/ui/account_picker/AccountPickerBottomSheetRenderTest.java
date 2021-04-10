@@ -30,6 +30,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -240,6 +241,7 @@ public class AccountPickerBottomSheetRenderTest {
                 mCoordinator.getBottomSheetViewForTesting(), "signin_auth_error_sheet");
     }
 
+    @DisabledTest(message = "https://crbug.com/1197715")
     @Test
     @MediumTest
     @Feature("RenderTest")
