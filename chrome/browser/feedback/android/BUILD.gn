@@ -29,6 +29,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSourceAdapter.java",
+    "java/src/org/chromium/chrome/browser/feedback/DeviceInfoFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FeedbackCollector.java",
     "java/src/org/chromium/chrome/browser/feedback/FeedbackContextFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FeedbackReporter.java",
@@ -56,6 +57,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.feedback"

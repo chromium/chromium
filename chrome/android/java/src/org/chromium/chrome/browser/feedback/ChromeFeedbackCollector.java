@@ -48,6 +48,7 @@ public class ChromeFeedbackCollector
 
         // This is the list of all synchronous sources of feedback.  Please add new synchronous
         // entries here.
+        sources.add(new DeviceInfoFeedbackSource());
         sources.add(new UrlFeedbackSource(initParams.url));
         sources.add(new VariationsFeedbackSource(initParams.profile));
         sources.add(new DataReductionProxyFeedbackSource(initParams.profile));
