@@ -1712,6 +1712,9 @@
   <message name="IDS_NETWORK_LIST_ITEM_ACTIVATE_A11Y_LABEL" desc="A11Y label for the button displayed for SIM networks that haven't been setup that opens the SIM setup dialog when clicked. Includes network name.">
     Activate, <ph name="NETWORK_NAME">$1<ex>Verizon</ex></ph>
   </message>
+  <message name="IDS_NETWORK_LIST_ITEM_ACTIVATING" desc="Loading text indicating that the SIM network is currently being set up so that the user can connect to it to access the Internet.">
+    Activating...
+  </message>
   <message name="IDS_NETWORK_LIST_ITEM_DOWNLOAD" desc="Text for the button displayed for pending eSIM profiles that installs the profile when pressed.">
     Download
   </message>

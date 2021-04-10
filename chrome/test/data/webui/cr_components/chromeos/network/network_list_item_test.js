@@ -164,6 +164,58 @@ suite('NetworkListItemTest', function() {
     assertTrue(!!arrow);
   });
 
+  test('Activating pSIM spinner visibility', async () => {
+    assertFalse(!!listItem.$$('#activatingPSimSpinner'));
+
+    // Set item to an activated pSIM network first.
+    const managedPropertiesActivated = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kCellular, 'cellular');
+    managedPropertiesActivated.typeProperties.cellular.activationState =
+        mojom.ActivationStateType.kActivated;
+    mojoApi_.setManagedPropertiesForTest(managedPropertiesActivated);
+
+    listItem.item =
+        OncMojo.managedPropertiesToNetworkState(managedPropertiesActivated);
+    await flushAsync();
+
+    // Activating spinner should not be showing.
+    assertFalse(!!listItem.$$('#activatingPSimSpinner'));
+
+    // Set item to an activating eSIM network.
+    const managedPropertiesESimActivating = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kCellular, 'cellular');
+
+    managedPropertiesESimActivating.typeProperties.cellular.eid = 'eid';
+    managedPropertiesESimActivating.typeProperties.cellular.activationState =
+        mojom.ActivationStateType.kActivating;
+    mojoApi_.setManagedPropertiesForTest(managedPropertiesESimActivating);
+
+    listItem.item = OncMojo.managedPropertiesToNetworkState(
+        managedPropertiesESimActivating);
+    await flushAsync();
+
+    // Activating spinner should not be showing.
+    assertFalse(!!listItem.$$('#activatingPSimSpinner'));
+
+    // Set item to an activating pSIM network.
+    const managedPropertiesActivating = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kCellular, 'cellular');
+    managedPropertiesActivating.typeProperties.cellular.activationState =
+        mojom.ActivationStateType.kActivating;
+    mojoApi_.setManagedPropertiesForTest(managedPropertiesActivating);
+
+    listItem.item =
+        OncMojo.managedPropertiesToNetworkState(managedPropertiesActivating);
+    await flushAsync();
+
+    // Activating spinner should now be showing.
+    assertTrue(!!listItem.$$('#activatingPSimSpinner'));
+
+    // Arrow button should also be visible.
+    let arrow = listItem.$$('#subpageButton');
+    assertTrue(!!arrow);
+  });
+
   test(
       'Pending eSIM profile name, provider, install button visibilty',
       async () => {
@@ -226,7 +278,7 @@ suite('NetworkListItemTest', function() {
         assertTrue(!!subtitle);
         assertEquals(itemSubtitle, subtitle.textContent.trim());
 
-        let spinner = listItem.$$('paper-spinner-lite');
+        let spinner = listItem.$$('#installingESimSpinner');
         assertTrue(!!spinner);
       });
 

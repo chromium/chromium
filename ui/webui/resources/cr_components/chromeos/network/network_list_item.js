@@ -139,6 +139,17 @@ Polymer({
     },
 
     /**
+     * Indicates the network item is a pSIM network currently activating.
+     * @private
+     */
+    isPSimActivatingNetwork_: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false,
+      computed: 'computeIsPSimActivatingNetwork_(networkState.*)',
+    },
+
+    /**
      * Whether the network item is a cellular one and is of an esim
      * pending profile.
      * @private
@@ -564,7 +575,7 @@ Polymer({
    * @private
    */
   isSubpageButtonVisible_(networkState, showButtons, disabled_) {
-    if (this.isPSimUnactivatedNetwork_) {
+    if (this.isPSimUnactivatedNetwork_ || this.isPSimActivatingNetwork_) {
       return true;
     }
     return !!networkState && showButtons && !disabled_ &&
@@ -740,6 +751,22 @@ Polymer({
    */
   getActivateBtnA11yLabel_() {
     return this.i18n('networkListItemActivateA11yLabel', this.getItemName_());
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsPSimActivatingNetwork_() {
+    if (!this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+    if (!this.networkState || !this.networkState.typeState.cellular ||
+        this.networkState.typeState.cellular.eid) {
+      return false;
+    }
+    return this.networkState.typeState.cellular.activationState ===
+        chromeos.networkConfig.mojom.ActivationStateType.kActivating;
   },
 
   /**
