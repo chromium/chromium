@@ -94,8 +94,25 @@ std::unique_ptr<WindowInfo> ArcReadHandler::GetWindowInfo(
   if (it == window_id_to_app_id_.end())
     return nullptr;
 
-  return FullRestoreReadHandler::GetInstance()->GetWindowInfo(
+  auto window_info = FullRestoreReadHandler::GetInstance()->GetWindowInfo(
       profile_path_, it->second, restore_window_id);
+
+  // For ARC windows, Android can restore window bounds, so remove the window
+  // bounds from the window info.
+  window_info->current_bounds.reset();
+
+  // For ARC windows, Android can restore window minimized or maximized status,
+  // so remove the WindowStateType from the window info for the minimized and
+  // maximized state.
+  if (window_info->window_state_type.has_value() &&
+      (chromeos::IsMinimizedWindowStateType(
+           window_info->window_state_type.value()) ||
+       window_info->window_state_type.value() ==
+           chromeos::WindowStateType::kMaximized)) {
+    window_info->window_state_type.reset();
+  }
+
+  return window_info;
 }
 
 int32_t ArcReadHandler::GetArcRestoreWindowId(int32_t task_id) {

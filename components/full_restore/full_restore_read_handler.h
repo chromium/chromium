@@ -94,12 +94,6 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // for Arc app windows.
   bool HasWindowInfo(int32_t restore_window_id);
 
-  // Gets the window information from |profile_path| for |app_id| and
-  // |restore_window_id|.
-  std::unique_ptr<WindowInfo> GetWindowInfo(const base::FilePath& profile_path,
-                                            const std::string& app_id,
-                                            int32_t restore_window_id);
-
   // Gets the window information for |window|.
   std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 
@@ -127,8 +121,15 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);
 
  private:
+  friend class ArcReadHandler;
   friend class ::chromeos::full_restore::AppLaunchHandlerBrowserTest;
   friend class FullRestoreReadHandlerTestApi;
+
+  // Gets the window information from |profile_path| for |app_id| and
+  // |restore_window_id|.
+  std::unique_ptr<WindowInfo> GetWindowInfo(const base::FilePath& profile_path,
+                                            const std::string& app_id,
+                                            int32_t restore_window_id);
 
   // Gets the window information for |restore_window_id| for browser windows and
   // Chrome app windows only. This interface can't be used for ARC app windows.

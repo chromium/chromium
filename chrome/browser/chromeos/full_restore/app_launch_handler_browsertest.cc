@@ -147,10 +147,15 @@ void SaveWindowInfo(aura::Window* window) {
   ::full_restore::SaveWindowInfo(window_info);
 }
 
-void SaveWindowInfo(aura::Window* window, uint32_t activation_index) {
+void SaveWindowInfo(
+    aura::Window* window,
+    uint32_t activation_index,
+    chromeos::WindowStateType window_state_type = kWindowStateType) {
   ::full_restore::WindowInfo window_info;
   window_info.window = window;
   window_info.activation_index = activation_index;
+  window_info.current_bounds = kCurrentBounds;
+  window_info.window_state_type = window_state_type;
   ::full_restore::SaveWindowInfo(window_info);
 }
 
@@ -784,11 +789,23 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
               window->GetProperty(::full_restore::kParentToHiddenContainerKey));
   }
 
-  void VerifyWindowInfo(aura::Window* window, int32_t activation_index) {
+  void VerifyWindowInfo(aura::Window* window,
+                        int32_t activation_index,
+                        chromeos::WindowStateType window_state_type =
+                            chromeos::WindowStateType::kDefault) {
     auto window_info = ::full_restore::GetWindowInfo(window);
     ASSERT_TRUE(window_info);
     EXPECT_TRUE(window_info->activation_index.has_value());
     EXPECT_EQ(activation_index, window_info->activation_index.value());
+
+    EXPECT_FALSE(window_info->current_bounds.has_value());
+
+    if (window_state_type == chromeos::WindowStateType::kDefault) {
+      EXPECT_FALSE(window_info->window_state_type.has_value());
+    } else {
+      EXPECT_TRUE(window_info->window_state_type.has_value());
+      EXPECT_EQ(window_state_type, window_info->window_state_type.value());
+    }
   }
 
   void VerifyObserver(aura::Window* window, int launch_count, int init_count) {
@@ -888,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
 
   VerifyObserver(window, /*launch_count=*/1, /*init_count=*/2);
   VerifyWindowProperty(window, kTaskId2, kTaskId1, /*hidden=*/false);
-  VerifyWindowInfo(window, kActivationIndex);
+  VerifyWindowInfo(window, kActivationIndex, kWindowStateType);
 
   // Destroy the task and close the window.
   app_host()->OnTaskDestroyed(kTaskId2);
@@ -949,8 +966,10 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
 
   int32_t activation_index1 = 11;
   int32_t activation_index2 = 12;
-  SaveWindowInfo(window1, activation_index1);
-  SaveWindowInfo(window2, activation_index2);
+  SaveWindowInfo(window1, activation_index1,
+                 chromeos::WindowStateType::kMaximized);
+  SaveWindowInfo(window2, activation_index2,
+                 chromeos::WindowStateType::kMinimized);
 
   WaitForAppLaunchInfoSaved();
 
