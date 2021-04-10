@@ -321,7 +321,7 @@ void DetectAddToCart(content::RenderFrame* render_frame,
     return;
   if (navigation_url.DomainIs("qvc.com"))
     return;
-  if (navigation_url.DomainIs("hsn.com") && url.DomainIs("granify.net"))
+  if (navigation_url.DomainIs("hsn.com") && url.DomainIs("granify.com"))
     return;
 
   blink::WebHTTPBody body = request.HttpBody();
