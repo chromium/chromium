@@ -40,7 +40,8 @@ Polymer({
    * @private
    */
   isButtonHidden_(buttonName) {
-    return !this.getButtonBarState_(buttonName);
+    const state = this.getButtonBarState_(buttonName);
+    return state === cellularSetup.ButtonState.HIDDEN;
   },
 
   /**

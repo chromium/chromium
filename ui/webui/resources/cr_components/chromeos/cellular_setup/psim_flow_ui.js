@@ -392,6 +392,8 @@ cr.define('cellularSetup', function() {
         case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
           this.forwardButtonLabel = this.i18n('done');
           buttonState = {
+            backward: cellularSetup.ButtonState.HIDDEN,
+            cancel: cellularSetup.ButtonState.HIDDEN,
             forward: cellularSetup.ButtonState.ENABLED,
           };
           break;

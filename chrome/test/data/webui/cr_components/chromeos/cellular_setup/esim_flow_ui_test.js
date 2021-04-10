@@ -201,8 +201,9 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertEquals(!!finalPage.$$('.error'), shouldBeShowingError);
     assertEquals(
         cellularSetup.ButtonState.ENABLED, eSimPage.buttonState.forward);
-    assertEquals(undefined, eSimPage.buttonState.backward);
-    assertEquals(undefined, eSimPage.buttonState.cancel);
+    assertEquals(
+        cellularSetup.ButtonState.HIDDEN, eSimPage.buttonState.backward);
+    assertEquals(cellularSetup.ButtonState.HIDDEN, eSimPage.buttonState.cancel);
     assertEquals(eSimPage.forwardButtonLabel, 'Done');
     let exitCellularSetupEventFired = false;
     eSimPage.addEventListener('exit-cellular-setup', () => {
