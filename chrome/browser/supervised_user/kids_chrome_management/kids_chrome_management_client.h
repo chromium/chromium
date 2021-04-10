@@ -103,7 +103,7 @@ class KidsChromeManagementClient : public KeyedService {
       ErrorCode error);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  signin::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_ = nullptr;
 
   // List of requests in execution.
   KidsChromeRequestList requests_in_progress_;
