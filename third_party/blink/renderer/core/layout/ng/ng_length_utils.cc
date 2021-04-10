@@ -783,19 +783,20 @@ void ComputeReplacedSize(const NGBlockNode& node,
   DCHECK(!out_aspect_ratio->has_value());
 
   const ComputedStyle& style = node.Style();
-
-  NGBoxStrut border_padding =
+  const NGBoxStrut border_padding =
       ComputeBorders(space, node) + ComputePadding(space, style);
-  LayoutUnit inline_min =
+
+  const MinMaxSizes inline_min_max_sizes = {
       ResolveMinInlineLength(space, style, border_padding, child_min_max_sizes,
-                             style.LogicalMinWidth());
-  LayoutUnit inline_max =
+                             style.LogicalMinWidth()),
       ResolveMaxInlineLength(space, style, border_padding, child_min_max_sizes,
-                             style.LogicalMaxWidth());
-  LayoutUnit block_min = ResolveMinBlockLength(space, style, border_padding,
-                                               style.LogicalMinHeight());
-  LayoutUnit block_max = ResolveMaxBlockLength(space, style, border_padding,
-                                               style.LogicalMaxHeight());
+                             style.LogicalMaxWidth())};
+
+  const MinMaxSizes block_min_max_sizes = {
+      ResolveMinBlockLength(space, style, border_padding,
+                            style.LogicalMinHeight()),
+      ResolveMaxBlockLength(space, style, border_padding,
+                            style.LogicalMaxHeight())};
 
   const Length& inline_length = style.LogicalWidth();
   const Length& block_length = style.LogicalHeight();
@@ -818,7 +819,7 @@ void ComputeReplacedSize(const NGBlockNode& node,
                                 child_min_max_sizes, inline_length_to_resolve);
     DCHECK(replaced_inline != kIndefiniteSize);
     replaced_inline =
-        ConstrainByMinMax(*replaced_inline, inline_min, inline_max);
+        inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
   }
   base::Optional<LayoutUnit> replaced_block;
   if (space.IsFixedBlockSize()) {
@@ -834,10 +835,13 @@ void ComputeReplacedSize(const NGBlockNode& node,
     replaced_block = ResolveMainBlockLength(space, style, border_padding,
                                             block_length_to_resolve,
                                             space.AvailableSize().block_size);
-    if (*replaced_block == kIndefiniteSize)
+
+    if (*replaced_block == kIndefiniteSize) {
       replaced_block.reset();
-    else
-      replaced_block = ConstrainByMinMax(*replaced_block, block_min, block_max);
+    } else {
+      replaced_block =
+          block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
+    }
   }
   if (replaced_inline && replaced_block) {
     out_replaced_size->emplace(*replaced_inline, *replaced_block);
@@ -880,7 +884,7 @@ void ComputeReplacedSize(const NGBlockNode& node,
     replaced_block = ComputeBlockFromInline(
         natural_size.value_or(LogicalSize(kIndefiniteSize, kIndefiniteSize))
             .block_size);
-    replaced_block = ConstrainByMinMax(*replaced_block, block_min, block_max);
+    replaced_block = block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
   } else if (replaced_block) {
     DCHECK(!replaced_inline);
     DCHECK(natural_size || !aspect_ratio.IsEmpty());
@@ -888,7 +892,7 @@ void ComputeReplacedSize(const NGBlockNode& node,
         natural_size.value_or(LogicalSize(kIndefiniteSize, kIndefiniteSize))
             .inline_size);
     replaced_inline =
-        ConstrainByMinMax(*replaced_inline, inline_min, inline_max);
+        inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
   } else {
     // If both lengths are unknown, they get defined by intrinsic values.
     DCHECK(!replaced_inline);
@@ -898,9 +902,9 @@ void ComputeReplacedSize(const NGBlockNode& node,
     // If lengths are constrained, keep aspect ratio.
     // The side that shrank the most defines the other side.
     LayoutUnit constrained_inline =
-        ConstrainByMinMax(*replaced_inline, inline_min, inline_max);
+        inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
     LayoutUnit constrained_block =
-        ConstrainByMinMax(*replaced_block, block_min, block_max);
+        block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
     if (constrained_inline != replaced_inline ||
         constrained_block != replaced_block) {
       LayoutUnit inline_ratio =
@@ -947,9 +951,9 @@ void ComputeReplacedSize(const NGBlockNode& node,
       }
     }
   }
-  *replaced_inline =
-      ConstrainByMinMax(*replaced_inline, inline_min, inline_max);
-  *replaced_block = ConstrainByMinMax(*replaced_block, block_min, block_max);
+
+  replaced_inline = inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
+  replaced_block = block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
   out_replaced_size->emplace(*replaced_inline, *replaced_block);
 }
 
