@@ -2214,6 +2214,9 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON" desc="This button signs the user out. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
         Sign Out
       </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_SYNC" desc="The text describes that sync will be off when user signs out [iOS only].">
+        This will turn off sync.
+      </message>
       <message name="IDS_IOS_SPOTLIGHT_KEYWORD_EIGHT" desc="Keyword used in Spotlight that will be linked to the Chrome App. [iOS only]">
         Online
       </message>

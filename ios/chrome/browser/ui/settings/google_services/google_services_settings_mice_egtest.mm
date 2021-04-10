@@ -4,6 +4,7 @@
 
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
@@ -11,6 +12,7 @@
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -22,6 +24,7 @@
 #endif
 
 using l10n_util::GetNSString;
+using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
@@ -33,6 +36,7 @@ id<GREYMatcher> GoogleServicesSettingsButton() {
                     grey_sufficientlyVisible(),
                     grey_accessibilityID(kSettingsGoogleServicesCellId), nil);
 }
+
 }  // namespace
 
 // Integration tests using the Google services settings screen with
@@ -65,6 +69,14 @@ id<GREYMatcher> GoogleServicesSettingsButton() {
                                    /*is_toggled_on=*/YES,
                                    /*enabled=*/YES)]
       performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON)]
+      performAction:grey_tap()];
 
   // Verify that the user is signed out and sign-in is disabled.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
