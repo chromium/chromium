@@ -51,6 +51,7 @@ class StyleRequest {
   RequestType type{kForRenderer};
   ScrollbarPart scrollbar_part{kNoPart};
   CustomScrollbar* scrollbar{nullptr};
+  AtomicString pseudo_argument{g_null_atom};
 
   explicit StyleRequest(const ComputedStyle* parent_override)
       : parent_override(parent_override),
@@ -75,7 +76,8 @@ class StyleRequest {
       : pseudo_id(pseudo_id),
         type(request_type),
         scrollbar_part(kNoPart),
-        scrollbar(nullptr) {}
+        scrollbar(nullptr),
+        pseudo_argument(g_null_atom) {}
 };
 
 }  // namespace blink

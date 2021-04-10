@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only_main_thread.h"
+#include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 
 namespace blink {
@@ -25,7 +26,7 @@ class CORE_EXPORT ComputedStylePropertyMap
     : public StylePropertyMapReadOnlyMainThread {
  public:
   ComputedStylePropertyMap(Node* node, const String& pseudo_element = String())
-      : pseudo_id_(CSSSelector::ParsePseudoId(pseudo_element, node)),
+      : pseudo_id_(CSSSelectorParser::ParsePseudoElement(pseudo_element, node)),
         node_(node) {}
   ComputedStylePropertyMap(const ComputedStylePropertyMap&) = delete;
   ComputedStylePropertyMap& operator=(const ComputedStylePropertyMap&) = delete;

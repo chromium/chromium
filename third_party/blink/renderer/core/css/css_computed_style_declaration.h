@@ -119,6 +119,7 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
 
   Member<Node> node_;
   PseudoId pseudo_element_specifier_;
+  AtomicString pseudo_argument_;
   bool allow_visited_style_;
 };
 

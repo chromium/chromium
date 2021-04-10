@@ -236,12 +236,21 @@
     {
       name: "PseudoBits",
       field_template: "primitive",
-      field_size: 11,
+      field_size: 12,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       custom_copy: true,
       custom_compare: true,
       computed_style_custom_functions: ["getter", "setter"],
+    },
+    // Used by ::highlight
+    {
+      name: "PseudoArgument",
+      field_template: "external",
+      field_group: "*",
+      type_name: "AtomicString",
+      include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
+      default_value: "g_null_atom",
     },
     // True if 'underline solid' is the only text decoration on this element.
     {

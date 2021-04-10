@@ -839,6 +839,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
     }
   }
   state.Style()->SetStyleType(style_request.pseudo_id);
+  state.Style()->SetPseudoArgument(style_request.pseudo_argument);
 
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {
     state.Style()->SetIsLink();

@@ -33,6 +33,9 @@
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -239,6 +242,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdResizer;
     case kPseudoTargetText:
       return kPseudoIdTargetText;
+    case kPseudoHighlight:
+      return kPseudoIdHighlight;
     case kPseudoSpellingError:
       return kPseudoIdSpellingError;
     case kPseudoGrammarError:
@@ -456,6 +461,7 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"-webkit-any", CSSSelector::kPseudoAny},
     {"cue", CSSSelector::kPseudoCue},
     {"dir", CSSSelector::kPseudoDir},
+    {"highlight", CSSSelector::kPseudoHighlight},
     {"host", CSSSelector::kPseudoHost},
     {"host-context", CSSSelector::kPseudoHostContext},
     {"is", CSSSelector::kPseudoIs},
@@ -470,8 +476,8 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"where", CSSSelector::kPseudoWhere},
 };
 
-static CSSSelector::PseudoType NameToPseudoType(const AtomicString& name,
-                                                bool has_arguments) {
+CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
+                                                      bool has_arguments) {
   if (name.IsNull() || !name.Is8Bit())
     return CSSSelector::kPseudoUnknown;
 
@@ -514,6 +520,11 @@ static CSSSelector::PseudoType NameToPseudoType(const AtomicString& name,
 
   if (match->type == CSSSelector::kPseudoTargetText &&
       !RuntimeEnabledFeatures::CSSTargetTextPseudoElementEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if (match->type == CSSSelector::kPseudoHighlight &&
+      !RuntimeEnabledFeatures::HighlightAPIEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -560,37 +571,10 @@ void CSSSelector::Show() const {
 }
 #endif
 
-CSSSelector::PseudoType CSSSelector::ParsePseudoType(const AtomicString& name,
-                                                     bool has_arguments) {
-  PseudoType pseudo_type = NameToPseudoType(name, has_arguments);
-  if (pseudo_type != kPseudoUnknown)
-    return pseudo_type;
-
-  if (name.StartsWith("-webkit-"))
-    return kPseudoWebKitCustomElement;
-  if (name.StartsWith("-internal-"))
-    return kPseudoBlinkInternalElement;
-  if (RuntimeEnabledFeatures::CustomStatePseudoClassEnabled() &&
-      name.StartsWith("--"))
-    return kPseudoState;
-
-  return kPseudoUnknown;
-}
-
-PseudoId CSSSelector::ParsePseudoId(const String& name, const Node* parent) {
-  unsigned name_without_colons_start =
-      name[0] == ':' ? (name[1] == ':' ? 2 : 1) : 0;
-  PseudoId pseudo_id = GetPseudoId(ParsePseudoType(
-      AtomicString(name.Substring(name_without_colons_start)), false));
-  if (!PseudoElement::IsWebExposed(pseudo_id, parent))
-    return kPseudoIdNone;
-  return pseudo_id;
-}
-
 void CSSSelector::UpdatePseudoPage(const AtomicString& value) {
   DCHECK_EQ(Match(), kPagePseudoClass);
   SetValue(value);
-  PseudoType type = ParsePseudoType(value, false);
+  PseudoType type = CSSSelectorParser::ParsePseudoType(value, false);
   if (type != kPseudoFirstPage && type != kPseudoLeftPage &&
       type != kPseudoRightPage) {
     type = kPseudoUnknown;
@@ -604,7 +588,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
                                    CSSParserMode mode) {
   DCHECK(match_ == kPseudoClass || match_ == kPseudoElement);
   AtomicString lower_value = value.LowerASCII();
-  PseudoType pseudo_type = ParsePseudoType(lower_value, has_arguments);
+  PseudoType pseudo_type =
+      CSSSelectorParser::ParsePseudoType(lower_value, has_arguments);
   SetPseudoType(pseudo_type);
   SetValue(pseudo_type == kPseudoState ? value : lower_value);
 
@@ -637,6 +622,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoWebKitCustomElement:
     case kPseudoSlotted:
     case kPseudoTargetText:
+    case kPseudoHighlight:
     case kPseudoSpellingError:
     case kPseudoGrammarError:
       if (match_ != kPseudoElement)
@@ -877,6 +863,12 @@ const CSSSelector* CSSSelector::SerializeCompound(
               separator = ' ';
             SerializeIdentifier(part, builder);
           }
+          builder.Append(')');
+          break;
+        }
+        case kPseudoHighlight: {
+          builder.Append('(');
+          builder.Append(simple_selector->Argument());
           builder.Append(')');
           break;
         }
@@ -1141,6 +1133,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoFirstLetter:
     case kPseudoSelection:
     case kPseudoTargetText:
+    case kPseudoHighlight:
     case kPseudoSpellingError:
     case kPseudoGrammarError:
       return true;

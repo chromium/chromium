@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -281,6 +282,84 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeComplexSelector(
   }
 
   return selector;
+}
+
+CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
+    const AtomicString& name,
+    bool has_arguments) {
+  CSSSelector::PseudoType pseudo_type =
+      CSSSelector::NameToPseudoType(name, has_arguments);
+  if (pseudo_type != CSSSelector::PseudoType::kPseudoUnknown)
+    return pseudo_type;
+
+  if (name.StartsWith("-webkit-"))
+    return CSSSelector::PseudoType::kPseudoWebKitCustomElement;
+  if (name.StartsWith("-internal-"))
+    return CSSSelector::PseudoType::kPseudoBlinkInternalElement;
+  if (RuntimeEnabledFeatures::CustomStatePseudoClassEnabled() &&
+      name.StartsWith("--"))
+    return CSSSelector::PseudoType::kPseudoState;
+
+  return CSSSelector::PseudoType::kPseudoUnknown;
+}
+
+PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
+                                               const Node* parent) {
+  CSSTokenizer tokenizer(selector_string);
+  const auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+
+  int number_of_colons = 0;
+  while (!range.AtEnd() && range.Peek().GetType() == kColonToken) {
+    number_of_colons++;
+    range.Consume();
+  }
+
+  // TODO(crbug.com/1197620): allowing 0 or 1 preceding colons is not aligned
+  // with specs.
+  if (!range.AtEnd() && number_of_colons <= 2 &&
+      (range.Peek().GetType() == kIdentToken ||
+       range.Peek().GetType() == kFunctionToken)) {
+    CSSParserToken selector_name_token = range.Consume();
+    PseudoId pseudo_id = CSSSelector::GetPseudoId(
+        ParsePseudoType(selector_name_token.Value().ToAtomicString(),
+                        selector_name_token.GetType() == kFunctionToken));
+
+    if (PseudoElement::IsWebExposed(pseudo_id, parent) &&
+        ((PseudoElementHasArguments(pseudo_id) &&
+          range.Peek(0).GetType() == kIdentToken &&
+          range.Peek(1).GetType() == kRightParenthesisToken &&
+          range.Peek(2).GetType() == kEOFToken) ||
+         range.Peek().GetType() == kEOFToken)) {
+      return pseudo_id;
+    }
+  }
+
+  return kPseudoIdNone;
+}
+
+AtomicString CSSSelectorParser::ParsePseudoElementArgument(
+    const String& selector_string) {
+  CSSTokenizer tokenizer(selector_string);
+  const auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+
+  int number_of_colons = 0;
+  while (!range.AtEnd() && range.Peek().GetType() == kColonToken) {
+    number_of_colons++;
+    range.Consume();
+  }
+
+  // TODO(crbug.com/1197620): allowing 0 or 1 preceding colons is not aligned
+  // with specs.
+  if (number_of_colons > 2 || range.Peek(0).GetType() != kFunctionToken ||
+      range.Peek(1).GetType() != kIdentToken ||
+      range.Peek(2).GetType() != kRightParenthesisToken ||
+      range.Peek(3).GetType() != kEOFToken) {
+    return g_null_atom;
+  }
+
+  return range.Peek(1).Value().ToAtomicString();
 }
 
 namespace {
@@ -786,6 +865,13 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       if (!block.AtEnd())
         return nullptr;
       selector->SetNth(ab.first, ab.second);
+      return selector;
+    }
+    case CSSSelector::kPseudoHighlight: {
+      const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
+      if (ident.GetType() != kIdentToken || !block.AtEnd())
+        return nullptr;
+      selector->SetArgument(ident.Value().ToAtomicString());
       return selector;
     }
     default:

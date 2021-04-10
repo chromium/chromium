@@ -83,6 +83,7 @@ class CORE_EXPORT SelectorChecker {
     CustomScrollbar* scrollbar = nullptr;
     ScrollbarPart scrollbar_part = kNoPart;
     PartNames* part_names = nullptr;
+    AtomicString pseudo_argument = g_null_atom;
   };
 
   explicit SelectorChecker(const Init& init)
@@ -91,7 +92,8 @@ class CORE_EXPORT SelectorChecker {
         part_names_(init.part_names),
         scrollbar_part_(init.scrollbar_part),
         mode_(init.mode),
-        is_ua_rule_(init.is_ua_rule) {}
+        is_ua_rule_(init.is_ua_rule),
+        pseudo_argument_(init.pseudo_argument) {}
   SelectorChecker(const SelectorChecker&) = delete;
   SelectorChecker& operator=(const SelectorChecker&) = delete;
 
@@ -191,6 +193,7 @@ class CORE_EXPORT SelectorChecker {
   ScrollbarPart scrollbar_part_;
   Mode mode_;
   bool is_ua_rule_;
+  AtomicString pseudo_argument_;
 #if DCHECK_IS_ON()
   mutable bool inside_match_ = false;
 #endif

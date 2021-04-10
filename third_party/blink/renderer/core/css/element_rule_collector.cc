@@ -147,6 +147,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   init.scrollbar = pseudo_style_request_.scrollbar;
   init.scrollbar_part = pseudo_style_request_.scrollbar_part;
   init.part_names = part_request ? &part_request->part_names : nullptr;
+  init.pseudo_argument = pseudo_style_request_.pseudo_argument;
   SelectorChecker checker(init);
   SelectorChecker::SelectorCheckingContext context(&context_.GetElement());
   context.scope = match_request.scope;

@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/sampled_effect.h"
 #include "third_party/blink/renderer/core/animation/timing_input.h"
+#include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -125,7 +126,7 @@ KeyframeEffect* KeyframeEffect::Create(
     if (element) {
       element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
       effect->effect_target_ = element->GetPseudoElement(
-          CSSSelector::ParsePseudoId(pseudo, element));
+          CSSSelectorParser::ParsePseudoElement(pseudo, element));
     }
   }
   return effect;
@@ -213,7 +214,7 @@ void KeyframeEffect::RefreshTarget() {
     target_element_->GetDocument().UpdateStyleAndLayoutTreeForNode(
         target_element_);
     PseudoId pseudoId =
-        CSSSelector::ParsePseudoId(target_pseudo_, target_element_);
+        CSSSelectorParser::ParsePseudoElement(target_pseudo_, target_element_);
     new_target = target_element_->GetPseudoElement(pseudoId);
   }
 

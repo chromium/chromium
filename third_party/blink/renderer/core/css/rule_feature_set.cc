@@ -181,6 +181,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
     case CSSSelector::kPseudoTargetText:
+    case CSSSelector::kPseudoHighlight:
     case CSSSelector::kPseudoSpellingError:
     case CSSSelector::kPseudoGrammarError:
       return true;

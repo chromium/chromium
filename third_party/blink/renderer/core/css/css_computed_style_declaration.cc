@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
@@ -292,8 +293,13 @@ CSSComputedStyleDeclaration::CSSComputedStyleDeclaration(
     : CSSStyleDeclaration(n ? n->GetExecutionContext() : nullptr),
       node_(n),
       pseudo_element_specifier_(
-          CSSSelector::ParsePseudoId(pseudo_element_name, n)),
-      allow_visited_style_(allow_visited_style) {}
+          CSSSelectorParser::ParsePseudoElement(pseudo_element_name, n)),
+      allow_visited_style_(allow_visited_style) {
+  pseudo_argument_ =
+      PseudoElementHasArguments(pseudo_element_specifier_)
+          ? CSSSelectorParser::ParsePseudoElementArgument(pseudo_element_name)
+          : g_null_atom;
+}
 
 CSSComputedStyleDeclaration::~CSSComputedStyleDeclaration() = default;
 
@@ -347,7 +353,8 @@ const ComputedStyle* CSSComputedStyleDeclaration::ComputeComputedStyle() const {
   DCHECK(styled_node);
   const ComputedStyle* style = styled_node->EnsureComputedStyle(
       styled_node->IsPseudoElement() ? kPseudoIdNone
-                                     : pseudo_element_specifier_);
+                                     : pseudo_element_specifier_,
+      pseudo_argument_);
   if (style && style->IsEnsuredOutsideFlatTree()) {
     UseCounter::Count(node_->GetDocument(),
                       WebFeature::kGetComputedStyleOutsideFlatTree);

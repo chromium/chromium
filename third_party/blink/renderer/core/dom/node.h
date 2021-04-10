@@ -713,8 +713,10 @@ class CORE_EXPORT Node : public EventTarget {
   bool ShouldSkipMarkingStyleDirty() const;
 
   const ComputedStyle* EnsureComputedStyle(
-      PseudoId pseudo_element_specifier = kPseudoIdNone) {
-    return VirtualEnsureComputedStyle(pseudo_element_specifier);
+      PseudoId pseudo_element_specifier = kPseudoIdNone,
+      const AtomicString& pseudo_argument = g_null_atom) {
+    return VirtualEnsureComputedStyle(pseudo_element_specifier,
+                                      pseudo_argument);
   }
 
   // ---------------------------------------------------------------------------
@@ -1112,7 +1114,8 @@ class CORE_EXPORT Node : public EventTarget {
   }
 
   virtual const ComputedStyle* VirtualEnsureComputedStyle(
-      PseudoId = kPseudoIdNone);
+      PseudoId = kPseudoIdNone,
+      const AtomicString& pseudo_argument = g_null_atom);
 
   void TrackForDebugging();
 

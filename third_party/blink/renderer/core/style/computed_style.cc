@@ -458,7 +458,8 @@ bool ComputedStyle::operator==(const ComputedStyle& o) const {
 }
 
 const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
-    PseudoId pid) const {
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) const {
   if (!cached_pseudo_element_styles_ || !cached_pseudo_element_styles_->size())
     return nullptr;
 
@@ -467,7 +468,9 @@ const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
     return nullptr;
 
   for (const auto& pseudo_style : *cached_pseudo_element_styles_) {
-    if (pseudo_style->StyleType() == pid)
+    if (pseudo_style->StyleType() == pseudo_id &&
+        (!PseudoElementHasArguments(pseudo_id) ||
+         pseudo_style->PseudoArgument() == pseudo_argument))
       return pseudo_style;
   }
 

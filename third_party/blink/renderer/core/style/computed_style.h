@@ -391,7 +391,9 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
   }
   void SetStyleType(PseudoId style_type) { SetStyleTypeInternal(style_type); }
 
-  CORE_EXPORT const ComputedStyle* GetCachedPseudoElementStyle(PseudoId) const;
+  CORE_EXPORT const ComputedStyle* GetCachedPseudoElementStyle(
+      PseudoId,
+      const AtomicString& pseudo_argument = g_null_atom) const;
   const ComputedStyle* AddCachedPseudoElementStyle(const ComputedStyle*) const;
   void ClearCachedPseudoElementStyles() const {
     if (cached_pseudo_element_styles_)

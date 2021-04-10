@@ -1121,6 +1121,11 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
         return false;
       return true;
     }
+    case CSSSelector::kPseudoHighlight: {
+      const AtomicString& highlight_name = selector.Argument();
+      result.dynamic_pseudo = PseudoId::kPseudoIdHighlight;
+      return highlight_name == pseudo_argument_;
+    }
     case CSSSelector::kPseudoTargetText:
       if (!is_ua_rule_) {
         UseCounter::Count(context.element->GetDocument(),

@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/property_set_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/resolver/selector_filter_parent_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -4770,9 +4771,9 @@ const AtomicString& Element::ShadowPseudoId() const {
 }
 
 void Element::SetShadowPseudoId(const AtomicString& id) {
-  DCHECK(CSSSelector::ParsePseudoType(id, false) ==
+  DCHECK(CSSSelectorParser::ParsePseudoType(id, false) ==
              CSSSelector::kPseudoWebKitCustomElement ||
-         CSSSelector::ParsePseudoType(id, false) ==
+         CSSSelectorParser::ParsePseudoType(id, false) ==
              CSSSelector::kPseudoBlinkInternalElement);
   setAttribute(html_names::kPseudoAttr, id);
 }
@@ -4814,7 +4815,8 @@ HeapVector<Member<Element>> CollectAncestorsToEnsure(Element& element) {
 }  // namespace
 
 const ComputedStyle* Element::EnsureComputedStyle(
-    PseudoId pseudo_element_specifier) {
+    PseudoId pseudo_element_specifier,
+    const AtomicString& pseudo_argument) {
   // Style computation should not be triggered when in a NoAllocationScope
   // because there is always a possibility that it could allocate something on
   // the V8 heap.
@@ -4864,12 +4866,14 @@ const ComputedStyle* Element::EnsureComputedStyle(
     ancestor->EnsureOwnComputedStyle(style_recalc_context, kPseudoIdNone);
   }
 
-  return EnsureOwnComputedStyle(style_recalc_context, pseudo_element_specifier);
+  return EnsureOwnComputedStyle(style_recalc_context, pseudo_element_specifier,
+                                pseudo_argument);
 }
 
 const ComputedStyle* Element::EnsureOwnComputedStyle(
     const StyleRecalcContext& style_recalc_context,
-    PseudoId pseudo_element_specifier) {
+    PseudoId pseudo_element_specifier,
+    const AtomicString& pseudo_argument) {
   // FIXME: Find and use the layoutObject from the pseudo element instead of the
   // actual element so that the 'length' properties, which are only known by the
   // layoutObject because it did the layout, will be correct and so that the
@@ -4908,7 +4912,8 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
     return element_style;
 
   if (const ComputedStyle* pseudo_element_style =
-          element_style->GetCachedPseudoElementStyle(pseudo_element_specifier))
+          element_style->GetCachedPseudoElementStyle(pseudo_element_specifier,
+                                                     pseudo_argument))
     return pseudo_element_style;
 
   const ComputedStyle* layout_parent_style = element_style;
@@ -4924,6 +4929,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   style_request.type = StyleRequest::kForComputedStyle;
   style_request.parent_override = element_style;
   style_request.layout_parent_override = layout_parent_style;
+  style_request.pseudo_argument = pseudo_argument;
 
   ComputedStyle* result = GetDocument().GetStyleResolver().ResolveStyle(
       this, style_recalc_context, style_request);

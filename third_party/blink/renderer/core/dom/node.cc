@@ -1612,10 +1612,11 @@ void Node::DetachLayoutTree(bool performing_reattach) {
 }
 
 const ComputedStyle* Node::VirtualEnsureComputedStyle(
-    PseudoId pseudo_element_specifier) {
+    PseudoId pseudo_element_specifier,
+    const AtomicString& pseudo_argument) {
   return ParentOrShadowHostNode()
              ? ParentOrShadowHostNode()->EnsureComputedStyle(
-                   pseudo_element_specifier)
+                   pseudo_element_specifier, pseudo_argument)
              : nullptr;
 }
 
