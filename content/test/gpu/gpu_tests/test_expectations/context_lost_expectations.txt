@@ -141,5 +141,5 @@ crbug.com/1154047 [ fuchsia ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
-# Flaky on dual GPU Mac.
-crbug.com/1164647 [ mac amd ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
+# Flaky on dual GPU Mac - right now, too flaky to even run the test.
+crbug.com/1164647 [ mac amd ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
