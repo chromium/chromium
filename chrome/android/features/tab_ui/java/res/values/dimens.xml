@@ -40,7 +40,6 @@
     <dimen name="selection_tab_list_toggle_button_lateral_inset">18dp</dimen>
     <dimen name="selection_tab_list_toggle_button_vertical_inset">22dp</dimen>
     <dimen name="tab_carousel_card_width">168dp</dimen>
-    <dimen name="tab_carousel_start_margin">-3dp</dimen>
     <dimen name="tasks_view_items_vertical_spacing">8dp</dimen>
     <dimen name="price_tracking_dialog_text_side_margin">16dp</dimen>
     <dimen name="price_tracking_dialog_text_top_margin">24dp</dimen>

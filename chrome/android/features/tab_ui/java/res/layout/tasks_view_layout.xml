@@ -27,6 +27,8 @@
             android:id="@+id/scroll_component_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
             android:orientation="vertical">
             <include layout="@layout/fake_search_box_layout"/>
             <androidx.recyclerview.widget.RecyclerView
@@ -43,6 +45,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/default_bg_color"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
             android:visibility="gone"
             android:scrollbars="none"
             app:layout_scrollFlags="scroll">
@@ -56,10 +60,10 @@
             android:id="@+id/tab_switcher_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="12dp"
+            android:paddingStart="16dp"
             android:paddingEnd="4dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:visibility="gone"
             android:background="@color/default_bg_color"
             android:orientation="horizontal"
@@ -82,7 +86,7 @@
                 android:layout_marginBottom="-16dp"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
-                android:paddingEnd="12dp"
+                android:paddingEnd="16dp"
                 android:text="@string/tab_switcher_carousel_view_all"/>
         </LinearLayout>
         <!-- TODO(crbug.com/982018): Make view stub to inflate only when needed. -->
@@ -90,7 +94,8 @@
             android:id="@+id/carousel_tab_switcher_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/tab_carousel_start_margin"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
             android:visibility="gone"
             app:layout_scrollFlags="scroll"/>
     </com.google.android.material.appbar.AppBarLayout>

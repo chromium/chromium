@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks;
 
-import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
-
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
 
@@ -472,20 +470,9 @@ class TasksView extends CoordinatorLayoutForPointer {
 
         MarginLayoutParams carouselTabSwitcherParams =
                 (MarginLayoutParams) mCarouselTabSwitcherContainer.getLayoutParams();
-
-        int margin = getResources().getDimensionPixelSize(
-                R.dimen.content_suggestions_card_modern_padding);
-        if (getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE) {
-            mostVisitedLayoutParams.leftMargin = margin;
-            mostVisitedLayoutParams.rightMargin = margin;
-            carouselTabSwitcherParams.leftMargin = margin;
-            carouselTabSwitcherParams.rightMargin = margin;
-        } else {
             mostVisitedLayoutParams.leftMargin = 0;
             mostVisitedLayoutParams.rightMargin = 0;
-            carouselTabSwitcherParams.leftMargin =
-                    getResources().getDimensionPixelSize(R.dimen.tab_carousel_start_margin);
+            carouselTabSwitcherParams.leftMargin = 0;
             carouselTabSwitcherParams.rightMargin = 0;
-        }
     }
 }
