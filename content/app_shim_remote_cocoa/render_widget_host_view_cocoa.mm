@@ -898,11 +898,6 @@ void ExtractUnderlines(NSAttributedString* string,
   if (EventIsReservedBySystem(theEvent))
     return NO;
 
-  if (![self isKeyLocked:theEvent] &&
-      ![_responderDelegate webContentShouldHandleKeyEquivalent:theEvent]) {
-    return NO;
-  }
-
   // Command key combinations are sent via performKeyEquivalent rather than
   // keyDown:. We just forward this on and if WebCore doesn't want to handle
   // it, we let the WebContentsView figure out how to reinject it.
