@@ -29,7 +29,16 @@ def main(argv):
                       help='Additional targets to pass to ninja')
   parser.add_argument(
       '--target_os',
-      choices=['android', 'chromeos', 'ios', 'linux', 'nacl', 'mac', 'win'],
+      choices=[
+          'android',
+          'chromeos',
+          'fuchsia',
+          'ios',
+          'linux',
+          'mac',
+          'nacl',
+          'win',
+      ],
       help='Target OS - see `gn help target_os`. Set to "win" when ' +
       'cross-compiling Windows from Linux or another host')
   parser.add_argument(
