@@ -61,26 +61,110 @@ int ChromeMain(int argc, const char** argv);
 }
 #endif
 
-extern "C" void V8SetRecordingOrReplaying(void* handle);
+// On linux ChromeMain is the process entry point, whereas on macOS the main
+// function is in a different binary in chrome_exe_main_mac.cc. When we get to
+// ChromeMain we've already started recording/replaying, but still need to
+// initialize V8's record/replay bindings. On linux we need to start
+// recording/replaying, so have a bunch of code here duplicated from
+// chrome_exec_main_mac.cc.
+#ifdef OS_LINUX
 
-static void MaybeSetRecordingOrReplaying(int argc, const char** argv) {
-  // Only renderer processes are recorded/replayed.
-  bool renderer = false;
-  for (int i = 0; i < argc; i++) {
-    if (!strcmp(argv[i], "--type=renderer")) {
-      renderer = true;
-    }
-  }
-  if (!renderer) {
+static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
+static void (*gRecordReplayRecordCommandLineArguments)(int*, char***);
+
+template <typename Src, typename Dst>
+static inline void CastPointer(const Src src, Dst* dst) {
+  static_assert(sizeof(Src) == sizeof(uintptr_t), "bad size");
+  static_assert(sizeof(Dst) == sizeof(uintptr_t), "bad size");
+  memcpy((void*)dst, (const void*)&src, sizeof(uintptr_t));
+}
+
+template <typename T>
+static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) {
+  void* sym = dlsym(handle, name);
+  if (!sym) {
+    fprintf(stderr, "Could not find %s in Record Replay driver.\n", name);
     return;
   }
 
+  CastPointer(sym, &function);
+}
+
+static const char* gBuildId = "linux-chromium-experimental";
+
+#endif // OS_LINUX
+
+extern "C" void V8SetRecordingOrReplaying(void* handle);
+
+static void RecordReplayAttach(int* pargc, const char*** pargv) {
   const char* driver = getenv("RECORD_REPLAY_DRIVER");
-  if (driver) {
-    void* handle = dlopen(driver, RTLD_LAZY);
-    CHECK(handle);
-    V8SetRecordingOrReplaying(handle);
+  if (!driver) {
+    // When not configured to record/replay, don't change anything.
+    return;
   }
+
+  // Figure out what type of process this is.
+  const char* type = nullptr;
+  for (int i = 0; i < *pargc; i++) {
+    if (!strncmp((*pargv)[i], "--type=", 7)) {
+      type = (*pargv)[i] + 7;
+      break;
+    }
+  }
+  if (type) {
+    // Only renderer processes are recorded/replayed.
+    if (strcmp(type, "renderer")) {
+      return;
+    }
+  } else {
+#ifdef OS_LINUX
+
+    // If there is no type, this is the main process. Add a couple command line
+    // arguments which are required to record/replay.
+    char** nargv = new char*[*pargc + 3];
+    memcpy(nargv, *pargv, *pargc * sizeof(char*));
+    *pargv = nargv;
+
+    // Recording processes currently need the sandbox disabled in order to
+    // write out recording IDs to the specified path name.
+    (*pargv)[*pargc] = strdup("--no-sandbox");
+
+    // Recording/replaying currently requires software rendering.
+    (*pargv)[*pargc + 1] = strdup("--disable-gpu");
+
+    (*pargv)[*pargc + 2] = nullptr;
+    *pargc += 2;
+
+#endif // OS_LINUX
+    return;
+  }
+
+  const char* dispatchAddress = getenv("RECORD_REPLAY_DISPATCH");
+  if (!dispatchAddress) {
+    fprintf(stderr, "RECORD_REPLAY_DISPATCH not set.\n");
+    return;
+  }
+
+  void* handle = dlopen(driver, RTLD_LAZY);
+  if (!handle) {
+    fprintf(stderr, "Loading Record Replay driver failed.\n");
+    return;
+  }
+
+#ifdef OS_LINUX
+
+  RecordReplayLoadSymbol(handle, "RecordReplayAttach", gRecordReplayAttach);
+  RecordReplayLoadSymbol(handle, "RecordReplayRecordCommandLineArguments",
+                         gRecordReplayRecordCommandLineArguments);
+
+  if (gRecordReplayAttach) {
+    gRecordReplayAttach(dispatchAddress, gBuildId);
+    gRecordReplayRecordCommandLineArguments(pargc, pargv);
+  }
+
+#endif // OS_LINUX
+
+  V8SetRecordingOrReplaying(handle);
 }
 
 #if defined(OS_WIN)
@@ -94,7 +178,7 @@ int ChromeMain(int argc, const char** argv) {
   int64_t exe_entry_point_ticks = 0;
 #endif
 
-  MaybeSetRecordingOrReplaying(argc, argv);
+  RecordReplayAttach(&argc, &argv);
 
 #if defined(OS_WIN)
 #if BUILDFLAG(USE_ALLOCATOR_SHIM) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
