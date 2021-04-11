@@ -12,7 +12,6 @@ import sys
 import subprocess
 import shutil
 
-
 _RSP_RE = re.compile(r' (@(.+?\.rsp)) ')
 _CMD_LINE_RE = re.compile(
     r'^(?P<gomacc>.*gomacc(\.exe)?"?\s+)?(?P<clang>\S*clang\S*)\s+(?P<args>.*)$'
@@ -51,8 +50,7 @@ def _ProcessCommand(command, target_os):
   match = _CMD_LINE_RE.search(command)
   if match:
     match_dict = match.groupdict()
-    command = ' '.join(
-        [match_dict['clang'], driver_mode, match_dict['args']])
+    command = ' '.join([match_dict['clang'], driver_mode, match_dict['args']])
   elif _debugging:
     print('Compile command didn\'t match expected regex!')
     print('Command:', command)
@@ -63,7 +61,7 @@ def _ProcessCommand(command, target_os):
   # output anyway.
   blocklisted_arguments = ['/nologo', '/showIncludes']
   command_parts = filter(lambda arg: arg not in blocklisted_arguments,
-    command.split())
+                         command.split())
 
   return " ".join(command_parts)
 
@@ -80,9 +78,9 @@ def _ProcessEntry(entry, target_os):
       rsp_path = os.path.join(entry['directory'], match.group(2))
       rsp_contents = open(rsp_path).read()
       entry['command'] = ''.join([
-          entry['command'][:match.start(1)],
-          rsp_contents,
-          entry['command'][match.end(1):]])
+          entry['command'][:match.start(1)], rsp_contents,
+          entry['command'][match.end(1):]
+      ])
   except IOError:
     if _debugging:
       print('Couldn\'t read response file for %s' % entry['file'])
@@ -110,8 +108,10 @@ def ProcessCompileDatabaseIfNeeded(compile_db, target_os=None):
 
   # Filter out NaCl stuff. The clang tooling chokes on them.
   # TODO(dcheng): This doesn't appear to do anything anymore, remove?
-  compile_db = [e for e in compile_db if '_nacl.cc.pdb' not in e['command']
-      and '_nacl_win64.cc.pdb' not in e['command']]
+  compile_db = [
+      e for e in compile_db if '_nacl.cc.pdb' not in e['command']
+      and '_nacl_win64.cc.pdb' not in e['command']
+  ]
   if _debugging:
     print('Filtered out %d entries...' % (original_length - len(compile_db)))
 
@@ -122,9 +122,9 @@ def ProcessCompileDatabaseIfNeeded(compile_db, target_os=None):
 
 def GetNinjaPath():
   ninja_executable = 'ninja.exe' if sys.platform == 'win32' else 'ninja'
-  return os.path.join(
-      os.path.dirname(os.path.realpath(__file__)),
-        '..', '..', '..', '..', 'third_party', 'depot_tools', ninja_executable)
+  return os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
+                      '..', '..', 'third_party', 'depot_tools',
+                      ninja_executable)
 
 
 # FIXME: This really should be a build target, rather than generated at runtime.

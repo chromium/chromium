@@ -2,7 +2,6 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """
 Helper for generating compile DBs for clang tooling. On non-Windows platforms,
 this is pretty straightforward. On Windows, the tool does a bit of extra work to
@@ -24,14 +23,10 @@ from clang import compile_db
 
 def main(argv):
   parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '-p',
-      required=True,
-      help='Path to build directory')
-  parser.add_argument(
-      'targets',
-      nargs='*',
-      help='Additional targets to pass to ninja')
+  parser.add_argument('-p', required=True, help='Path to build directory')
+  parser.add_argument('targets',
+                      nargs='*',
+                      help='Additional targets to pass to ninja')
   parser.add_argument(
       '--target_os',
       choices=['android', 'chromeos', 'ios', 'linux', 'nacl', 'mac', 'win'],
