@@ -1736,7 +1736,7 @@ bool RenderProcessHostImpl::Init() {
       browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  int flags = (renderer_prefix.empty() && !getenv("RECORD_REPLAY_DRIVER")
+  int flags = (renderer_prefix.empty() && !getenv("RECORD_REPLAY_DRIVER"))
     ? ChildProcessHost::CHILD_ALLOW_SELF
     : ChildProcessHost::CHILD_NORMAL;
 #elif defined(OS_MAC)

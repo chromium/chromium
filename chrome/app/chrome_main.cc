@@ -121,7 +121,7 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
 
     // If there is no type, this is the main process. Add a couple command line
     // arguments which are required to record/replay.
-    char** nargv = new char*[*pargc + 3];
+    const char** nargv = new const char*[*pargc + 3];
     memcpy(nargv, *pargv, *pargc * sizeof(char*));
     *pargv = nargv;
 
@@ -159,7 +159,7 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
 
   if (gRecordReplayAttach) {
     gRecordReplayAttach(dispatchAddress, gBuildId);
-    gRecordReplayRecordCommandLineArguments(pargc, pargv);
+    gRecordReplayRecordCommandLineArguments(pargc, (char***)pargv);
   }
 
 #endif // OS_LINUX

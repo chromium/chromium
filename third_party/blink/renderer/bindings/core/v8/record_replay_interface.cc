@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 
 #include "base/record_replay.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "v8/include/v8-inspector.h"
 
 namespace v8 {
