@@ -251,7 +251,8 @@ void SVGLayoutSupport::AdjustWithClipPathAndMask(
 FloatRect SVGLayoutSupport::ExtendTextBBoxWithStroke(
     const LayoutObject& layout_object,
     const FloatRect& text_bounds) {
-  DCHECK(layout_object.IsSVGText() || layout_object.IsSVGInline());
+  DCHECK(layout_object.IsSVGText() || layout_object.IsNGSVGText() ||
+         layout_object.IsSVGInline());
   FloatRect bounds = text_bounds;
   const ComputedStyle& style = layout_object.StyleRef();
   if (style.HasStroke()) {
@@ -267,7 +268,8 @@ FloatRect SVGLayoutSupport::ExtendTextBBoxWithStroke(
 FloatRect SVGLayoutSupport::ComputeVisualRectForText(
     const LayoutObject& layout_object,
     const FloatRect& text_bounds) {
-  DCHECK(layout_object.IsSVGText() || layout_object.IsSVGInline());
+  DCHECK(layout_object.IsSVGText() || layout_object.IsNGSVGText() ||
+         layout_object.IsSVGInline());
   FloatRect visual_rect = ExtendTextBBoxWithStroke(layout_object, text_bounds);
   if (const ShadowList* text_shadow = layout_object.StyleRef().TextShadow())
     text_shadow->AdjustRectForShadow(visual_rect);

@@ -20,6 +20,8 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
     needs_text_metrics_update_ = true;
   }
 
+  bool IsObjectBoundingBoxValid() const;
+
  private:
   // LayoutObject override:
   const char* GetName() const override;
@@ -27,6 +29,9 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const override;
   void AddChild(LayoutObject* child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
+  FloatRect ObjectBoundingBox() const override;
+  FloatRect StrokeBoundingBox() const override;
+  FloatRect VisualRectInLocalSVGCoordinates() const override;
 
   // LayoutBox override:
   bool CreatesNewFormattingContext() const override;
@@ -35,6 +40,10 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   void UpdateBlockLayout(bool relayout_children) override;
 
   void UpdateFont();
+
+  // bounding_box_* are mutable for on-demand computation in a const method.
+  mutable FloatRect bounding_box_;
+  mutable bool needs_update_bounding_box_ : 1;
 
   bool needs_text_metrics_update_ : 1;
 };

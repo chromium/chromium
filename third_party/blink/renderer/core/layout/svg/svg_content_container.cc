@@ -133,6 +133,8 @@ static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
 
   if (object.IsSVGText())
     return To<LayoutSVGText>(object).IsObjectBoundingBoxValid();
+  if (const auto* ng_text = DynamicTo<LayoutNGSVGText>(object))
+    return ng_text->IsObjectBoundingBoxValid();
 
   if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
     return svg_container->IsObjectBoundingBoxValid() &&
