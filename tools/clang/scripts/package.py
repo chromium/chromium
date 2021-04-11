@@ -166,6 +166,9 @@ def main():
   if args.build_mac_arm and sys.platform != 'darwin':
     print('--build-mac-arm only valid on macOS')
     return 1
+  if args.build_mac_arm and platform.machine() == 'arm64':
+    print('--build-mac-arm only valid on intel to cross-build arm')
+    return 1
 
   expected_stamp = GetExpectedStamp()
   pdir = 'clang-' + expected_stamp
@@ -177,8 +180,7 @@ def main():
     # 'Mac_arm64' here when there's no flag and 'Mac' when --build-mac-intel is
     # passed. Also update the build script to explicitly pass a default triple
     # then.
-    assert platform.machine() != 'arm64'
-    if args.build_mac_arm:
+    if args.build_mac_arm or platform.machine() == 'arm64':
       gcs_platform = 'Mac_arm64'
     else:
       gcs_platform = 'Mac'

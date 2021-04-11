@@ -18,6 +18,7 @@ import io
 import json
 import os
 import pipes
+import platform
 import re
 import shutil
 import subprocess
@@ -219,8 +220,15 @@ def AddCMakeToPath(args):
     zip_name = 'cmake-3.17.1-win64-x64.zip'
     dir_name = ['cmake-3.17.1-win64-x64', 'bin']
   elif sys.platform == 'darwin':
-    zip_name = 'cmake-3.17.1-Darwin-x86_64.tar.gz'
-    dir_name = ['cmake-3.17.1-Darwin-x86_64', 'CMake.app', 'Contents', 'bin']
+    if platform.machine() == 'arm64':
+      # TODO(thakis): Move to 3.20 everywhere.
+      zip_name = 'cmake-3.20.0-macos-universal.tar.gz'
+      dir_name = [
+          'cmake-3.20.0-macos-universal', 'CMake.app', 'Contents', 'bin'
+      ]
+    else:
+      zip_name = 'cmake-3.17.1-Darwin-x86_64.tar.gz'
+      dir_name = ['cmake-3.17.1-Darwin-x86_64', 'CMake.app', 'Contents', 'bin']
   else:
     zip_name = 'cmake-3.17.1-Linux-x86_64.tar.gz'
     dir_name = ['cmake-3.17.1-Linux-x86_64', 'bin']
@@ -483,6 +491,9 @@ def main():
   if args.build_mac_arm and sys.platform != 'darwin':
     print('--build-mac-arm only valid on macOS')
     return 1
+  if args.build_mac_arm and platform.machine() == 'arm64':
+    print('--build-mac-arm only valid on intel to cross-build arm')
+    return 1
 
   # Don't buffer stdout, so that print statements are immediately flushed.
   # LLVM tests print output without newlines, so with buffering they won't be
@@ -664,7 +675,6 @@ def main():
       # libraries are needed though, and only libclang_rt (i.e.
       # COMPILER_RT_BUILD_BUILTINS).
       bootstrap_args.extend([
-          '-DDARWIN_osx_ARCHS=x86_64',
           '-DCOMPILER_RT_BUILD_BUILTINS=ON',
           '-DCOMPILER_RT_BUILD_CRT=OFF',
           '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
@@ -675,6 +685,10 @@ def main():
           '-DCOMPILER_RT_ENABLE_WATCHOS=OFF',
           '-DCOMPILER_RT_ENABLE_TVOS=OFF',
           ])
+      if platform.machine() == 'arm64':
+        bootstrap_args.extend(['-DDARWIN_osx_ARCHS=arm64'])
+      else:
+        bootstrap_args.extend(['-DDARWIN_osx_ARCHS=x86_64'])
     elif args.pgo:
       # PGO needs libclang_rt.profile but none of the other compiler-rt stuff.
       bootstrap_args.extend([
@@ -696,7 +710,11 @@ def main():
     CopyLibstdcpp(args, LLVM_BOOTSTRAP_INSTALL_DIR)
     RunCommand(['ninja'], msvc_arch='x64')
     if args.run_tests:
-      RunCommand(['ninja', 'check-all'], msvc_arch='x64')
+      test_targets = ['check-all']
+      if sys.platform == 'darwin' and platform.machine() == 'arm64':
+        # TODO(llvm.org/PR49918): Run check-all on mac/arm too.
+        test_targets = ['check-llvm', 'check-clang']
+      RunCommand(['ninja'] + test_targets, msvc_arch='x64')
     RunCommand(['ninja', 'install'], msvc_arch='x64')
 
     if sys.platform == 'win32':
@@ -877,6 +895,7 @@ def main():
     cmake_args += ['-DCOMPILER_RT_ENABLE_IOS=ON',
                    '-DSANITIZER_MIN_OSX_VERSION=10.7']
     if args.build_mac_arm:
+      assert platform.machine() != 'arm64', 'build_mac_arm for cross build only'
       cmake_args += ['-DCMAKE_OSX_ARCHITECTURES=arm64',
                      '-DLLVM_USE_HOST_TOOLS=ON']
 
@@ -901,14 +920,14 @@ def main():
     VerifyZlibSupport()
 
   if sys.platform == 'win32':
-    platform = 'windows'
+    rt_platform = 'windows'
   elif sys.platform == 'darwin':
-    platform = 'darwin'
+    rt_platform = 'darwin'
   else:
     assert sys.platform.startswith('linux')
-    platform = 'linux'
-  rt_lib_dst_dir = os.path.join(LLVM_BUILD_DIR, 'lib', 'clang',
-                                RELEASE_VERSION, 'lib', platform)
+    rt_platform = 'linux'
+  rt_lib_dst_dir = os.path.join(LLVM_BUILD_DIR, 'lib', 'clang', RELEASE_VERSION,
+                                'lib', rt_platform)
 
   # Do an out-of-tree build of compiler-rt for 32-bit Win clang_rt.profile.lib.
   if sys.platform == 'win32':
@@ -943,7 +962,7 @@ def main():
 
     # Copy select output to the main tree.
     rt_lib_src_dir = os.path.join(compiler_rt_build_dir, 'lib', 'clang',
-                                  RELEASE_VERSION, 'lib', platform)
+                                  RELEASE_VERSION, 'lib', rt_platform)
     # Static and dynamic libraries:
     CopyDirectoryContents(rt_lib_src_dir, rt_lib_dst_dir)
 
@@ -1022,8 +1041,8 @@ def main():
       os.chdir(build_dir)
       target_spec = target_arch + '-fuchsia'
       if args.build_mac_arm:
-        # Just-built clang can't run (it's an arm binary), so use the bootstrap
-        # compiler instead.
+        # Just-built clang can't run (it's an arm binary on an intel host), so
+        # use the bootstrap compiler instead.
         host_path = LLVM_BOOTSTRAP_INSTALL_DIR
       else:
         host_path = LLVM_BUILD_DIR
@@ -1073,7 +1092,7 @@ def main():
 
       # Build the Fuchsia profile runtime.
       # TODO(thakis): Figure out why this doesn't build with the stage0
-      # compiler in arm builds.
+      # compiler in arm cross builds.
       if target_arch == 'x86_64' and not args.build_mac_arm:
         fuchsia_args.extend([
             '-DCOMPILER_RT_BUILD_BUILTINS=OFF',
