@@ -406,6 +406,7 @@ crbug.com/963223 [ win nvidia angle-vulkan passthrough ] conformance/rendering/o
 crbug.com/angleproject/2930 [ win nvidia angle-vulkan passthrough ] conformance/textures/misc/texture-size-cube-maps.html [ Failure ]
 crbug.com/1082826 [ win nvidia angle-vulkan passthrough ] conformance/buffers/buffer-data-dynamic-delay.html [ Failure ]
 crbug.com/1148120 [ win7 nvidia angle-vulkan passthrough ] conformance/canvas/viewport-unchanged-upon-resize.html [ Failure ]
+crbug.com/1197905 [ win7 nvidia angle-vulkan passthrough ] conformance/textures/misc/texture-size.html [ Failure ]
 
 # Flaky since crbug.com/1017162
 crbug.com/1017162 [ win nvidia angle-vulkan passthrough ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
@@ -707,6 +708,8 @@ crbug.com/1080360 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_texture_c
 crbug.com/1080401 [ chromeos chromeos-board-kevin no-swiftshader-gl ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 crbug.com/1080408 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
 crbug.com/1080377 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
+
+crbug.com/1197243 [ chromeos chromeos-board-amd64-generic ] conformance/extensions/oes-texture-half-float.html [ Failure ]
 
 # GPU supports ES 3.2, but supporting draw_buffers on WebGL 1.0/ ES 2.0 requires
 # a significant amount of emulation.
