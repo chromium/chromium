@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Close ChromeVox Tutorial</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{open paren}other{# open parens}}</translation>
+<translation id="270523456882008230">Hint: Double-tap with one finger to activate the current item.</translation>
 <translation id="2705875883745373140">Not pressed</translation>
 <translation id="2708078563826046398">Peach Puff</translation>
 <translation id="2713444072780614174">White</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Tool tip</translation>
 <translation id="2976476721782829799">You can also move around by dragging one finger around the screen. This is called exploring by touch. Try dragging your finger around to read the rest of this lesson.</translation>
 <translation id="297825089465017871">Swipe two fingers left</translation>
+<translation id="2988364959384217951">Hint: Swipe from right to left with two fingers if you would like to exit this tutorial.</translation>
 <translation id="2998131015536248178">Previous Character</translation>
 <translation id="2999559350546931576">Decrease pitch</translation>
 <translation id="3009352964623081324">Search + O, then S. Use to install, manage and customise voices.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Open ChromeVox menus</translation>
 <translation id="7799302833060027366">Press up, down, left or right to explore maths</translation>
 <translation id="7800558923657349506">Epilogue</translation>
+<translation id="7801768143868631306">Hint: Swipe left or right with one finger to navigate.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7810781339813764006">Next Group</translation>
 <translation id="7813616274030162878">Switch Access Menu</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Font <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Cycle punctuation echo</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Actions available. Press Search+Ctrl+A to view</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Modifier Keys</translation>
 <translation id="8943282376843390568">Lime</translation>

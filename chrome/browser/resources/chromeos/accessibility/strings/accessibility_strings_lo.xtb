@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ປິດການສອນການນຳໃຊ້ ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ ວົງເລັບເປີດ}other{ # ວົງເລັບເປີດ}}</translation>
+<translation id="270523456882008230">ຄຳແນະນຳ: ແຕະສອງເທື່ອດ້ວຍນິ້ວດຽວເພື່ອເປີດນຳໃຊ້ລາຍການປັດຈຸບັນ.</translation>
 <translation id="2705875883745373140">ບໍ່​ໄດ້​ກົດ​</translation>
 <translation id="2708078563826046398">ສີສົ້ມພີຈພັຟ</translation>
 <translation id="2713444072780614174">ສີ​ຂາວ</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">ເຄັດລັບເຄື່ອງມື</translation>
 <translation id="2976476721782829799">ທ່ານສາມາດເລື່ອນໄປມາໄດ້ໂດຍການລາກນິ້ວດຽວຢູ່ໜ້າຈໍ. ນີ້ເອີ້ນວ່າການສຳຫຼວດໂດຍການສຳຜັດ. ລອງລາກນິ້ວຂອງທ່ານໄປມາເພື່ອອ່ານສ່ວນທີ່ເຫຼືອຂອງບົດຮຽນນີ້.</translation>
 <translation id="297825089465017871">ປັດສອງນິ້ວມືໄປຊ້າຍ</translation>
+<translation id="2988364959384217951">ຄຳແນະນຳ: ປັດຈາກຂວາໄປຊ້າຍດ້ວຍສອງນິ້ວຫາກທ່ານຕ້ອງການອອກຈາກການສອນການນຳໃຊ້ນີ້.</translation>
 <translation id="2998131015536248178">ຕົວອັກສອນຜ່ານ​ມາ</translation>
 <translation id="2999559350546931576">ຜ່ອນລະດັບສຽງລົງ</translation>
 <translation id="3009352964623081324">ຊອກຫາ + O, ຈາກນັ້ນ S. ໃຊ້ເພື່ອຕິດຕັ້ງ, ຈັດການ ແລະ ປັບແຕ່ງສຽງ.</translation>
@@ -940,6 +942,7 @@
 <translation id="7776293189010177726">ເປີດເມນູ ChromeVox</translation>
 <translation id="7799302833060027366">ກົດປຸ່ມຂຶ້ນ, ລົງ, ຊ້າຍ ຫຼື ຂວາເພື່ອສຳຫຼວດຄະນິດສາດ</translation>
 <translation id="7800558923657349506">ຄຳກ່າວສົ່ງທ້າຍ</translation>
+<translation id="7801768143868631306">ຄຳແນະນຳ: ປັດຊ້າຍ ຫຼື ຂວາດ້ວຍນິ້ວດຽວເພື່ອນຳທາງ.</translation>
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
 <translation id="7810781339813764006">ກຸ່ມ​ຕໍ່​ໄປ</translation>
 <translation id="7813616274030162878">ເມນູການເຂົ້າເຖິງປຸ່ມ</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860">ຟອນ <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">ສຽງເອໂກເຄື່ອງໝາຍວັກຕອນຮອບວຽນ</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">ຄຳສັ່ງທີ່ສາມາດໃຊ້ໄດ້. ກົດ ຊອກຫາ+Ctrl+A ເພື່ອເບິ່ງ</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">ປຸ່ມຕົວດັດແປງ</translation>
 <translation id="8943282376843390568">ສີຂຽວໝາກນາວ</translation>

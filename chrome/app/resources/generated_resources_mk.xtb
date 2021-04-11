@@ -2415,7 +2415,7 @@
 <translation id="3650753875413052677">Грешка при регистрацијата</translation>
 <translation id="3650845953328929506">Прикачувањето на евиденцијата чека на ред.</translation>
 <translation id="3650952250015018111">Дозволете ѝ пристап на "<ph name="APP_NAME" />" до:</translation>
-<translation id="3651488188562686558">Исклучи се од Wi-Fi</translation>
+<translation id="3651488188562686558">Прекини ја врската со Wi-Fi</translation>
 <translation id="3652817283076144888">Се иницијализира</translation>
 <translation id="3653160965917900914">Мрежни споделувања</translation>
 <translation id="3653999333232393305">Продолжи дозволувајќи <ph name="HOST" /> да пристапи до вашиот микрофон</translation>
@@ -2547,7 +2547,7 @@
 <translation id="3788401245189148511">Може да:</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="379082410132524484">Картичката ви е истечена</translation>
-<translation id="3792890930871100565">Исклучи печатачи</translation>
+<translation id="3792890930871100565">Прекини ја врската со печатачите</translation>
 <translation id="3793395331556663376">Отворени се премногу датотечни системи.</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome не најде штетен софтвер на вашиот компјутер • Проверено пред 1 ден}one{Chrome не најде штетен софтвер на вашиот компјутер • Проверено пред {NUM_DAYS} ден}other{Chrome не најде штетен софтвер на вашиот компјутер • Проверено пред {NUM_DAYS} дена}}</translation>
 <translation id="379500251094592809">За да користите „Споделување во близина“, проверете дали двата уреда се отклучени, блиску еден до друг и дали имаат вклучено Bluetooth. Ако споделувате со Chromebook што не е во вашите контакти, проверете дали има вклучено „Видливост во близина“ (отворете ја статусната област, така што ќе го изберете времето, а потоа вклучете „Видливост во близина“) <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -3424,7 +3424,7 @@
 <translation id="4798543057539040565">{COUNT,plural, =1{ставка}one{# ставка}other{# ставки}}</translation>
 <translation id="4801448226354548035">Сокриј сметки</translation>
 <translation id="4801512016965057443">Дозволи роаминг на мобилни податоци</translation>
-<translation id="4804818685124855865">Исклучи</translation>
+<translation id="4804818685124855865">Прекини врска</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4807098396393229769">Име на картичка</translation>
 <translation id="4808024018088054533">Chrome не најде штетен софтвер на вашиот компјутер • Штотуку проверено</translation>

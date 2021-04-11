@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome பீட்டா</translation>
 <translation id="1399397803214730675">Google Chromeமின் மிகச் சமீபத்திய பதிப்பு இந்தக் கம்ப்யூட்டரில் ஏற்கனவே உள்ளது. மென்பொருள் இயங்கவில்லை என்றால், Google Chromeமை நிறுவல்நீக்கம் செய்துவிட்டு, மீண்டும் முயற்சி செய்க.</translation>
 <translation id="1434626383986940139">Chrome Canary ஆப்ஸ்</translation>
+<translation id="1507198376417198979">புதிய Chrome சுயவிவரத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="1516530951338665275">இணைப்பதைத் தொடர Google Chromeமிற்கு புளூடூத் அணுகல் 
  தேவை. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chromeஐப் புதுப்பி</translation>
@@ -211,6 +212,7 @@
 <translation id="6943584222992551122">இவரின் உலாவிய தரவு இந்தச் சாதனத்திலிருந்து நீக்கப்படும். தரவை மீட்டெடுக்க, Chromeமில் <ph name="USER_EMAIL" /> ஆக உள்நுழையவும்.</translation>
 <translation id="6967962315388095737">mDNS ட்ராஃபிக்கை அனுமதிக்க, Google Chrome பீட்டாவுக்கான உள்வரும் விதி.</translation>
 <translation id="6989339256997917931">Google Chrome புதுப்பிக்கப்பட்டது, ஆனால் இதை நீங்கள் குறைந்தபட்சம் 30 நாட்களாகப் பயன்படுத்தவில்லை.</translation>
+<translation id="7025800014283535195">இங்கே Chrome சுயவிவரங்களுக்கு இடையே மாறலாம்</translation>
 <translation id="7062128746136194023">Chromeமில் "தளங்கள், ஆப்ஸ், நீட்டிப்புகள் ஆகியவற்றுக்கான அனுமதிகளை" உங்கள் பெற்றோர் முடக்கிவிட்டார். இந்த <ph name="EXTENSION_TYPE_PARAMETER" /> ஐச் சேர்க்க அனுமதியில்லை.</translation>
 <translation id="7098166902387133879">Google Chrome உங்கள் மைக்ரோஃபோனைப் பயன்படுத்துகிறது.</translation>
 <translation id="7106741999175697885">செயல் நிர்வாகி - Google Chrome</translation>
@@ -288,4 +290,5 @@
 <translation id="922152298093051471">Chromeமைப் பிரத்தியேகப்படுத்து</translation>
 <translation id="940313311831216333">உங்கள் எல்லாச் சாதனங்களிலும் Chrome தொடர்பான அனைத்தையும் அணுக, உள்நுழைந்து ஒத்திசைவை இயக்கவும்.</translation>
 <translation id="989369509083708165">உங்கள் இயல்புநிலை உலாவி Google Chrome ஆகும்</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> விசைகளை அழுத்தி Chrome சுயவிவரங்களுக்கு இடையே மாறலாம்</translation>
 </translationbundle>
