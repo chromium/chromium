@@ -401,6 +401,10 @@ class RendererSandboxedProcessLauncherDelegate
         browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
     if (!renderer_prefix.empty())
       return nullptr;
+    if (getenv("RECORD_REPLAY_DRIVER")) {
+      // Zygotes are not used to spawn recording processes.
+      return nullptr;
+    }
     return GetGenericZygote();
   }
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
@@ -1732,8 +1736,9 @@ bool RenderProcessHostImpl::Init() {
       browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  int flags = renderer_prefix.empty() ? ChildProcessHost::CHILD_ALLOW_SELF
-                                      : ChildProcessHost::CHILD_NORMAL;
+  int flags = (renderer_prefix.empty() && !getenv("RECORD_REPLAY_DRIVER")
+    ? ChildProcessHost::CHILD_ALLOW_SELF
+    : ChildProcessHost::CHILD_NORMAL;
 #elif defined(OS_MAC)
   int flags = ChildProcessHost::CHILD_RENDERER;
 #else
@@ -3106,7 +3111,8 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   // A non-empty RendererCmdPrefix implies that Zygote is disabled.
   if (!base::CommandLine::ForCurrentProcess()
            ->GetSwitchValueNative(switches::kRendererCmdPrefix)
-           .empty()) {
+           .empty() ||
+      getenv("RECORD_REPLAY_DRIVER")) {
     command_line->AppendSwitch(switches::kNoZygote);
   }
 
