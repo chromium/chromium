@@ -4,7 +4,7 @@
 # Lines tagged with "impl_lte_$VERSION" will be active when testing trunk client
 # with versions less than or equal to $VERSION of the implementation.
 #
-# tags: [ impl_lte_83 client_lte_83 client_lte_84 client_lte_87 client_lte_88 client_lte_89 ]
+# tags: [ client_lte_87 client_lte_88 client_lte_89 ]
 # results: [ Skip ]
 # conflicts_allowed: True
 
@@ -14,36 +14,5 @@ crbug.com/1172938 [ client_lte_89 ] org.chromium.weblayer.test.NavigationTest#te
 # Changes were landed in crrev.com/c/2683084 which modified the test. The CL was not cherry picked into M87.
 crbug.com/1174169 [ client_lte_87 ] org.chromium.weblayer.test.NavigationTest#testLoadError [ Skip ]
 
-# ExternalNavigationTests are testing intent launching that changed after M83.
-[ impl_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentInNewTabLaunchedOnLinkClick [ Skip ]
-[ impl_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentViaOnLoadBlocked [ Skip ]
-[ impl_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testNonHandledExternalIntentWithFallbackUrlThatLaunchesIntentAfterRedirectBlocksFallbackIntent [ Skip ]
-[ impl_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testUserClicksLinkToPageWithExternalIntentLaunchedViaOnLoad [ Skip ]
-
-# The behavior of the impl tested by these Tab* tests changed after M83.
-[ impl_lte_83 ] org.chromium.weblayer.test.TabListCallbackTest#testCallbackInvokedWhenTabClosedViaWebContents [ Skip ]
-[ impl_lte_83 ] org.chromium.weblayer.test.TabTest#testBeforeUnloadNoHandler [ Skip ]
-[ impl_lte_83 ] org.chromium.weblayer.test.TabTest#testBeforeUnloadNoInteraction [ Skip ]
-
-# Replace was removed in https://crrev.com/c/2150968.
-crbug.com/1070851 [ impl_lte_83 ] org.chromium.weblayer.test.NavigationTest#testReplace [ Skip ]
-
-# Fixed in https://crrev.com/c/2180022.
-crbug.com/1077243 [ impl_lte_83 ] org.chromium.weblayer.test.FullscreenCallbackTest#testExitFullscreenWhenTabDestroyed [ Skip ]
-
-crbug.com/1096570 [ impl_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectLaunched [ Skip ]
-
 # The test was changed in the main branch in crrev.com/c/2377987 and the changes won't be merged into M88
 crbug.com/1155565 [ client_lte_88 ] org.chromium.weblayer.test.CookieManagerTest#testSetCookieNotSet [ Skip ]
-
-# Intentionally changed in M84, https://crrev.com/c/2130790.
-crbug.com/1078973 [ client_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentLaunchedViaOnLoad [ Skip ]
-crbug.com/1078973 [ client_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testNonHandledExternalIntentWithFallbackUrlThatLaunchesIntentAfterRedirectLaunchesFallbackIntent [ Skip ]
-
-# Replace was removed in https://crrev.com/c/2150968.
-crbug.com/1070851 [ client_lte_83 ] org.chromium.weblayer.test.NavigationTest#testReplace [ Skip ]
-
-# Test was made private.
-crbug.com/1087451 [ client_lte_84 ] org.chromium.weblayer.test.TopControlsTest#testBasic [ Skip ]
-
-crbug.com/1096570 [ client_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectBlocked [ Skip ]
