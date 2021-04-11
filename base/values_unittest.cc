@@ -25,6 +25,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
 namespace base {
 
 // Ensure that base::Value is as small as possible, i.e. that there is
@@ -2601,5 +2605,26 @@ TEST(ValuesTest, MutableGetString) {
   value.GetString() = "new_value";
   EXPECT_EQ("new_value", value.GetString());
 }
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+TEST(ValuesTest, TracingSupport) {
+  EXPECT_EQ(perfetto::TracedValueToString(Value(false)), "false");
+  EXPECT_EQ(perfetto::TracedValueToString(Value(1)), "1");
+  EXPECT_EQ(perfetto::TracedValueToString(Value(1.5)), "1.5");
+  EXPECT_EQ(perfetto::TracedValueToString(Value("value")), "value");
+  EXPECT_EQ(perfetto::TracedValueToString(Value(Value::Type::NONE)), "<none>");
+  {
+    Value::ListStorage list;
+    list.emplace_back(2);
+    list.emplace_back(3);
+    EXPECT_EQ(perfetto::TracedValueToString(Value(list)), "[2,3]");
+  }
+  {
+    Value::DictStorage dict;
+    dict["key"] = Value("value");
+    EXPECT_EQ(perfetto::TracedValueToString(Value(dict)), "{key:value}");
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 }  // namespace base

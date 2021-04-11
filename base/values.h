@@ -37,6 +37,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
+#include "base/trace_event/base_tracing_forward.h"
 #include "base/value_iterators.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -578,6 +579,9 @@ class BASE_EXPORT Value {
 
   // Serializes to a string for logging and debug purposes.
   std::string DebugString() const;
+
+  // Write this object into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue) const;
 
  protected:
   // Checked convenience accessors for dict and list.

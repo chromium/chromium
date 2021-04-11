@@ -22,6 +22,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -1021,6 +1022,45 @@ std::string Value::DebugString() const {
   std::string json;
   JSONWriter::WriteWithOptions(*this, JSONWriter::OPTIONS_PRETTY_PRINT, &json);
   return json;
+}
+
+void Value::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  switch (type()) {
+    case Type::BOOLEAN:
+      std::move(context).WriteBoolean(GetBool());
+      return;
+    case Type::INTEGER:
+      std::move(context).WriteInt64(GetInt());
+      return;
+    case Type::DOUBLE:
+      std::move(context).WriteDouble(GetDouble());
+      return;
+    case Type::STRING:
+      std::move(context).WriteString(GetString());
+      return;
+    case Type::BINARY:
+      std::move(context).WriteString("<binary data not supported>");
+      return;
+    case Type::DICTIONARY: {
+      perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
+      for (const auto& kv : DictItems())
+        dict.Add(perfetto::DynamicString{kv.first}, kv.second);
+      return;
+    }
+    case Type::LIST: {
+      perfetto::TracedArray array = std::move(context).WriteArray();
+      for (const auto& item : GetList())
+        array.Append(item);
+      return;
+    }
+    case Type::NONE:
+      std::move(context).WriteString("<none>");
+      return;
+    // TODO(crbug.com/859477): Remove after root cause is found.
+    case Type::DEAD:
+      CHECK(false);
+      return;
+  }
 }
 
 Value* Value::SetKeyInternal(StringPiece key,
