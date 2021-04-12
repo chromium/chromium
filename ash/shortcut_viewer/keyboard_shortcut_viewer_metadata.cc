@@ -15,7 +15,9 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event_constants.h"
@@ -101,6 +103,40 @@ base::Optional<std::u16string> GetSpecialStringForKeyboardCode(
   return l10n_util::GetStringUTF16(msg_id);
 }
 
+// Dead keys work by combining two consecutive keystrokes together. The first
+// keystroke does not produce an output character, it acts as a one-shot
+// modifier for a subsequent keystroke. So for example on a German keyboard,
+// pressing the acute ´ dead key, then pressing the letter e will produce é.
+// The first character is called the combining character and does not produce
+// an output glyph. This table maps the combining character to a string
+// containing the non-combining equivalent that can be displayed.
+std::u16string GetStringForDeadKey(ui::DomKey dom_key) {
+  DCHECK(dom_key.IsDeadKey());
+  int32_t ch = dom_key.ToDeadKeyCombiningCharacter();
+  switch (ch) {
+    // Combining grave.
+    case 0x300:
+      return u"`";
+    // Combining acute.
+    case 0x301:
+      return u"´";
+    // Combining circumflex.
+    case 0x302:
+      return u"^";
+    // Combining tilde.
+    case 0x303:
+      return u"~";
+    // Combining diaeresis.
+    case 0x308:
+      return u"¨";
+    default:
+      break;
+  }
+
+  LOG(WARNING) << "No mapping for dead key shortcut " << ch;
+  return base::UTF8ToUTF16(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
+}
+
 }  // namespace
 
 std::u16string GetStringForCategory(ShortcutCategory category) {
@@ -139,9 +175,38 @@ std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code) {
 
   ui::DomKey dom_key;
   ui::KeyboardCode key_code_to_compare = ui::VKEY_UNKNOWN;
+  const ui::KeyboardLayoutEngine* layout_engine =
+      ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
+
+  // The input |key_code| is the |KeyboardCode| aka VKEY of the shortcut in
+  // the US layout which is registered from the shortcut table. |key_code|
+  // is first mapped to the |DomCode| this key is on in the US layout. If
+  // the key is not positional, this processing is skipped and it is handled
+  // normally in the loop below. For the positional keys, the |DomCode| is
+  // then mapped to the |DomKey| in the current layout which represents the
+  // glyph/character that appears on the key (and usually when typed).
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    ui::DomCode dom_code =
+        ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(key_code);
+    if (dom_code != ui::DomCode::NONE) {
+      if (layout_engine->Lookup(dom_code, /*flags=*/ui::EF_NONE, &dom_key,
+                                &key_code_to_compare)) {
+        if (dom_key.IsDeadKey()) {
+          return GetStringForDeadKey(dom_key);
+        }
+        if (!dom_key.IsValid()) {
+          return std::u16string();
+        }
+        return base::UTF8ToUTF16(
+            ui::KeycodeConverter::DomKeyToKeyString(dom_key));
+      }
+      return std::u16string();
+    }
+  }
+
   for (const auto& dom_code : ui::dom_codes) {
-    if (!ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine()->Lookup(
-            dom_code, /*flags=*/ui::EF_NONE, &dom_key, &key_code_to_compare)) {
+    if (!layout_engine->Lookup(dom_code, /*flags=*/ui::EF_NONE, &dom_key,
+                               &key_code_to_compare)) {
       continue;
     }
     if (key_code_to_compare != key_code || !dom_key.IsValid() ||
