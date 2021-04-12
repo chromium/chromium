@@ -219,6 +219,7 @@ export const ErrorType = {
   SET_FPS_RANGE_FAILURE: 'set-fps-range-failure',
   START_CAMERA_FAILURE: 'start-camera-failure',
   START_CAPTURE_FAILURE: 'start-capture-failure',
+  STOP_CAPTURE_FAILURE: 'stop-capture-failure',
   UNCAUGHT_PROMISE: 'uncaught-promise',
 };
 

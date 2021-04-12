@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from '../../../chrome_util.js';
+import * as error from '../../../error.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceOperator} from '../../../mojo/device_operator.js';
 import {
+  CanceledError,
+  ErrorLevel,
+  ErrorType,
   Facing,      // eslint-disable-line no-unused-vars
   Resolution,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';
@@ -69,7 +73,16 @@ export class ModeBase {
    */
   async stopCapture() {
     this.stop_();
-    return await this.capture_;
+    try {
+      await this.capture_;
+    } catch (e) {
+      if (e instanceof CanceledError) {
+        return;
+      }
+      error.reportError(
+          ErrorType.STOP_CAPTURE_FAILURE, ErrorLevel.ERROR,
+          assertInstanceof(e, Error));
+    }
   }
 
   /**
