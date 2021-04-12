@@ -28,6 +28,7 @@ class DefaultBrowserUtilsTest : public PlatformTest {
     };
     feature_list_.InitAndEnableFeatureWithParameters(kDefaultPromoTailored,
                                                      feature_params);
+    ClearUserDefaults();
   }
   void TearDown() override { ClearUserDefaults(); }
 
