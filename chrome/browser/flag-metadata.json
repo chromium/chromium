@@ -1971,7 +1971,7 @@
   {
     "name": "enable-jxl",
     "owners": [ "deymo", "firsching", "lode" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 95
   },
   {
     "name": "enable-kerberos-settings-section",
