@@ -149,7 +149,7 @@ export class ConstraintsPreferrer {
    * @return {!ResolutionList}
    */
   getSupportedResolutions(deviceId) {
-    // Guarding from HALv1 code path calling this function.
+    // Guarding from fake camera code path calling this function.
     assert(this.supportedResolutions_.get(deviceId) !== undefined);
     return this.supportedResolutions_.get(deviceId);
   }

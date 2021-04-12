@@ -81,8 +81,8 @@ export class DeviceInfoUpdater {
     this.devicesInfo_ = this.enumerateDevices_();
 
     /**
-     * Camera3DeviceInfo of all available video devices. Is null on HALv1 device
-     * without mojo api support.
+     * Camera3DeviceInfo of all available video devices. Is null on fake cameras
+     * which do not have private mojo API support.
      * @type {!Promise<?Array<!Camera3DeviceInfo>>}
      * @private
      */
@@ -217,8 +217,7 @@ export class DeviceInfoUpdater {
   /**
    * Queries Camera3DeviceInfo of available devices through private mojo API.
    * @return {!Promise<?Array<!Camera3DeviceInfo>>} Camera3DeviceInfo
-   *     of available devices. Maybe null on HALv1 devices without supporting
-   *     private mojo api.
+   *     of available devices. Maybe null on fake cameras.
    * @throws {!Error} Thrown when camera unplugging happens between enumerating
    *     devices and querying mojo APIs with current device info results.
    * @private

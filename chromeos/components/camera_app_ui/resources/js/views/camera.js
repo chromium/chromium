@@ -6,6 +6,7 @@ import * as animate from '../animation.js';
 import {
   assert,
   assertInstanceof,
+  assertString,
 } from '../chrome_util.js';
 import {
   PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
@@ -668,24 +669,19 @@ export class Camera extends View {
 
   /**
    * Try start stream reconfiguration with specified mode and device id.
-   * @param {?string} deviceId
+   * @param {?string} deviceId Null if the default camera should be started.
    * @param {!Mode} mode
    * @return {!Promise<boolean>} If found suitable stream and reconfigure
    *     successfully.
    */
   async startWithMode_(deviceId, mode) {
     const deviceOperator = await DeviceOperator.getInstance();
-    let resolCandidates = null;
-    if (deviceOperator !== null) {
-      if (deviceId !== null) {
-        resolCandidates = this.modes_.getResolutionCandidates(mode, deviceId);
-      } else {
-        console.error(
-            'Null device id present on HALv3 device. Fallback to v1.');
-      }
-    }
-    if (resolCandidates === null) {
-      resolCandidates = this.modes_.getResolutionCandidatesV1(mode, deviceId);
+    let resolCandidates;
+    if (deviceOperator) {
+      resolCandidates =
+          this.modes_.getResolutionCandidates(mode, assertString(deviceId));
+    } else {
+      resolCandidates = this.modes_.getFakeResolutionCandidates(mode, deviceId);
     }
     for (const {resolution: captureR, previewCandidates} of resolCandidates) {
       for (const constraints of previewCandidates) {

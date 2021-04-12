@@ -10,6 +10,7 @@ import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import * as localStorage from '../../models/local_storage.js';
+import {DeviceOperator} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {Facing, Mode, PerfEvent, ViewName} from '../../type.js';
@@ -73,14 +74,6 @@ export class Options {
      * @private
      */
     this.refreshingVideoDeviceIds_ = false;
-
-    /**
-     * Whether the current device is HALv1 and lacks facing configuration.
-     * get facing information.
-     * @type {?boolean}
-     * private
-     */
-    this.isV1NoFacingConfig_ = null;
 
     /**
      * Mirroring set per device.
@@ -194,17 +187,9 @@ export class Options {
     const track = stream.getVideoTracks()[0];
     const trackSettings = track.getSettings && track.getSettings();
     const facingMode = trackSettings && trackSettings.facingMode;
-    if (this.isV1NoFacingConfig_ === null) {
-      // Because the facing mode of external camera will be set to undefined on
-      // all devices, to distinguish HALv1 device without facing configuration,
-      // assume the first opened camera is built-in camera. Device without
-      // facing configuration won't set facing of built-in cameras. Also if
-      // HALv1 device with facing configuration opened external camera first
-      // after CCA launched the logic here may misjudge it as this category.
-      this.isV1NoFacingConfig_ = facingMode === undefined;
-    }
-    const facing =
-        this.isV1NoFacingConfig_ ? Facing.NOT_SET : this.mapFacing_(facingMode);
+    const facing = (await DeviceOperator.isSupported()) ?
+        this.mapFacing_(facingMode) :
+        Facing.NOT_SET;
     this.videoDeviceId_ = trackSettings && trackSettings.deviceId || null;
     this.updateMirroring_(facing);
     this.audioTrack_ = stream.getAudioTracks()[0];
@@ -263,14 +248,13 @@ export class Options {
 
   /**
    * Gets the video device ids sorted by preference.
-   * @return {!Promise<!Array<?string>>} May contain null for user facing camera
-   *     on HALv1 devices.
+   * @return {!Promise<!Array<?string>>} May contain null for fake cameras.
    */
   async videoDeviceIds() {
     /** @type {!Array<(!Camera3DeviceInfo|!MediaDeviceInfo)>} */
     let devices;
     /**
-     * Object mapping from device id to facing. Set to null on HALv1 device.
+     * Object mapping from device id to facing. Set to null for fake cameras.
      * @type {?Object<string, !Facing>}
      */
     let facings = null;
@@ -282,7 +266,6 @@ export class Options {
       for (const {deviceId, facing} of camera3Info) {
         facings[deviceId] = facing;
       }
-      this.isV1NoFacingConfig_ = false;
     } else {
       devices = await this.infoUpdater_.getDevicesInfo();
     }
@@ -299,8 +282,9 @@ export class Options {
       }
       return 1;
     });
-    // Prepended 'null' deviceId means the system default camera on HALv1
-    // device. Add it only when the app is launched (no video-device-id set).
+    // Prepended 'null' deviceId means there is no facing information to sort
+    // device IDs and prefer the default one. Add it only when the app is
+    // launched (no video-device-id set).
     if (!facings && this.videoDeviceId_ === null) {
       sorted.unshift(null);
     }
