@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 
 namespace content {
 
@@ -38,6 +39,7 @@ void RegisterContentBinderPoliciesForSameOriginPrerendering(
 
   map.SetPolicy<blink::mojom::CacheStorage>(MojoBinderPolicy::kGrant);
   map.SetPolicy<blink::mojom::IDBFactory>(MojoBinderPolicy::kGrant);
+  map.SetPolicy<blink::mojom::NativeIOHost>(MojoBinderPolicy::kGrant);
   map.SetPolicy<network::mojom::RestrictedCookieManager>(
       MojoBinderPolicy::kGrant);
 }
