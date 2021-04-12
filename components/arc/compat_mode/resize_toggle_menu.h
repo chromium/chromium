@@ -11,6 +11,7 @@
 
 namespace views {
 class Widget;
+class MenuItemView;
 }  // namespace views
 
 namespace arc {
@@ -20,10 +21,11 @@ class ArcResizeLockPrefDelegate;
 class ResizeToggleMenu : public ui::SimpleMenuModel::Delegate {
  public:
   enum CommandId {
-    kResizePhone = 0,
-    kResizeTablet = 1,
-    kResizeDesktop = 2,
-    kOpenSettings = 3,
+    kResizePhone = 1,  // Starting from 1 to avoid the conflict with "separator
+                       // item" because its command id is 0.
+    kResizeTablet = 2,
+    kResizeDesktop = 3,
+    kOpenSettings = 4,
     kMaxValue = kOpenSettings,
   };
 
@@ -44,6 +46,9 @@ class ResizeToggleMenu : public ui::SimpleMenuModel::Delegate {
   views::Widget* widget_;
 
   ArcResizeLockPrefDelegate* pref_delegate_;
+
+  // Owned by |menu_runner_|. Store this here only for testing.
+  views::MenuItemView* root_view_ = nullptr;
 
   std::unique_ptr<ui::SimpleMenuModel> model_;
   std::unique_ptr<views::MenuModelAdapter> adapter_;

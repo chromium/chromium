@@ -112,6 +112,7 @@ bool ArcResizeLockManager::OnResizeButtonPressed(views::Widget* widget) {
     return false;
   }
 
+  resize_toggle_menu_.reset();
   resize_toggle_menu_ =
       std::make_unique<ResizeToggleMenu>(widget, pref_delegate_);
 
