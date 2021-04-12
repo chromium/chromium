@@ -531,7 +531,6 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // stage with the CompositeBGColorAnimation feature.
   base::Optional<CompositorAnimations::FailureReasons>
       supplemental_failure_reasons_;
-  bool can_composite_bgcolor_anim_ = false;
 
   // Animations with an owning element stop ticking if there is an active
   // display lock on an ancestor element.  Cache the status to minimize the
