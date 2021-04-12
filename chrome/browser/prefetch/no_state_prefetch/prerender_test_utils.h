@@ -53,11 +53,6 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
 
   bool CheckURL(const GURL& url) override;
 
-  // For tests that open the no-state prefetcher in a new background tab, the
-  // RenderView will not have been made visible when the NoStatePrefetchContents
-  // is destroyed even though it is used.
-  void set_should_be_shown(bool value) { should_be_shown_ = value; }
-
   // For tests which do not know whether the no-state prefetcher will be used.
   void set_skip_final_checks(bool value) { skip_final_checks_ = value; }
 
@@ -79,14 +74,10 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
 
   ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
       observer_;
+
   // The main frame created for the prerender, if any.
   content::RenderFrameHost* new_main_frame_ = nullptr;
-  // Set to true when the prerendering RenderWidget is shown, after having been
-  // hidden.
-  bool was_shown_ = false;
-  // Expected final value of was_shown_.  Defaults to true for
-  // FINAL_STATUS_USED, and false otherwise.
-  bool should_be_shown_;
+
   // If true, |expected_final_status_| and other shutdown checks are skipped.
   bool skip_final_checks_;
 

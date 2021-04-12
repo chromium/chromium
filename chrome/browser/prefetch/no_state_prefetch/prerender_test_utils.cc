@@ -109,7 +109,6 @@ TestNoStatePrefetchContents::TestNoStatePrefetchContents(
           origin),
       expected_final_status_(expected_final_status),
       observer_(this),
-      should_be_shown_(expected_final_status == FINAL_STATUS_USED),
       skip_final_checks_(ignore_final_status) {}
 
 TestNoStatePrefetchContents::~TestNoStatePrefetchContents() {
@@ -126,8 +125,6 @@ TestNoStatePrefetchContents::~TestNoStatePrefetchContents() {
   // NavigateToURLImpl().
   if (final_status() == FINAL_STATUS_USED)
     EXPECT_TRUE(new_main_frame_);
-
-  EXPECT_EQ(should_be_shown_, was_shown_);
 }
 
 bool TestNoStatePrefetchContents::CheckURL(const GURL& url) {
@@ -156,14 +153,8 @@ void TestNoStatePrefetchContents::RenderFrameHostChanged(
 void TestNoStatePrefetchContents::RenderWidgetHostVisibilityChanged(
     content::RenderWidgetHost* widget_host,
     bool became_visible) {
-  EXPECT_EQ(new_main_frame_->GetRenderWidgetHost(), widget_host);
-
-  if (became_visible) {
-    // A prerendered main frame should only be shown after being removed
-    // from the NoStatePrefetchContents for display.
-    EXPECT_FALSE(GetMainFrame());
-    was_shown_ = true;
-  }
+  // The NoStatePrefetchContents should never be visible.
+  NOTREACHED();
 }
 
 void TestNoStatePrefetchContents::RenderWidgetHostDestroyed(
