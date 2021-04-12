@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
+#import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
@@ -59,6 +60,14 @@
 @end
 
 @implementation CredentialProviderViewController
+
++ (void)initialize {
+  if (self == [CredentialProviderViewController self]) {
+    if (crash_helper::common::CanCrashpadStart()) {
+      crash_helper::common::StartCrashpad();
+    }
+  }
+}
 
 #pragma mark - ASCredentialProviderViewController
 

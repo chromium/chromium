@@ -64,6 +64,7 @@ source_set("content_widget") {
     "//base",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:command",
+    "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ntp_tile",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/favicon",

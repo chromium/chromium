@@ -11,6 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_command.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/share_extension/share_extension_view.h"
 #import "ios/chrome/share_extension/ui_util.h"
 
@@ -80,6 +81,14 @@ const CGFloat kMediumAlpha = 0.5;
 @synthesize maskView = _maskView;
 @synthesize shareView = _shareView;
 @synthesize itemType = _itemType;
+
++ (void)initialize {
+  if (self == [ShareViewController self]) {
+    if (crash_helper::common::CanCrashpadStart()) {
+      crash_helper::common::StartCrashpad();
+    }
+  }
+}
 
 #pragma mark - UIViewController
 
