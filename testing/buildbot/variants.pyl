@@ -312,8 +312,6 @@
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
-      '--timeout-scale',
-      '2.0',
       '--webview-apk-path=apks/AOSP_SystemWebView.apk',
       '--test-runner-outdir',
       '.',
@@ -338,8 +336,6 @@
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
     'args': [
-      '--timeout-scale',
-      '2.0',
       '--webview-apk-path=apks/AOSP_SystemWebView.apk',
       '--test-runner-outdir',
       '.',
@@ -364,8 +360,6 @@
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
     'args': [
-      '--timeout-scale',
-      '2.0',
       '--webview-apk-path=apks/AOSP_SystemWebView.apk',
       '--test-runner-outdir',
       '.',
@@ -390,8 +384,6 @@
   },
   'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
-      '--timeout-scale',
-      '2.0',
       '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
@@ -416,8 +408,6 @@
   },
   'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
     'args': [
-      '--timeout-scale',
-      '2.0',
       '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
@@ -442,8 +432,6 @@
   },
   'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
     'args': [
-      '--timeout-scale',
-      '2.0',
       '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
@@ -468,8 +456,6 @@
   },
   'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
-      '--timeout-scale',
-      '2.0',
       '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
@@ -494,8 +480,6 @@
   },
   'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
     'args': [
-      '--timeout-scale',
-      '2.0',
       '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
@@ -520,8 +504,6 @@
   },
   'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
     'args': [
-      '--timeout-scale',
-      '2.0',
       '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',

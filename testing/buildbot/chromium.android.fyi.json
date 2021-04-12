@@ -4452,8 +4452,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android29.textpb",
@@ -4518,8 +4516,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -4599,8 +4595,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -4680,8 +4674,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -4761,8 +4753,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -4842,8 +4832,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -4923,8 +4911,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -5008,8 +4994,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
@@ -5074,8 +5058,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -5155,8 +5137,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -5236,8 +5216,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -5317,8 +5295,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -5398,8 +5374,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -5479,8 +5453,6 @@
       },
       {
         "args": [
-          "--timeout-scale",
-          "2.0",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
