@@ -579,6 +579,47 @@ void NGBoxFragmentBuilder::SetMathItalicCorrection(
   math_data_->italic_correction_ = italic_correction;
 }
 
+void NGBoxFragmentBuilder::AdjustOffsetsForFragmentainerDescendant(
+    NGLogicalOutOfFlowPositionedNode& descendant,
+    bool only_fixedpos_containing_block) {
+  if (!PreviousBreakToken())
+    return;
+  LayoutUnit previous_consumed_block_size =
+      PreviousBreakToken()->ConsumedBlockSize();
+
+  // If the containing block is fragmented, adjust the offset to be from the
+  // first containing block fragment to the fragmentation context root. Also,
+  // adjust the static position to be relative to the adjusted containing block
+  // offset.
+  if (!only_fixedpos_containing_block &&
+      !descendant.containing_block.fragment) {
+    descendant.containing_block.offset.block_offset -=
+        previous_consumed_block_size;
+    descendant.static_position.offset.block_offset +=
+        previous_consumed_block_size;
+  }
+
+  // If the fixedpos containing block is fragmented, adjust the offset to be
+  // from the first containing block fragment to the fragmentation context root.
+  if (!descendant.fixedpos_containing_block.fragment &&
+      node_.IsFixedContainer()) {
+    descendant.fixedpos_containing_block.offset.block_offset -=
+        previous_consumed_block_size;
+  }
+}
+
+void NGBoxFragmentBuilder::
+    AdjustFixedposContainingBlockForFragmentainerDescendants() {
+  if (!HasOutOfFlowFragmentainerDescendants() || !PreviousBreakToken() ||
+      !node_.IsFixedContainer())
+    return;
+
+  for (auto& descendant : oof_positioned_fragmentainer_descendants_) {
+    AdjustOffsetsForFragmentainerDescendant(
+        descendant, /* only_fixedpos_containing_block */ true);
+  }
+}
+
 #if DCHECK_IS_ON()
 
 void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {

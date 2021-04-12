@@ -30,6 +30,7 @@ class NGLayoutResult;
 class NGPhysicalContainerFragment;
 class NGSimplifiedOOFLayoutAlgorithm;
 struct NGLink;
+struct NGLogicalContainingBlock;
 struct NGLogicalOutOfFlowPositionedNode;
 
 // Helper class for positioning of out-of-flow blocks.
@@ -117,6 +118,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     PhysicalSize container_physical_content_size;
     const ContainingBlockInfo container_info;
     const WritingDirectionMode default_writing_direction;
+    const NGLogicalContainingBlock& fixedpos_containing_block;
     bool inline_container = false;
 
     NodeInfo(NGBlockNode node,
@@ -126,6 +128,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
              const ContainingBlockInfo container_info,
              const WritingDirectionMode default_writing_direction,
              bool is_fragmentainer_descendant,
+             const NGLogicalContainingBlock& fixedpos_containing_block,
              bool inline_container)
         : node(node),
           constraint_space(constraint_space),
@@ -133,6 +136,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
           container_physical_content_size(container_physical_content_size),
           container_info(container_info),
           default_writing_direction(default_writing_direction),
+          fixedpos_containing_block(fixedpos_containing_block),
           inline_container(inline_container) {}
 
     void Trace(Visitor* visitor) const;
@@ -171,6 +175,14 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     NodeInfo node_info;
     OffsetInfo offset_info;
     Member<const NGBlockBreakToken> break_token;
+
+    // If an OOF element is fragmented, it gets laid out once it reaches the
+    // fragmentation context root. If that element has any fixedpos descendants
+    // whose containing block lives inside the same fragmentation context root,
+    // we'll need to adjust its static position to be relative to that
+    // containing block. |additional_fixedpos_offset| is used to make this
+    // adjustment.
+    LogicalOffset additional_fixedpos_offset;
 
     void Trace(Visitor* visitor) const;
   };

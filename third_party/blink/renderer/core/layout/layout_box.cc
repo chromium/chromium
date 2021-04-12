@@ -7464,8 +7464,8 @@ LayoutBox::PaginationBreakability LayoutBox::GetPaginationBreakability(
   NOT_DESTROYED();
   if (ShouldBeConsideredAsReplaced() || HasUnsplittableScrollingOverflow() ||
       (Parent() && IsWritingModeRoot()) ||
-      (IsOutOfFlowPositioned() &&
-       StyleRef().GetPosition() == EPosition::kFixed) ||
+      (IsFixedPositioned() && GetDocument().Printing() &&
+       IsA<LayoutView>(Container())) ||
       ShouldApplySizeContainment() || IsFrameSet())
     return kForbidBreaks;
 

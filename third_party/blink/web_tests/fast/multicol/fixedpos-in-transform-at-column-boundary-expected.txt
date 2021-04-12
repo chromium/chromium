@@ -1,7 +1,0 @@
-Test that a fixed positioned object inside a transform inside a multicol isn't paginated.
-
-The word "YO" should be seen below, with large letter spacing.
-
-Y
-O
-PASS

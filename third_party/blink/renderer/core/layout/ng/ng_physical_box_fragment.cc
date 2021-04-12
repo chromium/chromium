@@ -380,12 +380,20 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
         descendant.node,
         descendant.static_position.ConvertToPhysical(converter),
         descendant.inline_container,
-        descendant.containing_block_offset.ConvertToPhysical(
-            builder->Style().GetWritingDirection(), size,
-            descendant.containing_block_fragment
-                ? descendant.containing_block_fragment->Size()
-                : PhysicalSize()),
-        descendant.containing_block_fragment);
+        NGPhysicalContainingBlock(
+            descendant.containing_block.offset.ConvertToPhysical(
+                builder->Style().GetWritingDirection(), size,
+                descendant.containing_block.fragment
+                    ? descendant.containing_block.fragment->Size()
+                    : PhysicalSize()),
+            descendant.containing_block.fragment),
+        NGPhysicalContainingBlock(
+            descendant.fixedpos_containing_block.offset.ConvertToPhysical(
+                builder->Style().GetWritingDirection(), size,
+                descendant.fixedpos_containing_block.fragment
+                    ? descendant.fixedpos_containing_block.fragment->Size()
+                    : PhysicalSize()),
+            descendant.fixedpos_containing_block.fragment));
   }
   if (builder->HasMulticolsWithPendingOOFs()) {
     multicols_with_pending_oofs =

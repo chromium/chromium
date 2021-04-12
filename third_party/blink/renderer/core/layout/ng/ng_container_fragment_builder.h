@@ -182,7 +182,9 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       const NGPhysicalContainerFragment& fragment,
       LogicalOffset offset,
       LayoutUnit fragmentainer_consumed_block_size,
-      const LayoutInline* inline_container = nullptr);
+      const LayoutInline* inline_container = nullptr,
+      const NGLogicalContainingBlock* fixedpos_containing_block = nullptr,
+      LogicalOffset additional_fixedpos_offset = LogicalOffset());
 
   void SetIsSelfCollapsing() { is_self_collapsing_ = true; }
 

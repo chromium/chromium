@@ -171,8 +171,9 @@ void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
   oof_positioned_candidates_.emplace_back(
       child, NGLogicalStaticPosition{child_offset, inline_edge, block_edge},
       /* inline_container */ nullptr, needs_block_offset_adjustment,
-      /* containing_block_offset */ LogicalOffset(),
-      /* containing_block_fragment */ nullptr, containing_block_rect);
+      /* containing_block */ NGLogicalContainingBlock(),
+      /* fixedpos_containing_block */ NGLogicalContainingBlock(),
+      containing_block_rect);
 }
 
 void NGContainerFragmentBuilder::AddOutOfFlowInlineChildCandidate(
@@ -278,10 +279,9 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     const NGPhysicalContainerFragment& fragment,
     LogicalOffset offset,
     LayoutUnit fragmentainer_consumed_block_size,
-    const LayoutInline* inline_container) {
-  // TODO(almaher): Determine if this needs updating once nested fixedpos
-  // elements are properly handled in a multicol.
-
+    const LayoutInline* inline_container,
+    const NGLogicalContainingBlock* fixedpos_containing_block,
+    LogicalOffset additional_fixedpos_offset) {
   // Collect the child's out of flow descendants.
   const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
   for (const auto& descendant : fragment.OutOfFlowPositionedDescendants()) {
@@ -293,6 +293,24 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     if (!new_inline_container &&
         IsInlineContainerForNode(descendant.node, inline_container))
       new_inline_container = inline_container;
+
+    // If an OOF element is inside a fragmentation context, it will be laid out
+    // once it reaches the fragmentation context root. However, if such OOF
+    // elements have fixedpos descendants, those descendants will not find their
+    // containing block if the containing block lives inside the fragmentation
+    // context root. In this case, the containing block will be passed in via
+    // |fixedpos_containing_block|. If one exists, add the fixedpos as a
+    // fragmentainer descendant with the correct containing block and static
+    // position.
+    if (fixedpos_containing_block && fixedpos_containing_block->fragment &&
+        descendant.node.Style().GetPosition() == EPosition::kFixed) {
+      static_position.offset += additional_fixedpos_offset;
+      AddOutOfFlowFragmentainerDescendant(
+          {descendant.node, static_position, new_inline_container,
+           /* needs_block_offset_adjustment */ false,
+           *fixedpos_containing_block, *fixedpos_containing_block});
+      continue;
+    }
 
     // |oof_positioned_candidates_| should not have duplicated entries.
     DCHECK(std::none_of(
@@ -330,16 +348,41 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       box_fragment->OutOfFlowPositionedFragmentainerDescendants();
   for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
     const NGPhysicalContainerFragment* containing_block_fragment =
-        descendant.containing_block_fragment;
+        descendant.containing_block.fragment;
     if (!containing_block_fragment)
       containing_block_fragment = box_fragment;
 
     LogicalOffset containing_block_offset = converter.ToLogical(
-        descendant.containing_block_offset, containing_block_fragment->Size());
-    if (!fragment.IsFragmentainerBox())
+        descendant.containing_block.offset, containing_block_fragment->Size());
+    if (!box_fragment->IsFragmentainerBox())
       containing_block_offset.block_offset += offset.block_offset;
     if (IsBlockFragmentationContextRoot()) {
       containing_block_offset.block_offset += fragmentainer_consumed_block_size;
+    }
+
+    const NGPhysicalContainerFragment* fixedpos_containing_block_fragment =
+        descendant.fixedpos_containing_block.fragment;
+    if (!fixedpos_containing_block_fragment &&
+        box_fragment->GetLayoutObject() &&
+        box_fragment->GetLayoutObject()->CanContainFixedPositionObjects())
+      fixedpos_containing_block_fragment = box_fragment;
+
+    LogicalOffset fixedpos_containing_block_offset;
+    if (fixedpos_containing_block_fragment) {
+      fixedpos_containing_block_offset =
+          converter.ToLogical(descendant.fixedpos_containing_block.offset,
+                              fixedpos_containing_block_fragment->Size());
+      if (!box_fragment->IsFragmentainerBox())
+        fixedpos_containing_block_offset.block_offset += offset.block_offset;
+      if (IsBlockFragmentationContextRoot()) {
+        fixedpos_containing_block_offset.block_offset +=
+            fragmentainer_consumed_block_size;
+      }
+    }
+
+    if (!fixedpos_containing_block_fragment && fixedpos_containing_block) {
+      fixedpos_containing_block_fragment = fixedpos_containing_block->fragment;
+      fixedpos_containing_block_offset = fixedpos_containing_block->offset;
     }
 
     // The static position should remain relative to its containing block
@@ -350,8 +393,11 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
         descendant.static_position.ConvertToLogical(containing_block_converter);
     AddOutOfFlowFragmentainerDescendant(
         {descendant.node, static_position, descendant.inline_container,
-         /* needs_block_offset_adjustment */ false, containing_block_offset,
-         containing_block_fragment});
+         /* needs_block_offset_adjustment */ false,
+         NGLogicalContainingBlock(containing_block_offset,
+                                  containing_block_fragment),
+         NGLogicalContainingBlock(fixedpos_containing_block_offset,
+                                  fixedpos_containing_block_fragment)});
   }
 }
 

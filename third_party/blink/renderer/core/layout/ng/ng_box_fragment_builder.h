@@ -569,6 +569,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   void SetMathItalicCorrection(LayoutUnit italic_correction);
 
+  void AdjustOffsetsForFragmentainerDescendant(
+      NGLogicalOutOfFlowPositionedNode& descendant,
+      bool only_fixedpos_containing_block = false);
+  void AdjustFixedposContainingBlockForFragmentainerDescendants();
+
  private:
   // Update whether we have fragmented in this flow.
   void PropagateBreak(const NGLayoutResult&);
