@@ -230,7 +230,7 @@ void OverviewSession::Init(const WindowList& windows,
   overview_focus_widget_->SetContentsView(
       std::make_unique<OverviewFocusButton>());
 
-  UMA_HISTOGRAM_COUNTS_100("Ash.WindowSelector.Items", num_items_);
+  UMA_HISTOGRAM_COUNTS_100("Ash.Overview.Items", num_items_);
 
   SplitViewController::Get(Shell::GetPrimaryRootWindow())->AddObserver(this);
 
@@ -294,9 +294,9 @@ void OverviewSession::Shutdown() {
     overview_grid->Shutdown();
 
   DCHECK(num_items_ >= remaining_items);
-  UMA_HISTOGRAM_COUNTS_100("Ash.WindowSelector.OverviewClosedItems",
+  UMA_HISTOGRAM_COUNTS_100("Ash.Overview.OverviewClosedItems",
                            num_items_ - remaining_items);
-  UMA_HISTOGRAM_MEDIUM_TIMES("Ash.WindowSelector.TimeInOverview",
+  UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Overview.TimeInOverview",
                              base::Time::Now() - overview_start_time_);
 
   grid_list_.clear();
@@ -360,7 +360,7 @@ void OverviewSession::SelectWindow(OverviewItem* item) {
     const auto it = std::find(window_list.begin(), window_list.end(), window);
     if (it != window_list.end()) {
       // Record 1-based index so that selecting a top MRU window will record 1.
-      UMA_HISTOGRAM_COUNTS_100("Ash.WindowSelector.SelectionDepth",
+      UMA_HISTOGRAM_COUNTS_100("Ash.Overview.SelectionDepth",
                                1 + it - window_list.begin());
     }
   }
@@ -833,9 +833,8 @@ void OverviewSession::RestoreWindowActivation(bool restore) {
 }
 
 void OverviewSession::OnHighlightedItemActivated(OverviewItem* item) {
-  UMA_HISTOGRAM_COUNTS_100("Ash.WindowSelector.ArrowKeyPresses",
-                           num_key_presses_);
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Ash.WindowSelector.KeyPressesOverItemsRatio",
+  UMA_HISTOGRAM_COUNTS_100("Ash.Overview.ArrowKeyPresses", num_key_presses_);
+  UMA_HISTOGRAM_CUSTOM_COUNTS("Ash.Overview.KeyPressesOverItemsRatio",
                               (num_key_presses_ * 100) / num_items_, 1, 300,
                               30);
   base::RecordAction(

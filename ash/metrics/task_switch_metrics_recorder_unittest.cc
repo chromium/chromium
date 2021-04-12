@@ -115,11 +115,11 @@ TEST_F(TaskSwitchMetricsRecorderTest,
 }
 
 // Verifies that the TaskSwitchSource::OVERVIEW_MODE source adds data
-// to the Ash.WindowSelector.TimeBetweenActiveWindowChanges histogram.
+// to the Ash.Overview.TimeBetweenActiveWindowChanges histogram.
 TEST_F(TaskSwitchMetricsRecorderTest,
        VerifyTaskSwitchesFromOverviewModeAreRecorded) {
   const std::string kHistogramName =
-      "Ash.WindowSelector.TimeBetweenActiveWindowChanges";
+      "Ash.Overview.TimeBetweenActiveWindowChanges";
 
   OnTaskSwitch(TaskSwitchSource::OVERVIEW_MODE);
   OnTaskSwitch(TaskSwitchSource::OVERVIEW_MODE);

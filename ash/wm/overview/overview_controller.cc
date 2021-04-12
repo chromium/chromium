@@ -447,7 +447,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       OnStartingAnimationComplete(/*canceled=*/false);
 
     if (!last_overview_session_time_.is_null()) {
-      UMA_HISTOGRAM_LONG_TIMES("Ash.WindowSelector.TimeBetweenUse",
+      UMA_HISTOGRAM_LONG_TIMES("Ash.Overview.TimeBetweenUse",
                                base::Time::Now() - last_overview_session_time_);
     }
   }

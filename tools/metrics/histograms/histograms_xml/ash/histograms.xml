@@ -1557,6 +1557,51 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.Overview.ArrowKeyPresses" units="units"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The number of times the arrow keys are pressed in overview mode per session,
+    i.e. between bringing up overview mode and ending it. This is only measured
+    for the sessions that end by selecting a window with the enter key.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.Items" units="units" expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The number of items (single windows or groups of windows such as panels) in
+    the overview mode, present at the start of each session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.KeyPressesOverItemsRatio" units="%"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The ratio between the arrow key presses and the number of overview items,
+    expressed as a percentage for a single session. Recorded when an overview
+    session is exited after selecting a highlighted overview item.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.OverviewClosedItems" units="units"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The number of items closed from the window overview for a single session.
+    Recorded when exiting an overview session.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Overview.Scroll.PresentationTime.MaxLatency.TabletMode"
     units="ms" expires_after="2021-12-31">
   <owner>sammiequon@chromium.org</owner>
@@ -1575,6 +1620,59 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Presentation time for scrolling the overview grid in overview mode. Each
     time the grid is updated by a scroll, the time it takes to update the new
     visuals onto the screen is updated.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.SelectionDepth" units="items"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    When a window is selected in overview mode, records that window's position
+    in the global MRU ordering. 1 represents the most-recently used window, 2
+    represents the next most-recently used window, and so on.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.TimeBetweenActiveWindowChanges" units="seconds"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The amount of time between endings of overview mode sessions which were
+    caused by the user selecting a window which was not previously active. Only
+    recorded on the second and later times after startup that the user selected
+    a window which was not previously active.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.TimeBetweenUse" units="ms"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The amount of time between uses of overview mode, recorded when overview
+    mode is entered. Only recorded on the second and later times after startup
+    that the user entered overview mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.TimeInOverview" units="ms"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The amount of time spent in overview mode. Overview mode is engaged by
+    pressing the overview accelerator, overview button tray or swiping up from
+    the shelf in tablet mode. The time is measured from the moment the windows
+    begin animating to a thumbnail size preview to when a window is selected or
+    selection is canceled. Recorded when an overview session is exited, before
+    the exit animation starts.
   </summary>
 </histogram>
 
@@ -2324,7 +2422,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.TimeBetweenTaskSwitches" units="seconds"
-    expires_after="M81">
+    expires_after="2022-04-08">
+  <owner>nupurjain@chromium.org</owner>
   <owner>tbuckley@google.com</owner>
   <summary>
     The number of seconds between contiguous task switch user actions triggered
@@ -2333,10 +2432,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Ash.Tab.TimeBetweenSwitchToExistingTabUserActions,
     Ash.WindowCycleController.TimeBetweenTaskSwitches,
     Ash.AppList.TimeBetweenTaskSwitches,
-    Ash.WindowSelector.TimeBetweenActiveWindowChanges, etc). Note the
+    Ash.Overview.TimeBetweenActiveWindowChanges, etc). Note the
     Ash.AppList.TimeBetweenTaskSwitches and
     Ash.Tab.TimeBetweenSwitchToExistingTabUserActions histograms were deprecated
-    and removed in 10/2016.
+    and removed in 10/2016. Note that
+    Ash.Overview.TimeBetweenActiveWindowChanges was renamed from
+    Ash.WindowSelector.TimeBetweenActiveWindowChanges on 04/2021.
   </summary>
 </histogram>
 
@@ -2661,6 +2762,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.ArrowKeyPresses" units="units"
     expires_after="M81">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.ArrowKeyPresses.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <summary>
     The number of times the arrow keys are pressed in overview mode per session,
@@ -2671,6 +2775,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.Items" units="units"
     expires_after="2020-10-04">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.Items.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <owner>kuscher@google.com</owner>
   <summary>
@@ -2681,6 +2788,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.ItemsWhenTextFilteringUsed" units="items"
     expires_after="M77">
+  <obsolete>
+    Removed 04/2021 as of https://crrev.com/c/2816339. The text filtering
+    feature has been removed.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <summary>
     The number of items showing in overview mode at the moment when an item is
@@ -2691,6 +2802,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.KeyPressesOverItemsRatio" units="%"
     expires_after="2020-03-01">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.KeyPressesOverItemsRatio.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <summary>
     The ratio between the arrow key presses and the number of overview items,
@@ -2700,6 +2814,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.OverviewClosedItems" units="units"
     expires_after="2020-01-26">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.OverviewClosedItems.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <summary>
     The number of items closed from the window overview for a single session.
@@ -2708,6 +2825,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.SelectionDepth" units="items"
     expires_after="2021-09-29">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.SelectionDepth.
+  </obsolete>
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -2719,6 +2839,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.TextFilteringStringLength"
     units="characters" expires_after="M77">
+  <obsolete>
+    Removed 04/2021 as of https://crrev.com/c/2816339. The text filtering
+    feature has been removed.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <summary>
     The length of the string entered into the text filtering textfield at the
@@ -2728,6 +2852,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.TextFilteringTextfieldCleared"
     units="units" expires_after="M77">
+  <obsolete>
+    Removed 04/2021 as of https://crrev.com/c/2816339. The text filtering
+    feature has been removed.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <summary>
     The number of times the text filtering textfield has had all of its text
@@ -2739,6 +2867,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.TimeBetweenActiveWindowChanges"
     units="seconds" expires_after="M81">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.TimeBetweenActiveWindowChanges.
+  </obsolete>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The amount of time between endings of overview mode sessions which were
@@ -2750,6 +2881,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.TimeBetweenUse" units="ms"
     expires_after="M82">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.TimeBetweenUse.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <owner>kuscher@google.com</owner>
   <summary>
@@ -2761,6 +2895,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.TimeInOverview" units="ms"
     expires_after="2020-10-18">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.TimeInOverview.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <owner>kuscher@google.com</owner>
   <summary>
@@ -2773,6 +2910,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.WindowSelector.TimeInOverviewWithTextFiltering" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed 04/2021 as of https://crrev.com/c/2816339. The text filtering
+    feature has been removed.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <summary>
     The amount of time spent in overview mode when text filtering is used. The
