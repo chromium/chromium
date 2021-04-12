@@ -23,6 +23,12 @@ DEFINE_PROTO_FUZZER(const url_proto::Url& url_message) {
 
   url::Origin origin = url::Origin::Create((GURL(native_input)));
 
+  // We don't run the fuzzer on inputs whose hosts will contain "..". The ".."
+  // causes SchemefulSite to consider the registrable domain to start with the
+  // second ".".
+  if (origin.host().find("..") != std::string::npos)
+    return;
+
   net::SchemefulSite site(origin);
 
   base::Optional<net::SchemefulSite> site_with_registrable_domain =
