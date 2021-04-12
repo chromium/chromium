@@ -8216,12 +8216,12 @@
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "DefaultFileHandlingGuardSetting": 1 },
-        "prefs": { "profile.managed_default_content_settings.file_handling_guard": { "value": 1 } }
-      },
-      {
         "policies": { "DefaultFileHandlingGuardSetting": 2 },
         "prefs": { "profile.managed_default_content_settings.file_handling_guard": { "value": 2 } }
+      },
+      {
+        "policies": { "DefaultFileHandlingGuardSetting": 3 },
+        "prefs": { "profile.managed_default_content_settings.file_handling_guard": { "value": 3 } }
       }
     ]
   },
