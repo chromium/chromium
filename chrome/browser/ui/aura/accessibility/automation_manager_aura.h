@@ -71,6 +71,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
 
   // views::AXEventObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override;
+  void OnVirtualViewEvent(views::AXVirtualView* virtual_view,
+                          ax::mojom::Event event_type) override;
 
   // AutomationEventRouterObserver:
   void AllAutomationExtensionsGone() override;
@@ -89,6 +91,7 @@ class AutomationManagerAura : public ui::AXActionHandler,
   friend class base::NoDestructor<AutomationManagerAura>;
 
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, ScrollView);
+  FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, TableView);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, WebAppearsOnce);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, EventFromAction);
 

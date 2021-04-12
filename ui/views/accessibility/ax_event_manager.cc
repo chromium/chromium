@@ -33,4 +33,10 @@ void AXEventManager::NotifyViewEvent(views::View* view,
     observer.OnViewEvent(view, event_type);
 }
 
+void AXEventManager::NotifyVirtualViewEvent(views::AXVirtualView* virtual_view,
+                                            ax::mojom::Event event_type) {
+  for (AXEventObserver& observer : observers_)
+    observer.OnVirtualViewEvent(virtual_view, event_type);
+}
+
 }  // namespace views
