@@ -47,6 +47,9 @@ class NativeInputMethodEngine
   // ChromeKeyboardControllerClient:
   void OnKeyboardEnabledChanged(bool enabled) override;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // Flush all relevant Mojo pipes.
   void FlushForTesting();
 
@@ -154,6 +157,8 @@ class NativeInputMethodEngine
     // Returns whether this is connected to the input engine.
     bool IsConnectedForTesting() const { return remote_to_engine_.is_bound(); }
 
+    void OnProfileWillBeDestroyed();
+
    private:
     // Called when this is connected to the input engine. |bound| indicates
     // the success of the connection.
@@ -184,15 +189,13 @@ class NativeInputMethodEngine
 
   ImeObserver* GetNativeObserver() const;
 
-  void OnInputMethodPrefsChanged();
+  void OnInputMethodOptionsChanged() override;
 
   AssistiveSuggester* assistive_suggester_ = nullptr;
   AutocorrectManager* autocorrect_manager_ = nullptr;
   base::ScopedObservation<ChromeKeyboardControllerClient,
                           ChromeKeyboardControllerClient::Observer>
       chrome_keyboard_controller_client_observer_{this};
-
-  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace chromeos

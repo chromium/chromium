@@ -225,7 +225,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
       const std::string& component_id,
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback);
 
-  void OnInputMethodOptionsChanged();
+  virtual void OnInputMethodOptionsChanged();
 
   int GetContextIdForTesting() const { return context_id_; }
 

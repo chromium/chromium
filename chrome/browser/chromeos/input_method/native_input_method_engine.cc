@@ -52,6 +52,10 @@ bool ShouldRouteToFstMojoEngine(const std::string& engine_id) {
 
 bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
                                           const std::string& engine_id) {
+  if (!prefs) {
+    return false;
+  }
+
   // The FST Mojo engine is only needed if autocorrect is enabled.
   const base::DictionaryValue* input_method_settings =
       prefs->GetDictionary(prefs::kLanguageInputMethodSpecificSettings);
@@ -166,15 +170,6 @@ void NativeInputMethodEngine::Initialize(
   chrome_keyboard_controller_client_observer_.Observe(
       ChromeKeyboardControllerClient::Get());
 
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kSystemLatinPhysicalTyping)) {
-    pref_change_registrar_.Init(profile->GetPrefs());
-    pref_change_registrar_.Add(
-        prefs::kLanguageInputMethodSpecificSettings,
-        base::BindRepeating(&NativeInputMethodEngine::OnInputMethodPrefsChanged,
-                            base::Unretained(this)));
-  }
-
   // Wrap the given observer in our observer that will decide whether to call
   // Mojo directly or forward to the extension.
   auto native_observer =
@@ -189,6 +184,11 @@ void NativeInputMethodEngine::OnKeyboardEnabledChanged(bool enabled) {
   // Re-activate the engine whenever the virtual keyboard is enabled or disabled
   // so that the native or extension state is reset correctly.
   Enable(GetActiveComponentId());
+}
+
+void NativeInputMethodEngine::OnProfileWillBeDestroyed(Profile* profile) {
+  InputMethodEngine::OnProfileWillBeDestroyed(profile);
+  GetNativeObserver()->OnProfileWillBeDestroyed();
 }
 
 void NativeInputMethodEngine::FlushForTesting() {
@@ -597,8 +597,16 @@ void NativeInputMethodEngine::ImeObserver::OnRuleBasedKeyEventResponse(
   std::move(callback).Run(response->result);
 }
 
-void NativeInputMethodEngine::OnInputMethodPrefsChanged() {
-  Enable(GetActiveComponentId());
+void NativeInputMethodEngine::ImeObserver::OnProfileWillBeDestroyed() {
+  prefs_ = nullptr;
+}
+
+void NativeInputMethodEngine::OnInputMethodOptionsChanged() {
+  if (ShouldRouteToFstMojoEngine(GetActiveComponentId())) {
+    Enable(GetActiveComponentId());
+  } else {
+    InputMethodEngine::OnInputMethodOptionsChanged();
+  }
 }
 
 }  // namespace chromeos
