@@ -364,6 +364,15 @@ void BrowserTabStripController::CloseTab(int model_index) {
   model_->CloseWebContentsAt(model_index,
                              TabStripModel::CLOSE_USER_GESTURE |
                              TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+
+  // Try to show reading list IPH if needed.
+  if (tabstrip_->GetTabCount() >= 7) {
+    feature_engagement_tracker_->NotifyEvent(
+        feature_engagement::events::kClosedTabWithEightOrMore);
+
+    browser_view_->feature_promo_controller()->MaybeShowPromo(
+        feature_engagement::kIPHReadingListEntryPointFeature);
+  }
 }
 
 void BrowserTabStripController::AddTabToGroup(
@@ -794,7 +803,6 @@ void BrowserTabStripController::AddTab(WebContents* contents,
 
   tabstrip_->AddTabAt(index, TabRendererData::FromTabInModel(model_, index),
                       is_active);
-
   // Try to show tab groups IPH if needed.
   if (tabstrip_->GetTabCount() >= 6) {
     feature_engagement_tracker_->NotifyEvent(
@@ -802,9 +810,6 @@ void BrowserTabStripController::AddTab(WebContents* contents,
 
     browser_view_->feature_promo_controller()->MaybeShowPromo(
         feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
-
-    browser_view_->feature_promo_controller()->MaybeShowPromo(
-        feature_engagement::kIPHReadingListEntryPointFeature);
   }
 }
 

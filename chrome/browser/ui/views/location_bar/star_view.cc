@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,7 +25,9 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
@@ -119,6 +122,10 @@ void StarView::ExecuteCommand(ExecuteSource source) {
     menu_runner_->RunMenuAt(GetWidget(), nullptr, GetAnchorBoundsInScreen(),
                             views::MenuAnchorPosition::kTopRight,
                             ui::MENU_SOURCE_NONE);
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserContext(
+            browser_->profile());
+    tracker->NotifyEvent(feature_engagement::events::kBookmarkStarMenuOpened);
   } else {
     chrome::BookmarkCurrentTab(browser_);
   }
