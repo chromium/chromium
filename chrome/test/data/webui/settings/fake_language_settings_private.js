@@ -134,9 +134,6 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
     ];
 
     /** @type {!Array<string>} */
-    this.alwaysTranslateList = ['de, es, nl'];
-
-    /** @type {!Array<string>} */
     this.neverTranslateList = ['en, fr'];
 
     /** @type {!Array<!chrome.languageSettingsPrivate.InputMethod>} */
@@ -217,7 +214,8 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   getAlwaysTranslateLanguages(callback) {
     setTimeout(function() {
       callback(
-          /** @type {!Array<!string>} */ (this.alwaysTranslateList));
+          /** @type {!Array<!string>} */ (
+              this.settingsPrefs_.get('prefs.translate_whitelists.value')));
     }.bind(this));
   }
 
@@ -227,15 +225,21 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    * @param {boolean} alwaysTranslate
    */
   setLanguageAlwaysTranslateState(languageCode, alwaysTranslate) {
+    const alwaysTranslateList =
+        this.settingsPrefs_.get('prefs.translate_whitelists.value');
     if (alwaysTranslate) {
-      this.alwaysTranslateList.push(languageCode);
+      if (!alwaysTranslateList.includes(languageCode)) {
+        alwaysTranslateList.push(languageCode);
+      }
     } else {
-      const index = this.alwaysTranslateList.indexOf(languageCode);
+      const index = alwaysTranslateList.indexOf(languageCode);
       if (index === -1) {
         return;
       }
-      this.alwaysTranslateList.splice(index, 1);
+      alwaysTranslateList.splice(index, 1);
     }
+    this.settingsPrefs_.set(
+        'prefs.translate_whitelists.value', alwaysTranslateList);
   }
 
   /**
@@ -536,6 +540,14 @@ export function getFakeLanguagePrefs() {
       key: 'translate_blocked_languages',
       type: chrome.settingsPrivate.PrefType.LIST,
       value: ['en-US'],
+    },
+    // Note: The real implementation of this pref is actually a dictionary
+    // of {always translate: target}, however only the keys are needed for
+    // testing.
+    {
+      key: 'translate_whitelists',
+      type: chrome.settingsPrivate.PrefType.LIST,
+      value: [],
     },
     {
       key: 'translate_recent_target',

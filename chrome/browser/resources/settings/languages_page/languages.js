@@ -179,6 +179,8 @@ Polymer({
   observers: [
     // All observers wait for the model to be populated by including the
     // |languages| property.
+    'alwaysTranslateLanguagesPrefChanged_(' +
+        'prefs.translate_whitelists.value.*, languages)',
     'prospectiveUILanguageChanged_(prefs.intl.app_locale.value, languages)',
     'preferredLanguagesPrefChanged_(' +
         'prefs.' + preferredLanguagesPrefName + '.value, languages)',
@@ -534,6 +536,21 @@ Polymer({
     };
   },
 
+  /**
+   * Updates the list of always translate languages from translate prefs.
+   * @private
+   */
+  alwaysTranslateLanguagesPrefChanged_() {
+    if (this.prefs === undefined || this.languages === undefined) {
+      return;
+    }
+    const alwaysTranslateCodes = Object.keys(
+        /** @type {!Object} */ (this.getPref('translate_whitelists').value));
+    const alwaysTranslateLanguages =
+        alwaysTranslateCodes.map(code => this.getLanguage(code));
+    this.set('languages.alwaysTranslate', alwaysTranslateLanguages);
+  },
+
   /** @private */
   translateLanguagesPrefChanged_() {
     if (this.prefs === undefined || this.languages === undefined) {
@@ -836,6 +853,23 @@ Polymer({
    */
   isLanguageCodeForArcIme(languageCode) {
     return languageCode === kArcImeLanguage;
+  },
+
+  /**
+   *  @param {!chrome.languageSettingsPrivate.Language} language
+   *  @return {boolean} True if the language can be translated by Chrome.
+   */
+  isLanguageTranslatable(language) {
+    if (language.code === 'zh-CN' || language.code === 'zh-TW') {
+      // In Translate, general Chinese is not used, and the sub code is
+      // necessary as a language code for the Translate server.
+      return true;
+    }
+    if (language.code === this.getLanguageCodeWithoutRegion(language.code) &&
+        language.supportsTranslate) {
+      return true;
+    }
+    return false;
   },
 
   /**

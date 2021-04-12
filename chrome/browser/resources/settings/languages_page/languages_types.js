@@ -115,6 +115,12 @@ class LanguageHelper {
   isLanguageCodeForArcIme(languageCode) {}
 
   /**
+   *  @param {!chrome.languageSettingsPrivate.Language} language
+   *  @return {boolean}
+   */
+  isLanguageTranslatable(language) {}
+
+  /**
    * @param {string} languageCode
    * @return {boolean}
    */
@@ -179,6 +185,13 @@ class LanguageHelper {
    * @param {string} languageCode
    */
   disableTranslateLanguage(languageCode) {}
+
+  /**
+   * Sets whether a given language should always be automatically translated.
+   * @param {string} languageCode
+   * @param {boolean} alwaysTranslate
+   */
+  setLanguageAlwaysTranslateState(languageCode, alwaysTranslate) {}
 
   /**
    * Enables or disables spell check for the given language.

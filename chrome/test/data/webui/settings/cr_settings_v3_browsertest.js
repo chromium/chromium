@@ -119,6 +119,25 @@ TEST_F('CrSettingsLanguagesSubpageV3Test', 'LanguageMenu', function() {
   mocha.grep(languages_subpage_tests.TestNames.LanguageMenu).run();
 });
 
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
+// eslint-disable-next-line no-var
+var CrSettingsLanguagesSubpageDetailedV3Test =
+    class extends CrSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/languages_subpage_details_tests.js';
+  }
+};
+
+TEST_F(
+    'CrSettingsLanguagesSubpageDetailedV3Test', 'AlwaysTranslateDialog',
+    function() {
+      mocha
+          .grep(languages_subpage_details_tests.TestNames.AlwaysTranslateDialog)
+          .run();
+    });
+GEN('#endif');
+
 // eslint-disable-next-line no-var
 var CrSettingsLanguagesPageMetricsV3Test =
     class extends CrSettingsV3BrowserTest {

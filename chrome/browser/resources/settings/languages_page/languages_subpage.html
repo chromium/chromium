@@ -91,7 +91,32 @@
       label="$i18n{offerToEnableTranslate}"
       on-settings-boolean-control-change="onTranslateToggleChange_">
   </settings-toggle-button>
-
+  <template is="dom-if" if="[[enableDesktopDetailedLanguageSettings_]]">
+    <div class="cr-row continuation">
+      <h2 class="flex">$i18n{automaticallyTranslateLanguages}</h2>
+      <cr-button id="addAlwaysTranslate" class="header-aligned-button"
+          on-click="onAddAlwaysTranslateLanguagesClick_">
+        $i18n{add}
+      </cr-button>
+    </div>
+    <div class="list-frame">
+      <div id="alwaysTranslateList" class="vertical-list">
+        <template is="dom-repeat" items="[[languages.alwaysTranslate]]">
+          <div class="list-item">
+            <div class="start cr-padded-text">[[item.displayName]]</div>
+            <cr-icon-button class="icon-clear"
+                on-click="onRemoveAlwaysTranslateLanguageClick_">
+            </cr-icon-button>
+          </div>
+        </template>
+      </div>
+      <div id="noAlwaysTranslateLabel" 
+          class="list-item" 
+          hidden$="[[hasSome_(languages.alwaysTranslate)]]">
+        $i18n{noLanguagesAdded}
+      </div>
+    </div>
+  </template>
   <cr-lazy-render id="menu">
       <template>
         <cr-action-menu role-description="$i18n{menu}"
@@ -158,6 +183,15 @@
       on-languages-added="onLanguagesAdded_"
       on-close="onAddLanguagesDialogClose_">
   </settings-add-languages-dialog>
+</template>
+<template is="dom-if" if="[[enableDesktopDetailedLanguageSettings_]]">
+  <template is="dom-if" if="[[showAddAlwaysTranslateDialog_]]" restamp>
+    <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
+        id="alwaysTranslateDialog"
+        on-close="onAlwaysTranslateDialogClose_"
+        on-languages-added="onAlwaysTranslateLanguagesAdded_">
+    </settings-add-languages-dialog>
+  </template>
 </template>
 <template is="dom-if" if="[[showManagedLanguageDialog_]]" restamp>
   <managed-dialog on-close="onManagedLanguageDialogClosed_"

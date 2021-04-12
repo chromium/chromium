@@ -292,6 +292,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableDesktopRestructuredLanguageSettings",
                           base::FeatureList::IsEnabled(
                               language::kDesktopRestructuredLanguageSettings));
+  html_source->AddBoolean(
+      "enableDesktopDetailedLanguageSettings",
+      base::FeatureList::IsEnabled(language::kDesktopDetailedLanguageSettings));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
