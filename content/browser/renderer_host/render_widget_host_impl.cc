@@ -1496,10 +1496,10 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
   } else if (gesture_event.GetType() ==
              blink::WebInputEvent::Type::kGestureFlingStart) {
     if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
-      // TODO(sahel): Remove the VR specific case when motion events are used
-      // for Android VR event processing and VR touchpad scrolling is handled by
-      // sending wheel events rather than directly injecting Gesture Scroll
-      // Events. https://crbug.com/797322
+      // TODO(crbug.com/797322): Remove the VR specific case when motion events
+      // are used for Android VR event processing and VR touchpad scrolling is
+      // handled by sending wheel events rather than directly injecting Gesture
+      // Scroll Events.
       if (GetView()->IsInVR()) {
         // Regardless of the state of the wheel scroll latching
         // WebContentsEventForwarder doesn't inject any GSE events before GFS.

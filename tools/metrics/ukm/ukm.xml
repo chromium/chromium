@@ -12200,7 +12200,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PaymentApp.CheckoutEvents">
-  <owner>sahel@chromium.org</owner>
+  <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
     Records checkout events as well as completion status for the invoked payment
@@ -12233,7 +12233,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PaymentRequest.CheckoutEvents">
-  <owner>sahel@chromium.org</owner>
+  <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <metric name="CompletionStatus">
     <summary>
@@ -12258,7 +12258,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PaymentRequest.TransactionAmount">
-  <owner>sahel@chromium.org</owner>
+  <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <metric name="Category">
     <summary>

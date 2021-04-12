@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(sahel): Add link to w3c. https://crbugs.com/907601
+// TODO(crbug.com/907601): Add link to w3c.
 
 dictionary OverscrollEventInit : EventInit {
   double deltaX = 0.0;

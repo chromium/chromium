@@ -18892,7 +18892,8 @@ regressions. -->
 
 <histogram name="WheelScrolling.WasLatched" enum="BooleanLatched"
     expires_after="M77">
-  <owner>sahel@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Records whether or not a GSU event with wheel source is latched to the
     current scrolling element. It is false for the first GSU event of every

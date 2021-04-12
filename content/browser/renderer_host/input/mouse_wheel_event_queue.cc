@@ -207,10 +207,6 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
     bool needs_update = scroll_update.data.scroll_update.delta_x != 0 ||
                         scroll_update.data.scroll_update.delta_y != 0;
 
-    // For every GSU event record whether it is latched or not.
-    if (needs_update)
-      RecordLatchingUmaMetric(client_->IsWheelScrollInProgress());
-
     bool synthetic = event_sent_for_gesture_ack_->event.has_synthetic_phase;
 
     // Generally, there should always be a non-zero delta with kPhaseBegan
@@ -325,10 +321,6 @@ void MouseWheelEventQueue::SendScrollBegin(
 
   client_->ForwardGestureEventWithLatencyInfo(
       scroll_begin, ui::LatencyInfo(ui::SourceEventType::WHEEL));
-}
-
-void MouseWheelEventQueue::RecordLatchingUmaMetric(bool latched) {
-  UMA_HISTOGRAM_BOOLEAN("WheelScrolling.WasLatched", latched);
 }
 
 }  // namespace content

@@ -112,7 +112,6 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   void SendScrollEnd(blink::WebGestureEvent update_event, bool synthetic);
   void SendScrollBegin(const blink::WebGestureEvent& gesture_update,
                        bool synthetic);
-  void RecordLatchingUmaMetric(bool latched);
 
   // True if gesture scroll events can be generated for the wheel event sent for
   // ack.

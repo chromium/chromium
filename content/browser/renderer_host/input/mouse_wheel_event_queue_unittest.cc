@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -667,26 +666,6 @@ TEST_F(MouseWheelEventQueueTest, WheelScrollLatching) {
   EXPECT_EQ(0U, sent_gesture_event(0)->data.scroll_update.delta_x);
   EXPECT_EQ(1U, sent_gesture_event(0)->data.scroll_update.delta_y);
   EXPECT_EQ(1U, GetAndResetSentEventCount());
-}
-
-TEST_F(MouseWheelEventQueueTest, WheelScrollingWasLatchedHistogramCheck) {
-  base::HistogramTester histogram_tester;
-  const char latching_histogram_name[] = "WheelScrolling.WasLatched";
-
-  SendMouseWheel(kWheelScrollX, kWheelScrollY, kWheelScrollGlobalX,
-                 kWheelScrollGlobalY, 1, 1, 0, false,
-                 WebMouseWheelEvent::kPhaseBegan,
-                 WebMouseWheelEvent::kPhaseNone);
-  SendMouseWheelEventAck(blink::mojom::InputEventResultState::kNotConsumed);
-  histogram_tester.ExpectBucketCount(latching_histogram_name, 0, 1);
-
-  SendMouseWheel(kWheelScrollX, kWheelScrollY, kWheelScrollGlobalX,
-                 kWheelScrollGlobalY, 1, 1, 0, false,
-                 WebMouseWheelEvent::kPhaseChanged,
-                 WebMouseWheelEvent::kPhaseNone);
-  SendMouseWheelEventAck(blink::mojom::InputEventResultState::kNotConsumed);
-  histogram_tester.ExpectBucketCount(latching_histogram_name, 0, 1);
-  histogram_tester.ExpectBucketCount(latching_histogram_name, 1, 1);
 }
 
 #if defined(OS_MAC)
