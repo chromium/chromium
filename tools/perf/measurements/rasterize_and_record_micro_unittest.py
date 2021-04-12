@@ -41,8 +41,8 @@ class RasterizeAndRecordMicroUnitTest(legacy_page_test_case.LegacyPageTestCase):
     ]
     for name in expected_positve_scalar:
       samples = measurements[name]['samples']
-      self.assertEqual(len(samples), 1)
-      self.assertGreater(samples[0], 0)
+      self.assertEqual(len(samples), 1, '%s did not have 1 sample' % name)
+      self.assertGreater(samples[0], 0, 'Sample from %s was not > 0' % name)
 
     samples = measurements['total_picture_layers_off_screen']['samples']
     self.assertEqual(len(samples), 1)
