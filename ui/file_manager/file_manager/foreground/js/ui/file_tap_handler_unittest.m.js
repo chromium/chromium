@@ -57,13 +57,8 @@ export function testTap() {
         touches: [touch],
       }),
       0, handleTap);
-
   // Callback should be called after touchend.
   assertEquals(0, events.length);
-
-  // Leap time forward so the touchend event is not ignored (too short).
-  handler.eventTimeLeapForwardForTesting(100);
-
   handler.handleTouchEvents(
       new TouchEvent('touchend', {
         cancelable: true,
@@ -98,10 +93,6 @@ export function testTapMoveTolerance() {
         touches: [touch1],
       }),
       1, handleTap);
-
-  // Leap time forward so the touchend event is not ignored (too short).
-  handler.eventTimeLeapForwardForTesting(100);
-
   handler.handleTouchEvents(
       new TouchEvent('touchend', {
         cancelable: true,
@@ -222,10 +213,6 @@ export function testTwoFingerTap() {
         touches: [touch0_0, touch1_1],
       }),
       1, handleTap);
-
-  // Leap time forward so the touchend event is not ignored (too short).
-  handler.eventTimeLeapForwardForTesting(100);
-
   handler.handleTouchEvents(
       new TouchEvent('touchend', {
         cancelable: true,
@@ -273,10 +260,6 @@ export function testTwoFingerTap() {
         touches: [touch0_0, touch1_0],
       }),
       11, handleTap);
-
-  // Leap time forward so the touchend event is not ignored (too short).
-  handler.eventTimeLeapForwardForTesting(100);
-
   handler.handleTouchEvents(
       new TouchEvent('touchend', {
         cancelable: true,
