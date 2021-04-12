@@ -1,0 +1,111 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+
+polymer_element_files = [
+  "wallpaper_collections_element.js",
+  "wallpaper_images_element.js",
+  "personalization_router_element.js",
+]
+
+static_files = [
+  "index.html",
+  "mojo_interface_provider.js",
+  "personalization_app.js",
+  "styles.js",
+]
+
+js_library("mojo_interface_provider") {
+  deps = [
+    "../../mojom:mojom_js_library_for_compile",
+    "../common:utils",
+  ]
+}
+
+js_library("personalization_app") {
+  deps = [
+    ":personalization_router_element",
+    ":styles",
+    ":wallpaper_collections_element",
+    ":wallpaper_images_element",
+  ]
+}
+
+js_library("personalization_router_element") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-location:iron-location",
+    "//third_party/polymer/v3_0/components-chromium/iron-location:iron-query-params",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("styles") {
+}
+
+js_library("wallpaper_collections_element") {
+  deps = [
+    ":mojo_interface_provider",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("wallpaper_images_element") {
+  deps = [
+    ":mojo_interface_provider",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    ":mojo_interface_provider",
+    ":personalization_app",
+    ":personalization_router_element",
+    ":styles",
+    ":wallpaper_collections_element",
+    ":wallpaper_images_element",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = polymer_element_files
+}
+
+copy("copy_static") {
+  sources = static_files
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+copy("copy_mojo_to_trusted") {
+  deps = [ "../../mojom:mojom_js" ]
+  sources = [ "$target_gen_dir/../../mojom/personalization_app.mojom-lite.js" ]
+  outputs = [ "$target_gen_dir/personalization_app.mojom-lite.js" ]
+}
+
+preprocess_if_expr("preprocess") {
+  deps = [
+    ":copy_mojo_to_trusted",
+    ":copy_static",
+    ":web_components",
+  ]
+  in_folder = "$target_gen_dir/.."
+  out_folder = "$target_gen_dir/processed"
+  out_manifest = "$target_gen_dir/manifest.json"
+  in_files = []
+  foreach(file, polymer_element_files) {
+    in_files += [ "trusted/$file" ]
+  }
+  foreach(file, static_files) {
+    in_files += [ "trusted/$file" ]
+  }
+  in_files += [ "trusted/personalization_app.mojom-lite.js" ]
+}

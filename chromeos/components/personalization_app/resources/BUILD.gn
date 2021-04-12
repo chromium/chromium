@@ -8,102 +8,24 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-preprocessed_dir = "preprocessed"
-preprocessed_manifest = "manifest.json"
-preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
-
-polymer_element_files = [
-  "wallpaper_collections_element.js",
-  "wallpaper_images_element.js",
-  "personalization_router_element.js",
-]
-
 generate_grd("build_grd") {
   deps = [
-    ":preprocess_generated",
-    ":preprocess_mojo",
+    "common:preprocess",
+    "trusted:preprocess",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  input_files = [
-    "index.html",
-    "icon_192.png",
-    "personalization_app.js",
-    "mojo_interface_provider.js",
-  ]
+  input_files = [ "icon_192.png" ]
   manifest_files = [
-    "$target_gen_dir/$preprocessed_manifest",
-    "$target_gen_dir/$preprocess_mojo_manifest",
+    "$target_gen_dir/common/manifest.json",
+    "$target_gen_dir/trusted/manifest.json",
   ]
   grd_prefix = "chromeos_personalization_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 
-# Mojo files, for generating grdp
-preprocess_if_expr("preprocess_mojo") {
-  deps = [ "//chromeos/components/personalization_app/mojom:mojom_js" ]
-  in_folder = "$target_gen_dir/../mojom"
-  out_folder = "$target_gen_dir/$preprocessed_dir"
-  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
-  in_files = [ "personalization_app.mojom-lite.js" ]
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":mojo_interface_provider",
-    ":personalization_app",
-    ":personalization_router_element",
-    ":wallpaper_collections_element",
-    ":wallpaper_images_element",
+group("closure_compile") {
+  public_deps = [
+    "common:closure_compile",
+    "trusted:closure_compile",
   ]
-}
-
-js_library("mojo_interface_provider") {
-  deps = [ "//chromeos/components/personalization_app/mojom:mojom_js_library_for_compile" ]
-}
-
-js_library("personalization_app") {
-  deps = [
-    ":personalization_router_element",
-    ":wallpaper_collections_element",
-    ":wallpaper_images_element",
-  ]
-}
-
-js_library("wallpaper_collections_element") {
-  deps = [
-    ":mojo_interface_provider",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("wallpaper_images_element") {
-  deps = [
-    ":mojo_interface_provider",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("personalization_router_element") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/iron-location:iron-location",
-    "//third_party/polymer/v3_0/components-chromium/iron-location:iron-query-params",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocessed_dir"
-  out_manifest = "$target_gen_dir/$preprocessed_manifest"
-  in_files = polymer_element_files
-}
-
-html_to_js("web_components") {
-  js_files = polymer_element_files
 }

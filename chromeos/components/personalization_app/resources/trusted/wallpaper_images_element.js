@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isNonEmptyArray} from '../common/utils.js';
 import {fetchImagesForCollectionHelper, getWallpaperProvider} from './mojo_interface_provider.js';
 
 export class WallpaperImages extends PolymerElement {
@@ -136,7 +137,7 @@ export class WallpaperImages extends PolymerElement {
    * @return {boolean}
    */
   computeShowImages_(images, loading) {
-    return !loading && Array.isArray(images) && images.length > 0;
+    return !loading && isNonEmptyArray(images);
   }
 
   /**

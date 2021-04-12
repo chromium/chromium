@@ -1,0 +1,21 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+
+js_library("utils") {
+}
+
+js_type_check("closure_compile") {
+  deps = [ ":utils" ]
+}
+
+preprocess_if_expr("preprocess") {
+  deps = []
+  in_folder = ".."
+  out_folder = "$target_gen_dir/processed"
+  out_manifest = "$target_gen_dir/manifest.json"
+  in_files = [ "common/utils.js" ]
+}

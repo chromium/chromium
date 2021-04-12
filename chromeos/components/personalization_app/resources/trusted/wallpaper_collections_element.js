@@ -11,6 +11,7 @@
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isNonEmptyArray} from '../common/utils.js';
 import {fetchCollectionsHelper, getWallpaperProvider} from './mojo_interface_provider.js';
 
 export class WallpaperCollections extends PolymerElement {
@@ -98,7 +99,7 @@ export class WallpaperCollections extends PolymerElement {
    * @return {boolean}
    */
   computeShowCollections_(collections, loading) {
-    return !loading && Array.isArray(collections) && collections.length > 0;
+    return !loading && isNonEmptyArray(collections);
   }
 
   /**

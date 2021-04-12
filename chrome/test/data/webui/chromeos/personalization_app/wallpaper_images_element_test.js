@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://personalization/personalization_app.js';
-import {WallpaperImages} from 'chrome://personalization/wallpaper_images_element.js';
+import {WallpaperImages} from 'chrome://personalization/trusted/wallpaper_images_element.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {waitAfterNextRender} from '../../test_util.m.js';
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
