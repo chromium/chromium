@@ -1986,8 +1986,10 @@ domain DOM
       optional Node templateContent
       # Pseudo elements associated with this node.
       optional array of Node pseudoElements
-      # Import document for the HTMLImport links.
-      optional Node importedDocument
+      # Deprecated, as the HTML Imports API has been removed (crbug.com/937746).
+      # This property used to return the imported document for the HTMLImport links.
+      # The property is always undefined now.
+      deprecated optional Node importedDocument
       # Distributed nodes for given insertion point.
       optional array of BackendNode distributedNodes
       # Whether the node is SVG.
