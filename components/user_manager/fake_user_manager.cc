@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/single_thread_task_runner.h"
+#include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
@@ -123,6 +124,16 @@ void FakeUserManager::UpdateUserAccountData(
 void FakeUserManager::LogoutAllUsers() {
   primary_user_ = nullptr;
   active_user_ = nullptr;
+}
+
+void FakeUserManager::SetUserNonCryptohomeDataEphemeral(
+    const AccountId& account_id,
+    bool is_ephemeral) {
+  if (is_ephemeral) {
+    accounts_with_ephemeral_non_cryptohome_data_.insert(account_id);
+  } else {
+    accounts_with_ephemeral_non_cryptohome_data_.erase(account_id);
+  }
 }
 
 void FakeUserManager::UserLoggedIn(const AccountId& account_id,
@@ -295,7 +306,8 @@ bool FakeUserManager::IsLoggedInAsStub() const {
 
 bool FakeUserManager::IsUserNonCryptohomeDataEphemeral(
     const AccountId& account_id) const {
-  return false;
+  return base::Contains(accounts_with_ephemeral_non_cryptohome_data_,
+                        account_id);
 }
 
 bool FakeUserManager::IsGuestSessionAllowed() const {

@@ -71,10 +71,17 @@ if (is_chromeos_ash) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "user_unittest.cc" ]
+    sources = [
+      "known_user_unittest.cc",
+      "user_unittest.cc",
+    ]
     deps = [
+      ":test_support",
       ":user_manager",
+      "//base/test:test_support",
       "//components/account_id",
+      "//components/prefs:test_support",
+      "//testing/gmock",
       "//testing/gtest",
     ]
   }

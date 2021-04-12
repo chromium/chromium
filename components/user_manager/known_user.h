@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/user_manager/user_manager_export.h"
 
@@ -260,6 +261,9 @@ class USER_MANAGER_EXPORT KnownUser final {
 
  private:
   friend class UserManagerBase;
+
+  FRIEND_TEST_ALL_PREFIXES(KnownUserTest,
+                           CleanEphemeralUsersRemovesEphemeralAdOnly);
 
   // Removes |path| from account_id's known user dictionary.
   void ClearPref(const AccountId& account_id, const std::string& path);

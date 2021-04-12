@@ -139,6 +139,8 @@ bool UserMatches(const AccountId& account_id,
   }
 
   // TODO(alemate): update code once user id is really a struct.
+  // TODO(https://crbug.com/1190902): If the gaia id or GUID doesn't match,
+  // this function should likely be returning false even if the e-mail matches.
   switch (account_id.GetAccountType()) {
     case AccountType::GOOGLE: {
       bool has_gaia_id = dict.GetString(kGAIAIdKey, &value);

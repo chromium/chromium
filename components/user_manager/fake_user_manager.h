@@ -41,6 +41,11 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
 
   void LogoutAllUsers();
 
+  // Subsequent calls to IsCurrentUserNonCryptohomeDataEphemeral for
+  // |account_id| will return |is_ephemeral|.
+  void SetUserNonCryptohomeDataEphemeral(const AccountId& account_id,
+                                         bool is_ephemeral);
+
   void set_local_state(PrefService* local_state) { local_state_ = local_state; }
   void set_is_current_user_new(bool is_current_user_new) {
     is_current_user_new_ = is_current_user_new;
@@ -170,6 +175,10 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
 
   bool is_current_user_owner_ = false;
   bool is_current_user_new_ = false;
+
+  // Contains AccountIds for which IsCurrentUserNonCryptohomeDataEphemeral will
+  // return true.
+  std::set<AccountId> accounts_with_ephemeral_non_cryptohome_data_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeUserManager);
 };
