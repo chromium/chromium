@@ -230,10 +230,16 @@ class ProfileAttributesEntry {
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
                            DownloadHighResAvatarTest);
 
+  // Initializes the current entry instance. The callers must subsequently call
+  // InitializeLastNameToDisplay() for this entry.
   void Initialize(ProfileInfoCache* cache,
                   const base::FilePath& path,
                   PrefService* prefs);
 
+  // Sets the initial name of the profile to be displayed. The name might depend
+  // on other's profiles names so this must be called only after all profiles
+  // has been initialized.
+  void InitializeLastNameToDisplay();
   std::u16string GetLastNameToDisplay() const;
 
   // Returns true if:

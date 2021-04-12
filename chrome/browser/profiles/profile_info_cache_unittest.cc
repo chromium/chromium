@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"
@@ -1007,3 +1008,47 @@ TEST_F(ProfileInfoCacheTest, ModifiyEntryWhileInitializing) {
   EXPECT_FALSE(entry->IsSigninRequired());
 }
 #endif
+
+TEST_F(ProfileInfoCacheTest, ProfileNamesOnInit) {
+  // Set up the cache with two profiles having the same GAIA given name.
+  // The second profile also has a profile name matching the GAIA given name.
+  std::u16string kDefaultProfileName = u"Person 1";
+  std::u16string kCommonName = u"Joe";
+
+  // Create and initialize the first profile.
+  base::FilePath path_1 = GetProfilePath("path_1");
+  GetCache()->AddProfileToCache(path_1, kDefaultProfileName, std::string(),
+                                std::u16string(), false, 0, std::string(),
+                                EmptyAccountId());
+  ProfileAttributesEntry* entry_1 =
+      GetCache()->GetProfileAttributesWithPath(path_1);
+  entry_1->SetGAIAGivenName(kCommonName);
+  EXPECT_EQ(entry_1->GetName(), kCommonName);
+
+  // Create and initialize the second profile.
+  base::FilePath path_2 = GetProfilePath("path_2");
+  GetCache()->AddProfileToCache(path_2, kCommonName, std::string(),
+                                std::u16string(), false, 0, std::string(),
+                                EmptyAccountId());
+  ProfileAttributesEntry* entry_2 =
+      GetCache()->GetProfileAttributesWithPath(path_2);
+  entry_2->SetGAIAGivenName(kCommonName);
+  EXPECT_EQ(entry_2->GetName(), kCommonName);
+
+  // The first profile name should be modified.
+  EXPECT_EQ(entry_1->GetName(),
+            GetConcatenation(kCommonName, kDefaultProfileName));
+
+  // Reset cache to test profile names set on initialization.
+  ResetCache();
+  entry_1 = GetCache()->GetProfileAttributesWithPath(path_1);
+  entry_2 = GetCache()->GetProfileAttributesWithPath(path_2);
+
+  // Freshly initialized entries should not report name changes.
+  EXPECT_FALSE(entry_1->HasProfileNameChanged());
+  EXPECT_FALSE(entry_2->HasProfileNameChanged());
+
+  EXPECT_EQ(entry_1->GetName(),
+            GetConcatenation(kCommonName, kDefaultProfileName));
+  EXPECT_EQ(entry_2->GetName(), kCommonName);
+}

@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/common/buildflags.h"
@@ -94,6 +95,13 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
     InitEntryWithKey(it.key());
   }
 
+  // A profile name can depend on other profile names. Do an additional pass to
+  // update last used profile names once all profiles are initialized.
+  for (ProfileAttributesEntry* entry :
+       GetAllProfilesAttributes(/*include_guest_profile=*/true)) {
+    entry->InitializeLastNameToDisplay();
+  }
+
   // If needed, start downloading the high-res avatars and migrate any legacy
   // profile names.
   if (!disable_avatar_download_for_testing_)
@@ -160,7 +168,8 @@ void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
   if (account_id.HasAccountIdKey())
     info->SetString(kAccountIdKey, account_id.GetAccountIdKey());
   cache->SetWithoutPathExpansion(key, std::move(info));
-  InitEntryWithKey(key);
+  ProfileAttributesEntry* entry = InitEntryWithKey(key);
+  entry->InitializeLastNameToDisplay();
 
   // `OnProfileAdded()` must be the first observer method being called right
   // after a new profile is added to cache.
@@ -553,7 +562,8 @@ void ProfileInfoCache::LoadGAIAPictureIfNeeded() {
 }
 #endif
 
-void ProfileInfoCache::InitEntryWithKey(const std::string& key) {
+ProfileAttributesEntry* ProfileInfoCache::InitEntryWithKey(
+    const std::string& key) {
   // TODO(https://crbug.com/1195784): revert CHECKs back to DCHECKs after the
   // crash is investigated.
   CHECK(!base::Contains(keys_, key));
@@ -561,8 +571,10 @@ void ProfileInfoCache::InitEntryWithKey(const std::string& key) {
   base::FilePath path = user_data_dir_.AppendASCII(key);
   CHECK(!base::Contains(profile_attributes_entries_, path.value()));
   auto new_entry = std::make_unique<ProfileAttributesEntry>();
+  auto* new_entry_raw = new_entry.get();
   new_entry->Initialize(this, path, prefs_);
   profile_attributes_entries_[path.value()] = std::move(new_entry);
+  return new_entry_raw;
 }
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
