@@ -63,8 +63,6 @@ bool HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
 
 }  // namespace
 
-namespace internal {
-
 bool HaveFileHandlersChanged(
     const apps::FileHandlers* old_handlers,
     const std::vector<blink::Manifest::FileHandler>& new_handlers) {
@@ -115,8 +113,6 @@ bool HaveFileHandlersChanged(
   }
   return false;
 }
-
-}  // namespace internal
 
 ManifestUpdateTask::ManifestUpdateTask(
     const GURL& url,
@@ -284,7 +280,7 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI) &&
-      internal::HaveFileHandlersChanged(
+      HaveFileHandlersChanged(
           /*old_handlers=*/registrar_.GetAppFileHandlers(app_id_),
           /*new_handlers=*/web_application_info_->file_handlers)) {
     return true;

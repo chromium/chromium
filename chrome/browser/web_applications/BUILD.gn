@@ -128,7 +128,10 @@ source_set("web_applications") {
     }
   }
 
-  public_deps = [ "//chrome/browser/web_applications/proto" ]
+  public_deps = [
+    "//chrome/browser/web_applications/proto",
+    "//components/permissions:permissions",
+  ]
 }
 
 # This test_support library doesn't use extensions.

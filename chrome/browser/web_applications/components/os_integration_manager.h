@@ -113,6 +113,7 @@ class OsIntegrationManager {
   virtual void UpdateOsHooks(const AppId& app_id,
                              base::StringPiece old_name,
                              std::unique_ptr<ShortcutInfo> old_shortcut,
+                             bool file_handlers_need_os_update,
                              const WebApplicationInfo& web_app_info);
 
   // Proxy calls for AppShortcutManager.

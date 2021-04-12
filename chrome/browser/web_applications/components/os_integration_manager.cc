@@ -234,11 +234,14 @@ void OsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     std::unique_ptr<ShortcutInfo> old_shortcut,
+    bool file_handlers_need_os_update,
     const WebApplicationInfo& web_app_info) {
   if (g_suppress_os_hooks_for_testing_)
     return;
 
-  UpdateFileHandlers(app_id, std::move(old_shortcut));
+  if (file_handlers_need_os_update)
+    UpdateFileHandlers(app_id, std::move(old_shortcut));
+
   UpdateShortcuts(app_id, old_name);
   UpdateShortcutsMenu(app_id, web_app_info);
   UpdateUrlHandlers(app_id, base::DoNothing());

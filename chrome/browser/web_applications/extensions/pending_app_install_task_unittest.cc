@@ -170,6 +170,7 @@ class TestPendingAppInstallFinalizer : public InstallFinalizer {
   }
 
   void FinalizeUpdate(const WebApplicationInfo& web_app_info,
+                      content::WebContents* web_contents,
                       InstallFinalizedCallback callback) override {
     NOTREACHED();
   }

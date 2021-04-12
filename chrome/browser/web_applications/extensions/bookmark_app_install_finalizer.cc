@@ -126,6 +126,7 @@ void BookmarkAppInstallFinalizer::FinalizeUninstallAfterSync(
 
 void BookmarkAppInstallFinalizer::FinalizeUpdate(
     const WebApplicationInfo& web_app_info,
+    content::WebContents* web_contents,
     InstallFinalizedCallback callback) {
   web_app::AppId expected_app_id =
       web_app::GenerateAppIdFromURL(web_app_info.start_url);
@@ -288,12 +289,13 @@ void BookmarkAppInstallFinalizer::OnExtensionUpdated(
   }
 
   if (!is_legacy_finalizer()) {
-    // Using an empty ShortcutInfo here because BookmarkApp* is deprecated.
-    // Note that this code may not correctly update File Handlers on Linux, if
-    // un-deprecated.
+    // Using an empty `old_shortcut` and `file_handlers_need_os_update` here
+    // because BookmarkApp* is deprecated. Note that this code will not
+    // correctly update File Handlers on Linux, if un-deprecated.
     std::unique_ptr<web_app::ShortcutInfo> old_shortcut = nullptr;
     os_integration_manager().UpdateOsHooks(
-        extension->id(), old_name, std::move(old_shortcut), web_app_info);
+        extension->id(), old_name, std::move(old_shortcut),
+        /*file_handlers_need_os_update=*/false, web_app_info);
     registrar().NotifyWebAppManifestUpdated(extension->id(), old_name);
   }
   std::move(callback).Run(extension->id(),

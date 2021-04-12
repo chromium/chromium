@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -26,14 +27,12 @@ struct InstallableData;
 
 namespace web_app {
 
-namespace internal {
 // Checks for whether file handlers have changed. Ignores differences in names,
 // which aren't stored in the apps::FileHandlers, and ordering, which may
 // change after being inserted into a set or map.
 bool HaveFileHandlersChanged(
     const apps::FileHandlers* old_handlers,
     const std::vector<blink::Manifest::FileHandler>& new_handlers);
-}  // namespace internal
 
 class AppIconManager;
 class AppRegistrar;
