@@ -143,7 +143,6 @@ class ToolbarView : public views::AccessiblePaneView,
     return extensions_container_;
   }
   ExtensionsToolbarButton* GetExtensionsButton() const;
-  ToolbarButton* back_button() const { return back_; }
   ReloadButton* reload_button() const { return reload_; }
   LocationBarView* location_bar() const { return location_bar_; }
   CustomTabBarView* custom_tab_bar() { return custom_tab_bar_; }
