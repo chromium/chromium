@@ -97,13 +97,6 @@ void BrowserAccessibilityManagerAuraLinux::FireExpandedEvent(
       is_expanded);
 }
 
-void BrowserAccessibilityManagerAuraLinux::FireShowingEvent(
-    BrowserAccessibility* node,
-    bool is_showing) {
-  ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnShowingStateChanged(
-      is_showing);
-}
-
 void BrowserAccessibilityManagerAuraLinux::FireInvalidStatusChangedEvent(
     BrowserAccessibility* node) {
   ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnInvalidStatusChanged();
@@ -222,12 +215,6 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
       FireSelectedEvent(node);
-      break;
-    case ui::AXEventGenerator::Event::MENU_POPUP_END:
-      FireShowingEvent(node, false);
-      break;
-    case ui::AXEventGenerator::Event::MENU_POPUP_START:
-      FireShowingEvent(node, true);
       break;
     case ui::AXEventGenerator::Event::NAME_CHANGED:
       FireNameChangedEvent(node);

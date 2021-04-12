@@ -75,6 +75,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
  protected:
   // AXTreeObserver methods.
   void OnSubtreeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
+  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
   void OnAtomicUpdateFinished(
       ui::AXTree* tree,
       bool root_changed,

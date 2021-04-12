@@ -3432,14 +3432,6 @@ void AXPlatformNodeAuraLinux::OnExpandedStateChanged(bool is_expanded) {
   atk_object_notify_state_change(obj, ATK_STATE_EXPANDED, is_expanded);
 }
 
-void AXPlatformNodeAuraLinux::OnShowingStateChanged(bool is_showing) {
-  AtkObject* obj = GetOrCreateAtkObject();
-  if (!obj)
-    return;
-
-  atk_object_notify_state_change(obj, ATK_STATE_SHOWING, is_showing);
-}
-
 void AXPlatformNodeAuraLinux::OnMenuPopupStart() {
   AtkObject* atk_object = GetOrCreateAtkObject();
   AtkObject* parent_frame = FindAtkObjectParentFrame(atk_object);

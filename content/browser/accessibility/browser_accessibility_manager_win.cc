@@ -305,6 +305,10 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       if (node->IsIgnored()) {
         FireWinAccessibilityEvent(EVENT_OBJECT_HIDE, node);
         FireUiaStructureChangedEvent(StructureChangeType_ChildRemoved, node);
+        if (node->GetRole() == ax::mojom::Role::kMenu) {
+          FireWinAccessibilityEvent(EVENT_SYSTEM_MENUPOPUPEND, node);
+          FireUiaAccessibilityEvent(UIA_MenuClosedEventId, node);
+        }
       }
       HandleAriaPropertiesChangedEvent(*node);
       break;
@@ -359,14 +363,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
       FireUiaAccessibilityEvent(UIA_LayoutInvalidatedEventId, node);
-      break;
-    case ui::AXEventGenerator::Event::MENU_POPUP_END:
-      FireWinAccessibilityEvent(EVENT_SYSTEM_MENUPOPUPEND, node);
-      FireUiaAccessibilityEvent(UIA_MenuClosedEventId, node);
-      break;
-    case ui::AXEventGenerator::Event::MENU_POPUP_START:
-      FireWinAccessibilityEvent(EVENT_SYSTEM_MENUPOPUPSTART, node);
-      FireUiaAccessibilityEvent(UIA_MenuOpenedEventId, node);
       break;
     case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
       HandleAriaPropertiesChangedEvent(*node);
@@ -473,6 +469,10 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::SUBTREE_CREATED:
       FireWinAccessibilityEvent(EVENT_OBJECT_SHOW, node);
       FireUiaStructureChangedEvent(StructureChangeType_ChildAdded, node);
+      if (node->GetRole() == ax::mojom::Role::kMenu) {
+        FireWinAccessibilityEvent(EVENT_SYSTEM_MENUPOPUPSTART, node);
+        FireUiaAccessibilityEvent(UIA_MenuOpenedEventId, node);
+      }
       break;
     case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
       FireWinAccessibilityEvent(IA2_EVENT_TEXT_ATTRIBUTE_CHANGED, node);
@@ -727,6 +727,16 @@ void BrowserAccessibilityManagerWin::OnSubtreeWillBeDeleted(ui::AXTree* tree,
   if (obj) {
     FireWinAccessibilityEvent(EVENT_OBJECT_HIDE, obj);
     FireUiaStructureChangedEvent(StructureChangeType_ChildRemoved, obj);
+  }
+}
+
+void BrowserAccessibilityManagerWin::OnNodeWillBeDeleted(ui::AXTree* tree,
+                                                         ui::AXNode* node) {
+  if (node->data().role == ax::mojom::Role::kMenu) {
+    BrowserAccessibility* obj = GetFromAXNode(node);
+    DCHECK(obj);
+    FireWinAccessibilityEvent(EVENT_SYSTEM_MENUPOPUPEND, obj);
+    FireUiaAccessibilityEvent(UIA_MenuClosedEventId, obj);
   }
 }
 
