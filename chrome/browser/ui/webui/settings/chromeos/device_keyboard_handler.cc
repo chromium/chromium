@@ -149,8 +149,12 @@ void KeyboardHandler::UpdateShowKeys() {
   keyboard_params.SetKey(
       "showAppleCommandKey",
       base::Value(keyboards_state.has_external_apple_keyboard));
-  keyboard_params.SetKey("hasInternalKeyboard",
-                         base::Value(keyboards_state.has_internal_keyboard));
+  // An external (USB/BT) ChromeOS keyboard is treated similarly to an internal
+  // ChromeOS keyboard. i.e. they are functionally the same.
+  keyboard_params.SetKey(
+      "hasInternalKeyboard",
+      base::Value(keyboards_state.has_internal_keyboard ||
+                  keyboards_state.has_external_chromeos_keyboard));
 
   const bool show_assistant_key_settings = ui::DeviceKeyboardHasAssistantKey();
   keyboard_params.SetKey("hasAssistantKey",

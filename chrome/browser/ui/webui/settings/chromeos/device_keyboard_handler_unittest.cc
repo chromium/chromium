@@ -238,6 +238,18 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
       /*devtype=*/base::nullopt, /*sysattrs=*/{},
       /*properties=*/{{"CROS_KEYBOARD_TOP_ROW_LAYOUT", "1"}});
 
+  // Chrome OS external Bluetooth keyboard.
+  const ui::InputDevice external_bt_chromeos_kbd(
+      4, ui::INPUT_DEVICE_BLUETOOTH, "LG BT Keyboard", "",
+      base::FilePath("/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0/"
+                     "0003:04CA:0082.000B/input/input5"),
+      0x04ca, 0x0082, 0x0111);
+  fake_udev->AddFakeDevice(
+      external_bt_chromeos_kbd.name, external_bt_chromeos_kbd.sys_path.value(),
+      /*subsystem=*/"input", /*devnode=*/base::nullopt,
+      /*devtype=*/base::nullopt, /*sysattrs=*/{},
+      /*properties=*/{{"CROS_KEYBOARD_TOP_ROW_LAYOUT", "1"}});
+
   // An internal keyboard shouldn't change the defaults.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       chromeos::switches::kHasChromeOSKeyboard);
@@ -269,6 +281,16 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   EXPECT_FALSE(HasAppleCommandKey());
   EXPECT_FALSE(HasAssistantKey());
 
+  // Connecting external Bluetooth ChromeOS-branded keyboard, we should not
+  // see neither CapsLock not meta keys.
+  device_data_manager_test_api_.SetKeyboardDevices(
+      std::vector<ui::InputDevice>{external_bt_chromeos_kbd});
+  EXPECT_TRUE(HasInternalSearchKey());
+  EXPECT_FALSE(HasCapsLock());
+  EXPECT_FALSE(HasExternalMetaKey());
+  EXPECT_FALSE(HasAppleCommandKey());
+  EXPECT_FALSE(HasAssistantKey());
+
   // Simulate an external Apple keyboard being connected. Now users can remap
   // the command key.
   device_data_manager_test_api_.SetKeyboardDevices(
@@ -294,7 +316,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // should show the capslock and external meta remapping.
   // https://crbug.com/834594.
   device_data_manager_test_api_.SetKeyboardDevices(std::vector<ui::InputDevice>{
-      {5, ui::INPUT_DEVICE_USB, "Topre Corporation Realforce 87", "",
+      {6, ui::INPUT_DEVICE_USB, "Topre Corporation Realforce 87", "",
        external_generic_kbd.sys_path, 0x046d, 0xc31c, 0x0111}});
   EXPECT_FALSE(HasInternalSearchKey());
   EXPECT_TRUE(HasCapsLock());
