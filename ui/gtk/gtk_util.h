@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/color/color_id.h"
-#include "ui/gtk/gtk_buildflags.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/window/frame_buttons.h"

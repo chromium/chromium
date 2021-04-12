@@ -44,14 +44,31 @@ generate_stubs("gtk_stubs") {
   logging_include = "ui/gtk/log_noop.h"
 }
 
+source_set("gtk_compat") {
+  sources = [
+    "gtk_compat.cc",
+    "gtk_compat.h",
+  ]
+  defines = [ "IS_GTK_IMPL" ]
+  deps = [
+    ":gtk_buildflags",
+    ":gtk_stubs",
+    ":gtk_types",
+    "//base",
+    "//build/config/linux/gtk",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
 component("gtk_ui_delegate") {
   public = [ "gtk_ui_delegate.h" ]
   sources = [ "gtk_ui_delegate.cc" ]
   deps = [
+    ":gtk_buildflags",
     "//base",
     "//ui/gfx",
   ]
-  public_deps = [ ":gtk_buildflags" ]
   defines = [ "IS_GTK_IMPL" ]
 }
 
@@ -63,8 +80,6 @@ component("gtk") {
   sources = [
     "gtk_color_mixers.cc",
     "gtk_color_mixers.h",
-    "gtk_compat.cc",
-    "gtk_compat.h",
     "gtk_key_bindings_handler.cc",
     "gtk_key_bindings_handler.h",
     "gtk_ui.cc",
@@ -104,9 +119,9 @@ component("gtk") {
   }
 
   deps = [
-    ":gtk_stubs",
-    ":gtk_types",
+    ":gtk_compat",
     "//base",
+    "//build/config/linux/gtk",
     "//build/config/linux/gtk:gtkprint",
     "//printing",
     "//skia",
@@ -114,7 +129,6 @@ component("gtk") {
     # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking
     # our own HarfBuzz avoid mixing symbols from system HarfBuzz and
     # our own through the indirect dependency to harfbuzz-ng here.
-    "//build/config/linux/gtk",
     "//third_party:freetype_harfbuzz",
     "//ui/aura",
     "//ui/base",

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/environment.h"
 #include "base/logging.h"
+#include "ui/gtk/gtk_compat.h"
 
 #if BUILDFLAG(GTK_VERSION) >= 4
 #include <gdk/wayland/gdkwayland.h>
@@ -24,6 +25,8 @@ WEAK_GTK_FN(gdk_wayland_window_set_transient_for_exported);
 namespace ui {
 
 GtkUiDelegateWaylandBase::GtkUiDelegateWaylandBase() {
+  CHECK(gtk::LoadGtk());
+
   gdk_set_allowed_backends("wayland");
   // GDK_BACKEND takes precedence over gdk_set_allowed_backends(), so override
   // it to ensure we get the wayland backend.
