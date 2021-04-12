@@ -6980,7 +6980,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AudioSuspendAndResume) {
 
 // Check that a video suspends when the page goes to the cache and can resume
 // after restored.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DISABLED_VideoSuspendAndResume) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
