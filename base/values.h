@@ -122,8 +122,6 @@ class BASE_EXPORT Value {
     BINARY,
     DICTIONARY,
     LIST,
-    // TODO(crbug.com/859477): Remove once root cause is found.
-    DEAD
     // Note: Do not add more types. See the file-level comment above for why.
   };
 

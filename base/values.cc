@@ -176,14 +176,9 @@ Value::Value(Type type) {
     case Type::LIST:
       data_.emplace<ListStorage>();
       return;
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    case Type::DEAD:
-      CHECK(false);
-      return;
   }
 
-  // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
-  CHECK(false);
+  NOTREACHED();
 }
 
 Value::Value(bool in_bool) : data_(in_bool) {}
@@ -929,14 +924,9 @@ bool operator==(const Value& lhs, const Value& rhs) {
           });
     case Value::Type::LIST:
       return lhs.list() == rhs.list();
-      // TODO(crbug.com/859477): Remove after root cause is found.
-    case Value::Type::DEAD:
-      CHECK(false);
-      return false;
   }
 
-  // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
-  CHECK(false);
+  NOTREACHED();
   return false;
 }
 
@@ -973,14 +963,9 @@ bool operator<(const Value& lhs, const Value& rhs) {
           });
     case Value::Type::LIST:
       return lhs.list() < rhs.list();
-      // TODO(crbug.com/859477): Remove after root cause is found.
-    case Value::Type::DEAD:
-      CHECK(false);
-      return false;
   }
 
-  // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
-  CHECK(false);
+  NOTREACHED();
   return false;
 }
 
@@ -1055,10 +1040,6 @@ void Value::WriteIntoTracedValue(perfetto::TracedValue context) const {
     }
     case Type::NONE:
       std::move(context).WriteString("<none>");
-      return;
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    case Type::DEAD:
-      CHECK(false);
       return;
   }
 }

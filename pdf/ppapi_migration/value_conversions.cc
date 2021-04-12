@@ -50,10 +50,6 @@ pp::Var VarFromValue(const base::Value& value) {
       }
       return var_array;
     }
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    case base::Value::Type::DEAD:
-      CHECK(false);
-      return pp::Var();
   }
 }
 

@@ -132,14 +132,8 @@ bool InstallValue(const base::Value& value,
 
     case base::Value::Type::BINARY:
       return false;
-
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    case base::Value::Type::DEAD:
-      CHECK(false);
-      return false;
   }
-  // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
-  CHECK(false);
+  NOTREACHED();
   return false;
 }
 

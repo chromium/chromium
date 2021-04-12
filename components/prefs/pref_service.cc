@@ -559,20 +559,10 @@ base::Value* PrefService::GetMutableUserPref(const std::string& path,
     return value;
   }
 
-  // TODO(crbug.com/859477): Remove once root cause has been found.
-  if (value && value->type() != type) {
-    DEBUG_ALIAS_FOR_CSTR(path_copy, path.c_str(), 1024);
-    base::debug::DumpWithoutCrashing();
-  }
-
   // If no user preference of the correct type exists, clone default value.
   const base::Value* default_value = nullptr;
   pref_registry_->defaults()->GetValue(path, &default_value);
-  // TODO(crbug.com/859477): Revert to DCHECK once root cause has been found.
-  if (default_value->type() != type) {
-    DEBUG_ALIAS_FOR_CSTR(path_copy, path.c_str(), 1024);
-    base::debug::DumpWithoutCrashing();
-  }
+  DCHECK_EQ(default_value->type(), type);
   user_pref_store_->SetValueSilently(path, default_value->CreateDeepCopy(),
                                      GetWriteFlags(pref));
   user_pref_store_->GetMutableValue(path, &value);

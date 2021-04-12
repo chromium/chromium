@@ -86,13 +86,8 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
         return mojo_base::mojom::ValueDataView::Tag::DICTIONARY_VALUE;
       case base::Value::Type::LIST:
         return mojo_base::mojom::ValueDataView::Tag::LIST_VALUE;
-      // TODO(crbug.com/859477): Remove after root cause is found.
-      case base::Value::Type::DEAD:
-        CHECK(false);
-        return mojo_base::mojom::ValueDataView::Tag::NULL_VALUE;
     }
-    // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
-    CHECK(false);
+    NOTREACHED();
     return mojo_base::mojom::ValueDataView::Tag::NULL_VALUE;
   }
 

@@ -73,8 +73,6 @@ PP_Var PPB_X509Certificate_Fields::GetFieldAsPPVar(
     }
     case base::Value::Type::DICTIONARY:
     case base::Value::Type::LIST:
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    case base::Value::Type::DEAD:
       // Not handled.
       break;
   }

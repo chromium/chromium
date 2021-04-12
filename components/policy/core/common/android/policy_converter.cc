@@ -177,16 +177,9 @@ base::Optional<base::Value> PolicyConverter::ConvertValueToSchema(
       }
       return value;
     }
-
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    case base::Value::Type::DEAD: {
-      CHECK(false);
-      return base::nullopt;
-    }
   }
 
-  // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
-  CHECK(false);
+  NOTREACHED();
   return base::nullopt;
 }
 
