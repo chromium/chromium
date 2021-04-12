@@ -365,7 +365,6 @@ BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
   set_title_margins(provider->GetInsetsMetric(INSETS_DIALOG_TITLE));
   if (anchor_view)
     SetAnchorView(anchor_view);
-  UpdateColorsFromTheme();
   UMA_HISTOGRAM_BOOLEAN("Dialog.BubbleDialogDelegateView.Create", true);
 }
 

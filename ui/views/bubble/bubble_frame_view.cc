@@ -472,10 +472,8 @@ void BubbleFrameView::OnThemeChanged() {
 
 void BubbleFrameView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
-  if (details.is_add && details.child == this) {
-    OnThemeChanged();
+  if (details.is_add && details.child == this)
     UpdateClientLayerCornerRadius();
-  }
 
   // We need to update the client view's corner radius whenever the header or
   // footer are added/removed from the bubble frame so that the client view
