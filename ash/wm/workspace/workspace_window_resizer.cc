@@ -117,7 +117,7 @@ constexpr int kSnapDragDwellTimeResetThreshold = 8;
 
 // Dwell time before snap to maximize. The countdown starts when window dragged
 // into snap region.
-constexpr base::TimeDelta kDwellTime = base::TimeDelta::FromMilliseconds(800);
+constexpr base::TimeDelta kDwellTime = base::TimeDelta::FromMilliseconds(400);
 // The min amount of vertical movement needed for to trigger a snap to
 // maximize.
 constexpr int kSnapTriggerVerticalMoveThreshold = 64;
