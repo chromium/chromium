@@ -2481,6 +2481,13 @@ if (!is_android) {
         "../browser/ash/child_accounts/parent_access_code/parent_access_service_browsertest.cc",
         "../browser/ash/child_accounts/parent_access_code/parent_access_test_utils.cc",
         "../browser/ash/child_accounts/parent_access_code/parent_access_test_utils.h",
+        "../browser/ash/child_accounts/time_limits/app_time_browsertest.cc",
+        "../browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_test_utils.cc",
+        "../browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_test_utils.h",
+        "../browser/ash/child_accounts/time_limits/app_time_limits_policy_builder.cc",
+        "../browser/ash/child_accounts/time_limits/app_time_limits_policy_builder.h",
+        "../browser/ash/child_accounts/time_limits/web_time_calculation_browsertest.cc",
+        "../browser/ash/child_accounts/time_limits/web_time_limit_enforcer_browsertest.cc",
         "../browser/ash/drive/drive_integration_service_browsertest.cc",
         "../browser/ash/lock_screen_apps/note_taking_browsertest.cc",
         "../browser/ash/login/accessibility_browsertest.cc",
@@ -2646,13 +2653,6 @@ if (!is_android) {
         "../browser/chromeos/child_accounts/family_user_device_metrics_browsertest.cc",
         "../browser/chromeos/child_accounts/screen_time_controller_browsertest.cc",
         "../browser/chromeos/child_accounts/time_limit_test_utils.cc",
-        "../browser/chromeos/child_accounts/time_limits/app_time_browsertest.cc",
-        "../browser/chromeos/child_accounts/time_limits/app_time_limits_allowlist_policy_test_utils.cc",
-        "../browser/chromeos/child_accounts/time_limits/app_time_limits_allowlist_policy_test_utils.h",
-        "../browser/chromeos/child_accounts/time_limits/app_time_limits_policy_builder.cc",
-        "../browser/chromeos/child_accounts/time_limits/app_time_limits_policy_builder.h",
-        "../browser/chromeos/child_accounts/time_limits/web_time_calculation_browsertest.cc",
-        "../browser/chromeos/child_accounts/time_limits/web_time_limit_enforcer_browsertest.cc",
         "../browser/chromeos/chrome_content_browser_client_chromeos_part_browsertest.cc",
         "../browser/chromeos/crostini/crostini_browser_test_util.cc",
         "../browser/chromeos/crostini/crostini_browser_test_util.h",
@@ -7627,17 +7627,17 @@ if (is_chromeos_ash) {
   test("usage_time_limit_unittests") {
     testonly = true
     sources = [
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/consistency_golden_converter.cc",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/consistency_golden_converter.h",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/consistency_golden_converter_unittest.cc",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/consistency_golden_loader.cc",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/consistency_golden_loader.h",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/consistency_golden_loader_unittest.cc",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/consistency_test.cc",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/consistency_test_utils.cc",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/consistency_test_utils.h",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/proto_matcher.h",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/run_all_unittests.cc",
+      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_converter.cc",
+      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_converter.h",
+      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_converter_unittest.cc",
+      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_loader.cc",
+      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_loader.h",
+      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_loader_unittest.cc",
+      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_test.cc",
+      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_test_utils.cc",
+      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_test_utils.h",
+      "../browser/ash/child_accounts/time_limit_consistency_test/proto_matcher.h",
+      "../browser/ash/child_accounts/time_limit_consistency_test/run_all_unittests.cc",
       "../browser/chromeos/child_accounts/time_limit_override.cc",
       "../browser/chromeos/child_accounts/time_limit_override.h",
       "../browser/chromeos/child_accounts/time_limit_test_utils.cc",
@@ -7656,14 +7656,14 @@ if (is_chromeos_ash) {
       "//third_party/protobuf:protobuf_full",
     ]
     data = [
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/goldens/",
-      "../browser/chromeos/child_accounts/time_limit_consistency_test/test_goldens/",
+      "../browser/ash/child_accounts/time_limit_consistency_test/goldens/",
+      "../browser/ash/child_accounts/time_limit_consistency_test/test_goldens/",
     ]
   }
 
   proto_library("consistency_golden_proto") {
     visibility = [ ":usage_time_limit_unittests" ]
-    sources = [ "../browser/chromeos/child_accounts/time_limit_consistency_test/goldens/consistency_golden.proto" ]
+    sources = [ "../browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.proto" ]
     generate_python = false
   }
 }

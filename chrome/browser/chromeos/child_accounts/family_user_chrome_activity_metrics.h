@@ -8,8 +8,8 @@
 #include <set>
 
 #include "base/time/time.h"
+#include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_metrics_service.h"
-#include "chrome/browser/chromeos/child_accounts/time_limits/app_service_wrapper.h"
 
 class PrefRegistrySimple;
 class PrefService;

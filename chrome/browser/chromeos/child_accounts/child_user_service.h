@@ -9,9 +9,9 @@
 #include <set>
 #include <string>
 
+#include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
+#include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_parental_control_metrics.h"
-#include "chrome/browser/chromeos/child_accounts/time_limits/app_activity_report_interface.h"
-#include "chrome/browser/chromeos/child_accounts/time_limits/app_time_limit_interface.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {
