@@ -47,9 +47,6 @@ namespace content {
 
 namespace {
 
-constexpr char kPermissionDeniedHistogramName[] =
-    "DirectSockets.PermissionDeniedFailures";
-
 net::Error UnconditionallyPermitConnection(
     const blink::mojom::DirectSocketOptions& options) {
   DCHECK(options.remote_hostname.has_value());
@@ -335,28 +332,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, OpenTcp_MDNS) {
   EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
             EvalJs(shell(), script));
 #endif  // BUILDFLAG(ENABLE_MDNS)
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
-                       OpenTcp_TransientActivation) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      DirectSocketsServiceImpl::FailureType::kTransientActivation, 0);
-
-  const uint16_t listening_port = StartTcpServer();
-  const std::string script = base::StringPrintf(
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: %d});\
-       openTcp({remoteAddress: '127.0.0.1', remotePort: %d})",
-      listening_port, listening_port);
-
-  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
-            EvalJs(shell(), script));
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      DirectSocketsServiceImpl::FailureType::kTransientActivation, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, CloseTcp) {

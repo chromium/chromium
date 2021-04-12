@@ -343,6 +343,29 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenTcp_TransientActivation) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      DirectSocketsServiceImpl::FailureType::kTransientActivation, 0);
+
+  MockNetworkContext mock_network_context(net::OK);
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  const std::string script =
+      "openTcp({remoteAddress: '::1', remotePort: 993});\
+       openTcp({remoteAddress: '::1', remotePort: 993})";
+
+  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      DirectSocketsServiceImpl::FailureType::kTransientActivation, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_CannotEvadeCors) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
