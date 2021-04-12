@@ -7,10 +7,7 @@
 
 #include "chrome/installer/setup/install_worker.h"
 
-#include "base/win/atl.h"
-
 #include <oaidl.h>
-#include <sddl.h>
 #include <shlobj.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -74,6 +71,7 @@ constexpr wchar_t kChromeInstallFilesCapabilitySid[] =
 constexpr wchar_t kLpacChromeInstallFilesCapabilitySid[] =
     L"S-1-15-3-1024-2302894289-466761758-1166120688-1039016420-2430351297-"
     L"4240214049-4028510897-3317428798";
+constexpr wchar_t kAuthenticatedUsersSid[] = L"AU";
 
 void AddInstallerCopyTasks(const InstallParams& install_params,
                            WorkItemList* install_list) {
@@ -291,93 +289,6 @@ void AddChromeWorkItems(const InstallParams& install_params,
       ->AddDeleteTreeWorkItem(target_path.Append(installer::kChromeOldExe),
                               temp_path)
       ->set_best_effort(true);
-}
-
-// Adds an ACE from a trustee SID, access mask and flags to an existing DACL.
-// If the exact ACE already exists then the DACL is not modified and true is
-// returned.
-bool AddAceToDacl(const ATL::CSid& trustee,
-                  ACCESS_MASK access_mask,
-                  BYTE ace_flags,
-                  ATL::CDacl* dacl) {
-  // Check if the requested access already exists and return if so.
-  for (UINT i = 0; i < dacl->GetAceCount(); ++i) {
-    ATL::CSid sid;
-    ACCESS_MASK mask = 0;
-    BYTE type = 0;
-    BYTE flags = 0;
-    dacl->GetAclEntry(i, &sid, &mask, &type, &flags);
-    if (sid == trustee && type == ACCESS_ALLOWED_ACE_TYPE &&
-        (flags & ace_flags) == ace_flags &&
-        (mask & access_mask) == access_mask) {
-      return true;
-    }
-  }
-
-  // Add the new access to the DACL.
-  return dacl->AddAllowedAce(trustee, access_mask, ace_flags);
-}
-
-// Add to the ACL of an object on disk. This follows the method from MSDN:
-// https://msdn.microsoft.com/en-us/library/windows/desktop/aa379283.aspx
-// This is done using explicit flags rather than the "security string" format
-// because strings do not necessarily read what is written which makes it
-// difficult to de-dup. Working with the binary format is always exact and the
-// system libraries will properly ignore duplicate ACL entries.
-bool AddAclToPath(const base::FilePath& path,
-                  const std::vector<ATL::CSid>& trustees,
-                  ACCESS_MASK access_mask,
-                  BYTE ace_flags) {
-  DCHECK(!path.empty());
-
-  // Get the existing DACL.
-  ATL::CDacl dacl;
-  if (!ATL::AtlGetDacl(path.value().c_str(), SE_FILE_OBJECT, &dacl)) {
-    DPLOG(ERROR) << "Failed getting DACL for path \"" << path.value() << "\"";
-    return false;
-  }
-
-  for (const auto& trustee : trustees) {
-    DCHECK(trustee.IsValid());
-    if (!AddAceToDacl(trustee, access_mask, ace_flags, &dacl)) {
-      DPLOG(ERROR) << "Failed adding ACE to DACL for trustee " << trustee.Sid();
-      return false;
-    }
-  }
-
-  // Attach the updated ACL as the object's DACL.
-  if (!ATL::AtlSetDacl(path.value().c_str(), SE_FILE_OBJECT, dacl)) {
-    DPLOG(ERROR) << "Failed setting DACL for path \"" << path.value() << "\"";
-    return false;
-  }
-
-  return true;
-}
-
-bool AddAclToPath(const base::FilePath& path,
-                  const CSid& trustee,
-                  ACCESS_MASK access_mask,
-                  BYTE ace_flags) {
-  std::vector<ATL::CSid> trustees = {trustee};
-  return AddAclToPath(path, trustees, access_mask, ace_flags);
-}
-
-bool AddAclToPath(const base::FilePath& path,
-                  const std::vector<const wchar_t*>& trustees,
-                  ACCESS_MASK access_mask,
-                  BYTE ace_flags) {
-  std::vector<ATL::CSid> converted_trustees;
-  for (const wchar_t* trustee : trustees) {
-    PSID sid;
-    if (!::ConvertStringSidToSid(trustee, &sid)) {
-      DPLOG(ERROR) << "Failed to convert SID \"" << trustee << "\"";
-      return false;
-    }
-    converted_trustees.emplace_back(static_cast<SID*>(sid));
-    ::LocalFree(sid);
-  }
-
-  return AddAclToPath(path, converted_trustees, access_mask, ace_flags);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -796,10 +707,10 @@ void AddInstallWorkItems(const InstallParams& install_params,
             std::vector<const wchar_t*> sids = {
                 kChromeInstallFilesCapabilitySid,
                 kLpacChromeInstallFilesCapabilitySid};
-            bool success_target = AddAclToPath(
+            bool success_target = GrantAccessToPath(
                 target_path, sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
                 CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
-            bool success_temp = AddAclToPath(
+            bool success_temp = GrantAccessToPath(
                 temp_path, sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
                 CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
 
@@ -824,8 +735,8 @@ void AddInstallWorkItems(const InstallParams& install_params,
             base::BindOnce(
                 [](const base::FilePath& histogram_storage_dir,
                    const CallbackWorkItem& work_item) {
-                  return AddAclToPath(
-                      histogram_storage_dir, ATL::Sids::AuthenticatedUser(),
+                  return GrantAccessToPath(
+                      histogram_storage_dir, {kAuthenticatedUsersSid},
                       FILE_GENERIC_READ | FILE_DELETE_CHILD,
                       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
                 },

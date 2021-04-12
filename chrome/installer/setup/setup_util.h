@@ -17,6 +17,7 @@
 
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "base/win/windows_types.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
 
@@ -161,6 +162,13 @@ void AddUpdateDowngradeVersionItem(HKEY root,
                                    const base::Version& current_version,
                                    const base::Version& new_version,
                                    WorkItemList* list);
+
+// Adds allowed ACE entries to a file or directory |path| from a list of SIDs
+// with allowed |access_mask| and |inheritance| flags.
+bool GrantAccessToPath(const base::FilePath& path,
+                       const std::vector<const wchar_t*>& sids,
+                       ACCESS_MASK access_mask,
+                       DWORD inheritance);
 
 }  // namespace installer
 
