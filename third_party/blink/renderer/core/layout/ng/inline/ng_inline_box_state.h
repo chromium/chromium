@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_BOX_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_BOX_STATE_H_
 
+#include "base/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -40,6 +41,12 @@ struct NGInlineBoxState {
   const NGInlineItem* item = nullptr;
   Persistent<const ComputedStyle> style;
 
+  // Points to style->GetFont(), or |scaled_font| in an SVG <text>.
+  const Font* font;
+  // A storage of SVG scaled font. Do not touch this outside of
+  // InitializeFont().
+  base::Optional<Font> scaled_font;
+
   // The united metrics for the current box. This includes all objects in this
   // box, including descendants, and adjusted by placement properties such as
   // 'vertical-align'.
@@ -70,6 +77,10 @@ struct NGInlineBoxState {
   bool has_box_placeholder = false;
   bool needs_box_fragment = false;
 
+  // Initialize |font| and |scaled_font|. This should be called after setting
+  // |style|.
+  void InitializeFont(bool is_svg_text, const LayoutObject& layout_object);
+
   // True if this box has a metrics, including pending ones. Pending metrics
   // will be activated in |EndBoxState()|.
   bool HasMetrics() const {
@@ -79,8 +90,12 @@ struct NGInlineBoxState {
   // Compute text metrics for a box. All text in a box share the same
   // metrics.
   // The computed metrics is included into the line height of the current box.
-  void ComputeTextMetrics(const ComputedStyle&, FontBaseline baseline_type);
-  void EnsureTextMetrics(const ComputedStyle&, FontBaseline);
+  void ComputeTextMetrics(const ComputedStyle&,
+                          const Font& fontref,
+                          FontBaseline baseline_type);
+  void EnsureTextMetrics(const ComputedStyle&,
+                         const Font& fontref,
+                         FontBaseline);
   void ResetTextMetrics();
 
   void AccumulateUsedFonts(const ShapeResultView*, FontBaseline);
@@ -113,7 +128,8 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
   // Initialize the box state stack for a new line.
   // @return The initial box state for the line.
-  NGInlineBoxState* OnBeginPlaceItems(const ComputedStyle&,
+  NGInlineBoxState* OnBeginPlaceItems(const NGInlineNode node,
+                                      const ComputedStyle&,
                                       FontBaseline,
                                       bool line_height_quirk,
                                       NGLogicalLineItems* line_box);
@@ -263,6 +279,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
   Vector<BoxData, 4> box_data_list_;
 
   bool is_empty_line_ = false;
+  bool is_svg_text_ = false;
 };
 
 }  // namespace blink

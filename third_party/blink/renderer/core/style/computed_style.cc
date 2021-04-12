@@ -1940,20 +1940,24 @@ int ComputedStyle::ComputedLineHeight() const {
   return std::min(lh.Value(), LayoutUnit::Max().ToFloat());
 }
 
-LayoutUnit ComputedStyle::ComputedLineHeightAsFixed() const {
+LayoutUnit ComputedStyle::ComputedLineHeightAsFixed(const Font& font) const {
   const Length& lh = LineHeight();
 
   // Negative value means the line height is not set. Use the font's built-in
-  // spacing, if avalible.
-  if (lh.IsNegative() && GetFont().PrimaryFont())
-    return GetFont().PrimaryFont()->GetFontMetrics().FixedLineSpacing();
+  // spacing, if available.
+  if (lh.IsNegative() && font.PrimaryFont())
+    return font.PrimaryFont()->GetFontMetrics().FixedLineSpacing();
 
   if (lh.IsPercentOrCalc()) {
     return LayoutUnit(
-        MinimumValueForLength(lh, ComputedFontSizeAsFixed()).ToInt());
+        MinimumValueForLength(lh, ComputedFontSizeAsFixed(font)).ToInt());
   }
 
   return LayoutUnit(floorf(lh.Value()));
+}
+
+LayoutUnit ComputedStyle::ComputedLineHeightAsFixed() const {
+  return ComputedLineHeightAsFixed(GetFont());
 }
 
 void ComputedStyle::SetWordSpacing(float word_spacing) {

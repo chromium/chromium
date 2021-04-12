@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
@@ -18,11 +19,11 @@ namespace blink {
 
 namespace {
 
-FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style) {
+FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
+                                      const Font& font) {
   if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone)
     return FontHeight::Empty();
 
-  const Font& font = style.GetFont();
   LayoutUnit emphasis_mark_height =
       LayoutUnit(font.EmphasisMarkHeight(style.TextEmphasisMarkString()));
   DCHECK_GE(emphasis_mark_height, LayoutUnit());
@@ -33,19 +34,42 @@ FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style) {
 
 }  // namespace
 
+void NGInlineBoxState::InitializeFont(bool is_svg_text,
+                                      const LayoutObject& layout_object) {
+  if (!is_svg_text) {
+    font = &style->GetFont();
+    return;
+  }
+  scaled_font.emplace();
+  float scaling_factor;
+  LayoutSVGInlineText::ComputeNewScaledFontForStyle(
+      layout_object, scaling_factor, *scaled_font);
+  if (scaling_factor == 1.0f) {
+    scaled_font = base::nullopt;
+    font = &style->GetFont();
+  } else {
+    font = &*scaled_font;
+  }
+}
+
 void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
+                                          const Font& fontref,
                                           FontBaseline baseline_type) {
-  text_metrics = styleref.GetFontHeight(baseline_type);
+  if (const SimpleFontData* font_data = fontref.PrimaryFont())
+    text_metrics = font_data->GetFontMetrics().GetFontHeight(baseline_type);
+  else
+    text_metrics = FontHeight();
   text_top = -text_metrics.ascent;
   text_height = text_metrics.LineHeight();
 
-  FontHeight emphasis_marks_outsets = ComputeEmphasisMarkOutsets(styleref);
+  FontHeight emphasis_marks_outsets =
+      ComputeEmphasisMarkOutsets(styleref, fontref);
   if (emphasis_marks_outsets.IsEmpty()) {
-    text_metrics.AddLeading(styleref.ComputedLineHeightAsFixed());
+    text_metrics.AddLeading(styleref.ComputedLineHeightAsFixed(fontref));
   } else {
     FontHeight emphasis_marks_metrics = text_metrics;
     emphasis_marks_metrics += emphasis_marks_outsets;
-    text_metrics.AddLeading(styleref.ComputedLineHeightAsFixed());
+    text_metrics.AddLeading(styleref.ComputedLineHeightAsFixed(fontref));
     text_metrics.Unite(emphasis_marks_metrics);
     // TODO: Is this correct to include into text_metrics? How do we use
     // text_metrics after this point?
@@ -62,9 +86,10 @@ void NGInlineBoxState::ResetTextMetrics() {
 }
 
 void NGInlineBoxState::EnsureTextMetrics(const ComputedStyle& styleref,
+                                         const Font& fontref,
                                          FontBaseline baseline_type) {
   if (text_metrics.IsEmpty())
-    ComputeTextMetrics(styleref, baseline_type);
+    ComputeTextMetrics(styleref, fontref, baseline_type);
 }
 
 void NGInlineBoxState::AccumulateUsedFonts(const ShapeResultView* shape_result,
@@ -83,7 +108,7 @@ void NGInlineBoxState::AccumulateUsedFonts(const ShapeResultView* shape_result,
 LayoutUnit NGInlineBoxState::TextTop(FontBaseline baseline_type) const {
   if (!text_metrics.IsEmpty())
     return text_top;
-  if (const SimpleFontData* font_data = style->GetFont().PrimaryFont())
+  if (const SimpleFontData* font_data = font->PrimaryFont())
     return -font_data->GetFontMetrics().FixedAscent(baseline_type);
   NOTREACHED();
   return LayoutUnit();
@@ -101,10 +126,12 @@ bool NGInlineBoxState::CanAddTextOfStyle(
 }
 
 NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
+    const NGInlineNode node,
     const ComputedStyle& line_style,
     FontBaseline baseline_type,
     bool line_height_quirk,
     NGLogicalLineItems* line_box) {
+  is_svg_text_ = node.IsSVGText();
   if (stack_.IsEmpty()) {
     // For the first line, push a box state for the line itself.
     stack_.resize(1);
@@ -139,12 +166,15 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
   NGInlineBoxState& line_box_state = LineBoxState();
   if (line_box_state.style != &line_style) {
     line_box_state.style = &line_style;
+    line_box_state.InitializeFont(node.IsSVGText(), *node.GetLayoutBox());
 
     // Use a "strut" (a zero-width inline box with the element's font and
     // line height properties) as the initial metrics for the line box.
     // https://drafts.csswg.org/css2/visudet.html#strut
-    if (!line_height_quirk)
-      line_box_state.ComputeTextMetrics(line_style, baseline_type);
+    if (!line_height_quirk) {
+      line_box_state.ComputeTextMetrics(line_style, *line_box_state.font,
+                                        baseline_type);
+    }
   }
 
   return &stack_.back();
@@ -174,6 +204,7 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
   NGInlineBoxState* box = &stack_.back();
   box->fragment_start = line_box.size();
   box->style = &style;
+  box->InitializeFont(is_svg_text_, *item.GetLayoutObject());
   box->item = &item;
   box->has_start_edge = item_result.has_edge;
   box->margin_inline_start = item_result.margins.inline_start;
@@ -716,8 +747,7 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
           baseline_shift = child.metrics.ascent + box->TextTop(baseline_type);
           break;
         case EVerticalAlign::kTextBottom:
-          if (const SimpleFontData* font_data =
-                  box->style->GetFont().PrimaryFont()) {
+          if (const SimpleFontData* font_data = box->font->PrimaryFont()) {
             LayoutUnit text_bottom =
                 font_data->GetFontMetrics().FixedDescent(baseline_type);
             baseline_shift = text_bottom - child.metrics.descent;

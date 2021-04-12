@@ -3950,6 +3950,7 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/foreignObject/transformed-text-
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/rotated-text.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/singular-transform-3.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/svg-pointer-events-bbox.html [ Failure ]
+crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-dominant-baseline-hanging.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-fill-none-with-nested-tspan.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-multiple-dx-values.svg [ Pass Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-small-font-size.html [ Failure ]
