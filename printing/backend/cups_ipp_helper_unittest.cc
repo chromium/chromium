@@ -21,7 +21,7 @@ namespace printing {
 
 class MockCupsOptionProvider : public CupsOptionProvider {
  public:
-  ~MockCupsOptionProvider() override {}
+  ~MockCupsOptionProvider() override = default;
 
   ipp_attribute_t* GetSupportedOptionValues(
       const char* option_name) const override {
@@ -340,7 +340,7 @@ TEST_F(PrintBackendCupsIppHelperTest, AdvancedCaps) {
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
-  EXPECT_EQ(6u, caps.advanced_capabilities.size());
+  ASSERT_EQ(6u, caps.advanced_capabilities.size());
   EXPECT_EQ("confirmation-sheet-print", caps.advanced_capabilities[0].name);
   EXPECT_EQ(AdvancedCapability::Type::kBoolean,
             caps.advanced_capabilities[0].type);
@@ -354,8 +354,12 @@ TEST_F(PrintBackendCupsIppHelperTest, AdvancedCaps) {
   EXPECT_EQ(AdvancedCapability::Type::kString,
             caps.advanced_capabilities[3].type);
   EXPECT_EQ("output-bin", caps.advanced_capabilities[4].name);
+  EXPECT_EQ(AdvancedCapability::Type::kString,
+            caps.advanced_capabilities[4].type);
   EXPECT_EQ(2u, caps.advanced_capabilities[4].values.size());
   EXPECT_EQ("print-quality", caps.advanced_capabilities[5].name);
+  EXPECT_EQ(AdvancedCapability::Type::kString,
+            caps.advanced_capabilities[5].type);
   EXPECT_EQ(3u, caps.advanced_capabilities[5].values.size());
   histograms.ExpectUniqueSample("Printing.CUPS.IppAttributesCount", 5, 1);
 }
