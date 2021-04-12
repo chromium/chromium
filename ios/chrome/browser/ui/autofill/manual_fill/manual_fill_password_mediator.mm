@@ -233,7 +233,8 @@ BOOL AreCredentialsAtIndexesConnected(
 
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnableManualPasswordGeneration) &&
-        _syncService->IsSyncEnabled() && _activeFieldIsPassword) {
+        _syncService && _syncService->IsSyncEnabled() &&
+        _activeFieldIsPassword) {
       NSString* suggestPasswordTitleString = l10n_util::GetNSString(
           IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS);
       auto suggestPasswordItem = [[ManualFillActionItem alloc]
