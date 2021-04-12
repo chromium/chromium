@@ -34,9 +34,16 @@ class ArcUserSessionServiceFactory
 
 }  // namespace
 
+// static
 ArcUserSessionService* ArcUserSessionService::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcUserSessionServiceFactory::GetForBrowserContext(context);
+}
+
+// static
+ArcUserSessionService* ArcUserSessionService::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcUserSessionServiceFactory::GetForBrowserContextForTesting(context);
 }
 
 ArcUserSessionService::ArcUserSessionService(content::BrowserContext* context,

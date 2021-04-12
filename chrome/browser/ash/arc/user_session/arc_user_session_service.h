@@ -28,6 +28,8 @@ class ArcUserSessionService
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcUserSessionService* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcUserSessionService* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcUserSessionService(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);

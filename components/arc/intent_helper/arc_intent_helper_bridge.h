@@ -51,6 +51,8 @@ class ArcIntentHelperBridge : public KeyedService,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcIntentHelperBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcIntentHelperBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   // Returns factory for the ArcIntentHelperBridge.
   static KeyedServiceBaseFactory* GetFactory();

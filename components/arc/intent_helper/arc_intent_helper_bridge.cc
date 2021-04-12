@@ -91,6 +91,12 @@ ArcIntentHelperBridge* ArcIntentHelperBridge::GetForBrowserContext(
 }
 
 // static
+ArcIntentHelperBridge* ArcIntentHelperBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcIntentHelperBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
+// static
 KeyedServiceBaseFactory* ArcIntentHelperBridge::GetFactory() {
   return ArcIntentHelperBridgeFactory::GetInstance();
 }
