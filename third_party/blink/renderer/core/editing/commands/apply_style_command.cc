@@ -302,14 +302,6 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
 
     RelocatablePosition next_paragraph_start(
         NextPositionOf(EndOfParagraph(paragraph_start)).DeepEquivalent());
-    // RelocatablePosition turns the position into ParentAnchoredEquivalent(),
-    // which can affect the result of CreateVisiblePosition().
-    // To avoid an infinite loop, reconvert into a VisiblePosition and check
-    // that it's after the current paragraph_start.
-    bool will_advance =
-        next_paragraph_start.GetPosition().IsNull() ||
-        CreateVisiblePosition(next_paragraph_start.GetPosition())
-                .DeepEquivalent() > paragraph_start.DeepEquivalent();
     StyleChange style_change(style, paragraph_start.DeepEquivalent());
     if (style_change.CssStyle().length() || remove_only_) {
       Element* block =
@@ -335,8 +327,6 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     }
 
-    if (!will_advance)
-      break;
     paragraph_start = CreateVisiblePosition(next_paragraph_start.GetPosition());
   }
 

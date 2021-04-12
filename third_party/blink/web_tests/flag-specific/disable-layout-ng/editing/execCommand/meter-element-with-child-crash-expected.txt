@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL JustifyCenter with METER should not crash resources/testharness.js:2095:25)
+	 expected <div contenteditable><div style="text-align: center;"></div><div style="text-align: center;">|<meter></meter></div></div>,
+	 but got  <div contenteditable><div style="text-align: center;"></div>^<meter><isindex></isindex></meter>|</div>,
+	 sameupto <div contenteditable><div style="text-align: center;"></div>
+Harness: the test ran to completion.
+

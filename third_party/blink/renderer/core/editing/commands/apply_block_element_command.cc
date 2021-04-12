@@ -195,12 +195,10 @@ void ApplyBlockElementCommand::FormatSelection(
     end_of_current_paragraph = CreateVisiblePosition(end);
 
     Node* enclosing_cell = EnclosingNodeOfType(start, &IsTableCell);
-    Position end_of_next_paragraph =
+    RelocatablePosition relocatable_end_of_next_paragraph(
         EndOfNextParagrahSplittingTextNodesIfNeeded(
             end_of_current_paragraph, end_of_last_paragraph, start, end)
-            .DeepEquivalent();
-    RelocatablePosition relocatable_end_of_next_paragraph(
-        end_of_next_paragraph);
+            .DeepEquivalent());
     RelocatablePosition relocatable_end(end);
 
     FormatRange(start, end, end_of_last_paragraph, blockquote_for_next_indent,
@@ -208,15 +206,8 @@ void ApplyBlockElementCommand::FormatSelection(
     if (editing_state->IsAborted())
       return;
 
-    // FormatRange altered the DOM, potentially making end_of_next_paragraph
-    // invalid. That's why we used a relocatable position, which will remain
-    // valid. However, relocatable positions lose the anchor type, which can
-    // affect the resulting VisiblePosition. So keep the original position
-    // if it's equivalent to the relocatable one.
-    if (!end_of_next_paragraph.IsConnected() ||
-        !relocatable_end_of_next_paragraph.GetPosition().IsEquivalent(
-            end_of_next_paragraph))
-      end_of_next_paragraph = relocatable_end_of_next_paragraph.GetPosition();
+    const Position& end_of_next_paragraph =
+        relocatable_end_of_next_paragraph.GetPosition();
 
     // Sometimes FormatRange can format beyond end. If the relocated end is now
     // the equivalent to end_of_next_paragraph, abort to avoid redoing the same

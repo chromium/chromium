@@ -27,6 +27,7 @@ class CORE_EXPORT RelocatablePosition final
 
  private:
   Member<Range> const range_;
+  Position original_position_;
 };
 
 }  // namespace blink
