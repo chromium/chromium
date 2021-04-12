@@ -254,37 +254,6 @@ class CheckProcessPriority : public testing::EmptyTestEventListener {
 };
 #endif  // !defined(OS_IOS)
 
-class CheckThreadPriority : public testing::EmptyTestEventListener {
- public:
-  CheckThreadPriority(bool check_thread_priority_at_test_end)
-      : check_thread_priority_at_test_end_(check_thread_priority_at_test_end) {
-    CHECK_EQ(base::PlatformThread::GetCurrentThreadPriority(),
-             base::ThreadPriority::NORMAL)
-        << " -- The thread priority of this process is not the default. This "
-           "usually indicates nice has been used, which is not supported.";
-  }
-
-  void OnTestStart(const testing::TestInfo& test) override {
-    EXPECT_EQ(base::PlatformThread::GetCurrentThreadPriority(),
-              base::ThreadPriority::NORMAL)
-        << " -- The thread priority of this process is not the default. This "
-           "usually indicates nice has been used, which is not supported.";
-  }
-  void OnTestEnd(const testing::TestInfo& test) override {
-    if (check_thread_priority_at_test_end_) {
-      EXPECT_EQ(base::PlatformThread::GetCurrentThreadPriority(),
-                base::ThreadPriority::NORMAL)
-          << " -- The thread priority of this process is not the default. This "
-             "usually indicates nice has been used, which is not supported.";
-    }
-  }
-
- private:
-  const bool check_thread_priority_at_test_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckThreadPriority);
-};
-
 const std::string& GetProfileName() {
   static const NoDestructor<std::string> profile_name([]() {
     const CommandLine& command_line = *CommandLine::ForCurrentProcess();
