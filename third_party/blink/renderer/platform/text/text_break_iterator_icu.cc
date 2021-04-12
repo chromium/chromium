@@ -120,11 +120,11 @@ enum TextContext { kNoContext, kPriorContext, kPrimaryContext };
 
 const int kTextBufferCapacity = 16;
 
-typedef struct {
+struct UTextWithBuffer {
   DISALLOW_NEW();
   UText text;
   UChar buffer[kTextBufferCapacity];
-} UTextWithBuffer;
+};
 
 static inline int64_t TextPinIndex(int64_t& index, int64_t limit) {
   if (index < 0)
