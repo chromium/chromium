@@ -166,7 +166,7 @@ class CellularESimConnectionHandlerTest : public testing::Test {
         CreateTestIccid(profile_num), CreateTestName(profile_num),
         "service_provider", "activation_code",
         CreateTestServicePath(profile_num), hermes::profile::State::kInactive,
-        /*service_only=*/false);
+        hermes::profile::ProfileClass::kOperational, /*service_only=*/false);
     base::RunLoop().RunUntilIdle();
   }
 

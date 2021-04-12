@@ -174,7 +174,7 @@ class CellularMetricsLoggerTest : public testing::Test {
     network_state_test_helper_.hermes_euicc_test()->AddCarrierProfile(
         dbus::ObjectPath(service_path), dbus::ObjectPath(kTestEuiccPath),
         kTestIccid, kTestProfileName, "service_provider", "activation_code",
-        service_path, state,
+        service_path, state, hermes::profile::ProfileClass::kOperational,
         /*service_only=*/false);
     base::RunLoop().RunUntilIdle();
   }

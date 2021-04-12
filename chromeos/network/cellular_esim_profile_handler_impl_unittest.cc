@@ -28,6 +28,7 @@ namespace {
 
 const char kDefaultCellularDevicePath[] = "stub_cellular_device";
 const char kTestEuiccBasePath[] = "/org/chromium/Hermes/Euicc/";
+const char kTestProfileBasePath[] = "/org/chromium/Hermes/Profile/";
 const char kTestBaseEid[] = "12345678901234567890123456789012";
 const char kTestPSimIccid[] = "1234567890";
 const char kTestCellularServicePath[] = "/service/cellular";
@@ -112,11 +113,26 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
 
   dbus::ObjectPath AddProfile(int euicc_num,
                               hermes::profile::State state,
-                              const std::string& activation_code) {
-    dbus::ObjectPath path = helper_.hermes_euicc_test()->AddFakeCarrierProfile(
-        dbus::ObjectPath(CreateTestEuiccPath(euicc_num)), state,
-        activation_code, /*service_only=*/false);
+                              const std::string& activation_code,
+                              hermes::profile::ProfileClass profile_class =
+                                  hermes::profile::ProfileClass::kOperational) {
+    dbus::ObjectPath path(base::StringPrintf("%s%02d", kTestProfileBasePath,
+                                             num_profiles_created_));
+
+    helper_.hermes_euicc_test()->AddCarrierProfile(
+        path, dbus::ObjectPath(CreateTestEuiccPath(euicc_num)),
+        base::StringPrintf("%s%02d", "iccid_", num_profiles_created_),
+        base::StringPrintf("%s%02d", "name_", num_profiles_created_),
+        base::StringPrintf("%s%02d", "service_provider_",
+                           num_profiles_created_),
+        activation_code,
+        base::StringPrintf("%s%02d", "network_service_path_",
+                           num_profiles_created_),
+        state, profile_class, /*service_only=*/false);
+
     base::RunLoop().RunUntilIdle();
+
+    ++num_profiles_created_;
     return path;
   }
 
@@ -191,6 +207,8 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
   TestingPrefServiceSimple device_prefs_;
   FakeObserver observer_;
 
+  int num_profiles_created_ = 0;
+
   CellularInhibitor cellular_inhibitor_;
   std::unique_ptr<CellularESimProfileHandlerImpl> handler_;
 };
@@ -231,12 +249,24 @@ TEST_F(CellularESimProfileHandlerImplTest, EuiccWithNoProfiles) {
 
 TEST_F(CellularESimProfileHandlerImplTest, EuiccWithProfiles) {
   AddEuicc(/*euicc_num=*/1);
+
+  // Add two normal (i.e., kOperational) profiles.
   dbus::ObjectPath path1 = AddProfile(
       /*euicc_num=*/1, hermes::profile::State::kPending,
       /*activation_code=*/"code1");
   dbus::ObjectPath path2 = AddProfile(
       /*euicc_num=*/1, hermes::profile::State::kActive,
       /*activation_code=*/"code2");
+
+  // Add one kTesting and one kProvisioning profile. These profiles are ignored
+  // and should never be returned by CellularESimProfileHandlerImpl.
+  AddProfile(
+      /*euicc_num=*/1, hermes::profile::State::kInactive,
+      /*activation_code=*/"code3", hermes::profile::ProfileClass::kTesting);
+  AddProfile(
+      /*euicc_num=*/1, hermes::profile::State::kInactive,
+      /*activation_code=*/"code4",
+      hermes::profile::ProfileClass::kProvisioning);
 
   // Prefs not yet set.
   Init();

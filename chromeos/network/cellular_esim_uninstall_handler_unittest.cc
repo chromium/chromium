@@ -139,12 +139,14 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         dbus::ObjectPath(kTestCarrierProfilePath),
         dbus::ObjectPath(kDefaultEuiccPath), kTestCellularIccid,
         kTestProfileName, kTestServiceProvider, "", kTestNetworkServicePath,
-        hermes::profile::State::kActive, /*service_only=*/true);
+        hermes::profile::State::kActive,
+        hermes::profile::ProfileClass::kOperational, /*service_only=*/true);
     HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
         dbus::ObjectPath(kTestCarrierProfilePath2),
         dbus::ObjectPath(kDefaultEuiccPath), kTestCellularIccid2,
         kTestProfileName, kTestServiceProvider, "", kTestNetworkServicePath2,
-        hermes::profile::State::kInactive, /*service_only=*/true);
+        hermes::profile::State::kInactive,
+        hermes::profile::ProfileClass::kOperational, /*service_only=*/true);
     base::RunLoop().RunUntilIdle();
 
     ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(

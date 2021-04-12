@@ -131,7 +131,7 @@ dbus::ObjectPath FakeHermesEuiccClient::AddFakeCarrierProfile(
           ? base::StringPrintf("%s%02d", kFakeActivationCodePrefix, index)
           : activation_code,
       base::StringPrintf("%s%02d", kFakeNetworkServicePathPrefix, index), state,
-      service_only);
+      hermes::profile::ProfileClass::kOperational, service_only);
   return carrier_profile_path;
 }
 
@@ -144,6 +144,7 @@ void FakeHermesEuiccClient::AddCarrierProfile(
     const std::string& activation_code,
     const std::string& network_service_path,
     hermes::profile::State state,
+    hermes::profile::ProfileClass profile_class,
     bool service_only) {
   DVLOG(1) << "Adding new profile path=" << path.value() << ", name=" << name
            << ", state=" << state;
@@ -156,6 +157,7 @@ void FakeHermesEuiccClient::AddCarrierProfile(
   profile_properties->name().ReplaceValue(name);
   profile_properties->nick_name().ReplaceValue(name);
   profile_properties->state().ReplaceValue(state);
+  profile_properties->profile_class().ReplaceValue(profile_class);
   profile_service_path_map_[path] = network_service_path;
 
   Properties* euicc_properties = GetProperties(euicc_path);
