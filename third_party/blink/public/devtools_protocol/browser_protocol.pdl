@@ -2987,6 +2987,10 @@ experimental domain DOMSnapshot
       optional array of Rectangle scrollRects
       # The client rect of nodes. Only available when includeDOMRects is set to true
       optional array of Rectangle clientRects
+      # The list of background colors that are blended with colors of overlapping elements.
+      experimental optional array of StringIndex blendedBackgroundColors
+      # The list of computed text opacities.
+      experimental optional array of number textColorOpacities
 
   # Table of details of the post layout rendered text positions. The exact layout should not be regarded as
   # stable and may change between versions.
@@ -3043,6 +3047,14 @@ experimental domain DOMSnapshot
       optional boolean includePaintOrder
       # Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
       optional boolean includeDOMRects
+      # Whether to include blended background colors in the snapshot (default: false).
+      # Blended background color is achieved by blending background colors of all elements
+      # that overlap with the current element.
+      experimental optional boolean includeBlendedBackgroundColors
+      # Whether to include text color opacity in the snapshot (default: false).
+      # An element might have the opacity property set that affects the text color of the element.
+      # The final text color opacity is computed based on the opacity of all overlapping elements.
+      experimental optional boolean includeTextColorOpacities
     returns
       # The nodes in the DOM tree. The DOMNode at index 0 corresponds to the root document.
       array of DocumentSnapshot documents
