@@ -343,8 +343,9 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
+// TODO(crbug.com/1196515): Fix this flaky test.
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_TransientActivation) {
+                       DISABLED_OpenTcp_TransientActivation) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
   base::HistogramTester histogram_tester;
