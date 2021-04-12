@@ -113,6 +113,9 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
                 ? null
                 : AccountManagerFacadeProvider.getInstance().getProfileDataSource();
         mAccountInfoService = AccountInfoService.get();
+        if (mProfileDataSource == null) {
+            populateCache();
+        }
     }
 
     /**
@@ -172,9 +175,9 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         if (mObservers.isEmpty()) {
             if (mProfileDataSource != null) {
                 mProfileDataSource.addObserver(this);
+                populateCacheLegacy();
             }
             mAccountInfoService.addObserver(this);
-            populateCache();
         }
         mObservers.addObserver(observer);
     }
@@ -191,14 +194,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
             }
             mAccountInfoService.removeObserver(this);
         }
-    }
-
-    private void populateCache() {
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
-            for (Account account : accounts) {
-                updateAccountInfoByEmail(account.name);
-            }
-        });
     }
 
     @Override
@@ -232,18 +227,28 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         }
     }
 
-    private void updateAccountInfoByEmail(String email) {
-        if (mProfileDataSource != null) {
-            ProfileData profileData = mProfileDataSource.getProfileDataForAccount(email);
-            if (profileData != null) {
-                onProfileDataUpdated(profileData);
+    private void populateCache() {
+        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+            for (Account account : accounts) {
+                AccountInfo accountInfo = mAccountInfoService.getAccountInfoByEmail(account.name);
+                if (accountInfo != null) {
+                    onAccountInfoUpdated(accountInfo);
+                }
             }
-            return;
-        }
-        final AccountInfo accountInfo = mAccountInfoService.getAccountInfoByEmail(email);
-        if (accountInfo != null) {
-            onAccountInfoUpdated(accountInfo);
-        }
+        });
+    }
+
+    private void populateCacheLegacy() {
+        assert mProfileDataSource
+                != null : "This only populates cache with the Legacy profile data source.";
+        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+            for (Account account : accounts) {
+                ProfileData profileData = mProfileDataSource.getProfileDataForAccount(account.name);
+                if (profileData != null) {
+                    onProfileDataUpdated(profileData);
+                }
+            }
+        });
     }
 
     private void updateCacheAndNotifyObservers(
