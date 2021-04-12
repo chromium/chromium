@@ -1197,16 +1197,6 @@ Element* Document::CreateElement(const QualifiedName& q_name,
                                                              flags, is);
 }
 
-Document& Document::TreeRootDocument() const {
-  return *const_cast<Document*>(this);
-}
-
-LocalDOMWindow* Document::ExecutingWindow() const {
-  if (LocalDOMWindow* owning_window = domWindow())
-    return owning_window;
-  return nullptr;
-}
-
 DocumentFragment* Document::createDocumentFragment() {
   return DocumentFragment::Create(*this);
 }
@@ -1820,12 +1810,6 @@ LocalFrame* Document::GetFrame() const {
 
 Page* Document::GetPage() const {
   return GetFrame() ? GetFrame()->GetPage() : nullptr;
-}
-
-LocalFrame* Document::GetFrameOfTreeRootDocument() const {
-  if (GetFrame())
-    return GetFrame();
-  return nullptr;
 }
 
 Settings* Document::GetSettings() const {
@@ -7088,7 +7072,7 @@ bool Document::AllowInlineEventHandler(Node* node,
   // Also, if the listening node came from other document, which happens on
   // context-less event dispatching, we also need to ask the owner document of
   // the node.
-  LocalDOMWindow* window = ExecutingWindow();
+  LocalDOMWindow* window = domWindow();
   if (!window)
     return false;
 

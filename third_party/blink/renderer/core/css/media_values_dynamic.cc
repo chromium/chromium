@@ -16,7 +16,7 @@
 namespace blink {
 
 MediaValues* MediaValuesDynamic::Create(Document& document) {
-  return MediaValuesDynamic::Create(document.GetFrameOfTreeRootDocument());
+  return MediaValuesDynamic::Create(document.GetFrame());
 }
 
 MediaValues* MediaValuesDynamic::Create(LocalFrame* frame) {

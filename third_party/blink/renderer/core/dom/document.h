@@ -322,8 +322,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool IsPrerendering() const { return is_prerendering_; }
 
-  LocalDOMWindow* ExecutingWindow() const;
-
   network::mojom::ReferrerPolicy GetReferrerPolicy() const;
 
   bool DocumentPolicyFeatureObserved(
@@ -543,9 +541,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   LocalFrameView* View() const;  // can be null
   LocalFrame* GetFrame() const;  // can be null
-  // Returns frame_ for current document.  Can be null.
-  // TODO(kochi): Audit usage of this interface (crbug.com/746150).
-  LocalFrame* GetFrameOfTreeRootDocument() const;
   Page* GetPage() const;          // can be null
   Settings* GetSettings() const;  // can be null
 
@@ -1322,8 +1317,6 @@ class CORE_EXPORT Document : public ContainerNode,
                               const AtomicString& name,
                               const ElementRegistrationOptions*,
                               ExceptionState&);
-
-  Document& TreeRootDocument() const;
 
   void AdjustFloatQuadsForScrollAndAbsoluteZoom(Vector<FloatQuad>&,
                                                 const LayoutObject&) const;

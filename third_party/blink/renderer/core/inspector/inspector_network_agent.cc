@@ -1230,7 +1230,7 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
     if (worker_global_scope_) {
       context = worker_global_scope_.Get();
     } else if (loader && loader->GetFrame()) {
-      context = loader->GetFrame()->GetDocument()->ExecutingWindow();
+      context = loader->GetFrame()->GetDocument()->domWindow();
     }
     String stack_id =
         RequestDebugHeaderScope::CaptureStackIdForCurrentLocation(context);

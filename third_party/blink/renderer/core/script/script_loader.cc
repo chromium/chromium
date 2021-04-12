@@ -338,7 +338,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
     return false;
 
   Document& element_document = element_->GetDocument();
-  LocalDOMWindow* context_window = element_document.ExecutingWindow();
+  LocalDOMWindow* context_window = element_document.domWindow();
 
   // <spec step="7">... Determine the script's type as follows: ...</spec>
   script_type_ = GetScriptTypeAtPrepare(element_->TypeAttributeValue(),

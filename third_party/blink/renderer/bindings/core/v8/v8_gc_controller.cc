@@ -61,7 +61,7 @@ namespace blink {
 Node* V8GCController::OpaqueRootForGC(v8::Isolate*, Node* node) {
   DCHECK(node);
   if (node->isConnected())
-    return &node->GetDocument().TreeRootDocument();
+    return &node->GetDocument();
 
   if (auto* attr = DynamicTo<Attr>(node)) {
     Node* owner_element = attr->ownerElement();

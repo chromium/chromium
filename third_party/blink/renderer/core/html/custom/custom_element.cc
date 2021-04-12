@@ -27,7 +27,7 @@ CustomElementRegistry* CustomElement::Registry(const Element& element) {
 }
 
 CustomElementRegistry* CustomElement::Registry(const Document& document) {
-  if (LocalDOMWindow* window = document.ExecutingWindow())
+  if (LocalDOMWindow* window = document.domWindow())
     return window->customElements();
   return nullptr;
 }
