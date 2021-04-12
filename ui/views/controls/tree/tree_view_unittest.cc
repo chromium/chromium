@@ -329,8 +329,8 @@ const AXVirtualView* TreeViewTest::GetAccessibilityViewByName(
 }
 
 void TreeViewTest::IncrementSelection(bool next) {
-  tree_->IncrementSelection(next ? TreeView::INCREMENT_NEXT
-                                 : TreeView::INCREMENT_PREVIOUS);
+  tree_->IncrementSelection(next ? TreeView::IncrementType::kNext
+                                 : TreeView::IncrementType::kPrevious);
 }
 
 void TreeViewTest::CollapseOrSelectParent() {

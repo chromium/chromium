@@ -699,8 +699,9 @@ bool TreeView::OnKeyPressed(const ui::KeyEvent& event) {
 
     case ui::VKEY_UP:
     case ui::VKEY_DOWN:
-      IncrementSelection(event.key_code() == ui::VKEY_UP ? INCREMENT_PREVIOUS
-                                                         : INCREMENT_NEXT);
+      IncrementSelection(event.key_code() == ui::VKEY_UP
+                             ? IncrementType::kPrevious
+                             : IncrementType::kNext);
       return true;
 
     case ui::VKEY_LEFT:
@@ -1323,7 +1324,7 @@ void TreeView::IncrementSelection(IncrementType type) {
     // If nothing is selected select the first or last node.
     if (root_.children().empty())
       return;
-    if (type == INCREMENT_PREVIOUS) {
+    if (type == IncrementType::kPrevious) {
       int row_count = GetRowCount();
       int depth = 0;
       DCHECK(row_count);
@@ -1338,7 +1339,7 @@ void TreeView::IncrementSelection(IncrementType type) {
   }
 
   int depth = 0;
-  int delta = type == INCREMENT_PREVIOUS ? -1 : 1;
+  int delta = type == IncrementType::kPrevious ? -1 : 1;
   int row = GetRowForInternalNode(active_node_, &depth);
   int new_row = base::ClampToRange(row + delta, 0, GetRowCount() - 1);
   if (new_row == row)

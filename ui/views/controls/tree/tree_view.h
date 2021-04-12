@@ -307,12 +307,12 @@ class VIEWS_EXPORT TreeView : public View,
   };
 
   // Used by IncrementSelection.
-  enum IncrementType {
+  enum class IncrementType {
     // Selects the next node.
-    INCREMENT_NEXT,
+    kNext,
 
     // Selects the previous node.
-    INCREMENT_PREVIOUS
+    kPrevious
   };
 
   // Row of the root node. This varies depending upon whether the root is
