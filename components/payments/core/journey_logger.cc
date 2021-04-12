@@ -307,11 +307,12 @@ void JourneyLogger::RecordTransactionAmount(std::string currency,
   // A dictionary of 3-letter recorded currency codes and their approximated USD
   // conversion rates. Transaction currencies in currency_conversion_rates are
   // recorded after conversion.
+  // Conversion rates last updated on April 9, 2021
   const std::unordered_map<std::string, float> currency_conversion_rates = {
-      {"USD", 1.0},   {"EUR", 1.14},  {"GBP", 1.27}, {"JPY", 0.0093},
-      {"INR", 0.014}, {"CNY", 0.15},  {"CAD", 0.77}, {"RUB", 0.016},
-      {"PLN", 0.27},  {"AUD", 0.70},  {"BRL", 0.26}, {"UAH", 0.038},
-      {"TWD", 0.032}, {"CZK", 0.045}, {"MXN", 0.052}};
+      {"USD", 1.0},   {"EUR", 1.19},  {"GBP", 1.37}, {"JPY", 0.0091},
+      {"INR", 0.013}, {"CNY", 0.15},  {"CAD", 0.80}, {"RUB", 0.013},
+      {"PLN", 0.26},  {"AUD", 0.76},  {"BRL", 0.18}, {"UAH", 0.036},
+      {"TWD", 0.035}, {"CZK", 0.046}, {"MXN", 0.050}, {"SGD", 0.75}};
   std::unordered_map<std::string, float>::const_iterator it =
       currency_conversion_rates.find(currency);
   // transactions with currencies not included in the conversion dictionary are
