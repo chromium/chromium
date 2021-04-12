@@ -18879,7 +18879,7 @@
       'deprecated': True,
       'example_value': ['https://www.example.com', '[*.]example.edu'],
       'id': 431,
-      'caption': '''Allow media autoplay on a allowlist of URL patterns''',
+      'caption': '''Allow media autoplay on a whitelist of URL patterns''',
       'tags': [],
       'desc': '''This policy is deprecated, please use the '<ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME">AutoplayAllowlist</ph>' policy instead.
 
@@ -18902,7 +18902,7 @@
       },
       'example_value': ['https://www.example.com', '[*.]example.edu'],
       'id': 742,
-      'caption': '''Allow media autoplay on a whitelist of URL patterns''',
+      'caption': '''Allow media autoplay on a allowlist of URL patterns''',
       'tags': [],
       'desc': '''Setting the policy lets videos play automatically (without user consent) with audio content in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If <ph name="AUTOPLAY_ALLOWED_POLICY_NAME">AutoplayAllowed</ph> policy is set to True, then this policy has no effect. If <ph name="AUTOPLAY_ALLOWED_POLICY_NAME">AutoplayAllowed</ph> is set to False, then any URL patterns set in this policy can still play. If this policy changes while <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is running, it only applies to newly opened tabs.
 
