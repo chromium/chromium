@@ -239,12 +239,12 @@ void VerifyDebugger() {
 #elif defined(OS_FUCHSIA)
 
 bool BeingDebugged() {
-  zx_info_process_t info = {};
+  zx_info_process_v2_t info = {};
   // Ignore failures. The 0-initialization above will result in "false" for
   // error cases.
-  zx_object_get_info(zx_process_self(), ZX_INFO_PROCESS, &info, sizeof(info),
+  zx_object_get_info(zx_process_self(), ZX_INFO_PROCESS_V2, &info, sizeof(info),
                      nullptr, nullptr);
-  return info.debugger_attached;
+  return (info.flags & ZX_INFO_PROCESS_FLAG_DEBUGGER_ATTACHED) != 0;
 }
 
 void VerifyDebugger() {}
