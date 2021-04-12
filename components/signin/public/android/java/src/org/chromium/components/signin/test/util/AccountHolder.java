@@ -6,7 +6,6 @@ package org.chromium.components.signin.test.util;
 
 import android.accounts.Account;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.signin.AccessTokenData;
@@ -25,31 +24,27 @@ import java.util.Set;
  */
 public class AccountHolder {
     private final Account mAccount;
-    private final Map<String, String> mAuthTokens;
+    private final Map<String, AccessTokenData> mAuthTokens;
     private final Set<String> mFeatures;
 
-    private AccountHolder(Account account, Map<String, String> authTokens, Set<String> features) {
-        assert account != null;
-        assert authTokens != null;
-        assert features != null;
-
+    private AccountHolder(Account account) {
+        assert account != null : "account shouldn't be null!";
         mAccount = account;
-        mAuthTokens = authTokens;
-        mFeatures = features;
+        mAuthTokens = new HashMap<>();
+        mFeatures = new HashSet<>();
     }
 
     public Account getAccount() {
         return mAccount;
     }
 
-    boolean hasAuthTokenRegistered(String authTokenType) {
-        return mAuthTokens.containsKey(authTokenType);
-    }
-
     @Nullable
     AccessTokenData getAuthToken(String authTokenType) {
-        String authTokenString = mAuthTokens.get(authTokenType);
-        return authTokenString == null ? null : new AccessTokenData(authTokenString);
+        return mAuthTokens.get(authTokenType);
+    }
+
+    void updateAuthToken(String scope, String token) {
+        mAuthTokens.put(scope, new AccessTokenData(token));
     }
 
     /**
@@ -60,8 +55,8 @@ public class AccountHolder {
      */
     boolean removeAuthToken(String authToken) {
         String foundKey = null;
-        for (Map.Entry<String, String> tokenEntry : mAuthTokens.entrySet()) {
-            if (authToken.equals(tokenEntry.getValue())) {
+        for (Map.Entry<String, AccessTokenData> tokenEntry : mAuthTokens.entrySet()) {
+            if (authToken.equals(tokenEntry.getValue().getToken())) {
                 foundKey = tokenEntry.getKey();
                 break;
             }
@@ -90,59 +85,25 @@ public class AccountHolder {
     }
 
     /**
-     * Creates builder of {@link AccountHolder} for the given account email.
+     * Creates an {@link AccountHolder} from email.
      */
-    public static Builder builder(String accountEmail) {
-        return new Builder(AccountUtils.createAccountFromName(accountEmail));
+    public static AccountHolder createFromEmail(String email) {
+        return createFromAccount(AccountUtils.createAccountFromName(email));
     }
 
     /**
-     * Creates builder of {@link AccountHolder} for the given account.
+     * Creates an {@link AccountHolder} from {@link Account}.
      */
-    public static Builder builder(@NonNull Account account) {
-        return new Builder(account);
-    }
-
-    AccountHolder withAuthToken(String authTokenType, String authToken) {
-        return copy().authToken(authTokenType, authToken).build();
-    }
-
-    private Builder copy() {
-        return builder(mAccount).authTokens(mAuthTokens);
+    public static AccountHolder createFromAccount(Account account) {
+        return new AccountHolder(account);
     }
 
     /**
-     * Used to construct AccountHolder instances.
+     * Creates an {@link AccountHolder} from email and features.
      */
-    public static class Builder {
-        private final Account mAccount;
-        private Map<String, String> mAuthTokens = new HashMap<>();
-        private final Set<String> mFeatures = new HashSet<>();
-
-        Builder(@NonNull Account account) {
-            mAccount = account;
-        }
-
-        Builder authToken(String authTokenType, String authToken) {
-            mAuthTokens.put(authTokenType, authToken);
-            return this;
-        }
-
-        Builder authTokens(@NonNull Map<String, String> authTokens) {
-            mAuthTokens = authTokens;
-            return this;
-        }
-
-        /**
-         * Adds features to the set of features for this account.
-         */
-        public Builder addFeatures(String... features) {
-            Collections.addAll(mFeatures, features);
-            return this;
-        }
-
-        public AccountHolder build() {
-            return new AccountHolder(mAccount, mAuthTokens, mFeatures);
-        }
+    public static AccountHolder createFromEmailAndFeatures(String email, String... features) {
+        final AccountHolder accountHolder = createFromEmail(email);
+        Collections.addAll(accountHolder.mFeatures, features);
+        return accountHolder;
     }
 }

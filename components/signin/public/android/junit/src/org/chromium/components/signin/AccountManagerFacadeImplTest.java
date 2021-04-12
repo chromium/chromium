@@ -256,16 +256,14 @@ public class AccountManagerFacadeImplTest {
     }
 
     private Account addTestAccount(String accountEmail, String... features) {
-        AccountHolder holder = AccountHolder.builder(accountEmail)
-                                       .addFeatures(features)
-                                       .build();
+        AccountHolder holder = AccountHolder.createFromEmailAndFeatures(accountEmail, features);
         mDelegate.addAccount(holder);
         Assert.assertFalse(((AccountManagerFacadeImpl) mFacade).isUpdatePending().get());
         return holder.getAccount();
     }
 
     private void removeTestAccount(Account account) {
-        mDelegate.removeAccount(AccountHolder.builder(account).build());
+        mDelegate.removeAccount(AccountHolder.createFromAccount(account));
     }
 
     private void assertChildAccountStatus(Account account, @ChildAccountStatus.Status int status) {
