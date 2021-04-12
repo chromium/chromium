@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PROVIDER_H_
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PROVIDER_H_
 
+#include <memory>
+
+#include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
+class SystemExtensionsInstallManager;
 
 // Manages the installation, storage, and execution of System Extensions.
 class SystemExtensionsProvider : public KeyedService {
@@ -19,6 +23,13 @@ class SystemExtensionsProvider : public KeyedService {
   SystemExtensionsProvider(const SystemExtensionsProvider&) = delete;
   SystemExtensionsProvider& operator=(const SystemExtensionsProvider&) = delete;
   ~SystemExtensionsProvider() override;
+
+  SystemExtensionsInstallManager& install_manager() {
+    return *install_manager_;
+  }
+
+ private:
+  std::unique_ptr<SystemExtensionsInstallManager> install_manager_;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PROVIDER_H_

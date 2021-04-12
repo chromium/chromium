@@ -1739,6 +1739,7 @@ if (!is_android) {
       deps += [
         "//ash:test_support",
         "//ash/keyboard/ui:test_support",
+        "//chrome/browser/ash/system_extensions:browser_tests",
         "//chrome/browser/chromeos:arc_test_support",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",

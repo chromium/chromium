@@ -42,7 +42,6 @@ class SystemExtensionsProviderFactory
   bool ServiceIsCreatedWithBrowserContext() const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PROVIDER_FACTORY_H_

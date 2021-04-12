@@ -70,7 +70,3 @@ SystemExtensionsProviderFactory::GetBrowserContextToUse(
 
   return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
 }
-
-bool SystemExtensionsProviderFactory::ServiceIsNULLWhileTesting() const {
-  return true;
-}

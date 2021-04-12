@@ -14,6 +14,10 @@ group("system_extensions_group") {
 
 source_set("system_extensions") {
   sources = [
+    "system_extension.cc",
+    "system_extension.h",
+    "system_extensions_install_manager.cc",
+    "system_extensions_install_manager.h",
     "system_extensions_provider.cc",
     "system_extensions_provider.h",
     "system_extensions_provider_factory.cc",
@@ -29,5 +33,19 @@ source_set("system_extensions") {
     "//components/keyed_service/core",
     "//components/user_manager",
     "//skia",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "system_extensions_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":system_extensions",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
   ]
 }
