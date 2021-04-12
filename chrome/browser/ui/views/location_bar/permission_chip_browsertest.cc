@@ -83,6 +83,8 @@ class PermissionChipBrowserTest : public UiBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, InvokeUi_geolocation) {
+// Temporarily disabled per https://crbug.com/1197280
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
+                       DISABLED_InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }
