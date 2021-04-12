@@ -119,7 +119,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool AllowPaymentRequest() const override { return false; }
   bool IsDisplayNone() const override { return !embedded_content_view_; }
   mojom::blink::ColorScheme GetColorScheme() const override;
-  AtomicString RequiredCsp() const override { return g_null_atom; }
   bool ShouldLazyLoadChildren() const final;
 
   // For unit tests, manually trigger the UpdateContainerPolicy method.
@@ -145,7 +144,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
                               bool replace_current_item);
   bool IsKeyboardFocusable() const override;
   void FrameOwnerPropertiesChanged() override;
-  void CSPAttributeChanged() override;
 
   void DisposePluginSoon(WebPluginContainerImpl*);
 
@@ -181,6 +179,9 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // based on the frame attributes.
   virtual network::mojom::blink::TrustTokenParamsPtr ConstructTrustTokenParams()
       const;
+
+ protected:
+  bool is_swapping_frames() const { return is_swapping_frames_; }
 
  private:
   // Intentionally private to prevent redundant checks when the type is

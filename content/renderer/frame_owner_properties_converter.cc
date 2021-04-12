@@ -19,8 +19,6 @@ TypeConverter<blink::WebFrameOwnerProperties,
   result.allow_payment_request = mojo_properties.allow_payment_request;
   result.is_display_none = mojo_properties.is_display_none;
   result.color_scheme = mojo_properties.color_scheme;
-  result.required_csp =
-      blink::WebString::FromUTF8(mojo_properties.required_csp);
 
   return result;
 }
@@ -42,8 +40,6 @@ TypeConverter<blink::mojom::FrameOwnerPropertiesPtr,
       web_frame_owner_properties.allow_payment_request;
   mojo_properties->is_display_none = web_frame_owner_properties.is_display_none;
   mojo_properties->color_scheme = web_frame_owner_properties.color_scheme;
-  mojo_properties->required_csp =
-      web_frame_owner_properties.required_csp.Utf8();
 
   return mojo_properties;
 }

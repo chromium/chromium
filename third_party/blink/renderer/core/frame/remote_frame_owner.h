@@ -60,7 +60,6 @@ class CORE_EXPORT RemoteFrameOwner final
   mojom::blink::ColorScheme GetColorScheme() const override {
     return color_scheme_;
   }
-  AtomicString RequiredCsp() const override { return required_csp_; }
   bool ShouldLazyLoadChildren() const final;
 
   void SetFramePolicy(const FramePolicy& frame_policy) {
@@ -84,9 +83,6 @@ class CORE_EXPORT RemoteFrameOwner final
   void SetColorScheme(mojom::blink::ColorScheme color_scheme) {
     color_scheme_ = color_scheme;
   }
-  void SetRequiredCsp(const WebString& required_csp) {
-    required_csp_ = required_csp;
-  }
 
   void Trace(Visitor*) const override;
 
@@ -107,7 +103,6 @@ class CORE_EXPORT RemoteFrameOwner final
   bool is_display_none_;
   mojom::blink::ColorScheme color_scheme_;
   bool needs_occlusion_tracking_;
-  WebString required_csp_;
   const mojom::blink::FrameOwnerElementType frame_owner_element_type_;
 };
 

@@ -448,7 +448,6 @@ void Frame::ApplyFrameOwnerProperties(
   owner->SetAllowPaymentRequest(properties->allow_payment_request);
   owner->SetIsDisplayNone(properties->is_display_none);
   owner->SetColorScheme(properties->color_scheme);
-  owner->SetRequiredCsp(properties->required_csp);
 }
 
 void Frame::InsertAfter(Frame* new_child, Frame* previous_sibling) {

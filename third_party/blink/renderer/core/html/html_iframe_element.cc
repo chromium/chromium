@@ -466,4 +466,30 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
   return parsed_params;
 }
 
+void HTMLIFrameElement::CSPAttributeChanged() {
+  // Don't notify about updates if ContentFrame() is null, for example when
+  // the subframe hasn't been created yet; or if we are in the middle of
+  // swapping one frame for another, in which case the final state
+  // will be propagated at the end of the swapping operation.
+  if (is_swapping_frames() || !ContentFrame())
+    return;
+
+  // ParseContentSecurityPolicies needs a url to resolve report endpoints and
+  // for matching the keyword 'self'. However, the csp attribute does not allow
+  // report endpoints. Moreover, in the csp attribute, 'self' should not match
+  // the owner's url, but rather the frame src url. This is taken care by the
+  // Content-Security-Policy Embedded Enforcement algorithm, implemented in the
+  // NavigationRequest. That's why we pass an empty url here.
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp =
+      ParseContentSecurityPolicies(
+          required_csp_,
+          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP, KURL());
+  DCHECK_LE(csp.size(), 1u);
+
+  GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeCSPAttribute(
+      ContentFrame()->GetFrameToken(),
+      csp.IsEmpty() ? nullptr : std::move(csp[0]));
+}
+
 }  // namespace blink

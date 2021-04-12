@@ -2075,7 +2075,7 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
       owner_element->ScrollbarMode(), owner_element->MarginWidth(),
       owner_element->MarginHeight(), owner_element->AllowFullscreen(),
       owner_element->AllowPaymentRequest(), owner_element->IsDisplayNone(),
-      owner_element->GetColorScheme(), owner_element->RequiredCsp());
+      owner_element->GetColorScheme());
 
   mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost>
       policy_container_remote;
