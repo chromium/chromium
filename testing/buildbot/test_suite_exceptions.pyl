@@ -2129,12 +2129,6 @@
       'ToTWinThinLTO64',
     ],
   },
-  'openscreen_unittests': {
-    'remove_from': [
-      'Linux CFI',  # crbug.com/1143983
-      'CFI Linux ToT',  # crbug.com/1143983
-    ],
-  },
   'ozone_unittests': {
     'modifications': {
       'chromeos-betty-pi-arc-chrome': {
