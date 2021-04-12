@@ -361,16 +361,28 @@ void CompositorFrameReportingController::OnFinishImplFrame(
 void CompositorFrameReportingController::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& details) {
-  while (!submitted_compositor_frames_.empty()) {
-    auto submitted_frame = submitted_compositor_frames_.begin();
-    if (viz::FrameTokenGT(submitted_frame->frame_token, frame_token))
-      break;
+  bool feedback_failed = details.presentation_feedback.failed();
+  for (auto submitted_frame = submitted_compositor_frames_.begin();
+       submitted_frame != submitted_compositor_frames_.end() &&
+       !viz::FrameTokenGT(submitted_frame->frame_token, frame_token);) {
+    bool is_earlier_frame = submitted_frame->frame_token != frame_token;
 
-    auto termination_status = FrameTerminationStatus::kPresentedFrame;
-    if (submitted_frame->frame_token != frame_token ||
-        details.presentation_feedback.failed()) {
-      termination_status = FrameTerminationStatus::kDidNotPresentFrame;
+    // If the presentation feedback is a failure, earlier frames should still be
+    // left in the queue as they still might end up being presented
+    // successfully. Skip to the next frame.
+    if (feedback_failed && is_earlier_frame) {
+      submitted_frame++;
+      continue;
     }
+
+    auto termination_status = feedback_failed
+                                  ? FrameTerminationStatus::kDidNotPresentFrame
+                                  : FrameTerminationStatus::kPresentedFrame;
+
+    // If this is an earlier frame, presentation feedback has been successful
+    // which means this earlier frame should be considered dropped.
+    if (is_earlier_frame)
+      termination_status = FrameTerminationStatus::kDidNotPresentFrame;
 
     auto& reporter = submitted_frame->reporter;
     reporter->SetVizBreakdown(details);
@@ -393,7 +405,7 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
         reporter->AddEventsMetrics(std::move(it->second));
       }
 
-      // For presented frames, if |reporter| was cloned from another reporter,
+      // For presented frames, if `reporter` was cloned from another reporter,
       // and the original reporter is still alive, then check whether the cloned
       // reporter has a 'partial update decider'. It is still possible for the
       // original reporter to terminate with 'no damage', and if that happens,
@@ -422,7 +434,23 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
       }
     }
 
-    submitted_compositor_frames_.erase(submitted_frame);
+    if (feedback_failed) {
+      // When feedback is for a failed presentation, `submitted_frame` is not
+      // necessarily in the front of the queue. We will reach here only once per
+      // did-present; so, we will have 1 operation of O(n) complexity (n is the
+      // number of previous frames).
+      submitted_frame = submitted_compositor_frames_.erase(submitted_frame);
+    } else {
+      // When feedback is for a successful presentation, `submitted_frame` is in
+      // the front of the queue; so, we will have n operations of O(1)
+      // complexity for a did-present (n is the number of previous frames).
+      // `pop_front()` function is used here to shrink the queue when necessary
+      // to avoid unnecessary memory usage over time.
+      DCHECK_EQ(submitted_frame->frame_token,
+                submitted_compositor_frames_.front().frame_token);
+      submitted_compositor_frames_.pop_front();
+      submitted_frame = submitted_compositor_frames_.begin();
+    }
   }
 }
 
