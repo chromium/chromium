@@ -86,6 +86,7 @@ class ApplicationCacheHostForFrame;
 class ContentSecurityPolicy;
 class Document;
 class DocumentParser;
+class Frame;
 class FrameLoader;
 class HistoryItem;
 class LocalDOMWindow;
@@ -368,6 +369,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   Member<MHTMLArchive> archive_;
 
  private:
+  Frame* CalculateOwnerFrame();
   scoped_refptr<SecurityOrigin> CalculateOrigin(Document* owner_document);
   void InitializeWindow(Document* owner_document);
   void DidInstallNewDocument(Document*);
