@@ -27,11 +27,17 @@ EphemeralRange ComputeWholeContentRange(const ContainerNode& container) {
   auto* const last_child = inner_editor->lastChild();
   if (!IsA<HTMLBRElement>(last_child))
     return range;
+  const Node* const before_placeholder = last_child->previousSibling();
+  if (!before_placeholder) {
+    // In case of <div><br></div>.
+    return EphemeralRange(Position::FirstPositionInNode(container),
+                          Position::FirstPositionInNode(container));
+  }
   // We ignore placeholder <br> in <textarea> added by
   // |TextControlElement::AddPlaceholderBreakElementIfNecessary()|.
   // See http://crbug.com/1194349
   return EphemeralRange(Position::FirstPositionInNode(container),
-                        Position::AfterNode(*last_child->previousSibling()));
+                        Position::AfterNode(*before_placeholder));
 }
 
 }  // namespace

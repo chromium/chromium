@@ -60,6 +60,25 @@ TEST_F(CachedTextInputInfoTest, PlaceholderBRInTextArea) {
       << "We should not emit a newline for placeholder <br>";
 }
 
+// http://crbug.com/1197801
+TEST_F(CachedTextInputInfoTest, PlaceholderBROnlyInTextArea) {
+  SetBodyContent("<textarea id=target></textarea>");
+  auto& target = *To<TextControlElement>(GetElementById("target"));
+  target.focus();
+  GetDocument().execCommand("insertparagraph", false, "", ASSERT_NO_EXCEPTION);
+  GetDocument().execCommand("delete", false, "", ASSERT_NO_EXCEPTION);
+
+  // Inner editor is <div><br></div>.
+  GetFrame().Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position::LastPositionInNode(*target.InnerEditorElement()))
+          .Build());
+
+  EXPECT_EQ(PlainTextRange(0, 0),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ("", GetCachedTextInputInfo().GetText());
+}
+
 TEST_F(CachedTextInputInfoTest, RelayoutBoundary) {
   InsertStyleElement(
       "#sample { contain: strict; width: 100px; height: 100px; }");
