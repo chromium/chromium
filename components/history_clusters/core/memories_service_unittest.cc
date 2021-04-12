@@ -105,7 +105,7 @@ class MemoriesServiceTest : public testing::Test {
   int64_t next_navigation_id_ = 0;
 };
 
-TEST_F(MemoriesServiceTest, QueryMemories) {
+TEST_F(MemoriesServiceTest, GetMemories) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -127,8 +127,8 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
   AddVisitWithDetails(4, GURL{"https://github.com"}, u"Github title", 4, 5);
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
-  memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+  memories_service_->GetMemories(
+      base::BindLambdaForTesting([&](memories::Memories memories) {
         // Verify the parsed response.
         ASSERT_EQ(memories.size(), 2u);
         EXPECT_FALSE(memories[0]->id.is_empty());
@@ -216,14 +216,14 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
   run_loop_.Run();
 }
 
-TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
+TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyVisits) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
 
-  memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+  memories_service_->GetMemories(
+      base::BindLambdaForTesting([&](memories::Memories memories) {
         // Verify the parsed response.
         EXPECT_TRUE(memories.empty());
         run_loop_quit_.Run();
@@ -236,7 +236,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
   run_loop_.Run();
 }
 
-TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
+TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyEndpoint) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       memories::kMemories, {{memories::kRemoteModelEndpointParam, ""}});
@@ -244,22 +244,14 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
 
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
-  memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
-        // Verify the empty response.
-        EXPECT_TRUE(memories.empty());
-        run_loop_quit_.Run();
-      }));
+  EXPECT_DCHECK_DEATH(memories_service_->GetMemories(base::BindLambdaForTesting(
+      [&](memories::Memories memories) { NOTREACHED(); })));
 
   // Verify no request is made.
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
-
-  // Verify the callback is invoked.
-  run_loop_.Run();
 }
 
-TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
+TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyResponse) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -269,8 +261,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
   AddVisit(1, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
-  memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+  memories_service_->GetMemories(
+      base::BindLambdaForTesting([&](memories::Memories memories) {
         // Verify the parsed response.
         EXPECT_TRUE(memories.empty());
         run_loop_quit_.Run();
@@ -287,7 +279,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
   run_loop_.Run();
 }
 
-TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
+TEST_F(MemoriesServiceTest, GetMemoriesWithInvalidJsonResponse) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -297,8 +289,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
   AddVisit(1, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
-  memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+  memories_service_->GetMemories(
+      base::BindLambdaForTesting([&](memories::Memories memories) {
         // Verify the parsed response.
         EXPECT_TRUE(memories.empty());
         run_loop_quit_.Run();
@@ -315,7 +307,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
   run_loop_.Run();
 }
 
-TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
+TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyJsonResponse) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -325,8 +317,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
   AddVisit(1, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
-  memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+  memories_service_->GetMemories(
+      base::BindLambdaForTesting([&](memories::Memories memories) {
         // Verify the parsed response.
         EXPECT_TRUE(memories.empty());
         run_loop_quit_.Run();
@@ -343,7 +335,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
   run_loop_.Run();
 }
 
-TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
+TEST_F(MemoriesServiceTest, GetMemoriesWithPendingRequest) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -353,15 +345,15 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
   AddVisit(1, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
-  memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+  memories_service_->GetMemories(
+      base::BindLambdaForTesting([&](memories::Memories memories) {
         // Verify not reached.
         EXPECT_TRUE(false);
       }));
 
   EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
-  memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+  memories_service_->GetMemories(
+      base::BindLambdaForTesting([&](memories::Memories memories) {
         // Verify the parsed response.
         EXPECT_EQ(memories.size(), 2u);
         run_loop_quit_.Run();

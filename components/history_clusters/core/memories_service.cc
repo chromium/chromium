@@ -51,9 +51,11 @@ void MemoriesService::CompleteVisitIfReady(int64_t nav_id) {
   }
 }
 
-void MemoriesService::QueryMemories(const std::string& query,
-                                    MemoriesCallback callback) {
-  remote_model_helper_->GetMemories(visits_, std::move(callback));
+void MemoriesService::GetMemories(MemoriesCallback callback) {
+  if (visits_.empty())
+    std::move(callback).Run({});
+  else
+    remote_model_helper_->GetMemories(visits_, std::move(callback));
 }
 
 }  // namespace memories

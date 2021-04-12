@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"
@@ -47,8 +46,7 @@ class MemoriesService : public KeyedService {
   void CompleteVisitIfReady(int64_t nav_id);
 
   // Asks |remote_model_helper_| to construct memories from |visits_|.
-  // Note: |query| is ignored at the moment.
-  void QueryMemories(const std::string& query, MemoriesCallback callback);
+  void GetMemories(MemoriesCallback callback);
 
  private:
   friend class MemoriesServiceTestApi;

@@ -15,7 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-#if !defined(CHROME_BRANDED)
+#if !defined(OFFICIAL_BUILD)
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
@@ -69,19 +69,22 @@ void MemoriesHandler::SetPage(
   page_.Bind(std::move(pending_page));
 }
 
-void MemoriesHandler::QueryMemories(const std::string& query,
-                                    QueryMemoriesCallback callback) {
-  auto termination_callback = base::BindOnce(
-      &MemoriesHandler::OnMemoriesQueryResults, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), query);
-  if (memories::RemoteModelEndpoint().is_valid()) {
-    auto* memory_service =
-        MemoriesServiceFactory::GetForBrowserContext(profile_);
-    memory_service->QueryMemories(query, std::move(termination_callback));
-  } else {
-#if defined(CHROME_BRANDED)
-    std::move(callback).Run(memories::mojom::MemoriesResult::New());
+void MemoriesHandler::GetSampleMemories(const std::string& query,
+                                        MemoriesResultCallback callback) {
+#if defined(OFFICIAL_BUILD)
+  auto memories_result_mojom = memories::mojom::MemoriesResult::New();
+  std::move(callback).Run(std::move(memories_result_mojom));
+  return;
 #else
+  // If the query is empty and a remote model endpoint is set, then ask the
+  // MemoriesService for memories. The MemoriesService doesn't yet support
+  // filtering memories by query or an on-client clustering, so if either the
+  // query is non-empty or the endpoint is not set, fallback to sample memories
+  // from history.
+  if (query.empty() && memories::RemoteModelEndpoint().is_valid()) {
+    GetMemories(std::move(callback));
+  } else {
+    // Query HistoryService for URLs containing |query|.
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(
             profile_, ServiceAccessType::EXPLICIT_ACCESS);
@@ -91,32 +94,23 @@ void MemoriesHandler::QueryMemories(const std::string& query,
     history_service->QueryHistory(
         base::UTF8ToUTF16(query), query_options,
         base::BindOnce(&MemoriesHandler::OnHistoryQueryResults,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(termination_callback)),
+                       weak_ptr_factory_.GetWeakPtr(), query,
+                       std::move(callback)),
         &history_task_tracker_);
-#endif
   }
 }
 
-void MemoriesHandler::OnMemoriesQueryResults(
-    QueryMemoriesCallback callback,
-    const std::string& query,
-    std::vector<memories::mojom::MemoryPtr> memory_mojoms) {
-  auto result_mojom = memories::mojom::MemoriesResult::New();
-  result_mojom->title = base::UTF8ToUTF16(query);
-  result_mojom->thumbnail_url = GetRandomlySizedThumbnailUrl();
-  result_mojom->memories = std::move(memory_mojoms);
-  std::move(callback).Run(std::move(result_mojom));
-}
-
-#if !defined(CHROME_BRANDED)
-void MemoriesHandler::OnHistoryQueryResults(
-    MemoriesQueryResultsCallback callback,
-    history::QueryResults results) {
+void MemoriesHandler::OnHistoryQueryResults(const std::string& query,
+                                            MemoriesResultCallback callback,
+                                            history::QueryResults results) {
+  auto memories_result_mojom = memories::mojom::MemoriesResult::New();
   if (results.empty()) {
-    std::move(callback).Run({});
+    std::move(callback).Run(std::move(memories_result_mojom));
     return;
   }
+
+  memories_result_mojom->title = base::UTF8ToUTF16(query);
+  memories_result_mojom->thumbnail_url = GetRandomlySizedThumbnailUrl();
 
   auto memory_mojom = memories::mojom::Memory::New();
   memory_mojom->id = base::UnguessableToken::Create();
@@ -266,8 +260,17 @@ void MemoriesHandler::OnHistoryQueryResults(
     }
   }
 
-  std::vector<memories::mojom::MemoryPtr> memory_mojoms;
-  memory_mojoms.push_back(std::move(memory_mojom));
-  std::move(callback).Run(std::move(memory_mojoms));
-}
+  memories_result_mojom->memories.push_back(std::move(memory_mojom));
+  std::move(callback).Run(std::move(memories_result_mojom));
 #endif
+}
+
+void MemoriesHandler::GetMemories(MemoriesResultCallback callback) {
+  auto* memory_service = MemoriesServiceFactory::GetForBrowserContext(profile_);
+  memory_service->GetMemories(base::BindOnce([](memories::Memories memories) {
+                                auto result =
+                                    memories::mojom::MemoriesResult::New();
+                                result->memories = std::move(memories);
+                                return result;
+                              }).Then(std::move(callback)));
+}
