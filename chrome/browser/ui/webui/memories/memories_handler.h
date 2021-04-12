@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
 #include "components/history_clusters/core/memories.mojom.h"
 #include "components/history_clusters/core/memories_remote_model_helper.h"
@@ -18,6 +17,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if !defined(OFFICIAL_BUILD)
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #endif
 
@@ -61,7 +61,6 @@ class MemoriesHandler : public memories::mojom::PageHandler {
   void OnHistoryQueryResults(const std::string& query,
                              MemoriesResultCallback callback,
                              history::QueryResults results);
-  base::CancelableTaskTracker history_task_tracker_;
 #endif
 
   Profile* profile_;
@@ -70,7 +69,10 @@ class MemoriesHandler : public memories::mojom::PageHandler {
   mojo::Remote<memories::mojom::Page> page_;
   mojo::Receiver<memories::mojom::PageHandler> page_handler_;
 
+#if !defined(OFFICIAL_BUILD)
+  base::CancelableTaskTracker history_task_tracker_;
   base::WeakPtrFactory<MemoriesHandler> weak_ptr_factory_{this};
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_
