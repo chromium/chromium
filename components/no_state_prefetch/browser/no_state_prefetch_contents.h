@@ -170,8 +170,6 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
     return no_state_prefetch_contents_.get();
   }
 
-  std::unique_ptr<content::WebContents> ReleaseNoStatePrefetchContents();
-
   // Sets the final status, calls OnDestroy and adds |this| to the
   // NoStatePrefetchManager's pending deletes list.
   void Destroy(FinalStatus reason);

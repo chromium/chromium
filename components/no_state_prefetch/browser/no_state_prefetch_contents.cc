@@ -245,12 +245,12 @@ NoStatePrefetchContents::~NoStatePrefetchContents() {
   no_state_prefetch_manager_->RecordNetworkBytesConsumed(origin(),
                                                          network_bytes_);
 
-  if (!no_state_prefetch_contents_)
-    return;
-
-  // If we still have a WebContents, clean up anything we need to and then
-  // destroy it.
-  std::unique_ptr<WebContents> contents = ReleaseNoStatePrefetchContents();
+  if (no_state_prefetch_contents_) {
+    no_state_prefetch_contents_->SetDelegate(nullptr);
+    content::WebContentsObserver::Observe(nullptr);
+    delegate_->ReleaseNoStatePrefetchContents(
+        no_state_prefetch_contents_.get());
+  }
 }
 
 void NoStatePrefetchContents::AddObserver(Observer* observer) {
@@ -481,16 +481,6 @@ void NoStatePrefetchContents::DidGetMemoryUsage(
     }
     return;
   }
-}
-
-std::unique_ptr<WebContents>
-NoStatePrefetchContents::ReleaseNoStatePrefetchContents() {
-  no_state_prefetch_contents_->SetDelegate(nullptr);
-  content::WebContentsObserver::Observe(nullptr);
-
-  delegate_->ReleaseNoStatePrefetchContents(no_state_prefetch_contents_.get());
-
-  return std::move(no_state_prefetch_contents_);
 }
 
 RenderFrameHost* NoStatePrefetchContents::GetMainFrame() {
