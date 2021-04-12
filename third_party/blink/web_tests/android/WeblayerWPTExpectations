@@ -59,6 +59,13 @@ crbug.com/1025610 external/wpt/push-api/idlharness.https.any.serviceworker.html 
 crbug.com/1025610 external/wpt/push-api/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/1025610 external/wpt/push-api/idlharness.https.any.worker.html [ Failure ]
 
+# Several scroll animations tests fail in WebLayer and Clank.
+crbug.com/1198063 external/wpt/scroll-animations/css/at-scroll-timeline-start-end.html [ Failure ]
+crbug.com/1198063 external/wpt/scroll-animations/current-time-root-scroller.html [ Failure ]
+crbug.com/1198063 external/wpt/scroll-animations/idlharness.window.html [ Failure ]
+crbug.com/1198063 external/wpt/scroll-animations/progress-based-current-time.tenative.html [ Failure ]
+crbug.com/1198063 external/wpt/scroll-animations/scroll-timeline-snapshotting.html [ Timeout ]
+
 # SharedWorker is not supported on Android (https://crbug.com/154571).
 crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
 crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
@@ -1915,19 +1922,6 @@ crbug.com/1050754 external/wpt/screen-wake-lock/wakelock-released.https.html [ C
 crbug.com/1050754 external/wpt/screen-wake-lock/wakelock-request-denied.https.html [ Crash ]
 crbug.com/1050754 external/wpt/screen-wake-lock/wakelock-type.https.window.html [ Crash ]
 crbug.com/1050754 external/wpt/screen-wake-lock/wakelockpermissiondescriptor.https.html [ Crash ]
-crbug.com/1050754 external/wpt/scroll-animations/css/at-scroll-timeline-dynamic.tentative.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/css/at-scroll-timeline-start-end.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/current-time-root-scroller.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/element-based-offset-clamp.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/pause-animation.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/progress-based-current-time.tenative.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/scroll-animation-effect-phases.tentative.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/scroll-animation-inactive-timeline.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/scroll-animation.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/scroll-timeline-invalidation.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/scroll-timeline-snapshotting.html [ Timeout ]
-crbug.com/1050754 external/wpt/scroll-animations/setting-playback-rate.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/updating-the-finished-state.html [ Failure ]
 crbug.com/1050754 external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/scroll-to-text-fragment/redirects.html [ Pass Timeout ]
