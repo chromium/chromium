@@ -17,6 +17,8 @@
 
 namespace {
 
+constexpr int kBackToTabButtonMargin = 48;
+
 constexpr int kBackToTabButtonSize = 20;
 
 constexpr int kBackToTabImageSize = 14;
@@ -88,7 +90,8 @@ void BackToTabLabelButton::UpdateSizingAndPosition() {
   if (!window_size_.has_value())
     return;
 
-  SetMaxSize(gfx::Size(window_size_->width() - 48, kBackToTabButtonSize));
+  SetMaxSize(gfx::Size(window_size_->width() - kBackToTabButtonMargin,
+      kBackToTabButtonSize));
   SetSize(CalculatePreferredSize());
   LabelButton::SetPosition(
       gfx::Point((window_size_->width() / 2) - (size().width() / 2),
