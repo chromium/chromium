@@ -83,7 +83,8 @@ bool CastStreamingTestSender::Start(
   sender_session_ = std::make_unique<openscreen::cast::SenderSession>(
       openscreen::cast::SenderSession::Configuration{
           openscreen::IPAddress::kV6LoopbackAddress(), this, &environment_,
-          message_port_.get(), kSenderId, kReceiverId, true});
+          message_port_.get(), kSenderId, kReceiverId,
+          true /* use_android_rtp_hack */});
 
   std::vector<openscreen::cast::AudioCaptureConfig> audio_configs;
   if (audio_config) {
