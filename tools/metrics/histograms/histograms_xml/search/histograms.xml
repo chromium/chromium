@@ -1313,7 +1313,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.QueryTiles.ImagePreloadingEvent"
-    enum="QueryTilesImageLoadingEvent" expires_after="M91">
+    enum="QueryTilesImageLoadingEvent" expires_after="2022-04-01">
   <owner>xingliu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>

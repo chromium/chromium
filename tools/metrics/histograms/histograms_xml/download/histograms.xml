@@ -580,7 +580,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.ParallelDownloadRequestCount" units="requests"
-    expires_after="2020-10-18">
+    expires_after="2022-04-01">
+  <owner>qinmin@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>
     The total number of requests sent for a parallel download, including the
@@ -867,7 +868,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Service.OnUploadDataReceived.PauseReason"
-    enum="Download.Service.PauseReason" expires_after="2020-03-01">
+    enum="Download.Service.PauseReason" expires_after="never">
 <!-- expires-never: Used for detecting anomalies in background download service. -->
 
   <owner>shaktisahu@chromium.org</owner>
@@ -879,7 +880,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Service.PauseReason"
-    enum="Download.Service.PauseReason" expires_after="M82">
+    enum="Download.Service.PauseReason" expires_after="never">
 <!-- expires-never: Used for detecting anomalies in background download service. -->
 
   <owner>shaktisahu@chromium.org</owner>
