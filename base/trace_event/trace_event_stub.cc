@@ -33,11 +33,19 @@ TracedArray TracedValue::WriteArray() && {
   return TracedArray();
 }
 
-TracedArray TracedDictionary::AddArray(const char*) {
+TracedArray TracedDictionary::AddArray(StaticString) {
   return TracedArray();
 }
 
-TracedDictionary TracedDictionary::AddDictionary(const char*) {
+TracedArray TracedDictionary::AddArray(DynamicString) {
+  return TracedArray();
+}
+
+TracedDictionary TracedDictionary::AddDictionary(StaticString) {
+  return TracedDictionary();
+}
+
+TracedDictionary TracedDictionary::AddDictionary(DynamicString) {
   return TracedDictionary();
 }
 

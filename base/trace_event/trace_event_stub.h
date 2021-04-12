@@ -191,7 +191,13 @@ class TracedDictionary;
 class StaticString {
  public:
   template <typename T>
-  explicit StaticString(T*) {}
+  StaticString(T) {}
+};
+
+class DynamicString {
+ public:
+  template <typename T>
+  explicit DynamicString(T) {}
 };
 
 class TracedValue {
@@ -211,13 +217,18 @@ class TracedValue {
 
 class TracedDictionary {
  public:
-  TracedValue AddItem(const char*) { return TracedValue(); }
+  TracedValue AddItem(StaticString) { return TracedValue(); }
+  TracedValue AddItem(DynamicString) { return TracedValue(); }
 
   template <typename T>
-  void Add(const char*, T&&) {}
+  void Add(StaticString, T&&) {}
+  template <typename T>
+  void Add(DynamicString, T&&) {}
 
-  TracedDictionary AddDictionary(const char*);
-  TracedArray AddArray(const char*);
+  TracedDictionary AddDictionary(StaticString);
+  TracedDictionary AddDictionary(DynamicString);
+  TracedArray AddArray(StaticString);
+  TracedArray AddArray(DynamicString);
 };
 
 class TracedArray {
