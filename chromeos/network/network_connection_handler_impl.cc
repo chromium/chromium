@@ -16,6 +16,7 @@
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/cellular_esim_connection_handler.h"
+#include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/client_cert_util.h"
 #include "chromeos/network/device_state.h"
@@ -314,13 +315,27 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
       return;
     }
 
-    // eSIM networks are Cellular networks with an associated EID. Note that
-    // |cellular_esim_connection_handler_| is expected to be null if the flag is
-    // disabled.
-    if (cellular_esim_connection_handler_ &&
-        NetworkTypePattern::Cellular().MatchesType(network->type()) &&
-        !network->eid().empty() && !network->connectable()) {
-      is_non_connectable_esim_network = true;
+    if (NetworkTypePattern::Cellular().MatchesType(network->type())) {
+      const DeviceState* cellular_device =
+          network_state_handler_->GetDeviceState(network->device_path());
+
+      // If the SIM is active and the active SIM is locked, we are attempting to
+      // connect to a locked SIM. A SIM must be unlocked before a connection can
+      // succeed.
+      if (cellular_device && IsSimPrimary(network->iccid(), cellular_device) &&
+          cellular_device->IsSimLocked()) {
+        InvokeConnectErrorCallback(service_path, std::move(error_callback),
+                                   kErrorSimLocked);
+        return;
+      }
+
+      // eSIM networks are Cellular networks with an associated EID. Note that
+      // |cellular_esim_connection_handler_| is expected to be null if the flag
+      // is disabled.
+      if (cellular_esim_connection_handler_ && !network->eid().empty() &&
+          !network->connectable()) {
+        is_non_connectable_esim_network = true;
+      }
     }
   }
 

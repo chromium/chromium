@@ -69,6 +69,7 @@ const char NetworkConnectionHandler::kErrorCellularOutOfCredits[] =
     "cellular-out-of-credits";
 const char NetworkConnectionHandler::kErrorESimProfileIssue[] =
     "esim-profile-issue";
+const char NetworkConnectionHandler::kErrorSimLocked[] = "sim-locked";
 
 NetworkConnectionHandler::NetworkConnectionHandler()
     : tether_delegate_(nullptr) {}
