@@ -2,7 +2,7 @@
 <grit-part>
   <!-- ARC app compatibility mode -->
   <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_TITLE" desc="Dialog title that asks user if they want to enable resizing of the ARC application.">
-    Enable Maximizing?
+    Enable Resizing?
   </message>
   <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_BODY" desc="Dialog body that asks user if they want to enable resizing of the ARC application.">
     This app is designed for mobile devices. It is running in a compatibility mode. Allow resizing might encounter issues including app restarting.
@@ -12,5 +12,17 @@
   </message>
   <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME" desc="Label for check box that prevents the dialog from being shown in the future">
     Don't ask me again for this app
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE" desc="Label for button to resize the window to phone size">
+    Phone
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET" desc="Label for button to resize the window to tablet size">
+    Tablet
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_DESKTOP" desc="Label for button to resize the window to desktop size">
+    Desktop
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZE_SETTINGS" desc="Label for button to open resize settings">
+    Resize Settings
   </message>
 </grit-part>
