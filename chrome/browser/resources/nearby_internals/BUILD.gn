@@ -37,6 +37,7 @@ preprocess_if_expr("preprocess") {
     "nearby_contact_browser_proxy.js",
     "nearby_http_browser_proxy.js",
     "nearby_logs_browser_proxy.js",
+    "nearby_prefs_browser_proxy.js",
     "nearby_ui_trigger_browser_proxy.js",
     "types.js",
   ]
@@ -91,6 +92,7 @@ js_type_check("closure_compile") {
     ":nearby_http_browser_proxy",
     ":nearby_internals",
     ":nearby_logs_browser_proxy",
+    ":nearby_prefs_browser_proxy",
     ":nearby_ui_trigger_browser_proxy",
     ":types",
     ":ui_trigger_list_object",
@@ -109,6 +111,7 @@ js_library("nearby_internals") {
     ":nearby_contact_browser_proxy",
     ":nearby_http_browser_proxy",
     ":nearby_logs_browser_proxy",
+    ":nearby_prefs_browser_proxy",
     ":nearby_ui_trigger_browser_proxy",
     ":types",
     ":ui_trigger_list_object",
@@ -122,6 +125,7 @@ js_library("logging_tab") {
   deps = [
     ":log_object",
     ":nearby_logs_browser_proxy",
+    ":nearby_prefs_browser_proxy",
     ":types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
@@ -138,6 +142,13 @@ js_library("log_object") {
 }
 
 js_library("nearby_logs_browser_proxy") {
+  deps = [
+    ":types",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("nearby_prefs_browser_proxy") {
   deps = [
     ":types",
     "//ui/webui/resources/js:cr.m",

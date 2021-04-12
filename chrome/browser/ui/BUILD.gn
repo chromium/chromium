@@ -2503,6 +2503,8 @@ static_library("ui") {
       "webui/nearby_internals/nearby_internals_http_handler.h",
       "webui/nearby_internals/nearby_internals_logs_handler.cc",
       "webui/nearby_internals/nearby_internals_logs_handler.h",
+      "webui/nearby_internals/nearby_internals_prefs_handler.cc",
+      "webui/nearby_internals/nearby_internals_prefs_handler.h",
       "webui/nearby_internals/nearby_internals_ui.cc",
       "webui/nearby_internals/nearby_internals_ui.h",
       "webui/nearby_internals/nearby_internals_ui_trigger_handler.cc",
