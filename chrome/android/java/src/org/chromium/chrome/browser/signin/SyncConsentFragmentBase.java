@@ -414,7 +414,6 @@ public abstract class SyncConsentFragmentBase
     private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
         // Ensure that the AccountTrackerService has a fully up to date GAIA id <-> email mapping,
         // as this is needed for the previous account check.
-        final long seedingStartTime = SystemClock.elapsedRealtime();
         IdentityServicesProvider.get()
                 .getAccountTrackerService(Profile.getLastUsedRegularProfile())
                 .seedAccountsIfNeeded(() -> {
@@ -423,9 +422,6 @@ public abstract class SyncConsentFragmentBase
                     assert accountInfo != null : "The seeded CoreAccountInfo shouldn't be null";
                     mConsentTextTracker.recordConsent(accountInfo.getId(),
                             ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView, mView);
-                    RecordHistogram.recordTimesHistogram(
-                            "Signin.AndroidAccountSigninViewSeedingTime",
-                            SystemClock.elapsedRealtime() - seedingStartTime);
                     if (isResumed()) {
                         runStateMachineAndSignin(settingsClicked);
                     }
