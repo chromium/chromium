@@ -18,6 +18,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Google Chrome. As die sagteware nie werk nie, deïnstalleer Google Chrome en probeer weer.</translation>
 <translation id="1434626383986940139">Chrome Kanarie-programme</translation>
+<translation id="1507198376417198979">Pasmaak jou nuwe Chrome-profiel</translation>
 <translation id="1516530951338665275">Google Chrome het Bluetooth-toegang nodig om voort te gaan met 
  saambinding. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Dateer Chrome op</translation>
@@ -219,6 +220,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6943584222992551122">Hierdie persoon se blaaierdata sal van hierdie toestel af uitgevee word. Meld as <ph name="USER_EMAIL" /> by Chrome aan om hierdie data te herwin.</translation>
 <translation id="6967962315388095737">Inkomende reël vir Google Chrome Beta om mDNS-verkeer toe te laat.</translation>
 <translation id="6989339256997917931">Google Chrome is opgedateer, maar jy het dit vir minstens 30 dae nie gebruik nie.</translation>
+<translation id="7025800014283535195">Jy kan hier tussen Chrome-profiele wissel</translation>
 <translation id="7062128746136194023">Jou ouer het "Toestemmings vir werwe, programme en uitbreidings" vir Chrome afgeskakel. Hierdie <ph name="EXTENSION_TYPE_PARAMETER" /> mag nie bygevoeg word nie.</translation>
 <translation id="7098166902387133879">Google Chrome gebruik tans jou mikrofoon.</translation>
 <translation id="7106741999175697885">Taakbestuurder – Google Chrome</translation>
@@ -296,4 +298,5 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="922152298093051471">Pasmaak Chrome</translation>
 <translation id="940313311831216333">Meld aan en skakel dan sinkronisering aan om op al jou toestelle toegang tot jou Chrome-goed te kry.</translation>
 <translation id="989369509083708165">Google Chrome is jou verstekblaaier</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> kan tussen Chrome-profiele wissel</translation>
 </translationbundle>

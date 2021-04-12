@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1003222766972176318">Memento: oferta salvată este disponibilă</translation>
 <translation id="1008557486741366299">Nu acum</translation>
 <translation id="100957008357583611">Folosești locația?</translation>
 <translation id="1010200102790553230">Încarcă pagina mai târziu</translation>
@@ -254,6 +255,7 @@
 <translation id="1807246157184219062">Luminos</translation>
 <translation id="1807528111851433570">Foaia inițială</translation>
 <translation id="1812527064848182527">peisaj</translation>
+<translation id="1814698615734239189">Aplicația a fost creată pentru dispozitive mobile. Aceasta rulează într-un mod de compatibilitate. Dacă permiți redimensionarea, pot să apară probleme, inclusiv repornirea aplicației.</translation>
 <translation id="1821930232296380041">Solicitarea sau parametrii săi sunt greșiți</translation>
 <translation id="1822540298136254167">Site-urile pe care le-ai accesat și timpul petrecut pe ele</translation>
 <translation id="1826516787628120939">Se verifică</translation>
@@ -274,7 +276,6 @@
 <translation id="1914326953223720820">Serviciu de dezarhivare</translation>
 <translation id="1915697529809968049">Folosești Touch ID în loc de CVC?</translation>
 <translation id="1916770123977586577">Ca să aplici setările actualizate pentru acest site, reîncarcă pagina</translation>
-<translation id="1917876262703816781">O încălcare a securității datelor de pe un site sau dintr-o aplicație ți-a expus parola. Chrome recomandă să-ți schimbi acum parola de pe <ph name="ORIGIN" />.</translation>
 <translation id="1919345977826869612">Anunțuri</translation>
 <translation id="1919367280705858090">Obține ajutor în privința unui anumit mesaj de eroare</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Niciunul}=1{1 site}few{# site-uri}other{# de site-uri}}</translation>
@@ -600,6 +601,7 @@
 <translation id="3268451620468152448">File deschise</translation>
 <translation id="3270847123878663523">&amp;Anulați reordonarea</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3282085321714087552">Organizația ta, <ph name="ENROLLMENT_DOMAIN" />, a trimis câteva informații următoarelor site-uri, cum ar fi setări sau politici.</translation>
 <translation id="3282497668470633863">Adaugă numele de pe card</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3287510313208355388">Descarcă când ești online</translation>
@@ -915,7 +917,6 @@
 <translation id="4358461427845829800">Gestionează metodele de plată...</translation>
 <translation id="4359160567981085931">Ai introdus parola pe un site înșelător. Chrome te poate ajuta. Ca să schimbi parola și să anunți Google că respectivul cont poate fi în pericol, dă clic pe Protejează contul.</translation>
 <translation id="4367563149485757821">Number-12 (Plic)</translation>
-<translation id="4367839622597707614">{1,plural, =0{O încălcare a securității datelor de pe un site sau dintr-o aplicație ți-a expus parola salvată pentru <ph name="ORIGIN" />. Chrome recomandă să-ți schimbi acum parola de pe <ph name="ORIGIN" />.}=1{O încălcare a securității datelor de pe un site sau dintr-o aplicație ți-a expus parola salvată pentru <ph name="ORIGIN" /> și încă un site. Chrome recomandă să verifici acum parolele salvate.}few{O încălcare a securității datelor de pe un site sau dintr-o aplicație ți-a expus parola salvată pentru <ph name="ORIGIN" /> și încă <ph name="SITES_COUNT" /> site-uri. Chrome recomandă să verifici acum parolele salvate.}other{O încălcare a securității datelor de pe un site sau dintr-o aplicație ți-a expus parola salvată pentru <ph name="ORIGIN" /> și încă <ph name="SITES_COUNT" /> de site-uri. Chrome recomandă să verifici acum parolele salvate.}}</translation>
 <translation id="437058704415269440">Soldul contului</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Se aștepta valoarea <ph name="VALUE_TYPE" />.</translation>
@@ -933,6 +934,7 @@
 <translation id="4434045419905280838">Ferestre pop-up și redirecționări</translation>
 <translation id="4435702339979719576">Carte poștală)</translation>
 <translation id="443673843213245140">Utilizarea unui proxy este dezactivată, dar o configurare proxy este specificată în mod explicit.</translation>
+<translation id="4464826014807964867">Site-uri cu informații de la organizația ta</translation>
 <translation id="4466881336512663640">Modificările aduse formularului se vor pierde. Sigur dorești să continui?</translation>
 <translation id="4476953670630786061">Acest formular nu este sigur. Completarea automată a fost dezactivată.</translation>
 <translation id="4477350412780666475">Melodia următoare</translation>
@@ -1155,7 +1157,6 @@
 <translation id="5287456746628258573">Site-ul folosește o configurație de securitate învechită, care îți poate expune informațiile (de exemplu, parolele sau numerele cardurilor de credit) când sunt trimise la acest site.</translation>
 <translation id="5288108484102287882">Validarea valorilor de politică a returnat avertismente</translation>
 <translation id="5289384342738547352">Gestionarea mai multor documente</translation>
-<translation id="5295292838686006428">O încălcare a securității datelor de pe un site sau dintr-o aplicație ți-a expus parola. Chrome recomandă să verifici acum parolele salvate.</translation>
 <translation id="5299298092464848405">Eroare la analizarea politicii</translation>
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5306593769196050043">Ambele foi</translation>
@@ -1695,7 +1696,6 @@ Detalii suplimentare:
 <translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7481312909269577407">Înainte</translation>
 <translation id="7485870689360869515">Nu s-au găsit date.</translation>
-<translation id="7495290002932347110">O încălcare a securității datelor de pe un site sau dintr-o aplicație ți-a expus parola. Chrome recomandă să verifici parolele salvate și să-ți schimbi acum parola de pe <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Acest conținut este blocat. Contactează proprietarul site-ului pentru a remedia problema.</translation>
 <translation id="7498234416455752244">Continuați editarea</translation>
 <translation id="7503664977220660814">Ai introdus parola pe un site înșelător. Chromium recomandă să verifici acum parolele salvate pentru <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> și alte site-uri pe care folosești această parolă.</translation>
@@ -1882,6 +1882,7 @@ Detalii suplimentare:
 <translation id="8157295877370077682">Ieși de pe site</translation>
 <translation id="8163866351304776260">Perforare cvadruplă în stânga</translation>
 <translation id="8175796834047840627">Chrome oferă salvarea cardurilor în Contul Google pentru că te-ai conectat. Poți schimba acest comportament în setări.</translation>
+<translation id="8176440868214972690">Administratorul dispozitivului a trimis câteva informații următoarelor site-uri, cum ar fi setări sau politici.</translation>
 <translation id="8184538546369750125">Utilizați setarea prestabilită la nivel global (Permiteți)</translation>
 <translation id="8194797478851900357">&amp;Anulați mutarea</translation>
 <translation id="8201077131113104583">Adresa URL pentru actualizarea extensiei cu ID-ul „<ph name="EXTENSION_ID" />” nu este validă.</translation>
@@ -1896,6 +1897,7 @@ Detalii suplimentare:
 <translation id="8225771182978767009">Persoana care a configurat computerul a ales să blocheze acest site.</translation>
 <translation id="8228419419708659934">Afișare cu două pagini</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230159728600632642">Nu mai întreba pentru această aplicație</translation>
 <translation id="8232343881378637145">Temperatura platformei</translation>
 <translation id="8238581221633243064">Deschide pagina într-o filă incognito nouă</translation>
 <translation id="8241707690549784388">Pagina pe care o cauți a utilizat informațiile pe care le-ai introdus. Întoarcerea la acea pagină ar putea face ca orice acțiune să fie repetată. Vrei să continui?</translation>
@@ -2050,6 +2052,7 @@ Detalii suplimentare:
 <translation id="8798099450830957504">Prestabilit</translation>
 <translation id="8805819170075074995">Intrarea din listă „<ph name="LANGUAGE_ID" />”: intrarea este ignorată deoarece este inclusă și în politica SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Decupare după fiecare pagină</translation>
+<translation id="881292005876822445">Activezi maximizarea?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a actualiza Chrome din setările Chrome</translation>
 <translation id="8820817407110198400">Marcaje</translation>
 <translation id="883848425547221593">Alte marcaje</translation>

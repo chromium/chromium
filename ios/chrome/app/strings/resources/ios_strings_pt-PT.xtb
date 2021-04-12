@@ -189,6 +189,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2921219216347069551">Impossível Partilhar Página</translation>
 <translation id="2923448633003185837">Colar e ir</translation>
 <translation id="292639812446257861">Marcar como não lidas</translation>
+<translation id="2932085390869194046">Sugerir palavra-passe…</translation>
 <translation id="2952581218264071393">1. Abra as definições do Chrome.</translation>
 <translation id="2958718410589002129">Palavras-passe</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
@@ -422,6 +423,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5489208564673669003">Para gerir cookies de todos os sites, veja <ph name="BEGIN_LINK" />Definições de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todos os cookies (não recomendado).</translation>
 <translation id="5508435575041083207">Terminar sessão e limpar dados deste dispositivo</translation>
+<translation id="5513681519188741830">Há <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Criar Frase de Acesso</translation>
 <translation id="5548760955356983418">A Entrega permite-lhe começar a navegar num Website neste dispositivo e, em seguida, continuar facilmente no seu Mac. O Website atualmente aberto aparece na Dock do seu Mac.
 
@@ -759,7 +761,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8806823403540278281">A sua entidade requer que navegue em privado. Os separados não são guardados no Modo de navegação anónima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Marcadores</translation>
-<translation id="8823704566850948458">Sugerir palavra-passe…</translation>
 <translation id="8840513115188359703">A sessão na sua Conta Google não é terminada.</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>
 <translation id="8881801611828450202">Pesquisar esta imagem no <ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9152539721251340337">Criar um código QR</translation>
 <translation id="9157836665414082580">Supr. caixas diálogo</translation>
 <translation id="9188680907066685419">Terminar sessão na conta gerida</translation>
+<translation id="9200875785104711666">Há <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Entrega</translation>
 <translation id="9223358826628549784">Relatório de falha enviado.</translation>
 <translation id="952704832371081537">Cancelar</translation>

@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome เบต้า</translation>
 <translation id="1399397803214730675">คอมพิวเตอร์เครื่องนี้มี Google Chrome รุ่นใหม่กว่าแล้ว หากซอฟต์แวร์ไม่ทำงาน โปรดถอนการติดตั้ง Google Chrome แล้วลองใหม่อีกครั้ง</translation>
 <translation id="1434626383986940139">แอป Chrome Canary</translation>
+<translation id="1507198376417198979">ปรับแต่งโปรไฟล์ Chrome ใหม่</translation>
 <translation id="1516530951338665275">Google Chrome ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อจับคู่ต่อ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">อัปเดต Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้โปรไฟล์ Chrome นี้แล้ว การดำเนินการนี้จะสร้างโปรไฟล์ Chrome ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -209,6 +210,7 @@
 <translation id="6943584222992551122">ระบบจะลบข้อมูลการท่องเว็บของบุคคลนี้ออกจากอุปกรณ์เครื่องนี้ หากต้องการกู้ข้อมูลคืน ให้ลงชื่อเข้าใช้ Chrome ในชื่อ <ph name="USER_EMAIL" /></translation>
 <translation id="6967962315388095737">กฎขาเข้าสำหรับ Google Chrome เบต้าเพื่ออนุญาตการเข้าชมแบบ mDNS</translation>
 <translation id="6989339256997917931">อัปเดต Google Chrome แล้ว แต่คุณไม่ได้ใช้งานมาไม่ต่ำกว่า 30 วันแล้ว</translation>
+<translation id="7025800014283535195">คุณสลับไปมาระหว่างโปรไฟล์ Chrome ได้ที่นี่</translation>
 <translation id="7062128746136194023">ผู้ปกครองได้ปิด "สิทธิ์สำหรับเว็บไซต์ แอป และส่วนขยาย" ใน Chrome ไม่อนุญาตให้เพิ่ม<ph name="EXTENSION_TYPE_PARAMETER" />นี้</translation>
 <translation id="7098166902387133879">Google Chrome ใช้ไมโครโฟนอยู่</translation>
 <translation id="7106741999175697885">ตัวจัดการงาน - Google Chrome</translation>
@@ -286,4 +288,5 @@
 <translation id="922152298093051471">ปรับแต่ง Chrome</translation>
 <translation id="940313311831216333">หากต้องการเข้าถึงข้อมูล Chrome ในอุปกรณ์ทั้งหมด ให้ลงชื่อเข้าใช้แล้วเปิดการซิงค์</translation>
 <translation id="989369509083708165">Google Chrome เป็นเบราว์เซอร์เริ่มต้นของคุณ</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> จะสลับไปมาระหว่างโปรไฟล์ Chrome ได้</translation>
 </translationbundle>

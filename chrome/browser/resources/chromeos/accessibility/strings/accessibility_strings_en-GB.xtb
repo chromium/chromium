@@ -158,7 +158,6 @@
 <translation id="2045055672832940894">No previous control</translation>
 <translation id="2045606329038304310">Form field control</translation>
 <translation id="2063539687800151747">Epigraph</translation>
-<translation id="2074531330963286860">Actions available. Press Search+Period to view</translation>
 <translation id="2086961585857038472">Next word</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">en</translation>
@@ -1081,6 +1080,7 @@
 <translation id="8897030325301866860">Font <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Cycle punctuation echo</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Actions available. Press Search+Ctrl+A to view</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Modifier Keys</translation>
 <translation id="8943282376843390568">Lime</translation>

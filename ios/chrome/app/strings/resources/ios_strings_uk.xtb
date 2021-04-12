@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">Неможливо поділитися</translation>
 <translation id="2923448633003185837">Вставити й перейти</translation>
 <translation id="292639812446257861">Позначити як непрочитані</translation>
+<translation id="2932085390869194046">Запропонувати пароль…</translation>
 <translation id="2952581218264071393">1. Відкрийте налаштування Chrome</translation>
 <translation id="2958718410589002129">Паролі</translation>
 <translation id="2964349545761222050">Блокувати файли cookie третіх сторін</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">Щоб керувати файлами cookie для всіх сайтів, перегляньте <ph name="BEGIN_LINK" />Налаштування файлів cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокувати всі файли cookie (не рекомендовано)</translation>
 <translation id="5508435575041083207">Вийти й видалити дані з цього пристрою</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> год тому</translation>
 <translation id="5525269841082836315">Створити парол.фразу</translation>
 <translation id="5548760955356983418">За допомогою Handoff можна почати переглядати веб-сайт на цьому пристрої, а потім легко продовжити на пристрої Mac. Відкритий веб-сайт з’явиться на панелі Dock на пристрої Mac.
 
@@ -759,7 +761,6 @@
 <translation id="8806823403540278281">Адміністратор вашої організації вимагає, щоб ви переглядали веб-сторінки конфіденційно. Вкладки в режимі анонімного перегляду не зберігаються.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Закладки</translation>
-<translation id="8823704566850948458">Запропонувати пароль…</translation>
 <translation id="8840513115188359703">Ви не вийдете з облікового запису Google.</translation>
 <translation id="8870413625673593573">Нещодавно закриті</translation>
 <translation id="8881801611828450202">Пошук цього зображення в <ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">Створити QR-код</translation>
 <translation id="9157836665414082580">Заблокувати діалогові вікна</translation>
 <translation id="9188680907066685419">Вийти з керованого облікового запису</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> дн. тому</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Звіт про аварійне завершення роботи надіслано.</translation>
 <translation id="952704832371081537">Скасувати</translation>

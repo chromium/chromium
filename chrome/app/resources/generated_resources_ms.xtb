@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> mengesyorkan supaya anda mengemas kini <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="1118738876271697201">Sistem gagal menentukan model atau nombor siri peranti.</translation>
 <translation id="1119447706177454957">Ralat dalaman</translation>
-<translation id="111959947408687873">Gunakan Ctrl+<ph name="SEARCH_KEY_NAME" />+M untuk menogol penggadang skrin penuh. Gunakan kekunci Ctrl+Alt+Anak Panah untuk bergerak pada skrin semasa dizum masuk.</translation>
 <translation id="1122068467107743258">Tempat kerja</translation>
 <translation id="1122198203221319518">&amp;Alat</translation>
 <translation id="1122242684574577509">Pengesahan gagal. Klik untuk melawati halaman log masuk untuk rangkaian Wi-Fi yang anda gunakan (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Bingkai ini disekat kerana ia mengandungi beberapa kandungan selamat.</translation>
 <translation id="146219525117638703">Keadaan ONC</translation>
 <translation id="146220085323579959">Internet terputus. Sila periksa sambungan internet anda dan cuba lagi.</translation>
-<translation id="1463051728820430132">Tanya apabila apl web mahu membuka jenis fail pada peranti anda</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> telah disekat oleh Perlindungan Lanjutan.</translation>
 <translation id="1464044141348608623">Jangan benarkan laman mengetahui waktunya anda aktif menggunakan peranti</translation>
 <translation id="1464258312790801189">Akaun Anda</translation>
@@ -1026,6 +1024,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="211144231511833662">Kosongkan Jenis</translation>
 <translation id="2111670510994270194">Tab baharu ke kanan</translation>
 <translation id="2111810003053064883">Pengiklan boleh mengkaji keberkesanan iklan dengan cara yang tidak menjejak anda merentas berbilang laman.</translation>
+<translation id="2112554630428445878">Selamat datang, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Pin Tab</translation>
 <translation id="2113479184312716848">Buka &amp;Fail...</translation>
 <translation id="2113921862428609753">Akses Maklumat Pihak Berkuasa</translation>
@@ -1091,7 +1090,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2163470535490402084">Sila sambung ke Internet untuk melog masuk ke <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dan 1 lagi suis</translation>
 <translation id="2165421703844373933">Akses Assistant anda apabila anda menyebut "Ok Google". Untuk menjimatkan bateri, pilih “Hidup (Disyorkan)”. Assistant anda hanya akan memberikan respons apabila peranti anda dipasang palam atau mengecas.</translation>
-<translation id="2166269335975661317">Apl web boleh meminta untuk membuka jenis fail daripada peranti anda</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Log masuk juga</translation>
@@ -1970,7 +1968,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="313205617302240621">Terlupa kata laluan?</translation>
 <translation id="3132277757485842847">Kami tidak dapat mengekalkan sambungan dengan telefon anda. Pastikan telefon anda berada berdekatan, dibuka kunci dan Bluetooth serta Wi-Fi dihidupkan.</translation>
 <translation id="3132996321662585180">Muat semula setiap hari</translation>
-<translation id="3134393957315651797">Pilih status percubaan untuk percubaan <ph name="EXPERIMENT_NAME" />. Perihalan percubaan: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN tidak sah. Anda mempunyai <ph name="RETRIES" /> percubaan lagi.</translation>
 <translation id="313963229645891001">Memuat turun, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar kuning lalai</translation>
@@ -2643,6 +2640,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3881478300875776315">Tunjukkan kurang baris</translation>
 <translation id="3882165008614329320">Video sedia ada daripada kamera atau fail</translation>
 <translation id="3884152383786131369">Kandungan web yang tersedia dalam berbilang bahasa akan menggunakan bahasa pertama yang disokong daripada senarai ini. Pilihan ini disegerakkan dengan tetapan penyemak imbas anda. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Kemaskinian diurus oleh pentadbir anda</translation>
 <translation id="3886446263141354045">Permintaan anda untuk mengakses tapak ini telah dihantar kepada <ph name="NAME" />.</translation>
 <translation id="3888550877729210209">Mencatat nota dengan <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Maklumat ini membantu kami memahami isu Assistant anda dengan lebih baik. Maklumat ini akan disimpan selama maksimum 90 hari dan akses dihadkan kepada pasukan kejuruteraan dan maklum balas yang berkenaan.</translation>
@@ -4464,7 +4462,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5990266201903445068">Wi-Fi sahaja</translation>
 <translation id="5990386583461751448">Diterjemahkan</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Untuk memastikan anda boleh terus melayari web, minta pentadbir anda mengalih keluar aplikasi ini.}other{Untuk memastikan anda boleh terus melayari web, minta pentadbir anda mengalih keluar aplikasi ini.}}</translation>
-<translation id="5992175324932183568">Jangan benarkan apl web membuka jenis fail daripada peranti anda</translation>
 <translation id="5997337190805127100">Ketahui Lebih Lanjut Tentang Akses Tapak</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> hasil carian untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002210667729577411">Alihkan kumpulan ke tetingkap baharu</translation>
@@ -4586,7 +4583,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6124213551517593835">Tindakan ini akan mengosongkan semua data dan kuki yang disimpan oleh <ph name="SITE_GROUP_NAME" /> dan mana-mana tapak di bawah kumpulan ini</translation>
 <translation id="6124650939968185064">Sambungan berikut bergantung kepada sambungan ini:</translation>
 <translation id="6124698108608891449">Tapak ini memerlukan kebenaran lagi.</translation>
-<translation id="6125442051901189730">Tiada profil SIM tersedia. Sediakan profil baharu <ph name="BEGIN_LINK" />di sini.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Malangnya, anda perlu menambahkan akaun pada <ph name="DEVICE_TYPE" /> ini sekali lagi.</translation>
 <translation id="6129691635767514872">Data yang dipilih telah dialih keluar daripada Chrome dan peranti yang disegerakkan. Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain seperti carian dan aktiviti daripada perkhidmatan Google yang lain di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Komen Sijil Netscape</translation>
@@ -6402,7 +6398,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8147900440966275470"><ph name="NUM" /> Tab Ditemukan</translation>
 <translation id="8148760431881541277">Hadkan log masuk</translation>
 <translation id="8149564499626272569">Sahkan melalui telefon anda dengan kabel USB</translation>
-<translation id="8150259863378108853">Lacros merupakan penyemak imbas percubaan. Sila laporkan sebarang isu pada Bantuan &gt; "Laporkan isu..."</translation>
 <translation id="8151638057146502721">Konfigurasi</translation>
 <translation id="8154790740888707867">Tiada fail</translation>
 <translation id="815491593104042026">Op! Pengesahan gagal kerana telah dikonfigurasikan untuk menggunakan URL tidak selamat (<ph name="BLOCKED_URL" />). Sila hubungi pentadbir anda.</translation>
@@ -6588,8 +6583,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8368859634510605990">&amp;Buka semua penanda halaman</translation>
 <translation id="8370294614544004647">Tidur apabila komputer riba ditutup</translation>
 <translation id="8371695176452482769">Cakap sekarang</translation>
-<translation id="8371749822919332187">Gunakan Ctrl+Alt+Tingkatkan Kecerahan untuk zum masuk.
-Gunakan Ctrl+Alt+Kurangkan Kecerahan untuk zum keluar.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Redam Tapak}other{Redam Tapak}}</translation>
 <translation id="8372369524088641025">Kekunci WEP teruk</translation>
 <translation id="8373652277231415614">Direktori kongsi Crostini</translation>
@@ -6614,7 +6607,6 @@ Gunakan Ctrl+Alt+Kurangkan Kecerahan untuk zum keluar.</translation>
 <translation id="8398877366907290961">Teruskan juga</translation>
 <translation id="8400146488506985033">Urus orang</translation>
 <translation id="8401432541486058167">Sediakan PIN yang dikaitkan dengan kad pintar anda.</translation>
-<translation id="8403562727702715619">Baru-baru ini daripada Google Drive</translation>
 <translation id="8405046151008197676">Dapatkan sorotan daripada kemas kini terbaharu</translation>
 <translation id="8407199357649073301">Tahap Log:</translation>
 <translation id="8408068190360279472">Rangkaian <ph name="NETWORK_TYPE" />, menyambung</translation>
@@ -7401,7 +7393,6 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="975893173032473675">Bahasa Sasaran Terjemahan</translation>
 <translation id="976499800099896273">Dialog buat asal autopembetulan ditunjukkan untuk <ph name="TYPED_WORD" /> dibetulkan kepada <ph name="CORRECTED_WORD" />.  Tekan anak panah ke atas untuk mengakses atau kekunci Escape untuk mengabaikan perkataan ini.</translation>
 <translation id="978146274692397928">Lebar tanda baca permulaan adalah Penuh</translation>
-<translation id="97883469867914488">Sekat apl web daripada membuka jenis fail pada peranti anda</translation>
 <translation id="97905529126098460">Tetingkap ini akan ditutup selepas pembatalan selesai.</translation>
 <translation id="980731642137034229">Butang menu tindakan</translation>
 <translation id="981121421437150478">Luar talian</translation>

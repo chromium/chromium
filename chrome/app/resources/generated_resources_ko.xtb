@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" />에서 이 <ph name="DEVICE_TYPE" />의 업데이트를 권장합니다.</translation>
 <translation id="1118738876271697201">시스템에서 기기 모델 또는 일련번호를 확인하지 못했습니다.</translation>
 <translation id="1119447706177454957">내부 오류</translation>
-<translation id="111959947408687873">Ctrl+<ph name="SEARCH_KEY_NAME" />+M 키를 사용하여 전체화면 돋보기를 전환합니다. 확대 후 Ctrl+Alt+화살표 키를 사용하여 화면 안에서 이동합니다.</translation>
 <translation id="1122068467107743258">직장</translation>
 <translation id="1122198203221319518">도구(&amp;T)</translation>
 <translation id="1122242684574577509">인증에 실패했습니다. 클릭하여 사용 중인 Wi-Fi 네트워크(<ph name="NETWORK_ID" />)의 로그인 페이지로 이동하세요.</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">안전하지 않은 콘텐츠가 포함되어 이 프레임을 차단했습니다.</translation>
 <translation id="146219525117638703">ONC 상태</translation>
 <translation id="146220085323579959">인터넷 연결이 끊겼습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.</translation>
-<translation id="1463051728820430132">웹 앱이 기기에서 여러 유형의 파일을 열려고 할 때 확인</translation>
 <translation id="1463112138205428654">고급 보호 기능이 <ph name="FILE_NAME" />을(를) 차단했습니다.</translation>
 <translation id="1464044141348608623">사용자가 현재 기기를 사용 중인지 사이트에서 알 수 없도록 함</translation>
 <translation id="1464258312790801189">내 계정</translation>
@@ -1026,6 +1024,7 @@
 <translation id="211144231511833662">유형 지우기</translation>
 <translation id="2111670510994270194">오른쪽에 새 탭 열기</translation>
 <translation id="2111810003053064883">광고주는 사이트 전반에서 사용자를 추적하지 않는 방식으로 광고의 효과를 연구할 수 있습니다.</translation>
+<translation id="2112554630428445878"><ph name="USERNAME" />님, 환영합니다</translation>
 <translation id="21133533946938348">탭 고정</translation>
 <translation id="2113479184312716848">파일 열기(&amp;F)...</translation>
 <translation id="2113921862428609753">기관 정보 액세스</translation>
@@ -1091,7 +1090,6 @@
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> 기기에 로그인하려면 인터넷에 연결하세요.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> 외 1개</translation>
 <translation id="2165421703844373933">"Ok Google"이라고 말하여 어시스턴트에 액세스합니다. 배터리를 절약하려면 '사용(권장)'을 선택하세요. 기기가 전원에 연결되어 있거나 충전 중일 때만 어시스턴트가 응답합니다.</translation>
-<translation id="2166269335975661317">웹 앱이 기기에서 여러 유형의 파일을 열도록 요청할 수 있음</translation>
 <translation id="2166369534954157698">재빠른 갈색 여우가 게으른 개를 뛰어넘습니다.</translation>
 <translation id="2167276631610992935">자바스크립트</translation>
 <translation id="2169062631698640254">로그인</translation>
@@ -1970,7 +1968,6 @@
 <translation id="313205617302240621">비밀번호 찾기</translation>
 <translation id="3132277757485842847">휴대전화와 연결을 유지할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="3132996321662585180">매일 새로고침</translation>
-<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> 실험의 상태를 선택하세요. 실험 설명: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">잘못된 PIN입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="313963229645891001">다운로드 중, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">기본 노란색 아바타</translation>
@@ -2643,6 +2640,7 @@
 <translation id="3881478300875776315">자막 접기</translation>
 <translation id="3882165008614329320">카메라 또는 파일의 기존 동영상</translation>
 <translation id="3884152383786131369">여러 언어를 지원하는 웹 콘텐츠는 목록의 첫 번째 지원 언어를 사용합니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">업데이트는 관리자가 관리합니다</translation>
 <translation id="3886446263141354045">사용자의 사이트 액세스 요청이 <ph name="NAME" />님에게 전송되었습니다.</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />(으)로 메모 작성</translation>
 <translation id="3888586133700543064">어시스턴트에서 발생하는 문제를 파악하는 데 도움이 되는 정보입니다. 정보는 최대 90일 동안 저장되며, 관련 엔지니어링팀과 의견팀에서만 액세스할 수 있습니다.</translation>
@@ -4462,7 +4460,6 @@
 <translation id="5990266201903445068">Wi-Fi만 사용</translation>
 <translation id="5990386583461751448">번역됨</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{계속 웹을 탐색하려면 관리자에게 이 애플리케이션을 삭제해 달라고 요청하세요.}other{계속 웹을 탐색하려면 관리자에게 이 애플리케이션을 삭제해 달라고 요청하세요.}}</translation>
-<translation id="5992175324932183568">웹 앱이 기기에서 여러 유형의 파일을 열도록 허용하지 않음</translation>
 <translation id="5997337190805127100">사이트 액세스 권한 자세히 알아보기</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' 검색결과 <ph name="RESULT_COUNT" />개</translation>
 <translation id="6002210667729577411">그룹을 새 창으로 이동</translation>
@@ -4584,7 +4581,6 @@
 <translation id="6124213551517593835"><ph name="SITE_GROUP_NAME" /> 및 모든 하위 사이트에서 저장한 데이터와 쿠키가 모두 삭제됩니다.</translation>
 <translation id="6124650939968185064">이 확장 프로그램에 종속되는 확장 프로그램:</translation>
 <translation id="6124698108608891449">추가 권한이 필요한 사이트입니다.</translation>
-<translation id="6125442051901189730">사용할 수 있는 SIM 프로필이 없습니다. <ph name="BEGIN_LINK" />여기<ph name="END_LINK" />에서 새 프로필을 설정하세요.</translation>
 <translation id="6125479973208104919">이 <ph name="DEVICE_TYPE" />에 계정을 다시 추가해야 합니다.</translation>
 <translation id="6129691635767514872">선택한 데이터가 Chrome 및 동기화된 기기에서 삭제되었습니다. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />에서 검색이나 기타 Google 서비스에서의 활동 등 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
@@ -6400,7 +6396,6 @@
 <translation id="8147900440966275470">탭 <ph name="NUM" />개 찾음</translation>
 <translation id="8148760431881541277">로그인 제한</translation>
 <translation id="8149564499626272569">USB 케이블로 휴대전화를 연결하여 인증</translation>
-<translation id="8150259863378108853">Lacros는 실험 단계의 브라우저입니다. 문제가 발생하면 도움말 &gt; ‘문제 신고...’에서 신고해 주세요.</translation>
 <translation id="8151638057146502721">구성</translation>
 <translation id="8154790740888707867">파일 없음</translation>
 <translation id="815491593104042026">보안되지 않는 URL(<ph name="BLOCKED_URL" />)을 사용하도록 설정되었기 때문에 인증할 수 없습니다. 관리자에게 문의하세요.</translation>
@@ -6585,8 +6580,6 @@
 <translation id="8368859634510605990">모든 북마크 열기(&amp;O)</translation>
 <translation id="8370294614544004647">노트북을 닫으면 절전 모드 시작</translation>
 <translation id="8371695176452482769">말하세요</translation>
-<translation id="8371749822919332187">Ctrl+Alt+밝게 키를 사용하여 확대합니다.
-Ctrl+Alt+어둡게 키를 사용하여 축소합니다.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{사이트 숨기기}other{사이트 숨기기}}</translation>
 <translation id="8372369524088641025">잘못된 WEP 키</translation>
 <translation id="8373652277231415614">Crostini 공유 디렉터리</translation>
@@ -6611,7 +6604,6 @@ Ctrl+Alt+어둡게 키를 사용하여 축소합니다.</translation>
 <translation id="8398877366907290961">무시하고 계속하기</translation>
 <translation id="8400146488506985033">사용자 관리</translation>
 <translation id="8401432541486058167">스마트 카드와 연결된 PIN을 입력하세요.</translation>
-<translation id="8403562727702715619">Google Drive의 최근 항목</translation>
 <translation id="8405046151008197676">최신 업데이트에서 중요한 사항을 확인하세요.</translation>
 <translation id="8407199357649073301">로그 수준:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> 네트워크, 연결 중</translation>
@@ -7398,7 +7390,6 @@ Ctrl+Alt+어둡게 키를 사용하여 축소합니다.</translation>
 <translation id="975893173032473675">번역 도착어</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" />에서 <ph name="CORRECTED_WORD" />(으)로 수정된 것과 관련하여 자동 수정 실행취소 대화상자가 표시되었습니다.  액세스하려면 위쪽 화살표를, 무시하려면 Esc를 누르세요.</translation>
 <translation id="978146274692397928">초기 구두점 폭을 최대로 설정</translation>
-<translation id="97883469867914488">웹 앱이 기기에서 여러 유형의 파일을 열지 못하도록 차단</translation>
 <translation id="97905529126098460">취소가 완료되면 이 창이 닫힙니다.</translation>
 <translation id="980731642137034229">작업 메뉴 버튼</translation>
 <translation id="981121421437150478">오프라인</translation>

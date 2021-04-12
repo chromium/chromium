@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">לא ניתן לשתף את הדף</translation>
 <translation id="2923448633003185837">הדבקה וחיפוש</translation>
 <translation id="292639812446257861">סימון כ'לא נקרא'</translation>
+<translation id="2932085390869194046">הצעת סיסמה...</translation>
 <translation id="2952581218264071393">‏1. פותחים את ההגדרות של Chrome</translation>
 <translation id="2958718410589002129">סיסמאות</translation>
 <translation id="2964349545761222050">‏חסימה של קובצי cookie מצדדים שלישיים</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">‏הסבר על ניהול קובצי ה-cookie עבור כל האתרים זמין במאמר <ph name="BEGIN_LINK" />הגדרות קובצי cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="5508435575041083207">יציאה וניקוי נתונים מהמכשיר הזה</translation>
+<translation id="5513681519188741830">לפני <ph name="TIME" /> שעות</translation>
 <translation id="5525269841082836315">יצירת ביטוי סיסמה</translation>
 <translation id="5548760955356983418">‏Handoff מאפשר לך להתחיל לגלוש באתר מסוים במכשיר הזה ולאחר מכן להמשיך בקלות ב-Mac. האתר הפתוח הנוכחי יופיע ב-Dock של ה-Mac שלך.
 
@@ -759,7 +761,6 @@
 <translation id="8806823403540278281">לפי דרישת הארגון שלך, עליך לגלוש באופן פרטי. כרטיסיות אינן נשמרות במצב אנונימי.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">סימניות</translation>
-<translation id="8823704566850948458">הצעת סיסמה...</translation>
 <translation id="8840513115188359703">‏פעולה זו לא תוציא אותך מחשבון Google שלך.</translation>
 <translation id="8870413625673593573">נסגרו לאחרונה</translation>
 <translation id="8881801611828450202">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">‏יצירת קוד QR</translation>
 <translation id="9157836665414082580">הסתרת תיבות דו-שיח</translation>
 <translation id="9188680907066685419">יציאה מהחשבון המנוהל</translation>
+<translation id="9200875785104711666">לפני <ph name="TIME" /> ימים</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">דוח הקריסה נשלח.</translation>
 <translation id="952704832371081537">ביטול</translation>

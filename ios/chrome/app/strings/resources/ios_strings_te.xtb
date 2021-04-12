@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">పేజీ భాగస్వామ్యం సాధ్యపడలేదు</translation>
 <translation id="2923448633003185837">పేస్ట్ చేసి, ముందుకు వెళ్ళండి</translation>
 <translation id="292639812446257861">చదవనట్లు గుర్తు పెట్టు</translation>
+<translation id="2932085390869194046">పాస్‌వర్డ్‌‌ను సూచించు...</translation>
 <translation id="2952581218264071393">1. Chrome సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="2958718410589002129">పాస్‌వర్డ్‌లు</translation>
 <translation id="2964349545761222050">థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయి</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">అన్ని సైట్‌లకు కుక్కీలను మేనేజ్ చేయడానికి, <ph name="BEGIN_LINK" />కుక్కీ సెట్టింగ్‌ల<ph name="END_LINK" />ను చూడండి.</translation>
 <translation id="5490005495580364134">అన్ని కుక్కీలను బ్లాక్ చేయి (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="5508435575041083207">సైన్ అవుట్ చేసి, ఈ పరికరం నుండి డేటాను క్లియర్ చేయండి</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> గం. క్రితం</translation>
 <translation id="5525269841082836315">రహస్య పదబంధాన్ని సృష్టించండి</translation>
 <translation id="5548760955356983418">ఈ పరికరంలో వెబ్‌సైట్‌ను బ్రౌజ్ చేయడాన్ని ప్రారంభించి, ఆ తర్వాత దాన్ని మీ Macలో సులభంగా కొనసాగించడానికి హ్యాండ్‌ఆఫ్ మిమ్మల్ని అనుమతిస్తుంది. ప్రస్తుతం తెరిచిన వెబ్‌సైట్ మీ Mac డాక్‌లో కనిపిస్తుంది.
 
@@ -759,7 +761,6 @@
 <translation id="8806823403540278281">మీరు ప్రైవేట్‌గా బ్రౌజ్ చేయాల్సిందిగా మీ సంస్థ కోరుతోంది. ట్యాబ్‌లు అజ్ఞాత మోడ్‌లో సేవ్ చేయబడవు.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmarks</translation>
-<translation id="8823704566850948458">పాస్‌వర్డ్‌‌ను సూచించండి...</translation>
 <translation id="8840513115188359703">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు.</translation>
 <translation id="8870413625673593573">ఇటీవల మూసివేసినవి</translation>
 <translation id="8881801611828450202">ఈ చిత్రం కోసం <ph name="SEARCH_ENGINE" />ని వెతకండి</translation>
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">ఒక QR కోడ్‌ను సృష్టించండి</translation>
 <translation id="9157836665414082580">డైలాగ్‌లను కుదించు</translation>
 <translation id="9188680907066685419">నిర్వహిత ఖాతా నుండి సైన్ అవుట్ చేయండి</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> రో. క్రితం</translation>
 <translation id="9203116392574189331">హ్యాండ్ఆఫ్</translation>
 <translation id="9223358826628549784">క్రాష్ నివేదిక పంపబడింది.</translation>
 <translation id="952704832371081537">రద్దు చేయి</translation>

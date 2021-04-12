@@ -189,6 +189,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2921219216347069551">Nuk mund të ndajë faqen</translation>
 <translation id="2923448633003185837">Ngjit dhe vazhdo</translation>
 <translation id="292639812446257861">Shëno si të palexuara</translation>
+<translation id="2932085390869194046">Sugjero një fjalëkalim...</translation>
 <translation id="2952581218264071393">1. Hap "Cilësimet" e Chrome</translation>
 <translation id="2958718410589002129">Fjalëkalimet</translation>
 <translation id="2964349545761222050">Blloko kukit e palëve të treta</translation>
@@ -214,6 +215,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 
 Në modalitetin "i fshehtë", sajtet nuk mund t'i përdorin kukit për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, për shembull, për të personalizuar reklamat.</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
+<translation id="3222343486469566063">I paidentifikuar</translation>
 <translation id="3224641773458703735">Për të eksportuar fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="3240426699337459095">Lidhja u kopjua</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -421,6 +423,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5489208564673669003">Për të menaxhuar kukit për të gjitha sajtet, shiko <ph name="BEGIN_LINK" />Cilësimet e kukive<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blloko të gjitha kukit (nuk rekomandohet)</translation>
 <translation id="5508435575041083207">Dil dhe pastro të dhënat nga kjo pajisje</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> orë më parë</translation>
 <translation id="5525269841082836315">Krijo fjalëkalim</translation>
 <translation id="5548760955356983418">Handoff të lejon të fillosh të shfletosh një faqe interneti në këtë pajisje dhe pastaj me lehtësi të vazhdosh në kompjuterin tënd Mac. Faqja aktuale e hapur e internetit do të shfaqet në Dock të kompjuterit tënd Mac.
 
@@ -758,7 +761,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8806823403540278281">Organizata jote kërkon që të shfletosh në mënyrë private. Skedat nuk ruhen në modalitetin "e fshehtë".
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
-<translation id="8823704566850948458">Sugjero fjalëkalim...</translation>
 <translation id="8840513115188359703">Nuk do të dalësh nga llogaria jote e Google</translation>
 <translation id="8870413625673593573">Të mbyllura së fundi</translation>
 <translation id="8881801611828450202">Kërko në <ph name="SEARCH_ENGINE" /> për këtë imazh</translation>
@@ -786,6 +788,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9152539721251340337">Krijo një kod QR</translation>
 <translation id="9157836665414082580">Fshih dialogjet</translation>
 <translation id="9188680907066685419">Dil nga llogaria e menaxhuar</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> ditë më parë</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Raporti i ndërprerjes aksidentale u dërgua.</translation>
 <translation id="952704832371081537">Anulo</translation>

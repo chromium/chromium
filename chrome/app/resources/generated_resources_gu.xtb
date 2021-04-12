@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> દ્વારા સુઝાવ આપવામાં આવ્યો છે કે તમે આ <ph name="DEVICE_TYPE" /> અપડેટ કરો.</translation>
 <translation id="1118738876271697201">સિસ્ટમ, ડિવાઇસનું મૉડલ અથવા અનુક્રમ નંબર નિર્ધારિત કરવામાં નિષ્ફળ થઈ.</translation>
 <translation id="1119447706177454957">આંતરિક ભૂલ</translation>
-<translation id="111959947408687873">પૂર્ણસ્ક્રીન મૅગ્નિફાયર ટૉગલ કરવા માટે, Ctrl+<ph name="SEARCH_KEY_NAME" />+M કીનો ઉપયોગ કરો. જ્યારે મોટું કરેલું હોય ત્યારે સ્ક્રીન પર કોઈપણ જગ્યાએ જવા માટે, Ctrl+Alt+ઍરો કીનો ઉપયોગ કરો.</translation>
 <translation id="1122068467107743258">કાર્ય</translation>
 <translation id="1122198203221319518">&amp;સાધનો</translation>
 <translation id="1122242684574577509">પ્રમાણીકરણ નિષ્ફળ થયું. તમે ઉપયોગ કરી રહ્યા છો તે વાઇ-ફાઇ નેટવર્ક (<ph name="NETWORK_ID" />) માટેના લોગિન પેજની મુલાકાત લેવા માટે ક્લિક કરો.</translation>
@@ -427,7 +426,6 @@
 <translation id="146000042969587795">આ ફ્રેમ બ્લૉક કરવામાં આવી હતી કારણ કે તેમાં અમુક અસુરક્ષિત કન્ટેન્ટ છે.</translation>
 <translation id="146219525117638703">ONC સ્થિતિ</translation>
 <translation id="146220085323579959">ઇન્ટરનેટ ડિસ્કનેક્ટ થયું, કૃપા કરીને તમારું ઇન્ટરનેટ કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.</translation>
-<translation id="1463051728820430132">તમારા ડિવાઇસ પર જ્યારે કોઈ વેબ ઍપ આ પ્રકારની ફાઇલો ખોલવાની વિનંતી કરે, ત્યારે પૂછજો</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" />ને વિગતવાર સુરક્ષા દ્વારા બ્લૉક કરેલી હતી.</translation>
 <translation id="1464044141348608623">સાઇટને તમે સક્રિય રૂપે તમારા ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તે જાણવાની મંજૂરી આપશો નહીં</translation>
 <translation id="1464258312790801189">તમારા એકાઉન્ટ્સ</translation>
@@ -1088,7 +1086,6 @@
 <translation id="2163470535490402084">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> માં સાઇન ઇન કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> અને વધુ 1 સ્વિચ</translation>
 <translation id="2165421703844373933">તમે "ઓકે Google" બોલીને તમારા આસિસ્ટંટને ઍક્સેસ કરો. બૅટરીની બચત કરવા માટે, “ચાલુ (સુઝાવ આપ્યો છે પસંદ કરો)”. જ્યારે તમારું ડિવાઇસનો પ્લગ જોડેલો હશે અથવા ચાર્જ થઈ રહ્યું હશે ત્યારે જ આસિસ્ટંટ જવાબ આપશે.</translation>
-<translation id="2166269335975661317">તમારા ડિવાઇસમાંથી વેબ ઍપ આ પ્રકારની ફાઇલો ખોલવાની વિનંતી કરી શકે છે</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">કોઈપણ રીતે સાઇન ઇન કરો</translation>
@@ -1967,7 +1964,6 @@
 <translation id="313205617302240621">પાસવર્ડ ભૂલી ગયા?</translation>
 <translation id="3132277757485842847">અમે તમારા ફોન સાથે સંપર્ક જાળવી શક્યા નથી. ખાતરી કરો કે તમારો ફોન નજીકમાં હોય, અનલૉક કરેલો હોય અને તેમાં બ્લૂટૂથ અને વાઇ-ફાઇની સુવિધા ચાલુ હોય.</translation>
 <translation id="3132996321662585180">દરરોજ રિફ્રેશ કરો</translation>
-<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> પ્રયોગ માટે પ્રયોગનું સ્ટેટસ પસંદ કરો. પ્રયોગનું વર્ણન: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">અમાન્ય પિન. તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="313963229645891001">ડાઉનલોડ કરી રહ્યાં છીએ, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ડિફોલ્ટ પીળો અવતાર</translation>
@@ -4463,7 +4459,6 @@ USB ડિવાઇસ</translation>
 <translation id="5990266201903445068">ફક્ત વાઇ-ફાઇ</translation>
 <translation id="5990386583461751448">અનુવાદિત</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{તમે વેબ બ્રાઉઝ કરતા રહી શકો તેની ખાતરી કરવા માટે, તમારા વ્યવસ્થાપકને આ ઍપ્લિકેશન કાઢી નાખવાનું કહો.}one{તમે વેબ બ્રાઉઝ કરતા રહી શકો તેની ખાતરી કરવા માટે, તમારા વ્યવસ્થાપકને આ ઍપ્લિકેશનો કાઢી નાખવાનું કહો.}other{તમે વેબ બ્રાઉઝ કરતા રહી શકો તેની ખાતરી કરવા માટે, તમારા વ્યવસ્થાપકને આ ઍપ્લિકેશનો કાઢી નાખવાનું કહો.}}</translation>
-<translation id="5992175324932183568">તમારા ડિવાઇસમાંથી વેબ ઍપને આ પ્રકારની ફાઇલો ખોલવાની મંજૂરી આપશો નહીં</translation>
 <translation id="5997337190805127100">સાઇટ ઍક્સેસ વિશે વધુ જાણો</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' માટે <ph name="RESULT_COUNT" /> પરિણામ</translation>
 <translation id="6002210667729577411">ગ્રૂપને નવી વિંડોમાં ખસેડો</translation>
@@ -4585,7 +4580,6 @@ USB ડિવાઇસ</translation>
 <translation id="6124213551517593835">આમ કરવાથી <ph name="SITE_GROUP_NAME" /> અને તેની હેઠળ આવતી કોઈપણ સાઇટ દ્વારા સ્ટોર થયેલો બધો ડેટા અને કુકી સાફ કરવામાં આવશે</translation>
 <translation id="6124650939968185064">નીચેના એક્સ્ટેન્શન્સ આ એક્સ્ટેન્શન પર નિર્ભર કરે છે:</translation>
 <translation id="6124698108608891449">આ સાઇટ માટે વધુ પરવાનગીઓની જરૂર છે.</translation>
-<translation id="6125442051901189730">કોઈ સિમ પ્રોફાઇલ ઉપલબ્ધ નથી. <ph name="BEGIN_LINK" />અહીં<ph name="END_LINK" /> નવી પ્રોફાઇલનું સેટઅપ કરો.</translation>
 <translation id="6125479973208104919">કમનસીબે, તમને આ <ph name="DEVICE_TYPE" />માં તમારું એકાઉન્ટ ઉમેરવાની જરૂર પડશે.</translation>
 <translation id="6129691635767514872">પસંદ કરેલો ડેટા Chrome અને તમારા સિંક કરેલ ડિવાઇસમાંથી ડિલીટ કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો જેમ કે શોધ અને બીજા Google સેવાઓ પરની પ્રવૃત્તિઓ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર હોય શકે છે.</translation>
 <translation id="6129938384427316298">નેટસ્કેપ પ્રમાણપત્ર ટિપ્પણી</translation>
@@ -6395,7 +6389,6 @@ USB ડિવાઇસ</translation>
 <translation id="8147900440966275470"><ph name="NUM" /> ટૅબ મળી છે</translation>
 <translation id="8148760431881541277">સાઇન ઇન કરવાનું મર્યાદિત કરવાના સેટિંગ</translation>
 <translation id="8149564499626272569">USB કેબલનો ઉપયોગ કરીને તમારા ફોન મારફતે ચકાસો</translation>
-<translation id="8150259863378108853">Lacros, એક પ્રયોગાત્મક બ્રાઉઝર છે. કૃપા કરીને સહાય વિશેની કોઈપણ સમસ્યાની જાણ કરો &gt; "સમસ્યાની જાણ કરો…"</translation>
 <translation id="8151638057146502721">ગોઠવો</translation>
 <translation id="8154790740888707867">કોઇ ફાઇલ નથી</translation>
 <translation id="815491593104042026">અરેરે!  પ્રમાણીકરણ નિષ્ફળ થયું કારણ કે તે બિન-સુરક્ષિત URL નો ઉપયોગ કરવા માટે ગોઠવાયેલું હતું (<ph name="BLOCKED_URL" />).  કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
@@ -6580,8 +6573,6 @@ USB ડિવાઇસ</translation>
 <translation id="8368859634510605990">બધાં બુકમાર્ક્સ &amp;ખોલો</translation>
 <translation id="8370294614544004647">લૅપટૉપ બંધ કરવામાં આવે ત્યારે નિષ્ક્રિય કરો</translation>
 <translation id="8371695176452482769">હવે બોલો</translation>
-<translation id="8371749822919332187">મોટું કરવા માટે, Ctrl+Alt+બ્રાઇટનેસ વધારવાની કીનો ઉપયોગ કરો.
-નાનું કરવા માટે, Ctrl+Alt+બ્રાઇટનેસ ઘટાડવાની કીનો ઉપયોગ કરો.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{સાઇટને મ્યૂટ કરો}one{સાઇટને મ્યૂટ કરો}other{સાઇટને મ્યૂટ કરો}}</translation>
 <translation id="8372369524088641025">ખરાબ WEP કી</translation>
 <translation id="8373652277231415614">Crostiniએ શેર કરેલી ડિરેક્ટરી</translation>
@@ -6606,7 +6597,6 @@ USB ડિવાઇસ</translation>
 <translation id="8398877366907290961">કોઈપણ રીતે આગળ વધારો</translation>
 <translation id="8400146488506985033">લોકોને મેનેજ કરો</translation>
 <translation id="8401432541486058167">તમારા સ્માર્ટ કાર્ડ સાથે સંકળાયેલો હોય તે પિન પ્રદાન કરો.</translation>
-<translation id="8403562727702715619">તાજેતરમાં Google Driveમાંથી</translation>
 <translation id="8405046151008197676">એકદમ નવી અપડેટની હાઇલાઇટ મેળવો</translation>
 <translation id="8407199357649073301">લૉગ લેવલ:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> નેટવર્ક, કનેક્ટ કરી રહ્યું છે</translation>
@@ -6857,7 +6847,7 @@ USB ડિવાઇસ</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8702825062053163569">તમારું <ph name="DEVICE_TYPE" /> લૉક હતું.</translation>
 <translation id="8703346390800944767">જાહેરાત છોડો</translation>
-<translation id="8705331520020532516">શૃંખલા ક્રમાંક</translation>
+<translation id="8705331520020532516">અનુક્રમ નંબર</translation>
 <translation id="8705580154597116082">ફોન દ્વારા વાઇ-ફાઇ ઉપલબ્ધ</translation>
 <translation id="8705629851992224300">તમારી સુરક્ષા કી વાંચી શકાઈ નથી</translation>
 <translation id="8708000541097332489">બહાર નીકળવા પર સાફ કરો</translation>
@@ -7394,7 +7384,6 @@ USB ડિવાઇસ</translation>
 <translation id="975893173032473675">જેમાં અનુવાદ કરવો છે તે ભાષા</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> માટે ઑટોમૅટિક રીતે સુધારણાનો છેલ્લો ફેરફાર રદ કરવાનો સંવાદ બતાવવામાં આવ્યો અને તેને સુધારીને <ph name="CORRECTED_WORD" /> કર્યો.  ઍક્સેસ કરવા માટે ઉપર એરો કી દબાવો અથવા છોડી દેવા માટે Escape કી દબાવો.</translation>
 <translation id="978146274692397928">પ્રારંભિક વિરામચિહ્નની પહોળાઈ પૂર્ણ છે</translation>
-<translation id="97883469867914488">તમારા ડિવાઇસ પર આ પ્રકારની ફાઇલો ખોલવાથી વેબ ઍપને બ્લૉક કરો</translation>
 <translation id="97905529126098460">રદ કરવાની પ્રક્રિયા પૂરી થાય પછી આ વિંડો બંધ થશે.</translation>
 <translation id="980731642137034229">ક્રિયા મેનૂ બટન</translation>
 <translation id="981121421437150478">ઑફલાઇન</translation>

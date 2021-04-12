@@ -189,6 +189,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2921219216347069551">Gagal Berbagi Halaman</translation>
 <translation id="2923448633003185837">Tempel dan Buka</translation>
 <translation id="292639812446257861">Tandai Belum Dibaca</translation>
+<translation id="2932085390869194046">Sarankan Sandi...</translation>
 <translation id="2952581218264071393">1. Buka Setelan Chrome</translation>
 <translation id="2958718410589002129">Sandi</translation>
 <translation id="2964349545761222050">Blokir Cookie Pihak Ketiga</translation>
@@ -422,6 +423,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5489208564673669003">Untuk mengelola cookie semua situs, lihat <ph name="BEGIN_LINK" />Setelan Cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokir Semua Cookie (Tidak Direkomendasikan)</translation>
 <translation id="5508435575041083207">Logout dan Hapus Data dari Perangkat ini</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> j lalu</translation>
 <translation id="5525269841082836315">Buat Frasa Sandi</translation>
 <translation id="5548760955356983418">Handoff memungkinkan Anda memulai penjelajahan situs web pada perangkat ini dan melanjutkan di Mac dengan mudah. Situs web yang saat ini terbuka akan muncul di Dock pada Mac Anda.
 
@@ -759,7 +761,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8806823403540278281">Organisasi mengharuskan Anda menjelajah secara pribadi. Tab tidak disimpan dalam mode Samaran.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmark</translation>
-<translation id="8823704566850948458">Sarankan sandi...</translation>
 <translation id="8840513115188359703">Anda tidak akan keluar dari Akun Google.</translation>
 <translation id="8870413625673593573">Baru Saja Ditutup</translation>
 <translation id="8881801611828450202">Telusuri Gambar Ini di <ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9152539721251340337">Buat Kode QR</translation>
 <translation id="9157836665414082580">Sembunyikan Dialog</translation>
 <translation id="9188680907066685419">Keluar dari akun terkelola</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> h lalu</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Laporan kerusakan terkirim.</translation>
 <translation id="952704832371081537">Batal</translation>

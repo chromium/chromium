@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> rekomandon që ta përditësosh këtë pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Sistemi nuk arriti të përcaktonte modelin e pajisjes ose numrin e serisë.</translation>
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
-<translation id="111959947408687873">Përdor Ctrl+<ph name="SEARCH_KEY_NAME" />+M për të aktivizuar ose çaktivizuar zmadhuesin e ekranit të plotë. Përdor Ctrl+Alt+Tastet e shigjetave për të lëvizur nëpër ekran kur e ke zmadhuar atë.</translation>
 <translation id="1122068467107743258">Puna</translation>
 <translation id="1122198203221319518">&amp;Veglat</translation>
 <translation id="1122242684574577509">Vërtetimi dështoi. Kliko për të vizituar faqen e identifikimit për rrjetin Wi-Fi që po përdor (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Kjo kornizë u bllokua, sepse përmban përmbajtje të pasigurt.</translation>
 <translation id="146219525117638703">Gjendja ONC</translation>
 <translation id="146220085323579959">Interneti u shkëput. Kontrollo lidhjen e internetit dhe provo sërish.</translation>
-<translation id="1463051728820430132">Pyet kur një aplikacion uebi dëshiron të hapë llojet e skedarëve në pajisjen tënde</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> është bllokuar nga "Mbrojtja e përparuar".</translation>
 <translation id="1464044141348608623">Mos i lejo sajtet të dinë kur e përdor pajisjen tënde në mënyrë aktive</translation>
 <translation id="1464258312790801189">Llogaritë e tua</translation>
@@ -1023,6 +1021,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="211144231511833662">Pastro llojet</translation>
 <translation id="2111670510994270194">Skedë e re djathtas</translation>
 <translation id="2111810003053064883">Reklamuesit mund të studiojnë efikasitetin e reklamave në një mënyrë të tillë që nuk të gjurmon nëpër sajte.</translation>
+<translation id="2112554630428445878">Mirë se erdhe, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Gozhdimi i skedës</translation>
 <translation id="2113479184312716848">Hap &amp;skedarin...</translation>
 <translation id="2113921862428609753">Qasja tek informacionet e autoritetit</translation>
@@ -1088,7 +1087,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2163470535490402084">Lidhu në internet për t'u futur te pajisja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dhe 1 çelës tjetër</translation>
 <translation id="2165421703844373933">Hap "Asistentin" kur thua "Ok Google". Për të kursyer bateri, zgjidh "Aktive (Rekomandohet)". "Asistenti" yt do të përgjigjet vetëm kur pajisja jote të jetë e lidhur ose në karikim.</translation>
-<translation id="2166269335975661317">Aplikacionet e uebit mund të kërkojnë të hapin llojet e skedarëve nga pajisja jote</translation>
 <translation id="2166369534954157698">Zhapiku i gjelbër njomzak nga shporta e vjetër prej xunkthi u hodh si rrufe në qiell të pastër, pranë ca druve të çarë e xhamave të thyer</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Identifikohu gjithsesi</translation>
@@ -1967,7 +1965,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="313205617302240621">E harrove fjalëkalimin?</translation>
 <translation id="3132277757485842847">Nuk ishim në gjendje të ruanim një lidhje me telefonin tënd. Sigurohu që telefoni yt të jetë pranë, i shkyçur dhe të ketë të aktivizuar Bluetooth-in dhe Wi-Fi.</translation>
 <translation id="3132996321662585180">Rifresko çdo ditë</translation>
-<translation id="3134393957315651797">Zgjidh gjendjen e eksperimentit për eksperimentin <ph name="EXPERIMENT_NAME" />. Përshkrimi i eksperimentit: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Kodi PIN i pavlefshëm Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="313963229645891001">Po shkarkon, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatari i parazgjedhur i verdhë</translation>
@@ -2640,6 +2637,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3881478300875776315">Shfaq më pak rreshta</translation>
 <translation id="3882165008614329320">Video ekzistuese nga kamera ose skedari</translation>
 <translation id="3884152383786131369">Përmbajtja e uebit që ofrohet në shumë gjuhë do të përdorë gjuhën e parë të mbështetur nga kjo listë. Këto preferenca sinkronizohen me cilësimet e shfletuesit tënd. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Përditësimet menaxhohen nga administratori yt</translation>
 <translation id="3886446263141354045">Kërkesa jote për qasje te ky sajt është dërguar te <ph name="NAME" />.</translation>
 <translation id="3888550877729210209">Marrja e shënimeve me <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Këto informacione na ndihmojnë të kuptojmë më mirë problemin tënd me "Asistentin". Ato ruhen për deri në 90 ditë dhe qasja është e kufizuar vetëm për ekipet përkatëse teknike dhe të komenteve.</translation>
@@ -4461,7 +4459,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5990266201903445068">Vetëm Wi-Fi</translation>
 <translation id="5990386583461751448">Përkthyer</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Për t'u siguruar që mund të vazhdosh të shfletosh në ueb, kërkoji administratorit ta heqë këtë aplikacion.}other{Për t'u siguruar që mund të vazhdosh të shfletosh në ueb, kërkoji administratorit t'i heqë këto aplikacione.}}</translation>
-<translation id="5992175324932183568">Mos lejo që aplikacionet e uebit të hapin llojet e skedarëve nga pajisja jote</translation>
 <translation id="5997337190805127100">Mëso më shumë për qasjen te sajti</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Zhvendose grupin në dritaren e re</translation>
@@ -4583,7 +4580,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6124213551517593835">Kjo do të pastrojë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="SITE_GROUP_NAME" /> dhe çdo sajt në të</translation>
 <translation id="6124650939968185064">Shtesat vijuese varen nga kjo shtesë:</translation>
 <translation id="6124698108608891449">Ky sajt ka nevojë për më shumë autorizime.</translation>
-<translation id="6125442051901189730">Asnjë profil i disponueshëm karte SIM. Konfiguro një profil të ri <ph name="BEGIN_LINK" />këtu.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Fatkeqësisht, do të duhet të shtosh përsëri llogarinë tënde në këtë pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Të dhënat e zgjedhura janë hequr nga Chrome dhe nga pajisjet e sinkronizuara. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit, si kërkimet dhe aktivitetet nga shërbimet e tjera të Google, në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Komenti i certifikatës së Netscape</translation>
@@ -6397,7 +6393,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8147900440966275470">U gjet <ph name="NUM" /> skedë</translation>
 <translation id="8148760431881541277">Kufizo identifikimin</translation>
 <translation id="8149564499626272569">Verifikoje përmes telefonit me një kabllo USB</translation>
-<translation id="8150259863378108853">Lacros është një shfletues eksperimental. Raporto çdo problem me Ndihma &gt; "Raporto një problem..."</translation>
 <translation id="8151638057146502721">Konfiguro</translation>
 <translation id="8154790740888707867">Asnjë skedar</translation>
 <translation id="815491593104042026">Gabim! Vërtetimi dështoi, sepse ishte i konfiguruar të përdorte një URL jo të sigurt (<ph name="BLOCKED_URL" />). Kontakto me administratorin tënd.</translation>
@@ -6582,8 +6577,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8368859634510605990">&amp;Hapi të gjithë faqeshënuesit</translation>
 <translation id="8370294614544004647">Në gjumë kur mbyllet laptopi</translation>
 <translation id="8371695176452482769">Fol tani</translation>
-<translation id="8371749822919332187">Përdor Ctrl+Alt+Rrit ndriçimin për ta zmadhuar.
-Përdor Ctrl+Alt+Ul ndriçimin për ta zvogëluar.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Çaktivizo zërin e sajtit}other{Çaktivizo zërin e sajteve}}</translation>
 <translation id="8372369524088641025">Çelës WEP i gabuar</translation>
 <translation id="8373652277231415614">Direktoritë e ndara të Crostini</translation>
@@ -6608,7 +6601,6 @@ Përdor Ctrl+Alt+Ul ndriçimin për ta zvogëluar.</translation>
 <translation id="8398877366907290961">Vazhdo gjithsesi</translation>
 <translation id="8400146488506985033">Menaxho kontaktet</translation>
 <translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde smart.</translation>
-<translation id="8403562727702715619">Së fundi nga "Disku i Google"</translation>
 <translation id="8405046151008197676">Merr pikat kryesore nga përditësimi i fundit</translation>
 <translation id="8407199357649073301">Niveli i identifikimit:</translation>
 <translation id="8408068190360279472">Rrjeti <ph name="NETWORK_TYPE" />, po lidhet</translation>
@@ -7193,7 +7185,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9041692268811217999">Qasja në skedarët lokalë në kompjuterin tënd është çaktivizuar nga administratori yt</translation>
 <translation id="904224458472510106">Ky operacion nuk mund të zhbëhet</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>
-<translation id="904451693890288097">Fut kodin për "<ph name="DEVICE_NAME" />":</translation>
+<translation id="904451693890288097">Fut çelësin e kalimit për "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Dështoi lidhja me rrjetin: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Dërgon adresat e uebit në faqen që po përpiqesh të arrish në Google</translation>
 <translation id="9046895021617826162">Lidhja dështoi</translation>
@@ -7230,7 +7222,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9087949559523851360">Shto përdorues të kufizuar</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> është bllokuar nga politika e ndërmarrjes</translation>
 <translation id="9088446193279799727">Linux nuk mund të konfigurohej. Lidhu me internetin dhe provo përsëri.</translation>
-<translation id="9088917181875854783">Konfirmo që ky kod shfaqet në "<ph name="DEVICE_NAME" />":</translation>
+<translation id="9088917181875854783">Konfirmo që ky çelës kalimi shfaqet në "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Metodat e hyrjes</translation>
 <translation id="9090044809052745245">Si u shfaqet të tjerëve pajisja jote</translation>
 <translation id="9094033019050270033">Përditëso fjalëkalimin</translation>
@@ -7395,7 +7387,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="975893173032473675">Gjuha në të cilën do të përkthehet</translation>
 <translation id="976499800099896273">Dialogu i zhbërjes së korrigjimit automatik shfaqet për <ph name="TYPED_WORD" /> të korrigjuar në <ph name="CORRECTED_WORD" />.  Shtyp shigjetën lart për t'iu qasur, Escape për ta shpërfillur.</translation>
 <translation id="978146274692397928">Gjerësia fillestare e pikësimit është e plotë</translation>
-<translation id="97883469867914488">Blloko aplikacionet e uebit që të mos hapin llojet e skedarëve në pajisjen tënde</translation>
 <translation id="97905529126098460">Kjo dritare do të mbyllet pas përfundimit të anulimit.</translation>
 <translation id="980731642137034229">Butoni i menysë së veprimeve</translation>
 <translation id="981121421437150478">Jashtë linje</translation>

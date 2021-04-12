@@ -189,6 +189,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2921219216347069551">Ekki er hægt að deila síðu</translation>
 <translation id="2923448633003185837">Líma og opna</translation>
 <translation id="292639812446257861">Merkja sem ólesið</translation>
+<translation id="2932085390869194046">Tillaga að aðgangsorði...</translation>
 <translation id="2952581218264071393">1. Opnaðu stillingar Chrome</translation>
 <translation id="2958718410589002129">Aðgangsorð</translation>
 <translation id="2964349545761222050">Loka á fótspor frá þriðja aðila</translation>
@@ -214,6 +215,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 
 Þegar huliðsgluggi er notaður geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar.</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
+<translation id="3222343486469566063">Ekki innskráð(ur)</translation>
 <translation id="3224641773458703735">Til að flytja út aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
 <translation id="3240426699337459095">Tengill afritaður</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -421,6 +423,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5489208564673669003">Fyrir upplýsingar um stjórnun fótspora fyrir öll vefsvæði, sjá <ph name="BEGIN_LINK" />Fótsporastillingar<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Loka á öll fótspor (ekki mælt með)</translation>
 <translation id="5508435575041083207">Skrá út og hreinsa gögn úr þessu tæki</translation>
+<translation id="5513681519188741830">Fyrir <ph name="TIME" /> klst.</translation>
 <translation id="5525269841082836315">Búa til aðgangsorð</translation>
 <translation id="5548760955356983418">Handoff gerir þér kleift að byrja að skoða vefsvæði í þessu tæki og halda því síðan áfram á einfaldan hátt í Mac-tölvunni. Vefsvæðið sem er opið birtist í kvínni í Mac-tölvunni.
 
@@ -758,7 +761,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8806823403540278281">Fyrirtækið þitt krefst þess að þú vafrir í huliðsstillingu. Flipar eru ekki vistaðir í huliðsstillingu.
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bókamerki</translation>
-<translation id="8823704566850948458">Tillaga að aðgangsorði...</translation>
 <translation id="8840513115188359703">Þú verður ekki skráð(ur) út af Google reikningnum þínum.</translation>
 <translation id="8870413625673593573">Nýlega lokað</translation>
 <translation id="8881801611828450202">Leita að þessari mynd á <ph name="SEARCH_ENGINE" /></translation>
@@ -786,6 +788,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9152539721251340337">Búa til QR-kóða</translation>
 <translation id="9157836665414082580">Hindra nýja glugga</translation>
 <translation id="9188680907066685419">Skrá út af stýrðum reikningi</translation>
+<translation id="9200875785104711666">fyrir <ph name="TIME" /> dögum</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Hrunskýrsla send.</translation>
 <translation id="952704832371081537">Hætta við</translation>

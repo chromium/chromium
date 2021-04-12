@@ -4,6 +4,7 @@
 <translation id="1175958423215084756">Link registreret. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galleribilleder</translation>
 <translation id="1430915738399379752">Udskriv</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> er frakoblet.</translation>
 <translation id="1473110567575736769">Timer på 3 sekunder</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4x4</translation>
@@ -24,6 +25,7 @@
 <translation id="2501953888035679275">Tag billeder, og optag videoer med dit kamera.</translation>
 <translation id="2549985041256363841">Start optagelse</translation>
 <translation id="2599796128805996109">Bagsidekamera</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> er tilsluttet.</translation>
 <translation id="2912439424121107408">Eksperttilstand understøttes ikke på denne enhed</translation>
 <translation id="2968794441791257519">Billeder og videoer, der er taget med kameraet, flyttes til mappen Downloads. Du kan få adgang til dem i Filer.
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1003222766972176318">Recordatorio: Hay disponible una oferta guardada</translation>
 <translation id="1008557486741366299">Ahora no</translation>
 <translation id="100957008357583611">¿Deseas usar tu ubicación?</translation>
 <translation id="1010200102790553230">Cargar la página más tarde</translation>
@@ -250,6 +251,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Hoja de inicio</translation>
 <translation id="1812527064848182527">horizontal</translation>
+<translation id="1814698615734239189">Esta app está diseñada para dispositivos móviles. Se está ejecutando en modo de compatibilidad. Si permites que se cambie su tamaño, podría tener problemas, por ejemplo, que se reinicie.</translation>
 <translation id="1821930232296380041">Solicitud o parámetros de solicitud no válidos</translation>
 <translation id="1822540298136254167">Los sitios web que visitas y el tiempo que pasas en ellos</translation>
 <translation id="1826516787628120939">Comprobando</translation>
@@ -270,7 +272,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1914326953223720820">Servicio de descompresión</translation>
 <translation id="1915697529809968049">¿Deseas usar Touch ID en lugar de CVC?</translation>
 <translation id="1916770123977586577">Para aplicar la configuración actualizada en este sitio, vuelve a cargar la página</translation>
-<translation id="1917876262703816781">Tu contraseña quedó expuesta debido a una violación de la seguridad de los datos que se produjo en un sitio o app. Chrome te recomienda cambiar ahora la contraseña que usas en <ph name="ORIGIN" />.</translation>
 <translation id="1919345977826869612">Anuncios</translation>
 <translation id="1919367280705858090">Cómo obtener ayuda con un mensaje de error específico</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ninguno}=1{1 sitio}other{# sitios}}</translation>
@@ -597,6 +598,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3268451620468152448">Pestañas abiertas</translation>
 <translation id="3270847123878663523">&amp;Deshacer Reorganizar</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3282085321714087552">Tu organización, <ph name="ENROLLMENT_DOMAIN" />, envió parte de la información, como la configuración o las políticas, a los siguientes sitios web.</translation>
 <translation id="3282497668470633863">Agregar el nombre en la tarjeta</translation>
 <translation id="3286372614333682499">vertical</translation>
 <translation id="3287510313208355388">Descargar cuando haya conexión</translation>
@@ -907,7 +909,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4358461427845829800">Administrar formas de pago…</translation>
 <translation id="4359160567981085931">Ingresaste tu contraseña en un sitio engañoso. Chrome puede ayudarte. Para cambiar la contraseña y notificar a Google que tu cuenta podría estar en riesgo, haz clic en Proteger cuenta.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{La contraseña que guardaste para <ph name="ORIGIN" /> quedó expuesta debido a una violación de la seguridad de los datos que se produjo en un sitio o app. Chrome te recomienda cambiar ahora la contraseña que usas en <ph name="ORIGIN" />.}=1{La contraseña que guardaste para <ph name="ORIGIN" /> y un sitio más quedó expuesta debido a una violación de la seguridad de los datos que se produjo en un sitio o app. Chrome te recomienda revisar ahora en forma automática las contraseñas que tengas guardadas.}other{La contraseña que guardaste para <ph name="ORIGIN" /> y <ph name="SITES_COUNT" /> sitios más quedó expuesta debido a una violación de la seguridad de los datos que se produjo en un sitio o app. Chrome te recomienda revisar ahora en forma automática las contraseñas que tengas guardadas.}}</translation>
 <translation id="437058704415269440">Saldo de cuenta</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
@@ -925,6 +926,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4434045419905280838">Ventanas emergentes y redireccionamientos</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Se inhabilitó el uso de un proxy, pero se especificó una configuración explícita de proxy.</translation>
+<translation id="4464826014807964867">Sitios web con información de tu organización</translation>
 <translation id="4466881336512663640">Se perderán los cambios del formulario. ¿Confirmas que deseas continuar?</translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Se desactivó la función Autocompletar.</translation>
 <translation id="4477350412780666475">Siguiente pista</translation>
@@ -1147,7 +1149,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5287456746628258573">Este sitio usa una configuración de seguridad obsoleta. Si envías información (p. ej., contraseñas o números de tarjetas de crédito) a este sitio, es posible que quede expuesta.</translation>
 <translation id="5288108484102287882">La validación de los valores de la política generó advertencias</translation>
 <translation id="5289384342738547352">Control de varios documentos</translation>
-<translation id="5295292838686006428">Tu contraseña quedó expuesta debido a una violación de la seguridad de los datos que se produjo en un sitio o app. Chrome te recomienda revisar ahora las contraseñas que tengas guardadas.</translation>
 <translation id="5299298092464848405">Error al analizar la política</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">Ambas hojas</translation>
@@ -1687,7 +1688,6 @@ Detalles adicionales:
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7481312909269577407">Reenviar</translation>
 <translation id="7485870689360869515">No se encontró ningún dato.</translation>
-<translation id="7495290002932347110">Tu contraseña quedó expuesta debido a una violación de la seguridad de los datos que se produjo en un sitio o app. Chrome te recomienda revisar las contraseñas que tengas guardadas y cambiar la que usas en <ph name="ORIGIN" /> ahora.</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Comunícate con el propietario del sitio para solucionar el problema.</translation>
 <translation id="7498234416455752244">Seguir editando</translation>
 <translation id="7503664977220660814">Ingresaste tu contraseña en un sitio engañoso. Chromium te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y otros sitios donde uses esta contraseña.</translation>
@@ -1874,6 +1874,7 @@ Detalles adicionales:
 <translation id="8157295877370077682">Salir del sitio</translation>
 <translation id="8163866351304776260">Perforación cuádruple a la izquierda</translation>
 <translation id="8175796834047840627">Como accediste a tu cuenta, Chrome te ofrece guardar tus tarjetas en tu Cuenta de Google. Puedes modificar este comportamiento en la configuración.</translation>
+<translation id="8176440868214972690">El administrador de este dispositivo envió parte de la información, como la configuración o las políticas, a los siguientes sitios web.</translation>
 <translation id="8184538546369750125">Usar configuración global predeterminada (Permitir)</translation>
 <translation id="8194797478851900357">&amp;Deshacer Mover</translation>
 <translation id="8201077131113104583">URL de actualización no válida para la extensión con ID "<ph name="EXTENSION_ID" />"</translation>
@@ -1888,6 +1889,7 @@ Detalles adicionales:
 <translation id="8225771182978767009">La persona que configuró esta computadora decidió bloquear este sitio.</translation>
 <translation id="8228419419708659934">Vista de dos páginas</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230159728600632642">No volver a preguntarme sobre esta app</translation>
 <translation id="8232343881378637145">Temperatura de la plataforma</translation>
 <translation id="8238581221633243064">Abre la página en una nueva pestaña de incógnito.</translation>
 <translation id="8241707690549784388">La página que buscas ha utilizado la información que has especificado. Volver a la página podría provocar la repetición de alguna acción. ¿Deseas continuar?</translation>
@@ -2042,6 +2044,7 @@ Detalles adicionales:
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8805819170075074995">Entrada de lista "<ph name="LANGUAGE_ID" />": Se ignorará la entrada porque también se incluye en la política SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Cortar después de cada página</translation>
+<translation id="881292005876822445">¿Deseas habilitar la maximización?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para actualizar Chrome desde la configuración del navegador</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="883848425547221593">Otros favoritos</translation>

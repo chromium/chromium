@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">Chromium bruker mikrofonen din.</translation>
 <translation id="3155163173539279776">Start Chromium på nytt</translation>
 <translation id="3179665906251668410">Åpne linken i et inkognitovindu i Chromium</translation>
+<translation id="3185330573522821672">Tilpass den nye Chromium-profilen din</translation>
 <translation id="3190315855212034486">Chromium har krasjet. Vil du starte den på nytt nå?</translation>
 <translation id="3229526316128325841">Chromium forsøker å eksportere passordene dine.</translation>
 <translation id="3258596308407688501">Chromium kan ikke lese og skrive til egen datakatalog:
@@ -74,6 +75,7 @@
 <translation id="3430503420100763906">Med Chromium-profiler kan du holde alle Chromium-tingene dine atskilt. Opprett profiler for venner og familie, eller skill mellom arbeid og fritid.</translation>
 <translation id="347328004046849135">Chromium varsler deg når du logger på med passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="3474745554856756813">Dette sletter <ph name="ITEMS_COUNT" /> elementer fra denne enheten. For å hente dataene dine igjen senere må du logge på Chromium som <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931">Bruk <ph name="SHORTCUT" /> til å bytte mellom Chromium-profiler</translation>
 <translation id="3509308970982693815">Lukk alle Chromium-vinduer og prøv på nytt.</translation>
 <translation id="3575459661164320785">Det finnes skadelig programvare på datamaskinen din. Chromium kan fjerne den, gjenopprette innstillingene dine og deaktivere utvidelser for å få nettleseren til å fungere som normalt igjen.</translation>
 <translation id="3639635944603682591">Denne personens nettlesingsdata slettes fra denne enheten. For å gjenopprette dataene, logg på Chromium som <ph name="USER_EMAIL" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="6120345080069858279">Chromium lagrer dette passordet i Google-kontoen din, så du trenger ikke å huske det.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> er farlig, så Chromium har blokkert den.</translation>
 <translation id="6134968993075716475">Safe Browsing er slått av. Chromium anbefaler at du slår det på.</translation>
+<translation id="6145820983052037069">Du kan bytte mellom Chromium-profiler her</translation>
 <translation id="6183079672144801177">Sørg for at du er logget på Chromium på <ph name="TARGET_DEVICE_NAME" />, og prøv å sende på nytt.</translation>
 <translation id="6212496753309875659">Denne datamaskinen har allerede en nyere versjon av Chromium. Hvis programvaren ikke fungerer, må du avinstallere Chromium og prøve på nytt.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium startes på nytt nå}=1{Chromium startes på nytt om 1 sekund}other{Chromium startes på nytt om # sekunder}}</translation>

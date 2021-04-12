@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">പേജ് പങ്കിടാൻ കഴിയില്ല</translation>
 <translation id="2923448633003185837">ഒട്ടിച്ചാൽ മാത്രം മതി</translation>
 <translation id="292639812446257861">വായിക്കാത്തതായി അടയാളപ്പെടുത്തുക</translation>
+<translation id="2932085390869194046">പാസ്‌വേഡ് നിർദ്ദേശിക്കുക...</translation>
 <translation id="2952581218264071393">1. Chrome ക്രമീകരണം തുറക്കുക</translation>
 <translation id="2958718410589002129">പാസ്‌വേഡുകൾ</translation>
 <translation id="2964349545761222050">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">എല്ലാ സൈറ്റുകൾക്കുമുള്ള കുക്കികൾ മാനേജ് ചെയ്യാൻ, <ph name="BEGIN_LINK" />കുക്കി ക്രമീകരണം<ph name="END_LINK" /> കാണുക.</translation>
 <translation id="5490005495580364134">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="5508435575041083207">ഈ ഉപകരണം സൈൻ ഔട്ട് ചെയ്ത് അതിലെ ഡാറ്റ മായ്ക്കുക</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> മണിക്കൂർ മുമ്പ്</translation>
 <translation id="5525269841082836315">പാസ്‌ഫ്രെയ്‌സ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="5548760955356983418">ഈ ഉപകരണത്തിൽ ഒരു വെബ്‌സൈറ്റ് ബ്രൗസ് ചെയ്യാൻ ആരംഭിച്ചതിനുശേഷം Mac-ൽ എളുപ്പത്തിൽ തുടരാൻ 'ഹാൻഡ്ഓഫ്' അനുവദിക്കുന്നു. നിലവിൽ തുറന്ന വെബ്‌സൈറ്റ് നിങ്ങളുടെ Mac-ന്റെ ഡോക്കിൽ ദൃശ്യമാകും.
 
@@ -759,7 +761,6 @@
 <translation id="8806823403540278281">സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ നിങ്ങളുടെ സ്ഥാപനം ആവശ്യപ്പെടുന്നു. അദൃശ്യ മോഡിൽ ടാബുകൾ സംരക്ഷിച്ചിട്ടില്ല.
 <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmarks</translation>
-<translation id="8823704566850948458">പാസ്‌വേഡ് നിർദ്ദേശിക്കുക...</translation>
 <translation id="8840513115188359703">നിങ്ങൾ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ആകില്ല.</translation>
 <translation id="8870413625673593573">സമീപകാലത്ത് അടച്ചവ</translation>
 <translation id="8881801611828450202">ഈ ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">QR കോഡ് സൃഷ്ടിക്കുക</translation>
 <translation id="9157836665414082580">ഡയലോഗുകൾ നിയന്ത്രിക്കുക</translation>
 <translation id="9188680907066685419">മാനേജ് ചെയ്‌ത അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> ദിവസം മുമ്പ്</translation>
 <translation id="9203116392574189331">ഹാൻഡ്ഓഫ്</translation>
 <translation id="9223358826628549784">ക്രാഷ് റിപ്പോർട്ട് അയച്ചു.</translation>
 <translation id="952704832371081537">റദ്ദാക്കുക</translation>

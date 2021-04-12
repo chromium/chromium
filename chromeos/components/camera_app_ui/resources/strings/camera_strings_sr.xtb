@@ -4,6 +4,7 @@
 <translation id="1175958423215084756">Линк је откривен. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Слике у галерији</translation>
 <translation id="1430915738399379752">Штампај</translation>
+<translation id="1467231725790366244">Камера <ph name="CAMERA" /> је искључена.</translation>
 <translation id="1473110567575736769">Тајмер за 3 секунде</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4×4</translation>
@@ -24,6 +25,7 @@
 <translation id="2501953888035679275">Снимајте слике и видео снимке помоћу камере.</translation>
 <translation id="2549985041256363841">Започни снимање</translation>
 <translation id="2599796128805996109">Задња камера</translation>
+<translation id="2879583609344924966">Камера <ph name="CAMERA" /> је прикључена.</translation>
 <translation id="2912439424121107408">Режим за стручњаке није подржан на овом уређају</translation>
 <translation id="2968794441791257519">Слике и видео снимци који су снимљени помоћу камере ће се преместити у директоријум Преузимања. Можете да им приступите у Датотекама.
 

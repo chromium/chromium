@@ -238,7 +238,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2534155362429831547">Elemente șterse: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2536728043171574184">Se afișează o versiune offline a acestei pagini</translation>
 <translation id="2546283357679194313">Cookie-uri și date privind site-ul</translation>
-<translation id="2549341709325358884">Numai prin Wi-Fi și date mobile</translation>
 <translation id="2561519700418191927">Previzualizările videoclipului</translation>
 <translation id="2567385386134582609">IMAGINE</translation>
 <translation id="2571711316400087311">Oferă trimiterea paginilor în alte limbi la Google Traducere</translation>
@@ -752,6 +751,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5982307838673692400">Deschide o filă incognito</translation>
 <translation id="6000066717592683814">Păstrează Google</translation>
 <translation id="6000203700195075278">Urmărește din nou</translation>
+<translation id="6002623704405939939">Pentru a șterge istoricul <ph name="BEGIN_LINK1" />căutărilor<ph name="END_LINK1" /> sau alte tipuri de istoric, accesează <ph name="BEGIN_LINK2" />Activitatea mea de pe Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Parola sugerată</translation>
 <translation id="6036057147555329831">ICU suplimentar</translation>
 <translation id="6039379616847168523">Accesează fila următoare</translation>
@@ -925,6 +925,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="7088681679121566888">Chrome este actualizat</translation>
 <translation id="7106762743910369165">Browserul este gestionat de organizația ta</translation>
 <translation id="7121362699166175603">Șterge istoricul și completările automate din bara de adrese. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="7134993907760847334">Șterge istoricul de pe toate dispozitivele conectate.</translation>
 <translation id="7138678301420049075">Altele</translation>
 <translation id="7146622961999026732">Următoarele site-uri și aplicații par importante pentru tine:</translation>
 <translation id="7149893636342594995">Ultimele 24 de ore</translation>

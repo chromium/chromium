@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1003222766972176318">Peringatan: tawaran yang disimpan tersedia</translation>
 <translation id="1008557486741366299">Bukan Sekarang</translation>
 <translation id="100957008357583611">Gunakan lokasi anda?</translation>
 <translation id="1010200102790553230">Muatkan halaman kemudian</translation>
@@ -254,6 +255,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1807528111851433570">Helaian permulaan</translation>
 <translation id="1812527064848182527">landskap</translation>
+<translation id="1814698615734239189">Apl ini direka bentuk untuk peranti mudah alih. Apl ini dijalankan dalam mod keserasian. Jika pengubahan saiz dibenarkan, isu mungkin berlaku termasuk pemulaan semula apl.</translation>
 <translation id="1821930232296380041">Permintaan atau parameter permintaan tidak sah</translation>
 <translation id="1822540298136254167">Tapak web yang anda lawati dan tempoh anda melayarinya</translation>
 <translation id="1826516787628120939">Menyemak</translation>
@@ -274,7 +276,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1914326953223720820">Perkhidmatan Nyahzip</translation>
 <translation id="1915697529809968049">Gunakan Touch ID dan bukan CVC?</translation>
 <translation id="1916770123977586577">Untuk menerapkan tetapan anda yang dikemas kini pada tapak ini, muatkan semula halaman ini</translation>
-<translation id="1917876262703816781">Pelanggaran data pada tapak atau apl mendedahkan kata laluan anda. Chrome mengesyorkan supaya anda menukar kata laluan pada <ph name="ORIGIN" /> sekarang.</translation>
 <translation id="1919345977826869612">Iklan</translation>
 <translation id="1919367280705858090">Dapatkan bantuan berkaitan mesej ralat tertentu</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Tiada}=1{1 tapak}other{# tapak}}</translation>
@@ -602,6 +603,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3268451620468152448">Tab Terbuka</translation>
 <translation id="3270847123878663523">&amp;Buat asal Susun semula</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3282085321714087552">Organisasi anda, <ph name="ENROLLMENT_DOMAIN" />, telah menghantar beberapa maklumat, seperti tetapan atau dasar ke laman web berikut.</translation>
 <translation id="3282497668470633863">Tambahkan nama pada kad</translation>
 <translation id="3286372614333682499">potret</translation>
 <translation id="3287510313208355388">Muat turun semasa dalam talian</translation>
@@ -918,7 +920,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4358461427845829800">Urus kaedah pembayaran...</translation>
 <translation id="4359160567981085931">Anda baru sahaja memasukkan kata laluan anda pada tapak yang menipu. Chrome boleh membantu. Untuk menukar kata laluan anda dan memaklumi Google bahawa akaun anda mungkin berisiko, klik Lindungi Akaun.</translation>
 <translation id="4367563149485757821">Number-12 (Sampul Surat)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Pelanggaran data pada tapak atau apl mendedahkan kata laluan anda yang disimpan untuk <ph name="ORIGIN" />. Chrome mengesyorkan supaya anda menukar kata laluan anda pada <ph name="ORIGIN" /> sekarang.}=1{Pelanggaran data pada tapak atau apl mendedahkan kata laluan anda yang disimpan untuk <ph name="ORIGIN" /> dan satu lagi tapak. Chrome mengesyorkan anda menyemak kata laluan anda yang disimpan sekarang.}other{Pelanggaran data pada tapak atau apl mendedahkan kata laluan anda yang disimpan untuk <ph name="ORIGIN" /> dan <ph name="SITES_COUNT" /> tapak yang lain. Chrome mengesyorkan anda menyemak kata laluan anda yang disimpan sekarang.}}</translation>
 <translation id="437058704415269440">Baki Akaun</translation>
 <translation id="4372516964750095882">Fanfold-AS</translation>
 <translation id="4372948949327679948">Nilai <ph name="VALUE_TYPE" /> yang dijangka.</translation>
@@ -936,6 +937,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4434045419905280838">Tetingkap timbul dan ubah hala</translation>
 <translation id="4435702339979719576">Poskad)</translation>
 <translation id="443673843213245140">Penggunaan proksi dilumpuhkan tetapi konfigurasi proksi yang jelas dinyatakan.</translation>
+<translation id="4464826014807964867">Laman web yang mempunyai maklumat daripada organisasi anda</translation>
 <translation id="4466881336512663640">Perubahan borang akan hilang. Adakah anda pasti mahu meneruskan?</translation>
 <translation id="4476953670630786061">Borang ini tidak selamat. Autolengkap telah dimatikan.</translation>
 <translation id="4477350412780666475">Lagu Seterusnya</translation>
@@ -1158,7 +1160,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5287456746628258573">Tapak ini menggunakan konfigurasi keselamatan yang sudah lapuk, yang mungkin mendedahkan maklumat anda (contohnya, kata laluan atau nombor kad kredit) apabila dihantar ke tapak ini.</translation>
 <translation id="5288108484102287882">Pengesahan nilai dasar telah menimbulkan amaran</translation>
 <translation id="5289384342738547352">Pengendalian berbilang dokumen</translation>
-<translation id="5295292838686006428">Pelanggaran data pada tapak atau apl mendedahkan kata laluan anda. Chrome mengesyorkan anda menyemak kata laluan yang disimpan sekarang.</translation>
 <translation id="5299298092464848405">Ralat semasa menghuraikan dasar</translation>
 <translation id="5300589172476337783">Paparkan</translation>
 <translation id="5306593769196050043">Kedua-dua helaian</translation>
@@ -1698,7 +1699,6 @@ Butiran tambahan:
 <translation id="7473891865547856676">Tidak, Terima Kasih</translation>
 <translation id="7481312909269577407">Majukan</translation>
 <translation id="7485870689360869515">Tiada data dijumpai.</translation>
-<translation id="7495290002932347110">Pelanggaran data pada tapak atau apl mendedahkan kata laluan anda. Chrome mengesyorkan anda menyemak kata laluan yang disimpan dan menukar kata laluan anda pada <ph name="ORIGIN" /> sekarang.</translation>
 <translation id="7495528107193238112">Kandungan ini disekat. Hubungi pemilik tapak untuk menyelesaikan isu ini.</translation>
 <translation id="7498234416455752244">Teruskan mengedit</translation>
 <translation id="7503664977220660814">Anda baru sahaja memasukkan kata laluan pada tapak yang menipu. Chromium mengesyorkan penyemakan kata laluan anda yang disimpan untuk <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dan tapak lain yang menggunakan kata laluan ini sekarang.</translation>
@@ -1885,6 +1885,7 @@ Butiran tambahan:
 <translation id="8157295877370077682">Tinggalkan tapak</translation>
 <translation id="8163866351304776260">Empat tebukan kiri</translation>
 <translation id="8175796834047840627">Chrome menawarkan penyimpanan kad dalam Akaun Google anda kerana anda log masuk. Anda boleh menukar gelagat ini dalam tetapan.</translation>
+<translation id="8176440868214972690">Pentadbir peranti ini telah menghantar beberapa maklumat, seperti tetapan atau dasar ke laman web berikut.</translation>
 <translation id="8184538546369750125">Gunakan lalai global (Benarkan)</translation>
 <translation id="8194797478851900357">&amp;Buat Asal Pindahkan</translation>
 <translation id="8201077131113104583">URL kemas kini tidak sah untuk sambungan dengan ID "<ph name="EXTENSION_ID" />".</translation>
@@ -1899,6 +1900,7 @@ Butiran tambahan:
 <translation id="8225771182978767009">Orang yang menyediakan komputer ini telah memilih untuk menyekat tapak ini.</translation>
 <translation id="8228419419708659934">Paparan dua halaman</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230159728600632642">Jangan tanya saya lagi untuk apl ini</translation>
 <translation id="8232343881378637145">Suhu platform</translation>
 <translation id="8238581221633243064">Buka halaman dalam tab Inkognito baharu</translation>
 <translation id="8241707690549784388">Halaman yang anda cari untuk maklumat terpakai yang anda masukkan. Kembali ke halaman tersebut mungkin menyebabkan mana-mana tindakan yang anda ambil akan diulang. Adakah anda mahu teruskan?</translation>
@@ -2053,6 +2055,7 @@ Butiran tambahan:
 <translation id="8798099450830957504">Lalai</translation>
 <translation id="8805819170075074995">Masukan senarai "<ph name="LANGUAGE_ID" />": Masukan diabaikan kerana masukan ini disertakan dalam dasar SpellcheckLanguage juga.</translation>
 <translation id="8807160976559152894">Pangkas selepas setiap halaman</translation>
+<translation id="881292005876822445">Dayakan Pemaksimuman?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengemas kini Chrome daripada tetapan Chrome anda</translation>
 <translation id="8820817407110198400">Penanda buku</translation>
 <translation id="883848425547221593">Penanda Halaman Lain</translation>

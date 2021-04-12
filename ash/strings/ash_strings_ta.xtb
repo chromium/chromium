@@ -40,6 +40,7 @@
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> இலிருந்து சார்ஜ் செய்யப்படுகிறது</translation>
 <translation id="1255033239764210633">வானிலை எப்படி இருக்கிறது?</translation>
 <translation id="1267032506238418139">ஷார்ட்கட் மாற்றம்</translation>
+<translation id="1269405891096105529">கெஸ்ட் பயன்முறையில் சாதனம் செயல்படாது</translation>
 <translation id="1270290102613614947">ஆன்ஸ்க்ரீன் கீபோர்டு முடக்கப்பட்டது</translation>
 <translation id="1272079795634619415">நிறுத்து</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> மூலம் சார்ஜ் ஆகிறது</translation>
@@ -322,6 +323,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> நிர்வகிக்கப்பட்ட பயனர்</translation>
 <translation id="3665889125180354336">மைக்ரோஃபோன் மூலம் ரெக்கார்டு செய்தல்</translation>
 <translation id="36813544980941320">உங்கள் மொபைல், <ph name="DEVICE_NAME" /> சாதனம் ஆகியவற்றுக்கு இடையே வைஃபை நெட்வொர்க்குகள் பகிரப்படும்</translation>
+<translation id="3702809606464356667">தற்போதைய டெஸ்க்கில் உள்ள சாளரங்களைக் காட்டுகிறது, அனைத்து டெஸ்க்குகளிலும் உள்ள சாளரங்களைக் காட்ட, மேல்நோக்கிய அம்புக்குறி விசையை அழுத்தவும்</translation>
 <translation id="3702846122927433391">நைஜீரியாவின் மக்கள் தொகை</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">ஏற்றுகிறது…</translation>
@@ -630,6 +632,7 @@
 <translation id="6297287540776456956">பகுதியைத் தேர்ந்தெடுக்க, ஸ்டைஸைப் பயன்படுத்தவும்</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> <ph name="ROTATION" /> ஆகச் சுழற்றப்பட்டது</translation>
 <translation id="6315170314923504164">Voice</translation>
+<translation id="6330012934079202188">எல்லா டெஸ்க்குகளிலும் உள்ள சாளரங்களைக் காட்டுகிறது, தற்போதைய டெஸ்க்கில் உள்ள சாளரங்களைக் காட்ட, மேல்நோக்கிய அம்புக்குறி விசையை அழுத்தவும்</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> என்பது நிர்வகிக்கப்பட்ட ஓர் அமர்வாகும், <ph name="MANAGER" /> இதை நிர்வகிக்கிறது</translation>
 <translation id="6376931439017688372">புளூடூத் இயக்கப்பட்டுள்ளது</translation>
 <translation id="6381109794406942707">சாதனத்தைத் திறக்க உங்கள் பின்னை உள்ளிடவும்.</translation>

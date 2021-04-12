@@ -238,7 +238,6 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍‌ ଡିଲିଟ୍‍ ହୋ‍ଇଛି</translation>
 <translation id="2536728043171574184">ଏହି ପୃଷ୍ଠାର ଏକ ଅଫ୍‌ଲାଇନ୍‌ କପି ଦେଖୁଛି</translation>
 <translation id="2546283357679194313">କୁକିସ୍ ଏବଂ ସାଇଟ୍ ଡାଟା</translation>
-<translation id="2549341709325358884">କେବଳ ୱାଇ-ଫାଇ ଏବଂ ମୋବାଇଲ ଡାଟା</translation>
 <translation id="2561519700418191927">ଭିଡିଓ ପ୍ରିଭ୍ୟୁଗୁଡ଼ିକ</translation>
 <translation id="2567385386134582609">ଛବି</translation>
 <translation id="2571711316400087311">ଅନ୍ୟ ଭାଷାରେ ଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ Google Translateକୁ ପଠାଇବା ପାଇଁ ଅଫର୍ କରନ୍ତୁ</translation>
@@ -752,6 +751,7 @@
 <translation id="5982307838673692400">ଏକ ଇନକଗ୍ନିଟୋ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="6000066717592683814">Googleକୁ ଡିଫଲ୍ଟ ଭାବେ ରଖନ୍ତୁ</translation>
 <translation id="6000203700195075278">ପୁଣି ଅନୁସରଣ କରନ୍ତୁ</translation>
+<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />ସନ୍ଧାନ<ph name="END_LINK1" /> କିମ୍ବା ଅନ୍ୟ ଫର୍ମର ଇତିହାସଗୁଡ଼ିକୁ ଖାଲି କରିବା ପାଇଁ, <ph name="BEGIN_LINK2" />ମୋ Google କାର୍ଯ୍ୟକଳାପ<ph name="END_LINK2" />କୁ ଭିଜିଟ୍ କରନ୍ତୁ</translation>
 <translation id="6005538289190791541">ପ୍ରସ୍ତାବିତ ପାସ୍‌ୱାର୍ଡ</translation>
 <translation id="6036057147555329831">ଅତିରିକ୍ତ ICU</translation>
 <translation id="6039379616847168523">ପରବର୍ତ୍ତୀ ଟାବ୍‌କୁ ଯାଆନ୍ତୁ</translation>
@@ -925,6 +925,7 @@
 <translation id="7088681679121566888">Chrome ଅପ୍ ଟୁ ଡେଟ୍ ଅଛି</translation>
 <translation id="7106762743910369165">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଆପଣଙ୍କର ବ୍ରାଉଜର୍ ପରିଚାଳିତ ହୋଇଥାଏ</translation>
 <translation id="7121362699166175603">ଠିକଣା ବାର୍‍‍ରେ ଥିବା ଇତିବୃତ୍ତି ଓ ସ୍ୱତଃପୂରଣଗୁଡ଼ିକୁ ଖାଲି କରେ। ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟର ବାଉଜିଂ ଇତିବୃତ୍ତି <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ଅନ୍ୟ ଫର୍ମରେ ଥାଇପାରେ।</translation>
+<translation id="7134993907760847334">ସମସ୍ତ ସାଇନ୍-ଇନ୍ ହୋଇଥିବା ଡିଭାଇସରୁ ଇତିହାସକୁ ଖାଲି କରେ।</translation>
 <translation id="7138678301420049075">ଅନ୍ୟ</translation>
 <translation id="7146622961999026732">ଏହି ସାଇଟ୍ ଏବଂ ଆପଗୁଡ଼ିକ ଆପଣଙ୍କ ପାଇଁ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ପରି ଜଣାପଡ଼ୁଛି:</translation>
 <translation id="7149893636342594995">ଶେଷ 24 ଘଣ୍ଟା</translation>

@@ -238,7 +238,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> objekt har tagits bort</translation>
 <translation id="2536728043171574184">En offlinekopia av sidan visas</translation>
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
-<translation id="2549341709325358884">Endast Wi-Fi och mobildata</translation>
 <translation id="2561519700418191927">Förhandsgranskningar av video</translation>
 <translation id="2567385386134582609">BILD</translation>
 <translation id="2571711316400087311">Erbjud att skicka sidor på andra språk till Google Översätt</translation>
@@ -752,6 +751,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5982307838673692400">Öppna en inkognitoflik</translation>
 <translation id="6000066717592683814">Behåll Google</translation>
 <translation id="6000203700195075278">Följ på nytt</translation>
+<translation id="6002623704405939939">Du kan rensa <ph name="BEGIN_LINK1" />sökhistoriken<ph name="END_LINK1" /> och annan historik på <ph name="BEGIN_LINK2" />Min aktivitet på Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Föreslaget lösenord</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Hoppa till nästa flik</translation>
@@ -925,6 +925,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7088681679121566888">Chrome har uppdaterats</translation>
 <translation id="7106762743910369165">Webbläsaren hanteras av din organisation</translation>
 <translation id="7121362699166175603">Historik och autoslutföranden i adressfältet rensas. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="7134993907760847334">Historiken rensas från alla inloggade enheter.</translation>
 <translation id="7138678301420049075">Övrigt</translation>
 <translation id="7146622961999026732">De här webbplatserna och apparna verkar vara viktiga för dig:</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>

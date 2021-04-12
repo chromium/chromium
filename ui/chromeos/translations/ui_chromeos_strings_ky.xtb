@@ -494,7 +494,7 @@
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> жылдырылууда…</translation>
 <translation id="613750717151263950">Жапончо жана АКШ баскычтобу</translation>
 <translation id="6146563240635539929">Видеолор</translation>
-<translation id="6150853954427645995">Бул файлды оффлайнда колдонуу үчүн, онлайнга кайтып, файлды оң баскыч менен чыкылдатып, <ph name="OFFLINE_CHECKBOX_NAME" /> параметрин тандаңыз.</translation>
+<translation id="6150853954427645995">Бул файлды оффлайнда колдонуу үчүн онлайнга кайтып, файлды оң баскыч менен чыкылдатып, <ph name="OFFLINE_CHECKBOX_NAME" /> параметрин тандаңыз.</translation>
 <translation id="6164412158936057769">Көпөлөктөр</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6187719147498869044">Венгерче</translation>
@@ -702,7 +702,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Түзмөктүн үлгүсү</translation>
 <translation id="8208580316430297579">Санат иши</translation>
-<translation id="8223479393428528563">Бул файлдарды оффлайнда колдонуу үчүн, онлайн режимине кайтып, файлдарды оң баскыч менен чыкылдатып, андан соң <ph name="OFFLINE_CHECKBOX_NAME" /> параметрин тандаңыз.</translation>
+<translation id="8223479393428528563">Бул файлдарды оффлайнда колдонуу үчүн онлайн режимине кайтып, файлдарды оң баскыч менен чыкылдатып, андан соң <ph name="OFFLINE_CHECKBOX_NAME" /> параметрин тандаңыз.</translation>
 <translation id="8249296373107784235">Токтотуу</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8261561378965667560">Кытайча (түзүмдүк)</translation>

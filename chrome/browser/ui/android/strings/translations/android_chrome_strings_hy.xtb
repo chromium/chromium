@@ -238,7 +238,6 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> տարր ջնջվեց</translation>
 <translation id="2536728043171574184">Դուք դիտում եք տվյալ էջի անցանց պատճենը</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
-<translation id="2549341709325358884">Միայն Wi-Fi-ի և բջջային ինտերնետի միջոցով</translation>
 <translation id="2561519700418191927">Տեսանյութերի նախադիտում</translation>
 <translation id="2567385386134582609">ՊԱՏԿԵՐ</translation>
 <translation id="2571711316400087311">Առաջարկել այլ լեզուներով էջերն ուղարկել Google Translate ծառայությանը</translation>
@@ -752,6 +751,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5982307838673692400">Բացել ինկոգնիտո ներդիր</translation>
 <translation id="6000066717592683814">Օգտագործել Google-ը</translation>
 <translation id="6000203700195075278">Նորից բաժանորդագրվել</translation>
+<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />Որոնման հարցումները<ph name="END_LINK1" /> կամ ձեր գործողությունների հետ կապված այլ տվյալներ ջնջելու համար անցեք <ph name="BEGIN_LINK2" />«Իմ գործողությունները Google-ում»<ph name="END_LINK2" /> էջ։</translation>
 <translation id="6005538289190791541">Առաջարկվող գաղտնաբառ</translation>
 <translation id="6036057147555329831">Լրացուցիչ ICU մոդուլ</translation>
 <translation id="6039379616847168523">Անցնել հաջորդ ներդիր</translation>
@@ -925,6 +925,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7088681679121566888">Chrome-ը թարմացված է</translation>
 <translation id="7106762743910369165">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից</translation>
 <translation id="7121362699166175603">Մաքրում է պատմությունն ու ինքնալրացումները հասցեագոտում: Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում:</translation>
+<translation id="7134993907760847334">Մաքրում է պատմությունը բոլոր սարքերից, որոնցում մտել եք հաշիվ։</translation>
 <translation id="7138678301420049075">Այլ</translation>
 <translation id="7146622961999026732">Այս կայքերը և հավելվածները կարող են կարևոր լինել ձեզ համար՝</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>

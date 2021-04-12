@@ -16,6 +16,7 @@
 <translation id="137466361146087520">‏גרסת הבטא של Google Chrome</translation>
 <translation id="1399397803214730675">‏במחשב זה מותקנת כבר גרסה עדכנית יותר של Google Chrome. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Google Chrome ולנסות שוב.</translation>
 <translation id="1434626383986940139">‏אפליקציות Chrome – קאנארי</translation>
+<translation id="1507198376417198979">‏רוצה להתאים אישית את פרופיל Chrome?</translation>
 <translation id="1516530951338665275">‏ל-Google Chrome נדרשת גישה ל-Bluetooth כדי להמשיך 
  את ההתאמה. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
@@ -211,6 +212,7 @@
 <translation id="6943584222992551122">‏נתוני הגלישה של האדם הזה יימחקו מהמכשיר. כדי לשחזר את הנתונים, יש להיכנס ל-Chrome בתור<ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">‏כלל נכנס לגרסת הבטא של Google Chrome כדי לאפשר תנועת mDNS.</translation>
 <translation id="6989339256997917931">‏Google Chrome עודכן, אך לא השתמשת בו לפחות 30 ימים.</translation>
+<translation id="7025800014283535195">‏כאן ניתן לעבור בין פרופילים של Chrome</translation>
 <translation id="7062128746136194023">‏אחד מההורים השבית ב-Chrome את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להוסיף את ה<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">‏Google Chrome משתמש במיקרופון שלך.</translation>
 <translation id="7106741999175697885">‏מנהל המשימות - Google Chrome</translation>
@@ -288,4 +290,5 @@
 <translation id="922152298093051471">‏התאמה אישית של Chrome</translation>
 <translation id="940313311831216333">‏כדי לקבל גישה אל הפריטים שלך ב-Chrome בכל המכשירים, יש להיכנס לחשבון ולהפעיל את הסנכרון.</translation>
 <translation id="989369509083708165">‏Google Chrome הוא דפדפן ברירת המחדל</translation>
+<translation id="989816563149873169">‏ניתן לעבור בין פרופילים של Chrome באמצעות <ph name="SHORTCUT" /></translation>
 </translationbundle>

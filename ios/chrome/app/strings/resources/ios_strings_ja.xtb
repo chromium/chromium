@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">ページを共有できない</translation>
 <translation id="2923448633003185837">貼り付けて移動</translation>
 <translation id="292639812446257861">未読にする</translation>
+<translation id="2932085390869194046">パスワードを自動生成...</translation>
 <translation id="2952581218264071393">1. Chrome の設定を開く</translation>
 <translation id="2958718410589002129">パスワード</translation>
 <translation id="2964349545761222050">サードパーティの Cookie をブロックする</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />Cookie の設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5490005495580364134">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="5508435575041083207">ログアウトしてこのデバイスからデータを消去</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> 時間前</translation>
 <translation id="5525269841082836315">パスフレーズの作成</translation>
 <translation id="5548760955356983418">Handoffを使うと、このデバイスで見ているウェブサイトの続きをMacで見ることができます。現在開いているウェブサイトはMacのDockに表示されます。
 
@@ -759,7 +761,6 @@
 <translation id="8806823403540278281">組織がシークレット モードで閲覧するよう求めています。シークレット モードではタブは保存されません。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">ブックマーク</translation>
-<translation id="8823704566850948458">パスワードを自動生成...</translation>
 <translation id="8840513115188359703">Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="8870413625673593573">最近閉じたタブ</translation>
 <translation id="8881801611828450202">この画像を <ph name="SEARCH_ENGINE" /> で検索</translation>
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">QR コードを作成</translation>
 <translation id="9157836665414082580">ダイアログを表示しない</translation>
 <translation id="9188680907066685419">管理対象アカウントからログアウトする</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> 日前</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">クラッシュレポートを送信しました。</translation>
 <translation id="952704832371081537">キャンセル</translation>

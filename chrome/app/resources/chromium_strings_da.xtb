@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">Chromium bruger din mikrofon.</translation>
 <translation id="3155163173539279776">Genstart Chromium</translation>
 <translation id="3179665906251668410">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
+<translation id="3185330573522821672">Tilpas din nye Chromium-profil</translation>
 <translation id="3190315855212034486">Hov! Chromium er gået ned. Vil du genstarte nu?</translation>
 <translation id="3229526316128325841">Chromium anmoder om at eksportere dine adgangskoder.</translation>
 <translation id="3258596308407688501">Chromium kan ikke læse og skrive til sin datamappe:
@@ -74,6 +75,7 @@
 <translation id="3430503420100763906">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Opret profiler til dine venner og din familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
 <translation id="347328004046849135">Chromium giver dig besked, når du logger ind med en kompromitteret adgangskode</translation>
 <translation id="3474745554856756813">Denne handling sletter <ph name="ITEMS_COUNT" /> elementer på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chromium som <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> kan skifte mellem Chromium-profiler</translation>
 <translation id="3509308970982693815">Luk alle Chromium-vinduer, og prøv igen.</translation>
 <translation id="3575459661164320785">Der er skadelig software på din computer. Chromium kan fjerne den, gendanne dine indstillinger og deaktivere udgivelser, så din browser fungerer normalt igen.</translation>
 <translation id="3639635944603682591">Brugerens browserdata slettes fra denne enhed. Log ind på Chromium som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
@@ -154,6 +156,7 @@
 <translation id="6120345080069858279">Chromium gemmer denne adgangskode på din Google-konto. Du behøver ikke at huske den.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> er skadelig, så Chromium har blokeret den.</translation>
 <translation id="6134968993075716475">Beskyttet browsing er deaktiveret. Chromium anbefaler, at du aktiverer funktionen.</translation>
+<translation id="6145820983052037069">Her kan du skifte mellem Chromium-profiler</translation>
 <translation id="6183079672144801177">Sørg for, at du er logget ind på Chromium på din <ph name="TARGET_DEVICE_NAME" />, og prøv derefter at sende igen.</translation>
 <translation id="6212496753309875659">Computeren har allerede en nyere version af Chromium. Hvis softwaren ikke virker, skal du afinstallere Chromium og prøve igen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium genstarter nu}=1{Chromium genstarter om 1 sekund}one{Chromium genstarter om # sekund}other{Chromium genstarter om # sekunder}}</translation>

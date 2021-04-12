@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome 测试版</translation>
 <translation id="1399397803214730675">该计算机已安装了更高版本的 Google Chrome 浏览器。如果该软件无法正常运行，请卸载 Google Chrome 浏览器，然后重试。</translation>
 <translation id="1434626383986940139">Chrome Canary 应用</translation>
+<translation id="1507198376417198979">自定义您的新 Chrome 个人资料</translation>
 <translation id="1516530951338665275">Google Chrome 需获得蓝牙使用权限才能继续配对。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />已登录此 Chrome 个人资料。这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chrome 个人资料</translation>
@@ -210,6 +211,7 @@
 <translation id="6943584222992551122">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chrome。</translation>
 <translation id="6967962315388095737">Google Chrome 测试版的入站规则，允许 mDNS 流量。</translation>
 <translation id="6989339256997917931">Google Chrome 浏览器已更新，但您已经至少 30 天未使用它了。</translation>
+<translation id="7025800014283535195">您可在此处切换 Chrome 个人资料</translation>
 <translation id="7062128746136194023">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”。因此，您无法添加该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="7098166902387133879">Google Chrome 正在使用您的麦克风。</translation>
 <translation id="7106741999175697885">任务管理器 - Google Chrome</translation>
@@ -287,4 +289,5 @@
 <translation id="922152298093051471">自定义 Chrome</translation>
 <translation id="940313311831216333">如需在您的所有设备上访问自己的 Chrome 信息，请登录您的帐号，然后开启同步功能。</translation>
 <translation id="989369509083708165">Google Chrome 是您的默认浏览器</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> 可用于切换 Chrome 个人资料</translation>
 </translationbundle>

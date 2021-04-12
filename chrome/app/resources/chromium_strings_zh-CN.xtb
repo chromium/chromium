@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">Chromium 正在使用您的麦克风。</translation>
 <translation id="3155163173539279776">重新启动 Chromium</translation>
 <translation id="3179665906251668410">在 Chromium 无痕式窗口中打开链接(&amp;G)</translation>
+<translation id="3185330573522821672">自定义您的新 Chromium 个人资料</translation>
 <translation id="3190315855212034486">哎呀！Chromium 崩溃了。要立即重新启动吗？</translation>
 <translation id="3229526316128325841">Chromium 想导出您的密码。</translation>
 <translation id="3258596308407688501">Chromium 无法读写其数据目录：
@@ -74,6 +75,7 @@
 <translation id="3430503420100763906">借助 Chromium 个人资料，您可将自己的所有 Chromium 内容分门别类。比如，您可为朋友和家人创建专属个人资料，或者将工作内容和娱乐内容分开。</translation>
 <translation id="347328004046849135">当您使用已泄露的密码登录时，Chromium 会通知您</translation>
 <translation id="3474745554856756813">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> 可用于切换 Chromium 个人资料</translation>
 <translation id="3509308970982693815">请关闭所有 Chromium 窗口并重试。</translation>
 <translation id="3575459661164320785">您的计算机上存在有害软件。Chromium 可以移除该软件、恢复您的设置并停用扩展程序，以确保您的浏览器能够重新正常运行。</translation>
 <translation id="3639635944603682591">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chromium。</translation>
@@ -154,6 +156,7 @@
 <translation id="6120345080069858279">Chromium 会将此密码保存在您的 Google 帐号中，因此您不必记住它。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="6134968993075716475">“安全浏览”功能已关闭。Chromium 建议开启此功能。</translation>
+<translation id="6145820983052037069">您可在此处切换 Chromium 个人资料</translation>
 <translation id="6183079672144801177">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chromium，然后再次尝试发送。</translation>
 <translation id="6212496753309875659">此计算机已安装了更高版本的 Chromium。如果软件无法正常运行，请卸载 Chromium 并重试。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium 将立即重新启动}=1{Chromium 将在 1 秒后重新启动}other{Chromium 将在 # 秒后重新启动}}</translation>

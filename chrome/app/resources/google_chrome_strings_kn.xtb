@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome ಬೀಟಾ</translation>
 <translation id="1399397803214730675">ಈ ಕಂಪ್ಯೂಟರ್ ಈಗಾಗಲೇ ತೀರಾ ಇತ್ತೀಚಿನ Google Chrome ಆವೃತ್ತಿಯನ್ನು ಹೊಂದಿದೆ. ಸಾಫ್ಟ್‌ವೇರ್ ಕಾರ್ಯ ನಿರ್ವಹಿಸದೆ ಇದ್ದರೆ, ದಯವಿಟ್ಟು Google Chrome ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1434626383986940139">Chrome ಕ್ಯಾನರಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
+<translation id="1507198376417198979">ನಿಮ್ಮ ಹೊಸ Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="1516530951338665275">ಜೋಡಣೆಯನ್ನು ಮುಂದುವರಿಸಲು Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಪ್ರವೇಶದ ಅಗತ್ಯವಿದೆ. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
 <translation id="1583073672411044740">ಈ Chrome ಪ್ರೊಫೈಲ್‌ಗೆ ಈಗಾಗಲೇ <ph name="EXISTING_USER" /> ಅವರು ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದಾರೆ. ಇದು <ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಹೊಸ Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸುತ್ತದೆ</translation>
@@ -211,6 +212,7 @@
 <translation id="6943584222992551122">ಈ ವ್ಯಕ್ತಿಯ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಈ ಸಾಧನದಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ. ಡೇಟಾವನ್ನು ಮರಳಿ ಪಡೆದುಕೊಳ್ಳಲು, Chrome ನಲ್ಲಿ <ph name="USER_EMAIL" /> ಎಂದು ಸೈನ್-ಇನ್ ಮಾಡಿ.</translation>
 <translation id="6967962315388095737">mDNS ಟ್ರಾಫಿಕ್‌ಗೆ ಅನುಮತಿಸುವ ನಿಟ್ಟಿನಲ್ಲಿ Google Chrome ಬೀಟಾಗೆ ಒಳಬರುವ ನಿಯಮ.</translation>
 <translation id="6989339256997917931">Google Chrome ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ, ಆದರೆ ನೀವು ಕನಿಷ್ಠ 30 ದಿನಗಳವರೆಗಾದರೂ ಇದನ್ನು ಬಳಸಿರಲಿಕ್ಕಿಲ್ಲ. </translation>
+<translation id="7025800014283535195">ನೀವು ಇಲ್ಲಿ Chrome ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="7062128746136194023">ನಿಮ್ಮ ಪೋಷಕರು Chrome ನಲ್ಲಿ "ಸೈಟ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳಿಗಾಗಿ ಅನುಮತಿಗಳನ್ನು" ಆಫ್ ಮಾಡಿದ್ದಾರೆ. ಈ <ph name="EXTENSION_TYPE_PARAMETER" /> ಅನ್ನು ಸೇರಿಸಲು ಅನುಮತಿಯಿಲ್ಲ.</translation>
 <translation id="7098166902387133879">Google Chrome ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="7106741999175697885">ಕಾರ್ಯ ನಿರ್ವಾಹಕ - Google Chrome</translation>
@@ -289,4 +291,5 @@
 <translation id="922152298093051471">Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="940313311831216333">ನಿಮ್ಮ Chrome ವಿಷಯಗಳನ್ನು ಎಲ್ಲಾ ಸಾಧನಗಳಾದ್ಯಂತ ಪ್ರವೇಶಿಸಲು, ಸೈನ್ ಇನ್ ಮಾಡಿ, ನಂತರ ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="989369509083708165">Google Chrome ನಿಮ್ಮ ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿದೆ.</translation>
+<translation id="989816563149873169">Chrome ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲು <ph name="SHORTCUT" /> ಅನ್ನು ಬಳಸಬಹುದು</translation>
 </translationbundle>

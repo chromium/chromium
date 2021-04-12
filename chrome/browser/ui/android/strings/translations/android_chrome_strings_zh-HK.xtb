@@ -238,7 +238,6 @@
 <translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
-<translation id="2549341709325358884">Wi-Fi 和流動數據</translation>
 <translation id="2561519700418191927">影片預覽</translation>
 <translation id="2567385386134582609">圖片</translation>
 <translation id="2571711316400087311">詢問是否將其他語言的網頁傳送至「Google 翻譯」</translation>
@@ -752,6 +751,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5982307838673692400">開啟無痕式分頁</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6000203700195075278">重新追蹤</translation>
+<translation id="6002623704405939939">如要清除<ph name="BEGIN_LINK1" />搜尋<ph name="END_LINK1" />或其他類型的記錄，請前往<ph name="BEGIN_LINK2" />我的 Google 活動<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">建議的密碼</translation>
 <translation id="6036057147555329831">其他 ICU</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
@@ -925,6 +925,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7088681679121566888">Chrome 目前是最新版本</translation>
 <translation id="7106762743910369165">您的瀏覽器由組織管理</translation>
 <translation id="7121362699166175603">清除記錄和網址列中的自動完成資料。您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
+<translation id="7134993907760847334">清除所有已登入裝置上的記錄。</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7146622961999026732">這些網站和應用程式似乎對您很重要：</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>

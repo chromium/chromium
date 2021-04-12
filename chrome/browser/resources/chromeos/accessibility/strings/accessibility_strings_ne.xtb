@@ -45,6 +45,7 @@
 <translation id="1225969361094801578">गाढा स्लेट मिश्रित खैरो</translation>
 <translation id="1230503547248836149">छनौट कार्य सुरु गर्नुहोस्</translation>
 <translation id="1236794971743289975">एन्डनोट</translation>
+<translation id="1237797094773582699">यसका साथै, चार औँलाले दायाँबाट बायाँतिर स्वाइप गरेर अघिल्लो मुख्य एलिमेन्टमा जान सकिन्छ। अहिले नै यसो गरी हेर्नुहोस्!</translation>
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">कर्न्फ्लावर निलो</translation>
 <translation id="1246424317317450637">बोल्ड</translation>
@@ -157,7 +158,6 @@
 <translation id="2045055672832940894">अघिल्लो कुनै पनि नियन्त्रण छैन</translation>
 <translation id="2045606329038304310">फारमको क्षेत्र नियन्त्रण गर्ने क्षमता</translation>
 <translation id="2063539687800151747">शिलालेख</translation>
-<translation id="2074531330963286860">कारबाहीहरू उपलब्ध छन्। कारबाहीहरू हेर्न Search+Period थिच्नुहोस्</translation>
 <translation id="2086961585857038472">अर्को शब्द</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ने</translation>
@@ -302,6 +302,7 @@
 <translation id="3082249673510793544">पछाडि स्क्रोल गर्नुहोस्</translation>
 <translation id="3084806535845658316">टाइपिङ प्रतिध्वनि छैन</translation>
 <translation id="3086746722712840547">द्रष्टव्य</translation>
+<translation id="308736057934395497">यसले तपाईंको स्क्रिन अरूले देख्न नसकून् भन्नाका खातिर तपाईंको स्क्रिन अफ गरेर तपाईंको गोपनीयताको सुरक्षा अझ सुदृढ बनाउँछ। तपाईं खोज बटनसँगै स्क्रिनको चमक बढाउने बटन थिचेर जुनसुकै बेला स्क्रिन पुनः अन गर्न सक्नुहुन्छ।</translation>
 <translation id="3090227230165225418">डाउनलोडसम्बन्धी सूचना प्रकाशित गर्नुहोस्</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">अर्को ल्याङ्डमार्क</translation>
@@ -339,7 +340,7 @@
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
 <translation id="3260949043575829030">अघिल्लो उस्तै वस्तु</translation>
 <translation id="3270069636408109001">अर्को कुनै पनि तालिका छैन</translation>
-<translation id="3273791280096244679">लेबल सुरक्षित गर्नुहोस्</translation>
+<translation id="3273791280096244679">लेबल सेभ गर्नुहोस्</translation>
 <translation id="3283583562490372694">जाँच चिन्ह नलगाइएको</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
 <translation id="3286390186030710347">स्लाइडर</translation>
@@ -723,7 +724,7 @@
 <translation id="6082768461603900813">आधारभूत नेभिगेसन</translation>
 <translation id="609281021724813947">अघिल्लो कुनै पनि स्लाइडर छैन</translation>
 <translation id="6100239002225743044">एक लाइन माथि सार्नुहोस्</translation>
-<translation id="6118126368611144850">Chrome का लागि Android एपहरू। तपाईंको यन्त्रमा Play स्टोर भएको खण्डमा Android एपहरूको सहयोगले ChromeVox रिलिज हुनु अगावै यसलाई चलाई हेर्नुहोस्। Play स्टोरबाट Google Chrome Canary डाउनलोड गरी परीक्षणात्मक समर्थन चलाएर हेर्नुहोस्।</translation>
+<translation id="6118126368611144850">Chrome का लागि Android एपहरू। तपाईंको डिभाइसमा Play स्टोर भएको खण्डमा Android एपहरूको सहयोगले ChromeVox रिलिज हुनु अगावै यसलाई चलाई हेर्नुहोस्। Play स्टोरबाट Google Chrome Canary डाउनलोड गरी परीक्षणात्मक समर्थन चलाएर हेर्नुहोस्।</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">बटन</translation>
 <translation id="6132506484792346370">एउटा सूचीबाकस वा कम्बो बाकस</translation>

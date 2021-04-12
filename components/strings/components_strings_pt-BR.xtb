@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1003222766972176318">Lembrete: a oferta salva está disponível</translation>
 <translation id="1008557486741366299">Não agora</translation>
 <translation id="100957008357583611">Usar sua localização?</translation>
 <translation id="1010200102790553230">Carregar página mais tarde</translation>
@@ -250,6 +251,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Página inicial</translation>
 <translation id="1812527064848182527">paisagem</translation>
+<translation id="1814698615734239189">Esse app foi criado para dispositivos móveis. Ele está sendo executado em um modo de compatibilidade. Podem ocorrer problemas no redimensionamento, incluindo a reinicialização do app.</translation>
 <translation id="1821930232296380041">Solicitação ou parâmetros de solicitação inválidos</translation>
 <translation id="1822540298136254167">Os sites que você visita e o tempo gasto neles</translation>
 <translation id="1826516787628120939">Em verificação</translation>
@@ -270,7 +272,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1914326953223720820">Serviço Descompactar</translation>
 <translation id="1915697529809968049">Usar o Touch ID em vez do CVC?</translation>
 <translation id="1916770123977586577">Para aplicar as configurações atualizadas a este site, recarregue a página</translation>
-<translation id="1917876262703816781">Sua senha foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, mude a senha imediatamente em <ph name="ORIGIN" />.</translation>
 <translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Receber ajuda com uma mensagem de erro específica</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}one{# site}other{# sites}}</translation>
@@ -596,6 +597,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3268451620468152448">Guias abertas</translation>
 <translation id="3270847123878663523">&amp;Desfazer reordenar</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3282085321714087552">Sua organização, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações, como configurações ou políticas, aos sites a seguir.</translation>
 <translation id="3282497668470633863">Adicionar nome (como consta no cartão)</translation>
 <translation id="3286372614333682499">retrato</translation>
 <translation id="3287510313208355388">Download quando estiver on-line</translation>
@@ -906,7 +908,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4358461427845829800">Gerenciar formas de pagamento…</translation>
 <translation id="4359160567981085931">Você acabou de digitar sua senha em um site suspeito. O Chrome pode ajudar. Para mudar a senha e notificar o Google de que sua conta pode estar em risco, clique em "Proteger conta".</translation>
 <translation id="4367563149485757821">Nº 12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Sua senha para <ph name="ORIGIN" /> foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, mude a senha imediatamente em <ph name="ORIGIN" />.}=1{Sua senha para <ph name="ORIGIN" /> e 1 outro site foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, verifique as senhas salvas imediatamente.}one{Sua senha para <ph name="ORIGIN" /> e <ph name="SITES_COUNT" /> outro site foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, verifique as senhas salvas imediatamente.}other{Sua senha para <ph name="ORIGIN" /> e <ph name="SITES_COUNT" /> outros sites foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, verifique as senhas salvas imediatamente.}}</translation>
 <translation id="437058704415269440">Saldo da conta</translation>
 <translation id="4372516964750095882">216 mm x 304 mm</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
@@ -924,6 +925,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="4435702339979719576">Postal</translation>
 <translation id="443673843213245140">O uso de um proxy está desativado, mas uma configuração explícita de proxy é especificada.</translation>
+<translation id="4464826014807964867">Sites com informações da sua organização</translation>
 <translation id="4466881336512663640">As alterações no formulário serão perdidas. Tem certeza de que quer continuar?</translation>
 <translation id="4476953670630786061">Este formulário não é seguro. O preenchimento automático foi desativado.</translation>
 <translation id="4477350412780666475">Próxima faixa</translation>
@@ -1146,7 +1148,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5287456746628258573">Este site usa uma configuração de segurança desatualizada que pode expor suas informações, como senhas ou números de cartão de crédito, quando elas forem enviadas para o site.</translation>
 <translation id="5288108484102287882">A validação dos valores da política gerou alguns avisos</translation>
 <translation id="5289384342738547352">Gerenciamento de vários documentos</translation>
-<translation id="5295292838686006428">Sua senha foi exposta em uma violação de dados em um site ou app acessado por você. Por recomendação do Chrome, verifique as senhas salvas imediatamente.</translation>
 <translation id="5299298092464848405">Política de análise de erros</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">As duas páginas</translation>
@@ -1686,7 +1687,6 @@ Mais detalhes:
 <translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7485870689360869515">Nenhum dado encontrado</translation>
-<translation id="7495290002932347110">Sua senha foi exposta em violação de dados em um site ou app acessado por você. Por recomendação do Chrome, verifique suas senhas salvas e mude-as imediatamente em <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Entre em contato com o proprietário do site para corrigir o problema.</translation>
 <translation id="7498234416455752244">Continuar editando</translation>
 <translation id="7503664977220660814">Você acabou de digitar sua senha em um site suspeito. O Chromium recomenda que você verifique agora suas senhas salvas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sites em que você usa essa senha.</translation>
@@ -1873,6 +1873,7 @@ Mais detalhes:
 <translation id="8157295877370077682">Sair do site</translation>
 <translation id="8163866351304776260">Perfuração quádrupla no lado esquerdo</translation>
 <translation id="8175796834047840627">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações.</translation>
+<translation id="8176440868214972690">O administrador do dispositivo enviou algumas informações, como configurações ou políticas, aos sites a seguir.</translation>
 <translation id="8184538546369750125">Usar padrão global (Permitir)</translation>
 <translation id="8194797478851900357">&amp;Desfazer mover</translation>
 <translation id="8201077131113104583">URL de atualização inválido para extensão com ID "<ph name="EXTENSION_ID" />".</translation>
@@ -1887,6 +1888,7 @@ Mais detalhes:
 <translation id="8225771182978767009">A pessoa que configurou este computador optou por bloquear esse site.</translation>
 <translation id="8228419419708659934">Visualização de duas páginas</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230159728600632642">Não perguntar novamente para esse app</translation>
 <translation id="8232343881378637145">Temperatura da plataforma</translation>
 <translation id="8238581221633243064">Abrir página em uma nova guia anônima</translation>
 <translation id="8241707690549784388">A página que você está procurando usou as informações inseridas. Voltar à essa página poderá fazer com que todas as ações realizadas antes sejam repetidas. Quer continuar?</translation>
@@ -2041,6 +2043,7 @@ Mais detalhes:
 <translation id="8798099450830957504">Padrão</translation>
 <translation id="8805819170075074995">Entrada "<ph name="LANGUAGE_ID" />": entrada ignorada porque também foi incluída na política SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Cortar depois de cada página</translation>
+<translation id="881292005876822445">Ativar a maximização?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para atualizar o Chrome pelas configurações dele</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="883848425547221593">Outros favoritos</translation>

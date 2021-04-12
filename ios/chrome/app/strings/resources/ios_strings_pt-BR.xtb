@@ -189,6 +189,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2921219216347069551">Não é possível compartilhar a página</translation>
 <translation id="2923448633003185837">Colar e ir</translation>
 <translation id="292639812446257861">Marcar como não lidas</translation>
+<translation id="2932085390869194046">Sugerir senha…</translation>
 <translation id="2952581218264071393">1. Abrir configurações do Chrome</translation>
 <translation id="2958718410589002129">Senhas</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
@@ -422,6 +423,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5489208564673669003">Para gerenciar os cookies de todos os sites, acesse <ph name="BEGIN_LINK" />Configurações de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todos os cookies (não recomendado)</translation>
 <translation id="5508435575041083207">Sair e limpar dados deste dispositivo</translation>
+<translation id="5513681519188741830"><ph name="TIME" />h atrás</translation>
 <translation id="5525269841082836315">Criar senha</translation>
 <translation id="5548760955356983418">A "Transição" permite que você comece a navegar por um website neste dispositivo e, em seguida, continue facilmente no seu Mac. O website aberto aparecerá no Dock do Mac.
 
@@ -759,7 +761,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8806823403540278281">Sua organização requer o uso do modo de navegação privada. As guias não são salvas no modo de navegação anônima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Favoritos</translation>
-<translation id="8823704566850948458">Sugerir senha…</translation>
 <translation id="8840513115188359703">Você não será desconectado da sua Conta do Google.</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>
 <translation id="8881801611828450202">Pesquisar esta imagem no <ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9152539721251340337">Criar um código QR</translation>
 <translation id="9157836665414082580">Bloquear caixas de diálogo</translation>
 <translation id="9188680907066685419">Sair da conta gerenciada</translation>
+<translation id="9200875785104711666"><ph name="TIME" />d atrás</translation>
 <translation id="9203116392574189331">Transição</translation>
 <translation id="9223358826628549784">Relatórios de erros enviados.</translation>
 <translation id="952704832371081537">Cancelar</translation>

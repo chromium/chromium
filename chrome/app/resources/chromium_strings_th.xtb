@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">Chromium ใช้ไมโครโฟนของคุณอยู่</translation>
 <translation id="3155163173539279776">เรียกใช้งาน Chromium อีกครั้ง</translation>
 <translation id="3179665906251668410">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
+<translation id="3185330573522821672">ปรับแต่งโปรไฟล์ Chromium ใหม่</translation>
 <translation id="3190315855212034486">อ้าว! Chromium ขัดข้อง เปิดใหม่ตอนนี้หรือไม่</translation>
 <translation id="3229526316128325841">Chromium ต้องการส่งออกรหัสผ่านของคุณ</translation>
 <translation id="3258596308407688501">Google Chrome ไม่สามารถอ่านและเขียนข้อมูลในไดเรกทอรีข้อมูล:
@@ -74,6 +75,7 @@
 <translation id="3430503420100763906">โปรไฟล์ Chromium ช่วยให้คุณแยกข้อมูลต่างๆ ใน Chromium ออกจากกัน สร้างโปรไฟล์สำหรับเพื่อนและครอบครัว หรือแยกการทำงานออกจากความบันเทิง</translation>
 <translation id="347328004046849135">Chromium จะแจ้งให้ทราบเมื่อคุณลงชื่อเข้าใช้ด้วยรหัสผ่านที่ไม่รัดกุม</translation>
 <translation id="3474745554856756813">การดำเนินการนี้จะลบ <ph name="ITEMS_COUNT" /> รายการออกจากอุปกรณ์นี้ หากต้องการดึงข้อมูลภายหลัง ให้ลงชื่อเข้าใช้ Chromium ด้วย <ph name="USER_EMAIL" /></translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> จะสลับไปมาระหว่างโปรไฟล์ Chromium ได้</translation>
 <translation id="3509308970982693815">โปรดปิดหน้าต่าง Chromium ทั้งหมดแล้วลองอีกครั้ง</translation>
 <translation id="3575459661164320785">มีซอฟต์แวร์อันตรายในคอมพิวเตอร์ของคุณ Chromium ช่วยนำซอฟต์แวร์ดังกล่าวออก คืนการตั้งค่า และปิดใช้ส่วนขยายให้คุณได้ เพื่อให้เบราว์เซอร์กลับมาทำงานเป็นปกติอีกครั้ง</translation>
 <translation id="3639635944603682591">ระบบจะลบข้อมูลการท่องเว็บของบุคคลนี้ออกจากอุปกรณ์นี้ หากต้องการกู้ข้อมูลคืน ให้ลงชื่อเข้าใช้ Chromium ในชื่อ <ph name="USER_EMAIL" /></translation>
@@ -154,6 +156,7 @@
 <translation id="6120345080069858279">Chromium จะบันทึกรหัสผ่านนี้ในบัญชี Google คุณจะได้ไม่ต้องจำรหัสผ่านเอง</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> เป็นอันตราย Chromium จึงบล็อกไว้</translation>
 <translation id="6134968993075716475">Google Safe Browsing ปิดอยู่ Chromium ขอแนะนำให้เปิด</translation>
+<translation id="6145820983052037069">คุณสลับไปมาระหว่างโปรไฟล์ Chromium ได้ที่นี่</translation>
 <translation id="6183079672144801177">ตรวจสอบว่าคุณลงชื่อเข้าใช้ Chromium ใน <ph name="TARGET_DEVICE_NAME" /> แล้วลองส่งอีกครั้ง</translation>
 <translation id="6212496753309875659">คอมพิวเตอร์เครื่องนี้ติดตั้ง Chromium รุ่นที่ใหม่กว่าอยู่แล้ว ถ้าซอฟต์แวร์ไม่ทำงาน โปรดถอนการติดตั้ง Chromium และลองอีกครั้ง</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium จะเปิดขึ้นมาใหม่ตอนนี้}=1{Chromium จะเปิดขึ้นมาใหม่ใน 1 วินาที}other{Chromium จะเปิดขึ้นมาใหม่ใน # วินาที}}</translation>

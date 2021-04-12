@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">‏Chromium درحال استفاده از میکروفون شما است.</translation>
 <translation id="3155163173539279776">‏اجرای مجدد Chromium</translation>
 <translation id="3179665906251668410">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
+<translation id="3185330573522821672">‏سفارشی کردن نمایه جدید Chromium</translation>
 <translation id="3190315855212034486">‏اوه! Chromium خراب شده است. دوباره راه‌اندازی شود؟</translation>
 <translation id="3229526316128325841">‏Chromium می‌خواهد گذرواژه‌های شما را صادر کند.</translation>
 <translation id="3258596308407688501">‏Chromium نمی‌تواند مسیر داده‌های خود را بخواند یا در آن بنویسد:
@@ -73,6 +74,7 @@
 <translation id="3430503420100763906">‏با نمایه‌های Chromium می‌توانید همه چیزتان را در Chromium جدا کنید. برای دوستان و اعضای خانواده‌تان نمایه ایجاد کنید، یا کار و سرگرمی را ازهم جدا کنید.</translation>
 <translation id="347328004046849135">‏وقتی با گذرواژه‌ای لورفته به سیستم وارد می‌شوید، Chromium شما را مطلع می‌کند</translation>
 <translation id="3474745554856756813">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
+<translation id="3497319089134299931">‏با <ph name="SHORTCUT" /> می‌توانید بین نمایه‌های Chromium جابه‌جا شوید</translation>
 <translation id="3509308970982693815">‏لطفاً همه پنجره‌های Chromium را ببندید و دوباره سعی کنید.</translation>
 <translation id="3575459661164320785">‏نرم‌افزار مضری در رایانه‌تان وجود دارد. Chromium می‌تواند آن را بردارد، تنظیمات را بازیابی کند و افزونه‌ها را غیرفعال کند تا عملکرد مرورگرتان دوباره عادی شود.</translation>
 <translation id="3639635944603682591">‏داده‌های محصول مرور این کاربر از این دستگاه حذف می‌شود. برای بازیابی داده‌ها، با نام <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
@@ -153,6 +155,7 @@
 <translation id="6120345080069858279">‏Chromium این گذرواژه را در حساب Google شما ذخیره می‌کند. لازم نیست آن را به خاطر بسپارید.</translation>
 <translation id="6129621093834146363">‏<ph name="FILE_NAME" /> خطرناک است، بنابراین Chromium آن را مسدود کرده است.</translation>
 <translation id="6134968993075716475">‏«مرور ایمن» خاموش است. Chromium توصیه می‌کند آن را روشن کنید.</translation>
+<translation id="6145820983052037069">‏می‌توانید در اینجا بین نمایه‌های Chromium جابه‌جا شوید</translation>
 <translation id="6183079672144801177">‏مطمئن شوید در <ph name="TARGET_DEVICE_NAME" /> به سیستم Chromium وارد شده باشید و سپس دوباره ارسال کنید.</translation>
 <translation id="6212496753309875659">‏این رایانه در حال حاضر دارای یک نسخه جدیدتر از Chromium است. درصورتی‌که نرم‌افزار کار نمی‌کند، لطفاً Chromium را حذف نصب کنید و دوباره سعی کنید.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏Chromium هم‌اکنون راه‌اندازی مجدد می‌شود}=1{‏Chromium ‏۱ ثانیه دیگر راه‌اندازی مجدد می‌شود}one{‏Chromium ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}other{‏Chromium ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}}</translation>

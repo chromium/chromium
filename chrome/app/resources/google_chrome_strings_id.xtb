@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Komputer ini telah memiliki versi Google Chrome yang lebih anyar. Jika software tidak bekerja, uninstal Google Chrome dan coba lagi.</translation>
 <translation id="1434626383986940139">Aplikasi Chrome Canary</translation>
+<translation id="1507198376417198979">Sesuaikan profil Chrome baru Anda</translation>
 <translation id="1516530951338665275">Google Chrome memerlukan akses Bluetooth untuk melanjutkan 
  penyambungan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Perbarui browser Chrome</translation>
@@ -211,6 +212,7 @@
 <translation id="6943584222992551122">Data browsing pengguna ini akan dihapus dari perangkat ini. Untuk memulihkan data, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Inbound rule untuk Google Chrome Beta guna mengizinkan traffic mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome telah diperbarui, tetapi Anda belum menggunakannya selama setidaknya 30 hari.</translation>
+<translation id="7025800014283535195">Anda dapat berpindah-pindah profil Chrome di sini</translation>
 <translation id="7062128746136194023">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chrome. Tindakan menambahkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>
 <translation id="7098166902387133879">Google Chrome menggunakan mikrofon Anda.</translation>
 <translation id="7106741999175697885">Pengelola Tugas - Google Chrome</translation>
@@ -288,4 +290,5 @@
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="940313311831216333">Untuk mengakses aktivitas Chrome di semua perangkat, login lalu aktifkan sinkronisasi.</translation>
 <translation id="989369509083708165">Google Chrome adalah browser default Anda</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chrome</translation>
 </translationbundle>

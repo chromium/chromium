@@ -62,6 +62,7 @@
 <translation id="3130323860337406239">Chromiumএ আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="3155163173539279776">Chromium পুনৰ লঞ্চ কৰক</translation>
 <translation id="3179665906251668410">Chromiumৰ ইনক’&amp;গনিট’ ৱিণ্ড’ত লিংকটো খোলক</translation>
+<translation id="3185330573522821672">আপোনাৰ Chromiumৰ নতুন প্ৰ’ফাইল কাষ্টমাইজ কৰক</translation>
 <translation id="3190315855212034486">আমি দুঃখিত! Chromium ক্রেশ্ব হ’ল। পুনৰ লঞ্চ কৰিবনে?</translation>
 <translation id="3229526316128325841">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ ৰপ্তানি কৰিব খোজে।</translation>
 <translation id="3258596308407688501">Chromiumএ ইয়াৰ ডেটা ডাইৰেক্টৰী পঢ়িব আৰু তাত লিখিব নোৱাৰে:
@@ -76,6 +77,7 @@
 <translation id="3430503420100763906">Chromiumৰ প্ৰ’ফাইলৰ জৰিয়তে আপুনি নিজৰ আটাইবোৰ Chromiumৰ বস্তু পৃথক কৰিব পাৰে। বন্ধুবৰ্গ আৰু পৰিয়ালৰ বাবে প্ৰ’ফাইল সৃষ্টি কৰক অথবা কৰ্মস্থান আৰু মনোৰঞ্জনৰ মাজত বিভাজন কৰক।</translation>
 <translation id="347328004046849135">আপুনি কোনো হেক কৰা পাছৱৰ্ডৰ জৰিয়তে ছাইন ইন কৰিলে Chromiumএ আপোনাক জাননী দিব</translation>
 <translation id="3474745554856756813">ইয়ে এই ডিভাইচটোৰ পৰা <ph name="ITEMS_COUNT" />টা বস্তু মচিব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromiumত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> টিপি Chromiumৰ প্ৰ’ফাইলসমূহৰ মাজত সালসলনি কৰিব পাৰি</translation>
 <translation id="3509308970982693815">অনুগ্ৰহ কৰি Chromiumৰ সকলো ৱিণ্ড’ বন্ধ কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3575459661164320785">আপোনাৰ কম্পিউটাৰত কোনো ক্ষতিকাৰক ছফ্‌টৱেৰ আছে। Chromiumএ আপোনাৰ ব্ৰাউজাৰে সাধাৰণভাৱে কাম কৰিবলৈ এইটো আঁতৰাব পাৰে, আপোনাৰ ছেটিং পুনঃস্থাপন কৰিব পাৰে আৰু এক্সটেনশ্বন অক্ষম কৰিব পাৰে।</translation>
 <translation id="3639635944603682591">এই ডিভাইচটোৰ পৰা এই লোকজনৰ ব্ৰাউজিঙৰ ডেটা মচা যাব। ডেটা পুনৰুদ্ধাৰ কৰিবলৈ Chromiumত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
@@ -156,6 +158,7 @@
 <translation id="6120345080069858279">Chromiumএ এই পাছৱৰ্ডটো আপোনাৰ Google একাউণ্টত ছেভ কৰিব৷ আপুনি ইয়াক মনত ৰাখিব নালাগে৷</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> ক্ষতিকাৰক বাবে Chromiumএ ইয়াক অৱৰোধ কৰিছে।</translation>
 <translation id="6134968993075716475">সুৰক্ষিত ব্ৰাউজিং অফ আছে। Chromiumএ ইয়াক অন কৰাটো চুপাৰিছ কৰে।</translation>
+<translation id="6145820983052037069">ইয়াত আপুনি Chromiumৰ প্ৰ’ফাইলসমূহৰ মাজত সালসলনি কৰিব পাৰে</translation>
 <translation id="6183079672144801177">আপোনাৰ <ph name="TARGET_DEVICE_NAME" />ত Chromiumত আপুনি ছাইন ইন হৈ থকাটো নিশ্চিত কৰক আৰু তাৰ পাছত পুনৰ পঠিয়াবলৈ চেষ্টা কৰক।</translation>
 <translation id="6212496753309875659">এই কম্পিউটাৰটোত ইতিমধ্যে Chromiumৰ অধিক শেহতীয়া সংস্কৰণ আছে। যদি ছফ্টৱেৰটোৱে কাম কৰা নাই তেন্তে Chromium আনইনষ্টল কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="6219195342503754812">{0,plural, =0{এতিয়া Chromium পুনৰ লঞ্চ হ’ব}=1{১ ছেকেণ্ডত Chromium পুনৰ লঞ্চ হ’ব}one{# ছেকেণ্ডত Chromium পুনৰ লঞ্চ হ’ব}other{# ছেকেণ্ডত Chromium পুনৰ লঞ্চ হ’ব}}</translation>

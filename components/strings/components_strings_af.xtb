@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1003222766972176318">Onthounota: gestoorde aanbieding is beskikbaar</translation>
 <translation id="1008557486741366299">Nie nou nie</translation>
 <translation id="100957008357583611">Gebruik jou ligging?</translation>
 <translation id="1010200102790553230">Laai bladsy later</translation>
@@ -254,6 +255,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1807246157184219062">Lig</translation>
 <translation id="1807528111851433570">Beginbladsy</translation>
 <translation id="1812527064848182527">landskap</translation>
+<translation id="1814698615734239189">Hierdie program is vir mobiele toestelle ontwerp. Dit loop tans in 'n versoenbaarheidmodus. As grootteverandering toegelaat word, kan probleme voorkom, insluitend herbegin van program</translation>
 <translation id="1821930232296380041">Ongeldige versoeke of versoekparameters</translation>
 <translation id="1822540298136254167">Webwerwe wat jy besoek en waar jy tyd deurbring</translation>
 <translation id="1826516787628120939">Gaan tans na</translation>
@@ -274,7 +276,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1914326953223720820">Dekompakteer diens</translation>
 <translation id="1915697529809968049">Gebruik Touch ID pleks van CVC?</translation>
 <translation id="1916770123977586577">Herlaai hierdie bladsy om jou opgedateerde instellings op hierdie werf toe te pas</translation>
-<translation id="1917876262703816781">'n Dataskending op 'n werf of program het jou wagwoord blootgestel. Chrome beveel aan dat jy jou wagwoord op <ph name="ORIGIN" /> nou verander.</translation>
 <translation id="1919345977826869612">Advertensies</translation>
 <translation id="1919367280705858090">Kry hulp met 'n spesifieke foutboodskap</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Geen}=1{1 werf}other{# werwe}}</translation>
@@ -602,6 +603,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3268451620468152448">Maak oortjies oop</translation>
 <translation id="3270847123878663523">Ontdoen herrangskikking</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3282085321714087552">Jou organisasie, <ph name="ENROLLMENT_DOMAIN" />, het sommige inligting, soos instellings of beleide, na die volgende webwerwe gestuur.</translation>
 <translation id="3282497668470633863">Voeg naam op kaart by</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3287510313208355388">Laai af wanneer jy aanlyn is</translation>
@@ -917,7 +919,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4358461427845829800">Bestuur betaalmetodes …</translation>
 <translation id="4359160567981085931">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chrome kan help. Klik Beskerm Rekening om jou wagwoord te verander en stel Google in kennis dat jou rekening dalk in gevaar is.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{'n Dataskending op 'n werf of program het jou gestoorde wagwoord vir <ph name="ORIGIN" /> blootgestel. Chrome beveel aan dat jy jou wagwoord op <ph name="ORIGIN" /> nou verander.}=1{'n Dataskending op 'n werf of program het jou gestoorde wagwoord vir <ph name="ORIGIN" /> en een ander werf blootgestel. Chrome beveel aan dat jy jou gestoorde wagwoorde nou nagaan.}other{'n Dataskending op 'n werf of program het jou gestoorde wagwoord vir <ph name="ORIGIN" /> en <ph name="SITES_COUNT" /> ander werwe blootgestel. Chrome beveel aan dat jy jou gestoorde wagwoorde nou nagaan.}}</translation>
 <translation id="437058704415269440">Rekeningsaldo</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Verwagte <ph name="VALUE_TYPE" />-waarde.</translation>
@@ -935,6 +936,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4434045419905280838">Opspringers en herleidings</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Die gebruik van 'n instaanbediener is gedeaktiveer, maar 'n eksplisiete instaanbedieneropstelling word gespesifiseer.</translation>
+<translation id="4464826014807964867">Webwerwe met inligting van jou organisasie</translation>
 <translation id="4466881336512663640">Vormveranderinge sal verloor word. Is jy seker jy wil voortgaan?</translation>
 <translation id="4476953670630786061">Hierdie vorm is nie veilig nie. Outovul is afgeskakel.</translation>
 <translation id="4477350412780666475">Volgende snit</translation>
@@ -1157,7 +1159,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5287456746628258573">Hierdie werf gebruik 'n verouderde sekuriteitopstelling, wat jou inligting (byvoorbeeld, wagwoorde en kredietkaartnommers) kan blootstel wanneer dit na hierdie werf toe gestuur word.</translation>
 <translation id="5288108484102287882">Bevestiging van beleidswaardes het waarskuwings veroorsaak</translation>
 <translation id="5289384342738547352">Hantering van veelvuldige dokumente</translation>
-<translation id="5295292838686006428">'n Dataskending op 'n werf of program het jou wagwoord blootgestel. Chrome beveel aan dat jy jou gestoorde wagwoorde nou nagaan.</translation>
 <translation id="5299298092464848405">Kon nie beleid ontleed nie</translation>
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5306593769196050043">Albei blaaie</translation>
@@ -1697,7 +1698,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7473891865547856676">Nee, dankie</translation>
 <translation id="7481312909269577407">Vorentoe</translation>
 <translation id="7485870689360869515">Geen data gevind nie.</translation>
-<translation id="7495290002932347110">'n Dataskending op 'n werf of program het jou wagwoord blootgestel. Chrome beveel aan dat jy jou gestoorde wagwoorde nagaan en jou wagwoord op <ph name="ORIGIN" /> nou verander.</translation>
 <translation id="7495528107193238112">Hierdie inhoud is geblokkeer. Kontak die werfeienaar om die kwessie reg te stel.</translation>
 <translation id="7498234416455752244">Hou aan wysig</translation>
 <translation id="7503664977220660814">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chromium beveel aan dat jy jou gestoorde wagwoorde vir <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> en ander werwe waar jy hierdie wagwoord gebruik, nou nagaan.</translation>
@@ -1884,6 +1884,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8157295877370077682">Verlaat werf</translation>
 <translation id="8163866351304776260">Vierpons links</translation>
 <translation id="8175796834047840627">Chrome bied aan om jou kaarte in jou Google-rekening te stoor omdat jy aangemeld is. Jy kan hierdie gedrag in instellings verander.</translation>
+<translation id="8176440868214972690">Die administrateur van hierdie toestel het sommige inligting, soos instellings of beleide, na die volgende webwerwe gestuur.</translation>
 <translation id="8184538546369750125">Gebruik globale verstek (Laat toe)</translation>
 <translation id="8194797478851900357">Ontdoen skuif</translation>
 <translation id="8201077131113104583">Ongeldige opdatering-URL vir uitbreiding met ID "<ph name="EXTENSION_ID" />".</translation>
@@ -1898,6 +1899,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8225771182978767009">Die persoon wat hierdie rekenaar opgestel het, het besluit om hierdie werf te blokkeer.</translation>
 <translation id="8228419419708659934">Tweebladsyaansig</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230159728600632642">Moet my nie weer vir hierdie program vra nie</translation>
 <translation id="8232343881378637145">Platformtemperatuur</translation>
 <translation id="8238581221633243064">Maak bladsy in nuwe incognito-oortjie oop</translation>
 <translation id="8241707690549784388">Die bladsy wat jy soek, het inligting gebruik wat jy ingevoer het. As jy na daardie bladsy terugkeer, kan van die handelinge wat jy uitgevoer het, herhaal word. Wil jy voortgaan?</translation>
@@ -2051,6 +2053,7 @@ Bykomende besonderhede:
 <translation id="8798099450830957504">Verstek</translation>
 <translation id="8805819170075074995">Lysinskrywing "<ph name="LANGUAGE_ID" />": Inskrywing word geïgnoreer omdat dit ook by die SpellcheckLanguage-beleid ingesluit word.</translation>
 <translation id="8807160976559152894">Knip ná elke bladsy</translation>
+<translation id="881292005876822445">Aktiveer maksimering?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om Chrome vanuit jou Chrome-instellings op te dateer</translation>
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="883848425547221593">Ander boekmerke</translation>

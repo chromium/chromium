@@ -208,7 +208,7 @@
 <translation id="5372659122375744710">WiFi şəbəkəsi güvənli deyil</translation>
 <translation id="5401938042319910061">Bütün Rejimləri İşə Salın</translation>
 <translation id="5423849171846380976">Aktivləşdirildi</translation>
-<translation id="5430931332414098647">Ani Birləşmə</translation>
+<translation id="5430931332414098647">Cəld modem rejimi</translation>
 <translation id="5431318178759467895">Rəng</translation>
 <translation id="5431825016875453137">VPN / L2TP açın</translation>
 <translation id="5457599981699367932">Qonaq kimi gözdən keçirin</translation>
@@ -272,7 +272,6 @@
 <translation id="6766275201586212568">DNS həlləri alınmadı</translation>
 <translation id="6768237774506518020">DNS həllinin alınmama faizi yüksəkdir</translation>
 <translation id="6853312040151791195">Deşarj faizi</translation>
-<translation id="6898743098396957679">Skanlamanı tamamlamaq mümkün olmadı</translation>
 <translation id="6911383237894364323">Media serverlərinə qoşulmaq olmur</translation>
 <translation id="6957231940976260713">Xidmət adı</translation>
 <translation id="6977381486153291903">Mikro proqram versiyası</translation>
@@ -363,7 +362,7 @@
 <translation id="8919837981463578619">Alınmadı - Altlıq yoxdur</translation>
 <translation id="8928727111548978589">Alınmadı - Kağız yoxdur</translation>
 <translation id="8930622219860340959">Simsiz</translation>
-<translation id="8968751544471797276">Şarj faizi</translation>
+<translation id="8968751544471797276">Şarj sürəti</translation>
 <translation id="8970109610781093811">Yenidən icra edin</translation>
 <translation id="9003704114456258138">Tezlik</translation>
 <translation id="9039663905644212491">PEAP</translation>

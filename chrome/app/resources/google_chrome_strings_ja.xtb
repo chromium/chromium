@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome ベータ版</translation>
 <translation id="1399397803214730675">新しいバージョンの Google Chrome が既にインストールされています。ソフトウェアが動作しない場合は、Google Chrome をアンインストールしてからもう一度お試しください。</translation>
 <translation id="1434626383986940139">Chrome Canary アプリ</translation>
+<translation id="1507198376417198979">新しい Chrome プロフィールをカスタマイズ</translation>
 <translation id="1516530951338665275">Google Chrome でペアリングを続行するには、Bluetooth へのアクセスが必要です。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> さんはこの Chrome プロファイルにすでにログインしています。<ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chrome プロファイルが作成されます。</translation>
@@ -210,6 +211,7 @@
 <translation id="6943584222992551122">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
 <translation id="6967962315388095737">mDNS トラフィックを許可する Google Chrome ベータ版のインバウンド ルールです。</translation>
 <translation id="6989339256997917931">Google Chrome が更新されましたが、30 日間以上使用されていません。</translation>
+<translation id="7025800014283535195">こちらで Chrome プロフィールを切り替えることができます</translation>
 <translation id="7062128746136194023">保護者が Chrome の「サイト、アプリ、拡張機能の権限」をオフにしました。この <ph name="EXTENSION_TYPE_PARAMETER" /> を追加することはできません。</translation>
 <translation id="7098166902387133879">Google Chrome がマイクを使用しています。</translation>
 <translation id="7106741999175697885">タスク マネージャ - Google Chrome</translation>
@@ -287,4 +289,5 @@
 <translation id="922152298093051471">Chrome をカスタマイズ</translation>
 <translation id="940313311831216333">お使いのすべてのデバイスで Chrome の設定やデータを使用するには、ログインして同期を有効にしてください。</translation>
 <translation id="989369509083708165">既定のブラウザは Google Chrome です</translation>
+<translation id="989816563149873169">Chrome プロフィールを切り替えるには、<ph name="SHORTCUT" /> を使用します</translation>
 </translationbundle>

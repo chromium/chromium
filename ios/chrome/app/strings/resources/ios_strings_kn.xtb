@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">ಪುಟವನ್ನು ಹಂಚಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="2923448633003185837">ಅಂಟಿಸಿ ಮತ್ತು ಹೋಗಿ</translation>
 <translation id="292639812446257861">ಓದದಿರುವುದು ಎಂಬಂತೆ ಗುರುತಿಸಿ</translation>
+<translation id="2932085390869194046">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೂಚಿಸಿ...</translation>
 <translation id="2952581218264071393">1. Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2958718410589002129">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="2964349545761222050">ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">ಈ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕಿಗಳನ್ನು ನಿರ್ವಹಿಸಲು, <ph name="BEGIN_LINK" />ಕುಕಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
 <translation id="5490005495580364134">ಎಲ್ಲಾ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿಲ್ಲ)</translation>
 <translation id="5508435575041083207">ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತು ಈ ಸಾಧನದಲ್ಲಿರುವ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> ಗಂಟೆಯ ಹಿಂದೆ</translation>
 <translation id="5525269841082836315">ಪಾಸ್‌ಫ್ರೇಸ್ ರಚಿಸಿ</translation>
 <translation id="5548760955356983418">ಹ್ಯಾಂಡ್ಆಫ್ ವೆಬ್‌ಸೈಟ್ ಈ ಸಾಧನದಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ನಂತರ ನಿಮ್ಮ Mac ನಲ್ಲಿ ಸುಲಭವಾಗಿ ಮುಂದುವರಿಸಲು ಅನುಮತಿಸುತ್ತದೆ. ಪ್ರಸ್ತುತ ತೆರೆದ ವೆಬ್‌ಸೈಟ್ ನಿಮ್ಮ Mac ನಲ್ಲಿನ ಡಾಕ್‌ನಲ್ಲಿ ಗೋಚರಿಸುತ್ತದೆ.
 
@@ -759,7 +761,6 @@
 <translation id="8806823403540278281">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಯ ಪ್ರಕಾರ ನೀವು ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ. ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗುವುದಿಲ್ಲ.
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
-<translation id="8823704566850948458">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೂಚಿಸಿ...</translation>
 <translation id="8840513115188359703">ನಿಮ್ಮನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡುವುದಿಲ್ಲ.</translation>
 <translation id="8870413625673593573">ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಿರುವುದು</translation>
 <translation id="8881801611828450202">ಈ ಚಿತ್ರಕ್ಕಾಗಿ <ph name="SEARCH_ENGINE" /> ನಲ್ಲಿ ಹುಡುಕಿ</translation>
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">QR ಕೋಡ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="9157836665414082580">ಸಂವಾದಗಳನ್ನು ನಿಗ್ರಹಿಸಿ</translation>
 <translation id="9188680907066685419">ನಿರ್ವಹಿಸಲಾದ ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> ದಿ ಹಿಂದೆ</translation>
 <translation id="9203116392574189331">ಹ್ಯಾಂಡ್ಆಫ್</translation>
 <translation id="9223358826628549784">ಕ್ರ್ಯಾಶ್ ವರದಿಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
 <translation id="952704832371081537">ರದ್ದುಮಾಡಿ</translation>

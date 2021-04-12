@@ -18,6 +18,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="137466361146087520">Google Chrome beta verzie</translation>
 <translation id="1399397803214730675">Tento počítač už obsahuje novšiu verziu prehliadača Google Chrome. Ak softvér nefunguje, odinštalujte prehliadač Google Chrome a skúste to znova.</translation>
 <translation id="1434626383986940139">Aplikácie Chrome Canary</translation>
+<translation id="1507198376417198979">Prispôsobte svoj nový profil Chromu</translation>
 <translation id="1516530951338665275">Prehliadač Google Chrome potrebuje prístup k rozhraniu Bluetooth, aby mohol pokračovať 
  v párovaní. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Aktualizovať Chrome</translation>
@@ -216,6 +217,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6943584222992551122">Dáta prehliadania tejto osoby sa odstránia z tohto zariadenia. Ak ich budete chcieť obnoviť, prihláste sa do Chromu ako <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Pravidlo pre prichádzajúce prenosy pre prehliadač Google Chrome beta verzie, ktoré povoľuje prenos dát mDNS.</translation>
 <translation id="6989339256997917931">Prehliadač Google Chrome bol aktualizovaný, ale najmenej 30 dní ste ho nepoužili.</translation>
+<translation id="7025800014283535195">Tu môžete prepínať profily Chromu</translation>
 <translation id="7062128746136194023">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v Chrome. Pridanie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) nie je povolené.</translation>
 <translation id="7098166902387133879">Google Chrome používa váš mikrofón.</translation>
 <translation id="7106741999175697885">Správca úloh – Google Chrome</translation>
@@ -293,4 +295,5 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="922152298093051471">Prispôsobiť Chrome</translation>
 <translation id="940313311831216333">Ak chcete získať prístup k obsahu Chromu vo všetkých svojich zariadeniach, prihláste sa a zapnite synchronizáciu.</translation>
 <translation id="989369509083708165">Google Chrome je vaším predvoleným prehliadačom</translation>
+<translation id="989816563149873169">Skratkou <ph name="SHORTCUT" /> môžete prepínať profily Chromu</translation>
 </translationbundle>

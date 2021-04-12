@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">Vorschlag: <ph name="NUMBER_OF_TABS" /> von Ihren Tabs wurden längere Zeit nicht verwendet. Möchten Sie sie schließen?</translation>
 <translation id="257674075312929031">Gruppe</translation>
 <translation id="2613747923081026172">Gruppe erstellen</translation>
+<translation id="2662028055331606429">Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="2671423594960767771">Gruppe teilen</translation>
 <translation id="2759453070259087442">Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="NUMBER_OF_TABS" /> Tabs maximieren.</translation>
+<translation id="2801787514987684416">Geschäftsinformationen anzeigen?</translation>
 <translation id="2977480621796371840">Aus Gruppe entfernen</translation>
+<translation id="3194464645767632461">Bewertung</translation>
 <translation id="3291470810748040983">Sie erhalten eine Benachrichtigung, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
 <translation id="3882834874697329510">Falls Sie benachrichtigt werden möchten, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist, aktivieren Sie Benachrichtigungen in den Einstellungen.</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">Weitersurfen</translation>
 <translation id="4450893287417543264">Nicht mehr anzeigen</translation>
 <translation id="4648718555153979859">Ihre Tabs werden hier in Gruppen zusammengefasst</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> Rezension)}other{(<ph name="REVIEWS_COUNT_MANY" /> Rezensionen)}}</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="492284538114688557">Preisnachlass entdeckt</translation>
 <translation id="5007392906805964215">Ansehen</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">Sie können Seiten schnell miteinander vergleichen, indem Sie eine Gruppe erstellen. Berühren und halten Sie einen Link, um den Vorgang zu starten.</translation>
 <translation id="5490235265819901748">Tabgruppe maximiert</translation>
 <translation id="5533021382642990449">Später anzeigen</translation>
+<translation id="5556417849629758491">Geschäftsinformationen anzeigen, Option ist oben auf dem Bildschirm verfügbar</translation>
 <translation id="5558362125926932819">Tabgruppe mit <ph name="NUMBER_OF_TABS" /> Tabs schließen</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> Tabs gruppiert</translation>
 <translation id="575494663145460764">Benachrichtigungen bei Preisnachlässen erhalten?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">Tabs der Gruppe in Vollbildraster anzeigen</translation>
 <translation id="7792771145871471484">Vorschläge ansehen.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab gruppieren}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs gruppieren}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> Rezension}other{Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> Rezensionen}}</translation>
 <translation id="7885132941432959125">Tab nach rechts verschieben</translation>
 <translation id="7966321538264951561">Vorschläge ablehnen.</translation>
 <translation id="814503310257431685">Alle anzeigen</translation>

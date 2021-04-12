@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chromen betaversio</translation>
 <translation id="1399397803214730675">Tietokoneessa on jo Google Chromen uudempi versio. Jos sovellus ei toimi, poista Google Chrome ja yritä uudelleen.</translation>
 <translation id="1434626383986940139">Chrome Canary -sovellukset</translation>
+<translation id="1507198376417198979">Muokkaa uusi Chrome-profiili näköiseksesi</translation>
 <translation id="1516530951338665275">Google Chrome tarvitsee Bluetoothia jatkaakseen
  laiteparin muodostusta. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Päivitä Chrome</translation>
@@ -211,6 +212,7 @@
 <translation id="6943584222992551122">Käyttäjän selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Google Chromen betaversion saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="6989339256997917931">Google Chrome on päivitetty, mutta et ole käyttänyt sitä ainakaan 30 päivään.</translation>
+<translation id="7025800014283535195">Voit vaihdella Chrome-profiilien välillä täällä</translation>
 <translation id="7062128746136194023">Vanhempasi ovat laittaneet Chromen sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Lisäämistä (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
 <translation id="7098166902387133879">Google Chrome käyttää mikrofoniasi.</translation>
 <translation id="7106741999175697885">Tehtävänhallinta - Google Chrome</translation>
@@ -288,4 +290,5 @@
 <translation id="922152298093051471">Yksilöi Chromea</translation>
 <translation id="940313311831216333">Jos haluat pääsyn Chrome-sisältöösi kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>
 <translation id="989369509083708165">Google Chrome on oletusselaimesi.</translation>
+<translation id="989816563149873169">Valitsemalla <ph name="SHORTCUT" /> voit vaihdella eri Chrome-profiilien välillä</translation>
 </translationbundle>

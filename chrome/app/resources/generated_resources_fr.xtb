@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> vous recommande de mettre à jour ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Échec de l'identification du modèle ou du numéro de série de l'appareil.</translation>
 <translation id="1119447706177454957">Erreur interne.</translation>
-<translation id="111959947408687873">Appuyez sur Ctrl+<ph name="SEARCH_KEY_NAME" />+M pour activer/désactiver la loupe plein écran. Appuyez sur Ctrl+Alt+Touches fléchées pour vous déplacer après avoir fait un zoom avant.</translation>
 <translation id="1122068467107743258">Travail</translation>
 <translation id="1122198203221319518">&amp;Outils</translation>
 <translation id="1122242684574577509">Échec de l'authentification. Cliquez ici pour accéder à la page de connexion du réseau Wi-Fi que vous utilisez (<ph name="NETWORK_ID" />).</translation>
@@ -427,7 +426,6 @@
 <translation id="146000042969587795">Ce cadre a été bloqué, car il contient des éléments non sécurisés.</translation>
 <translation id="146219525117638703">État ONC</translation>
 <translation id="146220085323579959">Internet a été déconnecté. Veuillez vérifier votre connexion, puis réessayer.</translation>
-<translation id="1463051728820430132">Demander quand une appli Web souhaite ouvrir certains types de fichiers sur votre appareil</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> a été bloqué par la Protection Avancée.</translation>
 <translation id="1464044141348608623">Ne pas autoriser les sites à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="1464258312790801189">Vos comptes</translation>
@@ -1027,6 +1025,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="211144231511833662">Effacer les types</translation>
 <translation id="2111670510994270194">Nouvel onglet à droite</translation>
 <translation id="2111810003053064883">Les annonceurs peuvent évaluer l'efficacité des annonces sans utiliser de suivi intersites.</translation>
+<translation id="2112554630428445878">Bienvenue <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2113479184312716848">&amp;Ouvrir un fichier...</translation>
 <translation id="2113921862428609753">Accès aux informations de l'autorité</translation>
@@ -1092,7 +1091,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour vous connecter à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre contacteur</translation>
 <translation id="2165421703844373933">Accédez à l'Assistant en disant "Ok Google". Pour économiser la batterie, sélectionnez “Activé (recommandé)”. L'Assistant ne répondra que lorsque votre appareil sera branché ou en charge.</translation>
-<translation id="2166269335975661317">Les applis Web peuvent demander l'autorisation d'ouvrir certains types de fichiers sur votre appareil</translation>
 <translation id="2166369534954157698">Voici à quoi ressemblera votre texte.</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Se connecter quand même</translation>
@@ -1971,7 +1969,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="313205617302240621">Mot de passe oublié ?</translation>
 <translation id="3132277757485842847">Nous n'avons pas pu maintenir la connexion avec votre téléphone. Vérifiez qu'il est déverrouillé et à proximité, et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
-<translation id="3134393957315651797">Sélectionnez l'état du test pour <ph name="EXPERIMENT_NAME" />. Description du test : <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Code PIN incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="313963229645891001">Téléchargement en cours : <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar jaune par défaut</translation>
@@ -2644,6 +2641,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3882165008614329320">Vidéo existante filmée avec la caméra ou lue à partir d'un fichier</translation>
 <translation id="3884152383786131369">Le contenu Web disponible dans plusieurs langues vous sera proposé dans la première langue disponible de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Les mises à jour sont gérées par votre administrateur</translation>
 <translation id="3886446263141354045">Votre demande d'accès à ce site a bien été envoyée à <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Prise de notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Ces informations nous aident à mieux comprendre le problème que vous rencontrez avec l'Assistant. Elles sont conservées pendant 90 jours au maximum et ne peuvent être consultées que par nos ingénieurs et nos équipes responsables du traitement des commentaires.</translation>
@@ -4466,7 +4464,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5990266201903445068">Wi-Fi uniquement</translation>
 <translation id="5990386583461751448">Traduite</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}one{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}other{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer ces applications.}}</translation>
-<translation id="5992175324932183568">Ne pas autoriser les applis Web à ouvrir certains types de fichiers sur votre appareil</translation>
 <translation id="5997337190805127100">En savoir plus sur l'accès aux sites</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Déplacer le groupe vers une nouvelle fenêtre</translation>
@@ -4588,7 +4585,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6124213551517593835">L'ensemble des données et des cookies stockés par <ph name="SITE_GROUP_NAME" />, ainsi que les sites lui appartenant, seront effacés</translation>
 <translation id="6124650939968185064">Les extensions suivantes dépendent de cette extension :</translation>
 <translation id="6124698108608891449">Ce site a besoin d'autres autorisations.</translation>
-<translation id="6125442051901189730">Aucun profil SIM n'est disponible. Configurez un nouveau profil <ph name="BEGIN_LINK" />ici<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Malheureusement, vous devrez ajouter à nouveau votre compte sur cet appareil <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Les données sélectionnées ont été supprimées de Chrome et des appareils synchronisés. Votre compte Google conserve peut-être d'autres formes d'historique de navigation, comme vos recherches ou vos activités via d'autres services Google sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Commentaire du certificat Netscape</translation>
@@ -4853,7 +4849,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6429384232893414837">Erreur de mise à jour</translation>
 <translation id="6430814529589430811">Certificat unique codé Base 64 ASCII</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> va configurer les mises à jour automatiques pour tous les utilisateurs de cet ordinateur.</translation>
-<translation id="6434104957329207050">Vitesse de recherche des points</translation>
+<translation id="6434104957329207050">Vitesse de l'exploration par position</translation>
 <translation id="6434309073475700221">Supprimer</translation>
 <translation id="6434325376267409267">Vous devez mettre à jour votre appareil avant de pouvoir utiliser <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Afficher dans le Web Store</translation>
@@ -6404,7 +6400,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8147900440966275470"><ph name="NUM" /> onglet trouvé</translation>
 <translation id="8148760431881541277">Limiter les connexions</translation>
 <translation id="8149564499626272569">Valider via votre téléphone avec un câble USB</translation>
-<translation id="8150259863378108853">Lacros est un navigateur expérimental. Si vous relevez un problème, sélectionnez Aide &gt; Signaler un problème</translation>
 <translation id="8151638057146502721">Configurer</translation>
 <translation id="8154790740888707867">Fichier introuvable.</translation>
 <translation id="815491593104042026">Petit problème… L'authentification a échoué, car elle a été configurée pour utiliser une URL non sécurisée (<ph name="BLOCKED_URL" />). Veuillez contacter votre administrateur.</translation>
@@ -6589,8 +6584,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8368859634510605990">&amp;Ouvrir tous les favoris</translation>
 <translation id="8370294614544004647">Mettre en veille lorsque l'ordinateur portable est fermé</translation>
 <translation id="8371695176452482769">Parlez maintenant.</translation>
-<translation id="8371749822919332187">Appuyez sur Ctrl+Alt+Augmenter la luminosité pour faire un zoom avant.
-Appuyez sur Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Couper le son du site}one{Couper le son du site}other{Couper le son des sites}}</translation>
 <translation id="8372369524088641025">Clé WEP incorrecte</translation>
 <translation id="8373652277231415614">Répertoires partagés par Crostini</translation>
@@ -6615,7 +6608,6 @@ Appuyez sur Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</trans
 <translation id="8398877366907290961">Poursuivre quand même</translation>
 <translation id="8400146488506985033">Gérer les utilisateurs</translation>
 <translation id="8401432541486058167">Utilisez le code associé à votre carte à puce.</translation>
-<translation id="8403562727702715619">Récemment à partir de Google Drive</translation>
 <translation id="8405046151008197676">Découvrez les nouveautés de la dernière mise à jour</translation>
 <translation id="8407199357649073301">Niveau de consignation :</translation>
 <translation id="8408068190360279472">Réseau <ph name="NETWORK_TYPE" /> : connexion…</translation>
@@ -7403,7 +7395,6 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="975893173032473675">Langue cible</translation>
 <translation id="976499800099896273">Le mot "<ph name="TYPED_WORD" />" a été remplacé automatiquement par "<ph name="CORRECTED_WORD" />". Dans la boîte de dialogue qui s'affiche, appuyez sur la flèche vers le haut pour accepter cette correction ou sur la touche Échap pour l'ignorer.</translation>
 <translation id="978146274692397928">La largeur de ponctuation initiale est Complète</translation>
-<translation id="97883469867914488">Empêcher les applis Web d'ouvrir certains types de fichiers sur votre appareil</translation>
 <translation id="97905529126098460">Cette fenêtre se fermera une fois l'installation annulée.</translation>
 <translation id="980731642137034229">Bouton du menu d'actions</translation>
 <translation id="981121421437150478">Hors connexion</translation>

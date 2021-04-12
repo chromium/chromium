@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">‏يستخدم Chromium الميكروفون.</translation>
 <translation id="3155163173539279776">‏إعادة تشغيل Chromium</translation>
 <translation id="3179665906251668410">‏فتح الرابط في نافذة تصفح متخفٍ في Chromium</translation>
+<translation id="3185330573522821672">‏يمكنك الآن تخصيص ملفك الشخصي الجديد على Chromium.</translation>
 <translation id="3190315855212034486">‏للأسف! تعطل Chromium. هل تريد إعادة التشغيل الآن؟</translation>
 <translation id="3229526316128325841">‏يرغب Chromium في تصدير كلمات المرور.</translation>
 <translation id="3258596308407688501">‏يتعذر على Chromium القراءة والكتابة في دليل البيانات الخاص به:
@@ -74,6 +75,7 @@
 <translation id="3430503420100763906">‏باستخدام الملفات الشخصية على Chromium، يمكنك الفصل بين جميع بيانات Chromium. ويمكنك إنشاء ملفات شخصية للأصدقاء والعائلة أو تقسيمها للعمل وأغراض الترفيه.</translation>
 <translation id="347328004046849135">‏في حال تسجيل الدخول باستخدام كلمة مرور محتمَل تعرّضها للاختراق، سيرسل Chromium إشعارًا إليك.</translation>
 <translation id="3474745554856756813">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chromium كـ <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931">‏يعمل الاختصار <ph name="SHORTCUT" /> على التبديل بين الملفات الشخصية على Chromium.</translation>
 <translation id="3509308970982693815">‏يُرجى إغلاق جميع نوافذ Chromium وإعادة المحاولة.</translation>
 <translation id="3575459661164320785">‏هناك برنامج ضار على جهاز الكمبيوتر. ويمكن لمتصفِّح Chrome إزالته واستعادة إعداداتك وإيقاف الإضافات لكي يعمل متصفِّحك بشكلٍ طبيعي من جديد.</translation>
 <translation id="3639635944603682591">‏ستُحذَف بيانات تصفُّح هذا المستخدم من هذا الجهاز. ولاسترداد البيانات، سجّل الدخول إلى Chromium بصفتك <ph name="USER_EMAIL" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="6120345080069858279">‏سيحفظ Chromium كلمة المرور هذه في حسابك على Google ولن تحتاج تذكّرها.</translation>
 <translation id="6129621093834146363">‏ملف <ph name="FILE_NAME" /> ضار، لذلك فقد حظره Chromium.</translation>
 <translation id="6134968993075716475">‏تم إيقاف "التصفّح الآمن" ويقترح متصفّح Chrome تفعيله.</translation>
+<translation id="6145820983052037069">‏يمكنك من هنا التبديل بين الملفات الشخصية على Chromium.</translation>
 <translation id="6183079672144801177">‏يُرجى التأكُّد من تسجيل الدخول إلى متصفِّح Chromium على جهازك <ph name="TARGET_DEVICE_NAME" /> ثم محاولة الإرسال مرة أخرى.</translation>
 <translation id="6212496753309875659">‏يحتوي هذا الكمبيوتر فعلاً على إصدار أحدث من Chromium. إذا كان البرنامج لا يعمل، يُرجى إزالة Chromium وإعادة المحاولة.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏ستتم إعادة تشغيل Chromium الآن}=1{‏ستتم إعادة تشغيل Chromium في غضون ثانية واحدة}two{‏ستتم إعادة تشغيل Chromium في غضون ثانيتين}few{‏ستتم إعادة تشغيل Chromium في غضون # ثوان}many{‏ستتم إعادة تشغيل Chromium في غضون # ثانيةً}other{‏ستتم إعادة تشغيل Chromium في غضون # ثانية}}</translation>

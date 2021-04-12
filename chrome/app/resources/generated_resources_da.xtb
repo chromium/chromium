@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> anbefaler, at du opdaterer denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Systemet kunne ikke bestemme enhedsmodellen eller serienummeret.</translation>
 <translation id="1119447706177454957">Intern fejl</translation>
-<translation id="111959947408687873">Brug Ctrl+<ph name="SEARCH_KEY_NAME" />+M for at slå forstørrelse af fuld skærm til/fra. Brug Ctrl+Alt+piletasterne til at bevæge dig rundt på skærmen, når der er zoomet ind.</translation>
 <translation id="1122068467107743258">Arbejde</translation>
 <translation id="1122198203221319518">&amp;Værktøjer</translation>
 <translation id="1122242684574577509">Godkendelsen mislykkedes. Klik for at gå til loginsiden for det Wi-Fi-netværk, du bruger (<ph name="NETWORK_ID" />).</translation>
@@ -427,7 +426,6 @@
 <translation id="146000042969587795">Denne ramme blev blokeret, da den indeholder usikkert indhold.</translation>
 <translation id="146219525117638703">ONC-tilstand</translation>
 <translation id="146220085323579959">Forbindelsen til internettet blev afbrudt. Kontrollér din internetforbindelse, og prøv igen.</translation>
-<translation id="1463051728820430132">Spørg, når en webapp vil åbne typer af filer på din enhed</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> blev blokeret af Avanceret beskyttelse.</translation>
 <translation id="1464044141348608623">Tillad ikke, at websites ved, hvornår du aktivt bruger din enhed</translation>
 <translation id="1464258312790801189">Dine konti</translation>
@@ -1027,6 +1025,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="211144231511833662">Ryd typer</translation>
 <translation id="2111670510994270194">Ny fane i højre side</translation>
 <translation id="2111810003053064883">Annoncører kan undersøge effektiviteten af annoncer på en måde, der ikke sporer dig på tværs af forskellige websites.</translation>
+<translation id="2112554630428445878">Velkommen, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fastgør fane</translation>
 <translation id="2113479184312716848">Åbn &amp;fil...</translation>
 <translation id="2113921862428609753">Adgang til autoritetsoplysninger</translation>
@@ -1092,7 +1091,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2163470535490402084">Du skal oprette forbindelse til internettet for at kunne logge ind på din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 anden kontakt</translation>
 <translation id="2165421703844373933">Få adgang til din Google-assistent, når du siger "Hey Google". Du kan spare på batteriet ved at vælge "Til (anbefales)". Google-assistenten svarer kun, når din enhed oplader eller er sluttet til en strømkilde.</translation>
-<translation id="2166269335975661317">Webapps kan anmode om at åbne typer af filer fra din enhed</translation>
 <translation id="2166369534954157698">Quizdeltagerne spiste jordbær med fløde, mens cirkusklovnen Walther spillede på xylofon</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Log ind alligevel</translation>
@@ -1971,7 +1969,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="313205617302240621">Har du glemt din adgangskode?</translation>
 <translation id="3132277757485842847">Vi kunne ikke bevare forbindelsen til din telefon. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
 <translation id="3132996321662585180">Opdater dagligt</translation>
-<translation id="3134393957315651797">Vælg eksperimenttilstand for eksperimentet <ph name="EXPERIMENT_NAME" />. Beskrivelse af eksperiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Pinkoden er ugyldig. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="313963229645891001">Downloader – <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gul standardavatar</translation>
@@ -2644,6 +2641,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3881478300875776315">Vis færre linjer</translation>
 <translation id="3882165008614329320">Eksisterende video fra kamera eller fil</translation>
 <translation id="3884152383786131369">Webindhold, som er tilgængeligt på flere sprog, vises på det første understøttede sprog på denne liste. Disse præferencer synkroniseres med dine browserindstillinger. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Opdateringer administreres af din administrator.</translation>
 <translation id="3886446263141354045">Din anmodning om adgang til dette website er blevet sendt til <ph name="NAME" />.</translation>
 <translation id="3888550877729210209">Notetagning med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Disse oplysninger hjælper os til bedre at forstå dit problem med Assistent. Oplysningerne opbevares i op til 90 dage, og adgangen til oplysningerne er begrænset til de relevante udvikler- og feedbackteams.</translation>
@@ -4465,7 +4463,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5990266201903445068">Kun Wi-Fi</translation>
 <translation id="5990386583461751448">Oversat</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne denne app.}one{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne denne app.}other{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne disse apps.}}</translation>
-<translation id="5992175324932183568">Tillad ikke, at webapps åbner typer af filer fra din enhed</translation>
 <translation id="5997337190805127100">Få flere oplysninger om websiteadgang</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Flyt gruppe til nyt vindue</translation>
@@ -4587,7 +4584,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6124213551517593835">Denne handling rydder alle de data og cookies, der er gemt af <ph name="SITE_GROUP_NAME" /> og eventuelle websites i denne gruppe</translation>
 <translation id="6124650939968185064">Følgende udvidelser er afhængige af denne udvidelse:</translation>
 <translation id="6124698108608891449">Dette website kræver flere tilladelser.</translation>
-<translation id="6125442051901189730">Der er ingen tilgængelige SIM-profiler Opret en ny profil <ph name="BEGIN_LINK" />her<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Du skal desværre føje din konto til denne <ph name="DEVICE_TYPE" /> igen.</translation>
 <translation id="6129691635767514872">De valgte data er blevet fjernet fra Chrome og synkroniserede enheder. Din Google-konto kan indeholde andre former for browserhistorik, f.eks. søgninger og aktivitet i andre Google-tjenester, på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6129938384427316298">Kommentar til Netscape-certifikat</translation>
@@ -6402,7 +6398,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8147900440966275470">Der blev fundet <ph name="NUM" /> fane</translation>
 <translation id="8148760431881541277">Begræns login</translation>
 <translation id="8149564499626272569">Bekræft via din telefon med et USB-kabel</translation>
-<translation id="8150259863378108853">Lacros er en eksperimentel browser. Du kan rapportere problemer ved at gå til Hjælp &gt; "Rapportér et problem..."</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
 <translation id="8154790740888707867">Ingen fil</translation>
 <translation id="815491593104042026">Ups! Godkendelsen mislykkedes, fordi den var konfigureret til at bruge en webadresse, som ikke er sikker (<ph name="BLOCKED_URL" />). Kontakt din administrator.</translation>
@@ -6587,8 +6582,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8368859634510605990">&amp;Åbn alle bogmærker</translation>
 <translation id="8370294614544004647">Dvale, når skærmen er klappet ned</translation>
 <translation id="8371695176452482769">Indtal nu</translation>
-<translation id="8371749822919332187">Brug Ctrl+Alt+Lydstyrke op for at zoome ind.
-Brug Ctrl+Alt+Lydstyrke ned for at zoome ud.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Slå lyden fra på website}one{Slå lyden fra på website}other{Slå lyden fra på websites}}</translation>
 <translation id="8372369524088641025">Ugyldig WEP-nøgle</translation>
 <translation id="8373652277231415614">Delte indekser i Crostini</translation>
@@ -6613,7 +6606,6 @@ Brug Ctrl+Alt+Lydstyrke ned for at zoome ud.</translation>
 <translation id="8398877366907290961">Fortsæt alligevel</translation>
 <translation id="8400146488506985033">Administrer personer</translation>
 <translation id="8401432541486058167">Brug den pinkode, der hører til dit chipkort.</translation>
-<translation id="8403562727702715619">For nyligt fra Google Drive</translation>
 <translation id="8405046151008197676">Få højdepunkter fra den seneste opdatering</translation>
 <translation id="8407199357649073301">Logfilsniveau:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-netværk, opretter forbindelse</translation>
@@ -7402,7 +7394,6 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="975893173032473675">Sprog, der skal oversættes til</translation>
 <translation id="976499800099896273">Dialogboksen for fortrydelse af automatisk rettelse vises for <ph name="TYPED_WORD" />, som er rettet til <ph name="CORRECTED_WORD" />.  Tryk på pil op for at få adgang til rettelsen, tryk på Escape for at ignorere.</translation>
 <translation id="978146274692397928">Den oprindelige tegnsætningsbredde er Fuld</translation>
-<translation id="97883469867914488">Bloker, at webapps åbner typer af filer på din enhed</translation>
 <translation id="97905529126098460">Dette vindue lukkes, når annulleringen er fuldført.</translation>
 <translation id="980731642137034229">Knappen Handlingsmenu</translation>
 <translation id="981121421437150478">Offline</translation>

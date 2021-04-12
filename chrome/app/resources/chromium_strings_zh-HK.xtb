@@ -62,6 +62,7 @@
 <translation id="3130323860337406239">Chromium 正在使用您的麥克風。</translation>
 <translation id="3155163173539279776">重新啟動 Chromium</translation>
 <translation id="3179665906251668410">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
+<translation id="3185330573522821672">自訂您的新 Chromium 設定檔</translation>
 <translation id="3190315855212034486">Chromium 當機了，要立即重新啟動嗎？</translation>
 <translation id="3229526316128325841">Chromium 想匯出您的密碼。</translation>
 <translation id="3258596308407688501">Chromium 無法讀取及寫入數據目錄：
@@ -76,6 +77,7 @@
 <translation id="3430503420100763906">透過 Chromium 設定檔，您可將所有 Chromium 內容分門別類，例如建立親朋好友專屬的設定檔，或劃分工作和娛樂內容。</translation>
 <translation id="347328004046849135">如果您使用被盜用的密碼登入帳戶，Chromium 會通知您</translation>
 <translation id="3474745554856756813">這會刪除此裝置上的 <ph name="ITEMS_COUNT" /> 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chromium。</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> 可以切換唔同嘅 Chromium 設定檔</translation>
 <translation id="3509308970982693815">請關閉所有 Chromium 視窗，然後再試一次。</translation>
 <translation id="3575459661164320785">在您的電腦上發現有害軟件。Chromium 可移除該軟件、復原設定及停用擴充程式，讓瀏覽器恢復正常運作。</translation>
 <translation id="3639635944603682591">此使用者的瀏覽資料將從裝置上刪除。如要復原資料，請以「<ph name="USER_EMAIL" />」身分登入 Chromium。</translation>
@@ -156,6 +158,7 @@
 <translation id="6120345080069858279">Chromium 會將此密碼儲存在您的 Google 帳戶內，您無需記住。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="6134968993075716475">「安全瀏覽」功能已停用。Chromium 建議啟用此功能。</translation>
+<translation id="6145820983052037069">您可在此處切換不同的 Chromium 設定檔</translation>
 <translation id="6183079672144801177">請確認您已在 <ph name="TARGET_DEVICE_NAME" /> 上登入 Chromium，然後再傳送一次。</translation>
 <translation id="6212496753309875659">這部電腦已安裝較新的 Chromium 版本。如果軟件無法工作，請解除安裝 Chromium，然後再試一次。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium 將立即重新啟動}=1{Chromium 將於 1 秒後重新啟動}other{Chromium 將於 # 秒後重新啟動}}</translation>

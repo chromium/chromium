@@ -18,6 +18,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">V tomto počítači je již nainstalována novější verze prohlížeče Google Chrome. Jestliže software nefunguje, odinstalujte prosím prohlížeč Google Chrome a zkuste to znovu.</translation>
 <translation id="1434626383986940139">Aplikace Chrome Canary</translation>
+<translation id="1507198376417198979">Přizpůsobte si svůj nový profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome potřebuje přístup k Bluetooth, aby bylo možné
  pokračovat v párování. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Aktualizovat Chrome</translation>
@@ -218,6 +219,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6943584222992551122">Ze zařízení budou smazány údaje této osoby o prohlížení. Budete-li je chtít znovu získat, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Pravidlo příchozího provozu pro aplikaci Google Chrome Beta, které povolí provoz mDNS.</translation>
 <translation id="6989339256997917931">Prohlížeč Google Chrome byl aktualizován, ale minimálně po 30 dnů jste jej nepoužili.</translation>
+<translation id="7025800014283535195">Zde můžete přepínat mezi profily Chrome</translation>
 <translation id="7062128746136194023">Tvůj rodič pro Chrome vypnul možnost Oprávnění pro weby, aplikace a rozšíření. Přidání tohoto <ph name="EXTENSION_TYPE_PARAMETER" /> není povoleno.</translation>
 <translation id="7098166902387133879">Google Chrome používá váš mikrofon.</translation>
 <translation id="7106741999175697885">Správce úloh - Google Chrome</translation>
@@ -295,4 +297,5 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="922152298093051471">Přizpůsobit Chrome</translation>
 <translation id="940313311831216333">Chcete-li mít ve všech zařízeních přístup k údajům z prohlížeče Chrome, přihlaste se a zapněte synchronizaci.</translation>
 <translation id="989369509083708165">Google Chrome je vaším výchozím prohlížečem</translation>
+<translation id="989816563149873169">Zkratkou <ph name="SHORTCUT" /> lze přepínat mezi profily Chrome</translation>
 </translationbundle>

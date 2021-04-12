@@ -239,7 +239,6 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2536728043171574184">ಈ ಪುಟದ ಆಫ್‌ಲೈನ್ ನಕಲನ್ನು ವೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2546283357679194313">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
-<translation id="2549341709325358884">ವೈ-ಫೈ ಮತ್ತು ಮೊಬೈಲ್ ಡೇಟಾ ಮಾತ್ರ</translation>
 <translation id="2561519700418191927">ವೀಡಿಯೊ ಪೂರ್ವವೀಕ್ಷಣೆಗಳು</translation>
 <translation id="2567385386134582609">ಚಿತ್ರ</translation>
 <translation id="2571711316400087311">Google Translate ಗೆ ಪುಟಗಳನ್ನು ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಕಳುಹಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಿ</translation>
@@ -752,6 +751,7 @@
 <translation id="5982307838673692400">ಅದೃಶ್ಯ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="6000066717592683814">Google ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6000203700195075278">ಮರು ಅನುಸರಿಸಿ</translation>
+<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />ಹುಡುಕಾಟ<ph name="END_LINK1" /> ಅಥವಾ ಇತರೆ ಫಾರ್ಮ್‌ಗಳ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು, <ph name="BEGIN_LINK2" />ನನ್ನ Google ಚಟುವಟಿಕೆ<ph name="END_LINK2" /> ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="6005538289190791541">ಸೂಚಿಸಿದ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="6036057147555329831">ಹೆಚ್ಚುವರಿ ICU</translation>
 <translation id="6039379616847168523">ಮುಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
@@ -925,6 +925,7 @@
 <translation id="7088681679121566888">Chrome ಅಪ್ ಟು ಡೇಟ್ ಆಗಿದೆ</translation>
 <translation id="7106762743910369165">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
 <translation id="7121362699166175603">ವಿಳಾಸ ಪಟ್ಟಿಯ ಇತಿಹಾಸ ಮತ್ತು ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸುವಿಕೆಯನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ. ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
+<translation id="7134993907760847334">ಎಲ್ಲಾ ಸೈನ್ ಇನ್ ಮಾಡಿದ ಸಾಧನಗಳ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಿ.</translation>
 <translation id="7138678301420049075">ಇತರೆ</translation>
 <translation id="7146622961999026732">ಈ ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳು ನಿಮಗೆ ಮುಖ್ಯವಾದವು ಎನಿಸುತ್ತಿದೆ:</translation>
 <translation id="7149893636342594995">ಕಳೆದ 24 ಗಂಟೆಗಳು</translation>

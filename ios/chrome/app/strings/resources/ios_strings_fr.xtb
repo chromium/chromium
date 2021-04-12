@@ -189,6 +189,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2921219216347069551">Impossible de partager page</translation>
 <translation id="2923448633003185837">Coller et rechercher</translation>
 <translation id="292639812446257861">Marquer comme non lues</translation>
+<translation id="2932085390869194046">Suggérer un mot de passe…</translation>
 <translation id="2952581218264071393">1. Accédez aux paramètres de Chrome</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
 <translation id="2964349545761222050">Bloquer les cookies tiers</translation>
@@ -422,6 +423,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5489208564673669003">Pour gérer les cookies de l'ensemble des sites, consultez la page <ph name="BEGIN_LINK" />Paramètres relatifs aux cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les cookies (non recommandé)</translation>
 <translation id="5508435575041083207">Se déconnecter et effacer les données de cet appareil</translation>
+<translation id="5513681519188741830">Il y a <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Créer une phrase secrète</translation>
 <translation id="5548760955356983418">Avec Handoff, vous pouvez commencer à consulter un site Web sur cet appareil et poursuivre votre lecture facilement sur votre Mac. Le site Web actuellement ouvert apparaît alors dans le Dock.
 
@@ -759,7 +761,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8806823403540278281">Votre organisation exige que vous utilisiez le mode navigation privée. Lorsque ce mode est utilisé, les onglets ne sont pas enregistrés.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Favoris</translation>
-<translation id="8823704566850948458">Suggérer un mot de passe</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="8870413625673593573">Récemment fermés</translation>
 <translation id="8881801611828450202">Chercher cette image sur <ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9152539721251340337">Créer un code QR</translation>
 <translation id="9157836665414082580">Supprimer les boîtes de dialogue</translation>
 <translation id="9188680907066685419">Se déconnecter d'un compte géré</translation>
+<translation id="9200875785104711666">Il y a <ph name="TIME" /> j</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Le rapport d'erreur a bien été envoyé.</translation>
 <translation id="952704832371081537">Annuler</translation>

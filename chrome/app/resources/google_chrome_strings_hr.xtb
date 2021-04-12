@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Beta verzija preglednika Chrome</translation>
 <translation id="1399397803214730675">Na ovom računalu već postoji novija verzija programa Google Chrome. Ako softver ne radi, deinstalirajte Google Chrome i pokušajte ponovo.</translation>
 <translation id="1434626383986940139">Aplikacije kanala Chrome Canary</translation>
+<translation id="1507198376417198979">Prilagodite svoj novi profil u Chromeu</translation>
 <translation id="1516530951338665275">Google Chrome treba pristup Bluetoothu za nastavak 
  uparivanja. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
@@ -211,6 +212,7 @@
 <translation id="6943584222992551122">Podaci o pregledavanju za tu osobu izbrisat će se s ovog uređaja. Da biste vratili te podatke, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Ulazno pravilo kako bi Google Chrome Beta dopustio mDNS promet.</translation>
 <translation id="6989339256997917931">Google Chrome ažuriran je, ali vi ga niste upotrebljavali barem 30 dana.</translation>
+<translation id="7025800014283535195">Ovdje se možete prebacivati između profila u Chromeu</translation>
 <translation id="7062128746136194023">Tvoj je roditelj isključio "Dopuštenja za web-lokacije, aplikacije i proširenja" za Chrome. Nije dopušteno dodati <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome upotrebljava vaš mikrofon.</translation>
 <translation id="7106741999175697885">Upravitelj zadacima - Google Chrome:</translation>
@@ -288,4 +290,5 @@
 <translation id="922152298093051471">Prilagodi Chrome</translation>
 <translation id="940313311831216333">Da biste mogli pristupiti svojim sadržajima u Chromeu na svim svojim uređajima, prijavite se i zatim uključite sinkronizaciju.</translation>
 <translation id="989369509083708165">Google Chrome vaš je zadani preglednik</translation>
+<translation id="989816563149873169">Pomoću prečaca <ph name="SHORTCUT" /> možete se prebacivati između profila u Chromeu</translation>
 </translationbundle>

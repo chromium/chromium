@@ -18,6 +18,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Este ordenador ten instalada unha versión máis recente de Google Chrome. Se o software non funciona, desinstala Google Chrome e téntao de novo.</translation>
 <translation id="1434626383986940139">Aplicacións de valores controlados de Chrome</translation>
+<translation id="1507198376417198979">Personaliza o teu novo perfil de Chrome</translation>
 <translation id="1516530951338665275">Google Chrome precisa acceso mediante Bluetooth para continuar coa vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> xa ten a sesión iniciada neste perfil de Chrome. Con esta acción crearase un novo perfil de Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -218,6 +219,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6943584222992551122">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regra de entrada para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6989339256997917931">Actualizouse Google Chrome, pero non o utilizas desde hai polo menos 30 días.</translation>
+<translation id="7025800014283535195">Aquí podes cambiar entre perfís de Chrome</translation>
 <translation id="7062128746136194023">O teu pai ou nai desactivou esta opción en Chrome: Permisos para sitios, aplicacións e extensións. Non está permitido engadir esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome está usando o teu micrófono.</translation>
 <translation id="7106741999175697885">Xestor de tarefas: Google Chrome</translation>
@@ -295,4 +297,5 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="940313311831216333">Se queres acceder ás túas cousas de Chrome desde calquera dos teus dispositivos, inicia sesión e activa a sincronización.</translation>
 <translation id="989369509083708165">Google Chrome é o teu navegador predeterminado</translation>
+<translation id="989816563149873169">O atallo <ph name="SHORTCUT" /> permite cambiar entre perfís de Chrome</translation>
 </translationbundle>

@@ -189,6 +189,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2921219216347069551">Deljenje stranice nije moguće</translation>
 <translation id="2923448633003185837">Nalepi i idi</translation>
 <translation id="292639812446257861">Označi kao nepročitano</translation>
+<translation id="2932085390869194046">Predloži lozinku...</translation>
 <translation id="2952581218264071393">1. Otvorite podešavanja Chrome-a</translation>
 <translation id="2958718410589002129">Lozinke</translation>
 <translation id="2964349545761222050">Blokiraj kolačiće treće strane</translation>
@@ -422,6 +423,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5489208564673669003">Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="BEGIN_LINK" />Podešavanja kolačića<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="5508435575041083207">Odjavite se i obrišite podatke sa ovog uređaja</translation>
+<translation id="5513681519188741830">pre <ph name="TIME" /> s</translation>
 <translation id="5525269841082836315">Pravljenje pristupne fraze</translation>
 <translation id="5548760955356983418">Handoff vam omogućava da započnete pregledanje veb-sajta na ovom uređaju, pa da jednostavno nastavite na Mac-u. Veb-sajt koji je trenutno otvoren prikazaće se na doku na Mac-u.
 
@@ -759,7 +761,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8806823403540278281">Organizacija zahteva da pregledate privatno. Kartice se ne čuvaju u režimu bez arhiviranja.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Obeleživači</translation>
-<translation id="8823704566850948458">Predloži lozinku...</translation>
 <translation id="8840513115188359703">Nećemo vas odjaviti sa Google naloga.</translation>
 <translation id="8870413625673593573">Nedavno zatvoreno</translation>
 <translation id="8881801611828450202">Pretraži ovu sliku u <ph name="SEARCH_ENGINE" />-u</translation>
@@ -787,6 +788,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9152539721251340337">Napravite QR kôd</translation>
 <translation id="9157836665414082580">Spreči dijaloge</translation>
 <translation id="9188680907066685419">Odjavite se sa naloga kojim se upravlja</translation>
+<translation id="9200875785104711666">pre <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Izveštaj o otkazivanju je poslat.</translation>
 <translation id="952704832371081537">Otkaži</translation>

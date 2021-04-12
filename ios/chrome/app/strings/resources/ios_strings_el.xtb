@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">Κοιν.χ. σελ. αδύνατη</translation>
 <translation id="2923448633003185837">Επικόλληση και μετάβαση</translation>
 <translation id="292639812446257861">Επισ. ως μη αναγνωσμένων</translation>
+<translation id="2932085390869194046">Πρόταση για κωδικό πρόσβασης…</translation>
 <translation id="2952581218264071393">1. Ανοίξτε τις Ρυθμίσεις του Chrome.</translation>
 <translation id="2958718410589002129">Κωδικοί πρόσβασης</translation>
 <translation id="2964349545761222050">Αποκλεισμός cookie τρίτου μέρους</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">Για να διαχειριστείτε τα cookie για όλους τους ιστοτόπους, ανατρέξτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Αποκλεισμός όλων των cookie (δεν συνιστάται)</translation>
 <translation id="5508435575041083207">Αποσύνδεση και διαγραφή δεδομένων από αυτήν τη συσκευή</translation>
+<translation id="5513681519188741830">Πριν <ph name="TIME" /> ω.</translation>
 <translation id="5525269841082836315">Δημ. φράσης πρόσβ.</translation>
 <translation id="5548760955356983418">Το Handoff σάς δίνει τη δυνατότητα να ξεκινήσετε την περιήγηση σε έναν ιστότοπο σε αυτήν τη συσκευή και, στη συνέχεια, να συνεχίσετε εύκολα σε Mac. Ο ιστότοπος που είναι ανοικτός αυτήν τη στιγμή θα εμφανίζεται στο Dock του Mac.
 
@@ -760,7 +762,6 @@
 <translation id="8806823403540278281">Ο οργανισμός σας απαιτεί οι περιηγήσεις σας να είναι ιδιωτικές. Οι καρτέλες δεν αποθηκεύονται στην Κατάσταση ανώνυμης περιήγησης.
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Σελιδοδείκτες</translation>
-<translation id="8823704566850948458">Πρόταση για κωδικό πρόσβασης…</translation>
 <translation id="8840513115188359703">Δεν θα αποσυνδεθείτε από το Λογαριασμό σας Google.</translation>
 <translation id="8870413625673593573">Έκλεισαν πρόσφατα</translation>
 <translation id="8881801611828450202">Αναζήτηση εικόνας σε <ph name="SEARCH_ENGINE" /></translation>
@@ -788,6 +789,7 @@
 <translation id="9152539721251340337">Δημιουργία κωδικού QR</translation>
 <translation id="9157836665414082580">Απόκρυψη παραθύρων διαλόγου</translation>
 <translation id="9188680907066685419">Αποσύνδεση από διαχειριζόμενο λογαριασμό</translation>
+<translation id="9200875785104711666">Πριν από <ph name="TIME" /> ημ.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Η αναφορά σφάλματος εστάλη.</translation>
 <translation id="952704832371081537">Ακύρωση</translation>

@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">Хуудсыг хуваалцаж чадахгүй байна</translation>
 <translation id="2923448633003185837">Буулгаад үргэлжлүүлэх</translation>
 <translation id="292639812446257861">Уншаагүй гэж тэмдэглэх</translation>
+<translation id="2932085390869194046">Нууц үг санал болгох...</translation>
 <translation id="2952581218264071393">1. Chrome-н тохиргоог нээнэ үү</translation>
 <translation id="2958718410589002129">Нууц үг</translation>
 <translation id="2964349545761222050">Гуравдагч талын күүкиг блоклох</translation>
@@ -214,6 +215,7 @@
 
 Сайтууд нь нууцлалтай горимд байх үедээ, жишээлбэл зарыг хувийн болгохын тулд өөр сайт дээрх таны хөтчийн үйл ажиллагааг харах зорилгоор күүки ашиглах боломжгүй.</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
+<translation id="3222343486469566063">Нэвтрээгүй байна</translation>
 <translation id="3224641773458703735">Та нууц үгийг экспорт хийхийн тулд эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
 <translation id="3240426699337459095">Холбоосыг хуулсан</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -420,6 +422,7 @@
 <translation id="5489208564673669003">Бүх сайтын күүкийг удирдахын тулд <ph name="BEGIN_LINK" />Күүкиний тохиргоог<ph name="END_LINK" /> харна уу.</translation>
 <translation id="5490005495580364134">Бүх күүкиг блоклох (Зөвлөдөггүй)</translation>
 <translation id="5508435575041083207">Гарч, энэ төхөөрөмжөөс өгөгдлийг устгах</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> цагийн өмнө</translation>
 <translation id="5525269841082836315">Нэвтрэх үгийг үүсгэх</translation>
 <translation id="5548760955356983418">Handoff нь танд энэ төхөөрөмж дээр веб хуудсыг ачаалж, дараа нь Mac дээр хялбархан үргэжлүүлэн ажиллах боломжийг олгодог. Одоо нээлттэй байгаа вебсайт таны Mac-ийн Dock дотор гарч ирнэ.
 
@@ -757,7 +760,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8806823403540278281">Танай байгууллага танаас нууцлалтайгаар үзэхийг шаардаж байна. Нууцлалын горимд табуудыг хадгалдаггүй.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>
-<translation id="8823704566850948458">Нууц үг санал болгох...</translation>
 <translation id="8840513115188359703">Таныг Google Бүртгэлээс гаргахгүй.</translation>
 <translation id="8870413625673593573">Саяхан хаагдсан</translation>
 <translation id="8881801611828450202">Энэ зургийг <ph name="SEARCH_ENGINE" />-с хайх</translation>
@@ -785,6 +787,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9152539721251340337">QR код үүсгэх</translation>
 <translation id="9157836665414082580">Харилцах цонхыг зогсоох</translation>
 <translation id="9188680907066685419">Удирдсан бүртгэлээс гарах</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> өдрийн өмнө</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Алдаа ослын тайланг илгээсэн байна.</translation>
 <translation id="952704832371081537">Цуцлах</translation>

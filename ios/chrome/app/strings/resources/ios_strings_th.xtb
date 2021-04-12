@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">ไม่สามารถแชร์เว็บ</translation>
 <translation id="2923448633003185837">วางแล้วไป</translation>
 <translation id="292639812446257861">ทำเครื่องหมายว่ายังไม่ได้อ่าน</translation>
+<translation id="2932085390869194046">แนะนำรหัสผ่าน...</translation>
 <translation id="2952581218264071393">1. เปิดการตั้งค่า Chrome</translation>
 <translation id="2958718410589002129">รหัสผ่าน</translation>
 <translation id="2964349545761222050">บล็อกคุกกี้ของบุคคลที่สาม</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">ดู<ph name="BEGIN_LINK" />การตั้งค่าคุกกี้<ph name="END_LINK" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="5490005495580364134">บล็อกคุกกี้ทั้งหมด (ไม่แนะนำ)</translation>
 <translation id="5508435575041083207">ออกจากระบบและล้างข้อมูลในอุปกรณ์นี้</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> ชม. ที่ผ่านมา</translation>
 <translation id="5525269841082836315">สร้างข้อความรหัสผ่าน</translation>
 <translation id="5548760955356983418">Handoff ช่วยให้คุณสามารถเริ่มการท่องเว็บไซต์บนอุปกรณ์นี้และใช้งานต่อบน Mac ได้อย่างง่ายดาย เว็บไซต์ที่เปิดอยู่ในปัจจุบันจะปรากฏในแท่นชาร์จของ Mac
 
@@ -759,7 +761,6 @@
 <translation id="8806823403540278281">องค์กรกำหนดให้คุณเรียกดูแบบส่วนตัว ระบบจะไม่บันทึกแท็บในโหมดไม่ระบุตัวตน
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
-<translation id="8823704566850948458">แนะนำรหัสผ่าน...</translation>
 <translation id="8840513115188359703">คุณจะไม่ออกจากระบบบัญชี Google</translation>
 <translation id="8870413625673593573">เพิ่งปิด</translation>
 <translation id="8881801611828450202">ค้นหาภาพนี้ใน <ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">สร้างคิวอาร์โค้ด</translation>
 <translation id="9157836665414082580">ระงับกล่องโต้ตอบ</translation>
 <translation id="9188680907066685419">ออกจากระบบบัญชีที่มีการจัดการ</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> วันที่ผ่านมา</translation>
 <translation id="9203116392574189331">แฮนด์ออฟ</translation>
 <translation id="9223358826628549784">ส่งรายงานข้อขัดข้องแล้ว</translation>
 <translation id="952704832371081537">ยกเลิก</translation>

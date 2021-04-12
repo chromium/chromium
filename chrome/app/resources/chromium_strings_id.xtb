@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">Chromium menggunakan mikrofon Anda.</translation>
 <translation id="3155163173539279776">Luncurkan ulang Chromium</translation>
 <translation id="3179665906251668410">Buka Link di Jendela Sa&amp;maran Chromium</translation>
+<translation id="3185330573522821672">Sesuaikan profil Chromium baru Anda</translation>
 <translation id="3190315855212034486">Aduh! Chromium ngadat. Luncurkan ulang sekarang?</translation>
 <translation id="3229526316128325841">Chromium ingin mengekspor sandi.</translation>
 <translation id="3258596308407688501">Chromium tidak dapat membaca dan menulis ke direktori datanya:
@@ -74,6 +75,7 @@
 <translation id="3430503420100763906">Dengan profil Chromium, Anda dapat memisahkan semua aktivitas Chromium Anda. Buat profil untuk teman dan keluarga, atau pisahkan antara aktivitas kerja dan hiburan.</translation>
 <translation id="347328004046849135">Chromium akan memberi tahu Anda saat Anda login dengan sandi yang telah dibobol</translation>
 <translation id="3474745554856756813">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chromium</translation>
 <translation id="3509308970982693815">Tutup semua jendela Chromium dan coba lagi.</translation>
 <translation id="3575459661164320785">Ada software berbahaya di komputer Anda. Chromium dapat menghapusnya, memulihkan setelan Anda, dan menonaktifkan ekstensi agar browser berfungsi kembali secara normal.</translation>
 <translation id="3639635944603682591">Data browsing pengguna ini akan dihapus dari perangkat ini. Untuk memulihkan data, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="6120345080069858279">Chromium akan menyimpan sandi ini di Akun Google. Anda tidak perlu mengingatnya.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> berbahaya, sehingga Chromium memblokirnya.</translation>
 <translation id="6134968993075716475">Safe Browsing nonaktif. Chromium merekomendasikan untuk mengaktifkannya.</translation>
+<translation id="6145820983052037069">Anda dapat berpindah-pindah profil Chromium di sini</translation>
 <translation id="6183079672144801177">Pastikan Anda login ke Chromium di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
 <translation id="6212496753309875659">Komputer ini sudah memiliki versi Chromium yang lebih baru. Jika software tidak bekerja, harap coba uninstal Chromium, lalu cobalah kembali.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium akan diluncurkan ulang sekarang}=1{Chromium akan diluncurkan ulang dalam 1 detik}other{Chromium akan diluncurkan ulang dalam # detik}}</translation>

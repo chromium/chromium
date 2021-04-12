@@ -189,6 +189,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2921219216347069551">Kan ikke dele siden</translation>
 <translation id="2923448633003185837">Lim inn og gå til</translation>
 <translation id="292639812446257861">Merk som ulest</translation>
+<translation id="2932085390869194046">Foreslå passord</translation>
 <translation id="2952581218264071393">1. Åpne Chrome-innstillingene.</translation>
 <translation id="2958718410589002129">Passord</translation>
 <translation id="2964349545761222050">Blokkér informasjonskapsler fra tredjeparter</translation>
@@ -422,6 +423,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5489208564673669003">For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger for informasjonskapsler<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
 <translation id="5508435575041083207">Logg av og slett data fra denne enheten</translation>
+<translation id="5513681519188741830">For <ph name="TIME" /> t siden</translation>
 <translation id="5525269841082836315">Opprett en passordfrase</translation>
 <translation id="5548760955356983418">Med Handoff kan du begynne å se gjennom en nettside på denne enheten og deretter fortsette på Mac-en din uten problemer. Den åpne nettsiden vises i dokken til Mac-en din.
 
@@ -759,7 +761,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8806823403540278281">Organisasjonen din krever at du surfer privat. Faner lagres ikke i inkognitomodus.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bokmerker</translation>
-<translation id="8823704566850948458">Foreslå passord …</translation>
 <translation id="8840513115188359703">Du blir ikke logget av Google-kontoen din.</translation>
 <translation id="8870413625673593573">Nylig lukket</translation>
 <translation id="8881801611828450202">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9152539721251340337">Lag en QR-kode</translation>
 <translation id="9157836665414082580">Ignorer dialogbokser</translation>
 <translation id="9188680907066685419">Logg av administrert konto</translation>
+<translation id="9200875785104711666">for <ph name="TIME" /> d siden</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Programstopprapporten er sendt.</translation>
 <translation id="952704832371081537">Avbryt</translation>

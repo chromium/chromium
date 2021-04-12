@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">Стр. не може да се сподели</translation>
 <translation id="2923448633003185837">Поставяне и старт</translation>
 <translation id="292639812446257861">Означаване като непрочетено</translation>
+<translation id="2932085390869194046">Предложение за парола...</translation>
 <translation id="2952581218264071393">1. Отворете настройките на Chrome.</translation>
 <translation id="2958718410589002129">Пароли</translation>
 <translation id="2964349545761222050">Блокиране на „бисквитките“ на трети страни</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="BEGIN_LINK" />Настройки за „бисквитките“<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
 <translation id="5508435575041083207">Излизане от профила и изчистване на данните от това устройство</translation>
+<translation id="5513681519188741830">Преди <ph name="TIME" /> ч</translation>
 <translation id="5525269841082836315">Създаване на пропуск</translation>
 <translation id="5548760955356983418">С Handoff можете да започнете да разглеждате уебсайт на това устройство, след което лесно да продължите сърфирането от своя Mac. Отвореният сайт ще се покаже в лентата Dock.
 
@@ -759,7 +761,6 @@
 <translation id="8806823403540278281">Организацията ви изисква да сърфирате частно. В режим „инкогнито“ разделите не се запазват.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Отметки</translation>
-<translation id="8823704566850948458">Предложение за парола...</translation>
 <translation id="8840513115188359703">Няма да излезете от профила си в Google.</translation>
 <translation id="8870413625673593573">Наскоро затворени</translation>
 <translation id="8881801611828450202">Търсене на изобр. със: <ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">Създаване на QR код</translation>
 <translation id="9157836665414082580">Диалогови прозорци: Блокиране</translation>
 <translation id="9188680907066685419">Излизане от управляван профил</translation>
+<translation id="9200875785104711666">Преди <ph name="TIME" /> дни</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Сигналите за сривове са изпратени.</translation>
 <translation id="952704832371081537">Отказ</translation>

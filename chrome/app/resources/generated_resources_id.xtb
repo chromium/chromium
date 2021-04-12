@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> menyarankan Anda memperbarui <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="1118738876271697201">Sistem gagal menentukan model perangkat atau nomor seri.</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
-<translation id="111959947408687873">Gunakan Ctrl+<ph name="SEARCH_KEY_NAME" />+M untuk mengaktifkan/menonaktifkan kaca pembesar layar penuh. Gunakan Ctrl+Alt+Tombol panah untuk berpindah saat layar diperbesar.</translation>
 <translation id="1122068467107743258">Kantor</translation>
 <translation id="1122198203221319518">&amp;Alat</translation>
 <translation id="1122242684574577509">Autentikasi gagal. Klik untuk mengunjungi halaman masuk untuk jaringan Wi-Fi yang Anda gunakan (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Bingkai ini diblokir karena berisi sejumlah konten tidak aman.</translation>
 <translation id="146219525117638703">Status ONC</translation>
 <translation id="146220085323579959">Internet terputus. Periksa koneksi internet Anda dan coba lagi.</translation>
-<translation id="1463051728820430132">Tanyakan saat aplikasi web ingin membuka jenis file di perangkat</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> diblokir oleh Perlindungan Lanjutan.</translation>
 <translation id="1464044141348608623">Jangan izinkan situs mengetahui saat Anda aktif menggunakan perangkat</translation>
 <translation id="1464258312790801189">Akun Anda</translation>
@@ -758,7 +756,7 @@
 <translation id="1802624026913571222">Tidur saat cover ditutup</translation>
 <translation id="1802687198411089702">Halaman tidak merespons. Anda dapat menunggunya atau keluar.</translation>
 <translation id="1803531841600994172">Bahasa target</translation>
-<translation id="1803545009660609783">Latih kembali</translation>
+<translation id="1803545009660609783">Buat ulang</translation>
 <translation id="1805738995123446102">Tab background menggunakan mikrofon Anda</translation>
 <translation id="1805822111539868586">Periksa tampilan</translation>
 <translation id="1805888043020974594">Server cetak</translation>
@@ -1026,6 +1024,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="211144231511833662">Hapus Jenis</translation>
 <translation id="2111670510994270194">Tab baru di sebelah kanan</translation>
 <translation id="2111810003053064883">Pengiklan dapat mempelajari keefektifan iklan dengan cara yang tidak melacak Anda di seluruh situs.</translation>
+<translation id="2112554630428445878">Selamat datang, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Pasang pin pada Tab</translation>
 <translation id="2113479184312716848">Buka &amp;Berkas...</translation>
 <translation id="2113921862428609753">Akses Informasi Otoritas</translation>
@@ -1091,7 +1090,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2163470535490402084">Sambungkan ke internet untuk masuk ke <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, dan 1 tombol lainnya</translation>
 <translation id="2165421703844373933">Akses Asisten saat Anda mengucapkan "Ok Google". Untuk menghemat baterai, pilih "Aktifkan (Disarankan)". Asisten Anda hanya akan merespons saat perangkat dicolokkan atau diisi daya.</translation>
-<translation id="2166269335975661317">Aplikasi web dapat meminta untuk membuka jenis file dari perangkat</translation>
 <translation id="2166369534954157698">Lihat gaya font dan contoh ukurannya dengan cara yang menyenangkan</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Tetap login</translation>
@@ -1970,7 +1968,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="313205617302240621">Lupa sandi?</translation>
 <translation id="3132277757485842847">Kami tidak dapat mempertahankan koneksi dengan ponsel Anda. Pastikan ponsel berada di dekat Anda, tidak terkunci, serta Bluetooth dan Wi-Fi aktif.</translation>
 <translation id="3132996321662585180">Refresh tiap hari</translation>
-<translation id="3134393957315651797">Pilih status eksperimen untuk eksperimen <ph name="EXPERIMENT_NAME" />. Deskripsi eksperimen: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN tidak valid. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="313963229645891001">Mendownload, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar kuning default</translation>
@@ -2643,6 +2640,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3881478300875776315">Tampilkan lebih sedikit baris</translation>
 <translation id="3882165008614329320">Video yang sudah ada dari kamera atau file</translation>
 <translation id="3884152383786131369">Konten web yang tersedia dalam beberapa bahasa akan menggunakan bahasa pertama yang didukung dari daftar ini. Preferensi ini akan disinkronkan dengan setelan browser Anda. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Update dikelola oleh administrator Anda</translation>
 <translation id="3886446263141354045">Permintaan Anda untuk mengakses situs ini telah dikirim ke <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Mencatat dengan <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Informasi ini membantu kami lebih memahami masalah Asisten. Informasi tersebut disimpan selama 90 hari dan hanya dapat diakses oleh tim engineer dan masukan yang terkait.</translation>
@@ -4464,7 +4462,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5990266201903445068">Khusus Wi-Fi</translation>
 <translation id="5990386583461751448">Diterjemahkan</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Untuk memastikan bahwa Anda tetap dapat mengakses web, minta administrator untuk menghapus aplikasi ini.}other{Untuk memastikan bahwa Anda tetap dapat mengakses web, minta administrator untuk menghapus aplikasi berikut.}}</translation>
-<translation id="5992175324932183568">Jangan izinkan aplikasi web membuka jenis file dari perangkat</translation>
 <translation id="5997337190805127100">Pelajari Akses Situs Lebih Lanjut</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> hasil untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002210667729577411">Pindahkan grup ke jendela baru</translation>
@@ -4586,7 +4583,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6124213551517593835">Ini akan menghapus semua data dan cookie yang disimpan oleh <ph name="SITE_GROUP_NAME" /> dan situs apa pun dalam grup tersebut</translation>
 <translation id="6124650939968185064">Ekstensi berikut bergantung pada ekstensi ini:</translation>
 <translation id="6124698108608891449">Situs ini memerlukan izin lainnya.</translation>
-<translation id="6125442051901189730">Tidak ada profil SIM yang tersedia. Siapkan profil baru <ph name="BEGIN_LINK" />di sini<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Sayangnya, Anda harus menambahkan akun ke perangkat <ph name="DEVICE_TYPE" /> ini lagi.</translation>
 <translation id="6129691635767514872">Data yang dipilih telah dihapus dari Chrome dan perangkat yang disinkronkan. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penelusuran dan aktivitas dari layanan Google lainnya di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
@@ -6402,7 +6398,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8147900440966275470"><ph name="NUM" /> Tab Ditemukan</translation>
 <translation id="8148760431881541277">Batasi login</translation>
 <translation id="8149564499626272569">Verifikasi melalui ponsel dengan kabel USB</translation>
-<translation id="8150259863378108853">Lacros adalah browser eksperimental. Laporkan masalah melalui Bantuan &gt; "Laporkan masalah..."</translation>
 <translation id="8151638057146502721">Konfigurasi</translation>
 <translation id="8154790740888707867">Tidak ada file</translation>
 <translation id="815491593104042026">Ups!  Autentikasi gagal karena telah dikonfigurasi untuk menggunakan URL yang tidak aman (<ph name="BLOCKED_URL" />).  Hubungi administrator Anda.</translation>
@@ -6587,8 +6582,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8368859634510605990">&amp;Buka semua bookmark</translation>
 <translation id="8370294614544004647">Tidur saat laptop ditutup</translation>
 <translation id="8371695176452482769">Bicaralah sekarang</translation>
-<translation id="8371749822919332187">Gunakan Ctrl+Alt+Tingkatkan Kecerahan untuk memperbesar.
-Gunakan Ctrl+Alt+Kurangi Kecerahan untuk memperkecil.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Nonaktifkan Notifikasi Situs}other{Nonaktifkan Notifikasi Beberapa Situs}}</translation>
 <translation id="8372369524088641025">Kunci WEP yang buruk</translation>
 <translation id="8373652277231415614">Direktori bersama Crostini</translation>
@@ -6613,7 +6606,6 @@ Gunakan Ctrl+Alt+Kurangi Kecerahan untuk memperkecil.</translation>
 <translation id="8398877366907290961">Tetap lanjutkan</translation>
 <translation id="8400146488506985033">Kelola orang</translation>
 <translation id="8401432541486058167">Masukkan PIN yang terkait dengan kartu smart Anda.</translation>
-<translation id="8403562727702715619">Baru-baru ini dari Google Drive</translation>
 <translation id="8405046151008197676">Dapatkan sorotan dari update terakhir</translation>
 <translation id="8407199357649073301">Tingkat Log:</translation>
 <translation id="8408068190360279472">Jaringan <ph name="NETWORK_TYPE" />, menyambungkan</translation>
@@ -7400,7 +7392,6 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="975893173032473675">Bahasa Target Terjemahan</translation>
 <translation id="976499800099896273">Dialog urungkan koreksi otomatis ditampilkan untuk mengoreksi <ph name="TYPED_WORD" /> ke <ph name="CORRECTED_WORD" />.  Tekan panah atas untuk mengakses kata, escape untuk mengabaikan.</translation>
 <translation id="978146274692397928">Lebar tanda baca awal Penuh</translation>
-<translation id="97883469867914488">Blokir aplikasi web agar tidak membuka jenis file di perangkat</translation>
 <translation id="97905529126098460">Jendela ini akan ditutup setelah proses pembatalan selesai.</translation>
 <translation id="980731642137034229">Tombol menu tindakan</translation>
 <translation id="981121421437150478">Offline</translation>

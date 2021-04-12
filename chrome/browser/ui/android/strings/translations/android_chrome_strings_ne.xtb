@@ -11,10 +11,10 @@
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
 <translation id="1067922213147265141">Google का अन्य सेवाहरू</translation>
-<translation id="107147699690128016">तपाईंले फाइलको एक्स्टेन्सन परिवर्तन गर्नुभयो भने यो फाइल कुनै अर्को अनुप्रयोगमा खुल्न सक्छ जुन तपाईंको यन्त्रका लागि हानिकारक पनि हुन सक्छ।</translation>
+<translation id="107147699690128016">तपाईंले फाइलको एक्स्टेन्सन परिवर्तन गर्नुभयो भने यो फाइल कुनै अर्को अनुप्रयोगमा खुल्न सक्छ जुन तपाईंको डिभाइसका लागि हानिकारक पनि हुन सक्छ।</translation>
 <translation id="1100066534610197918">समूहमा नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="1105960400813249514">स्क्रिन क्याप्चर</translation>
-<translation id="1111673857033749125">तपाईँका अन्य यन्त्रहरूमा सुरक्षित गरिएका पुस्तक चिन्हहरू यहाँ देखिनेछन्।</translation>
+<translation id="1111673857033749125">तपाईँका अन्य डिभाइसमा सुरक्षित गरिएका पुस्तक चिन्हहरू यहाँ देखिनेछन्।</translation>
 <translation id="1113597929977215864">सरलीकृत दृश्य देखाउनुहोस्</translation>
 <translation id="1118561384561215815">वेबमा कार्यहरू गर्न मद्दत प्राप्त गर्नु…</translation>
 <translation id="1123070903960493543">यसअन्तर्गत तपाईंले Chrome प्रयोग गर्ने तरिका, तपाईंले चयन गर्नुभएका सेटिङ, Chrome क्र्यास भएका घटनाका विवरण समावेश हुन्छन्</translation>
@@ -93,6 +93,7 @@
 <translation id="1641113438599504367">सुरक्षित ब्राउजिङ</translation>
 <translation id="164269334534774161">तपाईं यस पृष्ठको <ph name="CREATION_TIME" /> को अफलाइन प्रतिलिपि हेर्दै हुनुहुन्छ</translation>
 <translation id="1644574205037202324">इतिहास</translation>
+<translation id="1668122540633280551">Chrome को होमपेजमा भिडियोका प्रिभ्युहरू स्वतः प्ले हुने तरिका छनौट गर्नुहोस्।</translation>
 <translation id="1670399744444387456">आधारभूत</translation>
 <translation id="1671236975893690980">डाउनलोड हुन बाँकी छ…</translation>
 <translation id="1672586136351118594">फेरि नदेखाउनुहोस्</translation>
@@ -237,6 +238,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाइए</translation>
 <translation id="2536728043171574184">यो पृष्ठको एक अफलाइन प्रतिलिपि हेर्दै</translation>
 <translation id="2546283357679194313">कुकीहरू र साइट डाटा</translation>
+<translation id="2561519700418191927">भिडियोका प्रभ्युहरू</translation>
 <translation id="2567385386134582609">छवि</translation>
 <translation id="2571711316400087311">अन्य भाषामा रहेका पृष्ठहरू Google अनुवादकमा पठाउने प्रस्ताव गरियोस्</translation>
 <translation id="2581165646603367611">यसले कुकी, क्यास र साइटहरूको Chrome लाई महत्वपूर्ण नलाग्ने अन्य डाटा खाली गर्ने छ।</translation>
@@ -258,7 +260,7 @@
 <translation id="2723001399770238859">अडियो</translation>
 <translation id="2728754400939377704">साइटद्वारा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="2744248271121720757">तत्कालै खोज्नका लागि कुनै शब्दमा ट्याप गर्नुहोस् वा सम्बन्धित कारबाहीहरू हेर्नुहोस्</translation>
-<translation id="2760989362628427051">तपाईंको यन्त्रमा अँध्यारो थिम वा ब्याट्री सेभर मोड सक्रिय हुँदा अँध्यारो थिम सक्रिय गर्नुहोस्</translation>
+<translation id="2760989362628427051">तपाईंको डिभाइसमा अँध्यारो थिम वा ब्याट्री सेभर मोड सक्रिय हुँदा अँध्यारो थिम सक्रिय गर्नुहोस्</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
 <translation id="2776236159752647997">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकेन्ड बाँकी छ</translation>
@@ -281,7 +283,7 @@
 <translation id="2893180576842394309">Google ले खोज र Google का अन्य सेवाहरूलाई वैयक्तीकृत गर्न तपाईंको इतिहाससम्बन्धी जानकारी प्रयोग गर्न सक्छ</translation>
 <translation id="2900528713135656174">कार्यक्रम सिर्जना गर्नुहोस्</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> सम्बन्धी सुझावहरू देखाइँदै</translation>
-<translation id="2904414404539560095">ट्याब आदान प्रदान गरिनु पर्ने यन्त्रहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
+<translation id="2904414404539560095">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
 <translation id="2905036901251765993">वरपर रहेका मान्छेहरूसँग आदान प्रदान गर्न उनीहरूलाई यो QR कोड स्क्यान गर्न लगाउनुहोस्</translation>
 <translation id="2909615210195135082">Google का सूचनाहरूको प्लेटफर्म</translation>
 <translation id="2923908459366352541">नाम मान्य छैन</translation>
@@ -298,7 +300,7 @@
 <translation id="2996291259634659425">पासफ्रेज सिर्जना गर्नुहोस्</translation>
 <translation id="2996809686854298943">URL आवश्यक छ</translation>
 <translation id="3006881078666935414">उपयोगसम्बन्धी कुनै डेटा छैन</translation>
-<translation id="3016635187733453316">यो यन्त्र इन्टरनेटमा जोडिएको कुरा सुनिश्चित गर्नुहोस्</translation>
+<translation id="3016635187733453316">यो डिभाइस इन्टरनेटमा जोडिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="3029704984691124060">पासफ्रेजहरू मेल खाँदैनन्</translation>
 <translation id="3031225630520268969">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI</translation>
 <translation id="3034163383943672781"><ph name="DATE" /> मा डाउनलोड सुरु हुने छ।</translation>
@@ -415,6 +417,7 @@
 <translation id="3773856050682458546">यसअन्तर्गत आधारभूत डेटाका साथै तपाईं जाने वेबसाइट र तपाईंले चलाउने एपसम्बन्धी जानकारी समावेश हुन्छन्</translation>
 <translation id="3775705724665058594">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
 <translation id="3778956594442850293">गृह स्क्रिनमा थपियो</translation>
+<translation id="3803784507854318295">अटोप्ले सुविधा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3810838688059735925">भिडियो</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोडहरूलाई मेटाइयो</translation>
@@ -458,7 +461,7 @@
 <translation id="4108314971463891922">फलो गर्नुहोस्</translation>
 <translation id="4108998448622696017">खतरनाक गतिविधि हुँदा पत्ता लगाउँछ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="4116038641877404294">पृष्ठहरूलाई अफलाइन हेर्न तिनीहरूलाई डाउनलोड गर्नुहोस्</translation>
-<translation id="4135200667068010335">ट्याब आदान प्रदान गरिनु पर्ने यन्त्रहरूको सूची बन्द छ।</translation>
+<translation id="4135200667068010335">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची बन्द छ।</translation>
 <translation id="4141536112466364990">Chrome चलाउन सिक्नुहोस्</translation>
 <translation id="4149994727733219643">वेब पृष्ठहरूका लागि सरलीकृत दृश्य</translation>
 <translation id="4170011742729630528">यो सेवा उपलब्ध छैन, पछि पुन: प्रयास गर्नुहोस्।</translation>
@@ -547,7 +550,7 @@
 <translation id="4763480195061959176">भिडियो</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{१ डाउनलोड सम्पन्न भयो।}other{# डाउनलोडहरू सम्पन्न भए।}}</translation>
 <translation id="4766678251456904326">यन्त्रमा खाता जोड्नुहोस्</translation>
-<translation id="4767937498890654900">{FILE_COUNT,plural, =1{एउटा डाउनलोडको समयतालिका निर्धारण गरियो।}other{# वटा डाउनलोडको समयतालिका निर्धारण गरियो।}}</translation>
+<translation id="4767937498890654900">{FILE_COUNT,plural, =1{एउटा डाउनलोडको समयतालिका बनाइएको छ।}other{# वटा डाउनलोडको समयतालिका बनाइएको छ।}}</translation>
 <translation id="4791358705705538979">तपाईंलाई वेबमा चेकआउट जस्ता कार्यहरू पूरा गर्न मद्दत गर्छ</translation>
 <translation id="4802417911091824046">पासफ्रेजमार्फत इन्क्रिप्सन गर्ने कार्यअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।
 
@@ -654,11 +657,11 @@
 <translation id="5456381639095306749">पृष्ठ डाउनलोड गर्नुहोस्</translation>
 <translation id="548278423535722844">नक्सा अनुप्रयोगमा खोल्नुहोस्</translation>
 <translation id="5483197086164197190">Chrome नेभिगेट गर्ने तरिका</translation>
-<translation id="5487521232677179737">डेटा खाली गर्नुहोस्</translation>
+<translation id="5487521232677179737">डेटा मेटाउनुहोस्</translation>
 <translation id="549025011754480756">बोलेर खोज्ने तरिका</translation>
 <translation id="5500777121964041360">तपाईंको स्थानमा उपलब्ध नहुन सक्छ</translation>
 <translation id="5512137114520586844">यो खाता <ph name="PARENT_NAME" /> द्वारा व्यवस्थित गरिएको छ।</translation>
-<translation id="5514904542973294328">यो यन्त्रका प्रशासकले असक्षम पार्नुभएको</translation>
+<translation id="5514904542973294328">यो डिभाइसका प्रशासकले असक्षम पार्नुभएको</translation>
 <translation id="5515439363601853141">आफ्नो पासवर्ड हेर्न अनलक गर्नुहोस्</translation>
 <translation id="5517095782334947753">तपाईंसँग <ph name="FROM_ACCOUNT" /> का पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू छन्।</translation>
 <translation id="5524843473235508879">रिडिरेक्ट गर्न रोक लगाइयो।</translation>
@@ -835,13 +838,13 @@
 <translation id="6534565668554028783">Google ले प्रतिक्रिया जनाउन निकै लामो समय लियो</translation>
 <translation id="6539092367496845964">केही चिज गडबड भयो। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{१ घन्टाअघि जाँच गरिएको}other{# घन्टाअघि जाँच गरिएको}}</translation>
-<translation id="6545017243486555795">सबै डेटा खाली गर्नुहोस्</translation>
+<translation id="6545017243486555795">सबै डेटा मेटाउनुहोस्</translation>
 <translation id="6560414384669816528">Sogou मार्फत खोजी गर्नुहोस्</translation>
 <translation id="656065428026159829">थप हेर्नुहोस्</translation>
 <translation id="6565959834589222080">Wi-Fi उपलब्ध हुँदा मोबाइल डेटा प्रयोग गरिँदैन</translation>
 <translation id="6566259936974865419">Chrome ले तपाईंको <ph name="GIGABYTES" /> जि.बि. बचाएको छ</translation>
 <translation id="6573096386450695060">सधैँ अनुमति दिनुहोस्</translation>
-<translation id="6573431926118603307">तपाईँले आफ्ना अन्य यन्त्रहरूमा Chrome मा खोल्नुभएका ट्याबहरू यहाँ देखिनेछन्।</translation>
+<translation id="6573431926118603307">तपाईँले आफ्ना अन्य डिभाइसमा Chrome मा खोल्नुभएका ट्याबहरू यहाँ देखिनेछन्।</translation>
 <translation id="6583199322650523874">हालको पृष्ठलाई पुस्तक चिन्ह लगाउनुहोस्</translation>
 <translation id="6588043302623806746">सुरक्षित DNS प्रयोग गर्नुहोस्</translation>
 <translation id="6590471736817333463">६०% सम्म डेटा बचत गर्नुहोस्</translation>
@@ -858,7 +861,7 @@
 <translation id="6643649862576733715">बचत गरिएको डेटाको मात्राद्वारा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}other{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> छविको पूर्वावलोकन गर्नुहोस्</translation>
-<translation id="6656545060687952787">Chrome यन्त्रहरूको लागि स्क्यान गर्न स्थान पहुँच आवश्यक छ। <ph name="BEGIN_LINK" /> अनुमतिहरू अपडेट गर्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="6656545060687952787">Chrome डिभाइसहरूको लागि स्क्यान गर्न स्थान पहुँच आवश्यक छ। <ph name="BEGIN_LINK" /> अनुमतिहरू अपडेट गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ट्याब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
@@ -873,8 +876,8 @@
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="671481426037969117">तपाईंको <ph name="FQDN" /> टाइमरको समय सकियो। यो भोलि फेरि सुरु हुने छ।</translation>
 <translation id="6738867403308150051">डाउनलोड गर्दैछ…</translation>
-<translation id="6767294960381293877">ट्याब आदान प्रदान गरिनु पर्ने यन्त्रहरूको सूची आधा उचाइमा खोलिएको छ।</translation>
-<translation id="6783942555455976443">यो पृष्ठ पछि पढ्ने प्रयोजनका लागि सुरक्षित गर्नुहोस् र रिमाइन्डर प्राप्त गर्नुहोस्</translation>
+<translation id="6767294960381293877">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची आधा उचाइमा खोलिएको छ।</translation>
+<translation id="6783942555455976443">यो पृष्ठ पछि पढ्ने प्रयोजनका लागि सेभ गर्नुहोस् र रिमाइन्डर प्राप्त गर्नुहोस्</translation>
 <translation id="6811034713472274749">पृष्ठ हेर्नका लागि तयार छ</translation>
 <translation id="6813446258015311409">Chrome मा साइन इन गर्ने पेज खोलियो।</translation>
 <translation id="6820686453637990663">CVC</translation>
@@ -938,7 +941,7 @@
 <translation id="7291910923717764901">यो पेजमा फोटोसम्बन्धी विवरण हालिएको छ</translation>
 <translation id="7293171162284876153">सिंक गर्ने कार्य सुरु गर्न "Chrome को आफ्नो डेटा सिंक गर्नुहोस्"।</translation>
 <translation id="7293429513719260019">भाषा चयन गर्नुहोस्</translation>
-<translation id="729975465115245577">तपाईंको यन्त्रमा पासवर्डहरूको फाइल भण्डारण गर्ने कुनै एप छैन।</translation>
+<translation id="729975465115245577">तपाईंको डिभाइसमा पासवर्डहरूको फाइल भण्डारण गर्ने कुनै एप छैन।</translation>
 <translation id="7302081693174882195">विवरणहरू: बचत गरिएको डेटाको मात्राअनुसार क्रमबद्ध गरिएको</translation>
 <translation id="7304873321153398381">अफलाइन छ। Chrome ले तपाईंका पासवर्डहरू जाँच्न सकेन।</translation>
 <translation id="7313188324932846546">सिंक सुविधा सेटअप गर्न ट्याप गर्नुहोस्</translation>
@@ -985,7 +988,7 @@
 <translation id="7577900504646297215">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड गरियो}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइलहरू डाउनलोड गरिए}}</translation>
 <translation id="7583262514280211622">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
-<translation id="7588219262685291874">तपाईंको यन्त्रमा ब्याट्री सेभर मोड सक्रिय हुँदा अँध्यारो थिम सक्रिय गर्नुहोस्</translation>
+<translation id="7588219262685291874">तपाईंको डिभाइसमा ब्याट्री सेभर मोड सक्रिय हुँदा अँध्यारो थिम सक्रिय गर्नुहोस्</translation>
 <translation id="7593557518625677601">Chrome सिंकलाई सुरु गर्न Android का सेटिङहरू खोल्नुहोस् र Android को प्रणालीसम्बन्धी सिंकलाई पुन:सक्षम पार्नुहोस्</translation>
 <translation id="7596558890252710462">अपरेटिङ सिस्टम</translation>
 <translation id="7605594153474022051">सिंकले काम गरिरहेको छैन</translation>
@@ -996,7 +999,7 @@
 <translation id="7626032353295482388">Chrome मा स्वागत छ</translation>
 <translation id="7630202231528827509">सेवा प्रदायकको URL</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
-<translation id="7641339528570811325">ब्राउजिङको डेटा खाली गर्नुहोस्…</translation>
+<translation id="7641339528570811325">ब्राउजिङको डेटा मेटाउनुहोस्…</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7665369617277396874">खाता थप्नुहोस्</translation>
@@ -1024,7 +1027,7 @@
 <translation id="7844171778363018843">सिंक गर्नका लागि कुनै पनि डेटा चयन गरिएको छैन</translation>
 <translation id="7846296061357476882">Google का सेवाहरू</translation>
 <translation id="784934925303690534">समयको दायरा</translation>
-<translation id="7851858861565204677">अन्य यन्त्रहरू</translation>
+<translation id="7851858861565204677">अन्य डिभाइसहरू</translation>
 <translation id="7853202427316060426">गतिविधि</translation>
 <translation id="7857691613771368249">फाइलहरू कहिले सुरक्षित गर्ने भनी सोध्नुहोस्</translation>
 <translation id="7859988229622350291">कहिल्यै अनुवाद नगरियोस्</translation>
@@ -1216,7 +1219,7 @@
 <translation id="9100505651305367705">समर्थित भएको बेला लेखहरूलाई सरलीकृत दृश्यमा देखाउने प्रस्ताव गर्नुहोस्</translation>
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>
 <translation id="9102803872260866941">पूर्वावलोकन ट्याब खुला छ</translation>
-<translation id="9104217018994036254">ट्याब आदान प्रदान गरिनु पर्ने यन्त्रहरूको सूची।</translation>
+<translation id="9104217018994036254">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची।</translation>
 <translation id="9108312223223904744">सुरक्षा साँचोका रूपमा प्रयोग गर्न मिल्ने फोन</translation>
 <translation id="9108808586816295166">सुरक्षित DNS सधैँ उपलब्ध नहुन सक्छ</translation>
 <translation id="9133397713400217035">अफलाइनमा अन्वेषण गर्नुहोस्</translation>

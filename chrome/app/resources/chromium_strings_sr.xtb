@@ -62,6 +62,7 @@
 <translation id="3130323860337406239">Chromium користи микрофон.</translation>
 <translation id="3155163173539279776">Поново покрени Chromium</translation>
 <translation id="3179665906251668410">Отвори линк у Chromium прозору без архи&amp;вирања</translation>
+<translation id="3185330573522821672">Прилагодите нови Chromium профил</translation>
 <translation id="3190315855212034486">Опа! Chromium је отказао. Желите ли да га одмах поново покренете?</translation>
 <translation id="3229526316128325841">Chromium жели да извезе лозинке.</translation>
 <translation id="3258596308407688501">Chromium не може да чита податке из директоријума са подацима нити да их уписује у њега:
@@ -76,6 +77,7 @@
 <translation id="3430503420100763906">Помоћу Chromium профила можете да раздвојите све Chromium садржаје. Направите профиле за пријатеље и породицу или раздвојите посао и забаву.</translation>
 <translation id="347328004046849135">Chromium ће вас обавестити када се пријавите помоћу угрожене лозинке</translation>
 <translation id="3474745554856756813">Овим ћете избрисати <ph name="ITEMS_COUNT" /> ставке(и) са овог уређаја. Да бисте касније вратили податке, пријавите се у Chromium као <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931">Помоћу пречице <ph name="SHORTCUT" /> можете да прелазите са једног Chromium профила на други</translation>
 <translation id="3509308970982693815">Затворите све Chromium прозоре и покушајте поново.</translation>
 <translation id="3575459661164320785">На рачунару постоји штетан софтвер. Chromium може да га уклони, врати подешавања и онемогући додатке да би прегледач могао поново да ради уобичајено.</translation>
 <translation id="3639635944603682591">Подаци прегледања ове особе ће бити избрисани са овог уређаја. Да бисте вратили податке, пријавите се у Chromium као <ph name="USER_EMAIL" />.</translation>
@@ -156,6 +158,7 @@
 <translation id="6120345080069858279">Chromium ће сачувати ову лозинку на Google налогу. Нећете морати да је памтите.</translation>
 <translation id="6129621093834146363">Датотека <ph name="FILE_NAME" /> је опасна, па ју је Chromium блокирао.</translation>
 <translation id="6134968993075716475">Безбедно прегледање је искључено. Chromium препоручује да га укључите.</translation>
+<translation id="6145820983052037069">Овде можете да прелазите са једног Chromium профила на други</translation>
 <translation id="6183079672144801177">Уверите се да сте пријављени у Chromium на уређају <ph name="TARGET_DEVICE_NAME" /> и пробајте да пошаљете поново.</translation>
 <translation id="6212496753309875659">Овај рачунар већ има новију верзију Chromium-а. Ако софтвер не функционише, деинсталирајте Chromium и покушајте поново.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Поново ћемо покренути Chromium}=1{Поново ћемо покренути Chromium за 1 секунду}one{Поново ћемо покренути Chromium за # секунду}few{Поново ћемо покренути Chromium за # секунде}other{Поново ћемо покренути Chromium за # секунди}}</translation>

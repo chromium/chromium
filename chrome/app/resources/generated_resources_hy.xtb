@@ -104,7 +104,6 @@
 <translation id="1118549423835582252">Կառավարիչը (<ph name="MANAGER" />) խորհուրդ է տալիս, որ թարմացնեք այս <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="1118738876271697201">Չհաջողվեց որոշել սարքի մոդելը կամ սերիական համարը:</translation>
 <translation id="1119447706177454957">Ներքին սխալ</translation>
-<translation id="111959947408687873">Ctrl+<ph name="SEARCH_KEY_NAME" />+M դյուրանցման միջոցով կարող եք միացնել/անջատել լիաէկրան խոշորացույցը։ Օգտագործեք Ctrl+Alt+սլաքաստեղները՝ մեծացված ռեժիմում էկրանով տեղաշարժվելու համար։</translation>
 <translation id="1122068467107743258">Աշխատանքային</translation>
 <translation id="1122198203221319518">&amp;Գործիքներ</translation>
 <translation id="1122242684574577509">Նույնականացումը չստացվեց: Սեղմեք՝ ձեր օգտագործած Wi-Fi ցանցի էջում մուտք գործելու համար (<ph name="NETWORK_ID" />):</translation>
@@ -428,7 +427,6 @@
 <translation id="146000042969587795">Այս շրջանակն արգելափակված է, քանի որ այն անապահով բովանդակություն է պարունակում:</translation>
 <translation id="146219525117638703">ONC կարգավիճակ</translation>
 <translation id="146220085323579959">Համացանցի կապակցում չկա: Ստուգեք համացանցի կապակցումը և նորից փորձեք:</translation>
-<translation id="1463051728820430132">Հարցնել, երբ որևէ վեբ հավելված ուզենա որոշակի տեսակի ֆայլեր բացել ձեր սարքում</translation>
 <translation id="1463112138205428654">Լրացուցիչ պաշտպանությունն արգելափակել է «<ph name="FILE_NAME" />» ֆայլը։</translation>
 <translation id="1464044141348608623">Թույլ չտալ կայքերին տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը</translation>
 <translation id="1464258312790801189">Ձեր հաշիվները</translation>
@@ -1028,6 +1026,7 @@
 <translation id="211144231511833662">Մաքրել տեսակների նշավանդակները</translation>
 <translation id="2111670510994270194">Նոր ներդիր աջ կողմում</translation>
 <translation id="2111810003053064883">Գովազդատուները կարող են գնահատել գովազդի արդյունավետությունը՝ առանց հետագծելու ձեր գործողությունները համացանցում։</translation>
+<translation id="2112554630428445878">Բարի գալուստ, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Ամրացնել ներդիրը</translation>
 <translation id="2113479184312716848">Բացել &amp;ֆայլը…</translation>
 <translation id="2113921862428609753">Լիազորությունների մասին տեղեկություններ</translation>
@@ -1093,7 +1092,6 @@
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> սարք մուտք գործելու համար միացեք համացանցին:</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ու ևս 1 փոխանջատիչ</translation>
 <translation id="2165421703844373933">Օգտագործեք ձեր Օգնականը՝ ասելով «Ok Google»: Մարտկոցի լիցքը տնտեսելու համար ընտրեք «Միացնել (խորհուրդ է տրվում)» կարգավորումը: Ձեր Օգնականը կպատասխանի, միայն երբ սարքը միացված է սնուցման աղբյուրին կամ լիցքավորվում է:</translation>
-<translation id="2166269335975661317">Վեբ հավելվածները կարող են ձեր սարքում որոշակի տեսակի ֆայլեր բացելու թույլտվություն խնդրել</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Մուտք գործել</translation>
@@ -1972,7 +1970,6 @@
 <translation id="313205617302240621">Մոռացե՞լ եք գաղտնաբառը:</translation>
 <translation id="3132277757485842847">Ձեր հեռախոսի հետ կապն ընդհատվել է։ Համոզվեք, որ այն մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
 <translation id="3132996321662585180">Թարմացնել ամեն օր</translation>
-<translation id="3134393957315651797">Ընտրեք «<ph name="EXPERIMENT_NAME" />» փորձարկման կարգավիճակը։ Փորձարկման նկարագրությունը՝ <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN կոդն անվավեր է։ Մնաց <ph name="RETRIES" /> փորձ։</translation>
 <translation id="313963229645891001">Ներբեռնում, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Կանխադրված դեղին ավատար</translation>
@@ -2645,6 +2642,7 @@
 <translation id="3881478300875776315">Ցույց տալ ավելի քիչ տողեր</translation>
 <translation id="3882165008614329320">Տեսանյութ տեսախցիկից կամ ֆայլից</translation>
 <translation id="3884152383786131369">Տարբեր լեզուներով հասանելի վեբ բովանդակությունը կօգտագործի ցանկում նշված աջակցվող առաջին լեզուն։ Այս պարամետրերը համաժամացվում են ձեր դիտարկիչի կարգավորումների հետ։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Թարմացումները կառավարվում են ադմինիստրատորի կողմից</translation>
 <translation id="3886446263141354045">Այս կայք մուտք գործելու ձեր հարցումն ուղարկվել է <ph name="NAME" />-ին</translation>
 <translation id="3888550877729210209">Կատարեք նշումներ <ph name="LOCK_SCREEN_APP_NAME" />-ի միջոցով</translation>
 <translation id="3888586133700543064">Այս տեղեկությունները կօգնեն ավելի լավ հասկանալ ձեր Օգնականի հետ կապված խնդրի էությունը։ Տեղեկությունները պահվում են մինչև 90 օր և հասանելի են միայն ինժեներների և օգնության թիմերին։</translation>
@@ -4469,7 +4467,6 @@
 <translation id="5990266201903445068">Միայն Wi-Fi</translation>
 <translation id="5990386583461751448">Թարգմանված է</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Որպեսզի շարունակեք կայքեր այցելել, խնդրեք ադմինիստրատորին հեռացնել այս հավելվածը։}one{Որպեսզի շարունակեք կայքեր այցելել, խնդրեք ադմինիստրատորին հեռացնել այս հավելվածը։}other{Որպեսզի շարունակեք կայքեր այցելել, խնդրեք ադմինիստրատորին հեռացնել այս հավելվածները։}}</translation>
-<translation id="5992175324932183568">Թույլ չտալ վեբ հավելվածներին որոշակի տեսակի ֆայլեր բացել ձեր սարքում</translation>
 <translation id="5997337190805127100">Մանրամասն կայքերի հասանելիության մասին</translation>
 <translation id="6000758707621254961">«<ph name="SEARCH_TEXT" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
 <translation id="6002210667729577411">Խումբը տեղափոխել նոր պատուհան</translation>
@@ -4591,7 +4588,6 @@
 <translation id="6124213551517593835"><ph name="SITE_GROUP_NAME" /> խմբի կայքերի և դրանց ենթակայքերի պահած բոլոր տվյալներն ու քուքիները կջնջվեն։</translation>
 <translation id="6124650939968185064">Հետևյալ ընդլայնումները կախված են այս ընդլայնումից՝</translation>
 <translation id="6124698108608891449">Այս կայքին անհրաժեշտ են լրացուցիչ թույլտվություններ։</translation>
-<translation id="6125442051901189730">SIM-ի հասանելի պրոֆիլներ չկան։ <ph name="BEGIN_LINK" />Ստեղծեք<ph name="END_LINK" /> նոր պրոֆիլ։</translation>
 <translation id="6125479973208104919">Հարկավոր է նորից ավելացնել հաշիվը <ph name="DEVICE_TYPE" /> սարքում:</translation>
 <translation id="6129691635767514872">Ընտրված տվյալները հեռացվել են Chrome-ից ու համաժամացված սարքերից: Պատմությունը կարող է պահվել նաև ձեր Google հաշվում, օրինակ՝ որոնումների և Google-ի ծառայություններում ձեր գործողությունների տեսքով: Այդ տվյալները կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="6129938384427316298">Netscape-ի վկայագրի մեկնաբանություն</translation>
@@ -4704,7 +4700,7 @@
 <translation id="625895209797312329">Արգելել կայքերին օգտագործել ձեր սարքում տեղադրված տառատեսակները</translation>
 <translation id="6259104249628300056">Հայտնաբերել սարքեր ձեր տեղական ցանցում</translation>
 <translation id="6262371516389954471">Կրկնօրինակները վերբեռնվում են Google և գաղտնագրվում ձեր Google հաշվի գաղտնաբառի միջոցով։</translation>
-<translation id="6263082573641595914">Microsoft-ի ՎԿ-ի տարբերակ</translation>
+<translation id="6263082573641595914">Microsoft-ի CA-ի տարբերակ</translation>
 <translation id="6263284346895336537">Ոչ վճռական</translation>
 <translation id="6264365405983206840">Ընտրել &amp;բոլորը</translation>
 <translation id="6265687851677020761">Հեռացնել միացքը</translation>
@@ -6405,7 +6401,6 @@
 <translation id="8147900440966275470">Գտնվել է <ph name="NUM" /> ներդիր</translation>
 <translation id="8148760431881541277">Մուտքի սահմանափակում</translation>
 <translation id="8149564499626272569">Հաստատել USB մալուխով միացված հեռախոսի միջոցով</translation>
-<translation id="8150259863378108853">Lacros-ը փորձնական դիտարկիչ է։ Խնդիրների մասին կարող եք հաղորդել՝ սեղմելով Օգնություն &gt; «Հաղորդել խնդրի մասին»։</translation>
 <translation id="8151638057146502721">Կազմաձևել</translation>
 <translation id="8154790740888707867">Ֆայլ չի գտնվել</translation>
 <translation id="815491593104042026">Իսկորոշումը չհաջողվեց, քանի որ նրա կազմաձևումը թույլ է տալիս օգտագործել ոչ ապահով URL (<ph name="BLOCKED_URL" />): Կապվեք ձեր ադմինիստրատորի հետ:</translation>
@@ -6590,8 +6585,6 @@
 <translation id="8368859634510605990">&amp;Բացել բոլոր էջանիշները</translation>
 <translation id="8370294614544004647">Անցնել քնի ռեժիմ, երբ նոթբուքը փակ է</translation>
 <translation id="8371695176452482769">Խոսեք հիմա</translation>
-<translation id="8371749822919332187">Օգտագործեք Ctrl+Alt+Ավելացնել պայծառությունը՝ մասշտաբը մեծացնելու համար։
-Օգտագործեք Ctrl+Alt+Պակասեցնել պայծառությունը՝ մասշտաբը փոքրացնելու համար։</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Անջատել կայքի ձայնը}one{Անջատել կայքի ձայնը}other{Անջատել կայքերի ձայնը}}</translation>
 <translation id="8372369524088641025">WEP բանալին սխալ է</translation>
 <translation id="8373652277231415614">Crostini-ի ընդհանուր գրացուցակներ</translation>
@@ -6616,7 +6609,6 @@
 <translation id="8398877366907290961">Շարունակել</translation>
 <translation id="8400146488506985033">Օգտատերերի կառավարում</translation>
 <translation id="8401432541486058167">Մուտքագրեք PIN կոդը, որը կապված է ձեր խելացի քարտի հետ։</translation>
-<translation id="8403562727702715619">Վերջերս Google Drive-ից</translation>
 <translation id="8405046151008197676">Ծանոթացեք վերջին թարմացման մասին հիմնական տեղեկություններին</translation>
 <translation id="8407199357649073301">Գրառման մակարդակը՝</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ցանց, միացում…</translation>
@@ -7404,7 +7396,6 @@
 <translation id="975893173032473675">Թարգմանության լեզուն</translation>
 <translation id="976499800099896273">Ցուցադրվում է ավտոմատ շտկումը հետարկելու երկխոսության պատուհանը <ph name="TYPED_WORD" /> բառի համար, որը ուղղվել և դարձել էր <ph name="CORRECTED_WORD" />։  Բացելու համար սեղմեք վեր սլաքը, անտեսելու համար՝ Escape։</translation>
 <translation id="978146274692397928">Կետադրական նշանների սկզբնական լայնքը՝ լիալայնք</translation>
-<translation id="97883469867914488">Արգելել վեբ հավելվածներին բացել որոշակի տեսակի ֆայլեր ձեր սարքում</translation>
 <translation id="97905529126098460">Այս պատուհանը կփակվի, հենց որ չեղարկման գործընթացն ավարտվի:</translation>
 <translation id="980731642137034229">Գործողությունների ընտրացանկի կոճակ</translation>
 <translation id="981121421437150478">Անցանց</translation>

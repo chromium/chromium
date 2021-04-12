@@ -189,6 +189,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2921219216347069551">Error al compartir</translation>
 <translation id="2923448633003185837">Pegar y acceder</translation>
 <translation id="292639812446257861">Marcar como no leídas</translation>
+<translation id="2932085390869194046">Sugerir contraseña…</translation>
 <translation id="2952581218264071393">1. Abre la configuración de Chrome.</translation>
 <translation id="2958718410589002129">Contraseñas</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceros</translation>
@@ -422,6 +423,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5489208564673669003">Para administrar las cookies de todos los sitios, visita la <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no se recomienda)</translation>
 <translation id="5508435575041083207">Salir y borrar los datos de este dispositivo</translation>
+<translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crear frase contras.</translation>
 <translation id="5548760955356983418">Handoff te permite comenzar a navegar en un sitio web en este dispositivo y, luego, continuar fácilmente en tu Mac. El sitio web que está abierto ahora aparecerá en el Dock de tu Mac.
 
@@ -759,7 +761,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8806823403540278281">Tu organización requiere que navegues de forma privada. Las pestañas no se guardan en el modo Incógnito.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Favoritos</translation>
-<translation id="8823704566850948458">Sugerir contraseña…</translation>
 <translation id="8840513115188359703">No saldrás de tu cuenta de Google.</translation>
 <translation id="8870413625673593573">Cerrado recientemente</translation>
 <translation id="8881801611828450202">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9152539721251340337">Crear un código QR</translation>
 <translation id="9157836665414082580">Suprimir diálogos</translation>
 <translation id="9188680907066685419">Salir de la cuenta administrada</translation>
+<translation id="9200875785104711666">Hace <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Informe de fallos enviado.</translation>
 <translation id="952704832371081537">Cancelar</translation>

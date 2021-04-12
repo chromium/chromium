@@ -62,6 +62,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3130323860337406239">Chromium gebruik tans jou mikrofoon.</translation>
 <translation id="3155163173539279776">Herbegin Chromium</translation>
 <translation id="3179665906251668410">Maak skakel in 'n incognitovenster in Chromium oop</translation>
+<translation id="3185330573522821672">Pasmaak jou nuwe Chromium-profiel</translation>
 <translation id="3190315855212034486">Sjoe! Chromium het omgeval. Wil jy nou herbegin?</translation>
 <translation id="3229526316128325841">Chromium wil jou wagwoorde uitvoer.</translation>
 <translation id="3258596308407688501">Chromium kan nie sy datagids lees of daarheen skryf nie:
@@ -76,6 +77,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3430503420100763906">Met Chromium-profiele kan jy al jou Chromium-goed skei. Skep profiele vir vriende en familielede, of verdeel tussen werk en pret.</translation>
 <translation id="347328004046849135">Chromium sal jou in kennis stel wanneer jy met 'n gekompromitteerde wagwoord aanmeld</translation>
 <translation id="3474745554856756813">Dit sal <ph name="ITEMS_COUNT" /> items op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> kan tussen Chromium-profiele wissel</translation>
 <translation id="3509308970982693815">Maak asseblief alle Chromium-vensters toe en probeer weer.</translation>
 <translation id="3575459661164320785">Daar is skadelike sagteware op jou rekenaar. Chromium kan dit verwyder, jou instellings teruglaai en uitbreidings deaktiveer om jou blaaier weer normaal te laat werk.</translation>
 <translation id="3639635944603682591">Hierdie persoon se blaaierdata sal van hierdie toestel af uitgevee word. Meld as <ph name="USER_EMAIL" /> by Chromium aan om die data te herwin.</translation>
@@ -156,6 +158,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="6120345080069858279">Chromium sal hierdie wagwoord in jou Google-rekening stoor. Jy sal dit nie hoef te onthou nie.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is gevaarlik en daarom het Chromium dit geblokkeer.</translation>
 <translation id="6134968993075716475">Veiligblaai is afgeskakel. Chromium beveel aan dat jy dit aanskakel.</translation>
+<translation id="6145820983052037069">Jy kan hier tussen Chromium-profiele wissel</translation>
 <translation id="6183079672144801177">Maak seker dat jy by Chromium aangemeld is op jou <ph name="TARGET_DEVICE_NAME" /> en probeer dan weer stuur.</translation>
 <translation id="6212496753309875659">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Chromium. As die sagteware nie werk nie, deïnstalleer Chromium en probeer weer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sal nou herbegin}=1{Chromium sal oor 1 sekonde herbegin}other{Chromium sal oor # sekondes herbegin}}</translation>

@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Acest computer are deja o versiune mai recentă de Google Chrome. Dacă software-ul nu funcționează, dezinstalați Google Chrome și încercați din nou.</translation>
 <translation id="1434626383986940139">Aplicații Chrome Canary</translation>
+<translation id="1507198376417198979">Personalizează noul profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome are nevoie de acces la Bluetooth pentru a continua conectarea. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Actualizează Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> s-a conectat deja la acest profil Chrome. Astfel, se va crea un nou profil Chrome pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -210,6 +211,7 @@
 <translation id="6943584222992551122">Datele de navigare ale acestei persoane vor fi șterse de pe dispozitiv. Pentru a recupera datele, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regula de intrare pentru Google Chrome Beta pentru a permite traficul mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome a fost actualizat, dar nu l-ai folosit cel puțin 30 de zile.</translation>
+<translation id="7025800014283535195">Aici poți comuta între profilurile Chrome</translation>
 <translation id="7062128746136194023">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chrome. Adăugarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>
 <translation id="7098166902387133879">Google Chrome utilizează microfonul.</translation>
 <translation id="7106741999175697885">Manager de activități - Google Chrome</translation>
@@ -287,4 +289,5 @@
 <translation id="922152298093051471">Personalizează Chrome</translation>
 <translation id="940313311831216333">Pentru a accesa informațiile din Chrome pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="989369509083708165">Google Chrome este browserul prestabilit</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> poate comuta între profilurile Chrome</translation>
 </translationbundle>

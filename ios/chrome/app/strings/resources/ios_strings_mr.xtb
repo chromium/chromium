@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">पृष्ठ शेअर करू शकत नाही</translation>
 <translation id="2923448633003185837">पेस्ट करा आणि जा</translation>
 <translation id="292639812446257861">न वाचलेले चिन्हांकित करा</translation>
+<translation id="2932085390869194046">पासवर्ड सुचवा...</translation>
 <translation id="2952581218264071393">१. Chrome सेटिंग्ज उघडा</translation>
 <translation id="2958718410589002129">पासवर्ड</translation>
 <translation id="2964349545761222050">तृतीय पक्ष कुकी ब्लॉक करा</translation>
@@ -423,6 +424,7 @@
 <translation id="5489208564673669003">सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="5490005495580364134">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
 <translation id="5508435575041083207">या डिव्हाइसमधून साइन आउट करा आणि डेटा साफ करा</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> तासांपूर्वी</translation>
 <translation id="5525269841082836315">सांकेतिक पासफ्रेझ तयार करा</translation>
 <translation id="5548760955356983418">Handoff तुम्हाला या डिव्हाइसवर ब्राउझिंग सुरू करू आणि त्यानंतर आपल्या Mac वर सहजपणे सुरू ठेऊ देते. वर्तमान उघडलेली वेबसाइट आपल्या Mac च्या डॉकवर दिसून येईल.
 
@@ -761,7 +763,6 @@
 <translation id="8806823403540278281">तुमच्या संस्थेनुसार तुम्ही खाजगीरीत्या ब्राउझ करणे आवश्यक आहे. गुप्त मोडमध्ये टॅब सेव्ह केले जात नाहीत.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmarks</translation>
-<translation id="8823704566850948458">पासवर्ड सुचवा...</translation>
 <translation id="8840513115188359703">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही.</translation>
 <translation id="8870413625673593573">अलीकडे बंद</translation>
 <translation id="8881801611828450202">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
@@ -789,6 +790,7 @@
 <translation id="9152539721251340337">QR कोड तयार करा</translation>
 <translation id="9157836665414082580">संवाद दर्शवू नका</translation>
 <translation id="9188680907066685419">व्यवस्थापित केलेल्या खात्यामधून साइन आउट करा</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> दिवसांपूर्वी</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">क्रॅश अहवाल पाठवला.</translation>
 <translation id="952704832371081537">रद्द करा</translation>

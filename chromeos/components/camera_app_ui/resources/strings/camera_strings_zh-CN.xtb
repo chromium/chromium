@@ -4,6 +4,7 @@
 <translation id="1175958423215084756">检测到链接。<ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">图库图片</translation>
 <translation id="1430915738399379752">打印</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" />已拔出。</translation>
 <translation id="1473110567575736769">3 秒计时器</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,6 +25,7 @@
 <translation id="2501953888035679275">使用相机拍照和录制视频。</translation>
 <translation id="2549985041256363841">开始录制</translation>
 <translation id="2599796128805996109">后置摄像头</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" />已插入。</translation>
 <translation id="2912439424121107408">此设备不支持专家模式</translation>
 <translation id="2968794441791257519">使用此相机拍摄的照片和视频将被移至“下载内容”文件夹。您可在“文件”中访问它们。
 

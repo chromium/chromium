@@ -18,6 +18,7 @@
 <translation id="137466361146087520">Google Chrome бета</translation>
 <translation id="1399397803214730675">Овај рачунар већ има новију верзију Google Chrome прегледача. Ако софтвер не функционише, деинсталирајте Google Chrome и покушајте поново.</translation>
 <translation id="1434626383986940139">Chrome Canary апликације</translation>
+<translation id="1507198376417198979">Прилагодите нови Chrome профил</translation>
 <translation id="1516530951338665275">Google Chrome захтева приступ Bluetooth-у ради настављања са 
  упаривањем. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Ажурирај Chrome</translation>
@@ -219,6 +220,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6943584222992551122">Подаци прегледања ове особе ће бити избрисани са овог уређаја. Да бисте вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Правило за долазни саобраћај за Google Chrome бета да бисте омогућили mDNS саобраћај.</translation>
 <translation id="6989339256997917931">Google Chrome је ажуриран, али га нисте користили најмање 30 дана.</translation>
+<translation id="7025800014283535195">Овде можете да прелазите са једног Chrome профила на други</translation>
 <translation id="7062128746136194023">Родитељ је искључио „Дозволе за сајтове, апликације и додатке“ за Chrome. Додавање ове ставке (<ph name="EXTENSION_TYPE_PARAMETER" />) није дозвољено.</translation>
 <translation id="7098166902387133879">Google Chrome користи микрофон.</translation>
 <translation id="7106741999175697885">Менаџер задатака – Google Chrome</translation>
@@ -296,4 +298,5 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="922152298093051471">Прилагодите Chrome</translation>
 <translation id="940313311831216333">Да бисте приступали Chrome садржају на свим уређајима, пријавите се, па укључите синхронизацију.</translation>
 <translation id="989369509083708165">Google Chrome је подразумевани прегледач</translation>
+<translation id="989816563149873169">Помоћу пречице <ph name="SHORTCUT" /> можете да прелазите са једног Chrome профила на други</translation>
 </translationbundle>

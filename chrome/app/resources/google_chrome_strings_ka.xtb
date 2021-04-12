@@ -18,6 +18,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">ამ კომპიუტერს უკვე აქვს Google Chrom-ის უფრო ახალი ვერსია. იმ შემთხვევაში, თუ პროგრამა არ მუშაობს, გთხოვთ, განახორციელეთ Google Chrome-ის დეინსტალაცია და სცადეთ ისევ.</translation>
 <translation id="1434626383986940139">Chrome Canary პროგრამები</translation>
+<translation id="1507198376417198979">მოირგეთ თქვენი ახალი Chrome პროფილი</translation>
 <translation id="1516530951338665275">დაწყვილების გასაგრძელებლად Google Chrome საჭიროებს Bluetooth-ზე წვდომას. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome-ის განახლება</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chrome პროფილში. ეს მოქმედება შექმნის ახალ Chrome პროფილს <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
@@ -217,6 +218,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6943584222992551122">ამ პიროვნების დათვალიერების მონაცემები წაიშლება ამ მოწყობილობიდან. მონაცემების აღსადგენად შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">შემომავალი წესი Google Chrome Beta-სთვის mDNS ტრაფიკის დასაშვებად.</translation>
 <translation id="6989339256997917931">Google Chrome განახლდა, მაგრამ თქვენ არ იყენებდით მას მინიმუმ 30 დღის განმავლობაში.</translation>
+<translation id="7025800014283535195">აქ შეგიძლიათ Chrome პროფილებს შორის გადართვა</translation>
 <translation id="7062128746136194023">თქვენმა მშობელმა გამორთო „ნებართვები საიტებისთვის, აპებისა და გაფართოებებისთვის“ Chrome-ისთვის. ეს <ph name="EXTENSION_TYPE_PARAMETER" /> ვერ დაემატება.</translation>
 <translation id="7098166902387133879">Google Chrome იყენებს თქვენს მიკროფონს.</translation>
 <translation id="7106741999175697885">ამოცანათა მმართველი - Google Chrome</translation>
@@ -294,4 +296,5 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="922152298093051471">Chrome-ის მორგება</translation>
 <translation id="940313311831216333">თქვენს Chrome კონტენტზე თქვენი ნებისმიერი მოწყობილობიდან წვდომისთვის შედით სისტემაში, შემდეგ კი ჩართეთ სინქრონიზაცია.</translation>
 <translation id="989369509083708165">Google Chrome თქვენი ნაგულისხმევი ბრაუზერია</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> გადართავს Chrome პროფილებს</translation>
 </translationbundle>

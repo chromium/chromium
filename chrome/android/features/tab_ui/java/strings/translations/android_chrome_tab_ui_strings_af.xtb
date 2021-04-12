@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">Voorstel: <ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
 <translation id="257674075312929031">Groep</translation>
 <translation id="2613747923081026172">Skep groep</translation>
+<translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />-gradering</translation>
 <translation id="2671423594960767771">Deel groep</translation>
 <translation id="2759453070259087442">Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="NUMBER_OF_TABS" /> oortjies uit.</translation>
+<translation id="2801787514987684416">Bekyk winkelinligting?</translation>
 <translation id="2977480621796371840">Verwyder uit groep</translation>
+<translation id="3194464645767632461">gradering</translation>
 <translation id="3291470810748040983">Jy sal 'n opletberig kry wanneer daar 'n laer prys in 'n oop oortjie is</translation>
 <translation id="3328308545011660196">Voorstel: <ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
 <translation id="3882834874697329510">Skakel kennisgewings in Instellings aan om 'n kennisgewing te kry wanneer daar 'n laer prys in 'n oop oortjie is.</translation>
 <translation id="3940195383040445971">Spoor pryse na in oortjies</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">Hou aan blaai</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
 <translation id="4648718555153979859">Jou oortjies word hier saamgegroepeer</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> resensie)}other{(<ph name="REVIEWS_COUNT_MANY" /> resensies)}}</translation>
 <translation id="4850886885716139402">Bekyk</translation>
 <translation id="492284538114688557">Prysdaling is opgemerk</translation>
 <translation id="5007392906805964215">Gaan na</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">Vergelyk bladsye vinnig deur 'n groep te maak. Raak en hou 'n skakel om te begin.</translation>
 <translation id="5490235265819901748">Oortjiegroep is uitgevou</translation>
 <translation id="5533021382642990449">Wys later</translation>
+<translation id="5556417849629758491">Bekyk winkelinligting; opsie beskikbaar naby bokant van die skerm</translation>
 <translation id="5558362125926932819">Maak oortjiegroep met <ph name="NUMBER_OF_TABS" /> oortjies toe</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> oortjies gegroepeer</translation>
 <translation id="575494663145460764">Kry opletberigte oor prysdalings?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">Wys groep se oortjies in volskermrooster</translation>
 <translation id="7792771145871471484">Gaan die voorstelle na.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Groepeer <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Groepeer <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> gradering, <ph name="REVIEWS_COUNT_ONE" /> resensie}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> gradering, <ph name="REVIEWS_COUNT_MANY" /> resensies}}</translation>
 <translation id="7885132941432959125">Skuif oortjie na regs</translation>
 <translation id="7966321538264951561">Maak die voorstelle toe.</translation>
 <translation id="814503310257431685">Bekyk alles</translation>

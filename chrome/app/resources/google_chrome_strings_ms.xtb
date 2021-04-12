@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Komputer ini mempunyai versi Google Chrome paling terkini. Jika perisian tidak berfungsi, sila nyahpasang Google Chrome dan cuba semula.</translation>
 <translation id="1434626383986940139">Apl Chrome Canary</translation>
+<translation id="1507198376417198979">Sesuaikan profil Chrome baharu anda</translation>
 <translation id="1516530951338665275">Google Chrome memerlukan akses Bluetooth untuk meneruskan 
  penggandingan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Kemas Kini Chrome</translation>
@@ -211,6 +212,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="6943584222992551122">Data semakan imbas orang ini akan dipadamkan daripada peranti ini. Untuk memulihkan data itu, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Peraturan masuk bagi Google Chrome Beta untuk membenarkan trafik mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome telah dikemas kini, tetapi anda belum menggunakannya untuk sekurang-kurangnya 30 hari.</translation>
+<translation id="7025800014283535195">Anda boleh beralih antara profil Chrome di sini</translation>
 <translation id="7062128746136194023">Ibu/bapa anda telah mematikan "Kebenaran untuk tapak web, apl dan sambungan" untuk Chrome. Tindakan menambah <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak dibenarkan.</translation>
 <translation id="7098166902387133879">Google Chrome menggunakan mikrofon anda.</translation>
 <translation id="7106741999175697885">Pengurus Tugas - Google Chrome</translation>
@@ -288,4 +290,5 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="940313311831216333">Untuk mengakses bahan Chrome anda pada semua peranti anda, log masuk, kemudian hidupkan penyegerakan.</translation>
 <translation id="989369509083708165">Google Chrome ialah penyemak imbas lalai anda</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> boleh digunakan untuk beralih antara profil Chrome</translation>
 </translationbundle>

@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">Chromium がマイクを使用しています。</translation>
 <translation id="3155163173539279776">Chromium を再起動します</translation>
 <translation id="3179665906251668410">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
+<translation id="3185330573522821672">新しい Chromium プロフィールをカスタマイズ</translation>
 <translation id="3190315855212034486">エラー: Chromium で問題が発生しました。今すぐ再起動しますか？</translation>
 <translation id="3229526316128325841">Chromium からパスワードをエクスポートするための許可を求められています。</translation>
 <translation id="3258596308407688501">Chromium はこのデータ ディレクトリへの読み書きを実行できません:
@@ -74,6 +75,7 @@
 <translation id="3430503420100763906">Chromium プロフィールを使うと、Chromium のあらゆる項目や設定を個別に管理できます。友達や家族のプロフィールを作成したり、仕事とプライベートでプロフィールを使い分けたりできます。</translation>
 <translation id="347328004046849135">不正使用されたパスワードでログインした場合、Chromium で通知します</translation>
 <translation id="3474745554856756813">このデバイスから <ph name="ITEMS_COUNT" /> 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
+<translation id="3497319089134299931">Chromium プロフィールを切り替えるには、<ph name="SHORTCUT" /> を使用します</translation>
 <translation id="3509308970982693815">すべての Chromium ウィンドウを閉じてからもう一度お試しください。</translation>
 <translation id="3575459661164320785">お使いのパソコンに有害なソフトウェアが見つかりました。Chromium では、ブラウザを正常な動作に戻すためにこのソフトウェアを削除し、設定を復元して、拡張機能を無効化することができます。</translation>
 <translation id="3639635944603682591">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
@@ -154,6 +156,7 @@
 <translation id="6120345080069858279">このパスワードは Google アカウントに保存されるため、覚えておく必要はありません。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> は危険なファイルであるため、Chromium でブロックしました。</translation>
 <translation id="6134968993075716475">セーフ ブラウジングがオフになっています。Chromium はオンにすることをおすすめしています。</translation>
+<translation id="6145820983052037069">こちらで Chromium プロフィールを切り替えることができます</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> で Chromium にログインしていることを確認してから、もう一度送信してください。</translation>
 <translation id="6212496753309875659">新しいバージョンの Chromium が既にインストールされています。ソフトウェアが動作しない場合は、Chromium をアンインストールしてからもう一度お試しください。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium は今すぐ再起動されます}=1{Chromium は 1 秒後に再起動されます}other{Chromium は # 秒後に再起動されます}}</translation>

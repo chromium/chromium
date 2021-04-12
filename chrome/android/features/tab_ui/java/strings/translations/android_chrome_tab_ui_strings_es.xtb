@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">Sugerencia: <ph name="NUMBER_OF_TABS" /> de las pestañas no se han usado recientemente. ¿Quieres cerrarlas?</translation>
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2613747923081026172">Crear grupo</translation>
+<translation id="2662028055331606429">Puntuación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2759453070259087442">Desplegar el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> pestañas.</translation>
+<translation id="2801787514987684416">¿Ver información de la tienda?</translation>
 <translation id="2977480621796371840">Quitar del grupo</translation>
+<translation id="3194464645767632461">puntuación</translation>
 <translation id="3291470810748040983">Recibirás una alerta cuando haya un precio más bajo en una pestaña abierta.</translation>
 <translation id="3328308545011660196">Sugerencia: Hay <ph name="NUMBER_OF_TABS" /> pestañas que parecen relacionadas. ¿Quieres agruparlas?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Ocultar <ph name="TABS_COUNT_ONE" /> pestaña}other{Ocultar grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestañas.}}</translation>
 <translation id="3882834874697329510">Para recibir una alerta cuando haya un precio más bajo en una pestaña abierta, activa las notificaciones en Ajustes.</translation>
 <translation id="3940195383040445971">Seguir precios en pestañas</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">Continuar navegando</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
 <translation id="4648718555153979859">Tus pestañas se agrupan aquí</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> reseña)}other{(<ph name="REVIEWS_COUNT_MANY" /> reseñas)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="492284538114688557">Bajada de precio detectada</translation>
 <translation id="5007392906805964215">Ver</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">Crea un grupo para comparar páginas rápidamente. Para comenzar, mantén pulsado un enlace.</translation>
 <translation id="5490235265819901748">Grupo de pestañas desplegado</translation>
 <translation id="5533021382642990449">Mostrar más tarde</translation>
+<translation id="5556417849629758491">Ver información de la tienda, opción disponible cerca de la parte superior de la pantalla</translation>
 <translation id="5558362125926932819">Cerrar grupo de pestañas con <ph name="NUMBER_OF_TABS" /> pestañas</translation>
 <translation id="5580090775658607195">Se han agrupado <ph name="TAB_COUNT" /> pestañas</translation>
 <translation id="575494663145460764">¿Quieres recibir alertas por bajadas de precio?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">Mostrar las pestañas del grupo en una cuadrícula en pantalla completa</translation>
 <translation id="7792771145871471484">Revisar las sugerencias.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Agrupar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ Puntuación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> reseña}other{Puntuación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> reseñas}}</translation>
 <translation id="7885132941432959125">Mover pestaña a la derecha</translation>
 <translation id="7966321538264951561">Cerrar las sugerencias.</translation>
 <translation id="814503310257431685">Ver todo</translation>

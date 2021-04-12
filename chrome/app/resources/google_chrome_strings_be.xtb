@@ -18,6 +18,7 @@
 <translation id="137466361146087520">Google Chrome (бэта-версія)</translation>
 <translation id="1399397803214730675">На гэтым камп'ютары ўжо ўсталявана навейшая версія Google Chrome. Калі праграма не працуе, выдаліце Google Chrome і паўтарыце спробу.</translation>
 <translation id="1434626383986940139">Праграмы Chrome Canary</translation>
+<translation id="1507198376417198979">Наладзьце новы профіль Chrome</translation>
 <translation id="1516530951338665275">Каб працягнуць спалучэнне, Google Chrome патрабуе доступу да Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
 <translation id="1583073672411044740">Уваход у гэты профіль Chrome ужо выкананы карыстальнікам <ph name="EXISTING_USER" />. Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -218,6 +219,7 @@
 <translation id="6943584222992551122">Даныя аб прагледжаных гэтым карыстальнікам старонках будуць выдалены з прылады. Каб аднавіць гэтыя даныя, увайдзіце ў Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Уваходнае правіла для бэта-версіі Google Chrome, якое дазваляе трафік mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome быў абноўлены, але вы не выкарыстоўвалі яго на працягу як мінімум 30 дзён.</translation>
+<translation id="7025800014283535195">Пераключацца паміж профілямі Chrome можна тут</translation>
 <translation id="7062128746136194023">Вашы бацькі выключылі "Дазволы для сайтаў, праграм і пашырэнняў" для Chrome. Дадаванне гэтага элемента (<ph name="EXTENSION_TYPE_PARAMETER" />) забаронена.</translation>
 <translation id="7098166902387133879">Google Chrome выкарыстоўвае ваш мікрафон.</translation>
 <translation id="7106741999175697885">Менеджар заданняў – Google Chrome</translation>
@@ -295,4 +297,5 @@
 <translation id="922152298093051471">Наладзіць Chrome</translation>
 <translation id="940313311831216333">Каб мець доступ да даных браўзера Chrome на ўсіх вашых прыладах, увайдзіце ва ўліковы запіс, а затым уключыце сінхранізацыю.</translation>
 <translation id="989369509083708165">Google Chrome – ваш стандартны браўзер.</translation>
+<translation id="989816563149873169">Пераключацца паміж профілямі Chrome можна, выкарыстоўваючы спалучэнне клавіш <ph name="SHORTCUT" /></translation>
 </translationbundle>

@@ -62,6 +62,7 @@
 <translation id="3130323860337406239">‏Chromium آپ کا مائیکروفون استعمال کر رہا ہے۔</translation>
 <translation id="3155163173539279776">‏Chromium کو دوبارہ شروع کریں</translation>
 <translation id="3179665906251668410">‏لنک کو Chromium &amp;پوشیدگی ونڈو میں کھولیں</translation>
+<translation id="3185330573522821672">‏اپنی نئی Chromium پروفائل کو حسب ضرورت بنائیں</translation>
 <translation id="3190315855212034486">‏افوہ! Chromium کریش ہوگیا ہے۔ دوبارہ شروع کریں؟</translation>
 <translation id="3229526316128325841">‏Chromium آپ کے پاس ورڈز برآمد کرنا چاہتا ہے۔</translation>
 <translation id="3258596308407688501">‏Chromium اپنی ڈیٹا ڈائریکٹری میں پڑھ اور لکھ نہیں سکتا ہے:
@@ -76,6 +77,7 @@
 <translation id="3430503420100763906">‏Chromium کی پروفائلز کے ساتھ آپ اپنے تمام Chromium مواد کو الگ کر سکتے ہیں۔ دوستوں اور فیملی کیلئے پروفائلز تخلیق کریں یا کام اور تفریح کے درمیان تقسیم کریں۔</translation>
 <translation id="347328004046849135">‏جب آپ کسی متاثرہ پاس ورڈ سے سائن ان کریں گے تو Chromium آپ کو مطلع کرے گا</translation>
 <translation id="3474745554856756813">‏یہ اس آلہ سے <ph name="ITEMS_COUNT" /> آئٹمز کو حذف کر دے گا۔ بعد میں اپنے ڈیٹا کی بازیافت کرنے کیلئے، Chromium میں <ph name="USER_EMAIL" /> کے بطور سائن ان کریں۔</translation>
+<translation id="3497319089134299931">‏<ph name="SHORTCUT" /> سے Chromium پروفائل کے درمیان سوئچ کیا جا سکتا ہے</translation>
 <translation id="3509308970982693815">‏براہ کرم سبھی Chromium ونڈوز بند کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="3575459661164320785">‏آپ کے کمپیوٹر میں نقصان دہ سافٹ ویئر ہے۔ Chromium اسے ہٹا کر آپ کی ترتیبات بحال اور ایکسٹینشنز کو غیر فعال کر سکتا ہے تاکہ آپ کا براؤزر دوبارہ حسب معمول کام کر سکے۔</translation>
 <translation id="3639635944603682591">‏اس شخص کا براؤزنگ ڈیٹا اس آلے سے حذف کر دیا جائے گا۔ ڈیٹا بحال کرنے کیلئے، Chromium میں بطور <ph name="USER_EMAIL" /> سائن ان کریں۔</translation>
@@ -156,6 +158,7 @@
 <translation id="6120345080069858279">‏Chromium آپ کے Google اکاؤنٹ میں اس پاس ورڈ کو محفوظ کرے گا۔ آپ کو اسے یاد کرنے کی ضرورت نہیں ہے۔</translation>
 <translation id="6129621093834146363">‏<ph name="FILE_NAME" /> خطرناک ہے، اس لیے Chromium نے اسے مسدود کر دیا ہے۔</translation>
 <translation id="6134968993075716475">‏محفوظ براؤزنگ آف ہے۔ Chromium اسے آن کرنے کی تجویز کرتا ہے۔</translation>
+<translation id="6145820983052037069">‏آپ یہاں Chromium پروفائلز کے درمیان سوئچ کر سکتے ہیں</translation>
 <translation id="6183079672144801177">‏یقینی بنائیں کہ آپ اپنے <ph name="TARGET_DEVICE_NAME" /> پر Chromium میں سائن ان ہیں اور پھر دوبارہ بھیج کر دیکھیں۔</translation>
 <translation id="6212496753309875659">‏اس کمپیوٹر پر Chromium کا ایک مزید حالیہ ورژن پہلے سے ہے۔ اگر سافٹ ویئر کام نہیں کر رہا ہے تو براہ کرم Chromium کو ان انسٹال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏ابھی Chromium دوبارہ لانچ ہوگا}=1{‏1 سیکنڈ میں Chromium دوبارہ لانچ ہوگا}other{‏# سیکنڈ میں Chromium دوبارہ لانچ ہوگا}}</translation>

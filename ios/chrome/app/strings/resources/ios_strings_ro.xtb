@@ -189,6 +189,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2921219216347069551">Pagină netrimisă</translation>
 <translation id="2923448633003185837">Inserează și accesează</translation>
 <translation id="292639812446257861">Marchează ca necitite</translation>
+<translation id="2932085390869194046">Sugerează o parolă...</translation>
 <translation id="2952581218264071393">1. deschide setările Chrome;</translation>
 <translation id="2958718410589002129">Parole</translation>
 <translation id="2964349545761222050">Blochează cookie-urile terță parte</translation>
@@ -422,6 +423,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5489208564673669003">Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="BEGIN_LINK" />Setări pentru cookie-uri<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blochează toate cookie-urile (nu este recomandat)</translation>
 <translation id="5508435575041083207">Deconectează-te și șterge datele de pe dispozitiv</translation>
+<translation id="5513681519188741830">acum <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Creează o expresie de acces</translation>
 <translation id="5548760955356983418">Cu Handoff, începi să navighezi pe un site de pe acest dispozitiv, apoi continui cu ușurință de pe Mac. Site-ul deschis actual va apărea în Dock pe Mac.
 
@@ -759,7 +761,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8806823403540278281">Organizația îți solicită să navighezi în privat. Filele nu sunt salvate în modul incognito.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Marcaje</translation>
-<translation id="8823704566850948458">Sugerează o parolă...</translation>
 <translation id="8840513115188359703">Nu vei fi deconectat(ă) de la Contul Google.</translation>
 <translation id="8870413625673593573">Închise recent</translation>
 <translation id="8881801611828450202">Caută această imagine cu <ph name="SEARCH_ENGINE" /></translation>
@@ -787,6 +788,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9152539721251340337">Creează un cod QR</translation>
 <translation id="9157836665414082580">Închide casetele de dialog</translation>
 <translation id="9188680907066685419">Deconectează-te de la contul gestionat</translation>
+<translation id="9200875785104711666">acum <ph name="TIME" /> zile</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Raportul de blocare a fost trimis.</translation>
 <translation id="952704832371081537">Anulează</translation>

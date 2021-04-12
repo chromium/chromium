@@ -238,7 +238,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elements suprimits</translation>
 <translation id="2536728043171574184">S'està mostrant una còpia sense connexió d'aquesta pàgina</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
-<translation id="2549341709325358884">Només amb Wi‑Fi i dades mòbils</translation>
 <translation id="2561519700418191927">Previsualitzacions de vídeo</translation>
 <translation id="2567385386134582609">IMATGE</translation>
 <translation id="2571711316400087311">Proposa enviar pàgines en altres idiomes al Traductor de Google</translation>
@@ -752,6 +751,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5982307838673692400">Obre una pestanya d'incògnit</translation>
 <translation id="6000066717592683814">Continua amb Google</translation>
 <translation id="6000203700195075278">Torna a seguir</translation>
+<translation id="6002623704405939939">Per esborrar la <ph name="BEGIN_LINK1" />cerca<ph name="END_LINK1" /> o altres formes de l'historial, visita <ph name="BEGIN_LINK2" />La meva activitat a Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Contrasenya suggerida</translation>
 <translation id="6036057147555329831">ICU addicional</translation>
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
@@ -925,6 +925,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7088681679121566888">Chrome està actualitzat</translation>
 <translation id="7106762743910369165">La teva organització gestiona el navegador</translation>
 <translation id="7121362699166175603">Esborra l'historial i les complecions automàtiques a la barra d'adreces. A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del Compte de Google.</translation>
+<translation id="7134993907760847334">Esborra l'historial de tots els dispositius amb la sessió iniciada.</translation>
 <translation id="7138678301420049075">Altres</translation>
 <translation id="7146622961999026732">Aquests llocs web i aquestes aplicacions semblen importants per a tu:</translation>
 <translation id="7149893636342594995">24 darreres hores</translation>

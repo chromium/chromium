@@ -104,7 +104,6 @@
 <translation id="1118549423835582252">לפי ההמלצה של <ph name="MANAGER" />, כדאי לעדכן את ה-<ph name="DEVICE_TYPE" /> הזה.</translation>
 <translation id="1118738876271697201">המערכת לא הצליחה לזהות את דגם המכשיר או את המספר הסידורי.</translation>
 <translation id="1119447706177454957">שגיאה פנימית</translation>
-<translation id="111959947408687873">‏כדי להפעיל או להשבית את התכונה 'הגדלת כל המסך', יש להשתמש במקשים Ctrl+<ph name="SEARCH_KEY_NAME" />+M. כדי לנוע במסך כשמגדילים את התצוגה, יש להשתמש במקשים Ctrl‏+Alt+מקשי החיצים.</translation>
 <translation id="1122068467107743258">עבודה</translation>
 <translation id="1122198203221319518">&amp;כלים</translation>
 <translation id="1122242684574577509">‏האימות נכשל. יש ללחוץ כדי לעבור אל דף ההתחברות של רשת ה-Wi-Fi שבה משתמשים (<ph name="NETWORK_ID" />).</translation>
@@ -428,7 +427,6 @@
 <translation id="146000042969587795">מסגרת זו נחסמה משום שהיא מכילה תוכן לא בטוח.</translation>
 <translation id="146219525117638703">‏מצב ONC</translation>
 <translation id="146220085323579959">האינטרנט מנותק. יש לבדוק את חיבור האינטרנט שלך ולנסות שוב.</translation>
-<translation id="1463051728820430132">יש לשאול כשאפליקציית אינטרנט מבקשת לפתוח סוגי קבצים במכשיר שלך</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> נחסם על-ידי ההגנה המתקדמת.</translation>
 <translation id="1464044141348608623">לא לאפשר לאתרים לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="1464258312790801189">החשבונות שלך</translation>
@@ -1025,6 +1023,7 @@
 <translation id="211144231511833662">ניקוי הסוגים</translation>
 <translation id="2111670510994270194">כרטיסייה חדשה מצד שמאל</translation>
 <translation id="2111810003053064883">מפרסמים יכולים לבחון את יעילות המודעות בדרך שאינה כוללת מעקב אחריך באתרים שונים.</translation>
+<translation id="2112554630428445878">שלום, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">הצמדת כרטיסייה</translation>
 <translation id="2113479184312716848">פתיחת &amp;קובץ...</translation>
 <translation id="2113921862428609753">גישה לפרטי רשות</translation>
@@ -1090,7 +1089,6 @@
 <translation id="2163470535490402084">צריך להתחבר לאינטרנט כדי להיכנס אל ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ועוד מתג אחד</translation>
 <translation id="2165421703844373933">‏כשאומרים "Hey Google", מתבצעת גישה ל-Assistant. כדי לחסוך בצריכת הסוללה, אפשר לבחור באפשרות "מופעל (מומלץ)". Assistant תגיב רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
-<translation id="2166269335975661317">אפליקציות אינטרנט יכולות לבקש לפתוח סוגי קבצים מהמכשיר</translation>
 <translation id="2166369534954157698">דג סקרן שט בים זך ולפתע מצא חבורה נחמדה</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">אני רוצה להיכנס בכל זאת</translation>
@@ -1970,7 +1968,6 @@
 <translation id="313205617302240621">שכחת את הסיסמה?</translation>
 <translation id="3132277757485842847">‏לא הצלחנו לשמור על החיבור לטלפון שלך. יש לוודא שהטלפון נמצא בקרבת מקום, אינו נעול, ושה-Bluetooth וה-Wi-Fi פועלים.</translation>
 <translation id="3132996321662585180">רענון מדי יום</translation>
-<translation id="3134393957315651797">יש לבחור מצב לניסוי <ph name="EXPERIMENT_NAME" />. תיאור הניסוי: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">קוד האימות לא חוקי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="313963229645891001">בהורדה, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">דמות ברירת מחדל צהובה</translation>
@@ -2643,6 +2640,7 @@
 <translation id="3881478300875776315">אני רוצה לראות פחות שורות</translation>
 <translation id="3882165008614329320">סרטון קיים ממצלמה או מקובץ</translation>
 <translation id="3884152383786131369">תוכן אינטרנט שזמין במספר שפות יוצג בשפה הנתמכת הראשונה ברשימה הזו. ההעדפות האלה מסונכרנות עם הגדרות הדפדפן. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">העדכונים מנוהלים על ידי מנהל המערכת</translation>
 <translation id="3886446263141354045">הבקשה שלך לגשת לאתר הזה נשלחה אל <ph name="NAME" /></translation>
 <translation id="3888550877729210209">כתיבת הערות בעזרת <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">‏המידע הזה עוזר לנו להבין בצורה טובה יותר את הבעיה שלך ב-Assistant. הוא נשמר לתקופה של עד 90 ימים והגישה אליו מוגבלת: רק צוותי ההנדסה והמשוב המתאימים רשאים לגשת אליו.</translation>
@@ -4464,7 +4462,6 @@
 <translation id="5990266201903445068">‏Wi-Fi בלבד</translation>
 <translation id="5990386583461751448">מתורגם</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{כדי שאפשר יהיה להמשיך לגלוש באינטרנט, צריך לבקש ממנהל המערכת להסיר את האפליקציה הזו.}two{כדי שאפשר יהיה להמשיך לגלוש באינטרנט, צריך לבקש ממנהל המערכת להסיר את האפליקציות האלה.}many{כדי שאפשר יהיה להמשיך לגלוש באינטרנט, צריך לבקש ממנהל המערכת להסיר את האפליקציות האלה.}other{כדי שאפשר יהיה להמשיך לגלוש באינטרנט, צריך לבקש ממנהל המערכת להסיר את האפליקציות האלה.}}</translation>
-<translation id="5992175324932183568">לא לאפשר לאפליקציות אינטרנט לפתוח סוגי קבצים במכשיר</translation>
 <translation id="5997337190805127100">מידע נוסף על גישה לאתרים</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> תוצאות בשביל '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002210667729577411">העברת הקבוצה לחלון חדש</translation>
@@ -4586,7 +4583,6 @@
 <translation id="6124213551517593835">‏הפעולה הזו תגרום למחיקת כל הנתונים וקובצי ה-cookie שאוחסנו על ידי קבוצת האתרים <ph name="SITE_GROUP_NAME" /> ועל-ידי כל האתרים הכלולים בקבוצה</translation>
 <translation id="6124650939968185064">התוספים הבאים תלויים בתוסף הזה:</translation>
 <translation id="6124698108608891449">האתר הזה צריך הרשאות נוספות.</translation>
-<translation id="6125442051901189730">‏אין פרופילים זמינים של SIM. <ph name="BEGIN_LINK" />כאן<ph name="END_LINK" /> מגדירים פרופיל חדש.</translation>
 <translation id="6125479973208104919">יהיה עליך להוסיף את החשבון שלך ב-<ph name="DEVICE_TYPE" /> פעם נוספת.</translation>
 <translation id="6129691635767514872">‏הנתונים שבחרת הוסרו מ-Chrome ומהמכשירים המסונכרנים. ייתכן שבכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> עדיין יתאפשר לך לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google, כמו חיפושים ופעילות משירותים אחרים של Google.</translation>
 <translation id="6129938384427316298">‏הערה לאישור Netscape</translation>
@@ -6403,7 +6399,6 @@
 <translation id="8147900440966275470">נמצאה כרטיסייה אחת (<ph name="NUM" />)</translation>
 <translation id="8148760431881541277">הגבלת כניסה</translation>
 <translation id="8149564499626272569">‏אימות באמצעות הטלפון עם כבל USB</translation>
-<translation id="8150259863378108853">‏Lacros הוא דפדפן ניסיוני. אפשר לדווח על כל בעיה דרך 'עזרה' &gt; "דיווח על בעיה..."</translation>
 <translation id="8151638057146502721">הגדרה</translation>
 <translation id="8154790740888707867">אין קובץ</translation>
 <translation id="815491593104042026">אופס! האימות נכשל מפני שהוא הוגדר להשתמש בכתובת אתר לא-מאובטחת (<ph name="BLOCKED_URL" />). יש לפנות למנהל המערכת.</translation>
@@ -6588,8 +6583,6 @@
 <translation id="8368859634510605990">&amp;פתיחת כל הסימניות</translation>
 <translation id="8370294614544004647">מעבר למצב שינה כשהמחשב הנייד נסגר</translation>
 <translation id="8371695176452482769">דיבור עכשיו</translation>
-<translation id="8371749822919332187">‏כדי להתקרב, יש להשתמש במקשים Ctrl‏+Alt+העלאת רמת הבהירות.
-כדי להתרחק, יש להשתמש במקשים Ctrl‏+Alt+הורדת רמת הבהירות.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{השתקת האתר}two{השתקת האתרים}many{השתקת האתרים}other{השתקת האתרים}}</translation>
 <translation id="8372369524088641025">‏מקש WEP גרוע</translation>
 <translation id="8373652277231415614">‏ספריות משותפות של Crostini</translation>
@@ -6614,7 +6607,6 @@
 <translation id="8398877366907290961">להמשיך בכל זאת</translation>
 <translation id="8400146488506985033">ניהול משתמשים</translation>
 <translation id="8401432541486058167">עליך לציין את קוד האימות המשויך לכרטיס החכם שלך.</translation>
-<translation id="8403562727702715619">‏לאחרונה מ-Google Drive</translation>
 <translation id="8405046151008197676">ריכזנו עבורך את הפרטים החשובים לגבי העדכון האחרון</translation>
 <translation id="8407199357649073301">רמת הרישום ביומן:</translation>
 <translation id="8408068190360279472">רשת <ph name="NETWORK_TYPE" />, מתבצעת התחברות</translation>
@@ -7403,7 +7395,6 @@
 <translation id="975893173032473675">שפת היעד של התרגום</translation>
 <translation id="976499800099896273">תיבת הדו-שיח של התיקון האוטומטי עם הפעולה 'ביטול' מוצגת עבור המילה <ph name="TYPED_WORD" /> שתוקנה למילה <ph name="CORRECTED_WORD" />.  יש ללחוץ על החצים למעלה כדי לגשת, לצאת או להתעלם.</translation>
 <translation id="978146274692397928">רוחב סימן הפיסוק הראשוני הוא מלא</translation>
-<translation id="97883469867914488">אפליקציות אינטרנט לא יוכלו לפתוח סוגי קבצים במכשיר</translation>
 <translation id="97905529126098460">החלון הזה ייסגר לאחר השלמת הביטול.</translation>
 <translation id="980731642137034229">לחצן תפריט פעולות</translation>
 <translation id="981121421437150478">לא מקוון</translation>

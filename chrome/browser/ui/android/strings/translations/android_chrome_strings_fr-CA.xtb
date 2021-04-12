@@ -238,7 +238,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> éléments supprimés</translation>
 <translation id="2536728043171574184">Affichage d’une copie hors ligne de cette page en cours</translation>
 <translation id="2546283357679194313">Témoins et données de site</translation>
-<translation id="2549341709325358884">Wi-Fi et données cellulaires seulement</translation>
 <translation id="2561519700418191927">Aperçus de vidéos</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2571711316400087311">Proposer d'envoyer les pages dans d'autres langues vers Google Traduction</translation>
@@ -752,6 +751,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5982307838673692400">Ouvrir un onglet de navigation privée</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6000203700195075278">Se réabonner</translation>
+<translation id="6002623704405939939">Pour effacer vos <ph name="BEGIN_LINK1" />recherches<ph name="END_LINK1" /> ou d'autres types d'historiques, visitez la page<ph name="BEGIN_LINK2" />Mon activité Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
 <translation id="6036057147555329831">ICU supplémentaire</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
@@ -925,6 +925,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7088681679121566888">Chrome est à jour</translation>
 <translation id="7106762743910369165">Votre navigateur est géré par votre organisation</translation>
 <translation id="7121362699166175603">Efface l'historique et les saisies semi-automatiques dans la barre d'adresse. D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="7134993907760847334">Efface l'historique de tous les appareils sur lesquels vous êtes connecté à votre compte.</translation>
 <translation id="7138678301420049075">Autre</translation>
 <translation id="7146622961999026732">Ces applications et ces sites semblent importants pour vous :</translation>
 <translation id="7149893636342594995">24 dernières heures</translation>

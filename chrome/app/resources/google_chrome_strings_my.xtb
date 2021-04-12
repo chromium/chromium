@@ -18,6 +18,7 @@
 <translation id="137466361146087520">Google Chrome စမ်းသပ်ဆော့ဖ်ဝဲ</translation>
 <translation id="1399397803214730675">ဒီကွန်ပျူတာ ထဲမှာ ပိုပြီး နောက်ကျသော Google Chrome  ဗားရှင်း ရှိနေပါပြီ။ ဆော့ဝဲ အလုပ်မလုပ်လျှင်၊ ကျေးဇူးပြုပြီး Google Chrome ကို ဖြုတ်လိုက်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1434626383986940139">Chrome ၏ Canary စမ်းသပ်အက်ပ်များ</translation>
+<translation id="1507198376417198979">သင့် Chrome ပရိုဖိုင်ကို စိတ်ကြိုက်ပြင်ပါ</translation>
 <translation id="1516530951338665275">Google Chrome သည် ဆက်လက်တွဲချိတ်ရန် ဘလူးတုသ်သုံးခွင့် 
  လိုပါသည်။ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Update Chrome</translation>
@@ -219,6 +220,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6943584222992551122">ဤပုဂ္ဂိုလ်၏ ကြည့်ရှုမှုဒေတာများကို ဤကိရိယာမှနေ၍ ဖျက်လိုက်ပါမည်။ ဒေတာကို ပြန်လည်ရယူရန် <ph name="USER_EMAIL" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="6967962315388095737">Google Chrome စမ်းသပ်ဆော့ဖ်ဝဲက mDNS အသွားအလာကို ခွင့်ပြုပေးနိုင်ရန်အတွက် ချမှတ်ထားသော အတွင်းစည်းမျဉ်း။</translation>
 <translation id="6989339256997917931">Google Chrome ကို မွမ်းမံပြီးသွားပြီ၊ သို့သော် သင်သည် ၎င်းကို အနည်းဆုံးအားဖြင့် ရက် ၃၀ အတွင်းမှာ မသုံးခဲ့ပါ။</translation>
+<translation id="7025800014283535195">ဤနေရာတွင် Chrome ပရိုဖိုင်များအကြား ပြောင်းနိုင်သည်</translation>
 <translation id="7062128746136194023">Chrome အတွက် "ဝဘ်ဆိုက်၊ အက်ပ်နှင့် နောက်ဆက်တွဲ ခွင့်ပြုချက်များ" ကို သင့်မိဘက ပိတ်လိုက်သည်။ ဤ <ph name="EXTENSION_TYPE_PARAMETER" /> ထည့်ခြင်းကို ခွင့်မပြုပါ။</translation>
 <translation id="7098166902387133879">Google Chrome သည် သင်၏ မိုက်ခရိုဖုန်းကို သုံးနေ</translation>
 <translation id="7106741999175697885">တာဝန် မန်နေဂျာ - Google Chrome</translation>
@@ -296,4 +298,5 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="940313311831216333">သင့်စက်အားလုံးတွင် သင်၏ Chrome နှင့်သက်ဆိုင်သည့်အရာများကို သုံးရန် လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ။</translation>
 <translation id="989369509083708165">Google Chrome သည် သင်၏ မူရင်းဘရောင်ဇာဖြစ်သည်</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> သည် Chrome ပရိုဖိုင်များအကြား ပြောင်းပေးနိုင်သည်</translation>
 </translationbundle>

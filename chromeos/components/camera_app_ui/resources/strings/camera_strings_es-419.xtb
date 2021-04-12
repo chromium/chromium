@@ -4,6 +4,7 @@
 <translation id="1175958423215084756">Se detectó un vínculo. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imágenes de la galería</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1467231725790366244">La cámara <ph name="CAMERA" /> está desconectada.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1627744224761163218">4 × 4</translation>
@@ -24,6 +25,7 @@
 <translation id="2501953888035679275">Toma fotos y graba videos con la cámara.</translation>
 <translation id="2549985041256363841">Comenzar grabación</translation>
 <translation id="2599796128805996109">Cámara posterior</translation>
+<translation id="2879583609344924966">La cámara <ph name="CAMERA" /> está conectada.</translation>
 <translation id="2912439424121107408">Este dispositivo no admite el modo experto</translation>
 <translation id="2968794441791257519">Las fotos y los videos que tomes con la cámara se moverán a la carpeta "Descargas", que puedes abrir con la app de Archivos.
 

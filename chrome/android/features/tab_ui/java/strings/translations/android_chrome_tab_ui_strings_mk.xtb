@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">Предлог: <ph name="NUMBER_OF_TABS" /> ваши картички не се користени во последно време. Дали да се затворат?</translation>
 <translation id="257674075312929031">Група</translation>
 <translation id="2613747923081026172">Создај група</translation>
+<translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> рецензии</translation>
 <translation id="2671423594960767771">Сподели ја групата</translation>
 <translation id="2759453070259087442">Проширете ја групата картички <ph name="TITLE_OF_GROUP" /> со <ph name="NUMBER_OF_TABS" /> картички.</translation>
+<translation id="2801787514987684416">Да се прикажат информации за продавницата?</translation>
 <translation id="2977480621796371840">Отстрани од групата</translation>
+<translation id="3194464645767632461">оценување</translation>
 <translation id="3291470810748040983">Ќе добиете известување ако има пониска цена во некоја отворена картичка</translation>
 <translation id="3328308545011660196">Предлог: <ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Собери <ph name="TABS_COUNT_ONE" /> картичка.}one{Собери ја групата <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картичкa.}other{Собери ја групата <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
 <translation id="3882834874697329510">За да добиете известување ако има пониска цена во некоја отворена картичка, вклучете ги известувањата во „Поставки“.</translation>
 <translation id="3940195383040445971">Следете ги цените на картичките</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">Продолжете да прелистувате</translation>
 <translation id="4450893287417543264">Не прикажувај повторно</translation>
 <translation id="4648718555153979859">Картичките тука се групирани заедно</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> рецензија)}one{(<ph name="REVIEWS_COUNT_MANY" /> рецензија)}other{(<ph name="REVIEWS_COUNT_MANY" /> рецензии)}}</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="492284538114688557">Забележано е намалување на цената</translation>
 <translation id="5007392906805964215">Прегледајте</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">Набрзина споредете ги страниците со правење група. За да започнете, допрете и задржете го линкот.</translation>
 <translation id="5490235265819901748">Групата картички се прошири</translation>
 <translation id="5533021382642990449">Прикажи подоцна</translation>
+<translation id="5556417849629758491">Прикажи информации за продавница, опција достапна во горниот дел од екранот</translation>
 <translation id="5558362125926932819">Затвори ја групата со <ph name="NUMBER_OF_TABS" /> картички</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> картички се групирани</translation>
 <translation id="575494663145460764">Дали сакате да добивате известувања за попусти?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">Прикажи ги картичките од групата во табела на цел екран</translation>
 <translation id="7792771145871471484">Прегледајте ги предлозите.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Групирајте <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Групирајте <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Групирајте <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> оцени, <ph name="REVIEWS_COUNT_ONE" /> рецензија}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> оцени, <ph name="REVIEWS_COUNT_MANY" /> рецензија}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> оцени, <ph name="REVIEWS_COUNT_MANY" /> рецензии}}</translation>
 <translation id="7885132941432959125">Премести ја картичката надесно</translation>
 <translation id="7966321538264951561">Отфрли ги предлозите.</translation>
 <translation id="814503310257431685">Прикажи ги сите</translation>

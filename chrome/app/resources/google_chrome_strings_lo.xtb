@@ -18,6 +18,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">ຄອມພິວເຕີນີ້ມີ Google Chrome ລຸ້ນໃໝ່ກ່ວາຢູ່ຮຽບຮ້ອຍແລ້ວ. ຖ້າຊອບແວບໍ່ເຮັດວຽກ, ກະລຸນາຖອນຕິດຕັ້ງ Google Chrome ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="1434626383986940139">ແອັບ Chrome Canary</translation>
+<translation id="1507198376417198979">ປັບແຕ່ງໂປຣໄຟລ໌ Chrome ໃໝ່ຂອງທ່ານ</translation>
 <translation id="1516530951338665275">Google Chrome ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສືບຕໍ່ 
  ການຈັບຄູ່. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
@@ -219,6 +220,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6943584222992551122">ຂໍ້ມູນການທ່ອງເວັບຂອງບຸກຄົນນີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ເພື່ອກູ້ຂໍ້ມູນຄືນມາ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ເປັນ <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome Beta ເພື່ອອະນຸຍາດການຮັບສົ່ງຂໍ້ມູນ mDNS.</translation>
 <translation id="6989339256997917931">ອັບເດດ Google Chrome ແລ້ວ, ແຕ່ທ່ານບໍ່ໄດ້ໃຊ້ມັນເປັນເວລາຢ່າງໜ້ອຍ 30 ວັນແລ້ວ​.</translation>
+<translation id="7025800014283535195">ທ່ານສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chrome ໄດ້ຢູ່ບ່ອນນີ້</translation>
 <translation id="7062128746136194023">ພໍ່ແມ່ຂອງທ່ານໄດ້ປິດ "ການອະນຸຍາດສຳລັບເວັບໄຊ, ແອັບ ແລະ ສ່ວນຂະຫຍາຍ" ສຳລັບ Chrome ແລ້ວ. ການເພີ່ມ <ph name="EXTENSION_TYPE_PARAMETER" /> ນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດ.</translation>
 <translation id="7098166902387133879">Google Chrome ກໍາລັງໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ.</translation>
 <translation id="7106741999175697885">ຕົວຈັດການໜ້າວຽກ - Google Chrome</translation>
@@ -296,4 +298,5 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="922152298093051471">ປັບແຕ່ງ Chrome</translation>
 <translation id="940313311831216333">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນໃນ Chrome ຂອງທ່ານຢູ່ໃນອຸປະກອນທັງໝົດ, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລ້ວເປີດການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="989369509083708165">Google Chrome ແມ່ນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> ສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chrome ໄດ້</translation>
 </translationbundle>

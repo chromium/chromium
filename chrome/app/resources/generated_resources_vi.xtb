@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> khuyên bạn nên cập nhật <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="1118738876271697201">Hệ thống không xác định được số sê-ri hoặc kiểu thiết bị.</translation>
 <translation id="1119447706177454957">Lỗi nội bộ</translation>
-<translation id="111959947408687873">Dùng tổ hợp phím Ctrl+<ph name="SEARCH_KEY_NAME" />+M để bật/tắt tính năng phóng to toàn màn hình. Dùng tổ hợp phím Ctrl+Alt+Mũi tên để di chuyển xung quanh màn hình khi đã phóng to.</translation>
 <translation id="1122068467107743258">Công việc</translation>
 <translation id="1122198203221319518">&amp;Công cụ</translation>
 <translation id="1122242684574577509">Xác thực bị lỗi. Nhấp để truy cập trang đăng nhập của mạng Wi-Fi mà bạn đang sử dụng (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Khung này đã bị chặn bởi vì có chứa một số nội dung không an toàn.</translation>
 <translation id="146219525117638703">Trạng thái ONC</translation>
 <translation id="146220085323579959">Internet đã bị ngắt kết nối. Hãy kiểm tra kết nối Internet của bạn và thử lại.</translation>
-<translation id="1463051728820430132">Hỏi khi một ứng dụng web muốn mở các loại tệp trên thiết bị của bạn</translation>
 <translation id="1463112138205428654">Chương trình Bảo vệ nâng cao đã chặn <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">Không cho trang web biết khi bạn đang dùng thiết bị của mình</translation>
 <translation id="1464258312790801189">Tài khoản của bạn</translation>
@@ -1026,6 +1024,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="211144231511833662">Xóa các loại thiết bị</translation>
 <translation id="2111670510994270194">Thẻ mới ở bên phải</translation>
 <translation id="2111810003053064883">Các nhà quảng cáo có thể nghiên cứu tính hiệu quả của quảng cáo mà không cần theo dõi bạn trên các trang web.</translation>
+<translation id="2112554630428445878">Chào mừng <ph name="USERNAME" />!</translation>
 <translation id="21133533946938348">Ghim Thẻ</translation>
 <translation id="2113479184312716848">Mở &amp;tệp...</translation>
 <translation id="2113921862428609753">Quyền Truy cập Thông tin Tổ chức Cấp Chứng chỉ</translation>
@@ -1091,7 +1090,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2163470535490402084">Vui lòng kết nối Internet để đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> và 1 công tắc khác</translation>
 <translation id="2165421703844373933">Nói "Ok Google" khi bạn muốn sử dụng Trợ lý. Để tiết kiệm pin, hãy chọn “Bật (Khuyên dùng)”. Trợ lý của bạn sẽ chỉ phản hồi khi thiết bị đã cắm điện hoặc đang sạc.</translation>
-<translation id="2166269335975661317">Ứng dụng web có thể xin phép mở các loại tệp trên thiết bị của bạn</translation>
 <translation id="2166369534954157698">Lươn ngắn lại chê trạch dài</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Đăng nhập bằng mọi cách</translation>
@@ -1970,7 +1968,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="313205617302240621">Bạn quên mật khẩu?</translation>
 <translation id="3132277757485842847">Chúng tôi không thể duy trì đường kết nối với điện thoại của bạn. Hãy đảm bảo điện thoại của bạn đang ở gần, mở khóa, đồng thời đã bật Bluetooth và Wi-Fi.</translation>
 <translation id="3132996321662585180">Làm mới hàng ngày</translation>
-<translation id="3134393957315651797">Chọn trạng thái thử nghiệm cho quá trình thử nghiệm <ph name="EXPERIMENT_NAME" />. Phần mô tả thử nghiệm: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Mã PIN không hợp lệ. Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="313963229645891001">Đang tải xuống, còn <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Hình đại diện màu vàng mặc định</translation>
@@ -2643,6 +2640,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3881478300875776315">Ẩn bớt dòng</translation>
 <translation id="3882165008614329320">Video hiện có từ camera hoặc tệp</translation>
 <translation id="3884152383786131369">Nội dung web có nhiều phiên bản ngôn ngữ sẽ dùng ngôn ngữ đầu tiên được hỗ trợ trong danh sách này. Những tùy chọn này được đồng bộ hóa với tùy chọn cài đặt của trình duyệt. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Quản trị viên của bạn quản lý các bản cập nhật</translation>
 <translation id="3886446263141354045">Yêu cầu truy cập trang web này của bạn đã được gửi tới <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Ghi chú bằng <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Thông tin này sẽ giúp chúng tôi hiểu rõ hơn vấn đề liên quan đến Trợ lý của bạn. Chúng tôi lưu trữ thông tin này trong tối đa 90 ngày và chỉ các nhóm liên quan phụ trách kỹ thuật và phản hồi mới được phép truy cập.</translation>
@@ -4464,7 +4462,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5990266201903445068">Chỉ Wi-Fi</translation>
 <translation id="5990386583461751448">Đã dịch</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Để đảm bảo có thể tiếp tục duyệt web, hãy yêu cầu quản trị viên xóa ứng dụng này.}other{Để đảm bảo có thể tiếp tục duyệt web, hãy yêu cầu quản trị viên xóa những ứng dụng này.}}</translation>
-<translation id="5992175324932183568">Không cho phép ứng dụng web mở các loại tệp trên thiết bị của bạn</translation>
 <translation id="5997337190805127100">Tìm hiểu thêm về quyền truy cập vào trang web</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002210667729577411">Di chuyển nhóm sang cửa sổ mới</translation>
@@ -4586,7 +4583,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6124213551517593835">Thao tác này sẽ xóa toàn bộ dữ liệu và cookie lưu trữ trong <ph name="SITE_GROUP_NAME" /> cũng như trong mọi trang web thuộc nhóm này</translation>
 <translation id="6124650939968185064">Các tiện ích sau phụ thuộc vào tiện ích này:</translation>
 <translation id="6124698108608891449">Trang web này cần các quyền khác.</translation>
-<translation id="6125442051901189730">Không có hồ sơ SIM nào. Hãy thiết lập một hồ sơ mới <ph name="BEGIN_LINK" />tại đây.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Rất tiếc, bạn sẽ cần phải thêm lại tài khoản của mình vào <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="6129691635767514872">Dữ liệu được chọn đã bị xóa khỏi Chrome và các thiết bị được đồng bộ hóa. Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Nhận xét về Chứng chỉ Netscape</translation>
@@ -6402,7 +6398,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8147900440966275470">Đã tìm thấy <ph name="NUM" /> thẻ</translation>
 <translation id="8148760431881541277">Giới hạn khả năng đăng nhập</translation>
 <translation id="8149564499626272569">Xác minh qua điện thoại có cáp USB</translation>
-<translation id="8150259863378108853">Lacros là một trình duyệt thử nghiệm. Vui lòng báo cáo mọi sự cố bằng cách chuyển đến mục Trợ giúp &gt; "Báo cáo sự cố..."</translation>
 <translation id="8151638057146502721">Định cấu hình</translation>
 <translation id="8154790740888707867">Không có tệp nào</translation>
 <translation id="815491593104042026">Rất tiếc! Xác thực không thành công do được định cấu hình sử dụng URL không an toàn (<ph name="BLOCKED_URL" />). Hãy liên hệ với quản trị viên của bạn.</translation>
@@ -6587,8 +6582,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8368859634510605990">&amp;Mở tất cả dấu trang</translation>
 <translation id="8370294614544004647">Chuyển sang chế độ ngủ khi gập máy tính</translation>
 <translation id="8371695176452482769">Nói ngay bây giờ</translation>
-<translation id="8371749822919332187">Dùng tổ hợp phím Ctrl+Alt+Tăng độ sáng để phóng to.
-Dùng tổ hợp phím Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Bật âm thanh trang web}other{Bật âm thanh các trang web}}</translation>
 <translation id="8372369524088641025">Khóa WEP sai</translation>
 <translation id="8373652277231415614">Thư mục do Crostini chia sẻ</translation>
@@ -6613,7 +6606,6 @@ Dùng tổ hợp phím Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation
 <translation id="8398877366907290961">Tiếp tục truy cập</translation>
 <translation id="8400146488506985033">Quản lý mọi người</translation>
 <translation id="8401432541486058167">Hãy cung cấp mã PIN liên kết với thẻ thông minh của bạn.</translation>
-<translation id="8403562727702715619">Gần đây từ Google Drive</translation>
 <translation id="8405046151008197676">Xem những điểm nổi bật của bản cập nhật mới nhất</translation>
 <translation id="8407199357649073301">Cấp độ nhật ký:</translation>
 <translation id="8408068190360279472">Đang kết nối mạng <ph name="NETWORK_TYPE" /></translation>
@@ -7400,7 +7392,6 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="975893173032473675">Ngôn ngữ cần dịch sang</translation>
 <translation id="976499800099896273">Hộp thoại hủy thao tác tự động sửa lỗi hiển thị cho từ <ph name="TYPED_WORD" /> đã được sửa thành từ <ph name="CORRECTED_WORD" />.  Nhấn phím mũi tên lên để truy cập hoặc nhấn phím Escape để bỏ qua.</translation>
 <translation id="978146274692397928">Độ rộng dấu câu ban đầu là Đầy đủ</translation>
-<translation id="97883469867914488">Chặn ứng dụng web mở các loại tệp trên thiết bị của bạn</translation>
 <translation id="97905529126098460">Cửa sổ này sẽ đóng sau khi quá trình hủy hoàn tất.</translation>
 <translation id="980731642137034229">Nút trình đơn thao tác</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>

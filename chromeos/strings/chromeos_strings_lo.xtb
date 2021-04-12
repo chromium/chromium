@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">ຢຸດພິມ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">ມີ DNS Resolver</translation>
+<translation id="1715359911173058521">ເກີດບັນຫາຂຶ້ນໃນການຕິດຕໍ່ສື່ສານກັບເຄື່ອງສະແກນ. ກະລຸນາກວດສອບເຄືອຂ່າຍ ຫຼື ການເຊື່ອມຕໍ່ USB ແລ້ວລອງໃໝ່.</translation>
 <translation id="1717874160321062422">ຈັດການໂດຍ <ph name="FIRST_MANAGER" /> ແລະ <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">ກຳລັງຍົກເລີກການສະແກນ</translation>
@@ -216,6 +217,7 @@
 <translation id="54609108002486618">ຖືກຈັດການ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ {0} ຄັ້ງ}other{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ {0} ຄັ້ງ}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">ບໍ່ສາມາດສະແກນໃຫ້ສຳເລັດໄດ້</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">ກຳລັງເປີດນຳໃຊ້</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@
 <translation id="5916084858004523819">ຫ້າມໃຊ້</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}other{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}}</translation>
 <translation id="5931523347251946569">ບໍ່ພົບໄຟລ໌</translation>
+<translation id="6037291330010597344">ຕົວປ້ອນເອກະສານຂອງເຄື່ອງສະແກນຫວ່າງເປົ່າ. ກະລຸນາເພີ່ມເອກະສານໃສ່ແລ້ວລອງໃໝ່.</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6040852767465482106">ຕົວຕົນທີ່ບໍ່ເປີດເຜີຍຊື່</translation>
 <translation id="604124094241169006">ອັດ​ຕະ​ໂນ​ມັດ</translation>
@@ -252,6 +255,7 @@
 <translation id="6302401976930124515">ຍົກເລີກການທົດສອບ <ph name="TEST_NAME" /> ແລ້ວ</translation>
 <translation id="6325525973963619867">ບໍ່ສຳເລັດ</translation>
 <translation id="636850387210749493">ການລົງທະບຽນວິສາຫະກິດ</translation>
+<translation id="6388847657025262518">ຕົວປ້ອນເອກະສານຂອງເຄື່ອງສະແກນຕິດຂັດ. ກະລຸນາກວດສອບຕົວປ້ອນເອກະສານແລ້ວລອງໃໝ່.</translation>
 <translation id="641081527798843608">ຫົວຂໍ້ກົງກັນ</translation>
 <translation id="6423239382391657905">ເປີດVPN</translation>
 <translation id="6456394469623773452">ດີ</translation>
@@ -273,7 +277,7 @@
 <translation id="6766275201586212568">ຄວາມລະອຽດ DNS ບໍ່ສຳເລັດ</translation>
 <translation id="6768237774506518020">ອັດຕາຄວາມບໍ່ສຳເລັດຂອງຄວາມລະອຽດ DNS ສູງ</translation>
 <translation id="6853312040151791195">ອັດຕາການຄາຍປະຈຸ</translation>
-<translation id="6898743098396957679">ບໍ່ສາມາດເຮັດສຳເລັດການສະແກນໄດ້</translation>
+<translation id="6910312834584889076">ຝາເຄື່ອງສະແກນເປີດຢູ່. ກະລຸນາປິດຝາແລ້ວລອງໃໝ່.</translation>
 <translation id="6911383237894364323">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຊີບເວີມີເດຍໄດ້</translation>
 <translation id="6957231940976260713">ຊື່ການບໍລິການ</translation>
 <translation id="6977381486153291903">ການດັດແກ້ເຟີມແວ</translation>
@@ -289,6 +293,7 @@
 <translation id="7162487448488904999">ຄັງຮູບ</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
+<translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">ອຸປະກອນເຄືອຂ່າຍ</translation>
 <translation id="7359657277149375382">ປະເພດໄຟລ໌</translation>

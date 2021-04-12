@@ -4,6 +4,7 @@
 <translation id="1175958423215084756">Länk har identifierats. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Bilder i galleriet</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> är inte ansluten.</translation>
 <translation id="1473110567575736769">Timer för 3 sekunder</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
@@ -24,6 +25,7 @@
 <translation id="2501953888035679275">Ta foton och spela in video med kameran.</translation>
 <translation id="2549985041256363841">Börja spela in</translation>
 <translation id="2599796128805996109">Bakre kamera</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> är ansluten.</translation>
 <translation id="2912439424121107408">Expertläget stöds inte på den här enheten</translation>
 <translation id="2968794441791257519">Videor och foton du tagit med kameran flyttas till mappen Nedladdningar. Du kan öppna dem i Filer.
 

@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> empfiehlt, dieses Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="1118738876271697201">Das System konnte das Gerätemodell oder die Seriennummer nicht ermitteln.</translation>
 <translation id="1119447706177454957">Interner Fehler</translation>
-<translation id="111959947408687873">Drücke „Strg + <ph name="SEARCH_KEY_NAME" /> +M“, um die Vollbildlupe zu aktivieren. Mit „Strg + Alt + Pfeiltasten“ kannst du dich über den Bildschirm bewegen, während die Vollbildlupe aktiviert ist.</translation>
 <translation id="1122068467107743258">Arbeit</translation>
 <translation id="1122198203221319518">&amp;Tools</translation>
 <translation id="1122242684574577509">Fehler bei der Authentifizierung. Klicken Sie hier, um die Anmeldeseite für das verwendete WLAN aufzurufen (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="146000042969587795">Dieser Frame wurde gesperrt, weil er unsicheren Inhalt enthält.</translation>
 <translation id="146219525117638703">ONC-Status</translation>
 <translation id="146220085323579959">Die Internetverbindung wurde getrennt. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.</translation>
-<translation id="1463051728820430132">Nachfragen, wenn eine Webanwendung Dateitypen öffnen möchte, die auf Ihrem Gerät gespeichert sind</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> wurde vom Erweiterten Sicherheitsprogramm blockiert.</translation>
 <translation id="1464044141348608623">Websites dürfen keine Informationen zu meiner aktiven Nutzung dieses Geräts abrufen</translation>
 <translation id="1464258312790801189">Meine Konten</translation>
@@ -1023,6 +1021,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="211144231511833662">Häkchen für Typen entfernen</translation>
 <translation id="2111670510994270194">Neuer Tab rechts</translation>
 <translation id="2111810003053064883">Werbetreibende können die Wirksamkeit von Anzeigen prüfen, ohne Sie dabei websiteübergreifend zu tracken.</translation>
+<translation id="2112554630428445878">Willkommen, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Tab anpinnen</translation>
 <translation id="2113479184312716848">&amp;Datei öffnen...</translation>
 <translation id="2113921862428609753">Zugriff auf Zertifizierungsstelleninformationen</translation>
@@ -1088,7 +1087,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2163470535490402084">Stellen Sie eine Internetverbindung her, um sich auf Ihrem Gerät (<ph name="DEVICE_TYPE" />) anzumelden.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> und ein weiterer Schalter</translation>
 <translation id="2165421703844373933">Mit "Ok Google" können Sie auf Ihren Assistant zugreifen. Damit der Akku geschont wird, sollten Sie die Option "An (empfohlen)" auswählen. So reagiert Ihr Assistant nur, wenn Ihr Gerät an eine Stromquelle angeschlossen ist oder auflädt.</translation>
-<translation id="2166269335975661317">Webanwendungen können nachfragen, ob sie bestimmte Dateitypen öffnen dürfen, die auf Ihrem Gerät gespeichert sind</translation>
 <translation id="2166369534954157698">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Trotzdem anmelden</translation>
@@ -1966,7 +1964,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="313205617302240621">Passwort vergessen?</translation>
 <translation id="3132277757485842847">Die Verbindung zu Ihrem Smartphone konnte nicht aufrechterhalten werden. Ihr Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="3132996321662585180">Täglich aktualisieren</translation>
-<translation id="3134393957315651797">Wählen Sie den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus. Testbeschreibung: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ungültige PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="313963229645891001">Wird heruntergeladen, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gelber Standardavatar</translation>
@@ -2639,6 +2636,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3881478300875776315">Weniger Zeilen anzeigen</translation>
 <translation id="3882165008614329320">Vorhandenes Video von der Kamera oder als Datei</translation>
 <translation id="3884152383786131369">Für Webinhalte in mehreren Sprachen wird die erste unterstützte Sprache aus dieser Liste verwendet. Diese Einstellungen werden mit den Browsereinstellungen synchronisiert. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Updates werden von Ihrem Administrator verwaltet</translation>
 <translation id="3886446263141354045">Deine Anfrage zum Zugriff auf diese Website wurde an <ph name="NAME" /> gesendet</translation>
 <translation id="3888550877729210209">Notizerstellung mit <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Diese Informationen helfen uns, Ihr Problem mit Assistant besser zu verstehen. Sie werden bis zu 90 Tage gespeichert und der Zugriff ist auf die zuständigen Entwickler- und Feedbackteams beschränkt.</translation>
@@ -4460,7 +4458,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5990266201903445068">Nur WLAN</translation>
 <translation id="5990386583461751448">Übersetzt</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Bitten Sie den Administrator, diese Anwendung zu entfernen, damit Sie weiterhin im Web surfen können.}other{Bitten Sie den Administrator, diese Anwendungen zu entfernen, damit Sie weiterhin im Web surfen können.}}</translation>
-<translation id="5992175324932183568">Nicht erlauben, dass Webanwendungen Dateitypen öffnen können, die auf Ihrem Gerät gespeichert sind</translation>
 <translation id="5997337190805127100">Weitere Informationen zum Websitezugriff</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> Ergebnisse für "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Gruppe in ein neues Fenster verschieben</translation>
@@ -4582,7 +4579,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6124213551517593835">Dadurch werden alle Daten und Cookies gelöscht, die von <ph name="SITE_GROUP_NAME" /> und ihren untergeordneten Websites gespeichert wurden</translation>
 <translation id="6124650939968185064">Die folgenden Erweiterungen hängen von dieser Erweiterung ab:</translation>
 <translation id="6124698108608891449">Diese Website benötigt weitere Berechtigungen.</translation>
-<translation id="6125442051901189730">Keine verfügbaren SIM-Profile. <ph name="BEGIN_LINK" />Neues Profil einrichten<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Sie müssen Ihr Konto dem <ph name="DEVICE_TYPE" /> erneut hinzufügen.</translation>
 <translation id="6129691635767514872">Die ausgewählten Daten wurden aus Chrome und von synchronisierten Geräten entfernt. Ihr Google-Konto weist möglicherweise andere Formen von Browserverläufen wie Suchanfragen und Aktivitäten von anderen Google-Diensten unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> auf.</translation>
 <translation id="6129938384427316298">Kommentar zu Netscape-Zertifikaten</translation>
@@ -6397,7 +6393,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8147900440966275470"><ph name="NUM" /> Tab gefunden</translation>
 <translation id="8148760431881541277">Anmeldung einschränken</translation>
 <translation id="8149564499626272569">Mit einem USB-Kabel über mein Smartphone bestätigen</translation>
-<translation id="8150259863378108853">Lacros ist ein experimenteller Browser. Melden Sie Probleme über „Hilfe“ &gt; „Problem melden…“</translation>
 <translation id="8151638057146502721">Konfigurieren</translation>
 <translation id="8154790740888707867">Keine Datei</translation>
 <translation id="815491593104042026">Hoppla! Bei der Authentifizierung ist ein Fehler aufgetreten, weil in der Konfiguration eine unsichere URL angegeben wurde (<ph name="BLOCKED_URL" />). Bitte wenden Sie sich an Ihren Administrator.</translation>
@@ -6582,8 +6577,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8368859634510605990">&amp;Alle Lesezeichen öffnen</translation>
 <translation id="8370294614544004647">Beim Zuklappen des Laptops in den Ruhemodus wechseln</translation>
 <translation id="8371695176452482769">Jetzt sprechen</translation>
-<translation id="8371749822919332187">Drücke „Strg + Alt + ‚Helligkeit erhöhen‘“ zum Heranzoomen.
-Drücke „Strg + Alt + ‚Helligkeit verringern‘“ zum Herauszoomen.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Website stummschalten}other{Websites stummschalten}}</translation>
 <translation id="8372369524088641025">Ungültiger WEP-Schlüssel</translation>
 <translation id="8373652277231415614">Freigegebene Crostini-Verzeichnisse</translation>
@@ -6608,7 +6601,6 @@ Drücke „Strg + Alt + ‚Helligkeit verringern‘“ zum Herauszoomen.</tran
 <translation id="8398877366907290961">Trotzdem fortfahren</translation>
 <translation id="8400146488506985033">Nutzer verwalten</translation>
 <translation id="8401432541486058167">Geben Sie die PIN für Ihre Smartcard an.</translation>
-<translation id="8403562727702715619">Vor Kurzem von Google Drive</translation>
 <translation id="8405046151008197676">Wichtiges zum letzten Update ansehen</translation>
 <translation id="8407199357649073301">Protokollebene:</translation>
 <translation id="8408068190360279472">Netzwerk: <ph name="NETWORK_TYPE" />, Verbindung wird hergestellt</translation>
@@ -7395,7 +7387,6 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="975893173032473675">Sprache, in die übersetzt wird</translation>
 <translation id="976499800099896273">Dialogfeld zum Rückgängigmachen der Autokorrektur wird für <ph name="TYPED_WORD" /> angezeigt, das zu <ph name="CORRECTED_WORD" /> geändert wurde.  Wenn Sie auf das Dialogfeld zugreifen möchten, drücken Sie den Aufwärtspfeil, wenn Sie es ignorieren möchten, drücken Sie die Escape-Taste.</translation>
 <translation id="978146274692397928">Anfängliche Punktbreite ist "Voll".</translation>
-<translation id="97883469867914488">Webanwendungen daran hindern, Dateitypen zu öffnen, die auf Ihrem Gerät gespeichert sind</translation>
 <translation id="97905529126098460">Dieses Fenster wird nach Abbruch der Installation geschlossen.</translation>
 <translation id="980731642137034229">Dreipunkt-Menü-Schaltfläche</translation>
 <translation id="981121421437150478">Offline</translation>

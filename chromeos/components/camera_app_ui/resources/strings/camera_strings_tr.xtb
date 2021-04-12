@@ -4,6 +4,7 @@
 <translation id="1175958423215084756">Bağlantı algılandı. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galeri resimleri</translation>
 <translation id="1430915738399379752">Yazdır</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" />, cihaza takılı değil.</translation>
 <translation id="1473110567575736769">3 saniye zamanlayıcı</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,6 +25,7 @@
 <translation id="2501953888035679275">Kameranızla fotoğraf çekin ve video kaydedin.</translation>
 <translation id="2549985041256363841">Kaydı başlat</translation>
 <translation id="2599796128805996109">Arka kamera</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" />, cihaza takılı.</translation>
 <translation id="2912439424121107408">Uzman modu bu cihazda desteklenmiyor</translation>
 <translation id="2968794441791257519">Kamerayla çekilen fotoğraflar ve videolar, İndirilenler klasörüne taşınacaktır. Bunlara Dosyalar uygulamasından erişebilirsiniz.
 

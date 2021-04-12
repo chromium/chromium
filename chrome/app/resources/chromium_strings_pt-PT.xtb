@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">O Chromium está a utilizar o microfone.</translation>
 <translation id="3155163173539279776">Reiniciar o Chromium</translation>
 <translation id="3179665906251668410">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
+<translation id="3185330573522821672">Personalize o seu novo perfil do Chromium</translation>
 <translation id="3190315855212034486">Ups! O Chromium falhou. Reiniciar agora?</translation>
 <translation id="3229526316128325841">O Chromium pretende exportar as suas palavras-passe.</translation>
 <translation id="3258596308407688501">O Chromium não consegue ler e escrever no respetivo diretório de dados:
@@ -74,6 +75,7 @@
 <translation id="3430503420100763906">Com os perfis do Chromium, pode separar todos os seus itens do Chromium. Crie perfis para amigos e familiares ou separe o trabalho da diversão.</translation>
 <translation id="347328004046849135">O Chromium envia-lhe uma notificação quando iniciar sessão com uma palavra-passe comprometida.</translation>
 <translation id="3474745554856756813">Esta ação elimina <ph name="ITEMS_COUNT" /> itens deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931">O atalho <ph name="SHORTCUT" /> permite alternar entre perfis do Chromium</translation>
 <translation id="3509308970982693815">Feche todas as janelas do Chromium e tente novamente.</translation>
 <translation id="3575459661164320785">Existe software prejudicial no seu computador. O Chromium pode removê-lo, restaurar as suas definições e desativar as extensões para que o navegador volte a funcionar normalmente.</translation>
 <translation id="3639635944603682591">Os dados de navegação desta pessoa serão eliminados deste dispositivo. Para recuperar os dados, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="6120345080069858279">O Chromium vai guardar esta palavra-passe na sua Conta Google. Não tem de a memorizar.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> é perigoso, por isso o Chromium bloqueou-o.</translation>
 <translation id="6134968993075716475">A Navegação segura está desativada. O Chromium recomenda que a ative.</translation>
+<translation id="6145820983052037069">Pode alternar entre perfis do Chromium aqui</translation>
 <translation id="6183079672144801177">Certifique-se de que tem sessão iniciada no Chromium no seu <ph name="TARGET_DEVICE_NAME" /> e, em seguida, tente enviar novamente.</translation>
 <translation id="6212496753309875659">Este computador já tem uma versão mais recente do Chromium. Se o software não estiver a funcionar, desinstale o Chromium e tente novamente.</translation>
 <translation id="6219195342503754812">{0,plural, =0{O Chromium será reiniciado agora}=1{O Chromium será reiniciado dentro de 1 segundo}other{O Chromium será reiniciado dentro de # segundos}}</translation>

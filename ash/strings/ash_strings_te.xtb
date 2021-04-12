@@ -133,6 +133,7 @@
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">సందేశాన్ని టైప్ చేయండి</translation>
 <translation id="2018630726571919839">ఒక జోక్ చెప్పు</translation>
+<translation id="2021864487439853900">అన్‌లాక్ కోసం క్లిక్ చేయండి</translation>
 <translation id="2049240716062114887">డెస్క్ పేరు <ph name="DESK_NAME" />గా మార్చబడింది</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
 <translation id="2067602449040652523">కీబోర్డ్ ప్రకాశం</translation>
@@ -412,10 +413,12 @@
 <translation id="4421231901400348175">రిమోట్ సహాయం విధానంలో మీ స్క్రీన్ నియంత్రణ <ph name="HELPER_NAME" />కి భాగస్వామ్యం చేయబడుతోంది.</translation>
 <translation id="4424159417645388645">డెస్క్ 5</translation>
 <translation id="4430019312045809116">వాల్యూమ్</translation>
+<translation id="4445159312344259901">అన్‌లాక్ కోసం సైన్ ఇన్ చేయండి</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ముఖ్యమైన నోటిఫికేషన్}other{# ముఖ్యమైన నోటిఫికేషన్‌లు}}</translation>
 <translation id="4450893287417543264">మళ్లీ చూపవద్దు</translation>
 <translation id="445864333228800152">గుడ్ ఈవెనింగ్,</translation>
 <translation id="4458688154122353284">స్క్రీన్ రికార్డింగ్‌ను ఆపివేయి</translation>
+<translation id="4467143075433126295">ఫుల్ స్క్రీన్ నుండి నిష్క్రమించడానికి [Esc]ని నొక్కి, పట్టుకోండి</translation>
 <translation id="4472575034687746823">ప్రారంభించండి</translation>
 <translation id="4477350412780666475">తర్వాతి ట్రాక్</translation>
 <translation id="4477892968187500306">ఈ పరికరంలో Google ధృవీకరించని యాప్‌లు ఉండవచ్చు.</translation>

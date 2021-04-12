@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Denne datamaskinen har allerede en nyere versjon av Google Chrome. Hvis programvaren ikke fungerer, må du avinstallere Google Chrome og prøve på nytt.</translation>
 <translation id="1434626383986940139">Chrome Canary-apper</translation>
+<translation id="1507198376417198979">Tilpass den nye Chrome-profilen din</translation>
 <translation id="1516530951338665275">Google Chrome trenger Bluetooth-tilgang for å fortsette tilkoblingen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Oppdater Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> er allerede logget på denne Chrome-profilen. Dette medfører at det blir opprettet en ny Chrome-profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -210,6 +211,7 @@
 <translation id="6943584222992551122">Denne personens nettlesingsdata slettes fra denne enheten. For å gjenopprette dataene, logg på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regel for å tillate innkommende mDNS-trafikk i Google Chrome Beta.</translation>
 <translation id="6989339256997917931">Google Chrome har blitt oppdatert, men du har ikke brukt programmet på minst 30 dager.</translation>
+<translation id="7025800014283535195">Du kan bytte mellom Chrome-profiler her</translation>
 <translation id="7062128746136194023">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome. Du har ikke tillatelse til å legge til denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome bruker mikrofonen din.</translation>
 <translation id="7106741999175697885">Oppgavebehandling – Google Chrome</translation>
@@ -287,4 +289,5 @@
 <translation id="922152298093051471">Tilpass Chrome</translation>
 <translation id="940313311831216333">For å få tilgang til Chrome-tingene dine på alle enhetene dine, logg på og slå på synkronisering.</translation>
 <translation id="989369509083708165">Google Chrome er standardnettleseren din</translation>
+<translation id="989816563149873169">Bruk <ph name="SHORTCUT" /> til å bytte mellom Chrome-profiler</translation>
 </translationbundle>

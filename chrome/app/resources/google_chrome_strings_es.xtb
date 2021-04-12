@@ -18,6 +18,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Este ordenador tiene instalada una versión más reciente de Google Chrome. Si el software no funciona, desinstala Google Chrome y vuelve a intentarlo.</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
+<translation id="1507198376417198979">Personaliza tu nuevo perfil de Chrome.</translation>
 <translation id="1516530951338665275">Google Chrome necesita acceso al Bluetooth para continuar 
  con la vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
@@ -219,6 +220,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6943584222992551122">Los datos de navegación de este usuario se eliminarán del dispositivo. Para recuperar los datos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regla entrante para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome se ha actualizado, pero llevas al menos 30 días sin utilizarlo.</translation>
+<translation id="7025800014283535195">Puedes cambiar de un perfil de Chrome a otro aquí</translation>
 <translation id="7062128746136194023">Tus padres han desactivado "Permisos de sitios, aplicaciones y extensiones" en Chrome. No se permite añadir <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome está utilizando el micrófono.</translation>
 <translation id="7106741999175697885">Administrador de tareas de Google Chrome</translation>
@@ -296,4 +298,5 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="940313311831216333">Para acceder a tus cosas de Chrome en todos tus dispositivos, inicia sesión y activa la sincronización.</translation>
 <translation id="989369509083708165">Google Chrome es tu navegador predeterminado</translation>
+<translation id="989816563149873169">Usa <ph name="SHORTCUT" /> para cambiar de un perfil de Chrome a otro</translation>
 </translationbundle>

@@ -238,7 +238,6 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />件の項目を削除しました</translation>
 <translation id="2536728043171574184">このページのオフライン コピーを表示しています</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
-<translation id="2549341709325358884">Wi-Fi とモバイルデータのみ</translation>
 <translation id="2561519700418191927">動画プレビュー</translation>
 <translation id="2567385386134582609">画像</translation>
 <translation id="2571711316400087311">他の言語のページを Google で翻訳するか尋ねる</translation>
@@ -752,6 +751,7 @@
 <translation id="5982307838673692400">シークレット タブを開く</translation>
 <translation id="6000066717592683814">Google のままにする</translation>
 <translation id="6000203700195075278">再フォロー</translation>
+<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />検索<ph name="END_LINK1" />や他の履歴を削除するには、<ph name="BEGIN_LINK2" />Google マイ アクティビティ<ph name="END_LINK2" />にアクセスしてください</translation>
 <translation id="6005538289190791541">推奨パスワード</translation>
 <translation id="6036057147555329831">その他の ICU</translation>
 <translation id="6039379616847168523">次のタブに移動する</translation>
@@ -925,6 +925,7 @@
 <translation id="7088681679121566888">Chrome は最新の状態です</translation>
 <translation id="7106762743910369165">お使いのブラウザは組織によって管理されています</translation>
 <translation id="7121362699166175603">アドレスバーの履歴とオートコンプリートを削除します。お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
+<translation id="7134993907760847334">ログインしているすべてのデバイスの履歴を削除します。</translation>
 <translation id="7138678301420049075">その他</translation>
 <translation id="7146622961999026732">以下のサイトやアプリは重要な可能性があります。</translation>
 <translation id="7149893636342594995">過去 24 時間</translation>

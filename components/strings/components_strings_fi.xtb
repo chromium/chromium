@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1003222766972176318">Muistutus: tallennettu tarjous saatavilla</translation>
 <translation id="1008557486741366299">Ei nyt</translation>
 <translation id="100957008357583611">Käytä sijaintiasi?</translation>
 <translation id="1010200102790553230">Lataa sivu myöhemmin</translation>
@@ -254,6 +255,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1807528111851433570">Aloitussivu</translation>
 <translation id="1812527064848182527">vaakasuunta</translation>
+<translation id="1814698615734239189">Tämä sovellus on suunniteltu mobiililaitteille. Se on käynnissä yhteensopivuustilassa. Koon muuttamisen salliminen saattaa aiheuttaa ongelmia, ja sovellus saattaa käynnistyä uudelleen.</translation>
 <translation id="1821930232296380041">Pyyntö on virheellinen tai pyynnön parametrit ovat virheelliset</translation>
 <translation id="1822540298136254167">Avaamasi verkkosivustot ja niillä vietetty aika</translation>
 <translation id="1826516787628120939">Tarkistetaan</translation>
@@ -274,7 +276,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1914326953223720820">Purkupalvelu</translation>
 <translation id="1915697529809968049">Käytetäänkö Touch ID:tä CVC:n sijaan?</translation>
 <translation id="1916770123977586577">Päivitä tämä sivu, niin päivitetyt asetuksesi otetaan käyttöön tällä sivustolla.</translation>
-<translation id="1917876262703816781">Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti salasanasi. Chrome suosittelee, että vaihdat salasanan heti (<ph name="ORIGIN" />).</translation>
 <translation id="1919345977826869612">Mainokset</translation>
 <translation id="1919367280705858090">Tiettyjen virheiden korjaaminen</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ei mitään}=1{1 sivusto}other{# sivustoa}}</translation>
@@ -603,6 +604,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3268451620468152448">Avoimet välilehdet</translation>
 <translation id="3270847123878663523">K&amp;umoa uudelleenjärjestely</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3282085321714087552">Organisaatiosi (<ph name="ENROLLMENT_DOMAIN" />) on lähettänyt seuraaville verkkosivustoille joitakin tietoja, kuten asetuksia tai käytäntöjä.</translation>
 <translation id="3282497668470633863">Lisää kortissa oleva nimi</translation>
 <translation id="3286372614333682499">pystysuunta</translation>
 <translation id="3287510313208355388">Lataa, kun verkkoyhteys on muodostettu</translation>
@@ -918,7 +920,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4358461427845829800">Hallinnoi maksutapoja…</translation>
 <translation id="4359160567981085931">Lisäsit juuri salasanasi petolliselle sivustolle. Chrome voi auttaa. Valitse Suojaa tili, niin voit vaihtaa salasanasi ja Googlelle ilmoitetaan tilin mahdollisesta vaarantumisesta.</translation>
 <translation id="4367563149485757821">Numero-12 (kirjekuori)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti tallennetun salasanasi (<ph name="ORIGIN" />). Chrome suosittelee, että vaihdat sivuston <ph name="ORIGIN" /> salasanasi heti.}=1{Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti tallennetun salasanasi (<ph name="ORIGIN" /> ja yksi muu sivusto). Chrome suosittelee tarkistamaan tallennetut salasanasi nyt.}other{Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti tallennetun salasanasi (<ph name="ORIGIN" /> ja <ph name="SITES_COUNT" /> muuta sivustoa). Chrome suosittelee tarkistamaan tallennetut salasanasi nyt.}}</translation>
 <translation id="437058704415269440">Tilin saldo</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Odotettu <ph name="VALUE_TYPE" />-arvo.</translation>
@@ -936,6 +937,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4434045419905280838">Ponn.ikkunat ja uudelleenohjaus</translation>
 <translation id="4435702339979719576">Postikortti</translation>
 <translation id="443673843213245140">Välityspalvelinta ei saa käyttää, mutta erilliset välityspalvelimen asetukset on määritetty.</translation>
+<translation id="4464826014807964867">Verkkosivustot, joilla on tietoa organisaatiostasi</translation>
 <translation id="4466881336512663640">Lomakkeen muutokset menetetään. Haluatko varmasti jatkaa?</translation>
 <translation id="4476953670630786061">Tämä lomake ei ole suojattu. Automaattinen täyttö on laitettu pois päältä.</translation>
 <translation id="4477350412780666475">Seuraava kappale</translation>
@@ -1158,7 +1160,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5287456746628258573">Tämä sivusto käyttää vanhentunutta tietoturvamääritystä, joka voi paljastaa tietosi (esim. salasanat tai credit-korttien numerot), kun ne lähetetään sivustolle.</translation>
 <translation id="5288108484102287882">Käytäntöarvojen vahvistus aiheutti varoituksia</translation>
 <translation id="5289384342738547352">Useiden dokumenttien käsittely</translation>
-<translation id="5295292838686006428">Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti salasanasi. Chrome suosittelee tarkistamaan tallennetut salasanasi nyt.</translation>
 <translation id="5299298092464848405">Virhe jäsennettäessä käytäntöä</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5306593769196050043">Molemmat taulukot</translation>
@@ -1698,7 +1699,6 @@ Lisätietoja:
 <translation id="7473891865547856676">Ei kiitos</translation>
 <translation id="7481312909269577407">Seuraava</translation>
 <translation id="7485870689360869515">Tietoja ei löydy.</translation>
-<translation id="7495290002932347110">Jonkin sivuston tai sovelluksen tietosuojaloukkaus paljasti salasanasi. Chrome suosittelee, että tarkistat tallennetut salasanasi ja vaihdat salasanan heti (<ph name="ORIGIN" />).</translation>
 <translation id="7495528107193238112">Tämä sisältö on estetty. Pyydä sivuston omistajalta apua ongelman korjaamiseen.</translation>
 <translation id="7498234416455752244">Jatka muokkausta</translation>
 <translation id="7503664977220660814">Lisäsit juuri salasanasi petolliselle sivustolle. Chromium suosittelee tarkistamaan näihin tallentamasi salasanat: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ja muut sivustot, joilla käytät salasanaa tällä hetkellä.</translation>
@@ -1885,6 +1885,7 @@ Lisätietoja:
 <translation id="8157295877370077682">Poistu sivustolta</translation>
 <translation id="8163866351304776260">Neljä reikää vasemmalla</translation>
 <translation id="8175796834047840627">Chrome tarjoaa korttien tallentamista Google-tilillesi, koska olet kirjautuneena sisään. Voit muuttaa tätä koska tahansa asetuksista.</translation>
+<translation id="8176440868214972690">Laitteen järjestelmänvalvoja on lähettänyt seuraaville verkkosivustoille joitakin tietoja, esim. asetuksia tai käytäntöjä.</translation>
 <translation id="8184538546369750125">Käytä yleistä oletusasetusta (salli)</translation>
 <translation id="8194797478851900357">K&amp;umoa siirto</translation>
 <translation id="8201077131113104583">Laajennuksella, jonka tunnus on <ph name="EXTENSION_ID" />, on virheellinen päivitys-URL-osoite.</translation>
@@ -1899,6 +1900,7 @@ Lisätietoja:
 <translation id="8225771182978767009">Tämän tietokoneen määrittänyt henkilö on estänyt tämän sivuston.</translation>
 <translation id="8228419419708659934">Kahden sivun näkymä</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230159728600632642">Älä kysy uudelleen tämän sovelluksen kohdalla</translation>
 <translation id="8232343881378637145">Alustan lämpötila</translation>
 <translation id="8238581221633243064">Avaa sivu uudessa incognito-välilehdessä.</translation>
 <translation id="8241707690549784388">Etsimäsi sivu käytti antamiasi tietoja. Sivulle palaaminen voi johtaa jokaisen tekemäsi toiminnon toistamiseen. Haluatko jatkaa?</translation>
@@ -2053,6 +2055,7 @@ Lisätietoja:
 <translation id="8798099450830957504">Oletus</translation>
 <translation id="8805819170075074995">Luettelokohde <ph name="LANGUAGE_ID" />: Kohde on ohitettu, koska se sisältyy myös SpellcheckLanguage-käytäntöön.</translation>
 <translation id="8807160976559152894">Leikkaa jokaisen sivun jälkeen</translation>
+<translation id="881292005876822445">Otetaanko maksimointi käyttöön?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, päivitä Chrome sen asetuksista painamalla sarkainta ja sitten Enter</translation>
 <translation id="8820817407110198400">Kirjanmerkit</translation>
 <translation id="883848425547221593">Muut kirjanmerkit</translation>

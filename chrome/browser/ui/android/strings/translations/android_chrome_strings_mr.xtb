@@ -238,7 +238,6 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले</translation>
 <translation id="2536728043171574184">या पेजची ऑफलाइन प्रत पाहत आहे</translation>
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
-<translation id="2549341709325358884">फक्त वाय-फाय आणि मोबाइल डेटा</translation>
 <translation id="2561519700418191927">व्हिडिओची पूर्वावलोकने</translation>
 <translation id="2567385386134582609">इमेज</translation>
 <translation id="2571711316400087311">Google Translate ला इतर भाषांमध्ये पेज पाठवण्याची ऑफर</translation>
@@ -752,6 +751,7 @@
 <translation id="5982307838673692400">गुप्त टॅब उघडा</translation>
 <translation id="6000066717592683814">Google ठेवा</translation>
 <translation id="6000203700195075278">पुन्हा फॉलो करा</translation>
+<translation id="6002623704405939939"><ph name="BEGIN_LINK1" />शोध<ph name="END_LINK1" /> किंवा इतिहासाचे इतर प्रकार साफ करण्यासाठी, <ph name="BEGIN_LINK2" />माझी Google अ‍ॅक्टिव्हिटी<ph name="END_LINK2" /> ला भेट द्या</translation>
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
 <translation id="6036057147555329831">अतिरिक्त ICU</translation>
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
@@ -925,6 +925,7 @@
 <translation id="7088681679121566888">Chrome अप टू डेट आहे</translation>
 <translation id="7106762743910369165">तुमचा ब्राउझर तुमच्या संस्थेद्वारे व्यवस्थापित केला जातो</translation>
 <translation id="7121362699166175603">अ‍ॅड्रेस बारवरील इतिहास आणि आपोआप पूर्ण करण्याचे दाखले साफ करते. तुमच्या Google खात्यामध्ये <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर कदाचित ब्राउझिंगचे इतर फॉर्म असतील.</translation>
+<translation id="7134993907760847334">साइन इन केलेल्या सर्व डिव्हाइसवरील इतिहास साफ करते.</translation>
 <translation id="7138678301420049075">इतर</translation>
 <translation id="7146622961999026732">या साइट आणि ही अ‍ॅप्स तुमच्यासाठी महत्त्वाची आहेत असे दिसते:</translation>
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>

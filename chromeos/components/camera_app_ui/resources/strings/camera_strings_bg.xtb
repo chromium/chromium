@@ -4,11 +4,13 @@
 <translation id="1175958423215084756">Разпозната е връзка. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Изображения в галерията</translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1467231725790366244">Устройството <ph name="CAMERA" /> е изключено.</translation>
 <translation id="1473110567575736769">Таймер за 3 секунди</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Нищо не е записано</translation>
 <translation id="1838104802459806957">Накланяне нагоре</translation>
+<translation id="1851169887664797861">Налице са допълнителни контроли за камерата</translation>
 <translation id="1851616744363735765">НА ПАУЗА</translation>
 <translation id="1862930711583847113">Файлът „<ph name="FILE" />“ не може да се експортира</translation>
 <translation id="1899697626337024495">Разделителна способност за снимките</translation>
@@ -24,6 +26,7 @@
 <translation id="2501953888035679275">Правете снимки и записвайте видеоклипове с камерата си.</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
 <translation id="2599796128805996109">Задна камера</translation>
+<translation id="2879583609344924966">Устройството <ph name="CAMERA" /> е свързано.</translation>
 <translation id="2912439424121107408">Експертният режим не се поддържа на това устройство</translation>
 <translation id="2968794441791257519">Направените с камерата снимки и видеоклипове ще бъдат преместени в папката „Изтегляния“. Можете да осъществите достъп до тях от „Файлове“.
 
@@ -37,6 +40,7 @@
 <translation id="3259149966178251584">Разделителна способност на камерата</translation>
 <translation id="3517926952904427380">Не може да се направи вертикална снимка</translation>
 <translation id="3569311554794739032">Наистина ли искате да премахнете „<ph name="FILE" />“?</translation>
+<translation id="3733597664308256288">Налице са допълнителни контроли за камерата. За достъп натиснете клавиша „търсене“ + стрелката за надясно.</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Сканиране на баркод</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>

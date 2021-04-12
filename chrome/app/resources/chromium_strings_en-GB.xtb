@@ -62,6 +62,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3130323860337406239">Chromium is using your microphone.</translation>
 <translation id="3155163173539279776">Relaunch Chromium</translation>
 <translation id="3179665906251668410">Open Link in Chromium Inco&amp;gnito Window</translation>
+<translation id="3185330573522821672">Customise your new Chromium profile</translation>
 <translation id="3190315855212034486">Whoa! Chromium has crashed. Relaunch now?</translation>
 <translation id="3229526316128325841">Chromium wants to export your passwords.</translation>
 <translation id="3258596308407688501">Chromium cannot read and write to its data directory:
@@ -76,6 +77,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3430503420100763906">With Chromium profiles you can separate all of your Chromium stuff. Create profiles for friends and family, or split between work and fun.</translation>
 <translation id="347328004046849135">Chromium will notify you when you sign in with a compromised password</translation>
 <translation id="3474745554856756813">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> can switch between Chromium profiles</translation>
 <translation id="3509308970982693815">Please close all Chromium windows and try again.</translation>
 <translation id="3575459661164320785">There's harmful software on your computer. Chromium can remove it, restore your settings and disable extensions to make your browser work normally again.</translation>
 <translation id="3639635944603682591">This person's browsing data will be deleted from this device. To recover the data, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
@@ -156,6 +158,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6120345080069858279">Chromium will save this password in your Google Account. You won’t have to remember it.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is dangerous, so Chromium has blocked it.</translation>
 <translation id="6134968993075716475">Safe Browsing is off. Chromium recommends turning it on.</translation>
+<translation id="6145820983052037069">You can switch between Chromium profiles here</translation>
 <translation id="6183079672144801177">Make sure that you are signed in to Chromium on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
 <translation id="6212496753309875659">This computer already has a more recent version of Chromium. If the software is not working, please uninstall Chromium and try again.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium will relaunch now}=1{Chromium will relaunch in 1 second}other{Chromium will relaunch in # seconds}}</translation>

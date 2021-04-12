@@ -16,6 +16,7 @@
 <translation id="137466361146087520">Google Chrome beta</translation>
 <translation id="1399397803214730675">Denne computer har allerede en nyere version af Google Chrome. Hvis programmet ikke virker, skal du afinstallere Google Chrome og prøve igen.</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
+<translation id="1507198376417198979">Tilpas din nye Chrome-profil</translation>
 <translation id="1516530951338665275">Google Chrome skal have adgang til Bluetooth for at fortsætte 
  parringen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Opdater Chrome</translation>
@@ -211,6 +212,7 @@
 <translation id="6943584222992551122">Brugerens browserdata slettes fra denne enhed. Log ind på Chrome som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
 <translation id="6967962315388095737">Indgående regel for Google Chrome beta om at tillade mDNS-trafik.</translation>
 <translation id="6989339256997917931">Google Chrome er blevet opdateret, men du har ikke brugt den i 30 dage.</translation>
+<translation id="7025800014283535195">Her kan du skifte mellem Chrome-profiler</translation>
 <translation id="7062128746136194023">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chrome. Det er ikke tilladt at tilføje denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Google Chrome bruger din mikrofon.</translation>
 <translation id="7106741999175697885">Jobliste – Google Chrome</translation>
@@ -288,4 +290,5 @@
 <translation id="922152298093051471">Tilpas Chrome</translation>
 <translation id="940313311831216333">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chrome-ting på alle dine enheder.</translation>
 <translation id="989369509083708165">Google Chrome er din standardbrowser</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> kan skifte mellem Chrome-profiler</translation>
 </translationbundle>

@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">صفحہ کا اشتراک نہیں کر سکتے ہیں</translation>
 <translation id="2923448633003185837">پیسٹ کریں اور جائیں</translation>
 <translation id="292639812446257861">بغیر پڑھے ہوئے کے بطور نشان زد کریں</translation>
+<translation id="2932085390869194046">پاس ورڈ تجویز کریں...</translation>
 <translation id="2952581218264071393">‏1۔ Chrome کی ترتیبات کھولیں</translation>
 <translation id="2958718410589002129">پاس ورڈز</translation>
 <translation id="2964349545761222050">فریق ثالث کوکیز کو مسدود کریں</translation>
@@ -214,6 +215,7 @@
 
 پوشیدگی موڈ میں ہونے پر سائٹس مختلف سائٹس میں آپ کی براؤزنگ سرگرمی کو دیکھنے کے لیے کوکیز کا استعمال نہیں کرسکتی ہیں، مثال کے طور پر اشتہارات کو ذاتی نوعیت کا بنانا۔</translation>
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
+<translation id="3222343486469566063">سائن ان نہیں ہیں</translation>
 <translation id="3224641773458703735">پاس ورڈز برآمد کرنے کیلئے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="3240426699337459095">لنک کاپی ہوگیا</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -421,6 +423,7 @@
 <translation id="5489208564673669003">سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے، <ph name="BEGIN_LINK" />کوکی کی ترتیبات<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="5490005495580364134">سبھی کوکیز مسدود کریں (تجویز نہیں کی جاتی)</translation>
 <translation id="5508435575041083207">اس آلہ سے سائن آؤٹ کریں اور ڈیٹا صاف کریں</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> گھنٹہ پہلے</translation>
 <translation id="5525269841082836315">پاس فریز بنائیں</translation>
 <translation id="5548760955356983418">‏Handoff آپ کو اس آلہ پر کسی ویب سائٹ کی براؤزنگ شروع کرنے اور پھر آسانی سےآپ کے Mac پر جاری رکھنے دیتا ہے۔ موجودہ کھلی ویب سائٹ آپ کے Mac کے ڈاک میں ظاہر ہوگی۔
 
@@ -707,6 +710,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8225985093977202398">کیش کردہ تصاویر اور فائلیں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8281781826761538115">ڈیفالٹ - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8283172974887967105">سیٹ کریں…</translation>
 <translation id="8299417921174340354">پاس ورڈز استعمال کرنے کے ليے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="8319076807703933069">نئی تلاش</translation>
 <translation id="8323906514956095947">ٹیب کے مزید اختیارات کیلئے ٹچ کریں اور دبائے رکھیں</translation>
@@ -757,7 +761,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8806823403540278281">آپ کی تنظیم چاہتی ہے کہ آپ نجی طور پر براؤز کریں۔ ٹیبز پوشیدگی وضع میں محفوظ نہیں ہیں۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">بُک مارکس</translation>
-<translation id="8823704566850948458">پاس ورڈ تجویز کریں...</translation>
 <translation id="8840513115188359703">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔</translation>
 <translation id="8870413625673593573">حال ہی میں بند کردہ</translation>
 <translation id="8881801611828450202">اس تصویر کیلئے <ph name="SEARCH_ENGINE" /> پر تلاش کریں</translation>
@@ -785,6 +788,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9152539721251340337">‏QR کوڈ تخلیق کریں</translation>
 <translation id="9157836665414082580">ڈائیلاگز کو دبائیں</translation>
 <translation id="9188680907066685419">نظم کردہ اکاؤنٹ سے سائن آؤٹ کریں</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> دن پہلے</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">کریش رپورٹ بھیج دی گئی۔</translation>
 <translation id="952704832371081537">منسوخ کریں</translation>

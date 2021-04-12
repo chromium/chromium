@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">შემოთავაზება: თქვენი <ph name="NUMBER_OF_TABS" /> ჩანართი ბოლო დროს არ გამოგიყენებიათ. გსურთ მათი დახურვა?</translation>
 <translation id="257674075312929031">ჯგუფი</translation>
 <translation id="2613747923081026172">ჯგუფის შექმნა</translation>
+<translation id="2662028055331606429">შეფასება: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="2671423594960767771">ჯგუფის გაზიარება</translation>
 <translation id="2759453070259087442">გააფართოეთ ჩანართების ჯგუფი „<ph name="TITLE_OF_GROUP" />“ <ph name="NUMBER_OF_TABS" /> ჩანართით.</translation>
+<translation id="2801787514987684416">გსურთ მაღაზიის ინფორმაციის ნახვა?</translation>
 <translation id="2977480621796371840">ჯგუფიდან ამოშლა</translation>
+<translation id="3194464645767632461">შეფასება</translation>
 <translation id="3291470810748040983">თქვენ მიიღებთ გაფრთხილებას, როცა გახსნილ ჩანართში უფრო დაბალი ფასი იქნება</translation>
 <translation id="3328308545011660196">შემოთავაზება: როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის ჩაკეცვა.}other{<ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ ჩაკეცვა.}}</translation>
 <translation id="3882834874697329510">იმისთვის, რომ მიიღოთ გაფრთხილება, როცა გახსნილ ჩანართში უფრო დაბალი ფასი იქნება, ჩართეთ შეტყობინების ფუნქცია პარამეტრებიდან.</translation>
 <translation id="3940195383040445971">ფასებისთვის თვალის მიდევნება ჩანართებზე</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">დათვალიერების გაგრძელება</translation>
 <translation id="4450893287417543264">აღარ გამოჩნდეს</translation>
 <translation id="4648718555153979859">თქვენი ჩანართები აქ დაჯგუფებულია</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა)}other{(<ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა)}}</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="492284538114688557">აღმოჩენილია ფასის დაწევა</translation>
 <translation id="5007392906805964215">გადახედვა</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">სწრაფად შეადარეთ გვერდები დაჯგუფების მეშვეობით. დასაწყებად ხანგრძლივად შეეხეთ ბმულს.</translation>
 <translation id="5490235265819901748">ჩანართების ჯგუფი გაფართოვდა</translation>
 <translation id="5533021382642990449">მოგვიანებით ჩვენება</translation>
+<translation id="5556417849629758491">მაღაზიის ინფორმაციის ნახვა, ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="5558362125926932819">ჩანართების <ph name="NUMBER_OF_TABS" />-ჩანართიანი ჯგუფის დახურვა</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ჩანართი დაჯგუფდა</translation>
 <translation id="575494663145460764">გსურთ, მიიღოთ გაფრთხილებები ფასის დაწევის შესახებ?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">ჯგუფის ჩანართების სრულეკრანიან ბადეში ჩვენება</translation>
 <translation id="7792771145871471484">შემოთავაზებების გადახედვა.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დაჯგუფება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დაჯგუფება}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ შეფასება: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა}other{შეფასება: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა}}</translation>
 <translation id="7885132941432959125">ჩანართის მარჯვნივ გადატანა</translation>
 <translation id="7966321538264951561">შემოთავაზებების დახურვა.</translation>
 <translation id="814503310257431685">ყველას ნახვა</translation>

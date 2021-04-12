@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1003222766972176318">Lembrete: oferta guardada disponível</translation>
 <translation id="1008557486741366299">Agora não</translation>
 <translation id="100957008357583611">Pretende utilizar a sua localização?</translation>
 <translation id="1010200102790553230">Carregar a página mais tarde</translation>
@@ -254,6 +255,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Folha inicial</translation>
 <translation id="1812527064848182527">paisagem</translation>
+<translation id="1814698615734239189">Esta app foi concebida para dispositivos móveis. Está a ser executada num modo de compatibilidade. Se ativar o redimensionamento, pode encontrar problemas, incluindo o reinício da app.</translation>
 <translation id="1821930232296380041">Pedido ou parâmetros do pedido inválidos</translation>
 <translation id="1822540298136254167">Os Websites que visita e o tempo despendido nos mesmos.</translation>
 <translation id="1826516787628120939">A verificar</translation>
@@ -274,7 +276,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1914326953223720820">Serviço de descompressão de ficheiros</translation>
 <translation id="1915697529809968049">Pretende utilizar o Touch ID em vez do CVC?</translation>
 <translation id="1916770123977586577">Para aplicar as definições atualizadas a este site, atualize esta página</translation>
-<translation id="1917876262703816781">Uma violação de dados num site ou numa aplicação expôs a sua palavra-passe. O Chrome recomenda que altere a sua palavra-passe em <ph name="ORIGIN" /> agora.</translation>
 <translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Obter ajuda relativamente a uma mensagem de erro específica</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}other{# sites}}</translation>
@@ -602,6 +603,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3268451620468152448">Abrir Separadores</translation>
 <translation id="3270847123878663523">&amp;Anular reordenação</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3282085321714087552">A sua entidade, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
 <translation id="3282497668470633863">Adicionar nome no cartão</translation>
 <translation id="3286372614333682499">retrato</translation>
 <translation id="3287510313208355388">Transferir quando estiver online</translation>
@@ -917,7 +919,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4358461427845829800">Gerir métodos de pagamento…</translation>
 <translation id="4359160567981085931">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome pode ajudar. Para alterar a sua palavra-passe e notificar a Google de que a sua conta pode estar em risco, clique em Proteger conta.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
-<translation id="4367839622597707614">{1,plural, =0{Uma violação de dados num site ou numa app expôs a sua palavra-passe guardada para <ph name="ORIGIN" />. O Chrome recomenda que altere a sua palavra-passe em <ph name="ORIGIN" /> agora.}=1{Uma violação de dados num site ou app expôs a sua palavra-passe guardada para <ph name="ORIGIN" /> e mais um site. O Chrome recomenda que verifique agora as palavras-passe guardadas.}other{Uma violação de dados num site ou app expôs a sua palavra-passe guardada para <ph name="ORIGIN" /> e mais <ph name="SITES_COUNT" /> sites. O Chrome recomenda que verifique agora as palavras-passe guardadas.}}</translation>
 <translation id="437058704415269440">Saldo da conta</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
@@ -935,6 +936,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">A utilização de um proxy está desativada, mas existe uma configuração de proxy explícita especificada.</translation>
+<translation id="4464826014807964867">Websites com informações sobre a sua entidade</translation>
 <translation id="4466881336512663640">As alterações ao formulário serão perdidas. Tem a certeza de que pretende continuar?</translation>
 <translation id="4476953670630786061">Este formulário não é seguro. O preenchimento automático foi desativado.</translation>
 <translation id="4477350412780666475">Faixa seguinte</translation>
@@ -1157,7 +1159,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5287456746628258573">Este site utiliza uma configuração de segurança desatualizada, que pode expor as suas informações (por exemplo, palavras-passe ou números de cartões de crédito) quando são enviados para este site.</translation>
 <translation id="5288108484102287882">A validação dos valores da política gerou avisos.</translation>
 <translation id="5289384342738547352">Processamento de vários documentos</translation>
-<translation id="5295292838686006428">Uma violação de dados num site ou numa aplicação expôs a sua palavra-passe. O Chrome recomenda que verifique agora as palavras-passe guardadas.</translation>
 <translation id="5299298092464848405">Erro ao analisar a política</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">Ambas as folhas</translation>
@@ -1696,7 +1697,6 @@ Detalhes adicionais:
 <translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7485870689360869515">Não foram encontrados dados.</translation>
-<translation id="7495290002932347110">Uma violação de dados num site ou numa aplicação expôs a sua palavra-passe. O Chrome recomenda que verifique as palavras-passe guardadas e altere a sua palavra-passe em <ph name="ORIGIN" /> agora.</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Contacte o proprietário do site para corrigir o problema.</translation>
 <translation id="7498234416455752244">Continuar a editar</translation>
 <translation id="7503664977220660814">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda que verifique agora as palavras-passe guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sites em que utilize esta palavra-passe.</translation>
@@ -1883,6 +1883,7 @@ Detalhes adicionais:
 <translation id="8157295877370077682">Sair do site</translation>
 <translation id="8163866351304776260">Perfuração quádrupla à esquerda</translation>
 <translation id="8175796834047840627">O Chrome está a disponibilizar a opção de guardar os seus cartões na sua Conta Google porque tem sessão iniciada. Pode alterar este comportamento nas definições.</translation>
+<translation id="8176440868214972690">O administrador deste serviço enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
 <translation id="8184538546369750125">Utilizar predefinição global (Permitir)</translation>
 <translation id="8194797478851900357">&amp;Anular movimentação</translation>
 <translation id="8201077131113104583">Atualizar URL inválido para a extensão com o ID "<ph name="EXTENSION_ID" />".</translation>
@@ -1897,6 +1898,7 @@ Detalhes adicionais:
 <translation id="8225771182978767009">A pessoa que configurou este computador optou por bloquear este site.</translation>
 <translation id="8228419419708659934">Vista de duas páginas</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230159728600632642">Não voltar a perguntar para esta app</translation>
 <translation id="8232343881378637145">Temperatura da plataforma</translation>
 <translation id="8238581221633243064">Abrir página num novo separador anónimo</translation>
 <translation id="8241707690549784388">A página que procura utilizou informações introduzidas por si. Regressar a essa página poderá originar a repetição de qualquer ação que tenha efetuado. Pretende continuar?</translation>
@@ -2051,6 +2053,7 @@ Detalhes adicionais:
 <translation id="8798099450830957504">Predefinição</translation>
 <translation id="8805819170075074995">Entrada da lista "<ph name="LANGUAGE_ID" />": a entrada foi ignorada porque também está incluída na política SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Cortar no fim de cada página</translation>
+<translation id="881292005876822445">Pretende ativar a maximização?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para atualizar o Chrome nas Definições do Chrome.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="883848425547221593">Outros marcadores</translation>

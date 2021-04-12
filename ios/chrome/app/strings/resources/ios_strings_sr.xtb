@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">Дељење странице није могуће</translation>
 <translation id="2923448633003185837">Налепи и иди</translation>
 <translation id="292639812446257861">Означи као непрочитано</translation>
+<translation id="2932085390869194046">Предложи лозинку...</translation>
 <translation id="2952581218264071393">1. Отворите подешавања Chrome-а</translation>
 <translation id="2958718410589002129">Лозинке</translation>
 <translation id="2964349545761222050">Блокирај колачиће треће стране</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">Да бисте управљали колачићима за све сајтове, погледајте <ph name="BEGIN_LINK" />Подешавања колачића<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокирај све колачиће (не препоручује се)</translation>
 <translation id="5508435575041083207">Одјавите се и обришите податке са овог уређаја</translation>
+<translation id="5513681519188741830">пре <ph name="TIME" /> с</translation>
 <translation id="5525269841082836315">Прављење приступне фразе</translation>
 <translation id="5548760955356983418">Handoff вам омогућава да започнете прегледање веб-сајта на овом уређају, па да једноставно наставите на Mac-у. Веб-сајт који је тренутно отворен приказаће се на доку на Mac-у.
 
@@ -759,7 +761,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8806823403540278281">Организација захтева да прегледате приватно. Картице се не чувају у режиму без архивирања.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Обележивачи</translation>
-<translation id="8823704566850948458">Предложи лозинку...</translation>
 <translation id="8840513115188359703">Нећемо вас одјавити са Google налога.</translation>
 <translation id="8870413625673593573">Недавно затворено</translation>
 <translation id="8881801611828450202">Претражи ову слику у <ph name="SEARCH_ENGINE" />-у</translation>
@@ -787,6 +788,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9152539721251340337">Направите QR кôд</translation>
 <translation id="9157836665414082580">Спречи дијалоге</translation>
 <translation id="9188680907066685419">Одјавите се са налога којим се управља</translation>
+<translation id="9200875785104711666">пре <ph name="TIME" /> д</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Извештај о отказивању је послат.</translation>
 <translation id="952704832371081537">Откажи</translation>

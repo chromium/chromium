@@ -238,7 +238,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2534155362429831547">Byly smazány položky (celkem <ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="2536728043171574184">Prohlížíte offline kopii stránky</translation>
 <translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
-<translation id="2549341709325358884">Pouze Wi-Fi a mobilní data</translation>
 <translation id="2561519700418191927">Náhledy videí</translation>
 <translation id="2567385386134582609">OBRÁZEK</translation>
 <translation id="2571711316400087311">Nabízet odeslání stránek v jiných jazycích do Překladače Google</translation>
@@ -752,6 +751,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5982307838673692400">Otevřít anonymní kartu</translation>
 <translation id="6000066717592683814">Ponechat Google</translation>
 <translation id="6000203700195075278">Znovu sledovat</translation>
+<translation id="6002623704405939939">Pokud chcete vymazat <ph name="BEGIN_LINK1" />vyhledávání<ph name="END_LINK1" /> nebo jiné formy historie, přejděte na stránku <ph name="BEGIN_LINK2" />Moje aktivita na Googlu<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Navrhované heslo</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Přejít na další kartu</translation>
@@ -925,6 +925,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="7088681679121566888">Chrome je aktuální</translation>
 <translation id="7106762743910369165">Váš prohlížeč je spravován vaší organizací</translation>
 <translation id="7121362699166175603">Vymaže historii a automatická dokončení v adresním řádku. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
+<translation id="7134993907760847334">Vymaže historii ze všech zařízení, na kterých jste přihlášeni.</translation>
 <translation id="7138678301420049075">Ostatní</translation>
 <translation id="7146622961999026732">Tyto weby a aplikace jsou pro vás zřejmě důležité:</translation>
 <translation id="7149893636342594995">Posledních 24 hodin</translation>

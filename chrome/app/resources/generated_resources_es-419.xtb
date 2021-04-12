@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> te recomienda actualizar este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">El sistema no pudo determinar el modelo del dispositivo ni el número de serie.</translation>
 <translation id="1119447706177454957">Error interno</translation>
-<translation id="111959947408687873">Usa Ctrl+<ph name="SEARCH_KEY_NAME" />+M para activar o desactivar la lupa de pantalla completa. Usa Ctrl+Alt+teclas de flechas para moverte por la pantalla después de acercar la vista.</translation>
 <translation id="1122068467107743258">Trabajo</translation>
 <translation id="1122198203221319518">&amp;Herramientas</translation>
 <translation id="1122242684574577509">Error de autenticación; haz clic para visitar la página de acceso correspondiente a la red Wi-Fi que estás usando (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Este marco se ha bloqueado porque incluye contenido no seguro.</translation>
 <translation id="146219525117638703">Estado de ONC</translation>
 <translation id="146220085323579959">Internet está desconectada. Verifica tu conexión a Internet y vuelve a intentarlo.</translation>
-<translation id="1463051728820430132">Preguntar cuando una aplicación web desea abrir determinados tipos de archivos de tu dispositivo</translation>
 <translation id="1463112138205428654">La "Protección avanzada" bloqueó el archivo <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">No permitir que los sitios sepan en qué momento estás usando activamente el dispositivo</translation>
 <translation id="1464258312790801189">Tus cuentas</translation>
@@ -1023,6 +1021,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nueva pestaña a la derecha</translation>
 <translation id="2111810003053064883">Los anunciantes pueden analizar la eficacia de los anuncios sin que estos hagan un seguimiento de los sitios que visitas.</translation>
+<translation id="2112554630428445878">Te damos la bienvenida, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2113479184312716848">Abrir &amp;archivo...</translation>
 <translation id="2113921862428609753">Acceso a la información de la autoridad</translation>
@@ -1088,7 +1087,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2163470535490402084">Conéctate a Internet para acceder a tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y 1 interruptor más</translation>
 <translation id="2165421703844373933">Di "Ok Google" para acceder al Asistente. Para ahorrar batería, elige "Activado (recomendado)". El Asistente responderá únicamente cuando el dispositivo esté conectado a una fuente de energía o se esté cargando.</translation>
-<translation id="2166269335975661317">Las aplicaciones web pueden solicitar permiso para abrir determinados tipos de archivos de tu dispositivo</translation>
 <translation id="2166369534954157698">El veloz murciélago hindú comía feliz cardillo y kiwi</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Acceder de todos modos</translation>
@@ -1967,7 +1965,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="313205617302240621">¿Olvidaste la contraseña?</translation>
 <translation id="3132277757485842847">No se pudo mantener la conexión con tu teléfono. Asegúrate de que esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
-<translation id="3134393957315651797">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />. Descripción del experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">El PIN no es válido. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="313963229645891001">Descargando, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
@@ -2640,6 +2637,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3881478300875776315">Mostrar menos líneas</translation>
 <translation id="3882165008614329320">Video existente de la cámara o archivo</translation>
 <translation id="3884152383786131369">El contenido web disponible en múltiples idiomas usará el primer idioma compatible de esta lista. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">El administrador gestiona las actualizaciones</translation>
 <translation id="3886446263141354045">Tu solicitud de acceso a este sitio se envió a <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Tomar notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Esta información nos permite entender mejor tu problema con Asistente. Estos datos se almacenan por 90 días. El acceso a esta información está restringido a los equipos de ingeniería y comentarios correspondientes.</translation>
@@ -4089,7 +4087,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5561162485081632007">Detecta eventos peligrosos cuando ocurren y te advierte sobre ellos.</translation>
 <translation id="5562781907504170924">Esta pestaña está conectada con un dispositivo Bluetooth.</translation>
 <translation id="556321030400250233">archivo local o compartido</translation>
-<translation id="5563234215388768762">Realizar una búsqueda en Google o escribir una URL</translation>
+<translation id="5563234215388768762">Haz una búsqueda en Google o escribe una URL</translation>
 <translation id="5565735124758917034">Activo</translation>
 <translation id="5567989639534621706">Cachés de aplicación</translation>
 <translation id="5568069709869097550">No puedo acceder</translation>
@@ -4461,7 +4459,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5990266201903445068">Solo Wi-Fi</translation>
 <translation id="5990386583461751448">Traducida</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Para asegurarte de que puedas seguir navegando en la Web, pídele a tu administrador que quite esta aplicación.}other{Para asegurarte de que puedas seguir navegando en la Web, pídele a tu administrador que quite estas aplicaciones.}}</translation>
-<translation id="5992175324932183568">No permitir que las aplicaciones web abran determinados tipos de archivos de tu dispositivo</translation>
 <translation id="5997337190805127100">Más información sobre el acceso a sitios</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Mover grupo a ventana nueva</translation>
@@ -4583,7 +4580,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6124213551517593835">Esta acción borrará todos los datos y cookies almacenados por <ph name="SITE_GROUP_NAME" /> y sus sitios secundarios</translation>
 <translation id="6124650939968185064">Las siguientes extensiones dependen de esta extensión:</translation>
 <translation id="6124698108608891449">Este sitio necesita más permisos.</translation>
-<translation id="6125442051901189730">No hay perfiles de SIM disponibles. Configura uno nuevo <ph name="BEGIN_LINK" />aquí.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Lamentablemente, debes volver a agregar tu cuenta a este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Los datos seleccionados se quitaron de Chrome y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Comentario sobre el certificado Netscape</translation>
@@ -6399,7 +6395,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8147900440966275470">Se encontró <ph name="NUM" /> pestaña</translation>
 <translation id="8148760431881541277">Limitar el acceso</translation>
 <translation id="8149564499626272569">Verificar por teléfono con un cable USB</translation>
-<translation id="8150259863378108853">Lacros es un navegador experimental. Para informar algún problema, usa la opción Ayuda &gt; "Informar un problema…"</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Sin archivos</translation>
 <translation id="815491593104042026">Se produjo un error y no se pudo completar la autenticación porque está configurada para utilizar una URL no segura (<ph name="BLOCKED_URL" />). Comunícate con el administrador.</translation>
@@ -6584,8 +6579,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8368859634510605990">&amp;Abrir todos los favoritos</translation>
 <translation id="8370294614544004647">Suspender cuando se cierra la laptop</translation>
 <translation id="8371695176452482769">Hablar ahora</translation>
-<translation id="8371749822919332187">Usa Ctrl+Alt+Aumentar brillo para acercarte.
-Usa Ctrl+Alt+Disminuir brillo para alejarte.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Silenciar el sitio}other{Silenciar los sitios}}</translation>
 <translation id="8372369524088641025">Clave de WEP no válida</translation>
 <translation id="8373652277231415614">Directorios compartidos de Crostini</translation>
@@ -6610,7 +6603,6 @@ Usa Ctrl+Alt+Disminuir brillo para alejarte.</translation>
 <translation id="8398877366907290961">Continuar de todos modos</translation>
 <translation id="8400146488506985033">Administrar personas</translation>
 <translation id="8401432541486058167">Proporciona el PIN asociado a tu tarjeta inteligente.</translation>
-<translation id="8403562727702715619">Recientemente desde Google Drive</translation>
 <translation id="8405046151008197676">Conoce las novedades de la última actualización</translation>
 <translation id="8407199357649073301">Nivel de registro:</translation>
 <translation id="8408068190360279472">Red <ph name="NETWORK_TYPE" />, conectando</translation>
@@ -7397,7 +7389,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="975893173032473675">Idioma de destino de la traducción</translation>
 <translation id="976499800099896273">Se muestra el diálogo para deshacer la autocorrección de la palabra <ph name="TYPED_WORD" /> corregida a <ph name="CORRECTED_WORD" />.  Presiona la flecha hacia arriba para acceder al botón Deshacer o Esc para ignorar el diálogo.</translation>
 <translation id="978146274692397928">El ancho de la puntuación inicial está completo</translation>
-<translation id="97883469867914488">No permitir que las aplicaciones web abran determinados tipos de archivos de tu dispositivo</translation>
 <translation id="97905529126098460">Cuando se complete la cancelación, se cerrará esta ventana.</translation>
 <translation id="980731642137034229">Botón del menú de Acción</translation>
 <translation id="981121421437150478">Sin conexión</translation>

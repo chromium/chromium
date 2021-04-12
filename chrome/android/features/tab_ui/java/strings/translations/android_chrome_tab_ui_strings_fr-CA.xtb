@@ -15,11 +15,15 @@
 <translation id="2569352796411618312">Suggestion : <ph name="NUMBER_OF_TABS" /> de vos onglets n'ont pas été utilisés récemment. Les fermer?</translation>
 <translation id="257674075312929031">Groupe</translation>
 <translation id="2613747923081026172">Créer un groupe</translation>
+<translation id="2662028055331606429">Note : <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2759453070259087442">Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" />, qui contient <ph name="NUMBER_OF_TABS" /> onglets.</translation>
+<translation id="2801787514987684416">Afficher les renseignements sur le magasin?</translation>
 <translation id="2977480621796371840">Supprimer du groupe</translation>
+<translation id="3194464645767632461">note</translation>
 <translation id="3291470810748040983">Vous recevrez une alerte si un meilleur prix est détecté dans un onglet ouvert</translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Réduire <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduire le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Réduire le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="3882834874697329510">Pour recevoir une alerte si un meilleur prix est détecté dans un onglet ouvert, accédez aux paramètres, puis activez les notifications.</translation>
 <translation id="3940195383040445971">Suivi des prix dans des onglets</translation>
@@ -28,6 +32,7 @@
 <translation id="4212246570487010370">Continuer la navigation</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
 <translation id="4648718555153979859">Vos onglets sont regroupés ici</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avis)}one{(<ph name="REVIEWS_COUNT_MANY" /> avis)}other{(<ph name="REVIEWS_COUNT_MANY" /> avis)}}</translation>
 <translation id="4850886885716139402">Affichage</translation>
 <translation id="492284538114688557">Une baisse de prix a été détectée</translation>
 <translation id="5007392906805964215">Examiner</translation>
@@ -35,6 +40,7 @@
 <translation id="5082793167783849073">Comparez rapidement des pages en créant un groupe. Pour commencer, maintenez le doigt sur un lien.</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
 <translation id="5533021382642990449">Afficher plus tard</translation>
+<translation id="5556417849629758491">Afficher les renseignements sur le magasin, option accessible dans le haut de l'écran</translation>
 <translation id="5558362125926932819">Fermer le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> onglets groupés</translation>
 <translation id="575494663145460764">Recevoir des alertes pour les baisses de prix?</translation>
@@ -54,6 +60,7 @@
 <translation id="7559245342362162951">Afficher les onglets du groupe dans une grille plein écran</translation>
 <translation id="7792771145871471484">Examiner les suggestions.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Regrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Regrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Regrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> avis}one{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}other{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}}</translation>
 <translation id="7885132941432959125">Déplacer l'onglet vers la droite</translation>
 <translation id="7966321538264951561">Ignorer les suggestions.</translation>
 <translation id="814503310257431685">Tout afficher</translation>

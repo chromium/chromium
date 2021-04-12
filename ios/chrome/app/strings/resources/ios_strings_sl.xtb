@@ -189,6 +189,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2921219216347069551">Deljenje te strani z drugimi ni mogoče</translation>
 <translation id="2923448633003185837">Prilepi in nadaljuj</translation>
 <translation id="292639812446257861">Označi kot neprebrano</translation>
+<translation id="2932085390869194046">Predlagaj geslo …</translation>
 <translation id="2952581218264071393">1. Odprite nastavitve brskalnika Chrome.</translation>
 <translation id="2958718410589002129">Gesla</translation>
 <translation id="2964349545761222050">Blokiranje piškotkov drugih spletnih mest</translation>
@@ -422,6 +423,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5489208564673669003">Če želite upravljati piškotke za vsa spletna mesta, si oglejte <ph name="BEGIN_LINK" />Nastavitve piškotkov<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokiraj vse piškotke (ni priporočljivo)</translation>
 <translation id="5508435575041083207">Odjava in brisanje podatkov iz te naprave</translation>
+<translation id="5513681519188741830">Pred <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Ustvarjanje gesla</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
@@ -759,7 +761,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8806823403540278281">Vaša organizacija zahteva, da brskate zasebno. V anonimnem načinu se zavihki ne shranjujejo.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Zaznamki</translation>
-<translation id="8823704566850948458">Predlagaj geslo …</translation>
 <translation id="8840513115188359703">Iz Google Računa ne boste odjavljeni.</translation>
 <translation id="8870413625673593573">Nedavno zaprto</translation>
 <translation id="8881801611828450202">Uporabi <ph name="SEARCH_ENGINE" /> za iskanje te slike</translation>
@@ -787,6 +788,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9152539721251340337">Ustvari kodo QR</translation>
 <translation id="9157836665414082580">Onemogoči pogovorna okna</translation>
 <translation id="9188680907066685419">Odjava iz upravljanega računa</translation>
+<translation id="9200875785104711666">pred <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Poročilo o zrušitvi poslano.</translation>
 <translation id="952704832371081537">Preklic</translation>

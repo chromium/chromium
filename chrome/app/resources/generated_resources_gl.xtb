@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> recomenda que actualices este dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1118738876271697201">Produciuse un erro no sistema e non se puido determinar o modelo do dispositivo ou o número de serie.</translation>
 <translation id="1119447706177454957">Erro interno</translation>
-<translation id="111959947408687873">Preme Ctrl+<ph name="SEARCH_KEY_NAME" />+M para activar/desactivar a lupa de pantalla completa. Se queres moverte pola pantalla cando está ampliada, usa Ctrl+Alt+teclas de frecha.</translation>
 <translation id="1122068467107743258">Traballo</translation>
 <translation id="1122198203221319518">&amp;Ferramentas</translation>
 <translation id="1122242684574577509">Non se puido efectuar a autenticación. Fai clic para visitar a páxina de inicio de sesión da rede wifi que utilizas (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Bloqueouse este marco porque contén algúns contidos non seguros.</translation>
 <translation id="146219525117638703">Estado de ONC</translation>
 <translation id="146220085323579959">Desconectouse Internet. Comproba a túa conexión a Internet e téntao de novo.</translation>
-<translation id="1463051728820430132">Preguntar cando unha aplicación tente abrir tipos de ficheiros no teu dispositivo</translation>
 <translation id="1463112138205428654">A función Protección avanzada bloqueou <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">Non permitir que os sitios saiban cando estás utilizando o dispositivo de maneira activa</translation>
 <translation id="1464258312790801189">As túas contas</translation>
@@ -1025,6 +1023,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nova pestana á dereita</translation>
 <translation id="2111810003053064883">Os anunciantes poden estudar a eficiencia dos anuncios sen facer un seguimento dos sitios que visitas.</translation>
+<translation id="2112554630428445878">Dámosche a benvida, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Ancorar pestana</translation>
 <translation id="2113479184312716848">Abrir &amp;ficheiro...</translation>
 <translation id="2113921862428609753">Acceso a información de autoridades</translation>
@@ -1090,7 +1089,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2163470535490402084">Conéctate a Internet para iniciar sesión co teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e 1 interruptor máis</translation>
 <translation id="2165421703844373933">Accede ao teu Asistente cando digas "Ok Google". Para aforrar batería, escolle Activado (recomendado). O teu Asistente só responderá cando o dispositivo estea enchufado ou cargando.</translation>
-<translation id="2166269335975661317">As aplicacións web poden pedirche permiso para abrir tipos de ficheiros no teu dispositivo</translation>
 <translation id="2166369534954157698">Necesitamos unha tipografía chuliña de cor kiwi que lle zorregue unha labazada visual á xente</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Iniciar sesión igualmente</translation>
@@ -1969,7 +1967,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="313205617302240621">Esqueciches o contrasinal?</translation>
 <translation id="3132277757485842847">Non puidemos manter a conexión co teu teléfono. Asegúrate de que estea preto e desbloqueado, e comproba que teña o Bluetooth e a wifi activados.</translation>
 <translation id="3132996321662585180">Actualizar diariamente</translation>
-<translation id="3134393957315651797">Seleccionar estado do experimento <ph name="EXPERIMENT_NAME" />. Descrición do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">O PIN non é válido. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="313963229645891001">Descargando, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarelo predeterminado</translation>
@@ -2642,6 +2639,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3881478300875776315">Mostrar menos liñas</translation>
 <translation id="3882165008614329320">Vídeo existente da cámara ou do ficheiro</translation>
 <translation id="3884152383786131369">No contido web que estean dispoñibles varios idiomas usarase o primeiro admitido da lista. Estas preferencias sincronízanse coa configuración do teu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">O teu administrador xestiona as actualizacións</translation>
 <translation id="3886446263141354045">Enviouse a túa solicitude para acceder a este sitio a <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Tomar notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Esta información permítenos comprender mellor o problema do teu Asistente. Almacénase durante un máximo de 90 días e só poden acceder a ela os equipos adecuados de enxeñaría e de xestión de comentarios.</translation>
@@ -4463,7 +4461,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5990266201903445068">Só por wifi</translation>
 <translation id="5990386583461751448">Páxina traducida</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Para asegurarte de que podes seguir navegando pola web, pídelle ao administrador que elimine esta aplicación.}other{Para asegurarte de que podes seguir navegando pola web, pídelle ao administrador que elimine estas aplicacións.}}</translation>
-<translation id="5992175324932183568">Permitir que as aplicacións web abran tipos de ficheiros no teu dispositivo</translation>
 <translation id="5997337190805127100">Máis información sobre o acceso aos sitios</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Mover grupo a unha ventá nova</translation>
@@ -4585,7 +4582,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6124213551517593835">Ao realizar esta acción, borraranse todos os datos e as cookies que almacenase <ph name="SITE_GROUP_NAME" /> e todos os sitios que formen parte dese grupo</translation>
 <translation id="6124650939968185064">As seguintes extensións dependen desta extensión:</translation>
 <translation id="6124698108608891449">Este sitio necesita máis permisos.</translation>
-<translation id="6125442051901189730">Non hai perfís SIM dispoñibles. Podes <ph name="BEGIN_LINK" />configurar un novo<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Terás que engadir a túa conta a este dispositivo <ph name="DEVICE_TYPE" /> de novo.</translation>
 <translation id="6129691635767514872">Os datos seleccionados elimináronse de Chrome e dos dispositivos sincronizados. É posible que a túa conta de Google teña outras formas do historial de navegación, como buscas e actividade doutros servizos de Google, en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Comentario do certificado de Netscape</translation>
@@ -4850,7 +4846,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6429384232893414837">Produciuse un erro na actualización</translation>
 <translation id="6430814529589430811">ASCII con codificación Base64, certificado único</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurará actualizacións automáticas para todos os usuarios deste ordenador.</translation>
-<translation id="6434104957329207050">Velocidade da busca por punto</translation>
+<translation id="6434104957329207050">Velocidade da exploración por posición</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434325376267409267">É necesario actualizar o teu dispositivo para que poidas utilizar <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Ver na tenda web</translation>
@@ -6400,7 +6396,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8147900440966275470"><ph name="NUM" /> pestana atopada</translation>
 <translation id="8148760431881541277">Limitar inicio de sesión</translation>
 <translation id="8149564499626272569">Verificar mediante o teléfono cun cable USB</translation>
-<translation id="8150259863378108853">Lacros é un navegador experimental. Se tes algún problema, indícanolo en Axuda &gt; Informar dun problema...</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Non hai ningún ficheiro</translation>
 <translation id="815491593104042026">Produciuse un erro na autenticación porque se configurou para utilizar un URL non seguro (<ph name="BLOCKED_URL" />).  Ponte en contacto co teu administrador.</translation>
@@ -6585,8 +6580,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8368859634510605990">&amp;Abrir todos os marcadores</translation>
 <translation id="8370294614544004647">Entrar en suspensión ao pechar o ordenador portátil</translation>
 <translation id="8371695176452482769">Fala agora</translation>
-<translation id="8371749822919332187">Para achegar a imaxe, preme Ctrl+Alt+Aumentar brillo.
-Se queres afastala, usa Ctrl+Alt+Reducir brillo.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Silenciar sitio}other{Silenciar sitios}}</translation>
 <translation id="8372369524088641025">Clave WEP incorrecta</translation>
 <translation id="8373652277231415614">Directorios compartidos de Crostini</translation>
@@ -6611,7 +6604,6 @@ Se queres afastala, usa Ctrl+Alt+Reducir brillo.</translation>
 <translation id="8398877366907290961">Continuar igualmente</translation>
 <translation id="8400146488506985033">Xestionar persoas</translation>
 <translation id="8401432541486058167">Introduce o PIN asociado á túa tarxeta intelixente.</translation>
-<translation id="8403562727702715619">Recentemente desde Google Drive</translation>
 <translation id="8405046151008197676">Descubre o máis destacado da última actualización</translation>
 <translation id="8407199357649073301">Nivel de rexistro:</translation>
 <translation id="8408068190360279472">Rede de tipo <ph name="NETWORK_TYPE" />, conectando</translation>
@@ -7398,7 +7390,6 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="975893173032473675">Idioma ao que queres traducir o contido</translation>
 <translation id="976499800099896273">Móstrase o cadro de diálogo para desfacer a autocorrección de "<ph name="TYPED_WORD" />", que se cambiou por "<ph name="CORRECTED_WORD" />".  Preme Frecha arriba para acceder ou Escape para ignorar o cadro de diálogo.</translation>
 <translation id="978146274692397928">A largura inicial da puntuación inicial é completa</translation>
-<translation id="97883469867914488">Impedir que as aplicacións web abran tipos de ficheiros no teu dispositivo</translation>
 <translation id="97905529126098460">Esta ventá pecharase unha vez completada a cancelación.</translation>
 <translation id="980731642137034229">Botón de menú de accións</translation>
 <translation id="981121421437150478">Sen conexión</translation>

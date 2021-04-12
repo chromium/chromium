@@ -4,6 +4,7 @@
 <translation id="1175958423215084756">リンクが検出されました。<ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ギャラリー画像</translation>
 <translation id="1430915738399379752">印刷</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> が外されました。</translation>
 <translation id="1473110567575736769">3 秒タイマー</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1627744224761163218">4x4</translation>
@@ -24,6 +25,7 @@
 <translation id="2501953888035679275">カメラを使って写真や動画を撮影できます。</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
 <translation id="2599796128805996109">背面カメラ</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> が接続されました。</translation>
 <translation id="2912439424121107408">このデバイスではエキスパート モードはサポートされていません</translation>
 <translation id="2968794441791257519">カメラで撮影した写真と動画を [ダウンロード] フォルダに移動します。これらの写真や動画には、[ファイル] からアクセスできます。
 

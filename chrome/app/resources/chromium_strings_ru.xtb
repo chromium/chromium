@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">Chromium использует микрофон.</translation>
 <translation id="3155163173539279776">Перезапустить Chromium</translation>
 <translation id="3179665906251668410">Открыть ссылку в режиме инкогнито браузера Chromium</translation>
+<translation id="3185330573522821672">Настройте новый профиль Chromium</translation>
 <translation id="3190315855212034486">Произошел сбой Chromium. Перезапустить?</translation>
 <translation id="3229526316128325841">Вы собираетесь экспортировать пароли из Chromium.</translation>
 <translation id="3258596308407688501">Chromium не может выполнять операции чтения и записи в своем каталоге: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -72,6 +73,7 @@
 <translation id="3430503420100763906">Профили Chromium нужны для раздельного использования браузера, например разными людьми или в разных целях.</translation>
 <translation id="347328004046849135">Вы получите уведомление от Chromium, если войдете в аккаунт с паролем, который был раскрыт.</translation>
 <translation id="3474745554856756813">С устройства будут удалены объекты (<ph name="ITEMS_COUNT" />). Чтобы восстановить данные позже, войдите в Chromium как <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931">Переключиться на другой профиль Chromium можно с помощью сочетания клавиш <ph name="SHORTCUT" /></translation>
 <translation id="3509308970982693815">Закройте все окна Chromium и повторите попытку снова.</translation>
 <translation id="3575459661164320785">На компьютере обнаружено вредоносное ПО. Chromium может удалить его, восстановить настройки и отключить расширения. Это вернет браузер в обычное состояние.</translation>
 <translation id="3639635944603682591">Данные о работе этого пользователя в браузере будут удалены с устройства. Чтобы восстановить их, войдите в Chromium как <ph name="USER_EMAIL" />.</translation>
@@ -152,6 +154,7 @@
 <translation id="6120345080069858279">Этот пароль будет сохранен в аккаунте Google. Вам не нужно его запоминать.</translation>
 <translation id="6129621093834146363">Chromium заблокировал файл <ph name="FILE_NAME" /> как опасный.</translation>
 <translation id="6134968993075716475">Безопасный просмотр отключен. Chromium рекомендует включить его.</translation>
+<translation id="6145820983052037069">Здесь можно переключиться на другой профиль Chromium</translation>
 <translation id="6183079672144801177">Убедитесь, что вы вошли в Chromium на устройстве <ph name="TARGET_DEVICE_NAME" />, и попробуйте повторить отправку.</translation>
 <translation id="6212496753309875659">На этом компьютере установлена актуальная версия Chromium. Если программа не работает, удалите Chromium и повторите попытку.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium перезапускается}=1{Chromium перезапустится через 1 секунду}one{Chromium перезапустится через # секунду}few{Chromium перезапустится через # секунды}many{Chromium перезапустится через # секунд}other{Chromium перезапустится через # секунды}}</translation>

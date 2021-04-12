@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> preporučuje da ažurirate ovaj uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Sustav nije uspio utvrditi model uređaja ili serijski broj.</translation>
 <translation id="1119447706177454957">Interna greška</translation>
-<translation id="111959947408687873">Da aktivirate/deaktivirate povećalo za cijeli ekran, koristite Ctrl + <ph name="SEARCH_KEY_NAME" /> + M. Da se pomjerate po uvećanom ekranu, koristite Ctrl + Alt + tipke sa strelicama.</translation>
 <translation id="1122068467107743258">Posao</translation>
 <translation id="1122198203221319518">&amp;Alati</translation>
 <translation id="1122242684574577509">Autentifikacija nije uspjela. Kliknite da posjetite stranicu za prijavu na WiFi mrežu koju koristite (<ph name="NETWORK_ID" />).</translation>
@@ -428,7 +427,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="146000042969587795">Okvir je blokiran jer ima nesiguran sadržaj.</translation>
 <translation id="146219525117638703">Stanje ONC-a</translation>
 <translation id="146220085323579959">Veza s internetom je prekinuta. Provjerite internetsku vezu i pokušajte ponovo.</translation>
-<translation id="1463051728820430132">Pitaj kada web aplikacija želi otvoriti određene vrste fajlova na uređaju</translation>
 <translation id="1463112138205428654">Napredna zaštita je blokirala fajl <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">Nemoj dozvoliti web lokacijama da znaju kada se uređaj aktivno koristi</translation>
 <translation id="1464258312790801189">Vaši računi</translation>
@@ -1028,6 +1026,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="211144231511833662">Obrši vrste</translation>
 <translation id="2111670510994270194">Nova kartica s desne strane</translation>
 <translation id="2111810003053064883">Oglašivači mogu proučavati učinkovitost oglasa, a da pri tome ne prate vaše aktivnosti na web lokacijama.</translation>
+<translation id="2112554630428445878">Dobro došli, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Zakači karticu</translation>
 <translation id="2113479184312716848">Otvori fajl...</translation>
 <translation id="2113921862428609753">Pristup informacijama o odobrenjima</translation>
@@ -1093,7 +1092,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2163470535490402084">Povežite se na internet da se prijavite na uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i još 1 prekidač</translation>
 <translation id="2165421703844373933">Pristupite Asistentu izgovaranjem "Ok Google" Radi uštede baterije, odaberite “Uključi (Preporučeno)”. Asistent će reagirati samo kada je uređaj priključen ili kada se puni.</translation>
-<translation id="2166269335975661317">Web aplikacije mogu tražiti da otvaraju fajlove s vašeg uređaja</translation>
 <translation id="2166369534954157698">Bošnjak Fadil Hadžić žučljiv zet najgrđem piscu!</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Ipak se prijavi</translation>
@@ -1972,7 +1970,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="313205617302240621">Zaboravili ste lozinku?</translation>
 <translation id="3132277757485842847">Nije moguće održati vezu s vašim telefonom. Provjerite nalazi li se telefon u blizini, je li otključan i jesu li Bluetooth i WiFi uključeni.</translation>
 <translation id="3132996321662585180">Osvježavaj dnevno</translation>
-<translation id="3134393957315651797">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />. Opis eksperimenta: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Nevažeći PIN. Broj preostalih pokušaja: <ph name="RETRIES" /></translation>
 <translation id="313963229645891001">Preuzimanje, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Zadani žuti avatar</translation>
@@ -2645,6 +2642,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3881478300875776315">Prikaži manje redova</translation>
 <translation id="3882165008614329320">Postojeći videozapis s kamere ili fajla</translation>
 <translation id="3884152383786131369">Sadržaj weba koji je dostupan na više jezika će koristiti prvi podržani jezik s liste. Ove postavke se sinhroniziraju s postavkama preglednika. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Ažuriranjima upravlja vaš administrator</translation>
 <translation id="3886446263141354045">Vaš zahtjev za pristup ovoj web lokaciji je poslan korisniku <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Kreiranje bilježaka pomoću aplikacije <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Ove informacije nam pomažu da bolje razumijemo problem s Asistentom. Pohranjuju se do 90 dana i pristup je ograničen na određene timove za inženjering i povratne informacije.</translation>
@@ -4466,7 +4464,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5990266201903445068">Samo WiFi</translation>
 <translation id="5990386583461751448">Prevedeno</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Da i dalje pregledate web, zatražite od administratora da ukloni ovu aplikaciju.}one{Da i dalje pregledate web, zatražite od administratora da ukloni ove aplikacije.}few{Da i dalje pregledate web, zatražite od administratora da ukloni ove aplikacije.}other{Da i dalje pregledate web, zatražite od administratora da ukloni ove aplikacije.}}</translation>
-<translation id="5992175324932183568">Nemoj dozvoliti web aplikacijama da otvaraju određene vrste fajlova na uređaju</translation>
 <translation id="5997337190805127100">Saznajte više o pristupu web lokacijama</translation>
 <translation id="6000758707621254961">Broj rezultata <ph name="RESULT_COUNT" /> za "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Premjesti grupu u novi prozor</translation>
@@ -4588,7 +4585,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6124213551517593835">Ovim će se obrisati svi podaci i kolačići koje je pohranila web lokacija <ph name="SITE_GROUP_NAME" /> i sve web lokacije povezane s njom</translation>
 <translation id="6124650939968185064">Sljedeće ekstenzije ovise o ovoj ekstenziji:</translation>
 <translation id="6124698108608891449">Ovoj web lokaciji je potrebno više odobrenja.</translation>
-<translation id="6125442051901189730">Nije dostupan nijedan SIM profil. Postavite novi profil <ph name="BEGIN_LINK" />ovdje.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Nažalost, morat ćete ponovo dodati svoj račun na ovaj uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Odabrani podaci su uklonjeni iz Chromea i sinhroniziranih uređaja. Vaš Google račun može imati druge oblike historije pregledanja kao što su pretraživanja i aktivnosti s drugih Googleovih usluga na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Komentar potvrde Netscapea</translation>
@@ -6404,7 +6400,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8147900440966275470">Pronađen je sljedeći broj kartica: <ph name="NUM" /></translation>
 <translation id="8148760431881541277">Ograniči prijavu</translation>
 <translation id="8149564499626272569">Potvrdite telefonom putem USB kabla</translation>
-<translation id="8150259863378108853">Lacros je ekperimentalni preglednik. Prijavite probleme u odjeljku Pomoć &gt; "Prijavite problem..."</translation>
 <translation id="8151638057146502721">Konfiguriraj</translation>
 <translation id="8154790740888707867">Nema fajla</translation>
 <translation id="815491593104042026">Ups!  Autentifikacija nije uspjela jer je konfigurirana da koristi nesigurni URL (<ph name="BLOCKED_URL" />). Obratite se svom administratoru.</translation>
@@ -6589,8 +6584,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8368859634510605990">&amp;Otvori sve oznake</translation>
 <translation id="8370294614544004647">Stanje mirovanja kada je laptop zatvoren</translation>
 <translation id="8371695176452482769">Govorite sada</translation>
-<translation id="8371749822919332187">Da uvećate, koristite Ctrl + Alt + povećavanje osvjetljenja.
-Da umanjite, koristite Ctrl + Alt + smanjivanje osvjetljenja.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Isključi zvuk web lokacije}one{Isključi zvuk web lokacija}few{Isključi zvuk web lokacija}other{Isključi zvuk web lokacija}}</translation>
 <translation id="8372369524088641025">Nepravilan WEP ključ</translation>
 <translation id="8373652277231415614">Dijeljeni direktoriji na Crostiniju</translation>
@@ -6615,7 +6608,6 @@ Da umanjite, koristite Ctrl + Alt + smanjivanje osvjetljenja.</translation>
 <translation id="8398877366907290961">Svejedno nastavi</translation>
 <translation id="8400146488506985033">Upravljaj osobama</translation>
 <translation id="8401432541486058167">Unesite PIN koji je povezan s vašom pametnom karticom.</translation>
-<translation id="8403562727702715619">Nedavno s Google diska</translation>
 <translation id="8405046151008197676">Otkrijte istaknute novosti o najnovijem ažuriranju</translation>
 <translation id="8407199357649073301">Nivo zapisa:</translation>
 <translation id="8408068190360279472">Mreža <ph name="NETWORK_TYPE" />, povezivanje</translation>
@@ -7404,7 +7396,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="975893173032473675">Jezik na koji se prevodi</translation>
 <translation id="976499800099896273">Dijaloški okvir za poništavanje automatskog ispravljanja je prikazan za riječ <ph name="TYPED_WORD" /> koja je ispravljena u <ph name="CORRECTED_WORD" />.  Pritisnite strelicu nagore da pristupite, a tipku Esc da zanemarite.</translation>
 <translation id="978146274692397928">Početna širina interpunkcije je "puna"</translation>
-<translation id="97883469867914488">Blokirajte web aplikacijama da otvaraju određene vrste fajlova na uređaju</translation>
 <translation id="97905529126098460">Ovaj prozor će se zatvoriti nakon završetka otkazivanja.</translation>
 <translation id="980731642137034229">Dugme menija s radnjama</translation>
 <translation id="981121421437150478">Van mreže</translation>

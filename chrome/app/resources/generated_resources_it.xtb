@@ -104,7 +104,6 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> ti consiglia di aggiornare questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Il sistema non è riuscito a stabilire il modello o il numero di serie del dispositivo.</translation>
 <translation id="1119447706177454957">Errore interno</translation>
-<translation id="111959947408687873">Premi Ctrl+<ph name="SEARCH_KEY_NAME" />+M per attivare e disattivare l'ingrandimento a schermo intero. Premi Ctrl+Alt+tasti Freccia per spostarti sullo schermo quando hai aumentato lo zoom.</translation>
 <translation id="1122068467107743258">Lavoro</translation>
 <translation id="1122198203221319518">S&amp;trumenti</translation>
 <translation id="1122242684574577509">Autenticazione non riuscita. Fai clic per visitare la pagina di accesso della rete Wi-Fi in uso (<ph name="NETWORK_ID" />).</translation>
@@ -426,7 +425,6 @@
 <translation id="146000042969587795">Il frame è stato bloccato poiché contiene contenuti non protetti.</translation>
 <translation id="146219525117638703">Stato ONC</translation>
 <translation id="146220085323579959">Rete Internet scollegata. Controlla la connessione Internet e riprova.</translation>
-<translation id="1463051728820430132">Chiedi quando un'app web vuole aprire determinati tipi di file sul tuo dispositivo</translation>
 <translation id="1463112138205428654">Il file <ph name="FILE_NAME" /> è stato bloccato dalla protezione avanzata.</translation>
 <translation id="1464044141348608623">Non consentire ai siti di sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="1464258312790801189">I tuoi account</translation>
@@ -1026,6 +1024,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="211144231511833662">Cancella Tipi</translation>
 <translation id="2111670510994270194">Nuova scheda a destra</translation>
 <translation id="2111810003053064883">Gli inserzionisti possono esaminare l'efficacia degli annunci senza tracciarti tra i siti.</translation>
+<translation id="2112554630428445878">Ti diamo il benvenuto <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Blocca scheda</translation>
 <translation id="2113479184312716848">Apri &amp;file...</translation>
 <translation id="2113921862428609753">Accesso alle informazioni sull'autorità</translation>
@@ -1091,7 +1090,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2163470535490402084">Connettiti a Internet per accedere al tuo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e 1 altro sensore</translation>
 <translation id="2165421703844373933">Accedi all'assistente quando dici "Ok Google". Per consumare meno batteria, seleziona "On (opzione consigliata)". L'assistente risponderà soltanto quando il dispositivo è collegato a una fonte di alimentazione o in carica.</translation>
-<translation id="2166269335975661317">Le app web possono chiedere di aprire determinati tipi di file dal tuo dispositivo</translation>
 <translation id="2166369534954157698">Pranzo d'acqua fa volti sghembi</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Accedi comunque</translation>
@@ -1969,7 +1967,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="313205617302240621">Hai dimenticato la password?</translation>
 <translation id="3132277757485842847">Impossibile mantenere una connessione col telefono. Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi.</translation>
 <translation id="3132996321662585180">Aggiorna ogni giorno</translation>
-<translation id="3134393957315651797">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" />. Descrizione dell'esperimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN non valido. Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
 <translation id="313963229645891001">Download in corso, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar giallo predefinito</translation>
@@ -2642,6 +2639,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3881478300875776315">Mostra meno righe</translation>
 <translation id="3882165008614329320">Video esistente da fotocamera o file</translation>
 <translation id="3884152383786131369">I contenuti web che sono disponibili in più lingue utilizzeranno la prima lingua supportata nell'elenco. Queste preferenze sono sincronizzate con le impostazioni del browser. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">Gli aggiornamenti sono gestiti dall'amministratore</translation>
 <translation id="3886446263141354045">La tua richiesta di accesso al sito è stata inviata a <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Creazione di appunti con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Queste informazioni ci aiutano a capire meglio il problema del tuo assistente. Vengono memorizzate per massimo 90 giorni e l'accesso è limitato ai team di tecnici e responsabili dei feedback competenti.</translation>
@@ -4463,7 +4461,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5990266201903445068">Solo Wi-Fi</translation>
 <translation id="5990386583461751448">Tradotta</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Per assicurarti di poter continuare a navigare sul Web, chiedi al tuo amministratore di rimuovere questa applicazione.}other{Per assicurarti di poter continuare a navigare sul Web, chiedi al tuo amministratore di rimuovere queste applicazioni.}}</translation>
-<translation id="5992175324932183568">Non consentire alle app web di aprire determinati tipi di file dal tuo dispositivo</translation>
 <translation id="5997337190805127100">Ulteriori informazioni sull'accesso ai siti</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> risultati per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002210667729577411">Sposta gruppo in una nuova finestra</translation>
@@ -4585,7 +4582,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6124213551517593835">Verranno cancellati tutti i dati e i cookie memorizzati da <ph name="SITE_GROUP_NAME" /> e dai siti al suo interno</translation>
 <translation id="6124650939968185064">Le seguenti estensioni dipendono da questa estensione:</translation>
 <translation id="6124698108608891449">Questo sito richiede altre autorizzazioni.</translation>
-<translation id="6125442051901189730">Nessun profilo SIM disponibile. Configurane uno nuovo <ph name="BEGIN_LINK" />qui<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Purtroppo devi aggiungere nuovamente il tuo account al dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">I dati selezionati sono stati rimossi da Chrome e dai dispositivi sincronizzati. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Commento certificato Netscape</translation>
@@ -6400,7 +6396,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8147900440966275470">È stata trovata <ph name="NUM" /> scheda</translation>
 <translation id="8148760431881541277">Limitare l'accesso</translation>
 <translation id="8149564499626272569">Verifica la tua identità tramite telefono con cavo USB</translation>
-<translation id="8150259863378108853">Lacros è un browser sperimentale. Segnala eventuali problemi selezionando Guida &gt; Segnala un problema…</translation>
 <translation id="8151638057146502721">Configura</translation>
 <translation id="8154790740888707867">Nessun file</translation>
 <translation id="815491593104042026">Spiacenti, impossibile eseguire l'autenticazione perché è stato configurato l'utilizzo di un URL non protetto (<ph name="BLOCKED_URL" />). Contatta l'amministratore.</translation>
@@ -6585,8 +6580,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8368859634510605990">&amp;Apri tutti i Preferiti</translation>
 <translation id="8370294614544004647">Sospendere alla chiusura del laptop</translation>
 <translation id="8371695176452482769">Parla adesso</translation>
-<translation id="8371749822919332187">Premi Ctrl+Alt+Aumenta luminosità per aumentare lo zoom.
-Premi Ctrl+Alt+Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Disattiva l'audio del sito}other{Disattiva l'audio dei siti}}</translation>
 <translation id="8372369524088641025">Chiave WEP non valida</translation>
 <translation id="8373652277231415614">Directory condivise di Crostini</translation>
@@ -6611,7 +6604,6 @@ Premi Ctrl+Alt+Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="8398877366907290961">Procedi comunque</translation>
 <translation id="8400146488506985033">Gestisci utenti</translation>
 <translation id="8401432541486058167">Specifica il PIN associato alla tua smart card.</translation>
-<translation id="8403562727702715619">Attività recenti su Google Drive</translation>
 <translation id="8405046151008197676">Scopri le novità principali dell'ultimo aggiornamento</translation>
 <translation id="8407199357649073301">Livello di log:</translation>
 <translation id="8408068190360279472">Rete <ph name="NETWORK_TYPE" />, collegamento in corso</translation>
@@ -7209,7 +7201,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="9055278955535611574">Accedi all'assistente con il comando "Hey Google"</translation>
 <translation id="9055636786322918818">Applica la crittografia RC4. Se scegli di utilizzare quest'opzione vai incontro a un rischio maggiore, in quanto le crittografie RC4 non sono sicure.</translation>
 <translation id="9056810968620647706">Nessuna corrispondenza trovata.</translation>
-<translation id="9057354806206861646">Aggiorna programmazione</translation>
+<translation id="9057354806206861646">Aggiornamenti programmati</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Errore dalla riga <ph name="ERROR_LINE_START" /> alla riga <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Impossibile acquisire contenuti riservati</translation>
@@ -7398,7 +7390,6 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="975893173032473675">Lingua in cui tradurre</translation>
 <translation id="976499800099896273">Finestra di dialogo visualizzata per annullamento correzione automatica di <ph name="TYPED_WORD" /> in <ph name="CORRECTED_WORD" />.  Premi la Freccia su per accedere alla parola corretta o Esc per ignorare.</translation>
 <translation id="978146274692397928">La larghezza della punteggiatura iniziale è piena</translation>
-<translation id="97883469867914488">Impedisci alle app web di aprire determinati tipi di file sul tuo dispositivo</translation>
 <translation id="97905529126098460">Questa finestra verrà chiusa una volta completato l'annullamento.</translation>
 <translation id="980731642137034229">Pulsante del menu azione</translation>
 <translation id="981121421437150478">Offline</translation>

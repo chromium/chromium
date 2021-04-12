@@ -62,6 +62,7 @@
 <translation id="3130323860337406239">Chromium нь таны микрофоныг ашиглаж байна.</translation>
 <translation id="3155163173539279776">Chromium-г дахин эхлүүлэх</translation>
 <translation id="3179665906251668410">Холбоосыг Chromium-н нууцлалтай цонхонд нээх</translation>
+<translation id="3185330573522821672">Chromium-н шинэ профайлаа тохируулна уу</translation>
 <translation id="3190315855212034486">Chromium-д гамтал гарлаа. Дахин эхлүүлэх үү?</translation>
 <translation id="3229526316128325841">Chromium таны төхөөрөмжийг экспортлох хүсэлтэй байна.</translation>
 <translation id="3258596308407688501">Chromium нь өөрийн өгөгдлийн сан руу уншуулж бас бичиж чадахгүй байна: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -74,6 +75,7 @@
 <translation id="3430503420100763906">Та Chromium профайлаар Chromium-н бүх зүйлээ тусгаарлах боломжтой. Найзууд, гэр бүлдээ профайл үүсгэх эсвэл ажил болон дуртай зүйлээ хооронд нь хуваагаарай.</translation>
 <translation id="347328004046849135">Таныг алдагдсан нууц үгээр нэвтрэх үед Chromium танд мэдэгдэнэ</translation>
 <translation id="3474745554856756813">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйл устгана. Өгөгдлөө дараа сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> Chromium-н профайлууд хооронд сэлгэх боломжтой</translation>
 <translation id="3509308970982693815">Chromium-н бүх цонхыг хаасны дараагаар дахин хандана уу.</translation>
 <translation id="3575459661164320785">Таны компьютер дээр аюултай программ хангамж байна. Chromium таны хөтчийн ажиллагааг дахин хэвийн болгохын тулд үүнийг устгах, таны тохиргоог сэргээх болон өргөтгөлүүдийг идэвхгүй болгох боломжтой.</translation>
 <translation id="3639635944603682591">Энэ хэрэглэгчийн хөтчийн өгөгдлийг энэ төхөөрөмжөөс устгана. Өгөгдлийг сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
@@ -154,6 +156,7 @@
 <translation id="6120345080069858279">Chromium энэ нууц үгийг таны Google Бүртгэлд хадгалах тул та үүнийг санах шаардлагагүй.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> аюултай тул үүнийг Chromium блок хийсэн.</translation>
 <translation id="6134968993075716475">Аюулгүй үзэх онцлог унтраалттай байна. Chromium түүнийг асаахыг зөвлөж байна.</translation>
+<translation id="6145820983052037069">Та энд Chromium-н профайлууд хооронд сэлгэх боломжтой</translation>
 <translation id="6183079672144801177">Та Chromium-д өөрийн <ph name="TARGET_DEVICE_NAME" />-с нэвтэрсэн эсэхээ шалгаад, дахин илгээхээр оролдоно уу.</translation>
 <translation id="6212496753309875659">Энэ компьютерт Chromium-ийн хамгийн сүүлийн үеийн хувилбар байна. Хэрэв программ ажиллахгүй байвал Chromium-ийг устгаад, дахин суурьлуулж үзнэ үү.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium-г одоо дахин ажиллуулна}=1{Chromium-г 1 секундийн дотор дахин ажиллуулна}other{Chromium-г # секундийн дотор дахин ажиллуулна}}</translation>

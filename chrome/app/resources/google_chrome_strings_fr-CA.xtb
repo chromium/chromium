@@ -18,6 +18,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="137466361146087520">Google Chrome bêta</translation>
 <translation id="1399397803214730675">Une version plus récente de Google Chrome est déjà installée sur cet ordinateur. Si celle-ci ne fonctionne pas, désinstallez Google Chrome, puis réessayez.</translation>
 <translation id="1434626383986940139">Applications Google Chrome Canary</translation>
+<translation id="1507198376417198979">Personnaliser votre nouveau profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome nécessite l'accès au Bluetooth pour continuer l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> est déjà connecté à ce profil Chrome. Cette action créera un profil Chrome associé au compte <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -217,6 +218,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6943584222992551122">Les données de navigation de cette personne seront supprimées de cet appareil. Pour les récupérer, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Règle de trafic entrant pour Google Chrome bêta autorisant le trafic mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome a été mis à jour, mais vous ne l'avez pas utilisé depuis au moins 30 jours.</translation>
+<translation id="7025800014283535195">Vous pouvez basculer entre les profils Chrome ici</translation>
 <translation id="7062128746136194023">Ton parent a désactivé le paramètre « Autorisations pour les sites, les applications et les extensions » dans Chrome. L'activation de ce <ph name="EXTENSION_TYPE_PARAMETER" /> n'est pas autorisée.</translation>
 <translation id="7098166902387133879">Google Chrome se sert de votre microphone.</translation>
 <translation id="7106741999175697885">Gestionnaire de tâches — Google Chrome</translation>
@@ -294,4 +296,5 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
 <translation id="940313311831216333">Pour accéder à vos données Chrome sur tous vos appareils, connectez-vous et activez la synchronisation.</translation>
 <translation id="989369509083708165">Google Chrome est votre navigateur par défaut</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> permet de basculer entre les profils Chrome</translation>
 </translationbundle>

@@ -4,11 +4,13 @@
 <translation id="1175958423215084756">Bol rozpoznaný odkaz. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Obrázky galérie</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
+<translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je odpojená.</translation>
 <translation id="1473110567575736769">Trojsekundový časovač</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">Nič sa nezaznamenalo</translation>
 <translation id="1838104802459806957">Naklonenie nahor</translation>
+<translation id="1851169887664797861">K dispozícii je ďalšie ovládanie kamery</translation>
 <translation id="1851616744363735765">POZASTAVENÉ</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> sa nepodarilo exportovať</translation>
 <translation id="1899697626337024495">Rozlíšenie fotky</translation>
@@ -24,6 +26,7 @@
 <translation id="2501953888035679275">Foťte a zaznamenávajte videá fotoaparátom.</translation>
 <translation id="2549985041256363841">Spustiť zaznamenávanie</translation>
 <translation id="2599796128805996109">Zadný fotoaparát</translation>
+<translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je pripojená.</translation>
 <translation id="2912439424121107408">Toto zariadenie nepodporuje expertný režim</translation>
 <translation id="2968794441791257519">Fotky a videá nasnímané fotoaparátom budú presunuté do priečinka Stiahnuté súbory. Dostanete sa k nim v Súboroch.
 
@@ -37,6 +40,7 @@
 <translation id="3259149966178251584">Rozlíšenie fotoaparátu</translation>
 <translation id="3517926952904427380">Nepodarilo sa nasnímať portrétovú fotku</translation>
 <translation id="3569311554794739032">Naozaj chcete odstrániť <ph name="FILE" />?</translation>
+<translation id="3733597664308256288">K dispozícii je ďalšie ovládanie kamery. Otvoríte ho klávesmi Hľadať + šípka doprava.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenovať čiarový kód</translation>
 <translation id="3892148308691398805">Kopírovať text</translation>

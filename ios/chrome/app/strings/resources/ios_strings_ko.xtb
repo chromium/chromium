@@ -189,6 +189,7 @@
 <translation id="2921219216347069551">페이지를 공유할 수 없음</translation>
 <translation id="2923448633003185837">붙여넣어 바로가기</translation>
 <translation id="292639812446257861">읽지않음으로 표시</translation>
+<translation id="2932085390869194046">비밀번호 추천...</translation>
 <translation id="2952581218264071393">1. Chrome 설정 열기</translation>
 <translation id="2958718410589002129">비밀번호</translation>
 <translation id="2964349545761222050">타사 쿠키 차단</translation>
@@ -422,6 +423,7 @@
 <translation id="5489208564673669003">모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />쿠키 설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="5490005495580364134">모든 쿠키 차단(권장되지 않음)</translation>
 <translation id="5508435575041083207">로그아웃 및 기기에서 데이터 삭제</translation>
+<translation id="5513681519188741830"><ph name="TIME" />시간 전</translation>
 <translation id="5525269841082836315">암호 만들기</translation>
 <translation id="5548760955356983418">Handoff를 이용하면 이 기기에서 웹사이트를 탐색하다가 Mac에서 간편하게 보던 페이지부터 계속할 수 있습니다. 현재 열어놓은 웹사이트가 Mac의 Dock에 표시됩니다.
 
@@ -759,7 +761,6 @@
 <translation id="8806823403540278281">조직에서 비공개로 탐색할 것을 요구합니다. 시크릿 모드에서는 탭이 저장되지 않습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">북마크</translation>
-<translation id="8823704566850948458">비밀번호 추천...</translation>
 <translation id="8840513115188359703">Google 계정에서 로그아웃되지 않습니다.</translation>
 <translation id="8870413625673593573">최근에 닫은 탭</translation>
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
@@ -787,6 +788,7 @@
 <translation id="9152539721251340337">QR 코드 만들기</translation>
 <translation id="9157836665414082580">대화상자 숨기기</translation>
 <translation id="9188680907066685419">관리 계정에서 로그아웃</translation>
+<translation id="9200875785104711666"><ph name="TIME" />일 전</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">비정상 종료 보고서 전송 완료</translation>
 <translation id="952704832371081537">취소</translation>

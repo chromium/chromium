@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">បានឈប់ - អស់​ទឹកថ្នាំ</translation>
 <translation id="1703835215927279855">សំបុត្រ</translation>
 <translation id="1706391837335750954">កម្មវិធីបំប្លែង DNS បច្ចុប្បន្ន</translation>
+<translation id="1715359911173058521">មានបញ្ហា​ក្នុងការ​ភ្ជាប់ជាមួយ​ម៉ាស៊ីនស្កេន។ សូមពិនិត្យមើល​ការតភ្ជាប់ USB ឬបណ្ដាញ រួចព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="1717874160321062422">ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="FIRST_MANAGER" /> និង <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">កំពុងបោះបង់ការស្កេន</translation>
@@ -215,6 +216,7 @@
 <translation id="54609108002486618">បាន​គ្រប់គ្រង</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{អាចព្យាយាមបាន {0} ដងទៀត}other{អាចព្យាយាមបាន {0} ដងទៀត}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />៖ <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">មិនអាចបញ្ចប់​ការស្កេន​បានទេ</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">កំពុងធ្វើសកម្មភាព</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -229,6 +231,7 @@
 <translation id="5916084858004523819">ត្រូវបាន​ហាមឃាត់</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ឯកសាររបស់អ្នកត្រូវបានស្កេន និងរក្សាទុកនៅក្នុង <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ដោយជោគជ័យហើយ។}other{ឯកសាររបស់អ្នកត្រូវបានស្កេន និងរក្សាទុកនៅក្នុង <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ដោយជោគជ័យហើយ។}}</translation>
 <translation id="5931523347251946569">រក​មិន​ឃើញ​ឯកសារទេ</translation>
+<translation id="6037291330010597344">ឧបករណ៍​បញ្ចូល​ឯកសារ​របស់ម៉ាស៊ីនស្កេន​គឺទទេ។ សូមបញ្ចូល​ឯកសារ រួចព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="6040143037577758943">បិទ</translation>
 <translation id="6040852767465482106">អត្តសញ្ញាណអនាមិក</translation>
 <translation id="604124094241169006">ស្វ័យប្រវត្តិ</translation>
@@ -251,6 +254,7 @@
 <translation id="6302401976930124515">ការធ្វើតេស្ត​លើ <ph name="TEST_NAME" /> ត្រូវបានបោះបង់</translation>
 <translation id="6325525973963619867">មិនបានសម្រេច</translation>
 <translation id="636850387210749493">ការចុះឈ្មោះសហគ្រាស</translation>
+<translation id="6388847657025262518">ឧបករណ៍​បញ្ចូល​ឯកសារ​របស់ម៉ាស៊ីនស្កេន​ជាប់គាំង។ សូម​ពិនិត្យមើល​ឧបករណ៍​បញ្ចូល​ឯកសារនោះ រួចព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="641081527798843608">ប្រធានបទ​ត្រូវគ្នា</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">ល្អ</translation>
@@ -272,7 +276,7 @@
 <translation id="6766275201586212568">កម្រិតច្បាស់ DNS ដែលមិនដំណើរការ</translation>
 <translation id="6768237774506518020">អត្រាមិនដំណើរការ​នៃកម្រិតច្បាស់ DNS ខ្ពស់</translation>
 <translation id="6853312040151791195">អត្រា​ឈប់សាកថ្ម</translation>
-<translation id="6898743098396957679">មិនអាច​បញ្ចប់​ការស្កេនបានទេ</translation>
+<translation id="6910312834584889076">គម្រប​របស់ម៉ាស៊ីនស្កេន​គឺបើក។ សូមបិទ​គម្របនោះ រួចព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="6911383237894364323">មិនអាចភ្ជាប់​ម៉ាស៊ីនមេ​មេឌៀបានទេ</translation>
 <translation id="6957231940976260713">ឈ្មោះ​សេវាកម្ម</translation>
 <translation id="6977381486153291903">ការកែប្រែកម្មវិធីបង្កប់</translation>
@@ -287,6 +291,7 @@
 <translation id="7162487448488904999">សាល​រូបភាព</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។ អ្នកគ្រប់គ្រង​អាចកំណត់រចនាសម្ព័ន្ធ​ឧបករណ៍​នេះពីចម្ងាយបាន។</translation>
 <translation id="7216409898977639127">ក្រុមហ៊ុន​ផ្តល់សេវា​ទូរសព្ទ</translation>
+<translation id="7271040990581020067">បច្ចុប្បន្ននេះ ម៉ាស៊ីនស្កេន​កំពុងស្ថិតក្នុង​ការប្រើប្រាស់។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">ឧបករណ៍​បណ្ដាញ</translation>
 <translation id="7359657277149375382">ប្រភេទ​ឯកសារ</translation>

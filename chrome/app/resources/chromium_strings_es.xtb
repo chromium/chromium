@@ -62,6 +62,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3130323860337406239">Chromium está utilizando el micrófono.</translation>
 <translation id="3155163173539279776">Reiniciar Chromium</translation>
 <translation id="3179665906251668410">Abrir enlace en una ventana de incó&amp;gnito de Chromium</translation>
+<translation id="3185330573522821672">Personaliza tu nuevo perfil de Chromium.</translation>
 <translation id="3190315855212034486">¡Vaya! Se ha producido un fallo en Chromium. ¿Quieres reiniciar el navegador ahora?</translation>
 <translation id="3229526316128325841">Chromium quiere exportar tus contraseñas.</translation>
 <translation id="3258596308407688501">Chromium no puede leer el directorio de datos ni escribir en él:
@@ -76,6 +77,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3430503420100763906">Con los perfiles de Chromium, puedes separar todos tus elementos de Chromium. Crea perfiles para amigos y familiares, o un perfil de trabajo y otro de ocio.</translation>
 <translation id="347328004046849135">Chromium te avisará cuando inicies sesión con una contraseña vulnerada</translation>
 <translation id="3474745554856756813">Se eliminarán <ph name="ITEMS_COUNT" /> elementos de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931">Usa <ph name="SHORTCUT" /> para cambiar de un perfil de Chromium a otro</translation>
 <translation id="3509308970982693815">Cierra todas las ventanas de Chromium e inténtalo de nuevo.</translation>
 <translation id="3575459661164320785">Se ha detectado software dañino en tu ordenador. Chromium puede eliminarlo, restaurar tu configuración y desactivar las extensiones para que el navegador vuelva a funcionar con normalidad.</translation>
 <translation id="3639635944603682591">Los datos de navegación de este usuario se eliminarán del dispositivo. Para recuperar tus datos, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
@@ -156,6 +158,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="6120345080069858279">Chromium guardará esta contraseña en tu cuenta de Google para que no tengas que recordarla.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> es peligroso, por lo que Chromium lo ha bloqueado.</translation>
 <translation id="6134968993075716475">La función Navegación segura está desactivada. Chromium recomienda activarla.</translation>
+<translation id="6145820983052037069">Puedes cambiar de un perfil de Chromium a otro aquí</translation>
 <translation id="6183079672144801177">Comprueba que hayas iniciado sesión en Chromium con tu <ph name="TARGET_DEVICE_NAME" /> y, después, prueba a enviarlo de nuevo.</translation>
 <translation id="6212496753309875659">Este ordenador ya cuenta con una versión más reciente de Chromium. Si el software no funciona, desinstala Chromium y vuelve a intentarlo.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se reiniciará ahora}=1{Chromium se reiniciará dentro de 1 segundo}other{Chromium se reiniciará dentro de # segundos}}</translation>
