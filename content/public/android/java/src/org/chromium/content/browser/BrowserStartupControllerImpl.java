@@ -204,16 +204,28 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             // flag that indicates that we have kicked off starting the browser process.
             mHasStartedInitializingBrowserProcess = true;
             sShouldStartGpuProcessOnBrowserStartup = startGpuProcess;
-            prepareToStartBrowserProcess(false);
 
-            if (!mHasCalledContentStart) {
-                mCurrentBrowserStartType = startMinimalBrowser ? BrowserStartType.MINIMAL_BROWSER
-                                                               : BrowserStartType.FULL_BROWSER;
-                if (contentStart() > 0) {
-                    // Failed. The callbacks may not have run, so run them.
-                    enqueueCallbackExecution(STARTUP_FAILURE);
+            // Start-up at this point occurs before the first frame of the app is drawn. Although
+            // contentStart() can be called eagerly, deferring it would allow a frame to be drawn,
+            // so that Android reports Chrome to start before our SurfaceView has rendered. Our
+            // metrics have also adapted to this. Therefore we wrap contentStart() into Runnable,
+            // and let prepareToStartBrowserProcess() decide whether to defer it by a frame (in
+            // production) or not (overridden in tests). http://b/181151614#comment6
+            prepareToStartBrowserProcess(false, new Runnable() {
+                @Override
+                public void run() {
+                    ThreadUtils.assertOnUiThread();
+                    if (mHasCalledContentStart) return;
+                    mCurrentBrowserStartType = startMinimalBrowser
+                            ? BrowserStartType.MINIMAL_BROWSER
+                            : BrowserStartType.FULL_BROWSER;
+                    if (contentStart() > 0) {
+                        // Failed. The callbacks may not have run, so run them.
+                        enqueueCallbackExecution(STARTUP_FAILURE);
+                    }
                 }
-            }
+            });
+
         } else if (mMinimalBrowserStarted && mLaunchFullBrowserAfterMinimalBrowserStart) {
             // If we missed the minimalBrowserStarted() call, launch the full browser now if needed.
             // Otherwise, minimalBrowserStarted() will handle the full browser launch.
@@ -232,19 +244,15 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
 
         // If already started skip to checking the result
         if (!mFullBrowserStartupDone) {
-            prepareToStartBrowserProcess(singleProcess);
+            // contentStart() need not be deferred, so passing null.
+            prepareToStartBrowserProcess(singleProcess, null /* deferrableTask */);
 
             boolean startedSuccessfully = true;
-            if (!mHasCalledContentStart) {
+            if (!mHasCalledContentStart
+                    || mCurrentBrowserStartType == BrowserStartType.MINIMAL_BROWSER) {
                 mCurrentBrowserStartType = BrowserStartType.FULL_BROWSER;
                 if (contentStart() > 0) {
                     // Failed. The callbacks may not have run, so run them.
-                    enqueueCallbackExecution(STARTUP_FAILURE);
-                    startedSuccessfully = false;
-                }
-            } else if (mCurrentBrowserStartType == BrowserStartType.MINIMAL_BROWSER) {
-                mCurrentBrowserStartType = BrowserStartType.FULL_BROWSER;
-                if (contentStart() > 0) {
                     enqueueCallbackExecution(STARTUP_FAILURE);
                     startedSuccessfully = false;
                 }
@@ -422,7 +430,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     }
 
     @VisibleForTesting
-    void prepareToStartBrowserProcess(final boolean singleProcess) {
+    void prepareToStartBrowserProcess(final boolean singleProcess, final Runnable deferrableTask) {
         if (mPrepareToStartCompleted) {
             return;
         }
@@ -447,6 +455,10 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             // TODO(yfriedman): Remove dependency on a command line flag for this.
             DeviceUtilsImpl.addDeviceSpecificUserAgentSwitch();
             BrowserStartupControllerImplJni.get().setCommandLineFlags(singleProcess);
+        }
+
+        if (deferrableTask != null) {
+            PostTask.postTask(UiThreadTaskTraits.USER_BLOCKING, deferrableTask);
         }
     }
 
