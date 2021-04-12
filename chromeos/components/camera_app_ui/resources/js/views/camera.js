@@ -523,7 +523,9 @@ export class Camera extends View {
         if (e instanceof CanceledError) {
           return;
         }
-        console.error(e);
+        error.reportError(
+            ErrorType.START_CAPTURE_FAILURE, ErrorLevel.ERROR,
+            assertInstanceof(e, Error));
       } finally {
         this.take_ = null;
         state.set(
@@ -721,7 +723,17 @@ export class Camera extends View {
         } catch (e) {
           factory.clear();
           this.preview_.close();
-          console.error(e);
+
+          let errorToReport = e;
+          // Since OverconstrainedError is not an Error instance.
+          if (e instanceof OverconstrainedError) {
+            errorToReport =
+                new Error(`${e.message} (constraint = ${e.constraint})`);
+            errorToReport.name = 'OverconstrainedError';
+          }
+          error.reportError(
+              ErrorType.START_CAMERA_FAILURE, ErrorLevel.ERROR,
+              assertInstanceof(errorToReport, Error));
         }
       }
     }
@@ -780,10 +792,12 @@ export class Camera extends View {
       state.set(state.State.CAMERA_CONFIGURING, false);
 
       return true;
-    } catch (error) {
+    } catch (e) {
       this.activeDeviceId_ = null;
-      if (!(error instanceof CameraSuspendedError)) {
-        console.error(error);
+      if (!(e instanceof CameraSuspendedError)) {
+        error.reportError(
+            ErrorType.START_CAMERA_FAILURE, ErrorLevel.ERROR,
+            assertInstanceof(e, Error));
         nav.open(ViewName.WARNING, WarningType.NO_CAMERA);
       }
       // Schedule to retry.

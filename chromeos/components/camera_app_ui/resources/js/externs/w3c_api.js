@@ -91,3 +91,18 @@ MediaTrackSettings.prototype.tilt;
 /** @type {?function (Event)} */ Element.prototype.onpointerdown;
 /** @type {?function (Event)} */ Element.prototype.onpointerup;
 /** @type {?function (Event)} */ Element.prototype.onpointerleave;
+
+/**
+ * @record
+ * @struct
+ */
+function OverconstrainedError() {}
+
+/** @type {string} */
+OverconstrainedError.prototype.constraint;
+
+/** @type {string} */
+OverconstrainedError.prototype.name;
+
+/** @type {string} */
+OverconstrainedError.prototype.message;

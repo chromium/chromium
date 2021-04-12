@@ -217,6 +217,8 @@ export const ErrorType = {
   IDLE_DETECTOR_FAILURE: 'idle-detector-failure',
   PRELOAD_IMAGE_FAILURE: 'preload-image-failure',
   SET_FPS_RANGE_FAILURE: 'set-fps-range-failure',
+  START_CAMERA_FAILURE: 'start-camera-failure',
+  START_CAPTURE_FAILURE: 'start-capture-failure',
   UNCAUGHT_PROMISE: 'uncaught-promise',
 };
 
