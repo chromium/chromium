@@ -252,9 +252,13 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
   }
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(
+  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>& rules =
       FrameImpl::FromWebContents(wc_getter.Run())
-          ->url_request_rewrite_rules_manager()));
+          ->url_request_rewrite_rules_manager()
+          ->GetCachedRules();
+  if (rules) {
+    throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(rules));
+  }
   return throttles;
 }
 

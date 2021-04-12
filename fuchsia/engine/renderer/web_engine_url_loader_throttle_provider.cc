@@ -36,10 +36,14 @@ WebEngineURLLoaderThrottleProvider::CreateThrottles(
   CHECK_NE(render_frame_id, MSG_ROUTING_NONE);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(
+  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>& rules =
       content_renderer_client_
           ->GetWebEngineRenderFrameObserverForRenderFrameId(render_frame_id)
-          ->url_request_rules_receiver()));
+          ->url_request_rules_receiver()
+          ->GetCachedRules();
+  if (rules) {
+    throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(rules));
+  }
   return throttles;
 }
 
