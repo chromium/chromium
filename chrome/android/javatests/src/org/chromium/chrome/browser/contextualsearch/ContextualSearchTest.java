@@ -88,7 +88,7 @@ public class ContextualSearchTest {
     private static class ContextualSearchPanelWrapper extends ContextualSearchPanel {
         public ContextualSearchPanelWrapper(Context context, LayoutManagerImpl layoutManager,
                 OverlayPanelManager panelManager) {
-            super(context, layoutManager, panelManager);
+            super(context, layoutManager, panelManager, null, null, null, 0, null, 0, null);
         }
 
         @Override

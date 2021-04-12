@@ -401,7 +401,9 @@ class ContextualSearchFakeServer
         OverlayPanelContentWrapper(OverlayContentDelegate contentDelegate,
                 OverlayContentProgressObserver progressObserver, ChromeActivity activity,
                 float barHeight) {
-            super(contentDelegate, progressObserver, activity, false, barHeight);
+            super(contentDelegate, progressObserver, activity, false, barHeight,
+                    activity.getCompositorViewHolder(), activity.getWindowAndroid(),
+                    activity::getActivityTab);
         }
 
         @Override

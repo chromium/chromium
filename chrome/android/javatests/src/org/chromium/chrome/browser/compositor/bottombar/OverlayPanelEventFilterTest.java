@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.view.MotionEvent;
@@ -14,15 +15,22 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEventFilter;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-
+import org.chromium.ui.base.WindowAndroid;
 /**
  * Class responsible for testing the OverlayPanelEventFilter.
  */
@@ -36,6 +44,28 @@ public class OverlayPanelEventFilterTest {
 
     // A small value used to check whether two floats are almost equal.
     private static final float EPSILON = 1e-04f;
+
+    private static final int MOCK_TOOLBAR_HEIGHT = 100;
+
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock
+    private LayoutManagerImpl mLayoutManager;
+    @Mock
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock
+    private WindowAndroid mWindowAndroid;
+    @Mock
+    private ViewGroup mCompositorViewHolder;
+    @Mock
+    private Tab mTab;
+    @Mock
+    private OverlayContentDelegate mOverlayContentDelegate;
+    @Mock
+    private OverlayContentProgressObserver mOverlayContentProgressObserver;
+    @Mock
+    private Activity mActivity;
 
     private float mTouchSlopDp;
     private float mDpToPx;
@@ -106,8 +136,12 @@ public class OverlayPanelEventFilterTest {
         private boolean mWasTapDetectedOnPanel;
         private boolean mWasScrollDetectedOnPanel;
 
-        public MockOverlayPanel(Context context, OverlayPanelManager panelManager) {
-            super(context, null, panelManager);
+        public MockOverlayPanel(Context context, LayoutManagerImpl layoutManager,
+                OverlayPanelManager manager,
+                BrowserControlsStateProvider browserControlsStateProvider,
+                WindowAndroid windowAndroid, ViewGroup compositorViewHolder, Tab tab) {
+            super(context, layoutManager, manager, browserControlsStateProvider, windowAndroid,
+                    compositorViewHolder, MOCK_TOOLBAR_HEIGHT, () -> tab);
         }
 
         @Override
@@ -120,7 +154,9 @@ public class OverlayPanelEventFilterTest {
          */
         private class MockOverlayPanelContent extends OverlayPanelContent {
             public MockOverlayPanelContent() {
-                super(null, null, null, false, 0);
+                super(mOverlayContentDelegate, mOverlayContentProgressObserver, mActivity,
+                        /* isIncognito= */ false, MOCK_TOOLBAR_HEIGHT, mCompositorViewHolder,
+                        mWindowAndroid, () -> mTab);
             }
 
             @Override
@@ -210,7 +246,8 @@ public class OverlayPanelEventFilterTest {
         mTouchSlopDp = ViewConfiguration.get(context).getScaledTouchSlop() / mDpToPx;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPanel = new MockOverlayPanel(context, new OverlayPanelManager());
+            mPanel = new MockOverlayPanel(context, mLayoutManager, new OverlayPanelManager(),
+                    mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab);
             mEventFilter = new OverlayPanelEventFilterWrapper(context, mPanel);
 
             mPanel.setSearchBarHeightForTesting(BAR_HEIGHT_DP);
