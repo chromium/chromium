@@ -13,7 +13,8 @@
     contain: inline-size layout;
   }
   #inner {
-    height: 101px;
+    height: 100px;
+    border-bottom: 1px solid red;
   }
   @container (max-width: 99px) {
     #inner {
@@ -40,7 +41,7 @@
   }, "Initial layout - expecting a scrollbar without overflowing content instead of overflowing content without a scrollbar");
 
   test(() => {
-    inner.style.height = "102px";
+    inner.style.borderBottomWidth = "2px";
     assert_less_than(scroller.clientWidth, 100, "Expects a vertical scrollbar");
     assert_equals(getComputedStyle(inner).height, "50px",
                   "Layout with a scrollbar means the container query applies");
