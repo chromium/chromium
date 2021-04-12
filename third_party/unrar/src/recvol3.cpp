@@ -36,7 +36,7 @@ THREAD_PROC(RSDecodeThread)
 }
 #endif
 
-RecVolumes3::RecVolumes3(bool TestOnly)
+RecVolumes3::RecVolumes3(RAROptions *Cmd,bool TestOnly)
 {
   memset(SrcFile,0,sizeof(SrcFile));
   if (TestOnly)
@@ -50,7 +50,7 @@ RecVolumes3::RecVolumes3(bool TestOnly)
     Buf.Alloc(TotalBufferSize);
     memset(SrcFile,0,sizeof(SrcFile));
 #ifdef RAR_SMP
-    RSThreadPool=CreateThreadPool();
+    RSThreadPool=new ThreadPool(Cmd->Threads);
 #endif
   }
 }
@@ -61,7 +61,7 @@ RecVolumes3::~RecVolumes3()
   for (size_t I=0;I<ASIZE(SrcFile);I++)
     delete SrcFile[I];
 #ifdef RAR_SMP
-  DestroyThreadPool(RSThreadPool);
+  delete RSThreadPool;
 #endif
 }
 
@@ -363,11 +363,10 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
 
 #ifdef RAR_SMP
   uint ThreadNumber=Cmd->Threads;
-  RSEncode rse[MaxPoolThreads];
 #else
   uint ThreadNumber=1;
-  RSEncode rse[1];
 #endif
+  RSEncode *rse=new RSEncode[ThreadNumber];
   for (uint I=0;I<ThreadNumber;I++)
     rse[I].Init(RecVolNumber);
 
@@ -438,6 +437,8 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
       if (WriteFlags[I])
         SrcFile[I]->Write(&Buf[I*RecBufferSize],MaxRead);
   }
+  delete[] rse;
+
   for (int I=0;I<RecVolNumber+FileNumber;I++)
     if (SrcFile[I]!=NULL)
     {

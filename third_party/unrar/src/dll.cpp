@@ -95,23 +95,23 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
     r->Flags=0;
     
     if (Data->Arc.Volume)
-      r->Flags|=0x01;
+      r->Flags|=ROADF_VOLUME;
     if (Data->Arc.MainComment)
-      r->Flags|=0x02;
+      r->Flags|=ROADF_COMMENT;
     if (Data->Arc.Locked)
-      r->Flags|=0x04;
+      r->Flags|=ROADF_LOCK;
     if (Data->Arc.Solid)
-      r->Flags|=0x08;
+      r->Flags|=ROADF_SOLID;
     if (Data->Arc.NewNumbering)
-      r->Flags|=0x10;
+      r->Flags|=ROADF_NEWNUMBERING;
     if (Data->Arc.Signed)
-      r->Flags|=0x20;
+      r->Flags|=ROADF_SIGNED;
     if (Data->Arc.Protected)
-      r->Flags|=0x40;
+      r->Flags|=ROADF_RECOVERY;
     if (Data->Arc.Encrypted)
-      r->Flags|=0x80;
+      r->Flags|=ROADF_ENCHEADERS;
     if (Data->Arc.FirstVolume)
-      r->Flags|=0x100;
+      r->Flags|=ROADF_FIRSTVOLUME;
 
     Array<wchar> CmtDataW;
     if (r->CmtBufSize!=0 && Data->Arc.GetComment(&CmtDataW))
@@ -474,6 +474,7 @@ static int RarErrorToDll(RAR_EXIT ErrCode)
   switch(ErrCode)
   {
     case RARX_FATAL:
+    case RARX_READ:
       return ERAR_EREAD;
     case RARX_CRC:
       return ERAR_BAD_DATA;

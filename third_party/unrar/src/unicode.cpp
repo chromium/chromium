@@ -1,7 +1,7 @@
 #include "rar.hpp"
 #define MBFUNCTIONS
 
-#if !defined(_WIN_ALL) && !defined(_APPLE) && defined(_UNIX) && defined(MBFUNCTIONS)
+#if defined(_UNIX) && defined(MBFUNCTIONS)
 
 static bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success);
 static void CharToWideMap(const char *Src,wchar *Dest,size_t DestSize,bool &Success);
@@ -30,7 +30,7 @@ bool WideToChar(const wchar *Src,char *Dest,size_t DestSize)
 #elif defined(_APPLE)
   WideToUtf(Src,Dest,DestSize);
 
-#elif defined(_UNIX) && defined(MBFUNCTIONS)
+#elif defined(MBFUNCTIONS)
   if (!WideToCharMap(Src,Dest,DestSize,RetCode))
   {
     mbstate_t ps; // Use thread safe external state based functions.
@@ -95,7 +95,7 @@ bool CharToWide(const char *Src,wchar *Dest,size_t DestSize)
 #elif defined(_APPLE)
   UtfToWide(Src,Dest,DestSize);
 
-#elif defined(_UNIX) && defined(MBFUNCTIONS)
+#elif defined(MBFUNCTIONS)
   mbstate_t ps;
   memset (&ps, 0, sizeof(ps));
   const char *SrcParam=Src; // mbsrtowcs can change the pointer.
@@ -128,8 +128,8 @@ bool CharToWide(const char *Src,wchar *Dest,size_t DestSize)
 }
 
 
-#if !defined(_WIN_ALL) && !defined(_APPLE) && defined(_UNIX) && defined(MBFUNCTIONS)
-// Convert and restore mapped inconvertible Unicode characters.
+#if defined(_UNIX) && defined(MBFUNCTIONS)
+// Convert and restore mapped inconvertible Unicode characters. 
 // We use it for extended ASCII names in Unix.
 bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success)
 {
@@ -142,7 +142,7 @@ bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success)
   // can produce uninitilized output while reporting success on garbage input.
   // So we clean the destination to calm analyzers.
   memset(Dest,0,DestSize);
-
+  
   Success=true;
   uint SrcPos=0,DestPos=0;
   while (Src[SrcPos]!=0 && DestPos<DestSize-MB_CUR_MAX)
@@ -177,7 +177,7 @@ bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success)
 #endif
 
 
-#if !defined(_WIN_ALL) && !defined(_APPLE) && defined(_UNIX) && defined(MBFUNCTIONS)
+#if defined(_UNIX) && defined(MBFUNCTIONS)
 // Convert and map inconvertible Unicode characters.
 // We use it for extended ASCII names in Unix.
 void CharToWideMap(const char *Src,wchar *Dest,size_t DestSize,bool &Success)
@@ -471,6 +471,7 @@ int wcsnicomp(const wchar *s1,const wchar *s2,size_t n)
 }
 
 
+// Case insensitive wcsstr().
 const wchar_t* wcscasestr(const wchar_t *str, const wchar_t *search)
 {
   for (size_t i=0;str[i]!=0;i++)
@@ -489,6 +490,8 @@ const wchar_t* wcscasestr(const wchar_t *str, const wchar_t *search)
 wchar* wcslower(wchar *s)
 {
 #ifdef _WIN_ALL
+  // _wcslwr requires setlocale and we do not want to depend on setlocale
+  // in Windows. Also CharLower involves less overhead.
   CharLower(s);
 #else
   for (wchar *c=s;*c!=0;c++)
@@ -503,6 +506,8 @@ wchar* wcslower(wchar *s)
 wchar* wcsupper(wchar *s)
 {
 #ifdef _WIN_ALL
+  // _wcsupr requires setlocale and we do not want to depend on setlocale
+  // in Windows. Also CharUpper involves less overhead.
   CharUpper(s);
 #else
   for (wchar *c=s;*c!=0;c++)
@@ -520,8 +525,9 @@ int toupperw(int ch)
 #if defined(_WIN_ALL)
   // CharUpper is more reliable than towupper in Windows, which seems to be
   // C locale dependent even in Unicode version. For example, towupper failed
-  // to convert lowercase Russian characters.
-  return (int)(INT_PTR)CharUpper((wchar *)(INT_PTR)ch);
+  // to convert lowercase Russian characters. Use 0xffff mask to prevent crash
+  // if value larger than 0xffff is passed to this function.
+  return (int)(INT_PTR)CharUpper((wchar *)(INT_PTR)(ch&0xffff));
 #else
   return towupper(ch);
 #endif
@@ -532,8 +538,9 @@ int tolowerw(int ch)
 {
 #if defined(_WIN_ALL)
   // CharLower is more reliable than towlower in Windows.
-  // See comment for towupper above.
-  return (int)(INT_PTR)CharLower((wchar *)(INT_PTR)ch);
+  // See comment for towupper above. Use 0xffff mask to prevent crash
+  // if value larger than 0xffff is passed to this function.
+  return (int)(INT_PTR)CharLower((wchar *)(INT_PTR)(ch&0xffff));
 #else
   return towlower(ch);
 #endif
@@ -652,3 +659,5 @@ char* SupportDBCS::strrchrd(const char *s, int c)
   return((char *)found);
 }
 #endif
+
+
