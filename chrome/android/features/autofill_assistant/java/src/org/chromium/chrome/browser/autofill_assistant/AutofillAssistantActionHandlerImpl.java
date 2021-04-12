@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.AssistantOnboardingResult;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
+import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 
@@ -91,9 +92,9 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         }
 
         Map<String, String> argumentMap = toArgumentMap(arguments);
-        Callback<BaseOnboardingCoordinator> afterOnboarding = (onboardingCoordinator) -> {
+        Callback<AssistantOverlayCoordinator> afterOnboarding = (overlayCoordinator) -> {
             callback.onResult(client.performDirectAction(
-                    name, experimentIds, argumentMap, onboardingCoordinator.transferControls()));
+                    name, experimentIds, argumentMap, overlayCoordinator));
         };
 
         if (!AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) {
@@ -106,7 +107,7 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
                     callback.onResult(false);
                     return;
                 }
-                afterOnboarding.onResult(coordinator);
+                afterOnboarding.onResult(coordinator.transferControls());
             });
             return;
         }
