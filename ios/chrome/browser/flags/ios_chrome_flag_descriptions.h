@@ -432,11 +432,6 @@ extern const char kWebPageAlternativeTextZoomDescription[];
 extern const char kWebViewNativeContextMenuName[];
 extern const char kWebViewNativeContextMenuDescription[];
 
-// Title and description for the flag to restore Gaia cookies as soon as Chrome
-// detects that they have been removed.
-extern const char kRestoreGaiaCookiesIfDeletedName[];
-extern const char kRestoreGaiaCookiesIfDeletedDescription[];
-
 // Title and description for the flag to restore Gaia cookies when the user
 // explicitly requests to be signed in to a Google service.
 extern const char kRestoreGaiaCookiesOnUserActionName[];

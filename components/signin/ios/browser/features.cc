@@ -16,9 +16,6 @@ bool ForceStartupSigninPromo() {
   return base::FeatureList::IsEnabled(kForceStartupSigninPromo);
 }
 
-const base::Feature kRestoreGaiaCookiesIfDeleted{
-    "RestoreGAIACookiesIfDeleted", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kRestoreGaiaCookiesOnUserAction{
     "RestoreGAIACookiesOnUserAction", base::FEATURE_DISABLED_BY_DEFAULT};
 

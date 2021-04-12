@@ -223,13 +223,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
                                 /*domain=*/std::string()));
   }
 
-  // Verifies the time that the Gaia cookie was last updated for google.com.
-  void CheckGaiaCookieWithUpdateTime(base::Time time) {
-    EXPECT_EQ(
-        time,
-        account_consistency_service_->last_gaia_cookie_verification_time_);
-  }
-
   // Navigation APIs.
   void SimulateNavigateToURL(NSURLResponse* response,
                              id<ManageAccountsDelegate> delegate) {
@@ -671,74 +664,6 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookie) {
 
   CheckDomainHasChromeConnectedCookie(kGoogleDomain);
   CheckDomainHasChromeConnectedCookie(kYoutubeDomain);
-}
-
-// Tests that the GAIA cookie update time is not updated before the scheduled
-// interval.
-TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateNotUpdateTime) {
-  SignIn();
-
-  // HTTP response URL is eligible for Mirror (the test does not use google.com
-  // since the CHROME_CONNECTED cookie is generated for it by default.
-  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
-       initWithURL:[NSURL URLWithString:@"https://youtube.com"]
-        statusCode:200
-       HTTPVersion:@"HTTP/1.1"
-      headerFields:@{}];
-
-  SimulateNavigateToURL(response, nil);
-
-  // Advance clock, but stay within the one-hour Gaia update time.
-  base::TimeDelta oneMinuteDelta = base::TimeDelta::FromMinutes(1);
-  task_environment_.FastForwardBy(oneMinuteDelta);
-  SimulateNavigateToURL(response, nil);
-
-  CheckGaiaCookieWithUpdateTime(base::Time::Now() - oneMinuteDelta);
-}
-
-// Tests that the GAIA cookie update time is updated at the scheduled interval.
-TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateAtUpdateTime) {
-  SignIn();
-
-  // HTTP response URL is eligible for Mirror (the test does not use google.com
-  // since the CHROME_CONNECTED cookie is generated for it by default.
-  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
-       initWithURL:[NSURL URLWithString:@"https://youtube.com"]
-        statusCode:200
-       HTTPVersion:@"HTTP/1.1"
-      headerFields:@{}];
-
-  SimulateNavigateToURL(response, nil);
-
-  // Advance clock past one-hour Gaia update time.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
-  SimulateNavigateToURL(response, nil);
-
-  CheckGaiaCookieWithUpdateTime(base::Time::Now());
-}
-
-// Ensures that the presence or absence of GAIA cookies is logged even if the
-// |kRestoreGAIACookiesIfDeleted| experiment is disabled.
-TEST_F(AccountConsistencyServiceTest, GAIACookieStatusLoggedProperly) {
-  // HTTP response URL is eligible for Mirror (the test does not use google.com
-  // since the CHROME_CONNECTED cookie is generated for it by default.
-  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
-       initWithURL:[NSURL URLWithString:@"https://youtube.com"]
-        statusCode:200
-       HTTPVersion:@"HTTP/1.1"
-      headerFields:@{}];
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
-
-  SimulateNavigateToURL(response, nil);
-  base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
-
-  SignIn();
-  SimulateNavigateToURL(response, nil);
-  base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 1);
 }
 
 // Tests that navigating to accounts.google.com without a GAIA cookie is logged

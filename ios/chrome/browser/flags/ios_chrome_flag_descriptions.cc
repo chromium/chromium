@@ -375,12 +375,6 @@ const char kRefactoredNTPDescription[] =
     "When enabled, the new tab page is replaced with the refactored version, "
     "which changes the ownership and containment of views.";
 
-const char kRestoreGaiaCookiesIfDeletedName[] =
-    "Restore GAIA cookies if deleted";
-const char kRestoreGaiaCookiesIfDeletedDescription[] =
-    "When enabled, will restore GAIA cookies for signed-in Chrome users if "
-    "they are deleted.";
-
 const char kRestoreGaiaCookiesOnUserActionName[] =
     "Restore GAIA cookies on user action";
 const char kRestoreGaiaCookiesOnUserActionDescription[] =

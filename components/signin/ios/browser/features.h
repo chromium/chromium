@@ -18,9 +18,6 @@ extern const base::Feature kSimplifySignOutIOS;
 // Returns true if the startup sign-in promo should be displayed at boot.
 bool ForceStartupSigninPromo();
 
-// Feature controlling whether to restore GAIA cookies if they are deleted.
-extern const base::Feature kRestoreGaiaCookiesIfDeleted;
-
 // Feature controlling whether to restore GAIA cookies when the user explicitly
 // requests to sign in to a Google service.
 extern const base::Feature kRestoreGaiaCookiesOnUserAction;
