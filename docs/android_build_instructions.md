@@ -380,6 +380,27 @@ Args that affect build speed:
    * Lint usually takes > 60 seconds to run, so disabling it dramatically
      reduces incremental build times.
 
+#### Running analysis build steps in the background
+Normally analysis build steps like lint and errorprone will run in parallel with
+the rest of the build. The build will then wait for all analysis steps to
+complete successfully. By offloading analysis build steps to a separate build
+server to be run lazily at a low priority when the machine is idle, the actual
+build can complete up to 50-80% faster.
+
+To take advantage of this speedup, run the script at
+[//build/android/fast_local_dev_server.py][fast_local_dev] in a separate
+terminal window. All your local builds will now forward analysis
+steps to this server. Analysis steps include android lint, errorprone, bytecode
+processor, etc. The output of these analysis checks will then be displayed in
+the terminal window running the server.
+
+**Note**: Since the build completes before the analysis checks finish, the build
+will not fail if an analysis check fails. Make sure to check the terminal that
+the server is running in at regular intervals to fix outstanding issues caught
+by these analysis checks.
+
+[fast_local_dev]: https://source.chromium.org/chromium/chromium/src/+/master:build/android/fast_local_dev_server.py
+
 #### Incremental Install
 [Incremental Install](/build/android/incremental_install/README.md) uses
 reflection and sideloading to speed up the edit & deploy cycle (normally < 10
