@@ -68,3 +68,6 @@
 -MenuItemViewTestInsert20.InsertItem20
 -MenuItemViewTestInsert00.InsertItem00
 -BookmarkBarViewTest18.BookmarkBarViewTest18_SiblingMenu
+
+# TODO(crbug.com/1195324): flaky fullscreen notification test
+-NotificationsTest.TestShouldDisplayMultiFullscreen
