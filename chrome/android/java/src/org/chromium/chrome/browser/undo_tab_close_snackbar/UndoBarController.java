@@ -91,12 +91,13 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                 // TabGridDialog is showing. If so, don't show the undo bar because TabGridDialog
                 // has its own undo bar. See crbug.com/1119899. Note that we don't disable attempts
                 // to dismiss snack bar to make sure that snack bar state is in sync with tab model.
-                if (dialogVisibilitySupplier != null && showingUndoBar) {
-                    return dialogVisibilitySupplier.get();
+                if (dialogVisibilitySupplier != null && dialogVisibilitySupplier.get()
+                        && showingUndoBar) {
+                    return true;
                 }
-                // If grid tab switcher is enabled, show the undo snack bar regardless of whether
+                // If grid / group M5 is enabled, show the undo snack bar regardless of whether
                 // accessibility mode is enabled.
-                if (TabUiFeatureUtilities.isGridTabSwitcherEnabled()) {
+                if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()) {
                     return false;
                 }
                 return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
