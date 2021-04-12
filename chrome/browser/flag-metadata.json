@@ -2872,8 +2872,8 @@
   },
   {
     "name": "files-filters-in-recents",
-    "owners": [ "fukino", "weifangsun" ],
-    "expiry_milestone": 90
+    "owners": [ "simmonsjosh@google.com", "benhartney@google.com" ],
+    "expiry_milestone": 98
   },
   {
     "name": "files-js-modules",
