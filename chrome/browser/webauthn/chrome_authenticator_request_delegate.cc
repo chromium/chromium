@@ -172,6 +172,56 @@ void DeleteCablePairingByPublicKey(base::ListValue* list,
 
 ChromeWebAuthenticationDelegate::~ChromeWebAuthenticationDelegate() = default;
 
+base::Optional<std::string>
+ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
+    const std::string& claimed_relying_party_id,
+    const url::Origin& caller_origin) {
+  // Don't override cryptotoken processing.
+  constexpr char kCryptotokenOrigin[] =
+      "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
+  if (caller_origin == url::Origin::Create(GURL(kCryptotokenOrigin))) {
+    return base::nullopt;
+  }
+
+  // Otherwise, allow extensions to use WebAuthn and map their origins
+  // directly to RP IDs.
+  if (caller_origin.scheme() == "chrome-extension") {
+    // The requested RP ID for an extension must simply be the extension
+    // identifier because no flexibility is permitted. If a caller doesn't
+    // specify an RP ID then Blink defaults the value to the origin's host.
+    if (claimed_relying_party_id != caller_origin.host()) {
+      return base::nullopt;
+    }
+    return caller_origin.Serialize();
+  }
+
+  return base::nullopt;
+}
+
+bool ChromeWebAuthenticationDelegate::ShouldPermitIndividualAttestation(
+    content::BrowserContext* browser_context,
+    const std::string& relying_party_id) {
+  constexpr char kGoogleCorpAppId[] =
+      "https://www.gstatic.com/securitykey/a/google.com/origins.json";
+
+  // If the RP ID is actually the Google corp App ID (because the request is
+  // actually a U2F request originating from cryptotoken), or is listed in the
+  // enterprise policy, signal that individual attestation is permitted.
+  return relying_party_id == kGoogleCorpAppId ||
+         IsWebauthnRPIDListedInEnterprisePolicy(browser_context,
+                                                relying_party_id);
+}
+
+bool ChromeWebAuthenticationDelegate::SupportsResidentKeys(
+    content::RenderFrameHost* render_frame_host) {
+  return true;
+}
+
+bool ChromeWebAuthenticationDelegate::IsFocused(
+    content::WebContents* web_contents) {
+  return web_contents->GetVisibility() == content::Visibility::VISIBLE;
+}
+
 #if defined(OS_MAC)
 // static
 ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig
@@ -272,32 +322,6 @@ ChromeAuthenticatorRequestDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-base::Optional<std::string>
-ChromeAuthenticatorRequestDelegate::MaybeGetRelyingPartyIdOverride(
-    const std::string& claimed_relying_party_id,
-    const url::Origin& caller_origin) {
-  // Don't override cryptotoken processing.
-  constexpr char kCryptotokenOrigin[] =
-      "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
-  if (caller_origin == url::Origin::Create(GURL(kCryptotokenOrigin))) {
-    return base::nullopt;
-  }
-
-  // Otherwise, allow extensions to use WebAuthn and map their origins
-  // directly to RP IDs.
-  if (caller_origin.scheme() == "chrome-extension") {
-    // The requested RP ID for an extension must simply be the extension
-    // identifier because no flexibility is permitted. If a caller doesn't
-    // specify an RP ID then Blink defaults the value to the origin's host.
-    if (claimed_relying_party_id != caller_origin.host()) {
-      return base::nullopt;
-    }
-    return caller_origin.Serialize();
-  }
-
-  return base::nullopt;
-}
-
 void ChromeAuthenticatorRequestDelegate::SetRelyingPartyId(
     const std::string& rp_id) {
   transient_dialog_model_holder_ =
@@ -369,19 +393,6 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
       bluetooth_adapter_power_on_callback);
 }
 
-bool ChromeAuthenticatorRequestDelegate::ShouldPermitIndividualAttestation(
-    const std::string& relying_party_id) {
-  constexpr char kGoogleCorpAppId[] =
-      "https://www.gstatic.com/securitykey/a/google.com/origins.json";
-
-  // If the RP ID is actually the Google corp App ID (because the request is
-  // actually a U2F request originating from cryptotoken), or is listed in the
-  // enterprise policy, signal that individual attestation is permitted.
-  return relying_party_id == kGoogleCorpAppId ||
-         IsWebauthnRPIDListedInEnterprisePolicy(GetBrowserContext(),
-                                                relying_party_id);
-}
-
 void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
     const std::string& relying_party_id,
     const device::FidoAuthenticator* authenticator,
@@ -417,10 +428,6 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
 
   weak_dialog_model_->RequestAttestationPermission(is_enterprise_attestation,
                                                    std::move(callback));
-}
-
-bool ChromeAuthenticatorRequestDelegate::SupportsResidentKeys() {
-  return true;
 }
 
 void ChromeAuthenticatorRequestDelegate::ConfigureCable(
@@ -499,13 +506,6 @@ void ChromeAuthenticatorRequestDelegate::SelectAccount(
   }
 
   weak_dialog_model_->SelectAccount(std::move(responses), std::move(callback));
-}
-
-bool ChromeAuthenticatorRequestDelegate::IsFocused() {
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
-  DCHECK(web_contents);
-  return web_contents->GetVisibility() == content::Visibility::VISIBLE;
 }
 
 void ChromeAuthenticatorRequestDelegate::DisableUI() {

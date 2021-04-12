@@ -354,6 +354,22 @@ struct WebAuthBrowserTestState {
   int delegate_create_count = 0;
 };
 
+class WebAuthBrowserTestWebAuthenticationDelegate
+    : public WebAuthenticationDelegate {
+ public:
+  explicit WebAuthBrowserTestWebAuthenticationDelegate(
+      WebAuthBrowserTestState* test_state)
+      : test_state_(test_state) {}
+
+  bool IsFocused(content::WebContents* web_contents) override {
+    test_state_->focus_checked = true;
+    return WebAuthenticationDelegate::IsFocused(web_contents);
+  }
+
+ private:
+  WebAuthBrowserTestState* const test_state_;
+};
+
 class WebAuthBrowserTestClientDelegate
     : public AuthenticatorRequestClientDelegate {
  public:
@@ -367,11 +383,6 @@ class WebAuthBrowserTestClientDelegate
       base::OnceCallback<void(bool)> callback) override {
     std::move(test_state_->attestation_prompt_callback_)
         .Run(std::move(callback));
-  }
-
-  bool IsFocused() override {
-    test_state_->focus_checked = true;
-    return AuthenticatorRequestClientDelegate::IsFocused();
   }
 
  private:
@@ -388,6 +399,10 @@ class WebAuthBrowserTestContentBrowserClient : public ContentBrowserClient {
       WebAuthBrowserTestState* test_state)
       : test_state_(test_state) {}
 
+  WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
+    return &web_authentication_delegate_;
+  }
+
   std::unique_ptr<AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
@@ -397,6 +412,8 @@ class WebAuthBrowserTestContentBrowserClient : public ContentBrowserClient {
 
  private:
   WebAuthBrowserTestState* const test_state_;
+  WebAuthBrowserTestWebAuthenticationDelegate web_authentication_delegate_{
+      test_state_};
 
   DISALLOW_COPY_AND_ASSIGN(WebAuthBrowserTestContentBrowserClient);
 };

@@ -25,6 +25,36 @@ WebAuthenticationDelegate::WebAuthenticationDelegate() = default;
 
 WebAuthenticationDelegate::~WebAuthenticationDelegate() = default;
 
+base::Optional<std::string>
+WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
+    const std::string& claimed_relying_party_id,
+    const url::Origin& caller_origin) {
+  return base::nullopt;
+}
+
+bool WebAuthenticationDelegate::ShouldPermitIndividualAttestation(
+    BrowserContext* browser_context,
+    const std::string& relying_party_id) {
+  return false;
+}
+
+bool WebAuthenticationDelegate::SupportsResidentKeys(
+    RenderFrameHost* render_frame_host) {
+  // The testing API supports resident keys, but for real requests //content
+  // doesn't by default.
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  if (AuthenticatorEnvironmentImpl::GetInstance()
+          ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
+    return true;
+  }
+  return false;
+}
+
+bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
+  return true;
+}
+
 #if defined(OS_MAC)
 base::Optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
 WebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
@@ -60,13 +90,6 @@ AuthenticatorRequestClientDelegate::AuthenticatorRequestClientDelegate() =
 AuthenticatorRequestClientDelegate::~AuthenticatorRequestClientDelegate() =
     default;
 
-base::Optional<std::string>
-AuthenticatorRequestClientDelegate::MaybeGetRelyingPartyIdOverride(
-    const std::string& claimed_relying_party_id,
-    const url::Origin& caller_origin) {
-  return base::nullopt;
-}
-
 void AuthenticatorRequestClientDelegate::SetRelyingPartyId(const std::string&) {
 }
 
@@ -81,21 +104,12 @@ void AuthenticatorRequestClientDelegate::RegisterActionCallbacks(
     device::FidoRequestHandlerBase::RequestCallback request_callback,
     base::RepeatingClosure bluetooth_adapter_power_on_callback) {}
 
-bool AuthenticatorRequestClientDelegate::ShouldPermitIndividualAttestation(
-    const std::string& relying_party_id) {
-  return false;
-}
-
 void AuthenticatorRequestClientDelegate::ShouldReturnAttestation(
     const std::string& relying_party_id,
     const device::FidoAuthenticator* authenticator,
     bool is_enterprise_attestation,
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(!is_enterprise_attestation);
-}
-
-bool AuthenticatorRequestClientDelegate::SupportsResidentKeys() {
-  return false;
 }
 
 void AuthenticatorRequestClientDelegate::ConfigureCable(
@@ -109,10 +123,6 @@ void AuthenticatorRequestClientDelegate::SelectAccount(
         callback) {
   // SupportsResidentKeys returned false so this should never be called.
   NOTREACHED();
-}
-
-bool AuthenticatorRequestClientDelegate::IsFocused() {
-  return true;
 }
 
 void AuthenticatorRequestClientDelegate::DisableUI() {}

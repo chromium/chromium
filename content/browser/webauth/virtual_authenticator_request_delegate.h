@@ -20,7 +20,6 @@ class VirtualAuthenticatorRequestDelegate
   ~VirtualAuthenticatorRequestDelegate() override;
 
   // AuthenticatorRequestClientDelegate:
-  bool SupportsResidentKeys() override;
   void SelectAccount(
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>

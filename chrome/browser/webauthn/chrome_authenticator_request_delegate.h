@@ -54,6 +54,15 @@ class ChromeWebAuthenticationDelegate
   ~ChromeWebAuthenticationDelegate() override;
 
   // content::WebAuthenticationDelegate:
+  base::Optional<std::string> MaybeGetRelyingPartyIdOverride(
+      const std::string& claimed_relying_party_id,
+      const url::Origin& caller_origin) override;
+  bool ShouldPermitIndividualAttestation(
+      content::BrowserContext* browser_context,
+      const std::string& relying_party_id) override;
+  bool SupportsResidentKeys(
+      content::RenderFrameHost* render_frame_host) override;
+  bool IsFocused(content::WebContents* web_contents) override;
 #if defined(OS_MAC)
   base::Optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
       content::BrowserContext* browser_context) override;
@@ -83,9 +92,6 @@ class ChromeAuthenticatorRequestDelegate
   }
 
   // content::AuthenticatorRequestClientDelegate:
-  base::Optional<std::string> MaybeGetRelyingPartyIdOverride(
-      const std::string& claimed_relying_party_id,
-      const url::Origin& caller_origin) override;
   void SetRelyingPartyId(const std::string& rp_id) override;
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override;
   void RegisterActionCallbacks(
@@ -93,14 +99,11 @@ class ChromeAuthenticatorRequestDelegate
       base::RepeatingClosure start_over_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback) override;
-  bool ShouldPermitIndividualAttestation(
-      const std::string& relying_party_id) override;
   void ShouldReturnAttestation(
       const std::string& relying_party_id,
       const device::FidoAuthenticator* authenticator,
       bool is_enterprise_attestation,
       base::OnceCallback<void(bool)> callback) override;
-  bool SupportsResidentKeys() override;
   void ConfigureCable(
       const url::Origin& origin,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
@@ -109,7 +112,6 @@ class ChromeAuthenticatorRequestDelegate
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback) override;
-  bool IsFocused() override;
   void DisableUI() override;
   bool IsWebAuthnUIEnabled() override;
   void SetConditionalRequest(bool is_conditional) override;

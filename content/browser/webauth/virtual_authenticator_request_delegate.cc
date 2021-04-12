@@ -19,10 +19,6 @@ VirtualAuthenticatorRequestDelegate::VirtualAuthenticatorRequestDelegate() =
 VirtualAuthenticatorRequestDelegate::~VirtualAuthenticatorRequestDelegate() =
     default;
 
-bool VirtualAuthenticatorRequestDelegate::SupportsResidentKeys() {
-  return true;
-}
-
 void VirtualAuthenticatorRequestDelegate::SelectAccount(
     std::vector<device::AuthenticatorGetAssertionResponse> responses,
     base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>

@@ -129,7 +129,7 @@ using device::VirtualFidoDevice;
 namespace {
 
 using InterestingFailureReason =
-    ::content::AuthenticatorRequestClientDelegate::InterestingFailureReason;
+    AuthenticatorRequestClientDelegate::InterestingFailureReason;
 using FailureReasonCallbackReceiver =
     ::device::test::TestCallbackReceiver<InterestingFailureReason>;
 
@@ -447,9 +447,26 @@ std::vector<uint8_t> UncompressLargeBlob(base::span<const uint8_t> blob) {
   return StringToVector(output);
 }
 
+// Convert a blink::mojom::AttestationConveyancePreference to a
+// device::AtttestationConveyancePreference.
+device::AttestationConveyancePreference ConvertAttestationConveyancePreference(
+    AttestationConveyancePreference in) {
+  switch (in) {
+    case AttestationConveyancePreference::NONE:
+      return ::device::AttestationConveyancePreference::kNone;
+    case AttestationConveyancePreference::INDIRECT:
+      return ::device::AttestationConveyancePreference::kIndirect;
+    case AttestationConveyancePreference::DIRECT:
+      return ::device::AttestationConveyancePreference::kDirect;
+    case AttestationConveyancePreference::ENTERPRISE:
+      return ::device::AttestationConveyancePreference::
+          kEnterpriseIfRPListedOnAuthenticator;
+  }
+}
+
 }  // namespace
 
-class AuthenticatorTestBase : public content::RenderViewHostTestHarness {
+class AuthenticatorTestBase : public RenderViewHostTestHarness {
  protected:
   AuthenticatorTestBase()
       : RenderViewHostTestHarness(
@@ -457,7 +474,7 @@ class AuthenticatorTestBase : public content::RenderViewHostTestHarness {
   ~AuthenticatorTestBase() override = default;
 
   void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
+    RenderViewHostTestHarness::SetUp();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::U2FClient::InitializeFake();
@@ -475,7 +492,7 @@ class AuthenticatorTestBase : public content::RenderViewHostTestHarness {
   }
 
   void TearDown() override {
-    content::RenderViewHostTestHarness::TearDown();
+    RenderViewHostTestHarness::TearDown();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::U2FClient::Shutdown();
@@ -518,7 +535,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
   }
 
   void NavigateAndCommit(const GURL& url) {
-    content::RenderViewHostTestHarness::NavigateAndCommit(url);
+    RenderViewHostTestHarness::NavigateAndCommit(url);
   }
 
   mojo::Remote<blink::mojom::Authenticator> ConnectToAuthenticator() {
@@ -1603,85 +1620,64 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class OverrideRPIDAuthenticatorRequestDelegate
-    : public AuthenticatorRequestClientDelegate {
+// TestWebAuthenticationDelegate is a test fake implementation of the
+// WebAuthentuicationDelegate embedder interface.
+class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
  public:
-  OverrideRPIDAuthenticatorRequestDelegate() = default;
-  ~OverrideRPIDAuthenticatorRequestDelegate() override = default;
+  base::Optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      RenderFrameHost*) override {
+    return is_uvpaa_override;
+  }
 
   base::Optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_rp_id,
       const url::Origin& caller_origin) override {
-    CHECK_EQ(caller_origin.scheme(), "chrome-extension");
-    return caller_origin.Serialize();
+    return rp_id_override;
   }
 
-  bool SupportsResidentKeys() override { return true; }
+  bool ShouldPermitIndividualAttestation(
+      content::BrowserContext* browser_context,
+      const std::string& relying_party_id) override {
+    return permit_individual_attestation;
+  }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverrideRPIDAuthenticatorRequestDelegate);
+  bool SupportsResidentKeys(RenderFrameHost*) override {
+    return supports_resident_keys;
+  }
+
+  bool IsFocused(WebContents* web_contents) override { return is_focused; }
+
+#if defined(OS_MAC)
+  base::Optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
+      BrowserContext* browser_context) override {
+    return touch_id_authenticator_config;
+  }
+#endif
+
+  // If set, the return value of IsUVPAA() will be overridden with this value.
+  // Platform-specific implementations will not be invoked.
+  base::Optional<bool> is_uvpaa_override;
+
+  // If set, the delegate will override the RP ID used for WebAuthn requests
+  // with this value.
+  base::Optional<std::string> rp_id_override;
+
+  // Indicates whether individual attestation should be permitted by the
+  // delegate.
+  bool permit_individual_attestation = false;
+
+  // Indicates whether resident key operations should be permitted by the
+  // delegate.
+  bool supports_resident_keys = false;
+
+  // The return value of the focus check issued at the end of a request.
+  bool is_focused = true;
+
+#if defined(OS_MAC)
+  // Configuration data for the macOS platform authenticator.
+  base::Optional<TouchIdAuthenticatorConfig> touch_id_authenticator_config;
+#endif
 };
-
-class OverrideRPIDAuthenticatorContentBrowserClient
-    : public ContentBrowserClient {
- public:
-  std::unique_ptr<AuthenticatorRequestClientDelegate>
-  GetWebAuthenticationRequestDelegate(
-      RenderFrameHost* render_frame_host) override {
-    return std::make_unique<OverrideRPIDAuthenticatorRequestDelegate>();
-  }
-};
-
-static constexpr char kExtensionId[] = "abcdefg";
-
-class ExtensionAuthenticatorTest : public AuthenticatorImplTest {
- public:
-  void SetUp() override {
-    AuthenticatorImplTest::SetUp();
-    old_client_ = SetBrowserClientForTesting(&test_client_);
-
-    const std::string extension_origin =
-        std::string("chrome-extension://") + kExtensionId;
-    const std::string extension_page = extension_origin + "/test.html";
-    NavigateAndCommit(GURL(extension_page));
-  }
-
-  void TearDown() override {
-    SetBrowserClientForTesting(old_client_);
-    AuthenticatorImplTest::TearDown();
-  }
-
- private:
-  OverrideRPIDAuthenticatorContentBrowserClient test_client_;
-  ContentBrowserClient* old_client_ = nullptr;
-};
-
-// Test that credentials can be created and used from an extension origin when
-// permitted by the delegate.
-TEST_F(ExtensionAuthenticatorTest, ChromeExtensions) {
-  std::vector<uint8_t> credential_id;
-  {
-    PublicKeyCredentialCreationOptionsPtr options =
-        GetTestPublicKeyCredentialCreationOptions();
-    options->relying_party.id = kExtensionId;
-
-    MakeCredentialResult result =
-        AuthenticatorMakeCredential(std::move(options));
-    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
-    credential_id = result.response->info->raw_id;
-  }
-
-  {
-    PublicKeyCredentialRequestOptionsPtr options =
-        GetTestPublicKeyCredentialRequestOptions();
-    options->relying_party_id = kExtensionId;
-    options->allow_credentials[0] = device::PublicKeyCredentialDescriptor(
-        device::CredentialType::kPublicKey, std::move(credential_id));
-
-    EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
-              AuthenticatorStatus::SUCCESS);
-  }
-}
 
 enum class EnterprisePolicy {
   LISTED,
@@ -1706,48 +1702,19 @@ enum class AttestationType {
   PACKED,
 };
 
-// Convert a blink::mojom::AttestationConveyancePreference to a
-// device::AtttestationConveyancePreference.
-device::AttestationConveyancePreference ConvertAttestationConveyancePreference(
-    AttestationConveyancePreference in) {
-  switch (in) {
-    case AttestationConveyancePreference::NONE:
-      return ::device::AttestationConveyancePreference::kNone;
-    case AttestationConveyancePreference::INDIRECT:
-      return ::device::AttestationConveyancePreference::kIndirect;
-    case AttestationConveyancePreference::DIRECT:
-      return ::device::AttestationConveyancePreference::kDirect;
-    case AttestationConveyancePreference::ENTERPRISE:
-      return ::device::AttestationConveyancePreference::
-          kEnterpriseIfRPListedOnAuthenticator;
-  }
-}
-
-class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
- public:
-  base::Optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-      RenderFrameHost*) override {
-    return is_uvpaa;
-  }
-
-  bool is_uvpaa = false;
-};
-
+// TestAuthenticatorRequestDelegate is a test fake implementation of the
+// AuthenticatorRequestClientDelegate embedder interface.
 class TestAuthenticatorRequestDelegate
     : public AuthenticatorRequestClientDelegate {
  public:
   TestAuthenticatorRequestDelegate(
       RenderFrameHost* render_frame_host,
       base::OnceClosure action_callbacks_registered_callback,
-      EnterprisePolicy enterprise_policy,
       AttestationConsent attestation_consent,
-      bool is_focused,
       base::OnceClosure started_over_callback)
       : action_callbacks_registered_callback_(
             std::move(action_callbacks_registered_callback)),
-        enterprise_policy_(enterprise_policy),
         attestation_consent_(attestation_consent),
-        is_focused_(is_focused),
         started_over_callback_(std::move(started_over_callback)) {}
 
   ~TestAuthenticatorRequestDelegate() override {
@@ -1769,11 +1736,6 @@ class TestAuthenticatorRequestDelegate
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(start_over_callback)));
     }
-  }
-
-  bool ShouldPermitIndividualAttestation(
-      const std::string& relying_party_id) override {
-    return enterprise_policy_ == EnterprisePolicy::LISTED;
   }
 
   void ShouldReturnAttestation(
@@ -1806,8 +1768,6 @@ class TestAuthenticatorRequestDelegate
     std::move(callback).Run(result);
   }
 
-  bool IsFocused() override { return is_focused_; }
-
   void OnTransportAvailabilityEnumerated(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo transport_info)
       override {
@@ -1821,9 +1781,7 @@ class TestAuthenticatorRequestDelegate
 
   base::OnceClosure action_callbacks_registered_callback_;
   base::Optional<base::OnceClosure> cancel_callback_;
-  const EnterprisePolicy enterprise_policy_;
   const AttestationConsent attestation_consent_;
-  const bool is_focused_;
   base::OnceClosure started_over_callback_;
   bool attestation_consent_queried_ = false;
 
@@ -1831,13 +1789,16 @@ class TestAuthenticatorRequestDelegate
   DISALLOW_COPY_AND_ASSIGN(TestAuthenticatorRequestDelegate);
 };
 
+// TestAuthenticatorContentBrowserClient is a test fake implementation of the
+// ContentBrowserClient interface that injects |TestWebAuthenticationDelegate|
+// and |TestAuthenticatorRequestDelegate| instances into |AuthenticatorImpl|.
 class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
  public:
   TestWebAuthenticationDelegate* GetTestWebAuthenticationDelegate() {
     return &web_authentication_delegate;
   }
 
-  // ContentBrowserClient
+  // ContentBrowserClient:
   WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
     return &web_authentication_delegate;
   }
@@ -1852,8 +1813,7 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
         action_callbacks_registered_callback
             ? std::move(action_callbacks_registered_callback)
             : base::DoNothing(),
-        enterprise_policy, attestation_consent, is_focused,
-        std::move(started_over_callback_));
+        attestation_consent, std::move(started_over_callback_));
   }
 
   TestWebAuthenticationDelegate web_authentication_delegate;
@@ -1862,9 +1822,7 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   // delegate is informed that the request has started.
   base::OnceClosure action_callbacks_registered_callback;
 
-  EnterprisePolicy enterprise_policy = EnterprisePolicy::NOT_LISTED;
   AttestationConsent attestation_consent = AttestationConsent::NOT_USED;
-  bool is_focused = true;
 
   // This emulates scenarios where a nullptr RequestClientDelegate is returned
   // because a request is already in progress.
@@ -1879,7 +1837,7 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
 };
 
 // A test class that installs and removes an
-// |AuthenticatorTestContentBrowserClient| automatically and can run tests
+// |TestAuthenticatorContentBrowserClient| automatically and can run tests
 // against simulated attestation results.
 class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
  public:
@@ -1919,7 +1877,9 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
           AttestationConveyancePreferenceToString(test.attestation_requested));
       SCOPED_TRACE(i);
 
-      test_client_.enterprise_policy = test.enterprise_policy;
+      test_client_.GetTestWebAuthenticationDelegate()
+          ->permit_individual_attestation =
+          test.enterprise_policy == EnterprisePolicy::LISTED;
       test_client_.attestation_consent = test.attestation_consent;
 
       PublicKeyCredentialCreationOptionsPtr options =
@@ -2083,6 +2043,55 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorContentBrowserClientTest);
 };
+
+// Test that credentials can be created and used from an extension origin when
+// permitted by the delegate.
+TEST_F(AuthenticatorContentBrowserClientTest, ChromeExtensions) {
+  static constexpr char kExtensionId[] = "abcdefg";
+  static const std::string kExtensionOrigin =
+      std::string("chrome-extension://") + kExtensionId;
+
+  NavigateAndCommit(GURL(kExtensionOrigin + "/test.html"));
+
+  for (bool permit_rp_id_override : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "permit=" << permit_rp_id_override);
+    if (permit_rp_id_override) {
+      test_client_.GetTestWebAuthenticationDelegate()->rp_id_override =
+          kExtensionOrigin;
+    } else {
+      test_client_.GetTestWebAuthenticationDelegate()->rp_id_override =
+          base::nullopt;
+    }
+
+    std::vector<uint8_t> credential_id;
+    {
+      PublicKeyCredentialCreationOptionsPtr options =
+          GetTestPublicKeyCredentialCreationOptions();
+      options->relying_party.id = kExtensionId;
+
+      MakeCredentialResult result =
+          AuthenticatorMakeCredential(std::move(options));
+      if (permit_rp_id_override) {
+        EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+        credential_id = result.response->info->raw_id;
+      } else {
+        EXPECT_EQ(result.status, AuthenticatorStatus::INVALID_DOMAIN);
+      }
+    }
+
+    {
+      PublicKeyCredentialRequestOptionsPtr options =
+          GetTestPublicKeyCredentialRequestOptions();
+      options->relying_party_id = kExtensionId;
+      options->allow_credentials[0] = device::PublicKeyCredentialDescriptor(
+          device::CredentialType::kPublicKey, std::move(credential_id));
+
+      EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+                permit_rp_id_override ? AuthenticatorStatus::SUCCESS
+                                      : AuthenticatorStatus::INVALID_DOMAIN);
+    }
+  }
+}
 
 TEST_F(AuthenticatorContentBrowserClientTest, AttestationBehaviour) {
   const char kStandardCommonName[] = "U2F Attestation";
@@ -2350,7 +2359,7 @@ TEST_F(AuthenticatorContentBrowserClientTest,
 // behavior of the Touch ID platform authenticator.
 TEST_F(AuthenticatorContentBrowserClientTest,
        PlatformAuthenticatorAttestation) {
-  test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa = true;
+  test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override = true;
   virtual_device_factory_->SetSupportedProtocol(
       device::ProtocolVersion::kCtap2);
   virtual_device_factory_->SetTransport(
@@ -2922,7 +2931,7 @@ TEST_F(AuthenticatorContentBrowserClientTest, Unfocused) {
   // When the |ContentBrowserClient| considers the tab to be unfocused,
   // registration requests should fail with a |NOT_FOCUSED| error, but getting
   // assertions should still work.
-  test_client_.is_focused = false;
+  test_client_.GetTestWebAuthenticationDelegate()->is_focused = false;
 
   NavigateAndCommit(GURL(kTestOrigin1));
 
@@ -2988,7 +2997,8 @@ TEST_F(AuthenticatorContentBrowserClientTest, IsUVPAAOverride) {
 
   for (const bool is_uvpaa : {false, true}) {
     SCOPED_TRACE(::testing::Message() << "is_uvpaa=" << is_uvpaa);
-    test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa = is_uvpaa;
+    test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override =
+        is_uvpaa;
 
     TestIsUvpaaCallback cb;
     authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
@@ -3049,9 +3059,7 @@ class MockAuthenticatorRequestDelegateObserver
       : TestAuthenticatorRequestDelegate(
             nullptr /* render_frame_host */,
             base::DoNothing() /* did_start_request_callback */,
-            EnterprisePolicy::NOT_LISTED,
             AttestationConsent::NOT_USED,
-            true /* is_focused */,
             /*started_over_callback=*/base::OnceClosure()),
         failure_reasons_callback_(std::move(failure_reasons_callback)) {}
   ~MockAuthenticatorRequestDelegateObserver() override = default;
@@ -3196,9 +3204,9 @@ TEST_F(AuthenticatorImplRequestDelegateTest, FailureReasonForTimeout) {
   EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, callback_receiver.status());
 
   ASSERT_TRUE(failure_reason_receiver.was_called());
-  EXPECT_EQ(content::AuthenticatorRequestClientDelegate::
-                InterestingFailureReason::kTimeout,
-            std::get<0>(*failure_reason_receiver.result()));
+  EXPECT_EQ(
+      AuthenticatorRequestClientDelegate::InterestingFailureReason::kTimeout,
+      std::get<0>(*failure_reason_receiver.result()));
 }
 
 TEST_F(AuthenticatorImplRequestDelegateTest,
@@ -3226,8 +3234,8 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
             callback_receiver.status());
 
   ASSERT_TRUE(failure_reason_receiver.was_called());
-  EXPECT_EQ(content::AuthenticatorRequestClientDelegate::
-                InterestingFailureReason::kKeyAlreadyRegistered,
+  EXPECT_EQ(AuthenticatorRequestClientDelegate::InterestingFailureReason::
+                kKeyAlreadyRegistered,
             std::get<0>(*failure_reason_receiver.result()));
 }
 
@@ -3249,8 +3257,8 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
   EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, callback_receiver.status());
 
   ASSERT_TRUE(failure_reason_receiver.was_called());
-  EXPECT_EQ(content::AuthenticatorRequestClientDelegate::
-                InterestingFailureReason::kKeyNotRegistered,
+  EXPECT_EQ(AuthenticatorRequestClientDelegate::InterestingFailureReason::
+                kKeyNotRegistered,
             std::get<0>(*failure_reason_receiver.result()));
 }
 
@@ -5368,8 +5376,6 @@ class ResidentKeyTestAuthenticatorRequestDelegate
 
   void FinishCollectToken() override {}
 
-  bool SupportsResidentKeys() override { return true; }
-
   void SelectAccount(
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
@@ -5423,12 +5429,22 @@ class ResidentKeyTestAuthenticatorRequestDelegate
 class ResidentKeyTestAuthenticatorContentBrowserClient
     : public ContentBrowserClient {
  public:
+  ResidentKeyTestAuthenticatorContentBrowserClient() {
+    web_authentication_delegate.supports_resident_keys = true;
+  }
+
+  WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
+    return &web_authentication_delegate;
+  }
+
   std::unique_ptr<AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
     return std::make_unique<ResidentKeyTestAuthenticatorRequestDelegate>(
         expected_accounts, selected_user_id, &failure_reason, &is_conditional);
   }
+
+  TestWebAuthenticationDelegate web_authentication_delegate;
 
   std::string expected_accounts;
   std::vector<uint8_t> selected_user_id;
@@ -6536,7 +6552,7 @@ class InternalAuthenticatorImplTest : public AuthenticatorTestBase {
   void NavigateAndCommit(const GURL& url) {
     // The |RenderFrameHost| must outlive |AuthenticatorImpl|.
     internal_authenticator_impl_.reset();
-    content::RenderViewHostTestHarness::NavigateAndCommit(url);
+    RenderViewHostTestHarness::NavigateAndCommit(url);
   }
 
   InternalAuthenticatorImpl* GetAuthenticator(
@@ -6655,31 +6671,12 @@ TEST_F(InternalAuthenticatorImplTest, GetAssertionOriginAndRpIds) {
 }
 
 #if defined(OS_MAC)
-class TouchIdConfigWebAuthenticationDelegate
-    : public WebAuthenticationDelegate {
- public:
-  TouchIdConfigWebAuthenticationDelegate() = default;
-  ~TouchIdConfigWebAuthenticationDelegate() override = default;
-
-  base::Optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
-      BrowserContext* browser_context) override {
-    return TouchIdAuthenticatorConfig{};
-  }
-};
-
-class TouchIdConfigAuthenticatorContentBrowserClient
-    : public ContentBrowserClient {
- private:
-  WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
-    return &delegate_;
-  }
-  TouchIdConfigWebAuthenticationDelegate delegate_;
-};
-
 class TouchIdAuthenticatorImplTest : public AuthenticatorImplTest {
  public:
   void SetUp() override {
     AuthenticatorImplTest::SetUp();
+    test_client_.GetTestWebAuthenticationDelegate()
+        ->touch_id_authenticator_config.emplace();
     old_client_ = SetBrowserClientForTesting(&test_client_);
   }
 
@@ -6689,7 +6686,7 @@ class TouchIdAuthenticatorImplTest : public AuthenticatorImplTest {
   }
 
  private:
-  TouchIdConfigAuthenticatorContentBrowserClient test_client_;
+  TestAuthenticatorContentBrowserClient test_client_;
   ContentBrowserClient* old_client_ = nullptr;
 };
 

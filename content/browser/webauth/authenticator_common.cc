@@ -31,12 +31,9 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/is_uvpaa.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "crypto/sha2.h"
 #include "device/base/features.h"
 #include "device/fido/attestation_statement.h"
@@ -845,7 +842,9 @@ void AuthenticatorCommon::StartGetAssertionRequest(
 }
 
 bool AuthenticatorCommon::IsFocused() const {
-  return GetRenderFrameHost()->IsCurrent() && request_delegate_->IsFocused();
+  return GetRenderFrameHost()->IsCurrent() &&
+         GetWebAuthenticationDelegate()->IsFocused(
+             WebContents::FromRenderFrameHost(GetRenderFrameHost()));
 }
 
 void AuthenticatorCommon::OnLargeBlobCompressed(
@@ -912,7 +911,7 @@ void AuthenticatorCommon::MakeCredential(
   }
 
   base::Optional<std::string> rp_id =
-      request_delegate_->MaybeGetRelyingPartyIdOverride(
+      GetWebAuthenticationDelegate()->MaybeGetRelyingPartyIdOverride(
           options->relying_party.id, caller_origin);
 
   if (!rp_id) {
@@ -992,7 +991,9 @@ void AuthenticatorCommon::MakeCredential(
   const bool might_create_resident_key =
       make_credential_options_->resident_key !=
       device::ResidentKeyRequirement::kDiscouraged;
-  if (might_create_resident_key && !request_delegate_->SupportsResidentKeys()) {
+  if (might_create_resident_key &&
+      !GetWebAuthenticationDelegate()->SupportsResidentKeys(
+          GetRenderFrameHost())) {
     if (make_credential_options_->resident_key ==
         device::ResidentKeyRequirement::kRequired) {
       CompleteMakeCredentialRequest(
@@ -1111,7 +1112,8 @@ void AuthenticatorCommon::MakeCredential(
          device::AttestationConveyancePreference::kEnterpriseApprovedByBrowser);
   if (attestation == device::AttestationConveyancePreference::
                          kEnterpriseIfRPListedOnAuthenticator &&
-      request_delegate_->ShouldPermitIndividualAttestation(relying_party_id_)) {
+      GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
+          GetBrowserContext(), relying_party_id_)) {
     attestation =
         device::AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
   }
@@ -1163,7 +1165,7 @@ void AuthenticatorCommon::GetAssertion(
   }
 
   base::Optional<std::string> rp_id =
-      request_delegate_->MaybeGetRelyingPartyIdOverride(
+      GetWebAuthenticationDelegate()->MaybeGetRelyingPartyIdOverride(
           options->relying_party_id, caller_origin);
 
   if (!rp_id) {
@@ -1219,7 +1221,8 @@ void AuthenticatorCommon::GetAssertion(
   request_delegate_->SetConditionalRequest(options->is_conditional);
 
   if (options->allow_credentials.empty()) {
-    if (!request_delegate_->SupportsResidentKeys()) {
+    if (!GetWebAuthenticationDelegate()->SupportsResidentKeys(
+            GetRenderFrameHost())) {
       CompleteGetAssertionRequest(
           blink::mojom::AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED);
       return;
@@ -1473,8 +1476,8 @@ void AuthenticatorCommon::OnRegisterResponse(
       // cryptotoken checks the attestation blocklist itself.
       if (!origin_is_crypto_token_extension &&
           response_data->attestation_should_be_filtered &&
-          !request_delegate_->ShouldPermitIndividualAttestation(
-              relying_party_id_)) {
+          !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
+              GetBrowserContext(), relying_party_id_)) {
         attestation_erasure =
             AttestationErasureOption::kEraseAttestationAndAaguid;
       } else if (origin_is_crypto_token_extension &&
@@ -1569,8 +1572,8 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
   // requesting direct attestation then it knows that it was one of the
   // tokens with inappropriate certs.
   if (response_data.IsAttestationCertificateInappropriatelyIdentifying() &&
-      !request_delegate_->ShouldPermitIndividualAttestation(
-          relying_party_id_)) {
+      !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
+          GetBrowserContext(), relying_party_id_)) {
     // The attestation response is incorrectly individually identifiable, but
     // the consent is for make & model information about a token, not for
     // individually-identifiable information. Erase the attestation to stop it
