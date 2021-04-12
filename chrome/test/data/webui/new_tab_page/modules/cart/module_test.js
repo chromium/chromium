@@ -38,11 +38,11 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         'getMerchantCarts', Promise.resolve({carts: []}));
 
     // Act.
-    await chromeCartDescriptor.initialize();
+    const moduleElement = await chromeCartDescriptor.initialize();
 
     // Assert.
     assertEquals(1, testProxy.handler.getCallCount('getMerchantCarts'));
-    assertEquals(null, chromeCartDescriptor.element);
+    assertEquals(null, moduleElement);
   });
 
   test('creates module if cart item', async () => {
@@ -79,15 +79,14 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         'getMerchantCarts', Promise.resolve({carts}));
 
     // Act.
-    await chromeCartDescriptor.initialize();
-    const moduleElement = chromeCartDescriptor.element;
+    const moduleElement = await chromeCartDescriptor.initialize();
     document.body.append(moduleElement);
     moduleElement.$.cartItemRepeat.render();
 
     // Assert.
     const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
     assertEquals(4, cartItems.length);
-    assertEquals(220, chromeCartDescriptor.element.offsetHeight);
+    assertEquals(220, moduleElement.offsetHeight);
 
     assertEquals('https://amazon.com/', cartItems[0].href);
     assertEquals('Amazon', cartItems[0].querySelector('.merchant').innerText);
@@ -147,8 +146,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         'getWarmWelcomeVisible', Promise.resolve({visible: true}));
 
     // Arrange.
-    await chromeCartDescriptor.initialize();
-    const moduleElement = chromeCartDescriptor.element;
+    const moduleElement = await chromeCartDescriptor.initialize();
     document.body.append(moduleElement);
     moduleElement.$.cartItemRepeat.render();
 
@@ -164,7 +162,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     assertEquals(
         loadTimeData.getString('modulesCartWarmWelcome'),
         headerDescription.innerText);
-    assertEquals(227, chromeCartDescriptor.element.offsetHeight);
+    assertEquals(227, moduleElement.offsetHeight);
   });
 
   test('Backend is notified when module is dismissed or restored', async () => {
@@ -187,8 +185,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     });
 
     // Arrange.
-    await chromeCartDescriptor.initialize();
-    const moduleElement = chromeCartDescriptor.element;
+    const moduleElement = await chromeCartDescriptor.initialize();
     document.body.append(moduleElement);
     moduleElement.$.cartItemRepeat.render();
 
@@ -251,8 +248,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         'getMerchantCarts', Promise.resolve({carts}));
 
     // Arrange.
-    await chromeCartDescriptor.initialize();
-    const moduleElement = chromeCartDescriptor.element;
+    const moduleElement = await chromeCartDescriptor.initialize();
     document.body.append(moduleElement);
     moduleElement.$.cartItemRepeat.render();
 
@@ -340,8 +336,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         'getMerchantCarts', Promise.resolve({carts}));
 
     // Arrange.
-    await chromeCartDescriptor.initialize();
-    const moduleElement = chromeCartDescriptor.element;
+    const moduleElement = await chromeCartDescriptor.initialize();
     document.body.append(moduleElement);
     moduleElement.$.cartItemRepeat.render();
     const cartCarousel =
@@ -440,8 +435,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         'getMerchantCarts', Promise.resolve({carts}));
 
     // Arrange.
-    await chromeCartDescriptor.initialize();
-    const moduleElement = chromeCartDescriptor.element;
+    const moduleElement = await chromeCartDescriptor.initialize();
     document.body.append(moduleElement);
     moduleElement.$.cartItemRepeat.render();
     const cartCarousel =
@@ -516,8 +510,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         'getMerchantCarts', Promise.resolve({carts}));
 
     // Arrange.
-    await chromeCartDescriptor.initialize();
-    const moduleElement = chromeCartDescriptor.element;
+    const moduleElement = await chromeCartDescriptor.initialize();
     document.body.append(moduleElement);
     moduleElement.$.cartItemRepeat.render();
 
@@ -584,8 +577,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         'getMerchantCarts', Promise.resolve({carts}));
 
     // Act.
-    await chromeCartDescriptor.initialize();
-    const moduleElement = chromeCartDescriptor.element;
+    const moduleElement = await chromeCartDescriptor.initialize();
     document.body.append(moduleElement);
     moduleElement.$.cartItemRepeat.render();
 

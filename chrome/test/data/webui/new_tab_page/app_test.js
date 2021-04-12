@@ -483,11 +483,11 @@ suite('NewTabPageAppTest', () => {
         // Act.
         moduleResolver.resolve([
           {
-            id: 'foo',
+            descriptor: {id: 'foo'},
             element: document.createElement('div'),
           },
           {
-            id: 'bar',
+            descriptor: {id: 'bar'},
             element: document.createElement('div'),
           }
         ]);
@@ -520,7 +520,7 @@ suite('NewTabPageAppTest', () => {
 
       // Act.
       moduleResolver.resolve([{
-        id: 'foo',
+        descriptor: {id: 'foo'},
         element: moduleElement,
       }]);
       await flushTasks();  // Wait for module descriptor resolution.
@@ -568,8 +568,10 @@ suite('NewTabPageAppTest', () => {
 
       // Act.
       moduleResolver.resolve([{
-        id: 'foo',
-        name: 'bar',
+        descriptor: {
+          id: 'foo',
+          name: 'bar',
+        },
         element: moduleElement,
       }]);
       await flushTasks();  // Wait for module descriptor resolution.
@@ -625,7 +627,7 @@ suite('NewTabPageAppTest', () => {
       // Arrange.
       const moduleElement = document.createElement('div');
       moduleResolver.resolve([{
-        id: 'foo',
+        descriptor: {id: 'foo'},
         element: moduleElement,
       }]);
       await flushTasks();  // Wait for module descriptor resolution.
@@ -656,11 +658,11 @@ suite('NewTabPageAppTest', () => {
     // Act.
     moduleResolver.resolve([
       {
-        id: 'foo',
+        descriptor: {id: 'foo'},
         element: document.createElement('div'),
       },
       {
-        id: 'bar',
+        descriptor: {id: 'bar'},
         element: document.createElement('div'),
       }
     ]);

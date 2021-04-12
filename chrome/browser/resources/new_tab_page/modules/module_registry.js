@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
-import {ModuleDescriptor} from './module_descriptor.js';
+
+import {Module, ModuleDescriptor} from './module_descriptor.js';
 import {descriptors} from './module_descriptors.js';
 
 /**
@@ -41,10 +42,10 @@ export class ModuleRegistry {
 
   /**
    * Initializes enabled modules previously set via |registerModules| and
-   * returns the initialized descriptors.
+   * returns the initialized modules.
    * @param {number} timeout Timeout in milliseconds after which initialization
    *     of a particular module aborts.
-   * @return {!Promise<!Array<!ModuleDescriptor>>}
+   * @return {!Promise<!Array<!Module>>}
    */
   async initializeModules(timeout) {
     // Capture updateDisabledModules -> setDisabledModules round trip in a
@@ -58,9 +59,11 @@ export class ModuleRegistry {
           });
       NewTabPageProxy.getInstance().handler.updateDisabledModules();
     });
-    await Promise.all(
-        this.descriptors_.filter(d => disabledIds.indexOf(d.id) < 0)
-            .map(d => d.initialize(timeout)));
-    return this.descriptors_.filter(descriptor => !!descriptor.element);
+    const descriptors =
+        this.descriptors_.filter(d => !disabledIds.includes(d.id));
+    const elements =
+        await Promise.all(descriptors.map(d => d.initialize(timeout)));
+    return elements.map((e, i) => ({element: e, descriptor: descriptors[i]}))
+        .filter(m => !!m.element);
   }
 }

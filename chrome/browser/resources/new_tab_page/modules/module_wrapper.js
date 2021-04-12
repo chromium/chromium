@@ -8,7 +8,7 @@ import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {recordLoadDuration, recordOccurence, recordPerdecage} from '../metrics_utils.js';
 import {WindowProxy} from '../window_proxy.js';
 
-import {ModuleDescriptor} from './module_descriptor.js';
+import {Module} from './module_descriptor.js';
 
 /** @fileoverview Element that implements the common module UI. */
 
@@ -23,28 +23,28 @@ class ModuleWrapperElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!ModuleDescriptor} */
-      descriptor: {
-        observer: 'onDescriptorChange_',
+      /** @type {!Module} */
+      module: {
+        observer: 'onModuleChange_',
         type: Object,
       },
     };
   }
 
   /**
-   * @param {ModuleDescriptor} newValue
-   * @param {ModuleDescriptor} oldValue
+   * @param {*} newValue
+   * @param {*} oldValue
    * @private
    */
-  onDescriptorChange_(newValue, oldValue) {
+  onModuleChange_(newValue, oldValue) {
     assert(!oldValue);
-    this.$.moduleElement.appendChild(this.descriptor.element);
+    this.$.moduleElement.appendChild(this.module.element);
 
     // Log at most one usage per module per NTP page load. This is possible,
     // if a user opens a link in a new tab.
-    this.descriptor.element.addEventListener('usage', () => {
+    this.module.element.addEventListener('usage', () => {
       recordOccurence('NewTabPage.Modules.Usage');
-      recordOccurence(`NewTabPage.Modules.Usage.${this.descriptor.id}`);
+      recordOccurence(`NewTabPage.Modules.Usage.${this.module.descriptor.id}`);
     }, {once: true});
 
     // Install observer to log module header impression.
@@ -54,7 +54,7 @@ class ModuleWrapperElement extends PolymerElement {
         const time = WindowProxy.getInstance().now();
         recordLoadDuration('NewTabPage.Modules.Impression', time);
         recordLoadDuration(
-            `NewTabPage.Modules.Impression.${this.descriptor.id}`, time);
+            `NewTabPage.Modules.Impression.${this.module.descriptor.id}`, time);
         this.dispatchEvent(new Event('detect-impression'));
       }
     }, {threshold: 1.0});
@@ -70,7 +70,7 @@ class ModuleWrapperElement extends PolymerElement {
       recordPerdecage(
           'NewTabPage.Modules.ImpressionRatio', intersectionPerdecage);
       recordPerdecage(
-          `NewTabPage.Modules.ImpressionRatio.${this.descriptor.id}`,
+          `NewTabPage.Modules.ImpressionRatio.${this.module.descriptor.id}`,
           intersectionPerdecage);
     });
 
@@ -86,7 +86,7 @@ class ModuleWrapperElement extends PolymerElement {
     // Track whether the user hovered on the module.
     this.addEventListener('mouseover', () => {
       chrome.metricsPrivate.recordSparseHashable(
-          'NewTabPage.Modules.Hover', this.descriptor.id);
+          'NewTabPage.Modules.Hover', this.module.descriptor.id);
     }, {
       useCapture: true,  // So that modules cannot swallow event.
       once: true,        // Only one log per NTP load.

@@ -282,13 +282,13 @@
             on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_">
         </ntp-middle-slot-promo>
       </template>
-      <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules"
+      <template is="dom-repeat" items="[[modules_]]" id="modules"
           on-dom-change="onModulesLoaded_">
-        <ntp-module-wrapper descriptor="[[item]]"
+        <ntp-module-wrapper module="[[item]]"
             on-dismiss-module="onDismissModule_"
             on-disable-module="onDisableModule_"
             on-customize-module="onCustomizeModule_"
-            hidden="[[moduleDisabled_(item.id,
+            hidden="[[moduleDisabled_(item.descriptor.id,
                                       dismissedModules_.*,
                                       disabledModules_)]]">
         </ntp-module-wrapper>
