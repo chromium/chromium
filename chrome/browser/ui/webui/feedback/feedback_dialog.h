@@ -27,6 +27,7 @@ class FeedbackDialog : public ui::WebDialogDelegate {
 
   // Show this web dialog
   void Show() const;
+  views::Widget* GetWidget() const;
 
  private:
   explicit FeedbackDialog(

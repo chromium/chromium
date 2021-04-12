@@ -25,8 +25,13 @@ class FeedbackHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  // JS message handler for chrome.send("showDialog")
   void HandleShowDialog(const base::ListValue* args);
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  void HandleShowAssistantLogsInfo(const base::ListValue* args);
+  void HandleShowBluetoothLogsInfo(const base::ListValue* args);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  void HandleShowMetrics(const base::ListValue* args);
+  void HandleShowSystemInfo(const base::ListValue* args);
 
   const FeedbackDialog* dialog_;
 };

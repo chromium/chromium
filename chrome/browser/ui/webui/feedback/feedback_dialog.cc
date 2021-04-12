@@ -114,6 +114,10 @@ void FeedbackDialog::Show() const {
     this->widget_->Show();
 }
 
+views::Widget* FeedbackDialog::GetWidget() const {
+  return this->widget_;
+}
+
 void FeedbackDialog::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
