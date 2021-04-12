@@ -187,6 +187,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
       'chromeos-local',
+      'chromeos',  # https://crbug.com/1198045
       'win7'  # https://crbug.com/1084931
   )
   def testMinidumpFromRendererHang(self):
