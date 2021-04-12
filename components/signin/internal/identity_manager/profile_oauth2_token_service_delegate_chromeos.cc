@@ -98,6 +98,7 @@ class PersistentErrorsHelper : public base::RefCounted<PersistentErrorsHelper> {
       // No accounts to get error status for, run callback immediately.
       std::move(callback).Run(
           std::map<account_manager::AccountKey, GoogleServiceAuthError>());
+      return;
     }
 
     // The ownership of this object is shared between callbacks passed to
