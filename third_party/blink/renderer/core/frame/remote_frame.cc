@@ -1004,9 +1004,12 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
   DCHECK(surface_id.is_valid());
   DCHECK(!remote_process_gone_);
 
-  compositing_helper_->SetSurfaceId(
-      surface_id, pending_visual_properties_.compositor_viewport.size(),
-      capture_sequence_number_changed);
+  compositing_helper_->SetSurfaceId(surface_id,
+                                    capture_sequence_number_changed);
+  DCHECK(cc_layer_);
+  // Note that in pre-CompositeAfterPaint, CompositedLayerMapping/GraphicsLayer
+  // will set the bounds again with the same value.
+  cc_layer_->SetBounds(pending_visual_properties_.local_frame_size);
 
   bool rect_changed = !sent_visual_properties_ ||
                       sent_visual_properties_->screen_space_rect !=

@@ -70,8 +70,7 @@ TEST_F(ChildFrameCompositingHelperTest, ChildFrameGoneClearsFallback) {
   EXPECT_FALSE(compositing_helper()->surface_id().is_valid());
 
   const viz::SurfaceId surface_id = MakeSurfaceId(viz::FrameSinkId(1, 1), 1);
-  const gfx::Size frame_size_in_dip(100, 100);
-  compositing_helper()->SetSurfaceId(surface_id, frame_size_in_dip, false);
+  compositing_helper()->SetSurfaceId(surface_id, false);
   EXPECT_EQ(surface_id, compositing_helper()->surface_id());
 
   // Reporting that the child frame is gone should clear the surface id.

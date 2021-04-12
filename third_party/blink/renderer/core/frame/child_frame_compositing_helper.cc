@@ -46,7 +46,6 @@ void ChildFrameCompositingHelper::ChildFrameGone(float device_scale_factor) {
 
 void ChildFrameCompositingHelper::SetSurfaceId(
     const viz::SurfaceId& surface_id,
-    const gfx::Size& frame_size_in_dip,
     bool capture_sequence_number_changed) {
   if (surface_id_ == surface_id)
     return;
@@ -71,8 +70,6 @@ void ChildFrameCompositingHelper::SetSurfaceId(
                                       true /* is_surface_layer */);
 
   UpdateVisibility(true);
-
-  surface_layer_->SetBounds(frame_size_in_dip);
 }
 
 void ChildFrameCompositingHelper::UpdateVisibility(bool visible) {

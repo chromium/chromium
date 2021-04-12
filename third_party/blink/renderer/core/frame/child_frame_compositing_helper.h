@@ -21,10 +21,6 @@ namespace cc {
 class PictureLayer;
 }
 
-namespace gfx {
-class Size;
-}
-
 namespace blink {
 
 class ChildFrameCompositor;
@@ -36,7 +32,6 @@ class CORE_EXPORT ChildFrameCompositingHelper : public cc::ContentLayerClient {
   ~ChildFrameCompositingHelper() override;
 
   void SetSurfaceId(const viz::SurfaceId& surface_id,
-                    const gfx::Size& frame_size_in_dip,
                     bool capture_sequence_number_changed);
   void UpdateVisibility(bool visible);
   void ChildFrameGone(float device_scale_factor);
