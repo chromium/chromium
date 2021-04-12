@@ -80,6 +80,15 @@ crbug.com/1198085 external/wpt/signed-exchange/sxg-referrer-same-physical-same-l
 crbug.com/1198085 external/wpt/signed-exchange/sxg-utf8-inner-url.tentative.html [ Timeout ]
 crbug.com/1198085 external/wpt/signed-exchange/sxg-variants-match.tentative.html [ Failure ]
 
+# WebCodecs failures on Android.
+crbug.com/1198089 external/wpt/webcodecs/video-frame.any.html [ Failure ]
+crbug.com/1198089 external/wpt/webcodecs/video-frame.any.worker.html [ Failure ]
+crbug.com/1198089 external/wpt/webcodecs/videoFrame-canvasImageSource.html [ Failure ]
+crbug.com/1198089 external/wpt/webcodecs/videoFrame-createImageBitmap.any.html [ Failure ]
+crbug.com/1198089 external/wpt/webcodecs/videoFrame-createImageBitmap.any.worker.html [ Failure ]
+crbug.com/1198089 external/wpt/webcodecs/videoFrame-texImage.any.html [ Failure ]
+crbug.com/1198089 external/wpt/webcodecs/videoFrame-texImage.any.worker.html [ Failure ]
+
 # Add untriaged failures in this block
 crbug.com/1050754 external/wpt/FileAPI/file/File-constructor.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/FileAPI/historical.https.html [ Failure Pass ]
@@ -4486,8 +4495,6 @@ crbug.com/1050754 external/wpt/webauthn/getcredential-passing.https.html [ Crash
 crbug.com/1050754 external/wpt/webauthn/getcredential-rk-passing.https.html [ Crash Failure ]
 crbug.com/1050754 external/wpt/webauthn/getcredential-timeout.https.html [ Crash Failure ]
 crbug.com/1050754 external/wpt/webauthn/webauthn-testdriver-basic.https.html [ Crash Failure ]
-crbug.com/1050754 external/wpt/webcodecs/video-decoder.html [ Failure ]
-crbug.com/1050754 external/wpt/webcodecs/video-track-reader.html [ Failure ]
 crbug.com/1050754 external/wpt/webmessaging/broadcastchannel/basics.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webmessaging/broadcastchannel/sandbox.html [ Failure ]
 crbug.com/1050754 external/wpt/webmessaging/broadcastchannel/workers.html [ Failure Timeout ]
