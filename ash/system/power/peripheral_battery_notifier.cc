@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/power/hid_battery_util.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -124,6 +125,13 @@ PeripheralBatteryNotifier::~PeripheralBatteryNotifier() {
 
 void PeripheralBatteryNotifier::OnUpdatedBatteryLevel(
     const PeripheralBatteryListener::BatteryInfo& battery_info) {
+  if ((battery_info.type == PeripheralBatteryListener::BatteryInfo::
+                                PeripheralType::kStylusViaCharger ||
+       battery_info.type == PeripheralBatteryListener::BatteryInfo::
+                                PeripheralType::kStylusViaScreen) &&
+      !ash::features::IsStylusBatteryStatusEnabled()) {
+    return;
+  }
   if (battery_info.type == PeripheralBatteryListener::BatteryInfo::
                                PeripheralType::kStylusViaCharger) {
     return;
