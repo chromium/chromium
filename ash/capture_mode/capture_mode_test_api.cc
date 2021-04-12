@@ -73,6 +73,16 @@ void CaptureModeTestApi::FlushRecordingServiceForTesting() {
   controller_->recording_service_remote_.FlushForTesting();
 }
 
+void CaptureModeTestApi::ResetRecordingServiceRemote() {
+  DCHECK(controller_->is_recording_in_progress());
+  controller_->recording_service_remote_.reset();
+}
+
+void CaptureModeTestApi::ResetRecordingServiceClientReceiver() {
+  DCHECK(controller_->is_recording_in_progress());
+  controller_->recording_service_client_receiver_.reset();
+}
+
 void CaptureModeTestApi::SetType(bool for_video) {
   controller_->SetType(for_video ? CaptureModeType::kVideo
                                  : CaptureModeType::kImage);
