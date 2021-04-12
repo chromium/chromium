@@ -620,9 +620,8 @@ ArcAccessibilityHelperBridge::GetFilterTypeForProfile(Profile* profile) {
   if (accessibility_manager->IsSelectToSpeakEnabled() ||
       accessibility_manager->IsSwitchAccessEnabled() ||
       accessibility_manager->IsSpokenFeedbackEnabled() ||
-      (features::IsMagnifierNewFocusFollowingEnabled() &&
-       (magnification_manager->IsMagnifierEnabled() ||
-        magnification_manager->IsDockedMagnifierEnabled()))) {
+      magnification_manager->IsMagnifierEnabled() ||
+      magnification_manager->IsDockedMagnifierEnabled()) {
     return arc::mojom::AccessibilityFilterType::ALL;
   }
 
@@ -739,11 +738,7 @@ void ArcAccessibilityHelperBridge::UpdateEnabledFeature() {
   if (!accessibility_manager || !magnification_manager)
     return;
 
-  is_focus_event_enabled_ =
-      (!features::IsMagnifierNewFocusFollowingEnabled() &&
-       (magnification_manager->IsMagnifierEnabled() ||
-        magnification_manager->IsDockedMagnifierEnabled())) ||
-      accessibility_manager->IsFocusHighlightEnabled();
+  is_focus_event_enabled_ = accessibility_manager->IsFocusHighlightEnabled();
 
   use_full_focus_mode_ = accessibility_manager->IsSwitchAccessEnabled() ||
                          accessibility_manager->IsSpokenFeedbackEnabled();

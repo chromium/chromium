@@ -30,9 +30,6 @@ namespace ash {
 //     desktop.
 //   - Watch change of the pref. When the pref changes, the setting of the
 //     magnifier will interlock with it.
-//
-// MagnificationManager also observes focus changed in page and calls Ash when
-// either Fullscreen or Docked magnifier is enabled.
 class MagnificationManager
     : public content::NotificationObserver,
       public user_manager::UserManager::UserSessionStateObserver,
@@ -66,10 +63,6 @@ class MagnificationManager
 
   // Loads the Fullscreen magnifier scale from the pref.
   double GetSavedScreenMagnifierScale() const;
-
-  // Updates for a new focus rect (eg, from ARC++) if a magnifier is enabled.
-  void HandleFocusedRectChangedIfEnabled(const gfx::Rect& bounds_in_screen,
-                                         bool is_editable);
 
   // Move magnifier to ensure rect is within viewport if a magnifier is enabled.
   void HandleMoveMagnifierToRectIfEnabled(const gfx::Rect& rect);
@@ -107,12 +100,6 @@ class MagnificationManager
       MagnifierMouseFollowingMode mouse_following_mode);
   void UpdateMagnifierFromPrefs();
   void UpdateDockedMagnifierFromPrefs();
-
-  // Called when received content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE.
-  void HandleFocusChangedInPage(const content::NotificationDetails& details);
-
-  // Called in response to AXEventObserver.
-  void HandleFocusChanged(const gfx::Rect& bounds_in_screen, bool is_editable);
 
   Profile* profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

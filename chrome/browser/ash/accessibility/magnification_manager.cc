@@ -31,11 +31,6 @@
 namespace ash {
 namespace {
 
-// The duration of time to ignore focus changes after the last mouse event.
-// Keep under one frame length (~16ms at 60hz).
-constexpr base::TimeDelta kTimeIgnoreFocusChangeAfterMouseEvent =
-    base::TimeDelta::FromMilliseconds(15);
-
 MagnificationManager* g_magnification_manager = nullptr;
 
 }  // namespace
@@ -106,15 +101,6 @@ void MagnificationManager::OnProfileWillBeDestroyed(Profile* profile) {
   SetProfile(nullptr);
 }
 
-void MagnificationManager::HandleFocusedRectChangedIfEnabled(
-    const gfx::Rect& bounds_in_screen,
-    bool is_editable) {
-  if (!fullscreen_magnifier_enabled_ && !IsDockedMagnifierEnabled())
-    return;
-
-  HandleFocusChanged(bounds_in_screen, is_editable);
-}
-
 void MagnificationManager::HandleMoveMagnifierToRectIfEnabled(
     const gfx::Rect& rect) {
   // Fullscreen magnifier and docked magnifier are mutually exclusive.
@@ -143,11 +129,6 @@ void MagnificationManager::OnViewEvent(views::View* view,
 
   ui::AXNodeData data;
   view->GetViewAccessibility().GetAccessibleNodeData(&data);
-
-  // Disallow focus on large containers, which probably should not move the
-  // magnified viewport to the center of the view.
-  if (ui::IsControl(data.role))
-    HandleFocusChanged(view->GetBoundsInScreen(), false);
 }
 
 void MagnificationManager::SetProfileForTest(Profile* profile) {
@@ -156,10 +137,6 @@ void MagnificationManager::SetProfileForTest(Profile* profile) {
 
 MagnificationManager::MagnificationManager() {
   registrar_.Add(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                 content::NotificationService::AllSources());
-  // TODO(warx): observe focus changed in page notification when either
-  // fullscreen magnifier or docked magnifier is enabled.
-  registrar_.Add(this, content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
                  content::NotificationService::AllSources());
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
   views::AXEventManager::Get()->AddObserver(this);
@@ -181,10 +158,6 @@ void MagnificationManager::Observe(
       Profile* profile = ProfileManager::GetActiveUserProfile();
       if (ProfileHelper::IsSigninProfile(profile))
         SetProfile(profile);
-      break;
-    }
-    case content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE: {
-      HandleFocusChangedInPage(details);
       break;
     }
   }
@@ -330,49 +303,6 @@ void MagnificationManager::UpdateDockedMagnifierFromPrefs() {
   if (!AccessibilityManager::Get())
     return;
   AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
-}
-
-void MagnificationManager::HandleFocusChangedInPage(
-    const content::NotificationDetails& details) {
-  const bool docked_magnifier_enabled = IsDockedMagnifierEnabled();
-  if (!fullscreen_magnifier_enabled_ && !docked_magnifier_enabled)
-    return;
-
-  content::FocusedNodeDetails* node_details =
-      content::Details<content::FocusedNodeDetails>(details).ptr();
-  // Ash uses the InputMethod of the window tree host to observe text input
-  // caret bounds changes, which works for both the native UI as well as
-  // webpages. We don't need to notify it of editable nodes in this case.
-  if (node_details->is_editable_node)
-    return;
-
-  HandleFocusChanged(node_details->node_bounds_in_screen,
-                     node_details->is_editable_node);
-}
-
-void MagnificationManager::HandleFocusChanged(const gfx::Rect& bounds_in_screen,
-                                              bool is_editable) {
-  if (features::IsMagnifierNewFocusFollowingEnabled())
-    return;
-
-  if (bounds_in_screen.IsEmpty())
-    return;
-
-  // Ignore focus changes while mouse activity is occurring.
-  if (base::TimeTicks::Now() - last_mouse_event_ <
-      kTimeIgnoreFocusChangeAfterMouseEvent) {
-    return;
-  }
-
-  // Fullscreen magnifier and docked magnifier are mutually exclusive.
-  if (fullscreen_magnifier_enabled_) {
-    Shell::Get()->magnification_controller()->HandleFocusedNodeChanged(
-        is_editable, bounds_in_screen);
-    return;
-  }
-  DCHECK(IsDockedMagnifierEnabled());
-  DockedMagnifierController::Get()->CenterOnPoint(
-      bounds_in_screen.CenterPoint());
 }
 
 }  // namespace ash

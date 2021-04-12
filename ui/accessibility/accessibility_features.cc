@@ -94,13 +94,6 @@ bool IsIChromeAccessibleEnabled() {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kMagnifierNewFocusFollowing{
-    "MagnifierNewFocusFollowing", base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsMagnifierNewFocusFollowingEnabled() {
-  return base::FeatureList::IsEnabled(::features::kMagnifierNewFocusFollowing);
-}
-
 const base::Feature kMagnifierPanningImprovements{
     "MagnifierPanningImprovements", base::FEATURE_ENABLED_BY_DEFAULT};
 

@@ -4417,12 +4417,6 @@ const char kExperimentalAccessibilitySwitchAccessSetupGuideDescription[] =
     "Enable a setup guide to walk through the steps of initially configuring "
     "Switch Access.";
 
-const char kMagnifierNewFocusFollowingName[] =
-    "Enable new focus following in Magnifier";
-const char kMagnifierNewFocusFollowingDescription[] =
-    "Enable feature which allows more comprehensive focus following in"
-    "in Magnifier.";
-
 const char kMagnifierPanningImprovementsName[] =
     "Enable panning improvements in magnifier";
 const char kMagnifierPanningImprovementsDescription[] =

@@ -455,9 +455,6 @@ AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
   std::unique_ptr<accessibility_private::MoveMagnifierToRect::Params> params =
       accessibility_private::MoveMagnifierToRect::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
-  if (!features::IsMagnifierNewFocusFollowingEnabled()) {
-    return RespondNow(NoArguments());
-  }
   gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
                    params->rect.height);
 
