@@ -4,12 +4,12 @@
     "tags": [
       {
         "buildername": "Mac Release (Intel)",
-        "master": "chromium.gpu",
-        "os": "Mac-10.14.6"
+        "builder_group": "chromium.gpu",
+        "os": "Mac-10.15.5"
       },
       {
         "buildername": "Mac Retina Release (AMD)",
-        "master": "chromium.gpu",
+        "builder_group": "chromium.gpu",
         "os": "Mac-10.14.6"
       }
     ]
@@ -19,8 +19,8 @@
     "tags": [
       {
         "buildername": "Win10 x64 Release (NVIDIA)",
-        "master": "chromium.gpu",
-        "os": "Windows-10"
+        "builder_group": "chromium.gpu",
+        "os": "Windows-10-18363"
       }
     ]
   },
@@ -29,7 +29,7 @@
     "tags": [
       {
         "buildername": "Android FYI Release (Nexus 5X)",
-        "master": "chromium.gpu.fyi",
+        "builder_group": "chromium.gpu.fyi",
         "os": "Android"
       }
     ]

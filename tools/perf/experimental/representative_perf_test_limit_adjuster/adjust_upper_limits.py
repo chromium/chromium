@@ -29,7 +29,7 @@ def FetchItemIds(tags, limit):
   """Fetches the item id of tasks described by the tags.
 
   Args:
-    tags: The tags which describe the task such as OS, master and buildername.
+    tags: The tags which describe the task such as OS, builder_group and buildername.
     limit: The number of runs to look at.
 
   Returns:
@@ -39,8 +39,9 @@ def FetchItemIds(tags, limit):
   query = [
       SWARMING_PATH, 'tasks', '-S', 'chromium-swarm.appspot.com', '-limit',
       str(limit), '-state=COMPLETED', '-field', 'items(task_id)', '-tag',
-      'master:{master}'.format(**tags), '-tag', 'os:{os}'.format(**tags),
-      '-tag', 'name:rendering_representative_perf_tests', '-tag',
+      'builder_group:{builder_group}'.format(**tags), '-tag',
+      'os:{os}'.format(**tags), '-tag',
+      'name:rendering_representative_perf_tests', '-tag',
       'buildername:{buildername}'.format(**tags)
   ]
   return json.loads(subprocess.check_output(query))
