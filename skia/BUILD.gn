@@ -400,10 +400,7 @@ component("skia") {
   }
 
   # Remove unused util sources.
-  sources -= [
-    "//third_party/skia/src/utils/SkInterpolator.cpp",
-    "//third_party/skia/src/utils/SkParsePath.cpp",
-  ]
+  sources -= [ "//third_party/skia/src/utils/SkParsePath.cpp" ]
 
   if (is_win) {
     sources -= [
