@@ -32,6 +32,9 @@ namespace blink {
 namespace {
 
 static constexpr char kUrlHandlerWildcardPrefix[] = "%2A.";
+// Keep in sync with web_app_origin_association_task.cc.
+static wtf_size_t kMaxUrlHandlersSize = 10;
+static wtf_size_t kMaxOriginLength = 2000;
 
 bool IsValidMimeType(const String& mime_type) {
   if (mime_type.StartsWith('.'))
@@ -1074,6 +1077,14 @@ Vector<mojom::blink::ManifestUrlHandlerPtr> ManifestParser::ParseUrlHandlers(
     return url_handlers;
   }
   for (wtf_size_t i = 0; i < handlers_list->size(); ++i) {
+    if (i == kMaxUrlHandlersSize) {
+      AddErrorInfo("property 'url_handlers' contains more than " +
+                   String::Number(kMaxUrlHandlersSize) +
+                   " valid elements, only the first " +
+                   String::Number(kMaxUrlHandlersSize) + " are parsed.");
+      break;
+    }
+
     const JSONObject* handler_object = JSONObject::Cast(handlers_list->at(i));
     if (!handler_object) {
       AddErrorInfo("url_handlers entry ignored, type object expected.");
@@ -1111,6 +1122,14 @@ ManifestParser::ParseUrlHandler(const JSONObject* object) {
   // (eg. example.com instead of https://example.com) because we can always
   // assume the use of https for URL handling. Remove this TODO if we decide
   // to require fully specified https scheme in this origin input.
+
+  if (origin_string->length() > kMaxOriginLength) {
+    AddErrorInfo(
+        "url_handlers entry ignored, 'origin' exceeds maximum character length "
+        "of " +
+        String::Number(kMaxOriginLength) + " .");
+    return base::nullopt;
+  }
 
   auto origin = SecurityOrigin::CreateFromString(*origin_string);
   if (!origin || origin->IsOpaque()) {

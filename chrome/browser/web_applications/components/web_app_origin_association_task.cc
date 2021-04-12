@@ -14,6 +14,29 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
+namespace {
+// Keep in sync with
+// third_party/blink/renderer/modules/manifest/manifest_parser.cc.
+constexpr size_t kMaxPathsSize = 10;
+constexpr size_t kMaxPathLength = 2000;
+
+// Number of paths cannot exceed |kMaxPathsSize|, and each path cannot contain
+// more than |kMaxPathLength| characters.
+std::vector<std::string> GetValidPaths(std::vector<std::string> paths) {
+  std::vector<std::string> result;
+  for (const std::string& path : paths) {
+    if (result.size() == kMaxPathsSize)
+      break;
+
+    if (path.length() > kMaxPathLength)
+      continue;
+
+    result.push_back(std::move(path));
+  }
+  return result;
+}
+}  // namespace
+
 namespace web_app {
 
 WebAppOriginAssociationManager::Task::Task(
@@ -85,10 +108,12 @@ void WebAppOriginAssociationManager::Task::OnAssociationParsed(
   for (auto& app : association->apps) {
     if (app->manifest_url == manifest_url_) {
       if (app->paths.has_value())
-        url_handler.paths = std::move(app->paths.value());
+        url_handler.paths = GetValidPaths(std::move(app->paths.value()));
 
-      if (app->exclude_paths.has_value())
-        url_handler.exclude_paths = std::move(app->exclude_paths.value());
+      if (app->exclude_paths.has_value()) {
+        url_handler.exclude_paths =
+            GetValidPaths(std::move(app->exclude_paths.value()));
+      }
 
       result_.push_back(std::move(url_handler));
       url_handler.Reset();

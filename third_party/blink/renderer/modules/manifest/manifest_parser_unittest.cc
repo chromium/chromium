@@ -2711,6 +2711,60 @@ TEST_F(ManifestParserTest, UrlHandlerParseRules) {
             ->IsSameOriginWith(url_handlers[0]->origin.get()));
     ASSERT_FALSE(url_handlers[0]->has_origin_wildcard);
   }
+
+  // Validate only the first 10 handlers are parsed.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8001\""
+        "    },"
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8002\""
+        "    },"
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8003\""
+        "    },"
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8004\""
+        "    },"
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8005\""
+        "    },"
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8006\""
+        "    },"
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8007\""
+        "    },"
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8008\""
+        "    },"
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8009\""
+        "    },"
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8010\""
+        "    },"
+        // 10 handlers above, this one should not be in the result.
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8011\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'url_handlers' contains more than 10 valid elements, "
+        "only the first 10 are parsed.",
+        errors()[0]);
+    ASSERT_EQ(10u, url_handlers.size());
+    ASSERT_TRUE(
+        blink::SecurityOrigin::CreateFromString("https://192.168.0.1:8010")
+            ->IsSameOriginWith(url_handlers[9]->origin.get()));
+  }
 }
 
 TEST_F(ManifestParserTest, ShareTargetParseRules) {
