@@ -993,13 +993,11 @@
 
 #pragma mark - PasswordBreachCommands
 
-- (void)showPasswordBreachForLeakType:(CredentialLeakType)leakType
-                                  URL:(const GURL&)URL {
+- (void)showPasswordBreachForLeakType:(CredentialLeakType)leakType {
   self.passwordBreachCoordinator = [[PasswordBreachCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                        leakType:leakType
-                             URL:URL];
+                        leakType:leakType];
   [self.passwordBreachCoordinator start];
 }
 

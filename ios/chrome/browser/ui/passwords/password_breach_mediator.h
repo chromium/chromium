@@ -10,8 +10,6 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
-class GURL;
-
 @protocol ApplicationCommands;
 @protocol PasswordBreachConsumer;
 @protocol PasswordBreachPresenter;
@@ -21,7 +19,6 @@ class GURL;
 
 - (instancetype)initWithConsumer:(id<PasswordBreachConsumer>)consumer
                        presenter:(id<PasswordBreachPresenter>)presenter
-                             URL:(const GURL&)URL
                         leakType:(password_manager::CredentialLeakType)leakType;
 
 - (instancetype)init NS_UNAVAILABLE;

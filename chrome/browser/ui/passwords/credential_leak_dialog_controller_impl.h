@@ -19,8 +19,7 @@ class CredentialLeakDialogControllerImpl
  public:
   CredentialLeakDialogControllerImpl(
       PasswordsLeakDialogDelegate* delegate,
-      password_manager::CredentialLeakType leak_type,
-      const GURL& origin);
+      password_manager::CredentialLeakType leak_type);
   ~CredentialLeakDialogControllerImpl() override;
 
   // Pop up the credential leak dialog.
@@ -45,7 +44,6 @@ class CredentialLeakDialogControllerImpl
   CredentialLeakPrompt* credential_leak_dialog_ = nullptr;
   PasswordsLeakDialogDelegate* delegate_;
   const password_manager::CredentialLeakType leak_type_;
-  const GURL origin_;
 
   DISALLOW_COPY_AND_ASSIGN(CredentialLeakDialogControllerImpl);
 };

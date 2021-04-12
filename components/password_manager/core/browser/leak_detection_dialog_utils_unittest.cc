@@ -90,7 +90,6 @@ TEST(CredentialLeakDialogUtilsTest, GetCancelButtonLabel) {
 }
 
 TEST(CredentialLeakDialogUtilsTest, GetCheckPasswordsDescription) {
-  GURL origin("https://example.com");
   for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
     if (kLeakTypesTestCases[i].leak_message_id ==
         IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE) {
@@ -98,13 +97,12 @@ TEST(CredentialLeakDialogUtilsTest, GetCheckPasswordsDescription) {
       std::u16string expected_message = l10n_util::GetStringUTF16(
           IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE);
       EXPECT_EQ(expected_message,
-                GetDescription(kLeakTypesTestCases[i].leak_type, origin));
+                GetDescription(kLeakTypesTestCases[i].leak_type));
     }
   }
 }
 
 TEST(CredentialLeakDialogUtilsTest, GetChangeAndCheckPasswordsDescription) {
-  GURL origin("https://example.com");
   for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
     if (kLeakTypesTestCases[i].leak_message_id ==
         IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE) {
@@ -112,13 +110,12 @@ TEST(CredentialLeakDialogUtilsTest, GetChangeAndCheckPasswordsDescription) {
       std::u16string expected_message = l10n_util::GetStringUTF16(
           IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE);
       EXPECT_EQ(expected_message,
-                GetDescription(kLeakTypesTestCases[i].leak_type, origin));
+                GetDescription(kLeakTypesTestCases[i].leak_type));
     }
   }
 }
 
 TEST(CredentialLeakDialogUtilsTest, GetChangePasswordDescription) {
-  GURL origin("https://example.com");
   for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
     if (kLeakTypesTestCases[i].leak_message_id ==
         IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE) {
@@ -126,7 +123,7 @@ TEST(CredentialLeakDialogUtilsTest, GetChangePasswordDescription) {
       std::u16string expected_message = l10n_util::GetStringUTF16(
           IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE);
       EXPECT_EQ(expected_message,
-                GetDescription(kLeakTypesTestCases[i].leak_type, origin));
+                GetDescription(kLeakTypesTestCases[i].leak_type));
     }
   }
 }

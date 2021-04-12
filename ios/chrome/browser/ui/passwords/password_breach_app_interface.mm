@@ -19,9 +19,7 @@
       password_manager::IsSaved(true),
       password_manager::IsReused(checkButtonPresent),
       password_manager::IsSyncing(true));
-  [(id<PasswordBreachCommands>)handler
-      showPasswordBreachForLeakType:leakType
-                                URL:GURL("example.com")];
+  [(id<PasswordBreachCommands>)handler showPasswordBreachForLeakType:leakType];
 }
 
 @end

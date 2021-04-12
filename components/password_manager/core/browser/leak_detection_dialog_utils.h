@@ -54,34 +54,31 @@ bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type);
 bool IsSyncingPasswordsNormally(CredentialLeakType leak_type);
 
 // Returns the label for the leak dialog accept button.
-std::u16string GetAcceptButtonLabel(
-    password_manager::CredentialLeakType leak_type);
+std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type);
 
 // Returns the label for the leak dialog cancel button.
 std::u16string GetCancelButtonLabel();
 
 // Returns the leak dialog message based on leak type.
-std::u16string GetDescription(password_manager::CredentialLeakType leak_type,
-                              const GURL& origin);
+std::u16string GetDescription(CredentialLeakType leak_type);
 
 // Returns the leak dialog title based on leak type.
-std::u16string GetTitle(password_manager::CredentialLeakType leak_type);
+std::u16string GetTitle(CredentialLeakType leak_type);
 
 // Returns the leak dialog tooltip shown on (?) click.
 std::u16string GetLeakDetectionTooltip();
 
 // Checks whether the leak dialog should prompt user to password checkup.
-bool ShouldCheckPasswords(password_manager::CredentialLeakType leak_type);
+bool ShouldCheckPasswords(CredentialLeakType leak_type);
 
 // Checks whether the leak dialog should show change password button.
 bool ShouldShowChangePasswordButton(CredentialLeakType leak_type);
 
 // Checks whether the leak dialog should show cancel button.
-bool ShouldShowCancelButton(password_manager::CredentialLeakType leak_type);
+bool ShouldShowCancelButton(CredentialLeakType leak_type);
 
 // Returns the LeakDialogType corresponding to |leak_type|.
-password_manager::metrics_util::LeakDialogType GetLeakDialogType(
-    password_manager::CredentialLeakType leak_type);
+metrics_util::LeakDialogType GetLeakDialogType(CredentialLeakType leak_type);
 
 // Returns the URL used to launch the password checkup.
 GURL GetPasswordCheckupURL(PasswordCheckupReferrer referrer =

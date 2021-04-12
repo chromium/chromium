@@ -16,9 +16,8 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 CredentialLeakDialogControllerImpl::CredentialLeakDialogControllerImpl(
     PasswordsLeakDialogDelegate* delegate,
-    CredentialLeakType leak_type,
-    const GURL& origin)
-    : delegate_(delegate), leak_type_(leak_type), origin_(origin) {}
+    CredentialLeakType leak_type)
+    : delegate_(delegate), leak_type_(leak_type) {}
 
 CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() {
   ResetDialog();
@@ -75,7 +74,7 @@ std::u16string CredentialLeakDialogControllerImpl::GetCancelButtonLabel()
 }
 
 std::u16string CredentialLeakDialogControllerImpl::GetDescription() const {
-  return password_manager::GetDescription(leak_type_, origin_);
+  return password_manager::GetDescription(leak_type_);
 }
 
 std::u16string CredentialLeakDialogControllerImpl::GetTitle() const {

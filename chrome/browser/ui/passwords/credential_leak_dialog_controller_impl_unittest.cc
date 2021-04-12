@@ -37,7 +37,7 @@ class CredentialLeakDialogControllerTest : public testing::Test {
  public:
   void SetUpController(password_manager::CredentialLeakType leak_type) {
     controller_ = std::make_unique<CredentialLeakDialogControllerImpl>(
-        &ui_controller_mock_, leak_type, GURL("https://example.com"));
+        &ui_controller_mock_, leak_type);
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }

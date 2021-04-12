@@ -350,8 +350,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
 - (void)showPasswordBreachForLeakType:(CredentialLeakType)leakType
                                   URL:(const GURL&)URL {
-  [self.passwordBreachDispatcher showPasswordBreachForLeakType:leakType
-                                                           URL:URL];
+  [self.passwordBreachDispatcher showPasswordBreachForLeakType:leakType];
 }
 
 - (void)showPasswordProtectionWarning:(NSString*)warningText

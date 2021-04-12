@@ -74,8 +74,7 @@ std::u16string GetCancelButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
 
-std::u16string GetDescription(CredentialLeakType leak_type,
-                              const GURL& /*origin*/) {
+std::u16string GetDescription(CredentialLeakType leak_type) {
   if (!ShouldCheckPasswords(leak_type)) {
     return l10n_util::GetStringUTF16(
         IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE);

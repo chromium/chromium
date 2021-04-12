@@ -282,7 +282,7 @@ void ManagePasswordsUIController::OnCredentialLeak(
     ClearPopUpFlagForBubble();
 
   auto* raw_controller =
-      new CredentialLeakDialogControllerImpl(this, leak_type, origin);
+      new CredentialLeakDialogControllerImpl(this, leak_type);
   dialog_controller_.reset(raw_controller);
   raw_controller->ShowCredentialLeakPrompt(
       CreateCredentialLeakPrompt(raw_controller));

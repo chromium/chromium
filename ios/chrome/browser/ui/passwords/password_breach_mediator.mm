@@ -48,7 +48,6 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 - (instancetype)initWithConsumer:(id<PasswordBreachConsumer>)consumer
                        presenter:(id<PasswordBreachPresenter>)presenter
-                             URL:(const GURL&)URL
                         leakType:(CredentialLeakType)leakType {
   self = [super init];
   if (self) {
@@ -56,7 +55,7 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
     _leakType = GetLeakDialogType(leakType);
     _dismissReason = LeakDialogDismissalReason::kNoDirectInteraction;
 
-    NSString* subtitle = SysUTF16ToNSString(GetDescription(leakType, URL));
+    NSString* subtitle = SysUTF16ToNSString(GetDescription(leakType));
     NSString* primaryActionString =
         SysUTF16ToNSString(GetAcceptButtonLabel(leakType));
     [consumer setTitleString:SysUTF16ToNSString(GetTitle(leakType))

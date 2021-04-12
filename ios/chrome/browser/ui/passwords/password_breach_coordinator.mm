@@ -49,11 +49,9 @@ using password_manager::CredentialLeakType;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
-                                  leakType:(CredentialLeakType)leakType
-                                       URL:(const GURL&)URL {
+                                  leakType:(CredentialLeakType)leakType {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
-    _url = URL;
     _leakType = leakType;
   }
   return self;
@@ -68,7 +66,6 @@ using password_manager::CredentialLeakType;
   self.mediator =
       [[PasswordBreachMediator alloc] initWithConsumer:self.viewController
                                              presenter:self
-                                                   URL:_url
                                               leakType:self.leakType];
   self.viewController.actionHandler = self.mediator;
 
