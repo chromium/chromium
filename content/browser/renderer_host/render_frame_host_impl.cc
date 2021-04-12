@@ -9491,6 +9491,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
         prefetch_loader_factory,
     blink::mojom::PolicyContainerPtr policy_container,
     const base::UnguessableToken& devtools_navigation_token) {
+  DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
       std::move(response_head), std::move(response_body),
@@ -9976,21 +9977,6 @@ const std::string CalculateMethod(
   return nav_request_method;
 }
 
-bool DoBaseURLExpectationsMatch(const GURL& renderer_base_url,
-                                bool is_error_page) {
-  // base_url value is currently only used in the browser side to check if a
-  // navigation results in an error page or not in
-  // NavigationRequest::DidCommitNavigation.
-  if (renderer_base_url == kUnreachableWebDataURL && !is_error_page) {
-    return false;
-  }
-  // Note: base_url might be set in |params| in other cases (e.g. if a page has
-  // the <base> element and it's doing a same document navigation, about:srcdoc,
-  // MHTML), but those cases do not matter because they aren't handled at all
-  // in the browser side.
-  return true;
-}
-
 bool CalculateURLIsUnreachable(
     NavigationRequest* request,
     bool is_error_page,
@@ -10072,14 +10058,12 @@ void RenderFrameHostImpl::
   // - intended_as_new_entry
   // - method
   // - url_is_unreachable
-  // - base_url
   // - post_id
   // - is_overriding_user_agent
   // - http_status_code
   // - should_update_history
   // - gesture
   // TODO(crbug.com/1131832): Verify more params.
-  const GURL& browser_base_url = request->common_params().base_url_for_data_url;
   // We can know if we're going to be in an error page after this navigation
   // if the net error code is not net::OK, or if we're doing a same-document
   // navigation on an error page (only possible for renderer-initiated
@@ -10090,9 +10074,6 @@ void RenderFrameHostImpl::
   const bool browser_url_is_unreachable = CalculateURLIsUnreachable(
       request, is_error_page,
       is_loaded_from_load_data_with_base_url_and_unreachable_url_);
-
-  const bool base_url_expectations_match =
-      DoBaseURLExpectationsMatch(params.base_url, is_error_page);
 
   const bool is_same_document_navigation = !!same_document_params;
   const bool is_same_document_history_api_navigation =
@@ -10135,7 +10116,6 @@ void RenderFrameHostImpl::
       (!ShouldVerify("method") || browser_method == params.method) &&
       (!ShouldVerify("url_is_unreachable") ||
        browser_url_is_unreachable == params.url_is_unreachable) &&
-      (!ShouldVerify("base_url") || base_url_expectations_match) &&
       (!ShouldVerify("post_id") || browser_post_id == params.post_id) &&
       (!ShouldVerify("is_overriding_user_agent") ||
        browser_is_overriding_user_agent == params.is_overriding_user_agent) &&
@@ -10164,22 +10144,11 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_unreachable",
                         params.url_is_unreachable);
 
-  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "browser_base_url",
-                             browser_base_url.possibly_invalid_spec());
-  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "renderer_base_url",
-                             params.base_url.possibly_invalid_spec());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "base_url_exp_match",
-                        base_url_expectations_match);
-
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "prev_ldwb",
                         is_loaded_from_load_data_with_base_url_);
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "prev_ldwbu",
       is_loaded_from_load_data_with_base_url_and_unreachable_url_);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "b_base_url_valid",
-                        browser_base_url.is_valid());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "b_base_url_empty",
-                        browser_base_url.is_empty());
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "b_hist_url_empty",
       request->common_params().history_url_for_data_url.is_empty());
@@ -10187,10 +10156,6 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "b_data_url_empty",
                         request->commit_params().data_url_as_string.empty());
 #endif
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "r_base_url_empty",
-                        params.base_url.is_empty());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "r_base_url_is_error",
-                        params.base_url == kUnreachableWebDataURL);
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "r_history_url_empty",
       request->common_params().history_url_for_data_url.is_empty());
@@ -10297,7 +10262,6 @@ void RenderFrameHostImpl::
             params.intended_as_new_entry);
   DCHECK_EQ(browser_method, params.method);
   DCHECK_EQ(browser_url_is_unreachable, params.url_is_unreachable);
-  DCHECK(base_url_expectations_match);
   DCHECK_EQ(browser_post_id, params.post_id);
   DCHECK_EQ(browser_is_overriding_user_agent, params.is_overriding_user_agent);
   DCHECK_EQ(browser_http_status_code, params.http_status_code);
@@ -10318,10 +10282,6 @@ void RenderFrameHostImpl::
   if (browser_url_is_unreachable != params.url_is_unreachable) {
     LogVerifyDidCommitParamsDifference(
         VerifyDidCommitParamsDifference::kURLIsUnreachable);
-  }
-  if (!base_url_expectations_match) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kBaseURL);
   }
   if (browser_post_id != params.post_id) {
     LogVerifyDidCommitParamsDifference(

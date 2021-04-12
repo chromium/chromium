@@ -743,6 +743,7 @@ void FrameNavigateParamsCapturer::DidFinishNavigation(
   has_user_gestures_.push_back(navigation_handle->HasUserGesture());
   is_overriding_user_agents_.push_back(
       NavigationRequest::From(navigation_handle)->is_overriding_user_agent());
+  is_error_pages_.push_back(navigation_handle->IsErrorPage());
   if (!navigations_remaining_ &&
       (!web_contents()->IsLoading() || !wait_for_load_))
     loop_.Quit();

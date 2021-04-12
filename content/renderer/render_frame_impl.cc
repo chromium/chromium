@@ -4780,8 +4780,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
 
   // Set the URL to be displayed in the browser UI to the user.
   params->url = GetLoadingUrl();
-  if (GURL(frame_document.BaseURL()) != params->url)
-    params->base_url = frame_document.BaseURL();
 
   // TODO(https://crbug.com/1158101): Reconsider how we calculate
   // should_update_history.

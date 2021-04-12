@@ -478,6 +478,10 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
     EXPECT_EQ(1U, is_overriding_user_agents_.size());
     return is_overriding_user_agents_[0];
   }
+  bool is_error_page() const {
+    EXPECT_EQ(1U, is_error_pages_.size());
+    return is_error_pages_[0];
+  }
 
   // Gets various captured parameters from all observed navigations.
   const std::vector<ui::PageTransition>& transitions() { return transitions_; }
@@ -493,6 +497,7 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
   const std::vector<bool>& is_overriding_user_agents() {
     return is_overriding_user_agents_;
   }
+  const std::vector<bool>& is_error_pages() { return is_error_pages_; }
 
  private:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
@@ -519,6 +524,7 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
   std::vector<bool> is_renderer_initiateds_;
   std::vector<bool> has_user_gestures_;
   std::vector<bool> is_overriding_user_agents_;
+  std::vector<bool> is_error_pages_;
 
   base::RunLoop loop_;
 };

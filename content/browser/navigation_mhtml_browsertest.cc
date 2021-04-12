@@ -23,6 +23,7 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -775,6 +776,31 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, PreloadedTextTrack) {
   // documents). To detect such NOTREACHED (via renderer crash) it is sufficient
   // for the test to wait for DidStopLoading notification (which is done
   // underneath NavigateToURL called above).
+}
+
+// MHTML document with a base URL of |kUnreachableWebDataURL| should not be
+// treated as an error page.
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, ErrorBaseURL) {
+  NavigationController& controller = web_contents()->GetController();
+  FrameTreeNode* root =
+      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+
+  // Prepare an MHTML document with the base URL set to the error page URL.
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(GURL(kUnreachableWebDataURL), "foo");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+
+  // Navigate to the MHTML document.
+  FrameNavigateParamsCapturer params_capturer(root);
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+  params_capturer.Wait();
+
+  // Check that the RenderFrameHost, NavigationRequest and NavigationEntry all
+  // agree that the document is not an error page.
+  RenderFrameHostImpl* main_document = main_frame_host();
+  EXPECT_FALSE(main_document->is_error_page());
+  EXPECT_FALSE(params_capturer.is_error_page());
+  EXPECT_NE(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
 }
 
 }  // namespace content
