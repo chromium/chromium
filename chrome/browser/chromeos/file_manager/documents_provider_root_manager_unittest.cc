@@ -127,7 +127,7 @@ TEST_F(DocumentsProviderRootManagerTest, AddMultipleRoots) {
   EXPECT_EQ("authority2", observer().added_authorities()[1]);
 }
 
-TEST_F(DocumentsProviderRootManagerTest, ExcludeBlacklistedRoots) {
+TEST_F(DocumentsProviderRootManagerTest, ExcludeDenylistedRoots) {
   AddFakeRoot("authority1", "123", "", "", 10, 100);
   AddFakeRoot("com.android.externalstorage.documents", "", "", "", -1, -1);
   AddFakeRoot("com.android.providers.downloads.documents", "", "", "", -1, -1);
