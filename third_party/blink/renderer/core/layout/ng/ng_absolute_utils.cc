@@ -124,6 +124,7 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
                          bool is_start_dominant,
                          bool is_block_direction,
                          bool is_table,
+                         bool is_shrink_to_fit,
                          base::Optional<LayoutUnit> size,
                          LayoutUnit* size_out,
                          LayoutUnit* inset_start_out,
@@ -278,7 +279,7 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
   } else if (!size) {
     LayoutUnit computed_available_size =
         available_size - *inset_start - *inset_end;
-    if (is_table) {
+    if (is_shrink_to_fit) {
       size = ComputeShrinkToFitSize(is_table, min_max_sizes, available_size,
                                     computed_available_size, *margin_start,
                                     *margin_end);
@@ -299,8 +300,9 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
         available_size, margin_start_length, margin_end_length,
         inset_start_length, inset_end_length, min_size, max_size,
         static_position_offset, static_position_edge, is_start_dominant,
-        is_block_direction, is_table, constrained_size, size_out,
-        inset_start_out, inset_end_out, margin_start_out, margin_end_out);
+        is_block_direction, is_table, is_shrink_to_fit, constrained_size,
+        size_out, inset_start_out, inset_end_out, margin_start_out,
+        margin_end_out);
     return;
   }
 
@@ -380,6 +382,9 @@ void ComputeOutOfFlowInlineDimensions(
   DCHECK(dimensions);
 
   const auto& style = node.Style();
+  const bool is_table = node.IsTable();
+  const bool is_shrink_to_fit = is_table || node.ShouldBeConsideredAsReplaced();
+
   Length min_inline_length = style.LogicalMinWidth();
   base::Optional<MinMaxSizes> min_size_minmax = minmax_content_sizes;
   // We don't need to check for IsInlineSizeComputableFromBlockSize; this is
@@ -405,7 +410,6 @@ void ComputeOutOfFlowInlineDimensions(
   }
 
   // Tables are never allowed to go below their min-content size.
-  const bool is_table = node.IsTable();
   if (is_table)
     min_inline_size = std::max(min_inline_size, minmax_content_sizes->min_size);
 
@@ -438,7 +442,7 @@ void ComputeOutOfFlowInlineDimensions(
       style.LogicalInlineStart(), style.LogicalInlineEnd(), min_inline_size,
       max_inline_size, static_position.offset.inline_offset,
       GetStaticPositionEdge(static_position.inline_edge), is_start_dominant,
-      false /* is_block_direction */, is_table, inline_size,
+      false /* is_block_direction */, is_table, is_shrink_to_fit, inline_size,
       &dimensions->size.inline_size, &dimensions->inset.inline_start,
       &dimensions->inset.inline_end, &dimensions->margins.inline_start,
       &dimensions->margins.inline_end);
@@ -453,7 +457,13 @@ void ComputeOutOfFlowBlockDimensions(
     const base::Optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions) {
+  DCHECK(dimensions);
+
+  // NOTE: |is_shrink_to_fit| isn't symmetrical with the inline calculations.
   const auto& style = node.Style();
+  const bool is_table = node.IsTable();
+  const bool is_shrink_to_fit = is_table;
+
   // After partial size has been computed, child block size is either unknown,
   // or fully computed, there is no minmax. To express this, a 'fixed' minmax
   // is created where min and max are the same.
@@ -470,7 +480,6 @@ void ComputeOutOfFlowBlockDimensions(
       space, style, border_padding, style.LogicalMaxHeight());
 
   // Tables are never allowed to go below their "auto" block-size.
-  const bool is_table = node.IsTable();
   if (is_table)
     min_block_size = std::max(min_block_size, min_max_sizes->min_size);
 
@@ -500,7 +509,7 @@ void ComputeOutOfFlowBlockDimensions(
       style.MarginAfter(), style.LogicalTop(), style.LogicalBottom(),
       min_block_size, max_block_size, static_position.offset.block_offset,
       GetStaticPositionEdge(static_position.block_edge), is_start_dominant,
-      true /* is_block_direction */, is_table, block_size,
+      true /* is_block_direction */, is_table, is_shrink_to_fit, block_size,
       &dimensions->size.block_size, &dimensions->inset.block_start,
       &dimensions->inset.block_end, &dimensions->margins.block_start,
       &dimensions->margins.block_end);

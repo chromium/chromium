@@ -1013,22 +1013,12 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   } else if (!candidate_style.AspectRatio().IsAuto()) {
     has_aspect_ratio_without_intrinsic_size = true;
     aspect_ratio = node_info.node.GetAspectRatio();
-  } else if (should_be_considered_as_replaced) {
-    replaced_size =
-        LogicalSize{min_max_sizes->ShrinkToFit(
-                        node_info.constraint_space.AvailableSize().inline_size),
-                    kIndefiniteSize};
   }
 
   ComputeOutOfFlowInlineDimensions(
       node_info.node, node_info.constraint_space, border_padding,
       node_info.static_position, min_max_sizes, minmax_intrinsic_sizes_for_ar,
       replaced_size, container_writing_direction, &offset_info.node_dimensions);
-
-  // |should_be_considered_as_replaced| sets the inline-size.
-  // It does not set the block-size. This is a compatibility quirk.
-  if (!is_replaced && should_be_considered_as_replaced)
-    replaced_size.reset();
 
   // Elements with only aspect ratio compute their block size from
   // inline size and aspect ratio.
