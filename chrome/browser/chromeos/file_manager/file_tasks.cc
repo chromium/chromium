@@ -671,7 +671,7 @@ void FindFileHandlerTasks(Profile* profile,
     const Extension* extension = iter->get();
 
     // Check that the extension can be launched with files. This includes all
-    // platform apps and whitelisted extensions.
+    // platform apps and allowlisted extensions.
     if (!CanLaunchViaEvent(extension)) {
       continue;
     }
