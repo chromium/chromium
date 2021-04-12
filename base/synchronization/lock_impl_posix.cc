@@ -14,7 +14,7 @@
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
 
-#ifdef OS_MAC
+#if defined(OS_MAC) || defined(OS_LINUX)
 #include <dlfcn.h>
 #endif
 
@@ -58,7 +58,7 @@ std::string SystemErrorCodeToString(int error_code) {
 #define PRIORITY_INHERITANCE_LOCKS_POSSIBLE() 1
 #endif
 
-#ifdef OS_MAC
+#if defined(OS_MAC) || defined(OS_LINUX)
 
 static void (*gAddOrderedPthreadMutexFn)(const char*, pthread_mutex_t*);
 

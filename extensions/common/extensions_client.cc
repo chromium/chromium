@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/record_replay.h"
 #include "base/timer/elapsed_timer.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extensions_api_provider.h"
@@ -116,6 +117,9 @@ void ExtensionsClient::DoInitialize() {
 
   DCHECK(!ManifestHandler::IsRegistrationFinalized());
   PermissionsInfo* permissions_info = PermissionsInfo::GetInstance();
+
+  recordreplay::Assert("ExtensionsClient::DoInitialize");
+
   const base::ElapsedTimer timer;
   for (const auto& provider : api_providers_) {
     provider->RegisterManifestHandlers();

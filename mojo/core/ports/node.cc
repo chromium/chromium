@@ -105,7 +105,9 @@ void GenerateRandomPortName(PortName* name) {
 }  // namespace
 
 Node::Node(const NodeName& name, NodeDelegate* delegate)
-    : name_(name), delegate_(this, delegate), ports_lock_("Node.ports_lock_") {}
+    : name_(name), delegate_(this, delegate), ports_lock_("Node.ports_lock_") {
+  recordreplay::Assert("Node::Node %lu %lu", name_.v1, name_.v2);
+}
 
 Node::~Node() {
   if (!ports_.empty())

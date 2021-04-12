@@ -183,7 +183,9 @@ PlatformThreadId PlatformThread::CurrentId() {
   return pthread_mach_thread_np(pthread_self());
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   static NoDestructor<InitAtFork> init_at_fork;
-  if (g_thread_id == -1) {
+  // Check for zero here as well to workaround bug where g_thread_id isn't
+  // initialized properly when replaying.
+  if (g_thread_id == -1 || g_thread_id == 0) {
     g_thread_id = syscall(__NR_gettid);
   } else {
     DCHECK_EQ(g_thread_id, syscall(__NR_gettid))

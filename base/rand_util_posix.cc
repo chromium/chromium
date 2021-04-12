@@ -66,7 +66,7 @@ void RandBytes(void* output, size_t output_length) {
   // We have to call `getrandom` via Linux Syscall Support, rather than through
   // the libc wrapper, because we might not have an up-to-date libc (e.g. on
   // some bots).
-  const ssize_t r = HANDLE_EINTR(sys_getrandom(output, output_length, 0));
+  const ssize_t r = HANDLE_EINTR(syscall(SYS_getrandom, output, output_length, 0));
 
   // Return success only on total success. In case errno == ENOSYS (or any other
   // error), we'll fall through to reading from urandom below.

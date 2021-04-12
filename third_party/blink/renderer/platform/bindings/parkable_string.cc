@@ -507,7 +507,11 @@ ParkableStringImpl::Status ParkableStringImpl::CurrentStatus() const {
 
 bool ParkableStringImpl::CanParkNow() const {
   return CurrentStatus() == Status::kUnreferencedExternally &&
-         metadata_->age_ != Age::kYoung;
+         metadata_->age_ != Age::kYoung &&
+         // Never park strings when recording/replaying, as they can be unparked
+         // at non-deterministic points (e.g. during script compilation) and
+         // perform file accesses.
+         !recordreplay::IsRecordingOrReplaying();
 }
 
 void ParkableStringImpl::Unpark() {

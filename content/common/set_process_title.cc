@@ -34,6 +34,7 @@
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/process/process_metrics.h"
+#include "base/record_replay.h"
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
 // Linux/glibc doesn't natively have setproctitle().
@@ -47,6 +48,13 @@ namespace content {
     !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
 void SetProcessTitleFromCommandLine(const char** main_argv) {
+  // When recording/replaying the argument strings are not contiguous in memory
+  // and some of the logic used to set the process title will behave differently
+  // when replaying. For now we work around this by not setting the process title.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    return;
+  }
+
   // Build a single string which consists of all the arguments separated
   // by spaces. We can't actually keep them separate due to the way the
   // setproctitle() function works.

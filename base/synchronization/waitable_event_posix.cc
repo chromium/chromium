@@ -92,7 +92,7 @@ bool WaitableEvent::IsSignaled() {
 class SyncWaiter : public WaitableEvent::Waiter {
  public:
   SyncWaiter()
-      : fired_(false), signaling_event_(nullptr), lock_(), cv_(&lock_) {}
+      : fired_(false), signaling_event_(nullptr), lock_("SyncWaiter.lock_"), cv_(&lock_) {}
 
   bool Fire(WaitableEvent* signaling_event) override {
     base::AutoLock locked(lock_);
@@ -159,8 +159,9 @@ void WaitableEvent::Wait() {
 }
 
 bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
-  if (wait_delta <= TimeDelta())
+  if (wait_delta <= TimeDelta()) {
     return IsSignaled();
+  }
 
   // Record the event that this thread is blocking upon (for hang diagnosis) and
   // consider it blocked for scheduling purposes. Ignore this for non-blocking
@@ -384,7 +385,8 @@ size_t WaitableEvent::EnqueueMany(std::pair<WaitableEvent*, size_t>* waitables,
 WaitableEvent::WaitableEventKernel::WaitableEventKernel(
     ResetPolicy reset_policy,
     InitialState initial_state)
-    : manual_reset_(reset_policy == ResetPolicy::MANUAL),
+    : lock_("WaitableEventKernel.lock_"),
+      manual_reset_(reset_policy == ResetPolicy::MANUAL),
       signaled_(initial_state == InitialState::SIGNALED) {}
 
 WaitableEvent::WaitableEventKernel::~WaitableEventKernel() = default;
