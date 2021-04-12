@@ -22,6 +22,7 @@ proto_library("proto") {
     "layout_key_function.proto",
     "mux.proto",
     "process_stats.proto",
+    "remote_open_url.proto",
     "test_data_channel_manager.proto",
     "video.proto",
     "video_stats.proto",

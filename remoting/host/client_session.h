@@ -207,6 +207,10 @@ class ClientSession : public protocol::HostStub,
       const std::string& channel_name,
       std::unique_ptr<protocol::MessagePipe> pipe);
 
+  void CreateRemoteOpenUrlMessageHandler(
+      const std::string& channel_name,
+      std::unique_ptr<protocol::MessagePipe> pipe);
+
   EventHandler* event_handler_;
 
   // Used to create a DesktopEnvironment instance for this session.

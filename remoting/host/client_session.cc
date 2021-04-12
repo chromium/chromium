@@ -29,6 +29,7 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_shape_pump.h"
+#include "remoting/host/remote_open_url_message_handler.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/proto/control.pb.h"
@@ -196,6 +197,13 @@ void ClientSession::SetCapabilities(
     data_channel_manager_.RegisterCreateHandlerCallback(
         kRtcLogTransferDataChannelPrefix,
         base::BindRepeating(&ClientSession::CreateRtcLogTransferMessageHandler,
+                            base::Unretained(this)));
+  }
+
+  if (HasCapability(capabilities_, protocol::kRemoteOpenUrlCapability)) {
+    data_channel_manager_.RegisterCreateHandlerCallback(
+        RemoteOpenUrlMessageHandler::kChannelName,
+        base::BindRepeating(&ClientSession::CreateRemoteOpenUrlMessageHandler,
                             base::Unretained(this)));
   }
 
@@ -385,6 +393,8 @@ void ClientSession::OnConnectionAuthenticated() {
   host_capabilities_.append(protocol::kRtcLogTransferCapability);
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kWebrtcIceSdpRestartAction);
+  host_capabilities_.append(" ");
+  host_capabilities_.append(protocol::kRemoteOpenUrlCapability);
 
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();
@@ -873,6 +883,15 @@ void ClientSession::CreateActionMessageHandler(
   // of |pipe|. Once |pipe| is closed, this instance will be cleaned up.
   new ActionMessageHandler(channel_name, capabilities, std::move(pipe),
                            std::move(action_executor));
+}
+
+void ClientSession::CreateRemoteOpenUrlMessageHandler(
+    const std::string& channel_name,
+    std::unique_ptr<protocol::MessagePipe> pipe) {
+  // RemoteOpenUrlMessageHandler manages its own lifetime and is tied to the
+  // lifetime of |pipe|. Once |pipe| is closed, this instance will be cleaned
+  // up.
+  new RemoteOpenUrlMessageHandler(channel_name, std::move(pipe));
 }
 
 }  // namespace remoting

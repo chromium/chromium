@@ -17,6 +17,8 @@ constexpr char kRateLimitResizeRequests[] = "rateLimitResizeRequests";
 constexpr char kFileTransferCapability[] = "fileTransfer";
 constexpr char kRtcLogTransferCapability[] = "rtcLogTransfer";
 
+constexpr char kRemoteOpenUrlCapability[] = "remoteOpenUrl";
+
 // TODO(joedow): Ideally these would be dynamically created via the
 // DataChannelManager, we should consider moving them there if we begin using
 // WebRTC data channels for individual features more frequently.
