@@ -54,6 +54,12 @@ ArcCastReceiverService* ArcCastReceiverService::GetForBrowserContext(
   return ArcCastReceiverServiceFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcCastReceiverService* ArcCastReceiverService::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcCastReceiverServiceFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcCastReceiverService::ArcCastReceiverService(content::BrowserContext* context,
                                                ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {

@@ -32,6 +32,8 @@ class ArcCastReceiverService
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcCastReceiverService* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcCastReceiverService* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcCastReceiverService(content::BrowserContext* context,
                          ArcBridgeService* bridge_service);
