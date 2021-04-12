@@ -10,14 +10,16 @@
   font-family: reference-font;
   src: local(Ahem), url(/fonts/Ahem.ttf);
   size-adjust: 100%;
-  unicode-range: U+41-5A; /* Uppercase ASCII only */
+  /* Uppercase ASCII only + U+20 to make this "first available font" */
+  unicode-range: U+20,U+41-5A;
 }
 
 @font-face {
   font-family: large-font;
   src: local(Ahem), url(/fonts/Ahem.ttf);
   size-adjust: 150%;
-  unicode-range: U+41-5A; /* Uppercase ASCII only */
+  /* Uppercase ASCII only + U+20 to make this "first available font" */
+  unicode-range: U+20,U+41-5A;
 }
 
 div {
@@ -37,11 +39,11 @@ div {
 <p>size-adjust:100% should be the same as no override.</p>
 
 <div>
-  <span class="reference">The Quick Brown Fox</span>
+  <span class="reference">TheQuickBrownFox</span>
 </div>
 
 <p>size-adjust:150% should affect Ahem characters only.</p>
 
 <div>
-  <span class="large">The Quick Brown Fox</span>
+  <span class="large">TheQuickBrownFox</span>
 </div>
