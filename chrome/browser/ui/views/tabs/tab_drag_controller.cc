@@ -885,10 +885,6 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     move_loop_widget_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     views::Widget* browser_widget = GetAttachedBrowserWidget();
-    // Need to release the drag controller before starting the move loop as it's
-    // going to trigger capture lost, which cancels drag.
-    attached_context_->ReleaseDragController();
-    target_context->OwnDragController(this);
     // Disable animations so that we don't see a close animation on aero.
     browser_widget->SetVisibilityChangedAnimationsEnabled(false);
     if (can_release_capture_)
