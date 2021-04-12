@@ -162,7 +162,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   void FakeDefaultNetwork(NetworkHandle network, ConnectionType type);
   void FakeConnectionSubtypeChanged(ConnectionSubtype subtype);
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
   scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
   const base::android::ScopedJavaGlobalRef<jobject>
       java_network_change_notifier_;

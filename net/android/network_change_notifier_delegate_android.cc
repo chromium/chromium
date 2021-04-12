@@ -94,7 +94,7 @@ NetworkChangeNotifierDelegateAndroid::NetworkChangeNotifierDelegateAndroid()
 }
 
 NetworkChangeNotifierDelegateAndroid::~NetworkChangeNotifierDelegateAndroid() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   observers_->AssertEmpty();
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NetworkChangeNotifier_removeNativeObserver(
@@ -109,7 +109,7 @@ NetworkChangeNotifierDelegateAndroid::GetCurrentConnectionType() const {
 
 NetworkChangeNotifier::ConnectionSubtype
 NetworkChangeNotifierDelegateAndroid::GetCurrentConnectionSubtype() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return ConvertConnectionSubtype(
       Java_NetworkChangeNotifier_getCurrentConnectionSubtype(
           base::android::AttachCurrentThread(), java_network_change_notifier_));
@@ -153,7 +153,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyConnectionTypeChanged(
     const JavaParamRef<jobject>& obj,
     jint new_connection_type,
     jlong default_netid) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const ConnectionType actual_connection_type = ConvertConnectionType(
       new_connection_type);
   SetCurrentConnectionType(actual_connection_type);
@@ -191,7 +191,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyConnectionTypeChanged(
 
 jint NetworkChangeNotifierDelegateAndroid::GetConnectionType(JNIEnv*,
                                                              jobject) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return GetCurrentConnectionType();
 }
 
@@ -199,7 +199,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyMaxBandwidthChanged(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint subtype) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   double new_max_bandwidth =
       NetworkChangeNotifierAndroid::GetMaxBandwidthMbpsForConnectionSubtype(
           ConvertConnectionSubtype(subtype));
@@ -213,7 +213,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyOfNetworkConnect(
     const JavaParamRef<jobject>& obj,
     jlong net_id,
     jint connection_type) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   NetworkHandle network = net_id;
   bool already_exists;
   {
@@ -236,7 +236,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyOfNetworkSoonToDisconnect(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jlong net_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   NetworkHandle network = net_id;
   {
     base::AutoLock auto_lock(connection_lock_);
@@ -250,7 +250,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyOfNetworkDisconnect(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jlong net_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   NetworkHandle network = net_id;
   {
     base::AutoLock auto_lock(connection_lock_);
@@ -266,7 +266,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyPurgeActiveNetworkList(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jlongArray>& active_networks) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   NetworkList active_network_list;
   base::android::JavaLongArrayToInt64Vector(env, active_networks,
                                             &active_network_list);
