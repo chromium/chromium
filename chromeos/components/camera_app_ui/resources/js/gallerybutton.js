@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './chrome_util.js';
+import {assert, assertInstanceof} from './chrome_util.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as filesystem from './models/file_system.js';
@@ -32,7 +32,8 @@ const THUMBNAIL_WIDTH = 240;
 class CoverPhoto {
   /**
    * @param {!FileAccessEntry} file File entry of cover photo.
-   * @param {string} thumbnailUrl Url to its thumbnail.
+   * @param {?string} thumbnailUrl Url to its thumbnail. Might be null if the
+   *     thumbnail is failed to load.
    */
   constructor(file, thumbnailUrl) {
     /**
@@ -42,7 +43,7 @@ class CoverPhoto {
     this.file = file;
 
     /**
-     * @type {string}
+     * @type {?string}
      * @const
      */
     this.thumbnailUrl = thumbnailUrl;
@@ -60,7 +61,9 @@ class CoverPhoto {
    * Releases resources used by this cover photo.
    */
   release() {
-    URL.revokeObjectURL(this.thumbnailUrl);
+    if (this.thumbnailUrl !== null) {
+      URL.revokeObjectURL(this.thumbnailUrl);
+    }
   }
 
   /**
@@ -79,10 +82,17 @@ class CoverPhoto {
       return null;
     }
 
-    const thumbnail = filesystem.hasVideoPrefix(file) ?
-        await scaleVideo(blob, THUMBNAIL_WIDTH) :
-        await scaleImage(blob, THUMBNAIL_WIDTH);
-    return new CoverPhoto(file, URL.createObjectURL(thumbnail));
+    try {
+      const thumbnail = filesystem.hasVideoPrefix(file) ?
+          await scaleVideo(blob, THUMBNAIL_WIDTH) :
+          await scaleImage(blob, THUMBNAIL_WIDTH);
+      return new CoverPhoto(file, URL.createObjectURL(thumbnail));
+    } catch (e) {
+      reportError(
+          ErrorType.BROKEN_THUMBNAIL, ErrorLevel.ERROR,
+          assertInstanceof(e, Error));
+      return new CoverPhoto(file, null);
+    }
   }
 }
 
@@ -154,7 +164,9 @@ export class GalleryButton {
 
     this.button_.hidden = cover === null;
     this.button_.style.backgroundImage =
-        cover !== null ? `url("${cover.thumbnailUrl}")` : 'none';
+        cover !== null && cover.thumbnailUrl !== null ?
+        `url("${cover.thumbnailUrl}")` :
+        'none';
   }
 
   /**

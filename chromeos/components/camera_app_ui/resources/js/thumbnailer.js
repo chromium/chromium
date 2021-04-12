@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import * as dom from './dom.js';
-import {reportError} from './error.js';
 import {
-  ErrorLevel,
-  ErrorType,
+  EmptyThumbnailError,
+  LoadError,
+  PlayError,
+  PlayMalformedError,
 } from './type.js';
 import {newDrawingCanvas} from './util.js';
 import {WaitableEvent} from './waitable_event.js';
@@ -17,6 +18,8 @@ import {WaitableEvent} from './waitable_event.js';
  * @param {number} width Canvas width.
  * @param {number} height Canvas height.
  * @return {!Promise<!Blob>} Converted jpeg blob.
+ * @throws {!EmptyThumbnailError} Thrown when the data to generate thumbnail is
+ *     empty.
  */
 async function elementToJpegBlob(element, width, height) {
   const {canvas, ctx} = newDrawingCanvas({width, height});
@@ -27,13 +30,7 @@ async function elementToJpegBlob(element, width, height) {
    */
   const data = ctx.getImageData(0, 0, width, height).data;
   if (data.every((byte) => byte === 0)) {
-    reportError(
-        ErrorType.BROKEN_THUMBNAIL,
-        ErrorLevel.ERROR,
-        new Error('The thumbnail is empty'),
-    );
-    // Do not throw an error here. A black thumbnail is still better than no
-    // thumbnail to let user open the corresponding picutre in gallery.
+    throw new EmptyThumbnailError();
   }
 
   return new Promise((resolve) => {
@@ -45,28 +42,45 @@ async function elementToJpegBlob(element, width, height) {
  * Loads the blob into a <video> element.
  * @param {!Blob} blob
  * @return {!Promise<!HTMLVideoElement>}
+ * @throws {!Error} Thrown when it fails to load video.
  */
 async function loadVideoBlob(blob) {
   const el = dom.create('video', HTMLVideoElement);
-
   try {
-    await new Promise((resolve, reject) => {
-      el.addEventListener('error', () => {
-        reject(new Error(`Failed to load video: ${el.error.message}`));
-      });
-      const gotFrame = new WaitableEvent();
-      el.requestVideoFrameCallback(() => gotFrame.signal());
-      el.preload = 'auto';
-      el.src = URL.createObjectURL(blob);
-      Promise.allSettled([el.play(), gotFrame.timedWait(300)]).then(() => {
-        el.pause();
-        resolve();
-      });
+    const hasLoaded = new WaitableEvent();
+    el.addEventListener('error', () => {
+      hasLoaded.signal(false);
     });
+    el.addEventListener('load', () => {
+      hasLoaded.signal(true);
+    });
+    const gotFrame = new WaitableEvent();
+    el.requestVideoFrameCallback(() => gotFrame.signal());
+    el.preload = 'auto';
+    el.src = URL.createObjectURL(blob);
+    if (!(await hasLoaded.wait())) {
+      throw new LoadError(el.error.message);
+    }
+
+    try {
+      await el.play();
+    } catch (e) {
+      throw new PlayError(e.message);
+    }
+
+    try {
+      // The |requestVideoFrameCallback| may not be triggered when playing
+      // malformed video. Set 300ms timeout here to prevent UI be blocked
+      // forever.
+      await gotFrame.timedWait(300);
+    } catch (e) {
+      throw new PlayMalformedError(e.message);
+    } finally {
+      el.pause();
+    }
   } finally {
     URL.revokeObjectURL(el.src);
   }
-
   return el;
 }
 
