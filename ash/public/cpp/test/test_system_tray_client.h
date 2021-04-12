@@ -72,12 +72,17 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return show_wifi_sync_settings_count_;
   }
 
+  int show_sim_unlock_settings_count() const {
+    return show_sim_unlock_settings_count_;
+  }
+
  private:
   int show_bluetooth_settings_count_ = 0;
   int show_multi_device_setup_count_ = 0;
   int show_connected_devices_settings_count_ = 0;
   int show_os_settings_privacy_and_security_count_ = 0;
   int show_wifi_sync_settings_count_ = 0;
+  int show_sim_unlock_settings_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TestSystemTrayClient);
 };

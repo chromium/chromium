@@ -19,6 +19,10 @@
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
+namespace ash {
+class SystemTrayClient;
+}  // namespace ash
+
 namespace chromeos {
 
 class NetworkState;
@@ -48,11 +52,17 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   // Show a mobile activation error notification.
   void ShowMobileActivationErrorForGuid(const std::string& guid);
 
+  void set_system_tray_client(ash::SystemTrayClient* system_tray_client) {
+    system_tray_client_ = system_tray_client;
+  }
+
   static const char kNetworkConnectNotificationId[];
   static const char kNetworkActivateNotificationId[];
   static const char kNetworkOutOfCreditsNotificationId[];
 
  private:
+  friend class NetworkStateNotifierTest;
+
   struct VpnDetails {
     VpnDetails(const std::string& guid, const std::string& name)
         : guid(guid), name(name) {}
@@ -97,9 +107,12 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
 
   // Shows the network settings for |network_id|.
   void ShowNetworkSettings(const std::string& network_id);
+  void ShowSimUnlockSettings();
 
   // Shows the carrier account detail page for |network_id|.
   void ShowCarrierAccountDetail(const std::string& network_id);
+
+  ash::SystemTrayClient* system_tray_client_ = nullptr;
 
   // The details of the connected VPN network if any, otherwise null.
   // Used for displaying the VPN disconnected notification.
