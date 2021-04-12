@@ -173,19 +173,15 @@ class TabListMediator {
      */
     static class ShoppingPersistedTabDataFetcher {
         protected Tab mTab;
-        protected TabListModel mModel;
         protected PriceWelcomeMessageController mPriceWelcomeMessageController;
 
         /**
          * @param tab {@link Tab} {@link ShoppingPersistedTabData} will be acquired for.
-         * @param model {@link TabListModel} to check if we already have the price welcome message
-         *         in the model.
          * @param priceWelcomeMessageController to show the price welcome message.
          */
-        ShoppingPersistedTabDataFetcher(Tab tab, @Nullable TabListModel model,
-                @Nullable PriceWelcomeMessageController priceWelcomeMessageController) {
+        ShoppingPersistedTabDataFetcher(
+                Tab tab, @Nullable PriceWelcomeMessageController priceWelcomeMessageController) {
             mTab = tab;
-            mModel = model;
             mPriceWelcomeMessageController = priceWelcomeMessageController;
         }
 
@@ -203,19 +199,12 @@ class TabListMediator {
         @VisibleForTesting
         void maybeShowPriceWelcomeMessage(
                 @Nullable ShoppingPersistedTabData shoppingPersistedTabData) {
-            // TODO(crbug.com/1166702): Use another method to check if we already have the price
-            // welcome message in tab switcher instead of using
-            // mModel.lastIndexForMessageItemFromType(MessageService.MessageType.PRICE_MESSAGE),
-            // because we may have other price message types.
             // Avoid inserting message while RecyclerView is computing a layout.
             new Handler().post(() -> {
-                if (!PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled() || (mModel == null)
+                if (!PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled()
                         || (mPriceWelcomeMessageController == null)
                         || (shoppingPersistedTabData == null)
-                        || (shoppingPersistedTabData.getPriceDrop() == null)
-                        || (mModel.lastIndexForMessageItemFromType(
-                                    MessageService.MessageType.PRICE_MESSAGE)
-                                != TabModel.INVALID_TAB_INDEX)) {
+                        || (shoppingPersistedTabData.getPriceDrop() == null)) {
                     return;
                 }
                 mPriceWelcomeMessageController.showPriceWelcomeMessage(
@@ -1157,7 +1146,7 @@ class TabListMediator {
                 && PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
             mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                     new ShoppingPersistedTabDataFetcher(
-                            pseudoTab.getTab(), mModel, mPriceWelcomeMessageController));
+                            pseudoTab.getTab(), mPriceWelcomeMessageController));
         } else {
             mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
         }

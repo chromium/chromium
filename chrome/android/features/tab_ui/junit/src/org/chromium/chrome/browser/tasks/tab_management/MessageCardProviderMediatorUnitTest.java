@@ -350,4 +350,18 @@ public class MessageCardProviderMediatorUnitTest {
                         .model;
         Assert.assertTrue(messageModel.get(MessageCardViewProperties.IS_INCOGNITO));
     }
+
+    @Test
+    public void isMessageShownTest() {
+        Assert.assertFalse(mMediator.isMessageShown(
+                MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME));
+        enqueueMessageItem(MessageService.MessageType.PRICE_MESSAGE, -1);
+        // Mock pulling this message, which will move the message from mMessageItems to
+        // mShownMessageItems.
+        mMediator.getNextMessageItemForType(MessageService.MessageType.PRICE_MESSAGE);
+        Assert.assertTrue(mMediator.isMessageShown(
+                MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME));
+        Assert.assertFalse(mMediator.isMessageShown(
+                MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_ALERTS));
+    }
 }

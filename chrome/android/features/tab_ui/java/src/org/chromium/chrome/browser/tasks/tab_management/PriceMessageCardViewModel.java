@@ -42,6 +42,7 @@ public class PriceMessageCardViewModel {
         return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                 .with(MessageCardViewProperties.MESSAGE_TYPE,
                         MessageService.MessageType.PRICE_MESSAGE)
+                .with(MessageCardViewProperties.MESSAGE_IDENTIFIER, data.getType())
                 .with(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, uiDismissActionProvider)
                 .with(MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
                         data.getDismissActionProvider())

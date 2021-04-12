@@ -40,6 +40,7 @@ public class TabSuggestionMessageCardViewModel {
         return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                 .with(MessageCardViewProperties.MESSAGE_TYPE,
                         MessageService.MessageType.TAB_SUGGESTION)
+                .with(MessageCardViewProperties.MESSAGE_IDENTIFIER, data.getActionType())
                 .with(MessageCardViewProperties.ICON_PROVIDER,
                         TabSuggestionMessageCardViewModel::getIconDrawable)
                 .with(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, uiDismissActionProvider)

@@ -17,6 +17,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 class MessageCardViewProperties {
     public static final PropertyModel.ReadableIntPropertyKey MESSAGE_TYPE =
             new PropertyModel.ReadableIntPropertyKey();
+    // Identifier is the subtype of message. For example, the message with type PRICE_MESSAGE may
+    // have the identifier PRICE_WELCOME or PRICE_ALERTS.
+    public static final PropertyModel.ReadableIntPropertyKey MESSAGE_IDENTIFIER =
+            new PropertyModel.ReadableIntPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<String> ACTION_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<String> DESCRIPTION_TEXT =
@@ -54,10 +58,10 @@ class MessageCardViewProperties {
             .WritableObjectPropertyKey<ShoppingPersistedTabData.PriceDrop> PRICE_DROP =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {ACTION_TEXT, DESCRIPTION_TEXT, DESCRIPTION_TEXT_TEMPLATE,
-                    MESSAGE_TYPE, ICON_PROVIDER, UI_ACTION_PROVIDER, UI_DISMISS_ACTION_PROVIDER,
-                    MESSAGE_SERVICE_ACTION_PROVIDER, MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
-                    DISMISS_BUTTON_CONTENT_DESCRIPTION, SHOULD_KEEP_AFTER_REVIEW, IS_ICON_VISIBLE,
-                    CARD_TYPE, CARD_ALPHA, IS_INCOGNITO, TITLE_TEXT, PRICE_DROP};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ACTION_TEXT, DESCRIPTION_TEXT,
+            DESCRIPTION_TEXT_TEMPLATE, MESSAGE_TYPE, MESSAGE_IDENTIFIER, ICON_PROVIDER,
+            UI_ACTION_PROVIDER, UI_DISMISS_ACTION_PROVIDER, MESSAGE_SERVICE_ACTION_PROVIDER,
+            MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER, DISMISS_BUTTON_CONTENT_DESCRIPTION,
+            SHOULD_KEEP_AFTER_REVIEW, IS_ICON_VISIBLE, CARD_TYPE, CARD_ALPHA, IS_INCOGNITO,
+            TITLE_TEXT, PRICE_DROP};
 }

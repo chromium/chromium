@@ -29,6 +29,11 @@ public class MessageService {
         int ALL = 4;
     }
 
+    // This identifier is used to serve messages that have no subtype, such as IPH. If one message
+    // type has multiple subtypes such as PRICE_MESSAGE, its service needs to define its own
+    // identifiers which should be used when creating the message card view model.
+    public static final int DEFAULT_MESSAGE_IDENTIFIER = -1;
+
     /**
      * This is a data wrapper. Implement this interface to send notification with data to all the
      * observers.

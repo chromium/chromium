@@ -727,7 +727,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
             extends TabListMediator.ShoppingPersistedTabDataFetcher {
         private ShoppingPersistedTabData mShoppingPersistedTabData;
         MockShoppingPersistedTabDataFetcher(Tab tab) {
-            super(tab, null, null);
+            super(tab, null);
         }
 
         public void setPriceStrings(String priceString, String previousPriceString) {

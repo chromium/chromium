@@ -528,7 +528,9 @@ public class TabSwitcherCoordinator
     @Override
     public void showPriceWelcomeMessage(PriceMessageService.PriceTabData priceTabData) {
         if (mPriceMessageService == null
-                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled()) {
+                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled()
+                || mMessageCardProviderCoordinator.isMessageShown(
+                        MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME)) {
             return;
         }
         mPriceMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, priceTabData);

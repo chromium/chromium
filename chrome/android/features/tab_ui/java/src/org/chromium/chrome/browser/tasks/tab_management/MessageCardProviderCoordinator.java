@@ -59,6 +59,15 @@ public class MessageCardProviderCoordinator {
     }
 
     /**
+     * @param messageType The {@link MessageService.MessageType} associated with the message.
+     * @param identifier The identifier associated with the message.
+     * @return Whether the given message is shown.
+     */
+    boolean isMessageShown(@MessageService.MessageType int messageType, int identifier) {
+        return mMediator.isMessageShown(messageType, identifier);
+    }
+
+    /**
      * Clean up all member fields.
      */
     public void destroy() {

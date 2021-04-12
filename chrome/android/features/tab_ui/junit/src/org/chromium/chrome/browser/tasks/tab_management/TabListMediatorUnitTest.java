@@ -2354,7 +2354,7 @@ public class TabListMediatorUnitTest {
     public void testMaybeShowPriceWelcomeMessage() {
         prepareTestMaybeShowPriceWelcomeMessage();
         ShoppingPersistedTabDataFetcher fetcher =
-                new ShoppingPersistedTabDataFetcher(mTab1, mModel, mPriceWelcomeMessageController);
+                new ShoppingPersistedTabDataFetcher(mTab1, mPriceWelcomeMessageController);
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         verify(mPriceWelcomeMessageController, times(1)).showPriceWelcomeMessage(mPriceTabData);
     }
@@ -2363,7 +2363,7 @@ public class TabListMediatorUnitTest {
     public void testMaybeShowPriceWelcomeMessage_MessageDisabled() {
         prepareTestMaybeShowPriceWelcomeMessage();
         ShoppingPersistedTabDataFetcher fetcher =
-                new ShoppingPersistedTabDataFetcher(mTab1, mModel, mPriceWelcomeMessageController);
+                new ShoppingPersistedTabDataFetcher(mTab1, mPriceWelcomeMessageController);
 
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, false);
@@ -2376,11 +2376,7 @@ public class TabListMediatorUnitTest {
     public void testMaybeShowPriceWelcomeMessage_NullParameter() {
         prepareTestMaybeShowPriceWelcomeMessage();
 
-        new ShoppingPersistedTabDataFetcher(mTab1, null, mPriceWelcomeMessageController)
-                .maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
-        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
-
-        new ShoppingPersistedTabDataFetcher(mTab1, mModel, null)
+        new ShoppingPersistedTabDataFetcher(mTab1, null)
                 .maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
     }
@@ -2389,25 +2385,12 @@ public class TabListMediatorUnitTest {
     public void testMaybeShowPriceWelcomeMessage_NoPriceDrop() {
         prepareTestMaybeShowPriceWelcomeMessage();
         ShoppingPersistedTabDataFetcher fetcher =
-                new ShoppingPersistedTabDataFetcher(mTab1, mModel, mPriceWelcomeMessageController);
+                new ShoppingPersistedTabDataFetcher(mTab1, mPriceWelcomeMessageController);
 
         fetcher.maybeShowPriceWelcomeMessage(null);
         verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
 
         doReturn(null).when(mShoppingPersistedTabData).getPriceDrop();
-        fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
-        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
-    }
-
-    @Test
-    public void testMaybeShowPriceWelcomeMessage_AlreadyHasMessage() {
-        prepareTestMaybeShowPriceWelcomeMessage();
-        ShoppingPersistedTabDataFetcher fetcher =
-                new ShoppingPersistedTabDataFetcher(mTab1, mModel, mPriceWelcomeMessageController);
-
-        // Simulate that we already has the message.
-        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
-
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
     }
@@ -2841,7 +2824,5 @@ public class TabListMediatorUnitTest {
         mPriceDrop = new PriceDrop("1", "2");
         mPriceTabData = new PriceTabData(TAB1_ID, mPriceDrop);
         doReturn(mPriceDrop).when(mShoppingPersistedTabData).getPriceDrop();
-        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE),
-                equalTo(TabModel.INVALID_TAB_INDEX));
     }
 }

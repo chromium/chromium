@@ -93,6 +93,13 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         return message;
     }
 
+    boolean isMessageShown(@MessageService.MessageType int messageType, int identifier) {
+        if (!mShownMessageItems.containsKey(messageType)) return false;
+        return mShownMessageItems.get(messageType)
+                       .model.get(MessageCardViewProperties.MESSAGE_IDENTIFIER)
+                == identifier;
+    }
+
     private PropertyModel buildModel(int messageType, MessageService.MessageData data) {
         switch (messageType) {
             case TAB_SUGGESTION:
