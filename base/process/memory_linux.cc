@@ -119,7 +119,7 @@ bool UncheckedMalloc(size_t size, void** result) {
     (!defined(LIBC_GLIBC) && !BUILDFLAG(USE_TCMALLOC))
   *result = malloc(size);
 #elif defined(LIBC_GLIBC) && !BUILDFLAG(USE_TCMALLOC)
-  *result = __libc_malloc(size);
+  *result = malloc(size);
 #elif BUILDFLAG(USE_TCMALLOC)
   *result = tc_malloc_skip_new_handler(size);
 #endif
