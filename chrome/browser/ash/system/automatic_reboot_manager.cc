@@ -167,7 +167,8 @@ AutomaticRebootManager::AutomaticRebootManager(const base::TickClock* clock)
   if (!session_manager::SessionManager::Get()->IsSessionStarted()) {
     if (ui::UserActivityDetector::Get())
       ui::UserActivityDetector::Get()->AddObserver(this);
-    session_manager_observer_.Add(session_manager::SessionManager::Get());
+    session_manager_observation_.Observe(
+        session_manager::SessionManager::Get());
     login_screen_idle_timer_ = std::make_unique<base::OneShotTimer>();
     OnUserActivity(nullptr);
   }
@@ -252,7 +253,7 @@ void AutomaticRebootManager::OnUserSessionStarted(bool is_primary_user) {
   // a relevant criterion.
   if (ui::UserActivityDetector::Get())
     ui::UserActivityDetector::Get()->RemoveObserver(this);
-  session_manager_observer_.RemoveAll();
+  session_manager_observation_.Reset();
   login_screen_idle_timer_.reset();
 }
 

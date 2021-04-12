@@ -576,8 +576,7 @@ DriveIntegrationService::DriveIntegrationService(
       drivefs_holder_(std::make_unique<DriveFsHolder>(
           profile_,
           this,
-          std::move(test_drivefs_mojo_listener_factory))),
-      power_manager_observer_(this) {
+          std::move(test_drivefs_mojo_listener_factory))) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(profile && !profile->IsOffTheRecord());
 
@@ -604,7 +603,7 @@ DriveIntegrationService::DriveIntegrationService(
 
   // PowerManagerClient is unset in unit tests.
   if (chromeos::PowerManagerClient::Get()) {
-    power_manager_observer_.Add(chromeos::PowerManagerClient::Get());
+    power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
   }
   SetEnabled(drive::util::IsDriveEnabledForProfile(profile));
 }

@@ -8,7 +8,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/user_manager/user_manager.h"
@@ -115,7 +115,7 @@ class MagnificationManager
   void HandleFocusChanged(const gfx::Rect& bounds_in_screen, bool is_editable);
 
   Profile* profile_ = nullptr;
-  ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // Last mouse event time - used for ignoring focus changes for a few
   // milliseconds after the last mouse event.

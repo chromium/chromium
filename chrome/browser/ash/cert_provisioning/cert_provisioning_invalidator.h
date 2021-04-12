@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/chromeos/policy/affiliated_invalidation_service_provider.h"
 #include "components/invalidation/public/invalidation_handler.h"
@@ -90,12 +90,12 @@ class CertProvisioningInvalidationHandler
   // An invalidation service providing the handler with incoming invalidations.
   invalidation::InvalidationService* const invalidation_service_;
 
-  ScopedObserver<
+  base::ScopedObservation<
       invalidation::InvalidationService,
       invalidation::InvalidationHandler,
       &invalidation::InvalidationService::RegisterInvalidationHandler,
       &invalidation::InvalidationService::UnregisterInvalidationHandler>
-      invalidation_service_observer_{this};
+      invalidation_service_observation_{this};
 
   // A topic representing certificate invalidations.
   const invalidation::Topic topic_;

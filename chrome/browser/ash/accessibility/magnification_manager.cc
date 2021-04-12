@@ -204,9 +204,11 @@ void MagnificationManager::SetProfileByUser(const user_manager::User* user) {
 }
 
 void MagnificationManager::SetProfile(Profile* profile) {
-  if (profile_)
-    profile_observer_.Remove(profile_);
-  DCHECK(!profile_observer_.IsObservingSources());
+  if (profile_) {
+    DCHECK(profile_observation_.IsObservingSource(profile_));
+    profile_observation_.Reset();
+  }
+  DCHECK(!profile_observation_.IsObserving());
 
   pref_change_registrar_.reset();
 
@@ -236,7 +238,7 @@ void MagnificationManager::SetProfile(Profile* profile) {
             &MagnificationManager::UpdateDockedMagnifierFromPrefs,
             base::Unretained(this)));
 
-    profile_observer_.Add(profile);
+    profile_observation_.Observe(profile);
   }
 
   profile_ = profile;

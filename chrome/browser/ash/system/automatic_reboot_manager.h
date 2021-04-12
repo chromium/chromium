@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -178,9 +178,9 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   base::ObserverList<AutomaticRebootManagerObserver, true>::Unchecked
       observers_;
 
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_manager_observer_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
 
   base::WeakPtrFactory<AutomaticRebootManager> weak_ptr_factory_{this};
 

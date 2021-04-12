@@ -1032,8 +1032,8 @@ bool AccessibilityManager::IsBrailleDisplayConnected() const {
 
 void AccessibilityManager::CheckBrailleState() {
   BrailleController* braille_controller = GetBrailleController();
-  if (!scoped_braille_observer_.IsObserving(braille_controller))
-    scoped_braille_observer_.Add(braille_controller);
+  if (!scoped_braille_observation_.IsObservingSource(braille_controller))
+    scoped_braille_observation_.Observe(braille_controller);
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&BrailleController::GetDisplayState,
@@ -1125,8 +1125,9 @@ void AccessibilityManager::SetProfile(Profile* profile) {
     return;
 
   if (profile_)
-    profile_observer_.Remove(profile_);
-  DCHECK(!profile_observer_.IsObservingSources());
+    DCHECK(profile_observation_.IsObservingSource(profile_));
+  profile_observation_.Reset();
+  DCHECK(!profile_observation_.IsObserving());
 
   pref_change_registrar_.reset();
   local_state_pref_change_registrar_.reset();
@@ -1225,10 +1226,10 @@ void AccessibilityManager::SetProfile(Profile* profile) {
 
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile);
-    if (!extension_registry_observer_.IsObserving(registry))
-      extension_registry_observer_.Add(registry);
+    if (!extension_registry_observations_.IsObservingSource(registry))
+      extension_registry_observations_.AddObservation(registry);
 
-    profile_observer_.Add(profile);
+    profile_observation_.Observe(profile);
   }
 
   bool had_profile = (profile_ != NULL);
@@ -1438,7 +1439,7 @@ void AccessibilityManager::OnExtensionUnloaded(
 }
 
 void AccessibilityManager::OnShutdown(extensions::ExtensionRegistry* registry) {
-  extension_registry_observer_.Remove(registry);
+  extension_registry_observations_.RemoveObservation(registry);
 }
 
 void AccessibilityManager::PostLoadChromeVox() {
@@ -1587,8 +1588,9 @@ void AccessibilityManager::SetKeyboardListenerExtensionId(
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(context);
-  if (!extension_registry_observer_.IsObserving(registry) && !id.empty())
-    extension_registry_observer_.Add(registry);
+  if (!extension_registry_observations_.IsObservingSource(registry) &&
+      !id.empty())
+    extension_registry_observations_.AddObservation(registry);
 }
 
 bool AccessibilityManager::ToggleDictation() {

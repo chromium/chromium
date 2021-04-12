@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
@@ -250,9 +250,9 @@ class CertProvisioningSchedulerImpl
   // scheduled but not executed yet.
   bool notify_observers_pending_ = false;
 
-  ScopedObserver<platform_keys::PlatformKeysService,
-                 platform_keys::PlatformKeysServiceObserver>
-      scoped_platform_keys_service_observer_{this};
+  base::ScopedObservation<platform_keys::PlatformKeysService,
+                          platform_keys::PlatformKeysServiceObserver>
+      scoped_platform_keys_service_observation_{this};
 
   base::WeakPtrFactory<CertProvisioningSchedulerImpl> weak_factory_{this};
 };

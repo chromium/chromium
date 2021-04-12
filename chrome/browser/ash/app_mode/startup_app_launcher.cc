@@ -55,7 +55,7 @@ StartupAppLauncher::StartupAppLauncher(Profile* profile,
     : KioskAppLauncher(delegate), profile_(profile), app_id_(app_id) {
   DCHECK(profile_);
   DCHECK(crx_file::id_util::IdIsValid(app_id_));
-  kiosk_app_manager_observer_.Add(KioskAppManager::Get());
+  kiosk_app_manager_observation_.Observe(KioskAppManager::Get());
 }
 
 StartupAppLauncher::~StartupAppLauncher() {
@@ -204,7 +204,7 @@ void StartupAppLauncher::MaybeLaunchApp() {
     ready_to_launch_ = true;
     // Updates to cached primary app crx will be ignored after this point, so
     // there is no need to observe the kiosk app manager any longer.
-    kiosk_app_manager_observer_.RemoveAll();
+    kiosk_app_manager_observation_.Reset();
 
     SetSecondaryAppsEnabledState(extension);
 
@@ -277,7 +277,7 @@ void StartupAppLauncher::OnFinishCrxInstall(const std::string& extension_id,
                << ", success=" << success;
 
   if (DidPrimaryOrSecondaryAppFailedToInstall(success, extension_id)) {
-    install_observer_.RemoveAll();
+    install_observation_.Reset();
     OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
     return;
   }
@@ -290,7 +290,7 @@ void StartupAppLauncher::OnFinishCrxInstall(const std::string& extension_id,
     return;
   }
 
-  install_observer_.RemoveAll();
+  install_observation_.Reset();
   if (delegate_->IsShowingNetworkConfigScreen()) {
     SYSLOG(WARNING) << "Showing network config screen";
     return;
@@ -481,7 +481,7 @@ void StartupAppLauncher::BeginInstall() {
           ->IsIdPending(app_id_)) {
     delegate_->OnAppInstalling();
     // Observe the crx installation events.
-    install_observer_.Add(
+    install_observation_.Observe(
         extensions::InstallTrackerFactory::GetForBrowserContext(profile_));
     return;
   }
@@ -527,7 +527,7 @@ void StartupAppLauncher::MaybeInstallSecondaryApps() {
   if (IsAnySecondaryAppPending()) {
     delegate_->OnAppInstalling();
     // Observe the crx installation events.
-    install_observer_.Add(
+    install_observation_.Observe(
         extensions::InstallTrackerFactory::GetForBrowserContext(profile_));
     return;
   }

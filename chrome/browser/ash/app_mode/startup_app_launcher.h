@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
@@ -113,11 +113,12 @@ class StartupAppLauncher : public KioskAppLauncher,
 
   extensions::AppWindowRegistry* window_registry_;
 
-  ScopedObserver<KioskAppManagerBase, KioskAppManagerObserver>
-      kiosk_app_manager_observer_{this};
+  base::ScopedObservation<KioskAppManagerBase, KioskAppManagerObserver>
+      kiosk_app_manager_observation_{this};
 
-  ScopedObserver<extensions::InstallTracker, extensions::InstallObserver>
-      install_observer_{this};
+  base::ScopedObservation<extensions::InstallTracker,
+                          extensions::InstallObserver>
+      install_observation_{this};
 
   base::WeakPtrFactory<StartupAppLauncher> weak_ptr_factory_{this};
 

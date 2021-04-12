@@ -74,7 +74,8 @@ void SystemClock::LoggedInStateChanged() {
 
 void SystemClock::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_EQ(profile, user_profile_);
-  profile_observer_.Remove(profile);
+  DCHECK(profile_observation_.IsObservingSource(profile));
+  profile_observation_.Reset();
   user_pref_registrar_.reset();
   user_profile_ = nullptr;
 }
@@ -102,8 +103,8 @@ void SystemClock::SetProfileByUser(const user_manager::User* user) {
 
 void SystemClock::SetProfile(Profile* profile) {
   user_profile_ = profile;
-  profile_observer_.RemoveAll();
-  profile_observer_.Add(profile);
+  profile_observation_.Reset();
+  profile_observation_.Observe(profile);
   PrefService* prefs = profile->GetPrefs();
   user_pref_registrar_.reset(new PrefChangeRegistrar);
   user_pref_registrar_->Init(prefs);

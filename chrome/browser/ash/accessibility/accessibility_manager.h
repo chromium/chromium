@@ -16,7 +16,8 @@
 #include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/chromevox_panel.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
@@ -440,7 +441,7 @@ class AccessibilityManager
 
   // Profile which has the current a11y context.
   Profile* profile_ = nullptr;
-  ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   content::NotificationRegistrar notification_registrar_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
@@ -457,9 +458,10 @@ class AccessibilityManager
   AccessibilityStatusCallbackList callback_list_;
 
   bool braille_display_connected_ = false;
-  ScopedObserver<extensions::api::braille_display_private::BrailleController,
-                 extensions::api::braille_display_private::BrailleObserver>
-      scoped_braille_observer_{this};
+  base::ScopedObservation<
+      extensions::api::braille_display_private::BrailleController,
+      extensions::api::braille_display_private::BrailleObserver>
+      scoped_braille_observation_{this};
 
   bool braille_ime_current_ = false;
 
@@ -471,9 +473,9 @@ class AccessibilityManager
   bool keyboard_listener_capture_ = false;
 
   // Listen to extension unloaded notifications.
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedMultiSourceObservation<extensions::ExtensionRegistry,
+                                     extensions::ExtensionRegistryObserver>
+      extension_registry_observations_{this};
 
   std::unique_ptr<AccessibilityExtensionLoader>
       accessibility_common_extension_loader_;

@@ -11,7 +11,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -86,7 +86,7 @@ class SystemClock : public chromeos::LoginState::Observer,
   base::Optional<base::HourClockType> scoped_hour_clock_type_;
 
   Profile* user_profile_ = nullptr;
-  ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> user_pref_registrar_;
 
   base::ObserverList<SystemClockObserver>::Unchecked observer_list_;

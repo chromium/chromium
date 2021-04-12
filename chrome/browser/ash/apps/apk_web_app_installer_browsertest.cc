@@ -11,7 +11,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -96,12 +96,12 @@ class ApkWebAppInstallerBrowserTest : public InProcessBrowserTest,
   void SetUpWebApps() {
     provider_ = web_app::WebAppProvider::Get(browser()->profile());
     DCHECK(provider_);
-    observer_.Add(&provider_->registrar());
+    observation_.Observe(&provider_->registrar());
   }
 
   void TearDownWebApps() {
     provider_ = nullptr;
-    observer_.RemoveAll();
+    observation_.Reset();
   }
 
   void SetUpOnMainThread() override {
@@ -171,8 +171,8 @@ class ApkWebAppInstallerBrowserTest : public InProcessBrowserTest,
   }
 
  protected:
-  ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
-      observer_{this};
+  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+      observation_{this};
   ArcAppListPrefs* arc_app_list_prefs_ = nullptr;
   web_app::WebAppProvider* provider_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;

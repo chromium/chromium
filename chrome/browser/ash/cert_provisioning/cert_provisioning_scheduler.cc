@@ -151,7 +151,7 @@ CertProvisioningSchedulerImpl::CertProvisioningSchedulerImpl(
   pref_name_ = GetPrefNameForCertProfiles(cert_scope);
   CHECK(pref_name_);
 
-  scoped_platform_keys_service_observer_.Add(platform_keys_service_);
+  scoped_platform_keys_service_observation_.Observe(platform_keys_service_);
 
   network_state_handler_->AddObserver(this, FROM_HERE);
 
@@ -711,7 +711,7 @@ void CertProvisioningSchedulerImpl::OnPlatformKeysServiceShutDown() {
   pref_change_registrar_.RemoveAll();
   weak_factory_.InvalidateWeakPtrs();
 
-  scoped_platform_keys_service_observer_.RemoveAll();
+  scoped_platform_keys_service_observation_.Reset();
   platform_keys_service_ = nullptr;
 }
 
