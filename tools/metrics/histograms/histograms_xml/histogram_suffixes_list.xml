@@ -849,6 +849,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="AndroidGATTEvents" separator=".">
+  <obsolete>
+    Removed 2021/04/12. crbug.com/1052934
+  </obsolete>
   <suffix name="onCharacteristicRead.Status" label=""/>
   <suffix name="onCharacteristicWrite.Status" label=""/>
   <suffix name="onConnectionStateChange.Status.Connected"

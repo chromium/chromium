@@ -263,6 +263,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.Android" enum="AndroidGATTStatusResult"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed 2021/04/12. crbug.com/1052934
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="AndroidGATTEvents" -->
 
   <owner>ortuno@chromium.org</owner>
