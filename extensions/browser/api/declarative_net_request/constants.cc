@@ -74,12 +74,6 @@ const char kErrorHeaderValuePresent[] =
     "removed.";
 const char kErrorCannotAppendRequestHeader[] =
     "Rule with id * must not specify a request header to be appended.";
-const char kErrorTabIdsOnNonSessionRule[] =
-    "Rule with id * specifies a value for \"*\" or \"*\" key. These are only "
-    "supported for session-scoped rules.";
-const char kErrorTabIdDuplicated[] =
-    "Rule with id * includes and excludes the same tab ID.";
-
 const char kErrorListNotPassed[] = "Rules file must contain a list.";
 
 const char kRuleCountExceeded[] =
@@ -145,8 +139,6 @@ const char kErrorGetMatchedRulesMissingPermissions[] =
     "The extension must have the declarativeNetRequestFeedback permission or "
     "have activeTab granted for the specified tab ID in order to call this "
     "function.";
-
-const char kEmbedderConditionsBufferIdentifier[] = "EMBEDDER_CONDITIONS";
 
 }  // namespace declarative_net_request
 }  // namespace extensions

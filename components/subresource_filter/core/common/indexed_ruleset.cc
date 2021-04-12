@@ -17,8 +17,6 @@ namespace {
 namespace proto = url_pattern_index::proto;
 using FindRuleStrategy =
     url_pattern_index::UrlPatternIndexMatcher::FindRuleStrategy;
-using EmbedderConditionsMatcher =
-    url_pattern_index::UrlPatternIndexMatcher::EmbedderConditionsMatcher;
 
 // A helper function to get the checksum on a data buffer.
 int LocalGetChecksum(const uint8_t* data, size_t size) {
@@ -54,12 +52,12 @@ VerifyStatus GetVerifyStatus(const uint8_t* buffer,
 
 // RulesetIndexer --------------------------------------------------------------
 
-const int RulesetIndexer::kIndexedFormatVersion = 30;
+const int RulesetIndexer::kIndexedFormatVersion = 29;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
 // updating RulesetIndexer::kIndexedFormatVersion.
-static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 9,
+static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 8,
               "kUrlPatternIndexFormatVersion has changed, make sure you've "
               "also updated RulesetIndexer::kIndexedFormatVersion above.");
 
@@ -138,7 +136,7 @@ bool IndexedRulesetMatcher::ShouldDisableFilteringForDocument(
       document_url, parent_document_origin, proto::ELEMENT_TYPE_UNSPECIFIED,
       activation_type,
       FirstPartyOrigin::IsThirdParty(document_url, parent_document_origin),
-      false, EmbedderConditionsMatcher(), FindRuleStrategy::kAny);
+      false, FindRuleStrategy::kAny);
 }
 
 LoadPolicy IndexedRulesetMatcher::GetLoadPolicyForResourceLoad(
@@ -163,19 +161,17 @@ const url_pattern_index::flat::UrlRule* IndexedRulesetMatcher::MatchedUrlRule(
     url_pattern_index::proto::ElementType element_type,
     bool disable_generic_rules) const {
   const bool is_third_party = first_party.IsThirdParty(url);
-  const EmbedderConditionsMatcher embedder_conditions_matcher;
 
-  const url_pattern_index::flat::UrlRule* blocklist_rule = blocklist_.FindMatch(
-      url, first_party.origin(), element_type,
-      proto::ACTIVATION_TYPE_UNSPECIFIED, is_third_party, disable_generic_rules,
-      embedder_conditions_matcher, FindRuleStrategy::kAny);
+  const url_pattern_index::flat::UrlRule* blocklist_rule =
+      blocklist_.FindMatch(url, first_party.origin(), element_type,
+                           proto::ACTIVATION_TYPE_UNSPECIFIED, is_third_party,
+                           disable_generic_rules, FindRuleStrategy::kAny);
   const url_pattern_index::flat::UrlRule* allowlist_rule = nullptr;
   if (blocklist_rule) {
     allowlist_rule =
         allowlist_.FindMatch(url, first_party.origin(), element_type,
                              proto::ACTIVATION_TYPE_UNSPECIFIED, is_third_party,
-                             disable_generic_rules, embedder_conditions_matcher,
-                             FindRuleStrategy::kAny);
+                             disable_generic_rules, FindRuleStrategy::kAny);
     return allowlist_rule ? allowlist_rule : blocklist_rule;
   }
   return nullptr;

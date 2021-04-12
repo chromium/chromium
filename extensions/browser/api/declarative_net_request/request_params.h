@@ -49,10 +49,6 @@ struct RequestParams {
   // ID of the parent RenderFrameHost.
   content::GlobalFrameRoutingId parent_routing_id;
 
-  // Matcher for `flat::UrlRule::embedder_conditions`.
-  url_pattern_index::UrlPatternIndexMatcher::EmbedderConditionsMatcher
-      embedder_conditions_matcher;
-
   // A map from CompositeMatcher to the priority of its highest priority
   // matching allow or allowAllRequests rule if there is one, or base::nullopt
   // otherwise. Used as a cache to prevent additional calls to

@@ -505,15 +505,6 @@ ParseResult ValidateHeaders(
   return ParseResult::SUCCESS;
 }
 
-void ParseTabIds(const std::vector<int>* input_tab_ids,
-                 base::flat_set<int>& output_tab_ids) {
-  if (!input_tab_ids)
-    return;
-
-  output_tab_ids =
-      base::flat_set<int>(input_tab_ids->begin(), input_tab_ids->end());
-}
-
 }  // namespace
 
 IndexedRule::IndexedRule() = default;
@@ -524,7 +515,6 @@ IndexedRule& IndexedRule::operator=(IndexedRule&& other) = default;
 // static
 ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
                                            const GURL& base_url,
-                                           RulesetID ruleset_id,
                                            IndexedRule* indexed_rule) {
   DCHECK(indexed_rule);
 
@@ -560,15 +550,6 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
   if (parsed_rule.condition.request_methods &&
       parsed_rule.condition.request_methods->empty()) {
     return ParseResult::ERROR_EMPTY_REQUEST_METHODS_LIST;
-  }
-
-  if (parsed_rule.condition.tab_ids && parsed_rule.condition.tab_ids->empty())
-    return ParseResult::ERROR_EMPTY_TAB_IDS_LIST;
-
-  bool is_session_scoped_ruleset = ruleset_id == kSessionRulesetID;
-  if (!is_session_scoped_ruleset && (parsed_rule.condition.tab_ids ||
-                                     parsed_rule.condition.excluded_tab_ids)) {
-    return ParseResult::ERROR_TAB_IDS_ON_NON_SESSION_RULE;
   }
 
   if (parsed_rule.condition.url_filter && parsed_rule.condition.regex_filter)
@@ -649,27 +630,6 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
   if (!CanonicalizeDomains(std::move(parsed_rule.condition.excluded_domains),
                            &indexed_rule->excluded_domains)) {
     return ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN;
-  }
-
-  {
-    ParseTabIds(parsed_rule.condition.tab_ids.get(), indexed_rule->tab_ids);
-    ParseTabIds(parsed_rule.condition.excluded_tab_ids.get(),
-                indexed_rule->excluded_tab_ids);
-    auto common_tab_id_it =
-        std::find_if(indexed_rule->tab_ids.begin(), indexed_rule->tab_ids.end(),
-                     [indexed_rule](int included_tab_id) {
-                       return base::Contains(indexed_rule->excluded_tab_ids,
-                                             included_tab_id);
-                     });
-    if (common_tab_id_it != indexed_rule->tab_ids.end())
-      return ParseResult::ERROR_TAB_ID_DUPLICATED;
-
-    // When both `tab_ids` and `excluded_tab_ids` are populated, only the
-    // included tab IDs are relevant.
-    if (!indexed_rule->tab_ids.empty() &&
-        !indexed_rule->excluded_tab_ids.empty()) {
-      indexed_rule->excluded_tab_ids.clear();
-    }
   }
 
   if (is_regex_rule) {

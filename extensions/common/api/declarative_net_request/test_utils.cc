@@ -80,10 +80,7 @@ std::unique_ptr<base::DictionaryValue> TestRuleCondition::ToValue() const {
   SetValue(dict.get(), kExcludedRequestMethodsKey, excluded_request_methods);
   SetValue(dict.get(), kResourceTypesKey, resource_types);
   SetValue(dict.get(), kExcludedResourceTypesKey, excluded_resource_types);
-  SetValue(dict.get(), kTabIdsKey, tab_ids);
-  SetValue(dict.get(), kExcludedTabIdsKey, excluded_tab_ids);
   SetValue(dict.get(), kDomainTypeKey, domain_type);
-
   return dict;
 }
 

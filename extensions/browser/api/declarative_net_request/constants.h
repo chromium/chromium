@@ -61,11 +61,7 @@ enum class ParseResult {
   ERROR_INVALID_HEADER_VALUE,
   ERROR_HEADER_VALUE_NOT_SPECIFIED,
   ERROR_HEADER_VALUE_PRESENT,
-  ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED,
-
-  ERROR_EMPTY_TAB_IDS_LIST,
-  ERROR_TAB_IDS_ON_NON_SESSION_RULE,
-  ERROR_TAB_ID_DUPLICATED,
+  ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED
 };
 
 // Describes the ways in which updating dynamic rules can fail.
@@ -156,8 +152,6 @@ extern const char kErrorInvalidHeaderValue[];
 extern const char kErrorNoHeaderValueSpecified[];
 extern const char kErrorHeaderValuePresent[];
 extern const char kErrorCannotAppendRequestHeader[];
-extern const char kErrorTabIdsOnNonSessionRule[];
-extern const char kErrorTabIdDuplicated[];
 
 extern const char kErrorListNotPassed[];
 
@@ -210,10 +204,6 @@ extern const char kErrorGetMatchedRulesMissingPermissions[];
 // The maximum amount of static rules in the global rule pool for a single
 // profile.
 constexpr int kMaxStaticRulesPerProfile = 300000;
-
-// Identifier for a Flatbuffer containing `flat::EmbedderConditions` as the
-// root.
-extern const char kEmbedderConditionsBufferIdentifier[];
 
 }  // namespace declarative_net_request
 }  // namespace extensions

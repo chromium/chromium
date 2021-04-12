@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/flat_set.h"
 #include "base/format_macros.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
@@ -68,7 +67,7 @@ TEST_F(IndexedRuleTest, IDParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
     if (result == ParseResult::SUCCESS)
@@ -121,7 +120,7 @@ TEST_F(IndexedRuleTest, PriorityParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
     if (result == ParseResult::SUCCESS)
@@ -162,7 +161,7 @@ TEST_F(IndexedRuleTest, OptionsParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
 
     EXPECT_EQ(ParseResult::SUCCESS, result);
     EXPECT_EQ(cases[i].expected_options, indexed_rule.options);
@@ -225,7 +224,7 @@ TEST_F(IndexedRuleTest, ResourceTypesParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
     if (result == ParseResult::SUCCESS)
@@ -297,7 +296,7 @@ TEST_F(IndexedRuleTest, UrlFilterParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
     if (result != ParseResult::SUCCESS)
       continue;
 
@@ -331,7 +330,6 @@ TEST_F(IndexedRuleTest, CaseInsensitiveLowerCased) {
     IndexedRule indexed_rule;
     ASSERT_EQ(ParseResult::SUCCESS,
               IndexedRule::CreateIndexedRule(std::move(rule), GetBaseURL(),
-                                             kMinValidStaticRulesetID,
                                              &indexed_rule));
     EXPECT_EQ(test_case.expected_pattern, indexed_rule.url_pattern);
   }
@@ -392,7 +390,7 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
     if (result == ParseResult::SUCCESS) {
@@ -423,7 +421,7 @@ TEST_F(IndexedRuleTest, RedirectUrlParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result) << static_cast<int>(result);
     if (result == ParseResult::SUCCESS)
@@ -569,7 +567,7 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
     EXPECT_EQ(cases[i].expected_result, result) << static_cast<int>(result);
     if (result != ParseResult::SUCCESS)
       continue;
@@ -605,7 +603,7 @@ TEST_F(IndexedRuleTest, RegexFilterParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
     EXPECT_EQ(result, test_case.result);
 
     if (result == ParseResult::SUCCESS) {
@@ -623,7 +621,7 @@ TEST_F(IndexedRuleTest, MultipleFiltersSpecified) {
 
   IndexedRule indexed_rule;
   ParseResult result = IndexedRule::CreateIndexedRule(
-      std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+      std::move(rule), GetBaseURL(), &indexed_rule);
   EXPECT_EQ(ParseResult::ERROR_MULTIPLE_FILTERS_SPECIFIED, result);
 }
 
@@ -671,7 +669,7 @@ TEST_F(IndexedRuleTest, RegexSubstitutionParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
     EXPECT_EQ(test_case.result, result);
 
     if (result == ParseResult::SUCCESS) {
@@ -702,7 +700,7 @@ TEST_F(IndexedRuleTest, MultipleRedirectKeys) {
 
   IndexedRule indexed_rule;
   ParseResult result = IndexedRule::CreateIndexedRule(
-      std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+      std::move(rule), GetBaseURL(), &indexed_rule);
   EXPECT_EQ(ParseResult::SUCCESS, result);
 
   // The redirect "url" is given preference in this case.
@@ -756,7 +754,7 @@ TEST_F(IndexedRuleTest, InvalidAllowAllRequestsResourceType) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
     if (result == ParseResult::SUCCESS)
@@ -877,7 +875,7 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
     EXPECT_EQ(cases[i].expected_result, result);
     if (result != ParseResult::SUCCESS)
       continue;
@@ -939,71 +937,12 @@ TEST_F(IndexedRuleTest, RequestMethodsParsing) {
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+        std::move(rule), GetBaseURL(), &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
     if (result == ParseResult::SUCCESS)
       EXPECT_EQ(cases[i].expected_request_methods_mask,
                 indexed_rule.request_methods);
-  }
-}
-
-TEST_F(IndexedRuleTest, TabID) {
-  using IntVec = std::vector<int>;
-  struct {
-    base::Optional<IntVec> tab_ids;
-    base::Optional<IntVec> excluded_tab_ids;
-    RulesetID ruleset_id;
-    ParseResult expected_result;
-
-    // Only relevant if `expected_result` is ParseResult::SUCCESS.
-    base::flat_set<int> expected_tab_ids;
-    base::flat_set<int> expected_excluded_tab_ids;
-  } cases[] = {
-      {base::nullopt, base::nullopt, kSessionRulesetID, ParseResult::SUCCESS},
-      {IntVec(), IntVec({3, 4, 4}), kSessionRulesetID,
-       ParseResult::ERROR_EMPTY_TAB_IDS_LIST},
-      {IntVec({1, 2}),
-       IntVec({3, 4, 3}),
-       kSessionRulesetID,
-       ParseResult::SUCCESS,
-       {1, 2},
-       {}},
-      {base::nullopt,
-       IntVec({3, 4, 3}),
-       kSessionRulesetID,
-       ParseResult::SUCCESS,
-       {},
-       {3, 4}},
-      {IntVec({1, 2, 3}), IntVec({5, 2}), kSessionRulesetID,
-       ParseResult::ERROR_TAB_ID_DUPLICATED},
-      {IntVec({1, 2}), base::nullopt, kDynamicRulesetID,
-       ParseResult::ERROR_TAB_IDS_ON_NON_SESSION_RULE},
-      {IntVec({1, 2}), IntVec({3}), kMinValidStaticRulesetID,
-       ParseResult::ERROR_TAB_IDS_ON_NON_SESSION_RULE},
-  };
-
-  for (size_t i = 0; i < base::size(cases); ++i) {
-    SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
-    dnr_api::Rule rule = CreateGenericParsedRule();
-    if (cases[i].tab_ids) {
-      rule.condition.tab_ids = std::make_unique<IntVec>(*cases[i].tab_ids);
-    }
-
-    if (cases[i].excluded_tab_ids) {
-      rule.condition.excluded_tab_ids =
-          std::make_unique<IntVec>(*cases[i].excluded_tab_ids);
-    }
-
-    IndexedRule indexed_rule;
-    ParseResult result = IndexedRule::CreateIndexedRule(
-        std::move(rule), GetBaseURL(), cases[i].ruleset_id, &indexed_rule);
-    EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS) {
-      EXPECT_EQ(cases[i].expected_tab_ids, indexed_rule.tab_ids);
-      EXPECT_EQ(cases[i].expected_excluded_tab_ids,
-                indexed_rule.excluded_tab_ids);
-    }
   }
 }
 
