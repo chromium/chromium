@@ -3385,7 +3385,7 @@ gfx::Rect TabStrip::GetDropBounds(int drop_index,
 
   Tab* tab = tab_at(std::min(drop_index, GetTabCount() - 1));
   const bool first_in_group =
-      tab->group().has_value() &&
+      drop_index < GetTabCount() && tab->group().has_value() &&
       GetModelIndexOf(tab) ==
           controller_->GetFirstTabInGroup(tab->group().value());
 
