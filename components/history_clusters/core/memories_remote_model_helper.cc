@@ -136,8 +136,10 @@ void MemoriesRemoteModelHelper::GetMemories(
     const std::vector<MemoriesVisit>& visits,
     MemoriesCallback callback) {
   const GURL endpoint(memories::RemoteModelEndpoint());
-  if (!endpoint.is_valid())
-    NOTREACHED();
+  if (!endpoint.is_valid() || visits.empty()) {
+    std::move(callback).Run({});
+    return;
+  }
   StopPendingRequests();
 
   std::string request_body;

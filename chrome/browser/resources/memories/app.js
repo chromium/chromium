@@ -120,14 +120,11 @@ class MemoriesAppElement extends MojomConversionMixinBase {
     if (searchField.getValue() !== this.query_) {
       searchField.setValue(this.query_);
     }
-    // <if expr="not is_official_build">
     this.onBrowserIdle_().then(() => {
-      this.pageHandler_.getSampleMemories(this.query_.trim())
-          .then(({result}) => {
-            this.result_ = result;
-          });
+      this.pageHandler_.queryMemories(this.query_.trim()).then(({result}) => {
+        this.result_ = result;
+      });
     });
-    // </if>
   }
 }
 

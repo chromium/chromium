@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
 #include "components/history_clusters/core/memories.mojom.h"
-#include "components/history_clusters/core/memories_remote_model_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -48,18 +47,19 @@ class MemoriesHandler : public memories::mojom::PageHandler {
   // memories::mojom::PageHandler:
   void SetPage(
       mojo::PendingRemote<memories::mojom::Page> pending_page) override;
-
-  using MemoriesResultCallback =
-      base::OnceCallback<void(memories::mojom::MemoriesResultPtr)>;
-  void GetSampleMemories(const std::string& query,
-                         MemoriesResultCallback callback) override;
-
-  void GetMemories(MemoriesResultCallback callback) override;
+  void QueryMemories(const std::string& query,
+                     QueryMemoriesCallback callback) override;
 
  private:
+  void OnMemoriesQueryResults(
+      QueryMemoriesCallback callback,
+      const std::string& query,
+      std::vector<memories::mojom::MemoryPtr> memory_mojoms);
+
 #if !defined(OFFICIAL_BUILD)
-  void OnHistoryQueryResults(const std::string& query,
-                             MemoriesResultCallback callback,
+  using MemoriesQueryResultsCallback =
+      base::OnceCallback<void(std::vector<memories::mojom::MemoryPtr>)>;
+  void OnHistoryQueryResults(MemoriesQueryResultsCallback callback,
                              history::QueryResults results);
 #endif
 
