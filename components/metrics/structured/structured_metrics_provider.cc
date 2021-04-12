@@ -26,6 +26,13 @@ constexpr int kSaveDelayMs = 1000;
 // The interval between chrome's collection of metrics logged from cros.
 constexpr int kExternalMetricsIntervalMins = 10;
 
+// The minimum waiting time between successive deliveries of independent metrics
+// to the metrics service via ProvideIndependentMetrics. This is set carefully:
+// metrics logs are stored in a queue of limited size, and are uploaded roughly
+// every 30 minutes.
+constexpr base::TimeDelta kMinIndependentMetricsInterval =
+    base::TimeDelta::FromMinutes(45);
+
 // Directory containing serialized event protos to read.
 constexpr char kExternalMetricsDir[] = "/var/lib/metrics/structured/events";
 
@@ -220,8 +227,9 @@ void StructuredMetricsProvider::OnRecordingDisabled() {
 void StructuredMetricsProvider::ProvideCurrentSessionData(
     ChromeUserMetricsExtension* uma_proto) {
   DCHECK(base::CurrentUIThread::IsSet());
-  if (!recording_enabled_ || init_state_ != InitState::kInitialized)
+  if (!recording_enabled_ || init_state_ != InitState::kInitialized) {
     return;
+  }
 
   // TODO(crbug.com/1148168): Consider splitting this into two metrics, one for
   // UMA metrics and one for non-UMA metrics.
@@ -235,10 +243,16 @@ void StructuredMetricsProvider::ProvideCurrentSessionData(
 }
 
 bool StructuredMetricsProvider::HasIndependentMetrics() {
-  // TODO(crbug.com/1148168): We cannot enable independent metrics uploads yet,
-  // because we will overwhelm the unsent log store shared across UMA, resulting
-  // in logs being dropped for long sessions.
-  return false;
+  if (!recording_enabled_ || init_state_ != InitState::kInitialized) {
+    return false;
+  }
+
+  if (base::Time::Now() - last_provided_independent_metrics_ <
+      kMinIndependentMetricsInterval) {
+    return false;
+  }
+
+  return events_.get()->get()->non_uma_events_size() != 0;
 }
 
 void StructuredMetricsProvider::ProvideIndependentMetrics(
@@ -251,6 +265,8 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
     return;
   }
 
+  last_provided_independent_metrics_ = base::Time::Now();
+
   // TODO(crbug.com/1148168): Add unit tests for independent metrics once we are
   // able to record them.
 
@@ -261,6 +277,7 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
   structured_data->mutable_events()->Swap(
       events_.get()->get()->mutable_non_uma_events());
   events_.get()->get()->clear_non_uma_events();
+  events_->QueueWrite();
 
   // Independent events should not be associated with the client_id, so clear
   // it.

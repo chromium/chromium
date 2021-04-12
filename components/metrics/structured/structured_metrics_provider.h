@@ -137,6 +137,9 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // See OnRecordingDisabled for more information.
   bool wipe_events_on_init_ = false;
 
+  // The last time we provided independent metrics.
+  base::Time last_provided_independent_metrics_;
+
   // Periodically reports metrics from cros.
   std::unique_ptr<ExternalMetrics> external_metrics_;
 
