@@ -110,7 +110,23 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
   }
 
   *memory = reinterpret_cast<void*>(addr);
+
+  // NOTE: The mapping operation is guaranteed to fail above if the VMO is not
+  // large enough to map `size` bytes, so this is a safe assumption.
   *mapped_size = size;
+
+  return true;
+}
+
+// static
+bool PlatformSharedMemoryRegion::Unmap(void* memory, size_t mapped_size) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(memory);
+  zx_status_t status = zx::vmar::root_self()->unmap(addr, mapped_size);
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "zx_vmar_unmap";
+    return false;
+  }
+
   return true;
 }
 

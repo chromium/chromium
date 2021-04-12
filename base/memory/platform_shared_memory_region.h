@@ -251,6 +251,9 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
              void** memory,
              size_t* mapped_size) const;
 
+  // Unmaps a region previously mapped by |MapAt()|.
+  static bool Unmap(void* memory, size_t mapped_size);
+
   const UnguessableToken& GetGUID() const { return guid_; }
 
   size_t GetSize() const { return size_; }
