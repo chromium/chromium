@@ -62,13 +62,6 @@
 #include "ui/gtk/x/gtk_ui_delegate_x11.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(USE_XKBCOMMON)
-#include "ui/events/ozone/layout/xkb/xkb_evdev_codes.h"
-#include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
-#else
-#include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
-#endif
-
 namespace ui {
 
 namespace {
@@ -77,9 +70,7 @@ namespace {
 class OzonePlatformX11 : public OzonePlatform,
                          public ui::OSExchangeDataProviderFactoryOzone {
  public:
-  OzonePlatformX11() {
-    SetInstance(this);
-  }
+  OzonePlatformX11() { SetInstance(this); }
 
   ~OzonePlatformX11() override = default;
 
@@ -227,14 +218,8 @@ class OzonePlatformX11 : public OzonePlatform,
     cursor_factory_ = std::make_unique<X11CursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
 
-#if BUILDFLAG(USE_XKBCOMMON)
-    keyboard_layout_engine_ =
-        std::make_unique<XkbKeyboardLayoutEngine>(xkb_evdev_code_converter_);
-    // TODO(nickdiego): debugging..
+    // TODO(crbug.com/987939): Support XKB.
     keyboard_layout_engine_ = std::make_unique<StubKeyboardLayoutEngine>();
-#else
-    keyboard_layout_engine_ = std::make_unique<StubKeyboardLayoutEngine>();
-#endif
     KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(
         keyboard_layout_engine_.get());
 
@@ -308,10 +293,6 @@ class OzonePlatformX11 : public OzonePlatform,
   }
 
   bool common_initialized_ = false;
-
-#if BUILDFLAG(USE_XKBCOMMON)
-  XkbEvdevCodes xkb_evdev_code_converter_;
-#endif
 
   // Objects in the UI process.
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
