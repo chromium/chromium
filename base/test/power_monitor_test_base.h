@@ -10,11 +10,11 @@
 
 namespace base {
 
+namespace test {
+
 // Use PowerMonitorTestSource via ScopedPowerMonitorTestSource wrapper when you
 // need to simulate power events (suspend and resume).
 class PowerMonitorTestSource;
-
-namespace test {
 
 // ScopedPowerMonitorTestSource initializes the PowerMonitor with a Mock
 // PowerMonitorSource. Mock power notifications can be simulated through this
@@ -56,36 +56,7 @@ class ScopedPowerMonitorTestSource {
 
 }  // namespace test
 
-// TODO(crbug/1188692): Move `PowerMonitorTestSource` and
-// `PowerMonitorTestObserver` into `test` namespace.
-class PowerMonitorTestSource : public PowerMonitorSource {
- public:
-  PowerMonitorTestSource();
-  ~PowerMonitorTestSource() override;
-
-  // Retrieve current states.
-  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
-  bool IsOnBatteryPower() override;
-
-  // Sends asynchronous notifications to registered observers.
-  void Suspend();
-  void Resume();
-  void SetOnBatteryPower(bool on_battery_power);
-
-  // Sends asynchronous notifications to registered observers and ensures they
-  // are executed (i.e. RunUntilIdle()).
-  void GeneratePowerStateEvent(bool on_battery_power);
-  void GenerateSuspendEvent();
-  void GenerateResumeEvent();
-  void GenerateThermalThrottlingEvent(
-      PowerThermalObserver::DeviceThermalState new_thermal_state);
-
- protected:
-  bool test_on_battery_power_ = false;
-  PowerThermalObserver::DeviceThermalState current_thermal_state_ =
-      PowerThermalObserver::DeviceThermalState::kUnknown;
-};
-
+// TODO(crbug/1188692): Move `PowerMonitorTestObserver` into `test` namespace.
 class PowerMonitorTestObserver : public PowerSuspendObserver,
                                  public PowerThermalObserver,
                                  public PowerStateObserver {

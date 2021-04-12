@@ -12,6 +12,78 @@
 namespace base {
 namespace test {
 
+class PowerMonitorTestSource : public PowerMonitorSource {
+ public:
+  PowerMonitorTestSource() = default;
+  ~PowerMonitorTestSource() override = default;
+
+  // Retrieve current states.
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
+  bool IsOnBatteryPower() override;
+
+  // Sends asynchronous notifications to registered observers.
+  void Suspend();
+  void Resume();
+  void SetOnBatteryPower(bool on_battery_power);
+
+  // Sends asynchronous notifications to registered observers and ensures they
+  // are executed (i.e. RunUntilIdle()).
+  void GeneratePowerStateEvent(bool on_battery_power);
+  void GenerateSuspendEvent();
+  void GenerateResumeEvent();
+  void GenerateThermalThrottlingEvent(
+      PowerThermalObserver::DeviceThermalState new_thermal_state);
+
+ protected:
+  bool test_on_battery_power_ = false;
+  PowerThermalObserver::DeviceThermalState current_thermal_state_ =
+      PowerThermalObserver::DeviceThermalState::kUnknown;
+};
+
+PowerThermalObserver::DeviceThermalState
+PowerMonitorTestSource::GetCurrentThermalState() {
+  return current_thermal_state_;
+}
+
+void PowerMonitorTestSource::Suspend() {
+  ProcessPowerEvent(SUSPEND_EVENT);
+}
+
+void PowerMonitorTestSource::Resume() {
+  ProcessPowerEvent(RESUME_EVENT);
+}
+
+void PowerMonitorTestSource::SetOnBatteryPower(bool on_battery_power) {
+  test_on_battery_power_ = on_battery_power;
+  ProcessPowerEvent(POWER_STATE_EVENT);
+}
+
+void PowerMonitorTestSource::GeneratePowerStateEvent(bool on_battery_power) {
+  SetOnBatteryPower(on_battery_power);
+  RunLoop().RunUntilIdle();
+}
+
+void PowerMonitorTestSource::GenerateSuspendEvent() {
+  Suspend();
+  RunLoop().RunUntilIdle();
+}
+
+void PowerMonitorTestSource::GenerateResumeEvent() {
+  Resume();
+  RunLoop().RunUntilIdle();
+}
+
+bool PowerMonitorTestSource::IsOnBatteryPower() {
+  return test_on_battery_power_;
+}
+
+void PowerMonitorTestSource::GenerateThermalThrottlingEvent(
+    PowerThermalObserver::DeviceThermalState new_thermal_state) {
+  ProcessThermalEvent(new_thermal_state);
+  current_thermal_state_ = new_thermal_state;
+  RunLoop().RunUntilIdle();
+}
+
 ScopedPowerMonitorTestSource::ScopedPowerMonitorTestSource() {
   auto power_monitor_test_source = std::make_unique<PowerMonitorTestSource>();
   power_monitor_test_source_ = power_monitor_test_source.get();
@@ -62,53 +134,6 @@ void ScopedPowerMonitorTestSource::GenerateThermalThrottlingEvent(
 }
 
 }  // namespace test
-
-PowerMonitorTestSource::PowerMonitorTestSource() = default;
-PowerMonitorTestSource::~PowerMonitorTestSource() = default;
-
-PowerThermalObserver::DeviceThermalState
-PowerMonitorTestSource::GetCurrentThermalState() {
-  return current_thermal_state_;
-}
-
-void PowerMonitorTestSource::Suspend() {
-  ProcessPowerEvent(SUSPEND_EVENT);
-}
-
-void PowerMonitorTestSource::Resume() {
-  ProcessPowerEvent(RESUME_EVENT);
-}
-
-void PowerMonitorTestSource::SetOnBatteryPower(bool on_battery_power) {
-  test_on_battery_power_ = on_battery_power;
-  ProcessPowerEvent(POWER_STATE_EVENT);
-}
-
-void PowerMonitorTestSource::GeneratePowerStateEvent(bool on_battery_power) {
-  SetOnBatteryPower(on_battery_power);
-  RunLoop().RunUntilIdle();
-}
-
-void PowerMonitorTestSource::GenerateSuspendEvent() {
-  Suspend();
-  RunLoop().RunUntilIdle();
-}
-
-void PowerMonitorTestSource::GenerateResumeEvent() {
-  Resume();
-  RunLoop().RunUntilIdle();
-}
-
-bool PowerMonitorTestSource::IsOnBatteryPower() {
-  return test_on_battery_power_;
-}
-
-void PowerMonitorTestSource::GenerateThermalThrottlingEvent(
-    PowerThermalObserver::DeviceThermalState new_thermal_state) {
-  ProcessThermalEvent(new_thermal_state);
-  current_thermal_state_ = new_thermal_state;
-  RunLoop().RunUntilIdle();
-}
 
 PowerMonitorTestObserver::PowerMonitorTestObserver() = default;
 PowerMonitorTestObserver::~PowerMonitorTestObserver() = default;
