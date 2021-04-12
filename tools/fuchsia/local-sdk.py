@@ -15,10 +15,9 @@ import sys
 import tarfile
 import tempfile
 
-
 SELF_FILE = os.path.normpath(os.path.abspath(__file__))
-REPOSITORY_ROOT = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', '..'))
+REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..'))
 
 
 def Run(*args):
@@ -81,7 +80,7 @@ def main(args):
   # file. This means that on next gclient runhooks, we'll restore to the
   # real DEPS-determined SDK.
   sdk_output_dir = os.path.join(REPOSITORY_ROOT, 'third_party', 'fuchsia-sdk',
-                            'sdk')
+                                'sdk')
   images_output_dir = os.path.join(REPOSITORY_ROOT, 'third_party',
                                    'fuchsia-sdk', 'images')
   EnsureEmptyDir(sdk_output_dir)
@@ -142,9 +141,9 @@ def main(args):
       if not entry.get('archive'):
         continue
 
-      shutil.copyfile(os.path.join(arch_output_dir, entry['path']),
-                      os.path.join(arch_image_dir, entry['name']) + '.' +
-                          entry['type'])
+      shutil.copyfile(
+          os.path.join(arch_output_dir, entry['path']),
+          os.path.join(arch_image_dir, entry['name']) + '.' + entry['type'])
 
   # Write merged manifest file.
   with open(manifest_path, 'w') as manifest_file:
