@@ -276,6 +276,7 @@ bool WebAppInstallManager::IsAppIdAlreadyEnqueued(const AppId& app_id) const {
 void WebAppInstallManager::UpdateWebAppFromInfo(
     const AppId& app_id,
     std::unique_ptr<WebApplicationInfo> web_application_info,
+    bool redownload_app_icons,
     OnceInstallCallback callback) {
   DCHECK(started_);
 
@@ -286,6 +287,7 @@ void WebAppInstallManager::UpdateWebAppFromInfo(
   base::OnceClosure start_task = base::BindOnce(
       &WebAppInstallTask::UpdateWebAppFromInfo, base::Unretained(task.get()),
       EnsureWebContentsCreated(), app_id, std::move(web_application_info),
+      redownload_app_icons,
       base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted,
                      base::Unretained(this), task.get(), std::move(callback)));
 
