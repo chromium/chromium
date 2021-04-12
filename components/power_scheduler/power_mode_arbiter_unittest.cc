@@ -148,6 +148,12 @@ TEST(PowerModeArbiterTest, Observer) {
 TEST(PowerModeArbiterTest, ResetVoteAfterTimeout) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  // Align the mock clock with the phase of the reset tasks.
+  base::TimeTicks target_time = env.NowTicks().SnappedToNextTick(
+      base::TimeTicks(), PowerModeArbiter::kResetVoteTimeResolution);
+  env.AdvanceClock(target_time - env.NowTicks());
+
   PowerModeArbiter arbiter;
 
   base::TimeDelta delta1s = base::TimeDelta::FromSeconds(1);
@@ -209,6 +215,20 @@ TEST(PowerModeArbiterTest, ResetVoteAfterTimeout) {
   env.FastForwardBy(delta1s);  // Execute the first reset task.
   EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kAnimation);
   env.FastForwardBy(delta1s);  // Execute the second reset task.
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
+
+  // Unaligned reset timeouts get aligned to the resolution.
+  voter1->VoteFor(PowerMode::kAnimation);
+  voter2->VoteFor(PowerMode::kCharging);
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kCharging);
+  voter2->ResetVoteAfterTimeout(PowerModeArbiter::kResetVoteTimeResolution / 3);
+  voter1->ResetVoteAfterTimeout(PowerModeArbiter::kResetVoteTimeResolution / 2);
+  base::TimeDelta first_half = PowerModeArbiter::kResetVoteTimeResolution / 2;
+  env.FastForwardBy(first_half);
+  // No change, since the timeouts were aligned to kResetVoteTimeResolution.
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kCharging);
+  // Executes the resets.
+  env.FastForwardBy(PowerModeArbiter::kResetVoteTimeResolution - first_half);
   EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
 
   // If the voter is destroyed, the task doesn't cause crashes.

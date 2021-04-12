@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list_threadsafe.h"
@@ -69,14 +70,21 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
   PowerMode GetActiveModeForTesting();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PowerModeArbiterTest, ResetVoteAfterTimeout);
+
   class ChargingPowerModeVoter;
+
+  // Limits the frequency at which we can run the UpdatePendingResets() task.
+  // All pending resets are aligned to this time resolution.
+  static constexpr base::TimeDelta kResetVoteTimeResolution =
+      base::TimeDelta::FromMilliseconds(100);
 
   // PowerModeVoter::Delegate implementation:
   void OnVoterDestroyed(PowerModeVoter*) override;
   void SetVote(PowerModeVoter*, PowerMode) override;
   void ResetVoteAfterTimeout(PowerModeVoter*, base::TimeDelta timeout) override;
 
-  void UpdatePendingResets();
+  void UpdatePendingResets(int sequence_number);
   void OnVotesUpdated();
 
   PowerMode ComputeActiveModeLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -94,6 +102,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
       GUARDED_BY(lock_);
   base::TimeTicks next_pending_vote_update_time_ GUARDED_BY(lock_);
   TracedPowerMode active_mode_ GUARDED_BY(lock_);
+  int update_task_sequence_number_ GUARDED_BY(lock_) = 0;
 
   // Owned by the arbiter but otherwise behaves like a regular voter.
   std::unique_ptr<ChargingPowerModeVoter> charging_voter_;

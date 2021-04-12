@@ -51,6 +51,8 @@ class PowerModeArbiter::ChargingPowerModeVoter : base::PowerStateObserver {
 
 PowerModeArbiter::Observer::~Observer() = default;
 
+constexpr base::TimeDelta PowerModeArbiter::kResetVoteTimeResolution;
+
 // static
 PowerModeArbiter* PowerModeArbiter::GetInstance() {
   static base::NoDestructor<PowerModeArbiter> arbiter;
@@ -84,30 +86,10 @@ void PowerModeArbiter::OnThreadPoolAvailable() {
                                std::make_unique<ChargingPowerModeVoter>();
                          }));
 
-  // Check if we need to post a task to update pending votes.
-  base::TimeTicks next_effective_time;
-  {
-    base::AutoLock lock(lock_);
-    for (const auto& entry : pending_resets_) {
-      base::TimeTicks effective_time = entry.second;
-      if (next_effective_time.is_null() ||
-          effective_time < next_effective_time) {
-        next_effective_time = effective_time;
-      }
-    }
-    next_pending_vote_update_time_ = next_effective_time;
-  }
-
-  if (!next_effective_time.is_null()) {
-    base::TimeTicks now = base::TimeTicks::Now();
-    if (next_effective_time < now)
-      next_effective_time = now;
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PowerModeArbiter::UpdatePendingResets,
-                       base::Unretained(this)),
-        next_effective_time - now);
-  }
+  // Check if there are any actionable resets and post another task to handle
+  // future ones if necessary. |update_task_sequence_number_| is initialized to
+  // 0 and incremented in UpdatePendingResets for the first time.
+  UpdatePendingResets(/*sequence_number=*/0);
 }
 
 std::unique_ptr<PowerModeVoter> PowerModeArbiter::NewVoter(const char* name) {
@@ -156,9 +138,13 @@ void PowerModeArbiter::SetVote(PowerModeVoter* voter, PowerMode mode) {
 void PowerModeArbiter::ResetVoteAfterTimeout(PowerModeVoter* voter,
                                              base::TimeDelta timeout) {
   bool should_post_update_task = false;
+  int sequence_number = 0;
   {
     base::AutoLock lock(lock_);
     base::TimeTicks scheduled_time = base::TimeTicks::Now() + timeout;
+    // Align to the reset task's resolution.
+    scheduled_time = scheduled_time.SnappedToNextTick(base::TimeTicks(),
+                                                      kResetVoteTimeResolution);
     pending_resets_[voter] = scheduled_time;
     // Only post a new task if there isn't one scheduled to run earlier yet.
     // This reduces the number of posted callbacks in situations where the
@@ -167,6 +153,8 @@ void PowerModeArbiter::ResetVoteAfterTimeout(PowerModeVoter* voter,
                          scheduled_time < next_pending_vote_update_time_)) {
       next_pending_vote_update_time_ = scheduled_time;
       should_post_update_task = true;
+      ++update_task_sequence_number_;
+      sequence_number = update_task_sequence_number_;
     }
   }
 
@@ -174,20 +162,27 @@ void PowerModeArbiter::ResetVoteAfterTimeout(PowerModeVoter* voter,
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PowerModeArbiter::UpdatePendingResets,
-                       base::Unretained(this)),
+                       base::Unretained(this), sequence_number),
         timeout);
   }
 }
 
-void PowerModeArbiter::UpdatePendingResets() {
-  // Note: This method may run at any point. Do not assume that there are any
-  // resets that have expired, or that any other UpdatePendingResets() task is
-  // scheduled.
+void PowerModeArbiter::UpdatePendingResets(int sequence_number) {
+  // Note: This method may run at any point and on any thread. Do not assume
+  // that there are any resets that have expired, or that any other
+  // UpdatePendingResets() task is scheduled.
   bool did_change = false;
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeTicks next_task_time;
+  int next_sequence_number = 0;
   {
     base::AutoLock lock(lock_);
+
+    // Check if this task was cancelled and replaced by another one.
+    if (update_task_sequence_number_ != sequence_number)
+      return;
+
+    now = base::TimeTicks::Now();
     for (auto it = pending_resets_.begin(); it != pending_resets_.end();) {
       base::TimeTicks task_time = it->second;
       if (task_time <= now) {
@@ -204,13 +199,18 @@ void PowerModeArbiter::UpdatePendingResets() {
         ++it;
       }
     }
+
     next_pending_vote_update_time_ = next_task_time;
+    if (!next_task_time.is_null()) {
+      ++update_task_sequence_number_;
+      next_sequence_number = update_task_sequence_number_;
+    }
   }
   if (!next_task_time.is_null()) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PowerModeArbiter::UpdatePendingResets,
-                       base::Unretained(this)),
+                       base::Unretained(this), next_sequence_number),
         next_task_time - now);
   }
   if (did_change)
