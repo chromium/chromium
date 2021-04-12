@@ -31,7 +31,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "net/base/url_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
@@ -44,9 +43,6 @@ namespace {
 
 constexpr int kPreferredDialogHeightPx = 640;
 constexpr int kPreferredDialogWidthPx = 768;
-
-constexpr char kOobeDialogHeightParamKey[] = "dialog-height";
-constexpr char kOobeDialogWidthParamKey[] = "dialog-width";
 
 }  // namespace
 
@@ -92,22 +88,12 @@ void MultiDeviceSetupDialog::AddOnCloseCallback(base::OnceClosure callback) {
 }
 
 MultiDeviceSetupDialog::MultiDeviceSetupDialog()
-    : SystemWebDialogDelegate(CreateMultiDeviceSetupURL(), std::u16string()) {}
+    : SystemWebDialogDelegate(GURL(chrome::kChromeUIMultiDeviceSetupUrl),
+                              std::u16string()) {}
 
 MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
   for (auto& callback : on_close_callbacks_)
     std::move(callback).Run();
-}
-
-GURL MultiDeviceSetupDialog::CreateMultiDeviceSetupURL() {
-  GURL gurl(chrome::kChromeUIMultiDeviceSetupUrl);
-  gfx::Size size;
-  GetDialogSize(&size);
-  gurl = net::AppendQueryParameter(gurl, kOobeDialogHeightParamKey,
-                                   base::NumberToString(size.height()));
-  gurl = net::AppendQueryParameter(gurl, kOobeDialogWidthParamKey,
-                                   base::NumberToString(size.width()));
-  return gurl;
 }
 
 void MultiDeviceSetupDialog::GetDialogSize(gfx::Size* size) const {
