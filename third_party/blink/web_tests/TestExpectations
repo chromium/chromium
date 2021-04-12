@@ -6775,7 +6775,6 @@ crbug.com/1198098 external/wpt/IndexedDB/idbindex-query-exception-order.html [ P
 crbug.com/1198098 external/wpt/IndexedDB/idbtransaction_objectStoreNames.html [ Pass Timeout ]
 crbug.com/1198098 external/wpt/file-system-access/sandboxed_FileSystemBaseHandle-IndexedDB.https.any.html [ Pass Timeout ]
 crbug.com/1198098 external/wpt/file-system-access/local_FileSystemBaseHandle-IndexedDB-manual.https.html [ Pass Timeout ]
-crbug.com/1198098 virtual/shared_array_buffer_on_desktop/storage/indexeddb/dispatch-events.html [ Pass Timeout ]
 crbug.com/1198098 storage/indexeddb/dispatch-events.html [ Pass Timeout ]
 crbug.com/1198098 storage/indexeddb/key-generator.html [ Pass Timeout ]
 crbug.com/1198103 virtual/scroll-unification/fast/events/drag-and-drop-autoscroll.html [ Pass Timeout ]
