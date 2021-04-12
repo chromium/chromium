@@ -61,5 +61,15 @@ TEST_F(RequiredFieldTest, ShouldFallbackForEmptyWithClick) {
   EXPECT_FALSE(required_field.ShouldFallback(false));
 }
 
+TEST_F(RequiredFieldTest, ShouldFallbackForEmptyOptional) {
+  RequiredField required_field;
+  required_field.optional = true;
+  required_field.status = RequiredField::EMPTY;
+  required_field.value_expression = "value";
+
+  EXPECT_TRUE(required_field.ShouldFallback(true));
+  EXPECT_FALSE(required_field.ShouldFallback(false));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

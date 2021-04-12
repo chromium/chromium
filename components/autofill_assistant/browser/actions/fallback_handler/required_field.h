@@ -25,6 +25,7 @@ struct RequiredField {
     selector = Selector(required_field_proto.element());
     value_expression = required_field_proto.value_expression();
     forced = required_field_proto.forced();
+    optional = required_field_proto.is_optional();
     fill_strategy = required_field_proto.fill_strategy();
     delay_in_millisecond = required_field_proto.delay_in_millisecond();
     select_strategy = required_field_proto.select_strategy();
@@ -50,6 +51,11 @@ struct RequiredField {
   // Autofill in an attempt to fix it. Mostly used in combination with key
   // strokes for fields that e.g. have JavaScript listeners attached.
   bool forced = false;
+
+  // This defines whether or not this field is optional. If it is, missing data
+  // or element-not-found errors are not treated as such but rather as FYI. For
+  // missing data, the field will be cleared.
+  bool optional = false;
 
   // Keyboard strategy for <input> elements to use. E.g. whether or not to use
   // key strokes.

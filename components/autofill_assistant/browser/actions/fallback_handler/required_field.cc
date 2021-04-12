@@ -14,7 +14,8 @@ RequiredField::RequiredField(const RequiredField& copy) = default;
 
 bool RequiredField::ShouldFallback(bool apply_fallback) const {
   return (status == EMPTY && !value_expression.empty() &&
-          !fallback_click_element.has_value()) ||
+          !fallback_click_element.has_value() &&
+          !(optional && !apply_fallback)) ||
          (status != EMPTY && value_expression.empty() &&
           !fallback_click_element.has_value()) ||
          (forced && apply_fallback) ||

@@ -695,7 +695,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       .Times(2)
       .WillRepeatedly(RunOnceCallback<1>(OkClientStatus(), "value"));
   EXPECT_CALL(mock_web_controller_,
-              SetValueAttribute(_,
+              SetValueAttribute("John Doe",
                                 EqualsElement(test_util::MockFindElement(
                                     mock_action_delegate_, card_name_selector)),
                                 _))
@@ -719,6 +719,128 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
         EXPECT_EQ(
             status.details().autofill_error_info().autofill_field_error_size(),
             0);
+      });
+
+  fallback_handler.CheckAndFallbackRequiredFields(OkClientStatus(),
+                                                  std::move(callback));
+}
+
+TEST_F(RequiredFieldsFallbackHandlerTest,
+       AddsMissingFallbackValueToDetailsForOptionalFieldsWithoutFailing) {
+  Selector card_name_selector({"#card_name"});
+  Selector card_number_selector({"#card_number"});
+  auto card_name_element =
+      test_util::MockFindElement(mock_web_controller_, card_name_selector, 2);
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(card_name_element), _))
+      .Times(2)
+      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus(), std::string()));
+  EXPECT_CALL(mock_web_controller_, SetValueAttribute(_, _, _)).Times(0);
+  auto card_number_element =
+      test_util::MockFindElement(mock_web_controller_, card_number_selector, 2);
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(card_number_element), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), "4111111111111111"));
+  EXPECT_CALL(
+      mock_web_controller_,
+      SetValueAttribute("4111111111111111",
+                        EqualsElement(test_util::MockFindElement(
+                            mock_action_delegate_, card_number_selector)),
+                        _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+
+  std::vector<RequiredField> required_fields = {
+      CreateRequiredField("${51}", {"#card_name"}),
+      CreateRequiredField("${52}", {"#card_number"})};
+  required_fields[0].optional = true;
+
+  std::map<std::string, std::string> fallback_values = {
+      {base::NumberToString(
+           static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NUMBER)),
+       "4111111111111111"}};
+
+  RequiredFieldsFallbackHandler fallback_handler(
+      required_fields, fallback_values, &mock_action_delegate_);
+
+  base::OnceCallback<void(const ClientStatus&)> callback =
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_TRUE(status.ok());
+        ASSERT_EQ(
+            status.details().autofill_error_info().autofill_field_error_size(),
+            1);
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .value_expression(),
+                  "${51}");
+        EXPECT_TRUE(status.details()
+                        .autofill_error_info()
+                        .autofill_field_error(0)
+                        .no_fallback_value());
+      });
+
+  fallback_handler.CheckAndFallbackRequiredFields(OkClientStatus(),
+                                                  std::move(callback));
+}
+
+TEST_F(RequiredFieldsFallbackHandlerTest,
+       AddsNotFoundElementToDetailsForOptionalFieldsWithoutFailing) {
+  Selector card_name_selector({"#card_name"});
+  Selector card_number_selector({"#card_number"});
+  EXPECT_CALL(mock_web_controller_, OnFindElement(card_name_selector, _))
+      .Times(2)
+      .WillRepeatedly(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+  EXPECT_CALL(mock_action_delegate_, FindElement(card_name_selector, _))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+  auto card_number_element =
+      test_util::MockFindElement(mock_web_controller_, card_number_selector, 2);
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(card_number_element), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), "4111111111111111"));
+  EXPECT_CALL(
+      mock_web_controller_,
+      SetValueAttribute("4111111111111111",
+                        EqualsElement(test_util::MockFindElement(
+                            mock_action_delegate_, card_number_selector)),
+                        _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+
+  std::vector<RequiredField> required_fields = {
+      CreateRequiredField("${51}", {"#card_name"}),
+      CreateRequiredField("${52}", {"#card_number"})};
+  required_fields[0].optional = true;
+
+  std::map<std::string, std::string> fallback_values = {
+      {base::NumberToString(
+           static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL)),
+       "John Doe"},
+      {base::NumberToString(
+           static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NUMBER)),
+       "4111111111111111"}};
+
+  RequiredFieldsFallbackHandler fallback_handler(
+      required_fields, fallback_values, &mock_action_delegate_);
+
+  base::OnceCallback<void(const ClientStatus&)> callback =
+      base::BindOnce([](const ClientStatus& status) {
+        EXPECT_TRUE(status.ok());
+        ASSERT_EQ(
+            status.details().autofill_error_info().autofill_field_error_size(),
+            1);
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .value_expression(),
+                  "${51}");
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .status(),
+                  ELEMENT_RESOLUTION_FAILED);
       });
 
   fallback_handler.CheckAndFallbackRequiredFields(OkClientStatus(),

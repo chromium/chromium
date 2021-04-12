@@ -1496,6 +1496,10 @@ message UseAddressProto {
     // Usually used together with simulate_key_presses.
     optional bool forced = 5;
 
+    // The field is optional. If there is no value from profile available or
+    // the element is not found, the field will be skipped.
+    optional bool is_optional = 11;
+
     // For JavaScript implemented dropdowns. This first clicks on the |element|,
     // then waits for |option_element_to_click| to appear and clicks it. The
     // selector must match a generic option, an |inner_text_pattern| will be
@@ -1560,6 +1564,10 @@ message UseCreditCardProto {
     // cases where the way autofill sets the field doesn't work on the website.
     // Usually used together with simulate_key_presses.
     optional bool forced = 5;
+
+    // The field is optional. If there is no value from profile available or
+    // the element is not found, the field will be skipped.
+    optional bool is_optional = 11;
 
     // For JavaScript implemented dropdowns. This first clicks on the |element|,
     // then waits for |option_element_to_click| to appear and clicks it. The
