@@ -179,6 +179,10 @@ class SystemNetworkContextManager {
   // it initializes some class members.
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams();
 
+  // Send the current value of the net.explicitly_allowed_network_ports pref to
+  // the network process.
+  void UpdateExplicitlyAllowedNetworkPorts();
+
   // The PrefService to retrieve all the pref values.
   PrefService* local_state_;
 

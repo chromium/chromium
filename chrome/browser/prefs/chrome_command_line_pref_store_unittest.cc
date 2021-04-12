@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <gtest/gtest.h>
 #include <stddef.h>
 
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -17,6 +17,8 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/cpp/network_switches.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_switches.h"
 
 namespace {
@@ -52,7 +54,6 @@ class TestCommandLinePrefStore : public ChromeCommandLinePrefStore {
     ASSERT_TRUE(value->is_list());
     ASSERT_EQ(cipher_count, value->GetList().size());
 
-    std::string cipher_string;
     for (const base::Value& cipher_string : value->GetList()) {
       ASSERT_TRUE(cipher_string.is_string());
       EXPECT_EQ(*ciphers++, cipher_string.GetString());
@@ -219,4 +220,29 @@ TEST(ChromeCommandLinePrefStoreTest, DisableSSLCipherSuites) {
   };
   store3->VerifySSLCipherSuites(expected_ciphers3,
                                 base::size(expected_ciphers3));
+}
+
+TEST(ChromeCommandLinePrefStoreTest, ExplicitlyAllowedPorts) {
+  base::CommandLine cl(base::CommandLine::NO_PROGRAM);
+  cl.AppendSwitchASCII(switches::kExplicitlyAllowedPorts,
+                       "79,554,  6000, foo,1000000");
+  auto store = base::MakeRefCounted<TestCommandLinePrefStore>(&cl);
+  constexpr int kExpectedPorts[] = {
+      79,
+      554,
+      6000,
+  };
+
+  const base::Value* value = nullptr;
+  ASSERT_TRUE(store->GetValue(prefs::kExplicitlyAllowedNetworkPorts, &value));
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_list());
+  ASSERT_EQ(base::size(kExpectedPorts), value->GetList().size());
+
+  int i = 0;
+  for (const base::Value& port : value->GetList()) {
+    ASSERT_TRUE(port.is_int());
+    EXPECT_EQ(kExpectedPorts[i], port.GetInt());
+    ++i;
+  }
 }

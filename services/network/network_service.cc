@@ -289,13 +289,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  // Set-up the global port overrides.
-  if (command_line->HasSwitch(switches::kExplicitlyAllowedPorts)) {
-    std::string allowed_ports =
-        command_line->GetSwitchValueASCII(switches::kExplicitlyAllowedPorts);
-    net::SetExplicitlyAllowedPorts(allowed_ports);
-  }
-
   // Record this once per session, though the switch is appled on a
   // per-NetworkContext basis.
   UMA_HISTOGRAM_BOOLEAN(
@@ -743,6 +736,11 @@ void NetworkService::BindTestInterface(
 
 void NetworkService::SetPreloadedFirstPartySets(const std::string& raw_sets) {
   first_party_sets_->ParseAndSet(raw_sets);
+}
+
+void NetworkService::SetExplicitlyAllowedPorts(
+    const std::vector<uint16_t>& ports) {
+  net::SetExplicitlyAllowedPorts(ports);
 }
 
 std::unique_ptr<net::HttpAuthHandlerFactory>

@@ -1143,6 +1143,8 @@ extern const char kSuppressDifferentOriginSubframeJSDialogs[];
 extern const char kPdfAnnotationsEnabled[];
 #endif
 
+extern const char kExplicitlyAllowedNetworkPorts[];
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

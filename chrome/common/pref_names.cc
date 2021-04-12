@@ -3224,4 +3224,9 @@ const char kFetchKeepaliveDurationOnShutdown[] =
 const char kPdfAnnotationsEnabled[] = "pdf.enable_annotations";
 #endif
 
+// A comma-separated list of ports on which outgoing connections will be
+// permitted even if they would otherwise be blocked.
+const char kExplicitlyAllowedNetworkPorts[] =
+    "net.explicitly_allowed_network_ports";
+
 }  // namespace prefs

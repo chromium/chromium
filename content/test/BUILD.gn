@@ -1110,7 +1110,6 @@ test("content_browsertests") {
     "../browser/navigation_mhtml_browsertest.cc",
     "../browser/net/accept_header_browsertest.cc",
     "../browser/net/http_cookie_browsertest.cc",
-    "../browser/net/net_command_line_flags_browsertest.cc",
     "../browser/net/network_field_trial_browsertest.cc",
     "../browser/net/split_cache_browsertest.cc",
     "../browser/net/trust_token_browsertest.cc",

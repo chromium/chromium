@@ -344,4 +344,8 @@ interface NetworkService {
   // known First-Party Sets), but does nothing if given non-JSON input or JSON
   // which is not a dictionary.
   SetPreloadedFirstPartySets(string raw_sets);
+
+  // Sets the list of ports which will be permitted even if they normally would
+  // be restricted.
+  SetExplicitlyAllowedPorts(array<uint16> ports);
 };

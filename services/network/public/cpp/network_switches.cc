@@ -56,10 +56,6 @@ const char kNetLogCaptureMode[] = "net-log-capture-mode";
 // for the format.
 const char kSSLKeyLogFile[] = "ssl-key-log-file";
 
-// Allows overriding the list of restricted ports by passing a comma-separated
-// list of port numbers.
-const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
-
 // Treat given (insecure) origins as secure origins. Multiple origins can be
 // supplied as a comma-separated list. For the definition of secure contexts,
 // see https://w3c.github.io/webappsec-secure-contexts/ and

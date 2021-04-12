@@ -8647,5 +8647,17 @@
         "prefs": { "pdf.enable_annotations": {} }
       }
     ]
+  },
+  "ExplicitlyAllowedNetworkPorts": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "ExplicitlyAllowedNetworkPorts": "554,10080" },
+        "prefs": {
+          "net.explicitly_allowed_network_ports": "10080",
+          "location": "local_state"
+        }
+      }
+    ]
   }
 }

@@ -293,6 +293,10 @@ const char kEnableNetBenchmarking[]         = "enable-net-benchmarking";
 const char kEnablePotentiallyAnnoyingSecurityFeatures[] =
     "enable-potentially-annoying-security-features";
 
+// Allows overriding the list of restricted ports by passing a comma-separated
+// list of port numbers.
+const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
+
 // Name of the command line flag to force content verification to be on in one
 // of various modes.
 const char kExtensionContentVerification[] = "extension-content-verification";
