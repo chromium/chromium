@@ -5,7 +5,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 
 // These preferences are included in java_pref_names_srcjar for access in
-// Java code.
+// Java code. TODO (https://crbug.com/1197367) add translate namespace.
 namespace prefs {
 
 // Boolean that is true when offering translate (i.e. the automatic translate
@@ -14,5 +14,7 @@ namespace prefs {
 const char kOfferTranslateEnabled[] = "translate.enabled";
 
 const char kPrefAlwaysTranslateList[] = "translate_whitelists";
+
+const char kPrefTranslateRecentTarget[] = "translate_recent_target";
 
 }  // namespace prefs

@@ -178,6 +178,9 @@ public class LanguageSettings extends PreferenceFragmentCompat
                 AddLanguageFragment.LANGUAGE_OPTIONS_TRANSLATE_LANGUAGES,
                 REQUEST_CODE_CHANGE_TARGET_LANGUAGE,
                 LanguagesManager.LanguageSettingsPageType.CHANGE_TARGET_LANGUAGE);
+        mPrefChangeRegistrar.addObserver(Pref.PREF_TRANSLATE_RECENT_TARGET, () -> {
+            targetLanguagePreference.setLanguageItem(TranslateBridge.getTargetLanguage());
+        });
 
         // Setup always translate preference.
         LanguageItemListPreference alwaysTranslatePreference =
@@ -247,6 +250,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
             mAppLanguageDelegate.startLanguageSplitDownload(code);
+            TranslateBridge.setDefaultTargetLanguage(code);
         } else if (requestCode == REQUEST_CODE_CHANGE_TARGET_LANGUAGE) {
             LanguageItemPickerPreference targetLanguagePreference =
                     (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);

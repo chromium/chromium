@@ -97,8 +97,6 @@ const char TranslatePrefs::kPrefTranslateLastDeniedTimeForLanguage[] =
     "translate_last_denied_time_for_language";
 const char TranslatePrefs::kPrefTranslateTooOftenDeniedForLanguage[] =
     "translate_too_often_denied_for_language";
-const char TranslatePrefs::kPrefTranslateRecentTarget[] =
-    "translate_recent_target";
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
 const char TranslatePrefs::kPrefTranslateAutoAlwaysCount[] =
@@ -226,7 +224,7 @@ void TranslatePrefs::ResetToDefaults() {
   prefs_->ClearPref(kPrefTranslateDeniedCount);
   prefs_->ClearPref(kPrefTranslateIgnoredCount);
   prefs_->ClearPref(kPrefTranslateAcceptedCount);
-  prefs_->ClearPref(kPrefTranslateRecentTarget);
+  prefs_->ClearPref(prefs::kPrefTranslateRecentTarget);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
   prefs_->ClearPref(kPrefTranslateAutoAlwaysCount);
@@ -865,7 +863,7 @@ bool TranslatePrefs::ShouldAutoTranslate(base::StringPiece original_language,
 
 void TranslatePrefs::SetRecentTargetLanguage(
     const std::string& target_language) {
-  prefs_->SetString(kPrefTranslateRecentTarget, target_language);
+  prefs_->SetString(prefs::kPrefTranslateRecentTarget, target_language);
 }
 
 void TranslatePrefs::ResetRecentTargetLanguage() {
@@ -873,7 +871,7 @@ void TranslatePrefs::ResetRecentTargetLanguage() {
 }
 
 std::string TranslatePrefs::GetRecentTargetLanguage() const {
-  return prefs_->GetString(kPrefTranslateRecentTarget);
+  return prefs_->GetString(prefs::kPrefTranslateRecentTarget);
 }
 
 int TranslatePrefs::GetForceTriggerOnEnglishPagesCount() const {
@@ -916,7 +914,7 @@ void TranslatePrefs::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(
       kPrefTranslateTooOftenDeniedForLanguage,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterStringPref(kPrefTranslateRecentTarget, "",
+  registry->RegisterStringPref(prefs::kPrefTranslateRecentTarget, "",
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       kPrefForceTriggerTranslateCount, 0,

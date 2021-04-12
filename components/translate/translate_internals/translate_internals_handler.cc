@@ -242,7 +242,7 @@ void TranslateInternalsHandler::SendPrefsToJs() {
   static const char* const keys[] = {
       language::prefs::kFluentLanguages,
       prefs::kOfferTranslateEnabled,
-      translate::TranslatePrefs::kPrefTranslateRecentTarget,
+      prefs::kPrefTranslateRecentTarget,
       translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated,
       translate::TranslatePrefs::kPrefNeverPromptSitesWithTime,
       prefs::kPrefAlwaysTranslateList,
