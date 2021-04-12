@@ -52,3 +52,8 @@ void gtk_style_context_add_provider_for_screen(GdkScreen* screen, GtkStyleProvid
 void gtk_style_context_add_provider_for_display(GdkDisplay* display, GtkStyleProvider* provider, guint priority);
 void gtk_style_context_remove_provider_for_screen(GdkScreen* screen, GtkStyleProvider* provider);
 void gtk_style_context_remove_provider_for_display(GdkDisplay* display, GtkStyleProvider* provider);
+void gtk_window_destroy(GtkWindow* window);
+GtkIconTheme* gtk_icon_theme_get_for_display(GdkDisplay* display);
+GtkIconTheme* gtk_icon_theme_get_default(void);
+gboolean gtk_widget_path_iter_has_class(const GtkWidgetPath* path, gint pos, const gchar* name);
+void gtk_style_context_get_background_color(GtkStyleContext* context, GtkStateFlags state, GdkRGBA* color);

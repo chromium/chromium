@@ -51,6 +51,8 @@ gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context);
 
 gfx::Insets GtkStyleContextGetMargin(GtkStyleContext* context);
 
+GdkRGBA GtkStyleContextGetColor(GtkStyleContext* context);
+
 bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event);
 
 bool GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
@@ -62,6 +64,12 @@ void GtkRenderIcon(GtkStyleContext* context,
                    GdkTexture* texture,
                    double x,
                    double y);
+
+GtkWidget* GtkToplevelWindowNew();
+
+void GtkCssProviderLoadFromData(GtkCssProvider* css_provider,
+                                const char* data,
+                                gssize length);
 
 ScopedGObject<GListModel> Gtk4FileChooserGetFiles(GtkFileChooser* dialog);
 

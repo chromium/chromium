@@ -33,9 +33,9 @@ class KeyEvent;
 
 namespace gtk {
 
-extern const char kGtkCSSMenu[];
-extern const char kGtkCSSMenuItem[];
-extern const char kGtkCSSMenuScrollbar[];
+const char* GtkCssMenu();
+const char* GtkCssMenuItem();
+const char* GtkCssMenuScrollbar();
 
 COMPONENT_EXPORT(GTK)
 void GtkInitFromCommandLine(const base::CommandLine& command_line);
@@ -122,7 +122,6 @@ class GtkCssContext {
 
 using ScopedCssProvider = ScopedGObject<GtkCssProvider>;
 
-#if BUILDFLAG(GTK_VERSION) < 4
 }  // namespace gtk
 
 // Template override cannot be in the gtk namespace.
@@ -150,7 +149,6 @@ inline void ScopedGObject<GtkStyleContext>::Unref() {
 }
 
 namespace gtk {
-#endif
 
 // Converts ui::NativeTheme::State to GtkStateFlags.
 GtkStateFlags StateToStateFlags(ui::NativeTheme::State state);

@@ -244,7 +244,7 @@ void NativeThemeGtk::PaintArrowButton(
   // Add the "flat" styleclass to avoid drawing a border.
   auto context = GetStyleContextFromCss(
       GtkCheckVersion(3, 20)
-          ? StrCat({kGtkCSSMenuScrollbar, " #range GtkButton#button.flat"})
+          ? StrCat({GtkCssMenuScrollbar(), " #range GtkButton#button.flat"})
           : "GtkRange.scrollbar.button.flat");
   // Remove any rounded corners since arrow scrollbar buttons are tiny.
   ApplyCssToContext(context, "* { border-radius: 0px; }");
@@ -282,7 +282,7 @@ void NativeThemeGtk::PaintScrollbarTrack(
   PaintWidget(
       canvas, rect,
       GetStyleContextFromCss(GtkCheckVersion(3, 20)
-                                 ? StrCat({kGtkCSSMenuScrollbar, " #trough"})
+                                 ? StrCat({GtkCssMenuScrollbar(), " #trough"})
                                  : "GtkScrollbar.scrollbar.trough"),
       BG_RENDER_NORMAL, true);
 }
@@ -296,7 +296,7 @@ void NativeThemeGtk::PaintScrollbarThumb(
     ColorScheme color_scheme) const {
   auto context = GetStyleContextFromCss(
       GtkCheckVersion(3, 20)
-          ? StrCat({kGtkCSSMenuScrollbar, " #trough #slider"})
+          ? StrCat({GtkCssMenuScrollbar(), " #trough #slider"})
           : "GtkScrollbar.scrollbar.slider");
   gtk_style_context_set_state(context, StateToStateFlags(state));
   PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, true);
@@ -318,7 +318,7 @@ void NativeThemeGtk::PaintMenuPopupBackground(
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
-  auto context = GetStyleContextFromCss(kGtkCSSMenu);
+  auto context = GetStyleContextFromCss(GtkCssMenu());
   // Chrome menus aren't rendered with transparency, so avoid rounded corners.
   ApplyCssToContext(context, "* { border-radius: 0px; }");
   PaintWidget(canvas, gfx::Rect(size), context, BG_RENDER_RECURSIVE, false);
@@ -331,7 +331,7 @@ void NativeThemeGtk::PaintMenuItemBackground(
     const MenuItemExtraParams& menu_item,
     ColorScheme color_scheme) const {
   auto context =
-      GetStyleContextFromCss(StrCat({kGtkCSSMenu, " ", kGtkCSSMenuItem}));
+      GetStyleContextFromCss(StrCat({GtkCssMenu(), " ", GtkCssMenuItem()}));
   gtk_style_context_set_state(context, StateToStateFlags(state));
   PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, true);
 }
@@ -365,7 +365,7 @@ void NativeThemeGtk::PaintMenuSeparator(
   };
   if (GtkCheckVersion(3, 20)) {
     auto context = GetStyleContextFromCss(
-        StrCat({kGtkCSSMenu, " GtkSeparator#separator.horizontal"}));
+        StrCat({GtkCssMenu(), " GtkSeparator#separator.horizontal"}));
     int min_height = 1;
     auto margin = GtkStyleContextGetMargin(context);
     auto border = GtkStyleContextGetBorder(context);
@@ -383,7 +383,7 @@ void NativeThemeGtk::PaintMenuSeparator(
     PaintWidget(canvas, gfx::Rect(x, y, w, h), context, BG_RENDER_NORMAL, true);
   } else {
     auto context = GetStyleContextFromCss(
-        StrCat({kGtkCSSMenu, " ", kGtkCSSMenuItem, ".separator.horizontal"}));
+        StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), ".separator.horizontal"}));
     gboolean wide_separators = false;
     gint separator_height = 0;
     GtkStyleContextGetStyle(context, "wide-separators", &wide_separators,

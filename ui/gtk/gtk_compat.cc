@@ -172,6 +172,19 @@ gfx::Insets GtkStyleContextGetMargin(GtkStyleContext* context) {
 }
 
 DISABLE_CFI_ICALL
+GdkRGBA GtkStyleContextGetColor(GtkStyleContext* context) {
+  static void* get_color = DlSym(GetLibGtk(), "gtk_style_context_get_color");
+  GdkRGBA color;
+  if (GtkCheckVersion(4)) {
+    DlCast<void(GtkStyleContext*, GdkRGBA*)>(get_color)(context, &color);
+  } else {
+    DlCast<void(GtkStyleContext*, GtkStateFlags, GdkRGBA*)>(get_color)(
+        context, gtk_style_context_get_state(context), &color);
+  }
+  return color;
+}
+
+DISABLE_CFI_ICALL
 bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event) {
   static void* filter = DlSym(GetLibGtk(), "gtk_im_context_filter_keypress");
   if (GtkCheckVersion(4)) {
@@ -210,6 +223,28 @@ void GtkRenderIcon(GtkStyleContext* context,
     DCHECK(pixbuf);
     DlCast<void(GtkStyleContext*, cairo_t*, GdkPixbuf*, double, double)>(
         render)(context, cr, pixbuf, x, y);
+  }
+}
+
+DISABLE_CFI_ICALL
+GtkWidget* GtkToplevelWindowNew() {
+  static void* window_new = DlSym(GetLibGtk(), "gtk_window_new");
+  if (GtkCheckVersion(4))
+    return DlCast<GtkWidget*()>(window_new)();
+  return DlCast<GtkWidget*(GtkWindowType)>(window_new)(GTK_WINDOW_TOPLEVEL);
+}
+
+DISABLE_CFI_ICALL
+void GtkCssProviderLoadFromData(GtkCssProvider* css_provider,
+                                const char* data,
+                                gssize length) {
+  static void* load = DlSym(GetLibGtk(), "gtk_css_provider_load_from_data");
+  if (GtkCheckVersion(4)) {
+    DlCast<void(GtkCssProvider*, const char*, gssize)>(load)(css_provider, data,
+                                                             length);
+  } else {
+    DlCast<gboolean(GtkCssProvider*, const char*, gssize, GError**)>(load)(
+        css_provider, data, length, nullptr);
   }
 }
 

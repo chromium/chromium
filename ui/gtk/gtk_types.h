@@ -56,6 +56,7 @@ using GdkSurface = struct _GdkSurface;
 constexpr GdkMemoryFormat GDK_MEMORY_B8G8R8A8 = static_cast<GdkMemoryFormat>(3);
 #else
 enum GtkWidgetHelpType : int;
+enum GtkWindowType : int;
 
 using GtkWidgetPath = struct _GtkWidgetPath;
 using GtkContainer = struct _GtkContainer;
@@ -64,6 +65,7 @@ using GdkWindow = struct _GdkWindow;
 using GdkKeymap = struct _GdkKeymap;
 using GtkIconInfo = struct _GtkIconInfo;
 using GdkScreen = struct _GdkScreen;
+using GdkColor = struct _GdkColor;
 
 struct _GdkEventKey {
   GdkEventType type;
@@ -79,11 +81,20 @@ struct _GdkEventKey {
   guint is_modifier : 1;
 };
 
+struct _GdkColor {
+  guint32 pixel;
+  guint16 red;
+  guint16 green;
+  guint16 blue;
+};
+
 constexpr int GTK_ICON_LOOKUP_USE_BUILTIN = 1 << 2;
 constexpr int GTK_ICON_LOOKUP_GENERIC_FALLBACK = 1 << 3;
 constexpr int GTK_ICON_LOOKUP_FORCE_SIZE = 1 << 4;
 
 constexpr const char GTK_STYLE_PROPERTY_BACKGROUND_IMAGE[] = "background-image";
+
+constexpr auto GTK_WINDOW_TOPLEVEL = static_cast<GtkWindowType>(0);
 #endif
 }
 

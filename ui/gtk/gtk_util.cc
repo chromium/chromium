@@ -27,6 +27,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_delegate.h"
 #include "ui/native_theme/common_theme.h"
@@ -36,16 +37,6 @@
 using base::StrCat;
 
 namespace gtk {
-
-#if BUILDFLAG(GTK_VERSION) >= 4
-const char kGtkCSSMenu[] = "#popover.background.menu #contents";
-const char kGtkCSSMenuItem[] = "#modelbutton.flat";
-const char kGtkCSSMenuScrollbar[] = "#scrollbar #range";
-#else
-const char kGtkCSSMenu[] = "GtkMenu#menu";
-const char kGtkCSSMenuItem[] = "GtkMenuItem#menuitem";
-const char kGtkCSSMenuScrollbar[] = "GtkScrollbar#scrollbar #trough";
-#endif
 
 namespace {
 
@@ -161,16 +152,26 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
 }
 
 GtkWidget* CreateDummyWindow() {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  GtkWidget* window = gtk_window_new();
-#else
-  GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-#endif
+  GtkWidget* window = GtkToplevelWindowNew();
   gtk_widget_realize(window);
   return window;
 }
 
 }  // namespace
+
+const char* GtkCssMenu() {
+  return GtkCheckVersion(4) ? "#popover.background.menu #contents"
+                            : "GtkMenu#menu";
+}
+
+const char* GtkCssMenuItem() {
+  return GtkCheckVersion(4) ? "#modelbutton.flat" : "GtkMenuItem#menuitem";
+}
+
+const char* GtkCssMenuScrollbar() {
+  return GtkCheckVersion(4) ? "#scrollbar #range"
+                            : "GtkScrollbar#scrollbar #trough";
+}
 
 void GtkInitFromCommandLine(const base::CommandLine& command_line) {
   CommonInitFromCommandLine(command_line);
@@ -408,10 +409,10 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
           object_name = t.token();
           break;
         case CSS_TYPE: {
-#if BUILDFLAG(GTK_VERSION) < 4
-          gtype = g_type_from_name(t.token().c_str());
-          DCHECK(gtype);
-#endif
+          if (!GtkCheckVersion(4)) {
+            gtype = g_type_from_name(t.token().c_str());
+            DCHECK(gtype);
+          }
           break;
         }
         case CSS_CLASS:
@@ -458,14 +459,7 @@ GtkCssContext GetStyleContextFromCss(const std::string& css_selector) {
 }
 
 SkColor GetFgColorFromStyleContext(GtkStyleContext* context) {
-  GdkRGBA color;
-#if BUILDFLAG(GTK_VERSION) >= 4
-  gtk_style_context_get_color(context, &color);
-#else
-  gtk_style_context_get_color(context, gtk_style_context_get_state(context),
-                              &color);
-#endif
-  return GdkRgbaToSkColor(color);
+  return GdkRgbaToSkColor(GtkStyleContextGetColor(context));
 }
 
 SkColor GetBgColorFromStyleContext(GtkCssContext context) {
@@ -493,13 +487,7 @@ SkColor GetFgColor(const std::string& css_selector) {
 
 ScopedCssProvider GetCssProvider(const std::string& css) {
   auto provider = TakeGObject(gtk_css_provider_new());
-#if BUILDFLAG(GTK_VERSION) >= 4
-  gtk_css_provider_load_from_data(provider, css.c_str(), -1);
-#else
-  GError* error = nullptr;
-  gtk_css_provider_load_from_data(provider, css.c_str(), -1, &error);
-  DCHECK(!error);
-#endif
+  GtkCssProviderLoadFromData(provider, css.c_str(), -1);
   return provider;
 }
 
@@ -544,28 +532,24 @@ SkColor GetSelectionBgColor(const std::string& css_selector) {
   auto context = GetStyleContextFromCss(css_selector);
   if (GtkCheckVersion(3, 20))
     return GetBgColorFromStyleContext(context);
-#if BUILDFLAG(GTK_VERSION) < 4
-  // This is verbatim how Gtk gets the selection color on versions before 3.20.
+  DCHECK(!GtkCheckVersion(4));
+  // This is verbatim how Gtk gets the selection color on versions
+  // before 3.20.
   GdkRGBA selection_color;
   G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
   gtk_style_context_get_background_color(
       context, gtk_style_context_get_state(context), &selection_color);
   G_GNUC_END_IGNORE_DEPRECATIONS;
   return GdkRgbaToSkColor(selection_color);
-#else
-  NOTREACHED();
-  return gfx::kPlaceholderColor;
-#endif
 }
 
 bool ContextHasClass(GtkCssContext context, const std::string& style_class) {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  return gtk_style_context_has_class(context, style_class.c_str());
-#else
-  return gtk_style_context_has_class(context, style_class.c_str()) ||
-         gtk_widget_path_iter_has_class(gtk_style_context_get_path(context), -1,
-                                        style_class.c_str());
-#endif
+  bool has_class = gtk_style_context_has_class(context, style_class.c_str());
+  if (!GtkCheckVersion(4)) {
+    has_class |= gtk_widget_path_iter_has_class(
+        gtk_style_context_get_path(context), -1, style_class.c_str());
+  }
+  return has_class;
 }
 
 SkColor GetSeparatorColor(const std::string& css_selector) {
@@ -576,22 +560,17 @@ SkColor GetSeparatorColor(const std::string& css_selector) {
   bool horizontal = ContextHasClass(context, "horizontal");
 
   int w = 1, h = 1;
-  GtkBorder border, padding;
-#if BUILDFLAG(GTK_VERSION) >= 4
-  auto size = GetSeparatorSize(horizontal);
-  w = size.width();
-  h = size.height();
-  gtk_style_context_get_border(context, &border);
-  gtk_style_context_get_padding(context, &padding);
-#else
-  gtk_style_context_get(context, gtk_style_context_get_state(context),
-                        "min-width", &w, "min-height", &h, nullptr);
-  GtkStateFlags state = gtk_style_context_get_state(context);
-  gtk_style_context_get_border(context, state, &border);
-  gtk_style_context_get_padding(context, state, &padding);
-#endif
-  w += border.left + padding.left + padding.right + border.right;
-  h += border.top + padding.top + padding.bottom + border.bottom;
+  if (GtkCheckVersion(4)) {
+    auto size = GetSeparatorSize(horizontal);
+    w = size.width();
+    h = size.height();
+  } else {
+    GtkStyleContextGet(context, "min-width", &w, "min-height", &h, nullptr);
+  }
+  auto border = GtkStyleContextGetBorder(context);
+  auto padding = GtkStyleContextGetPadding(context);
+  w += border.left() + padding.left() + padding.right() + border.right();
+  h += border.top() + padding.top() + padding.bottom() + border.bottom();
 
   if (horizontal) {
     w = 24;
@@ -690,19 +669,16 @@ GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
 }
 
 GtkIconTheme* GetDefaultIconTheme() {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  return gtk_icon_theme_get_for_display(gdk_display_get_default());
-#else
-  return gtk_icon_theme_get_default();
-#endif
+  return GtkCheckVersion(4)
+             ? gtk_icon_theme_get_for_display(gdk_display_get_default())
+             : gtk_icon_theme_get_default();
 }
 
 void GtkWindowDestroy(GtkWidget* widget) {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  gtk_window_destroy(GTK_WINDOW(widget));
-#else
-  gtk_widget_destroy(widget);
-#endif
+  if (GtkCheckVersion(4))
+    gtk_window_destroy(GTK_WINDOW(widget));
+  else
+    gtk_widget_destroy(widget);
 }
 
 GtkWidget* GetDummyWindow() {
@@ -810,60 +786,61 @@ base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorMenuItemBackgroundAlertedInitial:
     case ui::kColorMenuItemBackgroundAlertedTarget:
     case ui::kColorSubtleEmphasisBackground:
-      return GetBgColor(kGtkCSSMenu);
+      return GetBgColor(GtkCssMenu());
     case ui::kColorMenuBorder:
-      return GetBorderColor(kGtkCSSMenu);
+      return GetBorderColor(GtkCssMenu());
     case ui::kColorMenuItemBackgroundSelected:
-      return GetBgColor(StrCat({kGtkCSSMenu, " ", kGtkCSSMenuItem, ":hover"}));
+      return GetBgColor(
+          StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), ":hover"}));
     case ui::kColorMenuItemForeground:
     case ui::kColorMenuDropmarker:
     case ui::kColorMenuItemForegroundHighlighted:
       return GetFgColor(
-          StrCat({kGtkCSSMenu, " ", kGtkCSSMenuItem, " GtkLabel#label"}));
+          StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), " GtkLabel#label"}));
     case ui::kColorMenuItemForegroundSelected:
-      return GetFgColor(
-          StrCat({kGtkCSSMenu, " ", kGtkCSSMenuItem, ":hover GtkLabel#label"}));
+      return GetFgColor(StrCat(
+          {GtkCssMenu(), " ", GtkCssMenuItem(), ":hover GtkLabel#label"}));
     case ui::kColorMenuItemForegroundDisabled:
       return GetFgColor(StrCat(
-          {kGtkCSSMenu, " ", kGtkCSSMenuItem, ":disabled GtkLabel#label"}));
+          {GtkCssMenu(), " ", GtkCssMenuItem(), ":disabled GtkLabel#label"}));
     case ui::kColorAvatarIconGuest:
     case ui::kColorMenuItemForegroundSecondary:
       if (GtkCheckVersion(3, 20)) {
         return GetFgColor(
-            StrCat({kGtkCSSMenu, " ", kGtkCSSMenuItem, " #accelerator"}));
+            StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), " #accelerator"}));
       }
-      return GetFgColor(StrCat(
-          {kGtkCSSMenu, " ", kGtkCSSMenuItem, " GtkLabel#label.accelerator"}));
+      return GetFgColor(StrCat({GtkCssMenu(), " ", GtkCssMenuItem(),
+                                " GtkLabel#label.accelerator"}));
     case ui::kColorMenuSeparator:
     case ui::kColorAvatarHeaderArt:
       if (GtkCheckVersion(3, 20)) {
         return GetSeparatorColor(
-            StrCat({kGtkCSSMenu, " GtkSeparator#separator.horizontal"}));
+            StrCat({GtkCssMenu(), " GtkSeparator#separator.horizontal"}));
       }
       return GetFgColor(
-          StrCat({kGtkCSSMenu, " ", kGtkCSSMenuItem, ".separator"}));
+          StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), ".separator"}));
 
     // Dropdown
     case ui::kColorDropdownBackground:
       return GetBgColor(
           StrCat({"GtkComboBoxText#combobox GtkWindow#window.background.popup ",
-                  "GtkTreeMenu#menu(gtk-combobox-popup-menu) ", kGtkCSSMenuItem,
-                  " ", "GtkCellView#cellview"}));
+                  "GtkTreeMenu#menu(gtk-combobox-popup-menu) ",
+                  GtkCssMenuItem(), " ", "GtkCellView#cellview"}));
     case ui::kColorDropdownForeground:
       return GetFgColor(
           StrCat({"GtkComboBoxText#combobox GtkWindow#window.background.popup ",
-                  "GtkTreeMenu#menu(gtk-combobox-popup-menu) ", kGtkCSSMenuItem,
-                  " ", "GtkCellView#cellview"}));
+                  "GtkTreeMenu#menu(gtk-combobox-popup-menu) ",
+                  GtkCssMenuItem(), " ", "GtkCellView#cellview"}));
     case ui::kColorDropdownBackgroundSelected:
       return GetBgColor(
           StrCat({"GtkComboBoxText#combobox GtkWindow#window.background.popup ",
-                  "GtkTreeMenu#menu(gtk-combobox-popup-menu) ", kGtkCSSMenuItem,
-                  ":hover GtkCellView#cellview"}));
+                  "GtkTreeMenu#menu(gtk-combobox-popup-menu) ",
+                  GtkCssMenuItem(), ":hover GtkCellView#cellview"}));
     case ui::kColorDropdownForegroundSelected:
       return GetFgColor(
           StrCat({"GtkComboBoxText#combobox GtkWindow#window.background.popup ",
-                  "GtkTreeMenu#menu(gtk-combobox-popup-menu) ", kGtkCSSMenuItem,
-                  ":hover GtkCellView#cellview"}));
+                  "GtkTreeMenu#menu(gtk-combobox-popup-menu) ",
+                  GtkCssMenuItem(), ":hover GtkCellView#cellview"}));
 
     // Label
     case ui::kColorLabelForeground:
@@ -894,22 +871,20 @@ base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorLinkForeground: {
       if (GtkCheckVersion(3, 12))
         return GetFgColor("GtkLabel#label.link:link");
-#if BUILDFLAG(GTK_VERSION) < 4
       auto link_context = GetStyleContextFromCss("GtkLabel#label.view");
-      GdkColor* color;
-      gtk_style_context_get_style(link_context, "link-color", &color, nullptr);
+      GdkColor* color = nullptr;
+      GtkStyleContextGetStyle(link_context, "link-color", &color, nullptr);
       if (color) {
         SkColor ret_color =
             SkColorSetRGB(color->red >> 8, color->green >> 8, color->blue >> 8);
         // gdk_color_free() was deprecated in Gtk3.14.  This code path is only
-        // taken on versions earlier than Gtk3.12, but the compiler doesn't know
-        // that, so silence the deprecation warnings.
+        // taken on versions earlier than Gtk3.12, but the compiler doesn't
+        // know that, so silence the deprecation warnings.
         G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
         gdk_color_free(color);
         G_GNUC_END_IGNORE_DEPRECATIONS;
         return ret_color;
       }
-#endif
       // Default color comes from gtklinkbutton.c.
       return SkColorSetRGB(0x00, 0x00, 0xEE);
     }
@@ -1100,8 +1075,9 @@ base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorMenuIcon:
       if (GtkCheckVersion(3, 20))
         return GetFgColor(
-            StrCat({kGtkCSSMenu, " ", kGtkCSSMenuItem, " #radio"}));
-      return GetFgColor(StrCat({kGtkCSSMenu, " ", kGtkCSSMenuItem, ".radio"}));
+            StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), " #radio"}));
+      return GetFgColor(
+          StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), ".radio"}));
 
     case ui::kColorIcon:
       return GetFgColor("GtkButton#button.flat.scale GtkImage#image");
