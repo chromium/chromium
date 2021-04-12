@@ -34,8 +34,11 @@ namespace off_hours {
 // behavior for the removed policies. And behavior of policies is handled during
 // decoding process from proto to PolicyMap.
 //
-// "OffHours" mode is never on until device time is synchronized with
-// network time because in this case device time could be incorrect.
+// "OffHours" mode requires the system clock to be network synchronized.
+// However, network synchronization happens only after the first policy parsing.
+// We therefore have to assume that the clock is in fact synchronized at
+// startup. Otherwise we would terminate off-hour-allowed guest sessions
+// immediately.
 class DeviceOffHoursController : public chromeos::SystemClockClient::Observer {
  public:
   // Observer interface.
@@ -109,7 +112,7 @@ class DeviceOffHoursController : public chromeos::SystemClockClient::Observer {
   // immediately if it's already available).
   void SystemClockInitiallyAvailable(bool service_is_available);
 
-  // Called when the system time synchronization status with network time is
+  // Called when the system clock synchronization status with network time is
   // changed.
   void NetworkSynchronizationUpdated(bool network_synchronized);
 
@@ -131,10 +134,10 @@ class DeviceOffHoursController : public chromeos::SystemClockClient::Observer {
   // base::DefaultClock.
   base::Clock* clock_;
 
-  // Value is true if the system time is synchronized with network time, and
-  // false when synchronization failed. Value is not set until the response from
-  // the D-Bus call is not arrived.
-  base::Optional<bool> network_synchronized_;
+  // We start with the assumption that the system clock is synchronized with the
+  // network time. This will be updated once actual synchronization attempts are
+  // made by the system.
+  bool is_clock_network_synchronized_ = true;
 
   // Current "OffHours" time intervals.
   std::vector<WeeklyTimeInterval> off_hours_intervals_;
