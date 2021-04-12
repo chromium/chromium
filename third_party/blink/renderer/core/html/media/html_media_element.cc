@@ -153,7 +153,9 @@ enum class MediaControlsShow {
   kNoScript,
   kNotShown,
   kDisabledSettings,
-  kMaxValue = kDisabledSettings,
+  kUserExplicitlyEnabled,
+  kUserExplicitlyDisabled,
+  kMaxValue = kUserExplicitlyDisabled,
 };
 
 // These values are used for the Media.MediaElement.ContentTypeResult histogram.
@@ -2740,6 +2742,18 @@ bool HTMLMediaElement::ShouldShowControls(
     return false;
   }
 
+  // If the user has explicitly shown or hidden the controls, then force that
+  // choice.
+  if (user_wants_controls_visible_.has_value()) {
+    if (record_metrics == RecordMetricsBehavior::kDoRecord) {
+      RecordShowControlsUsage(this,
+                              *user_wants_controls_visible_
+                                  ? MediaControlsShow::kUserExplicitlyEnabled
+                                  : MediaControlsShow::kUserExplicitlyDisabled);
+    }
+    return *user_wants_controls_visible_;
+  }
+
   if (FastHasAttribute(html_names::kControlsAttr)) {
     if (record_metrics == RecordMetricsBehavior::kDoRecord)
       RecordShowControlsUsage(this, MediaControlsShow::kAttribute);
@@ -2848,6 +2862,11 @@ void HTMLMediaElement::setMuted(bool muted) {
     GetWebMediaPlayer()->SetVolume(EffectiveMediaVolume());
 
   autoplay_policy_->StopAutoplayMutedWhenVisible();
+}
+
+void HTMLMediaElement::SetUserWantsControlsVisible(bool visible) {
+  user_wants_controls_visible_ = visible;
+  UpdateControlsVisibility();
 }
 
 double HTMLMediaElement::EffectiveMediaVolume() const {

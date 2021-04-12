@@ -50568,6 +50568,8 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="No scripts allowed"/>
   <int value="3" label="Not shown"/>
   <int value="4" label="Disabled by settings"/>
+  <int value="5" label="User explicitly enabled"/>
+  <int value="6" label="User explicitly disabled"/>
 </enum>
 
 <enum name="MediaDocumentDownloadButtonType">

@@ -324,6 +324,8 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     return !!Media()->lazy_load_intersection_observer_;
   }
 
+  bool ControlsVisible() const { return Media()->ShouldShowControls(); }
+
   ExecutionContext* GetExecutionContext() const {
     return dummy_page_holder_->GetFrame().DomWindow();
   }
@@ -1066,6 +1068,38 @@ TEST_P(HTMLMediaElementTest, SendBufferOverflowToObserver) {
 
   NotifyBufferUnderflowEvent();
   EXPECT_TRUE(ReceivedMessageBufferUnderflowEvent());
+}
+
+TEST_P(HTMLMediaElementTest,
+       ControlsVisibilityUserChoiceOverridesControlsAttr) {
+  // Enable scripts to prevent controls being shown due to no scripts.
+  Media()->GetDocument().GetSettings()->SetScriptEnabled(true);
+
+  // Setting the controls attribute to true should show the controls.
+  Media()->SetBooleanAttribute(html_names::kControlsAttr, true);
+  EXPECT_TRUE(ControlsVisible());
+
+  // Setting it to false should hide them.
+  Media()->SetBooleanAttribute(html_names::kControlsAttr, false);
+  EXPECT_FALSE(ControlsVisible());
+
+  // If the user explicitly shows them, that should override the controls
+  // attribute.
+  Media()->SetUserWantsControlsVisible(true);
+  EXPECT_TRUE(ControlsVisible());
+
+  // Setting the controls attribute to false again should do nothing.
+  Media()->SetBooleanAttribute(html_names::kControlsAttr, false);
+  EXPECT_TRUE(ControlsVisible());
+
+  // If the user explicitly hides the controls, that should also override any
+  // controls attribute setting.
+  Media()->SetUserWantsControlsVisible(false);
+  EXPECT_FALSE(ControlsVisible());
+
+  // So setting the controls attribute to true should not show the controls.
+  Media()->SetBooleanAttribute(html_names::kControlsAttr, true);
+  EXPECT_FALSE(ControlsVisible());
 }
 
 }  // namespace blink

@@ -3303,7 +3303,7 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
       media_element->SetLoop(enable);
       break;
     case blink::mojom::blink::MediaPlayerActionType::kControls:
-      media_element->SetBooleanAttribute(html_names::kControlsAttr, enable);
+      media_element->SetUserWantsControlsVisible(enable);
       break;
     case blink::mojom::blink::MediaPlayerActionType::kPictureInPicture:
       DCHECK(IsA<HTMLVideoElement>(media_element));
