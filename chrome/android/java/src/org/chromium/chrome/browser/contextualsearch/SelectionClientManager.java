@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.content_public.browser.SelectionClient;
-import org.chromium.content_public.browser.SelectionMetricsLogger;
+import org.chromium.content_public.browser.SelectionEventProcessor;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.touch_selection.SelectionEventType;
@@ -192,8 +192,8 @@ public class SelectionClientManager {
         }
 
         @Override
-        public SelectionMetricsLogger getSelectionMetricsLogger() {
-            return mSmartSelectionClient.getSelectionMetricsLogger();
+        public SelectionEventProcessor getSelectionEventProcessor() {
+            return mSmartSelectionClient.getSelectionEventProcessor();
         }
     }
 }

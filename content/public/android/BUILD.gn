@@ -303,7 +303,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/selection/SelectionInsertionHandleObserver.java",
     "java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java",
     "java/src/org/chromium/content/browser/selection/SmartSelectionClient.java",
-    "java/src/org/chromium/content/browser/selection/SmartSelectionMetricsLogger.java",
+    "java/src/org/chromium/content/browser/selection/SmartSelectionEventProcessor.java",
     "java/src/org/chromium/content/browser/selection/SmartSelectionProvider.java",
     "java/src/org/chromium/content/browser/sms/SmsProviderGms.java",
     "java/src/org/chromium/content/browser/sms/SmsUserConsentReceiver.java",
@@ -350,7 +350,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/ScreenOrientationDelegate.java",
     "java/src/org/chromium/content_public/browser/ScreenOrientationProvider.java",
     "java/src/org/chromium/content_public/browser/SelectionClient.java",
-    "java/src/org/chromium/content_public/browser/SelectionMetricsLogger.java",
+    "java/src/org/chromium/content_public/browser/SelectionEventProcessor.java",
     "java/src/org/chromium/content_public/browser/SelectionPopupController.java",
     "java/src/org/chromium/content_public/browser/SmartClipProvider.java",
     "java/src/org/chromium/content_public/browser/SpeechRecognition.java",
@@ -613,7 +613,7 @@ junit_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/remoteobjects/RemoteObjectRegistryTest.java",
     "junit/src/org/chromium/content/browser/selection/MagnifierAnimatorTest.java",
     "junit/src/org/chromium/content/browser/selection/SelectionPopupControllerTest.java",
-    "junit/src/org/chromium/content/browser/selection/SmartSelectionMetricsLoggerTest.java",
+    "junit/src/org/chromium/content/browser/selection/SmartSelectionEventProcessorTest.java",
   ]
   deps = [
     ":content_java",

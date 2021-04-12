@@ -167,8 +167,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      */
     private SelectionClient mSelectionClient;
 
-    // SelectionMetricsLogger, could be null.
-    private SmartSelectionMetricsLogger mSelectionMetricsLogger;
+    @Nullable
+    private SmartSelectionEventProcessor mSmartSelectionEventProcessor;
 
     private PopupController mPopupController;
 
@@ -410,21 +410,21 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mUnselectAllOnDismiss = true;
 
         if (hasSelection()) {
-            if (mSelectionMetricsLogger != null) {
+            if (mSmartSelectionEventProcessor != null) {
                 switch (sourceType) {
                     case MenuSourceType.MENU_SOURCE_ADJUST_SELECTION:
-                        mSelectionMetricsLogger.logSelectionModified(
+                        mSmartSelectionEventProcessor.onSelectionModified(
                                 mLastSelectedText, mLastSelectionOffset, mClassificationResult);
                         break;
                     case MenuSourceType.MENU_SOURCE_ADJUST_SELECTION_RESET:
-                        mSelectionMetricsLogger.logSelectionAction(mLastSelectedText,
+                        mSmartSelectionEventProcessor.onSelectionAction(mLastSelectedText,
                                 mLastSelectionOffset, SelectionEvent.ACTION_RESET,
                                 /* SelectionClient.Result = */ null);
                         break;
                     case MenuSourceType.MENU_SOURCE_TOUCH_HANDLE:
                         break;
                     default:
-                        mSelectionMetricsLogger.logSelectionStarted(
+                        mSmartSelectionEventProcessor.onSelectionStarted(
                                 mLastSelectedText, mLastSelectionOffset, isEditable);
                 }
             }
@@ -917,8 +917,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         int id = item.getItemId();
         int groupId = item.getGroupId();
 
-        if (hasSelection() && mSelectionMetricsLogger != null) {
-            mSelectionMetricsLogger.logSelectionAction(mLastSelectedText, mLastSelectionOffset,
+        if (hasSelection() && mSmartSelectionEventProcessor != null) {
+            mSmartSelectionEventProcessor.onSelectionAction(mLastSelectedText, mLastSelectionOffset,
                     getActionType(id, groupId), mClassificationResult);
         }
 
@@ -1441,9 +1441,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     /* package */ void onSelectionChanged(String text) {
         final boolean unSelected = TextUtils.isEmpty(text) && hasSelection();
         if (unSelected) {
-            if (mSelectionMetricsLogger != null) {
-                mSelectionMetricsLogger.logSelectionAction(mLastSelectedText, mLastSelectionOffset,
-                        SelectionEvent.ACTION_ABANDON,
+            if (mSmartSelectionEventProcessor != null) {
+                mSmartSelectionEventProcessor.onSelectionAction(mLastSelectedText,
+                        mLastSelectionOffset, SelectionEvent.ACTION_ABANDON,
                         /* SelectionClient.Result = */ null);
             }
             destroyActionModeAndKeepSelection();
@@ -1460,9 +1460,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public void setSelectionClient(@Nullable SelectionClient selectionClient) {
         mSelectionClient = selectionClient;
-        mSelectionMetricsLogger = mSelectionClient == null
+        mSmartSelectionEventProcessor = mSelectionClient == null
                 ? null
-                : (SmartSelectionMetricsLogger) mSelectionClient.getSelectionMetricsLogger();
+                : (SmartSelectionEventProcessor) mSelectionClient.getSelectionEventProcessor();
 
         mClassificationResult = null;
 
@@ -1573,8 +1573,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             // We won't do expansion here, however, we want to 1) for starting a new logging
             // session, log non selection expansion event to match the behavior of expansion case.
             // 2) log selection handle dragging triggered selection change.
-            if (mSelectionMetricsLogger != null) {
-                mSelectionMetricsLogger.logSelectionModified(
+            if (mSmartSelectionEventProcessor != null) {
+                mSmartSelectionEventProcessor.onSelectionModified(
                         mLastSelectedText, mLastSelectionOffset, mClassificationResult);
             }
 
