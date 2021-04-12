@@ -12,6 +12,8 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.task.SequencedTaskRunner;
 
@@ -19,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
@@ -39,13 +40,15 @@ class CompressibleBitmap {
     private Bitmap mBitmap;
     private int mWidth;
     private int mHeight;
+    private boolean mIgnoreMissingAlpha;
 
     // Compression by this class achieves a compression ratio of about 20.
 
     // Compressed as a JPEG.
     private byte[] mCompressedData;
     // Compressed with zip.
-    private byte[] mCompressedAlphaBytes;
+    @VisibleForTesting
+    byte[] mCompressedAlphaBytes;
     private SequencedTaskRunner mTaskRunner;
     private AtomicBoolean mInUse = new AtomicBoolean();
 
@@ -60,10 +63,22 @@ class CompressibleBitmap {
         mBitmap = bitmap;
         mWidth = mBitmap.getWidth();
         mHeight = mBitmap.getHeight();
-        // The alpha flag isn't always set even though it should be.
+        mIgnoreMissingAlpha = false;
+        // The alpha flag isn't always set even though it should be as the input bitmap is
+        // ARGB8888 AKA N32Premultiplied.
         mBitmap.setHasAlpha(true);
         mTaskRunner = taskRunner;
         compressInBackground(visible);
+    }
+
+    /**
+     * Permits missing alpha channel to be ignored when inflating. If this is set to true, the
+     * compressed JPEG will be used without alpha. This will result in black or white backing
+     * to transparent/translucent pixels. Default is false causing the inflation to fail.
+     * @param shouldIgnore whether to ignore missing alpha channel on inflation.
+     */
+    void setIgnoreMissingAlphaForTesting(boolean shouldIgnore) {
+        mIgnoreMissingAlpha = shouldIgnore;
     }
 
     /**
@@ -129,13 +144,26 @@ class CompressibleBitmap {
                 BitmapFactory.decodeByteArray(mCompressedData, 0, mCompressedData.length, options);
         if (mBitmap == null) return false;
 
-        // The alpha flag isn't set by default despite requesting ARGB_8888.
-        mBitmap.setHasAlpha(true);
         // Decompress the alpha channel and apply the alpha mask.
         Bitmap alphaChannel = decompressAlpha(mCompressedAlphaBytes, mWidth, mHeight);
         if (alphaChannel != null) {
+            // The alpha flag isn't set by default despite requesting ARGB_8888.Set it only if alpha
+            // inflation succeeded.
+            mBitmap.setHasAlpha(true);
             applyAlpha(mBitmap, alphaChannel);
             alphaChannel.recycle();
+
+            // The bitmap must be premultiplied if alpha is true and is ARGB_8888.
+            if (!mBitmap.isPremultiplied()) {
+                mBitmap.recycle();
+                mBitmap = null;
+                return false;
+            }
+        } else if (!mIgnoreMissingAlpha) {
+            // Abort if alpha inflation failed and we ignoring it is unacceptable.
+            mBitmap.recycle();
+            mBitmap = null;
+            return false;
         }
         return true;
     }
@@ -218,12 +246,16 @@ class CompressibleBitmap {
         inflater.setInput(alpha, 0, alpha.length);
 
         Bitmap alphaBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8);
+        if (alphaBitmap == null) return null;
+
         ByteBuffer byteBuffer = ByteBuffer.allocate(width * height);
         try {
             inflater.inflate(byteBuffer.array());
             alphaBitmap.copyPixelsFromBuffer(byteBuffer);
-        } catch (DataFormatException e) {
-            // Should never happen.
+        } catch (Exception e) {
+            // This can happen if the inflated content is the wrong size or the inflation fails.
+            // This can happen if the device is under memory pressure or some sort of corruption
+            // occurs. When this happens we should return a null bitmap.
             alphaBitmap.recycle();
             alphaBitmap = null;
         }
