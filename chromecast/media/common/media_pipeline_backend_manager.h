@@ -132,6 +132,11 @@ class MediaPipelineBackendManager : public media::CmaBackendFactory {
   // automatic power save will be disabled until this is called with |true|.
   void SetPowerSaveEnabled(bool power_save_enabled);
 
+  // Temporarily disables power save mode even if there are no currently-playing
+  // audio streams. Useful to disable power save ahead of time if audio will
+  // start playing soon (within 5 seconds).
+  void TemporaryDisablePowerSave();
+
  private:
   friend class ActiveMediaPipelineBackendWrapper;
 

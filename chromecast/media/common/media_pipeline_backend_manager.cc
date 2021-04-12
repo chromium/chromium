@@ -266,5 +266,18 @@ void MediaPipelineBackendManager::SetPowerSaveEnabled(bool power_save_enabled) {
   }
 }
 
+void MediaPipelineBackendManager::TemporaryDisablePowerSave() {
+  MAKE_SURE_MEDIA_THREAD(TemporaryDisablePowerSave);
+  int playing_audio_streams = TotalPlayingAudioStreamsCount();
+  if (playing_audio_streams == 0) {
+    if (VolumeControl::SetPowerSaveMode) {
+      LOG(INFO) << "Temporarily disable power save";
+      VolumeControl::SetPowerSaveMode(false);
+      power_save_timer_.Start(FROM_HERE, kPowerSaveWaitTime, this,
+                              &MediaPipelineBackendManager::EnterPowerSaveMode);
+    }
+  }
+}
+
 }  // namespace media
 }  // namespace chromecast
