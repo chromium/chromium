@@ -20,9 +20,22 @@
 // +--------------------------------+
 @interface IdentityView : UIView
 
-// Minimum vertical margin above and below the avatar image and title/subtitle.
-// The default value is 12.
-@property(nonatomic) CGFloat minimumVerticalMargin;
+// Minimum vertical margin above the avatar image and title/subtitle, default
+// value is 12.
+@property(nonatomic, assign) CGFloat minimumTopMargin;
+// Minimum vertical margin below the avatar image and title/subtitle, default
+// value is 12.
+@property(nonatomic, assign) CGFloat minimumBottomMargin;
+// Avatar size, default value is 40.
+@property(nonatomic, assign) CGFloat avatarSize;
+// Horizontal distance between the avatar and the title, default
+// value is 16.
+@property(nonatomic, assign) CGFloat avatarTitleMargin;
+// Vertical distance between the title and the subtitle., default
+// value is 4.
+@property(nonatomic, assign) CGFloat titleSubtitleMargin;
+@property(nonatomic, strong) UIFont* titleFont;
+@property(nonatomic, strong) UIFont* subtitleFont;
 
 // Initialises IdentityView.
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;

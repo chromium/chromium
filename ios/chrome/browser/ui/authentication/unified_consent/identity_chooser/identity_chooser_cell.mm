@@ -37,7 +37,8 @@ const CGFloat kCheckmarkMagin = 26.;
   if (self) {
     _identityView = [[IdentityView alloc] initWithFrame:CGRectZero];
     _identityView.translatesAutoresizingMaskIntoConstraints = NO;
-    _identityView.minimumVerticalMargin = kIdentityViewVerticalMargin;
+    _identityView.minimumTopMargin = kIdentityViewVerticalMargin;
+    _identityView.minimumBottomMargin = kIdentityViewVerticalMargin;
     [self.contentView addSubview:_identityView];
     LayoutSides sideFlags = LayoutSides::kLeading | LayoutSides::kTrailing |
                             LayoutSides::kBottom | LayoutSides::kTop;

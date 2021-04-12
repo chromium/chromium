@@ -33,6 +33,7 @@ source_set("unified_consent_ui") {
   ]
   deps = [
     "resources:identity_picker_view_arrow_down",
+    "resources:identity_picker_view_arrow_right",
     "resources:unified_consent_header",
     "//base",
     "//components/google/core/common",

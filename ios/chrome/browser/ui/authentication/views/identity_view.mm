@@ -36,8 +36,16 @@ const CGFloat kVerticalMargin = 12.;
 @property(nonatomic, strong) NSLayoutConstraint* titleConstraintForNameAndEmail;
 // Constraints if the name doesn't exist.
 @property(nonatomic, strong) NSLayoutConstraint* titleConstraintForEmailOnly;
-// Constraints to update when |self.minimumVerticalMargin| is changed.
-@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* verticalConstraints;
+// Constraints to update when |self.minimumTopMargin| is updated.
+@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* topConstraints;
+// Constraints to update when |self.minimumBottomMargin| is updated.
+@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* bottomConstraints;
+// Constraints for the avatar size.
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* avatarSizeConstraints;
+// Constraints to update when |self.avatarTitleMargin| is updated.
+@property(nonatomic, strong)
+    NSLayoutConstraint* avatarTitleHorizontalConstraint;
 
 @end
 
@@ -76,26 +84,21 @@ const CGFloat kVerticalMargin = 12.;
     [self addLayoutGuide:textContainerGuide];
 
     // Layout constraints.
-    NSDictionary* views = @{
-      @"avatar" : _avatarView,
-      @"container" : textContainerGuide,
-      @"subtitle" : _subtitle,
-    };
-    NSDictionary* metrics = @{
-      @"AvatarSize" : @(kAvatarSize),
-      @"HAvatarMargin" : @(kHorizontalAvatarMargin),
-      @"VMargin" : @(kVerticalMargin),
-    };
-    NSArray* constraints = @[
-      // Horizontal constraints.
-      @"H:|-(HAvatarMargin)-[avatar]-(HAvatarMargin)-[container]|",
-      // Vertical constraints.
-      // Size constraints.
-      @"H:[avatar(AvatarSize)]",
-      @"V:[avatar(AvatarSize)]",
+    _avatarTitleHorizontalConstraint = [textContainerGuide.leadingAnchor
+        constraintEqualToAnchor:_avatarView.trailingAnchor
+                       constant:kHorizontalAvatarMargin];
+    [NSLayoutConstraint activateConstraints:@[
+      _avatarTitleHorizontalConstraint,
+      [_avatarView.leadingAnchor
+          constraintEqualToAnchor:self.leadingAnchor
+                         constant:kHorizontalAvatarMargin]
+    ]];
+    _avatarSizeConstraints = @[
+      [_avatarView.heightAnchor constraintEqualToConstant:kAvatarSize],
+      [_avatarView.widthAnchor constraintEqualToConstant:kAvatarSize],
     ];
+    [NSLayoutConstraint activateConstraints:_avatarSizeConstraints];
     AddSameCenterYConstraint(self, _avatarView);
-    ApplyVisualConstraintsWithMetrics(constraints, views, metrics);
     AddSameConstraintsToSides(_title, _subtitle,
                               LayoutSides::kLeading | LayoutSides::kTrailing);
     _titleConstraintForNameAndEmail =
@@ -120,21 +123,23 @@ const CGFloat kVerticalMargin = 12.;
           constraintEqualToAnchor:_subtitle.bottomAnchor],
     ]];
 
-    _verticalConstraints = @[
+    _topConstraints = @[
       [_avatarView.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.topAnchor
                                       constant:kVerticalMargin],
+      [_title.topAnchor constraintGreaterThanOrEqualToAnchor:self.topAnchor
+                                                    constant:kVerticalMargin],
+    ];
+    [NSLayoutConstraint activateConstraints:_topConstraints];
+    _bottomConstraints = @[
       [self.bottomAnchor
           constraintGreaterThanOrEqualToAnchor:_avatarView.bottomAnchor
                                       constant:kVerticalMargin],
-      [textContainerGuide.topAnchor
-          constraintGreaterThanOrEqualToAnchor:self.topAnchor
-                                      constant:kVerticalMargin],
       [self.bottomAnchor
-          constraintGreaterThanOrEqualToAnchor:textContainerGuide.bottomAnchor
+          constraintGreaterThanOrEqualToAnchor:_subtitle.bottomAnchor
                                       constant:kVerticalMargin],
     ];
-    [NSLayoutConstraint activateConstraints:_verticalConstraints];
+    [NSLayoutConstraint activateConstraints:_bottomConstraints];
   }
   return self;
 }
@@ -144,7 +149,7 @@ const CGFloat kVerticalMargin = 12.;
 - (void)setAvatar:(UIImage*)avatarImage {
   if (avatarImage) {
     self.avatarView.image = avatarImage;
-    self.avatarView.layer.cornerRadius = kAvatarSize / 2.0;
+    self.avatarView.layer.cornerRadius = self.avatarSize / 2.0;
   } else {
     self.avatarView.image = nil;
   }
@@ -165,15 +170,72 @@ const CGFloat kVerticalMargin = 12.;
   }
 }
 
-- (void)setMinimumVerticalMargin:(CGFloat)minimumVerticalMargin {
-  for (NSLayoutConstraint* constraint in self.verticalConstraints) {
-    constraint.constant = minimumVerticalMargin;
+#pragma mark - properties
+
+- (void)setMinimumTopMargin:(CGFloat)minimumTopMargin {
+  for (NSLayoutConstraint* constraint in self.topConstraints) {
+    constraint.constant = minimumTopMargin;
   }
 }
 
-- (CGFloat)minimumVerticalMargin {
-  DCHECK(self.verticalConstraints.count);
-  return self.verticalConstraints[0].constant;
+- (CGFloat)minimumTopMargin {
+  DCHECK(self.topConstraints.count);
+  return self.topConstraints[0].constant;
+}
+
+- (void)setMinimumBottomMargin:(CGFloat)minimumBottomMargin {
+  for (NSLayoutConstraint* constraint in self.bottomConstraints) {
+    constraint.constant = minimumBottomMargin;
+  }
+}
+
+- (CGFloat)minimumBottomMargin {
+  DCHECK(self.bottomConstraints.count);
+  return self.bottomConstraints[0].constant;
+}
+
+- (void)setAvatarSize:(CGFloat)avatarSize {
+  for (NSLayoutConstraint* constraint in self.avatarSizeConstraints) {
+    constraint.constant = avatarSize;
+  }
+  self.avatarView.layer.cornerRadius = avatarSize / 2.0;
+}
+
+- (CGFloat)avatarSize {
+  DCHECK(self.avatarSizeConstraints.count);
+  return self.avatarSizeConstraints[0].constant;
+}
+
+- (void)setAvatarTitleMargin:(CGFloat)avatarTitleMargin {
+  self.avatarTitleHorizontalConstraint.constant = avatarTitleMargin;
+}
+
+- (CGFloat)avatarTitleMargin {
+  return self.avatarTitleHorizontalConstraint.constant;
+}
+
+- (void)setTitleSubtitleMargin:(CGFloat)titleSubtitleMargin {
+  self.titleConstraintForNameAndEmail.constant = titleSubtitleMargin;
+}
+
+- (CGFloat)titleSubtitleMargin {
+  return self.titleConstraintForNameAndEmail.constant;
+}
+
+- (void)setTitleFont:(UIFont*)titleFont {
+  self.title.font = titleFont;
+}
+
+- (UIFont*)titleFont {
+  return self.title.font;
+}
+
+- (void)setSubtitleFont:(UIFont*)subtitleFont {
+  self.subtitle.font = subtitleFont;
+}
+
+- (UIFont*)subtitleFont {
+  return self.subtitleFont;
 }
 
 @end
