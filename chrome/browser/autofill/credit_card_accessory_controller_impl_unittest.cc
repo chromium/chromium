@@ -164,12 +164,11 @@ TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
 
   EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
       .WillOnce(SaveArg<0>(&result));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
 
-  auto* cc_controller = controller();
-  ASSERT_TRUE(cc_controller);
-  cc_controller->RefreshSuggestions();
-
-  ASSERT_EQ(
+  EXPECT_EQ(result, controller()->GetSheetData());
+  EXPECT_EQ(
       result,
       CreditCardAccessorySheetDataBuilder()
           .AddUserInfo(kVisaCard)
@@ -192,8 +191,10 @@ TEST_F(CreditCardAccessoryControllerTest, PreventsFillingInsecureContexts) {
 
   EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
       .WillOnce(SaveArg<0>(&result));
+  ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
+  EXPECT_EQ(result, controller()->GetSheetData());
   EXPECT_EQ(result,
             CreditCardAccessorySheetDataBuilder()
                 .SetWarning(l10n_util::GetStringUTF16(
@@ -223,9 +224,8 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
   data_manager_.AddCreditCard(card);
   data_manager_.AddCreditCard(test::GetCreditCard());
 
-  auto* cc_controller = controller();
-  ASSERT_TRUE(cc_controller);
-  cc_controller->RefreshSuggestions();
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
 
   UserInfo::Field field(card.ObfuscatedLastFourDigits(),
                         card.ObfuscatedLastFourDigits(), card.guid(),
@@ -245,7 +245,7 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
   EXPECT_CALL(mock_af_driver_,
               RendererShouldFillFieldWithValue(field_id, expected_number));
 
-  cc_controller->OnFillingTriggered(field_id, field);
+  controller()->OnFillingTriggered(field_id, field);
 }
 
 }  // namespace autofill

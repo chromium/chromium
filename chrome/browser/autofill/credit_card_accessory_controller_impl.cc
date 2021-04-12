@@ -83,8 +83,32 @@ void CreditCardAccessoryControllerImpl::RegisterFillingSourceObserver(
 
 base::Optional<autofill::AccessorySheetData>
 CreditCardAccessoryControllerImpl::GetSheetData() const {
-  NOTIMPLEMENTED();
-  return base::nullopt;
+  bool valid_manager = web_contents_->GetFocusedFrame() && GetManager();
+  std::vector<UserInfo> info_to_add;
+  bool allow_filling = valid_manager && ShouldAllowCreditCardFallbacks(
+                                            GetManager()->client(),
+                                            GetManager()->last_query_form());
+  std::transform(cards_cache_.begin(), cards_cache_.end(),
+                 std::back_inserter(info_to_add),
+                 [allow_filling](const CreditCard* data) {
+                   return TranslateCard(data, allow_filling);
+                 });
+
+  const std::vector<FooterCommand> footer_commands = {FooterCommand(
+      l10n_util::GetStringUTF16(
+          IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
+      AccessoryAction::MANAGE_CREDIT_CARDS)};
+
+  bool has_suggestions = !info_to_add.empty();
+
+  AccessorySheetData data = autofill::CreateAccessorySheetData(
+      AccessoryTabType::CREDIT_CARDS, GetTitle(has_suggestions),
+      std::move(info_to_add), std::move(footer_commands));
+  if (has_suggestions && !allow_filling && valid_manager) {
+    data.set_warning(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
+  }
+  return data;
 }
 
 void CreditCardAccessoryControllerImpl::OnFillingTriggered(
@@ -172,37 +196,14 @@ CreditCardAccessoryController* CreditCardAccessoryController::GetIfExisting(
 }
 
 void CreditCardAccessoryControllerImpl::RefreshSuggestions() {
-  bool valid_manager = web_contents_->GetFocusedFrame() && GetManager();
-  if (valid_manager) {
+  if (web_contents_->GetFocusedFrame() && GetManager()) {
     FetchSuggestionsFromPersonalDataManager();
   } else {
     cards_cache_.clear();  // If cards cannot be filled, don't show them.
   }
-  std::vector<UserInfo> info_to_add;
-  bool allow_filling = valid_manager && ShouldAllowCreditCardFallbacks(
-                                            GetManager()->client(),
-                                            GetManager()->last_query_form());
-  std::transform(cards_cache_.begin(), cards_cache_.end(),
-                 std::back_inserter(info_to_add),
-                 [allow_filling](const CreditCard* data) {
-                   return TranslateCard(data, allow_filling);
-                 });
-
-  const std::vector<FooterCommand> footer_commands = {FooterCommand(
-      l10n_util::GetStringUTF16(
-          IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
-      AccessoryAction::MANAGE_CREDIT_CARDS)};
-
-  bool has_suggestions = !info_to_add.empty();
-
-  AccessorySheetData data = autofill::CreateAccessorySheetData(
-      AccessoryTabType::CREDIT_CARDS, GetTitle(has_suggestions),
-      std::move(info_to_add), std::move(footer_commands));
-  if (has_suggestions && !allow_filling && valid_manager) {
-    data.set_warning(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
-  }
-  GetManualFillingController()->RefreshSuggestions(data);
+  base::Optional<AccessorySheetData> data = GetSheetData();
+  DCHECK(data.has_value());
+  GetManualFillingController()->RefreshSuggestions(std::move(data.value()));
 }
 
 void CreditCardAccessoryControllerImpl::OnPersonalDataChanged() {
@@ -299,7 +300,8 @@ autofill::AutofillDriver* CreditCardAccessoryControllerImpl::GetDriver() {
                    web_contents_->GetFocusedFrame());
 }
 
-autofill::AutofillManager* CreditCardAccessoryControllerImpl::GetManager() {
+autofill::AutofillManager* CreditCardAccessoryControllerImpl::GetManager()
+    const {
   DCHECK(web_contents_->GetFocusedFrame());
   return af_manager_for_testing_
              ? af_manager_for_testing_

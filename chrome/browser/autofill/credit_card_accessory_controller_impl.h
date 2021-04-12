@@ -67,7 +67,7 @@ class CreditCardAccessoryControllerImpl
   void FetchSuggestionsFromPersonalDataManager();
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   autofill::AutofillDriver* GetDriver();
-  autofill::AutofillManager* GetManager();
+  autofill::AutofillManager* GetManager() const;
 
   // Pointers to cards owned by PersonalDataManager.
   std::vector<CreditCard*> cards_cache_;
