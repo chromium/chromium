@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
@@ -700,6 +701,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
+  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
+      base::TimeDelta::FromSeconds(0));
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -732,6 +735,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        OpenProfile_Settings) {
+  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
+      base::TimeDelta::FromSeconds(0));
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();

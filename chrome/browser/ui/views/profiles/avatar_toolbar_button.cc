@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/avatar_menu.h"
@@ -48,6 +49,10 @@ constexpr int kIconSizeForNonTouchUi = 22;
 
 }  // namespace
 
+// static
+base::TimeDelta AvatarToolbarButton::g_iph_min_delay_after_creation =
+    base::TimeDelta::FromSeconds(2);
+
 AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
     : AvatarToolbarButton(browser_view, nullptr) {}
 
@@ -56,6 +61,7 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view,
     : ToolbarButton(PressedCallback()),
       browser_(browser_view->browser()),
       parent_(parent),
+      creation_time_(base::TimeTicks::Now()),
       feature_promo_controller_(browser_view->feature_promo_controller()) {
   delegate_ =
       std::make_unique<AvatarToolbarButtonDelegate>(this, browser_->profile());
@@ -217,8 +223,6 @@ void AvatarToolbarButton::NotifyHighlightAnimationFinished() {
 
 void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
   // If the tracker is already initialized, the callback is called immediately.
-  // TODO(https://crbug.com/1192488): Do not show the IPH at the same time the
-  // button is created ; ensure a small delay between button creation and IPH.
   feature_promo_controller_->feature_engagement_tracker()
       ->AddOnInitializedCallback(base::BindOnce(
           &AvatarToolbarButton::MaybeShowProfileSwitchIPHInitialized,
@@ -243,6 +247,12 @@ void AvatarToolbarButton::OnThemeChanged() {
 void AvatarToolbarButton::OnHighlightChanged() {
   DCHECK(parent_);
   delegate_->OnHighlightChanged();
+}
+
+// static
+void AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
+    base::TimeDelta delay) {
+  g_iph_min_delay_after_creation = delay;
 }
 
 void AvatarToolbarButton::NotifyClick(const ui::Event& event) {
@@ -330,10 +340,21 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPHInitialized(bool success) {
   if (!success)
     return;  // IPH system initialization failed.
 
+  // Prevent showing the promo right when the browser was created. Wait a small
+  // delay for a smoother animation.
+  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
+  if (time_since_creation < g_iph_min_delay_after_creation) {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AvatarToolbarButton::MaybeShowProfileSwitchIPHInitialized,
+            weak_ptr_factory_.GetWeakPtr(), /*success=*/true),
+        g_iph_min_delay_after_creation - time_since_creation);
+    return;
+  }
+
   DCHECK(
       feature_promo_controller_->feature_engagement_tracker()->IsInitialized());
-  // TODO(https://crbug.com/1192488): Highlight or expand the button while the
-  // promo is shown.
   feature_promo_controller_->MaybeShowPromo(
       feature_engagement::kIPHProfileSwitchFeature);
 }

@@ -71,6 +71,9 @@ class AvatarToolbarButton : public ToolbarButton,
   // ToolbarIconContainerView::Observer:
   void OnHighlightChanged() override;
 
+  // Can be used in tests to reduce or remove the delay before showing the IPH.
+  static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
+
  protected:
   // ToolbarButton:
   void NotifyClick(const ui::Event& event) override;
@@ -97,6 +100,14 @@ class AvatarToolbarButton : public ToolbarButton,
 
   Browser* const browser_;
   ToolbarIconContainerView* const parent_;
+
+  // Time when this object was created.
+  const base::TimeTicks creation_time_;
+
+  // Do not show the IPH right when creating the window, so that the IPH has a
+  // separate animation.
+  static base::TimeDelta g_iph_min_delay_after_creation;
+
   FeaturePromoControllerViews* const feature_promo_controller_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
