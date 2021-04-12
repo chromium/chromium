@@ -29,8 +29,6 @@ class ArcAudioBridge : public KeyedService,
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcAudioBridge* GetForBrowserContext(content::BrowserContext* context);
-  static ArcAudioBridge* GetForBrowserContextForTesting(
-      content::BrowserContext* context);
 
   ArcAudioBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);

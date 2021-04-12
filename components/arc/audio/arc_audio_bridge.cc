@@ -46,12 +46,6 @@ ArcAudioBridge* ArcAudioBridge::GetForBrowserContext(
   return ArcAudioBridgeFactory::GetForBrowserContext(context);
 }
 
-// static
-ArcAudioBridge* ArcAudioBridge::GetForBrowserContextForTesting(
-    content::BrowserContext* context) {
-  return ArcAudioBridgeFactory::GetForBrowserContextForTesting(context);
-}
-
 ArcAudioBridge::ArcAudioBridge(content::BrowserContext* context,
                                ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),

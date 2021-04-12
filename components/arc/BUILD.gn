@@ -413,7 +413,6 @@ source_set("unit_tests") {
     "appfuse/arc_appfuse_bridge_unittest.cc",
     "arc_features_parser_unittest.cc",
     "arc_util_unittest.cc",
-    "audio/arc_audio_bridge_unittest.cc",
     "bluetooth/bluetooth_mojom_traits_unittest.cc",
     "bluetooth/bluetooth_type_converters_unittest.cc",
     "camera/arc_camera_bridge_unittest.cc",
