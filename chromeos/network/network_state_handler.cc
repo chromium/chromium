@@ -1096,8 +1096,8 @@ void NetworkStateHandler::RequestUpdateForNetwork(
     const std::string& service_path) {
   NetworkState* network = GetModifiableNetworkState(service_path);
   if (network) {
-    // Tether networks are not managed by Shill; do not request properties.
-    if (network->type() == kTypeTether)
+    // Do not request properties for networks which are not backed by Shill.
+    if (network->IsNonProfileType())
       return;
     // Do not request properties if a condition has already triggered a request.
     if (network->update_requested())
@@ -1308,6 +1308,11 @@ void NetworkStateHandler::ProfileListChanged(const base::Value& profile_list) {
        iter != network_list_.end(); ++iter) {
     const NetworkState* network = (*iter)->AsNetworkState();
     DCHECK(network);
+
+    // Do not request properties for networks which are not backed by Shill.
+    if (network->IsNonProfileType())
+      continue;
+
     shill_property_handler_->RequestProperties(
         ManagedState::MANAGED_TYPE_NETWORK, network->path());
   }

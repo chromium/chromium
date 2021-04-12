@@ -109,6 +109,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void SetConnectBehavior(const std::string& service_path,
                           const base::RepeatingClosure& behavior) override;
   void SetHoldBackServicePropertyUpdates(bool hold_back) override;
+  void SetRequireServiceToGetProperties(
+      bool require_service_to_get_properties) override;
 
  private:
   typedef base::ObserverList<ShillPropertyChangedObserver>::Unchecked
@@ -143,6 +145,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   // Property updates that were held back while
   // |hold_back_service_property_updates_| was true.
   std::vector<base::OnceClosure> recorded_property_updates_;
+
+  // Whether or not this class should fail if GetProperties() is called for an
+  // unknown service.
+  bool require_service_to_get_properties_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

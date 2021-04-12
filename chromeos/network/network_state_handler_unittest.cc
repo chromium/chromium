@@ -2212,6 +2212,14 @@ TEST_F(NetworkStateHandlerTest, SyncStubCellularNetworks) {
   EXPECT_EQ(kStubCellularIccid, cellular->iccid());
   EXPECT_EQ(1u, test_observer_->network_list_changed_count());
 
+  // Set the test to fail if properties are requested from a service not backed
+  // by Shill, then update the profiles property and very that no test failure
+  // occurs. This verifies that stub networks do not have properties requested
+  // on profile change.
+  service_test_->SetRequireServiceToGetProperties(true);
+  network_state_handler_->shill_property_handler_->OnPropertyChanged(
+      shill::kProfilesProperty, base::Value(base::Value::Type::LIST));
+
   // Verify that StubCellularNetworksProvider can remove existing
   // networks.
   test_observer_->reset_change_counts();

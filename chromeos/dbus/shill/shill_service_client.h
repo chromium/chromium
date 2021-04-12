@@ -106,6 +106,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
     // |hold_back| == false, sends all recorded property updates.
     virtual void SetHoldBackServicePropertyUpdates(bool hold_back) = 0;
 
+    // Sets whether the fake should fail if requested to fetch properties for a
+    // service that is not known by Shill.
+    virtual void SetRequireServiceToGetProperties(
+        bool require_service_to_get_properties) = 0;
+
    protected:
     virtual ~TestInterface() {}
   };

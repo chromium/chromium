@@ -166,6 +166,8 @@ void FakeShillServiceClient::GetProperties(
     // Remove credentials that Shill wouldn't send.
     result_properties->RemoveKey(shill::kPassphraseProperty);
   } else {
+    DCHECK(!require_service_to_get_properties_);
+
     // This may happen if we remove services from the list.
     VLOG(2) << "Properties not found for: " << service_path.value();
   }
@@ -644,6 +646,11 @@ void FakeShillServiceClient::SetHoldBackServicePropertyUpdates(bool hold_back) {
   for (auto& property_update : property_updates)
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(property_update));
+}
+
+void FakeShillServiceClient::SetRequireServiceToGetProperties(
+    bool require_service_to_get_properties) {
+  require_service_to_get_properties_ = require_service_to_get_properties;
 }
 
 void FakeShillServiceClient::NotifyObserversPropertyChanged(
