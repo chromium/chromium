@@ -9,7 +9,6 @@ include_rules = [
   "+media/capture/video/chromeos",
   "+ui/aura",
   "+ui/display",
-  "+ui/gfx",
   "+ui/views",
   "+ui/webui",
 ]
