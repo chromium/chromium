@@ -58,6 +58,10 @@ class UpgradeDetector {
   // reached.
   static base::TimeDelta GetDefaultHighAnnoyanceThreshold();
 
+  // Returns the default delta from upgrade detection until elevated annoyance
+  // is reached.
+  static base::TimeDelta GetDefaultElevatedAnnoyanceThreshold();
+
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   virtual void Init();

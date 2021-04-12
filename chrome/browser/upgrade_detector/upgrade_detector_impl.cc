@@ -542,3 +542,8 @@ UpgradeDetector* UpgradeDetector::GetInstance() {
 base::TimeDelta UpgradeDetector::GetDefaultHighAnnoyanceThreshold() {
   return kDefaultHighThreshold;
 }
+
+// static
+base::TimeDelta UpgradeDetector::GetDefaultElevatedAnnoyanceThreshold() {
+  return kDefaultElevatedThreshold;
+}

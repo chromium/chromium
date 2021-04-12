@@ -42,10 +42,16 @@ constexpr base::TimeDelta kNotifyCycleDelta = base::TimeDelta::FromMinutes(20);
 // upgrade is detected.
 constexpr base::TimeDelta kDefaultHighThreshold = base::TimeDelta::FromDays(7);
 
+// The default amount of time it takes for the detector's annoyance level
+// (upgrade_notification_stage()) to reach UPGRADE_ANNOYANCE_ELEVATED once an
+// upgrade is detected.
+constexpr base::TimeDelta kDefaultElevatedThreshold =
+    base::TimeDelta::FromDays(4);
+
 // The default amount of time between the detector's annoyance level change
-// from UPGRADE_ANNOYANCE_ELEVATED to UPGRADE_ANNOYANCE_HIGH in ms.
+// from UPGRADE_ANNOYANCE_ELEVATED to UPGRADE_ANNOYANCE_HIGH.
 constexpr base::TimeDelta kDefaultHeadsUpPeriod =
-    base::TimeDelta::FromDays(3);  // 3 days.
+    kDefaultHighThreshold - kDefaultElevatedThreshold;
 
 }  // namespace
 
@@ -55,7 +61,8 @@ UpgradeDetectorChromeos::UpgradeDetectorChromeos(
     : UpgradeDetector(clock, tick_clock),
       upgrade_notification_timer_(tick_clock),
       initialized_(false),
-      toggled_update_flag_(false) {
+      toggled_update_flag_(false),
+      update_in_progress_(false) {
   // Not all tests provide a PrefService for local_state().
   PrefService* local_state = g_browser_process->local_state();
   if (local_state) {
@@ -136,6 +143,7 @@ void UpgradeDetectorChromeos::OnUpdate(const BuildState* build_state) {
     CalculateDeadlines();
   }
 
+  update_in_progress_ = false;
   set_is_rollback(build_state->update_type() ==
                   BuildState::UpdateType::kEnterpriseRollback);
   set_is_factory_reset_required(build_state->update_type() ==
@@ -244,6 +252,12 @@ void UpgradeDetectorChromeos::UpdateStatusChanged(
     // Update engine broadcasts this state only when update is available but
     // downloading over cellular connection requires user's agreement.
     NotifyUpdateOverCellularAvailable();
+  } else if (!update_in_progress_ &&
+             status.current_operation() ==
+                 update_engine::Operation::DOWNLOADING) {
+    update_in_progress_ = true;
+    if (!upgrade_detected_time().is_null())
+      NotifyOnUpgrade();
   }
   if (!toggled_update_flag_) {
     // Only send feature flag status one time.
@@ -281,7 +295,11 @@ void UpgradeDetectorChromeos::NotifyOnUpgrade() {
 
   const auto last_stage = upgrade_notification_stage();
   // These if statements must be sorted (highest interval first).
-  if (current_time >= high_deadline_) {
+  if (update_in_progress_) {
+    // Cancel any notification of a previous update (if there was one) while a
+    // new update is being downloaded.
+    set_upgrade_notification_stage(UPGRADE_ANNOYANCE_NONE);
+  } else if (current_time >= high_deadline_) {
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_HIGH);
   } else if (current_time >= elevated_deadline_) {
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_ELEVATED);
@@ -334,4 +352,9 @@ UpgradeDetector* UpgradeDetector::GetInstance() {
 // static
 base::TimeDelta UpgradeDetector::GetDefaultHighAnnoyanceThreshold() {
   return kDefaultHighThreshold;
+}
+
+// static
+base::TimeDelta UpgradeDetector::GetDefaultElevatedAnnoyanceThreshold() {
+  return kDefaultElevatedThreshold;
 }
