@@ -29,8 +29,8 @@ class MultipartUploadRequestFactory;
 // multipart protocol. This class is neither movable nor copyable.
 class MultipartUploadRequest {
  public:
-  using Callback =
-      base::OnceCallback<void(bool success, const std::string& response_data)>;
+  using Callback = base::OnceCallback<
+      void(bool success, int http_status, const std::string& response_data)>;
 
   // Creates a MultipartUploadRequest, which will upload |data| to the given
   // |base_url| with |metadata| attached.
