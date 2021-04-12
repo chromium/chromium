@@ -6,6 +6,9 @@
 # file. When the test failures below are triaged, new bugs will be created and we will change the
 # bug for the expectation to the new bug.
 
+# Test fails when run on Android.
+crbug.com/1197454 external/wpt/document-policy/experimental-features/unsized-media.tentative.https.sub.html [ Failure ]
+
 # This test is flaky.
 crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-openee_coop-ro.https.html [ Timeout ]
 
@@ -716,10 +719,6 @@ crbug.com/1050754 external/wpt/css/mediaqueries/test_media_queries.html [ Failur
 crbug.com/1050754 external/wpt/css/selectors/focus-visible-002.html [ Timeout ]
 crbug.com/1050754 external/wpt/css/selectors/focus-visible-016.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/custom-elements/reactions/HTMLInputElement.html [ Failure ]
-crbug.com/1050754 external/wpt/document-policy/experimental-features/sync-script.tentative.https.sub.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/experimental-features/unsized-media.tentative.https.sub.html [ Failure ]
-crbug.com/1050754 external/wpt/document-policy/reporting/oversized-images-reporting-tentative.html [ Timeout ]
-crbug.com/1050754 external/wpt/document-policy/required-policy/separate-document-policies.html [ Failure ]
 crbug.com/1050754 external/wpt/dom/events/Event-dispatch-click.html [ Timeout ]
 crbug.com/1050754 external/wpt/dom/events/scrolling/input-text-scroll-event-when-using-arrow-keys.html [ Timeout ]
 crbug.com/1050754 external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Failure ]

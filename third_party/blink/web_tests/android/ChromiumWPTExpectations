@@ -6,6 +6,9 @@
 # file. When the test failures below are triaged, new bugs will be created and we will change the
 # bug for the expectation to the new bug.
 
+# Test fails when run on Android.
+crbug.com/1197454 external/wpt/document-policy/experimental-features/unsized-media.tentative.https.sub.html [ Failure ]
+
 # https://crbug.com/1126079
 crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-openee_coop-ro.https.html [ Pass CRASH ]
 
@@ -1603,31 +1606,6 @@ crbug.com/1050754 external/wpt/delegated-ink/exception-thrown-bad-color.tentativ
 crbug.com/1050754 external/wpt/delegated-ink/exception-thrown-diameter-less-than-or-equal-to-0.tentative.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/delegated-ink/exception-thrown-untrusted-event.tentative.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/delegated-ink/requestPresenter-returns-valid-promise.tentative.window.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/experimental-features/document-write.tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/experimental-features/layout-animations-disabled-tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/experimental-features/layout-animations-disabled-violation-report-js-tentative.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/document-policy/experimental-features/layout-animations-disabled-violation-report-keyframes-tentative.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/document-policy/experimental-features/sync-script.tentative.https.sub.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/experimental-features/unsized-media.tentative.https.sub.html [ Failure ]
-crbug.com/1050754 external/wpt/document-policy/font-display/report-only-auto.tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/font-display/report-only-blank.tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/font-display/report-only-block.tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/font-display/report-only-swap.tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/font-display/reporting-auto.tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/font-display/reporting-blank.tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/font-display/reporting-block.tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/font-display/reporting-swap.tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/reporting/document-write-report-only-tentative.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/document-policy/reporting/document-write-reporting-tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/reporting/lossy-images-max-bpp-reporting-onload-tentative.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/document-policy/reporting/lossy-images-max-bpp-reporting-tentative.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/document-policy/reporting/oversized-images-reporting-tentative.html [ Timeout ]
-crbug.com/1050754 external/wpt/document-policy/reporting/unsized-media-reporting-tentative.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/document-policy/required-policy/document-policy.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/required-policy/no-document-policy.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/required-policy/required-document-policy-nested.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/required-policy/required-document-policy.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/document-policy/required-policy/separate-document-policies.html [ Failure ]
 crbug.com/1050754 external/wpt/dom/collections/HTMLCollection-as-prototype.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/dom/collections/HTMLCollection-delete.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/dom/collections/HTMLCollection-own-props.html [ Failure Pass ]
