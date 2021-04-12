@@ -85,7 +85,6 @@ class FontAccessContext;
 class GeneratedCodeCacheContext;
 class FileSystemAccessEntryFactory;
 class FileSystemAccessManagerImpl;
-class InterestGroupManager;
 class NativeIOContextImpl;
 class PrefetchURLLoaderService;
 class QuotaContext;
@@ -226,7 +225,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   QuotaContext* GetQuotaContext();
   ConversionManagerImpl* GetConversionManager();
   FontAccessManagerImpl* GetFontAccessManager();
-  InterestGroupManager* GetInterestGroupStorage();
   PrerenderHostRegistry* GetPrerenderHostRegistry();
   std::string GetPartitionDomain();
 
@@ -562,7 +560,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<NativeIOContextImpl> native_io_context_;
   std::unique_ptr<ConversionManagerImpl> conversion_manager_;
   std::unique_ptr<FontAccessManagerImpl> font_access_manager_;
-  std::unique_ptr<InterestGroupManager> interest_group_manager_;
   std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;
 
   // ReceiverSet for DomStorage, using the

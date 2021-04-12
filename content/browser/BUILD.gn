@@ -1010,8 +1010,6 @@ source_set("browser") {
     "interest_group/ad_auction_service_impl.h",
     "interest_group/auction_url_loader_factory_proxy.cc",
     "interest_group/auction_url_loader_factory_proxy.h",
-    "interest_group/interest_group_manager.cc",
-    "interest_group/interest_group_manager.h",
     "interest_group/interest_group_service_impl.cc",
     "interest_group/interest_group_service_impl.h",
     "interest_group/interest_group_storage.cc",

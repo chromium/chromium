@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_SERVICE_IMPL_H_
 
-#include "content/browser/interest_group/interest_group_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_service_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -41,8 +40,6 @@ class CONTENT_EXPORT InterestGroupServiceImpl final
 
   // `this` can only be destroyed by FrameServiceBase.
   ~InterestGroupServiceImpl() override;
-
-  InterestGroupManager& interest_group_manager_;
 };
 
 }  // namespace content

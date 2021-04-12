@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/common/content_export.h"
