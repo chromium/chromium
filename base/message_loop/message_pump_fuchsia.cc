@@ -121,17 +121,20 @@ void MessagePumpFuchsia::FdWatchController::OnZxHandleSignalled(
   // case, we don't want to call both the CanWrite and CanRead callback,
   // when the caller asked for only, for example, readable callbacks. So,
   // mask with the events that we actually wanted to know about.
-  events &= desired_events_;
-  DCHECK_NE(0u, events);
+  //
+  // Note that errors are always included.
+  const uint32_t desired_events = desired_events_ | FDIO_EVT_ERROR;
+  const uint32_t filtered_events = events & desired_events;
+  DCHECK_NE(filtered_events, 0u) << events << " & " << desired_events;
 
   // Each |watcher_| callback we invoke may stop or delete |this|. The pump has
   // set |was_stopped_| to point to a safe location on the calling stack, so we
   // can use that to detect being stopped mid-callback and avoid doing further
   // work that would touch |this|.
   bool* was_stopped = was_stopped_;
-  if (events & FDIO_EVT_WRITABLE)
+  if (filtered_events & FDIO_EVT_WRITABLE)
     watcher_->OnFileCanWriteWithoutBlocking(fd_);
-  if (!*was_stopped && (events & FDIO_EVT_READABLE))
+  if (!*was_stopped && (filtered_events & FDIO_EVT_READABLE))
     watcher_->OnFileCanReadWithoutBlocking(fd_);
 
   // Don't add additional work here without checking |*was_stopped_| again.
