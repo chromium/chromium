@@ -5,7 +5,7 @@
 import("//build/config/android/rules.gni")
 
 # Library groups
-if (build_with_chromium) {
+if (!limit_android_deps) {
   java_group("android_support_v4_java") {
     deps = [
       "//third_party/androidx:androidx_core_core_java",
@@ -750,7 +750,7 @@ java_prebuilt("org_threeten_threeten_extra_java") {
   ]
 }
 
-if (build_with_chromium) {
+if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("android_arch_lifecycle_common_java") {
     jar_path = "libs/android_arch_lifecycle_common/common-1.1.1.jar"

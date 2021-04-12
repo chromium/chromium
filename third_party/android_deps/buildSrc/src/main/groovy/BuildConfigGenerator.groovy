@@ -243,7 +243,7 @@ class BuildConfigGenerator extends DefaultTask {
             appendBuildTarget(dependency, depGraph.dependencies, sb)
         }
 
-        sb.append("if (build_with_chromium) {\n")
+        sb.append("if (!limit_android_deps) {\n")
         def buildWithChromiumDependencies = depGraph.dependencies.values().findAll {
             dependency -> !dependency.usedInBuild
         }

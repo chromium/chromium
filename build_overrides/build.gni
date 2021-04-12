@@ -27,6 +27,13 @@ declare_args() {
   # TODO(crbug/1006769): Switch to perfetto's client library.
   use_perfetto_client_library = false
 
+  # Limits the defined //third_party/android_deps targets to only "buildCompile"
+  # and "buildCompileNoDeps" targets. This is useful for third-party
+  # repositories which do not use JUnit tests. For instance,
+  # limit_android_deps == true removes "gn gen" requirement for
+  # //third_party/robolectric .
+  limit_android_deps = false
+
   # Allows googletest to pretty-print various absl types.  Disabled for nacl due
   # to lack of toolchain support.
   gtest_enable_absl_printers = !is_nacl

@@ -2331,7 +2331,7 @@ if (enable_java_templates) {
     _generate_productconfig_java = defined(invoker.product_config_java_packages)
 
     # JNI generation usually goes hand-in-hand with buildconfig generation.
-    _generate_final_jni = _generate_buildconfig_java && build_with_chromium
+    _generate_final_jni = _generate_buildconfig_java
     if (defined(invoker.generate_final_jni)) {
       _generate_final_jni = invoker.generate_final_jni
     }

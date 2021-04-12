@@ -5,6 +5,8 @@
 import("//build/config/android/rules.gni")
 import("//testing/test.gni")
 
+_registration_header = "$target_gen_dir/sample_jni_registration.h"
+
 generate_jni("jni_sample_header") {
   sources = [
     "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java",
@@ -40,41 +42,36 @@ source_set("jni_sample_native_side") {
   ]
 }
 
-if (build_with_chromium) {
-  _registration_header = "$target_gen_dir/sample_jni_registration.h"
+shared_library("jni_sample_lib") {
+  sources = [
+    "sample_entry_point.cc",
+    _registration_header,
+  ]
 
-  # "__final_jni" is not available when build_with_chromium == false.
-  shared_library("jni_sample_lib") {
-    sources = [
-      "sample_entry_point.cc",
-      _registration_header,
-    ]
+  deps = [
+    ":jni_sample_native_side",
+    ":sample_jni_apk__final_jni",  # For registration_header
+    "//base",
+  ]
+}
 
-    deps = [
-      ":jni_sample_native_side",
-      ":sample_jni_apk__final_jni",  # For registration_header
-      "//base",
-    ]
-  }
-
-  android_apk("sample_jni_apk") {
-    apk_name = "SampleJni"
-    android_manifest = "AndroidManifest.xml"
-    deps = [
-      ":jni_sample_java",
-      "//base:base_java",
-    ]
-    shared_libraries = [ ":jni_sample_lib" ]
-    jni_registration_header = _registration_header
-  }
+android_apk("sample_jni_apk") {
+  apk_name = "SampleJni"
+  android_manifest = "AndroidManifest.xml"
+  deps = [
+    ":jni_sample_java",
+    "//base:base_java",
+  ]
+  shared_libraries = [ ":jni_sample_lib" ]
+  jni_registration_header = _registration_header
 }
 
 # Serves to test that generated bindings compile properly.
 group("jni_generator_tests") {
-  deps = [ ":jni_annotation_sample_java" ]
-  if (build_with_chromium) {
-    deps += [ ":sample_jni_apk" ]
-  }
+  deps = [
+    ":jni_annotation_sample_java",
+    ":sample_jni_apk",
+  ]
 }
 
 java_annotation_processor("jni_processor") {
