@@ -713,6 +713,10 @@ const base::Feature kVirtualKeyboardMultipaste{
 const base::Feature kVmCameraMicIndicatorsAndNotifications{
     "VmCameraMicIndicatorsAndNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable or disable the chrome://vm page
+const base::Feature kVmStatusPage{"VmStatusPage",
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls whether to allow enabling wake on WiFi features in shill.
 const base::Feature kWakeOnWifiAllowed{"WakeOnWifiAllowed",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

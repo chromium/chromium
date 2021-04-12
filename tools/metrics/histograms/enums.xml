@@ -44404,6 +44404,7 @@ from previous Chrome versions.
   <int value="-1713564656" label="ProtectSyncCredentialOnReauth:enabled"/>
   <int value="-1711751318" label="enable-data-reduction-proxy-lo-fi-preview"/>
   <int value="-1710772665" label="disable-my-files-navigation"/>
+  <int value="-1706483123" label="VmStatusPage:enabled"/>
   <int value="-1704472714" label="UseMessagesGoogleComDomain:disabled"/>
   <int value="-1703709912" label="enable-new-ntp"/>
   <int value="-1703308540" label="disable-webaudio"/>
@@ -44416,6 +44417,7 @@ from previous Chrome versions.
   <int value="-1695774453" label="skip-extra-ash-window-positioning"/>
   <int value="-1694900665" label="HandwritingGestureEditing:enabled"/>
   <int value="-1693498375" label="CdmFactoryDaemon:enabled"/>
+  <int value="-1692973133" label="VmStatusPage:disabled"/>
   <int value="-1692967465"
       label="ContextMenuPerformanceInfoAndRemoteHintFetching:enabled"/>
   <int value="-1692384483" label="disambiguate-autofill-server-name-types"/>

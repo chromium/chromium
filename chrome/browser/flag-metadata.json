@@ -5287,6 +5287,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "vm-status-page",
+    "owners": [ "lxj", "joelhockey", "timloh" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "voice-button-in-top-toolbar",
     "owners": [ "jds", "chrome-language" ],
     "expiry_milestone": 93
