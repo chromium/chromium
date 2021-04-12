@@ -51,9 +51,9 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
 
       PrefService* prefs = browser_state->GetPrefs();
       // Don't open the url in below situations:
-      // 1. When the url is suppused to be opened in an incognito tab, but the
+      // 1. When the url is supposed to be opened in an incognito tab, but the
       // incognito mode is disabled by policy.
-      // 2. When the url is suppused to be opened in a normal tab, but the
+      // 2. When the url is supposed to be opened in a normal tab, but the
       // normal mode is disabled by policy.
       if ((params.in_incognito && IsIncognitoModeDisabled(prefs)) ||
           (!params.in_incognito && IsIncognitoModeForced(prefs))) {
