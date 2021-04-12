@@ -997,8 +997,9 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   base::Optional<LogicalSize> aspect_ratio;
   bool has_aspect_ratio_without_intrinsic_size = false;
   if (is_replaced) {
-    ComputeReplacedSize(node_info.node, node_info.constraint_space,
-                        min_max_sizes, &replaced_size, &aspect_ratio);
+    replaced_size =
+        ComputeReplacedSize(node_info.node, node_info.constraint_space,
+                            min_max_sizes, &aspect_ratio);
     DCHECK(replaced_size.has_value() != aspect_ratio.has_value());
     has_aspect_ratio_without_intrinsic_size = aspect_ratio.has_value();
     // If we only have aspect ratio, and no replaced size, intrinsic size

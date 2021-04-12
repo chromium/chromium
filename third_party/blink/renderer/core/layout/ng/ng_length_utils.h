@@ -443,11 +443,10 @@ CalculateDefaultBlockSize(const NGConstraintSpace& space,
 // This routine will return precisely one of |out_replaced_size| and
 // |out_aspect_ratio|. If |out_aspect_ratio| is filled in, both inline and block
 // componenents will be non-zero.
-CORE_EXPORT void ComputeReplacedSize(
+CORE_EXPORT base::Optional<LogicalSize> ComputeReplacedSize(
     const NGBlockNode&,
     const NGConstraintSpace&,
     const base::Optional<MinMaxSizes>&,
-    base::Optional<LogicalSize>* out_replaced_size,
     base::Optional<LogicalSize>* out_aspect_ratio);
 
 // Based on available inline size, CSS computed column-width, CSS computed
