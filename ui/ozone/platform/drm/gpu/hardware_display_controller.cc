@@ -43,12 +43,13 @@ namespace {
 
 void CompletePageFlip(
     base::WeakPtr<HardwareDisplayController> hardware_display_controller_,
+    int modeset_sequence,
     PresentationOnceCallback callback,
     DrmOverlayPlaneList plane_list,
     const gfx::PresentationFeedback& presentation_feedback) {
   if (hardware_display_controller_) {
-    hardware_display_controller_->OnPageFlipComplete(std::move(plane_list),
-                                                     presentation_feedback);
+    hardware_display_controller_->OnPageFlipComplete(
+        modeset_sequence, std::move(plane_list), presentation_feedback);
   }
   std::move(callback).Run(presentation_feedback);
 }
@@ -180,6 +181,7 @@ void HardwareDisplayController::SchedulePageFlip(
   // Everything was submitted successfully, wait for asynchronous completion.
   page_flip_request->TakeCallback(
       base::BindOnce(&CompletePageFlip, weak_ptr_factory_.GetWeakPtr(),
+                     GetDrmDevice()->modeset_sequence_id(),
                      std::move(presentation_callback), std::move(plane_list)));
   page_flip_request_ = std::move(page_flip_request);
 }
@@ -401,15 +403,22 @@ scoped_refptr<DrmDevice> HardwareDisplayController::GetDrmDevice() const {
 }
 
 void HardwareDisplayController::OnPageFlipComplete(
+    int modeset_sequence,
     DrmOverlayPlaneList pending_planes,
     const gfx::PresentationFeedback& presentation_feedback) {
   if (!page_flip_request_)
     return;  // Modeset occured during this page flip.
+
   time_of_last_flip_ = presentation_feedback.timestamp;
   current_planes_ = std::move(pending_planes);
+
   for (const auto& controller : crtc_controllers_) {
-    GetDrmDevice()->plane_manager()->ResetModesetBufferOfCrtc(
-        controller->crtc());
+    // Only reset the modeset buffer of the crtcs for pageflips that were
+    // committed after the modeset.
+    if (modeset_sequence == GetDrmDevice()->modeset_sequence_id()) {
+      GetDrmDevice()->plane_manager()->ResetModesetBufferOfCrtc(
+          controller->crtc());
+    }
   }
   page_flip_request_ = nullptr;
 }
