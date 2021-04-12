@@ -320,12 +320,18 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const base::Optional<T>& value) {
+  if (value.has_value())
+    return out << value;
+  return out << "nullopt";
+}
+
 std::ostream& operator<<(std::ostream& out, const WebApp& app) {
   out << "app_id: " << app.app_id_ << std::endl
       << "  name: " << app.name_ << std::endl
       << "  start_url: " << app.start_url_ << std::endl
-      << "  launch_query_params: " << app.launch_query_params_.value_or("")
-      << std::endl
+      << "  launch_query_params: " << app.launch_query_params_ << std::endl
       << "  scope: " << app.scope_ << std::endl
       << "  theme_color: " << ColorToString(app.theme_color_) << std::endl
       << "  background_color: " << ColorToString(app.background_color_)
@@ -402,20 +408,14 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
     out << "  url_handler: " << url_handler << std::endl;
   out << "  capture_links: " << app.capture_links_ << std::endl;
 
-  out << " chromeos_data: " << app.chromeos_data_.has_value() << std::endl;
-  if (app.chromeos_data_.has_value())
-    out << app.chromeos_data_.value();
+  out << "  chromeos_data: " << app.chromeos_data_ << std::endl;
 
-  out << " system_web_app: " << app.client_data_.system_web_app_data.has_value()
+  out << "  system_web_app: " << app.client_data_.system_web_app_data
       << std::endl;
-
-  if (app.client_data_.system_web_app_data.has_value())
-    out << app.client_data_.system_web_app_data.value();
 
   out << "  manifest_url: " << app.manifest_url_ << std::endl;
 
-  if (!app.manifest_id_.has_value())
-    out << "  manifest_id: " << app.manifest_id_.value() << std::endl;
+  out << "  manifest_id: " << app.manifest_id_ << std::endl;
 
   return out;
 }

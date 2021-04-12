@@ -55,15 +55,6 @@
 <div class="section">
   <h2>Page Index:</h2>
   <h3><a href="#installed">Installed Web Apps</a></h3>
-  <template is="dom-repeat" items="[[webAppList_]]">
-    <div>
-      <a href="#[[item.id]]">
-        <img src="chrome://app-icon/[[item.id]]/32">
-        [[item.name]]
-      </a>
-    </div>
-  </template>
-
   <h3><a href="#preinstalled">Preinstalled Web Apps</a></h3>
   <template is="dom-if" if="[[preinstalledWebAppDebugInfo_]]">
     <div><a href="#preinstalled-errors">Parse Errors</a></div>
@@ -78,6 +69,14 @@
 
 <div class="section">
   <h2 id="installed">Installed Web Apps</h2>
+  <template is="dom-repeat" items="[[webAppList_]]">
+    <div>
+      <a href="#[[item.id]]">
+        <img src="chrome://app-icon/[[item.id]]/32" width="32" height="32">
+        [[item.name]]
+      </a>
+    </div>
+  </template>
   <template is="dom-repeat" items="[[webAppList_]]">
     <div class="section web-app" id="[[item.id]]">
       <h2>[[item.name]]</h2>
