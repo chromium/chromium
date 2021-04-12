@@ -72,3 +72,8 @@ void NetworkConnectDelegateChromeOS::ShowMobileActivationError(
     const std::string& network_id) {
   network_state_notifier_->ShowMobileActivationErrorForGuid(network_id);
 }
+
+void NetworkConnectDelegateChromeOS::SetSystemTrayClient(
+    ash::SystemTrayClient* system_tray_client) {
+  network_state_notifier_->set_system_tray_client(system_tray_client);
+}

@@ -180,6 +180,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   session_controller_client_->Init();
 
   system_tray_client_ = std::make_unique<SystemTrayClient>();
+  network_connect_delegate_->SetSystemTrayClient(system_tray_client_.get());
+
   tablet_mode_page_behavior_ = std::make_unique<TabletModePageBehavior>();
   vpn_list_forwarder_ = std::make_unique<VpnListForwarder>();
 

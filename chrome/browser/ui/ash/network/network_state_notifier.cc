@@ -36,6 +36,9 @@ const int kMinTimeBetweenOutOfCreditsNotifySeconds = 10 * 60;
 const char kNotifierNetwork[] = "ash.network";
 const char kNotifierNetworkError[] = "ash.network.error";
 
+// TODO(b:184776317): Use string from service_constants.h
+const char kErrorSimLocked[] = "sim-locked";
+
 // Ignore in-progress error.
 bool ShillErrorIsIgnored(const std::string& shill_error) {
   if (shill_error == shill::kErrorResultInProgress)
@@ -134,6 +137,14 @@ const NetworkState* GetNetworkStateForGuid(const std::string& guid) {
                       : NetworkHandler::Get()
                             ->network_state_handler()
                             ->GetNetworkStateFromGuid(guid);
+}
+
+bool IsSimLockConnectionFailure(const std::string& connection_error_name,
+                                const NetworkState* network_state) {
+  if (connection_error_name == NetworkConnectionHandler::kErrorSimLocked)
+    return true;
+
+  return network_state && network_state->GetError() == kErrorSimLocked;
 }
 
 }  // namespace
@@ -520,11 +531,19 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
   std::string network_type =
       GetStringFromDictionary(shill_properties, shill::kTypeProperty);
 
+  base::RepeatingClosure on_click;
+  if (IsSimLockConnectionFailure(error_name, network)) {
+    on_click = base::BindRepeating(&NetworkStateNotifier::ShowSimUnlockSettings,
+                                   weak_ptr_factory_.GetWeakPtr());
+  } else {
+    on_click = base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
+                                   weak_ptr_factory_.GetWeakPtr(), guid);
+  }
+
   ShowErrorNotification(
       NetworkPathId(service_path), kNetworkConnectNotificationId, network_type,
       l10n_util::GetStringUTF16(IDS_NETWORK_CONNECTION_ERROR_TITLE), error_msg,
-      base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
-                          weak_ptr_factory_.GetWeakPtr(), guid));
+      std::move(on_click));
 }
 
 void NetworkStateNotifier::ShowVpnDisconnectedNotification(VpnDetails* vpn) {
@@ -540,7 +559,7 @@ void NetworkStateNotifier::ShowVpnDisconnectedNotification(VpnDetails* vpn) {
 }
 
 void NetworkStateNotifier::ShowNetworkSettings(const std::string& network_id) {
-  if (!SystemTrayClient::Get())
+  if (!system_tray_client_)
     return;
   const NetworkState* network = GetNetworkStateForGuid(network_id);
   if (!network)
@@ -553,10 +572,18 @@ void NetworkStateNotifier::ShowNetworkSettings(const std::string& network_id) {
   if (!NetworkTypePattern::Primitive(network->type())
            .MatchesPattern(NetworkTypePattern::Mobile()) &&
       shill_error::IsConfigurationError(error)) {
-    SystemTrayClient::Get()->ShowNetworkConfigure(network_id);
+    system_tray_client_->ShowNetworkConfigure(network_id);
   } else {
-    SystemTrayClient::Get()->ShowNetworkSettings(network_id);
+    system_tray_client_->ShowNetworkSettings(network_id);
   }
+}
+
+void NetworkStateNotifier::ShowSimUnlockSettings() {
+  if (!system_tray_client_)
+    return;
+
+  NET_LOG(USER) << "Opening SIM unlock settings";
+  system_tray_client_->ShowSettingsSimUnlock();
 }
 
 void NetworkStateNotifier::ShowCarrierAccountDetail(

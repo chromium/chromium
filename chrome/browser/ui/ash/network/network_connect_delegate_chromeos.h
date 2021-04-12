@@ -11,6 +11,10 @@
 #include "base/macros.h"
 #include "chromeos/network/network_connect.h"
 
+namespace ash {
+class SystemTrayClient;
+}  // namespace ash
+
 namespace chromeos {
 class NetworkStateNotifier;
 }
@@ -29,6 +33,8 @@ class NetworkConnectDelegateChromeOS
   void ShowNetworkConnectError(const std::string& error_name,
                                const std::string& network_id) override;
   void ShowMobileActivationError(const std::string& network_id) override;
+
+  void SetSystemTrayClient(ash::SystemTrayClient* system_tray_client);
 
  private:
   std::unique_ptr<chromeos::NetworkStateNotifier> network_state_notifier_;
