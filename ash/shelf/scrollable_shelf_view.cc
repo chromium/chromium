@@ -2337,6 +2337,13 @@ bool ScrollableShelfView::ShouldCountActivatedInkDrop(
   if (during_scroll_animation_)
     return should_count;
 
+  if (first_tappable_app_index_ == -1 || last_tappable_app_index_ == -1) {
+    // Verify that `first_tappable_app_index_` and `last_tappable_app_index_`
+    // may be both illegal. In that case, return early.
+    DCHECK_EQ(first_tappable_app_index_, last_tappable_app_index_);
+    return false;
+  }
+
   // The ink drop needs to be clipped only if |sender| is the app at one of the
   // corners of the shelf. This happens if it is either the first or the last
   // tappable app and no arrow is showing on its side.
