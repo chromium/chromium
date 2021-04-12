@@ -617,7 +617,11 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   }
 
   libgav1::ObuFrameHeader current_frame_header = obu_parser_->frame_header();
-  last_decoded_frame_visible_ = current_frame_header.show_frame;
+  if (current_frame_header.show_existing_frame) {
+    last_decoded_frame_visible_ = true;
+  } else {
+    last_decoded_frame_visible_ = current_frame_header.show_frame;
+  }
 
   if (obu_parser_->sequence_header_changed()) {
     if (current_frame_header.frame_type != libgav1::kFrameKey ||
