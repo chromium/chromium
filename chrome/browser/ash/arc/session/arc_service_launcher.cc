@@ -190,6 +190,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   // List in lexicographical order.
   ArcAccessibilityHelperBridge::GetForBrowserContext(profile);
   ArcAdbdMonitorBridge::GetForBrowserContext(profile);
+  ArcAppPerformanceTracing::GetForBrowserContext(profile);
   ArcAppPermissionsBridge::GetForBrowserContext(profile);
   ArcAudioBridge::GetForBrowserContext(profile);
   ArcAuthService::GetForBrowserContext(profile);
@@ -244,7 +245,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcSharesheetBridge::GetForBrowserContext(profile);
   ArcTimerBridge::GetForBrowserContext(profile);
   ArcTracingBridge::GetForBrowserContext(profile);
-  ArcAppPerformanceTracing::GetForBrowserContext(profile);
   ArcTtsService::GetForBrowserContext(profile);
   ArcUsbHostBridge::GetForBrowserContext(profile)->SetDelegate(
       std::make_unique<ArcUsbHostBridgeDelegate>());
