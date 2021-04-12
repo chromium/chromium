@@ -1007,6 +1007,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Overridden from ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
+  // Set the native theme from which this widget gets color from.
+  void SetNativeThemeForTest(ui::NativeTheme* native_theme) {
+    SetNativeTheme(native_theme);
+  }
+
  protected:
   // Call this to propagate native theme changes to the root view. Subclasses
   // may override this to customize how native theme updates are propagated.
@@ -1027,6 +1032,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Notification that the drag performed by RunShellDrag() has completed.
   virtual void OnDragComplete();
+
+  // Set the native theme from which this widget gets color from.
+  void SetNativeTheme(ui::NativeTheme* native_theme);
 
  private:
   // Type of ways to ignore activation changes.
@@ -1204,8 +1212,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Block the widget from closing.
   bool block_close_ = false;
 
+  // The native theme this widget is using.
+  // If nullptr, defaults to use the regular native theme.
+  ui::NativeTheme* native_theme_ = nullptr;
+
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
-      observation_{this};
+      native_theme_observation_{this};
 
   base::WeakPtrFactory<Widget> weak_ptr_factory_{this};
 

@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/context_menu_controller.h"
@@ -111,6 +112,10 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // Called when BrowserView creates all it's child views.
   void OnBrowserViewInitViewsComplete();
 
+  // ThemeService calls this when a user has changed their theme, indicating
+  // that it's time to redraw everything.
+  void UserChangedTheme(BrowserThemeChangeType theme_change_type);
+
   // views::Widget:
   views::internal::RootView* CreateRootView() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView()
@@ -118,9 +123,7 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   bool GetAccelerator(int command_id,
                       ui::Accelerator* accelerator) const override;
   const ui::ThemeProvider* GetThemeProvider() const override;
-  const ui::NativeTheme* GetNativeTheme() const override;
   void OnNativeWidgetWorkspaceChanged() override;
-  void PropagateNativeThemeChanged() override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,
@@ -148,6 +151,13 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
 
   // Callback for MenuRunner.
   void OnMenuClosed();
+
+  // Select a native theme that is appropriate for the current context.
+  void SelectNativeTheme();
+
+  // Regenerate the frame on theme change if necessary. Returns true if
+  // regenerated.
+  bool RegenerateFrameOnThemeChange(BrowserThemeChangeType theme_change_type);
 
   NativeBrowserFrame* native_browser_frame_;
 

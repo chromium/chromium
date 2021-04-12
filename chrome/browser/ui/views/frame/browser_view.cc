@@ -1922,68 +1922,8 @@ void BrowserView::ConfirmBrowserCloseWithPendingDownloads(
 }
 
 void BrowserView::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
-  // kWebAppTheme is triggered by web apps and will only change colors, not the
-  // frame type; just refresh the theme on all views in the browser window.
-  if (theme_change_type == BrowserThemeChangeType::kWebAppTheme) {
-    GetWidget()->ThemeChanged();
-    return;
-  }
-
-  // When the browser theme changes, the NativeTheme may also change.
-  // In Incognito, the usage of dark or normal hinges on the browser theme.
-  if (theme_change_type == BrowserThemeChangeType::kBrowserTheme &&
-      !GetRegularOrGuestSession()) {
-    ui::NativeTheme::GetInstanceForDarkUI()->NotifyOnNativeThemeUpdated();
-    ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
-
-    // Early exit. A native theme change will update all the
-    // NativeThemeObservers, and then BrowserFrame will re-enter this method
-    // with |theme_change_type| == kNativeTheme, doing all the below things.
-    return;
-  }
-
-  // When the native theme changes in a way that doesn't change the frame type
-  // required, we can skip a frame regeneration. Frame regeneration can cause
-  // visible flicker (see crbug/945138) so it's best avoided if all that has
-  // changed is, for example, the titlebar color, or the user has switched from
-  // light to dark mode.
-  const bool should_use_native_frame = frame_->ShouldUseNativeFrame();
-
-  bool must_regenerate_frame;
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // GTK and user theme changes can both change frame buttons, so the frame
-  // always needs to be regenerated on Linux.
-  must_regenerate_frame = true;
-#else
-  must_regenerate_frame = using_native_frame_ != should_use_native_frame;
-#endif
-
-#if defined(OS_WIN)
-  // On Windows, DWM transtion does not performed for a frame regeneration in
-  // fullscreen mode, so do a lighweight theme change to refresh a bookmark bar
-  // on new tab. (see crbug/1002480)
-  must_regenerate_frame |=
-      theme_change_type == BrowserThemeChangeType::kBrowserTheme &&
-      !IsFullscreen();
-#else
-  must_regenerate_frame |=
-      theme_change_type == BrowserThemeChangeType::kBrowserTheme;
-#endif
-
-  if (must_regenerate_frame) {
-    // This is a heavyweight theme change that requires regenerating the frame
-    // as well as repainting the browser window.
-    frame_->FrameTypeChanged();
-  } else {
-    // This is a lightweight theme change, so just refresh the theme on all
-    // views in the browser window.
-    GetWidget()->ThemeChanged();
-  }
-  using_native_frame_ = should_use_native_frame;
+  frame()->UserChangedTheme(theme_change_type);
 }
-
 void BrowserView::ShowAppMenu() {
   if (!toolbar_button_provider_->GetAppMenuButton())
     return;
