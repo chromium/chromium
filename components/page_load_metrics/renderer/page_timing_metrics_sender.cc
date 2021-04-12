@@ -10,11 +10,10 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
-#include "components/page_load_metrics/common/page_load_metrics_constants.h"
+#include "components/page_load_metrics/common/page_load_metrics_util.h"
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -46,15 +45,12 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       metadata_(mojom::FrameMetadata::New()),
       new_features_(mojom::PageLoadFeatures::New()),
       new_deferred_resource_data_(mojom::DeferredResourceCounts::New()),
-      buffer_timer_delay_ms_(kBufferTimerDelayMillis),
+      buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing) {
   const auto resource_id = initial_request->resource_id();
   page_resource_data_use_.emplace(
       std::piecewise_construct, std::forward_as_tuple(resource_id),
       std::forward_as_tuple(std::move(initial_request)));
-  buffer_timer_delay_ms_ = base::GetFieldTrialParamByFeatureAsInt(
-      kPageLoadMetricsTimerDelayFeature, "BufferTimerDelayMillis",
-      kBufferTimerDelayMillis /* default value */);
   if (!IsEmpty(*last_timing_)) {
     EnsureSendTimer();
   }

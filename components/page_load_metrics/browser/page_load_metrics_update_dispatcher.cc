@@ -800,12 +800,13 @@ void PageLoadMetricsUpdateDispatcher::FlushPendingTimingUpdates() {
 
 void PageLoadMetricsUpdateDispatcher::MaybeDispatchTimingUpdates(
     bool should_buffer_timing_update_callback) {
-  // If we merged a new timing value, then we should buffer updates for
-  // |kBufferTimerDelayMillis|, to allow for any other out of order timings to
-  // arrive before we dispatch the minimum observed timings to observers.
+  // If we merged a new timing value, then we should buffer updates to allow for
+  // any other out of order timings to arrive before we dispatch to observers.
   if (should_buffer_timing_update_callback) {
     timer_->Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(kBufferTimerDelayMillis),
+        FROM_HERE,
+        base::TimeDelta::FromMilliseconds(
+            GetBufferTimerDelayMillis(TimerType::kBrowser)),
         base::BindOnce(&PageLoadMetricsUpdateDispatcher::DispatchTimingUpdates,
                        base::Unretained(this)));
   } else if (!timer_->IsRunning()) {

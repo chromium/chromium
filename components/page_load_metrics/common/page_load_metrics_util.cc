@@ -6,10 +6,30 @@
 
 #include <algorithm>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
+#include "components/page_load_metrics/common/page_load_metrics_constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace page_load_metrics {
+
+namespace {
+
+// Default timer delay value. Can be overridden by field trial.
+const int kDefaultBufferTimerDelayMillis = 1000;
+
+// Maximum timer delay value.
+const int kMaxBufferTimerDelayMillis = 1000;
+
+// Additional delay for the browser timer relative to the renderer timer, to
+// allow for some variability in task queuing duration and IPC latency.
+const int kExtraBufferTimerDelayMillis = 50;
+
+// Parameter for the PageLoadMetricsTimerDelay feature which specifies a custom
+// timer delay value.
+const char* kBufferTimerDelayParamName = "BufferTimerDelayMillis";
+
+}  // namespace
 
 base::Optional<std::string> GetGoogleHostnamePrefix(const GURL& url) {
   const size_t registry_length =
@@ -60,6 +80,20 @@ base::Optional<base::TimeDelta> OptionalMin(
   if (!a && !b)
     return a;  // doesn't matter which
   return base::Optional<base::TimeDelta>(std::min(a.value(), b.value()));
+}
+
+int GetBufferTimerDelayMillis(TimerType timer_type) {
+  int result = base::GetFieldTrialParamByFeatureAsInt(
+      kPageLoadMetricsTimerDelayFeature, kBufferTimerDelayParamName,
+      kDefaultBufferTimerDelayMillis /* default value */);
+
+  DCHECK(timer_type == TimerType::kBrowser ||
+         timer_type == TimerType::kRenderer);
+  if (timer_type == TimerType::kBrowser) {
+    result += kExtraBufferTimerDelayMillis;
+  }
+
+  return std::min(result, kMaxBufferTimerDelayMillis);
 }
 
 }  // namespace page_load_metrics

@@ -35,6 +35,13 @@ bool IsGoogleHostname(const GURL& url);
 //   https://a.b.c.google.com/foo => returns 'a.b.c'
 base::Optional<std::string> GetGoogleHostnamePrefix(const GURL& url);
 
+// Distinguishes the renderer-side timer from the browser-side timer.
+enum class TimerType { kRenderer = 0, kBrowser = 1 };
+
+// Returns the maximum amount of time to delay dispatch of metrics updates
+// from the renderer process.
+int GetBufferTimerDelayMillis(TimerType timer_type);
+
 }  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_COMMON_PAGE_LOAD_METRICS_UTIL_H_
