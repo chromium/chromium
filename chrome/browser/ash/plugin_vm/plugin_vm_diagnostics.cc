@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/strcat.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics.mojom.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics_builder.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -57,7 +58,8 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     {
       EntryBuilder entry("Device is supported");
       if (!is_allowed_diagnostics.device_supported) {
-        entry.SetFail("This device is not supported");
+        entry.SetFail(base::StrCat(
+            {base::SysInfo::HardwareModelName(), " is not supported"}));
       }
       builder_.AddEntry(std::move(entry));
     }
