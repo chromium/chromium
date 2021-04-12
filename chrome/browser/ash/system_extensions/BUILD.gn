@@ -1,0 +1,33 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+group("system_extensions_group") {
+  # Enable the "exit_time_destructors" warning here to avoid accidentally
+  # adding exit time destructors and because the flag is not enabled by default.
+  # TODO(http://crbug.com/101600):  Remove once exit_time_destructors is enabled
+  # by default.
+  public_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("system_extensions") {
+  sources = [
+    "system_extensions_provider.cc",
+    "system_extensions_provider.h",
+    "system_extensions_provider_factory.cc",
+    "system_extensions_provider_factory.h",
+  ]
+  deps = [
+    ":system_extensions_group",
+    "//base",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/user_manager",
+    "//skia",
+  ]
+}

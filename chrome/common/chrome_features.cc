@@ -859,13 +859,15 @@ const base::Feature kSyncBookmarkApps{"SyncBookmarkApps",
 // Enables or disables chrome://sys-internals.
 const base::Feature kSysInternals{"SysInternals",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables or disables System Extensions.
+const base::Feature kSystemExtensions{"SystemExtensions",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables TPM firmware update capability on Chrome OS.
 const base::Feature kTPMFirmwareUpdate{"TPMFirmwareUpdate",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
 // Enables logging UKMs for background tab activity by TabActivityWatcher.
