@@ -65,11 +65,6 @@ const openscreen::cast::Answer kAnswerWithConstraints{
         openscreen::cast::AspectRatio{16, 9},
         openscreen::cast::AspectRatioConstraint::kFixed,
     },
-    // We don't currently use the RTCP event log, or DSCP, or extensions.
-    {},
-    {},
-    true,  // receiver_get_status
-    {},
 };
 
 class MockRemotingSource final : public media::mojom::RemotingSource {
@@ -213,7 +208,6 @@ class SessionTest : public mojom::ResourceProvider,
       answer.swap(answer_);
     } else {
       answer = std::make_unique<openscreen::cast::Answer>();
-      answer->supports_wifi_status_reporting = true;
     }
 
     answer->udp_port = receiver_endpoint_.port();
@@ -275,7 +269,6 @@ class SessionTest : public mojom::ResourceProvider,
     EXPECT_CALL(*this, OnGetVideoCaptureHost()).Times(num_to_get_video_host);
     EXPECT_CALL(*this, OnCreateAudioStream()).Times(num_to_create_audio_stream);
     EXPECT_CALL(*this, OnError(_)).Times(0);
-    EXPECT_CALL(*this, OnOutboundMessage("GET_STATUS")).Times(AtLeast(1));
     EXPECT_CALL(*this, OnOutboundMessage("GET_CAPABILITIES")).Times(1);
     EXPECT_CALL(*this, DidStart()).Times(1);
     SendAnswer();

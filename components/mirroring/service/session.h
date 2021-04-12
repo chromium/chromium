@@ -18,7 +18,6 @@
 #include "components/mirroring/service/mirror_settings.h"
 #include "components/mirroring/service/receiver_setup_querier.h"
 #include "components/mirroring/service/rtp_stream.h"
-#include "components/mirroring/service/wifi_status_monitor.h"
 #include "gpu/config/gpu_info.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/cast/cast_environment.h"

@@ -827,24 +827,15 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
       media_remoter_->OnMirroringResumed();
   }
 
-  std::unique_ptr<WifiStatusMonitor> wifi_status_monitor;
-  if (answer.supports_wifi_status_reporting) {
-    wifi_status_monitor =
-        std::make_unique<WifiStatusMonitor>(message_dispatcher_.get());
-    // Nest Hub devices do not support remoting despite having a relatively new
-    // build version, so we cannot filter with
-    // NeedsWorkaroundForOlder1DotXVersions() here.
-    if (initially_starting_session &&
-        (base::StartsWith(session_params_.receiver_model_name, "Chromecast",
-                          base::CompareCase::SENSITIVE) ||
-         base::StartsWith(session_params_.receiver_model_name, "Eureka Dongle",
-                          base::CompareCase::SENSITIVE))) {
-      QueryCapabilitiesForRemoting();
-    }
-  } else {
-    LogInfoMessage(
-        base::StrCat({"Remoting is not supported on this receiver model: ",
-                      session_params_.receiver_model_name}));
+  // Nest Hub devices do not support remoting despite having a relatively new
+  // build version, so we cannot filter with
+  // NeedsWorkaroundForOlder1DotXVersions() here.
+  if (initially_starting_session &&
+      (base::StartsWith(session_params_.receiver_model_name, "Chromecast",
+                        base::CompareCase::SENSITIVE) ||
+       base::StartsWith(session_params_.receiver_model_name, "Eureka Dongle",
+                        base::CompareCase::SENSITIVE))) {
+    QueryCapabilitiesForRemoting();
   }
 
   if (initially_starting_session && observer_)

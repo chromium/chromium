@@ -20,8 +20,6 @@ namespace {
 ResponseType ResponseTypeFromString(const std::string& type) {
   if (type == "ANSWER")
     return ResponseType::ANSWER;
-  if (type == "STATUS_RESPONSE")
-    return ResponseType::STATUS_RESPONSE;
   if (type == "CAPABILITIES_RESPONSE")
     return ResponseType::CAPABILITIES_RESPONSE;
   if (type == "RPC")
@@ -46,22 +44,6 @@ bool GetInt(const Json::Value& value, int* out) {
     return false;
   }
   const int i = value.asInt();
-  if (i < 0) {
-    return false;
-  }
-  *out = i;
-  return true;
-}
-
-bool GetDouble(const Json::Value& value, double* out) {
-  if (!value) {
-    *out = 0.0;
-    return true;
-  }
-  if (!value.isDouble()) {
-    return false;
-  }
-  const double i = value.asDouble();
   if (i < 0) {
     return false;
   }
@@ -105,10 +87,6 @@ bool GetArray(const Json::Value& value, Parser<T> parser, std::vector<T>* out) {
   }
 
   return true;
-}
-
-bool GetIntArray(const Json::Value& value, std::vector<int>* out) {
-  return GetArray<int>(value, base::BindRepeating(&GetInt), out);
 }
 
 bool GetStringArray(const Json::Value& value, std::vector<std::string>* out) {
@@ -165,26 +143,7 @@ std::unique_ptr<ReceiverCapability> ParseCapability(const Json::Value& value) {
   return capability;
 }
 
-std::unique_ptr<ReceiverStatus> ParseStatus(const Json::Value& value) {
-  auto status = std::make_unique<ReceiverStatus>();
-  if (!GetDouble(value["wifiSnr"], &(status->wifi_snr)) ||
-      !GetIntArray(value["wifiSpeed"], &(status->wifi_speed))) {
-    return {};
-  }
-  return status;
-}
-
 }  // namespace
-
-ReceiverStatus::ReceiverStatus() = default;
-ReceiverStatus::~ReceiverStatus() = default;
-ReceiverStatus::ReceiverStatus(ReceiverStatus&& receiver_response) = default;
-ReceiverStatus::ReceiverStatus(const ReceiverStatus& receiver_response) =
-    default;
-ReceiverStatus& ReceiverStatus::operator=(ReceiverStatus&& receiver_response) =
-    default;
-ReceiverStatus& ReceiverStatus::operator=(
-    const ReceiverStatus& receiver_response) = default;
 
 ReceiverCapability::ReceiverCapability() = default;
 ReceiverCapability::~ReceiverCapability() = default;
@@ -256,13 +215,6 @@ std::unique_ptr<ReceiverResponse> ReceiverResponse::Parse(
       }
       break;
 
-    case ResponseType::STATUS_RESPONSE:
-      response->status_ = ParseStatus(root_node["status"]);
-      if (!response->status_) {
-        response->valid_ = false;
-      }
-      break;
-
     case ResponseType::CAPABILITIES_RESPONSE:
       response->capabilities_ = ParseCapability(root_node["capabilities"]);
       if (!response->capabilities_) {
@@ -305,9 +257,6 @@ std::unique_ptr<ReceiverResponse> ReceiverResponse::CloneForTesting() const {
   switch (type_) {
     case ResponseType::ANSWER:
       clone->answer_ = std::make_unique<openscreen::cast::Answer>(*answer_);
-      break;
-    case ResponseType::STATUS_RESPONSE:
-      clone->status_ = std::make_unique<ReceiverStatus>(*status_);
       break;
     case ResponseType::CAPABILITIES_RESPONSE:
       clone->capabilities_ =

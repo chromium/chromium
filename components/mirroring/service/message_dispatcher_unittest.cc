@@ -61,8 +61,8 @@ class MessageDispatcherTest : public mojom::CastMessageChannel,
         base::BindRepeating(&MessageDispatcherTest::OnAnswerResponse,
                             base::Unretained(this)));
     message_dispatcher_->Subscribe(
-        ResponseType::STATUS_RESPONSE,
-        base::BindRepeating(&MessageDispatcherTest::OnStatusResponse,
+        ResponseType::RPC,
+        base::BindRepeating(&MessageDispatcherTest::OnRpcMessage,
                             base::Unretained(this)));
   }
   ~MessageDispatcherTest() override { task_environment_.RunUntilIdle(); }
@@ -75,8 +75,8 @@ class MessageDispatcherTest : public mojom::CastMessageChannel,
     last_answer_response_ = response.CloneForTesting();
   }
 
-  void OnStatusResponse(const ReceiverResponse& response) {
-    last_status_response_ = response.CloneForTesting();
+  void OnRpcMessage(const ReceiverResponse& response) {
+    last_rpc_ = response.CloneForTesting();
   }
 
  protected:
@@ -96,7 +96,7 @@ class MessageDispatcherTest : public mojom::CastMessageChannel,
   CastMessage last_outbound_message_;
   std::string last_error_message_;
   std::unique_ptr<ReceiverResponse> last_answer_response_;
-  std::unique_ptr<ReceiverResponse> last_status_response_;
+  std::unique_ptr<ReceiverResponse> last_rpc_;
 
  private:
   mojo::Receiver<mojom::CastMessageChannel> receiver_{this};
@@ -128,7 +128,7 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
   SendInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
   EXPECT_EQ(12345, last_answer_response_->sequence_number());
   EXPECT_EQ(ResponseType::ANSWER, last_answer_response_->type());
   ASSERT_TRUE(last_answer_response_->valid());
@@ -136,22 +136,28 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
   last_answer_response_.reset();
   EXPECT_TRUE(last_error_message_.empty());
 
-  // Simulate a receiver STATUS_RESPONSE and expect that just the
-  // STATUS_RESPONSE subscriber processes the message.
-  const std::string status_response =
-      "{\"type\":\"STATUS_RESPONSE\",\"seqNum\":12345,\"result\":\"ok\","
-      "\"status\":{\"wifiSnr\":42}}";
-  const CastMessage status_message =
-      CastMessage{mojom::kWebRtcNamespace, status_response};
-  SendInboundMessage(status_message);
+  // Simulate a receiver RPC and expect that just the
+  // RPC subscriber processes the message.
+  const std::string message = "Hello from the Cast Receiver!";
+  std::string rpc_base64;
+  base::Base64Encode(message, &rpc_base64);
+  const std::string rpc =
+      R"({"sessionId": 735189,
+          "seqNum": 6789,
+          "type": "RPC",
+          "result": "ok",
+          "rpc": ")" +
+      rpc_base64 + R"("})";
+
+  const CastMessage rpc_message = CastMessage{mojom::kRemotingNamespace, rpc};
+  SendInboundMessage(rpc_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
-  ASSERT_TRUE(last_status_response_);
-  EXPECT_EQ(12345, last_status_response_->sequence_number());
-  EXPECT_EQ(ResponseType::STATUS_RESPONSE, last_status_response_->type());
-  ASSERT_TRUE(last_status_response_->valid());
-  EXPECT_EQ(42, last_status_response_->status().wifi_snr);
-  last_status_response_.reset();
+  ASSERT_TRUE(last_rpc_);
+  EXPECT_EQ(6789, last_rpc_->sequence_number());
+  EXPECT_EQ(ResponseType::RPC, last_rpc_->type());
+  ASSERT_TRUE(last_rpc_->valid());
+  last_rpc_.reset();
   EXPECT_TRUE(last_error_message_.empty());
 
   // Unsubscribe from ANSWER messages, and when feeding-in an ANSWER message,
@@ -160,32 +166,32 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
   SendInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
   EXPECT_FALSE(last_error_message_.empty());  // Expect an error reported.
   last_error_message_.clear();
 
-  // However, STATUS_RESPONSE messages should still be dispatcher to the
+  // However, RPC messages should still be dispatcher to the
   // remaining subscriber.
-  SendInboundMessage(status_message);
+  SendInboundMessage(rpc_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
-  EXPECT_TRUE(last_status_response_);
-  last_status_response_.reset();
+  EXPECT_TRUE(last_rpc_);
+  last_rpc_.reset();
   EXPECT_TRUE(last_error_message_.empty());
 
-  // Finally, unsubscribe from STATUS_RESPONSE messages, and when feeding-in
-  // either an ANSWER or a STATUS_RESPONSE message, nothing should happen.
-  message_dispatcher_->Unsubscribe(ResponseType::STATUS_RESPONSE);
+  // Finally, unsubscribe from RPC messages, and when feeding-in
+  // either an ANSWER or a RPC message, nothing should happen.
+  message_dispatcher_->Unsubscribe(ResponseType::RPC);
   SendInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
   EXPECT_FALSE(last_error_message_.empty());
   last_error_message_.clear();
-  SendInboundMessage(status_message);
+  SendInboundMessage(rpc_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
   EXPECT_FALSE(last_error_message_.empty());
 }
 
@@ -195,7 +201,7 @@ TEST_F(MessageDispatcherTest, IgnoreMalformedMessage) {
   SendInboundMessage(message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
   EXPECT_FALSE(last_error_message_.empty());
 }
 
@@ -205,14 +211,14 @@ TEST_F(MessageDispatcherTest, IgnoreMessageWithWrongNamespace) {
   SendInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
   // Messages with different namespace are ignored with no error reported.
   EXPECT_TRUE(last_error_message_.empty());
 }
 
 TEST_F(MessageDispatcherTest, RequestReply) {
   EXPECT_FALSE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
   message_dispatcher_->Unsubscribe(ResponseType::ANSWER);
   task_environment_.RunUntilIdle();
   const std::string fake_offer = "{\"type\":\"OFFER\",\"seqNum\":45623}";
@@ -233,7 +239,7 @@ TEST_F(MessageDispatcherTest, RequestReply) {
   task_environment_.RunUntilIdle();
   // The answer message with mismatched sequence number is ignored.
   EXPECT_FALSE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
   EXPECT_TRUE(last_error_message_.empty());
 
   constexpr char kAnswerWithCorrectSeqNum[] = R"(
@@ -252,7 +258,7 @@ TEST_F(MessageDispatcherTest, RequestReply) {
   SendInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
   EXPECT_TRUE(last_error_message_.empty());
   EXPECT_EQ(45623, last_answer_response_->sequence_number());
   EXPECT_EQ(ResponseType::ANSWER, last_answer_response_->type());
@@ -264,7 +270,7 @@ TEST_F(MessageDispatcherTest, RequestReply) {
   SendInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
   EXPECT_FALSE(last_error_message_.empty());
   last_error_message_.clear();
 
@@ -279,13 +285,13 @@ TEST_F(MessageDispatcherTest, RequestReply) {
   // Received the request to send the outbound message.
   EXPECT_TRUE(IsEqual(fake_message, last_outbound_message_));
   EXPECT_FALSE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
 
   // Destroy the dispatcher.
   message_dispatcher_.reset();
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(last_answer_response_);
-  EXPECT_FALSE(last_status_response_);
+  EXPECT_FALSE(last_rpc_);
 }
 
 }  // namespace mirroring

@@ -79,7 +79,6 @@ TEST_F(ReceiverResponseTest, ParseRealWorldAnswerMessage) {
   EXPECT_EQ(50691, response->answer().udp_port);
   EXPECT_EQ(std::vector<int32_t>({0, 1}), response->answer().send_indexes);
   EXPECT_EQ(std::vector<uint32_t>({40863u, 759293u}), response->answer().ssrcs);
-  EXPECT_EQ(false, response->answer().supports_wifi_status_reporting);
 }
 
 TEST_F(ReceiverResponseTest, ParseErrorMessage) {
@@ -112,28 +111,6 @@ TEST_F(ReceiverResponseTest, ParseErrorMessage) {
   int bar_value = 0;
   EXPECT_TRUE(GetInt(*parsed_details, "bar", &bar_value));
   EXPECT_EQ(88, bar_value);
-}
-
-TEST_F(ReceiverResponseTest, ParseStatusMessage) {
-  const std::string response_string =
-      R"({"seqNum": 777,
-          "type": "STATUS_RESPONSE",
-          "result": "ok",
-          "sessionId": 12345323,
-          "status": {
-            "wifiSnr": 36.7,
-            "wifiSpeed": [1234, 5678, 3000, 3001],
-            "wifiFcsError": [12, 13, 12, 12]
-          }
-        })";
-  auto response = ReceiverResponse::Parse(response_string);
-  ASSERT_TRUE(response);
-  EXPECT_EQ(777, response->sequence_number());
-  EXPECT_EQ(ResponseType::STATUS_RESPONSE, response->type());
-  ASSERT_TRUE(response->valid());
-  EXPECT_EQ(36.7, response->status().wifi_snr);
-  const std::vector<int32_t> expect_speed({1234, 5678, 3000, 3001});
-  EXPECT_EQ(expect_speed, response->status().wifi_speed);
 }
 
 TEST_F(ReceiverResponseTest, ParseCapabilityMessage) {
@@ -229,7 +206,6 @@ TEST_F(ReceiverResponseTest, ParseResponseWithNullField) {
             "sendIndexes": [0,1],
             "ssrcs": [152818,556029],
             "IV": null,
-            "receiverGetStatus": true,
             "castMode": "mirroring"
           },
           "status": null,
@@ -245,7 +221,6 @@ TEST_F(ReceiverResponseTest, ParseResponseWithNullField) {
   EXPECT_EQ(std::vector<int32_t>({0, 1}), response->answer().send_indexes);
   EXPECT_EQ(std::vector<uint32_t>({152818u, 556029u}),
             response->answer().ssrcs);
-  EXPECT_EQ(true, response->answer().supports_wifi_status_reporting);
 }
 
 }  // namespace mirroring

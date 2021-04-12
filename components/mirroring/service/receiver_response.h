@@ -20,25 +20,8 @@ namespace mirroring {
 enum class ResponseType {
   UNKNOWN,
   ANSWER,                 // Response to OFFER message.
-  STATUS_RESPONSE,        // Response to GET_STATUS message.
   CAPABILITIES_RESPONSE,  // Response to GET_CAPABILITIES message.
   RPC,                    // Rpc binary messages. The payload is base64 encoded.
-};
-
-struct COMPONENT_EXPORT(MIRRORING_SERVICE) ReceiverStatus {
-  ReceiverStatus();
-  ~ReceiverStatus();
-  ReceiverStatus(ReceiverStatus&& receiver_response);
-  ReceiverStatus(const ReceiverStatus& receiver_response);
-  ReceiverStatus& operator=(ReceiverStatus&& receiver_response);
-  ReceiverStatus& operator=(const ReceiverStatus& receiver_response);
-
-  // Current WiFi signal to noise ratio in decibels.
-  double wifi_snr = 0.0;
-
-  // Min, max, average, and current bandwidth in bps in order of the WiFi link.
-  // Example: [1200, 1300, 1250, 1230].
-  std::vector<int32_t> wifi_speed;
 };
 
 struct COMPONENT_EXPORT(MIRRORING_SERVICE) ReceiverCapability {
@@ -128,11 +111,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) ReceiverResponse {
     return rpc_;
   }
 
-  const ReceiverStatus& status() const {
-    DCHECK(valid_ && type_ == ResponseType::STATUS_RESPONSE);
-    return *status_;
-  }
-
   const ReceiverCapability& capabilities() const {
     DCHECK(valid_ && type_ == ResponseType::CAPABILITIES_RESPONSE);
     return *capabilities_;
@@ -162,9 +140,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) ReceiverResponse {
   // ResponseType::RPC
   // Contains the decoded (i.e. raw binary) RPC data.
   std::string rpc_;
-
-  // ResponseType::STATUS_RESPONSE
-  std::unique_ptr<ReceiverStatus> status_;
 
   // ResponseType::CAPABILITIES_RESPONSE
   std::unique_ptr<ReceiverCapability> capabilities_;
