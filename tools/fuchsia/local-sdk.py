@@ -35,19 +35,17 @@ def EnsureEmptyDir(path):
 
 
 def BuildForArch(arch):
-  build_dir = 'out/release-' + arch
   Run(
       'scripts/fx',
       '--dir',
-      build_dir,
+      'out/release-{}'.format(arch),
       'set',
-      'terminal.qemu-' + arch,
+      'terminal.qemu-{}'.format(arch),
       '--args=cache_package_labels+=["//sdk/bundles:tools"]',
       '--args=is_debug=false',
       '--args=build_sdk_archives=true',
       # Increase the size of the image to allow multiple test runs.
-      # 512 MiB (512 * 1024 * 1024).
-      '--args=fvm_image_size=536870912')
+      '--args=fvm_image_size={}'.format(512 * 1024 * 1024))
   Run('scripts/fx', 'build', 'sdk', 'build/images')
 
 
