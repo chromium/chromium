@@ -41,11 +41,18 @@
     this.activeTouchId_ = undefined;
 
     /**
-     * The index of the item which is being touched by the active touch. Valid
+     * The index of the item that is being touched by the active touch. Valid
      * only when |activeTouchId_| is defined.
      * @private {number}
      */
     this.activeItemIndex_ = -1;
+
+    /**
+     * The event.timeStamp when the active touch was created. Valid only when
+     * the |activeTouchId_| is defined.
+     * @private {number}
+     */
+    this.timeStamp_ = 0;
 
     /**
      * Last touch X position in client co-ords.
@@ -116,6 +123,7 @@
         this.resetTouchTracking_();
         const touch = event.targetTouches[0];
         this.activeTouchId_ = touch.identifier;
+        this.timeStamp_ = event.timeStamp;
         this.tapStarted_ = true;
 
         this.activeItemIndex_ = index;
@@ -175,6 +183,13 @@
         const tapStarted = this.resetTouchTracking_();
 
         if (!tapStarted) {
+          break;
+        }
+
+        // Ignore taps if their duration is "too short".
+        const tapDuration = event.timeStamp - this.timeStamp_;
+        if (tapDuration < 33) {  // Short: 33ms is ~two frames at 60FPS.
+          event.preventDefault();
           break;
         }
 
@@ -253,6 +268,17 @@
         }
       }
     }
+  }
+
+  /**
+   * For testing: move event time forward by |time| milliseconds, by removing
+   * that amount of time from the active touch Id |timeStamp_|.
+   *
+   * @param {number} time The time in milliseconds.
+   */
+  eventTimeLeapForwardForTesting(time) {
+    assert(this.activeTouchId_ !== undefined, 'An active touch is expected');
+    this.timeStamp_ -= time;
   }
 }
 
