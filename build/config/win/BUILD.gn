@@ -375,13 +375,7 @@ config("cfi_linker") {
   # for now. https://crbug.com/846966
   if (!is_debug && !is_asan) {
     # Turn on CFG bitmap generation and CFG load config.
-    if (target_cpu == "arm64") {
-      # longjmp protection is temporarily disabled on Windows on Arm64 due to
-      # a code-generation defect. https://crbug.com/1126549
-      ldflags = [ "/guard:cf,nolongjmp" ]
-    } else {
-      ldflags = [ "/guard:cf" ]
-    }
+    ldflags = [ "/guard:cf" ]
   }
 }
 
