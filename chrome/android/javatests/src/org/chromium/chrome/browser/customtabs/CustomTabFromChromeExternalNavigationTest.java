@@ -24,6 +24,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory.CustomTabNavigationDelegate;
@@ -80,6 +81,7 @@ public class CustomTabFromChromeExternalNavigationTest {
         mActivityRule.startCustomTabActivityWithIntent(intent);
     }
 
+    @DisabledTest(message = "https://crbug.com/1197727")
     @Test
     @Feature("CustomTabFromChrome")
     @MediumTest
