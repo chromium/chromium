@@ -43,6 +43,40 @@ message ContentMetaData {
   optional string email = 5;
 }
 
+message ClientMetadata {
+  // Describes the browser uploading a scan request.
+  message Browser {
+    optional string browser_id = 1;
+    optional string user_agent = 2;
+    optional string chrome_version = 3;
+
+    // This is omitted on scans triggered at the profile level.
+    optional string machine_user = 4;
+  };
+  optional Browser browser = 1;
+
+  // Describes the device uploading a scan request. This is omitted on scans
+  // triggered at the profile level.
+  message Device {
+    optional string dm_token = 1;
+    optional string client_id = 2;
+    optional string os_version = 3;
+    optional string os_platform = 4;
+    optional string name = 5;
+  };
+  optional Device device = 2;
+
+  // Describes the profile uploading a scan request.
+  message Profile {
+    optional string dm_token = 1;
+    optional string gaia_email = 2;
+    optional string profile_path = 3;
+    optional string profile_name = 4;
+    optional string client_id = 5;
+  };
+  optional Profile profile = 3;
+};
+
 // Analysis request sent from chrome to backend.
 message ContentAnalysisRequest {
   // The TokenID for Enterprise-enrolled devices.  This identifies a specific
@@ -65,6 +99,10 @@ message ContentAnalysisRequest {
 
   // The tags configured for the URL that triggered the content analysis.
   repeated string tags = 11;
+
+  // Additional information about the browser, device or profile so events can
+  // be reported with device/user identifiable information.
+  optional ClientMetadata client_metadata = 12;
 
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;

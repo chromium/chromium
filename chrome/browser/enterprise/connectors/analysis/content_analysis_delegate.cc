@@ -534,6 +534,8 @@ void ContentAnalysisDelegate::PrepareRequest(
   request->set_per_profile_request(data_.settings.per_profile);
   for (const std::string& tag : data_.settings.tags)
     request->add_tag(tag);
+  if (data_.settings.client_metadata)
+    request->set_client_metadata(*data_.settings.client_metadata);
 }
 
 void ContentAnalysisDelegate::FillAllResultsWith(bool status) {

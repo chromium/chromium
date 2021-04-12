@@ -236,6 +236,8 @@ void DeepScanningRequest::PrepareRequest(
   if (trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
     request->set_device_token(analysis_settings_.dm_token);
     request->set_per_profile_request(analysis_settings_.per_profile);
+    if (analysis_settings_.client_metadata)
+      request->set_client_metadata(*analysis_settings_.client_metadata);
   }
 
   request->set_analysis_connector(enterprise_connectors::FILE_DOWNLOADED);

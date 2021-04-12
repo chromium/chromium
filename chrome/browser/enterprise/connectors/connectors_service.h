@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_types.h"
@@ -117,6 +118,10 @@ class ConnectorsService : public KeyedService {
   // - The kEnterpriseConnectorsEnabled feature is disabled
   // - The profile is incognito
   bool ConnectorsEnabled() const;
+
+  // Obtain a ClientMetadata instance corresponding to the current
+  // OnSecurityEvent policy value.
+  std::unique_ptr<ClientMetadata> BuildClientMetadata();
 
   content::BrowserContext* context_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;

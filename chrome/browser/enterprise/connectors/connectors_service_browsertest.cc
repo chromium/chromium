@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/json/json_reader.h"
+#include "base/path_service.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -48,6 +49,7 @@ constexpr char kNormalReportingSettingsPref[] = R"([
 constexpr char kFakeProfileDMToken[] = "fake-profile-dm-token";
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
 constexpr char kFakeBrowserClientId[] = "fake-browser-client-id";
+constexpr char kFakeProfileClientId[] = "fake-profile-client-id";
 constexpr char kAffiliationId1[] = "affiliation-id-1";
 constexpr char kAffiliationId2[] = "affiliation-id-2";
 #endif
@@ -115,6 +117,7 @@ class ConnectorsServiceProfileBrowserTest
     auto profile_policy_data =
         std::make_unique<enterprise_management::PolicyData>();
     profile_policy_data->add_user_affiliation_ids(kAffiliationId1);
+    profile_policy_data->set_device_id(kFakeProfileClientId);
     profile_policy_manager->core()->store()->set_policy_data_for_testing(
         std::move(profile_policy_data));
 
@@ -144,16 +147,22 @@ class ConnectorsServiceProfileBrowserTest
 
   void SetPrefs(const char* pref,
                 const char* scope_pref,
-                const char* pref_value) {
+                const char* pref_value,
+                bool profile_scope = true) {
     browser()->profile()->GetPrefs()->Set(pref,
                                           *base::JSONReader::Read(pref_value));
-    browser()->profile()->GetPrefs()->SetInteger(scope_pref,
-                                                 policy::POLICY_SCOPE_USER);
+    browser()->profile()->GetPrefs()->SetInteger(
+        scope_pref, profile_scope ? policy::POLICY_SCOPE_USER
+                                  : policy::POLICY_SCOPE_MACHINE);
   }
-  void SetPrefs(const char* pref, const char* scope_pref, int pref_value) {
+  void SetPrefs(const char* pref,
+                const char* scope_pref,
+                int pref_value,
+                bool profile_scope = true) {
     browser()->profile()->GetPrefs()->SetInteger(pref, pref_value);
-    browser()->profile()->GetPrefs()->SetInteger(scope_pref,
-                                                 policy::POLICY_SCOPE_USER);
+    browser()->profile()->GetPrefs()->SetInteger(
+        scope_pref, profile_scope ? policy::POLICY_SCOPE_USER
+                                  : policy::POLICY_SCOPE_MACHINE);
   }
 
   ManagementStatus management_status() { return management_status_; }
@@ -223,6 +232,35 @@ class ConnectorsServiceAnalysisProfileBrowserTest
   ConnectorsServiceAnalysisProfileBrowserTest()
       : ConnectorsServiceProfileBrowserTest(std::get<1>(GetParam())) {}
   AnalysisConnector connector() { return std::get<0>(GetParam()); }
+
+  void ValidateClientMetadata(const ClientMetadata& metadata,
+                              bool profile_reporting) {
+    ASSERT_TRUE(metadata.has_browser());
+    ASSERT_TRUE(metadata.browser().has_browser_id());
+    ASSERT_TRUE(metadata.browser().has_user_agent());
+    ASSERT_TRUE(metadata.browser().has_chrome_version());
+    ASSERT_NE(profile_reporting, metadata.browser().has_machine_user());
+
+    ASSERT_NE(profile_reporting, metadata.has_device());
+    if (!profile_reporting) {
+      // The device DM token should only be populated when reporting is set at
+      // the device level, aka not the profile level.
+      ASSERT_NE(profile_reporting, metadata.device().has_dm_token());
+      ASSERT_TRUE(metadata.device().has_client_id());
+      ASSERT_TRUE(metadata.device().has_os_version());
+      ASSERT_TRUE(metadata.device().has_os_platform());
+      ASSERT_TRUE(metadata.device().has_name());
+    }
+
+    ASSERT_TRUE(metadata.has_profile());
+    ASSERT_EQ(profile_reporting, metadata.profile().has_dm_token());
+    ASSERT_TRUE(metadata.profile().has_gaia_email());
+    ASSERT_TRUE(metadata.profile().has_profile_path());
+    ASSERT_TRUE(metadata.profile().has_profile_name());
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    ASSERT_TRUE(metadata.profile().has_client_id());
+#endif
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -234,7 +272,75 @@ INSTANTIATE_TEST_SUITE_P(
                         ManagementStatus::UNAFFILIATED,
                         ManagementStatus::UNMANAGED)));
 
-IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest, Test) {
+IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
+                       DeviceReporting) {
+  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+           kNormalAnalysisSettingsPref, /*profile_scope*/ false);
+  SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
+           ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
+           kNormalReportingSettingsPref, /*profile_scope*/ false);
+  auto settings =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+
+  if (management_status() == ManagementStatus::UNMANAGED) {
+    ASSERT_FALSE(settings.has_value());
+  } else {
+    ASSERT_TRUE(settings.has_value());
+    ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
+    ASSERT_FALSE(settings.value().per_profile);
+    ValidateClientMetadata(*settings.value().client_metadata,
+                           /*profile_reporting*/ false);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
+                       ProfileReporting) {
+  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+           kNormalAnalysisSettingsPref);
+  SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
+           ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
+           kNormalReportingSettingsPref);
+  auto settings =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (management_status() == ManagementStatus::UNMANAGED) {
+    ASSERT_FALSE(settings.has_value());
+  } else {
+    ASSERT_TRUE(settings.has_value());
+    ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
+    ASSERT_FALSE(settings.value().per_profile);
+    ValidateClientMetadata(*settings.value().client_metadata,
+                           /*profile_reporting*/ false);
+  }
+#else
+  switch (management_status()) {
+    case ManagementStatus::AFFILIATED:
+      EXPECT_TRUE(settings.has_value());
+      ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
+      ASSERT_TRUE(settings.value().per_profile);
+      ValidateClientMetadata(*settings.value().client_metadata,
+                             /*profile_reporting*/ true);
+      break;
+    case ManagementStatus::UNAFFILIATED:
+      EXPECT_FALSE(settings.has_value());
+      break;
+    case ManagementStatus::UNMANAGED:
+      EXPECT_TRUE(settings.has_value());
+      ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
+      ASSERT_TRUE(settings.value().per_profile);
+      ASSERT_TRUE(settings.value().client_metadata);
+      ValidateClientMetadata(*settings.value().client_metadata,
+                             /*profile_reporting*/ true);
+      break;
+  }
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
+                       NoReporting) {
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
            kNormalAnalysisSettingsPref);
   auto settings =
@@ -248,6 +354,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest, Test) {
     ASSERT_TRUE(settings.has_value());
     ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
     ASSERT_FALSE(settings.value().per_profile);
+    ASSERT_FALSE(settings.value().client_metadata);
   }
 #else
   switch (management_status()) {
@@ -255,6 +362,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest, Test) {
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
       ASSERT_TRUE(settings.value().per_profile);
+      ASSERT_FALSE(settings.value().client_metadata);
       break;
     case ManagementStatus::UNAFFILIATED:
       EXPECT_FALSE(settings.has_value());
@@ -263,6 +371,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest, Test) {
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
       ASSERT_TRUE(settings.value().per_profile);
+      ASSERT_FALSE(settings.value().client_metadata);
       break;
   }
 #endif
