@@ -5,5 +5,9 @@
 #
 # This script is used to launch WebKitTestRunner on ClusterFuzz bots.
 
+rm -rf "$HOME/Library/Application Support/DumpRenderTree"
+
 BASEDIR=$(dirname "$0")
 DYLD_FRAMEWORK_PATH=$BASEDIR DYLD_LIBRARY_PATH=$BASEDIR ./WebKitTestRunner $@
+
+rm -rf "$HOME/Library/Application Support/DumpRenderTree"
