@@ -19,6 +19,7 @@
     // TODO(crbug.com/1173160): Consider when to clear the session object since
     // Chrome may be closed without transiting to background, e.g. device power
     // off, then the previous session object is staled.
+    NSLog(@"%@", [NSThread callStackSymbols]);
     SetStartSurfaceSessionObjectForSceneState(sceneState);
   }
 }
