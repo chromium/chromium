@@ -12,12 +12,14 @@
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feed/android/jni_headers/FeedServiceBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 
 namespace feed {
@@ -81,6 +83,10 @@ static void JNI_FeedServiceBridge_SetVideoPreviewsTypePreference(JNIEnv* env,
   pref_service->SetInteger(feed::prefs::kVideoPreviewsType, setting);
 }
 
+static jlong JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
+  return FeedServiceBridge::GetReliabilityLoggingId();
+}
+
 std::string FeedServiceBridge::GetLanguageTag() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return ConvertJavaStringToUTF8(env,
@@ -114,6 +120,18 @@ void FeedServiceBridge::PrefetchImage(const GURL& url) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FeedServiceBridge_prefetchImage(
       env, base::android::ConvertUTF8ToJavaString(env, url.spec()));
+}
+
+uint64_t FeedServiceBridge::GetReliabilityLoggingId() {
+  PrefService* profile_prefs = ProfileManager::GetLastUsedProfile()->GetPrefs();
+  if (!g_browser_process->metrics_service()) {
+    // If for some reason we don't have the metrics client ID, an ID based only
+    // on the random "salt" will be generated.
+    return FeedService::GetReliabilityLoggingId(/*metrics_id=*/std::string(),
+                                                profile_prefs);
+  }
+  return FeedService::GetReliabilityLoggingId(
+      g_browser_process->metrics_service()->GetClientId(), profile_prefs);
 }
 
 }  // namespace feed

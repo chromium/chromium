@@ -113,6 +113,10 @@ class FeedService : public KeyedService {
   // Whether Feedv2 is enabled. If false, the FeedService should not be created.
   static bool IsEnabled(const PrefService& pref_service);
 
+  // Returns the client ID for reliability logging.
+  static uint64_t GetReliabilityLoggingId(const std::string& metrics_id,
+                                          PrefService* pref_service);
+
  private:
   class StreamDelegateImpl;
   class NetworkDelegateImpl;

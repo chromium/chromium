@@ -122,6 +122,10 @@ public final class FeedServiceBridge {
         FeedServiceBridgeJni.get().setVideoPreviewsTypePreference(videoPreviewsType);
     }
 
+    public static long getReliabilityLoggingId() {
+        return FeedServiceBridgeJni.get().getReliabilityLoggingId();
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isEnabled();
@@ -132,5 +136,6 @@ public final class FeedServiceBridge {
         void reportOpenVisitComplete(long visitTimeMs);
         int getVideoPreviewsTypePreference();
         void setVideoPreviewsTypePreference(int videoPreviewsType);
+        long getReliabilityLoggingId();
     }
 }

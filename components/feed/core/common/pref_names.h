@@ -69,6 +69,8 @@ extern const char kDiscoverAPIEndpointOverride[];
 extern const char kExperiments[];
 // If set to false, the WebFeed UI is disabled.
 extern const char kEnableWebFeedUI[];
+// Random bytes used in generating reliability logging ID.
+extern const char kReliabilityLoggingIdSalt[];
 
 }  // namespace prefs
 

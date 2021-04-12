@@ -5,11 +5,13 @@
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2007,6 +2009,35 @@ TEST_F(FeedApiTest, StreamDataOverwritesOldStream) {
   EXPECT_EQ("new-shared-data",
             stored_data->shared_states[0].shared_state_data());
   EXPECT_EQ("new-frame-data", stored_data->content[0].frame());
+}
+
+TEST_F(FeedApiTest, ReliabilityLoggingId_GetAndReset) {
+  // If nothing changes between two calls to GetReliabilityLoggingId(), it
+  // should return the same ID.
+  uint64_t first_id =
+      FeedService::GetReliabilityLoggingId(/*metrics_id=*/"", &profile_prefs_);
+  EXPECT_EQ(first_id, FeedService::GetReliabilityLoggingId(/*metrics_id=*/"",
+                                                           &profile_prefs_));
+
+  profile_prefs_.ClearPref(prefs::kReliabilityLoggingIdSalt);
+  EXPECT_NE(first_id, FeedService::GetReliabilityLoggingId(/*metrics_id=*/"",
+                                                           &profile_prefs_));
+}
+
+TEST_F(FeedApiTest, ReliabilityLoggingId_ChangeOnMetricsIdChange) {
+  const char kSomeMetricsId[] = "metrics-id-1";
+  uint64_t first_id =
+      FeedService::GetReliabilityLoggingId(kSomeMetricsId, &profile_prefs_);
+  EXPECT_NE(first_id, FeedService::GetReliabilityLoggingId("metrics-id-2",
+                                                           &profile_prefs_));
+
+  // If we use the original metrics ID, we should get the original ID unless
+  // the salt is cleared.
+  EXPECT_EQ(first_id, FeedService::GetReliabilityLoggingId(kSomeMetricsId,
+                                                           &profile_prefs_));
+  profile_prefs_.ClearPref(prefs::kReliabilityLoggingIdSalt);
+  EXPECT_NE(first_id, FeedService::GetReliabilityLoggingId(kSomeMetricsId,
+                                                           &profile_prefs_));
 }
 
 // Keep instantiations at the bottom.

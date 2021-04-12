@@ -338,6 +338,11 @@ public class FeedStreamSurface
                     return AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
             }
         }
+
+        @Override
+        public long getReliabilityLoggingId() {
+            return FeedServiceBridge.getReliabilityLoggingId();
+        }
     }
 
     /**

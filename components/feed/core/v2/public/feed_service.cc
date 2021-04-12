@@ -7,8 +7,12 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/hash/hash.h"
+#include "base/rand_util.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
+#include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/feed_network_impl.h"
 #include "components/feed/core/v2/feed_store.h"
@@ -251,6 +255,24 @@ void FeedService::ClearCachedData() {
 // static
 bool FeedService::IsEnabled(const PrefService& pref_service) {
   return pref_service.GetBoolean(feed::prefs::kEnableSnippets);
+}
+
+// static
+uint64_t FeedService::GetReliabilityLoggingId(const std::string& metrics_id,
+                                              PrefService* prefs) {
+  // The reliability logging ID is generated from the UMA client ID so that it
+  // changes whenever the UMA client ID changes. We hash the UMA client ID with
+  // a random salt so that the UMA client ID can't be guessed from the
+  // reliability logging ID. The salt never leaves the client.
+  uint64_t salt;
+  if (!prefs->HasPrefPath(prefs::kReliabilityLoggingIdSalt)) {
+    salt = base::RandUint64();
+    prefs->SetUint64(prefs::kReliabilityLoggingIdSalt, salt);
+  } else {
+    salt = prefs->GetUint64(prefs::kReliabilityLoggingIdSalt);
+  }
+  return base::FastHash(base::StrCat(
+      {metrics_id, std::string(reinterpret_cast<char*>(&salt), sizeof(salt))}));
 }
 
 #if defined(OS_ANDROID)

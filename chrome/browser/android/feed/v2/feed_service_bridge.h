@@ -19,6 +19,7 @@ class FeedServiceBridge {
   static void ClearAll();
   static bool IsEnabled();
   static void PrefetchImage(const GURL& url);
+  static uint64_t GetReliabilityLoggingId();
 };
 
 }  // namespace feed
