@@ -57,6 +57,10 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
+namespace v8 {
+class Isolate;
+}  // namespace v8
+
 namespace blink {
 
 class BaseFetchContext;
@@ -149,6 +153,30 @@ class MODULES_EXPORT WebSocketChannelImpl final
     uint32_t data_length;
   };
 
+  // Used by BlobLoader and Message, so defined here so that it can be shared.
+  class MessageDataDeleter {
+   public:
+    // This constructor exists to permit default construction of the MessageData
+    // type, but the deleter cannot be called when it was used.
+    MessageDataDeleter() : isolate_(nullptr), size_(0) {}
+
+    MessageDataDeleter(v8::Isolate* isolate, size_t size)
+        : isolate_(isolate), size_(size) {}
+
+    MessageDataDeleter(const MessageDataDeleter&) = default;
+    MessageDataDeleter& operator=(const MessageDataDeleter&) = default;
+
+    void operator()(char* p) const;
+
+   private:
+    v8::Isolate* isolate_;
+    size_t size_;
+  };
+
+  using MessageData = std::unique_ptr<char[], MessageDataDeleter>;
+
+  static MessageData CreateMessageData(v8::Isolate*, size_t);
+
   friend class WebSocketChannelImplHandshakeThrottleTest;
   FRIEND_TEST_ALL_PREFIXES(WebSocketChannelImplHandshakeThrottleTest,
                            ThrottleSucceedsFirst);
@@ -183,15 +211,20 @@ class MODULES_EXPORT WebSocketChannelImpl final
         base::StrongAlias<class DidCallSendMessageTag, bool>;
 
     // Initializes message as a string
-    Message(const std::string&,
+    Message(v8::Isolate*,
+            const std::string&,
             base::OnceClosure completion_callback,
             DidCallSendMessage did_call_send_message);
 
     // Initializes message as a blob
     explicit Message(scoped_refptr<BlobDataHandle>);
 
+    // Initializes message from the contents of a blob
+    Message(MessageData, size_t);
+
     // Initializes message as a ArrayBuffer
-    Message(base::span<const char> message,
+    Message(v8::Isolate*,
+            base::span<const char> message,
             base::OnceClosure completion_callback,
             DidCallSendMessage did_call_send_message);
 
@@ -223,15 +256,6 @@ class MODULES_EXPORT WebSocketChannelImpl final
     void SetDidCallSendMessage(DidCallSendMessage did_call_send_message);
 
    private:
-    struct MessageDataDeleter {
-      void operator()(char* p) const { WTF::Partitions::FastFree(p); }
-    };
-    using MessageData = std::unique_ptr<char[], MessageDataDeleter>;
-    static MessageData CreateMessageData(std::size_t message_size) {
-      return MessageData(static_cast<char*>(WTF::Partitions::FastMalloc(
-          message_size, "blink::WebSockChannelImpl::Message::MessageData")));
-    }
-
     MessageData message_data_;
     MessageType type_;
 
@@ -274,7 +298,8 @@ class MODULES_EXPORT WebSocketChannelImpl final
   void OnCompletion(const base::Optional<WebString>& error);
 
   // Methods for BlobLoader.
-  void DidFinishLoadingBlob(DOMArrayBuffer*);
+  void DidFinishLoadingBlob(MessageData, size_t);
+  void BlobTooLarge();
   void DidFailLoadingBlob(FileErrorCode);
 
   void TearDownFailedConnection();
