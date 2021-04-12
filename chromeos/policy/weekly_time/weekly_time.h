@@ -42,6 +42,8 @@ class CHROMEOS_EXPORT WeeklyTime {
            timezone_offset_ == rhs.timezone_offset();
   }
 
+  bool operator!=(const WeeklyTime& rhs) const { return !operator==(rhs); }
+
   // Return DictionaryValue in format:
   // { "day_of_week" : int # value is from 1 to 7 (1 = Monday, 2 = Tuesday,
   // etc.)
@@ -94,8 +96,14 @@ class CHROMEOS_EXPORT WeeklyTime {
       const base::Value* value,
       base::Optional<int> timezone_offset);
 
+  // Return the |time| in GMT in WeeklyTime structure.
+  static WeeklyTime GetGmtWeeklyTime(base::Time time);
+
   // Return the current time in GMT in WeeklyTime structure.
   static WeeklyTime GetCurrentGmtWeeklyTime(base::Clock* clock);
+
+  // Return the system's local |time| in WeeklyTime structure.
+  static WeeklyTime GetLocalWeeklyTime(base::Time time);
 
   // Return the current time in the system's local time in WeeklyTime structure.
   static WeeklyTime GetCurrentLocalWeeklyTime(base::Clock* clock);
@@ -115,6 +123,11 @@ class CHROMEOS_EXPORT WeeklyTime {
   // system's local timezone.
   base::Optional<int> timezone_offset_;
 };
+
+// Constructs a WeeklyTime from an exploded base::Time.
+CHROMEOS_EXPORT WeeklyTime
+GetWeeklyTimeFromExploded(const base::Time::Exploded& exploded,
+                          const base::Optional<int> timezone_offset);
 
 }  // namespace policy
 

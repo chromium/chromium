@@ -105,7 +105,7 @@ class DeviceOffHoursController : public chromeos::SystemClockClient::Observer {
   void SetOffHoursEndTime(base::Time off_hours_end_time);
 
   // Timer for update "OffHours" mode.
-  void StartOffHoursTimer(base::TimeDelta delay);
+  void StartOffHoursTimer(base::Time update_time);
   void StopOffHoursTimer();
 
   // Called once when the system clock service initially becomes available (or
@@ -123,7 +123,7 @@ class DeviceOffHoursController : public chromeos::SystemClockClient::Observer {
   bool off_hours_mode_ = false;
 
   // "OffHours" mode end time. It is needed to show "OffHours" session limit
-  // notification. When "OffHours" mode is off the value is null.
+  // notification. When "OffHours" mode is off the value is base::Time{}.
   base::Time off_hours_end_time_;
 
   // Timer for updating device settings at the begin of next “OffHours” interval
