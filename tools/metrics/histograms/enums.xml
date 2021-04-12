@@ -17887,6 +17887,7 @@ Called by update_debug_scenarios.py.-->
   <int value="50" label="Service worker network request panel closed quickly"/>
   <int value="51" label="Network panel timing tab SW respondWith clicked"/>
   <int value="52" label="Copy value in network request panel"/>
+  <int value="53" label="Console Sidebar opened"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
