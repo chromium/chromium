@@ -98,6 +98,13 @@ public final class ChromePreferenceKeys {
      */
     public static final String CHROME_DEFAULT_BROWSER = "applink.chrome_default_browser";
 
+    /**
+     * Key prefix used to indicate the timestamps when the survey info bar is displayed for a
+     * certain survey.
+     */
+    public static final KeyPrefix CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP =
+            new KeyPrefix("Chrome.Survey.PromptDisplayedTimestamp.*");
+
     /** The URI of Chrome shared URI to Android system clibpoard. */
     public static final String CLIPBOARD_SHARED_URI = "Chrome.Clipboard.SharedUri";
 
@@ -822,12 +829,6 @@ public final class ChromePreferenceKeys {
     public static final String SNAPSHOT_DATABASE_REMOVED = "snapshot_database_removed";
 
     public static final String SURVEY_DATE_LAST_ROLLED = "last_rolled_for_chrome_survey_key";
-    /**
-     *  The survey questions for this survey are the same as those in the survey used for Chrome
-     *  Home, so we reuse the old infobar key to prevent the users from seeing the same survey more
-     *  than once.
-     */
-    public static final String SURVEY_INFO_BAR_DISPLAYED = "chrome_home_survey_info_bar_displayed";
 
     public static final String TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF =
             "ChromeTabbedActivity.BackgroundTimeMs";
@@ -953,6 +954,7 @@ public final class ChromePreferenceKeys {
                 AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP,
                 APPLICATION_OVERRIDE_LANGUAGE,
+                CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.pattern(),
                 CLIPBOARD_SHARED_URI,
                 CLIPBOARD_SHARED_URI_TIMESTAMP,
                 COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP,

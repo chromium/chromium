@@ -34,8 +34,7 @@ import org.chromium.content_public.browser.WebContents;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChromeSurveyControllerTest {
-    private static final String STUDY_NAME = "HorizontalTabSwitcherStudyName";
-    private static final String GROUP_NAME = "HorizontalTabSwitcherGroupName";
+    private static final String TEST_SURVEY_TRIGGER_ID = "foobar";
 
     private TestChromeSurveyController mTestController;
     private RiggedSurveyController mRiggedController;
@@ -57,7 +56,7 @@ public class ChromeSurveyControllerTest {
     public void before() {
         MockitoAnnotations.initMocks(this);
 
-        mTestController = new TestChromeSurveyController();
+        mTestController = new TestChromeSurveyController(TEST_SURVEY_TRIGGER_ID);
         mTestController.setTabModelSelector(mSelector);
         mSharedPreferences = SharedPreferencesManager.getInstance();
         Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
@@ -65,12 +64,36 @@ public class ChromeSurveyControllerTest {
 
     @Test
     public void testInfoBarDisplayedBefore() {
-        Assert.assertFalse(
-                mSharedPreferences.contains(ChromePreferenceKeys.SURVEY_INFO_BAR_DISPLAYED));
-        Assert.assertFalse(mTestController.hasInfoBarBeenDisplayed());
-        mSharedPreferences.writeLong(
-                ChromePreferenceKeys.SURVEY_INFO_BAR_DISPLAYED, System.currentTimeMillis());
-        Assert.assertTrue(mTestController.hasInfoBarBeenDisplayed());
+        final String triggerId1 = "triggerId1";
+        final String triggerId2 = "triggerId2";
+
+        TestChromeSurveyController controller1 = new TestChromeSurveyController(triggerId1);
+        TestChromeSurveyController controller2 = new TestChromeSurveyController(triggerId2);
+
+        String prefKey1 =
+                ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(triggerId1);
+        String prefKey2 =
+                ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(triggerId2);
+
+        // The new survey should not have been presented before.
+        Assert.assertFalse("SharedPref for triggerId1 should not be recorded.",
+                mSharedPreferences.contains(prefKey1));
+        Assert.assertFalse("SharedPref for triggerId2 should not be recorded.",
+                mSharedPreferences.contains(prefKey2));
+        Assert.assertFalse("Infobar for triggerId1 is marked displayed.",
+                controller1.hasInfoBarBeenDisplayed());
+        Assert.assertFalse("Infobar for triggerId2 is marked displayed.",
+                controller2.hasInfoBarBeenDisplayed());
+
+        mSharedPreferences.writeLong(prefKey1, System.currentTimeMillis());
+        Assert.assertTrue("Infobar for triggerId1 should be marked displayed.",
+                controller1.hasInfoBarBeenDisplayed());
+        Assert.assertFalse("Infobar for triggerId2 should not be marked displayed yet.",
+                controller2.hasInfoBarBeenDisplayed());
+
+        mSharedPreferences.writeLong(prefKey2, System.currentTimeMillis());
+        Assert.assertTrue("Infobar for trggerId2 should be marked displayed.",
+                controller2.hasInfoBarBeenDisplayed());
     }
 
     @Test
@@ -200,7 +223,7 @@ public class ChromeSurveyControllerTest {
         private int mMaxNumber;
 
         RiggedSurveyController(int randomNumberToReturn, int dayOfYear, int maxNumber) {
-            super();
+            super(TEST_SURVEY_TRIGGER_ID);
             mRandomNumberToReturn = randomNumberToReturn;
             mDayOfYear = dayOfYear;
             mMaxNumber = maxNumber;
@@ -225,8 +248,8 @@ public class ChromeSurveyControllerTest {
     class TestChromeSurveyController extends ChromeSurveyController {
         private Tab mTab;
 
-        public TestChromeSurveyController() {
-            super();
+        public TestChromeSurveyController(String triggerId) {
+            super(triggerId);
         }
 
         @Override
