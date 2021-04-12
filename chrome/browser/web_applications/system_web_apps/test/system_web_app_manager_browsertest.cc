@@ -54,6 +54,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/idle/idle.h"
+#include "ui/base/idle/scoped_set_idle_state.h"
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1452,26 +1454,29 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
   content::TestNavigationObserver navigation_observer(
       GURL("chrome://test-system-app/page2.html"));
   navigation_observer.StartWatchingNewWebContents();
+  ui::ScopedSetIdleState idle(ui::IDLE_STATE_IDLE);
 
   WaitForSystemAppsBackgroundTasksStart();
 
   auto& tasks = GetManager().GetBackgroundTasksForTesting();
-  auto* start_timer = tasks[0]->get_start_timer_for_testing();
-  EXPECT_EQ(base::TimeDelta::FromSeconds(120), start_timer->GetCurrentDelay());
-  EXPECT_EQ(base::TimeDelta::FromDays(1),
-            tasks[0]->get_repeating_timer_for_testing()->GetCurrentDelay());
-
+  auto* timer = tasks[0]->get_timer_for_testing();
+  EXPECT_EQ(base::TimeDelta::FromSeconds(120), timer->GetCurrentDelay());
+  EXPECT_EQ(SystemAppBackgroundTask::INITIAL_WAIT,
+            tasks[0]->get_state_for_testing());
   // The "Immediate" timer waits for 2 minutes, and it's really hard to mock
   // time properly in a browser test, so just fire the thing now. We're not
   // testing that base::Timer works.
-  start_timer->FireNow();
+  timer->FireNow();
 
   navigation_observer.Wait();
-  EXPECT_FALSE(start_timer->IsRunning());
+  EXPECT_TRUE(timer->IsRunning());
   EXPECT_EQ(1u, tasks.size());
   EXPECT_TRUE(tasks[0]->open_immediately_for_testing());
   EXPECT_EQ(base::TimeDelta::FromDays(1), tasks[0]->period_for_testing());
   EXPECT_EQ(1u, tasks[0]->timer_activated_count_for_testing());
+  EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
+            tasks[0]->get_state_for_testing());
+  EXPECT_EQ(base::TimeDelta::FromDays(1), timer->GetCurrentDelay());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

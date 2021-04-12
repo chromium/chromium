@@ -103,6 +103,7 @@ source_set("web_applications") {
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
     "//skia",
+    "//ui/base/idle",
   ]
 
   if (is_chromeos_ash) {
@@ -262,6 +263,8 @@ source_set("web_applications_unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/idle:idle",
+    "//ui/base/idle:test_support",
   ]
 
   if (is_chromeos_ash) {
@@ -317,6 +320,8 @@ source_set("web_applications_browser_tests") {
     "//components/services/app_service/public/cpp:intents",
     "//components/webapps/browser",
     "//extensions/browser:test_support",
+    "//ui/base/idle:idle",
+    "//ui/base/idle:test_support",
   ]
 
   if (is_chromeos_ash) {

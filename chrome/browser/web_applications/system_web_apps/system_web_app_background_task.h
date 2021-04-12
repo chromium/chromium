@@ -53,6 +53,28 @@ struct SystemAppBackgroundTaskInfo {
 // Used to manage a running periodic background task for a SWA.
 class SystemAppBackgroundTask {
  public:
+  enum TimerState {
+    INITIAL_WAIT = 0,
+    WAIT_PERIOD = 1,
+    WAIT_IDLE = 2,
+    INACTIVE = 3
+  };
+
+  // Wait for 2 minutes before starting background tasks. User login is busy,
+  // and this will give a little time to settle down. We could get even more
+  // sophisticated, and smear all the different start_immediately tasks across a
+  // couple minutes instead of setting their start timers to the same time.
+  static const int kInitialWaitForBackgroundTasksSeconds = 120;
+
+  // User idle for 2 minutes
+  static const int kIdleThresholdSeconds = 120;
+
+  // Else, poll every 30 seconds
+  static const int kIdlePollIntervalSeconds = 30;
+
+  // For up to an hour.
+  static const int kIdlePollMaxTimeToWaitSeconds = 3600;
+
   SystemAppBackgroundTask(Profile* profile,
                           const SystemAppBackgroundTaskInfo& info);
   ~SystemAppBackgroundTask();
@@ -78,6 +100,10 @@ class SystemAppBackgroundTask {
     return timer_activated_count_;
   }
 
+  base::Time polling_since_time_for_testing() const {
+    return polling_since_time_;
+  }
+
   WebAppUrlLoader* UrlLoaderForTesting() { return web_app_url_loader_.get(); }
 
   // Set the url loader for testing. Takes ownership of the argument.
@@ -85,16 +111,16 @@ class SystemAppBackgroundTask {
     web_app_url_loader_ = std::move(loader);
   }
 
-  base::OneShotTimer* get_start_timer_for_testing() {
-    return start_immediately_timer_.get();
-  }
+  TimerState get_state_for_testing() const { return state_; }
 
-  base::RepeatingTimer* get_repeating_timer_for_testing() {
-    return timer_.get();
-  }
+  base::OneShotTimer* get_timer_for_testing() { return timer_.get(); }
 
  private:
-  void NavigateTimerBackgroundPage();
+  // A state machine to either poll and fail, stop polling and succeed, or stop
+  // polling and fail
+  void MaybeOpenPage();
+
+  void NavigateBackgroundPage();
   void OnLoaderReady(WebAppUrlLoader::Result);
   void OnPageReady(WebAppUrlLoader::Result);
 
@@ -102,13 +128,14 @@ class SystemAppBackgroundTask {
   SystemAppType app_type_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppUrlLoader> web_app_url_loader_;
-  std::unique_ptr<base::RepeatingTimer> timer_;
-  std::unique_ptr<base::OneShotTimer> start_immediately_timer_;
+  std::unique_ptr<base::OneShotTimer> timer_;
+  TimerState state_;
   GURL url_;
   base::TimeDelta period_;
   unsigned long opened_count_;
   unsigned long timer_activated_count_;
   bool open_immediately_;
+  base::Time polling_since_time_;
 
   base::WeakPtrFactory<SystemAppBackgroundTask> weak_ptr_factory_{this};
 };
