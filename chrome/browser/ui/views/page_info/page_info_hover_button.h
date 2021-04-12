@@ -27,8 +27,8 @@ class View;
 class PageInfoBubbleViewBrowserTest;
 
 // Hoverable button containing icon, styled title, and (multi-line) subtitle.
-// PageInfoHoverButton inherits the interaction behavior from HoverButton but
-// sets up its own layout and content.
+// 'PageInfoHoverButton' inherits the interaction behavior from 'HoverButton'
+// but sets up its own layout and content.
 class PageInfoHoverButton : public HoverButton {
  public:
   METADATA_HEADER(PageInfoHoverButton);
@@ -38,18 +38,29 @@ class PageInfoHoverButton : public HoverButton {
   // the secondary text color. The |subtitle_text| is shown below the title text
   // in secondary text color. |tooltip_text| is used for the tooltip shown on
   // hovering over the button.
-  // *-----------------------------------------------------------------*
-  // | Icon | Title |title_resource_id| string + |secondary_text|      |
-  // |-----------------------------------------------------------------|
-  // |      | |subtitle_text|                                          |
-  // *-----------------------------------------------------------------*
-  PageInfoHoverButton(views::Button::PressedCallback callback,
-                      const gfx::ImageSkia& image_icon,
-                      int title_resource_id,
-                      const std::u16string& secondary_text,
-                      int click_target_id,
-                      const std::u16string& tooltip_text,
-                      const std::u16string& subtitle_text);
+  // *-------------------------------------------------------------------------*
+  // | Icon | |title_resource_id| + |secondary_text|                           |
+  // |-------------------------------------------------------------------------|
+  // |      | |subtitle_text|                                                  |
+  // *-------------------------------------------------------------------------*
+  // If flag PageInfoV2Desktop is enabled, the button will look different.
+  // Optional |action_image_icom| is shown on right side. |secondary_text| isn't
+  // concatenated with the |title_resource_id|, it is shown separately on right
+  // side before the |action_image_icon|.
+  // *-------------------------------------------------------------------------*
+  // | Icon | |title_resource_id|               |secondary_text| | Action icon |
+  // |-------------------------------------------------------------------------|
+  // |      | |subtitle_text|                                                  |
+  // *-------------------------------------------------------------------------*
+  PageInfoHoverButton(
+      views::Button::PressedCallback callback,
+      const gfx::ImageSkia& main_image_icon,
+      int title_resource_id,
+      const std::u16string& secondary_text,
+      int click_target_id,
+      const std::u16string& tooltip_text,
+      const std::u16string& subtitle_text,
+      base::Optional<gfx::ImageSkia> action_image_icon = base::nullopt);
   ~PageInfoHoverButton() override {}
 
   // Updates the title text, and applies the secondary style to the secondary
@@ -60,7 +71,6 @@ class PageInfoHoverButton : public HoverButton {
  protected:
   views::StyledLabel* title() const { return title_; }
   views::Label* subtitle() const { return subtitle_; }
-  views::View* icon_view() const { return icon_view_; }
   // HoverButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
@@ -74,8 +84,9 @@ class PageInfoHoverButton : public HoverButton {
   void UpdateAccessibleName();
 
   views::StyledLabel* title_ = nullptr;
+  // Shows secondary text on right side. Used for page info v2 only.
+  views::Label* secondary_label_ = nullptr;
   views::Label* subtitle_ = nullptr;
-  views::View* icon_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoHoverButton);
 };

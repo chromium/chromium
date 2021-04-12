@@ -215,6 +215,10 @@ class PageInfoUI {
 
   // Returns the icon for VR settings.
   static const gfx::ImageSkia GetVrSettingsIcon(SkColor related_text_color);
+
+  // Returns the icon for a button which opens an external dialog or page (ex.
+  // cookies dialog or site settings page).
+  static const gfx::ImageSkia GetLaunchIcon(const SkColor related_text_color);
 #endif
 
   // Return true if the given ContentSettingsType is in PageInfoUI.

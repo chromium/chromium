@@ -826,6 +826,14 @@ const gfx::ImageSkia PageInfoUI::GetVrSettingsIcon(SkColor related_text_color) {
       vector_icons::kVrHeadsetIcon, kVectorIconSize,
       color_utils::DeriveDefaultIconColor(related_text_color));
 }
+
+// static
+const gfx::ImageSkia PageInfoUI::GetLaunchIcon(
+    const SkColor related_text_color) {
+  return gfx::CreateVectorIcon(
+      vector_icons::kLaunchIcon, kVectorIconSize,
+      color_utils::DeriveDefaultIconColor(related_text_color));
+}
 #endif
 
 // static

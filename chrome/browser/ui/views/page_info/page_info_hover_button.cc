@@ -6,30 +6,47 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "components/page_info/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 
+namespace {
+
+std::unique_ptr<views::View> CreateIconView(const gfx::ImageSkia& icon_image) {
+  auto icon = std::make_unique<NonAccessibleImageView>();
+  icon->SetImage(icon_image);
+  // Make sure hovering over the icon also hovers the `PageInfoHoverButton`.
+  icon->SetCanProcessEventsWithinSubtree(false);
+  // Don't cover |icon| when the ink drops are being painted.
+  icon->SetPaintToLayer();
+  icon->layer()->SetFillsBoundsOpaquely(false);
+  return icon;
+}
+
+}  // namespace
+
 PageInfoHoverButton::PageInfoHoverButton(
     views::Button::PressedCallback callback,
-    const gfx::ImageSkia& image_icon,
+    const gfx::ImageSkia& main_image_icon,
     int title_resource_id,
     const std::u16string& secondary_text,
     int click_target_id,
     const std::u16string& tooltip_text,
-    const std::u16string& subtitle_text)
+    const std::u16string& subtitle_text,
+    base::Optional<gfx::ImageSkia> action_image_icon)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
-  auto icon = std::make_unique<NonAccessibleImageView>();
-  icon->SetImage(image_icon);
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
@@ -44,39 +61,56 @@ PageInfoHoverButton::PageInfoHoverButton(
                      views::GridLayout::kFixedSize,
                      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   columns->AddPaddingColumn(views::GridLayout::kFixedSize, icon_label_spacing);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
+  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
                      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  columns->AddPaddingColumn(views::GridLayout::kFixedSize, icon_label_spacing);
+  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::FILL,
+                     views::GridLayout::kFixedSize,
+                     views::GridLayout::ColumnSize::kUsePreferred,
+                     views::GridLayout::kFixedSize, 0);
+  columns->AddPaddingColumn(views::GridLayout::kFixedSize, icon_label_spacing);
+  columns->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
+                     views::GridLayout::kFixedSize,
+                     views::GridLayout::ColumnSize::kFixed, 16, 0);
 
-  // Make sure hovering over the icon also hovers the |PageInfoHoverButton|.
-  icon->SetCanProcessEventsWithinSubtree(false);
-  // Don't cover |icon_view| when the ink drops are being painted.
-  icon->SetPaintToLayer();
-  icon->layer()->SetFillsBoundsOpaquely(false);
+  views::style::TextContext text_context =
+      base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)
+          ? views::style::CONTEXT_DIALOG_BODY_TEXT
+          : views::style::CONTEXT_LABEL;
 
   // Force row to have sufficient height for full line-height of the title.
   grid_layout->StartRow(
       views::GridLayout::kFixedSize, kColumnSetId,
-      views::style::GetLineHeight(views::style::CONTEXT_LABEL,
-                                  views::style::STYLE_PRIMARY));
+      views::style::GetLineHeight(text_context, views::style::STYLE_PRIMARY));
 
-  icon_view_ = grid_layout->AddView(std::move(icon));
-
+  grid_layout->AddView(CreateIconView(main_image_icon));
   auto title_label = std::make_unique<views::StyledLabel>();
-  title_label->SetTextContext(views::style::CONTEXT_LABEL);
-  // views::StyledLabels are all multi-line. With a layout manager, StyledLabel
-  // will try use the available space to size itself, and long titles will wrap
-  // to the next line (for smaller PageInfoHoverButtons, this will also cover up
-  // |subtitle_|). Wrap it in a parent view with no layout manager to ensure it
-  // keeps its original size set by SizeToFit() above. Long titles will then be
-  // truncated.
-  auto title_wrapper = std::make_unique<views::View>();
-  title_ = title_wrapper->AddChildView(std::move(title_label));
-  SetTitleText(title_resource_id, secondary_text);
+  title_label->SetTextContext(text_context);
 
-  // Hover the whole button when hovering |title_|. This is OK because |title_|
-  // will never have a link in it.
-  title_wrapper->SetCanProcessEventsWithinSubtree(false);
-  grid_layout->AddView(std::move(title_wrapper));
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
+    title_ = grid_layout->AddView(std::move(title_label));
+    title_->SetCanProcessEventsWithinSubtree(false);
+
+    auto secondary_label = std::make_unique<views::Label>(
+        std::u16string(), views::style::CONTEXT_LABEL,
+        views::style::STYLE_SECONDARY);
+    secondary_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+    secondary_label_ = grid_layout->AddView(std::move(secondary_label));
+
+    if (action_image_icon.has_value()) {
+      grid_layout->AddView(CreateIconView(action_image_icon.value()));
+    }
+  } else {
+    auto title_wrapper = std::make_unique<views::View>();
+    title_wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal));
+    title_ = title_wrapper->AddChildView(std::move(title_label));
+    // Hover the whole button when hovering |title_|. This is OK because
+    // |title_| will never have a link in it.
+    title_wrapper->SetCanProcessEventsWithinSubtree(false);
+    grid_layout->AddView(std::move(title_wrapper));
+  }
+  SetTitleText(title_resource_id, secondary_text);
 
   if (!subtitle_text.empty()) {
     grid_layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
@@ -110,6 +144,9 @@ void PageInfoHoverButton::SetTitleText(int title_resource_id,
   DCHECK(title_);
   if (secondary_text.empty()) {
     title_->SetText(l10n_util::GetStringUTF16(title_resource_id));
+  } else if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
+    title_->SetText(l10n_util::GetStringUTF16(title_resource_id));
+    secondary_label_->SetText(secondary_text);
   } else {
     size_t offset;
     auto title_text =
@@ -125,11 +162,15 @@ void PageInfoHoverButton::SetTitleText(int title_resource_id,
 }
 
 void PageInfoHoverButton::UpdateAccessibleName() {
+  const std::u16string title_text =
+      secondary_label_ == nullptr
+          ? title()->GetText()
+          : base::JoinString({title()->GetText(), secondary_label_->GetText()},
+                             u" ");
   const std::u16string accessible_name =
       subtitle() == nullptr
-          ? title()->GetText()
-          : base::JoinString({title()->GetText(), subtitle()->GetText()},
-                             u"\n");
+          ? title_text
+          : base::JoinString({title_text, subtitle()->GetText()}, u"\n");
   HoverButton::SetAccessibleName(accessible_name);
 }
 

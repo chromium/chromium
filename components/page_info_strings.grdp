@@ -276,6 +276,9 @@
       <message name="IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED" desc="The label of the counts for allowed cookies that are in use on the page. This text will be used in IDS_PAGE_INFO_COOKIES_BUTTON_TEXT.">
         {NUM_COOKIES, plural, =1 {(1 in use)} other {(# in use)}}
       </message>
+      <message name="IDS_PAGE_INFO_NUM_COOKIES" desc="The label of the counts for allowed cookies that are in use on the page. This text will be shown next to IDS_PAGE_INFO_COOKIES_BUTTON_TEXT. It is the same as IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED, but without parenthesis">
+        {NUM_COOKIES, plural, =1 {1 in use} other {# in use}}
+      </message>
       <message name="IDS_PAGE_INFO_COOKIES_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED.">
         Show cookies
       </message>

@@ -39,6 +39,12 @@ SkColor GetRelatedTextColor() {
                                 views::style::STYLE_PRIMARY);
 }
 
+SkColor GetSecondaryLabelColor() {
+  views::Label label;
+  return views::style::GetColor(label, views::style::CONTEXT_LABEL,
+                                views::style::STYLE_SECONDARY);
+}
+
 }  // namespace
 
 PageInfoMainView::PageInfoMainView(PageInfo* presenter,
@@ -95,7 +101,8 @@ PageInfoMainView::PageInfoMainView(PageInfo* presenter,
         PageInfoUI::GetSiteSettingsIcon(GetRelatedTextColor()),
         IDS_PAGE_INFO_SITE_SETTINGS_LINK, std::u16string(),
         PageInfoMainView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
-        tooltip, std::u16string()));
+        tooltip, std::u16string(),
+        PageInfoUI::GetLaunchIcon(GetSecondaryLabelColor())));
   }
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
@@ -119,7 +126,7 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
 
   // Get the string to display the number of cookies.
   const std::u16string num_cookies_text = l10n_util::GetPluralStringFUTF16(
-      IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED, total_allowed);
+      IDS_PAGE_INFO_NUM_COOKIES, total_allowed);
 
   // Create the cookie button if it doesn't yet exist. This method gets called
   // each time site data is updated, so if it *does* already exist, skip this
@@ -142,16 +149,16 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
                   view->HandleMoreInfoRequest(view->cookie_button_);
                 },
                 this),
-            icon, IDS_PAGE_INFO_COOKIES_BUTTON_TEXT, num_cookies_text,
+            icon, IDS_PAGE_INFO_COOKIES, num_cookies_text,
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG, tooltip,
-            std::u16string())
+            std::u16string(),
+            PageInfoUI::GetLaunchIcon(GetSecondaryLabelColor()))
             .release();
     site_settings_view_->AddChildView(cookie_button_);
   }
 
   // Update the text displaying the number of allowed cookies.
-  cookie_button_->SetTitleText(IDS_PAGE_INFO_COOKIES_BUTTON_TEXT,
-                               num_cookies_text);
+  cookie_button_->SetTitleText(IDS_PAGE_INFO_COOKIES, num_cookies_text);
 
   PreferredSizeChanged();
 }
@@ -327,9 +334,9 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
                   view->HandleMoreInfoRequest(view->certificate_button_);
                 },
                 this),
-            icon, IDS_PAGE_INFO_CERTIFICATE_BUTTON_TEXT, secondary_text,
+            icon, IDS_PAGE_INFO_CERTIFICATE, secondary_text,
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER, tooltip,
-            subtitle_text)
+            subtitle_text, PageInfoUI::GetLaunchIcon(GetSecondaryLabelColor()))
             .release());
   }
 
