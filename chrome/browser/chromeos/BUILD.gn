@@ -3600,6 +3600,7 @@ source_set("unit_tests") {
     "../ash/arc/session/arc_play_store_enabled_preference_handler_unittest.cc",
     "../ash/arc/session/arc_provisioning_result_unittest.cc",
     "../ash/arc/session/arc_session_manager_unittest.cc",
+    "../ash/arc/sharesheet/arc_sharesheet_bridge_unittest.cc",
     "../ash/arc/tracing/arc_app_performance_tracing_unittest.cc",
     "../ash/arc/tracing/arc_cpu_event_unittest.cc",
     "../ash/arc/tracing/arc_graphics_jank_detector_unittest.cc",

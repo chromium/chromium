@@ -44,6 +44,12 @@ ArcSharesheetBridge* ArcSharesheetBridge::GetForBrowserContext(
   return ArcSharesheetBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcSharesheetBridge* ArcSharesheetBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcSharesheetBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcSharesheetBridge::ArcSharesheetBridge(content::BrowserContext* context,
                                          ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),

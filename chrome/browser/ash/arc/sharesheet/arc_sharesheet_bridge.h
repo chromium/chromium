@@ -28,6 +28,8 @@ class ArcSharesheetBridge : public KeyedService, public mojom::SharesheetHost {
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcSharesheetBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcSharesheetBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcSharesheetBridge(content::BrowserContext* context,
                       ArcBridgeService* bridge_service);
