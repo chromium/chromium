@@ -53,7 +53,7 @@ class PLATFORM_EXPORT Filter final : public GarbageCollected<Filter> {
   float ApplyHorizontalScale(float value) const;
   float ApplyVerticalScale(float value) const;
 
-  FloatPoint3D Resolve3dPoint(const FloatPoint3D&) const;
+  FloatPoint3D Resolve3dPoint(FloatPoint3D) const;
 
   const FloatRect& FilterRegion() const { return filter_region_; }
   const FloatRect& ReferenceBox() const { return reference_box_; }
