@@ -121,24 +121,24 @@ void DeviceOffHoursController::UpdateOffHoursMode() {
       VLOG(1) << "The system clock isn't network synchronized. OffHours mode "
                  "is unavailable.";
     }
-    SetOffHoursEndTime(base::Time{});
     StopOffHoursTimer();
     SetOffHoursMode(false);
     return;
   }
-
-  namespace wtu = ::policy::weekly_time_utils;
-  const base::Time now = clock_->Now();
-  const bool in_interval = wtu::Contains(now, off_hours_intervals_);
-  const base::Optional<base::Time> update_time =
-      wtu::GetNextEventTime(now, off_hours_intervals_);
-
-  // weekly off_hours_intervals_ is not empty -> update_time has a value
-  DCHECK(update_time);
-
-  SetOffHoursEndTime(in_interval ? update_time.value() : base::Time{});
-  StartOffHoursTimer(update_time.value());
-  SetOffHoursMode(in_interval);
+  WeeklyTime current_time = WeeklyTime::GetCurrentGmtWeeklyTime(clock_);
+  for (const auto& interval : off_hours_intervals_) {
+    if (interval.Contains(current_time)) {
+      base::TimeDelta remaining_off_hours_duration =
+          current_time.GetDurationTo(interval.end());
+      SetOffHoursEndTime(base::Time::Now() + remaining_off_hours_duration);
+      StartOffHoursTimer(remaining_off_hours_duration);
+      SetOffHoursMode(true);
+      return;
+    }
+  }
+  StartOffHoursTimer(weekly_time_utils::GetDeltaTillNextTimeInterval(
+      current_time, off_hours_intervals_));
+  SetOffHoursMode(false);
 }
 
 void DeviceOffHoursController::SetOffHoursEndTime(
@@ -159,9 +159,10 @@ void DeviceOffHoursController::SetOffHoursMode(bool off_hours_enabled) {
   OffHoursModeIsChanged();
 }
 
-void DeviceOffHoursController::StartOffHoursTimer(base::Time update_time) {
-  DVLOG(1) << "OffHours mode timer starts with run time " << update_time;
-  timer_->Start(FROM_HERE, update_time,
+void DeviceOffHoursController::StartOffHoursTimer(base::TimeDelta delay) {
+  DCHECK_GT(delay, base::TimeDelta());
+  DVLOG(1) << "OffHours mode timer starts for " << delay;
+  timer_->Start(FROM_HERE, clock_->Now() + delay,
                 base::BindOnce(&DeviceOffHoursController::UpdateOffHoursMode,
                                weak_ptr_factory_.GetWeakPtr()));
 }

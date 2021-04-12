@@ -424,11 +424,4 @@ INSTANTIATE_TEST_SUITE_P(
                                     9 * kMinutesInHour,
                                     -4 * kMillisecondsInHour)));
 
-TEST(WeeklyTimeConversion, CorrectFromExploded) {
-  base::Time now = base::Time::Now();
-  base::Time::Exploded exploded;
-  now.UTCExplode(&exploded);
-  EXPECT_EQ(WeeklyTime::GetGmtWeeklyTime(now),
-            GetWeeklyTimeFromExploded(exploded, 0));
-}
 }  // namespace policy

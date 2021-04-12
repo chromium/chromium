@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "chromeos/chromeos_export.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -53,20 +52,9 @@ CHROMEOS_EXPORT std::u16string WeeklyTimeToLocalizedString(
 CHROMEOS_EXPORT std::vector<WeeklyTimeInterval> ConvertIntervalsToGmt(
     const std::vector<WeeklyTimeInterval>& intervals);
 
-// Checks if |time| is contained in one of the |intervals|. Timezone agnostic
-// intervals are not supported.
-CHROMEOS_EXPORT bool Contains(const base::Time& time,
-                              const std::vector<WeeklyTimeInterval>& intervals);
-
 // Return duration till next weekly time interval.
 CHROMEOS_EXPORT base::TimeDelta GetDeltaTillNextTimeInterval(
     const WeeklyTime& current_time,
-    const std::vector<WeeklyTimeInterval>& weekly_time_intervals);
-
-// Returns next start or end interval time after |current_time|, or
-// base::nullopt in case |weekly_time_intervals| is empty.
-CHROMEOS_EXPORT base::Optional<base::Time> GetNextEventTime(
-    const base::Time& current_time,
     const std::vector<WeeklyTimeInterval>& weekly_time_intervals);
 
 // Takes in a vector of weekly time intervals. If |clock->Now()|
