@@ -51,7 +51,7 @@ async function loadVideoBlob(blob) {
     el.addEventListener('error', () => {
       hasLoaded.signal(false);
     });
-    el.addEventListener('load', () => {
+    el.addEventListener('loadeddata', () => {
       hasLoaded.signal(true);
     });
     const gotFrame = new WaitableEvent();
