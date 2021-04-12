@@ -77,7 +77,7 @@ bool SkiaOutputDeviceDawn::Reshape(const gfx::Size& size,
   CreateSwapChainImplementation();
   wgpu::SwapChainDescriptor desc;
   desc.implementation = reinterpret_cast<int64_t>(&swap_chain_implementation_);
-  // TODO(sgilhuly): Use a wgpu::Surface in this call once the Surface-based
+  // TODO(rivr): Use a wgpu::Surface in this call once the Surface-based
   // SwapChain API is ready.
   swap_chain_ = context_provider_->GetDevice().CreateSwapChain(nullptr, &desc);
   if (!swap_chain_)
@@ -98,7 +98,7 @@ void SkiaOutputDeviceDawn::SwapBuffers(BufferPresentedCallback feedback,
   base::TimeTicks vsync_timebase;
   base::TimeDelta vsync_interval;
   uint32_t flags = 0;
-  // TODO(sgilhuly): Add an async path for getting vsync parameters. The sync
+  // TODO(rivr): Add an async path for getting vsync parameters. The sync
   // path is sufficient for VSyncProviderWin.
   if (vsync_provider_ && vsync_provider_->GetVSyncParametersIfAvailable(
                              &vsync_timebase, &vsync_interval)) {

@@ -417,7 +417,7 @@ TEST_F(VizDevToolsTest, SurfaceHierarchyCleanup) {
 
 // Verify that a surface with multiple references is only a child of its most
 // recent referrer.
-// TODO(sgilhuly): This test follows the current behaviour of surfaces with
+// TODO(rivr): This test follows the current behaviour of surfaces with
 // multiple references, and should be changed if support for nodes to have
 // multiple parents is added.
 TEST_F(VizDevToolsTest, MultipleSurfaceReferences) {

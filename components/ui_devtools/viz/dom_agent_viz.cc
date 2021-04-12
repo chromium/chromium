@@ -107,7 +107,7 @@ void DOMAgentViz::OnSurfaceDestroyed(const viz::SurfaceId& surface_id) {
   DestroyElementAndRemoveSubtree(it->second.get());
 }
 
-// TODO(sgilhuly): Add support for elements to have multiple parents. Currently,
+// TODO(rivr): Add support for elements to have multiple parents. Currently,
 // when a reference is added to a surface, the SurfaceElement is moved to be a
 // child of only its most recent referrer. When a reference is removed from a
 // surface, this is ignored unless the reference is to the SurfaceElement's
@@ -151,7 +151,7 @@ void DOMAgentViz::OnRemovedSurfaceReference(const viz::SurfaceId& parent_id,
   // happen when we have Surface A referencing Surface B, then we create
   // Surface C and ask it to reference Surface B. When A asks to remove
   // the reference to B, do nothing because B is already referenced by C.
-  // TODO(sgilhuly): Add support for elements to have multiple parents so this
+  // TODO(rivr): Add support for elements to have multiple parents so this
   // case can be correctly handled.
   UIElement* old_parent = child->parent();
   if (SurfaceElement::From(old_parent) != parent_id)

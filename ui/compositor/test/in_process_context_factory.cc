@@ -145,7 +145,7 @@ class DirectOutputSurface : public viz::OutputSurface {
 
 }  // namespace
 
-// TODO(sgilhuly): This class is managed heavily by InProcessTransportFactory.
+// TODO(rivr): This class is managed heavily by InProcessTransportFactory.
 // Move some of the logic in here and simplify the interface.
 class InProcessContextFactory::PerCompositorData
     : public viz::mojom::DisplayPrivate {

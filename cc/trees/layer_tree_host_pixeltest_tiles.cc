@@ -267,7 +267,7 @@ std::vector<RasterTestConfig> const kTestCasesMultiThread = {
     {viz::RendererType::kSkiaGL, TestRasterType::kOneCopy},
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    // TODO(sgilhuly): Switch this to one copy raster once is is supported for
+    // TODO(rivr): Switch this to one copy raster once is is supported for
     // Vulkan in these tests.
     {viz::RendererType::kSkiaVk, TestRasterType::kOop},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)

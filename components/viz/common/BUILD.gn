@@ -44,7 +44,7 @@ viz_component("resource_format_utils") {
   }
 }
 
-# TODO(sgilhuly): To reduce link times, merge these context provider components
+# TODO(rivr): To reduce link times, merge these context provider components
 # into a single gr_context_provider component.
 if (is_mac) {
   viz_component("metal_context_provider") {

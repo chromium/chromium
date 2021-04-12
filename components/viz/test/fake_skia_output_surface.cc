@@ -265,7 +265,7 @@ void FakeSkiaOutputSurface::CopyOutput(
   }
 
   if (request->result_format() == CopyOutputResult::Format::RGBA_TEXTURE) {
-    // TODO(sgilhuly): This implementation is incomplete and doesn't copy
+    // TODO(rivr): This implementation is incomplete and doesn't copy
     // anything into the mailbox, but currently the only tests that use this
     // don't actually check the returned texture data.
     auto* sii = context_provider_->SharedImageInterface();

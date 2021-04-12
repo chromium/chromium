@@ -8,7 +8,7 @@ declare_args() {
   skia_use_gl = true
 
   # Enable gtests using SkiaRenderer Dawn.
-  # TODO(sgilhuly): Remove this and enable the tests by default once a software
+  # TODO(rivr): Remove this and enable the tests by default once a software
   # path for D3D12 is available.
   enable_skia_dawn_gtests = false
 }

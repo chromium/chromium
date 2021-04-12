@@ -105,7 +105,7 @@ const GpuFeatureData GetGpuFeatureData(
          "via blocklist or the command line."),
      true},
     {"gpu_compositing",
-     // TODO(sgilhuly): Replace with a check to see which backend is used for
+     // TODO(rivr): Replace with a check to see which backend is used for
      // compositing; do the same for GPU rasterization if it's enabled. For now
      // assume that if GL is blocklisted, then Vulkan is also. Check GL to see
      // if GPU compositing is disabled.

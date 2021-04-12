@@ -38,7 +38,7 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::Create() {
 }
 
 DawnContextProvider::DawnContextProvider() {
-  // TODO(sgilhuly): This may return a GPU that is not the active one. Currently
+  // TODO(rivr): This may return a GPU that is not the active one. Currently
   // the only known way to avoid this is platform-specific; e.g. on Mac, create
   // a Dawn device, get the actual Metal device from it, and compare against
   // MTLCreateSystemDefaultDevice().

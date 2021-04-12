@@ -1110,7 +1110,7 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
   if (gpu_mode_ == gpu::GpuMode::HARDWARE_VULKAN &&
       gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
           gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
-    // TODO(sgilhuly): The GpuMode in GpuProcessHost will still be
+    // TODO(rivr): The GpuMode in GpuProcessHost will still be
     // HARDWARE_VULKAN. This isn't a big issue right now because both GPU modes
     // report to the same histogram. The first fallback will occur after 4
     // crashes, instead of 3.

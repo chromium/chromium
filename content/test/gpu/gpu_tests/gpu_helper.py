@@ -168,7 +168,7 @@ def GetDisplayServer():
     return None
 
 
-# TODO(sgilhuly): Use GPU feature status for Dawn instead of command line.
+# TODO(rivr): Use GPU feature status for Dawn instead of command line.
 def HasDawnSkiaRenderer(extra_browser_args):
   if extra_browser_args:
     for arg in extra_browser_args:
