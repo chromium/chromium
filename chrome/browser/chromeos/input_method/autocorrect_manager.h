@@ -72,8 +72,8 @@ class AutocorrectManager {
   int context_id_ = 0;
   int key_presses_until_underline_hide_ = 0;
   std::u16string original_text_;
-  bool window_visible = false;
-  bool button_highlighted = false;
+  bool window_visible_ = false;
+  bool button_highlighted_ = false;
   base::TimeTicks autocorrect_time_;
 };
 

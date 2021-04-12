@@ -93,7 +93,7 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
   if (event.type() != ui::ET_KEY_PRESSED) {
     return false;
   }
-  if (event.code() == ui::DomCode::ARROW_UP && window_visible) {
+  if (event.code() == ui::DomCode::ARROW_UP && window_visible_) {
     std::string error;
     auto button = ui::ime::AssistiveWindowButton();
     button.id = ui::ime::ButtonId::kUndo;
@@ -102,11 +102,11 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
         IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON, original_text_);
     suggestion_handler_->SetButtonHighlighted(context_id_, button, true,
                                               &error);
-    button_highlighted = true;
+    button_highlighted_ = true;
     return true;
   }
-  if (event.code() == ui::DomCode::ENTER && window_visible &&
-      button_highlighted) {
+  if (event.code() == ui::DomCode::ENTER && window_visible_ &&
+      button_highlighted_) {
     UndoAutocorrect();
     return true;
   }
@@ -133,14 +133,14 @@ void AutocorrectManager::ClearUnderline() {
 
 void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
                                                   const int cursor_pos,
-                                                  const int anchpr_pos) {
+                                                  const int anchor_pos) {
   std::string error;
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   const gfx::Range range = input_context->GetAutocorrectRange();
   if (!range.is_empty() && cursor_pos >= range.start() &&
       cursor_pos <= range.end()) {
-    if (!window_visible) {
+    if (!window_visible_) {
       const std::u16string autocorrected_text =
           text.substr(range.start(), range.length());
       chromeos::AssistiveWindowProperties properties;
@@ -149,20 +149,20 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
       properties.announce_string = l10n_util::GetStringFUTF8(
           IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, original_text_,
           autocorrected_text);
-      window_visible = true;
-      button_highlighted = false;
+      window_visible_ = true;
+      button_highlighted_ = false;
       suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                         &error);
       LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
       RecordAssistiveCoverage(AssistiveType::kAutocorrectWindowShown);
     }
     key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
-  } else if (window_visible) {
+  } else if (window_visible_) {
     chromeos::AssistiveWindowProperties properties;
     properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
     properties.visible = false;
-    window_visible = false;
-    button_highlighted = false;
+    window_visible_ = false;
+    button_highlighted_ = false;
     suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                       &error);
   }
@@ -184,9 +184,8 @@ void AutocorrectManager::UndoAutocorrect() {
   chromeos::AssistiveWindowProperties properties;
   properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = false;
-  window_visible = false;
-  button_highlighted = false;
-  window_visible = false;
+  window_visible_ = false;
+  button_highlighted_ = false;
   suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                     &error);
 
