@@ -677,7 +677,7 @@ class _LogcatProcessor(object):
     self._found_initial_pid = self._primary_pid != None
     # Retrieve any additional patterns that are relevant for the User.
     self._user_defined_highlight = None
-    user_regex = os.environ['CHROMIUM_LOGCAT_HIGHLIGHT']
+    user_regex = os.environ.get('CHROMIUM_LOGCAT_HIGHLIGHT')
     if user_regex:
       self._user_defined_highlight = re.compile(user_regex)
       if not self._user_defined_highlight:
