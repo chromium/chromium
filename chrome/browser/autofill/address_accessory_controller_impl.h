@@ -19,7 +19,6 @@
 class ManualFillingController;
 
 namespace autofill {
-class AutofillProfile;
 class PersonalDataManager;
 
 // Use either AddressAccessoryController::GetOrCreate or
@@ -59,8 +58,6 @@ class AddressAccessoryControllerImpl
 
   // Required for construction via |CreateForWebContents|:
   explicit AddressAccessoryControllerImpl(content::WebContents* contents);
-
-  std::vector<AutofillProfile*> GetProfiles();
 
   // Constructor that allows to inject a mock filling controller.
   AddressAccessoryControllerImpl(

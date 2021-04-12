@@ -30,7 +30,6 @@ using base::ASCIIToUTF16;
 using testing::_;
 using testing::ByMove;
 using testing::Mock;
-using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
@@ -103,6 +102,10 @@ TEST_F(AddressAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
             initial_controller);
 }
 
+TEST_F(AddressAccessoryControllerTest, ProvidesNoSheetBeforeInitialRefresh) {
+  ASSERT_FALSE(controller()->GetSheetData().has_value());
+}
+
 TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {
   AutofillProfile canadian = test::GetFullValidProfileForCanada();
   personal_data_manager()->AddProfile(canadian);
@@ -113,7 +116,8 @@ TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {
 
   controller()->RefreshSuggestions();
 
-  ASSERT_EQ(
+  EXPECT_EQ(result, controller()->GetSheetData());
+  EXPECT_EQ(
       result,
       AddressAccessorySheetDataBuilder(std::u16string())
           .AddUserInfo()
@@ -145,7 +149,8 @@ TEST_F(AddressAccessoryControllerTest, ProvidesEmptySuggestionsMessage) {
 
   controller()->RefreshSuggestions();
 
-  ASSERT_EQ(result,
+  EXPECT_EQ(result, controller()->GetSheetData());
+  EXPECT_EQ(result,
             AddressAccessorySheetDataBuilder(addresses_empty_str()).Build());
 }
 
@@ -156,13 +161,16 @@ TEST_F(AddressAccessoryControllerTest, TriggersRefreshWhenDataChanges) {
 
   // A refresh without data stores an empty sheet and registers an observer.
   controller()->RefreshSuggestions();
-  ASSERT_EQ(result,
+
+  EXPECT_EQ(result, controller()->GetSheetData());
+  EXPECT_EQ(result,
             AddressAccessorySheetDataBuilder(addresses_empty_str()).Build());
 
   // When new data is added, a refresh is automatically triggered.
   AutofillProfile email = test::GetIncompleteProfile2();
   personal_data_manager()->AddProfile(email);
-  ASSERT_EQ(result, AddressAccessorySheetDataBuilder(std::u16string())
+  EXPECT_EQ(result, controller()->GetSheetData());
+  EXPECT_EQ(result, AddressAccessorySheetDataBuilder(std::u16string())
                         .AddUserInfo()
                         /*name full:*/
                         .AppendSimpleField(std::u16string())
