@@ -128,7 +128,9 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
   EXPECT_TRUE(tester()->IsVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldDisplayTextResponse) {
+// TODO(b/184802501): Fix this flaky test.
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
+                       DISABLED_ShouldDisplayTextResponse) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
