@@ -178,7 +178,7 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
     params.body_string_specifier = IDS_TAB_GROUPS_NEW_GROUP_PROMO;
     params.arrow = views::BubbleBorder::TOP_LEFT;
 
-    // Turn on IPH Snooze only for Tab Group.
+    // Turn on IPH Snooze for Tab Group.
     if (base::FeatureList::IsEnabled(
             feature_engagement::kIPHDesktopSnoozeFeature)) {
       params.allow_focus = true;
@@ -231,6 +231,14 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
     FeaturePromoBubbleParams params;
     params.body_string_specifier = IDS_READING_LIST_ENTRY_POINT_PROMO;
     params.arrow = views::BubbleBorder::TOP_RIGHT;
+
+    // Turn on IPH Snooze for Read Later entry point.
+    if (base::FeatureList::IsEnabled(
+            feature_engagement::kIPHDesktopSnoozeFeature)) {
+      params.allow_focus = true;
+      params.persist_on_blur = true;
+      params.allow_snooze = true;
+    }
 
     RegisterFeature(feature_engagement::kIPHReadingListEntryPointFeature,
                     params, base::BindRepeating(GetReadingListStarView));
