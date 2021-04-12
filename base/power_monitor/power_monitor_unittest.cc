@@ -5,6 +5,7 @@
 #include "base/power_monitor/power_monitor.h"
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/test/power_monitor_test_base.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,19 +16,15 @@ class PowerMonitorTest : public testing::Test {
  protected:
   PowerMonitorTest() = default;
 
-  void TearDown() override { PowerMonitor::ShutdownForTesting(); }
+  void PowerMonitorInitialize() { power_monitor_source_.emplace(); }
 
-  void PowerMonitorInitialize() {
-    power_monitor_source_ = new PowerMonitorTestSource();
-    PowerMonitor::Initialize(
-        std::unique_ptr<PowerMonitorSource>(power_monitor_source_));
+  test::ScopedPowerMonitorTestSource& source() {
+    return power_monitor_source_.value();
   }
-
-  PowerMonitorTestSource* source() { return power_monitor_source_; }
 
  private:
   test::TaskEnvironment task_environment_;
-  PowerMonitorTestSource* power_monitor_source_;
+  base::Optional<test::ScopedPowerMonitorTestSource> power_monitor_source_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorTest);
 };
@@ -47,61 +44,61 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   }
 
   // Sending resume when not suspended should have no effect.
-  source()->GenerateResumeEvent();
+  source().GenerateResumeEvent();
   EXPECT_EQ(observers[0].resumes(), 0);
 
   // Pretend we suspended.
-  source()->GenerateSuspendEvent();
+  source().GenerateSuspendEvent();
   // Ensure all observers were notified of the event
   for (const auto& index : observers)
     EXPECT_EQ(index.suspends(), 1);
 
   // Send a second suspend notification.  This should be suppressed.
-  source()->GenerateSuspendEvent();
+  source().GenerateSuspendEvent();
   EXPECT_EQ(observers[0].suspends(), 1);
 
   // Pretend we were awakened.
-  source()->GenerateResumeEvent();
+  source().GenerateResumeEvent();
   EXPECT_EQ(observers[0].resumes(), 1);
 
   // Send a duplicate resume notification.  This should be suppressed.
-  source()->GenerateResumeEvent();
+  source().GenerateResumeEvent();
   EXPECT_EQ(observers[0].resumes(), 1);
 
   // Pretend the device has gone on battery power
-  source()->GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(true);
   EXPECT_EQ(observers[0].power_state_changes(), 1);
   EXPECT_EQ(observers[0].last_power_state(), true);
 
   // Repeated indications the device is on battery power should be suppressed.
-  source()->GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(true);
   EXPECT_EQ(observers[0].power_state_changes(), 1);
 
   // Pretend the device has gone off battery power
-  source()->GeneratePowerStateEvent(false);
+  source().GeneratePowerStateEvent(false);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
   EXPECT_EQ(observers[0].last_power_state(), false);
 
   // Repeated indications the device is off battery power should be suppressed.
-  source()->GeneratePowerStateEvent(false);
+  source().GeneratePowerStateEvent(false);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
 
   EXPECT_EQ(observers[0].thermal_state_changes(), 0);
 
   // Send a power thermal change notification.
-  source()->GenerateThermalThrottlingEvent(
+  source().GenerateThermalThrottlingEvent(
       PowerThermalObserver::DeviceThermalState::kNominal);
   EXPECT_EQ(observers[0].thermal_state_changes(), 1);
   EXPECT_EQ(observers[0].last_thermal_state(),
             PowerThermalObserver::DeviceThermalState::kNominal);
 
   // Send a duplicate power thermal notification.  This should be suppressed.
-  source()->GenerateThermalThrottlingEvent(
+  source().GenerateThermalThrottlingEvent(
       PowerThermalObserver::DeviceThermalState::kNominal);
   EXPECT_EQ(observers[0].thermal_state_changes(), 1);
 
   // Send a different power thermal change notification.
-  source()->GenerateThermalThrottlingEvent(
+  source().GenerateThermalThrottlingEvent(
       PowerThermalObserver::DeviceThermalState::kFair);
   EXPECT_EQ(observers[0].thermal_state_changes(), 2);
   EXPECT_EQ(observers[0].last_thermal_state(),
@@ -128,8 +125,8 @@ TEST_F(PowerMonitorTest, ThermalThrottling) {
       PowerThermalObserver::DeviceThermalState::kCritical};
 
   for (const auto state : kThermalStates) {
-    source()->GenerateThermalThrottlingEvent(state);
-    EXPECT_EQ(state, source()->GetCurrentThermalState());
+    source().GenerateThermalThrottlingEvent(state);
+    EXPECT_EQ(state, source().GetCurrentThermalState());
     EXPECT_EQ(observer.last_thermal_state(), state);
   }
 
@@ -149,13 +146,13 @@ TEST_F(PowerMonitorTest, AddPowerSuspendObserverBeforeAndAfterInitialization) {
   PowerMonitor::AddPowerSuspendObserver(&observer2);
 
   // Simulate suspend/resume notifications.
-  source()->GenerateSuspendEvent();
+  source().GenerateSuspendEvent();
   EXPECT_EQ(observer1.suspends(), 1);
   EXPECT_EQ(observer2.suspends(), 1);
   EXPECT_EQ(observer1.resumes(), 0);
   EXPECT_EQ(observer2.resumes(), 0);
 
-  source()->GenerateResumeEvent();
+  source().GenerateResumeEvent();
   EXPECT_EQ(observer1.resumes(), 1);
   EXPECT_EQ(observer2.resumes(), 1);
 
@@ -178,10 +175,10 @@ TEST_F(PowerMonitorTest, AddPowerStateObserverBeforeAndAfterInitialization) {
   // Simulate power state transitions (e.g. battery on/off).
   EXPECT_EQ(observer1.power_state_changes(), 0);
   EXPECT_EQ(observer2.power_state_changes(), 0);
-  source()->GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(true);
   EXPECT_EQ(observer1.power_state_changes(), 1);
   EXPECT_EQ(observer2.power_state_changes(), 1);
-  source()->GeneratePowerStateEvent(false);
+  source().GeneratePowerStateEvent(false);
   EXPECT_EQ(observer1.power_state_changes(), 2);
   EXPECT_EQ(observer2.power_state_changes(), 2);
 
@@ -198,7 +195,7 @@ TEST_F(PowerMonitorTest, SuspendStateReturnedFromAddObserver) {
   EXPECT_FALSE(
       PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(&observer1));
 
-  source()->GenerateSuspendEvent();
+  source().GenerateSuspendEvent();
 
   EXPECT_TRUE(
       PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(&observer2));
@@ -222,7 +219,7 @@ TEST_F(PowerMonitorTest, PowerStateReturnedFromAddObserver) {
   EXPECT_FALSE(
       PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(&observer1));
 
-  source()->GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(true);
 
   // An observer is added after the on-battery notification.
   EXPECT_TRUE(

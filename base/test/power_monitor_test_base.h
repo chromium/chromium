@@ -34,6 +34,8 @@ class ScopedPowerMonitorTestSource {
   ScopedPowerMonitorTestSource& operator=(const ScopedPowerMonitorTestSource&) =
       delete;
 
+  // Retrieve current states.
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
   bool IsOnBatteryPower();
 
   // Sends asynchronous notifications to registered observers.
@@ -44,6 +46,8 @@ class ScopedPowerMonitorTestSource {
   void GenerateSuspendEvent();
   void GenerateResumeEvent();
   void GeneratePowerStateEvent(bool on_battery_power);
+  void GenerateThermalThrottlingEvent(
+      PowerThermalObserver::DeviceThermalState new_thermal_state);
 
  private:
   // Owned by PowerMonitor.

@@ -51,24 +51,16 @@ class PowerMonitorMessageBroadcasterTest : public DeviceServiceTestBase {
 
   void SetUp() override {
     DeviceServiceTestBase::SetUp();
-
-    power_monitor_source_ = new base::PowerMonitorTestSource();
-    base::PowerMonitor::Initialize(
-        std::unique_ptr<base::PowerMonitorSource>(power_monitor_source_));
   }
 
   void TearDown() override {
-    // The DeviceService must be destroyed before shutting down the
-    // PowerMonitor, which the DeviceService is observing.
     DestroyDeviceService();
-    base::PowerMonitor::ShutdownForTesting();
   }
 
-  base::PowerMonitorTestSource* source() { return power_monitor_source_; }
+ protected:
+  base::test::ScopedPowerMonitorTestSource power_monitor_source_;
 
  private:
-  base::PowerMonitorTestSource* power_monitor_source_;
-
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorMessageBroadcasterTest);
 };
 
@@ -96,39 +88,39 @@ TEST_F(PowerMonitorMessageBroadcasterTest, PowerMessageBroadcast) {
   EXPECT_EQ(client->power_state_changes(), 1);
 
   // Sending resume when not suspended should have no effect.
-  source()->GenerateResumeEvent();
+  power_monitor_source_.GenerateResumeEvent();
   EXPECT_EQ(client->resumes(), 0);
 
   // Pretend we suspended.
-  source()->GenerateSuspendEvent();
+  power_monitor_source_.GenerateSuspendEvent();
   EXPECT_EQ(client->suspends(), 1);
 
   // Send a second suspend notification.  This should be suppressed.
-  source()->GenerateSuspendEvent();
+  power_monitor_source_.GenerateSuspendEvent();
   EXPECT_EQ(client->suspends(), 1);
 
   // Pretend we were awakened.
-  source()->GenerateResumeEvent();
+  power_monitor_source_.GenerateResumeEvent();
   EXPECT_EQ(client->resumes(), 1);
 
   // Send a duplicate resume notification.  This should be suppressed.
-  source()->GenerateResumeEvent();
+  power_monitor_source_.GenerateResumeEvent();
   EXPECT_EQ(client->resumes(), 1);
 
   // Pretend the device has gone on battery power
-  source()->GeneratePowerStateEvent(true);
+  power_monitor_source_.GeneratePowerStateEvent(true);
   EXPECT_EQ(client->power_state_changes(), 2);
 
   // Repeated indications the device is on battery power should be suppressed.
-  source()->GeneratePowerStateEvent(true);
+  power_monitor_source_.GeneratePowerStateEvent(true);
   EXPECT_EQ(client->power_state_changes(), 2);
 
   // Pretend the device has gone off battery power
-  source()->GeneratePowerStateEvent(false);
+  power_monitor_source_.GeneratePowerStateEvent(false);
   EXPECT_EQ(client->power_state_changes(), 3);
 
   // Repeated indications the device is off battery power should be suppressed.
-  source()->GeneratePowerStateEvent(false);
+  power_monitor_source_.GeneratePowerStateEvent(false);
   EXPECT_EQ(client->power_state_changes(), 3);
 
   broadcast_source.reset();

@@ -22,6 +22,11 @@ ScopedPowerMonitorTestSource::~ScopedPowerMonitorTestSource() {
   base::PowerMonitor::ShutdownForTesting();
 }
 
+PowerThermalObserver::DeviceThermalState
+ScopedPowerMonitorTestSource::GetCurrentThermalState() {
+  return power_monitor_test_source_->GetCurrentThermalState();
+}
+
 bool ScopedPowerMonitorTestSource::IsOnBatteryPower() {
   return power_monitor_test_source_->IsOnBatteryPower();
 }
@@ -49,6 +54,11 @@ void ScopedPowerMonitorTestSource::GenerateResumeEvent() {
 void ScopedPowerMonitorTestSource::GeneratePowerStateEvent(
     bool on_battery_power) {
   power_monitor_test_source_->GeneratePowerStateEvent(on_battery_power);
+}
+
+void ScopedPowerMonitorTestSource::GenerateThermalThrottlingEvent(
+    PowerThermalObserver::DeviceThermalState new_thermal_state) {
+  power_monitor_test_source_->GenerateThermalThrottlingEvent(new_thermal_state);
 }
 
 }  // namespace test
