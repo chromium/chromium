@@ -58,7 +58,7 @@ const CGFloat kGoogleSearchDoodleShrunkHeight = 68;
 
 // Height for the shrunk logo frame.
 // TODO(crbug.com/1170491): clean up post-launch.
-const CGFloat kGoogleSearchLogoShrunkHeight = 34;
+const CGFloat kGoogleSearchLogoShrunkHeight = 36;
 
 // Height for the doodle frame when Google is not the default search engine.
 const CGFloat kNonGoogleSearchDoodleHeight = 60;
@@ -99,7 +99,7 @@ CGFloat doodleTopMargin(BOOL toolbarPresent,
       topInset +
       AlignValueToPixel(kDoodleScaledTopMarginOther *
                         ui_util::SystemSuggestedFontSizeMultiplier());
-  if (ShouldShrinkLogoForStartSurface()) {
+  if (ShouldShrinkLogoForStartSurface() && !IsCompactHeight(traitCollection)) {
     topMargin += kShrunkDoodleTopMarginOther;
   } else {
     topMargin += kDoodleTopMarginOther;
