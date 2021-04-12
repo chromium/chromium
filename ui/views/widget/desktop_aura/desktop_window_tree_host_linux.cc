@@ -18,6 +18,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
@@ -103,6 +104,23 @@ void DesktopWindowTreeHostLinux::CleanUpWindowList(
   open_windows_ = nullptr;
 }
 
+// static
+DesktopWindowTreeHostLinux* DesktopWindowTreeHostLinux::From(
+    WindowTreeHost* wth) {
+  DCHECK(open_windows_) << "Calling this method from non-Linux based "
+                           "platform.";
+
+  for (auto widget : *open_windows_) {
+    DesktopWindowTreeHostPlatform* wth_platform =
+        DesktopWindowTreeHostPlatform::GetHostForWidget(widget);
+    if (wth_platform != wth)
+      continue;
+
+    return static_cast<views::DesktopWindowTreeHostLinux*>(wth_platform);
+  }
+  return nullptr;
+}
+
 gfx::Rect DesktopWindowTreeHostLinux::GetXRootWindowOuterBounds() const {
   // TODO(msisov): must be removed as soon as all X11 low-level bits are moved
   // to Ozone.
@@ -137,6 +155,15 @@ base::OnceClosure DesktopWindowTreeHostLinux::DisableEventListening() {
 
   return base::BindOnce(&DesktopWindowTreeHostLinux::EnableEventListening,
                         weak_factory_.GetWeakPtr());
+}
+
+ui::WaylandExtension* DesktopWindowTreeHostLinux::GetWaylandExtension() {
+  return ui::GetWaylandExtension(*(platform_window()));
+}
+
+const ui::WaylandExtension* DesktopWindowTreeHostLinux::GetWaylandExtension()
+    const {
+  return ui::GetWaylandExtension(*(platform_window()));
 }
 
 void DesktopWindowTreeHostLinux::Init(const Widget::InitParams& params) {
