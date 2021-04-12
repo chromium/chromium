@@ -6760,3 +6760,21 @@ crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-fr
 # These timeout because COEP reporting to a worker is not implemented.
 crbug.com/1197041 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
 crbug.com/1197041 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
+
+# Sheriff 2021-04-12
+crbug.com/1198098 external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes-cursors.any.worker.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.serviceworker.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/IndexedDB/idbindex_getAll.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/IndexedDB/idb-explicit-commit.any.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/IndexedDB/idb-explicit-commit.any.worker.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/IndexedDB/interleaved-cursors-large.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/IndexedDB/keypath-special-identifiers.htm [ Pass Timeout ]
+crbug.com/1198098 external/wpt/IndexedDB/idbobjectstore_putall.tentative.any.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/IndexedDB/fire-error-event-exception.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/IndexedDB/idbindex-query-exception-order.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/IndexedDB/idbtransaction_objectStoreNames.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/file-system-access/sandboxed_FileSystemBaseHandle-IndexedDB.https.any.html [ Pass Timeout ]
+crbug.com/1198098 external/wpt/file-system-access/local_FileSystemBaseHandle-IndexedDB-manual.https.html [ Pass Timeout ]
+crbug.com/1198098 virtual/shared_array_buffer_on_desktop/storage/indexeddb/dispatch-events.html [ Pass Timeout ]
+crbug.com/1198098 storage/indexeddb/dispatch-events.html [ Pass Timeout ]
+crbug.com/1198098 storage/indexeddb/key-generator.html [ Pass Timeout ]
