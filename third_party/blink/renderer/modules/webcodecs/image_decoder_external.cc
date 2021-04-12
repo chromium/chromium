@@ -342,8 +342,10 @@ void ImageDecoderExternal::OnStateChange() {
     if (available > 0 || data_complete != internal_data_complete_) {
       decoder_->AsyncCall(&ImageDecoderCore::AppendData)
           .WithArgs(available, std::move(data), data_complete);
-      DecodeMetadata();
-      MaybeSatisfyPendingDecodes();
+      if (tracks_->IsEmpty() || tracks_->selectedTrack()) {
+        DecodeMetadata();
+        MaybeSatisfyPendingDecodes();
+      }
     }
     internal_data_complete_ = data_complete;
   }
@@ -372,6 +374,7 @@ bool ImageDecoderExternal::HasPendingActivity() const {
 void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
   DCHECK(!closed_);
   DCHECK(decoder_);
+  DCHECK(tracks_->IsEmpty() || tracks_->selectedTrack());
 
   for (auto& request : pending_decodes_) {
     if (failed_) {
@@ -490,6 +493,8 @@ void ImageDecoderExternal::MaybeSatisfyPendingMetadataDecodes() {
 
 void ImageDecoderExternal::DecodeMetadata() {
   DCHECK(decoder_);
+  DCHECK(tracks_->IsEmpty() || tracks_->selectedTrack());
+
   decoder_->AsyncCall(&ImageDecoderCore::DecodeMetadata)
       .Then(CrossThreadBindOnce(&ImageDecoderExternal::OnMetadata,
                                 weak_factory_.GetWeakPtr()));
