@@ -65,6 +65,8 @@ std::u16string GetConnectErrorString(const std::string& error_name) {
     return l10n_util::GetStringUTF16(
         IDS_CHROMEOS_NETWORK_ERROR_ACTIVATION_FAILED);
   }
+  if (error_name == NetworkConnectionHandler::kErrorSimLocked)
+    return l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED);
   return std::u16string();
 }
 
@@ -111,7 +113,8 @@ bool ShouldConnectFailedNotificationBeShown(const std::string& error_name,
   if (error_name != NetworkConnectionHandler::kErrorConnectFailed &&
       error_name != NetworkConnectionHandler::kErrorNotFound &&
       error_name != NetworkConnectionHandler::kErrorConfigureFailed &&
-      error_name != NetworkConnectionHandler::kErrorCertLoadTimeout) {
+      error_name != NetworkConnectionHandler::kErrorCertLoadTimeout &&
+      error_name != NetworkConnectionHandler::kErrorSimLocked) {
     return false;
   }
 

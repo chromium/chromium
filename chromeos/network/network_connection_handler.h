@@ -120,6 +120,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // Error occurred while trying to perform an operation with an eSIM profile.
   static const char kErrorESimProfileIssue[];
 
+  // Failed due to a connection attempt to a cellular network with a locked SIM.
+  // The SIM must be unlocked before a connection can succeed.
+  static const char kErrorSimLocked[];
+
   class COMPONENT_EXPORT(CHROMEOS_NETWORK) TetherDelegate {
    public:
     using StringErrorCallback =
