@@ -46,12 +46,14 @@ void ThroughputTracker::Start(ThroughputTrackerHost::ReportCallback callback) {
   host_->StartThroughputTracker(id_, std::move(callback));
 }
 
-void ThroughputTracker::Stop() {
+bool ThroughputTracker::Stop() {
   DCHECK(started_);
 
   started_ = false;
   if (host_)
-    host_->StopThroughtputTracker(id_);
+    return host_->StopThroughtputTracker(id_);
+
+  return false;
 }
 
 void ThroughputTracker::Cancel() {

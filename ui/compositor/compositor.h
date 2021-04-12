@@ -372,7 +372,7 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   void StartThroughputTracker(
       TrackerId tracker_id,
       ThroughputTrackerHost::ReportCallback callback) override;
-  void StopThroughtputTracker(TrackerId tracker_id) override;
+  bool StopThroughtputTracker(TrackerId tracker_id) override;
   void CancelThroughtputTracker(TrackerId tracker_id) override;
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -504,8 +504,23 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   bool disabled_swap_until_resize_ = false;
 
   TrackerId next_throughput_tracker_id_ = 1u;
-  using ThroughputTrackerMap =
-      base::flat_map<TrackerId, ThroughputTrackerHost::ReportCallback>;
+  struct TrackerState {
+    TrackerState();
+    TrackerState(TrackerState&&);
+    TrackerState& operator=(TrackerState&&);
+    ~TrackerState();
+
+    // Whether a tracker is waiting for report and `report_callback` should be
+    // invoked. This is set to true when a tracker is stopped.
+    bool should_report = false;
+    // Whether the report for a tracker has happened. This is set when an
+    // involuntary report happens before the tracker is stopped and set
+    // `should_report` field above.
+    bool report_attempted = false;
+    // Invoked to send report to the owner of a tracker.
+    ThroughputTrackerHost::ReportCallback report_callback;
+  };
+  using ThroughputTrackerMap = base::flat_map<TrackerId, TrackerState>;
   ThroughputTrackerMap throughput_tracker_map_;
 
   base::WeakPtrFactory<Compositor> context_creation_weak_ptr_factory_{this};

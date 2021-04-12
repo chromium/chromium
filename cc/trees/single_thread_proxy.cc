@@ -563,16 +563,12 @@ void SingleThreadProxy::NotifyPaintWorkletStateChange(
 
 void SingleThreadProxy::NotifyThroughputTrackerResults(
     CustomTrackerResults results) {
-  DCHECK(task_runner_provider_->IsImplThread());
-  // This method is called from ImplThread side so post a task to
-  // MainThread. This is necessary because the throughput tracker callbacks are
-  // supposed to be executed on MainThread side, which may invok compositor's
-  // method that expected to be executed on MainThread.
-  task_runner_provider_->MainThreadTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &SingleThreadProxy::NotifyThroughputTrackerResultsOnMainThread,
-          weak_factory_.GetWeakPtr(), std::move(results)));
+  // This method is called from ImplThread side to report after being requested,
+  // or from the MainThread when releasing FrameSequenceTrackers during
+  // destruction. Regardless, `layer_tree_host_` should be accessed from
+  // MainThread side.
+  DebugScopedSetMainThread main(task_runner_provider_);
+  layer_tree_host_->NotifyThroughputTrackerResults(std::move(results));
 }
 
 bool SingleThreadProxy::IsInSynchronousComposite() const {
@@ -1013,11 +1009,6 @@ void SingleThreadProxy::WillNotReceiveBeginFrame() {
 
 void SingleThreadProxy::DidReceiveCompositorFrameAck() {
   layer_tree_host_->DidReceiveCompositorFrameAck();
-}
-
-void SingleThreadProxy::NotifyThroughputTrackerResultsOnMainThread(
-    CustomTrackerResults results) {
-  layer_tree_host_->NotifyThroughputTrackerResults(std::move(results));
 }
 
 }  // namespace cc

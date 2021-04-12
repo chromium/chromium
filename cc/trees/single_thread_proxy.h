@@ -180,7 +180,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void IssueImageDecodeFinishedCallbacks();
 
   void DidReceiveCompositorFrameAck();
-  void NotifyThroughputTrackerResultsOnMainThread(CustomTrackerResults results);
 
   // Accessed on main thread only.
   LayerTreeHost* layer_tree_host_;
