@@ -121,7 +121,7 @@ void LoginManagerMixin::SetUpLocalState() {
     if (user.user_type == user_manager::USER_TYPE_CHILD) {
       user_manager::known_user::SetProfileRequiresPolicy(
           user.account_id,
-          user_manager::known_user::ProfileRequiresPolicy::kPolicyRequired);
+          user_manager::ProfileRequiresPolicy::kPolicyRequired);
     }
   }
 

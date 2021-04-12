@@ -23,6 +23,7 @@
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -338,6 +339,8 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
       new user_manager::FakeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
+  TestingPrefServiceSimple local_state;
+  fake_user_manager->set_local_state(&local_state);
 
   struct {
     user_manager::UserType user_type;

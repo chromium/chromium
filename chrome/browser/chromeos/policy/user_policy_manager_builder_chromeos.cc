@@ -46,7 +46,7 @@
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-using user_manager::known_user::ProfileRequiresPolicy;
+using user_manager::ProfileRequiresPolicy;
 namespace policy {
 
 using PolicyEnforcement = UserCloudPolicyManagerChromeOS::PolicyEnforcement;

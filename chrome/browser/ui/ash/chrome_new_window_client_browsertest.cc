@@ -45,8 +45,7 @@ void CreateAndStartUserSession(const AccountId& account_id) {
   using session_manager::SessionManager;
 
   user_manager::known_user::SetProfileRequiresPolicy(
-      account_id,
-      user_manager::known_user::ProfileRequiresPolicy::kNoPolicyRequired);
+      account_id, user_manager::ProfileRequiresPolicy::kNoPolicyRequired);
   const std::string user_id_hash =
       ProfileHelper::GetUserIdHashByUserIdForTesting(account_id.GetUserEmail());
   SessionManager::Get()->CreateSession(account_id, user_id_hash, false);

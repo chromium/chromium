@@ -547,9 +547,8 @@ void UserCloudPolicyManagerChromeOS::SetPolicyRequired(bool policy_required) {
   auto* user_manager = ash::ChromeUserManager::Get();
   user_manager::known_user::SetProfileRequiresPolicy(
       account_id_,
-      policy_required
-          ? user_manager::known_user::ProfileRequiresPolicy::kPolicyRequired
-          : user_manager::known_user::ProfileRequiresPolicy::kNoPolicyRequired);
+      policy_required ? user_manager::ProfileRequiresPolicy::kPolicyRequired
+                      : user_manager::ProfileRequiresPolicy::kNoPolicyRequired);
   if (user_manager->IsCurrentUserNonCryptohomeDataEphemeral()) {
     // For ephemeral users, we need to set a flag via session manager - this
     // handles the case where the session restarts due to a crash (the restarted

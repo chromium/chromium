@@ -106,7 +106,7 @@ void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kUserType);
   registry->RegisterStringPref(kLastActiveUser, std::string());
 
-  known_user::RegisterPrefs(registry);
+  KnownUser::RegisterPrefs(registry);
 }
 
 UserManagerBase::UserManagerBase(
@@ -329,7 +329,7 @@ void UserManagerBase::RemoveNonOwnerUserInternal(const AccountId& account_id,
 void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   RemoveNonCryptohomeData(account_id);
-  known_user::RemovePrefs(account_id);
+  KnownUser(GetLocalState()).RemovePrefs(account_id);
   if (user_loading_stage_ == STAGE_LOADED) {
     // After the User object is deleted from memory in DeleteUser() here,
     // the account_id reference will be invalid if the reference points
@@ -912,7 +912,8 @@ void UserManagerBase::RegularUserLoggedIn(const AccountId& account_id,
   }
 
   AddUserRecord(active_user_);
-  known_user::SetIsEphemeralUser(active_user_->GetAccountId(), false);
+  KnownUser(GetLocalState())
+      .SetIsEphemeralUser(active_user_->GetAccountId(), false);
 
   // Make sure that new data is persisted to Local State.
   GetLocalState()->CommitPendingWrite();
@@ -925,7 +926,8 @@ void UserManagerBase::RegularUserLoggedInAsEphemeral(
   SetIsCurrentUserNew(true);
   is_current_user_ephemeral_regular_user_ = true;
   active_user_ = User::CreateRegularUser(account_id, user_type);
-  known_user::SetIsEphemeralUser(active_user_->GetAccountId(), true);
+  KnownUser(GetLocalState())
+      .SetIsEphemeralUser(active_user_->GetAccountId(), true);
 }
 
 void UserManagerBase::NotifyActiveUserChanged(User* active_user) {
@@ -989,7 +991,7 @@ void UserManagerBase::RemoveNonCryptohomeData(const AccountId& account_id) {
   DictionaryPrefUpdate prefs_force_online_update(prefs, kUserForceOnlineSignin);
   prefs_force_online_update->RemoveKey(account_id.GetUserEmail());
 
-  known_user::RemovePrefs(account_id);
+  KnownUser(prefs).RemovePrefs(account_id);
 
   const AccountId last_active_user =
       AccountId::FromUserEmail(GetLocalState()->GetString(kLastActiveUser));
@@ -1037,8 +1039,12 @@ void UserManagerBase::NotifyActiveUserHashChanged(const std::string& hash) {
 
 void UserManagerBase::Initialize() {
   UserManager::Initialize();
-  if (!HasBrowserRestarted())
-    known_user::CleanEphemeralUsers();
+  if (!HasBrowserRestarted()) {
+    PrefService* local_state = GetLocalState();
+    // local_state may be null in unit tests.
+    if (local_state)
+      KnownUser(local_state).CleanEphemeralUsers();
+  }
   CallUpdateLoginState();
 }
 

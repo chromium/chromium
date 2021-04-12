@@ -313,7 +313,7 @@ base::Optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
   const bool profile_has_policy =
       user_manager::known_user::GetProfileRequiresPolicy(
           user_context.GetAccountId()) ==
-          user_manager::known_user::ProfileRequiresPolicy::kPolicyRequired ||
+          user_manager::ProfileRequiresPolicy::kPolicyRequired ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kProfileRequiresPolicy);
 

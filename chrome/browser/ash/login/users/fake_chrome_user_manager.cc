@@ -627,7 +627,7 @@ bool FakeChromeUserManager::IsUserAllowed(
 
 void FakeChromeUserManager::CreateLocalState() {
   local_state_ = std::make_unique<TestingPrefServiceSimple>();
-  user_manager::known_user::RegisterPrefs(local_state_->registry());
+  user_manager::KnownUser::RegisterPrefs(local_state_->registry());
 }
 
 void FakeChromeUserManager::SimulateUserProfileLoad(

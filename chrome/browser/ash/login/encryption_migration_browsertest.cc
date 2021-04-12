@@ -108,7 +108,7 @@ class EncryptionMigrationTest : public OobeBaseTest {
   void MarkUserHasEnterprisePolicy() {
     user_manager::known_user::SetProfileRequiresPolicy(
         test_user_.account_id,
-        user_manager::known_user::ProfileRequiresPolicy::kPolicyRequired);
+        user_manager::ProfileRequiresPolicy::kPolicyRequired);
   }
 
   // Runs a successful full migration flow, and tests that UI is updated as
