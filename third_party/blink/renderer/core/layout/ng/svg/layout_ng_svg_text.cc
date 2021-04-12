@@ -118,18 +118,26 @@ FloatRect LayoutNGSVGText::ObjectBoundingBox() const {
     // We don't need to take into account of ink overflow here. We should
     // return a union of "advance x EM height".
     // https://svgwg.org/svg2-draft/coords.html#BoundingBoxes
-    PhysicalRect bbox;
+    FloatRect bbox;
     DCHECK_LE(PhysicalFragmentCount(), 1u);
     for (const auto& fragment : PhysicalFragments()) {
       if (!fragment.Items())
         continue;
       for (const auto& item : fragment.Items()->Items()) {
-        if (item.Type() != NGFragmentItem::kSVGText)
+        const auto* svg_data = item.SVGFragmentData();
+        if (!svg_data)
           continue;
-        bbox.Unite(item.RectInContainerFragment());
+        // Do not use item.RectInContainerFragment() in order to avoid
+        // precision loss.
+        const float scaling_factor =
+            To<LayoutSVGInlineText>(item.GetLayoutObject())->ScalingFactor();
+        DCHECK_GT(scaling_factor, 0.0f);
+        FloatRect item_rect = svg_data->rect;
+        item_rect.Scale(1 / scaling_factor);
+        bbox.Unite(item_rect);
       }
     }
-    bounding_box_ = FloatRect(bbox);
+    bounding_box_ = bbox;
     needs_update_bounding_box_ = false;
   }
   return bounding_box_;

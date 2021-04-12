@@ -165,16 +165,20 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   PhysicalRect box_rect = ComputeBoxRect(cursor_, paint_offset, parent_offset_);
+  IntRect visual_rect;
   const LayoutSVGInlineText* svg_inline_text = nullptr;
   float scaling_factor = 1.0f;
   if (text_item.Type() == NGFragmentItem::kSVGText) {
     svg_inline_text = To<LayoutSVGInlineText>(layout_object);
     scaling_factor = svg_inline_text->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
+    visual_rect = EnclosingIntRect(
+        svg_inline_text->Parent()->VisualRectInLocalSVGCoordinates());
+  } else {
+    PhysicalRect ink_overflow = text_item.SelfInkOverflow();
+    ink_overflow.Move(box_rect.offset);
+    visual_rect = EnclosingIntRect(ink_overflow);
   }
-  PhysicalRect ink_overflow = text_item.SelfInkOverflow();
-  ink_overflow.Move(box_rect.offset);
-  IntRect visual_rect = EnclosingIntRect(ink_overflow);
 
   // The text clip phase already has a DrawingRecorder. Text clips are initiated
   // only in BoxPainterBase::PaintFillLayer, which is already within a
