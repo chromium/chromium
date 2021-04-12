@@ -71,8 +71,14 @@ class TestImporter(object):
         self.new_test_expectations = {}
         self.verbose = False
 
-        args = ['--clean-up-affected-tests-only',
-                '--clean-up-test-expectations']
+        args = [
+            '--clean-up-affected-tests-only',
+            '--clean-up-test-expectations',
+            # TODO(crbug.com/1196713): Result download needs to migrate away
+            # from test-results.appspot.com before we can resume using
+            # results from CQ builders.
+            '--rebaseline-blink-try-bots-only'
+        ]
         self._expectations_updater = WPTExpectationsUpdater(
             self.host, args, wpt_manifests)
 
