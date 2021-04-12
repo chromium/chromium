@@ -6839,7 +6839,13 @@
     'android_weblayer_x86_marshmallow_10_gtests': {
       'weblayer_instrumentation_tests': {
         'variants': [
-          {'identifier': 'ToT_Tests'}
+          {
+            'identifier': 'ToT_Tests',
+            'args': [
+              '--timeout-scale',
+              '2.0',
+            ]
+          }
         ]
       },
       'weblayer_instrumentation_version_tests': {
@@ -6857,7 +6863,13 @@
     'android_weblayer_x86_pie_oreo_gtests': {
       'weblayer_instrumentation_tests': {
         'variants': [
-          {'identifier': 'ToT_Tests'}
+          {
+            'identifier': 'ToT_Tests',
+            'args': [
+              '--timeout-scale',
+              '2.0',
+            ]
+          }
         ]
       },
       'weblayer_instrumentation_version_tests': {
