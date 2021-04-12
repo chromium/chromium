@@ -282,6 +282,8 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
   if (profiles_from_hermes == profiles_before_fetch)
     return;
 
+  NET_LOG(EVENT) << "New set of eSIM profiles have been fetched from Hermes";
+
   // Store the updated list of profiles in prefs.
   base::Value list(base::Value::Type::LIST);
   for (const auto& profile : profiles_from_hermes)

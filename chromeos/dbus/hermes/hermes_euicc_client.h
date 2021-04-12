@@ -57,6 +57,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
                                    const std::string& activation_code,
                                    const std::string& network_service_path,
                                    hermes::profile::State state,
+                                   hermes::profile::ProfileClass profile_class,
                                    bool service_only) = 0;
 
     // Queues an error code that will be returned from a subsequent
