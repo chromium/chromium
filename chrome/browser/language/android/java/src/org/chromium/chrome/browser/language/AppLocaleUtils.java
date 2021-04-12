@@ -80,8 +80,4 @@ public class AppLocaleUtils {
             listener.onComplete(true);
         }
     }
-
-    public static boolean languageSplitAvalilable(String language) {
-      return LanguageSplitInstaller.getInstance().getInstalledLanguages().contains(language);
-    }
 }

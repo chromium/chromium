@@ -38,8 +38,7 @@ public class GlobalAppLocaleController {
         mOverrideLanguage = AppLocaleUtils.getAppLanguagePrefStartUp(base);
 
         mIsOverridden = !TextUtils.isEmpty(mOverrideLanguage)
-                && !TextUtils.equals(mOriginalSystemLocal.toLanguageTag(), mOverrideLanguage)
-                && AppLocaleUtils.languageSplitAvalilable(mOverrideLanguage);
+                && !TextUtils.equals(mOriginalSystemLocal.toLanguageTag(), mOverrideLanguage);
         return mIsOverridden;
     }
 
