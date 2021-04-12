@@ -48,7 +48,7 @@ class TranslateUIDelegate {
   void OnErrorShown(TranslateErrors::Type error_type);
 
   // Returns the LanguageState associated with this object.
-  const LanguageState& GetLanguageState();
+  const LanguageState* GetLanguageState();
 
   // Returns the number of languages supported.
   size_t GetNumberOfLanguages() const;

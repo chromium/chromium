@@ -204,8 +204,10 @@ void TranslateUIDelegate::OnErrorShown(TranslateErrors::Type error_type) {
                             TranslateErrors::TRANSLATE_ERROR_MAX);
 }
 
-const LanguageState& TranslateUIDelegate::GetLanguageState() {
-  return *translate_manager_->GetLanguageState();
+const LanguageState* TranslateUIDelegate::GetLanguageState() {
+  if (translate_manager_)
+    return translate_manager_->GetLanguageState();
+  return nullptr;
 }
 
 size_t TranslateUIDelegate::GetNumberOfLanguages() const {
@@ -222,18 +224,21 @@ void TranslateUIDelegate::UpdateSourceLanguageIndex(size_t language_index) {
   std::string language_code = kUnknownLanguageCode;
   if (language_index < GetNumberOfLanguages())
     language_code = GetLanguageCodeAt(language_index);
-  translate_manager_->GetActiveTranslateMetricsLogger()->LogSourceLanguage(
-      language_code);
+  if (translate_manager_) {
+    translate_manager_->GetActiveTranslateMetricsLogger()->LogSourceLanguage(
+        language_code);
+  }
 }
 
 void TranslateUIDelegate::UpdateSourceLanguage(
     const std::string& language_code) {
-  DCHECK(translate_manager_ != nullptr);
   for (size_t i = 0; i < languages_.size(); ++i) {
     if (languages_[i].first.compare(language_code) == 0) {
       UpdateSourceLanguageIndex(i);
-      translate_manager_->mutable_translate_event()
-          ->set_modified_source_language(language_code);
+      if (translate_manager_) {
+        translate_manager_->mutable_translate_event()
+            ->set_modified_source_language(language_code);
+      }
       return;
     }
   }
@@ -247,19 +252,22 @@ void TranslateUIDelegate::UpdateTargetLanguageIndex(size_t language_index) {
   UMA_HISTOGRAM_BOOLEAN(kModifyTargetLang, true);
   target_language_index_ = language_index;
 
-  translate_manager_->GetActiveTranslateMetricsLogger()->LogTargetLanguage(
-      GetLanguageCodeAt(language_index),
-      TranslateBrowserMetrics::TargetLanguageOrigin::kChangedByUser);
+  if (translate_manager_) {
+    translate_manager_->GetActiveTranslateMetricsLogger()->LogTargetLanguage(
+        GetLanguageCodeAt(language_index),
+        TranslateBrowserMetrics::TargetLanguageOrigin::kChangedByUser);
+  }
 }
 
 void TranslateUIDelegate::UpdateTargetLanguage(
     const std::string& language_code) {
-  DCHECK(translate_manager_ != nullptr);
   for (size_t i = 0; i < languages_.size(); ++i) {
     if (languages_[i].first.compare(language_code) == 0) {
       UpdateTargetLanguageIndex(i);
-      translate_manager_->mutable_translate_event()
-          ->set_modified_target_language(language_code);
+      if (translate_manager_) {
+        translate_manager_->mutable_translate_event()
+            ->set_modified_target_language(language_code);
+      }
       return;
     }
   }
