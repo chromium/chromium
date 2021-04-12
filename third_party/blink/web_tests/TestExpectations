@@ -6778,3 +6778,4 @@ crbug.com/1198098 external/wpt/file-system-access/local_FileSystemBaseHandle-Ind
 crbug.com/1198098 virtual/shared_array_buffer_on_desktop/storage/indexeddb/dispatch-events.html [ Pass Timeout ]
 crbug.com/1198098 storage/indexeddb/dispatch-events.html [ Pass Timeout ]
 crbug.com/1198098 storage/indexeddb/key-generator.html [ Pass Timeout ]
+crbug.com/1198103 virtual/scroll-unification/fast/events/drag-and-drop-autoscroll.html [ Pass Timeout ]
