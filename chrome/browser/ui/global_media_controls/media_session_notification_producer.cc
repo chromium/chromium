@@ -418,7 +418,7 @@ void MediaSessionNotificationProducer::OnFocusLost(
                      base::Unretained(this), id));
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.insert(id);
-  service_->OnNotificationChanged(&id);
+  service_->OnNotificationChanged();
 }
 
 void MediaSessionNotificationProducer::OnContainerClicked(
@@ -485,7 +485,7 @@ void MediaSessionNotificationProducer::OnContainerDraggedOut(
   dragged_out_session_ids_.insert(id);
   overlay_media_notifications_manager_.ShowOverlayNotification(
       id, std::move(overlay_notification));
-  service_->OnNotificationChanged(&id);
+  service_->OnNotificationChanged();
 }
 
 void MediaSessionNotificationProducer::OnAudioSinkChosen(
@@ -708,5 +708,5 @@ void MediaSessionNotificationProducer::OnItemUnfrozen(const std::string& id) {
   if (!base::Contains(dragged_out_session_ids_, id))
     active_controllable_session_ids_.insert(id);
 
-  service_->OnNotificationChanged(&id);
+  service_->OnNotificationChanged();
 }

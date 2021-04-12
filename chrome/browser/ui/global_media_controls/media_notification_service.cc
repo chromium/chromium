@@ -79,14 +79,19 @@ void MediaNotificationService::ShowNotification(const std::string& id) {
       !media_session_notification_producer_->ActivateItem(id)) {
     return;
   }
-  ShowAndObserveContainer(id);
+
+  // If new notifications come up while the dialog is open for a
+  // PresentationRequest, do not show the new notifications.
+  if (!HasOpenDialogForPresentationRequest()) {
+    ShowAndObserveContainer(id);
+  }
 }
 
 void MediaNotificationService::HideNotification(const std::string& id) {
   if (media_session_notification_producer_) {
     media_session_notification_producer_->HideItem(id);
   }
-  OnNotificationChanged(&id);
+  OnNotificationChanged();
   if (!dialog_delegate_) {
     return;
   }
@@ -99,7 +104,7 @@ void MediaNotificationService::RemoveItem(const std::string& id) {
   const auto id_copy{id};
   if (media_session_notification_producer_)
     media_session_notification_producer_->RemoveItem(id_copy);
-  OnNotificationChanged(&id_copy);
+  OnNotificationChanged();
 }
 
 scoped_refptr<base::SequencedTaskRunner>
@@ -131,11 +136,12 @@ void MediaNotificationService::OnOverlayNotificationClosed(
 }
 
 void MediaNotificationService::OnCastNotificationsChanged() {
-  OnNotificationChanged(nullptr);
+  OnNotificationChanged();
 }
 
 void MediaNotificationService::SetDialogDelegate(
     MediaDialogDelegate* delegate) {
+  dialog_opened_from_presentation_ = false;
   SetDialogDelegateCommon(delegate);
   if (!dialog_delegate_)
     return;
@@ -172,6 +178,7 @@ void MediaNotificationService::SetDialogDelegate(
 void MediaNotificationService::SetDialogDelegateForWebContents(
     MediaDialogDelegate* delegate,
     content::WebContents* contents) {
+  dialog_opened_from_presentation_ = true;
   SetDialogDelegateCommon(delegate);
   if (!dialog_delegate_)
     return;
@@ -250,6 +257,10 @@ bool MediaNotificationService::HasOpenDialog() const {
   return !!dialog_delegate_;
 }
 
+bool MediaNotificationService::HasOpenDialogForPresentationRequest() const {
+  return HasOpenDialog() && dialog_opened_from_presentation_;
+}
+
 void MediaNotificationService::HideMediaDialog() {
   if (dialog_delegate_) {
     dialog_delegate_->HideMediaDialog();
@@ -310,7 +321,7 @@ MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
 }
 
 void MediaNotificationService::ShowAndObserveContainer(const std::string& id) {
-  OnNotificationChanged(&id);
+  OnNotificationChanged();
   if (!dialog_delegate_) {
     return;
   }
@@ -334,9 +345,7 @@ MediaNotificationService::GetNotificationItem(const std::string& id) {
   return nullptr;
 }
 
-// TODO(muyaoxu@): Remove |changed_notification_id| since its no longer used.
-void MediaNotificationService::OnNotificationChanged(
-    const std::string* changed_notification_id) {
+void MediaNotificationService::OnNotificationChanged() {
   for (auto& observer : observers_)
     observer.OnNotificationListChanged();
 }

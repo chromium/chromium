@@ -165,10 +165,8 @@ class MediaNotificationService
   GetNotificationItem(const std::string& id);
 
   // Called after changing anything about a notification to notify any observers
-  // and update the visibility of supplemental notifications.  If the change is
-  // associated with a particular notification ID, that ID should be passed as
-  // the argument, otherwise the argument should be nullptr.
-  void OnNotificationChanged(const std::string* changed_notification_id);
+  // and update the visibility of supplemental notifications.
+  void OnNotificationChanged();
 
   MediaNotificationProducer* GetNotificationProducer(
       const std::string& notification_id);
@@ -177,7 +175,15 @@ class MediaNotificationService
   // SetDialogDelegate() and SetDialogDelegateForPresentationRequest().
   void SetDialogDelegateCommon(MediaDialogDelegate* delegate);
 
+  // True if there is an open MediaDialogView and the dialog is opened for a
+  // PresentationRequest.
+  bool HasOpenDialogForPresentationRequest() const;
+
   MediaDialogDelegate* dialog_delegate_ = nullptr;
+
+  // True if the dialog was opened by |SetDialogDelegateForWebContents()|. The
+  // value does not indicate whether the MediaDialogView is opened or not.
+  bool dialog_opened_from_presentation_ = false;
 
   std::unique_ptr<MediaSessionNotificationProducer>
       media_session_notification_producer_;
