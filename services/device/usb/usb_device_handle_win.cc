@@ -335,10 +335,12 @@ void UsbDeviceHandleWin::SetInterfaceAlternateSetting(int interface_number,
   }
 
   bool found_alternate = false;
-  for (const auto& alternate : interface.info->alternates) {
-    if (alternate->alternate_setting == alternate_setting) {
-      found_alternate = true;
-      break;
+  if (interface.info) {
+    for (const auto& alternate : interface.info->alternates) {
+      if (alternate->alternate_setting == alternate_setting) {
+        found_alternate = true;
+        break;
+      }
     }
   }
 
@@ -413,7 +415,7 @@ void UsbDeviceHandleWin::ClearHalt(mojom::UsbTransferDirection direction,
       base::BindOnce(&ResetPipeBlocking, interface.handle.Get(),
                      endpoint_address),
       base::BindOnce(&UsbDeviceHandleWin::OnClearHalt, this,
-                     interface.info->interface_number, std::move(callback)));
+                     interface.interface_number, std::move(callback)));
 }
 
 void UsbDeviceHandleWin::ControlTransfer(
@@ -597,6 +599,8 @@ UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device)
 
       Interface& interface_info = interfaces_[interface->interface_number];
       interface_info.info = interface.get();
+      interface_info.interface_number = interface->interface_number;
+      interface_info.first_interface = interface->first_interface;
       RegisterEndpoints(interface.get(), *alternate);
 
       if (device_->driver_type() == UsbDeviceWin::DriverType::kComposite) {
@@ -619,7 +623,8 @@ UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device)
     DCHECK(base::Contains(device_->functions(), 0));
     const UsbDeviceWin::FunctionInfo& function_info =
         device_->functions().find(0)->second;
-    DCHECK(base::Contains(interfaces_, 0));
+    // This may create a fake interface 0 (for internal bookkeeping purposes) if
+    // the device doesn't have any interfaces.
     Interface& interface_info = interfaces_[0];
     interface_info.function_driver = function_info.driver;
     interface_info.function_path = function_info.path;
@@ -693,8 +698,8 @@ void UsbDeviceHandleWin::OpenInterfaceHandle(Interface* interface,
     OpenInterfaceHandle(
         first_interface,
         base::BindOnce(&UsbDeviceHandleWin::OnFirstInterfaceOpened,
-                       weak_factory_.GetWeakPtr(),
-                       interface->info->interface_number, std::move(callback)));
+                       weak_factory_.GetWeakPtr(), interface->interface_number,
+                       std::move(callback)));
     return;
   }
 
@@ -720,10 +725,10 @@ UsbDeviceHandleWin::Interface* UsbDeviceHandleWin::GetFirstInterfaceForFunction(
       DCHECK(base::Contains(interfaces_, 0));
       return &interfaces_[0];
     case UsbDeviceWin::DriverType::kComposite: {
-      if (interface->info->interface_number == interface->info->first_interface)
+      if (interface->interface_number == interface->first_interface)
         return interface;
 
-      auto it = interfaces_.find(interface->info->first_interface);
+      auto it = interfaces_.find(interface->first_interface);
       DCHECK(it != interfaces_.end());
       return &it->second;
     }
@@ -740,14 +745,14 @@ void UsbDeviceHandleWin::OnFunctionAvailable(OpenInterfaceCallback callback,
 
   if (!base::EqualsCaseInsensitiveASCII(interface->function_driver,
                                         kWinUsbDriverName)) {
-    USB_LOG(ERROR) << "Interface " << int{interface->info->interface_number}
+    USB_LOG(ERROR) << "Interface " << int{interface->interface_number}
                    << " uses driver \"" << interface->function_driver
                    << "\" instead of WinUSB.";
     return;
   }
 
   if (interface->function_path.empty()) {
-    USB_LOG(ERROR) << "Interface " << int{interface->info->interface_number}
+    USB_LOG(ERROR) << "Interface " << int{interface->interface_number}
                    << " has no device path.";
     return;
   }
@@ -777,10 +782,8 @@ void UsbDeviceHandleWin::OnFirstInterfaceOpened(int interface_number,
   DCHECK(interface_it != interfaces_.end());
   Interface* interface = &interface_it->second;
   if (device_->driver_type() == UsbDeviceWin::DriverType::kComposite) {
-    DCHECK_NE(interface->info->first_interface,
-              interface->info->interface_number);
-    DCHECK_EQ(interface->info->first_interface,
-              first_interface->info->interface_number);
+    DCHECK_NE(interface->first_interface, interface->interface_number);
+    DCHECK_EQ(interface->first_interface, first_interface->interface_number);
   }
 
   base::ScopedClosureRunner run_callback(
@@ -791,8 +794,8 @@ void UsbDeviceHandleWin::OnFirstInterfaceOpened(int interface_number,
 
   first_interface->reference_count++;
 
-  int index = interface->info->interface_number -
-              first_interface->info->interface_number - 1;
+  int index =
+      interface->interface_number - first_interface->interface_number - 1;
   WINUSB_INTERFACE_HANDLE handle;
   if (WinUsb_GetAssociatedInterface(first_interface->handle.Get(), index,
                                     &handle)) {
@@ -800,7 +803,7 @@ void UsbDeviceHandleWin::OnFirstInterfaceOpened(int interface_number,
   } else {
     USB_PLOG(ERROR) << "Failed to get associated interface " << index
                     << " from interface "
-                    << int{first_interface->info->interface_number};
+                    << int{first_interface->interface_number};
     ReleaseInterfaceReference(first_interface);
   }
 }
@@ -830,6 +833,7 @@ void UsbDeviceHandleWin::OnSetAlternateInterfaceSetting(int interface_number,
   }
 
   // Unregister endpoints from the previously selected alternate setting.
+  DCHECK(interface.info);
   for (const auto& alternate : interface.info->alternates) {
     if (alternate->alternate_setting == interface.alternate_setting) {
       UnregisterEndpoints(*alternate);
@@ -999,7 +1003,7 @@ UsbDeviceHandleWin::Request* UsbDeviceHandleWin::MakeRequest(
   interface->reference_count++;
 
   auto request = std::make_unique<Request>(interface->handle.Get(),
-                                           interface->info->interface_number);
+                                           interface->interface_number);
   Request* request_ptr = request.get();
   requests_.push_back(std::move(request));
   return request_ptr;
@@ -1136,7 +1140,7 @@ bool UsbDeviceHandleWin::AllFunctionsEnumerated() const {
         const Interface& interface = map_entry.second;
 
         // Iterate over functions, rather than interfaces.
-        if (interface.info->first_interface != interface.info->interface_number)
+        if (interface.first_interface != interface.interface_number)
           continue;
 
         if (interface.function_driver.empty())
