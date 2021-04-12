@@ -32,9 +32,10 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     kNormal,
     kHigh,
   };
-  using ColorProviderKey = std::tuple<ColorMode, ContrastMode>;
+  using ThemeName = std::string;
+  using ColorProviderKey = std::tuple<ColorMode, ContrastMode, ThemeName>;
   using ColorProviderInitializerList = base::RepeatingCallbackList<
-      void(ColorProvider*, ColorMode, ContrastMode)>;
+      void(ColorProvider*, ColorMode, ContrastMode, ThemeName)>;
 
   ColorProviderManager(const ColorProviderManager&) = delete;
   ColorProviderManager& operator=(const ColorProviderManager&) = delete;
