@@ -32,7 +32,7 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
                                      zx_signals_t signals) = 0;
 
    protected:
-    virtual ~ZxHandleWatcher() {}
+    virtual ~ZxHandleWatcher() = default;
   };
 
   // Manages an active watch on an zx_handle_t.

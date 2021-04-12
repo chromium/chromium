@@ -9,8 +9,7 @@
 #include <lib/fdio/io.h>
 #include <lib/fdio/unsafe.h>
 #include <lib/zx/time.h>
-#include <zircon/status.h>
-#include <zircon/syscalls.h>
+#include <zircon/errors.h>
 
 #include "base/auto_reset.h"
 #include "base/fuchsia/fuchsia_logging.h"
