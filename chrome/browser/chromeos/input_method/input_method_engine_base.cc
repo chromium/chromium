@@ -127,9 +127,6 @@ void InputMethodEngineBase::Disable() {
 
 void InputMethodEngineBase::Reset() {
   observer_->OnReset(active_component_id_);
-  if (pref_change_registrar_) {
-    pref_change_registrar_.reset();
-  }
 }
 
 void InputMethodEngineBase::ProcessKeyEvent(const ui::KeyEvent& key_event,
