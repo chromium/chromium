@@ -107,7 +107,9 @@ if (is_chromeos_device && cros_sdk_version != "") {
 #       results tracking and displaying (eg: flakiness dashboard).
 #   generated_script: Path to place the generated script.
 #   deploy_chrome: If true, deploys a locally built chrome located in the root
-#       build dir to the VM after launching it.
+#       build dir to the VM or DUT after launching it.
+#   deploy_lacros: If true, deploys a locally built Lacros located in the root
+#       build dir to the VM or DUT after launching it.
 #   runtime_deps_file: Path to file listing runtime deps for the test. If set,
 #       all files listed will be copied to the VM before testing.
 #   override_board: "cros_board" variable was used to decide both the toolchain
@@ -124,6 +126,7 @@ template("generate_runner_script") {
                          [
                            "override_board",
                            "deploy_chrome",
+                           "deploy_lacros",
                            "generated_script",
                            "runtime_deps_file",
                            "tast_attr_expr",
@@ -135,6 +138,14 @@ template("generate_runner_script") {
 
   if (defined(override_board)) {
     cros_board = override_board
+  }
+
+  if (!defined(deploy_chrome)) {
+    deploy_chrome = false
+  }
+
+  if (!defined(deploy_lacros)) {
+    deploy_lacros = false
   }
 
   cros_is_vm = false
@@ -157,9 +168,8 @@ template("generate_runner_script") {
       }
     }
 
-    if (!defined(deploy_chrome)) {
-      deploy_chrome = false
-    }
+    assert(!(deploy_chrome && deploy_lacros),
+           "deploy_chrome and deploy_lacros are exclusive.")
 
     if (is_tast || cros_is_vm || deploy_chrome) {
       _symlink_targets = []
@@ -265,7 +275,7 @@ template("generate_runner_script") {
       args += [ "--deploy-chrome" ]
     }
 
-    if (is_chromeos_lacros) {
+    if (deploy_lacros) {
       args += [ "--deploy-lacros" ]
     }
 
@@ -414,6 +424,7 @@ template("lacros_tast_test") {
 
   generate_runner_script(target_name) {
     testonly = true
+    deploy_lacros = true
     generated_script = "$root_build_dir/bin/run_${target_name}"
     runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
 
