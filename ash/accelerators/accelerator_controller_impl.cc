@@ -1806,6 +1806,10 @@ bool AcceleratorControllerImpl::CanHandleAccelerators() const {
 // AcceleratorControllerImpl, private:
 
 void AcceleratorControllerImpl::Init() {
+  // Use positional lookup by default if the feature is enabled.
+  accelerators_.set_use_positional_lookup(
+      ::features::IsImprovedKeyboardShortcutsEnabled());
+
   for (size_t i = 0; i < kActionsAllowedAtLoginOrLockScreenLength; ++i) {
     actions_allowed_at_login_screen_.insert(
         kActionsAllowedAtLoginOrLockScreen[i]);
