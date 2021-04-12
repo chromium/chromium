@@ -7402,6 +7402,19 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="IOS.PageAddedToReadingList">
+  <owner>thegreenfrog@chromium.org</owner>
+  <summary>
+    Logged when the user adds a page to the Reading List.
+  </summary>
+  <metric name="AddedFromMessages" enum="Boolean">
+    <summary>
+      True if the page was added by the user tapping on the Messages prompt to
+      save to Reading List.
+    </summary>
+  </metric>
+</event>
+
 <event name="IOS.PageZoomChanged">
   <owner>rkgibson@google.com</owner>
   <summary>
