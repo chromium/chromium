@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.player.CompositorStatus;
@@ -132,7 +133,7 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
     }
 
     private void onCaptureResult(@Status int status) {
-        // TODO(tgupta): Add metrics logging here.
+        LongScreenshotsMetrics.logBitmapGenerationStatus(status);
         mGeneratorCallBack.onCaptureResult(status);
     }
 }

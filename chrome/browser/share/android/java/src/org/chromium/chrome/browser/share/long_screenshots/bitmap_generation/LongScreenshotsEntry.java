@@ -138,7 +138,6 @@ public class LongScreenshotsEntry {
     }
 
     private void onBitmapGenerated(Bitmap bitmap) {
-        // TODO(tgupta): Add metrics logging here.
         mGeneratedBitmap = bitmap;
 
         if (mMemoryTracker != null && mGeneratedBitmap != null) {

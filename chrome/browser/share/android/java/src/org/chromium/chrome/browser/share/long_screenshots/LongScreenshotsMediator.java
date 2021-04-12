@@ -91,11 +91,15 @@ public class LongScreenshotsMediator
         ImageView imageView = mDialogView.findViewById(R.id.screenshot_image);
         imageView.setImageBitmap(mInitialBitmap);
 
+        LongScreenshotsMetrics.logLongScreenshotsEvent(
+                LongScreenshotsMetrics.LongScreenshotsEvent.DIALOG_OPEN);
         mDialog.show();
     }
 
     public void areaSelectionDone(View view) {
         // TODO(1163193): Delete all bitmaps.
+        LongScreenshotsMetrics.logLongScreenshotsEvent(
+                LongScreenshotsMetrics.LongScreenshotsEvent.DIALOG_OK);
         mDialog.cancel();
         mDone = true;
         if (mDoneCallback != null) {
@@ -106,6 +110,8 @@ public class LongScreenshotsMediator
 
     public void areaSelectionClose(View view) {
         // TODO(1163193): Delete all bitmaps.
+        LongScreenshotsMetrics.logLongScreenshotsEvent(
+                LongScreenshotsMetrics.LongScreenshotsEvent.DIALOG_CANCEL);
         mDialog.cancel();
     }
 
@@ -255,6 +261,8 @@ public class LongScreenshotsMediator
     @Override
     public Bitmap getScreenshot() {
         // TODO(skare): Populate with actual selected region.
+        // TODO(skare): At that time, log the height in a new histogram such as
+        //     Sharing.LongScreenshots.ScreenshotHeight.
         return mInitialBitmap;
     }
 }
