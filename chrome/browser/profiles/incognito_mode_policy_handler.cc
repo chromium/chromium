@@ -87,11 +87,11 @@ void IncognitoModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   } else if (deprecated_enabled) {
     // If kIncognitoModeAvailability is not specified, check the obsolete
     // kIncognitoEnabled.
-    bool enabled = true;
-    if (deprecated_enabled->GetAsBoolean(&enabled)) {
-      prefs->SetInteger(
-          prefs::kIncognitoModeAvailability,
-          enabled ? IncognitoModePrefs::ENABLED : IncognitoModePrefs::DISABLED);
+    if (deprecated_enabled->is_bool()) {
+      prefs->SetInteger(prefs::kIncognitoModeAvailability,
+                        deprecated_enabled->GetBool()
+                            ? IncognitoModePrefs::ENABLED
+                            : IncognitoModePrefs::DISABLED);
     } else {
       NOTREACHED();
     }

@@ -38,12 +38,12 @@ void ForceSafeSearchPolicyHandler::ApplyPolicySettings(
 
     // Note that ForceYouTubeRestrict is an int policy, we cannot simply deep
     // copy value, which is a boolean.
-    bool enabled = false;
-    if (value->GetAsBoolean(&enabled)) {
+    if (value->is_bool()) {
       prefs->SetValue(
           prefs::kForceYouTubeRestrict,
-          base::Value(enabled ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
-                              : safe_search_util::YOUTUBE_RESTRICT_OFF));
+          base::Value(value->GetBool()
+                          ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
+                          : safe_search_util::YOUTUBE_RESTRICT_OFF));
     }
   }
 }
