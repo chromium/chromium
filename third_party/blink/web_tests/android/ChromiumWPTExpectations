@@ -27,6 +27,10 @@ crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failu
 crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
 crbug.com/1190392 external/wpt/trusted-types/worker-constructor.https.html [ Failure ]
 
+# Reporting IDL failures on Android.
+crbug.com/1198081 external/wpt/reporting/idlharness.any.html [ Failure ]
+crbug.com/1198081 external/wpt/reporting/idlharness.any.worker.html [ Failure ]
+
 # Add untriaged failures in this block
 crbug.com/1050754 external/wpt/FileAPI/file/File-constructor.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/FileAPI/historical.https.html [ Failure Pass ]
@@ -3836,12 +3840,6 @@ crbug.com/1050754 external/wpt/referrer-policy/generic/inheritance/iframe-inheri
 crbug.com/1050754 external/wpt/referrer-policy/generic/inheritance/iframe-inheritance-javascript.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/referrer-policy/generic/multiple-headers-one-invalid.html [ Failure ]
 crbug.com/1050754 external/wpt/referrer-policy/generic/unsupported-csp-referrer-directive.html [ Failure ]
-crbug.com/1050754 external/wpt/reporting/bufferSize.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/reporting/idlharness.any.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/reporting/idlharness.any.worker.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/reporting/nestedReport.html [ Failure ]
-crbug.com/1050754 external/wpt/reporting/order.html [ Failure ]
-crbug.com/1050754 external/wpt/reporting/path-absolute-endpoint.https.sub.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/resize-observer/idlharness.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/resize-observer/observe.html [ Failure ]
 crbug.com/1050754 external/wpt/resize-observer/svg.html [ Failure ]

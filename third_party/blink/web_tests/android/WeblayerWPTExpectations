@@ -71,6 +71,10 @@ crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failu
 crbug.com/1190392 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
 crbug.com/1190392 external/wpt/trusted-types/worker-constructor.https.html [ Failure ]
 
+# Reporting IDL failures on Android.
+crbug.com/1198081 external/wpt/reporting/idlharness.any.html [ Failure ]
+crbug.com/1198081 external/wpt/reporting/idlharness.any.worker.html [ Failure ]
+
 # Add untriaged failures in this block
 crbug.com/1050754 external/wpt/IndexedDB/file_support.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/IndexedDB/idbfactory_open10.htm [ Failure Pass ]
@@ -1898,7 +1902,6 @@ crbug.com/1050754 external/wpt/referrer-policy/gen/top.meta/unsafe-url/sharedwor
 crbug.com/1050754 external/wpt/referrer-policy/gen/top.meta/unsafe-url/sharedworker-module.http.html [ Failure ]
 crbug.com/1050754 external/wpt/referrer-policy/gen/top.meta/unset/sharedworker-classic.http.html [ Failure ]
 crbug.com/1050754 external/wpt/referrer-policy/gen/top.meta/unset/sharedworker-module.http.html [ Failure ]
-crbug.com/1050754 external/wpt/reporting/bufferSize.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/resize-observer/observe.html [ Failure ]
 crbug.com/1050754 external/wpt/resize-observer/svg.html [ Failure ]
 crbug.com/1050754 external/wpt/resource-timing/crossorigin-sandwich-TAO.sub.html [ Failure ]
