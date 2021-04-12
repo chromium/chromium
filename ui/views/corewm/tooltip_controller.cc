@@ -127,11 +127,18 @@ int TooltipController::GetMaxWidth(const gfx::Point& location) const {
 void TooltipController::UpdateTooltip(aura::Window* target) {
   // The |tooltip_parent_window_| is only set when the tooltip is visible or
   // its |will_show_tooltip_timer_| is running.
-  if (observed_window_ == target && state_manager_->tooltip_parent_window()) {
-    // Since this is an update on an already (or about to be) visible tooltip,
-    // assume that the trigger is the same as the one that initiated the current
-    // tooltip and reuse it.
-    UpdateIfRequired(state_manager_->tooltip_trigger());
+  if (target && observed_window_ == target) {
+    // This is either an update on an already (or about to be) visible tooltip
+    // or a call to UpdateIfRequired that will potentially trigger a tooltip
+    // caused by a tooltip text update.
+    //
+    // If there's no active tooltip, it's appropriate to assume that the trigger
+    // is kCursor because a tooltip text update triggered from the keyboard
+    // would always happen in UpdateTooltipFromKeyboard, not from here.
+    if (state_manager_->tooltip_parent_window())
+      UpdateIfRequired(state_manager_->tooltip_trigger());
+    else if (IsTooltipTextUpdateNeeded())
+      UpdateIfRequired(TooltipTrigger::kCursor);
   }
 
   ResetWindowAtMousePressedIfNeeded(target, /* force_reset */ false);

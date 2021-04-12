@@ -752,6 +752,43 @@ TEST_F(TooltipControllerTest, MAYBE_Capture) {
   widget2.reset();
 }
 
+TEST_F(TooltipControllerTest, ShowTooltipOnTooltipTextUpdate) {
+  std::u16string expected_tooltip;
+
+  wm::SetTooltipText(GetWindow(), &expected_tooltip);
+
+  // Create a mouse event. This event shouldn't trigger the tooltip to show
+  // since the tooltip text is empty, but should set the |observed_window_|
+  // correctly.
+  gfx::Point point(1, 1);
+  View::ConvertPointToWidget(view_, &point);
+  generator_->MoveMouseRelativeTo(GetWindow(), point);
+
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
+  EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+  EXPECT_EQ(GetWindow(), helper_->GetObservedWindow());
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+
+  // This is the heart of the test: we update the tooltip text and call
+  // UpdateTooltip. It should trigger the tooltip to show up because the
+  // |observed_window_| will be set to GetWindow() and the tooltip text on the
+  // window will be different than it previously was.
+  expected_tooltip = u"Tooltip text";
+  helper_->controller()->UpdateTooltip(GetWindow());
+
+  EXPECT_EQ(expected_tooltip, wm::GetTooltipText(GetWindow()));
+  EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
+  EXPECT_EQ(GetWindow(), helper_->GetTooltipParentWindow());
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+  EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
+            TooltipTrigger::kCursor);
+
+  helper_->HideAndReset();
+
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+  EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+}
+
 namespace {
 
 class TestTooltip : public Tooltip {
