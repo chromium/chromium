@@ -46,9 +46,9 @@ url_parse_proto_fuzzer.
 ## Write a fuzz target for code that accepts protobufs
 
 This is almost as easy as writing a standard libFuzzer-based fuzzer. You can
-look at [lpm_test_fuzzer] for an example of a working example of this (don't
-copy the line adding "//testing/libfuzzer:no_clusterfuzz" to
-additional_configs). Or you can follow this walkthrough:
+look at [override_lite_runtime_plugin_test_fuzzer] for an example of a working
+example of this (don't copy the line adding "//testing/libfuzzer:no_clusterfuzz"
+to additional_configs). Or you can follow this walkthrough:
 
 Start by creating a fuzz target. This is what the .cc file will look like:
 
@@ -365,5 +365,5 @@ fuzzer).
 [this]: https://github.com/google/libprotobuf-mutator/tree/master/examples/libfuzzer/libfuzzer_example.cc
 [existing proto fuzzers]: https://cs.chromium.org/search/?q=DEFINE_(BINARY_%7CTEXT_)?PROTO_FUZZER+-file:src/third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h+lang:cpp&sq=package:chromium&type=cs
 [here]: https://github.com/google/libprotobuf-mutator/blob/master/README.md#utf-8-strings
-[lpm_test_fuzzer]: https://cs.chromium.org/#search&q=lpm_test_fuzzer+file:%5Esrc/third_party/libprotobuf-mutator/BUILD.gn
+[override_lite_runtime_plugin_test_fuzzer]: https://cs.chromium.org/#search&q=override_lite_runtime_plugin_test_fuzzer+file:%5Esrc/third_party/libprotobuf-mutator/BUILD.gn
 [mojo_parse_messages_proto_fuzzer]: https://cs.chromium.org/chromium/src/mojo/public/tools/fuzzers/mojo_parse_message_proto_fuzzer.cc?l=25

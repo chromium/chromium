@@ -7,7 +7,7 @@
 
 syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
-package lpm_test_fuzzer;
+package lpm_protoc_plugin_test_fuzzer;
 
 message ImportedPublicly {
   required int32 input = 1;
