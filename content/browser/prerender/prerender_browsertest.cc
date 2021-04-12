@@ -1619,6 +1619,41 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderDocumentHostUserData) {
   EXPECT_EQ(data_after_activation.get(), data.get());
 }
 
+// Tests that executing the GamepadMonitor API on a prerendering before
+// navigating to the prerendered page causes cancel prerendering.
+// This Test cannot be a web test because web tests handles the GamepadMonitor
+// interface on the renderer side. See GamepadController::Install().
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, GamepadMonitorCancelPrerendering) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHost();
+
+  // Executing `navigator.getGamepads()` to start binding the GamepadMonitor
+  // interface.
+  ignore_result(EvalJs(prerendered_render_frame_host, "navigator.getGamepads()",
+                       EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  // Verify Mojo capability control cancels prerendering.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kDisallowedMojoInterface, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderCancelledInterface",
+      PrerenderCancelledInterface::kGamepadMonitor, 1);
+}
+
 // Tests that accessing the clipboard via the execCommand API fails because the
 // page does not has any user activation.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, ClipboardByExecCommandFail) {

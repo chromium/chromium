@@ -12,9 +12,9 @@ namespace {
 
 PrerenderCancelledInterface GetCancelledInterfaceType(
     const std::string& interface_name) {
-  if (interface_name == "device::mojom::GamepadHapticsManager")
+  if (interface_name == "device.mojom.GamepadHapticsManager")
     return PrerenderCancelledInterface::kGamepadHapticsManager;
-  else if (interface_name == "device::mojom::GamepadMonitor")
+  else if (interface_name == "device.mojom.GamepadMonitor")
     return PrerenderCancelledInterface::kGamepadMonitor;
   return PrerenderCancelledInterface::kUnknown;
 }
