@@ -354,7 +354,7 @@
 <translation id="138784436342154190">Vols restaurar la pàgina d'arrencada predeterminada?</translation>
 <translation id="1388253969141979417">Amb permís per utilitzar el micròfon</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> es reiniciarà quan les actualitzacions s'hagin completat.</translation>
-<translation id="139013308650923562">Es permet que utilitzin els tipus de lletra instal·lats al teu dispositiu</translation>
+<translation id="139013308650923562">Amb permís per utilitzar els tipus de lletra instal·lats al teu dispositiu</translation>
 <translation id="1390548061267426325">Obre com a pestanya normal</translation>
 <translation id="1393283411312835250">Sol i núvols</translation>
 <translation id="1395730723686586365">S'ha iniciat l'actualitzador.</translation>
@@ -2163,7 +2163,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="338583716107319301">Separador</translation>
 <translation id="338691029516748599">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, gestionada per l'administrador, connecta</translation>
 <translation id="3387614642886316601">Fes servir el corrector ortogràfic millorat</translation>
-<translation id="3387829698079331264">No es permet que sàpiguen quan estàs utilitzant el dispositiu de manera activa</translation>
+<translation id="3387829698079331264">Sense permís per saber quan estàs utilitzant el dispositiu de manera activa</translation>
 <translation id="3388094447051599208">La safata de sortida és quasi plena</translation>
 <translation id="3388788256054548012">Aquest fitxer està encriptat. Demana al propietari que el desencripti.</translation>
 <translation id="3390013585654699824">Detalls de l'aplicació</translation>
@@ -4912,7 +4912,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="650266656685499220">Per crear àlbums, ves a Google Fotos</translation>
 <translation id="6503077044568424649">Els més visitats</translation>
 <translation id="650457560773015827">Botó esquerre</translation>
-<translation id="6504601948739128893">No es permet que utilitzin els tipus de lletra instal·lats al teu dispositiu</translation>
+<translation id="6504601948739128893">Sense permís per utilitzar els tipus de lletra instal·lats al teu dispositiu</translation>
 <translation id="6504611359718185067">Per poder afegir una impressora, connecta't a Internet</translation>
 <translation id="6506374932220792071">Signatura d'ECDSA X9.62 amb SHA-256</translation>
 <translation id="6508248480704296122">Relacionada amb <ph name="NAME_PH" /></translation>
@@ -7368,7 +7368,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="947329552760389097">&amp;Inspecciona els elements</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> no pot obrir els fitxers que es troben en aquesta carpeta perquè conté fitxers del sistema</translation>
 <translation id="951991426597076286">Rebutja</translation>
-<translation id="953434574221655299">Es permet que sàpiguen quan estàs utilitzant el dispositiu de manera activa</translation>
+<translation id="953434574221655299">Amb permís per saber quan estàs utilitzant el dispositiu de manera activa</translation>
 <translation id="956500788634395331">Tens protecció contra les extensions potencialment perjudicials</translation>
 <translation id="957960681186851048">Aquest lloc web ha provat de baixar diversos fitxers automàticament</translation>
 <translation id="960987915827980018">Queda cosa d'una hora</translation>

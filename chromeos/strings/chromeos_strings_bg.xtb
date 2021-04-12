@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Налице е DNS резолвер</translation>
+<translation id="1715359911173058521">Има проблем с установяването на връзка със скенера. Проверете връзката с USB или мрежата и опитайте отново.</translation>
 <translation id="1717874160321062422">Управлява се от <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Сканирането се отменя</translation>
@@ -216,6 +217,7 @@
 <translation id="54609108002486618">Управляван</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Остава {0} опит}other{Остават {0} опита}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">Сканирането не бе изпълнено</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Активира се</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@
 <translation id="5916084858004523819">Забранено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файлът ви бе сканиран успешно и запазен в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файловете ви бяха сканирани успешно и запазени в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файлът не бе намерен</translation>
+<translation id="6037291330010597344">Подавачът на документи на скенера е празен. Добавете документи и опитайте отново.</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6040852767465482106">Анонимна самоличност</translation>
 <translation id="604124094241169006">Автоматично</translation>
@@ -252,6 +255,7 @@
 <translation id="6302401976930124515">Тестът „<ph name="TEST_NAME" />“ бе прекратен</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="636850387210749493">Корпоративно записване</translation>
+<translation id="6388847657025262518">Подавачът на документи на скенера е блокирал. Проверете го и опитайте отново.</translation>
 <translation id="641081527798843608">Съвпадение на субекта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Добър</translation>
@@ -273,6 +277,7 @@
 <translation id="6766275201586212568">Неуспешни преобразувания от DNS</translation>
 <translation id="6768237774506518020">Голям процент неуспехи при преобразуването от DNS</translation>
 <translation id="6853312040151791195">Скорост на разреждане</translation>
+<translation id="6910312834584889076">Капакът на скенера е отворен. Затворете го и опитайте отново.</translation>
 <translation id="6911383237894364323">Не може да се установи връзка с мултимедийните сървъри</translation>
 <translation id="6957231940976260713">Имe на услугата</translation>
 <translation id="6977381486153291903">Версия на фърмуера</translation>
@@ -287,6 +292,7 @@
 <translation id="7162487448488904999">Галерия</translation>
 <translation id="7177485034254901881">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
+<translation id="7271040990581020067">Скенерът се използва понастоящем. Опитайте отново по-късно.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">Мрежови устройства</translation>
 <translation id="7359657277149375382">Файлов тип</translation>

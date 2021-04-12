@@ -3073,7 +3073,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4404843640767531781"><ph name="APP_NAME" /> valideyniniz tərəfindən bloklanıb. Bu tətbiqdən istifadə etmək üçün valideyninizdən icazə istəyin.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="440653823335387109">OXUDUĞUNUZ SƏHİFƏLƏR</translation>
-<translation id="4406883609789734330">Canlı Altyazı</translation>
+<translation id="4406883609789734330">Avtomatik subtitrlər</translation>
 <translation id="4408599188496843485">Yardım</translation>
 <translation id="4409697491990005945">Kənar boşluqlar</translation>
 <translation id="4410545552906060960">Cihazı kilidləmək üçün parol əvəzinə rəqəmdən (PIN) istifadə edin. Sonra PIN ayarlamaq üçün Ayarlara keçin.</translation>
@@ -4663,7 +4663,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6238767809035845642">Digər Cihazdan paylaşılan mətn</translation>
 <translation id="6238923052227198598">Ən son qeydi kilid ekranında saxlayın</translation>
 <translation id="6239558157302047471">Çərçivəni yenidən yükləyin</translation>
-<translation id="6240821072888636753">Hər dəfə soruşun</translation>
+<translation id="6240821072888636753">Həmişə soruşulsun</translation>
 <translation id="6241530762627360640">Sisteminizlə cütlənmiş Bluetooth cihazları haqqında öyrənin və yaxınlıqdakı Bluetooth cihazlarını tapın.</translation>
 <translation id="6241844896329831164">Giriş tələb edilmir</translation>
 <translation id="6242574558232861452">Təşkilatınızın güvənlik siyasətlərinə əsasən yoxlanılır.</translation>
@@ -5288,7 +5288,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="693807610556624488">Yazı əməliyyatı bu cihazda maksimum atribut sayını keçib: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">1 yadda saxlanmış printeriniz var.</translation>
 <translation id="6938606182859551396"><ph name="DEVICE_TYPE" /> cihazınızda telefonunuzdan bildirişlər almaq üçün telefonunuzdakı təlimatları izləyərək Google Play Xidmətlərinə bildirişlərə giriş icazəsi verin.</translation>
-<translation id="6938789263968032501">Şəxslər</translation>
+<translation id="6938789263968032501">Adamlar</translation>
 <translation id="6939815295902433669">Cihaz proqramını nəzərdən keçirin</translation>
 <translation id="694168622559714949">Administratorunuz dəyişdirilə bilməyən bir defolt dil təyin edib.</translation>
 <translation id="6941937518557314510">Sertifikatlarınızla <ph name="HOST_NAME" /> saytını doğrulamaq üçün <ph name="TOKEN_NAME" /> üzərinə daxil olun.</translation>

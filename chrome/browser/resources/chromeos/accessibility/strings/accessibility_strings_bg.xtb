@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Затваряне на урока за ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{отваряща скоба}other{# отварящи скоби}}</translation>
+<translation id="270523456882008230">Съвет: Докоснете два пъти с един пръст, за да активирате текущия елемент.</translation>
 <translation id="2705875883745373140">Не е натиснато</translation>
 <translation id="2708078563826046398">прасковен пай</translation>
 <translation id="2713444072780614174">бяло</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Подсказка</translation>
 <translation id="2976476721782829799">Можете също да се придвижвате, като плъзгате пръст по екрана. Тази функция се нарича „Изследване чрез докосване“. Опитайте да прочетете остатъка от този урок, като плъзгате пръста си по екрана.</translation>
 <translation id="297825089465017871">Прекарайте два пръста наляво</translation>
+<translation id="2988364959384217951">Съвет: Ако искате да излезете от този урок, прекарайте два пръста от дясно наляво.</translation>
 <translation id="2998131015536248178">Предишният знак</translation>
 <translation id="2999559350546931576">Намаляване на височината на звука</translation>
 <translation id="3009352964623081324">Клавиш „търсене“ + O, след това S. Използвайте за инсталиране, управление и персонализиране на гласове.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Отваряне на менютата на ChromeVox</translation>
 <translation id="7799302833060027366">Разглеждайте математическото съдържание с помощта на клавишите със стрелки нагоре, надолу, наляво или надясно</translation>
 <translation id="7800558923657349506">Епилог</translation>
+<translation id="7801768143868631306">Съвет: За да навигирате, прекарайте пръст наляво или надясно.</translation>
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7810781339813764006">Следващата група</translation>
 <translation id="7813616274030162878">Меню на „Достъп с превключване“</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Шрифт <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Цикъл на ехото за препинателни знаци</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Възможни са действия. За преглед натиснете клавиша „търсене“ + Ctrl + A</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Модифициращи клавиши</translation>
 <translation id="8943282376843390568">лимоненозелено</translation>

@@ -266,6 +266,7 @@
 <translation id="2777555524387840389">Остават <ph name="SECONDS" /> сек</translation>
 <translation id="2779651927720337254">неуспешно</translation>
 <translation id="2781151931089541271">Остава 1 сек</translation>
+<translation id="279827439955962619">Премахване на открояването</translation>
 <translation id="2801022321632964776">Актуализирайте, за да получите своя език в най-новата версия на Chrome</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="281504910091592009">Преглеждайте и управлявайте запазените пароли в <ph name="BEGIN_LINK" />профила си в Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4487967297491345095">Всички данни на приложението Chrome ще се изтрият за постоянно. Това включва всички файлове, настройки, профили, бази от данни и др.</translation>
 <translation id="449126573531210296">Синхронизираните пароли да се шифроват с идентификационните данни за профила ви в Google</translation>
 <translation id="4493497663118223949">Олекотеният режим е включен</translation>
+<translation id="4504667196171871375">При Wi-Fi и мобилни данни</translation>
 <translation id="4508528996305412043">Менюто на картата за емисията е отворено</translation>
 <translation id="4508642716788467538">Изберете езика си</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{преди # ден}other{преди # дни}}</translation>
@@ -917,6 +919,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="702463548815491781">Препоръчва се, когато TalkBack или достъпът с превключване са задействани</translation>
 <translation id="7027549951530753705">Файлът „<ph name="ITEM_TITLE" />“ бе възстановен</translation>
 <translation id="7029809446516969842">Пароли</translation>
+<translation id="7040531500313579672">Споделяне на открояването</translation>
 <translation id="7054588988317389591">Искате ли да получавате описания на изображенията?</translation>
 <translation id="7055152154916055070">Блокирано бе пренасочване:</translation>
 <translation id="7063006564040364415">Не можа да се установи връзка със синхронизиращия сървър.</translation>
