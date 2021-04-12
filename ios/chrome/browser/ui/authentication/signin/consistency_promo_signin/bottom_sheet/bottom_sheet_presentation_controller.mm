@@ -112,8 +112,8 @@
 
 // Closes the bottom sheet.
 - (void)closeButtonAction:(id)sender {
-  [self.presentedViewController dismissViewControllerAnimated:YES
-                                                   completion:nil];
+  [self.presentationDelegate
+      bottomSheetPresentationControllerDismissViewController:self];
 }
 
 @end

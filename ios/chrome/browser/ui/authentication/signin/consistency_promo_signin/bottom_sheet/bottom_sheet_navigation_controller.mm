@@ -29,11 +29,6 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-  [super viewDidDisappear:animated];
-  [self.presentationDelegate bottomSheetNavigationControllerDidDisappear:self];
-}
-
 - (void)pushViewController:(UIViewController*)viewController
                   animated:(BOOL)animated {
   // |viewController.view| has to be a UIScrollView.

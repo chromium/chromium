@@ -19,7 +19,7 @@
 #endif
 
 @interface ConsistencyPromoSigninCoordinator () <
-    BottomSheetNavigationControllerPresentationDelegate,
+    BottomSheetPresentationControllerPresentationDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
@@ -46,7 +46,6 @@
   self.navigationController = [[BottomSheetNavigationController alloc]
       initWithRootViewController:[self firstViewController]];
   self.navigationController.delegate = self;
-  self.navigationController.presentationDelegate = self;
   UIScreenEdgePanGestureRecognizer* edgeSwipeGesture =
       [[UIScreenEdgePanGestureRecognizer alloc]
           initWithTarget:self
@@ -67,6 +66,26 @@
   // Needs implementation.
   NOTIMPLEMENTED();
   return nil;
+}
+
+// Dismisses the bottom sheet view controller.
+- (void)dismissNavigationViewController {
+  __weak __typeof(self) weakSelf = self;
+  [self.navigationController
+      dismissViewControllerAnimated:YES
+                         completion:^() {
+                           [weakSelf finishedWithResult:
+                                         SigninCoordinatorResultCanceledByUser
+                                               identity:nil];
+                         }];
+}
+
+// Calls the sign-in completion block.
+- (void)finishedWithResult:(SigninCoordinatorResult)signinResult
+                  identity:(ChromeIdentity*)identity {
+  [self runCompletionCallbackWithSigninResult:signinResult
+                                     identity:identity
+                   showAdvancedSettingsSignin:NO];
 }
 
 #pragma mark - SwipeGesture
@@ -107,17 +126,14 @@
   }
 }
 
-#pragma mark - BottomSheetNavigationControllerPresentationDelegate
+#pragma mark - BottomSheetPresentationControllerPresentationDelegate
 
-- (void)bottomSheetNavigationControllerDidDisappear:
-    (UIViewController*)viewController {
-  [self runCompletionCallbackWithSigninResult:
-            SigninCoordinatorResultCanceledByUser
-                                     identity:nil
-                   showAdvancedSettingsSignin:NO];
+- (void)bottomSheetPresentationControllerDismissViewController:
+    (BottomSheetPresentationController*)controller {
+  [self dismissNavigationViewController];
 }
 
-#pragma mark - UIViewControllerAnimatedTransitioning
+#pragma mark - UINavigationControllerDelegate
 
 - (id<UIViewControllerAnimatedTransitioning>)
                navigationController:
@@ -159,9 +175,12 @@
                                 (UIViewController*)presentingViewController
                                 sourceViewController:(UIViewController*)source {
   DCHECK_EQ(self.navigationController, presentedViewController);
-  return [[BottomSheetPresentationController alloc]
-      initWithBottomSheetNavigationController:self.navigationController
-                     presentingViewController:presentingViewController];
+  BottomSheetPresentationController* controller =
+      [[BottomSheetPresentationController alloc]
+          initWithBottomSheetNavigationController:self.navigationController
+                         presentingViewController:presentingViewController];
+  controller.presentationDelegate = self;
+  return controller;
 }
 
 @end

@@ -8,11 +8,26 @@
 #import <UIKit/UIKit.h>
 
 @class BottomSheetNavigationController;
+@class BottomSheetPresentationController;
+
+// Presentation protocol for BottomSheetPresentationController.
+@protocol BottomSheetPresentationControllerPresentationDelegate <NSObject>
+
+// Called when the bottom sheet view controller needs to be dismissed.
+- (void)bottomSheetPresentationControllerDismissViewController:
+    (BottomSheetPresentationController*)controller;
+
+@end
 
 // Presentation controller to present BottomSheetNavigationController from the
 // bottom of the screen.
 // Related to BottomSheetNavigationController.
 @interface BottomSheetPresentationController : UIPresentationController
+
+// Presentation delegate.
+@property(nonatomic, weak)
+    id<BottomSheetPresentationControllerPresentationDelegate>
+        presentationDelegate;
 
 - (instancetype)initWithBottomSheetNavigationController:
                     (BottomSheetNavigationController*)viewcontroller

@@ -7,18 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@class BottomSheetNavigationController;
-
-// Delegate protocol for presentation events of BottomSheetNavigationController.
-@protocol BottomSheetNavigationControllerPresentationDelegate <NSObject>
-
-// Called when BottomSheetNavigationController disappears. Related to:
-// -[UIViewController viewDidDisappear:].
-- (void)bottomSheetNavigationControllerDidDisappear:
-    (BottomSheetNavigationController*)viewController;
-
-@end
-
 // Navigation controller presented from the bottom. The pushed view controllers
 // view have to be UIScrollView. This is required to support high font size
 // (related to accessibility) with small devices (like iPhone SE).
@@ -28,11 +16,6 @@
 // Child view controller are required to implement
 // ChildBottomSheetViewController protocol.
 @interface BottomSheetNavigationController : UINavigationController
-
-// Presentation delegate.
-@property(nonatomic, weak)
-    id<BottomSheetNavigationControllerPresentationDelegate>
-        presentationDelegate;
 
 // Returns the desired size related to the current view controller shown by
 // |BottomSheetNavigationController|.
