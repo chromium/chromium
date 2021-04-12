@@ -30,7 +30,7 @@ class NotificationBadgeColorCache {
 
   // Calculate the color for the notification badge and cache it. If the
   // |app_id| already has a cached color then return that instead.
-  SkColor GetBadgeColorForApp(std::string app_id, gfx::ImageSkia icon);
+  SkColor GetBadgeColorForApp(const std::string& app_id, gfx::ImageSkia icon);
 
  private:
   using AppIdBadgeColor = std::map<std::string, SkColor>;
