@@ -69,7 +69,7 @@ class AtomicUint64_NoBarrier {
   uint64_t value() const { return counter_; }
 
  private:
-  std::atomic<uint64_t> counter_;
+  std::atomic<uint64_t> counter_{0};
 };
 
 class AtomicUint64_Barrier {
@@ -79,7 +79,7 @@ class AtomicUint64_Barrier {
   uint64_t value() const { return counter_; }
 
  private:
-  std::atomic<uint64_t> counter_;
+  std::atomic<uint64_t> counter_{0};
 };
 
 template <typename CounterType>
@@ -157,25 +157,21 @@ TEST(CounterPerfTest, Uint64_Lock_4Threads) {
   RunIncrementPerfTest<Uint64_Lock>("Uint64_Lock_4Threads", 4);
 }
 
-// TODO(crbug/1197115): fix and reenable
-TEST(CounterPerfTest, DISABLED_AtomicUint64_NoBarrier_1Thread) {
+TEST(CounterPerfTest, AtomicUint64_NoBarrier_1Thread) {
   RunIncrementPerfTest<AtomicUint64_NoBarrier>("AtomicUint64_NoBarrier_1Thread",
                                                1);
 }
 
-// TODO(crbug/1197115): fix and reenable
-TEST(CounterPerfTest, DISABLED_AtomicUint64_NoBarrier_4Threads) {
+TEST(CounterPerfTest, AtomicUint64_NoBarrier_4Threads) {
   RunIncrementPerfTest<AtomicUint64_NoBarrier>(
       "AtomicUint64_NoBarrier_4Threads", 4);
 }
 
-// TODO(crbug/1197115): fix and reenable
-TEST(CounterPerfTest, DISABLED_AtomicUint64_Barrier_1Thread) {
+TEST(CounterPerfTest, AtomicUint64_Barrier_1Thread) {
   RunIncrementPerfTest<AtomicUint64_Barrier>("AtomicUint64_Barrier_1Thread", 1);
 }
 
-// TODO(crbug/1197115): fix and reenable
-TEST(CounterPerfTest, DISABLED_AtomicUint64_Barrier_4Threads) {
+TEST(CounterPerfTest, AtomicUint64_Barrier_4Threads) {
   RunIncrementPerfTest<AtomicUint64_Barrier>("AtomicUint64_Barrier_4Threads",
                                              4);
 }
