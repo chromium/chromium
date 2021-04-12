@@ -144,6 +144,11 @@ DEFINE_BINARY_PROTO_FUZZER(
       // Promises will be fulfilled synchronously since we're using an array
       // buffer based source.
       RunFuzzingLoop(image_decoder, proto.invocations());
+
+      // Close out underlying decoder to simplify reproduction analysis.
+      image_decoder->close();
+      image_decoder = nullptr;
+      base::RunLoop().RunUntilIdle();
     }
 
     Persistent<TestUnderlyingSource> underlying_source =
@@ -157,6 +162,7 @@ DEFINE_BINARY_PROTO_FUZZER(
             stream));
     image_decoder = ImageDecoderExternal::Create(
         script_state, image_decoder_init, IGNORE_EXCEPTION_FOR_TESTING);
+    image_decoder_init = nullptr;
 
     if (image_decoder) {
       // Split the image data into chunks.
@@ -176,6 +182,7 @@ DEFINE_BINARY_PROTO_FUZZER(
       }
 
       underlying_source->Close();
+      data_copy = nullptr;
 
       // Run one additional loop after all data has been appended.
       RunFuzzingLoop(image_decoder, proto.invocations());
