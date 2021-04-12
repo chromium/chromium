@@ -212,45 +212,85 @@
   #yellow-connectagon {
     --connectagon-shape-color: var(--welcome-yellow);
     --connectagon-connector-color: var(--welcome-yellow-tinted);
+    animation: yellow-connectagon 4s alternate infinite linear;
     left: 549px;
     top: 156px;
     transform: translate(-50%, -50%) rotate(51deg);
   }
 
+  @keyframes yellow-connectagon {
+    to {
+      transform: translate(calc(-50% - 62px), calc(-50% - 36px)) rotate(411deg);
+    }
+  }
+
   #green-triangle {
     -webkit-mask: url(../images/background_svgs/triangle.svg);
+    animation: green-triangle 2s infinite linear;
     background-color: var(--welcome-green);
-    height: 400px;
     left: 1813px;
     top: 151px;
-    transform: translate(-50%, -50%) rotate(50deg);
-    width: 400px;
+    transform: translate(-50%, -50%) rotate(0deg);
+    transform-origin: 250px 250px;
+  }
+
+  @keyframes green-triangle {
+    to {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
   }
 
   #blue-connectagon {
     --connectagon-shape-color: var(--welcome-blue);
     --connectagon-connector-color: var(--welcome-blue-tinted);
+    animation: blue-connectagon 4s alternate infinite linear;
     left: 2157px;
     top: 249px;
     transform: translate(-50%, -50%) rotate(152deg);
   }
 
+  @keyframes blue-connectagon {
+    50% {
+      transform: translate(calc(-50% + 10px), calc(-50% + 20px)) rotate(152deg);
+    }
+
+    100% {
+      transform: translate(calc(-50%), calc(-50% + 40px)) rotate(152deg);
+    }
+  }
+
   #green-connectagon {
     --connectagon-shape-color: var(--welcome-green);
     --connectagon-connector-color: var(--welcome-green-tinted);
+    animation: green-connectagon 8s alternate infinite linear;
     left: 851px;
     top: 766px;
     transform: translate(-50%, -50%) rotate(139deg);
   }
 
+  @keyframes green-connectagon {
+    50% {
+      transform: translate(calc(-50% + 40px), calc(-50% + 10px)) rotate(499deg);
+    }
+
+    100% {
+      transform: translate(calc(-50% + 80px), calc(-50% + 20px)) rotate(139deg);
+    }
+  }
+
   #square {
     -webkit-mask: url(../images/background_svgs/square.svg);
+    animation: square 4s infinite linear;
     background-color: var(--welcome-yellow);
-    height: 400px;
     left: 1822px;
     top: 716px;
     transform: translate(-50%, -50%) rotate(29deg);
-    width: 400px;
+  }
+
+  @keyframes square {
+    to {
+      transform: translate(-50%, -50%) rotate(389deg);
+    }
   }
 
   #grey-triangle {
