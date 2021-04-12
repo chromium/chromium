@@ -3451,76 +3451,69 @@ bool AXObject::SupportsARIAExpanded() const {
   }
 }
 
-bool IsGlobalARIAAttribute(const AtomicString& name) {
-  if (!name.StartsWith("ARIA"))
-    return false;
-  if (name.StartsWith("ARIA-ATOMIC"))
-    return true;
-  if (name.StartsWith("ARIA-BUSY"))
-    return true;
-  if (name.StartsWith("ARIA-CONTROLS"))
-    return true;
-  if (name.StartsWith("ARIA-CURRENT"))
-    return true;
-  if (name.StartsWith("ARIA-DESCRIBEDBY"))
-    return true;
-  if (name.StartsWith("ARIA-DETAILS"))
-    return true;
-  if (name.StartsWith("ARIA-DISABLED"))
-    return true;
-  if (name.StartsWith("ARIA-DROPEFFECT"))
-    return true;
-  if (name.StartsWith("ARIA-ERRORMESSAGE"))
-    return true;
-  if (name.StartsWith("ARIA-FLOWTO"))
-    return true;
-  if (name.StartsWith("ARIA-GRABBED"))
-    return true;
-  if (name.StartsWith("ARIA-HASPOPUP"))
-    return true;
-  if (name.StartsWith("ARIA-HIDDEN"))
-    return true;
-  if (name.StartsWith("ARIA-INVALID"))
-    return true;
-  if (name.StartsWith("ARIA-KEYSHORTCUTS"))
-    return true;
-  if (name.StartsWith("ARIA-LABEL"))
-    return true;
-  if (name.StartsWith("ARIA-LABELEDBY"))
-    return true;
-  if (name.StartsWith("ARIA-LABELLEDBY"))
-    return true;
-  if (name.StartsWith("ARIA-LIVE"))
-    return true;
-  if (name.StartsWith("ARIA-OWNS"))
-    return true;
-  if (name.StartsWith("ARIA-RELEVANT"))
-    return true;
-  if (name.StartsWith("ARIA-ROLEDESCRIPTION"))
-    return true;
-  return false;
+bool DoesUndoRolePresentation(const AtomicString& name) {
+  // This is the list of global ARIA properties that force
+  // role="presentation"/"none" to be exposed, and does not contain ARIA
+  // properties who's global status is being deprecated.
+  // TODO(accessibility) aria-label/labelledby is not allowed on
+  // role="none"/"presentation", therefore it should not be listed here.
+  // However, this breaks a few name tests that assume aria-label causes
+  // role="none"/"presentation" to be exposed, even though the property is
+  // prohibited there. See https://github.com/w3c/accname/issues/121.
+  // clang-format off
+  DEFINE_STATIC_LOCAL(
+      HashSet<AtomicString>, aria_global_properties,
+      ({
+        "ARIA-ATOMIC",
+        // TODO(accessibility/ARIA 1.3) Add these (and test in aria-global.html)
+        // "ARIA-BRAILLELABEL",
+        // "ARIA-BRAILLEROLEDESCRIPTION",
+        "ARIA-BUSY",
+        "ARIA-CONTROLS",
+        "ARIA-CURRENT",
+        "ARIA-DESCRIBEDBY",
+        "ARIA-DESCRIPTION",
+        "ARIA-DETAILS",
+        "ARIA-DROPEFFECT",
+        "ARIA-FLOWTO",
+        "ARIA-GRABBED",
+        "ARIA-HIDDEN",  // For aria-hidden=false.
+        "ARIA-KEYSHORTCUTS",
+        "ARIA-LABEL",
+        "ARIA-LABELEDBY",
+        "ARIA-LABELLEDBY",
+        "ARIA-LIVE",
+        "ARIA-OWNS",
+        "ARIA-RELEVANT",
+        "ARIA-ROLEDESCRIPTION"
+      }));
+  // clang-format on
+
+  return aria_global_properties.Contains(name);
 }
 
-bool AXObject::HasGlobalARIAAttribute() const {
+bool AXObject::HasAriaAttribute(bool does_undo_role_presentation) const {
   auto* element = GetElement();
   if (!element)
     return false;
 
+  // A role is considered an ARIA attribute.
+  if (!does_undo_role_presentation &&
+      AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown) {
+    return true;
+  }
+
+  // Check for any attribute that begins with "aria-".
   AttributeCollection attributes = element->AttributesWithoutUpdate();
   for (const Attribute& attr : attributes) {
     // Attributes cache their uppercase names.
     auto name = attr.GetName().LocalNameUpper();
-    if (IsGlobalARIAAttribute(name))
-      return true;
+    if (name.StartsWith("ARIA-")) {
+      if (!does_undo_role_presentation || DoesUndoRolePresentation(name))
+        return true;
+    }
   }
-  if (!element->DidAttachInternals())
-    return false;
-  const auto& internals_attributes =
-      element->EnsureElementInternals().GetAttributes();
-  for (const QualifiedName& attr : internals_attributes.Keys()) {
-    if (IsGlobalARIAAttribute(attr.LocalNameUpper()))
-      return true;
-  }
+
   return false;
 }
 
@@ -3642,9 +3635,13 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
     if (IsA<HTMLIFrameElement>(*GetNode()) || IsA<HTMLFrameElement>(*GetNode()))
       return ax::mojom::blink::Role::kIframePresentational;
     if ((GetElement() && GetElement()->SupportsFocus()) ||
-        HasGlobalARIAAttribute()) {
-      // If we return an unknown role, then the native HTML role would be used
-      // instead.
+        HasAriaAttribute(true /* does_undo_role_presentation */)) {
+      // Must be exposed with a role if focusable or has a global ARIA property
+      // that is allowed in this context. See
+      // https://w3c.github.io/aria/#presentation for more information about the
+      // conditions upon which elements with role="none"/"presentation" must be
+      // included in the tree. Return Role::kUnknown, so that the native HTML
+      // role is used instead.
       return ax::mojom::blink::Role::kUnknown;
     }
   }

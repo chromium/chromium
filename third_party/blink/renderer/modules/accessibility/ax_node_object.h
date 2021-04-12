@@ -181,7 +181,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // ARIA attributes.
   ax::mojom::blink::Role AriaRoleAttribute() const final;
-  bool HasAriaAttribute() const override;
   void AriaDescribedbyElements(AXObjectVector&) const override;
   void AriaOwnsElements(AXObjectVector&) const override;
   bool SupportsARIADragging() const override;

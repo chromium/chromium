@@ -465,18 +465,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIgnoreObject;
   }
 
-  // If this element has aria attributes on it, it should not be ignored.
-  if (HasGlobalARIAAttribute())
-    return kIncludeObject;
-
-  bool has_non_empty_alt_attribute = !GetAttribute(kAltAttr).IsEmpty();
-  if (IsImage()) {
-    if (has_non_empty_alt_attribute || GetAttribute(kAltAttr).IsNull())
-      return kIncludeObject;
-    else if (ignored_reasons)
-      ignored_reasons->push_back(IgnoredReason(kAXEmptyAlt));
-    return kIgnoreObject;
-  }
   // Using the title or accessibility description (so we
   // check if there's some kind of accessible name for the element)
   // to decide an element's visibility is not as definitive as
@@ -486,8 +474,20 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // for example, any element having an alt attribute will make it
   // not ignored, rather than just images.
   if (HasAriaAttribute() || !GetAttribute(kTitleAttr).IsEmpty() ||
-      has_non_empty_alt_attribute)
+      !GetAttribute(kAltAttr).IsEmpty()) {
     return kIncludeObject;
+  }
+
+  if (IsImage()) {
+    // A null alt attribute means the attribute is not present. We assume this
+    // is a mistake, and expose the image so that it can be repaired.
+    // In contrast, alt="" is treated as intentional markup to ignore the image.
+    if (GetAttribute(kAltAttr).IsNull())
+      return kIncludeObject;
+    else if (ignored_reasons)
+      ignored_reasons->push_back(IgnoredReason(kAXEmptyAlt));
+    return kIgnoreObject;
+  }
 
   // <span> tags are inline tags and not meant to convey information if they
   // have no other ARIA information on them. If we don't ignore them, they may
@@ -2678,25 +2678,6 @@ String AXNodeObject::SlowGetValueForControlIncludingContentEditable() const {
 
 ax::mojom::blink::Role AXNodeObject::AriaRoleAttribute() const {
   return aria_role_;
-}
-
-bool AXNodeObject::HasAriaAttribute() const {
-  Element* element = GetElement();
-  if (!element)
-    return false;
-
-  // Explicit ARIA role should be considered an aria attribute.
-  if (AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown)
-    return true;
-
-  AttributeCollection attributes = element->AttributesWithoutUpdate();
-  for (const Attribute& attr : attributes) {
-    // Attributes cache their uppercase names.
-    if (attr.GetName().LocalNameUpper().StartsWith("ARIA-"))
-      return true;
-  }
-
-  return false;
 }
 
 void AXNodeObject::AriaDescribedbyElements(AXObjectVector& describedby) const {
