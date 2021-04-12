@@ -197,6 +197,15 @@ That said, assuming you have the LLVM sources available, you'll need to bring
 your own `clang-apply-replacements` binary if you want to use the `-fix` option
 noted below.
 
+**Note:** If you're on a system that offers a clang tools through its package
+manager (e.g., on Debian/Ubuntu, `sudo apt-get install clang-tidy clang-tools`),
+you might not need an LLVM checkout to make the required binaries and scripts
+(`clang-tidy`, `run-clang-tidy` and `clang-apply-replacements`) available in
+your `$PATH`. However, the system packaged binaries might be several versions
+behind Chromium's toolchain, so not all flags are guaranteed to work. If this is
+a problem, consider building clang-tidy from the same revision the current
+toolchain is using, rather than filing a bug against the toolchain component.
+
 Running clang-tidy is (hopefully) simple.
 1.  Build chrome normally.
 ```
