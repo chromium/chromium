@@ -262,15 +262,14 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView {
 
 ``` cpp
 #include "base/bind.h"
-#include "base/callback_forward.h"
 ...
 // static
 void LoginBubbleDialogView::Show(View* anchor_view,
                                  BubbleBorder::Arrow anchor_position,
                                  OnSubmitCallback accept_callback) {
   BubbleDialogDelegateView::CreateBubble(
-      new LoginBubbleDialogView(anchor_view, anchor_position,
-                                std::move(accept_callback)))
+      std::make_unique<LoginBubbleDialogView>(anchor_view, anchor_position,
+                                              std::move(accept_callback)))
       ->Show();
 }
 ...
@@ -434,10 +433,10 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
 
 #include "login_bubble_dialog_example.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -469,8 +468,8 @@ void LoginBubbleDialogView::Show(View* anchor_view,
                                  BubbleBorder::Arrow anchor_position,
                                  OnSubmitCallback accept_callback) {
   BubbleDialogDelegateView::CreateBubble(
-      new LoginBubbleDialogView(anchor_view, anchor_position,
-                                std::move(accept_callback)))
+      std::make_unique<LoginBubbleDialogView>(anchor_view, anchor_position,
+                                              std::move(accept_callback)))
       ->Show();
 }
 
