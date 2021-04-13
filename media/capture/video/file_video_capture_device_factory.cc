@@ -23,7 +23,6 @@ base::FilePath GetFilePathFromCommandLine() {
   base::FilePath command_line_file_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           switches::kUseFileForFakeVideoCapture);
-  CHECK(!command_line_file_path.empty());
   return command_line_file_path;
 }
 
