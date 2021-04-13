@@ -4151,12 +4151,12 @@
   {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa", "fredmello", "mahmoudi" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 94
   },
   {
     "name": "paint-preview-startup",
     "owners": [ "ckitagawa", "fredmello", "mahmoudi" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 94
   },
   {
     "name": "passive-listener-default",
