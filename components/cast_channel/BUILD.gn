@@ -123,6 +123,7 @@ if (use_fuzzing_engine) {
       "//third_party/openscreen/src/cast/common/certificate/proto",
       "//third_party/openscreen/src/cast/common/channel/proto",
     ]
+    proto_deps = [ "//third_party/openscreen/src/cast/common/channel/proto:channel_proto" ]
     proto_out_dir = "components/cast_channel/fuzz_proto"
   }
 
