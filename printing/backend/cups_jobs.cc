@@ -317,7 +317,12 @@ bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
     }
     base::StringPiece name(value);
     if (name == base::StringPiece(kPrinterMakeAndModel)) {
-      DCHECK_EQ(IPP_TAG_TEXT, ippGetValueTag(attr));
+      if (IPP_TAG_TEXT != ippGetValueTag(attr)) {
+        LOG(WARNING) << "printer-make-and-model value tag is "
+                     << ippGetValueTag(attr) << " instead of " << IPP_TAG_TEXT
+                     << " (IPP_TAG_TEXT).";
+        continue;
+      }
       const char* make_and_model_string = ippGetString(attr, 0, nullptr);
       if (make_and_model_string) {
         printer_info->make_and_model = make_and_model_string;
