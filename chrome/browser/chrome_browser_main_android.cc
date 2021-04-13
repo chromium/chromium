@@ -67,9 +67,7 @@ void ChromeBrowserMainPartsAndroid::PostProfileInit() {
   // been created. Register non-profile-specific things that use GCM so that no
   // messages can be processed (and dropped) because the handler wasn't
   // installed in time.
-  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
-    webauthn::authenticator::RegisterForCloudMessages();
-  }
+  webauthn::authenticator::RegisterForCloudMessages();
 }
 
 int ChromeBrowserMainPartsAndroid::PreEarlyInitialization() {
