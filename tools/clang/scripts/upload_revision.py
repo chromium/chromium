@@ -99,7 +99,7 @@ def main():
                                                 clang_sub_revision))
 
   rev_string = "{}-{}".format(clang_git_revision, clang_sub_revision)
-  Git(["checkout", "origin/master", "-b", "clang-{}".format(rev_string)])
+  Git(["checkout", "origin/main", "-b", "clang-{}".format(rev_string)])
 
   old_rev_string = PatchRevision(clang_git_revision, clang_sub_revision)
 
