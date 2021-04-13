@@ -149,7 +149,7 @@ SharedQuadState* CreateTestSharedQuadState(
     const gfx::RRectF& rrect) {
   const gfx::Rect layer_rect = rect;
   const gfx::Rect visible_layer_rect = rect;
-  const gfx::Rect clip_rect = rect;
+  const gfx::Rect clip_rect = gfx::Rect();
   const bool is_clipped = false;
   const bool are_contents_opaque = false;
   const float opacity = 1.0f;
@@ -1316,7 +1316,6 @@ class IntersectingQuadPixelTest : public VizPixelTestWithParam {
     trans.RotateAboutYAxis(45.0);
     front_quad_state_ = CreateTestSharedQuadState(
         trans, viewport_rect_, render_pass_.get(), gfx::RRectF());
-    front_quad_state_->clip_rect = quad_rect_;
     // Make sure they end up in a 3d sorting context.
     front_quad_state_->sorting_context_id = 1;
 
@@ -1328,7 +1327,6 @@ class IntersectingQuadPixelTest : public VizPixelTestWithParam {
     back_quad_state_ = CreateTestSharedQuadState(
         trans, viewport_rect_, render_pass_.get(), gfx::RRectF());
     back_quad_state_->sorting_context_id = 1;
-    back_quad_state_->clip_rect = quad_rect_;
   }
   void AppendBackgroundAndRunTest(const cc::PixelComparator& comparator,
                                   const base::FilePath::CharType* ref_file) {

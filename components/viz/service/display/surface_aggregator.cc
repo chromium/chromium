@@ -2122,7 +2122,9 @@ void SurfaceAggregator::HandleDeJelly(Surface* surface) {
       continue;
 
     // We are going to de-jelly this SharedQuadState. Expand the max clip.
-    jelly_clip.Union(state->clip_rect);
+    if (state->is_clipped) {
+      jelly_clip.Union(state->clip_rect);
+    }
 
     // Compute the skew angle and update |max_skew|.
     float de_jelly_angle = gfx::RadToDeg(atan2(delta_y, screen_width));
@@ -2228,6 +2230,7 @@ void SurfaceAggregator::CreateDeJellyRenderPassQuads(
   // MaxDeJellyHeight().
   int un_clip_top = 0;
   int un_clip_bottom = 0;
+  DCHECK(state->is_clipped);
   if (state->clip_rect.y() <= jelly_clip.y()) {
     un_clip_top = MaxDeJellyHeight();
   }

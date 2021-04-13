@@ -2422,9 +2422,9 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
           filters->MapRect(rpdq_params.filter_bounds, local_matrix);
 
       // If after applying the filter we would be clipped out, skip the draw.
-      gfx::Rect clip_rect = quad->shared_quad_state->clip_rect;
-      if (clip_rect.IsEmpty()) {
-        clip_rect = current_draw_rect_;
+      gfx::Rect clip_rect = current_draw_rect_;
+      if (quad->shared_quad_state->is_clipped) {
+        clip_rect = quad->shared_quad_state->clip_rect;
       }
       gfx::Transform transform =
           quad->shared_quad_state->quad_to_target_transform;
