@@ -299,14 +299,20 @@ RequestContentScript::RequestContentScript(
   script_loader_ = ExtensionSystem::Get(browser_context)
                        ->user_script_manager()
                        ->GetUserScriptLoaderForExtension(extension->id());
+  scoped_observation_.Observe(script_loader_);
   AddScript();
 }
 
 RequestContentScript::~RequestContentScript() {
-  DCHECK(script_loader_);
-  script_loader_->RemoveScripts(
-      {UserScriptIDPair(script_.id(), script_.host_id())},
-      UserScriptLoader::ScriptsLoadedCallback());
+  // This can occur either if this RequestContentScript action is removed via an
+  // API call or if its extension is unloaded. If the extension is unloaded, the
+  // associated `script_loader_` may have been deleted before this object which
+  // means the loader has already removed `script_`.
+  if (script_loader_) {
+    script_loader_->RemoveScripts(
+        {UserScriptIDPair(script_.id(), script_.host_id())},
+        UserScriptLoader::ScriptsLoadedCallback());
+  }
 }
 
 void RequestContentScript::InitScript(const mojom::HostID& host_id,
@@ -365,6 +371,17 @@ void RequestContentScript::InstructRenderProcessToInject(
       ->ExecuteDeclarativeScript(
           sessions::SessionTabHelper::IdForTab(contents).id(), extension->id(),
           script_.id(), contents->GetLastCommittedURL());
+}
+
+void RequestContentScript::OnScriptsLoaded(
+    UserScriptLoader* loader,
+    content::BrowserContext* browser_context) {}
+
+void RequestContentScript::OnUserScriptLoaderDestroyed(
+    UserScriptLoader* loader) {
+  DCHECK_EQ(script_loader_, loader);
+  scoped_observation_.Reset();
+  script_loader_ = nullptr;
 }
 
 // static
