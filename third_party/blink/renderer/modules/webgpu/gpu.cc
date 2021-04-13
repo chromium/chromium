@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
@@ -158,7 +159,7 @@ void GPU::RecordAdapterForIdentifiability(
   IdentifiableTokenBuilder output_builder;
   if (adapter) {
     output_builder.AddToken(IdentifiabilityBenignStringToken(adapter->name()));
-    for (const auto& feature : adapter->features()) {
+    for (const auto& feature : adapter->features()->FeatureNameSet()) {
       output_builder.AddToken(IdentifiabilityBenignStringToken(feature));
     }
   }

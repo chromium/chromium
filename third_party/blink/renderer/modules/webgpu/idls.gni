@@ -32,6 +32,7 @@ modules_idl_files = [
   "gpu_sampler.idl",
   "gpu_shader_module.idl",
   "gpu_shader_stage.idl",
+  "gpu_supported_features.idl",
   "gpu_swap_chain.idl",
   "gpu_texture.idl",
   "gpu_texture_usage.idl",

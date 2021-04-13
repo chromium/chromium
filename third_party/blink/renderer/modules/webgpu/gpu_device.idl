@@ -9,7 +9,7 @@
 ] interface GPUDevice : EventTarget {
     [SameObject] readonly attribute GPUAdapter adapter;
 
-    readonly attribute FrozenArray<GPUFeatureName> features;
+    readonly attribute GPUSupportedFeatures features;
     // Deprecated
     readonly attribute FrozenArray<GPUFeatureName> extensions;
 

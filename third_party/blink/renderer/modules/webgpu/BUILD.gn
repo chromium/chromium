@@ -69,6 +69,8 @@ blink_modules_sources("webgpu") {
     "gpu_shader_module.cc",
     "gpu_shader_module.h",
     "gpu_shader_stage.h",
+    "gpu_supported_features.cc",
+    "gpu_supported_features.h",
     "gpu_swap_chain.cc",
     "gpu_swap_chain.h",
     "gpu_texture.cc",

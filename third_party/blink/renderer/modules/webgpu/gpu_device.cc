@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_sampler.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_uncaptured_error_event.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_validation_error.h"
@@ -65,7 +66,8 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
     : ExecutionContextClient(execution_context),
       DawnObject(dawn_control_client, dawn_device),
       adapter_(adapter),
-      feature_name_list_(ToStringVector(descriptor->nonGuaranteedFeatures())),
+      features_(MakeGarbageCollected<GPUSupportedFeatures>(
+          ToStringVector(descriptor->nonGuaranteedFeatures()))),
       queue_(MakeGarbageCollected<GPUQueue>(
           this,
           GetProcs().deviceGetDefaultQueue(GetHandle()))),
@@ -206,15 +208,15 @@ GPUAdapter* GPUDevice::adapter() const {
   return adapter_;
 }
 
-Vector<String> GPUDevice::features() const {
-  return feature_name_list_;
+GPUSupportedFeatures* GPUDevice::features() const {
+  return features_;
 }
 
 Vector<String> GPUDevice::extensions() {
   AddConsoleWarning(
       "The extensions attribute has been deprecated in favor of the features "
       "attribute, and will soon be removed.");
-  return feature_name_list_;
+  return features_->FeatureNameList();
 }
 
 ScriptPromise GPUDevice::lost(ScriptState* script_state) {
@@ -440,6 +442,7 @@ const AtomicString& GPUDevice::InterfaceName() const {
 
 void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(adapter_);
+  visitor->Trace(features_);
   visitor->Trace(queue_);
   visitor->Trace(lost_property_);
   ExecutionContextClient::Trace(visitor);

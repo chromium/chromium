@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+enum GPUFeatureName {
+    "pipeline-statistics-query",
+    "texture-compression-bc",
+    "timestamp-query",
+    "shader-float16",
+    "depth-clamping"
+};
+
+[
+    Exposed(Window WebGPU, Worker WebGPU)
+] interface GPUSupportedFeatures {
+    // TODO(crbug.com/1197293): Should be a setlike of GPUFeatureName, but Blink
+    // doesn't appear to support that yet. Not a compatibility issue since this
+    // setlike is readonly and we can ensure that it only contains strings from
+    // the GPUFeatureName enum.
+    readonly setlike<DOMString>;
+};

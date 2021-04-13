@@ -1678,6 +1678,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_module.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_stage.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_stage.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_supported_features.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_supported_features.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_swap_chain.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_swap_chain.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture.cc",
