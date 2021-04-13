@@ -170,11 +170,9 @@ export class App {
         }
       });
 
-      const payload = (element) =>
-          ({[element.dataset['key']]: element.checked});
       const save = (element) => {
         if (element.dataset['key'] !== undefined) {
-          localStorage.set(payload(element));
+          localStorage.set(element.dataset['key'], element.checked);
         }
       };
       element.addEventListener('change', (event) => {
@@ -188,10 +186,10 @@ export class App {
             // Handle unchecked grouped sibling radios.
             const grouped =
                 `input[type=radio][name=${element.name}]:not(:checked)`;
-            dom.getAll(grouped, HTMLInputElement)
-                .forEach(
-                    (radio) => radio.dispatchEvent(new Event('change')) &&
-                        save(radio));
+            for (const radio of dom.getAll(grouped, HTMLInputElement)) {
+              radio.dispatchEvent(new Event('change'));
+              save(radio);
+            }
           }
         }
       });

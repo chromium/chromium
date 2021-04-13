@@ -98,7 +98,7 @@ export async function initMetrics() {
   const clientId = localStorage.getString(GA_LOCAL_STORAGE_KEY);
 
   const setClientId = (id) => {
-    localStorage.set({[GA_LOCAL_STORAGE_KEY]: id});
+    localStorage.set(GA_LOCAL_STORAGE_KEY, id);
   };
 
   await (await gaHelper).initGA(GA_ID, clientId, Comlink.proxy(setClientId));

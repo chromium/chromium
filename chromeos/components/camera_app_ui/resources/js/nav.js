@@ -211,7 +211,7 @@ export function onKeyPressed(event) {
         }
         const newState = !state.get(state.State.EXPERT);
         state.set(state.State.EXPERT, newState);
-        localStorage.set({expert: newState});
+        localStorage.set('expert', newState);
       })();
       break;
     default:

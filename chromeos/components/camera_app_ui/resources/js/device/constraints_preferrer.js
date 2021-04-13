@@ -97,7 +97,7 @@ export class ConstraintsPreferrer {
    * @protected
    */
   saveResolutionPreference_(key) {
-    localStorage.set({[key]: Object.fromEntries(this.prefResolution_)});
+    localStorage.set(key, Object.fromEntries(this.prefResolution_));
   }
 
   /**
@@ -254,7 +254,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
    * @private
    */
   saveFpsPreference_() {
-    localStorage.set({deviceVideoFps: this.prefFpses_});
+    localStorage.set('deviceVideoFps', this.prefFpses_);
   }
 
   /**

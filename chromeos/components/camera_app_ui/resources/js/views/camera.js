@@ -392,7 +392,7 @@ export class Camera extends View {
       if (localStorage.getBool(ptzToastKey)) {
         return;
       }
-      localStorage.set({[ptzToastKey]: true});
+      localStorage.set(ptzToastKey, true);
 
       const {bottom, right} =
           dom.get('#open-ptz-panel', HTMLButtonElement).getBoundingClientRect();
@@ -475,7 +475,7 @@ export class Camera extends View {
       const shown = localStorage.getBool('isFolderChangeMsgShown');
       await this.configuring_;
       if (!shown) {
-        localStorage.set({isFolderChangeMsgShown: true});
+        localStorage.set('isFolderChangeMsgShown', true);
         await animate.play(this.banner_);
       }
       focusOnShutterButton();

@@ -41,22 +41,18 @@ export function getBool(key) {
 }
 
 /**
- * @param {!Object<string>} items
+ * @param {string} key
+ * @param {*} value
  */
-export function set(items) {
-  for (const [key, val] of Object.entries(items)) {
-    window.localStorage.setItem(key, JSON.stringify(val));
-  }
+export function set(key, value) {
+  window.localStorage.setItem(key, JSON.stringify(value));
 }
 
 /**
- * @param {(string|!Array<string>)} items
+ * @param {...string} keys
  */
-export function remove(items) {
-  if (typeof items === 'string') {
-    items = [items];
-  }
-  for (const key of items) {
+export function remove(...keys) {
+  for (const key of keys) {
     window.localStorage.removeItem(key);
   }
 }
