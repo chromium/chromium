@@ -3102,6 +3102,7 @@ public class ContextualSearchManagerTest {
      */
     @Test
     @SmallTest
+    @FlakyTest(message = "Disabled 4/2021. See https://crbug.com/1197102")
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
