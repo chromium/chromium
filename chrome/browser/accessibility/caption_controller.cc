@@ -16,9 +16,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/caption_bubble_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -180,13 +177,9 @@ void CaptionController::CreateUI() {
   DCHECK(!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
          speech::SodaInstaller::GetInstance()->IsSodaInstalled());
   is_ui_constructed_ = true;
-  // Create captions UI in each browser view.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserAdded(browser);
-  }
 
-  // Add observers to the BrowserList for new browser views being added.
-  BrowserList::GetInstance()->AddObserver(this);
+  caption_bubble_controller_ = CaptionBubbleController::Create();
+  caption_bubble_controller_->UpdateCaptionStyle(caption_style_);
 
   // Observe native theme changes for caption style updates.
   ui::NativeTheme::GetInstanceForWeb()->AddObserver(this);
@@ -207,11 +200,9 @@ void CaptionController::DestroyUI() {
   if (!is_ui_constructed_)
     return;
   is_ui_constructed_ = false;
-  // Destroy caption bubble controllers.
-  caption_bubble_controllers_.clear();
+  caption_bubble_controller_.reset(nullptr);
 
-  // Remove observers.
-  BrowserList::GetInstance()->RemoveObserver(this);
+  // Remove native theme observer.
   ui::NativeTheme::GetInstanceForWeb()->RemoveObserver(this);
 
   // Remove prefs to observe.
@@ -225,65 +216,30 @@ void CaptionController::UpdateAccessibilityCaptionHistograms() {
   base::UmaHistogramBoolean("Accessibility.LiveCaption", enabled_);
 }
 
-void CaptionController::OnBrowserAdded(Browser* browser) {
-  if (browser->profile() != profile_ &&
-      browser->profile()->GetOriginalProfile() != profile_) {
-    return;
-  }
-
-  DCHECK(!caption_bubble_controllers_.count(browser));
-  caption_bubble_controllers_[browser] =
-      CaptionBubbleController::Create(browser);
-  caption_bubble_controllers_[browser]->UpdateCaptionStyle(caption_style_);
-}
-
-void CaptionController::OnBrowserRemoved(Browser* browser) {
-  if (browser->profile() != profile_ &&
-      browser->profile()->GetOriginalProfile() != profile_) {
-    return;
-  }
-
-  DCHECK(caption_bubble_controllers_.count(browser));
-  caption_bubble_controllers_.erase(browser);
-}
-
 bool CaptionController::DispatchTranscription(
     CaptionHostImpl* caption_host_impl,
     const chrome::mojom::TranscriptionResultPtr& transcription_result) {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(caption_host_impl->GetWebContents());
-  if (!browser || !caption_bubble_controllers_.count(browser))
+  if (!caption_bubble_controller_)
     return false;
-  return caption_bubble_controllers_[browser]->OnTranscription(
-      caption_host_impl, transcription_result);
+  return caption_bubble_controller_->OnTranscription(caption_host_impl,
+                                                     transcription_result);
 }
 
 void CaptionController::OnError(CaptionHostImpl* caption_host_impl) {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(caption_host_impl->GetWebContents());
-  if (!browser || !caption_bubble_controllers_.count(browser))
+  if (!caption_bubble_controller_)
     return;
-  caption_bubble_controllers_[browser]->OnError(caption_host_impl);
+  caption_bubble_controller_->OnError(caption_host_impl);
 }
 
 void CaptionController::OnAudioStreamEnd(CaptionHostImpl* caption_host_impl) {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(caption_host_impl->GetWebContents());
-  if (!browser || !caption_bubble_controllers_.count(browser))
+  if (!caption_bubble_controller_)
     return;
-  caption_bubble_controllers_[browser]->OnAudioStreamEnd(caption_host_impl);
+  caption_bubble_controller_->OnAudioStreamEnd(caption_host_impl);
 }
 
 void CaptionController::OnLanguageIdentificationEvent(
     const media::mojom::LanguageIdentificationEventPtr& event) {
   // TODO(crbug.com/1175357): Implement the UI for language identification.
-}
-
-CaptionBubbleController*
-CaptionController::GetCaptionBubbleControllerForBrowser(Browser* browser) {
-  if (!browser || !caption_bubble_controllers_.count(browser))
-    return nullptr;
-  return caption_bubble_controllers_[browser].get();
 }
 
 void CaptionController::OnCaptionStyleUpdated() {
@@ -292,10 +248,7 @@ void CaptionController::OnCaptionStyleUpdated() {
   // not duplicate them here.
   caption_style_ = GetCaptionStyleFromUserSettings(profile_prefs,
                                                    false /* record_metrics */);
-
-  for (const auto& item : caption_bubble_controllers_) {
-    caption_bubble_controllers_[item.first]->UpdateCaptionStyle(caption_style_);
-  }
+  caption_bubble_controller_->UpdateCaptionStyle(caption_style_);
 }
 
 }  // namespace captions

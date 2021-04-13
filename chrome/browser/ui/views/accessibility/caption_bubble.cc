@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/caption_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -35,7 +34,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -45,6 +43,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -56,10 +55,8 @@ static constexpr int kCornerRadiusDip = 4;
 static constexpr int kSidePaddingDip = 18;
 static constexpr int kButtonDip = 16;
 static constexpr int kButtonCircleHighlightPaddingDip = 2;
-// The preferred width of the bubble within its anchor.
-static constexpr double kPreferredAnchorWidthPercentage = 0.8;
 static constexpr int kMaxWidthDip = 536;
-// Margin of the bubble with respect to the anchor window.
+// Margin of the bubble with respect to the context window.
 static constexpr int kMinAnchorMarginDip = 20;
 static constexpr int kCaptionBubbleAlpha = 230;  // 90% opacity
 static constexpr char kPrimaryFont[] = "Roboto";
@@ -70,8 +67,6 @@ static constexpr double kDefaultRatioInParentX = 0.5;
 static constexpr double kDefaultRatioInParentY = 1;
 static constexpr int kErrorImageSizeDip = 20;
 static constexpr int kErrorMessageBetweenChildSpacingDip = 16;
-static constexpr int kFocusRingInnerInsetDip = 3;
-static constexpr int kWidgetDisplacementWithArrowKeyDip = 16;
 static constexpr int kNoActivityIntervalSeconds = 5;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -145,8 +140,7 @@ bool ParseNonTransparentRGBACSSColorString(std::string css_string,
 
 namespace captions {
 // CaptionBubble implementation of BubbleFrameView. This class takes care
-// of making the caption draggable and handling the focus ring when the
-// Caption Bubble is focused.
+// of making the caption draggable.
 class CaptionBubbleFrameView : public views::BubbleFrameView {
  public:
   METADATA_HEADER(CaptionBubbleFrameView);
@@ -157,41 +151,16 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
         close_button_(close_button),
         expand_button_(expand_button),
         collapse_button_(collapse_button) {
-    // The focus ring is drawn on CaptionBubbleFrameView because it has the
-    // correct bounds, but focused state is taken from the CaptionBubble.
-    focus_ring_ = views::FocusRing::Install(this);
-
     auto border = std::make_unique<views::BubbleBorder>(
         views::BubbleBorder::FLOAT, views::BubbleBorder::DIALOG_SHADOW,
         gfx::kPlaceholderColor);
     border->SetCornerRadius(kCornerRadiusDip);
-#if defined(OS_MAC)
-    // Inset the border so that there's space to draw a focus ring on Mac
-    // without clipping by the system window.
-    border->set_insets(border->GetBorderAndShadowInsets() + gfx::Insets(1));
-#endif
-    gfx::Insets shadow = border->GetBorderAndShadowInsets();
-    gfx::Insets padding = gfx::Insets(kFocusRingInnerInsetDip);
-    focus_ring_->SetPathGenerator(
-        std::make_unique<views::RoundRectHighlightPathGenerator>(
-            shadow - padding, kCornerRadiusDip + 2));
     views::BubbleFrameView::SetBubbleBorder(std::move(border));
-    focus_ring_->SetHasFocusPredicate([](View* view) {
-      auto* frame_view = static_cast<CaptionBubbleFrameView*>(view);
-      return frame_view->contents_focused();
-    });
   }
 
   ~CaptionBubbleFrameView() override = default;
   CaptionBubbleFrameView(const CaptionBubbleFrameView&) = delete;
   CaptionBubbleFrameView& operator=(const CaptionBubbleFrameView&) = delete;
-
-  void UpdateFocusRing(bool focused) {
-    contents_focused_ = focused;
-    focus_ring_->SchedulePaint();
-  }
-
-  bool contents_focused() { return contents_focused_; }
 
   // TODO(crbug.com/1055150): This does not work on Linux because the bubble is
   // not a top-level view, so it doesn't receive events. See crbug.com/1074054
@@ -225,17 +194,10 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
     return (hit == HTCLIENT || hit == HTNOWHERE) ? HTCAPTION : hit;
   }
 
-  void Layout() override {
-    views::BubbleFrameView::Layout();
-    focus_ring_->Layout();
-  }
-
  private:
   views::View* close_button_;
   views::View* expand_button_;
   views::View* collapse_button_;
-  views::FocusRing* focus_ring_ = nullptr;
-  bool contents_focused_ = false;
 };
 
 BEGIN_METADATA(CaptionBubbleFrameView, views::BubbleFrameView)
@@ -334,31 +296,19 @@ class CaptionBubbleLabel : public views::Label {
 BEGIN_METADATA(CaptionBubbleLabel, views::Label)
 END_METADATA
 
-CaptionBubble::CaptionBubble(views::View* anchor,
-                             BrowserView* browser_view,
-                             base::OnceClosure destroyed_callback)
-    : BubbleDialogDelegateView(anchor,
-                               views::BubbleBorder::FLOAT,
-                               views::BubbleBorder::Shadow::NO_SHADOW),
-      destroyed_callback_(std::move(destroyed_callback)),
-      ratio_in_parent_x_(kDefaultRatioInParentX),
-      ratio_in_parent_y_(kDefaultRatioInParentY),
-      browser_view_(browser_view),
+CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback)
+    : destroyed_callback_(std::move(destroyed_callback)),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  set_draggable(true);
-  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  AddAccelerator(ui::Accelerator(ui::VKEY_F6, ui::EF_NONE));
-  AddAccelerator(ui::Accelerator(ui::VKEY_F6, ui::EF_SHIFT_DOWN));
-  // The CaptionBubble is focusable. It will alert the CaptionBubbleFrameView
-  // when its focus changes so that the focus ring can be updated.
-  // TODO(crbug.com/1055150): Consider using
-  // View::FocusBehavior::ACCESSIBLE_ONLY. However, that does not seem to get
-  // OnFocus() and OnBlur() called so we never draw the custom focus ring.
-  SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  // While not shown, the title is still used to identify the window in the
+  // window switcher.
+  SetShowTitle(false);
+  SetTitle(IDS_LIVE_CAPTION_BUBBLE_TITLE);
+  set_has_parent(false);
+
   inactivity_timer_ = std::make_unique<base::RetainingOneShotTimer>(
       FROM_HERE, base::TimeDelta::FromSeconds(kNoActivityIntervalSeconds),
       base::BindRepeating(&CaptionBubble::OnInactivityTimeout,
@@ -373,90 +323,15 @@ CaptionBubble::~CaptionBubble() {
 }
 
 gfx::Rect CaptionBubble::GetBubbleBounds() {
-  // Get the height and width of the full bubble using the superclass method.
-  // This includes shadow and insets.
-  gfx::Rect original_bounds =
-      views::BubbleDialogDelegateView::GetBubbleBounds();
-
-  gfx::Rect anchor_rect = GetAnchorView()->GetBoundsInScreen();
-  // Calculate the desired width based on the original bubble's width (which is
-  // the max allowed per the spec).
-  int min_width = anchor_rect.width() - kMinAnchorMarginDip * 2;
-  int desired_width = anchor_rect.width() * kPreferredAnchorWidthPercentage;
-  int width = std::max(min_width, desired_width);
-  if (width > original_bounds.width())
-    width = original_bounds.width();
-  int height = original_bounds.height();
-
-  // The placement is based on the ratio between the center of the widget and
-  // the center of the anchor_rect.
-  int target_x =
-      anchor_rect.x() + anchor_rect.width() * ratio_in_parent_x_ - width / 2.0;
-  int target_y = anchor_rect.y() + anchor_rect.height() * ratio_in_parent_y_ -
-                 height / 2.0;
-  latest_bounds_ = gfx::Rect(target_x, target_y, width, height);
-  latest_anchor_bounds_ = GetAnchorView()->GetBoundsInScreen();
-  anchor_rect.Inset(gfx::Insets(kMinAnchorMarginDip));
-  if (!anchor_rect.Contains(latest_bounds_)) {
-    latest_bounds_.AdjustToFit(anchor_rect);
-  }
-  // If it still doesn't fit after being adjusted to fit, then it is too tall
-  // or too wide for the tiny window, and we need to simply hide it. Otherwise,
-  // ensure it is shown.
-  DCHECK(GetWidget());
-  bool can_layout = latest_bounds_.height() >= height;
-  if (can_layout != can_layout_) {
-    can_layout_ = can_layout;
-    UpdateBubbleVisibility();
-  }
-
-  return latest_bounds_;
-}
-
-void CaptionBubble::OnWidgetBoundsChanged(views::Widget* widget,
-                                          const gfx::Rect& new_bounds) {
-  DCHECK_EQ(widget, GetWidget());
+  // Bubble bounds are what the computed bubble bounds would be, taking into
+  // account the current bubble size.
+  gfx::Rect bubble_bounds = views::BubbleDialogDelegateView::GetBubbleBounds();
+  // Widget bounds are where the bubble currently is in space.
   gfx::Rect widget_bounds = GetWidget()->GetWindowBoundsInScreen();
-  gfx::Rect anchor_rect = GetAnchorView()->GetBoundsInScreen();
-  if (latest_bounds_ == widget_bounds && latest_anchor_bounds_ == anchor_rect) {
-    return;
-  }
-
-  if (latest_anchor_bounds_ != anchor_rect) {
-    // The window has moved. Reposition the widget within it.
-    SizeToContents();
-    return;
-  }
-
-  // Check that our widget is visible. If it is not visible then
-  // the user has not explicitly moved it (because the user can't see it),
-  // so we should take no action.
-  if (!GetWidget()->IsVisible())
-    return;
-
-  // The widget has moved within the window. Recalculate the desired ratio
-  // within the parent.
-  gfx::Rect bounds_rect = GetAnchorView()->GetBoundsInScreen();
-  bounds_rect.Inset(gfx::Insets(kMinAnchorMarginDip));
-
-  bool out_of_bounds = false;
-  if (!bounds_rect.Contains(widget_bounds)) {
-    widget_bounds.AdjustToFit(bounds_rect);
-    out_of_bounds = true;
-  }
-
-  ratio_in_parent_x_ = (widget_bounds.CenterPoint().x() - anchor_rect.x()) /
-                       (1.0 * anchor_rect.width());
-  ratio_in_parent_y_ = (widget_bounds.CenterPoint().y() - anchor_rect.y()) /
-                       (1.0 * anchor_rect.height());
-
-  if (out_of_bounds)
-    SizeToContents();
-
-  // If the widget is visible and unfocused, probably due to a mouse drag, reset
-  // the inactivity timer.
-  if (GetWidget()->IsVisible() && !HasFocus())
-    inactivity_timer_->Reset();
+  // Use the widget x and y to keep the bubble oriented at its current location,
+  // and use the bubble width and height to set the correct bubble size.
+  return gfx::Rect(widget_bounds.x(), widget_bounds.y(), bubble_bounds.width(),
+                   bubble_bounds.height());
 }
 
 void CaptionBubble::Init() {
@@ -478,8 +353,7 @@ void CaptionBubble::Init() {
   UseCompactMargins();
 
   set_close_on_deactivate(false);
-  // The caption bubble starts out hidden and unable to be activated.
-  SetCanActivate(false);
+  SetCanActivate(true);
 
   auto label = std::make_unique<CaptionBubbleLabel>();
   label->SetMultiLine(true);
@@ -550,6 +424,14 @@ void CaptionBubble::Init() {
   UpdateContentSize();
 }
 
+void CaptionBubble::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
+                                             views::Widget* widget) const {
+  params->type = views::Widget::InitParams::TYPE_WINDOW;
+  params->z_order = ui::ZOrderLevel::kFloatingWindow;
+  params->visible_on_all_workspaces = true;
+  params->name = "LiveCaptionWindow";
+}
+
 bool CaptionBubble::ShouldShowCloseButton() const {
   // We draw our own close button so that we can capture the button presses and
   // so we can customize its appearance.
@@ -564,64 +446,23 @@ CaptionBubble::CreateNonClientFrameView(views::Widget* widget) {
   return frame;
 }
 
-void CaptionBubble::OnKeyEvent(ui::KeyEvent* event) {
-  // Use the arrow keys to move.
-  if (event->type() == ui::ET_KEY_PRESSED) {
-    gfx::Vector2d offset;
-    if (event->key_code() == ui::VKEY_UP)
-      offset.set_y(-kWidgetDisplacementWithArrowKeyDip);
-    if (event->key_code() == ui::VKEY_DOWN)
-      offset.set_y(kWidgetDisplacementWithArrowKeyDip);
-    if (event->key_code() == ui::VKEY_LEFT)
-      offset.set_x(-kWidgetDisplacementWithArrowKeyDip);
-    if (event->key_code() == ui::VKEY_RIGHT)
-      offset.set_x(kWidgetDisplacementWithArrowKeyDip);
-    if (offset != gfx::Vector2d()) {
-      DCHECK(GetWidget());
-      gfx::Rect bounds = GetWidget()->GetWindowBoundsInScreen();
-      bounds.Offset(offset);
-      GetWidget()->SetBounds(bounds);
-      int x = 100 * base::ClampToRange(ratio_in_parent_x_, 0.0, 1.0);
-      int y = 100 * base::ClampToRange(ratio_in_parent_y_, 0.0, 1.0);
-      GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
-          IDS_LIVE_CAPTION_BUBBLE_MOVE_SCREENREADER_ANNOUNCEMENT,
-          base::NumberToString16(x), base::NumberToString16(y)));
-      return;
-    }
-  }
-  views::BubbleDialogDelegateView::OnKeyEvent(event);
+void CaptionBubble::OnWidgetBoundsChanged(views::Widget* widget,
+                                          const gfx::Rect& new_bounds) {
+  DCHECK_EQ(widget, GetWidget());
+  // If the widget is visible and unfocused, probably due to a mouse drag, reset
+  // the inactivity timer.
+  if (GetWidget()->IsVisible() && !HasFocus())
+    inactivity_timer_->Reset();
 }
 
-bool CaptionBubble::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  if (accelerator.key_code() == ui::VKEY_ESCAPE) {
-    // We don't want to close when the user hits "escape", because this isn't a
-    // normal dialog bubble -- it's meant to be up all the time. We just want to
-    // release focus back to the page in that case.
-    // Users should use the "close" button to close the bubble.
-    GetAnchorView()->RequestFocus();
-    GetAnchorView()->GetWidget()->Activate();
-    return true;
+void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
+                                              bool active) {
+  DCHECK_EQ(widget, GetWidget());
+  if (active) {
+    inactivity_timer_->Stop();
+  } else {
+    inactivity_timer_->Reset();
   }
-  if (accelerator.key_code() == ui::VKEY_F6) {
-    // F6 rotates focus through the panes in the browser. Use
-    // BrowserView::AcceleratorPressed so that metrics are logged appropriately.
-    browser_view_->AcceleratorPressed(accelerator);
-    // Remove focus from this widget.
-    browser_view_->GetWidget()->Activate();
-    return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
-void CaptionBubble::OnFocus() {
-  frame_->UpdateFocusRing(true);
-  inactivity_timer_->Stop();
-}
-
-void CaptionBubble::OnBlur() {
-  frame_->UpdateFocusRing(false);
-  inactivity_timer_->Reset();
 }
 
 void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -631,17 +472,6 @@ void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
   return title_->GetText();
-}
-
-void CaptionBubble::AddedToWidget() {
-  DCHECK(GetWidget());
-  DCHECK(GetAnchorView());
-  DCHECK(anchor_widget());
-  GetWidget()->SetFocusTraversableParent(
-      anchor_widget()->GetFocusTraversable());
-  GetWidget()->SetFocusTraversableParentView(GetAnchorView());
-  GetAnchorView()->SetProperty(views::kAnchoredDialogKey,
-                               static_cast<DialogDelegate*>(this));
 }
 
 void CaptionBubble::CloseButtonPressed() {
@@ -722,41 +552,23 @@ void CaptionBubble::UpdateBubbleVisibility() {
     return;
   }
 
-  // Hide the widget if there is no room for it, the model is closed. or the
-  // bubble has no activity. Activity is defined as transcription received from
-  // the speech service or user interacting with the bubble through focus,
-  // pressing buttons, or dragging.
-  if (!can_layout_ || model_->IsClosed() || !HasActivity()) {
+  // Hide the widget if the model is closed or the bubble has no activity.
+  // Activity is defined as transcription received from the speech service or
+  // user interacting with the bubble through focus, pressing buttons, or
+  // dragging.
+  if (model_->IsClosed() || !HasActivity()) {
     Hide();
     return;
   }
 
   // Show the widget if it has text or an error to display.
   if (!model_->GetFullText().empty() || model_->HasError()) {
-    if (!GetWidget()->IsVisible()) {
-      GetWidget()->ShowInactive();
-      GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-          IDS_LIVE_CAPTION_BUBBLE_APPEAR_SCREENREADER_ANNOUNCEMENT));
-      LogSessionEvent(SessionEvent::kStreamStarted);
-    }
+    ShowInactive();
     return;
   }
 
   // No text and no error. Hide it.
   Hide();
-}
-
-void CaptionBubble::OnWidgetVisibilityChanged(views::Widget* widget,
-                                              bool visible) {
-  DCHECK_EQ(widget, GetWidget());
-  // The caption bubble can only be activated when it is visible. Nothing else,
-  // including the focus manager, can activate the caption bubble.
-  SetCanActivate(visible);
-  // Ensure that the widget is deactivated when it is hidden.
-  // TODO(crbug.com/1144201): Investigate whether Hide() should always
-  // deactivate widgets, and if so, remove this.
-  if (!visible)
-    widget->Deactivate();
 }
 
 void CaptionBubble::UpdateCaptionStyle(
@@ -887,11 +699,58 @@ void CaptionBubble::Redraw() {
   SizeToContents();
 }
 
-void CaptionBubble::Hide() {
-  if (GetWidget()->IsVisible()) {
-    GetWidget()->Hide();
-    LogSessionEvent(SessionEvent::kStreamEnded);
+void CaptionBubble::ShowInactive() {
+  DCHECK(model_);
+  if (GetWidget()->IsVisible())
+    return;
+
+  GetWidget()->ShowInactive();
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      IDS_LIVE_CAPTION_BUBBLE_APPEAR_SCREENREADER_ANNOUNCEMENT));
+  LogSessionEvent(SessionEvent::kStreamStarted);
+
+  // If the caption bubble has already been shown, do not reposition it.
+  if (has_been_shown_)
+    return;
+  has_been_shown_ = true;
+
+  // The first time that the caption bubble is shown, place it at the bottom
+  // center of the context widget for the currently set model. We do the
+  // placement at this time to ensure that the caption bubble is positioned
+  // where the user will spot it. If there are multiple browser windows open,
+  // and the user plays media on the second window, the caption bubble will show
+  // up in the bottom center of the second window, which is where the user is
+  // already looking. It also ensures that the caption bubble will appear in the
+  // right workspace if a user has Chrome windows open on multiple workspaces.
+  if (!model_->GetContext())
+    return;
+  gfx::Rect context_rect = model_->GetContext()->GetClientAreaBoundsInScreen();
+  context_rect.Inset(gfx::Insets(kMinAnchorMarginDip));
+  gfx::Rect bubble_bounds = GetBubbleBounds();
+
+  // The placement is based on the ratio between the center of the widget and
+  // the center of the context_rect.
+  int target_x = context_rect.x() +
+                 context_rect.width() * kDefaultRatioInParentX -
+                 bubble_bounds.width() / 2.0;
+  int target_y = context_rect.y() +
+                 context_rect.height() * kDefaultRatioInParentY -
+                 bubble_bounds.height() / 2.0;
+  gfx::Rect target_bounds = gfx::Rect(target_x, target_y, bubble_bounds.width(),
+                                      bubble_bounds.height());
+  if (!context_rect.Contains(target_bounds)) {
+    target_bounds.AdjustToFit(context_rect);
   }
+
+  GetWidget()->SetBounds(target_bounds);
+}
+
+void CaptionBubble::Hide() {
+  if (!GetWidget()->IsVisible())
+    return;
+  GetWidget()->Hide();
+  GetWidget()->Deactivate();
+  LogSessionEvent(SessionEvent::kStreamEnded);
 }
 
 void CaptionBubble::OnInactivityTimeout() {

@@ -7,6 +7,10 @@
 
 #include <string>
 
+namespace views {
+class Widget;
+}
+
 namespace captions {
 
 class CaptionBubble;
@@ -20,9 +24,10 @@ class CaptionBubble;
 //  is alerted.
 //
 //  There exists one CaptionBubble and one CaptionBubbleControllerViews per
-//  browser, but one CaptionBubbleModel per tab. The CaptionBubbleModel is owned
-//  by the CaptionBubbleControllerViews. It is created when a tab activates and
-//  exists for the lifetime of that tab.
+//  profile, but one CaptionBubbleModel per media stream. The CaptionBubbleModel
+//  is owned by the CaptionBubbleControllerViews. It is created when
+//  transcriptions from a new media stream are received and exists until the
+//  audio stream ends for that stream.
 //
 //  Partial text is a speech result that is subject to change. Incoming partial
 //  texts overlap with the previous partial text.
@@ -34,7 +39,7 @@ class CaptionBubble;
 //
 class CaptionBubbleModel {
  public:
-  CaptionBubbleModel();
+  explicit CaptionBubbleModel(views::Widget* context);
   ~CaptionBubbleModel();
   CaptionBubbleModel(const CaptionBubbleModel&) = delete;
   CaptionBubbleModel& operator=(const CaptionBubbleModel&) = delete;
@@ -61,6 +66,7 @@ class CaptionBubbleModel {
   bool IsClosed() const { return is_closed_; }
   bool HasError() const { return has_error_; }
   std::string GetFullText() const { return final_text_ + partial_text_; }
+  views::Widget* GetContext() const { return context_; }
 
  private:
   // Alert the observer that a change has occurred to the model text.
@@ -74,6 +80,11 @@ class CaptionBubbleModel {
 
   // Whether an error should be displayed one the bubble.
   bool has_error_ = false;
+
+  // The context widget for this caption bubble. On Chrome browser, this is the
+  // top level widget of the browser window. When this feature is implemented
+  // in ash, this will be the top level widget of the ash window.
+  views::Widget* context_ = nullptr;
 
   // The CaptionBubble observing changes to this model.
   CaptionBubble* observer_ = nullptr;

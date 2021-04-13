@@ -8,16 +8,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/accessibility/caption_controller.h"
-#include "chrome/browser/accessibility/caption_controller_factory.h"
-#include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/accessibility/caption_bubble_controller_views.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -46,12 +42,7 @@
 
 class BrowserViewTest : public InProcessBrowserTest {
  public:
-  BrowserViewTest() : devtools_(nullptr) {
-    // TODO(crbug.com/1182859): Update this test to enable the
-    // kUseSodaForLiveCaption feature.
-    scoped_feature_list_.InitWithFeatures({media::kLiveCaption},
-                                          {media::kUseSodaForLiveCaption});
-  }
+  BrowserViewTest() : devtools_(nullptr) {}
 
  protected:
   BrowserView* browser_view() {
@@ -382,62 +373,3 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
 }
 
 #endif  // !defined(OS_MAC)
-
-// Mac processes different accelerators and also focuses differently.
-// TODO(crbug.com/1055150): Implement RotatePaneFocus for Mac and add a similar
-// test using command+option+down/up arrows.
-#if !defined(OS_MAC)
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, F6CyclesThroughCaptionBubbleToo) {
-  captions::CaptionController* caption_controller =
-      captions::CaptionControllerFactory::GetForProfileIfExists(
-          browser()->profile());
-  caption_controller->Init();
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
-                                               true);
-  // No bubble is shown until a transcription happens.
-  captions::CaptionBubbleControllerViews* bubble_controller =
-      static_cast<captions::CaptionBubbleControllerViews*>(
-          caption_controller->GetCaptionBubbleControllerForBrowser(browser()));
-  EXPECT_FALSE(bubble_controller->GetFocusableCaptionBubble());
-
-  auto caption_host_impl = std::make_unique<captions::CaptionHostImpl>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
-  caption_controller->DispatchTranscription(
-      caption_host_impl.get(),
-      chrome::mojom::TranscriptionResult::New("Hello, world", false));
-  // Now the caption bubble exists but is not focused.
-  views::View* bubble = bubble_controller->GetFocusableCaptionBubble();
-  EXPECT_TRUE(bubble);
-  EXPECT_TRUE(bubble->GetWidget()->IsVisible());
-  EXPECT_FALSE(bubble->HasFocus());
-  EXPECT_FALSE(bubble->GetFocusManager()->GetFocusedView());
-
-  // Press F6 until we enter the bubble.
-  while (!bubble->HasFocus()) {
-    EXPECT_TRUE(
-        browser_view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_F6, 0)));
-  }
-
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Check the native widget has focus.
-  aura::client::FocusClient* focus_client =
-      aura::client::GetFocusClient(bubble->GetWidget()->GetNativeView());
-  EXPECT_TRUE(bubble->GetWidget()->GetNativeView() ==
-              focus_client->GetFocusedWindow());
-#endif
-
-  // F6 again exits the bubble. Because the bubble is focused, it gets the
-  // accelerator event.
-  EXPECT_TRUE(bubble->AcceleratorPressed(ui::Accelerator(ui::VKEY_F6, 0)));
-
-  // Now something else within the browser_view's focus manager is focused.
-  EXPECT_FALSE(bubble->HasFocus());
-  EXPECT_FALSE(bubble->GetFocusManager()->GetFocusedView());
-  EXPECT_TRUE(browser_view()->GetWidget()->GetFocusManager()->GetFocusedView());
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // The bubble's native widget should no longer have focus.
-  EXPECT_FALSE(bubble->GetWidget()->GetNativeView() ==
-               focus_client->GetFocusedWindow());
-#endif
-}
-#endif

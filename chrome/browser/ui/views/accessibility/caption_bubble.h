@@ -22,16 +22,14 @@ class RetainingOneShotTimer;
 }
 
 namespace views {
-class Label;
 class ImageButton;
 class ImageView;
+class Label;
 }
 
 namespace ui {
 struct AXNodeData;
 }
-
-class BrowserView;
 
 namespace captions {
 class CaptionBubbleFrameView;
@@ -40,31 +38,34 @@ class CaptionBubbleLabel;
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble
 //
-//  A caption bubble that floats above the BrowserView and shows automatically-
-//  generated text captions for audio and media streams from the current tab.
+//  A caption bubble that floats above all other windows and shows
+//  automatically- generated text captions for audio and media streams. The
+//  captions bubble's widget is a top-level window that has top z order and is
+//  visible on all workspaces. It is draggable in and out of the tab.
 //
 class CaptionBubble : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(CaptionBubble);
-  CaptionBubble(views::View* anchor,
-                BrowserView* browser_view,
-                base::OnceClosure destroyed_callback);
+  explicit CaptionBubble(base::OnceClosure destroyed_callback);
   CaptionBubble(const CaptionBubble&) = delete;
   CaptionBubble& operator=(const CaptionBubble&) = delete;
   ~CaptionBubble() override;
 
   // Sets the caption bubble model currently being used for this caption bubble.
-  // There exists one CaptionBubble per browser, but one CaptionBubbleModel
-  // per tab. A new CaptionBubbleModel is set when the active tab changes. A
-  // CaptionBubbleModel is owned by the CaptionBubbleControllerViews. It is
-  // created when a tab activates and exists for the lifetime of that tab.
+  // There exists one CaptionBubble per profile, but one CaptionBubbleModel per
+  // media stream. A new CaptionBubbleModel is set when transcriptions from a
+  // different media stream are received. A CaptionBubbleModel is owned by the
+  // CaptionBubbleControllerViews. It is created when transcriptions from a new
+  // media stream are received and exists until the audio stream ends for that
+  // stream.
   void SetModel(CaptionBubbleModel* model);
 
   // Changes the caption style of the caption bubble.
   void UpdateCaptionStyle(base::Optional<ui::CaptionStyle> caption_style);
 
-  // Returns whether the bubble has activity, with the above definition of
-  // activity.
+  // Returns whether the bubble has activity. Activity is defined as
+  // transcription received from the speech service or user interacting with the
+  // bubble through focus, pressing buttons, or dragging.
   bool HasActivity();
 
   views::Label* GetLabelForTesting();
@@ -76,20 +77,17 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
  protected:
   // views::BubbleDialogDelegateView:
   void Init() override;
+  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
+                                views::Widget* widget) const override;
   bool ShouldShowCloseButton() const override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   gfx::Rect GetBubbleBounds() override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
-  void OnKeyEvent(ui::KeyEvent* event) override;
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void OnFocus() override;
-  void OnBlur() override;
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetAccessibleWindowTitle() const override;
-  void AddedToWidget() override;
 
  private:
   friend class CaptionBubbleControllerViewsTest;
@@ -128,6 +126,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   int GetNumLinesVisible();
   void UpdateContentSize();
   void Redraw();
+  void ShowInactive();
   void Hide();
 
   // The following methods set the caption bubble style based on the user's
@@ -160,22 +159,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
 
   base::ScopedClosureRunner destroyed_callback_;
 
-  // The bubble tries to stay relatively positioned in its parent.
-  // ratio_in_parent_x_ represents the ratio along the parent width at which
-  // to display the center of the bubble, if possible.
-  double ratio_in_parent_x_;
-  double ratio_in_parent_y_;
-  gfx::Rect latest_bounds_;
-  gfx::Rect latest_anchor_bounds_;
-
-  // Whether there's space for the widget to layout within its parent window.
-  bool can_layout_ = true;
-
-  // A reference to the BrowserView holding this bubble. Unowned.
-  BrowserView* browser_view_;
-
   // Whether the caption bubble is expanded to show more lines of text.
   bool is_expanded_ = false;
+
+  bool has_been_shown_ = false;
 
   // A timer which causes the bubble to hide if there is no activity after a
   // specified interval.

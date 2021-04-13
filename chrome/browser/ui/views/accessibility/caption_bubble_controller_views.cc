@@ -7,41 +7,21 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/accessibility/caption_controller.h"
-#include "chrome/browser/accessibility/caption_controller_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/views/widget/widget.h"
 
 namespace captions {
 
 // Static
-std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create(
-    Browser* browser) {
-  return std::make_unique<CaptionBubbleControllerViews>(browser);
+std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create() {
+  return std::make_unique<CaptionBubbleControllerViews>();
 }
 
-// Static
-views::View* CaptionBubbleControllerViews::GetCaptionBubbleAccessiblePane(
-    Browser* browser) {
-  CaptionController* caption_controller =
-      CaptionControllerFactory::GetForProfileIfExists(browser->profile());
-  if (caption_controller) {
-    CaptionBubbleControllerViews* bubble_controller =
-        static_cast<CaptionBubbleControllerViews*>(
-            caption_controller->GetCaptionBubbleControllerForBrowser(browser));
-    if (bubble_controller)
-      return bubble_controller->GetFocusableCaptionBubble();
-  }
-  return nullptr;
-}
-
-CaptionBubbleControllerViews::CaptionBubbleControllerViews(Browser* browser)
-    : CaptionBubbleController(browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+CaptionBubbleControllerViews::CaptionBubbleControllerViews() {
   caption_bubble_ = new CaptionBubble(
-      browser_view->GetContentsView(), browser_view,
       base::BindOnce(&CaptionBubbleControllerViews::OnCaptionBubbleDestroyed,
                      base::Unretained(this)));
   caption_widget_ =
@@ -110,17 +90,16 @@ void CaptionBubbleControllerViews::UpdateCaptionStyle(
   caption_bubble_->UpdateCaptionStyle(caption_style);
 }
 
-views::View* CaptionBubbleControllerViews::GetFocusableCaptionBubble() {
-  if (caption_widget_ && caption_widget_->IsVisible())
-    return caption_bubble_;
-  return nullptr;
-}
-
 void CaptionBubbleControllerViews::SetActiveModel(
     CaptionHostImpl* caption_host_impl) {
   if (!caption_bubble_models_.count(caption_host_impl)) {
-    caption_bubble_models_.emplace(caption_host_impl,
-                                   std::make_unique<CaptionBubbleModel>());
+    content::WebContents* web_contents = caption_host_impl->GetWebContents();
+    views::Widget* context =
+        web_contents ? views::Widget::GetTopLevelWidgetForNativeView(
+                           web_contents->GetNativeView())
+                     : nullptr;
+    caption_bubble_models_.emplace(
+        caption_host_impl, std::make_unique<CaptionBubbleModel>(context));
   }
 
   CaptionBubbleModel* caption_bubble_model =

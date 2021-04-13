@@ -79,7 +79,6 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
-#include "chrome/browser/ui/views/accessibility/caption_bubble_controller_views.h"
 #include "chrome/browser/ui/views/accessibility/caret_browsing_dialog_delegate.h"
 #include "chrome/browser/ui/views/autofill/autofill_bubble_handler_impl.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
@@ -2745,14 +2744,6 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (download_shelf_)
     panes->push_back(download_shelf_->GetView());
 // TODO(crbug.com/1055150): Implement for mac.
-#if !defined(OS_MAC)
-  // See if there is a caption bubble present.
-  views::View* caption_bubble =
-      captions::CaptionBubbleControllerViews::GetCaptionBubbleAccessiblePane(
-          browser());
-  if (caption_bubble)
-    panes->push_back(caption_bubble);
-#endif
   panes->push_back(contents_web_view_);
   if (devtools_web_view_->GetVisible())
     panes->push_back(devtools_web_view_);

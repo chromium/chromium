@@ -72,18 +72,14 @@ class CaptionControllerTest : public InProcessBrowserTest {
       speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   }
 
-  void SetLiveCaptionEnabledForProfile(bool enabled, Profile* profile) {
+  void SetLiveCaptionEnabledOnProfile(bool enabled, Profile* profile) {
     profile->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
     if (enabled)
       speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   }
 
   CaptionController* GetController() {
-    return GetControllerForBrowser(browser());
-  }
-
-  CaptionController* GetControllerForBrowser(Browser* browser) {
-    return GetControllerForProfile(browser->profile());
+    return GetControllerForProfile(browser()->profile());
   }
 
   CaptionController* GetControllerForProfile(Profile* profile) {
@@ -91,101 +87,81 @@ class CaptionControllerTest : public InProcessBrowserTest {
   }
 
   CaptionBubbleController* GetBubbleController() {
-    return GetBubbleControllerForBrowser(browser());
+    return GetBubbleControllerForProfile(browser()->profile());
   }
 
-  CaptionBubbleController* GetBubbleControllerForBrowser(Browser* browser) {
-    return GetControllerForBrowser(browser)
-        ->GetCaptionBubbleControllerForBrowser(browser);
+  CaptionBubbleController* GetBubbleControllerForProfile(Profile* profile) {
+    return GetControllerForProfile(profile)->caption_bubble_controller_.get();
   }
 
-  CaptionHostImpl* GetCaptionHostImplForBrowser(Browser* browser) {
-    if (!caption_host_impls_.count(browser)) {
-      caption_host_impls_.emplace(browser, std::make_unique<CaptionHostImpl>(
-                                               browser->tab_strip_model()
-                                                   ->GetActiveWebContents()
-                                                   ->GetMainFrame()));
+  CaptionHostImpl* GetCaptionHostImpl() {
+    if (!caption_host_impl_) {
+      caption_host_impl_ = std::make_unique<CaptionHostImpl>(
+          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
     }
-    return caption_host_impls_[browser].get();
+    return caption_host_impl_.get();
   }
 
   bool DispatchTranscription(std::string text) {
-    return DispatchTranscriptionToBrowser(text, browser());
+    return DispatchTranscriptionToProfile(text, browser()->profile());
   }
 
-  bool DispatchTranscriptionToBrowser(std::string text, Browser* browser) {
-    return DispatchTranscriptionToBrowserForProfile(text, browser,
-                                                    browser->profile());
-  }
-
-  bool DispatchTranscriptionToBrowserForProfile(std::string text,
-                                                Browser* browser,
-                                                Profile* profile) {
+  bool DispatchTranscriptionToProfile(std::string text, Profile* profile) {
     return GetControllerForProfile(profile)->DispatchTranscription(
-        GetCaptionHostImplForBrowser(browser),
+        GetCaptionHostImpl(),
         chrome::mojom::TranscriptionResult::New(text, false /* is_final */));
   }
 
-  void OnError() { OnErrorOnBrowser(browser()); }
+  void OnError() { OnErrorOnProfile(browser()->profile()); }
 
-  void OnErrorOnBrowser(Browser* browser) {
-    OnErrorOnBrowserForProfile(browser, browser->profile());
+  void OnErrorOnProfile(Profile* profile) {
+    GetControllerForProfile(profile)->OnError(GetCaptionHostImpl());
   }
 
-  void OnErrorOnBrowserForProfile(Browser* browser, Profile* profile) {
-    GetControllerForProfile(profile)->OnError(
-        GetCaptionHostImplForBrowser(browser));
+  void OnAudioStreamEnd() { OnAudioStreamEndOnProfile(browser()->profile()); }
+
+  void OnAudioStreamEndOnProfile(Profile* profile) {
+    GetControllerForProfile(profile)->OnAudioStreamEnd(GetCaptionHostImpl());
   }
 
-  void OnAudioStreamEnd() { OnAudioStreamEndOnBrowser(browser()); }
-
-  void OnAudioStreamEndOnBrowser(Browser* browser) {
-    OnAudioStreamEndOnBrowserForProfile(browser, browser->profile());
+  bool HasBubbleController() {
+    return HasBubbleControllerOnProfile(browser()->profile());
   }
 
-  void OnAudioStreamEndOnBrowserForProfile(Browser* browser, Profile* profile) {
-    GetControllerForProfile(profile)->OnAudioStreamEnd(
-        GetCaptionHostImplForBrowser(browser));
-  }
-
-  int NumBubbleControllers() {
-    return NumBubbleControllersForProfile(browser()->profile());
-  }
-
-  int NumBubbleControllersForProfile(Profile* profile) {
-    return GetControllerForProfile(profile)->caption_bubble_controllers_.size();
+  bool HasBubbleControllerOnProfile(Profile* profile) {
+    return GetControllerForProfile(profile)->caption_bubble_controller_ !=
+           nullptr;
   }
 
   void ExpectIsWidgetVisible(bool visible) {
-    ExpectIsWidgetVisibleOnBrowser(visible, browser());
+    ExpectIsWidgetVisibleOnProfile(visible, browser()->profile());
   }
 
-  void ExpectIsWidgetVisibleOnBrowser(bool visible, Browser* browser) {
+  void ExpectIsWidgetVisibleOnProfile(bool visible, Profile* profile) {
 #if defined(TOOLKIT_VIEWS)
     EXPECT_EQ(
         visible,
-        GetBubbleControllerForBrowser(browser)->IsWidgetVisibleForTesting());
+        GetBubbleControllerForProfile(profile)->IsWidgetVisibleForTesting());
 #endif
   }
 
   void ExpectBubbleLabelTextEquals(std::string text) {
-    ExpectBubbleLabelTextOnBrowserEquals(text, browser());
+    ExpectBubbleLabelTextOnProfileEquals(text, browser()->profile());
   }
 
-  void ExpectBubbleLabelTextOnBrowserEquals(std::string text,
-                                            Browser* browser) {
+  void ExpectBubbleLabelTextOnProfileEquals(std::string text,
+                                            Profile* profile) {
 #if defined(TOOLKIT_VIEWS)
     EXPECT_EQ(
         text,
-        GetBubbleControllerForBrowser(browser)->GetBubbleLabelTextForTesting());
+        GetBubbleControllerForProfile(profile)->GetBubbleLabelTextForTesting());
 #endif
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unordered_map<Browser*, std::unique_ptr<CaptionHostImpl>>
-      caption_host_impls_;
+  std::unique_ptr<CaptionHostImpl> caption_host_impl_;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, ProfilePrefsAreRegistered) {
@@ -220,15 +196,15 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, LiveCaptionEnabledChanged) {
   EXPECT_EQ(nullptr, GetBubbleController());
-  EXPECT_EQ(0, NumBubbleControllers());
+  EXPECT_FALSE(HasBubbleController());
 
   SetLiveCaptionEnabled(true);
   EXPECT_NE(nullptr, GetBubbleController());
-  EXPECT_EQ(1, NumBubbleControllers());
+  EXPECT_TRUE(HasBubbleController());
 
   SetLiveCaptionEnabled(false);
   EXPECT_EQ(nullptr, GetBubbleController());
-  EXPECT_EQ(0, NumBubbleControllers());
+  EXPECT_FALSE(HasBubbleController());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
@@ -241,154 +217,24 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
 
   SetLiveCaptionEnabled(false);
   EXPECT_EQ(nullptr, GetBubbleController());
-  EXPECT_EQ(0, NumBubbleControllers());
+  EXPECT_FALSE(HasBubbleController());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnSodaInstalled) {
-  EXPECT_EQ(0, NumBubbleControllers());
+  EXPECT_FALSE(HasBubbleController());
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
-  EXPECT_EQ(0, NumBubbleControllers());
+  EXPECT_FALSE(HasBubbleController());
 
   // The UI is only created after SODA is installed.
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  EXPECT_EQ(1, NumBubbleControllers());
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnBrowserAdded) {
-  EXPECT_EQ(0, NumBubbleControllers());
-
-  // Add a new browser and then enable live caption. Test that a caption bubble
-  // controller is created.
-  CreateBrowser(browser()->profile());
-  SetLiveCaptionEnabled(true);
-  EXPECT_EQ(2, NumBubbleControllers());
-
-  // Add a new browser and test that a caption bubble controller is created.
-  CreateBrowser(browser()->profile());
-  EXPECT_EQ(3, NumBubbleControllers());
-
-  // Disable live caption. Add a new browser and test that a caption bubble
-  // controller is not created.
-  SetLiveCaptionEnabled(false);
-  CreateBrowser(browser()->profile());
-  EXPECT_EQ(0, NumBubbleControllers());
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnBrowserAdded_Incognito) {
-  EXPECT_EQ(0, NumBubbleControllers());
-
-  // Add a new incognito browser and then enable live caption. Test that a
-  // caption bubble controller is created in each browser (incognito and
-  // regular).
-  CreateIncognitoBrowser();
-  SetLiveCaptionEnabled(true);
-  EXPECT_EQ(2, NumBubbleControllers());
-
-  // Add a new incognito browser and test that a caption bubble controller is
-  // created.
-  CreateIncognitoBrowser();
-  EXPECT_EQ(3, NumBubbleControllers());
-
-  // Disable live caption. Add a new incognito browser and test that a caption
-  // bubble controller is not created.
-  SetLiveCaptionEnabled(false);
-  CreateIncognitoBrowser();
-  EXPECT_EQ(0, NumBubbleControllers());
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnBrowserRemoved) {
-  Profile* profile = browser()->profile();
-  CaptionController* controller = GetController();
-  Browser* browser1 = browser();
-  // Add 3 browsers.
-  Browser* browser2 = CreateBrowser(profile);
-  Browser* browser3 = CreateBrowser(profile);
-  Browser* browser4 = CreateBrowser(profile);
-
-  SetLiveCaptionEnabled(true);
-  EXPECT_EQ(4, NumBubbleControllers());
-
-  // Close browser4 and test that the caption bubble controller was destroyed.
-  browser4->window()->Close();
-  ui_test_utils::WaitForBrowserToClose();
-  EXPECT_EQ(nullptr,
-            controller->GetCaptionBubbleControllerForBrowser(browser4));
-  EXPECT_EQ(3, NumBubbleControllers());
-
-  // Make the bubble on browser3 visible by dispatching a transcription.
-  DispatchTranscriptionToBrowser(
-      "If you lift a kangaroo's tail off the ground it can't hop.", browser3);
-  ExpectIsWidgetVisibleOnBrowser(true, browser3);
-  browser3->window()->Close();
-  ui_test_utils::WaitForBrowserToClose();
-  EXPECT_EQ(nullptr,
-            controller->GetCaptionBubbleControllerForBrowser(browser3));
-  EXPECT_EQ(2, NumBubbleControllers());
-
-  // Make the bubble on browser2 visible by dispatching a transcription.
-  DispatchTranscriptionToBrowser(
-      "A lion's roar can be heard from 5 miles away.", browser2);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
-
-  // Close all browsers and verify that the caption bubbles are destroyed on
-  // the two remaining browsers.
-  chrome::CloseAllBrowsers();
-  ui_test_utils::WaitForBrowserToClose();
-  ui_test_utils::WaitForBrowserToClose();
-
-  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
-    // With DestroyProfileOnBrowserClose, the Profile* is deleted entirely.
-    //
-    // TODO(crbug.com/88586): Remove the other branch once
-    // DestroyProfileOnBrowserClose becomes the default.
-    base::RunLoop().RunUntilIdle();
-    std::vector<Profile*> loaded_profiles =
-        g_browser_process->profile_manager()->GetLoadedProfiles();
-    auto it = base::ranges::find(loaded_profiles, profile);
-    EXPECT_EQ(loaded_profiles.end(), it);
-  } else {
-    EXPECT_EQ(nullptr,
-              controller->GetCaptionBubbleControllerForBrowser(browser2));
-    EXPECT_EQ(nullptr,
-              controller->GetCaptionBubbleControllerForBrowser(browser1));
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnBrowserRemoved_Incognito) {
-  CaptionController* controller = GetController();
-  Browser* incognito_browser1 = CreateIncognitoBrowser();
-  Browser* incognito_browser2 = CreateIncognitoBrowser();
-
-  SetLiveCaptionEnabled(true);
-  // There is 1 regular browser and 2 incognito browsers.
-  EXPECT_EQ(3, NumBubbleControllers());
-
-  // Close incognito_browser2 and test that the caption bubble controller was
-  // destroyed.
-  incognito_browser2->window()->Close();
-  ui_test_utils::WaitForBrowserToClose();
-  EXPECT_EQ(nullptr, controller->GetCaptionBubbleControllerForBrowser(
-                         incognito_browser2));
-  EXPECT_EQ(2, NumBubbleControllers());
-
-  // Make the bubble on incognito_browser1 visible by dispatching a
-  // transcription.
-  DispatchTranscriptionToBrowser(
-      "If you lift a kangaroo's tail off the ground it can't hop.",
-      incognito_browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, incognito_browser1);
-  incognito_browser1->window()->Close();
-  ui_test_utils::WaitForBrowserToClose();
-  EXPECT_EQ(nullptr, controller->GetCaptionBubbleControllerForBrowser(
-                         incognito_browser1));
-  EXPECT_EQ(1, NumBubbleControllers());
+  EXPECT_TRUE(HasBubbleController());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, DispatchTranscription) {
   bool success = DispatchTranscription("A baby spider is called a spiderling.");
   EXPECT_FALSE(success);
-  EXPECT_EQ(0, NumBubbleControllers());
+  EXPECT_FALSE(HasBubbleController());
 
   SetLiveCaptionEnabled(true);
   success = DispatchTranscription(
@@ -403,59 +249,12 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, DispatchTranscription) {
       "Approximately 10-20% of power outages in the US are caused by "
       "squirrels.");
   EXPECT_FALSE(success);
-  EXPECT_EQ(0, NumBubbleControllers());
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
-                       DispatchTranscription_MultipleBrowsers) {
-  Browser* browser1 = browser();
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  SetLiveCaptionEnabled(true);
-
-  // Dispatch transcription routes the transcription to the right browser.
-  bool success = DispatchTranscriptionToBrowser(
-      "Honeybees can recognize human faces.", browser1);
-  EXPECT_TRUE(success);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(false, browser2);
-  ExpectIsWidgetVisibleOnBrowser(false, incognito_browser);
-  ExpectBubbleLabelTextOnBrowserEquals("Honeybees can recognize human faces.",
-                                       browser1);
-  ExpectBubbleLabelTextOnBrowserEquals("", browser2);
-  ExpectBubbleLabelTextOnBrowserEquals("", incognito_browser);
-
-  success = DispatchTranscriptionToBrowser(
-      "A blue whale's heart is the size of a small car.", browser2);
-  EXPECT_TRUE(success);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
-  ExpectIsWidgetVisibleOnBrowser(false, incognito_browser);
-  ExpectBubbleLabelTextOnBrowserEquals(
-      "A blue whale's heart is the size of a small car.", browser2);
-  ExpectBubbleLabelTextOnBrowserEquals("Honeybees can recognize human faces.",
-                                       browser1);
-  ExpectBubbleLabelTextOnBrowserEquals("", incognito_browser);
-
-  success = DispatchTranscriptionToBrowser(
-      "Squirrels forget where they hide about half of their nuts.",
-      incognito_browser);
-  EXPECT_TRUE(success);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
-  ExpectIsWidgetVisibleOnBrowser(true, incognito_browser);
-  ExpectBubbleLabelTextOnBrowserEquals(
-      "A blue whale's heart is the size of a small car.", browser2);
-  ExpectBubbleLabelTextOnBrowserEquals("Honeybees can recognize human faces.",
-                                       browser1);
-  ExpectBubbleLabelTextOnBrowserEquals(
-      "Squirrels forget where they hide about half of their nuts.",
-      incognito_browser);
+  EXPECT_FALSE(HasBubbleController());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnError) {
   OnError();
-  EXPECT_EQ(0, NumBubbleControllers());
+  EXPECT_FALSE(HasBubbleController());
 
   SetLiveCaptionEnabled(true);
   OnError();
@@ -463,35 +262,12 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnError) {
 
   SetLiveCaptionEnabled(false);
   OnError();
-  EXPECT_EQ(0, NumBubbleControllers());
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnError_MultipleBrowsers) {
-  Browser* browser1 = browser();
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  SetLiveCaptionEnabled(true);
-
-  // OnError routes to the right browser.
-  OnErrorOnBrowser(browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(false, browser2);
-  ExpectIsWidgetVisibleOnBrowser(false, incognito_browser);
-
-  OnErrorOnBrowser(browser2);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
-  ExpectIsWidgetVisibleOnBrowser(false, incognito_browser);
-
-  OnErrorOnBrowser(incognito_browser);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
-  ExpectIsWidgetVisibleOnBrowser(true, incognito_browser);
+  EXPECT_FALSE(HasBubbleController());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnAudioStreamEnd) {
   OnAudioStreamEnd();
-  EXPECT_EQ(0, NumBubbleControllers());
+  EXPECT_FALSE(HasBubbleController());
 
   SetLiveCaptionEnabled(true);
   DispatchTranscription("Some cicadas appear only once every 17 years.");
@@ -502,39 +278,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnAudioStreamEnd) {
 
   SetLiveCaptionEnabled(false);
   OnAudioStreamEnd();
-  EXPECT_EQ(0, NumBubbleControllers());
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
-                       OnAudioStreamEnd_MultipleBrowsers) {
-  Browser* browser1 = browser();
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  SetLiveCaptionEnabled(true);
-  DispatchTranscriptionToBrowser("Ladybugs are beetles, not bugs.", browser1);
-  DispatchTranscriptionToBrowser("Ladybugs eat 5000 bugs in their lifetimes.",
-                                 browser2);
-  DispatchTranscriptionToBrowser("Ladybugs have up to 20 spots.",
-                                 incognito_browser);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
-  ExpectIsWidgetVisibleOnBrowser(true, incognito_browser);
-
-  // OnAudioStreamEnd routes to the right browser.
-  OnAudioStreamEndOnBrowser(browser1);
-  ExpectIsWidgetVisibleOnBrowser(false, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
-  ExpectIsWidgetVisibleOnBrowser(true, incognito_browser);
-
-  OnAudioStreamEndOnBrowser(browser2);
-  ExpectIsWidgetVisibleOnBrowser(false, browser1);
-  ExpectIsWidgetVisibleOnBrowser(false, browser2);
-  ExpectIsWidgetVisibleOnBrowser(true, incognito_browser);
-
-  OnAudioStreamEndOnBrowser(incognito_browser);
-  ExpectIsWidgetVisibleOnBrowser(false, browser1);
-  ExpectIsWidgetVisibleOnBrowser(false, browser2);
-  ExpectIsWidgetVisibleOnBrowser(false, incognito_browser);
+  EXPECT_FALSE(HasBubbleController());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.
@@ -543,213 +287,102 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
                        LiveCaptionEnabledChanged_MultipleProfiles) {
   Profile* profile1 = browser()->profile();
   Profile* profile2 = CreateProfile();
-  CreateBrowser(profile2);
 
   // The profiles start with no caption bubble controllers.
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile2));
+  EXPECT_FALSE(HasBubbleControllerOnProfile(profile1));
+  EXPECT_FALSE(HasBubbleControllerOnProfile(profile2));
 
   // Enable live caption on profile1.
   SetLiveCaptionEnabled(true);
-  EXPECT_EQ(1, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile2));
+  EXPECT_TRUE(HasBubbleControllerOnProfile(profile1));
+  EXPECT_FALSE(HasBubbleControllerOnProfile(profile2));
 
   // Enable live caption on profile2.
-  SetLiveCaptionEnabledForProfile(true, profile2);
-  EXPECT_EQ(1, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(1, NumBubbleControllersForProfile(profile2));
+  SetLiveCaptionEnabledOnProfile(true, profile2);
+  EXPECT_TRUE(HasBubbleControllerOnProfile(profile1));
+  EXPECT_TRUE(HasBubbleControllerOnProfile(profile2));
 
   // Disable live caption on profile1.
   SetLiveCaptionEnabled(false);
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(1, NumBubbleControllersForProfile(profile2));
+  EXPECT_FALSE(HasBubbleControllerOnProfile(profile1));
+  EXPECT_TRUE(HasBubbleControllerOnProfile(profile2));
 
   // Disable live caption on profile2.
-  SetLiveCaptionEnabledForProfile(false, profile2);
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile2));
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnBrowserAdded_MultipleProfiles) {
-  Profile* profile1 = browser()->profile();
-  Profile* profile2 = CreateProfile();
-
-  // Enable live caption on both profiles.
-  SetLiveCaptionEnabled(true);
-  SetLiveCaptionEnabledForProfile(true, profile2);
-
-  // Add a new browser to profile1. Test that there are caption bubble
-  // controllers on all of the existing browsers.
-  CreateBrowser(profile1);
-  EXPECT_EQ(2, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile2));
-
-  // Add a new browser to profile 2. Test that a caption bubble controller is
-  // created in profile2 and not in profile1.
-  Browser* profile2_browser2 = CreateBrowser(profile2);
-  EXPECT_NE(
-      nullptr,
-      GetControllerForProfile(profile2)->GetCaptionBubbleControllerForBrowser(
-          profile2_browser2));
-  EXPECT_EQ(
-      nullptr,
-      GetControllerForProfile(profile1)->GetCaptionBubbleControllerForBrowser(
-          profile2_browser2));
-  EXPECT_EQ(2, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(1, NumBubbleControllersForProfile(profile2));
-
-  // Disable live caption on profile1. Add a new browser to both profiles, and
-  // test that a caption bubble controller is only created on profile2.
-  SetLiveCaptionEnabled(false);
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(1, NumBubbleControllersForProfile(profile2));
-  CreateBrowser(profile1);
-  CreateBrowser(profile2);
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(2, NumBubbleControllersForProfile(profile2));
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
-                       OnBrowserRemoved_MultipleProfiles) {
-  Profile* profile1 = browser()->profile();
-  Profile* profile2 = CreateProfile();
-  Browser* browser1 = browser();
-  Browser* browser2 = CreateBrowser(profile2);
-  CaptionController* controller1 = GetControllerForProfile(profile1);
-  CaptionController* controller2 = GetControllerForProfile(profile2);
-
-  // TODO(crbug.com/88586): Remove this test when the
-  // DestroyProfileOnBrowserClose flag is removed.
-  ScopedProfileKeepAlive profile1_keep_alive(
-      profile1, ProfileKeepAliveOrigin::kBrowserWindow);
-  ScopedProfileKeepAlive profile2_keep_alive(
-      profile2, ProfileKeepAliveOrigin::kBrowserWindow);
-
-  // Enable live caption on both profiles.
-  SetLiveCaptionEnabled(true);
-  SetLiveCaptionEnabledForProfile(true, profile2);
-  EXPECT_EQ(1, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(1, NumBubbleControllersForProfile(profile2));
-
-  // Close browser2 and test that the caption bubble controller was destroyed.
-  browser2->window()->Close();
-  ui_test_utils::WaitForBrowserToClose();
-  EXPECT_EQ(nullptr,
-            controller2->GetCaptionBubbleControllerForBrowser(browser2));
-  EXPECT_EQ(1, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile2));
-
-  // Make the bubble on incognito_browser1 visible by dispatching a
-  // transcription.
-  DispatchTranscriptionToBrowser(
-      "If you lift a kangaroo's tail off the ground it can't hop.", browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  browser1->window()->Close();
-  ui_test_utils::WaitForBrowserToClose();
-  EXPECT_EQ(nullptr,
-            controller1->GetCaptionBubbleControllerForBrowser(browser1));
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile1));
-  EXPECT_EQ(0, NumBubbleControllersForProfile(profile2));
+  SetLiveCaptionEnabledOnProfile(false, profile2);
+  EXPECT_FALSE(HasBubbleControllerOnProfile(profile1));
+  EXPECT_FALSE(HasBubbleControllerOnProfile(profile2));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
                        DispatchTranscription_MultipleProfiles) {
   Profile* profile1 = browser()->profile();
   Profile* profile2 = CreateProfile();
-  Browser* browser1 = browser();
-  Browser* browser2 = CreateBrowser(profile2);
 
   // Enable live caption on both profiles.
   SetLiveCaptionEnabled(true);
-  SetLiveCaptionEnabledForProfile(true, profile2);
+  SetLiveCaptionEnabledOnProfile(true, profile2);
 
-  // Dispatch transcription routes the transcription to the right browser on the
-  // right profile.
-  bool success = DispatchTranscriptionToBrowserForProfile(
-      "Only female mosquitos bite.", browser1, profile1);
+  // Dispatch transcription routes the transcription to the right profile.
+  bool success =
+      DispatchTranscriptionToProfile("Only female mosquitos bite.", profile1);
   EXPECT_TRUE(success);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(false, browser2);
-  ExpectBubbleLabelTextOnBrowserEquals("Only female mosquitos bite.", browser1);
-  ExpectBubbleLabelTextOnBrowserEquals("", browser2);
+  ExpectIsWidgetVisibleOnProfile(true, profile1);
+  ExpectIsWidgetVisibleOnProfile(false, profile2);
+  ExpectBubbleLabelTextOnProfileEquals("Only female mosquitos bite.", profile1);
+  ExpectBubbleLabelTextOnProfileEquals("", profile2);
 
-  success = DispatchTranscriptionToBrowserForProfile(
-      "Mosquitos were around at the time of the dinosaurs.", browser2,
-      profile2);
+  success = DispatchTranscriptionToProfile(
+      "Mosquitos were around at the time of the dinosaurs.", profile2);
   EXPECT_TRUE(success);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
-  ExpectBubbleLabelTextOnBrowserEquals("Only female mosquitos bite.", browser1);
-  ExpectBubbleLabelTextOnBrowserEquals(
-      "Mosquitos were around at the time of the dinosaurs.", browser2);
-
-  // Dispatch transcription returns false for browsers on different profiles.
-  success = DispatchTranscriptionToBrowserForProfile(
-      "There are over 3000 species of mosquitos.", browser1, profile2);
-  EXPECT_FALSE(success);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
-  ExpectBubbleLabelTextOnBrowserEquals("Only female mosquitos bite.", browser1);
-  ExpectBubbleLabelTextOnBrowserEquals(
-      "Mosquitos were around at the time of the dinosaurs.", browser2);
+  ExpectIsWidgetVisibleOnProfile(true, profile1);
+  ExpectIsWidgetVisibleOnProfile(true, profile2);
+  ExpectBubbleLabelTextOnProfileEquals("Only female mosquitos bite.", profile1);
+  ExpectBubbleLabelTextOnProfileEquals(
+      "Mosquitos were around at the time of the dinosaurs.", profile2);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnError_MultipleProfiles) {
   Profile* profile1 = browser()->profile();
   Profile* profile2 = CreateProfile();
-  Browser* browser1 = browser();
-  Browser* browser2 = CreateBrowser(profile2);
 
   // Enable live caption on both profiles.
   SetLiveCaptionEnabled(true);
-  SetLiveCaptionEnabledForProfile(true, profile2);
+  SetLiveCaptionEnabledOnProfile(true, profile2);
 
-  // OnError routes to the right browser on the right profile.
-  OnErrorOnBrowserForProfile(browser1, profile1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(false, browser2);
+  // OnError routes to the right profile.
+  OnErrorOnProfile(profile1);
+  ExpectIsWidgetVisibleOnProfile(true, profile1);
+  ExpectIsWidgetVisibleOnProfile(false, profile2);
 
-  OnErrorOnBrowserForProfile(browser2, profile2);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
-
-  // OnError does nothing when sent to browsers on different profiles.
-  OnErrorOnBrowserForProfile(browser1, profile2);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
+  OnErrorOnProfile(profile2);
+  ExpectIsWidgetVisibleOnProfile(true, profile1);
+  ExpectIsWidgetVisibleOnProfile(true, profile2);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
                        OnAudioStreamEnd_MultipleProfiles) {
   Profile* profile1 = browser()->profile();
   Profile* profile2 = CreateProfile();
-  Browser* browser1 = browser();
-  Browser* browser2 = CreateBrowser(profile2);
 
   // Enable live caption on both profiles.
   SetLiveCaptionEnabled(true);
-  SetLiveCaptionEnabledForProfile(true, profile2);
+  SetLiveCaptionEnabledOnProfile(true, profile2);
 
-  DispatchTranscriptionToBrowserForProfile(
-      "Capybaras are the largest rodents in the world.", browser1, profile1);
-  DispatchTranscriptionToBrowserForProfile(
-      "Capybaras' teeth grow continuously.", browser2, profile2);
-  ExpectIsWidgetVisibleOnBrowser(true, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
+  DispatchTranscriptionToProfile(
+      "Capybaras are the largest rodents in the world.", profile1);
+  DispatchTranscriptionToProfile("Capybaras' teeth grow continuously.",
+                                 profile2);
+  ExpectIsWidgetVisibleOnProfile(true, profile1);
+  ExpectIsWidgetVisibleOnProfile(true, profile2);
 
-  // OnAudioStreamEnd routes to the right browser on the right profile.
-  OnAudioStreamEndOnBrowserForProfile(browser1, profile1);
-  ExpectIsWidgetVisibleOnBrowser(false, browser1);
-  ExpectIsWidgetVisibleOnBrowser(true, browser2);
+  // OnAudioStreamEnd routes to the right profile.
+  OnAudioStreamEndOnProfile(profile1);
+  ExpectIsWidgetVisibleOnProfile(false, profile1);
+  ExpectIsWidgetVisibleOnProfile(true, profile2);
 
-  OnAudioStreamEndOnBrowserForProfile(browser2, profile2);
-  ExpectIsWidgetVisibleOnBrowser(false, browser1);
-  ExpectIsWidgetVisibleOnBrowser(false, browser2);
-
-  // OnAudioStreamEnd does nothing when sent to browsers on different profiles.
-  OnAudioStreamEndOnBrowserForProfile(browser1, profile2);
-  ExpectIsWidgetVisibleOnBrowser(false, browser1);
-  ExpectIsWidgetVisibleOnBrowser(false, browser2);
+  OnAudioStreamEndOnProfile(profile2);
+  ExpectIsWidgetVisibleOnProfile(false, profile1);
+  ExpectIsWidgetVisibleOnProfile(false, profile2);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

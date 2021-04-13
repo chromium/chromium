@@ -30,6 +30,13 @@ class TestViewsDelegate : public ViewsDelegate {
     use_transparent_windows_ = transparent;
   }
 
+// When running on ChromeOS, NativeWidgetAura requires the parent and/or context
+// to be non-null. Some test views provide neither, so we do it here. Normally
+// this is done by the browser-specific ViewsDelegate.
+#if defined(OS_CHROMEOS)
+  void set_context(gfx::NativeWindow context) { context_ = context; }
+#endif
+
 #if defined(OS_APPLE)
   // Allows tests to provide a ContextFactory via the ViewsDelegate interface.
   void set_context_factory(ui::ContextFactory* context_factory) {
@@ -62,6 +69,9 @@ class TestViewsDelegate : public ViewsDelegate {
   bool use_transparent_windows_ = false;
   std::unique_ptr<LayoutProvider> layout_provider_ =
       std::make_unique<LayoutProvider>();
+#if defined(OS_CHROMEOS)
+  gfx::NativeWindow context_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(TestViewsDelegate);
 };

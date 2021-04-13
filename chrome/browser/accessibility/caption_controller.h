@@ -9,14 +9,12 @@
 #include <unordered_map>
 
 #include "chrome/browser/accessibility/soda_installer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/caption.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/native_theme/native_theme_observer.h"
 
-class Browser;
 class Profile;
 class PrefChangeRegistrar;
 
@@ -38,12 +36,11 @@ class CaptionHostImpl;
 //
 //  The controller of the live caption feature. It enables the captioning
 //  service when the preference is enabled. The caption controller is a
-//  KeyedService and BrowserListObserver. There exists one caption controller
-//  per profile and it lasts for the duration of the session. The caption
-//  controller owns the live caption UI, which are caption bubble controllers.
+//  KeyedService. There exists one caption controller per profile and it lasts
+//  for the duration of the session. The caption controller owns the live
+//  caption UI, which is a caption bubble controller.
 //
-class CaptionController : public BrowserListObserver,
-                          public KeyedService,
+class CaptionController : public KeyedService,
                           public speech::SodaInstaller::Observer,
                           public ui::NativeThemeObserver {
  public:
@@ -56,9 +53,9 @@ class CaptionController : public BrowserListObserver,
 
   void Init();
 
-  // Routes a transcription to the CaptionBubbleController that belongs to the
-  // appropriate browser. Returns whether the transcription result was routed
-  // successfully. Transcriptions will halt if this returns false.
+  // Routes a transcription to the CaptionBubbleController. Returns whether the
+  // transcription result was routed successfully. Transcriptions will halt if
+  // this returns false.
   bool DispatchTranscription(
       CaptionHostImpl* caption_host_impl,
       const chrome::mojom::TranscriptionResultPtr& transcription_result);
@@ -66,24 +63,16 @@ class CaptionController : public BrowserListObserver,
   void OnLanguageIdentificationEvent(
       const media::mojom::LanguageIdentificationEventPtr& event);
 
-  // Alerts the CaptionBubbleController that belongs to the appropriate browser
-  // that there is an error in the speech recognition service.
+  // Alerts the CaptionBubbleController that there is an error in the speech
+  // recognition service.
   void OnError(CaptionHostImpl* caption_host_impl);
 
-  // Alerts the CaptionBubbleController that belongs to the appropriate browser
-  // that the audio stream has ended.
+  // Alerts the CaptionBubbleController that the audio stream has ended.
   void OnAudioStreamEnd(CaptionHostImpl* caption_host_impl);
-
-  CaptionBubbleController* GetCaptionBubbleControllerForBrowser(
-      Browser* browser);
 
  private:
   friend class CaptionControllerFactory;
   friend class CaptionControllerTest;
-
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
 
   // SodaInstaller::Observer:
   void OnSodaInstalled() override;
@@ -108,12 +97,7 @@ class CaptionController : public BrowserListObserver,
   Profile* profile_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-
-  // A map of Browsers using this profile to CaptionBubbleControllers anchored
-  // to the browser.
-  std::unordered_map<Browser*, std::unique_ptr<CaptionBubbleController>>
-      caption_bubble_controllers_;
-
+  std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
   base::Optional<ui::CaptionStyle> caption_style_;
 
   // Whether Live Caption is enabled.

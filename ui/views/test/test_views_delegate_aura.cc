@@ -26,6 +26,10 @@ HICON TestViewsDelegate::GetSmallWindowIcon() const {
 void TestViewsDelegate::OnBeforeWidgetInit(
     Widget::InitParams* params,
     internal::NativeWidgetDelegate* delegate) {
+#if defined(OS_CHROMEOS)
+  if (!params->parent && !params->context)
+    params->context = context_;
+#endif
   if (params->opacity == Widget::InitParams::WindowOpacity::kInferred) {
     params->opacity = use_transparent_windows_
                           ? Widget::InitParams::WindowOpacity::kTranslucent

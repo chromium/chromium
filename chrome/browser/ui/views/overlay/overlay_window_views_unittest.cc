@@ -47,40 +47,17 @@ class TestPictureInPictureWindowController
   content::WebContents* const web_contents_;
 };
 
-// When running on ChromeOS, NativeWidgetAura requires the parent and/or
-// context to be non-null. OverlayWindowViews provides neither, so we do it
-// here. Normally this is done by the browser-specific ViewsDelegate.
-class TestViewsDelegateWithContext : public views::TestViewsDelegate {
- public:
-  // ViewsDelegate:
-  void OnBeforeWidgetInit(
-      views::Widget::InitParams* params,
-      views::internal::NativeWidgetDelegate* delegate) override {
-    views::TestViewsDelegate::OnBeforeWidgetInit(params, delegate);
-    if (!params->context)
-      params->context = context_;
-  }
-
-  void set_context(gfx::NativeWindow context) { context_ = context; }
-
- private:
-  gfx::NativeWindow context_;
-};
-
 class OverlayWindowViewsTest : public ChromeViewsTestBase {
  public:
   // ChromeViewsTestBase:
   void SetUp() override {
-    // set_views_delegate() must be called before SetUp(), and GetContext() is
-    // null before that, hence the unobvious initialization order.
-    auto views_delegate = std::make_unique<TestViewsDelegateWithContext>();
-    auto* views_delegate_with_context = views_delegate.get();
-    set_views_delegate(std::move(views_delegate));
     // Purposely skip ChromeViewsTestBase::SetUp() as that creates ash::Shell
     // on ChromeOS, which we don't want.
     ViewsTestBase::SetUp();
-    views_delegate_with_context->set_context(GetContext());
 
+#if defined(OS_CHROMEOS)
+    test_views_delegate()->set_context(GetContext());
+#endif
     test_views_delegate()->set_use_desktop_native_widgets(true);
 
     // The default work area must be big enough to fit the minimum

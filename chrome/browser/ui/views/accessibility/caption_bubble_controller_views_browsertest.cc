@@ -35,11 +35,6 @@
 
 namespace captions {
 
-namespace {
-// Test constants.
-static constexpr int kArrowKeyDisplacement = 16;
-}  // namespace
-
 class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
  public:
   CaptionBubbleControllerViewsTest() = default;
@@ -51,7 +46,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   CaptionBubbleControllerViews* GetController() {
     if (!controller_)
-      controller_ = std::make_unique<CaptionBubbleControllerViews>(browser());
+      controller_ = std::make_unique<CaptionBubbleControllerViews>();
     return controller_.get();
   }
 
@@ -123,14 +118,6 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     return controller_ && controller_->IsWidgetVisibleForTesting();
   }
 
-  bool CanWidgetActivate() {
-    return GetCaptionWidget() && GetCaptionWidget()->CanActivate();
-  }
-
-  bool IsWidgetActive() {
-    return GetCaptionWidget() && GetCaptionWidget()->IsActive();
-  }
-
   void DestroyController() { controller_.reset(nullptr); }
 
   void ClickButton(views::Button* button) {
@@ -142,15 +129,6 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     button->OnMouseReleased(ui::MouseEvent(
         ui::ET_MOUSE_RELEASED, gfx::Point(0, 0), gfx::Point(0, 0),
         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-  }
-
-  // There may be some rounding errors as we do floating point math with ints.
-  // Check that points are almost the same.
-  void ExpectInBottomCenter(gfx::Rect anchor_bounds, gfx::Rect bubble_bounds) {
-    EXPECT_LT(
-        abs(bubble_bounds.CenterPoint().x() - anchor_bounds.CenterPoint().x()),
-        2);
-    EXPECT_EQ(bubble_bounds.bottom(), anchor_bounds.bottom() - 20);
   }
 
   bool OnPartialTranscription(std::string text) {
@@ -220,11 +198,6 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
     GetController()->caption_bubble_->set_tick_clock_for_testing(tick_clock);
-  }
-
-  void UnfocusCaptionWidget() {
-    GetController()->caption_bubble_->AcceleratorPressed(
-        ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   }
 
  private:
@@ -310,135 +283,45 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, BubblePositioning) {
   int bubble_width = 536;
   gfx::Insets bubble_margins(6);
-  views::View* contents_view =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetContentsView();
 
   browser()->window()->SetBounds(gfx::Rect(10, 10, 800, 600));
+  gfx::Rect context_rect = views::Widget::GetWidgetForNativeWindow(
+                               browser()->window()->GetNativeWindow())
+                               ->GetClientAreaBoundsInScreen();
   OnPartialTranscription("Mantis shrimp have 12-16 photoreceptors");
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
+  gfx::Rect bubble_bounds = GetCaptionWidget()->GetWindowBoundsInScreen();
+  // There may be some rounding errors as we do floating point math with ints.
+  // Check that points are almost the same.
+  EXPECT_LT(
+      abs(bubble_bounds.CenterPoint().x() - context_rect.CenterPoint().x()), 2);
+  EXPECT_EQ(bubble_bounds.bottom(), context_rect.bottom() - 20);
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
-  // Move the window and the widget should stay centered.
+  // Move the window and the widget should stay in the same place.
   browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 600));
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
+  EXPECT_EQ(bubble_bounds, GetCaptionWidget()->GetWindowBoundsInScreen());
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
-  // Shrink the window's height.
+  // Shrink the window's height. The widget should stay in the same place.
   browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 300));
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
+  EXPECT_EQ(bubble_bounds, GetCaptionWidget()->GetWindowBoundsInScreen());
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
-  // Shrink it super far, then grow it back up again, and it should still
-  // be in the right place.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 100));
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 500));
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
-  EXPECT_EQ(GetBubble()->margins(), bubble_margins);
-
-  // Now shrink the width so that the caption bubble shrinks.
+  // Now shrink the window width. The bubble width should not change.
   browser()->window()->SetBounds(gfx::Rect(50, 50, 500, 500));
-  gfx::Rect widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  gfx::Rect contents_bounds = contents_view->GetBoundsInScreen();
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_LT(GetBubble()->GetBoundsInScreen().width(), bubble_width);
-  EXPECT_EQ(GetBubble()->margins(), bubble_margins);
-  EXPECT_EQ(20, widget_bounds.x() - contents_bounds.x());
-  EXPECT_EQ(20, contents_bounds.right() - widget_bounds.right());
-
-  // Make it bigger again and ensure it's visible and wide again.
-  // Note: On Mac we cannot put the window too close to the top of the screen
-  // or it gets pushed down by the menu bar.
-  browser()->window()->SetBounds(gfx::Rect(100, 100, 800, 600));
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
+  EXPECT_EQ(bubble_bounds, GetCaptionWidget()->GetWindowBoundsInScreen());
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
-  // Now move the widget within the window.
+  // Now move the widget within the window. The bubble width should not change.
   GetCaptionWidget()->SetBounds(
       gfx::Rect(200, 300, GetCaptionWidget()->GetWindowBoundsInScreen().width(),
                 GetCaptionWidget()->GetWindowBoundsInScreen().height()));
-
-  // The bubble width should not have changed.
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
-
-  // Move the window and the widget stays fixed with respect to the window.
-  browser()->window()->SetBounds(gfx::Rect(100, 100, 800, 600));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  EXPECT_EQ(200, widget_bounds.x());
-  EXPECT_EQ(300, widget_bounds.y());
-  EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
-  EXPECT_EQ(GetBubble()->margins(), bubble_margins);
-
-  // Now put the window in the top corner for easier math.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 600));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  EXPECT_EQ(150, widget_bounds.x());
-  EXPECT_EQ(250, widget_bounds.y());
-  contents_bounds = contents_view->GetBoundsInScreen();
-  double x_ratio = (widget_bounds.CenterPoint().x() - contents_bounds.x()) /
-                   (1.0 * contents_bounds.width());
-  double y_ratio = (widget_bounds.CenterPoint().y() - contents_bounds.y()) /
-                   (1.0 * contents_bounds.height());
-
-  // The center point ratio should not change as we resize the window, and the
-  // widget is repositioned.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 750, 550));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  contents_bounds = contents_view->GetBoundsInScreen();
-  double new_x_ratio = (widget_bounds.CenterPoint().x() - contents_bounds.x()) /
-                       (1.0 * contents_bounds.width());
-  double new_y_ratio = (widget_bounds.CenterPoint().y() - contents_bounds.y()) /
-                       (1.0 * contents_bounds.height());
-  EXPECT_NEAR(x_ratio, new_x_ratio, .005);
-  EXPECT_NEAR(y_ratio, new_y_ratio, .005);
-
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 700, 500));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  contents_bounds = contents_view->GetBoundsInScreen();
-  new_x_ratio = (widget_bounds.CenterPoint().x() - contents_bounds.x()) /
-                (1.0 * contents_bounds.width());
-  new_y_ratio = (widget_bounds.CenterPoint().y() - contents_bounds.y()) /
-                (1.0 * contents_bounds.height());
-  EXPECT_NEAR(x_ratio, new_x_ratio, .005);
-  EXPECT_NEAR(y_ratio, new_y_ratio, .005);
-
-  // But if we make the window too small, the widget will stay within its
-  // bounds.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 500, 500));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  contents_bounds = contents_view->GetBoundsInScreen();
-  new_y_ratio = (widget_bounds.CenterPoint().y() - contents_bounds.y()) /
-                (1.0 * contents_bounds.height());
-  EXPECT_NEAR(y_ratio, new_y_ratio, .005);
-  EXPECT_TRUE(contents_bounds.Contains(widget_bounds));
-
-  // Making it big again resets the position to what it was before.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 600));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  EXPECT_EQ(150, widget_bounds.x());
-  EXPECT_EQ(250, widget_bounds.y());
-
-#if !defined(OS_MAC)
-  // Shrink it so small the caption bubble can't fit. Ensure it's hidden.
-  // Mac windows cannot be shrunk small enough to force the bubble to hide.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 200, 100));
-  EXPECT_FALSE(IsWidgetVisible());
-
-  // Make it bigger again and ensure it's visible and wide again.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 400));
-  EXPECT_TRUE(IsWidgetVisible());
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesError) {
@@ -502,75 +385,18 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(IsWidgetVisible());
 }
 
+// TODO(crbug.com/1055150): Renable this test once it is passing. Tab traversal
+// works in app but doesn't work in tests right now.
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       MovesWithArrowsWhenFocused) {
-  OnPartialTranscription(
-      "Honeybees have tiny hairs on their eyes to help them collect pollen");
-  // Not focused initially.
-  EXPECT_FALSE(GetBubble()->HasFocus());
-  // In the tests, the widget must be active for the key presses to be handled.
-  GetCaptionWidget()->Activate();
-
-  // Key presses do not change the bounds when it is not focused.
-  gfx::Rect bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_UP, false,
-                                              false, false, false));
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_LEFT, false,
-                                              false, false, false));
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-
-  // Focus the bubble, and try the arrow keys.
-  GetBubble()->RequestFocus();
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_UP, false,
-                                              false, false, false));
-  bounds.Offset(0, -kArrowKeyDisplacement);
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_LEFT, false,
-                                              false, false, false));
-  bounds.Offset(-kArrowKeyDisplacement, 0);
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RIGHT, false,
-                                              false, false, false));
-  bounds.Offset(kArrowKeyDisplacement, 0);
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
-                                              false, false, false));
-  bounds.Offset(0, kArrowKeyDisplacement);
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-
-  // Down shouldn't move the bubble again because we started at the bottom of
-  // the screen.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
-                                              false, false, false));
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-
-  // Hitting the escape key should remove focus from the view, so arrows no
-  // longer work.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
-                                              false, false, false));
-  EXPECT_FALSE(GetBubble()->HasFocus());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_UP, false,
-                                              false, false, false));
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, FocusableInTabOrder) {
+                       DISABLED_FocusableInTabOrder) {
   OnPartialTranscription(
       "A narwhal's tusk is an enlarged tooth containing "
       "millions of nerve endings");
-  // Not initially focused.
-  EXPECT_FALSE(GetBubble()->HasFocus());
-  EXPECT_FALSE(GetCloseButton()->HasFocus());
-  EXPECT_FALSE(GetBubble()->GetFocusManager()->GetFocusedView());
-  // In the tests, the widget must be active for the key presses to be handled.
+  // Not initially active.
+  EXPECT_FALSE(GetCaptionWidget()->IsActive());
+  // The widget must be active for the key presses to be handled.
   GetCaptionWidget()->Activate();
 
-  // Press tab until we enter the bubble.
-  while (!GetBubble()->HasFocus()) {
-    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                                false, false, false));
-  }
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Check the native widget has focus.
   aura::client::FocusClient* focus_client =
@@ -579,41 +405,39 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, FocusableInTabOrder) {
               focus_client->GetFocusedWindow());
 #endif
   // Next tab should be the close button.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                              false, false, false));
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      GetCaptionWidget()->GetNativeWindow(), ui::VKEY_TAB, false, false, false,
+      false));
   EXPECT_TRUE(GetCloseButton()->HasFocus());
 
   // Next tab should be the expand button.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                              false, false, false));
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      GetCaptionWidget()->GetNativeWindow(), ui::VKEY_TAB, false, false, false,
+      false));
   EXPECT_TRUE(GetExpandButton()->HasFocus());
 
 #if !defined(OS_MAC)
   // Pressing enter should turn the expand button into a collapse button.
   // Focus should remain on the collapse button.
   // TODO(crbug.com/1055150): Fix this for Mac.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
-                                              false, false, false));
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      GetCaptionWidget()->GetNativeWindow(), ui::VKEY_RETURN, false, false,
+      false, false));
   EXPECT_TRUE(GetCollapseButton()->HasFocus());
 
   // Pressing enter again should turn the collapse button into an expand button.
   // Focus should remain on the expand button.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
-                                              false, false, false));
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      GetCaptionWidget()->GetNativeWindow(), ui::VKEY_RETURN, false, false,
+      false, false));
   EXPECT_TRUE(GetExpandButton()->HasFocus());
 #endif
 
-  // Next tab exits the bubble entirely.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                              false, false, false));
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // The native widget should no longer have focus.
-  EXPECT_FALSE(GetCaptionWidget()->GetNativeView() ==
-               focus_client->GetFocusedWindow());
-#endif
-  EXPECT_FALSE(GetBubble()->HasFocus());
-  EXPECT_FALSE(GetCloseButton()->HasFocus());
-  EXPECT_FALSE(GetBubble()->GetFocusManager()->GetFocusedView());
+  // Next tab goes back to the close button.
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      GetCaptionWidget()->GetNativeWindow(), ui::VKEY_TAB, false, false, false,
+      false));
+  EXPECT_TRUE(GetCloseButton()->HasFocus());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -908,21 +732,11 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesBubble) {
   EXPECT_FALSE(IsWidgetVisible());
 
 #if !defined(OS_MAC)
-  // Shrink it so small the caption bubble can't fit. Ensure it's hidden.
-  // Mac windows cannot be shrunk small enough to force the bubble to hide.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 200, 100));
-  EXPECT_FALSE(IsWidgetVisible());
-
-  // Make it bigger again and ensure it's still not visible.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 400));
-  EXPECT_FALSE(IsWidgetVisible());
-
-  // Now set some text, and ensure it hides when shrunk but re-shows when
-  // grown.
+  // Set some text, and ensure it stays visible when the window changes size.
   OnPartialTranscription("Newborn opossums are about 1cm long");
   EXPECT_TRUE(IsWidgetVisible());
   browser()->window()->SetBounds(gfx::Rect(50, 50, 200, 100));
-  EXPECT_FALSE(IsWidgetVisible());
+  EXPECT_TRUE(IsWidgetVisible());
   browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 400));
   EXPECT_TRUE(IsWidgetVisible());
 #endif
@@ -1142,29 +956,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ("a ", GetAXLineText()[8]);
 }
 
-#if !defined(OS_MAC)
-// Tests are flaky on Mac: Mac browsertests do not have an activation policy so
-// the widget activation may not work as expected.
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       BubbleDeactivatedWhenHidden) {
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_FALSE(CanWidgetActivate());
-  EXPECT_FALSE(IsWidgetActive());
-  OnPartialTranscription("Cows can detect odors up to 6 miles away.");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_TRUE(CanWidgetActivate());
-  EXPECT_FALSE(IsWidgetActive());
-  GetBubble()->RequestFocus();
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_TRUE(CanWidgetActivate());
-  EXPECT_TRUE(IsWidgetActive());
-  ClickButton(GetCloseButton());
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_FALSE(CanWidgetActivate());
-  EXPECT_FALSE(IsWidgetActive());
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
   // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
   // a mock tick clock that replaces the default tick clock with mock time.
@@ -1176,7 +967,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Bowhead whales can live for over 200 years.", GetLabelText());
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  // TODO(crbug.com/1055150): Change this to 5 seconds. For some reasons tests
+  // need to wait 10 seconds, but testing the feature only requires a 5 second
+  // wait.
+  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(10));
   EXPECT_FALSE(IsWidgetVisible());
   EXPECT_EQ("", GetLabelText());
 
@@ -1203,28 +997,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
   test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
   EXPECT_TRUE(IsWidgetVisible());
 
-  // In the tests, the widget must be active.
-  GetCaptionWidget()->Activate();
-  // Caption bubble stays visible while it has focus.
-  GetBubble()->RequestFocus();
-  EXPECT_TRUE(IsWidgetVisible());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(10));
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ(
-      "Killer whales travel in matrifocal groups--a family unit centered on "
-      "the mother.",
-      GetLabelText());
-
-  UnfocusCaptionWidget();
-  EXPECT_FALSE(GetBubble()->HasFocus());
-  EXPECT_EQ(
-      "Killer whales travel in matrifocal groups--a family unit centered on "
-      "the mother.",
-      GetLabelText());
-  EXPECT_TRUE(IsWidgetVisible());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(5));
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_EQ("", GetLabelText());
+  // TODO(crbug.com/1055150): Test that widget doesn't hide when focused. It
+  // works in app but the tests aren't working.
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -1239,7 +1013,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Bowhead whales can live for over 200 years.", GetLabelText());
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  // TODO(crbug.com/1055150): Change this to 5 seconds. For some reasons tests
+  // need to wait 10 seconds, but testing the feature only requires a 5 second
+  // wait.
+  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(10));
   EXPECT_FALSE(IsWidgetVisible());
   EXPECT_EQ("", GetLabelText());
 

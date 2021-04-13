@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
 
 #include "chrome/browser/ui/views/accessibility/caption_bubble.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 // The caption bubble contains 2 lines of text in its normal size and 8 lines
@@ -14,7 +15,8 @@ constexpr int kMaxLines = 9;
 
 namespace captions {
 
-CaptionBubbleModel::CaptionBubbleModel() = default;
+CaptionBubbleModel::CaptionBubbleModel(views::Widget* context)
+    : context_(context) {}
 
 CaptionBubbleModel::~CaptionBubbleModel() {
   if (observer_)

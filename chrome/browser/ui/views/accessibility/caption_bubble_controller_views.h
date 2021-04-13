@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/caption_bubble_controller.h"
 
 namespace views {
-class View;
 class Widget;
 }
 
@@ -28,9 +27,7 @@ class CaptionBubbleModel;
 //
 class CaptionBubbleControllerViews : public CaptionBubbleController {
  public:
-  static views::View* GetCaptionBubbleAccessiblePane(Browser* browser);
-
-  explicit CaptionBubbleControllerViews(Browser* browser);
+  CaptionBubbleControllerViews();
   ~CaptionBubbleControllerViews() override;
   CaptionBubbleControllerViews(const CaptionBubbleControllerViews&) = delete;
   CaptionBubbleControllerViews& operator=(const CaptionBubbleControllerViews&) =
@@ -52,10 +49,6 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // Called when the caption style changes.
   void UpdateCaptionStyle(
       base::Optional<ui::CaptionStyle> caption_style) override;
-
-  // Returns the view of the caption bubble which should receive focus, if one
-  // exists.
-  views::View* GetFocusableCaptionBubble();
 
  private:
   friend class CaptionBubbleControllerViewsTest;

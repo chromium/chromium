@@ -178,6 +178,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   gfx::NativeView parent_window() const { return parent_window_; }
   void set_parent_window(gfx::NativeView window) { parent_window_ = window; }
 
+  bool has_parent() { return has_parent_; }
+  void set_has_parent(bool has_parent) { has_parent_ = has_parent; }
+
   // Whether the bubble accepts mouse events or not.
   bool accept_events() const { return accept_events_; }
   void set_accept_events(bool accept_events) { accept_events_ = accept_events; }
@@ -351,6 +354,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
 
   bool accept_events_ = true;
   gfx::NativeView parent_window_ = nullptr;
+
+  // By default, all BubbleDialogDelegates have parent windows.
+  bool has_parent_ = true;
 
   // Pointer to this bubble's ClientView.
   ClientView* client_view_ = nullptr;

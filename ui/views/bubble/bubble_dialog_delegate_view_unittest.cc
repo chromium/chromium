@@ -298,6 +298,21 @@ TEST_F(BubbleDialogDelegateViewTest, ResetAnchorWidget) {
   EXPECT_TRUE(bubble_observer.widget_closed());
 }
 
+TEST_F(BubbleDialogDelegateViewTest, NoParentWidget) {
+  test_views_delegate()->set_use_desktop_native_widgets(true);
+#if defined(OS_CHROMEOS)
+  test_views_delegate()->set_context(GetContext());
+#endif
+  BubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(nullptr);
+  bubble_delegate->set_has_parent(false);
+  WidgetAutoclosePtr bubble_widget(
+      BubbleDialogDelegateView::CreateBubble(std::move(bubble_delegate)));
+  EXPECT_EQ(bubble_delegate, bubble_widget->widget_delegate());
+  EXPECT_EQ(bubble_widget.get(), bubble_delegate->GetWidget());
+  EXPECT_EQ(nullptr, bubble_widget->parent());
+}
+
 TEST_F(BubbleDialogDelegateViewTest, InitiallyFocusedView) {
   std::unique_ptr<Widget> anchor_widget =
       CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
