@@ -7,6 +7,8 @@
 #include <set>
 #include <string>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -160,21 +162,8 @@ void BookmarkEditorView::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDS_EDIT) {
     tree_view_->StartEditing(tree_view_->GetActiveNode());
   } else if (command_id == IDS_DELETE) {
-    EditorNode* node = tree_model_->AsNode(tree_view_->GetActiveNode());
-    if (!node)
-      return;
-    if (node->value != 0) {
-      const BookmarkNode* b_node =
-          bookmarks::GetBookmarkNodeByID(bb_model_, node->value);
-      if (!b_node->children().empty() &&
-          !chrome::ConfirmDeleteBookmarkNode(b_node,
-                                             GetWidget()->GetNativeWindow())) {
-        // The folder is not empty and the user didn't confirm.
-        return;
-      }
-      deletes_.push_back(node->value);
-    }
-    tree_model_->Remove(node->parent(), node);
+    ExecuteCommandDelete(base::BindOnce(&chrome::ConfirmDeleteBookmarkNode,
+                                        GetWidget()->GetNativeWindow()));
   } else {
     DCHECK_EQ(IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM, command_id);
     NewFolder(tree_model_->AsNode(tree_view_->GetActiveNode()));
@@ -583,6 +572,37 @@ ui::SimpleMenuModel* BookmarkEditorView::GetMenuModel() {
         IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM);
   }
   return context_menu_model_.get();
+}
+
+void BookmarkEditorView::ExecuteCommandDelete(
+    base::OnceCallback<bool(const bookmarks::BookmarkNode* node)>
+        non_empty_folder_confirmation_cb) {
+  EditorNode* node = tree_model_->AsNode(tree_view_->GetActiveNode());
+  if (!node)
+    return;
+  const int64_t bookmark_node_id = node->value;
+  if (bookmark_node_id != 0) {
+    const BookmarkNode* b_node =
+        bookmarks::GetBookmarkNodeByID(bb_model_, bookmark_node_id);
+    if (!b_node->children().empty()) {
+      if (!std::move(non_empty_folder_confirmation_cb).Run(b_node)) {
+        // The folder is not empty and the user didn't confirm.
+        return;
+      }
+      // The function above runs a nested loop so it's necessary to guard
+      // against |node| having been deleted meanwhile (e.g. via extensions).
+      node = tree_model_->AsNode(tree_view_->GetActiveNode());
+      if (!node || node->value != bookmark_node_id) {
+        // The active node has been deleted or has changed. In theory
+        // FindNodeWithID() could be used to look up by |bookmark_node_id|,
+        // but it's hard to reason about the desired behavior in this case, so
+        // let's err on the safe side and avoid a deletion.
+        return;
+      }
+    }
+    deletes_.push_back(bookmark_node_id);
+  }
+  tree_model_->Remove(node->parent(), node);
 }
 
 void BookmarkEditorView::EditorTreeModel::SetTitle(

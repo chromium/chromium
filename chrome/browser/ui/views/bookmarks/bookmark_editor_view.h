@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/bookmarks/browser/bookmark_expanded_state_tracker.h"
@@ -211,6 +212,12 @@ class BookmarkEditorView : public BookmarkEditor,
       bookmarks::BookmarkExpandedStateTracker::Nodes* expanded_nodes);
 
   ui::SimpleMenuModel* GetMenuModel();
+
+  // Helper functions that implements the IDS_DELETE logic for ExecuteCommand,
+  // used in tests to fake the modal dialog.
+  void ExecuteCommandDelete(
+      base::OnceCallback<bool(const bookmarks::BookmarkNode* node)>
+          non_empty_folder_confirmation_cb);
 
   // Profile the entry is from.
   Profile* profile_;
