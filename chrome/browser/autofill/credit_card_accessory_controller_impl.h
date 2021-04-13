@@ -77,6 +77,9 @@ class CreditCardAccessoryControllerImpl
   autofill::AutofillManager* af_manager_for_testing_ = nullptr;
   autofill::AutofillDriver* af_driver_for_testing_ = nullptr;
 
+  // The observer to notify if available suggestions change.
+  FillingSourceObserver source_observer_;
+
   // OnFillingTriggered() sets this so that OnCreditCardFetched() can assert
   // that the focused frame has not changed and knows the field to be filled.
   FieldGlobalId last_focused_field_id_;

@@ -5,6 +5,8 @@
 #include "chrome/browser/autofill/credit_card_accessory_controller_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
+#include "chrome/browser/autofill/accessory_controller.h"
 #include "chrome/browser/autofill/mock_manual_filling_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,6 +27,7 @@
 using testing::_;
 using testing::SaveArg;
 using testing::SaveArgPointee;
+using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 
 constexpr char kExampleSite[] = "https://example.com";
 const std::u16string kFirstTwelveDigits = u"411111111111";
@@ -154,6 +157,8 @@ class CreditCardAccessoryControllerTest
   MockAutocompleteHistoryManager history_;
   testing::NiceMock<MockManualFillingController> mock_mf_controller_;
   TestAutofillManager af_manager_;
+  base::MockCallback<AccessoryController::FillingSourceObserver>
+      filling_source_observer_;
 };
 
 TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
@@ -220,10 +225,16 @@ TEST_F(CreditCardAccessoryControllerTest, PreventsFillingInsecureContexts) {
 }
 
 TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
+  // TODO(crbug.com/1169167): Move this into setup once controllers don't push
+  // updated sheets proactively anymore.
+  controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
+
   autofill::CreditCard card = test::GetMaskedServerCard();
   data_manager_.AddCreditCard(card);
   data_manager_.AddCreditCard(test::GetCreditCard());
 
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
