@@ -99,7 +99,8 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual bool SendConversionRequestInsteadOfRedirecting(
       const KURL& url,
       const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
-      ReportingDisposition reporting_disposition) const;
+      ReportingDisposition reporting_disposition,
+      const String& devtools_request_id) const;
 
   void AddClientHintsIfNecessary(
       const ClientHintsPreferences& hints_preferences,

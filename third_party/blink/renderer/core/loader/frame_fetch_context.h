@@ -120,7 +120,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   bool SendConversionRequestInsteadOfRedirecting(
       const KURL& url,
       const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
-      ReportingDisposition reporting_disposition) const override;
+      ReportingDisposition reporting_disposition,
+      const String& devtools_request_id) const override;
 
   mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
   TakePendingWorkerTimingReceiver(int request_id) override;

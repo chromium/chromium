@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
@@ -269,6 +271,9 @@ blink::protocol::String InspectorIssueCodeValue(
       return "";
     case mojom::blink::InspectorIssueCode::kLowTextContrastIssue:
       return protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue;
+    case mojom::blink::InspectorIssueCode::kAttributionReportingIssue:
+      return protocol::Audits::InspectorIssueCodeEnum::
+          AttributionReportingIssue;
   }
 }
 
@@ -526,6 +531,16 @@ std::unique_ptr<protocol::Audits::SourceCodeLocation> BuildAffectedLocation(
   return protocol_affected_location;
 }
 
+protocol::String BuildAttributionReportingIssueType(
+    blink::mojom::blink::AttributionReportingIssueType type) {
+  switch (type) {
+    case blink::mojom::blink::AttributionReportingIssueType::
+        kPermissionPolicyDisabled:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          PermissionPolicyDisabled;
+  }
+}
+
 }  // namespace
 
 void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
@@ -638,6 +653,21 @@ void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
             .setViolatingNodeId(d->violating_node_id)
             .build();
     issueDetails.setLowTextContrastIssueDetails(std::move(lowContrastDetails));
+  }
+
+  if (issue->Details()->attribution_reporting_issue_details) {
+    const auto* d = issue->Details()->attribution_reporting_issue_details.get();
+    auto details = protocol::Audits::AttributionReportingIssueDetails::create()
+                       .setViolationType(BuildAttributionReportingIssueType(
+                           d->violation_type))
+                       .build();
+    if (d->frame)
+      details->setFrame(BuildAffectedFrame(d->frame));
+    if (d->request)
+      details->setRequest(BuildAffectedRequest(d->request));
+    if (d->violating_node_id)
+      details->setViolatingNodeId(d->violating_node_id);
+    issueDetails.setAttributionReportingIssueDetails(std::move(details));
   }
 
   auto inspector_issue = protocol::Audits::InspectorIssue::create()

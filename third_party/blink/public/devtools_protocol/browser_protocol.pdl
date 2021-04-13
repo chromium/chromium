@@ -715,6 +715,19 @@ experimental domain Audits
       optional Network.IPAddressSpace resourceIPAddressSpace
       optional Network.ClientSecurityState clientSecurityState
 
+  type AttributionReportingIssueType extends string
+    enum
+      PermissionPolicyDisabled
+
+  # Details for issues around "Attribution Reporting API" usage.
+  # Explainer: https://github.com/WICG/conversion-measurement-api
+  type AttributionReportingIssueDetails extends object
+    properties
+      AttributionReportingIssueType violationType
+      optional AffectedFrame frame
+      optional AffectedRequest request
+      optional DOM.BackendNodeId violatingNodeId
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -729,6 +742,7 @@ experimental domain Audits
       TrustedWebActivityIssue
       LowTextContrastIssue
       CorsIssue
+      AttributionReportingIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -744,6 +758,7 @@ experimental domain Audits
       optional TrustedWebActivityIssueDetails twaQualityEnforcementDetails
       optional LowTextContrastIssueDetails lowTextContrastIssueDetails
       optional CorsIssueDetails corsIssueDetails
+      optional AttributionReportingIssueDetails attributionReportingIssueDetails
 
   # An inspector issue reported from the back-end.
   type InspectorIssue extends object

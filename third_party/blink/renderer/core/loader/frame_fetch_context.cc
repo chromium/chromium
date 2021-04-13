@@ -71,7 +71,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspector_attribution_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/appcache/application_cache_host.h"
 #include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_for_frame.h"
@@ -799,7 +799,8 @@ bool FrameFetchContext::CalculateIfAdSubresource(
 bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     const KURL& url,
     const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
-    ReportingDisposition reporting_disposition) const {
+    ReportingDisposition reporting_disposition,
+    const String& devtools_request_id) const {
   if (GetResourceFetcherProperties().IsDetached())
     return false;
 
@@ -821,6 +822,13 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
 
   if (!document_->domWindow()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kConversionMeasurement)) {
+    ReportAttributionIssue(
+        GetFrame(),
+        mojom::blink::AttributionReportingIssueType::kPermissionPolicyDisabled,
+        nullptr, devtools_request_id);
+
+    // TODO(crbug.com/1178400): Remove console message once the issue reported
+    //     above is actually shown in DevTools.
     String message =
         "The 'conversion-measurement' feature policy must be enabled to "
         "register a conversion.";

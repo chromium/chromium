@@ -1,0 +1,12 @@
+Test that a site with disabled conversion measurement Permissions Policy reports an issue when an attribution link is clicked
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            frame : <object>
+            violatingNodeId : <number>
+            violationType : PermissionPolicyDisabled
+        }
+    }
+}
+

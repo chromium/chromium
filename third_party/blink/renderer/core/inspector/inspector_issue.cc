@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_issue.h"
 
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspector_attribution_issue.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
@@ -38,5 +40,29 @@ const mojom::blink::InspectorIssueDetailsPtr& InspectorIssue::Details() const {
 }
 
 void InspectorIssue::Trace(blink::Visitor* visitor) const {}
+
+void ReportAttributionIssue(LocalFrame* frame,
+                            mojom::blink::AttributionReportingIssueType type,
+                            Element* element,
+                            const base::Optional<String>& request_id) {
+  auto attribution_issue = mojom::blink::AttributionReportingIssue::New();
+  attribution_issue->violation_type = type;
+  attribution_issue->frame = mojom::blink::AffectedFrame::New(
+      IdentifiersFactory::IdFromToken(frame->GetDevToolsFrameToken()));
+  if (element)
+    attribution_issue->violating_node_id = DOMNodeIds::IdForNode(element);
+  if (request_id) {
+    auto affected_request = mojom::blink::AffectedRequest::New();
+    affected_request->request_id = *request_id;
+    attribution_issue->request = std::move(affected_request);
+  }
+  auto issue_details = mojom::blink::InspectorIssueDetails::New();
+  issue_details->attribution_reporting_issue_details =
+      std::move(attribution_issue);
+  auto issue = mojom::blink::InspectorIssueInfo::New(
+      mojom::blink::InspectorIssueCode::kAttributionReportingIssue,
+      std::move(issue_details));
+  frame->AddInspectorIssue(std::move(issue));
+}
 
 }  // namespace blink

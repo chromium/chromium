@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_attribution_issue.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -28,12 +29,27 @@ base::Optional<WebImpression> GetImpression(
     const String& impression_data_string,
     const String& conversion_destination_string,
     const base::Optional<String>& reporting_origin_string,
-    base::Optional<uint64_t> impression_expiry_milliseconds) {
+    base::Optional<uint64_t> impression_expiry_milliseconds,
+    HTMLAnchorElement* element) {
   if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(execution_context))
     return base::nullopt;
 
+  LocalFrame* frame = nullptr;
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    frame = window->GetFrame();
+  } else {
+    return base::nullopt;
+  }
+
   if (!execution_context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kConversionMeasurement)) {
+    ReportAttributionIssue(
+        frame,
+        mojom::blink::AttributionReportingIssueType::kPermissionPolicyDisabled,
+        element, base::nullopt);
+
+    // TODO(crbug.com/1178400): Remove console message once the issue reported
+    //     above is actually shown in DevTools.
     String message =
         "The 'conversion-measurement' permissions policy must be enabled to "
         "declare an impression.";
@@ -45,13 +61,6 @@ base::Optional<WebImpression> GetImpression(
 
   // Conversion measurement is only allowed when both the frame and the main
   // frame (if different) have a secure origin.
-  LocalFrame* frame = nullptr;
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    frame = window->GetFrame();
-  } else {
-    return base::nullopt;
-  }
-
   const Frame& main_frame = frame->Tree().Top();
   if (!main_frame.GetSecurityContext()
            ->GetSecurityOrigin()
@@ -129,7 +138,7 @@ base::Optional<WebImpression> GetImpressionForAnchor(
                 element->FastGetAttribute(html_names::kReportingoriginAttr)
                     .GetString())
           : base::nullopt,
-      expiry);
+      expiry, element);
 }
 
 base::Optional<WebImpression> GetImpressionForParams(
@@ -142,7 +151,8 @@ base::Optional<WebImpression> GetImpressionForParams(
                            : base::nullopt,
                        params->hasImpressionExpiry()
                            ? base::make_optional(params->impressionExpiry())
-                           : base::nullopt);
+                           : base::nullopt,
+                       nullptr);
 }
 
 }  // namespace blink

@@ -1,0 +1,13 @@
+Test that a site with disabled conversion measurement Permissions Policy reports an issue when a conversion pixel is loaded
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            frame : <object>
+            request : <object>
+            violationType : PermissionPolicyDisabled
+        }
+    }
+}
+Success: Request IDs reported from "Network.requestWillBeSent" and "Audits.issueAdded" match
+

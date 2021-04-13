@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
@@ -107,7 +108,8 @@ bool BaseFetchContext::CalculateIfAdSubresource(
 bool BaseFetchContext::SendConversionRequestInsteadOfRedirecting(
     const KURL& url,
     const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
-    ReportingDisposition reporting_disposition) const {
+    ReportingDisposition reporting_disposition,
+    const String& devtools_request_id) const {
   return false;
 }
 
@@ -521,8 +523,13 @@ BaseFetchContext::CanRequestInternal(
     return ResourceRequestBlockedReason::kOther;
   }
 
-  if (SendConversionRequestInsteadOfRedirecting(url, redirect_info,
-                                                reporting_disposition)) {
+  // Redirect `ResourceRequest`s don't have a DevToolsId set, but are
+  // associated with the requestId of the initial request. The right
+  // DevToolsId needs to be resolved via the InspectorId.
+  const String devtools_request_id =
+      IdentifiersFactory::RequestId(nullptr, resource_request.InspectorId());
+  if (SendConversionRequestInsteadOfRedirecting(
+          url, redirect_info, reporting_disposition, devtools_request_id)) {
     return ResourceRequestBlockedReason::kConversionRequest;
   }
 

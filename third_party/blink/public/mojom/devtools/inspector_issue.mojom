@@ -20,6 +20,7 @@ enum InspectorIssueCode {
   kTrustedWebActivityIssue,
   kHeavyAdIssue,
   kLowTextContrastIssue,
+  kAttributionReportingIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -172,6 +173,18 @@ struct LowTextContrastIssue {
   string font_weight;
 };
 
+enum AttributionReportingIssueType {
+  kPermissionPolicyDisabled,
+};
+
+struct AttributionReportingIssue {
+  AttributionReportingIssueType violation_type;
+  AffectedFrame? frame;
+  AffectedRequest? request;
+  // 0 is not a valid node id and is used to indicate absence.
+  int32 violating_node_id = 0;
+};
+
 // A collection of optional fields that may store additional data depending
 // on the issue code.
 struct InspectorIssueDetails {
@@ -183,6 +196,7 @@ struct InspectorIssueDetails {
   TrustedWebActivityIssueDetails? twa_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
   LowTextContrastIssue? low_text_contrast_details;
+  AttributionReportingIssue? attribution_reporting_issue_details;
 };
 
 struct InspectorIssueInfo {
