@@ -29,22 +29,21 @@ enum class OriginTrialStatus {
   kTrialNotAllowed = 3,
 };
 
-struct DevtoolsOriginTrialTokenResult {
-  DevtoolsOriginTrialTokenResult(
-      const String& raw_token,
-      OriginTrialTokenStatus status,
-      const base::Optional<TrialToken>& parsed_token);
-  ~DevtoolsOriginTrialTokenResult() = default;
+struct OriginTrialTokenResult {
+  OriginTrialTokenResult(const String& raw_token,
+                         OriginTrialTokenStatus status,
+                         const base::Optional<TrialToken>& parsed_token);
+  ~OriginTrialTokenResult() = default;
 
   String raw_token;
   OriginTrialTokenStatus status;
   base::Optional<TrialToken> parsed_token;
 };
 
-struct DevtoolsOriginTrialResult {
+struct OriginTrialResult {
   String trial_name;
   OriginTrialStatus status;
-  Vector<DevtoolsOriginTrialTokenResult> token_results;
+  Vector<OriginTrialTokenResult> token_results;
 };
 
 // The Origin Trials Framework provides limited access to experimental features,
@@ -152,11 +151,11 @@ class CORE_EXPORT OriginTrialContext final
   void Trace(Visitor*) const;
 
   // A copy of the HashMap is returned as new entries can be added to
-  // `devtools_trial_results_` afterwards, which potentially causes
+  // `trial_results_` afterwards, which potentially causes
   // inconsistency.
-  const HashMap<String, DevtoolsOriginTrialResult>
-  GetOriginTrialResultsForDevtools() const {
-    return devtools_trial_results_;
+  const HashMap<String, OriginTrialResult> GetOriginTrialResultsForDevtools()
+      const {
+    return trial_results_;
   }
 
  private:
@@ -203,23 +202,25 @@ class CORE_EXPORT OriginTrialContext final
   // before, otherwise false.
   bool InstallFeature(OriginTrialFeature, ScriptState*);
 
-  void CacheTokenForDevtools(const String& raw_token,
-                             const TrialTokenResult&,
-                             OriginTrialStatus);
+  // Caches raw origin trial token along with the parse result to
+  // `trial_results_`.
+  void CacheToken(const String& raw_token,
+                  const TrialTokenResult&,
+                  OriginTrialStatus);
 
   const SecurityOrigin* GetSecurityOrigin();
   bool IsSecureContext();
 
-  Vector<String> tokens_;
   HashSet<OriginTrialFeature> enabled_features_;
   HashSet<OriginTrialFeature> installed_features_;
   HashSet<OriginTrialFeature> navigation_activated_features_;
   WTF::HashMap<OriginTrialFeature, base::Time> feature_expiry_times_;
   std::unique_ptr<TrialTokenValidator> trial_token_validator_;
   Member<ExecutionContext> context_;
-
-  HashMap</* Trial Name */ String, DevtoolsOriginTrialResult>
-      devtools_trial_results_;
+  // Stores raw origin trial token along with the parse result.
+  // This field is mainly used for devtools support, but
+  // `OriginTrialContext::GetTokens` also depends on the structure.
+  HashMap</* Trial Name */ String, OriginTrialResult> trial_results_;
 };
 
 }  // namespace blink

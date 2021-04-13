@@ -159,7 +159,7 @@ OriginTrialStatus MergeOriginTrialStatus(OriginTrialStatus s1,
 }  // namespace
 
 // TODO(crbug.com/607555): Mark `TrialToken` as copyable.
-DevtoolsOriginTrialTokenResult::DevtoolsOriginTrialTokenResult(
+OriginTrialTokenResult::OriginTrialTokenResult(
     const String& raw_token,
     OriginTrialTokenStatus status,
     const base::Optional<TrialToken>& parsed_token)
@@ -228,9 +228,18 @@ std::unique_ptr<Vector<String>> OriginTrialContext::GetTokens(
   DCHECK(execution_context);
   const OriginTrialContext* context =
       execution_context->GetOriginTrialContext();
-  if (!context || context->tokens_.IsEmpty())
+  if (!context || context->trial_results_.IsEmpty())
     return nullptr;
-  return std::make_unique<Vector<String>>(context->tokens_);
+
+  auto tokens = std::make_unique<Vector<String>>();
+  for (const auto& entry : context->trial_results_) {
+    const OriginTrialResult& trial_result = entry.value;
+    for (const OriginTrialTokenResult& token_result :
+         trial_result.token_results) {
+      tokens->push_back(token_result.raw_token);
+    }
+  }
+  return tokens;
 }
 
 // static
@@ -285,7 +294,6 @@ void OriginTrialContext::AddTokenInternal(const String& token,
                                           bool is_script_origin_secure) {
   if (token.IsEmpty())
     return;
-  tokens_.push_back(token);
 
   bool enabled = EnableTrialFromToken(origin, is_origin_secure, script_origin,
                                       is_script_origin_secure, token);
@@ -302,7 +310,6 @@ void OriginTrialContext::AddTokens(const Vector<String>& tokens) {
   bool found_valid = false;
   for (const String& token : tokens) {
     if (!token.IsEmpty()) {
-      tokens_.push_back(token);
       if (EnableTrialFromToken(GetSecurityOrigin(), IsSecureContext(), token))
         found_valid = true;
     }
@@ -540,23 +547,22 @@ bool OriginTrialContext::EnableTrialFromToken(
     }
   }
   RecordTokenValidationResultHistogram(status);
-  CacheTokenForDevtools(token, token_result, trial_status);
+  CacheToken(token, token_result, trial_status);
   return trial_status == OriginTrialStatus::kEnabled;
 }
 
-void OriginTrialContext::CacheTokenForDevtools(
-    const String& raw_token,
-    const TrialTokenResult& token_result,
-    OriginTrialStatus trial_status) {
+void OriginTrialContext::CacheToken(const String& raw_token,
+                                    const TrialTokenResult& token_result,
+                                    OriginTrialStatus trial_status) {
   String trial_name = token_result.ParsedToken()
                           ? token_result.ParsedToken()->feature_name().c_str()
                           : kDefaultTrialName;
 
   // Does nothing if key already exists.
   auto& trial_result =
-      devtools_trial_results_
+      trial_results_
           .insert(trial_name,
-                  DevtoolsOriginTrialResult{
+                  OriginTrialResult{
                       trial_name,
                       OriginTrialStatus::kValidTokenNotProvided,
                       /* token_results */ {},
@@ -565,7 +571,7 @@ void OriginTrialContext::CacheTokenForDevtools(
 
   trial_result.status =
       MergeOriginTrialStatus(trial_result.status, trial_status);
-  trial_result.token_results.push_back(DevtoolsOriginTrialTokenResult{
+  trial_result.token_results.push_back(OriginTrialTokenResult{
       raw_token, token_result.Status(),
       token_result.ParsedToken()
           ? base::make_optional(*token_result.ParsedToken())
