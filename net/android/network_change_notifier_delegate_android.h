@@ -106,10 +106,14 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jlongArray>& active_networks);
 
-  // These methods can be called on any thread. Note that the provided observer
-  // will be notified on the thread AddObserver() is called on.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  // Registers/unregisters the observer which receives notifications from this
+  // delegate. Notifications may be dispatched to the observer from any thread.
+  // |observer| must not invoke (Register|Unregister)Observer() when receiving a
+  // notification, because it would cause a reentrant lock acquisition.
+  // |observer| must unregister itself before
+  // ~NetworkChangeNotifierDelegateAndroid().
+  void RegisterObserver(Observer* observer);
+  void UnregisterObserver(Observer* observer);
 
   // These methods are simply implementations of NetworkChangeNotifier APIs of
   // the same name. They can be called from any thread.
@@ -163,7 +167,10 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   void FakeConnectionSubtypeChanged(ConnectionSubtype subtype);
 
   THREAD_CHECKER(thread_checker_);
-  scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
+
+  base::Lock observer_lock_;
+  Observer* observer_ GUARDED_BY(observer_lock_) = nullptr;
+
   const base::android::ScopedJavaGlobalRef<jobject>
       java_network_change_notifier_;
   // True if NetworkCallback failed to register, indicating that

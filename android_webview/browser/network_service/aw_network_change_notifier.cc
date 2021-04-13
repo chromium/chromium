@@ -7,7 +7,7 @@
 namespace android_webview {
 
 AwNetworkChangeNotifier::~AwNetworkChangeNotifier() {
-  delegate_->RemoveObserver(this);
+  delegate_->UnregisterObserver(this);
 }
 
 net::NetworkChangeNotifier::ConnectionType
@@ -64,7 +64,7 @@ AwNetworkChangeNotifier::AwNetworkChangeNotifier(
     net::NetworkChangeNotifierDelegateAndroid* delegate)
     : net::NetworkChangeNotifier(DefaultNetworkChangeCalculatorParams()),
       delegate_(delegate) {
-  delegate_->AddObserver(this);
+  delegate_->RegisterObserver(this);
 }
 
 // static
