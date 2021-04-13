@@ -57,6 +57,11 @@
   return self;
 }
 
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [super dealloc];
+}
+
 - (void)onWindowWillStartLiveResize:(NSNotification*)notification {
   _nativeAppWindow->OnWindowWillStartLiveResize();
 }

@@ -30,6 +30,11 @@
   return self;
 }
 
+- (void)dealloc {
+  [self stopObservingClicks];
+  [super dealloc];
+}
+
 - (void)close {
   [self stopObservingClicks];
   [super close];
