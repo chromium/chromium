@@ -75,6 +75,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityNavigationControllerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityUrlLoadingTest.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/features/ImmersiveModeControllerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/shadows/ShadowExternalNavigationDelegateImpl.java",
   "junit/src/org/chromium/chrome/browser/directactions/FindInPageDirectActionHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/directactions/GoBackDirectActionHandlerTest.java",

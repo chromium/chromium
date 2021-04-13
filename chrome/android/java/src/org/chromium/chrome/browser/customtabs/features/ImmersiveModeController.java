@@ -40,7 +40,7 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
 
     private final Activity mActivity;
     private final Handler mHandler = new Handler();
-    private final Runnable mSetImmersiveFlagsRunnable = this::setImmersiveFlags;
+    private final Runnable mUpdateImmersiveFlagsRunnable = this::updateImmersiveFlags;
 
     private int mImmersiveFlags;
     private boolean mInImmersiveMode;
@@ -87,17 +87,31 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
         postSetImmersiveFlags(0);
     }
 
+    /**
+     * Exits immersive mode.
+     */
+    public void exitImmersiveMode() {
+        if (!mInImmersiveMode) return;
+
+        mInImmersiveMode = false;
+        mHandler.removeCallbacks(mUpdateImmersiveFlagsRunnable);
+        updateImmersiveFlags();
+    }
+
     private void postSetImmersiveFlags(int delayInMills) {
         if (!mInImmersiveMode) return;
 
-        mHandler.removeCallbacks(mSetImmersiveFlagsRunnable);
-        mHandler.postDelayed(mSetImmersiveFlagsRunnable, delayInMills);
+        mHandler.removeCallbacks(mUpdateImmersiveFlagsRunnable);
+        mHandler.postDelayed(mUpdateImmersiveFlagsRunnable, delayInMills);
     }
 
-    private void setImmersiveFlags() {
+    private void updateImmersiveFlags() {
         View decor = mActivity.getWindow().getDecorView();
         int currentFlags = decor.getSystemUiVisibility();
-        int desiredFlags = currentFlags | mImmersiveFlags;
+
+        int desiredFlags =
+                mInImmersiveMode ? currentFlags | mImmersiveFlags : currentFlags & ~mImmersiveFlags;
+
         if (currentFlags != desiredFlags) {
             decor.setSystemUiVisibility(desiredFlags);
         }
@@ -110,23 +124,8 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
         }
     }
 
-    /**
-     * Exits immersive mode.
-     */
-    public void exitImmersiveMode() {
-        if (!mInImmersiveMode) return;
-        mInImmersiveMode = false;
-        mHandler.removeCallbacks(mSetImmersiveFlagsRunnable);
-        View decor = mActivity.getWindow().getDecorView();
-        int currentFlags = decor.getSystemUiVisibility();
-        int desiredFlags = currentFlags & ~mImmersiveFlags;
-        if (currentFlags != desiredFlags) {
-            decor.setSystemUiVisibility(desiredFlags);
-        }
-    }
-
     @Override
     public void destroy() {
-        mHandler.removeCallbacks(mSetImmersiveFlagsRunnable);
+        mHandler.removeCallbacks(mUpdateImmersiveFlagsRunnable);
     }
 }
