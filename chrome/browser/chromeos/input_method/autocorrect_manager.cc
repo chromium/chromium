@@ -30,15 +30,6 @@ bool IsCurrentInputMethodExperimentalMultilingual() {
       input_method_manager->GetActiveIMEState()->GetCurrentInputMethod().id());
 }
 
-void LogAssistiveAutocorrectAction(AutocorrectActions action) {
-  base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Actions",
-                                action);
-  if (IsCurrentInputMethodExperimentalMultilingual()) {
-    base::UmaHistogramEnumeration(
-        "InputMethod.MultilingualExperiment.Autocorrect.Actions", action);
-  }
-}
-
 void LogAssistiveAutocorrectDelay(base::TimeDelta delay) {
   base::UmaHistogramMediumTimes("InputMethod.Assistive.Autocorrect.Delay",
                                 delay);
@@ -74,8 +65,10 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
   if (!input_context)
     return;
 
-  // TODO(crbug/1159297): Record diacritics-related metrics for multilingual
-  // experiment, based on `current_text` and `original_text`.
+  in_diacritical_autocorrect_session_ =
+      IsCurrentInputMethodExperimentalMultilingual() &&
+      diacritics_insensitive_string_comparator_.Equal(original_text,
+                                                      current_text);
 
   original_text_ = original_text;
   key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
@@ -87,6 +80,23 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
   autocorrect_time_ = base::TimeTicks::Now();
+}
+
+void AutocorrectManager::LogAssistiveAutocorrectAction(
+    AutocorrectActions action) {
+  base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Actions",
+                                action);
+
+  if (IsCurrentInputMethodExperimentalMultilingual()) {
+    base::UmaHistogramEnumeration(
+        "InputMethod.MultilingualExperiment.Autocorrect.Actions", action);
+
+    if (in_diacritical_autocorrect_session_) {
+      base::UmaHistogramEnumeration(
+          "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
+          action);
+    }
+  }
 }
 
 bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {

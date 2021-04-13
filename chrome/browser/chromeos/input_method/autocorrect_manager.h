@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/chromeos/input_method/assistive_window_controller.h"
+#include "chrome/browser/chromeos/input_method/diacritics_insensitive_string_comparator.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine_base.h"
 #include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
 
@@ -67,6 +68,7 @@ class AutocorrectManager {
 
  private:
   void ClearUnderline();
+  void LogAssistiveAutocorrectAction(AutocorrectActions action);
 
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
@@ -75,6 +77,10 @@ class AutocorrectManager {
   bool window_visible_ = false;
   bool button_highlighted_ = false;
   base::TimeTicks autocorrect_time_;
+
+  DiacriticsInsensitiveStringComparator
+      diacritics_insensitive_string_comparator_;
+  bool in_diacritical_autocorrect_session_ = false;
 };
 
 }  // namespace chromeos
