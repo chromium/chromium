@@ -7,31 +7,23 @@
   }
   cr-search-field {
     --cr-search-field-clear-icon-margin-end: 14px;
-    --cr-search-field-clear-icon-margin-end:14px;
     --cr-search-field-clear-icon-size:20px;
     --cr-search-field-input-border-bottom: none;
     --cr-search-field-input-padding-bottom: 0;
-    --cr-search-field-clear-icon-size:20px;
-    --cr-search-field-input-border-bottom: none;
-    --cr-search-field-input-padding-bottom: 0;
+    --cr-search-field-input-padding-start: 8px;
     --cr-search-field-input-padding-top: 0;
-    --cr-search-field-input-padding-top: 0;
-    --cr-search-field-input-width: calc(100% - 24px);
-    --cr-search-field-search-icon-padding: 0px 8px 0px 14px;
-    --cr-search-field-search-icon-size: 20px;
+    --cr-search-field-input-width: 100%;
+    --cr-search-field-search-icon-display: none;
+    --cr-search-field-search-icon-fill: var(--cr-secondary-text-color);
+    --cr-search-field-search-icon-inline-display: block;
+    --cr-search-field-search-icon-inline-margin-start: 14px;
     --cr-search-field-underline-display: none;
     align-items: center;
-    background-color: var(--cr-separator-color);
+    background-color: var(--google-grey-100);
     border-radius: 41px;
     height: 40px;
     line-height: 40px;
     margin-bottom: 8px;
-  }
-
-  cr-search-field::part(searchIcon) {
-    height: 20px;
-    padding: 0 8px 0 14px;
-    width: 20px;
   }
 
   #container {
@@ -88,7 +80,7 @@
       </div>
     </template>
     <template is="dom-if" if="[[!results.length]]">
-      <div class="no-result">
+      <div class="name">
         No results
       </div>
     </template>
