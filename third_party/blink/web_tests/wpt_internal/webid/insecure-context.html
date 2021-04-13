@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>WebID requires secure context</title>
+<link rel="author" title="Majid Valipour" href="mailto:majidvp@chromium.org">
+<link rel="help" href="https://wicg.github.io/WebID">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(t => {
+  assert_false(isSecureContext);
+  assert_false('id' in navigator);
+}, "navigator.id requires secure context.");
+</script>

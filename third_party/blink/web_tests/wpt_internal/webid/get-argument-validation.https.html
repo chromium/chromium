@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>WebID navigator.id.get() inputs Tests</title>
+<title>Basic parameter validation for navigator.id.get()</title>
 <link rel="author" title="Majid Valipour" href="mailto:majidvp@chromium.org">
-<link rel="help" href="Test basic parameter validation for navigator.id.get()">
 <link rel="help" href="https://wicg.github.io/WebID">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -10,6 +9,7 @@
 <script>
   // request
   promise_test(async t => {
+    assert_implements(navigator.id, 'missing navigator.id.');
     const result = navigator.id.get({
       provider: 'https://idp.test',
     });
@@ -18,6 +18,7 @@
 
   // provider
   promise_test(async t => {
+    assert_implements(navigator.id, 'missing navigator.id.');
     const result = navigator.id.get({
       request: ''
     });
@@ -25,6 +26,7 @@
   }, "Reject when provider is missing" );
 
   promise_test(async t => {
+    assert_implements(navigator.id, 'missing navigator.id.');
     const result = navigator.id.get({
       provider: 'not_a_url',
       request: '',
@@ -34,6 +36,7 @@
 
   // mode
   promise_test(async t => {
+    assert_implements(navigator.id, 'missing navigator.id.');
     const result = navigator.id.get({
       provider: 'https://idp.test',
       request: '',
