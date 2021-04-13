@@ -485,6 +485,12 @@ crbug.com/1050993 [ Linux ] virtual/gpu-rasterization/images/drag-image-descenda
 # Flaky test.
 crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Pass Failure ]
 
+# Flaky - possible filter paint invalidation bug.
+crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Pass Failure ]
+crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Pass Failure ]
+crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Pass Failure ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-intercept-attr.html [ Pass Failure ]
+
 # Fixed in CompositeAfterPaint.
 crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Failure ]
 crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Failure ]
@@ -6636,7 +6642,6 @@ crbug.com/v8/11429 http/tests/devtools/profiler/cpu-profiler-profiling.js [ Pass
 
 # Sheriff 2021-03-04
 crbug.com/1184745 [ Mac ] external/wpt/media-source/mediasource-changetype-play.html [ Pass Failure ]
-crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Pass Failure ]
 
 # Sheriff 2021-03-08
 crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.html [ Pass Failure ]
@@ -6651,8 +6656,6 @@ crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Pass Fa
 crbug.com/1184157 http/tests/serviceworker/window-close-during-registration.html [ Pass Failure Timeout ]
 
 # Sheriff 2021-03-11
-crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Pass Failure ]
-crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Pass Failure ]
 crbug.com/1186901 [ Linux ] http/tests/devtools/elements/styles-3/style-autocomplete.js [ Pass Failure ]
 
 # Updating virtual suite from virtual/threaded/fast/scroll-snap to
