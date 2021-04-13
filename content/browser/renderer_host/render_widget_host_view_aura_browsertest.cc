@@ -363,6 +363,75 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDevtoolsBrowserTest,
   ASSERT_TRUE(ExecuteScript(wc, "noop();"));
 }
 
+// Used to verify features under the environment whose device scale factor is 2.
+class RenderWidgetHostViewAuraDSFBrowserTest
+    : public RenderWidgetHostViewAuraBrowserTest {
+ public:
+  // RenderWidgetHostViewAuraBrowserTest:
+  void SetUp() override {
+    EnablePixelOutput(scale());
+    RenderWidgetHostViewAuraBrowserTest::SetUp();
+  }
+
+  float scale() const { return 2.f; }
+};
+
+// Verifies the bounding box of the selection region.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDSFBrowserTest,
+                       SelectionRegionBoundingBox) {
+  GURL page(
+      "data:text/html;charset=utf-8,"
+      "<!DOCTYPE html>"
+      "<html>"
+      "<body>"
+      "<p id=\"text-content\">Gibbons are apes in the family Hylobatidae.</p>"
+      "<script>"
+      "  function selectText() {"
+      "    const input = document.getElementById('text-content');"
+      "    var range = document.createRange();"
+      "    range.selectNodeContents(input);"
+      "    var selection = window.getSelection();  "
+      "    selection.removeAllRanges();"
+      "    selection.addRange(range);"
+      "  }"
+      "  function getSelectionBounds() {"
+      "    var r = "
+      "document.getSelection().getRangeAt(0).getBoundingClientRect();"
+      "    return [r.x, r.right, r.y, r.bottom]; "
+      "  }"
+      "</script>"
+      "</body>"
+      "</html>");
+  EXPECT_TRUE(NavigateToURL(shell(), page));
+
+  // Select text and wait until the bounding box updates.
+  auto* wc = shell()->web_contents();
+  ASSERT_TRUE(ExecuteScript(wc, "selectText();"));
+  WaitForSelectionBoundingBoxUpdate(wc);
+
+  // Verify the device scale factor.
+  const float device_scale_factor =
+      GetRenderWidgetHostView()->GetDeviceScaleFactor();
+  ASSERT_EQ(scale(), device_scale_factor);
+
+  // Calculate the DIP size from the bounds in pixel. Follow exactly what is
+  // done in `WebFrameWidgetImpl`.
+  const base::ListValue eval_result =
+      EvalJs(wc, "getSelectionBounds();").ExtractList();
+  const int x = floor(eval_result.GetList()[0].GetDouble());
+  const int right = ceil(eval_result.GetList()[1].GetDouble());
+  const int y = floor(eval_result.GetList()[2].GetDouble());
+  const int bottom = ceil(eval_result.GetList()[3].GetDouble());
+  const int expected_dip_width = floor(right / scale()) - ceil(x / scale());
+  const int expected_dip_height = floor(bottom / scale()) - ceil(y / scale());
+
+  // Verify the DIP size of the bounding box.
+  const gfx::Rect selection_bounds =
+      GetRenderWidgetHostView()->GetSelectionBoundingBox();
+  EXPECT_EQ(expected_dip_width, selection_bounds.width());
+  EXPECT_EQ(expected_dip_height, selection_bounds.height());
+}
+
 class RenderWidgetHostViewAuraActiveWidgetTest : public ContentBrowserTest {
  public:
   RenderWidgetHostViewAuraActiveWidgetTest() = default;

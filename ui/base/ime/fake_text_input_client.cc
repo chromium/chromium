@@ -74,6 +74,10 @@ gfx::Rect FakeTextInputClient::GetCaretBounds() const {
   return {};
 }
 
+gfx::Rect FakeTextInputClient::GetSelectionBoundingBox() const {
+  return {};
+}
+
 bool FakeTextInputClient::GetCompositionCharacterBounds(uint32_t index,
                                                         gfx::Rect* rect) const {
   return false;

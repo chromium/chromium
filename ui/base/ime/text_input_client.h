@@ -136,6 +136,11 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // If there is selection, then the selection bounds will be returned.
   virtual gfx::Rect GetCaretBounds() const = 0;
 
+  // Returns the bounds of the rectangle which encloses the selection region.
+  // Bounds are in the screen coordinates. An empty value should be returned if
+  // there is not any selection or this function is not implemented.
+  virtual gfx::Rect GetSelectionBoundingBox() const = 0;
+
   // Retrieves the composition character boundary rectangle in the universal
   // screen coordinates in DIP (Density Independent Pixel).
   // The |index| is zero-based index of character position in composition text.

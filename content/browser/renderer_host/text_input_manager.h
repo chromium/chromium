@@ -74,6 +74,9 @@ class CONTENT_EXPORT TextInputManager {
     // The end of the selection region (caret position).
     gfx::SelectionBound focus;
 
+    // The bounding box of the selection region.
+    gfx::Rect bounding_box;
+
     // The following variables are only used on Mac platform.
     // The current caret bounds.
     gfx::Rect caret_rect;
@@ -189,6 +192,7 @@ class CONTENT_EXPORT TextInputManager {
                               base::i18n::TextDirection anchor_dir,
                               const gfx::Rect& focus_rect,
                               base::i18n::TextDirection focus_dir,
+                              const gfx::Rect& bounding_box,
                               bool is_anchor_first);
 
   // Notify observers that the selection bounds have been updated. This is also

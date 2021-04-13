@@ -6199,9 +6199,9 @@ TEST_F(InputMethodStateAuraTest, GetCaretBounds) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
     gfx::Rect anchor_rect = gfx::Rect(0, 0, 10, 10);
     gfx::Rect focus_rect = gfx::Rect(10 + index, 10 + index, 10, 10);
-    views_[index]->SelectionBoundsChanged(anchor_rect,
-                                          base::i18n::LEFT_TO_RIGHT, focus_rect,
-                                          base::i18n::LEFT_TO_RIGHT, true);
+    views_[index]->SelectionBoundsChanged(
+        anchor_rect, base::i18n::LEFT_TO_RIGHT, focus_rect,
+        base::i18n::LEFT_TO_RIGHT, /*bounding_box=*/gfx::Rect(), true);
 
     // Calculate the bounds.
     gfx::SelectionBound anchor_bound = GetSelectionBoundFromRect(
@@ -6529,7 +6529,8 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest, OnCaretBoundsChanged) {
 
   parent_view_->SelectionBoundsChanged(
       gfx::Rect(0, 0, 10, 10), base::i18n::LEFT_TO_RIGHT,
-      gfx::Rect(10, 10, 10, 10), base::i18n::LEFT_TO_RIGHT, true);
+      gfx::Rect(10, 10, 10, 10), base::i18n::LEFT_TO_RIGHT,
+      /*bounding_box=*/gfx::Rect(), true);
   EXPECT_EQ(parent_view_, text_input_client_);
 
   input_method->RemoveObserver(this);

@@ -512,6 +512,11 @@ gfx::Rect ArcImeService::GetCaretBounds() const {
   return cursor_rect_;
 }
 
+gfx::Rect ArcImeService::GetSelectionBoundingBox() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return gfx::Rect();
+}
+
 bool ArcImeService::GetTextRange(gfx::Range* range) const {
   if (!text_range_.IsValid())
     return false;

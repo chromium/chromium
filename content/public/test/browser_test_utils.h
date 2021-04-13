@@ -327,6 +327,10 @@ void SimulateTouchEventAt(WebContents* web_contents,
                           const gfx::Point& point);
 
 void SimulateLongTapAt(WebContents* web_contents, const gfx::Point& point);
+
+// Waits for the update in the bounding box (i.e. the rectangle enclosing the
+// selection region) associated with `web_contents`.
+void WaitForSelectionBoundingBoxUpdate(WebContents* web_contents);
 #endif
 
 // Taps the screen with modifires at |point|.

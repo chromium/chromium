@@ -1504,6 +1504,11 @@ gfx::Rect Textfield::GetCaretBounds() const {
   return rect;
 }
 
+gfx::Rect Textfield::GetSelectionBoundingBox() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return gfx::Rect();
+}
+
 bool Textfield::GetCompositionCharacterBounds(uint32_t index,
                                               gfx::Rect* rect) const {
   DCHECK(rect);

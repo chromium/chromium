@@ -206,6 +206,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   int GetTextInputFlags() const override;
   bool CanComposeInline() const override;
   gfx::Rect GetCaretBounds() const override;
+  gfx::Rect GetSelectionBoundingBox() const override;
   bool GetCompositionCharacterBounds(uint32_t index,
                                      gfx::Rect* rect) const override;
   bool HasCompositionText() const override;
@@ -524,7 +525,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   ui::InputMethod* GetInputMethod() const;
 
   // Get the focused view that should be used for retrieving the text selection.
-  RenderWidgetHostViewBase* GetFocusedViewForTextSelection();
+  RenderWidgetHostViewBase* GetFocusedViewForTextSelection() const;
 
   // Returns whether the widget needs an input grab to work properly.
   bool NeedsInputGrab();

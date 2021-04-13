@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/text_input_manager.h"
 
+#include <algorithm>
+
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "ui/gfx/geometry/rect.h"
@@ -194,6 +196,7 @@ void TextInputManager::SelectionBoundsChanged(
     base::i18n::TextDirection anchor_dir,
     const gfx::Rect& focus_rect,
     base::i18n::TextDirection focus_dir,
+    const gfx::Rect& bounding_box,
     bool is_anchor_first) {
   DCHECK(IsRegistered(view));
   // Converting the anchor point to root's coordinate space (for child frame
@@ -232,12 +235,42 @@ void TextInputManager::SelectionBoundsChanged(
     }
   }
 
+  // Transform `bounding_box` to the top-level frame's coordinate space.
+  std::vector<gfx::Point> bounding_box_vertice = {
+      bounding_box.origin(), bounding_box.top_right(),
+      bounding_box.bottom_left(), bounding_box.bottom_right()};
+  std::vector<int> x_after_transform;
+  std::vector<int> y_after_transform;
+  for (const auto& vertex : bounding_box_vertice) {
+    const gfx::Point vertex_after_transform =
+        view->TransformPointToRootCoordSpace(vertex);
+    x_after_transform.push_back(vertex_after_transform.x());
+    y_after_transform.push_back(vertex_after_transform.y());
+  }
+
+  std::sort(x_after_transform.begin(), x_after_transform.end());
+  std::sort(y_after_transform.begin(), y_after_transform.end());
+
+  const gfx::Point bounding_box_origin_after_transform(x_after_transform[0],
+                                                       y_after_transform[0]);
+  const gfx::Point bounding_box_bottom_right_after_transform(
+      x_after_transform.back(), y_after_transform.back());
+  const gfx::Rect bounding_box_transformed(
+      bounding_box_origin_after_transform,
+      gfx::Size(bounding_box_bottom_right_after_transform.x() -
+                    bounding_box_origin_after_transform.x(),
+                bounding_box_bottom_right_after_transform.y() -
+                    bounding_box_origin_after_transform.y()));
+
   if (anchor_bound == selection_region_map_[view].anchor &&
-      focus_bound == selection_region_map_[view].focus)
+      focus_bound == selection_region_map_[view].focus &&
+      bounding_box_transformed == selection_region_map_[view].bounding_box) {
     return;
+  }
 
   selection_region_map_[view].anchor = anchor_bound;
   selection_region_map_[view].focus = focus_bound;
+  selection_region_map_[view].bounding_box = bounding_box_transformed;
 
   if (anchor_rect == focus_rect) {
     selection_region_map_[view].caret_rect.set_origin(

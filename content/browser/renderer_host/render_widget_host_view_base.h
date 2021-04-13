@@ -383,13 +383,15 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Notifies the view that the renderer selection bounds has changed.
   // Selection bounds are described as a focus bound which is the current
   // position of caret on the screen, as well as the anchor bound which is the
-  // starting position of the selection. The coordinates are with respect to
-  // RenderWidget's window's origin. Focus and anchor bound are represented as
-  // gfx::Rect.
+  // starting position of the selection. `bounding_box` is the bounds of the
+  // rectangle enclosing the selection region. The coordinates are with respect
+  // to RenderWidget's window's origin. Focus and anchor bound are represented
+  // as gfx::Rect.
   virtual void SelectionBoundsChanged(const gfx::Rect& anchor_rect,
                                       base::i18n::TextDirection anchor_dir,
                                       const gfx::Rect& focus_rect,
                                       base::i18n::TextDirection focus_dir,
+                                      const gfx::Rect& bounding_box,
                                       bool is_anchor_first);
 
   // Updates the range of the marked text in an IME composition.

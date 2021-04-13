@@ -124,11 +124,13 @@ void RenderWidgetHostViewBase::SelectionBoundsChanged(
     base::i18n::TextDirection anchor_dir,
     const gfx::Rect& focus_rect,
     base::i18n::TextDirection focus_dir,
+    const gfx::Rect& bounding_box,
     bool is_anchor_first) {
 #if !defined(OS_ANDROID)
   if (GetTextInputManager())
     GetTextInputManager()->SelectionBoundsChanged(
-        this, anchor_rect, anchor_dir, focus_rect, focus_dir, is_anchor_first);
+        this, anchor_rect, anchor_dir, focus_rect, focus_dir, bounding_box,
+        is_anchor_first);
 #else
   NOTREACHED() << "Selection bounds should be routed through the compositor.";
 #endif

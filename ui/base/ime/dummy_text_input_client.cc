@@ -8,6 +8,7 @@
 #include <vector>
 #endif
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -76,6 +77,11 @@ bool DummyTextInputClient::CanComposeInline() const {
 }
 
 gfx::Rect DummyTextInputClient::GetCaretBounds() const {
+  return gfx::Rect();
+}
+
+gfx::Rect DummyTextInputClient::GetSelectionBoundingBox() const {
+  NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Rect();
 }
 

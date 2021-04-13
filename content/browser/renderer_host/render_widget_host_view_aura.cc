@@ -1261,6 +1261,19 @@ gfx::Rect RenderWidgetHostViewAura::GetCaretBounds() const {
   return caret_rect;
 }
 
+gfx::Rect RenderWidgetHostViewAura::GetSelectionBoundingBox() const {
+  auto* focused_view = GetFocusedViewForTextSelection();
+  if (!focused_view)
+    return gfx::Rect();
+
+  const gfx::Rect bounding_box =
+      text_input_manager_->GetSelectionRegion(focused_view)->bounding_box;
+  if (bounding_box.IsEmpty())
+    return gfx::Rect();
+
+  return ConvertRectToScreen(bounding_box);
+}
+
 bool RenderWidgetHostViewAura::GetCompositionCharacterBounds(
     uint32_t index,
     gfx::Rect* rect) const {
@@ -2147,7 +2160,7 @@ ui::InputMethod* RenderWidgetHostViewAura::GetInputMethod() const {
 }
 
 RenderWidgetHostViewBase*
-RenderWidgetHostViewAura::GetFocusedViewForTextSelection() {
+RenderWidgetHostViewAura::GetFocusedViewForTextSelection() const {
   // We obtain the TextSelection from focused RWH which is obtained from the
   // frame tree.
   return GetFocusedWidget() ? GetFocusedWidget()->GetView() : nullptr;

@@ -595,6 +595,43 @@ class ResizeObserver : public RenderWidgetHostObserver {
   base::RepeatingCallback<bool()> is_complete_callback_;
 };
 
+#if defined(USE_AURA)
+
+class BoundingBoxUpdateWaiter : public TextInputManager::Observer {
+ public:
+  explicit BoundingBoxUpdateWaiter(RenderWidgetHostViewAura* rwhva)
+      : text_input_manager_(rwhva->GetTextInputManager()),
+        original_bounding_box_(rwhva->GetSelectionBoundingBox()),
+        rwhva_(rwhva) {
+    text_input_manager_->AddObserver(this);
+  }
+  BoundingBoxUpdateWaiter(const BoundingBoxUpdateWaiter&) = delete;
+  BoundingBoxUpdateWaiter& operator=(const BoundingBoxUpdateWaiter&) = delete;
+  ~BoundingBoxUpdateWaiter() { text_input_manager_->RemoveObserver(this); }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // TextInputManager::Observer:
+  void OnSelectionBoundsChanged(
+      TextInputManager* text_input_manager,
+      RenderWidgetHostViewBase* updated_view) override {
+    if (rwhva_->GetSelectionBoundingBox() == original_bounding_box_) {
+      return;
+    }
+
+    run_loop_.Quit();
+  }
+
+  TextInputManager* const text_input_manager_;
+  const gfx::Rect original_bounding_box_;
+  RenderWidgetHostViewAura* const rwhva_;
+
+  base::RunLoop run_loop_;
+};
+
+#endif
+
 }  // namespace
 
 bool NavigateToURL(WebContents* web_contents, const GURL& url) {
@@ -1184,6 +1221,13 @@ void SimulateLongTapAt(WebContents* web_contents, const gfx::Point& point) {
   ui::GestureEvent long_tap(point.x(), point.y(), 0, ui::EventTimeForNow(),
                             long_tap_details, touch_end.unique_event_id());
   rwhva->OnGestureEvent(&long_tap);
+}
+
+void WaitForSelectionBoundingBoxUpdate(WebContents* web_contents) {
+  RenderWidgetHostViewAura* rwhva = static_cast<RenderWidgetHostViewAura*>(
+      web_contents->GetRenderWidgetHostView());
+  BoundingBoxUpdateWaiter waiter(rwhva);
+  waiter.Wait();
 }
 #endif
 

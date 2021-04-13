@@ -2158,7 +2158,7 @@ void RenderWidgetHostImpl::SelectionBoundsChanged(
     bool is_anchor_first) {
   if (view_)
     view_->SelectionBoundsChanged(anchor_rect, anchor_dir, focus_rect,
-                                  focus_dir, is_anchor_first);
+                                  focus_dir, bounding_box, is_anchor_first);
 }
 
 void RenderWidgetHostImpl::OnUpdateDragCursor(

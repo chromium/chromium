@@ -180,6 +180,11 @@ gfx::Rect TextInput::GetCaretBounds() const {
   return caret_bounds_ + window_->GetBoundsInScreen().OffsetFromOrigin();
 }
 
+gfx::Rect TextInput::GetSelectionBoundingBox() const {
+  NOTIMPLEMENTED();
+  return gfx::Rect();
+}
+
 bool TextInput::GetCompositionCharacterBounds(uint32_t index,
                                               gfx::Rect* rect) const {
   return false;

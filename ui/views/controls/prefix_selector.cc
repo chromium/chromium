@@ -87,6 +87,11 @@ gfx::Rect PrefixSelector::GetCaretBounds() const {
   return rect;
 }
 
+gfx::Rect PrefixSelector::GetSelectionBoundingBox() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return gfx::Rect();
+}
+
 bool PrefixSelector::GetCompositionCharacterBounds(uint32_t index,
                                                    gfx::Rect* rect) const {
   // TextInputClient::GetCompositionCharacterBounds is expected to fill |rect|
