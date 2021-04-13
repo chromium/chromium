@@ -188,6 +188,7 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
     Profile* profile,
     const web_app::AppId& app_id,
     const std::vector<base::FilePath>& files,
+    const std::vector<GURL>& urls,
     chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state) {
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
   DCHECK(extension);
