@@ -5337,6 +5337,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac11 Tests",
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_group = "chromium.mac",
     console_view_entry = consoles.console_view_entry(
         category = "mac",
