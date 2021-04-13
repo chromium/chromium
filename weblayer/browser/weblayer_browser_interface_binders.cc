@@ -17,7 +17,7 @@
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "weblayer/browser/no_state_prefetch/no_state_prefetch_processor_impl_delegate_impl.h"
-#include "weblayer/browser/no_state_prefetch/prerender_utils.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_utils.h"
 #include "weblayer/browser/translate_client_impl.h"
 #include "weblayer/browser/webui/weblayer_internals.mojom.h"
 #include "weblayer/browser/webui/weblayer_internals_ui.h"

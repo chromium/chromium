@@ -17,7 +17,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "weblayer/browser/heavy_ad_service_factory.h"
 #include "weblayer/browser/i18n_util.h"
-#include "weblayer/browser/no_state_prefetch/prerender_utils.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_utils.h"
 #include "weblayer/browser/page_load_metrics_observer_impl.h"
 #include "weblayer/browser/weblayer_page_load_metrics_memory_tracker_factory.h"
 

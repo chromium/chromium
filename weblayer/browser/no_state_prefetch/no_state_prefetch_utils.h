@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_UTILS_H_
-#define WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_UTILS_H_
+#ifndef WEBLAYER_BROWSER_NO_STATE_PREFETCH_NO_STATE_PREFETCH_UTILS_H_
+#define WEBLAYER_BROWSER_NO_STATE_PREFETCH_NO_STATE_PREFETCH_UTILS_H_
 
 namespace content {
 class WebContents;
@@ -20,4 +20,4 @@ prerender::NoStatePrefetchContents* NoStatePrefetchContentsFromWebContents(
 
 }  // namespace weblayer
 
-#endif  // WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_UTILS_H_
+#endif  // WEBLAYER_BROWSER_NO_STATE_PREFETCH_NO_STATE_PREFETCH_UTILS_H_

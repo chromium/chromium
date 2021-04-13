@@ -11,7 +11,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
-#include "weblayer/browser/no_state_prefetch/prerender_utils.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_utils.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_ui_manager.h"
 
 namespace weblayer {

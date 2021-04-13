@@ -21,14 +21,14 @@ static_library("browser") {
     "no_state_prefetch_processor_impl.cc",
     "no_state_prefetch_processor_impl.h",
     "no_state_prefetch_processor_impl_delegate.h",
+    "no_state_prefetch_utils.cc",
+    "no_state_prefetch_utils.h",
     "prerender_config.cc",
     "prerender_config.h",
     "prerender_histograms.cc",
     "prerender_histograms.h",
     "prerender_history.cc",
     "prerender_history.h",
-    "prerender_util.cc",
-    "prerender_util.h",
   ]
 
   deps = [
@@ -54,8 +54,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "no_state_prefetch_processor_impl_unittest.cc",
+    "no_state_prefetch_utils_unittest.cc",
     "prerender_history_unittest.cc",
-    "prerender_util_unittest.cc",
   ]
 
   deps = [

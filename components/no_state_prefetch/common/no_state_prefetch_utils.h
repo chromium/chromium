@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_UTIL_H_
-#define COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_UTIL_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_UTILS_H_
+#define COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_UTILS_H_
 
 #include <string>
 
 class GURL;
 
 namespace prerender {
+
 extern const char kFollowOnlyWhenPrerenderShown[];
 
-// Returns true iff the scheme of the URL given is valid for prerendering.
+// Returns true iff the scheme of the URL given is valid for prefetch.
 bool DoesURLHaveValidScheme(const GURL& url);
 
 // Returns true iff the scheme of the subresource URL given is valid for
-// prerendering.
+// prefetch.
 bool DoesSubresourceURLHaveValidScheme(const GURL& url);
 
 // Returns true iff the method given is valid for NoStatePrefetch.
@@ -40,4 +41,4 @@ void RecordPrefetchRedirectCount(const std::string& histogram_prefix,
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_UTIL_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_UTILS_H_

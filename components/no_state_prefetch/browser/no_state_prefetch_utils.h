@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_UTIL_H_
-#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_UTIL_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_UTILS_H_
+#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_UTILS_H_
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -25,8 +25,8 @@ bool IsGoogleOriginURL(const GURL& origin_url);
 void RecordNoStatePrefetchMetrics(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id,
-    prerender::NoStatePrefetchManager* no_state_prefetch_manager);
+    NoStatePrefetchManager* no_state_prefetch_manager);
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_UTIL_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_UTILS_H_

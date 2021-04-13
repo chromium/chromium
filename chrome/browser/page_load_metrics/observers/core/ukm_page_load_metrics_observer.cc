@@ -29,7 +29,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/browser/prerender_util.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "components/offline_pages/buildflags/buildflags.h"

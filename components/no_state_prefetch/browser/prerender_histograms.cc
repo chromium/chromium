@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "components/google/core/common/google_util.h"
-#include "components/no_state_prefetch/common/prerender_util.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_utils.h"
 #include "net/http/http_cache.h"
 
 namespace prerender {

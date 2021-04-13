@@ -7,7 +7,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/browser/prerender_util.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

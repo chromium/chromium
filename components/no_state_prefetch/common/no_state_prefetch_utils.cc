@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/common/prerender_util.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_utils.h"
 
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"

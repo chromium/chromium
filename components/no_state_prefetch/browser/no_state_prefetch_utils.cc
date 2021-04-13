@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_util.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "components/google/core/common/google_util.h"
@@ -32,14 +32,14 @@ bool IsGoogleOriginURL(const GURL& origin_url) {
 void RecordNoStatePrefetchMetrics(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id,
-    prerender::NoStatePrefetchManager* no_state_prefetch_manager) {
+    NoStatePrefetchManager* no_state_prefetch_manager) {
   DCHECK(no_state_prefetch_manager);
 
   const std::vector<GURL>& redirects = navigation_handle->GetRedirectChain();
 
   base::TimeDelta prefetch_age;
-  prerender::FinalStatus final_status;
-  prerender::Origin prefetch_origin;
+  FinalStatus final_status;
+  Origin prefetch_origin;
 
   bool nostate_prefetch_entry_found =
       no_state_prefetch_manager->GetPrefetchInformation(

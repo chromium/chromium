@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/renderer/prerender_utils.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_utils.h"
 
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "content/public/common/page_visibility_state.h"
@@ -53,7 +53,7 @@ bool DeferMediaLoad(content::RenderFrame* render_frame,
   if ((render_frame->GetWebFrame()->View()->GetVisibilityState() !=
            content::PageVisibilityState::kVisible &&
        !has_played_media_before) ||
-      prerender::NoStatePrefetchHelper::IsPrefetching(render_frame)) {
+      NoStatePrefetchHelper::IsPrefetching(render_frame)) {
     new MediaLoadDeferrer(render_frame->GetWebFrame()->View(),
                           std::move(closure));
     return true;

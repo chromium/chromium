@@ -94,7 +94,7 @@
 #include "weblayer/browser/navigation_error_navigation_throttle.h"
 #include "weblayer/browser/navigation_ui_data_impl.h"
 #include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
-#include "weblayer/browser/no_state_prefetch/prerender_utils.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_utils.h"
 #include "weblayer/browser/page_specific_content_settings_delegate.h"
 #include "weblayer/browser/password_manager_driver_factory.h"
 #include "weblayer/browser/popup_navigation_delegate_impl.h"

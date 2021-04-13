@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
-#include "components/no_state_prefetch/common/prerender_util.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_utils.h"
 #include "content/public/common/content_constants.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"

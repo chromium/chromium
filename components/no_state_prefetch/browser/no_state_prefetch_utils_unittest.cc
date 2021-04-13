@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_util.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -10,7 +10,7 @@
 namespace prerender {
 
 // Ensure that we detect GWS origin URLs correctly.
-TEST(PrerenderUtilTest, DetectGWSOriginURLTest) {
+TEST(NoStatePrefetchUtilsTest, DetectGWSOriginURLTest) {
   EXPECT_TRUE(IsGoogleOriginURL(GURL("http://www.google.com/#asdf")));
   EXPECT_TRUE(IsGoogleOriginURL(GURL("http://www.google.com/")));
   EXPECT_TRUE(IsGoogleOriginURL(GURL("https://www.google.com")));
