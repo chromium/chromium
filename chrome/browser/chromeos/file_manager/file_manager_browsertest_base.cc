@@ -22,6 +22,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
 #include "base/json/json_writer.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -1175,7 +1176,7 @@ class DriveFsTestVolume : public TestVolume {
                                           base::Unretained(this)));
   }
 
-  drivefs::mojom::DialogResult last_dialog_result() {
+  base::Optional<drivefs::mojom::DialogResult> last_dialog_result() {
     return last_dialog_result_;
   }
 
@@ -1278,7 +1279,7 @@ class DriveFsTestVolume : public TestVolume {
     last_dialog_result_ = result;
   }
 
-  drivefs::mojom::DialogResult last_dialog_result_;
+  base::Optional<drivefs::mojom::DialogResult> last_dialog_result_;
 
   // Profile associated with this volume: not owned.
   Profile* profile_ = nullptr;
@@ -2756,8 +2757,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "getLastDriveDialogResult") {
+    base::Optional<drivefs::mojom::DialogResult> result =
+        drive_volume_->last_dialog_result();
     base::JSONWriter::Write(
-        base::Value(static_cast<int32_t>(drive_volume_->last_dialog_result())),
+        base::Value(result ? static_cast<int32_t>(result.value()) : -1),
         output);
     return;
   }

@@ -712,8 +712,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveOfflineInfoBanner").EnableDriveDssPin(),
         TestCase("driveOfflineInfoBannerWithoutFlag"),
         TestCase("driveEnableDocsOfflineDialog"),
-        // Disabled because it's flaky: crbug.com/1198093
-        // TestCase("driveEnableDocsOfflineDialogWithoutWindow"),
+        TestCase("driveEnableDocsOfflineDialogWithoutWindow"),
         TestCase("driveEnableDocsOfflineDialogMultipleWindows"),
         TestCase("driveEnableDocsOfflineDialogDisappearsOnUnmount")));
 
