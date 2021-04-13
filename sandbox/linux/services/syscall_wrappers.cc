@@ -4,7 +4,6 @@
 
 #include "sandbox/linux/services/syscall_wrappers.h"
 
-#include <fcntl.h>
 #include <pthread.h>
 #include <sched.h>
 #include <setjmp.h>
@@ -20,7 +19,6 @@
 #include "build/build_config.h"
 #include "sandbox/linux/system_headers/capability.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
-#include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
 namespace sandbox {
@@ -219,7 +217,7 @@ asm(
 #undef STR
 #undef XSTR
 
-#endif  // defined(ARCH_CPU_X86_FAMILY)
+#endif
 
 int sys_sigaction(int signum,
                   const struct sigaction* act,
@@ -243,7 +241,7 @@ int sys_sigaction(int signum,
 #error "Unsupported architecture."
 #endif
     }
-#endif  // defined(ARCH_CPU_X86_FAMILY)
+#endif
   }
 
   LinuxSigAction linux_oldact = {};
@@ -261,23 +259,6 @@ int sys_sigaction(int signum,
   return result;
 }
 
-#endif  // !defined(OS_NACL_NONSFI)
-
-int sys_stat(const char* path, struct kernel_stat* stat_buf) {
-#if !defined(__NR_stat)
-  return syscall(__NR_newfstatat, AT_FDCWD, path, stat_buf, 0);
-#else
-  return syscall(__NR_stat, path, stat_buf);
-#endif
-}
-
-int sys_lstat(const char* path, struct kernel_stat* stat_buf) {
-#if !defined(__NR_lstat)
-  return syscall(__NR_newfstatat, AT_FDCWD, path, stat_buf,
-                 AT_SYMLINK_NOFOLLOW);
-#else
-  return syscall(__NR_lstat, path, stat_buf);
-#endif
-}
+#endif  // defined(MEMORY_SANITIZER)
 
 }  // namespace sandbox

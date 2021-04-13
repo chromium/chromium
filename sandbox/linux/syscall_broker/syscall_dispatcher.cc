@@ -19,18 +19,8 @@ namespace syscall_broker {
 #define BROKER_UNPOISON_STRING(x)
 #endif
 
-int SyscallDispatcher::DefaultStatForTesting(const char* pathname,
-                                             bool follow_links,
-                                             default_stat_struct* sb) {
-#if defined(__NR_fstatat64)
-  return Stat64(pathname, follow_links, sb);
-#elif defined(__NR_newfstatat)
-  return Stat(pathname, follow_links, sb);
-#endif
-}
-
 int SyscallDispatcher::PerformStatat(const arch_seccomp_data& args,
-                                     bool stat64) {
+                                     bool arch64) {
   if (static_cast<int>(args.args[0]) != AT_FDCWD)
     return -EPERM;
   // Only allow the AT_SYMLINK_NOFOLLOW flag which is used by some libc
@@ -40,29 +30,13 @@ int SyscallDispatcher::PerformStatat(const arch_seccomp_data& args,
 
   const bool follow_links =
       !(static_cast<int>(args.args[3]) & AT_SYMLINK_NOFOLLOW);
-  if (stat64) {
+  if (arch64) {
     return Stat64(reinterpret_cast<const char*>(args.args[1]), follow_links,
-                  reinterpret_cast<struct kernel_stat64*>(args.args[2]));
+                  reinterpret_cast<struct stat64*>(args.args[2]));
   }
 
   return Stat(reinterpret_cast<const char*>(args.args[1]), follow_links,
-              reinterpret_cast<struct kernel_stat*>(args.args[2]));
-}
-
-int SyscallDispatcher::PerformUnlinkat(const arch_seccomp_data& args) {
-  if (static_cast<int>(args.args[0]) != AT_FDCWD)
-    return -EPERM;
-
-  int flags = static_cast<int>(args.args[2]);
-
-  if (flags == AT_REMOVEDIR) {
-    return Rmdir(reinterpret_cast<const char*>(args.args[1]));
-  }
-
-  if (flags != 0)
-    return -EPERM;
-
-  return Unlink(reinterpret_cast<const char*>(args.args[1]));
+              reinterpret_cast<struct stat*>(args.args[2]));
 }
 
 int SyscallDispatcher::DispatchSyscall(const arch_seccomp_data& args) {
@@ -153,42 +127,59 @@ int SyscallDispatcher::DispatchSyscall(const arch_seccomp_data& args) {
 #if defined(__NR_stat)
     case __NR_stat:
       return Stat(reinterpret_cast<const char*>(args.args[0]), true,
-                  reinterpret_cast<struct kernel_stat*>(args.args[1]));
+                  reinterpret_cast<struct stat*>(args.args[1]));
 #endif
 #if defined(__NR_stat64)
     case __NR_stat64:
       return Stat64(reinterpret_cast<const char*>(args.args[0]), true,
-                    reinterpret_cast<struct kernel_stat64*>(args.args[1]));
+                    reinterpret_cast<struct stat64*>(args.args[1]));
 #endif
 #if defined(__NR_lstat)
     case __NR_lstat:
       // See https://crbug.com/847096
       BROKER_UNPOISON_STRING(reinterpret_cast<const char*>(args.args[0]));
       return Stat(reinterpret_cast<const char*>(args.args[0]), false,
-                  reinterpret_cast<struct kernel_stat*>(args.args[1]));
+                  reinterpret_cast<struct stat*>(args.args[1]));
 #endif
 #if defined(__NR_lstat64)
     case __NR_lstat64:
       // See https://crbug.com/847096
       BROKER_UNPOISON_STRING(reinterpret_cast<const char*>(args.args[0]));
       return Stat64(reinterpret_cast<const char*>(args.args[0]), false,
-                    reinterpret_cast<struct kernel_stat64*>(args.args[1]));
+                    reinterpret_cast<struct stat64*>(args.args[1]));
+#endif
+#if defined(__NR_fstatat)
+    case __NR_fstatat:
+      return PerformStatat(args, /*arch64=*/false);
 #endif
 #if defined(__NR_fstatat64)
     case __NR_fstatat64:
-      return PerformStatat(args, /*stat64=*/true);
+      return PerformStatat(args, /*arch64=*/true);
 #endif
 #if defined(__NR_newfstatat)
     case __NR_newfstatat:
-      return PerformStatat(args, /*stat64=*/false);
+      return PerformStatat(args, /*arch64=*/false);
 #endif
 #if defined(__NR_unlink)
     case __NR_unlink:
       return Unlink(reinterpret_cast<const char*>(args.args[0]));
 #endif
 #if defined(__NR_unlinkat)
-    case __NR_unlinkat:
-      return PerformUnlinkat(args);
+    case __NR_unlinkat: {
+      if (static_cast<int>(args.args[0]) != AT_FDCWD)
+        return -EPERM;
+
+      int flags = static_cast<int>(args.args[2]);
+
+      if (flags == AT_REMOVEDIR) {
+        return Rmdir(reinterpret_cast<const char*>(args.args[1]));
+      }
+
+      if (flags != 0)
+        return -EPERM;
+
+      return Unlink(reinterpret_cast<const char*>(args.args[1]));
+    }
 #endif  // defined(__NR_unlinkat)
     default:
       RAW_CHECK(false);

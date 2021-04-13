@@ -3,4 +3,5 @@ include_rules = [
   "+sandbox/linux/seccomp-bpf",
   "+sandbox/linux/services",
   "+sandbox/linux/system_headers",
+  "+third_party/lss/linux_syscall_support.h",
 ]

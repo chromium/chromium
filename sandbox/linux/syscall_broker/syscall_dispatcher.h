@@ -9,15 +9,13 @@
 #include <cstddef>
 
 #include "sandbox/linux/system_headers/linux_seccomp.h"
-#include "sandbox/linux/system_headers/linux_stat.h"
-#include "sandbox/sandbox_export.h"
 
 namespace sandbox {
 namespace syscall_broker {
 
 // An abstract class that defines all the system calls we perform for the
 // sandboxed process.
-class SANDBOX_EXPORT SyscallDispatcher {
+class SyscallDispatcher {
  public:
   // Emulates access()/faccessat().
   // X_OK will always return an error in practice since the broker process
@@ -42,34 +40,19 @@ class SANDBOX_EXPORT SyscallDispatcher {
   virtual int Rmdir(const char* path) const = 0;
 
   // Emulates stat()/stat64()/lstat()/lstat64()/fstatat()/newfstatat().
-  // Stat64 is only available on 32-bit systems.
   virtual int Stat(const char* pathname,
                    bool follow_links,
-                   struct kernel_stat* sb) const = 0;
+                   struct stat* sb) const = 0;
   virtual int Stat64(const char* pathname,
                      bool follow_links,
-                     struct kernel_stat64* sb) const = 0;
+                     struct stat64* sb) const = 0;
 
   // Emulates unlink()/unlinkat().
   virtual int Unlink(const char* unlink) const = 0;
 
-  // Different architectures use a different syscall from the stat family by
-  // default in glibc. E.g. 32-bit systems use *stat*64() and fill out struct
-  // kernel_stat64, whereas 64-bit systems use *stat*() and fill out struct
-  // kernel_stat. Some tests want to call the SyscallDispatcher directly, and
-  // should be using the default stat in order to test against glibc.
-  int DefaultStatForTesting(const char* pathname,
-                            bool follow_links,
-                            default_stat_struct* sb);
-
   // Validates the args passed to a *statat*() syscall and performs the syscall
-  // using Stat(), or on 32-bit systems it uses Stat64() for the *statat64()
-  // syscalls.
-  int PerformStatat(const arch_seccomp_data& args, bool stat64);
-
-  // Validates the args passed to an unlinkat() syscall and performs the syscall
-  // using either Unlink() or Rmdir().
-  int PerformUnlinkat(const arch_seccomp_data& args);
+  // using Stat() or Stat64().
+  int PerformStatat(const arch_seccomp_data& args, bool arch64);
 
   // Reads the syscall number and arguments, imposes some policy (e.g. the *at()
   // system calls must only allow AT_FDCWD as the first argument), and
