@@ -46,17 +46,25 @@ ArcAudioBridge* ArcAudioBridge::GetForBrowserContext(
   return ArcAudioBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcAudioBridge* ArcAudioBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcAudioBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcAudioBridge::ArcAudioBridge(content::BrowserContext* context,
                                ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
       cras_audio_handler_(ash::CrasAudioHandler::Get()) {
   arc_bridge_service_->audio()->SetHost(this);
   arc_bridge_service_->audio()->AddObserver(this);
+  DCHECK(cras_audio_handler_);
   cras_audio_handler_->AddAudioObserver(this);
 }
 
 ArcAudioBridge::~ArcAudioBridge() {
-  cras_audio_handler_->RemoveAudioObserver(this);
+  if (ash::CrasAudioHandler::Get())  // for unittests
+    cras_audio_handler_->RemoveAudioObserver(this);
   arc_bridge_service_->audio()->RemoveObserver(this);
   arc_bridge_service_->audio()->SetHost(nullptr);
 }
