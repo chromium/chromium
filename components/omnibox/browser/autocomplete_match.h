@@ -195,6 +195,7 @@ struct AutocompleteMatch {
   ~AutocompleteMatch();
 
   AutocompleteMatch& operator=(const AutocompleteMatch& match);
+  AutocompleteMatch& operator=(AutocompleteMatch&& match) noexcept;
 
 #if defined(OS_ANDROID)
   // Returns a corresponding Java object, creating it if necessary.
@@ -759,7 +760,8 @@ struct AutocompleteMatch {
   // for throw away AutocompleteMatch objects, eg. during Classify() or
   // QualifyPartialUrlQuery() calls.
   // See AutocompleteControllerAndroid for more details.
-  mutable base::android::ScopedJavaGlobalRef<jobject> java_match_;
+  mutable std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>
+      java_match_;
 
   base::WeakPtrFactory<AutocompleteMatch> weak_ptr_factory_{this};
 #endif

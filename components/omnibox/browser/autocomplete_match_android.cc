@@ -19,6 +19,7 @@
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaByteArray;
@@ -33,7 +34,7 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
     JNIEnv* env) const {
   // Short circuit if we already built the match.
   if (java_match_)
-    return ScopedJavaLocalRef<jobject>(java_match_);
+    return ScopedJavaLocalRef<jobject>(*java_match_);
 
   std::vector<int> contents_class_offsets;
   std::vector<int> contents_class_styles;
@@ -85,26 +86,29 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
 
   std::vector<int> temp_subtypes(subtypes.begin(), subtypes.end());
 
-  java_match_ = Java_AutocompleteMatch_build(
-      env, reinterpret_cast<intptr_t>(this), type,
-      ToJavaIntArray(env, temp_subtypes), AutocompleteMatch::IsSearchType(type),
-      relevance, transition, ConvertUTF16ToJavaString(env, contents),
-      ToJavaIntArray(env, contents_class_offsets),
-      ToJavaIntArray(env, contents_class_styles),
-      ConvertUTF16ToJavaString(env, description),
-      ToJavaIntArray(env, description_class_offsets),
-      ToJavaIntArray(env, description_class_styles), janswer,
-      ConvertUTF16ToJavaString(env, fill_into_edit),
-      url::GURLAndroid::FromNativeGURL(env, destination_url),
-      url::GURLAndroid::FromNativeGURL(env, image_url), j_image_dominant_color,
-      SupportsDeletion(), j_post_content_type, j_post_content,
-      suggestion_group_id.value_or(
-          SearchSuggestionParser::kNoSuggestionGroupId),
-      j_query_tiles, ToJavaByteArray(env, clipboard_image_data), has_tab_match,
-      ToJavaArrayOfStrings(env, navsuggest_titles),
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, navsuggest_urls));
+  java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
+      Java_AutocompleteMatch_build(
+          env, reinterpret_cast<intptr_t>(this), type,
+          ToJavaIntArray(env, temp_subtypes),
+          AutocompleteMatch::IsSearchType(type), relevance, transition,
+          ConvertUTF16ToJavaString(env, contents),
+          ToJavaIntArray(env, contents_class_offsets),
+          ToJavaIntArray(env, contents_class_styles),
+          ConvertUTF16ToJavaString(env, description),
+          ToJavaIntArray(env, description_class_offsets),
+          ToJavaIntArray(env, description_class_styles), janswer,
+          ConvertUTF16ToJavaString(env, fill_into_edit),
+          url::GURLAndroid::FromNativeGURL(env, destination_url),
+          url::GURLAndroid::FromNativeGURL(env, image_url),
+          j_image_dominant_color, SupportsDeletion(), j_post_content_type,
+          j_post_content,
+          suggestion_group_id.value_or(
+              SearchSuggestionParser::kNoSuggestionGroupId),
+          j_query_tiles, ToJavaByteArray(env, clipboard_image_data),
+          has_tab_match, ToJavaArrayOfStrings(env, navsuggest_titles),
+          url::GURLAndroid::ToJavaArrayOfGURLs(env, navsuggest_urls)));
 
-  return ScopedJavaLocalRef<jobject>(java_match_);
+  return ScopedJavaLocalRef<jobject>(*java_match_);
 }
 
 void AutocompleteMatch::UpdateJavaObjectNativeRef() {
@@ -113,7 +117,7 @@ void AutocompleteMatch::UpdateJavaObjectNativeRef() {
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AutocompleteMatch_updateNativeObjectRef(
-      env, java_match_, reinterpret_cast<intptr_t>(this));
+      env, *java_match_, reinterpret_cast<intptr_t>(this));
 }
 
 void AutocompleteMatch::DestroyJavaObject() {
@@ -121,8 +125,8 @@ void AutocompleteMatch::DestroyJavaObject() {
     return;
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutocompleteMatch_destroy(env, java_match_);
-  java_match_.Reset();
+  Java_AutocompleteMatch_destroy(env, *java_match_);
+  java_match_.reset();
 }
 
 void AutocompleteMatch::UpdateWithClipboardContent(
@@ -166,7 +170,7 @@ void AutocompleteMatch::UpdateClipboardContent(JNIEnv* env) {
   }
 
   Java_AutocompleteMatch_updateClipboardContent(
-      env, java_match_, ConvertUTF16ToJavaString(env, contents),
+      env, *java_match_, ConvertUTF16ToJavaString(env, contents),
       url::GURLAndroid::FromNativeGURL(env, destination_url),
       j_post_content_type, j_post_content,
       ToJavaByteArray(env, clipboard_image_data));
