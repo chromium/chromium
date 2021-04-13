@@ -545,11 +545,18 @@ class PCScanInternal final {
   PCScanInternal(const PCScanInternal&) = delete;
   PCScanInternal& operator=(const PCScanInternal&) = delete;
 
-  TaskHandle current_pcscan_task() const { return current_task_; }
-  void set_current_pcscan_task(TaskHandle task) {
+  TaskHandle CurrentPCScanTask() const {
+    std::lock_guard<std::mutex> lock(current_task_mutex_);
+    return current_task_;
+  }
+  void SetCurrentPCScanTask(TaskHandle task) {
+    std::lock_guard<std::mutex> lock(current_task_mutex_);
     current_task_ = std::move(task);
   }
-  void reset_current_pcscan_task() { current_task_.reset(); }
+  void ResetCurrentPCScanTask() {
+    std::lock_guard<std::mutex> lock(current_task_mutex_);
+    current_task_.reset();
+  }
 
   void RegisterScannableRoot(Root* root);
   void RegisterNonScannableRoot(Root* root);
@@ -578,8 +585,11 @@ class PCScanInternal final {
   PCScanInternal();
 
   TaskHandle current_task_;
+  mutable std::mutex current_task_mutex_;
+
   Roots scannable_roots_{};
   Roots nonscannable_roots_{};
+
   const char* process_name_ = nullptr;
   const SimdSupport simd_support_;
 };
@@ -1382,7 +1392,7 @@ void PCScanTask::FinishScanner() {
       stats_.survived_quarantine_size(),
       PCScanInternal::Instance().CalculateTotalHeapSize());
 
-  PCScanInternal::Instance().reset_current_pcscan_task();
+  PCScanInternal::Instance().ResetCurrentPCScanTask();
   // Check that concurrent task can't be scheduled twice.
   PA_CHECK(pcscan_.state_.exchange(PCScan::State::kNotRunning,
                                    std::memory_order_acq_rel) ==
@@ -1523,7 +1533,7 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
 
   // Create PCScan task and set it as current.
   auto task = base::MakeRefCounted<PCScanTask>(*this);
-  PCScanInternal::Instance().set_current_pcscan_task(task);
+  PCScanInternal::Instance().SetCurrentPCScanTask(task);
 
   if (UNLIKELY(invocation_mode == InvocationMode::kScheduleOnlyForTesting))
     return;
@@ -1551,17 +1561,15 @@ void PCScan::PerformScanIfNeeded(InvocationMode invocation_mode) {
 void PCScan::JoinScan() {
 #if !PCSCAN_DISABLE_SAFEPOINTS
   auto& internal = PCScanInternal::Instance();
-  // Current task can be destroyed by the scanner.
-  // TODO(bikineev): This should actually be something like
-  // std::atomic_shared_ptr.
-  if (auto current_task = internal.current_pcscan_task())
+  // Current task can be destroyed by the scanner. Check that it's valid.
+  if (auto current_task = internal.CurrentPCScanTask())
     current_task->RunFromMutator();
 #endif
 }
 
 void PCScan::FinishScanForTesting() {
   auto& internal = PCScanInternal::Instance();
-  auto current_task = internal.current_pcscan_task();
+  auto current_task = internal.CurrentPCScanTask();
   PA_CHECK(current_task.get());
   current_task->RunFromScanner();
 }
