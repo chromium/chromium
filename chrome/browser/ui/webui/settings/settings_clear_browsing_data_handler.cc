@@ -437,15 +437,21 @@ void ClearBrowsingDataHandler::OnStateChanged(syncer::SyncService* sync) {
 void ClearBrowsingDataHandler::UpdateSyncState() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  FireWebUIListener(
-      "update-sync-state",
-      base::Value(identity_manager && identity_manager->HasPrimaryAccount(
-                                          signin::ConsentLevel::kSync)),
-      base::Value(sync_service_ && sync_service_->IsSyncFeatureActive() &&
-                  sync_service_->GetActiveDataTypes().Has(
-                      syncer::HISTORY_DELETE_DIRECTIVES)),
-      base::Value(
-          browsing_data_counter_utils::ShouldShowCookieException(profile_)));
+  base::DictionaryValue event;
+  event.SetBoolKey("signedIn",
+                   identity_manager && identity_manager->HasPrimaryAccount(
+                                           signin::ConsentLevel::kSignin));
+  event.SetBoolKey("syncConsented",
+                   identity_manager && identity_manager->HasPrimaryAccount(
+                                           signin::ConsentLevel::kSync));
+  event.SetBoolKey("syncingHistory",
+                   sync_service_ && sync_service_->IsSyncFeatureActive() &&
+                       sync_service_->GetActiveDataTypes().Has(
+                           syncer::HISTORY_DELETE_DIRECTIVES));
+  event.SetBoolKey(
+      "shouldShowCookieException",
+      browsing_data_counter_utils::ShouldShowCookieException(profile_));
+  FireWebUIListener("update-sync-state", event);
 }
 
 void ClearBrowsingDataHandler::RefreshHistoryNotice() {
