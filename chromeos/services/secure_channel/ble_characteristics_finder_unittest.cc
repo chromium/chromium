@@ -25,6 +25,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using device::BluetoothAdapter;
+using device::BluetoothAdapterFactory;
+using device::BluetoothDevice;
+using device::BluetoothGattService;
+using device::BluetoothRemoteGattCharacteristic;
+using device::BluetoothRemoteGattService;
+using device::BluetoothUUID;
+using device::MockBluetoothAdapter;
+using device::MockBluetoothDevice;
+using device::MockBluetoothGattCharacteristic;
+using device::MockBluetoothGattService;
 using testing::_;
 using testing::AtLeast;
 using testing::DoAll;
@@ -53,13 +64,11 @@ const char kEidCharID[] = "eid id";
 
 const char kServiceID[] = "service id";
 
-const device::BluetoothRemoteGattCharacteristic::Properties
-    kCharacteristicProperties =
-        device::BluetoothRemoteGattCharacteristic::PROPERTY_BROADCAST |
-        device::BluetoothRemoteGattCharacteristic::PROPERTY_READ |
-        device::BluetoothRemoteGattCharacteristic::
-            PROPERTY_WRITE_WITHOUT_RESPONSE |
-        device::BluetoothRemoteGattCharacteristic::PROPERTY_INDICATE;
+const BluetoothRemoteGattCharacteristic::Properties kCharacteristicProperties =
+    BluetoothRemoteGattCharacteristic::PROPERTY_BROADCAST |
+    BluetoothRemoteGattCharacteristic::PROPERTY_READ |
+    BluetoothRemoteGattCharacteristic::PROPERTY_WRITE_WITHOUT_RESPONSE |
+    BluetoothRemoteGattCharacteristic::PROPERTY_INDICATE;
 
 const char kOtherCharUUID[] = "09731422-048A-11E5-8418-1697F925EC7B";
 const char kOtherCharID[] = "other id";
@@ -95,26 +104,23 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
 
  protected:
   SecureChannelBluetoothLowEnergyCharacteristicFinderTest()
-      : adapter_(new NiceMock<device::MockBluetoothAdapter>),
-        device_(
-            new NiceMock<device::MockBluetoothDevice>(adapter_.get(),
-                                                      0,
-                                                      kDeviceName,
-                                                      kBluetoothAddress,
-                                                      /* paired */ false,
-                                                      /* connected */ false)),
-        remote_service_({device::BluetoothUUID(kServiceUUID), ""}),
-        to_peripheral_char_({device::BluetoothUUID(kToPeripheralCharUUID), ""}),
-        from_peripheral_char_(
-            {device::BluetoothUUID(kFromPeripheralCharUUID), ""}),
+      : adapter_(new NiceMock<MockBluetoothAdapter>),
+        device_(new NiceMock<MockBluetoothDevice>(adapter_.get(),
+                                                  0,
+                                                  kDeviceName,
+                                                  kBluetoothAddress,
+                                                  /* paired */ false,
+                                                  /* connected */ false)),
+        remote_service_({BluetoothUUID(kServiceUUID), ""}),
+        to_peripheral_char_({BluetoothUUID(kToPeripheralCharUUID), ""}),
+        from_peripheral_char_({BluetoothUUID(kFromPeripheralCharUUID), ""}),
         remote_device_(multidevice::CreateRemoteDeviceRefForTest()) {
-    device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
+    BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
 
     // The default behavior for |device_| is to have no services discovered. Can
     // be overrided later.
     ON_CALL(*device_, GetGattServices())
-        .WillByDefault(
-            Return(std::vector<device::BluetoothRemoteGattService*>()));
+        .WillByDefault(Return(std::vector<BluetoothRemoteGattService*>()));
   }
 
   void SetUp() {
@@ -140,14 +146,14 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
     test_task_runner->RunUntilIdle();
   }
 
-  std::unique_ptr<device::MockBluetoothGattCharacteristic>
-  ExpectToFindCharacteristic(const device::BluetoothUUID& uuid,
-                             const std::string& id,
-                             bool valid = true) {
-    std::unique_ptr<device::MockBluetoothGattCharacteristic> characteristic(
-        new NiceMock<device::MockBluetoothGattCharacteristic>(
+  std::unique_ptr<MockBluetoothGattCharacteristic> ExpectToFindCharacteristic(
+      const BluetoothUUID& uuid,
+      const std::string& id,
+      bool valid = true) {
+    std::unique_ptr<MockBluetoothGattCharacteristic> characteristic(
+        new NiceMock<MockBluetoothGattCharacteristic>(
             /*service=*/nullptr, id, uuid, kCharacteristicProperties,
-            device::BluetoothRemoteGattCharacteristic::PERMISSION_NONE));
+            BluetoothRemoteGattCharacteristic::PERMISSION_NONE));
 
     ON_CALL(*characteristic.get(), GetUUID()).WillByDefault(Return(uuid));
     if (valid)
@@ -155,25 +161,23 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
     return characteristic;
   }
 
-  std::unique_ptr<device::MockBluetoothGattCharacteristic>
-  ExpectEidCharacteristic(const std::string& id,
-                          bool read_success,
-                          bool correct_eid) {
-    std::unique_ptr<device::MockBluetoothGattCharacteristic> characteristic =
-        ExpectToFindCharacteristic(
-            device::BluetoothUUID(kEidCharacteristicUUID), id);
+  std::unique_ptr<MockBluetoothGattCharacteristic> ExpectEidCharacteristic(
+      const std::string& id,
+      bool read_success,
+      bool correct_eid) {
+    std::unique_ptr<MockBluetoothGattCharacteristic> characteristic =
+        ExpectToFindCharacteristic(BluetoothUUID(kEidCharacteristicUUID), id);
 
     // Posting to a task to allow the read to be asynchronous, although still
     // running only on one thread. Calls to
     // |task_environment_.RunUntilIdle()| in tests will process any
     // pending callbacks.
     ON_CALL(*characteristic.get(), ReadRemoteCharacteristic_(_, _))
-        .WillByDefault(
-            Invoke([read_success, correct_eid](
-                       device::BluetoothRemoteGattCharacteristic::ValueCallback&
-                           callback,
-                       device::BluetoothRemoteGattCharacteristic::ErrorCallback&
-                           error_callback) {
+        .WillByDefault(Invoke(
+            [read_success, correct_eid](
+                BluetoothRemoteGattCharacteristic::ValueCallback& callback,
+                BluetoothRemoteGattCharacteristic::ErrorCallback&
+                    error_callback) {
               base::ThreadTaskRunnerHandle::Get()->PostTask(
                   FROM_HERE,
                   read_success
@@ -182,19 +186,19 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
                                                    : GetIncorrectEidValue())
                       : base::BindOnce(
                             std::move(error_callback),
-                            device::BluetoothGattService::GATT_ERROR_FAILED));
+                            BluetoothGattService::GATT_ERROR_FAILED));
             }));
     return characteristic;
   }
 
-  device::MockBluetoothGattService* SetUpServiceWithCharacteristics(
+  MockBluetoothGattService* SetUpServiceWithCharacteristics(
       const std::string& service_id,
-      std::vector<device::MockBluetoothGattCharacteristic*> characteristics,
+      std::vector<MockBluetoothGattCharacteristic*> characteristics,
       bool is_discovery_complete) {
-    auto service = std::make_unique<NiceMock<device::MockBluetoothGattService>>(
-        device_.get(), service_id, device::BluetoothUUID(kServiceUUID),
+    auto service = std::make_unique<NiceMock<MockBluetoothGattService>>(
+        device_.get(), service_id, BluetoothUUID(kServiceUUID),
         /*is_primary=*/true);
-    device::MockBluetoothGattService* service_ptr = service.get();
+    MockBluetoothGattService* service_ptr = service.get();
     services_.push_back(std::move(service));
     ON_CALL(*device_, GetGattServices())
         .WillByDefault(Return(GetRawServiceList()));
@@ -205,7 +209,7 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
         .WillByDefault(Return(service_ptr));
 
     for (auto* characteristic : characteristics) {
-      std::vector<device::BluetoothRemoteGattCharacteristic*> chars_for_uuid{
+      std::vector<BluetoothRemoteGattCharacteristic*> chars_for_uuid{
           characteristic};
       ON_CALL(*service_ptr, GetCharacteristicsByUUID(characteristic->GetUUID()))
           .WillByDefault(Return(chars_for_uuid));
@@ -215,25 +219,25 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
     return service_ptr;
   }
 
-  device::MockBluetoothGattService* SetUpServiceWithIds(
+  MockBluetoothGattService* SetUpServiceWithIds(
       const std::string& service_id,
       const std::string& from_char_id,
       const std::string& to_char_id,
       const std::string& eid_char_id = std::string(),
       bool correct_eid_value = true) {
-    std::unique_ptr<device::MockBluetoothGattCharacteristic> from_char =
-        ExpectToFindCharacteristic(
-            device::BluetoothUUID(kFromPeripheralCharUUID), from_char_id);
-    std::unique_ptr<device::MockBluetoothGattCharacteristic> to_char =
-        ExpectToFindCharacteristic(device::BluetoothUUID(kToPeripheralCharUUID),
+    std::unique_ptr<MockBluetoothGattCharacteristic> from_char =
+        ExpectToFindCharacteristic(BluetoothUUID(kFromPeripheralCharUUID),
+                                   from_char_id);
+    std::unique_ptr<MockBluetoothGattCharacteristic> to_char =
+        ExpectToFindCharacteristic(BluetoothUUID(kToPeripheralCharUUID),
                                    to_char_id);
-    std::vector<device::MockBluetoothGattCharacteristic*> characteristics{
+    std::vector<MockBluetoothGattCharacteristic*> characteristics{
         from_char.get(), to_char.get()};
     all_mock_characteristics_.push_back(std::move(from_char));
     all_mock_characteristics_.push_back(std::move(to_char));
 
     if (!eid_char_id.empty()) {
-      std::unique_ptr<device::MockBluetoothGattCharacteristic> eid_char =
+      std::unique_ptr<MockBluetoothGattCharacteristic> eid_char =
           ExpectEidCharacteristic(eid_char_id, /* read_success */ true,
                                   correct_eid_value);
       characteristics.push_back(eid_char.get());
@@ -254,8 +258,8 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
     return fake_background_eid_generator;
   }
 
-  std::vector<device::BluetoothRemoteGattService*> GetRawServiceList() {
-    std::vector<device::BluetoothRemoteGattService*> service_list_raw;
+  std::vector<BluetoothRemoteGattService*> GetRawServiceList() {
+    std::vector<BluetoothRemoteGattService*> service_list_raw;
     std::transform(services_.begin(), services_.end(),
                    std::back_inserter(service_list_raw),
                    [](auto& service) { return service.get(); });
@@ -270,10 +274,10 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
   std::unique_ptr<BluetoothLowEnergyCharacteristicsFinder>
       characteristic_finder_;
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<device::MockBluetoothAdapter> adapter_;
-  std::unique_ptr<device::MockBluetoothDevice> device_;
-  std::vector<std::unique_ptr<device::BluetoothRemoteGattService>> services_;
-  std::vector<std::unique_ptr<device::MockBluetoothGattCharacteristic>>
+  scoped_refptr<MockBluetoothAdapter> adapter_;
+  std::unique_ptr<MockBluetoothDevice> device_;
+  std::vector<std::unique_ptr<BluetoothRemoteGattService>> services_;
+  std::vector<std::unique_ptr<MockBluetoothGattCharacteristic>>
       all_mock_characteristics_;
   FakeBackgroundEidGenerator* fake_background_eid_generator_;
   RemoteAttribute remote_service_;
@@ -316,10 +320,9 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
 TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
        FindRightCharacteristicsWrongDevice) {
   // Make CharacteristicFinder which is supposed to listen for other device.
-  std::unique_ptr<device::BluetoothDevice> device(
-      new NiceMock<device::MockBluetoothDevice>(
-          adapter_.get(), 0, kDeviceName, kBluetoothAddress,
-          /* connected */ false, /* paired */ false));
+  std::unique_ptr<BluetoothDevice> device(new NiceMock<MockBluetoothDevice>(
+      adapter_.get(), 0, kDeviceName, kBluetoothAddress,
+      /* connected */ false, /* paired */ false));
   BluetoothLowEnergyCharacteristicsFinder characteristic_finder(
       adapter_, device.get(), remote_service_, to_peripheral_char_,
       from_peripheral_char_,
@@ -330,8 +333,8 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
                          OnCharacteristicsFinderError,
                      base::Unretained(this)),
       remote_device_, CreateBackgroundEidGenerator());
-  device::BluetoothAdapter::Observer* observer =
-      static_cast<device::BluetoothAdapter::Observer*>(&characteristic_finder);
+  BluetoothAdapter::Observer* observer =
+      static_cast<BluetoothAdapter::Observer*>(&characteristic_finder);
 
   RemoteAttribute found_to_char, found_from_char;
   // These shouldn't be called at all since the GATT events below are for other
@@ -339,15 +342,15 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
   EXPECT_CALL(*this, OnCharacteristicsFound(_, _, _)).Times(0);
   EXPECT_CALL(*this, OnCharacteristicsFinderError()).Times(0);
 
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> from_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kFromPeripheralCharUUID),
+  std::unique_ptr<MockBluetoothGattCharacteristic> from_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kFromPeripheralCharUUID),
                                  kFromPeripheralCharID);
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> to_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kToPeripheralCharUUID),
+  std::unique_ptr<MockBluetoothGattCharacteristic> to_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kToPeripheralCharUUID),
                                  kToPeripheralCharID);
 
-  std::vector<device::MockBluetoothGattCharacteristic*> characteristics{
-      from_char.get(), to_char.get()};
+  std::vector<MockBluetoothGattCharacteristic*> characteristics{from_char.get(),
+                                                                to_char.get()};
   SetUpServiceWithCharacteristics(kServiceID, characteristics,
                                   /* is_discovery_complete */ false);
 
@@ -359,10 +362,10 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
   EXPECT_CALL(*this, OnCharacteristicsFound(_, _, _)).Times(0);
   EXPECT_CALL(*this, OnCharacteristicsFinderError());
 
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> other_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kOtherCharUUID),
-                                 kOtherCharID, /* valid */ false);
-  std::vector<device::MockBluetoothGattCharacteristic*> characteristics{
+  std::unique_ptr<MockBluetoothGattCharacteristic> other_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kOtherCharUUID), kOtherCharID,
+                                 /* valid */ false);
+  std::vector<MockBluetoothGattCharacteristic*> characteristics{
       other_char.get()};
   SetUpServiceWithCharacteristics(kServiceID, characteristics,
                                   /* is_discovery_complete */ false);
@@ -383,10 +386,10 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
   EXPECT_CALL(*this, OnCharacteristicsFound(_, _, _)).Times(0);
   EXPECT_CALL(*this, OnCharacteristicsFinderError());
 
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> from_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kFromPeripheralCharUUID),
+  std::unique_ptr<MockBluetoothGattCharacteristic> from_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kFromPeripheralCharUUID),
                                  kFromPeripheralCharID);
-  std::vector<device::MockBluetoothGattCharacteristic*> characteristics{
+  std::vector<MockBluetoothGattCharacteristic*> characteristics{
       from_char.get()};
   SetUpServiceWithCharacteristics(kServiceID, characteristics,
                                   /* is_discovery_complete */ true);
@@ -402,16 +405,16 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
           DoAll(SaveArg<1>(&found_to_char), SaveArg<2>(&found_from_char)));
   EXPECT_CALL(*this, OnCharacteristicsFinderError()).Times(0);
 
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> other_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kOtherCharUUID),
-                                 kOtherCharID, /* valid */ false);
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> from_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kFromPeripheralCharUUID),
+  std::unique_ptr<MockBluetoothGattCharacteristic> other_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kOtherCharUUID), kOtherCharID,
+                                 /* valid */ false);
+  std::unique_ptr<MockBluetoothGattCharacteristic> from_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kFromPeripheralCharUUID),
                                  kFromPeripheralCharID);
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> to_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kToPeripheralCharUUID),
+  std::unique_ptr<MockBluetoothGattCharacteristic> to_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kToPeripheralCharUUID),
                                  kToPeripheralCharID);
-  std::vector<device::MockBluetoothGattCharacteristic*> characteristics{
+  std::vector<MockBluetoothGattCharacteristic*> characteristics{
       other_char.get(), from_char.get(), to_char.get()};
   SetUpServiceWithCharacteristics(kServiceID, characteristics,
                                   /* is_discovery_complete */ false);
@@ -430,16 +433,16 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
           DoAll(SaveArg<1>(&found_to_char), SaveArg<2>(&found_from_char)));
   EXPECT_CALL(*this, OnCharacteristicsFinderError()).Times(0);
 
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> from_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kFromPeripheralCharUUID),
+  std::unique_ptr<MockBluetoothGattCharacteristic> from_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kFromPeripheralCharUUID),
                                  kFromPeripheralCharID);
 
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> to_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kToPeripheralCharUUID),
+  std::unique_ptr<MockBluetoothGattCharacteristic> to_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kToPeripheralCharUUID),
                                  kToPeripheralCharID);
 
-  std::vector<device::MockBluetoothGattCharacteristic*> characteristics{
-      from_char.get(), to_char.get()};
+  std::vector<MockBluetoothGattCharacteristic*> characteristics{from_char.get(),
+                                                                to_char.get()};
   SetUpServiceWithCharacteristics(kServiceID, characteristics,
                                   /* is_discovery_complete */ true);
 
@@ -485,19 +488,19 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
   EXPECT_CALL(*this, OnCharacteristicsFound(_, _, _)).Times(0);
   EXPECT_CALL(*this, OnCharacteristicsFinderError());
 
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> from_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kFromPeripheralCharUUID),
+  std::unique_ptr<MockBluetoothGattCharacteristic> from_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kFromPeripheralCharUUID),
                                  kFromPeripheralCharID);
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> to_char =
-      ExpectToFindCharacteristic(device::BluetoothUUID(kToPeripheralCharUUID),
+  std::unique_ptr<MockBluetoothGattCharacteristic> to_char =
+      ExpectToFindCharacteristic(BluetoothUUID(kToPeripheralCharUUID),
                                  kToPeripheralCharID);
   // NOTE: Explicitly passing false for read_success so that the GATT read
   // fails.
-  std::unique_ptr<device::MockBluetoothGattCharacteristic> eid_char =
+  std::unique_ptr<MockBluetoothGattCharacteristic> eid_char =
       ExpectEidCharacteristic(kEidCharID, /* read_success */ false,
                               /* correct_eid */ true);
 
-  std::vector<device::MockBluetoothGattCharacteristic*> characteristics{
+  std::vector<MockBluetoothGattCharacteristic*> characteristics{
       from_char.get(), to_char.get(), eid_char.get()};
   SetUpServiceWithCharacteristics(kServiceID, characteristics,
                                   /* is_discovery_complete */ false);
