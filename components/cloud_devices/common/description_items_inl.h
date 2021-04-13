@@ -100,12 +100,13 @@ bool SelectionCapability<Option, Traits>::operator==(
 template <class Option, class Traits>
 bool SelectionCapability<Option, Traits>::IsValid() const {
   if (empty())
-    return false;  // This type of capabilities can't be empty
+    return false;  // This type of capabilities can't be empty.
   for (size_t i = 0; i < options_.size(); ++i) {
     if (!Traits::IsValid(options_[i]))
       return false;
   }
-  return default_idx_ >= 0 && default_idx_ < base::checked_cast<int>(size());
+  // This type of capability does not need a default value.
+  return default_idx_ >= -1 && default_idx_ < base::checked_cast<int>(size());
 }
 
 template <class Option, class Traits>

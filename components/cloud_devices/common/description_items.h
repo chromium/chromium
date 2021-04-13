@@ -114,8 +114,8 @@ class SelectionCapability {
   }
 
   const Option& GetDefault() const {
-    CHECK_GE(default_idx_, 0);
-    return options_[default_idx_];
+    CHECK(!options_.empty());
+    return options_[std::max(default_idx_, 0)];
   }
 
   void AddOption(const Option& option) { AddDefaultOption(option, false); }
