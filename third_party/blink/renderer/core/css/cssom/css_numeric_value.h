@@ -38,6 +38,8 @@ class CORE_EXPORT CSSNumericValue : public CSSStyleValue {
   static CSSNumericValue* FromCSSValue(const CSSPrimitiveValue&);
   // https://drafts.css-houdini.org/css-typed-om/#rectify-a-numberish-value
   static CSSNumericValue* FromNumberish(const CSSNumberish& value);
+  // https://drafts.css-houdini.org/css-typed-om/#rectify-a-percentish-value
+  static CSSNumericValue* FromPercentish(const CSSNumberish& value);
 
   // Methods defined in the IDL.
   CSSNumericValue* add(const HeapVector<CSSNumberish>&, ExceptionState&);

@@ -287,6 +287,15 @@ CSSNumericValue* CSSNumericValue::FromNumberish(const CSSNumberish& value) {
   return value.GetAsCSSNumericValue();
 }
 
+/* static */
+CSSNumericValue* CSSNumericValue::FromPercentish(const CSSNumberish& value) {
+  if (value.IsDouble()) {
+    return CSSUnitValue::Create(value.GetAsDouble() * 100,
+                                CSSPrimitiveValue::UnitType::kPercentage);
+  }
+  return value.GetAsCSSNumericValue();
+}
+
 CSSUnitValue* CSSNumericValue::to(const String& unit_string,
                                   ExceptionState& exception_state) {
   CSSPrimitiveValue::UnitType target_unit = UnitFromName(unit_string);

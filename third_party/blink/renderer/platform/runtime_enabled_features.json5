@@ -500,6 +500,10 @@
       status: "stable",
     },
     {
+      name: "CSSColorTypedOM",
+      status:  "experimental",
+    },
+    {
       name: "CSSContainerQueries",
     },
     {

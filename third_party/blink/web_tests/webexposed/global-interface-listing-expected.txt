@@ -642,6 +642,10 @@ interface CSSAnimation : Animation
     attribute @@toStringTag
     getter animationName
     method constructor
+interface CSSColorValue
+    attribute @@toStringTag
+    method constructor
+    method toRGB
 interface CSSConditionRule : CSSGroupingRule
     attribute @@toStringTag
     getter conditionText
@@ -804,6 +808,17 @@ interface CSSPropertyRule : CSSRule
     getter name
     getter syntax
     method constructor
+interface CSSRGB : CSSColorValue
+    attribute @@toStringTag
+    getter alpha
+    getter b
+    getter g
+    getter r
+    method constructor
+    setter alpha
+    setter b
+    setter g
+    setter r
 interface CSSRotate : CSSTransformComponent
     attribute @@toStringTag
     getter angle
