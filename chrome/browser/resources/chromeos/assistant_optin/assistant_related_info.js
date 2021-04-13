@@ -39,22 +39,6 @@ Polymer({
     },
 
     /**
-     * Text key of the next button.
-     */
-    nextButtonKey_: {
-      type: String,
-      value: 'next',
-    },
-
-    /**
-     * Text key of the skip button.
-     */
-    skipButtonKey_: {
-      type: String,
-      value: 'assistantOptinSkipButton',
-    },
-
-    /**
      * Whether activity control consent is skipped.
      */
     skipActivityControl_: {
@@ -234,12 +218,8 @@ Polymer({
   reloadContent(data) {
     if (data['activityControlNeeded']) {
       this.titleKey_ = 'assistantRelatedInfoTitle';
-      this.nextButtonKey_ = 'next';
-      this.skipButtonKey_ = 'assistantOptinSkipButton';
     } else {
       this.titleKey_ = 'assistantRelatedInfoReturnedUserTitle';
-      this.nextButtonKey_ = 'assistantOptinAgreeButton';
-      this.skipButtonKey_ = 'assistantOptinNoThanksButton';
     }
     this.skipActivityControl_ = !data['activityControlNeeded'];
     this.$.zippy.setAttribute(
