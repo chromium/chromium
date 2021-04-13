@@ -47,7 +47,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -190,7 +189,6 @@ public class OmniboxTest {
     @Test
     @MediumTest
     @SkipCommandLineParameterization
-    @DisableFeatures("OmniboxSearchEngineLogo")
     public void testSecurityIconOnHTTP() {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
@@ -203,13 +201,9 @@ public class OmniboxTest {
                             R.id.location_bar);
             StatusCoordinator statusCoordinator = locationBar.getStatusCoordinatorForTesting();
             boolean securityIcon = statusCoordinator.isSecurityButtonShown();
-            if (mActivityTestRule.getActivity().isTablet()) {
-                Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
-                Assert.assertEquals(R.drawable.omnibox_info,
-                        statusCoordinator.getSecurityIconResourceIdForTesting());
-            } else {
-                Assert.assertFalse("Omnibox should not have a Security icon", securityIcon);
-            }
+            Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
+            Assert.assertEquals(R.drawable.omnibox_info,
+                    statusCoordinator.getSecurityIconResourceIdForTesting());
         } finally {
             testServer.stopAndDestroyServer();
         }

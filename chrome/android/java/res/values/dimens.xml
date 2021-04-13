@@ -187,8 +187,6 @@
     <dimen name="location_bar_status_separator_spacer">8dp</dimen>
     <dimen name="location_bar_min_url_width">68dp</dimen>
     <dimen name="location_bar_min_verbose_status_text_width">48dp</dimen>
-    <dimen name="location_bar_incognito_badge_end_padding_with_status_icon">2dp</dimen>
-    <dimen name="location_bar_incognito_badge_end_padding_without_status_icon">8dp</dimen>
 
     <!--
          Specialty spacing for when the search engine icon is shown. The various

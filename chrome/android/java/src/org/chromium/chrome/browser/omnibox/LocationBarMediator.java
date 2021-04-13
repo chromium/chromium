@@ -30,7 +30,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
@@ -61,7 +60,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -81,7 +79,7 @@ import java.util.List;
 class LocationBarMediator
         implements LocationBarDataProvider.Observer, OmniboxStub, VoiceRecognitionHandler.Delegate,
                    VoiceRecognitionHandler.Observer, AssistantVoiceSearchService.Observer,
-                   UrlBarDelegate, OnKeyListener, ComponentCallbacks, TemplateUrlServiceObserver {
+                   UrlBarDelegate, OnKeyListener, ComponentCallbacks {
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
     private static final int ICON_FADE_ANIMATION_DELAY_MS = 75;
     private static final long NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
@@ -205,14 +203,7 @@ class LocationBarMediator
         mStatusCoordinator = statusCoordinator;
         updateShouldAnimateIconChanges();
         updateButtonVisibility();
-
-        if (mIsTablet) {
-            mStatusCoordinator.setShowIconsWhenUrlFocused(true);
-            if (mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                        mLocationBarDataProvider.isIncognito())) {
-                mStatusCoordinator.setStatusIconShown(true);
-            }
-        }
+        updateSearchEngineStatusIconShownState();
     }
 
     /*package */ void destroy() {
@@ -227,10 +218,6 @@ class LocationBarMediator
         mVoiceRecognitionHandler = null;
         mLocationBarDataProvider.removeObserver(this);
         mDeferredNativeRunnables.clear();
-        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
-        if (templateUrlService != null) {
-            templateUrlService.removeObserver(this);
-        }
         mUrlFocusChangeListeners.clear();
     }
 
@@ -278,7 +265,6 @@ class LocationBarMediator
 
     /*package */ void onFinishNativeInitialization() {
         mNativeInitialized = true;
-        mTemplateUrlServiceSupplier.get().runWhenLoaded(this::registerTemplateUrlObserver);
         mOmniboxPrerender = new OmniboxPrerender();
         mAssistantVoiceSearchServiceSupplier.set(new AssistantVoiceSearchService(mContext,
                 ExternalAuthUtils.getInstance(), mTemplateUrlServiceSupplier.get(),
@@ -290,7 +276,6 @@ class LocationBarMediator
         mLocationBarLayout.onFinishNativeInitialization();
         setProfile(mProfileSupplier.get());
         onPrimaryColorChanged();
-        mLocationBarLayout.updateStatusVisibility();
 
         for (Runnable deferredRunnable : mDeferredNativeRunnables) {
             mLocationBarLayout.post(deferredRunnable);
@@ -496,15 +481,6 @@ class LocationBarMediator
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    /* package */ void registerTemplateUrlObserver() {
-        final TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
-        templateUrlService.addObserver(this);
-
-        // Force an update once to populate initial data.
-        onTemplateURLServiceChanged();
-    }
-
     /**
      * Sets the displayed URL according to the provided url string and UrlBarData.
      *
@@ -595,7 +571,6 @@ class LocationBarMediator
         mUrlCoordinator.setKeyboardVisibility(shouldShowKeyboard, true);
         setUrlFocusChangeInProgress(false);
         updateShouldAnimateIconChanges();
-        mStatusCoordinator.onUrlAnimationFinished(showExpandedState);
         if (!mIsTablet && !showExpandedState) {
             mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
         }
@@ -1075,44 +1050,13 @@ class LocationBarMediator
         }
         return false;
     }
-    /** Update the state of the search engine status icon. */
-    @VisibleForTesting
-    void updateSearchEngineStatusIcon() {
-        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
-        assert templateUrlService != null;
 
-        mStatusCoordinator.updateSearchEngineStatusIcon(
-                templateUrlService.isDefaultSearchEngineGoogle(),
-                mSearchEngineLogoUtils.getSearchLogoUrl(templateUrlService));
-
-        updateSearchEngineStatusIconPhone();
-    }
-
-    private void updateSearchEngineStatusIconPhone() {
-        if (mIsTablet) return;
-
-        // This branch will be hit if the search engine logo experiment is enabled.
-        if (mSearchEngineLogoUtils.isSearchEngineLogoEnabled()) {
-            // Setup the padding once we're loaded, the focused padding changes will happen with
-            // post-layout positioning via setTranslation. This is a byproduct of the way we do the
-            // omnibox un/focus animation which is by writing a function f(x) where x ranges from
-            // 0 (totally unfocused) to 1 (totally focused). Positioning the location bar and its
-            // children this way doesn't affect the views' bounds (including hit rect). But these
-            // hit rects are preserved for the views that matter (the icon and the url actions
-            // container).
-            int lateralPadding = mContext.getResources().getDimensionPixelOffset(
-                    R.dimen.sei_location_bar_lateral_padding);
-            mLocationBarLayout.setPaddingRelative(lateralPadding,
-                    mLocationBarLayout.getPaddingTop(), lateralPadding,
-                    mLocationBarLayout.getPaddingBottom());
-        }
-
+    private void updateSearchEngineStatusIconShownState() {
         // The search engine icon will be the first visible focused view when it's showing.
         boolean shouldShowSearchEngineLogo = mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                 mLocationBarDataProvider.isIncognito());
 
-        // This branch will be hit if the search engine logo experiment is enabled and we should
-        // show the logo.
+        // This branch will be hit if the search engine logo should be shown.
         if (shouldShowSearchEngineLogo && mLocationBarLayout instanceof LocationBarPhone) {
             ((LocationBarPhone) mLocationBarLayout)
                     .setFirstVisibleFocusedView(/* toStatusView= */ true);
@@ -1121,7 +1065,8 @@ class LocationBarMediator
             // padding area. Set clip padding to false to prevent them from getting clipped.
             mLocationBarLayout.setClipToPadding(false);
         }
-        mLocationBarLayout.setShowIconsWhenUrlFocused(shouldShowSearchEngineLogo);
+        mLocationBarLayout.setShowIconsWhenUrlFocused(shouldShowSearchEngineLogo || mIsTablet);
+        mStatusCoordinator.setShowIconsWhenUrlFocused(shouldShowSearchEngineLogo || mIsTablet);
     }
 
     // LocationBarData.Observer implementation
@@ -1131,6 +1076,7 @@ class LocationBarMediator
     @Override
     public void onIncognitoStateChanged() {
         updateMicButtonState();
+        updateSearchEngineStatusIconShownState();
     }
 
     @Override
@@ -1142,7 +1088,6 @@ class LocationBarMediator
     public void onPrimaryColorChanged() {
         updateAssistantVoiceSearchDrawableAndColors();
         updateUseDarkColors();
-        mLocationBarLayout.updateStatusVisibility();
     }
 
     @Override
@@ -1353,22 +1298,6 @@ class LocationBarMediator
 
     @Override
     public void onLowMemory() {}
-
-    // TemplateUrlServiceObserver implementation.
-
-    @Override
-    public void onTemplateURLServiceChanged() {
-        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
-        TemplateUrl searchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
-        if ((mSearchEngine == null && searchEngine == null)
-                || (mSearchEngine != null && mSearchEngine.equals(searchEngine))) {
-            return;
-        }
-
-        mSearchEngine = searchEngine;
-        updateSearchEngineStatusIcon();
-        mLocationBarLayout.updateStatusVisibility();
-    }
 
     @Override
     public boolean isLensEnabled(@LensEntryPoint int lensEntryPoint) {

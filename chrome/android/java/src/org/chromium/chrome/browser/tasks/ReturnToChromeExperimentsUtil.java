@@ -345,14 +345,6 @@ public final class ReturnToChromeExperimentsUtil {
         return chromeActivity;
     }
 
-    public static boolean isCanonicalizedNTPUrl(String url) {
-        if (TextUtils.isEmpty(url)) return false;
-        // Avoid loading native library due to GURL usage since
-        // #shouldShowStartSurfaceAsTheHomePage() is in the critical path in Instant Start.
-        return url.equals("chrome://newtab/") || url.equals("chrome-native://newtab/")
-                || url.equals("about:newtab");
-    }
-
     /**
      * Check whether we should show Start Surface as the home page. This is used for all cases
      * except initial tab creation, which uses {@link
@@ -398,7 +390,8 @@ public final class ReturnToChromeExperimentsUtil {
         // on tablet, accessibility is not enabled or the tab group continuation feature is enabled.
         String homePageUrl = HomepageManager.getHomepageUri();
         return StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled()
-                && (TextUtils.isEmpty(homePageUrl) || isCanonicalizedNTPUrl(homePageUrl))
+                && (TextUtils.isEmpty(homePageUrl)
+                        || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl))
                 && !StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                         ContextUtils.getApplicationContext());

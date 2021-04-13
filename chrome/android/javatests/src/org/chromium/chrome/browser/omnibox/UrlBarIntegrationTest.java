@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -192,8 +191,6 @@ public class UrlBarIntegrationTest {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    // TODO(crbug.com/1028469): Investigate and enable this test for the search engine logo feature.
-    @DisableFeatures("OmniboxSearchEngineLogo")
     public void testLongPress() {
         // This is a more realistic test than HUGE_URL because ita's full of separator characters
         // which have historically been known to trigger odd behavior with long-pressing.

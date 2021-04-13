@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -83,6 +84,7 @@ public class PageInfoDiscoverabilityTest {
     PropertyModel mModel;
     PermissionDialogController mPermissionDialogController;
     StatusMediator mMediator;
+    OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
 
     @Before
     public void setUp() throws Exception {
@@ -93,13 +95,14 @@ public class PageInfoDiscoverabilityTest {
         mPermissionDialogController = PermissionDialogController.getInstance();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
             mMediator = new StatusMediator(mModel, mResources, mContext,
                     mUrlBarEditingTextStateProvider,
                     /* isTablet */ false, mMockForceModelViewReconciliationRunnable,
                     mLocationBarDataProvider, mPermissionDialogController, mSearchEngineLogoUtils,
-                    ()
-                            -> mTemplateUrlService,
+                    mTemplateUrlServiceSupplier,
                     () -> mProfile, null, sPermissionTestRule.getActivity().getWindowAndroid());
+            mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         });
     }
 

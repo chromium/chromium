@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -43,7 +41,6 @@ import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,7 +56,6 @@ import org.chromium.content_public.browser.BrowserStartupController;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
-@Features.EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
 public class SearchEngineLogoUtilsUnitTest {
     private static final String LOGO_URL = "http://testlogo.com";
     private static final String EVENTS_HISTOGRAM = "AndroidSearchEngineLogo.Events";
@@ -95,10 +91,11 @@ public class SearchEngineLogoUtilsUnitTest {
         shadowOf(mBitmap).appendDescription("test");
 
         doReturn(mBitmap).when(mRoundedIconGenerator).generateIconForText(any());
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(LOGO_URL).when(mTemplateUrlService).getUrlForSearchQuery(any());
         doReturn(true)
                 .when(mFaviconHelper)
-                .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), any());
         doReturn(false).when(mLocaleManager).needToCheckForSearchEnginePromo();
         LocaleManager.setInstanceForTest(mLocaleManager);
 
@@ -117,9 +114,7 @@ public class SearchEngineLogoUtilsUnitTest {
     @Test
     public void testDefaultEnabledBehavior() {
         // Verify the default behavior of the feature being enabled matches expectations.
-        assertTrue(mSearchEngineLogoUtils.shouldShowRoundedSearchEngineLogo(
-                /* isOffTheRecord= */ false));
-        assertFalse(mSearchEngineLogoUtils.shouldShowSearchLoupeEverywhere(
+        assertTrue(mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                 /* isOffTheRecord= */ false));
     }
 
@@ -139,8 +134,9 @@ public class SearchEngineLogoUtilsUnitTest {
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
                 /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
                 mCallback);
+        verify(mFaviconHelper)
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
-        assertNotNull(faviconCallback);
         faviconCallback.onFaviconAvailable(mBitmap, LOGO_URL);
 
         verify(mCallback).onResult(expected);
@@ -183,8 +179,9 @@ public class SearchEngineLogoUtilsUnitTest {
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
                 /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
                 mCallback);
+        verify(mFaviconHelper)
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
-        assertNotNull(faviconCallback);
         faviconCallback.onFaviconAvailable(mBitmap, LOGO_URL);
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
                 /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
@@ -251,8 +248,9 @@ public class SearchEngineLogoUtilsUnitTest {
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
                 /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
                 mCallback);
+        verify(mFaviconHelper)
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
-        assertNotNull(faviconCallback);
         faviconCallback.onFaviconAvailable(null, LOGO_URL);
 
         verify(mCallback).onResult(expected);
@@ -299,22 +297,22 @@ public class SearchEngineLogoUtilsUnitTest {
     }
 
     @Test
-    public void isSearchEngineLogoEnabled_SecurityExceptionThrown() {
+    public void needToCheckForSearchEnginePromo_SecurityExceptionThrown() {
         doThrow(SecurityException.class).when(mLocaleManager).needToCheckForSearchEnginePromo();
 
         try {
-            mSearchEngineLogoUtils.isSearchEngineLogoEnabled();
+            mSearchEngineLogoUtils.needToCheckForSearchEnginePromo();
         } catch (Exception e) {
             Assert.fail("No exception should be thrown.");
         }
     }
 
     @Test
-    public void isSearchEngineLogoEnabled_DeadObjectRuntimeExceptionThrown() {
+    public void needToCheckForSearchEnginePromo_DeadObjectRuntimeExceptionThrown() {
         doThrow(RuntimeException.class).when(mLocaleManager).needToCheckForSearchEnginePromo();
 
         try {
-            mSearchEngineLogoUtils.isSearchEngineLogoEnabled();
+            mSearchEngineLogoUtils.needToCheckForSearchEnginePromo();
         } catch (Exception e) {
             Assert.fail("No exception should be thrown.");
         }

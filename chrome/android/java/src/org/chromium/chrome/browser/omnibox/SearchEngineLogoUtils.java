@@ -19,7 +19,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -92,70 +91,12 @@ public class SearchEngineLogoUtils {
     }
 
     /**
-     * Encapsulates complicated boolean check for reuse and readability.
-     * @return True if the search engine logo is enabled, regardless of visibility.
-     */
-    public boolean isSearchEngineLogoEnabled() {
-        // LocaleManager#needToCheckForSearchEnginePromo() checks several system features which
-        // risk throwing exceptions. See the exception cases below for details.
-        try {
-            return !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
-                    && ChromeFeatureList.isInitialized()
-                    && ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO);
-        } catch (SecurityException e) {
-            Log.e(TAG, "Can thrown by failed IPC, see crbug.com/1027709");
-            return false;
-        } catch (RuntimeException e) {
-            Log.e(TAG, "Can be thrown if underlying services are dead, see crbug.com/1121602");
-            return false;
-        }
-    }
-
-    /**
-     * Encapsulates complicated boolean check for reuse and readability.
+     * Encapsulates the check for if the search engine logo should be shown.
      * @param isOffTheRecord True if the user is currently using an incognito tab.
      * @return True if we should show the search engine logo.
      */
     public boolean shouldShowSearchEngineLogo(boolean isOffTheRecord) {
-        return !isOffTheRecord
-                && isSearchEngineLogoEnabled()
-                // Using the profile now, so we need to pay attention to browser initialization.
-                && mBrowserStartupController.isFullBrowserStarted();
-    }
-
-    /**
-     * Encapsulates complicated boolean check for reuse and readability.
-     * @param isOffTheRecord True if the user is currently using an incognito tab.
-     * @return True if we should show the rounded search engine logo.
-     */
-    public boolean shouldShowRoundedSearchEngineLogo(boolean isOffTheRecord) {
-        return shouldShowSearchEngineLogo(isOffTheRecord) && ChromeFeatureList.isInitialized()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO, ROUNDED_EDGES_VARIANT,
-                        /* default= */ true);
-    }
-
-    /** Ignores the incognito state for instances where a caller would otherwise pass "false". */
-    boolean isRoundedSearchEngineLogoEnabled() {
-        return shouldShowRoundedSearchEngineLogo(false);
-    }
-
-    /**
-     * Encapsulates complicated boolean check for reuse and readability.
-     * @param isOffTheRecord True if the user is currently using an incognito tab.
-     * @return True if we should show the search engine logo as a loupe everywhere.
-     */
-    public boolean shouldShowSearchLoupeEverywhere(boolean isOffTheRecord) {
-        return shouldShowSearchEngineLogo(isOffTheRecord)
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO, LOUPE_EVERYWHERE_VARIANT,
-                        /* default= */ false);
-    }
-
-    /** @return Whether the status icon should be hidden when the LocationBar is unfocused. */
-    public boolean currentlyOnNTP(LocationBarDataProvider locationBarDataProvider) {
-        return locationBarDataProvider != null
-                && UrlUtilities.isNTPUrl(locationBarDataProvider.getCurrentUrl());
+        return !isOffTheRecord;
     }
 
     /**
@@ -163,7 +104,9 @@ public class SearchEngineLogoUtils {
      * Returns the search URL of the current DSE or null if one cannot be found.
      */
     @Nullable
-    public String getSearchLogoUrl(TemplateUrlService templateUrlService) {
+    public String getSearchLogoUrl(@Nullable TemplateUrlService templateUrlService) {
+        if (templateUrlService == null) return null;
+
         String logoUrlWithPath = templateUrlService.getUrlForSearchQuery(DUMMY_URL_QUERY);
         if (logoUrlWithPath == null || !UrlUtilities.isHttpOrHttps(logoUrlWithPath)) {
             return logoUrlWithPath;
@@ -176,15 +119,10 @@ public class SearchEngineLogoUtils {
      * @param resources Android resources object, used to read the dimension.
      * @return The size that the logo favicon should be.
      */
-    public int getSearchEngineLogoSizePixels(Resources resources) {
+    public int getSearchEngineLogoSizePixels(@NonNull Resources resources) {
         if (sSearchEngineLogoTargetSizePixels == 0) {
-            if (isRoundedSearchEngineLogoEnabled()) {
-                sSearchEngineLogoTargetSizePixels = resources.getDimensionPixelSize(
-                        R.dimen.omnibox_search_engine_logo_favicon_size);
-            } else {
-                sSearchEngineLogoTargetSizePixels =
-                        getSearchEngineLogoComposedSizePixels(resources);
-            }
+            sSearchEngineLogoTargetSizePixels = resources.getDimensionPixelSize(
+                    R.dimen.omnibox_search_engine_logo_favicon_size);
         }
 
         return sSearchEngineLogoTargetSizePixels;
@@ -194,7 +132,7 @@ public class SearchEngineLogoUtils {
      * @param resources Android resources object, used to read the dimension.
      * @return The total size the logo will be on screen.
      */
-    public static int getSearchEngineLogoComposedSizePixels(Resources resources) {
+    public static int getSearchEngineLogoComposedSizePixels(@NonNull Resources resources) {
         if (sSearchEngineLogoComposedSizePixels == 0) {
             sSearchEngineLogoComposedSizePixels = resources.getDimensionPixelSize(
                     R.dimen.omnibox_search_engine_logo_composed_size);
@@ -217,10 +155,14 @@ public class SearchEngineLogoUtils {
     public void getSearchEngineLogo(@NonNull Resources resources, boolean inNightMode,
             @Nullable Profile profile, @Nullable TemplateUrlService templateUrlService,
             @NonNull Callback<StatusIconResource> callback) {
-        // If either of the nullable dependencies are null, fallback to the search loupe. If
-        // templateUrlService is available and the default search engine is Google, serve that
-        // locally.
-        if (profile == null || templateUrlService == null) {
+        // In the following cases, we fallback to the search loupe:
+        // - Either of the nullable dependencies are null.
+        // - We still need to check for the search engine promo, which happens in rare cases when
+        //   the search engine promo needed to be shown but wasn't for some reason.
+        // If TemplateUrlService is available and the default search engine is Google,
+        // then we serve the Google icon we have locally.
+        // Otherwise, the search engine is non-Google and we go to the network to fetch it.
+        if (profile == null || templateUrlService == null || needToCheckForSearchEnginePromo()) {
             callback.onResult(getSearchLoupeResource(inNightMode));
             return;
         } else if (templateUrlService.isDefaultSearchEngineGoogle()) {
@@ -272,6 +214,22 @@ public class SearchEngineLogoUtils {
                             : ThemeUtils.getThemedToolbarIconTintRes(/* useLight= */ true));
     }
 
+    /** Returns whether the search engine promo is complete. */
+    @VisibleForTesting
+    boolean needToCheckForSearchEnginePromo() {
+        // LocaleManager#needToCheckForSearchEnginePromo() checks several system features which
+        // risk throwing exceptions. See the exception cases below for details.
+        try {
+            return LocaleManager.getInstance().needToCheckForSearchEnginePromo();
+        } catch (SecurityException e) {
+            Log.e(TAG, "Can be thrown by a failed IPC, see crbug.com/1027709\n", e);
+            return false;
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Can be thrown if underlying services are dead, see crbug.com/1121602\n", e);
+            return false;
+        }
+    }
+
     /**
      * Process the image returned from a network fetch or cache hit. This method processes the logo
      * to make it eligible for display. The logo is resized to ensure it will fill the required
@@ -293,25 +251,23 @@ public class SearchEngineLogoUtils {
                 Bitmap.createScaledBitmap(image, getSearchEngineLogoSizePixels(resources),
                         getSearchEngineLogoSizePixels(resources), true);
 
-        Bitmap composedIcon = scaledIcon;
-        if (isRoundedSearchEngineLogoEnabled()) {
-            int composedSizePixels = getSearchEngineLogoComposedSizePixels(resources);
-            if (mRoundedIconGenerator == null) {
-                mRoundedIconGenerator = new RoundedIconGenerator(composedSizePixels,
-                        composedSizePixels, composedSizePixels, Color.TRANSPARENT, 0);
-            }
-            int color = (image.getWidth() == 0 || image.getHeight() == 0)
-                    ? Color.TRANSPARENT
-                    : getMostCommonEdgeColor(image);
-            mRoundedIconGenerator.setBackgroundColor(color);
-
-            // Generate a rounded background with no text.
-            composedIcon = mRoundedIconGenerator.generateIconForText("");
-            Canvas canvas = new Canvas(composedIcon);
-            // Draw the logo in the middle of the generated background.
-            int dx = (composedSizePixels - logoSizePixels) / 2;
-            canvas.drawBitmap(scaledIcon, dx, dx, null);
+        int composedSizePixels = getSearchEngineLogoComposedSizePixels(resources);
+        if (mRoundedIconGenerator == null) {
+            mRoundedIconGenerator = new RoundedIconGenerator(composedSizePixels, composedSizePixels,
+                    composedSizePixels, Color.TRANSPARENT, 0);
         }
+        int color = (image.getWidth() == 0 || image.getHeight() == 0)
+                ? Color.TRANSPARENT
+                : getMostCommonEdgeColor(image);
+        mRoundedIconGenerator.setBackgroundColor(color);
+
+        // Generate a rounded background with no text.
+        Bitmap composedIcon = mRoundedIconGenerator.generateIconForText("");
+        Canvas canvas = new Canvas(composedIcon);
+        // Draw the logo in the middle of the generated background.
+        int dx = (composedSizePixels - logoSizePixels) / 2;
+        canvas.drawBitmap(scaledIcon, dx, dx, null);
+
         // Cache the result icon to reduce future work.
         sCachedComposedBackground = composedIcon;
         sCachedComposedBackgroundLogoUrl = logoUrl;

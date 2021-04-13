@@ -383,9 +383,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 res.getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
         mLocationBarBackground = createModernLocationBarBackground(getResources());
 
-        int lateralPadding = res.getDimensionPixelOffset(R.dimen.location_bar_lateral_padding);
-        mLocationBar.getPhoneCoordinator().setPadding(lateralPadding, 0, lateralPadding, 0);
-
         mActiveLocationBarBackground = mLocationBarBackground;
     }
 
@@ -1033,7 +1030,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(isIncognito)) {
             mUrlBar.setTranslationX(
                     getUrlBarTranslationXForToolbarAnimation(mUrlExpansionFraction, hasFocus()));
-        } else if (SearchEngineLogoUtils.getInstance().isSearchEngineLogoEnabled()) {
+        } else {
             mUrlBar.setTranslationX(0);
         }
 
@@ -2819,9 +2816,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             float urlExpansionPercent, boolean hasFocus) {
         StatusCoordinator statusCoordinator = mLocationBar.getStatusCoordinator();
         if (statusCoordinator == null) return 0;
+        SearchEngineLogoUtils searchEngineLogoUtils = SearchEngineLogoUtils.getInstance();
+        assert searchEngineLogoUtils != null;
 
         // No offset is required if the experiment is disabled.
-        if (!SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(
+        if (!searchEngineLogoUtils.shouldShowSearchEngineLogo(
                     getToolbarDataProvider().isIncognito())) {
             return 0;
         }
@@ -2835,7 +2834,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 urlExpansionPercent * statusCoordinator.getEndPaddingPixelSizeOnFocusDelta();
 
         boolean scrollingOnNtp = !hasFocus && statusCoordinator.isSearchEngineStatusIconVisible()
-                && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentUrl());
+                && UrlUtilities.isCanonicalizedNTPUrl(getToolbarDataProvider().getCurrentUrl());
         if (scrollingOnNtp) {
             // When:
             // 1. unfocusing the LocationBar on the NTP.

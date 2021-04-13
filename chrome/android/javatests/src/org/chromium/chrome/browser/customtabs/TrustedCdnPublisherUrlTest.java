@@ -8,8 +8,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
@@ -17,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.filters.SmallTest;
@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -62,7 +64,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.util.TestWebServer;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -79,6 +80,9 @@ import java.util.concurrent.TimeoutException;
 public class TrustedCdnPublisherUrlTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     private static final String PAGE_WITH_TITLE =
             "<!DOCTYPE html><html><head><title>Example title</title></head></html>";
@@ -169,14 +173,7 @@ public class TrustedCdnPublisherUrlTest {
     }
 
     private int getDefaultSecurityIcon() {
-        // On tablets an info icon is shown for ConnectionSecurityLevel.NONE pages,
-        // on smaller form factors nothing.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                    InstrumentationRegistry.getTargetContext())) {
-            return org.chromium.chrome.R.drawable.omnibox_info;
-        }
-
-        return 0;
+        return org.chromium.chrome.R.drawable.omnibox_info;
     }
 
     @Test
@@ -415,15 +412,24 @@ public class TrustedCdnPublisherUrlTest {
     private void verifySecurityIcon(int expectedSecurityIcon) {
         ImageView securityButton =
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_button);
+
         if (expectedSecurityIcon == 0) {
             Assert.assertEquals(View.INVISIBLE, securityButton.getVisibility());
         } else {
+            Assert.assertEquals(org.chromium.chrome.R.drawable.omnibox_info, expectedSecurityIcon);
             Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
-            Bitmap expectedIcon = BitmapFactory.decodeResource(
-                    InstrumentationRegistry.getTargetContext().getResources(),
-                    expectedSecurityIcon);
-            Assert.assertTrue(expectedIcon.sameAs(
-                    ((BitmapDrawable) securityButton.getDrawable()).getBitmap()));
+
+            ColorStateList colorStateList =
+                    AppCompatResources.getColorStateList(InstrumentationRegistry.getTargetContext(),
+                            R.color.default_icon_color_light_tint_list);
+            ImageView expectedSecurityButton =
+                    new ImageView(InstrumentationRegistry.getTargetContext());
+            expectedSecurityButton.setImageResource(expectedSecurityIcon);
+            ApiCompatibilityUtils.setImageTintList(expectedSecurityButton, colorStateList);
+
+            BitmapDrawable expectedDrawable = (BitmapDrawable) expectedSecurityButton.getDrawable();
+            BitmapDrawable actualDrawable = (BitmapDrawable) securityButton.getDrawable();
+            Assert.assertTrue(expectedDrawable.getBitmap().sameAs(actualDrawable.getBitmap()));
         }
     }
 }

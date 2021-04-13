@@ -1967,23 +1967,6 @@ const FeatureEntry::FeatureVariation kOmniboxAssistantVoiceSearchVariations[] =
 };
 
 const FeatureEntry::FeatureParam
-    kOmniboxSearchEngineLogoRoundedEdgesVariationConstant[] = {
-        {"rounded_edges", "true"}};
-const FeatureEntry::FeatureParam
-    kOmniboxSearchEngineLogoLoupeEverywhereVariationConstant[] = {
-        {"loupe_everywhere", "true"}};
-const FeatureEntry::FeatureVariation
-    kOmniboxSearchEngineLogoFeatureVariations[] = {
-        {"(rounded edges)",
-         kOmniboxSearchEngineLogoRoundedEdgesVariationConstant,
-         base::size(kOmniboxSearchEngineLogoRoundedEdgesVariationConstant),
-         nullptr},
-        {"(loupe everywhere)",
-         kOmniboxSearchEngineLogoLoupeEverywhereVariationConstant,
-         base::size(kOmniboxSearchEngineLogoLoupeEverywhereVariationConstant),
-         nullptr}};
-
-const FeatureEntry::FeatureParam
     kPhotoPickerVideoSupportEnabledWithAnimatedThumbnails[] = {
         {"animate_thumbnails", "true"}};
 const FeatureEntry::FeatureVariation
@@ -4190,12 +4173,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxNativeVoiceSuggestProviderName,
      flag_descriptions::kOmniboxNativeVoiceSuggestProviderDescription,
      kOsAndroid, FEATURE_VALUE_TYPE(omnibox::kNativeVoiceSuggestProvider)},
-    {"omnibox-search-engine-logo",
-     flag_descriptions::kOmniboxSearchEngineLogoName,
-     flag_descriptions::kOmniboxSearchEngineLogoDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxSearchEngineLogo,
-                                    kOmniboxSearchEngineLogoFeatureVariations,
-                                    "OmniboxSearchEngineLogo")},
     {"omnibox-search-ready-incognito",
      flag_descriptions::kOmniboxSearchReadyIncognitoName,
      flag_descriptions::kOmniboxSearchReadyIncognitoDescription, kOsAndroid,

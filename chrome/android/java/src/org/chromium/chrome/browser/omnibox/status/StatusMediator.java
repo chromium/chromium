@@ -18,7 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
-import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -33,11 +33,13 @@ import org.chromium.components.browser_ui.site_settings.ContentSettingsResources
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
 import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -45,12 +47,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * Contains the controller logic of the Status component.
  */
-public class StatusMediator implements PermissionDialogController.Observer {
+public class StatusMediator
+        implements PermissionDialogController.Observer, TemplateUrlServiceObserver {
     private static final int PERMISSION_ICON_DISPLAY_TIMEOUT_MS = 8500;
 
     private final PropertyModel mModel;
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
-    private final Supplier<TemplateUrlService> mTemplateUrlServiceSupplier;
+    private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final Supplier<Profile> mProfileSupplier;
     private boolean mDarkTheme;
     private boolean mUrlHasFocus;
@@ -59,8 +62,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
     private boolean mPageIsOffline;
     private boolean mShowStatusIconWhenUrlFocused;
     private boolean mIsSecurityButtonShown;
-    private boolean mIsSearchEngineStateSetup;
-    private boolean mIsSearchEngineGoogle;
     private boolean mShouldCancelCustomFavicon;
     private boolean mIsTablet;
 
@@ -94,7 +95,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
     private boolean mUrlBarTextIsSearch = true;
 
     private float mUrlFocusPercent;
-    private String mSearchEngineLogoUrl;
 
     private Runnable mForceModelViewReconciliationRunnable;
 
@@ -112,13 +112,17 @@ public class StatusMediator implements PermissionDialogController.Observer {
             LocationBarDataProvider locationBarDataProvider,
             PermissionDialogController permissionDialogController,
             SearchEngineLogoUtils searchEngineLogoUtils,
-            Supplier<TemplateUrlService> templateUrlServiceSupplier,
+            OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             Supplier<Profile> profileSupplier, PageInfoIPHController pageInfoIPHController,
             WindowAndroid windowAndroid) {
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
         mSearchEngineLogoUtils = searchEngineLogoUtils;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
+        mTemplateUrlServiceSupplier.onAvailable((templateUrlService) -> {
+            templateUrlService.addObserver(this);
+            updateLocationBarIcon(IconTransitionType.CROSSFADE);
+        });
         mProfileSupplier = profileSupplier;
         updateColorTheme();
 
@@ -140,11 +144,18 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mForceModelViewReconciliationRunnable = forceModelViewReconciliationRunnable;
         mPermissionDialogController = permissionDialogController;
         mPermissionDialogController.addObserver(this);
+
+        setStatusIconShown(/* show= */ !mLocationBarDataProvider.isIncognito());
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     public void destroy() {
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
         mPermissionDialogController.removeObserver(this);
+
+        if (mTemplateUrlServiceSupplier.hasValue()) {
+            mTemplateUrlServiceSupplier.get().removeObserver(this);
+        }
     }
 
     /**
@@ -167,7 +178,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
     void setPageIsOffline(boolean pageIsOffline) {
         if (mPageIsOffline != pageIsOffline) {
             mPageIsOffline = pageIsOffline;
-            updateStatusVisibility();
+            updateVerbaseStatusTextVisibility();
             updateColorTheme();
         }
     }
@@ -178,7 +189,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
     void setPageIsPaintPreview(boolean pageIsPaintPreview) {
         if (mPageIsPaintPreview != pageIsPaintPreview) {
             mPageIsPaintPreview = pageIsPaintPreview;
-            updateStatusVisibility();
+            updateVerbaseStatusTextVisibility();
             updateColorTheme();
         }
     }
@@ -189,7 +200,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
     void setPageSecurityLevel(@ConnectionSecurityLevel int level) {
         if (mPageSecurityLevel == level) return;
         mPageSecurityLevel = level;
-        updateStatusVisibility();
+        updateVerbaseStatusTextVisibility();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
@@ -266,7 +277,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
         if (hasSpaceForStatus != mVerboseStatusSpaceAvailable) {
             mVerboseStatusSpaceAvailable = hasSpaceForStatus;
-            updateStatusVisibility();
+            updateVerbaseStatusTextVisibility();
         }
     }
 
@@ -277,6 +288,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
         if (mUrlHasFocus == urlHasFocus) return;
 
         mUrlHasFocus = urlHasFocus;
+        updateVerbaseStatusTextVisibility();
         updateStatusVisibility();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
@@ -285,29 +297,26 @@ public class StatusMediator implements PermissionDialogController.Observer {
         if (!mUrlHasFocus) updateLocationBarIconForDefaultMatchCategory(true);
     }
 
-    /**
-     * Extra logic to support extra NTP use cases which show the status icon when animating and when
-     * focused, but hide it when unfocused.
-     * @param showExpandedState Whether the url bar is expanded currently.
-     */
-    void setUrlAnimationFinished(boolean showExpandedState) {
-        if (mIsTablet
-                || !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                        mLocationBarDataProvider.isIncognito())) {
-            return;
-        }
-
-        // Hide the icon when the url unfocus animation finishes.
-        // Note: When mUrlFocusPercent is non-zero, that means we're still in the focused state from
-        // scrolling on the NTP.
-        if (!showExpandedState && MathUtils.areFloatsEqual(mUrlFocusPercent, 0f)
-                && mSearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
-            setStatusIconShown(false);
-        }
-    }
-
     void setStatusIconShown(boolean show) {
         mModel.set(StatusProperties.SHOW_STATUS_ICON, show);
+    }
+
+    void setStatusIconAlpha(float alpha) {
+        mModel.set(StatusProperties.STATUS_ICON_ALPHA, alpha);
+    }
+
+    void updateStatusVisibility() {
+        boolean shouldShowLogo = mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                mLocationBarDataProvider.isIncognito());
+        setShowIconsWhenUrlFocused(shouldShowLogo);
+
+        if (mLocationBarDataProvider.isInOverviewAndShowingOmnibox()) {
+            setStatusIconShown(true);
+        } else if (UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())) {
+            setStatusIconShown(shouldShowLogo && (mUrlHasFocus || mUrlFocusPercent > 0));
+        } else {
+            setStatusIconShown(true);
+        }
     }
 
     /**
@@ -331,15 +340,15 @@ public class StatusMediator implements PermissionDialogController.Observer {
         }
 
         // Only fade the animation on the new tab page.
-        if (mSearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
+        if (UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())) {
             float focusAnimationProgress = percent;
             if (!mUrlHasFocus) {
                 focusAnimationProgress = MathUtils.clamp(
                         (percent - mTextOffsetThreshold) / mTextOffsetAdjustedScale, 0f, 1f);
             }
-            mModel.set(StatusProperties.STATUS_ICON_ALPHA, focusAnimationProgress);
+            setStatusIconAlpha(focusAnimationProgress);
         } else {
-            mModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+            setStatusIconAlpha(1f);
         }
 
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -372,7 +381,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
     /**
      * Update visibility of the verbose status text field.
      */
-    private void updateStatusVisibility() {
+    private void updateVerbaseStatusTextVisibility() {
         int statusText = 0;
 
         if (mPageIsPaintPreview) {
@@ -439,19 +448,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
     }
 
     /**
-     * Called when the search engine status icon needs updating.
-     *
-     * @param isSearchEngineGoogle True if the default search engine is google.
-     * @param searchEngineUrl The URL for the search engine icon.
-     */
-    public void updateSearchEngineStatusIcon(boolean isSearchEngineGoogle, String searchEngineUrl) {
-        mIsSearchEngineStateSetup = true;
-        mIsSearchEngineGoogle = isSearchEngineGoogle;
-        mSearchEngineLogoUrl = searchEngineUrl;
-        updateLocationBarIcon(IconTransitionType.CROSSFADE);
-    }
-
-    /**
      * Update selection of icon presented on the location bar.
      *
      * - Navigation button is:
@@ -469,10 +465,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, getAccessibilityDescriptionRes());
 
         // No need to proceed further if we've already updated it for the search engine icon.
-        if (!LibraryLoader.getInstance().isInitialized()
-                || maybeUpdateStatusIconForSearchEngineIcon()) {
-            return;
-        }
+        if (maybeUpdateStatusIconForSearchEngineIcon()) return;
 
         int icon = 0;
         int tint = 0;
@@ -492,10 +485,12 @@ public class StatusMediator implements PermissionDialogController.Observer {
             toast = R.string.menu_page_info;
         }
 
+        // If the icon is missing, fallback to the info icon.
         StatusIconResource statusIcon = icon == 0 ? null : new StatusIconResource(icon, tint);
         if (statusIcon != null) {
             statusIcon.setTransitionType(transitionType);
         }
+
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
         mModel.set(StatusProperties.STATUS_ICON_ACCESSIBILITY_TOAST_RES, toast);
     }
@@ -523,13 +518,13 @@ public class StatusMediator implements PermissionDialogController.Observer {
     private boolean shouldUpdateStatusIconForSearchEngineIcon() {
         boolean showIconWhenFocused = mUrlHasFocus && mShowStatusIconWhenUrlFocused;
         boolean showIconWhenScrollingOnNTP =
-                mSearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)
+                UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())
                 && mUrlFocusPercent > 0 && !mUrlHasFocus && !mLocationBarDataProvider.isLoading()
                 && mShowStatusIconWhenUrlFocused;
 
         return mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                        mLocationBarDataProvider.isIncognito())
-                && mIsSearchEngineStateSetup && (showIconWhenFocused || showIconWhenScrollingOnNTP);
+                && (showIconWhenFocused || showIconWhenScrollingOnNTP);
     }
 
     /**
@@ -689,5 +684,10 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
     public int getLastPermission() {
         return mLastPermission;
+    }
+
+    @Override
+    public void onTemplateURLServiceChanged() {
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 }

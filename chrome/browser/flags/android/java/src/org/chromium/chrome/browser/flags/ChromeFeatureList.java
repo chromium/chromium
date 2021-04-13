@@ -395,7 +395,6 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_MOST_VISITED_TILES = "OmniboxMostVisitedTiles";
     public static final String OMNIBOX_NATIVE_VOICE_SUGGEST_PROVIDER =
             "OmniboxNativeVoiceSuggestProvider";
-    public static final String OMNIBOX_SEARCH_ENGINE_LOGO = "OmniboxSearchEngineLogo";
     public static final String OMNIBOX_SEARCH_READY_INCOGNITO = "OmniboxSearchReadyIncognito";
     public static final String OMNIBOX_SPARE_RENDERER = "OmniboxSpareRenderer";
     public static final String OVERLAY_NEW_LAYOUT = "OverlayNewLayout";

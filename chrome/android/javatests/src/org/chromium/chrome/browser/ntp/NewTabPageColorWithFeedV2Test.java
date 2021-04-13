@@ -89,7 +89,6 @@ public class NewTabPageColorWithFeedV2Test {
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @Features.EnableFeatures({ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
     @Features.DisableFeatures({
             ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD})
     public void testTextBoxBackgroundColor() throws Exception {

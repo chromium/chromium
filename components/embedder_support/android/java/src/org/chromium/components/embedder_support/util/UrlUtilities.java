@@ -278,6 +278,19 @@ public class UrlUtilities {
         return isNTPUrl(gurl);
     }
 
+    /**
+     * Returns whether the url matches an NTP URL exactly. This is used to support features
+     * showing the omnibox before native is loaded. Prefer using {@see #isNTPUrl(GURL gurl)} when
+     * native is loaded.
+     * @param url The current URL to compare.
+     * @return Whether the given URL matches the NTP urls exactly.
+     */
+    public static boolean isCanonicalizedNTPUrl(String url) {
+        return TextUtils.equals(url, UrlConstants.NTP_URL)
+                || TextUtils.equals(url, UrlConstants.NTP_NON_NATIVE_URL)
+                || TextUtils.equals(url, UrlConstants.NTP_ABOUT_URL);
+    }
+
     public static String extractPublisherFromPublisherUrl(String publisherUrl) {
         String publisher =
                 UrlFormatter.formatUrlForDisplayOmitScheme(GURLUtils.getOrigin(publisherUrl));

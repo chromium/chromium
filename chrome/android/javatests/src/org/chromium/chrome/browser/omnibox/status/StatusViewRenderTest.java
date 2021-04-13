@@ -78,7 +78,7 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
             ViewGroup view = new LinearLayout(getActivity());
 
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
             getActivity().setContentView(view, params);
 

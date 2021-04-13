@@ -623,44 +623,6 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testTemplateUrlServiceChanged() {
-        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        doReturn(mNonGoogleSearchEngine)
-                .when(mTemplateUrlService)
-                .getDefaultSearchEngineTemplateUrl();
-        mMediator.onTemplateURLServiceChanged();
-
-        verify(mStatusCoordinator)
-                .updateSearchEngineStatusIcon(
-                        false, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
-
-        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        doReturn(mGoogleSearchEngine).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
-        mMediator.onTemplateURLServiceChanged();
-
-        verify(mStatusCoordinator)
-                .updateSearchEngineStatusIcon(
-                        true, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
-
-        // Calling onTemplateURLServiceChanged with the exact same data shouldn't trigger any calls.
-        mMediator.onTemplateURLServiceChanged();
-
-        verify(mStatusCoordinator, times(1))
-                .updateSearchEngineStatusIcon(
-                        true, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
-
-        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        doReturn(mNonGoogleSearchEngine)
-                .when(mTemplateUrlService)
-                .getDefaultSearchEngineTemplateUrl();
-        mMediator.onTemplateURLServiceChanged();
-
-        verify(mStatusCoordinator, times(2))
-                .updateSearchEngineStatusIcon(
-                        false, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
-    }
-
-    @Test
     public void testUpdateAssistantVoiceSearchDrawablesAndColors() {
         AssistantVoiceSearchService avs = Mockito.mock(AssistantVoiceSearchService.class);
         ColorStateList csl = Mockito.mock(ColorStateList.class);
