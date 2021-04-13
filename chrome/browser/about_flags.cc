@@ -7188,6 +7188,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          optimization_guide::features::kOptimizationGuideModelDownloading)},
 
+    {"media-session-webrtc", flag_descriptions::kMediaSessionWebRTCName,
+     flag_descriptions::kMediaSessionWebRTCDescription, kOsAll,
+     FEATURE_VALUE_TYPE(media::kMediaSessionWebRTC)},
+
     {"webid", flag_descriptions::kWebIdName,
      flag_descriptions::kWebIdDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebID)},

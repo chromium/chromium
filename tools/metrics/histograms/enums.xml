@@ -47880,6 +47880,7 @@ from previous Chrome versions.
   <int value="1369649674" label="ChromeShareScreenshot:enabled"/>
   <int value="1370797930" label="ShowBluetoothDeviceBattery:enabled"/>
   <int value="1371092708" label="disable-desktop-capture-picker-old-ui"/>
+  <int value="1371344350" label="MediaSessionWebRTC:disabled"/>
   <int value="1371907429" label="enable-wallet-card-import"/>
   <int value="1372680885" label="enable-mtp-write-support"/>
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
@@ -48745,6 +48746,7 @@ from previous Chrome versions.
   <int value="2137347307" label="enable-drive-apps-in-app-list"/>
   <int value="2137554806"
       label="enable-experimental-accessibility-dictation-listening"/>
+  <int value="2137571271" label="MediaSessionWebRTC:enabled"/>
   <int value="2137599770" label="enable-win32k-renderer-lockdown"/>
   <int value="2138146331" label="OmniboxVoiceSearchAlwaysVisible:enabled"/>
   <int value="2139048614" label="UseSurfaceLayerForVideo:enabled"/>
