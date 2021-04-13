@@ -34,8 +34,6 @@ class LegacyTLSBlockingPage
                            bool user_is_interacting,
                            web::WebFrame* sender_frame) override;
 
-  void AfterShow() override;
-
   web::WebState* web_state_ = nullptr;
   const GURL request_url_;
   std::unique_ptr<LegacyTLSControllerClient> controller_;

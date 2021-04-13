@@ -76,8 +76,6 @@ class FakeWebState : public WebState {
       const ScriptCommandCallback& callback,
       const std::string& command_prefix) override;
   CRWWebViewProxyType GetWebViewProxy() const override;
-  bool IsShowingWebInterstitial() const override;
-  WebInterstitial* GetWebInterstitial() const override;
 
   void AddObserver(WebStateObserver* observer) override;
 

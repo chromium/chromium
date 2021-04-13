@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
-#include "ios/web/public/security/web_interstitial_delegate.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -18,24 +17,20 @@ class DictionaryValue;
 
 namespace web {
 class WebFrame;
-class WebInterstitial;
 class WebState;
 }  // namespace web
 
 namespace security_interstitials {
 
-class IOSSecurityInterstitialPage : public web::WebInterstitialDelegate {
+class IOSSecurityInterstitialPage {
  public:
   IOSSecurityInterstitialPage(web::WebState* web_state,
                               const GURL& request_url,
                               IOSBlockingPageControllerClient* client);
-  ~IOSSecurityInterstitialPage() override;
+  virtual ~IOSSecurityInterstitialPage();
 
-  // Creates an interstitial and shows it.
-  void Show();
-
-  // web::WebInterstitialDelegate implementation.
-  std::string GetHtmlContents() const override;
+  // Returns the HTML that should be displayed in the page
+  virtual std::string GetHtmlContents() const;
 
   // Whether a URL should be displayed on this interstitial page. This is
   // respected by committed interstitials only.
@@ -56,16 +51,11 @@ class IOSSecurityInterstitialPage : public web::WebInterstitialDelegate {
   virtual void PopulateInterstitialStrings(
       base::DictionaryValue* load_time_data) const = 0;
 
-  // Gives an opportunity for child classes to react to Show() having run. The
-  // |web_interstitial_| will now have a value.
-  virtual void AfterShow() = 0;
-
   // Returns the formatted host name for the request url.
   std::u16string GetFormattedHostName() const;
 
   web::WebState* web_state() const { return web_state_; }
   const GURL& request_url() const { return request_url_; }
-  web::WebInterstitial* web_interstitial() const { return web_interstitial_; }
 
  private:
   // The WebState with which this interstitial page is associated. Not
@@ -73,10 +63,6 @@ class IOSSecurityInterstitialPage : public web::WebInterstitialDelegate {
   // class is destroyed.
   web::WebState* web_state_;
   const GURL request_url_;
-
-  // Once non-null, the |web_interstitial_| takes ownership of this
-  // IOSSecurityInterstitialPage instance.
-  web::WebInterstitial* web_interstitial_;
 
   // Used to interact with the embedder. Unowned pointer; must outlive |this|
   // instance.

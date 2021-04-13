@@ -41,12 +41,10 @@ IOSSSLBlockingPage::IOSSSLBlockingPage(
     const GURL& request_url,
     int options_mask,
     const base::Time& time_triggered,
-    base::OnceCallback<void(bool)> callback,
     std::unique_ptr<security_interstitials::IOSBlockingPageControllerClient>
         client)
     : IOSSecurityInterstitialPage(web_state, request_url, client.get()),
       web_state_(web_state),
-      callback_(std::move(callback)),
       ssl_info_(ssl_info),
       overridable_(IsOverridable(options_mask)),
       controller_(std::move(client)) {
@@ -70,67 +68,11 @@ bool IOSSSLBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 IOSSSLBlockingPage::~IOSSSLBlockingPage() {
-  if (!callback_.is_null()) {
-    // The page is closed without the user having chosen what to do, default to
-    // deny.
-    NotifyDenyCertificate();
-  }
-}
-
-void IOSSSLBlockingPage::AfterShow() {
-  controller_->SetWebInterstitial(web_interstitial());
 }
 
 void IOSSSLBlockingPage::PopulateInterstitialStrings(
     base::DictionaryValue* load_time_data) const {
   ssl_error_ui_->PopulateStringsForHTML(load_time_data);
-}
-
-// This handles the commands sent from the interstitial JavaScript.
-void IOSSSLBlockingPage::CommandReceived(const std::string& command) {
-  if (command == "\"pageLoadComplete\"") {
-    // content::WaitForRenderFrameReady sends this message when the page
-    // load completes. Ignore it.
-    return;
-  }
-
-  int cmd = 0;
-  bool retval = base::StringToInt(command, &cmd);
-  DCHECK(retval);
-  ssl_error_ui_->HandleCommand(
-      static_cast<security_interstitials::SecurityInterstitialCommand>(cmd));
-}
-
-void IOSSSLBlockingPage::OnProceed() {
-  // Accepting the certificate resumes the loading of the page.
-  DCHECK(!callback_.is_null());
-  std::move(callback_).Run(true);
-}
-
-void IOSSSLBlockingPage::OnDontProceed() {
-  NotifyDenyCertificate();
-}
-
-void IOSSSLBlockingPage::OverrideItem(web::NavigationItem* item) {
-  item->SetTitle(l10n_util::GetStringUTF16(IDS_SSL_V2_TITLE));
-
-  item->GetSSL().security_style = web::SECURITY_STYLE_AUTHENTICATION_BROKEN;
-  item->GetSSL().cert_status = ssl_info_.cert_status;
-  // On iOS cert may be null when it is not provided by API callback or can not
-  // be parsed.
-  if (ssl_info_.cert) {
-    item->GetSSL().certificate = ssl_info_.cert;
-  }
-}
-
-void IOSSSLBlockingPage::NotifyDenyCertificate() {
-  // It's possible that callback_ may not exist if the user clicks "Proceed"
-  // followed by pressing the back button before the interstitial is hidden.
-  // In that case the certificate will still be treated as allowed.
-  if (callback_.is_null())
-    return;
-
-  std::move(callback_).Run(false);
 }
 
 // static
@@ -171,7 +113,7 @@ void IOSSSLBlockingPage::HandleScriptCommand(
     return;
   }
 
-  // Non-proceed commands are handled the same between committed and
-  // non-committed interstitials, so the CommandReceived method can be used.
-  IOSSSLBlockingPage::CommandReceived(command_str);
+  ssl_error_ui_->HandleCommand(
+      static_cast<security_interstitials::SecurityInterstitialCommand>(
+          command_num));
 }

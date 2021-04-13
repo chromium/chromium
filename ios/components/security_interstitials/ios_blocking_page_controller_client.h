@@ -15,7 +15,6 @@
 class GURL;
 
 namespace web {
-class WebInterstitial;
 class WebState;
 }  // namespace web
 
@@ -38,8 +37,6 @@ class IOSBlockingPageControllerClient
   void GoBack() override;
   bool CanGoBack() override;
   void OpenEnhancedProtectionSettings() override;
-
-  void SetWebInterstitial(web::WebInterstitial* web_interstitial);
 
   // web::WebStateObserver implementation.
   void WebStateDestroyed(web::WebState* web_state) override;
@@ -67,7 +64,6 @@ class IOSBlockingPageControllerClient
   void Close();
 
   web::WebState* web_state_;
-  web::WebInterstitial* web_interstitial_;
   const std::string app_locale_;
 
   base::WeakPtrFactory<IOSBlockingPageControllerClient> weak_factory_;

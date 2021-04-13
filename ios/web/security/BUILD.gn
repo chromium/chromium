@@ -32,8 +32,6 @@ source_set("security") {
     "crw_ssl_status_updater.h",
     "crw_ssl_status_updater.mm",
     "ssl_status.cc",
-    "web_interstitial_impl.h",
-    "web_interstitial_impl.mm",
     "wk_web_view_security_util.h",
     "wk_web_view_security_util.mm",
   ]
@@ -68,7 +66,6 @@ source_set("unittests") {
     "crw_cert_verification_controller_unittest.mm",
     "crw_ssl_status_updater_unittest.mm",
     "ssl_status_unittest.cc",
-    "web_interstitial_unittest.mm",
     "wk_web_view_security_util_unittest.mm",
   ]
 }

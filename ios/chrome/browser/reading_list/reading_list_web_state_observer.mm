@@ -81,8 +81,7 @@ void ReadingListWebStateObserver::ReadingListModelLoaded(
     DidStartLoading(web_state_);
     return;
   }
-  if (last_load_result_ == web::PageLoadCompletionStatus::SUCCESS ||
-      web_state_->IsShowingWebInterstitial()) {
+  if (last_load_result_ == web::PageLoadCompletionStatus::SUCCESS) {
     return;
   }
   // An error page is being displayed.
@@ -118,8 +117,7 @@ void ReadingListWebStateObserver::DidStartLoading(web::WebState* web_state) {
 void ReadingListWebStateObserver::StartCheckingLoading() {
   DCHECK(reading_list_model_);
   DCHECK(web_state_);
-  if (!reading_list_model_->loaded() ||
-      web_state_->IsShowingWebInterstitial()) {
+  if (!reading_list_model_->loaded()) {
     StopCheckingProgress();
     return;
   }

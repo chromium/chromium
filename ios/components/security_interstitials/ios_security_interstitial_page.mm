@@ -14,7 +14,6 @@
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #include "ios/components/ui_util/dynamic_type_util.h"
 #include "ios/web/common/features.h"
-#include "ios/web/public/security/web_interstitial.h"
 #import "ios/web/public/web_state.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/jstemplate_builder.h"
@@ -50,22 +49,10 @@ IOSSecurityInterstitialPage::IOSSecurityInterstitialPage(
     IOSBlockingPageControllerClient* client)
     : web_state_(web_state),
       request_url_(request_url),
-      web_interstitial_(nullptr),
       client_(client) {
-  // Creating web_interstitial_ without showing it leaks memory, so don't
-  // create it here.
 }
 
 IOSSecurityInterstitialPage::~IOSSecurityInterstitialPage() {}
-
-void IOSSecurityInterstitialPage::Show() {
-  DCHECK(!web_interstitial_);
-  web_interstitial_ = web::WebInterstitial::CreateInterstitial(
-      web_state_, ShouldCreateNewNavigation(), request_url_,
-      std::unique_ptr<web::WebInterstitialDelegate>(this));
-  web_interstitial_->Show();
-  AfterShow();
-}
 
 std::string IOSSecurityInterstitialPage::GetHtmlContents() const {
   base::DictionaryValue load_time_data;
