@@ -33,7 +33,7 @@ js_type_check("closure_compile") {
     ":metrics",
     ":my_files",
     ":open_audio_files",
-    ":open_image_files",
+    ":open_image_media_app",
     ":open_video_files",
     ":providers",
     ":quick_view",
@@ -182,7 +182,7 @@ js_library("open_audio_files") {
   deps = []
 }
 
-js_library("open_image_files") {
+js_library("open_image_media_app") {
   testonly = true
   deps = []
 }

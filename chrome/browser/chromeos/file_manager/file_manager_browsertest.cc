@@ -368,18 +368,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("imageOpenMediaAppDownloads").MediaSwa(),
         TestCase("imageOpenMediaAppDrive").MediaSwa()));
 
-// TODO(crbug/1030935): Remove these tests when removing Gallery, the equivalent
-// coverage for MediaApp is provided by the tests above.
-WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    OpenImageFiles, /* open_image_files.js */
-    FilesAppBrowserTest,
-    ::testing::Values(TestCase("imageOpenDownloads").InGuestMode(),
-                      TestCase("imageOpenDownloads"),
-                      TestCase("imageOpenDownloads").DisableJsModules(),
-                      TestCase("imageOpenDrive"),
-                      TestCase("imageOpenGalleryOpenDownloads"),
-                      TestCase("imageOpenGalleryOpenDrive")));
-
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenSniffedFiles, /* open_sniffed_files.js */
     FilesAppBrowserTest,
@@ -582,7 +570,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewUsb"),
         TestCase("openQuickViewRemovablePartitions"),
         TestCase("openQuickViewMtp"),
-        TestCase("openQuickViewTabIndexImage"),
+        TestCase("openQuickViewTabIndexImage").MediaSwa(),
         TestCase("openQuickViewTabIndexText"),
         TestCase("openQuickViewTabIndexHtml"),
         TestCase("openQuickViewTabIndexAudio"),

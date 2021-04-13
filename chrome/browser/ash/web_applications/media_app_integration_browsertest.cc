@@ -67,15 +67,7 @@ constexpr char kDomExceptionScript[] =
     "new "
     "CustomEvent('simulate-unhandled-rejection-with-dom-exception-for-test'));";
 
-class MediaAppIntegrationTest : public SystemWebAppIntegrationTest {
- public:
-  MediaAppIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kMediaApp}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using MediaAppIntegrationTest = SystemWebAppIntegrationTest;
 
 class MediaAppIntegrationWithFilesAppTest : public MediaAppIntegrationTest {
   void SetUpOnMainThread() override {

@@ -775,10 +775,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>;
   if (url.host_piece() == ash::kChromeUIScanningAppHost)
     return &NewWebUI<ash::ScanningUI>;
-  if (base::FeatureList::IsEnabled(chromeos::features::kMediaApp)) {
-    if (url.host_piece() == chromeos::kChromeUIMediaAppHost)
-      return &NewComponentUI<chromeos::MediaAppUI, ChromeMediaAppUIDelegate>;
-  }
+  if (url.host_piece() == chromeos::kChromeUIMediaAppHost)
+    return &NewComponentUI<chromeos::MediaAppUI, ChromeMediaAppUIDelegate>;
   if (url.host_piece() == chromeos::multidevice::kChromeUIProximityAuthHost &&
       profile->IsRegularProfile()) {
     return &NewWebUI<chromeos::multidevice::ProximityAuthUI>;

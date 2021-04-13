@@ -56,6 +56,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -386,7 +387,13 @@ void ComponentLoader::AddAudioPlayerExtension() {
 }
 
 void ComponentLoader::AddGalleryExtension() {
-  Add(IDR_GALLERY_MANIFEST, base::FilePath(FILE_PATH_LITERAL("gallery")));
+  // TODO(crbug.com/1030935): Delete this entirely around M93 when it has has a
+  // chance to be cleaned up.
+  if (extensions::ExtensionPrefs::Get(profile_)
+          ->ShouldInstallObsoleteComponentExtension(
+              file_manager::kGalleryAppId)) {
+    Add(IDR_GALLERY_MANIFEST, base::FilePath(FILE_PATH_LITERAL("gallery")));
+  }
 }
 
 void ComponentLoader::AddImageLoaderExtension() {

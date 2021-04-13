@@ -895,6 +895,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, LockScreen) {
 
 // Verifies that opening holding space items works.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
+  // Install the Media App, which we expect to open holding space items.
+  WaitForTestSystemAppInstall();
+
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 

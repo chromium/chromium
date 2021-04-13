@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -714,21 +713,11 @@ class LocalAndDriveFileSystemExtensionApiTest
 
 // Mixin for starting one of the FileSystem test fixures with a specific app
 // configuration, which may include default-installed apps. Currently set up
-// to run with the chrome://media-app flag explicitly flipped (or not).
+// to run with the chrome://media-app.
 class FileSystemExtensionApiTestWithApps
-    : public LocalFileSystemExtensionApiTest,
-      public ::testing::WithParamInterface<bool> {
+    : public LocalFileSystemExtensionApiTest {
  public:
-  FileSystemExtensionApiTestWithApps() {
-    if (MediaAppEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMediaApp);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(chromeos::features::kMediaApp);
-    }
-  }
-
-  // A more readable accessor to determine if the MediaApp is enabled.
-  bool MediaAppEnabled() const { return GetParam(); }
+  FileSystemExtensionApiTestWithApps() {}
 
   // FileManagerPrivateApiTest:
   void SetUpOnMainThread() override {
@@ -744,9 +733,6 @@ class FileSystemExtensionApiTestWithApps
     return {{kArbitraryTime, kArbitraryTime, "test_file.png"},
             {kArbitraryTime, kArbitraryTime, "test_file.arw"}};
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 namespace {
@@ -758,31 +744,18 @@ constexpr int kMediaAppUmaBucket = 19;
 // Metric recorded as the result of the call to apps::RecordAppLaunch().
 constexpr char kAppLaunchMetric[] = "Apps.DefaultAppLaunch.FromFileManager";
 
-std::string MediaAppBoolString(const testing::TestParamInfo<bool> info) {
-  return info.param ? "MediaApp" : "Gallery";
-}
-
 }  // namespace
 
 // Check the interception of ExecuteTask calls to replace Gallery for PNGs. The
-// MediaApp should be used only if it is enabled, otherwise fall back to
-// gallery.
-IN_PROC_BROWSER_TEST_P(FileSystemExtensionApiTestWithApps, OpenGalleryForPng) {
+// Media App should always be used in this case.
+IN_PROC_BROWSER_TEST_F(FileSystemExtensionApiTestWithApps, OpenGalleryForPng) {
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(RunBackgroundPageTestCase(
-      "open_gallery", MediaAppEnabled() ? "testPngOpensGalleryReturnsOpened"
-                                        : "testPngOpensGalleryReturnsMsgSent"))
+  EXPECT_TRUE(RunBackgroundPageTestCase("open_gallery",
+                                        "testPngOpensGalleryReturnsOpened"))
       << message_;
-  histogram_tester.ExpectBucketCount(kAppLaunchMetric, kGalleryUmaBucket,
-                                     MediaAppEnabled() ? 0 : 1);
-  histogram_tester.ExpectBucketCount(kAppLaunchMetric, kMediaAppUmaBucket,
-                                     MediaAppEnabled() ? 1 : 0);
+  histogram_tester.ExpectBucketCount(kAppLaunchMetric, kGalleryUmaBucket, 0);
+  histogram_tester.ExpectBucketCount(kAppLaunchMetric, kMediaAppUmaBucket, 1);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         FileSystemExtensionApiTestWithApps,
-                         testing::Bool(),
-                         MediaAppBoolString);
 
 //
 // LocalFileSystemExtensionApiTests.

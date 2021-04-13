@@ -4636,10 +4636,6 @@ const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
-const char kMediaAppName[] = "Media App";
-const char kMediaAppDescription[] =
-    "Enables the chrome://media-app System Web App (SWA)";
-
 const char kMediaAppAnnotationName[] = "Media App Annotation";
 const char kMediaAppAnnotationDescription[] =
     "Enables image annotation in chrome://media-app";

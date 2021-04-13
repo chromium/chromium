@@ -2697,9 +2697,6 @@ extern const char kLockScreenMediaControlsDescription[];
 extern const char kLockScreenNotificationName[];
 extern const char kLockScreenNotificationDescription[];
 
-extern const char kMediaAppName[];
-extern const char kMediaAppDescription[];
-
 extern const char kMediaAppAnnotationName[];
 extern const char kMediaAppAnnotationDescription[];
 

@@ -123,7 +123,8 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
 
 // HoldingSpaceBrowserTestBase -------------------------------------------------
 
-HoldingSpaceBrowserTestBase::HoldingSpaceBrowserTestBase() {
+HoldingSpaceBrowserTestBase::HoldingSpaceBrowserTestBase()
+    : web_app::SystemWebAppBrowserTestBase(false) {
   scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
 }
 

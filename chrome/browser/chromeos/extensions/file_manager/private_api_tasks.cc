@@ -75,45 +75,6 @@ std::set<std::string> GetUniqueMimeTypes(
   return mime_types;
 }
 
-// Intercepts usage of executeTask(..) that wants to invoke the new MediaApp and
-// switches it back to Gallery if MediaApp is not available.
-// TODO(crbug/1030935): Remove this when the gallery app is properly removed or
-// the camera app has a new API (not fileManagerPrivate) to invoke its
-// "Camera Roll" viewer.
-void MaybeAdjustTaskForGalleryAppRemoval(
-    file_manager::file_tasks::TaskDescriptor* task,
-    const std::vector<FileSystemURL>& urls,
-    Profile* profile) {
-  if (task->app_id != web_app::kMediaAppId)
-    return;
-
-  auto* provider = web_app::WebAppProvider::Get(profile);
-  DCHECK(provider);
-  base::Optional<web_app::AppId> optional_app_id =
-      provider->system_web_app_manager().GetAppIdForSystemApp(
-          web_app::SystemAppType::MEDIA);
-
-  // If the MediaApp is installed, then there's nothing to do.
-  if (optional_app_id) {
-    // Sanity check the app id when installed. The app id at runtime is
-    // determined by the origin and the "start_url" manifest property.
-    DCHECK_EQ(*optional_app_id, web_app::kMediaAppId);
-    return;
-  }
-
-  // In tests, the SystemWebAppManager constructor early-exits without
-  // configuring any apps to install. So even if the MediaApp is enabled, it
-  // might not be installed.
-  DCHECK(
-      !base::FeatureList::IsEnabled(chromeos::features::kMediaApp) ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kTestType))
-      << "When enabled, MediaApp should only be missing in tests.";
-
-  DCHECK_EQ(task->task_type, file_manager::file_tasks::TASK_TYPE_WEB_APP);
-  task->task_type = file_manager::file_tasks::TASK_TYPE_FILE_HANDLER;
-  task->app_id = file_manager::kGalleryAppId;
-}
-
 }  // namespace
 
 FileManagerPrivateInternalExecuteTaskFunction::
@@ -151,8 +112,6 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
     }
     urls.push_back(url);
   }
-
-  MaybeAdjustTaskForGalleryAppRemoval(&task, urls, profile);
 
   const bool result = file_manager::file_tasks::ExecuteFileTask(
       profile, source_url(), task, urls,

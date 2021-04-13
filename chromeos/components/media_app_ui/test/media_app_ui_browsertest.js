@@ -68,15 +68,12 @@ var MediaAppUIBrowserTest = class extends testing.Test {
 
   /** @override */
   get featureList() {
-    // The FileHandling flag should be automatically set by origin trials when
-    // the Media App feature is enabled, but this testing environment does not
-    // seem to recognize origin trials, so they must be explicitly set with
-    // flags to prevent tests crashing on Media App load due to
-    // window.launchQueue being undefined. See http://crbug.com/1071320.
-    return {
-      enabled:
-          ['chromeos::features::kMediaApp', 'blink::features::kFileHandlingAPI']
-    };
+    // The FileHandling flag should be automatically set by origin trials, but
+    // this testing environment does not seem to recognize origin trials. To
+    // work around it they must be explicitly set with flags to prevent tests
+    // crashing on Media App load due to window.launchQueue being undefined.
+    // See http://crbug.com/1071320.
+    return {enabled: ['blink::features::kFileHandlingAPI']};
   }
 
   /** @override */

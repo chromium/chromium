@@ -10,7 +10,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 
 class Profile;
 
@@ -27,8 +27,11 @@ namespace ash {
 class HoldingSpaceItem;
 class HoldingSpaceTestApi;
 
-// Base class for holding space browser tests.
-class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
+// Base class for holding space browser tests. Subclasses
+// SystemWebAppBrowserTestBase for the ability to test with the Media App, which
+// is the default handler for files opened from the holding space.
+class HoldingSpaceBrowserTestBase
+    : public web_app::SystemWebAppBrowserTestBase {
  public:
   HoldingSpaceBrowserTestBase();
   ~HoldingSpaceBrowserTestBase() override;

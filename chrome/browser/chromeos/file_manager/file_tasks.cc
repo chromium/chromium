@@ -174,11 +174,6 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
 // should behave more like a user-installed app than a fallback handler.
 // Specifically, only apps set as the default in user prefs should be preferred
 // over chrome://media-app.
-// Until the Gallery app is removed, this function will also hide the Gallery
-// task in cases where choosing it would instead launch chrome://media-app due
-// to interception done in executeTask to support the "camera roll" function,
-// when the MediaApp feature is enabled. If the feature is not enabled, there
-// will be no MediaApp task and this function does nothing.
 void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
                             std::vector<FullTaskDescriptor>* tasks) {
   const auto task_for_app = [&](const std::string& app_id) {
@@ -187,11 +182,18 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
     });
   };
 
+  // Gallery app was replaced by media app in m86, deprecated in m91, and will
+  // be deleted in m93. However, it still sometimes appears in the file task
+  // list because its manifest registers it as a handler for many file types.
+  // Manually erase it from the list here. This can be removed at the same time
+  // as the gallery app deletion (currently planned for m93). See b/180347590.
+  const auto gallery_task = task_for_app(kGalleryAppId);
+  if (gallery_task != tasks->end())
+    tasks->erase(gallery_task);
+
   const auto media_app_task = task_for_app(web_app::kMediaAppId);
   if (media_app_task == tasks->end())
     return;
-
-  const auto gallery_task = task_for_app(kGalleryAppId);
 
   // If the video player is still available, check if it was offered and early
   // exit. Unfortunately because obscure videos must be handled with extension
@@ -203,8 +205,6 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   // already hidden by flags.
   if (task_for_app(kVideoPlayerAppId) != tasks->end()) {
     media_app_task->set_is_generic_file_handler(true);
-    if (gallery_task != tasks->end())
-      tasks->erase(gallery_task);
     return;
   }
 
@@ -219,11 +219,14 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   // Zip Archiver). "image/*" does not count as "generic".
   DCHECK(!media_app_task->is_generic_file_handler());
 
-  // Otherwise, build a new list with Media App at the front, and no Gallery.
+  // Otherwise, build a new list with Media App at the front.
+  if (media_app_task == tasks->begin())
+    return;
+
   std::vector<FullTaskDescriptor> new_tasks;
   new_tasks.push_back(*media_app_task);
   for (auto it = tasks->begin(); it != tasks->end(); ++it) {
-    if (it != media_app_task && it != gallery_task)
+    if (it != media_app_task)
       new_tasks.push_back(std::move(*it));
   }
   std::swap(*tasks, new_tasks);
@@ -248,7 +251,6 @@ bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
   constexpr const char* kBuiltInApps[] = {
       kFileManagerAppId,
       kVideoPlayerAppId,
-      kGalleryAppId,
       kTextEditorAppId,
       kAudioPlayerAppId,
       extension_misc::kQuickOfficeComponentExtensionId,

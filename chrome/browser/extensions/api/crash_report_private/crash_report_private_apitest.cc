@@ -89,18 +89,6 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
   DISALLOW_COPY_AND_ASSIGN(CrashReportPrivateApiTest);
 };
 
-class CrashReportPrivateCalledFromSwaTest : public SystemWebAppIntegrationTest {
- public:
-  CrashReportPrivateCalledFromSwaTest() {
-    // Enable this for tests so they still pass if "--disable-features=MediaApp"
-    // is present.
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kMediaApp}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
   constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({
@@ -296,6 +284,8 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
                    "type=REGULAR_TABBED"));
   EXPECT_EQ(report.content, "");
 }
+
+using CrashReportPrivateCalledFromSwaTest = SystemWebAppIntegrationTest;
 
 // Test WEB_APP is detected when |CrashReportPrivate| is called from an app
 // window.

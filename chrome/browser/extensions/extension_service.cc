@@ -146,8 +146,8 @@ const char* const kMigratedExtensionIds[] = {
 // uninstalled.
 // Note: We preserve at least one entry here for continued testing coverage.
 const char* const kObsoleteComponentExtensionIds[] = {
-    // Obsolete since M86.
-    "ljoammodoonkhnehlncldjelhidljdpi"  // Genius
+    // Obsolete since M91.
+    "nlkncpkkdoccmpiclbokaimcnedabhhm"  // Gallery
 };
 
 void ReportExtensionDisabledRemotely(bool should_be_remotely_disabled,

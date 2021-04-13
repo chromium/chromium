@@ -53,14 +53,10 @@ void VerifyTasks(int* remaining,
   ASSERT_TRUE(result) << expectation.file_extensions;
   --*remaining;
 
-  bool has_media_app = false;
-  bool has_gallery = false;
   for (const auto& t : *result) {
-    has_media_app = has_media_app || t.task_descriptor().app_id == kMediaAppId;
-    has_gallery = has_gallery || t.task_descriptor().app_id == kGalleryAppId;
+    EXPECT_FALSE(t.task_descriptor().app_id == kGalleryAppId)
+        << "Gallery has been deprecated and should never appear as a task.";
   }
-  // Gallery and Media App should never both appear as task options.
-  EXPECT_TRUE(!(has_media_app && has_gallery)) << expectation.file_extensions;
 
   auto default_task =
       std::find_if(result->begin(), result->end(),
@@ -150,38 +146,21 @@ class FileTasksBrowserTestBase
 class FileTasksBrowserTest : public FileTasksBrowserTestBase {
  public:
   FileTasksBrowserTest() {
-    // Disable Media App. Enable Video Player Chrome App.
+    // Enable Media App Video support.
     scoped_feature_list_.InitWithFeatures(
-        {},
-        {chromeos::features::kMediaApp, ash::features::kVideoPlayerAppHidden});
+        {chromeos::features::kVideoPlayerAppHidden}, {});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class FileTasksBrowserTestWithMediaApp : public FileTasksBrowserTestBase {
+class FileTasksBrowserTestNoVideo : public FileTasksBrowserTestBase {
  public:
-  FileTasksBrowserTestWithMediaApp() {
-    // Enable Media App with Video support.
+  FileTasksBrowserTestNoVideo() {
+    // Disable Media App video support.
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kMediaApp,
-         chromeos::features::kVideoPlayerAppHidden},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class FileTasksBrowserTestWithMediaAppNoVideo
-    : public FileTasksBrowserTestBase {
- public:
-  FileTasksBrowserTestWithMediaAppNoVideo() {
-    // Enable Media App with Raw support, but no video.
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kMediaApp},
-        {chromeos::features::kVideoPlayerAppHidden});
+        {}, {chromeos::features::kVideoPlayerAppHidden});
   }
 
  private:
@@ -317,54 +296,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExtensionToMimeMapping) {
 // If desires change, we'll need to update ChooseAndSetDefaultTask() with some
 // additional logic.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
-  //  With the Media App disabled, all images should be handled by Gallery.
-  std::vector<Expectation> expectations = {
-      // Images.
-      {"bmp", kGalleryAppId},
-      {"gif", kGalleryAppId},
-      {"ico", kGalleryAppId},
-      {"jpg", kGalleryAppId},
-      {"jpeg", kGalleryAppId},
-      {"png", kGalleryAppId},
-      {"webp", kGalleryAppId},
-      // Raw.
-      {"arw", kGalleryAppId, "image/tiff"},
-      {"cr2", kGalleryAppId, "image/tiff"},
-      {"dng", kGalleryAppId, "image/tiff"},
-      {"nef", kGalleryAppId, "image/tiff"},
-      {"nrw", kGalleryAppId, "image/tiff"},
-      {"orf", kGalleryAppId, "image/tiff"},
-      {"raf", kGalleryAppId, "image/tiff"},
-      {"rw2", kGalleryAppId, "image/tiff"},
-      {"NRW", kGalleryAppId, "image/tiff"},  // Uppercase extension.
-      {"arw", kGalleryAppId, ""},  // Missing MIME type (unable to sniff).
-  };
-  expectations.insert(expectations.end(),
-                      std::begin(kVideoDeprecatedExpectations),
-                      std::end(kVideoDeprecatedExpectations));
-  expectations.insert(expectations.end(),
-                      std::begin(kAudioDeprecatedExpectations),
-                      std::end(kAudioDeprecatedExpectations));
-
-  TestExpectationsAgainstDefaultTasks(expectations);
-}
-
-// Spot test the default handlers for selections that include multiple different
-// file types. Only tests combinations of interest to the Media App.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MultiSelectDefaultHandler) {
-  std::vector<Expectation> expectations = {
-      {"jpg/gif", kGalleryAppId},
-      {"jpg/mp4", kGalleryAppId},
-  };
-
-  TestExpectationsAgainstDefaultTasks(expectations);
-}
-
-// Tests the default handlers with the Media App installed.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
-                       DefaultHandlerChangeDetector) {
-  // With the Media App enabled, images should be handled by it by default (but
-  // video, which it also handles should be unchanged).
+  // Media App should handle images and video by default.
   std::vector<Expectation> expectations = {
       // Images.
       {"bmp", kMediaAppId},
@@ -397,8 +329,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
 
 // Tests the default handlers with the Media App installed, but Video support
 // disabled.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
-                       VideoHandlerChangeDetector) {
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, VideoHandlerChangeDetector) {
   std::vector<Expectation> expectations(std::begin(kVideoExpectations),
                                         std::end(kVideoExpectations));
   TestExpectationsAgainstDefaultTasks(expectations);
@@ -406,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
 
 // Tests the default handlers with the Media App installed, but Video support
 // disabled.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaAppNoVideo,
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestNoVideo,
                        VideoHandlerChangeDetector) {
   std::vector<Expectation> expectations(
       std::begin(kVideoDeprecatedExpectations),
@@ -415,9 +346,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaAppNoVideo,
 }
 
 // Spot test the default handlers for selections that include multiple different
-// file types with the Media App installed.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
-                       MultiSelectDefaultHandler) {
+// file types. Only tests combinations of interest to the Media App.
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MultiSelectDefaultHandler) {
   std::vector<Expectation> expectations = {
       {"jpg/gif", kMediaAppId},
       {"jpg/mp4", kMediaAppId},
@@ -426,29 +356,9 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
   TestExpectationsAgainstDefaultTasks(expectations);
 }
 
-// Sanity check: the tiff-specific file handler is preferred when MediaApp is
-// not enabled.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, InstalledAppsAreImplicitDefaults) {
-  if (GetParam() == TestProfileType::kRegular) {
-    auto extension = InstallTiffHandlerChromeApp(browser()->profile());
-    TestExpectationsAgainstDefaultTasks({{"tiff", extension->id().c_str()}});
-  } else if (GetParam() == TestProfileType::kGuest) {
-    // The extension can't be installed in guest mode. (FATAL check under
-    // ExtensionService::AddNewOrUpdatedExtension()). There should be no tiff
-    // handler.
-    TestExpectationsAgainstDefaultTasks({{"tiff", nullptr}});
-  } else {
-    // The extension installs in incognito, but doesn't register a file handler.
-    // So, also no tiff handler.
-    InstallTiffHandlerChromeApp(browser()->profile());
-    TestExpectationsAgainstDefaultTasks({{"tiff", nullptr}});
-  }
-}
-
-// If the media app is enabled, it will be preferred over a chrome app with a
-// specific extension, unless that app is set default via prefs.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
-                       MediaAppPreferredOverChromeApps) {
+// The Media App will be preferred over a chrome app with a specific extension,
+// unless that app is set default via prefs.
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MediaAppPreferredOverChromeApps) {
   if (GetParam() == TestProfileType::kGuest) {
     // The provided file system can't install in guest mode. Just check that
     // MediaApp handles tiff.
@@ -471,8 +381,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
 }
 
 // Test expectations for files coming from provided file systems.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
-                       ProvidedFileSystemFileSource) {
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
   if (GetParam() == TestProfileType::kGuest) {
     // Provided file systems don't exist in guest. This test seems to work OK in
     // incognito mode though.
@@ -530,14 +439,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          TestProfileTypeToString);
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         FileTasksBrowserTestWithMediaApp,
-                         ::testing::Values(TestProfileType::kRegular,
-                                           TestProfileType::kIncognito,
-                                           TestProfileType::kGuest),
-                         TestProfileTypeToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         FileTasksBrowserTestWithMediaAppNoVideo,
+                         FileTasksBrowserTestNoVideo,
                          ::testing::Values(TestProfileType::kRegular,
                                            TestProfileType::kIncognito,
                                            TestProfileType::kGuest),

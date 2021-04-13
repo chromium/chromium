@@ -477,9 +477,6 @@ const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
 const base::Feature kNewOobeLayout{"NewOobeLayout",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
-// ChromeOS Media App. https://crbug.com/996088.
-const base::Feature kMediaApp{"MediaApp", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether image annotation is enabled in the ChromeOS media app.
 const base::Feature kMediaAppAnnotation{"MediaAppAnnotation",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
