@@ -49,7 +49,7 @@ constexpr base::FilePath::CharType kSodaTestAudioRelativePath[] =
 
 constexpr int kExpectedChannelCount = 1;
 
-constexpr base::FilePath::CharType kSodaBinaryRelativePath[] =
+constexpr base::FilePath::CharType kSodaBinaryForTestingRelativePath[] =
     FILE_PATH_LITERAL("libsoda_for_testing.so");
 
 // TODO: Should be a way to generate this, this seems way too brittle.
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaBinaryPath,
       test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
-          .Append(kSodaBinaryRelativePath));
+          .Append(kSodaBinaryForTestingRelativePath));
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
       test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaBinaryPath,
       test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
-          .Append(kSodaBinaryRelativePath));
+          .Append(kSodaBinaryForTestingRelativePath));
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
       test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
