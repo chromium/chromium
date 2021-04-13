@@ -4,17 +4,16 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.app.Activity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import org.chromium.chrome.browser.app.ChromeActivity;
 
 /**
  * Automatically extracts context information and serializes it in JSON form.
  */
 class FeedbackContext extends JSONObject {
-    static String buildContextString(
-            ChromeActivity activity, String debugContext, int indentSpaces) {
+    static String buildContextString(Activity activity, String debugContext, int indentSpaces) {
         try {
             return new FeedbackContext(activity, debugContext).toString(indentSpaces);
         } catch (JSONException e) {
@@ -24,14 +23,14 @@ class FeedbackContext extends JSONObject {
         }
     }
 
-    private FeedbackContext(ChromeActivity activity, String debugContext) throws JSONException {
+    private FeedbackContext(Activity activity, String debugContext) throws JSONException {
         addActivityInformation(activity);
         addClientContext(debugContext);
     }
 
-    private void addActivityInformation(ChromeActivity activity) throws JSONException {
-        put("intent-action", activity.getInitialIntent().getAction());
-        put("intent-data", activity.getInitialIntent().getDataString());
+    private void addActivityInformation(Activity activity) throws JSONException {
+        put("intent-action", activity.getIntent().getAction());
+        put("intent-data", activity.getIntent().getDataString());
     }
 
     private void addClientContext(String debugContext) throws JSONException {
