@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/record_replay.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
@@ -23,7 +24,8 @@ class ScopedInterfaceEndpointHandle::State
 
   State(InterfaceId id,
         scoped_refptr<AssociatedGroupController> group_controller)
-      : id_(id), group_controller_(group_controller) {}
+      : lock_("ScopedInterfaceEndpointHandle::State.lock_"),
+        id_(id), group_controller_(group_controller) {}
 
   void InitPendingState(scoped_refptr<State> peer) {
     DCHECK(!lock_);
@@ -179,6 +181,8 @@ class ScopedInterfaceEndpointHandle::State
     {
       internal::MayAutoLock locker(&lock_);
 
+      recordreplay::Assert("ScopedInterfaceEndpointHandle Start");
+
       // There may be race between Close() of endpoint A and
       // NotifyPeerAssociation() of endpoint A_peer on different sequences.
       // Therefore, it is possible that endpoint A has been closed but it
@@ -192,20 +196,28 @@ class ScopedInterfaceEndpointHandle::State
       group_controller_ = std::move(group_controller);
 
       if (!association_event_handler_.is_null()) {
+        recordreplay::Assert("ScopedInterfaceEndpointHandle #1");
         if (runner_->RunsTasksInCurrentSequence()) {
+          recordreplay::Assert("ScopedInterfaceEndpointHandle #1.1");
           handler = std::move(association_event_handler_);
           runner_ = nullptr;
         } else {
+          recordreplay::Assert("ScopedInterfaceEndpointHandle #2");
           runner_->PostTask(
               FROM_HERE, base::BindOnce(&ScopedInterfaceEndpointHandle::State::
                                             RunAssociationEventHandler,
                                         this, runner_, ASSOCIATED));
+          recordreplay::Assert("ScopedInterfaceEndpointHandle #3");
         }
       }
     }
 
+    recordreplay::Assert("ScopedInterfaceEndpointHandle #4");
+
     if (!handler.is_null())
       std::move(handler).Run(ASSOCIATED);
+
+    recordreplay::Assert("ScopedInterfaceEndpointHandle Done");
   }
 
   // Called by the peer, maybe from a different sequence.

@@ -14,9 +14,7 @@
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
 
-#if defined(OS_MAC) || defined(OS_LINUX)
 #include <dlfcn.h>
-#endif
 
 namespace base {
 namespace internal {
@@ -58,8 +56,6 @@ std::string SystemErrorCodeToString(int error_code) {
 #define PRIORITY_INHERITANCE_LOCKS_POSSIBLE() 1
 #endif
 
-#if defined(OS_MAC) || defined(OS_LINUX)
-
 static void (*gAddOrderedPthreadMutexFn)(const char*, pthread_mutex_t*);
 
 static void RecordReplayAddOrderedPthreadMutex(const char* name,
@@ -74,13 +70,6 @@ static void RecordReplayAddOrderedPthreadMutex(const char* name,
 
   gAddOrderedPthreadMutexFn(name, mutex);
 }
-
-#else
-
-static void RecordReplayAddOrderedPthreadMutex(const char* name,
-                                               pthread_mutex_t* mutex) {}
-
-#endif
 
 LockImpl::LockImpl(const char* ordered_name) {
   pthread_mutexattr_t mta;

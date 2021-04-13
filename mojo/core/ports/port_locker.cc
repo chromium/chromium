@@ -34,7 +34,6 @@ void UpdateTLS(PortLocker* old_locker, PortLocker* new_locker) {
 static uintptr_t GetPortId(Port* port) {
   // When recording/replaying the sorted order of ports need to be consistent,
   // so we use the ID associated with the port via RegisterPointer for sorting.
-#ifdef OS_MAC
   if (recordreplay::IsRecordingOrReplaying()) {
     uintptr_t id = recordreplay::PointerId(port);
     CHECK(id);
@@ -42,9 +41,6 @@ static uintptr_t GetPortId(Port* port) {
   } else {
     return (uintptr_t)port;
   }
-#else
-  return (uintptr_t)port;
-#endif
 }
 
 PortLocker::PortLocker(const PortRef** port_refs, size_t num_ports)
