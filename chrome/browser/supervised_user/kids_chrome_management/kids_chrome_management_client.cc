@@ -117,6 +117,15 @@ GetClassifyURLResponseProto(const std::string& response) {
   return response_proto;
 }
 
+std::unique_ptr<network::ResourceRequest>
+CreateResourceRequestForUrlClassifier() {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = GURL(kClassifyUrlRequestApiPath);
+  resource_request->method = "POST";
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  return resource_request;
+}
+
 }  // namespace
 
 struct KidsChromeManagementClient::KidsChromeManagementRequest {
@@ -168,11 +177,6 @@ void KidsChromeManagementClient::ClassifyURL(
     KidsChromeManagementCallback callback) {
   DVLOG(1) << "Checking URL:  " << request_proto->url();
 
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kClassifyUrlRequestApiPath);
-  resource_request->method = "POST";
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
   const net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
           "kids_chrome_management_client_classify_url", R"(
@@ -202,7 +206,7 @@ void KidsChromeManagementClient::ClassifyURL(
 
   auto kids_chrome_request = std::make_unique<KidsChromeManagementRequest>(
       std::move(request_proto), std::move(callback),
-      std::move(resource_request), traffic_annotation,
+      CreateResourceRequestForUrlClassifier(), traffic_annotation,
       kClassifyUrlOauthConsumerName, kClassifyUrlKidPermissionScope,
       RequestMethod::kClassifyUrl);
 
@@ -219,6 +223,12 @@ void KidsChromeManagementClient::MakeHTTPRequest(
 void KidsChromeManagementClient::StartFetching(
     KidsChromeRequestList::iterator it) {
   KidsChromeManagementRequest* req = it->get();
+
+  // This is a quick fix for https://crbug.com/1192222. `resource_request` is
+  // moved during creation of SimpleURLLoader. Retrying the request causes
+  // dereferencing nullptr. To avoid that recreate the `resource_request` here.
+  if (!req->resource_request)
+    req->resource_request = CreateResourceRequestForUrlClassifier();
 
   signin::ScopeSet scopes{req->scope};
 
