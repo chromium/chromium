@@ -21,7 +21,7 @@ class KeyboardHookX11 : public KeyboardHookBase, public XKeyboardHook {
  public:
   KeyboardHookX11(base::Optional<base::flat_set<DomCode>> dom_codes,
                   gfx::AcceleratedWidget accelerated_widget,
-                  KeyEventCallback callback);
+                  KeyboardHookBase::KeyEventCallback callback);
   KeyboardHookX11(const KeyboardHookX11&) = delete;
   KeyboardHookX11& operator=(const KeyboardHookX11&) = delete;
   ~KeyboardHookX11() override;
