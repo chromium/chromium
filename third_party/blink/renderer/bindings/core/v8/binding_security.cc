@@ -30,11 +30,15 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 
+#include <string>
+
+#include "base/debug/crash_logging.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/window_agent_factory.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -59,6 +63,37 @@ bool IsSameWindowAgentFactory(const LocalDOMWindow* window1,
   return window1->GetFrame() && window2->GetFrame() &&
          &window1->GetFrame()->window_agent_factory() ==
              &window2->GetFrame()->window_agent_factory();
+}
+
+struct WindowSecurityCrashData {
+  bool is_opaque;
+  std::string origin_or_precursor_origin_if_opaque;
+  bool has_universal_access_agent;
+  bool has_file_url_agent;
+  // TODO(dcheng): Remove url
+  std::string url;
+};
+
+WindowSecurityCrashData GenerateWindowSecurityCrashData(
+    const LocalDOMWindow& window) {
+  const WindowAgentFactory* const agent_factory =
+      window.GetFrame() ? &window.GetFrame()->window_agent_factory() : nullptr;
+  const Agent& agent = *window.GetAgent();
+  bool has_universal_access_agent = false;
+  bool has_file_url_agent = false;
+  if (agent_factory) {
+    has_universal_access_agent = agent_factory->IsUniversalAccessAgent(agent);
+    has_file_url_agent = agent_factory->IsFileUrlAgent(agent);
+  }
+  const SecurityOrigin* const origin = window.GetSecurityOrigin();
+  return {
+      .is_opaque = origin->IsOpaque(),
+      .origin_or_precursor_origin_if_opaque =
+          origin->GetOriginOrPrecursorOriginIfOpaque()->ToRawString().Utf8(),
+      .has_universal_access_agent = has_universal_access_agent,
+      .has_file_url_agent = has_file_url_agent,
+      .url = window.Url().GetString().Utf8(),
+  };
 }
 
 }  // namespace
@@ -131,10 +166,11 @@ bool CanAccessWindowInternal(
 
   const SecurityOrigin* accessing_origin =
       accessing_window->GetSecurityOrigin();
+  const SecurityOrigin* target_origin =
+      local_target_window->GetSecurityOrigin();
 
   SecurityOrigin::AccessResultDomainDetail detail;
-  bool can_access = accessing_origin->CanAccess(
-      local_target_window->GetSecurityOrigin(), detail);
+  bool can_access = accessing_origin->CanAccess(target_origin, detail);
   if (detail ==
           SecurityOrigin::AccessResultDomainDetail::kDomainSetByOnlyOneOrigin ||
       detail ==
@@ -150,12 +186,47 @@ bool CanAccessWindowInternal(
     // policy being enabled and not a logic bug.
     if (detail == SecurityOrigin::AccessResultDomainDetail::
                       kDomainNotRelevantAgentClusterMismatch) {
-      // Assert that because the agent clusters are different than the
-      // WindowAgentFactories must also be different.
-      SECURITY_CHECK(
-          !IsSameWindowAgentFactory(accessing_window, local_target_window) ||
-          (WebTestSupport::IsRunningWebTest() &&
-           local_target_window->GetFrame()->PagePopupOwner()));
+      bool are_window_agent_factories_same =
+          IsSameWindowAgentFactory(accessing_window, local_target_window);
+      // If the access check failed due to an agent cluster mismatch, then
+      // the two windows should have different window agent factories.
+      if (are_window_agent_factories_same) {
+        WindowSecurityCrashData accessing_window_crash_data =
+            GenerateWindowSecurityCrashData(*accessing_window);
+        WindowSecurityCrashData target_window_crash_data =
+            GenerateWindowSecurityCrashData(*local_target_window);
+
+        SCOPED_CRASH_KEY_BOOL("CanAccess", "AccessingOriginIsOpaque",
+                              accessing_window_crash_data.is_opaque);
+        SCOPED_CRASH_KEY_STRING256(
+            "CanAccess", "AccessingOriginAsString",
+            accessing_window_crash_data.origin_or_precursor_origin_if_opaque);
+        SCOPED_CRASH_KEY_BOOL(
+            "CanAccess", "AccessingAgentIsUniversal",
+            accessing_window_crash_data.has_universal_access_agent);
+        SCOPED_CRASH_KEY_BOOL("CanAccess", "AccessingAgentIsFileUrl",
+                              accessing_window_crash_data.has_file_url_agent);
+        SCOPED_CRASH_KEY_STRING256("CanAccess", "AccessingUrl",
+                                   accessing_window_crash_data.url);
+
+        SCOPED_CRASH_KEY_BOOL("CanAccess", "TargetOriginIsOpaque",
+                              target_window_crash_data.is_opaque);
+        SCOPED_CRASH_KEY_STRING256(
+            "CanAccess", "TargetOriginAsString",
+            target_window_crash_data.origin_or_precursor_origin_if_opaque);
+        SCOPED_CRASH_KEY_BOOL(
+            "CanAccess", "TargetAgentIsUniversal",
+            target_window_crash_data.has_universal_access_agent);
+        SCOPED_CRASH_KEY_BOOL("CanAccess", "TargetAgentIsFileUrl",
+                              target_window_crash_data.has_file_url_agent);
+        SCOPED_CRASH_KEY_STRING256("CanAccess", "TargetUrl",
+                                   target_window_crash_data.url);
+
+        // Other than the exception for layout tests, this likely indicates a
+        // bug in production code.
+        SECURITY_CHECK(WebTestSupport::IsRunningWebTest() &&
+                       local_target_window->GetFrame()->PagePopupOwner());
+      }
 
       *cross_document_access =
           DOMWindow::CrossDocumentAccessPolicy::kDisallowed;
