@@ -71,6 +71,9 @@ class AddressAccessoryControllerImpl
   // The tab for which this class is scoped.
   content::WebContents* web_contents_;
 
+  // The observer to notify if available suggestions change.
+  FillingSourceObserver source_observer_;
+
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> mf_controller_;
 

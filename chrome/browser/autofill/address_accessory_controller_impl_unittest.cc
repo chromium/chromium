@@ -11,6 +11,7 @@
 #include <vector>
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/autofill/accessory_controller.h"
 #include "chrome/browser/autofill/mock_manual_filling_controller.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,6 +35,7 @@ using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
 using FillingSource = ManualFillingController::FillingSource;
+using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 
 std::u16string addresses_empty_str() {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_EMPTY_MESSAGE);
@@ -91,6 +93,8 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
+  base::MockCallback<AccessoryController::FillingSourceObserver>
+      filling_source_observer_;
 };
 
 TEST_F(AddressAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
@@ -103,7 +107,15 @@ TEST_F(AddressAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
 }
 
 TEST_F(AddressAccessoryControllerTest, ProvidesNoSheetBeforeInitialRefresh) {
-  ASSERT_FALSE(controller()->GetSheetData().has_value());
+  controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
+
+  EXPECT_FALSE(controller()->GetSheetData().has_value());
+
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  controller()->RefreshSuggestions();
+
+  EXPECT_TRUE(controller()->GetSheetData().has_value());
 }
 
 TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {

@@ -103,7 +103,7 @@ AddressAccessoryController* AddressAccessoryController::GetOrCreate(
 
 void AddressAccessoryControllerImpl::RegisterFillingSourceObserver(
     FillingSourceObserver observer) {
-  NOTIMPLEMENTED();
+  source_observer_ = std::move(observer);
 }
 
 base::Optional<autofill::AccessorySheetData>
@@ -164,8 +164,14 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
     personal_data_manager_->AddObserver(this);
   }
   base::Optional<AccessorySheetData> data = GetSheetData();
-  DCHECK(data.has_value());
-  GetManualFillingController()->RefreshSuggestions(std::move(data.value()));
+  if (source_observer_) {
+    source_observer_.Run(this, IsFillingSourceAvailable(data.has_value()));
+  } else {
+    // TODO(crbug.com/1169167): Remove once filling controller pulls this
+    // information instead of waiting to get it pushed.
+    DCHECK(data.has_value());
+    GetManualFillingController()->RefreshSuggestions(std::move(data.value()));
+  }
 }
 
 void AddressAccessoryControllerImpl::OnPersonalDataChanged() {
