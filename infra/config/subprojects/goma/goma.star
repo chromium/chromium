@@ -163,14 +163,14 @@ fyi_goma_rbe_latest_client_builder(
 fyi_goma_rbe_latest_client_builder(
     name = "Win Builder (dbg) Goma RBE Latest Client",
     goma_backend = goma.backend.RBE_STAGING,
-    goma_enable_ats = True,
+    goma_enable_ats = False,
     os = os.WINDOWS_DEFAULT,
 )
 
 fyi_goma_rbe_latest_client_builder(
     name = "Win Builder Goma RBE Latest Client",
     goma_backend = goma.backend.RBE_STAGING,
-    goma_enable_ats = True,
+    goma_enable_ats = False,
     os = os.WINDOWS_DEFAULT,
 )
 
