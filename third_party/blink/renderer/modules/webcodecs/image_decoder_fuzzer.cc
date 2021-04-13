@@ -115,6 +115,10 @@ DEFINE_BINARY_PROTO_FUZZER(
         ToScriptStateForMainWorld(&page_holder->GetFrame());
     ScriptState::Scope scope(script_state);
 
+    // Fuzz the isTypeSupported() API explicitly.
+    ImageDecoderExternal::isTypeSupported(script_state,
+                                          proto.config().type().c_str());
+
     Persistent<ImageDecoderInit> image_decoder_init =
         MakeGarbageCollected<ImageDecoderInit>();
     image_decoder_init->setType(proto.config().type().c_str());
