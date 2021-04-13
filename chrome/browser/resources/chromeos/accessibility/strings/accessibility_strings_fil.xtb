@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Isara ang Tutorial para sa ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{open paren}one{# open paren}other{# na open paren}}</translation>
+<translation id="270523456882008230">Hint: Mag-double tap gamit ang isang daliri para i-activate ang kasalukuyang item.</translation>
 <translation id="2705875883745373140">Hindi pinindot</translation>
 <translation id="2708078563826046398">Peach Puff</translation>
 <translation id="2713444072780614174">Puti</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Tool tip</translation>
 <translation id="2976476721782829799">Puwede ka ring gumalaw-galaw sa pamamagitan ng pag-drag ng isang daliri sa screen. Tinatawag itong explore by touch. Subukang i-drag ang iyong daliri para basahin ang kabuuan ng araling ito.</translation>
 <translation id="297825089465017871">Mag-swipe pakaliwa gamit ang dalawang daliri</translation>
+<translation id="2988364959384217951">Hint: Mag-swipe pakaliwa gamit ang dalawang daliri kung gusto mong lumabas sa tutorial na ito.</translation>
 <translation id="2998131015536248178">Nakaraang Character</translation>
 <translation id="2999559350546931576">Babaan ang pitch</translation>
 <translation id="3009352964623081324">Search + O, pagkatapos ay S. Gamitin para mag-install, mamahala, at mag-customize ng mga boses.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Buksan ang mga menu ng ChromeVox</translation>
 <translation id="7799302833060027366">Pindutin ang pataas, pababa, pakaliwa, o pakanan para i-explore ang matematika</translation>
 <translation id="7800558923657349506">Epilogue</translation>
+<translation id="7801768143868631306">Hint: Mag-swipe pakaliwa o pakanan gamit ang isang daliri para mag-navigate.</translation>
 <translation id="7805768142964895445">Katayuan</translation>
 <translation id="7810781339813764006">Susunod na Pangkat</translation>
 <translation id="7813616274030162878">Menu ng Switch Access</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Font <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Echo ng cycle punctuation</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Available ang mga pagkilos. Pindutin ang Search+Ctrl+A para tingnan</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Mga Modifier Key</translation>
 <translation id="8943282376843390568">Lime</translation>

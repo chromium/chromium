@@ -266,6 +266,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2777555524387840389">Zbývá: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">nezdařilo se</translation>
 <translation id="2781151931089541271">Zbývá: 1 s</translation>
+<translation id="279827439955962619">Odstranit zvýraznění</translation>
 <translation id="2801022321632964776">Chcete-li si obsah prohlížet ve svém jazyce, aktualizujte na nejnovější verzi Chromu</translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="281504910091592009">Zobrazit a spravovat uložená hesla v <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privacy Sandbox se stále aktivně vyvíjí a je dostupný jen ve vybraných ob
 <translation id="4487967297491345095">Všechna data aplikace Chrome budou trvale smazána. Zahrnuje to soubory, nastavení, účty, databáze apod.</translation>
 <translation id="449126573531210296">Šifrovat synchronizovaná hesla pomocí účtu Google</translation>
 <translation id="4493497663118223949">Zjednodušený režim je zapnutý</translation>
+<translation id="4504667196171871375">Přes Wi-Fi a mobilní data</translation>
 <translation id="4508528996305412043">Je otevřená nabídka karty informačního kanálu</translation>
 <translation id="4508642716788467538">Vyberte jazyk</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{před # dnem}few{před # dny}many{před # dne}other{před # dny}}</translation>
@@ -917,6 +919,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="702463548815491781">Doporučeno, když je zapnuta funkce TalkBack nebo přístup pomocí přepínačů</translation>
 <translation id="7027549951530753705">Obnoveno: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Hesla</translation>
+<translation id="7040531500313579672">Sdílet zvýraznění</translation>
 <translation id="7054588988317389591">Zobrazovat popisy obrázků?</translation>
 <translation id="7055152154916055070">Bylo zablokováno přesměrování:</translation>
 <translation id="7063006564040364415">K synchronizačnímu serveru se nelze připojit.</translation>

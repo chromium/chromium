@@ -266,6 +266,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2777555524387840389">Il reste <ph name="SECONDS" /> secondes</translation>
 <translation id="2779651927720337254">échec</translation>
 <translation id="2781151931089541271">Il reste 1 s</translation>
+<translation id="279827439955962619">Retirer la mise en surbrillance</translation>
 <translation id="2801022321632964776">Mettez Chrome à jour pour en profiter dans votre propre langue</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="281504910091592009">Affichez et gérez les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4487967297491345095">Toutes les données des applications de Chrome seront supprimées de façon définitive. Cela comprend tous les fichiers, les paramètres, les comptes, les bases de données, etc.</translation>
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
 <translation id="4493497663118223949">Le mode simplifié est activé</translation>
+<translation id="4504667196171871375">Utiliser le réseau Wi-Fi ou les données cellulaires</translation>
 <translation id="4508528996305412043">Le menu de la carte du flux est ouvert</translation>
 <translation id="4508642716788467538">Choisissez votre langue</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Il y a # jour}one{Il y a # jour}other{Il y a # jours}}</translation>
@@ -917,6 +919,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="702463548815491781">Recommandé lorsque le service TalkBack ou Switch Access est activé</translation>
 <translation id="7027549951530753705">Élément restauré : <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Mots de passe</translation>
+<translation id="7040531500313579672">Partager le texte en surbrillance</translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images?</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
 <translation id="7063006564040364415">Échec de connexion au serveur de synchronisation.</translation>

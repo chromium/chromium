@@ -421,6 +421,7 @@
 <translation id="2521385132275182522">เย็บด้วยลวดเย็บกระดาษด้านขวาล่าง</translation>
 <translation id="2523886232349826891">บันทึกไว้เฉพาะในอุปกรณ์นี้</translation>
 <translation id="2524461107774643265">เพิ่มข้อมูลอื่นๆ</translation>
+<translation id="2526590354069164005">เดสก์ท็อป</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{และอีก 1 โดเมน}other{และอีก # โดเมน}}</translation>
 <translation id="2536110899380797252">เพิ่มที่อยู่</translation>
 <translation id="2539524384386349900">ตรวจหา</translation>
@@ -2042,7 +2043,6 @@
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
 <translation id="8805819170075074995">รายการ "<ph name="LANGUAGE_ID" />": ระบบไม่สนใจรายการนี้เพราะมีอยู่ในนโยบาย SpellcheckLanguage เช่นกัน</translation>
 <translation id="8807160976559152894">ตัดออกหลังหน้าแต่ละหน้า</translation>
-<translation id="881292005876822445">เปิดใช้การปรับขนาดสูงสุดไหม</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="883848425547221593">บุ๊กมาร์กอื่นๆ</translation>

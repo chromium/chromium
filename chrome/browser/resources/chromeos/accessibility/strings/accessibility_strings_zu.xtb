@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Vala okokufundisa kwe-ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{vula ubakaki}one{# vula obakaki}other{# vula obakaki}}</translation>
+<translation id="270523456882008230">Icebiso: Thepha kabili ngomunwe owodwa ukuze usebenzise into yamanje.</translation>
 <translation id="2705875883745373140">Ayicindeziwe</translation>
 <translation id="2708078563826046398">I-Peach Puff</translation>
 <translation id="2713444072780614174">Mhlophe</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Ithiphu lethuluzi</translation>
 <translation id="2976476721782829799">Ungaphinda uhambahambe ngokuhudula umunwe owodwa esikrinini. Lokhu kubizwa ngokuthi ukuhlola ngokuthinta. Zama ukuhudula umunwe wakho nxazonke ukuze ufunde sonke lesi sifundo</translation>
 <translation id="297825089465017871">Swayiphela iminwe emibili ngakwesokunxele</translation>
+<translation id="2988364959384217951">Icebiso: Swayipha kusuka kwesokudla kuya kwesobunxele ngeminwe emibili uma ungathanda ukuphuma kulesi sifundo.</translation>
 <translation id="2998131015536248178">Uhlamvu oludlule</translation>
 <translation id="2999559350546931576">Yehlisa iphitshi</translation>
 <translation id="3009352964623081324">Sesha + O, bese u-S. Kusebenzisele ukufaka, ukuphatha, nokwenza amazwi ngokwezifiso.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Vula amamenyu e-ChromeVox</translation>
 <translation id="7799302833060027366">Cindezela phezulu, phansi, kwesokunxele, noma kwesokudla ukuze uhlole izibalo</translation>
 <translation id="7800558923657349506">I-Epilogue</translation>
+<translation id="7801768143868631306">Icebiso: Swayiphela kwesobunxele noma kwesokudla ngomunwe owodwa ukuze uzulazule.</translation>
 <translation id="7805768142964895445">Isimo</translation>
 <translation id="7810781339813764006">Iqembu elilandelayo</translation>
 <translation id="7813616274030162878">Shintsha imenyu yokufinyelela</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Ifonti <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Ummemo womjikelezo wezimpawu zokuloba</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Izenzo ezitholakalayo. Cindezela u-Search+Ctrl+A ukuze ubuke</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Okhiye besilungiso</translation>
 <translation id="8943282376843390568">I-Lime</translation>

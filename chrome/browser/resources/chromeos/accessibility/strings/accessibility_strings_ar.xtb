@@ -242,6 +242,7 @@
 <translation id="2684412629217766642">‏إغلاق برنامج ChromeVox التعليمي</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{قوس مفتوح واحد}zero{# open parens}two{قوسان مفتوحان (#)}few{# أقواس مفتوحة}many{# قوسًا مفتوحًا}other{# من الأقواس المفتوحة}}</translation>
+<translation id="270523456882008230">تلميح: انقر مرّتين بإصبع واحد لعرض الدرس الحالي.</translation>
 <translation id="2705875883745373140">غير مضغوط</translation>
 <translation id="2708078563826046398">أحمر خوخي</translation>
 <translation id="2713444072780614174">أبيض</translation>
@@ -286,6 +287,7 @@
 <translation id="2972205263822847197">تلميح</translation>
 <translation id="2976476721782829799">يمكنك التنقّل داخل الشاشة من خلال سحب إصبع واحد حول الشاشة. ويُعرف هذا الإجراء باسم "الاستكشاف باللمس". جرِّب سحب إصبعك حول الشاشة لقراءة الجزء المتبقّي من هذا الدرس.</translation>
 <translation id="297825089465017871">التمرير السريع بإصبعين إلى يمين الشاشة</translation>
+<translation id="2988364959384217951">تلميح: مرِّر سريعًا بإصبعين من اليمين إلى اليسار إذا أردت الخروج من هذا البرنامج التعليمي.</translation>
 <translation id="2998131015536248178">الحرف السابق</translation>
 <translation id="2999559350546931576">خفض درجة الصوت</translation>
 <translation id="3009352964623081324">‏مفتاح البحث + O، ثم S. يُستخدَم لتثبيت الأصوات وإدارتها وتخصيصها.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">‏فتح قوائم ChromeVox</translation>
 <translation id="7799302833060027366">اضغط على السهم المتجه للأعلى أو للأسفل أو لليمين أو لليسار لاستكشاف محتوى الرياضيات.</translation>
 <translation id="7800558923657349506">تتِّمة</translation>
+<translation id="7801768143868631306">تلميح: مرِّر سريعًا بإصبع واحد إلى اليمين أو اليسار للتنقّل.</translation>
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7810781339813764006">المجموعة التالية</translation>
 <translation id="7813616274030162878">قائمة الوصول عبر مفتاح التحويل</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">الخطّ <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">دورة صدى علامات الترقيم</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">‏هناك إجراءات متاحة. اضغط على مفتاح البحث +Ctrl‏+A لعرضها.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">مفاتيح التعديل</translation>
 <translation id="8943282376843390568">ليموني</translation>

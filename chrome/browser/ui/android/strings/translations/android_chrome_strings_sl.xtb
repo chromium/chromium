@@ -266,6 +266,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="2777555524387840389">Še <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">ni uspelo</translation>
 <translation id="2781151931089541271">Še 1 s</translation>
+<translation id="279827439955962619">Odstrani označevanje</translation>
 <translation id="2801022321632964776">Posodobite Chrome na najnovejšo različico, če ga želite v svojem jeziku</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="281504910091592009">Shranjena gesla si lahko ogledate in jih upravljate v <ph name="BEGIN_LINK" />Google Računu<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="4487967297491345095">Vsi podatki aplikacije Chrome bodo trajno izbrisani, vključno z vsemi datotekami, nastavitvami, računi, zbirkami podatkov ipd.</translation>
 <translation id="449126573531210296">Šifriranje sinhroniziranih gesel z računom Google</translation>
 <translation id="4493497663118223949">Lahki način je vklopljen</translation>
+<translation id="4504667196171871375">»V omrežju Wi-Fi ali mobilnem omrežju«</translation>
 <translation id="4508528996305412043">Meni kartice vira je odprt</translation>
 <translation id="4508642716788467538">Izberite jezik</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Pred # dnevom}one{Pred # dnevom}two{Pred # dnevoma}few{Pred # dnevi}other{Pred # dnevi}}</translation>
@@ -917,6 +919,7 @@ Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" /
 <translation id="702463548815491781">Priporočljivo, ko je vklopljena aplikacija TalkBack ali funkcija dostopa s stikalom</translation>
 <translation id="7027549951530753705">Obnovljeno: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Gesla</translation>
+<translation id="7040531500313579672">Deli označevanje</translation>
 <translation id="7054588988317389591">Želite pridobiti opise slik?</translation>
 <translation id="7055152154916055070">Preusmeritev je preprečena:</translation>
 <translation id="7063006564040364415">Povezave s strežnikom za sinhronizacijo ni bilo mogoče vzpostaviti.</translation>

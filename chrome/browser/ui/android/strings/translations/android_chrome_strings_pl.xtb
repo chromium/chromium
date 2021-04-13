@@ -266,6 +266,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2777555524387840389">Pozostało: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">Nie pobrano</translation>
 <translation id="2781151931089541271">Pozostała sekunda</translation>
+<translation id="279827439955962619">Usuń podświetlenie</translation>
 <translation id="2801022321632964776">Zaktualizuj Chrome do najnowszej wersji, by mieć w nim dostępny swój język</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="281504910091592009">Zapisane hasła znajdziesz na swoim <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4487967297491345095">Wszystkie dane aplikacji Chrome zostaną trwale usunięte. Dotyczy to wszystkich plików, ustawień, kont, baz danych itp.</translation>
 <translation id="449126573531210296">Szyfruj synchronizowane hasła, używając danych konta Google</translation>
 <translation id="4493497663118223949">Wersja uproszczona jest włączona</translation>
+<translation id="4504667196171871375">Przez Wi-Fi i mobilną transmisję danych</translation>
 <translation id="4508528996305412043">Menu karty kanału jest otwarte</translation>
 <translation id="4508642716788467538">Wybierz język</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# dzień temu}few{# dni temu}many{# dni temu}other{# dnia temu}}</translation>
@@ -917,6 +919,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="702463548815491781">Zalecane, gdy włączono TalkBack lub Switch Access</translation>
 <translation id="7027549951530753705">Przywrócono: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Hasła</translation>
+<translation id="7040531500313579672">Udostępnij podświetlenie</translation>
 <translation id="7054588988317389591">Czy chcesz pobierać opisy obrazów?</translation>
 <translation id="7055152154916055070">Zablokowano przekierowanie:</translation>
 <translation id="7063006564040364415">Nie udało się nawiązać połączenia z serwerem synchronizacji.</translation>

@@ -425,6 +425,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2521385132275182522">Sankabėlė apačioje dešinėje</translation>
 <translation id="2523886232349826891">Išsaugota tik šiame įrenginyje</translation>
 <translation id="2524461107774643265">Daugiau informacijos pridėjimas</translation>
+<translation id="2526590354069164005">Darbalaukis</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ir dar 1}one{ir dar #}few{ir dar #}many{ir dar #}other{ir dar #}}</translation>
 <translation id="2536110899380797252">Pridėti adresą</translation>
 <translation id="2539524384386349900">Aptikti</translation>
@@ -1174,6 +1175,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5327248766486351172">Pavadinimas</translation>
 <translation id="5329858041417644019">Jūsų naršyklė nėra tvarkoma</translation>
 <translation id="5332219387342487447">Pristatymo metodas</translation>
+<translation id="5333022057423422993">„Chrome“ aptiko, kad slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. Kad galėtumėte apsaugoti paskyras, rekomenduojame patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="5334013548165032829">Išsamūs sistemos žurnalai</translation>
 <translation id="5340250774223869109">Programa užblokuota</translation>
 <translation id="534295439873310000">ALR įrenginiai</translation>
@@ -1288,6 +1290,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5784606427469807560">Patvirtinant kortelę kilo problema. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
 <translation id="5785756445106461925">Be to, šiame puslapyje yra kitų nesaugių išteklių. Perduodant duomenis šiuos išteklius gali peržiūrėti kiti asmenys ir keisti atakuojanti programa, siekianti pakeisti puslapio išvaizdą.</translation>
 <translation id="5786044859038896871">Ar norite, kad būtų įvesta jūsų kredito kortelės informacija?</translation>
+<translation id="578633867165174378">„Chrome“ aptiko, kad slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. Rekomenduojame dabar pakeisti šį slaptažodį.</translation>
 <translation id="5798290721819630480">Atmesti pakeitimus?</translation>
 <translation id="5803412860119678065">Ar norite, kad būtų įvesta <ph name="CARD_DETAIL" /> informacija?</translation>
 <translation id="5804241973901381774">Leidimai</translation>
@@ -1477,6 +1480,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6579630537141957243">Prijungti MIDI įrenginį?</translation>
 <translation id="6579990219486187401">Šviesiai rausva spalva</translation>
 <translation id="6583674473685352014">B6 (vokas)</translation>
+<translation id="6587182488465657433">„Chrome“ aptiko, kad slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. Kad galėtumėte apsaugoti paskyras, rekomenduojame dabar jį pakeisti ir tada patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="6587923378399804057">Nukopijuota nuoroda</translation>
 <translation id="6591833882275308647">Jūsų „<ph name="DEVICE_TYPE" />“ netvarkomas</translation>
 <translation id="6592952801936330159">Mygtukas „Tvarkyti svetainės nustatymus“; paspauskite „Enter“, jei norite tvarkyti leidimus ir svetainėse saugomus duomenis „Chrome“ nustatymuose</translation>
@@ -2055,7 +2059,6 @@ Papildoma išsami informacija:
 <translation id="8798099450830957504">Numatytasis</translation>
 <translation id="8805819170075074995">Sąrašo įrašas „<ph name="LANGUAGE_ID" />“: įrašo nepaisoma, nes jis taip pat įtrauktas į politiką „SpellcheckLanguage“.</translation>
 <translation id="8807160976559152894">Apkarpymas po kiekvieno puslapio</translation>
-<translation id="881292005876822445">Įgalinti didinimą?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad „Chrome“ nustatymuose būtų atnaujinta naršyklė „Chrome“</translation>
 <translation id="8820817407110198400">Žymės</translation>
 <translation id="883848425547221593">Kitos žymės</translation>

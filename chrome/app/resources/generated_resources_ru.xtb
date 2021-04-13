@@ -2010,7 +2010,6 @@
 <translation id="3183143381919926261">Мобильные сети</translation>
 <translation id="3183944777708523606">Расположение мониторов</translation>
 <translation id="3184536091884214176">Настройте принтеры CUPS. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">Обычная SIM-карта</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3188465121994729530">Скользящее среднее</translation>
 <translation id="3189187154924005138">Большой курсор</translation>
@@ -2689,7 +2688,6 @@
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3926002189479431949">Smart Lock – телефон заменен</translation>
 <translation id="3927932062596804919">Запретить</translation>
-<translation id="392803502090869922">Настройка eSIM</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" />: сохранить изменения?</translation>
 <translation id="3928659086758780856">Заканчиваются чернила.</translation>
 <translation id="3929426037718431833">Расширения, у которых есть право на просмотр и изменение информации на этом сайте</translation>
@@ -2809,6 +2807,7 @@
 <translation id="4056908315660577142">Время, установленное родителями для приложения Chrome "<ph name="APP_NAME" />", истекло. Лимит на завтра: <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Открыть в Интернет-магазине</translation>
+<translation id="4057991113334098539">Активация...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Проверить документ</translation>
 <translation id="406070391919917862">Фоновые приложения</translation>
@@ -2908,7 +2907,6 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Языки</translation>
 <translation id="4184885522552335684">Перетащите дисплей на новое место</translation>
-<translation id="4186763173530196927">Приложение пытается получить доступ к камере. Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности камеры.</translation>
 <translation id="4187424053537113647">Настройка <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Выделение объектов, выбранных с помощью клавиатуры</translation>
 <translation id="4194570336751258953">Включить нажатие от прикосновения</translation>
@@ -5026,7 +5024,6 @@
 <translation id="6635362468090274700">Никто не сможет обмениваться с вами данными, пока вы не откроете доступ к своему устройству.<ph name="BR" /><ph name="BR" />Чтобы предоставить временный доступ, откройте панель состояния и включите параметр "Широкий доступ".</translation>
 <translation id="6635944431854494329">Владелец может управлять этой функцией в меню "Настройки &gt; Дополнительные &gt; Автоматически отправлять статистику использования и данные диагностики в Google".</translation>
 <translation id="6635956300022133031">Выбор и настройка голоса</translation>
-<translation id="6636588250634969791">Прежде чем продолжить, вставьте SIM-карту</translation>
 <translation id="6639554308659482635">Память SQLite</translation>
 <translation id="6642720633335369752">Чтобы посмотреть все открытые приложения, проведите по экрану снизу вверх и удерживайте.</translation>
 <translation id="664290675870910564">Выбор сети</translation>

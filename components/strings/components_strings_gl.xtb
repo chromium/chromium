@@ -424,6 +424,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2521385132275182522">Grampa na parte inferior dereita</translation>
 <translation id="2523886232349826891">Gardada só neste dispositivo</translation>
 <translation id="2524461107774643265">Engadir máis información</translation>
+<translation id="2526590354069164005">Ordenador</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
 <translation id="2536110899380797252">Engadir enderezo</translation>
 <translation id="2539524384386349900">Detectar</translation>
@@ -1170,6 +1171,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5329858041417644019">O teu navegador non está xestionado</translation>
 <translation id="5332219387342487447">Método de envío</translation>
+<translation id="5333022057423422993">Chrome atopou o contrasinal que acabas de utilizar entre os datos dunha violación da seguranza dos datos. Para protexer as túas contas, recomendámosche que revises os contrasinais que tes gardados.</translation>
 <translation id="5334013548165032829">Rexistros do sistema detallados</translation>
 <translation id="5340250774223869109">A aplicación está bloqueada</translation>
 <translation id="534295439873310000">Dispositivos con NFC</translation>
@@ -1284,6 +1286,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5784606427469807560">Produciuse un problema ao confirmar a túa tarxeta. Comproba a túa conexión a Internet e téntao de novo.</translation>
 <translation id="5785756445106461925">Ademais, esta páxina inclúe outros recursos que non son seguros. Outros usuarios poden ver estes recursos mentres se desprazan e un atacante pode cambiar o aspecto da páxina.</translation>
 <translation id="5786044859038896871">Queres completar a información da tarxeta de crédito?</translation>
+<translation id="578633867165174378">Chrome atopou o contrasinal que acabas de utilizar entre os datos dunha violación da seguranza dos datos. Recomendámosche que o cambies de inmediato.</translation>
 <translation id="5798290721819630480">Queres descartar os cambios?</translation>
 <translation id="5803412860119678065">Queres completar a información da tarxeta de crédito <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -1473,6 +1476,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6579630537141957243">Queres conectar o dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6583674473685352014">B6 (sobre)</translation>
+<translation id="6587182488465657433">Chrome atopou o contrasinal que acabas de utilizar entre os datos dunha violación da seguranza dos datos. Para protexer as túas contas, recomendámosche que o cambies de inmediato e que logo revises os contrasinais que tes gardados.</translation>
 <translation id="6587923378399804057">Ligazón que copiaches</translation>
 <translation id="6591833882275308647">O teu <ph name="DEVICE_TYPE" /> non está xestionado</translation>
 <translation id="6592952801936330159">Botón Xestionar configuración dos sitios. Para xestionar na configuración de Chrome os permisos e os datos almacenados dos sitios, preme Introducir</translation>
@@ -2050,7 +2054,6 @@ Detalles adicionais:
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8805819170075074995">Entrada da lista "<ph name="LANGUAGE_ID" />": ignorouse a entrada debido a que tamén está incluída na política SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Recorte despois de cada páxina</translation>
-<translation id="881292005876822445">Queres activar a maximización?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para actualizar Chrome desde a configuración do navegador</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="883848425547221593">Outros marcadores</translation>

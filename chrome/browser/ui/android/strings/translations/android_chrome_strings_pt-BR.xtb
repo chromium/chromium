@@ -266,6 +266,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundos restantes</translation>
 <translation id="2779651927720337254">falha</translation>
 <translation id="2781151931089541271">Um segundo restante</translation>
+<translation id="279827439955962619">Remover destaque</translation>
 <translation id="2801022321632964776">Faça a atualização para usar a versão mais recente do Chrome no seu idioma</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Ver e gerenciar as senhas salvas na sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Essa tecnologia ainda está em desenvolvimento ativo e está disponível apenas 
 <translation id="4487967297491345095">Todos os dados de app Chrome serão excluídos permanentemente. Isso inclui todos os arquivos, configurações, contas, bancos de dados etc.</translation>
 <translation id="449126573531210296">Criptografar as senhas sincronizadas com sua Conta do Google</translation>
 <translation id="4493497663118223949">Modo Lite ativado</translation>
+<translation id="4504667196171871375">Com Wi-Fi e dados móveis</translation>
 <translation id="4508528996305412043">O menu do card do feed está aberto</translation>
 <translation id="4508642716788467538">Escolha seu idioma</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# dia atrás}one{# dias atrás}other{# dias atrás}}</translation>
@@ -918,6 +920,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="702463548815491781">Recomendado quando o TalkBack ou o acesso com interruptor estão ativados</translation>
 <translation id="7027549951530753705">Download de <ph name="ITEM_TITLE" /> restaurado</translation>
 <translation id="7029809446516969842">Senhas</translation>
+<translation id="7040531500313579672">Compartilhar destaque</translation>
 <translation id="7054588988317389591">Ver descrições de imagens?</translation>
 <translation id="7055152154916055070">Redirecionamento bloqueado:</translation>
 <translation id="7063006564040364415">Não foi possível conectar ao servidor de sincronização.</translation>

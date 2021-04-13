@@ -425,6 +425,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2523886232349826891">Ise-save sa device lang na ito</translation>
 <translation id="2524461107774643265">Magdagdag ng Higit Pang Impormasyon</translation>
+<translation id="2526590354069164005">Desktop</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{at 1 pa}one{at # pa}other{at # pa}}</translation>
 <translation id="2536110899380797252">Magdagdag ng Address</translation>
 <translation id="2539524384386349900">Tukuyin</translation>
@@ -1173,6 +1174,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5327248766486351172">Pangalan</translation>
 <translation id="5329858041417644019">Hindi pinapamahalaan ang iyong browser</translation>
 <translation id="5332219387342487447">Paraan ng Pagpapadala</translation>
+<translation id="5333022057423422993">Nakita ng Chrome sa isang paglabag sa data ang password na kakagamit mo lang. Para i-secure ang iyong mga account, inirerekomenda naming suriin ang mga naka-save na password mo.</translation>
 <translation id="5334013548165032829">Mga detalyadong log ng system</translation>
 <translation id="5340250774223869109">Naka-block ang application</translation>
 <translation id="534295439873310000">Mga NFC device</translation>
@@ -1287,6 +1289,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5784606427469807560">Nagkaroon ng problema sa pagkumpirma ng iyong card. Suriin ang koneksyon sa internet at subukang muli.</translation>
 <translation id="5785756445106461925">Bukod pa rito, ang page na ito ay may iba pang mga mapagkukunang hindi secure. Makikita ng iba ang mga mapagkukunang ito habang ipinadadala, at maaaring baguhin ng isang umaatake upang baguhin ang hitsura ng page.</translation>
 <translation id="5786044859038896871">Gusto mo bang ilagay ang impormasyon ng iyong card?</translation>
+<translation id="578633867165174378">Nakita ng Chrome sa isang paglabag sa data ang password na kakagamit mo lang. Inirerekomenda naming palitan na ngayon ang password na ito.</translation>
 <translation id="5798290721819630480">I-discard ang mga pagbabago?</translation>
 <translation id="5803412860119678065">Gusto mo bang ilagay ang iyong <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
@@ -1476,6 +1479,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6579630537141957243">Magkonekta ng MIDI device?</translation>
 <translation id="6579990219486187401">Light Pink</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6587182488465657433">Nakita ng Chrome sa isang paglabag sa data ang password na kakagamit mo lang. Para i-secure ang iyong mga account, inirerekomenda naming palitan ito ngayon at pagkatapos ay suriin ang mga naka-save na password mo.</translation>
 <translation id="6587923378399804057">Link na kinopya mo</translation>
 <translation id="6591833882275308647">Hindi pinapamahalaan ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="6592952801936330159">Button na Pamahalaan ang mga setting ng site, pindutin ang Enter para pamahalaan ang mga pahintulot at data na naka-store sa lahat ng site sa mga setting ng Chrome</translation>
@@ -2053,7 +2057,6 @@ Mga karagdagang detalye:
 <translation id="8798099450830957504">Default</translation>
 <translation id="8805819170075074995">Listahan ng entry na "<ph name="LANGUAGE_ID" />": Binalewala ang entry dahil kasama rin ito sa patakarang SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Paikliin pagkatapos ng bawat page</translation>
-<translation id="881292005876822445">I-enable ang Pag-maximize?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para i-update ang Chrome mula sa iyong mga setting ng Chrome</translation>
 <translation id="8820817407110198400">Mga Bookmark</translation>
 <translation id="883848425547221593">Iba Pang Mga Bookmark</translation>

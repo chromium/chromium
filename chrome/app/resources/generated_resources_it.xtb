@@ -2008,7 +2008,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3183143381919926261">Reti di dati mobili</translation>
 <translation id="3183944777708523606">Disposizione del monitor</translation>
 <translation id="3184536091884214176">Configura o gestisci le stampanti CUPS. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">SIM fisica</translation>
 <translation id="3188257591659621405">I miei file</translation>
 <translation id="3188465121994729530">Media spostamento</translation>
 <translation id="3189187154924005138">Puntatore grande</translation>
@@ -2687,7 +2686,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3925573269917483990">Fotocamera:</translation>
 <translation id="3926002189479431949">Telefono con Smart Lock cambiato</translation>
 <translation id="3927932062596804919">Non consentire</translation>
-<translation id="392803502090869922">Impostazione eSIM</translation>
 <translation id="3928570707778085600">Salvare le modifiche per <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Inchiostro in esaurimento</translation>
 <translation id="3929426037718431833">Queste estensioni possono vedere e modificare le informazioni sul sito.</translation>
@@ -2807,6 +2805,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4056908315660577142">Hai raggiunto il tempo massimo impostato dal genitore per l'app di Chrome <ph name="APP_NAME" />. Domani potrai utilizzare l'app per <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Visualizza nello Store</translation>
+<translation id="4057991113334098539">In fase di attivazione...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Controlla documento ora</translation>
 <translation id="406070391919917862">Applicazioni in background</translation>
@@ -2906,7 +2905,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4184885522552335684">Trascina per spostare un display</translation>
-<translation id="4186763173530196927">Un'app sta tentando di accedere alla videocamera. Disattiva l'opzione Privacy videocamera per consentire l'accesso.</translation>
 <translation id="4187424053537113647">Configurazione di <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Evidenziazione con stato attivo della tastiera</translation>
 <translation id="4194570336751258953">Attiva tocco per fare clic</translation>
@@ -5024,7 +5022,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6635362468090274700">Nessuno può condividere contenuti con te finché non ti rendi visibile.<ph name="BR" /><ph name="BR" />Per renderti visibile temporaneamente, apri l'area di stato e attiva la funzionalità Visibilità nelle vicinanze.</translation>
 <translation id="6635944431854494329">Il proprietario può controllare questa funzionalità dalla sezione Impostazioni &gt; Avanzate &gt; Invia automaticamente a Google dati di diagnostica e utilizzo.</translation>
 <translation id="6635956300022133031">Seleziona e personalizza le voci per la sintesi vocale</translation>
-<translation id="6636588250634969791">Inserisci SIM prima di procedere</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
 <translation id="6642720633335369752">Per visualizzare le finestre di tutte le app aperte, scorri dal basso verso l'alto e tieni premuto.</translation>
 <translation id="664290675870910564">Selezione rete</translation>

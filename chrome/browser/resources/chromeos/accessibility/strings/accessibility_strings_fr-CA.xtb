@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Fermer le tutoriel de ChromeVox</translation>
 <translation id="2697408785920771974">saisie semi-automatique alignement</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parenthèse ouvrante}one{# parenthèse ouvrante}other{# parenthèses ouvrantes}}</translation>
+<translation id="270523456882008230">Astuce : Touchez deux fois l'écran avec un doigt pour activer l'élément actuel.</translation>
 <translation id="2705875883745373140">Non appuyé</translation>
 <translation id="2708078563826046398">Rose pêche</translation>
 <translation id="2713444072780614174">Blanc</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Infobulle</translation>
 <translation id="2976476721782829799">Vous pouvez aussi vous déplacer en faisant glisser un doigt sur l'écran. C'est ce qu'on appelle explorer au toucher. Essayez de lire le reste de cette leçon en explorant l'écran au toucher.</translation>
 <translation id="297825089465017871">Faites glisser deux doigts vers la gauche</translation>
+<translation id="2988364959384217951">Astuce : Balayez l'écran de droite à gauche avec deux doigts si vous souhaitez quitter ce tutoriel.</translation>
 <translation id="2998131015536248178">Caractère précédent</translation>
 <translation id="2999559350546931576">Diminuer la hauteur de la voix</translation>
 <translation id="3009352964623081324">Rechercher+O, puis S. Ce raccourci permet d'installer, de gérer et de personnaliser les voix.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Ouvrir les menus de ChromeVox</translation>
 <translation id="7799302833060027366">Appuyez sur les touches vers le haut, le bas, la gauche ou la droite pour explorer les fonctions mathématiques</translation>
 <translation id="7800558923657349506">Épilogue</translation>
+<translation id="7801768143868631306">Astuce : Balayez l'écran vers la gauche ou la droite avec un doigt pour naviguer.</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7810781339813764006">Groupe suivant</translation>
 <translation id="7813616274030162878">Menu de Switch Access</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860">Police <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Parcourir les modes d'écho de la ponctuation</translation>
 <translation id="8908714597367957477">en-tête de colonne</translation>
+<translation id="8910180774920883033">Actions proposées. Appuyez sur Rechercher+Ctrl+A pour les consulter</translation>
 <translation id="8937112856099038376">lien interne</translation>
 <translation id="8940925288729953902">Touches de modification</translation>
 <translation id="8943282376843390568">Vert lime</translation>

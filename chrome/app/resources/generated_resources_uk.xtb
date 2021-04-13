@@ -2012,7 +2012,6 @@
 <translation id="3183143381919926261">Мережі мобільного Інтернету</translation>
 <translation id="3183944777708523606">Налаштування екранів</translation>
 <translation id="3184536091884214176">Налаштувати принтери CUPS та керувати ними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">Фізична SIM-карта</translation>
 <translation id="3188257591659621405">Мої файли</translation>
 <translation id="3188465121994729530">Середня швидкість переміщення курсора</translation>
 <translation id="3189187154924005138">Великий курсор</translation>
@@ -2691,7 +2690,6 @@
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3926002189479431949">Телефон для Smart Lock змінено</translation>
 <translation id="3927932062596804919">Відмовити</translation>
-<translation id="392803502090869922">Налаштування eSim-карти</translation>
 <translation id="3928570707778085600">Зберегти зміни в "<ph name="FILE_OR_FOLDER_NAME" />"?</translation>
 <translation id="3928659086758780856">Низький рівень чорнила</translation>
 <translation id="3929426037718431833">Ці розширення можуть бачити та змінювати інформацію на сайті.</translation>
@@ -2811,6 +2809,7 @@
 <translation id="4056908315660577142">Досягнено ліміту часу використання, який батьки встановили для додатка <ph name="APP_NAME" /> у Chrome. Завтра ти зможеш користуватися ним <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Переглянути в магазині</translation>
+<translation id="4057991113334098539">Активація...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Перевірити документ зараз</translation>
 <translation id="406070391919917862">Фонові програми</translation>
@@ -2910,7 +2909,6 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Мови</translation>
 <translation id="4184885522552335684">Потягніть, щоб перемістити дисплей</translation>
-<translation id="4186763173530196927">Додаток намагається отримати доступ до камери. Щоб надати його, вимкніть перемикач конфіденційності камери.</translation>
 <translation id="4187424053537113647">Налаштування додатка <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Виділяти фокус клавіатури</translation>
 <translation id="4194570336751258953">Увімкнути функцію "торкнутися, щоб натиснути"</translation>
@@ -5028,7 +5026,6 @@
 <translation id="6635362468090274700">Інші користувачі зможуть надсилати вам дані, лише якщо ви зробите свій пристрій видимим.<ph name="BR" /><ph name="BR" />Щоб зробити пристрій видимим тимчасово, відкрийте панель стану і ввімкніть опцію "Видимість поблизу".</translation>
 <translation id="6635944431854494329">Власник може керувати цією функцією в меню "Налаштування &gt; Розширені &gt; Автоматично надсилати в Google дані про діагностику та використання".</translation>
 <translation id="6635956300022133031">Вибрати й налаштувати голоси для синтезу мовлення</translation>
-<translation id="6636588250634969791">Спершу вставте SIM-карту</translation>
 <translation id="6639554308659482635">Пам'ять SQLite</translation>
 <translation id="6642720633335369752">Щоб побачити всі відкриті вікна додатків, проведіть пальцем знизу вгору й утримуйте.</translation>
 <translation id="664290675870910564">Вибір мережі</translation>

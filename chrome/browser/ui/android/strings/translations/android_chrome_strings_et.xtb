@@ -266,6 +266,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2777555524387840389">Jäänud on <ph name="SECONDS" /> sekundit</translation>
 <translation id="2779651927720337254">ebaõnnestus</translation>
 <translation id="2781151931089541271">Jäänud on 1 sekund</translation>
+<translation id="279827439955962619">Esiletõstu eemaldamine</translation>
 <translation id="2801022321632964776">Oma keele kasutamiseks värskendage Chrome uusimale versioonile</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="281504910091592009">Vaadake ja hallake salvestatud paroole oma <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="4487967297491345095">Kõik Chrome'i rakenduse andmed kustutatakse jäädavalt. See hõlmab kõiki faile, seadeid, kontosid, andmebaase jms.</translation>
 <translation id="449126573531210296">Krüpteerige sünkroonitud paroolid oma Google'i kontoga</translation>
 <translation id="4493497663118223949">Lihtsustatud režiim on sees</translation>
+<translation id="4504667196171871375">WiFi- ja mobiilsidevõrgus</translation>
 <translation id="4508528996305412043">Voo kaardimenüü on avatud</translation>
 <translation id="4508642716788467538">Valige oma keel</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# päev tagasi}other{# päeva tagasi}}</translation>
@@ -917,6 +919,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="702463548815491781">Soovitatav juhul, kui TalkBack või lülitiga juurdepääs on sisse lülitatud</translation>
 <translation id="7027549951530753705">Taastati <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Paroolid</translation>
+<translation id="7040531500313579672">Jaga esiletõstu</translation>
 <translation id="7054588988317389591">Kas saada piltide kirjeldusi?</translation>
 <translation id="7055152154916055070">Ümbersuunamine blokeeriti:</translation>
 <translation id="7063006564040364415">Sünkroonimisserveriga ei saanud ühendust.</translation>

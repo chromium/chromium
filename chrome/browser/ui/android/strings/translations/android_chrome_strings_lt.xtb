@@ -266,6 +266,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2777555524387840389">Liko <ph name="SECONDS" /> sek.</translation>
 <translation id="2779651927720337254">nepavyko</translation>
 <translation id="2781151931089541271">Liko 1 sek.</translation>
+<translation id="279827439955962619">Pašalinti paryškinimą</translation>
 <translation id="2801022321632964776">Norėdami gauti naujausią versiją su įdiegta savo kalba, atnaujinkite „Chrome“</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="281504910091592009">Peržiūrėkite ir tvarkykite išsaugotus slaptažodžius <ph name="BEGIN_LINK" />„Google“ paskyroje<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="4487967297491345095">Visi „Chrome“ duomenys bus ištrinti visam laikui. Tai apima visus failus, nustatymus, paskyras, duomenų bazes ir kt.</translation>
 <translation id="449126573531210296">Šifruoti sinchronizuotus slaptažodžius naudojant „Google“ paskyrą</translation>
 <translation id="4493497663118223949">Supaprastintasis režimas įjungtas</translation>
+<translation id="4504667196171871375">Naudojant „Wi-Fi“ ir mobiliojo ryšio duomenis</translation>
 <translation id="4508528996305412043">Sklaidos kanalo kortelės meniu atidarytas</translation>
 <translation id="4508642716788467538">Pasirinkite kalbą</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Prieš # dieną}one{Prieš # dieną}few{Prieš # dienas}many{Prieš # dienos}other{Prieš # dienų}}</translation>
@@ -917,6 +919,7 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="702463548815491781">Rekomenduojama, kai įjungta „TalkBack“ arba prieiga jungikliu</translation>
 <translation id="7027549951530753705">Atkurta „<ph name="ITEM_TITLE" />“</translation>
 <translation id="7029809446516969842">Slaptažodžiai</translation>
+<translation id="7040531500313579672">Bendrinti paryškinimą</translation>
 <translation id="7054588988317389591">Gauti vaizdų aprašus?</translation>
 <translation id="7055152154916055070">Peradresavimas užblokuotas:</translation>
 <translation id="7063006564040364415">Nepavyko prisijungti prie sinchronizavimo serverio.</translation>

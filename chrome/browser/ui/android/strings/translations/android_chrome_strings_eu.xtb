@@ -266,6 +266,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundo gelditzen dira</translation>
 <translation id="2779651927720337254">huts egin du</translation>
 <translation id="2781151931089541271">Segundo bat gelditzen da</translation>
+<translation id="279827439955962619">Kendu testura daraman esteka</translation>
 <translation id="2801022321632964776">Eguneratu azken bertsiora Chrome zure hizkuntzan erabili ahal izateko</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="281504910091592009">Ikusi eta kudeatu <ph name="BEGIN_LINK" />Google-ko kontuan<ph name="END_LINK" /> gordetako pasahitzak</translation>
@@ -503,6 +504,7 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="4487967297491345095">Betiko ezabatuko dira Chrome aplikazioko datu guztiak, besteak beste, fitxategiak, ezarpenak, kontuak eta datu-baseak.</translation>
 <translation id="449126573531210296">Enkriptatu sinkronizatutako pasahitzak Google-ko kontuarekin</translation>
 <translation id="4493497663118223949">Oinarrizko modua aktibatuta dago</translation>
+<translation id="4504667196171871375">Wifi- eta datu-konexioa erabiltzean</translation>
 <translation id="4508528996305412043">Jarioko txartelaren menua irekita dago</translation>
 <translation id="4508642716788467538">Aukeratu hizkuntza</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Duela # egun}other{Duela # egun}}</translation>
@@ -917,6 +919,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="702463548815491781">TalkBack edo Erabilerraztasun-osagarria aktibatuta daudenean gomendatua</translation>
 <translation id="7027549951530753705">Leheneratu da <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Pasahitzak</translation>
+<translation id="7040531500313579672">Partekatu testura daraman esteka</translation>
 <translation id="7054588988317389591">Irudi-deskribapenak lortu nahi dituzu?</translation>
 <translation id="7055152154916055070">Birbideratze hau blokeatu da:</translation>
 <translation id="7063006564040364415">Ezin izan da sinkronizazio-zerbitzarira konektatu</translation>

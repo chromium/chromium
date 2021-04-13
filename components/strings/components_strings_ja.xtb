@@ -421,6 +421,7 @@
 <translation id="2521385132275182522">ステープル（右下）</translation>
 <translation id="2523886232349826891">カードはこのデバイスのみに保存されます</translation>
 <translation id="2524461107774643265">その他の情報の追加</translation>
+<translation id="2526590354069164005">デスクトップ</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{、他 1 件}other{、他 # 件}}</translation>
 <translation id="2536110899380797252">住所を追加</translation>
 <translation id="2539524384386349900">検出</translation>
@@ -1162,6 +1163,7 @@
 <translation id="5327248766486351172">名前</translation>
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
 <translation id="5332219387342487447">配送方法</translation>
+<translation id="5333022057423422993">最近使用したパスワードがデータ侵害により漏洩しました。アカウントを保護するため、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="5334013548165032829">詳細なシステムログ</translation>
 <translation id="5340250774223869109">アプリケーションがブロックされました</translation>
 <translation id="534295439873310000">NFC デバイス</translation>
@@ -1276,6 +1278,7 @@
 <translation id="5784606427469807560">カードの確認中に問題が発生しました。インターネット接続を確認してもう一度お試しください。</translation>
 <translation id="5785756445106461925">加えて、このページには安全でない他のリソースが含まれています。このリソースは送信中に他のユーザーから見られる可能性があります。また、悪意のあるユーザーによって改変されページの見た目が変わる可能性もあります。</translation>
 <translation id="5786044859038896871">カード情報を入力しますか？</translation>
+<translation id="578633867165174378">最近使用したパスワードがデータ侵害により漏洩しました。このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="5798290721819630480">変更を破棄しますか？</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> を入力しますか？</translation>
 <translation id="5804241973901381774">権限</translation>
@@ -1465,6 +1468,7 @@
 <translation id="6579630537141957243">MIDI デバイスを使用しますか？</translation>
 <translation id="6579990219486187401">ライトピンク</translation>
 <translation id="6583674473685352014">B6（封筒）</translation>
+<translation id="6587182488465657433">最近使用したパスワードがデータ侵害により漏洩しました。アカウントを保護するため、このパスワードを今すぐ変更し、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="6587923378399804057">コピーしたリンク</translation>
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
 <translation id="6592952801936330159">サイトの設定を管理するボタンです。Enter キーを押して、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
@@ -2043,7 +2047,6 @@
 <translation id="8798099450830957504">既定</translation>
 <translation id="8805819170075074995">リスト項目「<ph name="LANGUAGE_ID" />」: SpellcheckLanguage ポリシーにも含まれているため、この項目は無視されます。</translation>
 <translation id="8807160976559152894">トリミング（ページ単位）</translation>
-<translation id="881292005876822445">最大化を有効にしますか？</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Chrome を更新します</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="883848425547221593">その他のブックマーク</translation>

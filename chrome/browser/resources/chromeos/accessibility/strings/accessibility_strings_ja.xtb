@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox のチュートリアルを閉じる</translation>
 <translation id="2697408785920771974">インライン オートコンプリート</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{左丸かっこ}other{# 個の左丸かっこ}}</translation>
+<translation id="270523456882008230">ヒント: 現在のアイテムを有効にするには、1 本の指でダブルタップします。</translation>
 <translation id="2705875883745373140">オフ</translation>
 <translation id="2708078563826046398">ピーチパフ</translation>
 <translation id="2713444072780614174">白</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">ツールチップ</translation>
 <translation id="2976476721782829799">画面上を 1 本の指でドラッグして移動することもできます。これを「タッチガイド」と呼びます。1 本の指でドラッグして、このレッスンの残りを読んでみましょう。</translation>
 <translation id="297825089465017871">2 本の指で左にスワイプします</translation>
+<translation id="2988364959384217951">ヒント: このチュートリアルを終了する場合は、2 本の指で右から左にスワイプします。</translation>
 <translation id="2998131015536248178">前の文字</translation>
 <translation id="2999559350546931576">ピッチを下げる</translation>
 <translation id="3009352964623081324">検索+O の後、S キーを押します。音声のインストール、管理、カスタマイズを行います。</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox メニューを開きます</translation>
 <translation id="7799302833060027366">数式要素間を移動するには上下左右の矢印キーを押します</translation>
 <translation id="7800558923657349506">エピローグ</translation>
+<translation id="7801768143868631306">ヒント: 移動するには、1 本の指で左または右にスワイプします。</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7810781339813764006">次のグループ</translation>
 <translation id="7813616274030162878">スイッチ アクセス メニュー</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">フォント <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">句読点読み上げを切り替えます</translation>
 <translation id="8908714597367957477">列見出し</translation>
+<translation id="8910180774920883033">実行可能な操作があります。表示するには、検索+Ctrl+A キーを押してください</translation>
 <translation id="8937112856099038376">内部リンク</translation>
 <translation id="8940925288729953902">修飾キー</translation>
 <translation id="8943282376843390568">ライム</translation>

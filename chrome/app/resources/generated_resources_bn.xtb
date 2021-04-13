@@ -1025,6 +1025,7 @@
 <translation id="211144231511833662">টাইপগুলি মুছে দিন</translation>
 <translation id="2111670510994270194">ডানদিকে নতুন ট্যাব</translation>
 <translation id="2111810003053064883">বিজ্ঞাপনদাতারা এমন পদ্ধতিতেও কোনও বিজ্ঞাপনের কার্যকারিতা অধ্যয়ন করতে পারেন যেটি বিভিন্ন সাইট জুড়ে আপনার অ্যাক্টিভি ট্র্যাক করবে না।</translation>
+<translation id="2112554630428445878">স্বাগতম, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">ট্যাব পিন করুন</translation>
 <translation id="2113479184312716848">Open &amp;File...</translation>
 <translation id="2113921862428609753">কর্তৃপক্ষ তথ্য অ্যাক্সেস</translation>
@@ -2008,7 +2009,6 @@
 <translation id="3183143381919926261">মোবাইল ডেটা নেটওয়ার্ক</translation>
 <translation id="3183944777708523606">মনিটর সাজানো</translation>
 <translation id="3184536091884214176">CUPS প্রিন্টার সেট-আপ বা ম্যানেজ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">ফিজিক্যাল সিম</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3188465121994729530">সরানোর গড়</translation>
 <translation id="3189187154924005138">বড় কার্সর</translation>
@@ -2639,6 +2639,7 @@
 <translation id="3881478300875776315">কম লাইন দেখুন</translation>
 <translation id="3882165008614329320">ক্যামেরা বা ফাইলে আগে থেকে থাকা ভিডিও</translation>
 <translation id="3884152383786131369">যেসকল ওয়েব কন্টেন্ট একাধিক ভাষায় উপলভ্য সেগুলি এই তালিকা থেকে উপযুক্ত প্রথম ভাষাটি ব্যবহার করবে। আপনার ব্রাউজার সেটিংসের সাথে এই পছন্দ সিঙ্ক করা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3885112598747515383">আপনার অ্যাডমিনিস্ট্রেটর আপডেটগুলি ম্যানেজ করে।</translation>
 <translation id="3886446263141354045">এই সাইটটি অ্যাক্সেস করার জন্য আপনার অনুরোধ <ph name="NAME" />কে পাঠানো হয়েছে</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ব্যবহার করে নোট নেওয়া হচ্ছে</translation>
 <translation id="3888586133700543064">এই তথ্য আপনার Assistant সংক্রান্ত সমস্যা আমাদের আরও ভালভাবে বুঝতে সাহায্য করে। এটি ৯০ দিন পর্যন্ত সেভ করা থাকে এবং অ্যাক্সেস যথাযথ ইঞ্জিনিয়ারিং এবং মতামত টিমের মধ্যে সীমাবদ্ধ থাকে।</translation>
@@ -2686,7 +2687,6 @@
 <translation id="3925573269917483990">ক্যামেরা:</translation>
 <translation id="3926002189479431949">Smart Lock ফোন পরিবর্তিত হয়েছে</translation>
 <translation id="3927932062596804919">অস্বীকার</translation>
-<translation id="392803502090869922">ই-সিম সেট আপ করুন</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" />-এ পরিবর্তন সেভ করতে চান?</translation>
 <translation id="3928659086758780856">প্রিন্ট করার কালি কমে এসেছে</translation>
 <translation id="3929426037718431833">এইসব এক্সটেনশন এই সাইটের তথ্য দেখতে এবং পরিবর্তন করতে পারে।</translation>
@@ -2805,6 +2805,7 @@
 <translation id="4056908315660577142"><ph name="APP_NAME" />-এর জন্য আপনার অভিভাবক যে সময়সীমা সেট করেছেন তা পার হয়ে গেছে। আগামীকাল আপনি আবার এটি <ph name="TIME_LIMIT" />-এর জন্য ব্যবহার করতে পারবেন।</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">দোকানে দেখুন</translation>
+<translation id="4057991113334098539">সক্রিয় করা হচ্ছে...</translation>
 <translation id="4058720513957747556">অ্যাপ্লিকেশান সকেট (TCP/IP)</translation>
 <translation id="4058793769387728514">এখন ডকুমেন্ট চেক করুন</translation>
 <translation id="406070391919917862">পৃষ্ঠভূমি অ্যাপ্লিকেশান</translation>
@@ -2904,7 +2905,6 @@
 <translation id="4181602000363099176">২০x</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4184885522552335684">কোনো প্রদর্শন সরাতে টেনে আনুন</translation>
-<translation id="4186763173530196927">একটি অ্যাপ ক্যামেরা অ্যাক্সেস করার চেষ্টা করছে। অ্যাক্সেস করার অনুমতি দিতে, ক্যামেরার 'গোপনীয়তা' সুইচ বন্ধ করে দিন।</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> সেট-আপ করা হচ্ছে...</translation>
 <translation id="4190828427319282529">কীবোর্ডের ফোকাস হাইলাইট করুন</translation>
 <translation id="4194570336751258953">ট্যাপ-টু-ক্লিক চালু করুন</translation>
@@ -5023,7 +5023,6 @@
 <translation id="6635362468090274700">ডিভাইস দেখতে না পাওয়া পর্যন্ত কেউই আপনার সাথে শেয়ার করতে পারবে না।<ph name="BR" /><ph name="BR" />সাময়িকভাবে নিজের ডিভাইস দেখাতে, 'স্ট্যাটাস এরিয়া' বিকল্প খুলুন, তারপরে 'নিয়ারবাই দৃশ্যমানতা' ফিচার চালু করুন।</translation>
 <translation id="6635944431854494329">সেটিংস &gt; অ্যাডভান্সড &gt; নিজে থেকে Google-এ ডায়গনস্টিক ও ব্যবহারের ডেটা পাঠান বিকল্পে গিয়ে মালিক এই ফিচারটি নিয়ন্ত্রণ করতে পারেন।</translation>
 <translation id="6635956300022133031">পাঠ্য থেকে ভাষ্য ভয়েস বেছে নিন এবং কাস্টমাইজ করুন</translation>
-<translation id="6636588250634969791">পরবর্তী ধাপে যাওয়ার আগে সিম কার্ড ঢোকান</translation>
 <translation id="6639554308659482635">SQLite স্মৃতি</translation>
 <translation id="6642720633335369752">সব খোলা অ্যাপের উইন্ডোগুলি দেখতে নিচের দিক থেকে উপরে সোয়াইপ করে ধরে রাখুন।</translation>
 <translation id="664290675870910564">নেটওয়ার্ক বেছে নিন</translation>

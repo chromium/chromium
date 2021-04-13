@@ -425,6 +425,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2521385132275182522">Namathisela phansi kwesokudla</translation>
 <translation id="2523886232349826891">Kulondolozwe kule divayisi kuphela</translation>
 <translation id="2524461107774643265">Engeza ulwazi olungeziwe</translation>
+<translation id="2526590354069164005">Ideskithophu</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{nokungu-1 ngaphezulu}one{nokungu-# ngaphezulu}other{nokungu-# ngaphezulu}}</translation>
 <translation id="2536110899380797252">Engeza ikheli</translation>
 <translation id="2539524384386349900">Thola</translation>
@@ -1170,6 +1171,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5327248766486351172">Igama</translation>
 <translation id="5329858041417644019">Isiphequluli sakho asiphethwe</translation>
 <translation id="5332219387342487447">Indlela yokuhambisa</translation>
+<translation id="5333022057423422993">I-Chrome ithole iphasiwedi osanda kuyisebenzisa ekwephuleni idatha. Ukuze uvikele ama-akhawunti akho, sincoma ukuthi uhlole amaphasiwedi akho alondoloziwe.</translation>
 <translation id="5334013548165032829">Amalogi anemininingwane yesistimu</translation>
 <translation id="5340250774223869109">Uhlelo lokusebenza luvinjiwe</translation>
 <translation id="534295439873310000">Amadivayisi e-NFC</translation>
@@ -1284,6 +1286,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5784606427469807560">Kune nenkinga yokuqinisekisa ikhadi lakho. Hlola ukuxhumeka kwakho kwe-inthanethi uphinde uzame futhi.</translation>
 <translation id="5785756445106461925">Ngokuqhubekayo, leli khasi lifaka ezinye izisetshenziswa ezingavikelekile. Lezi zisetshenziswa zingabukwa ngabanye ngenkathi ikwezokuthutha, futhi zingalungiswa yisihlaseli ukuze kuguqulwe ukubukeka kwekhasi.</translation>
 <translation id="5786044859038896871">Ingabe ufuna ukugcwalisa ulwazi lwekhadi lakho?</translation>
+<translation id="578633867165174378">I-Chrome ithole iphasiwedi osanda kuyisebenzisa ekwephuleni idatha. Sincoma ukuba ushintshe le phasiwedi manje.</translation>
 <translation id="5798290721819630480">Lahla izinguquko?</translation>
 <translation id="5803412860119678065">Ingabe ufuna ukugcwalisa i-<ph name="CARD_DETAIL" /> yakho?</translation>
 <translation id="5804241973901381774">Izimvume</translation>
@@ -1473,6 +1476,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6579630537141957243">Xhuma idivayisi ye-MIDI?</translation>
 <translation id="6579990219486187401">Okuphinki okukhanyayo</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6587182488465657433">I-Chrome ithole iphasiwedi osanda kuyisebenzisa ekwephuleni idatha. Ukuze uvikele ama-akhawunti akho, sincoma ukuthi uyishintshe manje bese uhlole amaphasiwedi akho alondoloziwe.</translation>
 <translation id="6587923378399804057">Isixhumanisi osikopishile</translation>
 <translation id="6591833882275308647">I-<ph name="DEVICE_TYPE" /> yakho ayiphethwe</translation>
 <translation id="6592952801936330159">Phatha inkinobho yamasethingi wesayithi, cindezela u-Enter ukuphatha izimvume nedatha egcinwe kuwo wonke amasayithi kumasethingi we-Chrome</translation>
@@ -2050,7 +2054,6 @@ Imininingwane engeziwe:
 <translation id="8798099450830957504">Okuzenzakalelayo</translation>
 <translation id="8805819170075074995">Ukufakwa kohlu kwesi-"<ph name="LANGUAGE_ID" />": Okufakiwe kuzitshiwe ngoba kuphinde kwafakwa kunqubomgomo ye-SpellcheckLanguage policy.</translation>
 <translation id="8807160976559152894">Sika ngemuva kwekhasi ngalinye</translation>
-<translation id="881292005876822445">Nika amandla Ukukhulisa?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab bese u-Enter ukuze ubuyekeze i-Chrome kusuka kumasethingi akho e-Chrome</translation>
 <translation id="8820817407110198400">Amabhukhimakhi</translation>
 <translation id="883848425547221593">Amanye amabhukhimakhi</translation>

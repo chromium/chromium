@@ -266,6 +266,7 @@
 <translation id="2777555524387840389">Մնացել է <ph name="SECONDS" /> վրկ</translation>
 <translation id="2779651927720337254">չհաջողվեց ներբեռնել</translation>
 <translation id="2781151931089541271">Մնացել է 1 վրկ</translation>
+<translation id="279827439955962619">Հեռացնել ընդգծումը</translation>
 <translation id="2801022321632964776">Տեղադրեք Chrome-ի վերջին տարբերակը՝ կայքերը ձեր լեզվով դիտելու համար</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="281504910091592009">Դիտեք և կառավարեք պահված գաղտնաբառերը ձեր <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4487967297491345095">Chrome հավելվածի բոլոր տվյալներն ընդմիշտ կջնջվեն, ներառյալ` բոլոր ֆայլերը, կարգավորումները, հաշիվները, տվյալների շտեմարանները և այլն:</translation>
 <translation id="449126573531210296">Գաղտնագրել համաժամացված գաղտնաբառերը Google հաշվի միջոցով</translation>
 <translation id="4493497663118223949">Lite ռեժիմը միացված է</translation>
+<translation id="4504667196171871375">Wi-Fi-ի և բջջային ինտերնետի միջոցով</translation>
 <translation id="4508528996305412043">Լրահոսի քարտի ընտրացանկը բացված է</translation>
 <translation id="4508642716788467538">Ընտրեք լեզուն</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# օր առաջ}one{# օր առաջ}other{# օր առաջ}}</translation>
@@ -917,6 +919,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="702463548815491781">Խորհուրդ է տրվում, երբ TalkBack-ը կամ Switch Access-ը միացված են</translation>
 <translation id="7027549951530753705">Վերականգնման ամսաթիվը՝ <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
+<translation id="7040531500313579672">Կիսվել ընդգծումով</translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>
 <translation id="7055152154916055070">Վերահասցեավորումն արգելափակված է՝</translation>
 <translation id="7063006564040364415">Չհաջողվեց կապակցվել համաժամացման սերվերին:</translation>

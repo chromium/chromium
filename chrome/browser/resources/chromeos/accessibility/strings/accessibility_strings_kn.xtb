@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox ಟುಟೋರಿಯಲ್ ಮುಚ್ಚು</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ತೆರೆದ ಆವರಣ}one{# ತೆರೆದ ಆವರಣಗಳು}other{# ತೆರೆದ ಆವರಣಗಳು}}</translation>
+<translation id="270523456882008230">ಸುಳಿವು: ಪ್ರಸ್ತುತ ಐಟಂ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಒಂದೇ ಬೆರಳಿನಿಂದ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="2705875883745373140">ಒತ್ತಿಲ್ಲ</translation>
 <translation id="2708078563826046398">ಪೀಚ್ ಪಫ್</translation>
 <translation id="2713444072780614174">ಬಿಳಿ</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">ಟೂಲ್‌ ಟಿಪ್‌</translation>
 <translation id="2976476721782829799">ಸ್ಕ್ರೀನ್ ಸುತ್ತಲೂ ಒಂದು ಬೆರಳನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡುವ ಮೂಲಕ ನೀವು ಸುತ್ತಲೂ ಚಲಿಸಬಹುದು. ಇದನ್ನು ಸ್ಪರ್ಶದ ಮೂಲಕ ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ ಎಂದು ಕರೆಯಲಾಗುತ್ತದೆ. ಈ ಪಾಠದ ಉಳಿದ ಭಾಗವನ್ನು ಓದಲು ನಿಮ್ಮ ಬೆರಳನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="297825089465017871">ಎರಡು ಬೆರಳುಗಳಿಂದ ಎಡಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
+<translation id="2988364959384217951">ಸುಳಿವು: ನೀವು ಈ ಟುಟೋರಿಯಲ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು ಬಯಸಿದರೆ, ಬಲದಿಂದ ಎಡಕ್ಕೆ ಎರಡು ಬೆರಳುಗಳಿಂದ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>
 <translation id="2998131015536248178">ಹಿಂದಿನ ಅಕ್ಷರ</translation>
 <translation id="2999559350546931576">ಪಿಚ್ ಇಳಿಸಿ</translation>
 <translation id="3009352964623081324">Search + O, ನಂತರ S. ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು, ನಿರ್ವಹಿಸಲು ಮತ್ತು ಧ್ವನಿಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಬಳಸಿ.</translation>
@@ -940,6 +942,7 @@
 <translation id="7776293189010177726">ChromeVox ಮೆನುಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7799302833060027366">ಗಣಿತದ ವಿಷಯವನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್‌ ಮಾಡಲು ಮೇಲಕ್ಕೆ, ಕೆಳಕ್ಕೆ, ಎಡಕ್ಕೆ ಅಥವಾ ಬಲಕ್ಕೆ ಒತ್ತಿರಿ</translation>
 <translation id="7800558923657349506">ಹಿನ್ನುಡಿ</translation>
+<translation id="7801768143868631306">ಸುಳಿವು: ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಒಂದು ಬೆರಳಿನಲ್ಲಿ ಎಡಕ್ಕೆ ಅಥವಾ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
 <translation id="7810781339813764006">ಮುಂದಿನ ಗುಂಪು</translation>
 <translation id="7813616274030162878">ಪ್ರವೇಶದ ಮೆನು ಬದಲಿಸಿ</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860">ಫಾಂಟ್ <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">ಸೈಕಲ್ ಪಂಚುಯೇಶನ್ ಎಕೋ</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">ಕ್ರಿಯೆಗಳು ಲಭ್ಯವಿವೆ. ವೀಕ್ಷಿಸಲು Search+Ctrl+A ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">ಮಾರ್ಪಡಿಸುವ ಕೀಗಳು</translation>
 <translation id="8943282376843390568">ನಿಂಬೆ ಹಳದಿ</translation>

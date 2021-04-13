@@ -421,6 +421,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2521385132275182522">Grapat a la part inferior dreta</translation>
 <translation id="2523886232349826891">Només es desarà en aquest dispositiu</translation>
 <translation id="2524461107774643265">Afegeix més informació</translation>
+<translation id="2526590354069164005">Escriptori</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i 1 més}other{i # més}}</translation>
 <translation id="2536110899380797252">Afegeix una adreça</translation>
 <translation id="2539524384386349900">Detecta</translation>
@@ -1162,6 +1163,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5329858041417644019">El navegador no està gestionat</translation>
 <translation id="5332219387342487447">Mètode d'enviament</translation>
+<translation id="5333022057423422993">Chrome ha trobat la contrasenya que acabes de fer servir en una violació de les dades. Per protegir els teus comptes, et recomanem que comprovis les teves contrasenyes desades.</translation>
 <translation id="5334013548165032829">Registres detallats del sistema</translation>
 <translation id="5340250774223869109">L'aplicació està bloquejada</translation>
 <translation id="534295439873310000">Dispositius amb NFC</translation>
@@ -1276,6 +1278,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5784606427469807560">S'ha produït un problema en confirmar la targeta. Comprova la connexió a Internet i torna-ho a provar.</translation>
 <translation id="5785756445106461925">A més, aquesta pàgina conté altres recursos que no són segurs. La resta d'usuaris poden visualitzar-los mentre estan en trànsit, i algun atacant podria modificar-los per canviar l'aparença de la pàgina.</translation>
 <translation id="5786044859038896871">Vols emplenar la informació de la teva targeta?</translation>
+<translation id="578633867165174378">Chrome ha trobat la contrasenya que acabes de fer servir en una violació de les dades. Et recomanem que canviïs la contrasenya ara.</translation>
 <translation id="5798290721819630480">Vols descartar els canvis?</translation>
 <translation id="5803412860119678065">Vols emplenar la informació de la teva targeta <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -1465,6 +1468,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6579630537141957243">Vols connectar el dispositiu MIDI?</translation>
 <translation id="6579990219486187401">Rosa clar</translation>
 <translation id="6583674473685352014">B6 (sobre)</translation>
+<translation id="6587182488465657433">Chrome ha trobat la contrasenya que acabes de fer servir en una violació de les dades. Per protegir els teus comptes, et recomanem que la canviïs ara i que, després, comprovis les contrasenyes que tens desades.</translation>
 <translation id="6587923378399804057">Enllaç que has copiat</translation>
 <translation id="6591833882275308647">El dispositiu <ph name="DEVICE_TYPE" /> no està gestionat</translation>
 <translation id="6592952801936330159">Botó Gestiona la configuració del lloc web: prem Retorn per gestionar els permisos i les dades emmagatzemades als llocs web des de la configuració de Chrome</translation>
@@ -2042,7 +2046,6 @@ Detalls addicionals:
 <translation id="8798099450830957504">Predeterminat</translation>
 <translation id="8805819170075074995">Entrada "<ph name="LANGUAGE_ID" />" de la llista: l'entrada s'ha ignorat perquè també s'inclou a la política SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Retalla després de cada pàgina</translation>
-<translation id="881292005876822445">Vols activar la maximització?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per actualitzar Chrome des de la configuració de Chrome</translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="883848425547221593">Altres adreces d'interès</translation>

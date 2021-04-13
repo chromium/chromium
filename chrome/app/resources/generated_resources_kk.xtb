@@ -2006,7 +2006,6 @@
 <translation id="3183143381919926261">Мобильдік интернет желілері</translation>
 <translation id="3183944777708523606">Мониторды реттеу</translation>
 <translation id="3184536091884214176">CUPS принтерлерін реттеу және басқару. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">Физикалық SIM картасы</translation>
 <translation id="3188257591659621405">Файлдарым</translation>
 <translation id="3188465121994729530">Орташа мәнді жылжыту</translation>
 <translation id="3189187154924005138">Үлкен көрсеткі</translation>
@@ -2685,7 +2684,6 @@
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3926002189479431949">Smart Lock телефоны өзгертілді</translation>
 <translation id="3927932062596804919">Тыйым салу</translation>
-<translation id="392803502090869922">eSIM картасын реттеу</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" /> өзгерістері сақталсын ба?</translation>
 <translation id="3928659086758780856">Сия азайды.</translation>
 <translation id="3929426037718431833">Бұл кеңейтімдер осы сайттағы ақпаратты көре алады және өзгерте алады.</translation>
@@ -2904,7 +2902,6 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Тілдер</translation>
 <translation id="4184885522552335684">Дисплейді жылжыту үшін сүйреу</translation>
-<translation id="4186763173530196927">Қолданба камераны пайдаланғысы келіп тұр. Пайдалануға рұқсат беру үшін камераның құпиялылық функциясын өшіріңіз.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> орнатылуда...</translation>
 <translation id="4190828427319282529">Пернетақта фокусын бөлектеу</translation>
 <translation id="4194570336751258953">Tap-to-click мүмкіндігін қосу</translation>
@@ -5022,7 +5019,6 @@
 <translation id="6635362468090274700">Өзіңізді көрсетпесеңіз, сізбен ешкім бөлісе алмайды.<ph name="BR" /><ph name="BR" />Өзіңізді уақытша көрсету үшін күй аумағын ашыңыз, сосын Nearby көрсетілу параметрін таңдаңыз.</translation>
 <translation id="6635944431854494329">Бұл функцияны иесі "Параметрлер &gt; Қосымша &gt; Google-ға диагностика және пайдалану деректерін автоматты түрде жіберу" бөлімінен басқара алады.</translation>
 <translation id="6635956300022133031">Мәтінді дыбысқа түрлендіру дауыстарын таңдау және реттеу</translation>
-<translation id="6636588250634969791">Жалғастырмас бұрын SIM картасын салыңыз.</translation>
 <translation id="6639554308659482635">SQLite жады</translation>
 <translation id="6642720633335369752">Қолданбаның барлық ашық терезесін көру үшін саусақпен экранның төменгі жағынан жоғары қарай сырғытып, ұстап тұрыңыз.</translation>
 <translation id="664290675870910564">Желіні таңдау</translation>

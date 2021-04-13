@@ -421,6 +421,7 @@
 <translation id="2521385132275182522">釘裝 (右下方)</translation>
 <translation id="2523886232349826891">只會儲存至此裝置</translation>
 <translation id="2524461107774643265">新增更多資料</translation>
+<translation id="2526590354069164005">桌面電腦</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{和另外 1 個網域}other{和另外 # 個網域}}</translation>
 <translation id="2536110899380797252">新增地址</translation>
 <translation id="2539524384386349900">偵測</translation>
@@ -2041,7 +2042,6 @@
 <translation id="8798099450830957504">預設</translation>
 <translation id="8805819170075074995">清單項目「<ph name="LANGUAGE_ID" />」：此項目同時亦包括在 SpellcheckLanguage 政策中，因此系統會忽略該項目。</translation>
 <translation id="8807160976559152894">完成每頁後修剪</translation>
-<translation id="881292005876822445">要啟用最大化功能嗎？</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以透過 Chrome 設定更新 Chrome</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="883848425547221593">其他書籤</translation>

@@ -421,6 +421,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2521385132275182522">Grapa bat behean, eskuinetara</translation>
 <translation id="2523886232349826891">Gailu honetan soilik gordeko da</translation>
 <translation id="2524461107774643265">Gehitu informazio gehiago</translation>
+<translation id="2526590354069164005">Ordenagailua</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{eta beste bat}other{eta beste #}}</translation>
 <translation id="2536110899380797252">Gehitu helbidea</translation>
 <translation id="2539524384386349900">Hauteman</translation>
@@ -1158,6 +1159,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5327248766486351172">Izena</translation>
 <translation id="5329858041417644019">Gailuak ez du kudeatzailerik</translation>
 <translation id="5332219387342487447">Bidalketa-metodoa</translation>
+<translation id="5333022057423422993">Chrome-k erabili berri duzun pasahitza aurkitu du datuen isilpekotasunaren urratze batean. Zure kontuak babesteko, gordeta dauzkazun pasahitzak egiaztatzea gomendatzen dizugu.</translation>
 <translation id="5334013548165032829">Sistemaren erregistroen xehetasunak</translation>
 <translation id="5340250774223869109">Aplikazioa blokeatuta dago</translation>
 <translation id="534295439873310000">NFC darabilten gailuak</translation>
@@ -1272,6 +1274,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5784606427469807560">Arazo bat izan da txartela berrestean. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="5785756445106461925">Gainera, orri honetan seguruak ez diren beste baliabide batzuk daude. Bidean dauden bitartean, beste pertsonek baliabide horiek ikus ditzakete eta erasotzaileek aldatu egin ditzakete orriaren portaera aldatzeko.</translation>
 <translation id="5786044859038896871">Txartelaren datuak betetzea nahi duzu?</translation>
+<translation id="578633867165174378">Chrome-k erabili berri duzun pasahitza aurkitu du datuen isilpekotasunaren urratze batean. Pasahitz hori berehala aldatzea gomendatzen dizugu.</translation>
 <translation id="5798290721819630480">Aldaketak baztertu nahi dituzu?</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> txartelaren datuak betetzea nahi duzu?</translation>
 <translation id="5804241973901381774">Baimenak</translation>
@@ -1460,6 +1463,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6579630537141957243">MIDI gailua konektatu nahi duzu?</translation>
 <translation id="6579990219486187401">Arrosa argia</translation>
 <translation id="6583674473685352014">B6 (gutun-azala)</translation>
+<translation id="6587182488465657433">Chrome-k erabili berri duzun pasahitza aurkitu du datuen isilpekotasunaren urratze batean. Zure kontuak babesteko, pasahitz hori aldatzea eta gordeta dauzkazun pasahitzak egiaztatzea gomendatzen dizugu.</translation>
 <translation id="6587923378399804057">Kopiatu duzun esteka</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> gailuak ez du kudeatzailerik</translation>
 <translation id="6592952801936330159">Webguneen ezarpenak kudeatzeko botoia, sakatu Sartu Chrome-ren ezarpenetara joan, eta baimenak eta webguneetan gordetako datuak kudeatzeko</translation>
@@ -2037,7 +2041,6 @@ Xehetasun gehiago:
 <translation id="8798099450830957504">Lehenetsia</translation>
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" zerrenda-sarrera: sarrerari ez ikusi egin zaio, SpellcheckLanguage gidalerroan ere agertzen delako.</translation>
 <translation id="8807160976559152894">Moztu orri bakoitzaren amaieran</translation>
-<translation id="881292005876822445">Maximizatzailea gaitu nahi duzu?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu Chrome eguneratzeko Chrome-ren ezarpenetan</translation>
 <translation id="8820817407110198400">Laster-markak</translation>
 <translation id="883848425547221593">Beste laster-markak</translation>

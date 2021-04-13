@@ -2006,7 +2006,6 @@
 <translation id="3183143381919926261">മൊബൈൽ ഡാറ്റാ നെറ്റ്‌വർക്കുകൾ</translation>
 <translation id="3183944777708523606">മോണിറ്റർ ക്രമീകരണം</translation>
 <translation id="3184536091884214176">CUPS പ്രിന്ററുകൾ സജ്ജമാക്കുക അല്ലെങ്കിൽ മാനേജ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">ഫിസിക്കൽ സിം</translation>
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
 <translation id="3188465121994729530">ശരാശരി നീക്കുന്നു</translation>
 <translation id="3189187154924005138">വലിയ കഴ്‌സർ</translation>
@@ -2685,7 +2684,6 @@
 <translation id="3925573269917483990">ക്യാമറ:</translation>
 <translation id="3926002189479431949">Smart Lock ഫോൺ മാറി</translation>
 <translation id="3927932062596804919">നിരസിക്കൂ</translation>
-<translation id="392803502090869922">eSim സജ്ജീകരണം</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" /> മാറ്റങ്ങൾ എന്നതിലേക്ക് സംരക്ഷിക്കണോ?</translation>
 <translation id="3928659086758780856">മഷി കുറവാണ്</translation>
 <translation id="3929426037718431833">ഈ വിപുലീകരണങ്ങൾക്ക് ഈ സൈറ്റിലെ വിവരങ്ങൾ കാണാനും മാറ്റാനും കഴിയും.</translation>
@@ -2804,6 +2802,7 @@
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome ആപ്പിനായി നിങ്ങളുടെ രക്ഷിതാവ് സജ്ജീകരിച്ച സമയ പരിധിയിലെത്തി. നാളെ <ph name="TIME_LIMIT" /> സമയം നിങ്ങൾക്ക് അത് ഉപയോഗിക്കാം.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">സ്റ്റോറിൽ കാണുക</translation>
+<translation id="4057991113334098539">സജീവമാക്കുന്നു...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">ഡോക്യുമെന്റ് ഇപ്പോള്‍‌ പരിശോധിക്കുക</translation>
 <translation id="406070391919917862">പശ്ചാത്തല അപ്ലിക്കേഷനുകള്‍</translation>
@@ -2903,7 +2902,6 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ഭാഷകൾ‌</translation>
 <translation id="4184885522552335684">ഡിസ്‌പ്ലേ നീക്കാൻ വലിച്ചിടുക</translation>
-<translation id="4186763173530196927">ഒരു ആപ്പ് ക്യാമറ ആക്‌സസ് ചെയ്യാൻ ശ്രമിക്കുന്നു. ആക്‌സസ് അനുവദിക്കുന്നതിന് ക്യാമറാ സ്വകാര്യതാ സ്വിച്ച് ഓഫാക്കുക.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> സജ്ജീകരിക്കുന്നു...</translation>
 <translation id="4190828427319282529">കീബോർഡ് ഫോക്കസ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="4194570336751258953">'ക്ലിക്കിനായി ടാപ്പ് ചെയ്യുക' പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -5023,7 +5021,6 @@
 <translation id="6635362468090274700">നിങ്ങൾ ദൃശ്യപരതാ ക്രമീകരണം ഓണാക്കുന്നത് വരെ ആർക്കും നിങ്ങളുമായി പങ്കിടാനാകില്ല.<ph name="BR" /><ph name="BR" />താൽക്കാലികമായി നിങ്ങളുടെ ഉപകരണം ദൃശ്യമാക്കാൻ, സ്‌റ്റാറ്റസ് ഏരിയ തുറന്ന് സമീപമുള്ള ദൃശ്യപരത ഓണാക്കുക.</translation>
 <translation id="6635944431854494329">ക്രമീകരണം &gt; വിപുലമായത് &gt; ഡയഗണോസ്‌റ്റിക്, ഉപയോഗ ഡാറ്റ Google-ന് സ്വയമേവ അയയ്‌ക്കുക എന്നതിൽ ഉടമയ്‌ക്ക് ഈ ഫീച്ചർ നിയന്ത്രിക്കാനാവും.</translation>
 <translation id="6635956300022133031">ടെക്‌സ്റ്റ് ടു സ്‌പീച്ച് ശബ്ദങ്ങൾ തിരഞ്ഞെടുത്ത് ഇഷ്ടാനുസൃതമാക്കുക</translation>
-<translation id="6636588250634969791">തുടരുന്നതിന് മുമ്പ് SIM ഇടുക</translation>
 <translation id="6639554308659482635">SQLite മെമ്മറി</translation>
 <translation id="6642720633335369752">തുറന്നിരിക്കുന്ന എല്ലാ ആപ്പ് വിൻഡോകളും കാണാൻ, താഴെ നിന്ന് മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്ത് പിടിക്കുക.</translation>
 <translation id="664290675870910564">നെറ്റ്‌വർക്ക് തിരഞ്ഞെടുക്കൽ</translation>

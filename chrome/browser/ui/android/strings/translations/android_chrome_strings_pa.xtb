@@ -266,6 +266,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ਸਕਿੰਟ ਬਾਕੀ</translation>
 <translation id="2779651927720337254">ਅਸਫਲ</translation>
 <translation id="2781151931089541271">1 ਸਕਿੰਟ ਬਾਕੀ</translation>
+<translation id="279827439955962619">ਹਾਈਲਾਈਟਿੰਗ ਹਟਾਓ</translation>
 <translation id="2801022321632964776">Chrome ਦੇ ਨਵੀਨਤਮ ਵਰਜਨ ਵਿੱਚ ਆਪਣੀ ਭਾਸ਼ਾ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="2805756323405976993">ਐਪਸ</translation>
 <translation id="281504910091592009">ਆਪਣੇ <ph name="BEGIN_LINK" />Google ਖਾਤੇ<ph name="END_LINK" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">Chrome ਦਾ ਸਾਰਾ ਐਪ ਡਾਟਾ ਸਥਾਈ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਸ ਵਿੱਚ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ, ਸੈਟਿੰਗਾਂ, ਖਾਤੇ, ਡਾਟਾਬੇਸ ਆਦਿ ਸ਼ਾਮਲ ਹਨ।</translation>
 <translation id="449126573531210296">ਸਮਕਾਲੀਕਿਰਤ ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕਰੋ</translation>
 <translation id="4493497663118223949">ਲਾਈਟ ਮੋਡ ਚਾਲੂ ਹੈ</translation>
+<translation id="4504667196171871375">ਵਾਈ-ਫਾਈ ਅਤੇ ਮੋਬਾਈਲ ਡਾਟੇ 'ਤੇ</translation>
 <translation id="4508528996305412043">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
 <translation id="4508642716788467538">ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# ਦਿਨ ਪਹਿਲਾਂ}one{# ਦਿਨ ਪਹਿਲਾਂ}other{# ਦਿਨ ਪਹਿਲਾਂ}}</translation>
@@ -917,6 +919,7 @@
 <translation id="702463548815491781">TalkBack ਜਾਂ 'ਸਵਿੱਚ ਪਹੁੰਚ' ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7029809446516969842">ਪਾਸਵਰਡ</translation>
+<translation id="7040531500313579672">ਹਾਈਲਾਈਟਿੰਗ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7054588988317389591">ਕੀ ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨੇ ਹਨ?</translation>
 <translation id="7055152154916055070">ਇਸ ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ:</translation>
 <translation id="7063006564040364415">ਸਿੰਕ ਸਰਵਰ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕਰ ਸਕਿਆ।</translation>

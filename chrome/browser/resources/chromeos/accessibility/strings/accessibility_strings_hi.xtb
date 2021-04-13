@@ -241,6 +241,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2684412629217766642">ChromeVox ट्यूटोरियल बंद करें</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{खुला कोष्ठक}one{# खुले कोष्ठक}other{# खुले कोष्ठक}}</translation>
+<translation id="270523456882008230">ध्यान दें: मौजूदा आइटम को ऐक्टिवेट करने के लिए, स्क्रीन पर एक उंगली से दो बार टैप करें.</translation>
 <translation id="2705875883745373140">दबाया नहीं गया</translation>
 <translation id="2708078563826046398">आड़ू जैसा रंग</translation>
 <translation id="2713444072780614174">सफ़ेद</translation>
@@ -285,6 +286,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2972205263822847197">टूल टिप</translation>
 <translation id="2976476721782829799">आप एक उंगली को खींचकर और छोड़कर भी स्क्रीन पर एक से दूसरी जगह जा सकते हैं. इसे 'छूकर, उससे जुड़ी जानकारी सुनना' कहते हैं. इस लेसन का बाकी हिस्सा पढ़ने के लिए, अपनी उंगली को स्क्रीन पर खींचें और छोड़ें.</translation>
 <translation id="297825089465017871">दो उंगलियों से बाईं ओर स्वाइप करें</translation>
+<translation id="2988364959384217951">ध्यान दें: अगर आप इस ट्यूटोरियल से बाहर निकलना चाहते हैं, तो स्क्रीन पर दो उंगलियों से दाईं से बाईं ओर स्वाइप करें.</translation>
 <translation id="2998131015536248178">पिछला वर्ण</translation>
 <translation id="2999559350546931576">पिच घटाएं</translation>
 <translation id="3009352964623081324">Search + O, फिर S. इस शॉर्टकट का इस्तेमाल इंस्टॉल करने, प्रबंधित करने, और आवाज़ को अपनी पसंद के मुताबिक बनाने के लिए करें.</translation>
@@ -940,6 +942,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7776293189010177726">ChromeVox मेनू खोलें</translation>
 <translation id="7799302833060027366">मैथ के बारे में जानने के लिए ऊपर, नीचे, बाईं या दाईं ओर तीर के निशान वाला बटन दबाएं</translation>
 <translation id="7800558923657349506">उपसंहार</translation>
+<translation id="7801768143868631306">ध्यान दें: स्क्रीन पर एक जगह से दूसरी जगह जाने के लिए, उस पर एक उंगली से बाईं या दाईं ओर स्वाइप करें.</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7810781339813764006">अगला समूह</translation>
 <translation id="7813616274030162878">ऐक्सेस करने का तरीका बदलने से जुड़ा मेन्यू</translation>
@@ -1079,6 +1082,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8897030325301866860">फ़ॉन्ट <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">विराम चिह्न इको को चक्रित करें</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">कार्रवाइयां उपलब्ध हैं. इन्हें देखने के लिए, Search+Ctrl+A दबाएं</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">संशोधक कुंजियां</translation>
 <translation id="8943282376843390568">नींबू पीला</translation>

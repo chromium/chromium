@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox-útmutató bezárása</translation>
 <translation id="2697408785920771974">szövegközi automatikus kiegészítés</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{nyitó zárójel}other{# nyitó zárójel}}</translation>
+<translation id="270523456882008230">Tipp: Koppintson duplán egy ujjal az aktuális elem aktiválásához.</translation>
 <translation id="2705875883745373140">Nincs megnyomva</translation>
 <translation id="2708078563826046398">Őszibarackfelfújt</translation>
 <translation id="2713444072780614174">Fehér</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Elemleírás</translation>
 <translation id="2976476721782829799">Egy ujja húzásával is mozoghat a képernyőn. Ennek a funkciónak az a neve, hogy Felfedezés érintéssel. Az ujja képernyőn való húzásával olvassa el a lecke hátralevő részét.</translation>
 <translation id="297825089465017871">Csúsztassa két ujját balra</translation>
+<translation id="2988364959384217951">Tipp: Csúsztasson balról jobbra két ujjal, ha ki szeretne lépni ebből az útmutatóból.</translation>
 <translation id="2998131015536248178">Előző karakter</translation>
 <translation id="2999559350546931576">Hangszín csökkentése</translation>
 <translation id="3009352964623081324">Keresés + O, majd S. Használja a hangok telepítéséhez, kezeléséhez és személyre szabásához.</translation>
@@ -940,6 +942,7 @@
 <translation id="7776293189010177726">ChromeVox-menük megnyitása</translation>
 <translation id="7799302833060027366">A matematikai tartalmak felfedezéséhez használja a fel, le, balra és jobbra nyílbillentyűket</translation>
 <translation id="7800558923657349506">Végszó</translation>
+<translation id="7801768143868631306">Tipp: Egy ujjal balra vagy jobbra csúsztatva navigálhat.</translation>
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7810781339813764006">Következő csoport</translation>
 <translation id="7813616274030162878">A kapcsolóalapú hozzáférés menüje</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860"><ph name="FONT_FAMILY" /> betűtípus</translation>
 <translation id="8898516272131543774">Központozás visszaolvasásának be- vagy kikapcsolása</translation>
 <translation id="8908714597367957477">oszlopfejléc</translation>
+<translation id="8910180774920883033">A használható műveletek megtekintéséhez nyomja le a Kereső + Ctrl + A billentyűparancsot.</translation>
 <translation id="8937112856099038376">belső link</translation>
 <translation id="8940925288729953902">Módosítóbillentyűk</translation>
 <translation id="8943282376843390568">Limezöld</translation>

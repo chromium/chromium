@@ -255,7 +255,7 @@
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1807528111851433570">גיליון ראשון</translation>
 <translation id="1812527064848182527">לרוחב</translation>
-<translation id="1814698615734239189">האפליקציה הזו מיועדת למכשירים ניידים. היא רצה במצב תאימות. הרשאה לשינוי הגודל עלולה לגרום לבעיות, כולל הפעלת האפליקציה מחדש.</translation>
+<translation id="1814698615734239189">האפליקציה הזו מיועדת למכשירים ניידים. היא פועלת במצב תאימות. הרשאה לשינוי הגודל עלולה לגרום לבעיות, כולל הפעלת האפליקציה מחדש.</translation>
 <translation id="1821930232296380041">הבקשה או הפרמטרים של הבקשה אינם חוקיים</translation>
 <translation id="1822540298136254167">אתרים שנכנסת אליהם וזמני השהייה באתרים האלה</translation>
 <translation id="1826516787628120939">מתבצעת בדיקה</translation>
@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">סיכת הידוק בפינה הימנית התחתונה</translation>
 <translation id="2523886232349826891">הכרטיס יישמר רק במכשיר הזה</translation>
 <translation id="2524461107774643265">הוספת עוד מידע</translation>
+<translation id="2526590354069164005">שולחן עבודה</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ודומיין אחד נוסף}two{ו-# דומיינים נוספים}many{ו-# דומיינים נוספים}other{ו-# דומיינים נוספים}}</translation>
 <translation id="2536110899380797252">הוספת כתובת</translation>
 <translation id="2539524384386349900">זהה</translation>
@@ -1175,6 +1176,7 @@ Del</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="5329858041417644019">הדפדפן שלך לא מנוהל</translation>
 <translation id="5332219387342487447">שיטת משלוח</translation>
+<translation id="5333022057423422993">‏Chrome איתר את הסיסמה שבה השתמשת עכשיו בפרצה באבטחת מידע. כדי לאבטח את החשבונות שלך, מומלץ לבדוק את הסיסמאות השמורות.</translation>
 <translation id="5334013548165032829">יומני מערכת מפורטים</translation>
 <translation id="5340250774223869109">האפליקציה חסומה</translation>
 <translation id="534295439873310000">‏מכשירי NFC</translation>
@@ -1290,6 +1292,7 @@ Del</translation>
 <translation id="5784606427469807560">הייתה בעיה באישור הכרטיס. יש לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="5785756445106461925">כמו כן, דף זה כולל משאבים נוספים שאינם מאובטחים. גורמים אחרים עלולים לראות את המשאבים האלה במהלך העברתם, ותוקף עלול לשנות אותם באופן שישנה את מראה הדף.</translation>
 <translation id="5786044859038896871">האם ברצונך למלא את פרטי הכרטיס שלך?</translation>
+<translation id="578633867165174378">‏Chrome איתר את הסיסמה שבה השתמשת עכשיו בפרצה באבטחת מידע. מומלץ לשנות את הסיסמה הזו מיד.</translation>
 <translation id="5798290721819630480">לבטל את השינויים?</translation>
 <translation id="5803412860119678065">האם ברצונך למלא את פרטי הכרטיס <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">הרשאות</translation>
@@ -1479,6 +1482,7 @@ Del</translation>
 <translation id="6579630537141957243">‏לחבר התקן MIDI?</translation>
 <translation id="6579990219486187401">ורוד בהיר</translation>
 <translation id="6583674473685352014">B6 (Envelope)‎</translation>
+<translation id="6587182488465657433">‏Chrome איתר את הסיסמה שבה השתמשת עכשיו בפרצה באבטחת מידע. כדי לאבטח את החשבונות שלך, מומלץ לשנות אותה מיד ואז לבדוק את הסיסמאות השמורות.</translation>
 <translation id="6587923378399804057">קישור שהעתקת</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> זה אינו מנוהל</translation>
 <translation id="6592952801936330159">‏הלחצן 'ניהול ההגדרות לאתרים', יש להקיש על Enter כדי לנהל את ההרשאות והנתונים השמורים בכל האתרים בהגדרות Chrome</translation>
@@ -2056,7 +2060,6 @@ Del</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
 <translation id="8805819170075074995">‏ערך רשימה "<ph name="LANGUAGE_ID" />": המערכת התעלמה מהערך מאחר שהוא כלול גם במדיניות SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">חיתוך אחרי כל עמוד</translation>
-<translation id="881292005876822445">להפעיל הגדלה מקסימלית?</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לעדכן את דפדפן Chrome בהגדרות Chrome</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="883848425547221593">סימניות אחרות</translation>

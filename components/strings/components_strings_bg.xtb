@@ -423,6 +423,7 @@
 <translation id="2521385132275182522">Телбодиране долу вдясно</translation>
 <translation id="2523886232349826891">Запазено само на това устройство</translation>
 <translation id="2524461107774643265">Добавяне на още информация</translation>
+<translation id="2526590354069164005">Работен плот</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{и още 1}other{и още #}}</translation>
 <translation id="2536110899380797252">Добавяне на адрес</translation>
 <translation id="2539524384386349900">Откриване</translation>
@@ -2052,7 +2053,6 @@
 <translation id="8798099450830957504">По подразбиране</translation>
 <translation id="8805819170075074995">Списъчен запис „<ph name="LANGUAGE_ID" />“: Записът е пренебрегнат, защото е включен и в правилото SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Отрязване след всяка страница</translation>
-<translation id="881292005876822445">Да се разреши ли увеличаването?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да актуализирате Chrome от настройките</translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="883848425547221593">Други отметки</translation>

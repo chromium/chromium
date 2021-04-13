@@ -423,6 +423,7 @@
 <translation id="5489208564673669003">সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="BEGIN_LINK" />কুকি সেটিংস<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="5490005495580364134">সমস্ত সাইটের কুকি ব্লক করুন (যদিও আমরা এটি করতে সাজেস্ট করছি না)</translation>
 <translation id="5508435575041083207">সাইন-আউট করুন এবং এই ডিভাইসে থাকা ডেটা মুছে ফেলুন</translation>
+<translation id="5513681519188741830"><ph name="TIME" /> ঘঃ আগে</translation>
 <translation id="5525269841082836315">পাসফ্রেজ তৈরি করুন</translation>
 <translation id="5548760955356983418">Handoff এই ডিভাইসে একটি ওয়েবসাইট ব্রাউজ করা শুরু করতে দেয় এবং পরে সহজেই আপনার Mac-এ অবিরত করতে দেয়৷ সাম্প্রতিক খোলা ওয়েবসাইটটি আপনার Mac-এ ডক-এ প্রদর্শিত হবে৷
 
@@ -788,6 +789,7 @@
 <translation id="9152539721251340337">একটি QR কোড তৈরি করুন</translation>
 <translation id="9157836665414082580">ডায়ালগ রুদ্ধ করুন</translation>
 <translation id="9188680907066685419">ম্যানেজ করা অ্যাকাউন্ট থেকে সাইন-আউট করুন</translation>
+<translation id="9200875785104711666"><ph name="TIME" /> দিন আগে</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">ক্র্যাশ রিপোর্ট পাঠানো হয়েছে৷</translation>
 <translation id="952704832371081537">বাতিল করুন</translation>

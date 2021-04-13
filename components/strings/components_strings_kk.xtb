@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">Төменгі оң жағын қапсыру</translation>
 <translation id="2523886232349826891">Тек осы құрылғыда сақталады</translation>
 <translation id="2524461107774643265">Қосымша ақпарат енгізу</translation>
+<translation id="2526590354069164005">Жұмыс үстелі</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{және тағы 1}other{және тағы #}}</translation>
 <translation id="2536110899380797252">Мекенжай енгізу</translation>
 <translation id="2539524384386349900">Анықтау</translation>
@@ -2052,7 +2053,6 @@
 <translation id="8798099450830957504">Әдепкі</translation>
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" тізім жазбасы: жазба еленбейді, себебі ол SpellcheckLanguage саясатына енгізілген.</translation>
 <translation id="8807160976559152894">Әр беттен кейін кесу</translation>
-<translation id="881292005876822445">"Өлшемді барынша ұлғайту" функциясын қосу керек пе?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде Chrome-ды жаңарту үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="8820817407110198400">Бетбелгілер</translation>
 <translation id="883848425547221593">Басқа бетбелгілер</translation>

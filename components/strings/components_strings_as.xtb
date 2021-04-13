@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">তলৰ অংশৰ সোঁফালে ষ্টে'পল কৰক</translation>
 <translation id="2523886232349826891">কেৱল এই ডিভাইচটোত ছেভ কৰা হয়</translation>
 <translation id="2524461107774643265">অধিক তথ্য যোগ কৰক</translation>
+<translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{আৰু ১টা}one{আৰু অন্য #টা}other{আৰু অন্য #টা}}</translation>
 <translation id="2536110899380797252">ঠিকনা যোগ কৰক</translation>
 <translation id="2539524384386349900">চিনাক্ত কৰক</translation>
@@ -2043,7 +2044,6 @@
 <translation id="8798099450830957504">ডিফ’ল্ট</translation>
 <translation id="8805819170075074995">তালিকাৰ অন্তৰ্ভুক্তি "<ph name="LANGUAGE_ID" />": অন্তৰ্ভুক্তি অৱজ্ঞা কৰা হৈছে কাৰণ এইটো SpellcheckLanguage নীতিতো আছে।</translation>
 <translation id="8807160976559152894">প্ৰতিটো পৃষ্ঠাৰ পাছত ট্ৰিম কৰক</translation>
-<translation id="881292005876822445">মেক্সিমাইজ কৰাৰ সুবিধাটো সক্ষম কৰিবনে?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিংসমূহত Chrome আপডে’ট কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883848425547221593">অন্য বুকমাৰ্ক</translation>

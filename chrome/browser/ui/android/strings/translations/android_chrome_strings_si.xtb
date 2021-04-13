@@ -266,6 +266,7 @@
 <translation id="2777555524387840389">තත්පර <ph name="SECONDS" />ක් ඉතිරියි</translation>
 <translation id="2779651927720337254">අසාර්ථකයි</translation>
 <translation id="2781151931089541271">තත්පර 1ක් ඉතිරියි</translation>
+<translation id="279827439955962619">උද්දීපනය ඉවත් කරන්න</translation>
 <translation id="2801022321632964776">Chrome හි නවතම අනුවාදයේ ඔබේ භාෂාව ලබා ගැනීමට යාවත්කාලීන කරන්න</translation>
 <translation id="2805756323405976993">යෙදුම්</translation>
 <translation id="281504910091592009">ඔබේ <ph name="BEGIN_LINK" />Google ගිණුම<ph name="END_LINK" /> තුළ සුරකින ලද මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">Chrome හි සියලු යෙදුම් දත්ත ස්ථිරවම මකනු ඇත. මෙහි සියලු ගොනු, සැකසීම්, ගිණුම්, දත්ත සමුදායන්, ආදිය ඇතුළත් වේ.</translation>
 <translation id="449126573531210296">සමමුහුර්ත කළ මුරපද ඔබගේ Google ගිණුම සමග සංකේතනය කරන්න</translation>
 <translation id="4493497663118223949">සැහැල්ලු ප්‍රකාරය ක්‍රියාත්මකයි</translation>
+<translation id="4504667196171871375">Wi-Fi සහ ජංගම දත්ත මත</translation>
 <translation id="4508528996305412043">සංග්‍රහ කාඩ්පත් මෙනුව විවෘත කර ඇත</translation>
 <translation id="4508642716788467538">ඔබගේ භාෂාව තෝරන්න</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{දින #කට පෙර}one{දින #කට පෙර}other{දින #කට පෙර}}</translation>
@@ -917,6 +919,7 @@
 <translation id="702463548815491781">TalkBack හෝ ප්‍රවේශය ස්විචය ක්‍රියාත්මක විට නිර්දේශ කරනු ලැබේ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ප්‍රතිසාධනය කරන ලදි</translation>
 <translation id="7029809446516969842">මුරපද</translation>
+<translation id="7040531500313579672">උද්දීපන බෙදා ගන්න</translation>
 <translation id="7054588988317389591">රූප විස්තර ලබා ගන්නද?</translation>
 <translation id="7055152154916055070">හරවා යැවීම අවහිරයි:</translation>
 <translation id="7063006564040364415">සමමු සර්වරයට සම්බන්ධ විය නොහැකි විය.</translation>

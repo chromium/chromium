@@ -421,6 +421,7 @@
 <translation id="2521385132275182522">Скоба в правом нижнем углу</translation>
 <translation id="2523886232349826891">Карта будет сохранена только на этом устройстве</translation>
 <translation id="2524461107774643265">Укажите дополнительную информацию</translation>
+<translation id="2526590354069164005">Рабочий стол</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{и ещё 1}one{и ещё #}few{и ещё #}many{и ещё #}other{и ещё #}}</translation>
 <translation id="2536110899380797252">Добавить адрес</translation>
 <translation id="2539524384386349900">Определять</translation>
@@ -2041,7 +2042,6 @@
 <translation id="8798099450830957504">По умолчанию</translation>
 <translation id="8805819170075074995">Элемент списка "<ph name="LANGUAGE_ID" />": элемент проигнорирован, поскольку он уже включен в правило SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Подрезать после каждой страницы</translation>
-<translation id="881292005876822445">Разрешить изменение размера?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="883848425547221593">Другие закладки</translation>

@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">‏بستن برنامه آموزشی ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{پرانتز باز}one{# پرانتز باز}other{# پرانتز باز}}</translation>
+<translation id="270523456882008230">خوانایاری: برای فعال کردن مورد کنونی، با یک انگشت دوضربه بزنید.</translation>
 <translation id="2705875883745373140">فشرده نشده</translation>
 <translation id="2708078563826046398">هلویی پررنگ</translation>
 <translation id="2713444072780614174">سفید</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">راهنمای ابزار</translation>
 <translation id="2976476721782829799">همچنین می‌توانید با کشیدن یک انگشت روی صفحه، در صفحه حرکت کنید. به این کار «کاوش با لمس» گفته می‌شود. برای خواندن مابقی این درس، انگشتتان روی صفحه بکشید.</translation>
 <translation id="297825089465017871">تند کشیدن دو انگشت به راست</translation>
+<translation id="2988364959384217951">خوانایاری: اگر می‌خواهید از آموزش گام‌به‌گام خارج شوید، با دو انگشت تند از راست به چپ بکشید.</translation>
 <translation id="2998131015536248178">نویسه قبلی</translation>
 <translation id="2999559350546931576">کاهش گام</translation>
 <translation id="3009352964623081324">‏Search + O، سپس S برای نصب، مدیریت، و سفارشی‌سازی صداها استفاده کنید.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">‏باز کردن منوهای ChromeVox</translation>
 <translation id="7799302833060027366">برای کاوش ریاضی، کلیدهای بالا، پایین، چپ یا راست را فشار دهید</translation>
 <translation id="7800558923657349506">گفتار پایانی</translation>
+<translation id="7801768143868631306">خوانایاری: برای پیمایش کردن، با یک انگشت تند از چپ به راست بکشید.</translation>
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7810781339813764006">گروه بعدی</translation>
 <translation id="7813616274030162878">منوی دسترسی کلیدی</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">قلم <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">بازگویی علائم سجاوندی حلقه</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">کنش‌هایی دردسترس است. برای مشاهده، «جستجو+مهار+ش» را فشار دهید</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">کلیدهای تغییردهنده</translation>
 <translation id="8943282376843390568">لیمویی</translation>

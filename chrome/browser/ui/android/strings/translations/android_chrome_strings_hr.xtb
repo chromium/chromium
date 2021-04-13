@@ -266,6 +266,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2777555524387840389">Preostalo sekundi: <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">nije uspjelo</translation>
 <translation id="2781151931089541271">Još 1 s</translation>
+<translation id="279827439955962619">Ukloni isticanje</translation>
 <translation id="2801022321632964776">Ažurirajte Chrome na najnoviju verziju za prikaz na vašem jeziku</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="281504910091592009">Spremljene zaporke možete pregledati i upravljati njima na svojem <ph name="BEGIN_LINK" />Google računu<ph name="END_LINK" /></translation>
@@ -502,6 +503,7 @@ Privacy Sandbox još uvijek je u aktivnoj fazi razvoja te je dostupan u određen
 <translation id="4487967297491345095">Svi Chromeovi podaci aplikacije trajno će se izbrisati. To uključuje sve datoteke, postavke, račune, baze podataka i slično.</translation>
 <translation id="449126573531210296">Šifriranje sinkroniziranih zaporki s Google računom</translation>
 <translation id="4493497663118223949">Jednostavni je način uključen</translation>
+<translation id="4504667196171871375">Na Wi-Fiju i mobilnim podacima</translation>
 <translation id="4508528996305412043">Izbornik kartice feeda je otvoren</translation>
 <translation id="4508642716788467538">Odaberite jezik</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{prije # dana}one{prije # dana}few{prije # dana}other{prije # dana}}</translation>
@@ -916,6 +918,7 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="702463548815491781">Preporučuje se kada su uključeni TalkBack ili prekidač za pristup</translation>
 <translation id="7027549951530753705">Vraćeno: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Zaporke</translation>
+<translation id="7040531500313579672">Podijeli istaknuto</translation>
 <translation id="7054588988317389591">Primati opise slike?</translation>
 <translation id="7055152154916055070">Preusmjeravanje je blokirano:</translation>
 <translation id="7063006564040364415">Nije uspjelo povezivanje s poslužiteljem za sinkronizaciju.</translation>

@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Fecha o tutorial do ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parênteses de abertura}one{# parênteses de abertura}other{# parênteses de abertura}}</translation>
+<translation id="270523456882008230">Dica: para ativar o item atual, toque nele duas vezes com um dedo.</translation>
 <translation id="2705875883745373140">Não pressionado</translation>
 <translation id="2708078563826046398">Pêssego</translation>
 <translation id="2713444072780614174">Branco</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Dica</translation>
 <translation id="2976476721782829799">Você também pode arrastar um dedo pela tela para se mover por ela. Essa ação é chamada de Explorar por toque. Tente arrastar o dedo para ler o restante da lição.</translation>
 <translation id="297825089465017871">Deslize para a esquerda usando dois dedos</translation>
+<translation id="2988364959384217951">Dica: para sair do tutorial, deslize com dois dedos da direita para a esquerda.</translation>
 <translation id="2998131015536248178">Caractere anterior</translation>
 <translation id="2999559350546931576">Diminuir tom de voz</translation>
 <translation id="3009352964623081324">Pesquisa + O e depois S. Use para instalar, gerenciar e personalizar vozes.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Abrir menus do ChromeVox</translation>
 <translation id="7799302833060027366">Pressione a seta para cima, para baixo, para a esquerda ou para a direita e veja o cálculo</translation>
 <translation id="7800558923657349506">Epílogo</translation>
+<translation id="7801768143868631306">Dica: para navegar, deslize com um dedo da esquerda ou direita.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7810781339813764006">Próximo grupo</translation>
 <translation id="7813616274030162878">Menu do "acesso com interruptor"</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Fonte <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Percorrer eco de pontuação</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Ações disponíveis. Pressione Pesquisa + Ctrl + A para ver</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Teclas modificadoras</translation>
 <translation id="8943282376843390568">Verde-limão</translation>

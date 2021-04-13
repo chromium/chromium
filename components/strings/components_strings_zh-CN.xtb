@@ -421,6 +421,7 @@
 <translation id="2521385132275182522">钉装（右下角）</translation>
 <translation id="2523886232349826891">仅会保存在此设备上</translation>
 <translation id="2524461107774643265">添加更多信息</translation>
+<translation id="2526590354069164005">桌面</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{以及另外 1 个网域}other{以及另外 # 个网域}}</translation>
 <translation id="2536110899380797252">添加地址</translation>
 <translation id="2539524384386349900">检测</translation>
@@ -2038,7 +2039,6 @@
 <translation id="8798099450830957504">默认</translation>
 <translation id="8805819170075074995">列表条目“<ph name="LANGUAGE_ID" />”：该条目因同时存在于 SpellcheckLanguage 政策中而被忽略。</translation>
 <translation id="8807160976559152894">完成每页后裁切</translation>
-<translation id="881292005876822445">启用最大化？</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="883848425547221593">其他书签</translation>

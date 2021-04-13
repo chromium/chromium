@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Sulje ChromeVox-opetusohjelma</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{vasen kaarisulje}other{# vasenta kaarisuljetta}}</translation>
+<translation id="270523456882008230">Vinkki: Kaksoisnapauta yhdellä sormella aktivoidaksesi nykyisen kohteen.</translation>
 <translation id="2705875883745373140">Ei painettu</translation>
 <translation id="2708078563826046398">Persikka</translation>
 <translation id="2713444072780614174">Valkoinen</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Työkaluvinkki</translation>
 <translation id="2976476721782829799">Voit myös siirtyä näytöllä vetämällä yhtä sormea. Tätä kutsutaan kosketuksella tutkimiseksi. Kokeile vetää sormeasi näytöllä lukeaksesi loput tästä harjoituksesta.</translation>
 <translation id="297825089465017871">Pyyhkäise vasemmalle kahdella sormella</translation>
+<translation id="2988364959384217951">Vinkki: Pyyhkäise oikealta vasemmalle kahdella sormella, jos haluat poistua tästä ohjeesta.</translation>
 <translation id="2998131015536248178">Edellinen merkki</translation>
 <translation id="2999559350546931576">Vähennä äänenkorkeutta</translation>
 <translation id="3009352964623081324">Haku + O ja sitten S. Käytä äänten asentamiseen, ylläpitämiseen ja muokkaamiseen.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Avaa ChromeVox-valikot.</translation>
 <translation id="7799302833060027366">Tutki laskutoimituksia painamalla ylä-, ala-, vasenta tai oikeaa näppäintä</translation>
 <translation id="7800558923657349506">Epilogi</translation>
+<translation id="7801768143868631306">Vinkki: Pyyhkäise vasemmalta oikealle yhdellä sormella, jos haluat siirtyä paikasta toiseen.</translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7810781339813764006">Seuraava ryhmä</translation>
 <translation id="7813616274030162878">Kytkimen käytön valikko</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Fontti <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Ota välimerkkien puhuminen käyttöön tai pois käytöstä</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Toimintoja on saatavilla. Katso painamalla Haku+Ctrl+A</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Muokkausavaimet</translation>
 <translation id="8943282376843390568">Lime</translation>

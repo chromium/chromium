@@ -266,6 +266,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekondes oor</translation>
 <translation id="2779651927720337254">misluk</translation>
 <translation id="2781151931089541271">1 sekonde oor</translation>
+<translation id="279827439955962619">Verwyder kleurmerk</translation>
 <translation id="2801022321632964776">Dateer op om jou taal in die jongste weergawe van Chrome kry</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="281504910091592009">Bekyk en bestuur gestoorde wagwoorde in jou <ph name="BEGIN_LINK" />Google-rekening<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privacy Sandbox word nog aktief ontwikkel en is in sekere streke beskikbaar. Vir
 <translation id="4487967297491345095">Al Chrome se programdata sal permanent uitgevee word. Dit sluit in alle lêers, instellings, rekeninge, databasisse, ens.</translation>
 <translation id="449126573531210296">Enkripteer gesinkroniseerde wagwoorde met jou Google-rekening</translation>
 <translation id="4493497663118223949">Ligte Modus is aan</translation>
+<translation id="4504667196171871375">Op Wi-Fi en mobiele data</translation>
 <translation id="4508528996305412043">Stroomkaartkieslys is oop</translation>
 <translation id="4508642716788467538">Kies jou taal</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# dag gelede}other{# dae gelede}}</translation>
@@ -917,6 +919,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="702463548815491781">Aanbeveel wanneer TalkBack of Skakelaartoegang aan is</translation>
 <translation id="7027549951530753705">Teruggestel op <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
+<translation id="7040531500313579672">Deel gemerkte teks</translation>
 <translation id="7054588988317389591">Kry prentbeskrywings?</translation>
 <translation id="7055152154916055070">Herleiding is geblokkeer:</translation>
 <translation id="7063006564040364415">Kon nie aan die sinkroniseringbediener koppel nie.</translation>

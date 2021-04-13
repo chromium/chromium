@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Uždaryti „ChromeVox“ mokymo programą</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{atidaromasis skliaustas}one{# atidaromasis skliaustas}few{# atidaromieji skliaustai}many{# open parens}other{# atidaromųjų skliaustų}}</translation>
+<translation id="270523456882008230">Patarimas: vienu pirštu dukart palieskite, kad suaktyvintumėte dabartinį elementą.</translation>
 <translation id="2705875883745373140">Nepaspausta</translation>
 <translation id="2708078563826046398">Persikų spalva</translation>
 <translation id="2713444072780614174">Balta</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Patarimas</translation>
 <translation id="2976476721782829799">Taip pat galite judėti po ekraną vilkdami pirštu. Tai vadinama naršymu paliečiant. Pabandykite perskaityti likusį šios pamokos turinį vilkdami pirštu.</translation>
 <translation id="297825089465017871">Perbraukite dviem pirštais kairėn</translation>
+<translation id="2988364959384217951">Patarimas: dviem pirštais perbraukite iš dešinės į kairę, jei norėtumėte išeiti iš šios mokymo programos.</translation>
 <translation id="2998131015536248178">Ankstesnis simbolis</translation>
 <translation id="2999559350546931576">Sumažinti aukštį</translation>
 <translation id="3009352964623081324">Paieškos klavišas + O, tada S. Naudokite, kad galėtumėte įdiegti, tvarkyti ir tinkinti balsus.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Atidaryti „ChromeVox“ meniu</translation>
 <translation id="7799302833060027366">Jei norite naršyti matematines funkcijas, paspauskite aukštyn, žemyn, kairėn arba dešinėn</translation>
 <translation id="7800558923657349506">Epilogas</translation>
+<translation id="7801768143868631306">Patarimas: vienu pirštu perbraukite kairėn arba dešinėn, kad galėtumėte naršyti.</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7810781339813764006">Kita grupė</translation>
 <translation id="7813616274030162878">Prieigos jungikliu meniu</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Šriftas: <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Ciklo skyrybos aidas</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Galimi veiksmai. Paspauskite paieškos + „Ctrl“ + A klavišus, kad peržiūrėtumėte</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Modifikavimo klavišai</translation>
 <translation id="8943282376843390568">Žaliųjų citrinų spalva</translation>

@@ -2009,7 +2009,6 @@
 <translation id="3183143381919926261">మొబైల్ డేటా నెట్‌వర్క్‌లు</translation>
 <translation id="3183944777708523606">మానిటర్ అమరిక</translation>
 <translation id="3184536091884214176">CUPS ప్రింటర్‌లను సెటప్ చేయండి లేదా నిర్వహించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">ఫిజికల్ సిమ్</translation>
 <translation id="3188257591659621405">నా ఫైల్‌లు</translation>
 <translation id="3188465121994729530">తరలించే సగటు</translation>
 <translation id="3189187154924005138">పెద్ద కర్సర్</translation>
@@ -2688,7 +2687,6 @@
 <translation id="3925573269917483990">కెమెరా:</translation>
 <translation id="3926002189479431949">Smart Lock ఫోన్ మార్చబడింది</translation>
 <translation id="3927932062596804919">తిరస్కరించు</translation>
-<translation id="392803502090869922">eSIM సెటప్</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" />కు మార్పులను సేవ్ చేయాలా?</translation>
 <translation id="3928659086758780856">ఇంక్ తక్కువగా ఉంది</translation>
 <translation id="3929426037718431833">ఈ ఎక్స్‌టెన్షన్‌లు ఈ సైట్‌లో సమాచారాన్ని చూడగలవు, మార్చగలవు.</translation>
@@ -2808,6 +2806,7 @@
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome యాప్‌కు మీ తల్లి/తండ్రి సెట్ చేసిన సమయ పరిమితిని మీరు చేరుకున్నారు. మీరు రేపు దానిని <ph name="TIME_LIMIT" /> సమయం ఉపయోగించవచ్చు.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">స్టోర్‌లో వీక్షించండి</translation>
+<translation id="4057991113334098539">సక్రియం చేస్తోంది...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">పత్రాన్ని ఇప్పుడు తనిఖీ చేయి</translation>
 <translation id="406070391919917862">నేపథ్య యాప్‌లు</translation>
@@ -2907,7 +2906,6 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">భాషలు</translation>
 <translation id="4184885522552335684">డిస్‌ప్లేను తరలించడానికి లాగండి</translation>
-<translation id="4186763173530196927">కెమెరాను యాక్సెస్ చేయడానికి ఒక యాప్ ట్రై చేస్తోంది. యాక్సెస్‌ను అనుమతించడానికి కెమెరా గోప్యతా స్విచ్‌ను ఆఫ్ చేయండి.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" />ను సెటప్ చేస్తోంది...</translation>
 <translation id="4190828427319282529">కీబోర్డ్ ఫోకస్‌ను హైలైట్ చేయండి</translation>
 <translation id="4194570336751258953">క్లిక్ చేయ‌డానికి టాప్ చేయి ప్రారంభించు</translation>
@@ -5025,7 +5023,6 @@
 <translation id="6635362468090274700">మీరు మీ సమీప షేరింగ్ విజిబిలిటీ సెట్టింగ్‌ను 'కనిపించు'కు సెట్ చేసేంత వరకు మీతో ఎవరూ షేర్ చేయలేరు.<ph name="BR" /><ph name="BR" />మీ సెట్టింగ్‌ను తాత్కాలికంగా 'కనిపించు'గా ఉంచడానికి స్టేటస్ ప్రాంతాన్ని తెరిచి, ఆపై సమీప విజిబిలిటీని ఆన్ చేయండి.</translation>
 <translation id="6635944431854494329">యజమాని ఈ ఫీచర్‌ను, సెట్టింగ్‌లు &gt; అధునాతనం &gt; సమస్య విశ్లేషణ, వినియోగ డేటాను ఆటోమేటిక్‌గా Googleకు పంపు ఎంపిక ద్వారా నియంత్రించవచ్చు.</translation>
 <translation id="6635956300022133031">వచనం-నుండి-ప్రసంగం వాయిస్‌లను ఎంచుకోండి మరియు అనుకూలీకరించండి</translation>
-<translation id="6636588250634969791">కొనసాగడానికి ముందు సిమ్‌ను ఇన్‌సర్ట్ చేయండి</translation>
 <translation id="6639554308659482635">SQLite మెమరీ</translation>
 <translation id="6642720633335369752">తెరిచి ఉన్న అన్ని యాప్ విండోలనూ చూడటానికి, కింది నుండి పైకి స్వైప్ చేసి, పట్టుకోండి.</translation>
 <translation id="664290675870910564">నెట్‌వర్క్ ఎంపిక</translation>

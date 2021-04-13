@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox ट्यूटोरियल बंद करा</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{उघडा कंस}other{# उघडे कंस}}</translation>
+<translation id="270523456882008230">सूचना: सध्याचा आयटम ॲक्टिव्हेट करण्यासाठी एका बोटाने दोनदा टॅप करा.</translation>
 <translation id="2705875883745373140">न दाबलेले</translation>
 <translation id="2708078563826046398">फिकट आबोली</translation>
 <translation id="2713444072780614174">पांढरा</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">टूल टीप</translation>
 <translation id="2976476721782829799">तुम्ही एका बोटाने ड्रॅग करून स्क्रीनभोवती हलवू शकता. याला स्‍पर्शाने एक्‍सप्‍लोर करा असे म्हणतात. या धड्याचा राहिलेला भाग वाचण्यासाठी, तुमचे बोट त्याभोवती ड्रॅग करून पाहा.</translation>
 <translation id="297825089465017871">दोन बोटांनी डावीकडे स्वाइप करा</translation>
+<translation id="2988364959384217951">सूचना: तुम्हाला या ट्युटोरियलमधून बाहेर पडायचे असल्यास, दोन बोटांनी उजवीकडून डावीकडे स्वाइप करा.</translation>
 <translation id="2998131015536248178">मागील वर्ण</translation>
 <translation id="2999559350546931576">पीच कमी करा</translation>
 <translation id="3009352964623081324">Search + O, त्यानंतर S. इंस्टॉल करण्यासाठी, व्यवस्थापित करण्यासाठी आणि व्हॉइस कस्टमाइझ करण्यासाठी वापरा.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox मेनू उघडा</translation>
 <translation id="7799302833060027366">गणित एक्सप्लोर करण्यासाठी अप, डाउन, लेफ्ट किंवा राइट दाबा</translation>
 <translation id="7800558923657349506">उपसंहार</translation>
+<translation id="7801768143868631306">सूचना: नेव्हिगेट करण्यासाठी एका बोटाने डावीकडे किंवा उजवीकडे स्वाइप करा.</translation>
 <translation id="7805768142964895445">स्थिती</translation>
 <translation id="7810781339813764006">पुढील गट</translation>
 <translation id="7813616274030162878">अ‍ॅक्सेस मेनू स्विच करा</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860"><ph name="FONT_FAMILY" /> फॉंट</translation>
 <translation id="8898516272131543774">विरामचिन्ह प्रतिध्वनी आवर्तन</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">उपलब्ध क्रिया. पाहण्यासाठी Search+Ctrl+A दाबा</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">सुधारणा की</translation>
 <translation id="8943282376843390568">लिंबू</translation>

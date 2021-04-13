@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Zapiranje vadnice za ChromeVox</translation>
 <translation id="2697408785920771974">samovvr</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{oklepaj}one{# oklepaj}two{# oklepaja}few{# oklepaji}other{# oklepajev}}</translation>
+<translation id="270523456882008230">Namig: Dvakrat se dotaknite z enim prstom, če želite aktivirati trenutni element.</translation>
 <translation id="2705875883745373140">Ni pritisnjeno</translation>
 <translation id="2708078563826046398">Bleda breskova</translation>
 <translation id="2713444072780614174">Bela</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Opis orodja</translation>
 <translation id="2976476721782829799">Pomikate se lahko tudi tako, da z enim prstom vlečete po zaslonu. Temu se reče raziskovanje z dotikom. Poskusite vleči prst po zaslonu in tako preberite preostanek lekcije.</translation>
 <translation id="297825089465017871">Z dvema prstoma povlecite v levo</translation>
+<translation id="2988364959384217951">Namig: Z dvema prstoma povlecite z desne proti levi, če želite zapreti to vadnico.</translation>
 <translation id="2998131015536248178">Prejšnji znak</translation>
 <translation id="2999559350546931576">Zmanjšanje višine tona</translation>
 <translation id="3009352964623081324">Tipka za iskanje + O, nato S. Uporabite za nameščanje, upravljanje in prilagajanje glasov.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Odpiranje menijev ChromeVoxa</translation>
 <translation id="7799302833060027366">Pritisnite gor, dol, levo ali desno, če želite raziskati matematično vsebino</translation>
 <translation id="7800558923657349506">Epilog</translation>
+<translation id="7801768143868631306">Namig: Za pomikanje z enim prstom povlecite levo ali desno.</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7810781339813764006">Naslednja skupina</translation>
 <translation id="7813616274030162878">Meni dostopa s stikalom</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Pisava <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Kroženje med možnostmi izgovarjanja ločil</translation>
 <translation id="8908714597367957477">glvstp</translation>
+<translation id="8910180774920883033">Na voljo so dejanja. Pritisnite tipko za iskanje + Ctrl + A, če si jih želite ogledati.</translation>
 <translation id="8937112856099038376">intpvz</translation>
 <translation id="8940925288729953902">Modifikacijske tipke</translation>
 <translation id="8943282376843390568">Rumenozelena</translation>

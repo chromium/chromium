@@ -421,6 +421,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2521385132275182522">Grapa en la esquina inferior derecha</translation>
 <translation id="2523886232349826891">Solo se guardará en este dispositivo</translation>
 <translation id="2524461107774643265">Agregar más información</translation>
+<translation id="2526590354069164005">Escritorio</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{y 1 más}other{y # más}}</translation>
 <translation id="2536110899380797252">Agregar dirección</translation>
 <translation id="2539524384386349900">Detectar</translation>
@@ -2044,7 +2045,6 @@ Detalles adicionales:
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8805819170075074995">Entrada de lista "<ph name="LANGUAGE_ID" />": Se ignorará la entrada porque también se incluye en la política SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Cortar después de cada página</translation>
-<translation id="881292005876822445">¿Deseas habilitar la maximización?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para actualizar Chrome desde la configuración del navegador</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="883848425547221593">Otros favoritos</translation>

@@ -2006,7 +2006,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3183143381919926261">Redes de datos móviles</translation>
 <translation id="3183944777708523606">Configuración del monitor</translation>
 <translation id="3184536091884214176">Configura o administra impresoras CUPS. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">SIM física</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3188465121994729530">Promedio móvil</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
@@ -2685,7 +2684,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3926002189479431949">Cambió el teléfono con Smart Lock</translation>
 <translation id="3927932062596804919">Rechazar</translation>
-<translation id="392803502090869922">Configuración de eSIM</translation>
 <translation id="3928570707778085600">¿Quieres guardar los cambios de <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Nivel de tinta bajo</translation>
 <translation id="3929426037718431833">Estas extensiones pueden ver y cambiar información en este sitio.</translation>
@@ -2805,6 +2803,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4056908315660577142">Alcanzaste el límite de tiempo que tu padre o madre establecieron para la app de <ph name="APP_NAME" /> de Chrome. Mañana podrás volver a usarla por <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Ver en Chrome Web Store</translation>
+<translation id="4057991113334098539">Activando...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Controlar documento ahora</translation>
 <translation id="406070391919917862">Aplicaciones de fondo</translation>
@@ -2904,7 +2903,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4184885522552335684">Arrastrar para mover una pantalla</translation>
-<translation id="4186763173530196927">Una app intenta acceder a la cámara. Para permitir el acceso, desactiva el interruptor de privacidad de la cámara.</translation>
 <translation id="4187424053537113647">Configurando <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Destacar el enfoque del teclado</translation>
 <translation id="4194570336751258953">Habilitar el punteo para hacer clic</translation>
@@ -5022,7 +5020,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6635362468090274700">Para que las personas puedan compartir contenido contigo, primero debes estar visible.<ph name="BR" /><ph name="BR" />Para activar tu visibilidad de forma temporal, abre el área de estado y, luego, activa la visibilidad de Nearby.</translation>
 <translation id="6635944431854494329">El propietario puede controlar esta función desde Configuración &gt; Configuración avanzada &gt; Enviar automáticamente datos de uso y diagnóstico a Google.</translation>
 <translation id="6635956300022133031">Selecciona y personaliza las voces de texto a voz.</translation>
-<translation id="6636588250634969791">Inserta la tarjeta SIM para continuar</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
 <translation id="6642720633335369752">Para ver todas las ventanas de las apps abiertas, desliza el dedo hacia arriba desde la parte inferior y mantén presionada la pantalla.</translation>
 <translation id="664290675870910564">Selección de red</translation>

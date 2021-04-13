@@ -420,6 +420,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2521385132275182522">Nietje rechtsonder</translation>
 <translation id="2523886232349826891">Alleen opgeslagen op dit apparaat</translation>
 <translation id="2524461107774643265">Meer informatie toevoegen</translation>
+<translation id="2526590354069164005">Bureaublad</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
 <translation id="2536110899380797252">Adres toevoegen</translation>
 <translation id="2539524384386349900">Detecteren</translation>
@@ -2036,7 +2037,6 @@ Aanvullende informatie:
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8805819170075074995">Lijstitem '<ph name="LANGUAGE_ID" />': Item is genegeerd omdat dit ook is opgenomen in het beleid SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Bijsnijden na elke pagina</translation>
-<translation id="881292005876822445">Maximaliseren aanzetten?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om Chrome te updaten via je Chrome-instellingen</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883848425547221593">Andere bookmarks</translation>

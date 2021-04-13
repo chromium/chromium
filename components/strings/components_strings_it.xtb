@@ -425,6 +425,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2521385132275182522">Pinzatura in basso a destra</translation>
 <translation id="2523886232349826891">Salvataggio effettuato solo su questo dispositivo</translation>
 <translation id="2524461107774643265">Aggiungi altre informazioni</translation>
+<translation id="2526590354069164005">Desktop</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e 1 altro}other{e altro #}}</translation>
 <translation id="2536110899380797252">Aggiungi indirizzo</translation>
 <translation id="2539524384386349900">Rileva</translation>
@@ -2049,7 +2050,6 @@ Ulteriori dettagli:
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8805819170075074995">Voce "<ph name="LANGUAGE_ID" />": voce ignorata perché è inclusa anche nella norma SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Taglia dopo ciascuna pagina</translation>
-<translation id="881292005876822445">Vuoi attivare l'ingrandimento?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per aggiornare Chrome dalle relative impostazioni</translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="883848425547221593">Altri Preferiti</translation>

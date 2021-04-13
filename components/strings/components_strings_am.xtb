@@ -421,6 +421,7 @@
 <translation id="2521385132275182522">ከግራጌ በቀኝ በኩል ስቴፕለር ምታ</translation>
 <translation id="2523886232349826891">በዚህ መሣሪያ ላይ ብቻ ይቀመጣል</translation>
 <translation id="2524461107774643265">ተጨማሪ መረጃ ያክሉ</translation>
+<translation id="2526590354069164005">ዴስክቶፕ</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{እና 1 ተጨማሪ}one{እና # ተጨማሪ}other{እና # ተጨማሪ}}</translation>
 <translation id="2536110899380797252">አድራሻ ያክሉ</translation>
 <translation id="2539524384386349900">አግኝ</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5327248766486351172">ስም</translation>
 <translation id="5329858041417644019">የእርስዎ አሳሽ አይተዳደርም</translation>
 <translation id="5332219387342487447">የመላኪያ መንገድ</translation>
+<translation id="5333022057423422993">Chrome እርስዎ አሁን የተጠቀሙበትን የይለፍ ቃል በውሂብ ጥሰት ውስጥ አግኝቷል። የመለያዎችዎን ደህንነት ለማስጠበቅ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ እንመክራለን።</translation>
 <translation id="5334013548165032829">ዝርዝር የስርዓት ምዝግብ ማስታወሻዎች</translation>
 <translation id="5340250774223869109">መተግበሪያ ታግዷል</translation>
 <translation id="534295439873310000">የNFC መሣሪያዎች</translation>
@@ -1277,6 +1279,7 @@
 <translation id="5784606427469807560">የእርስዎን ካርድ ማረጋገጥ ላይ አንድ ችግር ነበር። የበይነመረብ ግንኙነትዎን ይፈትሹት እና እንደገና ይሞክሩ።</translation>
 <translation id="5785756445106461925">በተጨማሪ፣ ይህ ገጽ ደህንነታቸው ያልተጠበቀ ሌሎች ንብረቶችን አካትቷል። እነዚህ ንብረቶች በሽግግር ወቅት በሌሎች ሊታዩ ይችላሉ፣ እናም የገጹን መልክ ለመለወጥ በአጥቂዎች ሊቀየሩ ይችላሉ።</translation>
 <translation id="5786044859038896871">የካርድዎን መረጃ መሙላት ይፈልጋሉ?</translation>
+<translation id="578633867165174378">Chrome እርስዎ አሁን የተጠቀሙበትን የይለፍ ቃል በውሂብ ጥሰት ውስጥ አግኝቷል። ይህንን የይለፍ ቃል አሁን እንዲቀይሩ እንመክራለን።</translation>
 <translation id="5798290721819630480">ለውጦች ይወገዱ?</translation>
 <translation id="5803412860119678065">የእርስዎን <ph name="CARD_DETAIL" /> መሙላት ይፈልጋሉ?</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
@@ -1466,6 +1469,7 @@
 <translation id="6579630537141957243">የMIDI መሣሪያ ያገናኙ?</translation>
 <translation id="6579990219486187401">ፈዛዛ ሮዝ</translation>
 <translation id="6583674473685352014">B6 (የደንዳቤ ፖስታ)</translation>
+<translation id="6587182488465657433">Chrome እርስዎ አሁን የተጠቀሙበትን የይለፍ ቃል በውሂብ ጥሰት ውስጥ አግኝቷል። የመለያዎችዎን ደህንነት ለመጠበቅ አሁኑኑ እንዲለውጡት እና የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ እንመክራለን።</translation>
 <translation id="6587923378399804057">እርስዎ የቀዱት አገናኝ</translation>
 <translation id="6591833882275308647">የእርስዎ <ph name="DEVICE_TYPE" /> የሚተዳደር አይደለም</translation>
 <translation id="6592952801936330159">የጣቢያ ቅንብሮች አዝራሩን ያቀናብሩ፣ በChrome ቅንብሮች ውስጥ ፈቃዶችን እና በመላ ጣቢያዎች ላይ የተከማቸ ውሂብን ለማቀናበር አስገባን ይጫኑ</translation>
@@ -2044,7 +2048,6 @@
 <translation id="8798099450830957504">እንደወረደ</translation>
 <translation id="8805819170075074995">የዝርዝር ግቤት «<ph name="LANGUAGE_ID" />»፦ ግቤት እንዲሁም በSpellcheckLanguage መመሪያው ላይ ስለተካተተ ችላ ተብሏል።</translation>
 <translation id="8807160976559152894">ከእያንዳንዱ ገጽ በኋላ ከርክም</translation>
-<translation id="881292005876822445">ማስፋት ይንቃ?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ይጫኑ እና ከእርስዎ Chrome ቅንብሮች Chromeን ለማዘመን አስገባን ይጫኑ</translation>
 <translation id="8820817407110198400">ዕልባቶች</translation>
 <translation id="883848425547221593">ሌላ እልባቶች</translation>

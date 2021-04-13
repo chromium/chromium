@@ -266,6 +266,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder igjen</translation>
 <translation id="2779651927720337254">mislyktes</translation>
 <translation id="2781151931089541271">1 sekund igjen</translation>
+<translation id="279827439955962619">Fjern markering</translation>
 <translation id="2801022321632964776">Oppdater for å få språket ditt i den nyeste versjonen av Chrome</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="281504910091592009">Se og administrer lagrede passord i <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din</translation>
@@ -503,6 +504,7 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="4487967297491345095">Alle appdataene for Chrome slettes permanent. Dette omfatter alle filer, innstillinger, kontoer, databaser osv.</translation>
 <translation id="449126573531210296">Kryptér synkroniserte passord med Google-kontoen din</translation>
 <translation id="4493497663118223949">Forenklet modus er på</translation>
+<translation id="4504667196171871375">Via Wi-Fi og mobildata</translation>
 <translation id="4508528996305412043">Feedkortmenyen er åpnet</translation>
 <translation id="4508642716788467538">Velg språk</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{for # dag siden}other{for # dager siden}}</translation>
@@ -917,6 +919,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="702463548815491781">Anbefalt når TalkBack eller brytertilgang er på</translation>
 <translation id="7027549951530753705">Gjenopprettet <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Passord</translation>
+<translation id="7040531500313579672">Del markering</translation>
 <translation id="7054588988317389591">Vil du ha bildebeskrivelser?</translation>
 <translation id="7055152154916055070">Viderekoblingen er blokkert:</translation>
 <translation id="7063006564040364415">Kunne ikke koble til synkroniseringstjeneren.</translation>

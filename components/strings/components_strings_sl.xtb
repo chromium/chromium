@@ -425,6 +425,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2521385132275182522">Spenjanje spodaj desno</translation>
 <translation id="2523886232349826891">Shranjena samo v tej napravi</translation>
 <translation id="2524461107774643265">Dodajanje več podatkov</translation>
+<translation id="2526590354069164005">Namizje</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{in še 1}one{in še #}two{in še #}few{in še #}other{in še #}}</translation>
 <translation id="2536110899380797252">Dodaj naslov</translation>
 <translation id="2539524384386349900">Zaznava</translation>
@@ -1173,6 +1174,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5329858041417644019">Vaš brskalnik ni upravljan</translation>
 <translation id="5332219387342487447">Način pošiljanja</translation>
+<translation id="5333022057423422993">Chrome je geslo, ki ste ga pravkar uporabili, našel v podatkovni kršitvi. Zaradi zavarovanja računov priporočamo, da preverite shranjena gesla.</translation>
 <translation id="5334013548165032829">Podrobni sistemski dnevniki</translation>
 <translation id="5340250774223869109">Aplikacija je blokirana</translation>
 <translation id="534295439873310000">Naprave s tehnologijo NFC</translation>
@@ -1287,6 +1289,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5784606427469807560">Težava pri potrditvi kartice. Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="5785756445106461925">Poleg tega so na tej strani druga sredstva, ki niso varna. Ta sredstva lahko med prenosom pregledujejo drugi, morebitni napadalec pa jih lahko spremeni, tako da se spremeni videz strani.</translation>
 <translation id="5786044859038896871">Ali želite izpolniti podatke kreditne kartice?</translation>
+<translation id="578633867165174378">Chrome je geslo, ki ste ga pravkar uporabili, našel v podatkovni kršitvi. Priporočamo, da ga takoj spremenite.</translation>
 <translation id="5798290721819630480">Želite zavreči spremembe?</translation>
 <translation id="5803412860119678065">Ali želite izpolniti podatke za kartico <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
@@ -1476,6 +1479,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6579630537141957243">Želite povezati napravo MIDI?</translation>
 <translation id="6579990219486187401">Svetlo rožnata</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6587182488465657433">Chrome je geslo, ki ste ga pravkar uporabili, našel v podatkovni kršitvi. Zaradi zavarovanja računov priporočamo, da ga takoj spremenite in nato preverite shranjena gesla.</translation>
 <translation id="6587923378399804057">Povezava, ki ste jo kopirali</translation>
 <translation id="6591833882275308647">Naprava <ph name="DEVICE_TYPE" /> ni upravljana</translation>
 <translation id="6592952801936330159">Gumb za upravljanje nastavitev spletnega mesta, pritisnite Enter, če želite upravljati dovoljenja in podatke, shranjene na spletnih mestih v Chromovih nastavitvah.</translation>
@@ -2053,7 +2057,6 @@ Dodatne podrobnosti:
 <translation id="8798099450830957504">Privzeto</translation>
 <translation id="8805819170075074995">Vnos na seznamu »<ph name="LANGUAGE_ID" />«: vnos je prezrt, ker je vključen tudi v pravilnik SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Obrezovanje po vsaki strani</translation>
-<translation id="881292005876822445">Želite omogočiti povečanje?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite posodobiti Chrome v Chromovih nastavitvah</translation>
 <translation id="8820817407110198400">Zaznamki</translation>
 <translation id="883848425547221593">Drugi zaznamki</translation>

@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Fechar tutorial do ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parêntese esquerdo}other{# parênteses esquerdos}}</translation>
+<translation id="270523456882008230">Sugestão: toque duas vezes com um dedo para ativar o item atual.</translation>
 <translation id="2705875883745373140">Não premido</translation>
 <translation id="2708078563826046398">Pêssego</translation>
 <translation id="2713444072780614174">Branco</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Sugestão</translation>
 <translation id="2976476721782829799">Também pode deslocar-se ao arrastar um dedo no ecrã. A isto chama-se explorar através do toque. Experimente arrastar o dedo para ler o resto da aula.</translation>
 <translation id="297825089465017871">Deslizar rapidamente com dois dedos para a esquerda</translation>
+<translation id="2988364959384217951">Sugestão: deslize rapidamente da direita para a esquerda com dois dedos se pretender sair deste tutorial.</translation>
 <translation id="2998131015536248178">Caráter anterior</translation>
 <translation id="2999559350546931576">Diminuir timbre</translation>
 <translation id="3009352964623081324">Pesquisa + O e, em seguida, S. Utilize o atalho para instalar, gerir e personalizar vozes.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Abrir menus do ChromeVox</translation>
 <translation id="7799302833060027366">Prima a seta para cima, para baixo, para a esquerda ou para a direita para explorar a matemática.</translation>
 <translation id="7800558923657349506">Epílogo</translation>
+<translation id="7801768143868631306">Sugestão: deslize rapidamente para a esquerda ou para a direita com um dedo para navegar.</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7810781339813764006">Grupo seguinte</translation>
 <translation id="7813616274030162878">Menu do acesso por comutador</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Tipo de letra: <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Eco da pontuação de ciclo</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Ações disponíveis. Prima Pesquisar + Ctrl + Alt + A para ver</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Teclas de modificação</translation>
 <translation id="8943282376843390568">Lima</translation>

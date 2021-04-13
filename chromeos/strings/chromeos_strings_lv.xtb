@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Apturēts — beigusies tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS atrisinātāja pieejamība</translation>
+<translation id="1715359911173058521">Savienojumā ar skeneri radās problēma. Pārbaudiet tīkla vai USB savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="1717874160321062422">Pārvalda <ph name="FIRST_MANAGER" /> un <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Skenēšana tiek atcelta</translation>
@@ -216,6 +217,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="54609108002486618">Pārvaldītais</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Atlicis {0} mēģinājums.}zero{Atlikuši {0} mēģinājumi.}one{Atlicis {0} mēģinājums.}other{Atlikuši {0} mēģinājumi.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">Nevarēja pabeigt skenēšanu</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5916084858004523819">Aizliegts</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fails ir sekmīgi noskenēts un saglabāts mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fails nav atrasts</translation>
+<translation id="6037291330010597344">Skenera dokumentu padevējs ir tukšs. Pievienojiet dokumentus un mēģiniet vēlreiz.</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6040852767465482106">Anonīma identitāte</translation>
 <translation id="604124094241169006">Automātiski</translation>
@@ -252,6 +255,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: pārbaude ir atcelta.</translation>
 <translation id="6325525973963619867">Neizdevās</translation>
 <translation id="636850387210749493">Uzņēmuma palaide</translation>
+<translation id="6388847657025262518">Skenera dokumentu padevējā ir iestrēdzis papīrs. Pārbaudiet padevēju un mēģiniet vēlreiz.</translation>
 <translation id="641081527798843608">Temata atbilstība</translation>
 <translation id="6423239382391657905">Atvērt VPN</translation>
 <translation id="6456394469623773452">Apmierinošs</translation>
@@ -273,6 +277,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6766275201586212568">DNS atrisināšanas kļūmes</translation>
 <translation id="6768237774506518020">Biežas DNS atrisināšanas kļūmes</translation>
 <translation id="6853312040151791195">Izlādes ātrums</translation>
+<translation id="6910312834584889076">Skenera vāks ir atvērts. Aizveriet vāku un mēģiniet vēlreiz.</translation>
 <translation id="6911383237894364323">Nevar izveidot savienojumu ar multivides satura serveriem.</translation>
 <translation id="6957231940976260713">Pakalpojuma nosaukums</translation>
 <translation id="6977381486153291903">Aparātprogrammatūras pārskatīšana</translation>
@@ -287,6 +292,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7177485034254901881">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />. Administratori var attālināti konfigurēt ierīci.</translation>
 <translation id="7216409898977639127">Mobilo sakaru operators</translation>
+<translation id="7271040990581020067">Skeneris pašlaik tiek izmantots. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">Tīkla ierīces</translation>
 <translation id="7359657277149375382">Faila tips</translation>

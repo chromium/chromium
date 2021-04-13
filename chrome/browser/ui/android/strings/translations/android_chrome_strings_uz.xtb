@@ -266,6 +266,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2777555524387840389"><ph name="SECONDS" /> soniya qoldi</translation>
 <translation id="2779651927720337254">xatolik:</translation>
 <translation id="2781151931089541271">1 soniya qoldi</translation>
+<translation id="279827439955962619">Belgilovni olib tashlash</translation>
 <translation id="2801022321632964776">Chromeni eng oxirgi versiyagacha yangilab, internetni oʻz tilingizda kezing</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google hisobingizga<ph name="END_LINK" /> saqlangan parollarni ko‘rish va boshqarish</translation>
@@ -503,6 +504,7 @@ Privacy Sandbox hali ishlab chiqish jarayonida va ayrim mamlakatlarda mavjud. Ho
 <translation id="4487967297491345095">Barcha Chrome ilovalari ma’lumotlari o‘chiriladi. Bularga barcha fayllar, sozlamalar, hisoblar va ma’lumotlar bazasi kiradi.</translation>
 <translation id="449126573531210296">Sinxronlangan parollarni Google hisob maʼlumotlari bilan shifrlang</translation>
 <translation id="4493497663118223949">Lite rejimi yoniq</translation>
+<translation id="4504667196171871375">Wi-Fi va mobil internetda yoniq</translation>
 <translation id="4508528996305412043">Quyi bildirgi menyu ochildi</translation>
 <translation id="4508642716788467538">Tilni tanlang</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# kun oldin}other{# kun oldin}}</translation>
@@ -917,6 +919,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="702463548815491781">TalkBack yoki Switch Access yoniq holatda tavsiya etiladi</translation>
 <translation id="7027549951530753705">Tiklandi: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Parollar</translation>
+<translation id="7040531500313579672">Belgilovni ulashish</translation>
 <translation id="7054588988317389591">Rasm tavsiflari chiqsinmi?</translation>
 <translation id="7055152154916055070">Yo‘naltirish bloklandi:</translation>
 <translation id="7063006564040364415">Sinxronlash serveriga ulanib bo‘lmadi.</translation>

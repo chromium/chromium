@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Zamknij samouczek czytnika ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{nawias okrągły otwierający}few{# nawiasy okrągłe otwierające}many{# nawiasów okrągłych otwierających}other{# open parens}}</translation>
+<translation id="270523456882008230">Wskazówka: aby aktywować bieżący element, kliknij dwukrotnie jednym palcem.</translation>
 <translation id="2705875883745373140">Nienaciśnięte</translation>
 <translation id="2708078563826046398">Brzoskwiniowy obłoczek</translation>
 <translation id="2713444072780614174">Biały</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Wskazówka do elementu</translation>
 <translation id="2976476721782829799">Możesz też poruszać się po ekranie, przeciągając po nim jednym palcem. Ta funkcja nazywa się Czytanie dotykiem. Przeciągnij palcem, aby przeczytać resztę tej lekcji.</translation>
 <translation id="297825089465017871">Przesuń dwoma palcami w lewo</translation>
+<translation id="2988364959384217951">Wskazówka: jeśli zechcesz zamknąć ten samouczek, przesuń 2 palcami z prawej strony w lewo.</translation>
 <translation id="2998131015536248178">Poprzedni znak</translation>
 <translation id="2999559350546931576">Obniż tonację.</translation>
 <translation id="3009352964623081324">Wyszukaj + O, a następnie S. Służy do instalowania i dostosowywania głosów oraz do zarządzania nimi.</translation>
@@ -940,6 +942,7 @@
 <translation id="7776293189010177726">Otwórz menu ChromeVox</translation>
 <translation id="7799302833060027366">Naciśnij strzałkę w górę, w dół, w lewo lub w prawo, by poruszać się po wyrażeniach matematycznych</translation>
 <translation id="7800558923657349506">Epilog</translation>
+<translation id="7801768143868631306">Wskazówka: aby nawigować, przesuwaj palcem w lewo lub w prawo.</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7810781339813764006">Następna grupa</translation>
 <translation id="7813616274030162878">Menu funkcji Switch Access</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860">Czcionka <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Włącz/wyłącz odczytywanie interpunkcji</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Dostępne działania. Aby je wyświetlić, naciśnij klawisz wyszukiwania + Ctrl + A.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Klawisze modyfikujące</translation>
 <translation id="8943282376843390568">Limonkowy</translation>

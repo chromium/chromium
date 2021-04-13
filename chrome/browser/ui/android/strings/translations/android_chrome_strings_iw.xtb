@@ -266,6 +266,7 @@
 <translation id="2777555524387840389">נותרו <ph name="SECONDS" /> שניות</translation>
 <translation id="2779651927720337254">נכשל</translation>
 <translation id="2781151931089541271">נותרה שנייה אחת</translation>
+<translation id="279827439955962619">הסרת ההדגשה</translation>
 <translation id="2801022321632964776">‏עדכון לגרסה האחרונה של Chrome יאפשר לך לקרוא בשפה שלך</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="281504910091592009">‏הצגה וניהול של סיסמאות שמורות ב<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">‏כל נתוני היישומים של Chrome יימחקו לצמיתות, כולל כל הקבצים, ההגדרות, החשבונות, מסדי הנתונים וכו'</translation>
 <translation id="449126573531210296">‏הצפנת סיסמאות מסונכרנות באמצעות חשבון Google</translation>
 <translation id="4493497663118223949">מצב הטעינה המהירה מופעל</translation>
+<translation id="4504667196171871375">‏ב-Wi-Fi ובחבילת גלישה</translation>
 <translation id="4508528996305412043">תפריט כרטיס הפיד נפתח</translation>
 <translation id="4508642716788467538">בחירת שפה</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{לפני יום}two{לפני יומיים}many{לפני # ימים}other{לפני # ימים}}</translation>
@@ -917,6 +919,7 @@
 <translation id="702463548815491781">‏מומלץ אם הפעלת TalkBack או גישה באמצעות מתג</translation>
 <translation id="7027549951530753705">בוצע שחזור של <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">סיסמאות</translation>
+<translation id="7040531500313579672">שיתוף ההדגשה</translation>
 <translation id="7054588988317389591">רוצה לקבל תיאורי תמונות?</translation>
 <translation id="7055152154916055070">הפניה אוטומטית נחסמה:</translation>
 <translation id="7063006564040364415">לא ניתן היה להתחבר אל שרת הסנכרון.</translation>

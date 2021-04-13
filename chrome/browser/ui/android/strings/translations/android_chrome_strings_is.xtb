@@ -266,6 +266,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2777555524387840389"><ph name="SECONDS" /> sek. eftir</translation>
 <translation id="2779651927720337254">mistókst</translation>
 <translation id="2781151931089541271">Ein sek. eftir</translation>
+<translation id="279827439955962619">Fjarlægja auðkenningu</translation>
 <translation id="2801022321632964776">Uppfærðu til að fá tungumálið þitt í nýjustu útgáfunni af Chrome</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="281504910091592009">Þú getur skoðað og haft umsjón með vistuðum aðgangsorðum á <ph name="BEGIN_LINK" />Google reikningnum<ph name="END_LINK" /> þínum</translation>
@@ -503,6 +504,7 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="4487967297491345095">Öllum forritsgögnum Chrome verður eytt fyrir fullt og allt. Þar með taldar eru allar skrár, stillingar, reikningar, gagnagrunnar o.s.frv.</translation>
 <translation id="449126573531210296">Dulkóða samstillt aðgangsorð með Google reikningnum þínum</translation>
 <translation id="4493497663118223949">Kveikt er á léttútgáfu</translation>
+<translation id="4504667196171871375">Á Wi-Fi og með farsímagögnum</translation>
 <translation id="4508528996305412043">Kortavalmynd straums er opin</translation>
 <translation id="4508642716788467538">Veldu tungumál</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Fyrir # degi}one{Fyrir # degi}other{Fyrir # dögum}}</translation>
@@ -917,6 +919,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="702463548815491781">Mælt með þegar kveikt er á TalkBack eða rofaaðgangi</translation>
 <translation id="7027549951530753705">Endurheimti <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
+<translation id="7040531500313579672">Deila áherslumerkingu</translation>
 <translation id="7054588988317389591">Fá myndlýsingar?</translation>
 <translation id="7055152154916055070">Lokað á framsendingu:</translation>
 <translation id="7063006564040364415">Ekki var hægt að tengjast samstillingarþjóninum.</translation>

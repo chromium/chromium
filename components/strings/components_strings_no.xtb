@@ -425,6 +425,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2521385132275182522">Stift nede til høyre</translation>
 <translation id="2523886232349826891">Kun lagret på denne enheten</translation>
 <translation id="2524461107774643265">Legg til mer informasjon</translation>
+<translation id="2526590354069164005">Skrivebordet</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 til}other{og # til}}</translation>
 <translation id="2536110899380797252">Legg til adresse</translation>
 <translation id="2539524384386349900">Oppdag</translation>
@@ -1173,6 +1174,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5329858041417644019">Nettleseren din administreres ikke</translation>
 <translation id="5332219387342487447">Leveringsmetode</translation>
+<translation id="5333022057423422993">Chrome har funnet passordet du nettopp brukte, i et databrudd. For å sikre kontoene dine anbefaler vi at du sjekker de lagrede passordene dine.</translation>
 <translation id="5334013548165032829">Detaljerte systemlogger</translation>
 <translation id="5340250774223869109">Programmet er blokkert</translation>
 <translation id="534295439873310000">NFC-enheter</translation>
@@ -1287,6 +1289,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5784606427469807560">Det oppsto et problem under forsøket på å bekrefte kortet ditt. Kontrollér Internett-tilkoblingen din, og prøv igjen.</translation>
 <translation id="5785756445106461925">Denne siden inneholder i tillegg andre ressurser som ikke er sikre. Disse ressursene er synlige for andre mens de sendes frem og tilbake, og eventuelle angripere kan modifisere dem for å endre på utseendet til siden.</translation>
 <translation id="5786044859038896871">Vil du fylle ut kortinformasjonen?</translation>
+<translation id="578633867165174378">Chrome har funnet passordet du nettopp brukte, i et databrudd. Vi anbefaler at du endrer dette passordet nå.</translation>
 <translation id="5798290721819630480">Vil du forkaste endringene?</translation>
 <translation id="5803412860119678065">Vil du fylle ut informasjonen knyttet til <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
@@ -1476,6 +1479,7 @@ brukere av denne nettleseren.</translation>
 <translation id="6579630537141957243">Vil du koble til MIDI-enheten din?</translation>
 <translation id="6579990219486187401">Lys rosa</translation>
 <translation id="6583674473685352014">B6 (konvolutt)</translation>
+<translation id="6587182488465657433">Chrome har funnet passordet du nettopp brukte, i et databrudd. For å sikre kontoene dine anbefaler vi at du endrer passordet nå, og deretter sjekker de lagrede passordene dine.</translation>
 <translation id="6587923378399804057">Linken du kopierte</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> administreres ikke</translation>
 <translation id="6592952801936330159">Knappen «Administrer nettstedsinnstillinger» – trykk på Enter for å administrere tillatelser og data som er lagret på nettsteder, i Chrome-innstillingene</translation>
@@ -2052,7 +2056,6 @@ Mer informasjon:
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8805819170075074995">Listeoppføringen «<ph name="LANGUAGE_ID" />»: Oppføringen er ignorert fordi den også er inkludert i regelen SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Beskjær etter hver side</translation>
-<translation id="881292005876822445">Vil du slå på maksimering?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å oppdatere Chrome fra Chrome-innstillingene</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
 <translation id="883848425547221593">Andre bokmerker</translation>

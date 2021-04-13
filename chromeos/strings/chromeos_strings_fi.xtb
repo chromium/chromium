@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Pysähtynyt – Muste loppu</translation>
 <translation id="1703835215927279855">Kirje</translation>
 <translation id="1706391837335750954">DNS-ratkaisija paikalla</translation>
+<translation id="1715359911173058521">Skanneriin yhdistämisessä on ongelma. Tarkista verkko- tai USB-yhteys ja yritä uudelleen.</translation>
 <translation id="1717874160321062422">Ylläpitäjät: <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Perutaan skannausta</translation>
@@ -216,6 +217,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="54609108002486618">Ylläpidetty</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} yritys jäljellä}other{{0} yritystä jäljellä}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">Skannausta ei voi suorittaa loppuun</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5916084858004523819">Kielletty</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tiedostosi skannaus onnistui. Se on tallennettu tänne: <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tiedostojesi skannaus onnistui. Ne on tallennettu tänne: <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Tiedostoa ei löydy</translation>
+<translation id="6037291330010597344">Skannerin syöttölaite on tyhjä. Lisää dokumentteja ja yritä uudelleen.</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6040852767465482106">Anonyymi henkilöllisyys</translation>
 <translation id="604124094241169006">Automaattinen</translation>
@@ -252,6 +255,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6302401976930124515">Testi on peruttu: <ph name="TEST_NAME" /></translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
+<translation id="6388847657025262518">Skannerin syöttölaite on tukossa. Tarkista syöttölaite ja yritä uudelleen.</translation>
 <translation id="641081527798843608">Aiheen vastaavuus</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Hyväksyttävä</translation>
@@ -273,6 +277,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
 <translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
 <translation id="6853312040151791195">Tyhjentymisnopeus</translation>
+<translation id="6910312834584889076">Skannerin kansi on auki. Sulje kansi ja yritä uudelleen.</translation>
 <translation id="6911383237894364323">Mediapalvelimiin ei saada yhteyttä</translation>
 <translation id="6957231940976260713">Palvelun nimi</translation>
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
@@ -287,6 +292,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7162487448488904999">Galleria</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
+<translation id="7271040990581020067">Skanneri on tällä hetkellä käytössä. Yritä myöhemmin uudelleen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">Verkkolaitteet</translation>
 <translation id="7359657277149375382">Tiedostotyyppi</translation>

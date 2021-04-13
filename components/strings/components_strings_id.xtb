@@ -390,7 +390,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2384307209577226199">Default perusahaan</translation>
 <translation id="2385809941344967209">Update Chrome dari setelan Chrome</translation>
 <translation id="2386255080630008482">Sertifikat server telah dicabut.</translation>
-<translation id="2392959068659972793">Tampilkan kebijakan tanpa nilai yang disetel</translation>
+<translation id="2392959068659972793">Tampilkan kebijakan yang nilainya tidak ditetapkan</translation>
 <translation id="239429038616798445">Metode pengiriman tidak tersedia. Coba metode lain.</translation>
 <translation id="2396249848217231973">&amp;Urungkan penghapusan</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
@@ -421,6 +421,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2521385132275182522">Jepretan di kanan bawah</translation>
 <translation id="2523886232349826891">Hanya disimpan di perangkat ini</translation>
 <translation id="2524461107774643265">Tambahkan Informasi Lainnya</translation>
+<translation id="2526590354069164005">Desktop</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dan 1 lainnya}other{dan # lainnya}}</translation>
 <translation id="2536110899380797252">Tambahkan Alamat</translation>
 <translation id="2539524384386349900">Deteksi</translation>
@@ -2039,7 +2040,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8798099450830957504">Default</translation>
 <translation id="8805819170075074995">Entri daftar "<ph name="LANGUAGE_ID" />": Entri diabaikan karena entri tersebut juga disertakan dalam kebijakan SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Trim setelah setiap halaman tercetak</translation>
-<translation id="881292005876822445">Aktifkan Pemaksimalan?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengupdate Chrome dari setelan Chrome</translation>
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="883848425547221593">Bookmark Lain</translation>

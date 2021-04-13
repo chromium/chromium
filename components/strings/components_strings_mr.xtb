@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">स्टेपल बॉटम राइट</translation>
 <translation id="2523886232349826891">फक्त या डिव्हाइसवर सेव्ह केले जाईल</translation>
 <translation id="2524461107774643265">अधिक माहिती जोडा</translation>
+<translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{आणि आणखी एक}other{आणि आणखी #}}</translation>
 <translation id="2536110899380797252">पत्ता जोडा</translation>
 <translation id="2539524384386349900">शोधा</translation>
@@ -1172,6 +1173,7 @@
 <translation id="5327248766486351172">नाव</translation>
 <translation id="5329858041417644019">तुमचे ब्राउझर व्यवस्थापित केलेले नाही</translation>
 <translation id="5332219387342487447">पाठविण्‍याची पद्धत</translation>
+<translation id="5333022057423422993">Chrome ला तुम्ही नुकताच डेटा भंगामध्ये वापरलेला पासवर्ड आढळळा आहे. तुमची खाती सुरक्षित करण्यासाठी, आम्ही तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करतो.</translation>
 <translation id="5334013548165032829">तपशीलवार सिस्टम लॉग</translation>
 <translation id="5340250774223869109">अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
 <translation id="534295439873310000">NFC डिव्हाइस</translation>
@@ -1286,6 +1288,7 @@
 <translation id="5784606427469807560">आपल्या कार्डची पुष्टी करताना समस्या आली. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5785756445106461925">पुढे, या पृष्ठात सुरक्षित नसलेली इतर संसाधने समाविष्ट आहेत. ही संसाधने संक्रमणात असताना इतरांद्वारे पाहिली जाऊ शकतात आणि पृष्ठाचे स्वरूप बदलण्यासाठी आक्रमणकर्त्याद्वारे सुधारित केली जाऊ शकतात.</translation>
 <translation id="5786044859038896871">तुम्ही तुमची कार्ड माहिती भरू इच्छित आहात?</translation>
+<translation id="578633867165174378">Chrome ला तुम्ही नुकताच डेटा भंगामध्ये वापरलेला पासवर्ड आढळळा आहे. आम्ही हा पासवर्ड आताच बदलण्याची शिफारस करतो.</translation>
 <translation id="5798290721819630480">बदल टाकून द्यायचे?</translation>
 <translation id="5803412860119678065">तुम्ही तुमचे <ph name="CARD_DETAIL" /> भरू इच्छित आहात?</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
@@ -1476,6 +1479,7 @@
 <translation id="6579630537141957243">MIDI डिव्‍हाइस कनेक्ट करायचे का?</translation>
 <translation id="6579990219486187401">फिकट गुलाबी</translation>
 <translation id="6583674473685352014">B6 (Envelope)B6 (Envelope)</translation>
+<translation id="6587182488465657433">Chrome ला तुम्ही नुकताच डेटा भंगामध्ये वापरलेला पासवर्ड आढळळा आहे. तुमची खाती सुरक्षित करण्यासाठी, आम्ही तो आताच बदलण्याची आणि त्यानंतर तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करतो.</translation>
 <translation id="6587923378399804057">तुम्ही कॉपी केलेली लिंक</translation>
 <translation id="6591833882275308647">तुमचे <ph name="DEVICE_TYPE" /> व्यवस्थापित केलेले नाही</translation>
 <translation id="6592952801936330159">साइट सेटिंग्ज व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये परवानग्या आणि सर्व साइटवर स्टोअर केलेला डेटा व्यवस्थापित करण्यासाठी एंटर दाबा</translation>
@@ -2053,7 +2057,6 @@
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8805819170075074995">सूची एंट्री "<ph name="LANGUAGE_ID" />": एंट्री SpellcheckLanguage धोरणामध्येदेखील समाविष्ट असल्यामुळे तिच्याकडे दुर्लक्ष केले गेले आहे.</translation>
 <translation id="8807160976559152894">प्रत्येक पेजनंतर ट्रिम करा</translation>
-<translation id="881292005876822445">आकार वाढवणे सुरू करायचे आहे का?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Chrome सेटिंग्जमधून Chrome अपडेट करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883848425547221593">अन्य बुकमार्क</translation>

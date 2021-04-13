@@ -266,6 +266,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> စက္ကန့် ကျန်သည်</translation>
 <translation id="2779651927720337254">ဒေါင်းလုဒ် မပြီးဆုံးပါ</translation>
 <translation id="2781151931089541271">၁ စက္ကန့် ကျန်သည်</translation>
+<translation id="279827439955962619">မြင်သာထင်သာဖြစ်အောင်လုပ်ခြင်းကို ဖယ်ရှားရန်</translation>
 <translation id="2801022321632964776">Chrome နောက်ဆုံးဗားရှင်းတွင် သင့်ဘာသာစကားကို ရယူရန် အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="281504910091592009">သိမ်းဆည်းထားသည့် စကားဝှက်များကို သင်၏ <ph name="BEGIN_LINK" />Google အကောင့်<ph name="END_LINK" /> တွင် ကြည့်ရှုစီမံပါ</translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">Chrome ၏ အက်ပ်ဒေတာများကို အပြီးအပိုင် ဖျက်လိုက်ပါမည်။ ၎င်းတို့တွင် ဖိုင်၊ ဆက်တင်၊ အကောင့်၊ ဒေတာဘေ့စ်၊ စသည်တို့အားလုံး ပါဝင်သည်။</translation>
 <translation id="449126573531210296">စင့်ခ်လုပ်ထားသော စကားဝှက်များကို သင့် Google Account ဖြင့် အသွင်ဝှက်ရန်</translation>
 <translation id="4493497663118223949">'အပေါ့စားမုဒ်' ဖွင့်ထားသည်</translation>
+<translation id="4504667196171871375">Wi-Fi နှင့် မိုဘိုင်းဒေတာ သုံးချိန်</translation>
 <translation id="4508528996305412043">ဖိဒ်ကတ်မီနူး ဖွင့်ထားသည်</translation>
 <translation id="4508642716788467538">သင်၏ ဘာသာစကားကို ရွေးရန်</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{လွန်ခဲ့သည့် # ရက်က}other{လွန်ခဲ့သည့် # ရက်က}}</translation>
@@ -916,6 +918,7 @@
 <translation id="702463548815491781">TalkBack သို့မဟုတ် 'ခလုတ်အသုံးပြုခွင့်' ဖွင့်ထားသည့်အခါ အကြံပြုသည်</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ကို ပြန်ယူပြီးပြီ</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>
+<translation id="7040531500313579672">မြင်သာထင်သာဖြစ်အောင်လုပ်ခြင်းကို မျှဝေရန်</translation>
 <translation id="7054588988317389591">ပုံရှင်းလင်းချက်များ ရယူမလား။</translation>
 <translation id="7055152154916055070">တစ်ဆင့်ပြန်ညွှန်ခြင်းကို ပိတ်ထားသည်−</translation>
 <translation id="7063006564040364415">စင့်ခ်ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။</translation>

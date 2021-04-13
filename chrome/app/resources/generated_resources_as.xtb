@@ -2007,7 +2007,6 @@
 <translation id="3183143381919926261">ম’বাইল ডেটাৰ নেটৱৰ্কসমূহ</translation>
 <translation id="3183944777708523606">মনিটৰৰ ব্যৱস্থাপনা</translation>
 <translation id="3184536091884214176">CUPS প্ৰিণ্টাৰসমূহ ছেট আপ কৰক অথবা পৰিচালনা কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">কায়িক ছিম</translation>
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
 <translation id="3188465121994729530">গতিশীল গঢ়</translation>
 <translation id="3189187154924005138">ডাঙৰ কাৰ্ছৰ</translation>
@@ -2686,7 +2685,6 @@
 <translation id="3925573269917483990">কেমেৰা:</translation>
 <translation id="3926002189479431949">স্মার্ট লক ফ’ন সলনি কৰা হৈছে</translation>
 <translation id="3927932062596804919">অস্বীকাৰ কৰক</translation>
-<translation id="392803502090869922">ই-ছিমৰ ছেটআপ</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" />ত সাল সলনিবোৰ ছেভ কৰিবনে?</translation>
 <translation id="3928659086758780856">চিয়াঁহী কম আছে</translation>
 <translation id="3929426037718431833">এই এক্সটেনশ্বনসমূহে এই ছাইটটোত তথ্য চাব আৰু সলনি কৰিব পাৰে।</translation>
@@ -2902,7 +2900,6 @@
 <translation id="4181602000363099176">২০গুণ</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4184885522552335684">কোনো ডিছপ্লে’ স্থানান্তৰ কৰিবলৈ টানক</translation>
-<translation id="4186763173530196927">এটা এপে কেমেৰা এক্সেছ কৰিবলৈ চেষ্টা কৰি আছে। এক্সেছৰ অনুমতি দিবলৈ কেমেৰাৰ গোপনীয়তাৰ ছুইচটো অফ কৰক।</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> ছেট আপ কৰি থকা হৈছে...</translation>
 <translation id="4190828427319282529">কীব’ৰ্ডৰ ফ’কাছ হাইলাইট কৰক</translation>
 <translation id="4194570336751258953">ক্লিক কৰিবলৈ টিপা সুবিধাটো সক্ষম কৰক</translation>
@@ -5015,7 +5012,6 @@
 <translation id="6635362468090274700">আপুনি নিজকে দৃশ্যমান নকৰালৈকে কোনেও আপোনাৰ সৈতে শ্বেয়াৰ কৰিব নোৱাৰে।<ph name="BR" /><ph name="BR" />আপোনাক নিজকে সাময়িকভাৱে দৃশ্যমান কৰিবলৈ বিভিন্ন স্থিতি দেখুওৱা ঠাইখিনি খোলক, তাৰ পাছত নিকটৱৰ্তী দৃশ্যমানতা অন কৰক।</translation>
 <translation id="6635944431854494329">গৰাকীজনে ছেটিংসমূহ &gt; উন্নত &gt; Googleলৈ স্বয়ংক্রিয়ভাৱে ডাইগন‘ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়াওকৰ পৰা এই সুবিধাটো নিয়ন্ত্ৰণ কৰিব পাৰে।</translation>
 <translation id="6635956300022133031">পাঠৰ পৰা কথন সুবিধাৰ বাবে কণ্ঠস্বৰ বাছনি আৰু কাষ্টমাইজ কৰক</translation>
-<translation id="6636588250634969791">আগবঢ়াৰ আগতে ছিম ভৰাওক</translation>
 <translation id="6639554308659482635">SQLite মেম'ৰী</translation>
 <translation id="6642720633335369752">খোল খাই থকা এপৰ সকলো ৱিণ্ড’ চাবলৈ একেবাৰে তলিৰ পৰা ওপৰলৈ ছোৱাইপ কৰি ধৰি ৰাখক।</translation>
 <translation id="664290675870910564">নেটৱৰ্কৰ বাছনি</translation>

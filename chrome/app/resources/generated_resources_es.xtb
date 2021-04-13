@@ -2009,7 +2009,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3183143381919926261">Redes de datos móviles</translation>
 <translation id="3183944777708523606">Disposición del monitor</translation>
 <translation id="3184536091884214176">Configurar o gestionar impresoras CUPS. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">SIM física</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3188465121994729530">Media móvil</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
@@ -2688,7 +2687,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3926002189479431949">El teléfono de Smart Lock ha cambiado</translation>
 <translation id="3927932062596804919">Denegar</translation>
-<translation id="392803502090869922">Configuración de eSIM</translation>
 <translation id="3928570707778085600">¿Quieres guardar los cambios en <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Queda poca tinta</translation>
 <translation id="3929426037718431833">Estas extensiones pueden ver y cambiar información en este sitio web.</translation>
@@ -2807,6 +2805,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4056908315660577142">Has llegado al límite de tiempo de uso que ha establecido tu padre o madre para la aplicación de Chrome <ph name="APP_NAME" />. Podrás usarla mañana durante <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Ver en Chrome Web Store</translation>
+<translation id="4057991113334098539">Activando...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Comprobar el documento ahora</translation>
 <translation id="406070391919917862">Aplicaciones en segundo plano</translation>
@@ -2906,7 +2905,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4184885522552335684">Arrastra una pantalla para moverla</translation>
-<translation id="4186763173530196927">Una aplicación está intentando acceder a la cámara. Desactiva el interruptor de privacidad de la cámara para darle acceso.</translation>
 <translation id="4187424053537113647">Configurando <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">Resaltar con el foco del teclado</translation>
 <translation id="4194570336751258953">Habilitar la función Tocar para hacer clic</translation>
@@ -5024,7 +5022,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6635362468090274700">Nadie podrá compartir nada contigo hasta que tu dispositivo sea visible.<ph name="BR" /><ph name="BR" />Para hacerlo visible temporalmente, abre el área de estado y activa la visibilidad Nearby.</translation>
 <translation id="6635944431854494329">El propietario puede controlar esta función desde Configuración &gt; Configuración avanzada &gt; Enviar automáticamente los datos de uso y diagnóstico a Google.</translation>
 <translation id="6635956300022133031">Seleccionar y personalizar voces de la síntesis de voz</translation>
-<translation id="6636588250634969791">Inserta una SIM antes de continuar</translation>
 <translation id="6639554308659482635">Memoria de SQLite</translation>
 <translation id="6642720633335369752">Para ver todas las ventanas de las aplicaciones abiertas, desliza el dedo hacia arriba y no lo levantes.</translation>
 <translation id="664290675870910564">Selección de red</translation>

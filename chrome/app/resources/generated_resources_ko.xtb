@@ -2009,7 +2009,6 @@
 <translation id="3183143381919926261">모바일 데이터 네트워크</translation>
 <translation id="3183944777708523606">모니터 배치</translation>
 <translation id="3184536091884214176">CUPS 프린터를 설정하거나 관리합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">실제 SIM</translation>
 <translation id="3188257591659621405">내 파일</translation>
 <translation id="3188465121994729530">이동 평균</translation>
 <translation id="3189187154924005138">큰 커서</translation>
@@ -2688,7 +2687,6 @@
 <translation id="3925573269917483990">카메라:</translation>
 <translation id="3926002189479431949">Smart Lock 휴대전화가 변경됨</translation>
 <translation id="3927932062596804919">거부</translation>
-<translation id="392803502090869922">eSIM 설정</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" />에 변경사항을 저장하시겠습니까?</translation>
 <translation id="3928659086758780856">잉크 부족</translation>
 <translation id="3929426037718431833">이 사이트의 정보를 확인하고 변경할 수 있는 확장 프로그램입니다</translation>
@@ -2808,6 +2806,7 @@
 <translation id="4056908315660577142">부모님이 설정한 <ph name="APP_NAME" /> Chrome 앱 사용 제한 시간에 도달했습니다. 내일 <ph name="TIME_LIMIT" /> 동안 다시 사용할 수 있습니다.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">스토어에서 보기</translation>
+<translation id="4057991113334098539">활성화 중...</translation>
 <translation id="4058720513957747556">AppSocket(TCP/IP)</translation>
 <translation id="4058793769387728514">지금 문서 확인</translation>
 <translation id="406070391919917862">백그라운드 애플리케이션</translation>
@@ -2905,7 +2904,6 @@
 <translation id="4181602000363099176">20배</translation>
 <translation id="4181841719683918333">언어</translation>
 <translation id="4184885522552335684">디스플레이를 이동하려면 드래그하세요.</translation>
-<translation id="4186763173530196927">앱에서 카메라에 액세스하려고 합니다. 액세스를 허용하려면 카메라 개인정보 보호 스위치를 끄세요.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> 설정 중…</translation>
 <translation id="4190828427319282529">키보드 포커스 강조표시</translation>
 <translation id="4194570336751258953">탭하여 클릭 사용</translation>
@@ -5023,7 +5021,6 @@
 <translation id="6635362468090274700">나를 공개하기 전에는 아무도 나와 파일을 공유할 수 없습니다.<ph name="BR" /><ph name="BR" />일시적으로 나를 공개하려면 상태 영역을 열고 Nearby 전체 공개를 사용 설정하면 됩니다.</translation>
 <translation id="6635944431854494329">소유자는 설정 &gt; 고급 &gt; 진단 및 사용 데이터를 Google에 자동 전송에서 이 기능을 제어할 수 있습니다.</translation>
 <translation id="6635956300022133031">텍스트 음성 변환 기능의 음성을 선택하고 맞춤설정합니다.</translation>
-<translation id="6636588250634969791">계속하기 전에 SIM을 삽입하세요.</translation>
 <translation id="6639554308659482635">SQLite 메모리</translation>
 <translation id="6642720633335369752">열려 있는 모든 앱 창을 보려면 하단에서 위로 스와이프한 다음 길게 누르세요.</translation>
 <translation id="664290675870910564">네트워크 선택</translation>

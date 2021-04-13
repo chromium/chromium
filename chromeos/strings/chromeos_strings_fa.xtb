@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">متوقف شد - جوهر تمام شده است</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">موجود بودن رافع ساناد</translation>
+<translation id="1715359911173058521">‏مشکلی در برقراری ارتباط با اسکنر وجود دارد. اتصال USB یا شبکه را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="1717874160321062422">تحت مدیریت <ph name="FIRST_MANAGER" /> و <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
@@ -216,6 +217,7 @@
 <translation id="54609108002486618">مدیریت شده</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} فرصت باقی مانده است}one{{0} فرصت باقی مانده است}other{{0} فرصت باقی مانده است}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">اسکن کامل نشد</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">فعالسازی</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@
 <translation id="5916084858004523819">ممنوع</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{فایل شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}one{فایل شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}other{فایل‌های شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}}</translation>
 <translation id="5931523347251946569">فایل پیدا نشد</translation>
+<translation id="6037291330010597344">تغذیه‌کننده سند اسکنر خالی است. اسناد را اضافه کنید و دوباره امتحان کنید.</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6040852767465482106">شناسه ناشناس</translation>
 <translation id="604124094241169006">خودکار</translation>
@@ -252,6 +255,7 @@
 <translation id="6302401976930124515">آزمایش <ph name="TEST_NAME" /> لغو شده است</translation>
 <translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
+<translation id="6388847657025262518">تغذیه‌کننده سند اسکنر گیر کرده است. تغذیه‌کننده را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="641081527798843608">مطابقت موضوع</translation>
 <translation id="6423239382391657905">‏باز کردن VPN</translation>
 <translation id="6456394469623773452">عالی</translation>
@@ -273,6 +277,7 @@
 <translation id="6766275201586212568">تفکیک ساناد انجام نشد</translation>
 <translation id="6768237774506518020">میزان خطای تفکیک ساناد بالا است</translation>
 <translation id="6853312040151791195">سرعت تخلیه شارژ</translation>
+<translation id="6910312834584889076">پوشش اسکنر باز است. پوشش را ببندید و دوباره امتحان کنید.</translation>
 <translation id="6911383237894364323">امکان اتصال به سرورهای رسانه وجود ندارد</translation>
 <translation id="6957231940976260713">نام سرویس</translation>
 <translation id="6977381486153291903">بازبینی سفت‌افزار</translation>
@@ -287,6 +292,7 @@
 <translation id="7162487448488904999">گالری</translation>
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
 <translation id="7216409898977639127">ارائه‌دهنده شبکه تلفن همراه</translation>
+<translation id="7271040990581020067">اسکنر درحال استفاده است. بعداً دوباره امتحان کنید.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">دستگاه‌های شبکه</translation>
 <translation id="7359657277149375382">نوع فایل</translation>

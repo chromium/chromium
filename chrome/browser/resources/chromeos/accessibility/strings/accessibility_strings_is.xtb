@@ -241,6 +241,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="2684412629217766642">Loka ChromeVox kennslu</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{opnunarsvigi}one{# opnunarsvigi}other{# opnunarsvigar}}</translation>
+<translation id="270523456882008230">Ábending: Ýttu tvisvar með einum fingri til að virkja núverandi atriði.</translation>
 <translation id="2705875883745373140">Ekki ýtt</translation>
 <translation id="2708078563826046398">Ferskjubleikur</translation>
 <translation id="2713444072780614174">Hvítur</translation>
@@ -285,6 +286,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="2972205263822847197">Ábending</translation>
 <translation id="2976476721782829799">Þú getur einnig fært þig til með því að draga einn fingur um skjáinn. Þetta er kallað snertikönnun. Prófaðu að draga fingurinn um skjáinn til að lesa afganginn af leiðsögninni.</translation>
 <translation id="297825089465017871">Strjúktu tveimur fingrum til vinstri</translation>
+<translation id="2988364959384217951">Ábending: Strjúktu með tveimur fingrum frá hægri til vinstri til að loka þessari leiðsögn.</translation>
 <translation id="2998131015536248178">Fyrra staftákn</translation>
 <translation id="2999559350546931576">Minnka tónhæð</translation>
 <translation id="3009352964623081324">Leita + O og svo S. Notað til að setja upp, stjórna og sérstilla raddir.</translation>
@@ -941,6 +943,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="7776293189010177726">Opna ChromeVox valmyndir</translation>
 <translation id="7799302833060027366">Ýttu upp, niður, til vinstri eða hægri til að reyna fyrir þér í stærðfræði</translation>
 <translation id="7800558923657349506">Lokaorð</translation>
+<translation id="7801768143868631306">Ábending: Strjúktu til vinstri eða hægri með einum fingri til að fletta.</translation>
 <translation id="7805768142964895445">Staða</translation>
 <translation id="7810781339813764006">Næsti hópur</translation>
 <translation id="7813616274030162878">Valmynd rofaaðgangs</translation>
@@ -1080,6 +1083,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="8897030325301866860">Leturgerð <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Kveikja/slökkva á upplestri greinarmerkja</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Aðgerðir í boði. Ýttu á Search+Ctrl+A til að skoða</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Breytilyklar</translation>
 <translation id="8943282376843390568">Límónugrænn</translation>

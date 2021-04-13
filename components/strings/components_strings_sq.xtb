@@ -424,6 +424,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2521385132275182522">Kapje me tel poshtë djathtas</translation>
 <translation id="2523886232349826891">Ruajtur vetëm në këtë pajisje</translation>
 <translation id="2524461107774643265">Shto më shumë informacion</translation>
+<translation id="2526590354069164005">Desktopi</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
 <translation id="2536110899380797252">Shto adresë</translation>
 <translation id="2539524384386349900">Zbulo</translation>
@@ -1168,6 +1169,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5327248766486351172">Emri</translation>
 <translation id="5329858041417644019">Shfletuesi yt nuk është i menaxhuar</translation>
 <translation id="5332219387342487447">Mënyra e dërgimit</translation>
+<translation id="5333022057423422993">Chrome e gjeti fjalëkalimin që sapo përdore në një nxjerrje të paautorizuar të të dhënave. Për t'i siguruar llogaritë e tua, ne rekomandojmë të kontrollosh fjalëkalimet e tua të ruajtura.</translation>
 <translation id="5334013548165032829">Evidencat e detajuara të sistemit</translation>
 <translation id="5340250774223869109">Aplikacioni është bllokuar</translation>
 <translation id="534295439873310000">Pajisjet me NFC</translation>
@@ -1282,6 +1284,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5784606427469807560">Kishte një problem me konfirmimin e kartës tënde. Kontrollo lidhjen e internetit dhe provo përsëri.</translation>
 <translation id="5785756445106461925">Për më tepër, kjo faqe përfshin burime të tjera që nuk janë të sigurta. Këto burime mund të shikohen nga të tjerët kur janë në procesin e kalimit dhe mund të modifikohen nga ndonjë sulmues për të ndryshuar pamjen e faqes.</translation>
 <translation id="5786044859038896871">Dëshiron që të plotësosh informacionet e kartës?</translation>
+<translation id="578633867165174378">Chrome e gjeti fjalëkalimin që sapo përdore në një nxjerrje të paautorizuar të të dhënave. Ne rekomandojmë ta ndryshosh këtë fjalëkalim tani.</translation>
 <translation id="5798290721819630480">Të injorohen ndryshimet?</translation>
 <translation id="5803412860119678065">Dëshiron që të plotësosh informacionet për <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Lejet</translation>
@@ -1470,6 +1473,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6579630537141957243">Të lidhet pajisja MIDI?</translation>
 <translation id="6579990219486187401">Rozë e çelur</translation>
 <translation id="6583674473685352014">B6 (Zarf)</translation>
+<translation id="6587182488465657433">Chrome e gjeti fjalëkalimin që sapo përdore në një nxjerrje të paautorizuar të të dhënave. Për t'i siguruar llogaritë e tua, ne rekomandojmë ta ndryshosh atë tani dhe më pas të kontrollosh fjalëkalimet e tua të ruajtura.</translation>
 <translation id="6587923378399804057">Lidhja që kopjove</translation>
 <translation id="6591833882275308647">Pajisja jote <ph name="DEVICE_TYPE" /> nuk është e menaxhuar</translation>
 <translation id="6592952801936330159">Butoni "Menaxho cilësimet e sajtit". Shtyp "Enter" për të menaxhuar lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
@@ -2047,7 +2051,6 @@ Detaje shtesë:
 <translation id="8798099450830957504">I parazgjedhur</translation>
 <translation id="8805819170075074995">Hyrja e listës "<ph name="LANGUAGE_ID" />": Hyrja është shpërfillur sepse është e përfshirë edhe në politikën e SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Prerje pas çdo faqeje</translation>
-<translation id="881292005876822445">Të aktivizohet maksimizimi?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të përditësuar Chrome nga cilësimet e tua të Chrome</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
 <translation id="883848425547221593">Faqeshënues të tjerë</translation>

@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Tanca el tutorial de ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parèntesi d'obertura}other{# parèntesis d'obertura}}</translation>
+<translation id="270523456882008230">Suggeriment: fes doble toc amb un dit per activar l'article actual.</translation>
 <translation id="2705875883745373140">Sense prémer.</translation>
 <translation id="2708078563826046398">Préssec clar</translation>
 <translation id="2713444072780614174">Blanc</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Descripció emergent</translation>
 <translation id="2976476721782829799">També et pots moure d'un lloc a un altre arrossegant un dit per la pantalla. Aquesta acció s'anomena "Exploració tàctil". Prova d'arrossegar el dit per llegir la resta de la lliçó.</translation>
 <translation id="297825089465017871">Fes lliscar dos dits cap a l'esquerra</translation>
+<translation id="2988364959384217951">Suggeriment: fes lliscar dos dits de dreta a esquerra per sortir d'aquest tutorial.</translation>
 <translation id="2998131015536248178">Caràcter anterior</translation>
 <translation id="2999559350546931576">Disminueix la presentació.</translation>
 <translation id="3009352964623081324">Cerca+O i, després, S. Fes-ho servir per instal·lar, gestionar i personalitzar veus.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Obre els menús de ChromeVox</translation>
 <translation id="7799302833060027366">Prem la fletxa amunt, avall, a l'esquerra o a la dreta per explorar expressions matemàtiques</translation>
 <translation id="7800558923657349506">Epíleg</translation>
+<translation id="7801768143868631306">Suggeriment: fes lliscar un dit cap a l'esquerra o cap a la dreta per navegar.</translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7810781339813764006">Grup següent</translation>
 <translation id="7813616274030162878">Menú d'accés amb interruptors</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Tipus de lletra <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Retorn de la puntuació del cicle.</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Hi ha accions disponibles. Prem Cerca+Ctrl+A per veure-les.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Tecles modificadores</translation>
 <translation id="8943282376843390568">Verd llima</translation>

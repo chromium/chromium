@@ -2012,7 +2012,6 @@
 <translation id="3183143381919926261">ເຄືອຂ່າຍອິນເຕີເນັດມືຖື</translation>
 <translation id="3183944777708523606">ການຈັດວາງໜ້າຈໍ</translation>
 <translation id="3184536091884214176">ຕັ້ງຄ່າ ຫຼື ຈັດການເຄື່ອງພິມ CUPS. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">SIM ແທ້</translation>
 <translation id="3188257591659621405">ໄຟລ໌ຂອງຂ້ອຍ</translation>
 <translation id="3188465121994729530">ການ​​ຍ້າຍ​ໂດຍ​ສະ​ເລ່ຍ</translation>
 <translation id="3189187154924005138">ເຄີເຊີຂະໜາດໃຫຍ່</translation>
@@ -2190,6 +2189,7 @@
 <translation id="3406396172897554194">ຊອກຫາຕາມພາສາ ຫຼື ຊື່ການປ້ອນຂໍ້ມູນ</translation>
 <translation id="3406605057700382950">ສະແດງແຖບບຸກມາກສ໌</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{ສ່ວນຂະຫຍາຍນີ້ອາດຈະເປັນອັນຕະລາຍ}other{ສ່ວນຂະຫຍາຍເຫຼົ່ານີ້ອາດຈະເປັນອັນຕະລາຍ}}</translation>
+<translation id="3408072735282270043">ເປີດໃຊ້, <ph name="NETWORK_NAME" /></translation>
 <translation id="3409785640040772790">ແຜນທີ່</translation>
 <translation id="3410832398355316179">ໄຟລ໌ ແລະ ຂໍ້ມູນໃນເຄື່ອງທັງໝົດທີ່ກ່ຽວຂ້ອງກັບຜູ້ໃຊ້ນີ້ຈະຖືກລຶບຢ່າງຖາວອນເມື່ອລະບົບລຶບຜູ້ໃຊ້ນີ້ອອກ. <ph name="USER_EMAIL" /> ສາມາດເຂົ້າສູ່ລະບົບໃນພາຍຫຼັງໄດ້ຄືເກົ່າ.</translation>
 <translation id="3412265149091626468">ຂ້າມໄປຫາການເລືອກ</translation>
@@ -2693,7 +2693,6 @@
 <translation id="3925573269917483990">ກ້ອງ​ຖ່າຍ​ຮູບ​</translation>
 <translation id="3926002189479431949">ໂທ​ລະ​ສັບລັອກ​ອັດ​ສະ​ລິ​ຍະປ່ຽນ​ແປງ​ແລ້ວ</translation>
 <translation id="3927932062596804919">ປະຕິເສດ</translation>
-<translation id="392803502090869922">ຕັ້ງຄ່າ eSIM</translation>
 <translation id="3928570707778085600">ບັນທຶກການປ່ຽນແປງໄວ້ໃນ <ph name="FILE_OR_FOLDER_NAME" /> ບໍ?</translation>
 <translation id="3928659086758780856">ໝຶກເຫຼືອໜ້ອຍ</translation>
 <translation id="3929426037718431833">ສ່ວນຂະຫຍາຍເຫຼົ່ານີ້ສາມາດເຫັນ ແລະ ປ່ຽນແປງຂໍ້ມູນໃນເວັບໄຊນີ້ໄດ້.</translation>
@@ -2813,6 +2812,7 @@
 <translation id="4056908315660577142">ທ່ານໄດ້ຮອດຂີດຈຳກັດເວລາທີ່ພໍ່ແມ່ຂອງທ່ານກຳນົດໄວ້ສຳລັບແອັບ Chrome <ph name="APP_NAME" /> ແລ້ວ. ທ່ານສາມາດໃຊ້ມັນເປັນເວລາ <ph name="TIME_LIMIT" /> ໄດ້ໃນມື້ອື່ນ.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">ເບິ່ງ​ຢູ່​ໃນ​ຮ້ານ</translation>
+<translation id="4057991113334098539">ກຳລັງເປີດນຳໃຊ້...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">ກວດເບິ່ງເອກະສານດຽວນີ້</translation>
 <translation id="406070391919917862">ແອັບພື້ນຫຼັງ</translation>
@@ -2912,7 +2912,6 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ພາສາ</translation>
 <translation id="4184885522552335684">ລາກເພື່ອຍ້າຍຈໍສະແດງຜົນ</translation>
-<translation id="4186763173530196927">ແອັບກຳລັງພະຍາຍາມເຂົ້າເຖິງກ້ອງຢູ່. ປິດປຸ່ມຄວາມເປັນສ່ວນຕົວຂອງກ້ອງເພື່ອອະນຸຍາດການເຂົ້າເຖິງ.</translation>
 <translation id="4187424053537113647">ກຳລັງຕັ້ງຄ່າ <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">ໄຮໄລ້ໂຟກັສແປ້ນພິມ</translation>
 <translation id="4194570336751258953">ເປີດໃຊ້ງານແຕະເພື່ອຄລິກ</translation>
@@ -3351,6 +3350,7 @@
 <translation id="4682551433947286597">ວອລເປເປີປະກົດຢູ່ໃນໜ້າຈໍລົງຊື່ເຂົ້າ​ໃຊ້.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="4684427112815847243">ຊິງຄ໌​ທຸກ​ຢ່າງ</translation>
+<translation id="4684471265911890182"><ph name="APP_NAME" /> ກຳລັງພະຍາຍາມເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຢູ່. ປິດປຸ່ມຄວາມເປັນສ່ວນຕົວຂອງກ້ອງຖ່າຍຮູບເພື່ອອະນຸຍາດການເຂົ້າເຖິງ.</translation>
 <translation id="4687613760714619596">ອຸ​ປະ​ກອນ​ທີ່​ບໍ່​ຮູ້ຈັກ (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ID ບັນທຶກໃນເຄື່ອງ: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">ເລືອກການຕັ້ງຄ່າສາທິດຂອງທ່ານ</translation>
@@ -5036,7 +5036,6 @@
 <translation id="6635362468090274700">ບໍ່ມີໃຜສາມາດແບ່ງປັນກັບທ່ານໄດ້ຈົນກວ່າທ່ານເຮັດໃຫ້ຄົນອື່ນເບິ່ງເຫັນທ່ານໄດ້.<ph name="BR" /><ph name="BR" />ເພື່ອເຮັດໃຫ້ຄົນອື່ນເບິ່ງເຫັນທ່ານແບບຊົ່ວຄາວ, ກະລຸນາເປີດພື້ນທີ່ສະຖານະ, ຈາກນັ້ນເປີດການແບ່ງປັນ Nearby.</translation>
 <translation id="6635944431854494329">ເຈົ້າຂອງສາມາດຄວບຄຸມຄຸນສົມບັດນີ້ໄດ້ຈາກການຕັ້ງຄ່າ &gt; ຂັ້ນສູງ &gt; ສົ່ງຂໍ້ມູນການວິເຄາະ ແລະ ການນຳໃຊ້ໃຫ້ Google ໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="6635956300022133031">ເລືອກ ແລະ ປັບແຕ່ງສຽງສຳລັບການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
-<translation id="6636588250634969791">ໃສ່ SIM ກ່ອນທີ່ຈະດຳເນີນຕໍ່</translation>
 <translation id="6639554308659482635">ຄວາມ​ຈໍາ SQLite</translation>
 <translation id="6640268266988685324">ເປີດແຖບ</translation>
 <translation id="6642720633335369752">ເພື່ອເບິ່ງໜ້າຈໍແອັບທີ່ເປີດຢູ່ທັງໝົດ, ກະລຸນາປັດຂຶ້ນຈາກລຸ່ມສຸດແລ້ວຄ້າໄວ້.</translation>
@@ -6690,6 +6689,7 @@
 <translation id="8480869669560681089">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກຈາກ <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">ຢືນຢັນການອະນຸຍາດ USB</translation>
 <translation id="8481980314595922412">ຄຸນສົມບັດທົດລອງໃຊ້ເປີດຢູ່</translation>
+<translation id="848666842773560761">ມີແອັບກຳລັງພະຍາຍາມເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຢູ່. ປິດປຸ່ມຄວາມເປັນສ່ວນຕົວຂອງກ້ອງຖ່າຍຮູບເພື່ອອະນຸຍາດການເຂົ້າເຖິງ.</translation>
 <translation id="8487678622945914333">ຊຸມເຂົ້າ</translation>
 <translation id="8489156414266187072">ການແນະນຳສ່ວນຕົວພຽງແຕ່ສະແດງໃນບັນຊີຂອງທ່ານເທົ່ານັ້ນ</translation>
 <translation id="8490896350101740396">ແອັບ kiosk "<ph name="UPDATED_APPS" />" ຕໍ່​ໄປ​ນີ້​ໄດ້​ຮັບ​ການ​ອັບ​ເດດ​ແລ້ວ. ກະ​ລຸ​ນາ​ປິດເປີດອຸ​ປະ​ກອນ​ໃໝ່ ເພື່ອ​ດຳ​ເນີນ​ຂັ້ນ​ຕອນ​ອັບ​ເດດ​ໃຫ້​ສຳ​ເລັດ.</translation>

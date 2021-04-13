@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Închide tutorialul ChromeVox</translation>
 <translation id="2697408785920771974">completare automată inline</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{paranteză deschisă}few{# paranteze deschise}other{# de paranteze deschise}}</translation>
+<translation id="270523456882008230">Sfat: atinge de două ori cu un deget pentru a activa elementul actual.</translation>
 <translation id="2705875883745373140">Neapăsat</translation>
 <translation id="2708078563826046398">Puf de piersică</translation>
 <translation id="2713444072780614174">Alb</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Balon explicativ</translation>
 <translation id="2976476721782829799">Poți să te deplasezi trecând cu un deget pe ecran. Această acțiune se numește explorare prin atingere. Treci cu degetul pe ecran pentru a citi restul lecției.</translation>
 <translation id="297825089465017871">Glisează cu două degete la stânga</translation>
+<translation id="2988364959384217951">Sfat: glisează de la dreapta la stânga cu două degete dacă vrei să ieși din acest tutorial.</translation>
 <translation id="2998131015536248178">Caracterul anterior</translation>
 <translation id="2999559350546931576">Scădeți înălțimea sunetului</translation>
 <translation id="3009352964623081324">Tasta de căutare + O, apoi S. Folosește opțiunea pentru a instala, a gestiona și a personaliza voci.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Deschide meniurile ChromeVox</translation>
 <translation id="7799302833060027366">Atinge tasta săgeată în sus, în jos, spre stânga sau spre dreapta pentru a explora conținutul matematic</translation>
 <translation id="7800558923657349506">Epilog</translation>
+<translation id="7801768143868631306">Sfat: glisează spre stânga sau spre dreapta cu un deget pentru a naviga.</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7810781339813764006">Grupul următor</translation>
 <translation id="7813616274030162878">Meniul Acces prin comutare</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Font <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Repetă ecoul la punctuație</translation>
 <translation id="8908714597367957477">antet coloană</translation>
+<translation id="8910180774920883033">Acțiuni disponibile. Apasă pe Search+Ctrl+A pentru a afișa</translation>
 <translation id="8937112856099038376">link intern</translation>
 <translation id="8940925288729953902">Taste de modificare</translation>
 <translation id="8943282376843390568">Verde-gălbui</translation>

@@ -2005,7 +2005,6 @@
 <translation id="3183143381919926261">移动数据网络</translation>
 <translation id="3183944777708523606">显示器排列方式</translation>
 <translation id="3184536091884214176">设置或管理 CUPS 打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">实体 SIM 卡</translation>
 <translation id="3188257591659621405">我的文件</translation>
 <translation id="3188465121994729530">移动平均值</translation>
 <translation id="3189187154924005138">大号光标</translation>
@@ -2684,7 +2683,6 @@
 <translation id="3925573269917483990">摄像头：</translation>
 <translation id="3926002189479431949">Smart Lock 的配对手机已更改</translation>
 <translation id="3927932062596804919">拒绝</translation>
-<translation id="392803502090869922">eSIM 卡设置</translation>
 <translation id="3928570707778085600">将所做更改保存至 <ph name="FILE_OR_FOLDER_NAME" />？</translation>
 <translation id="3928659086758780856">墨水不足</translation>
 <translation id="3929426037718431833">这些扩展程序可以查看和更改此网站上的信息。</translation>
@@ -2803,6 +2801,7 @@
 <translation id="4056908315660577142">您已达到您家长为 Chrome 应用“<ph name="APP_NAME" />”设定的使用时限。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">在应用店中查看</translation>
+<translation id="4057991113334098539">正在激活...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">立即检查文稿</translation>
 <translation id="406070391919917862">后台应用</translation>
@@ -2902,7 +2901,6 @@
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">语言</translation>
 <translation id="4184885522552335684">拖动即可移动显示屏</translation>
-<translation id="4186763173530196927">有一个应用正在尝试使用摄像头。若要允许它使用摄像头，请关闭摄像头的隐私保护开关。</translation>
 <translation id="4187424053537113647">正在设置 <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">突出显示键盘焦点</translation>
 <translation id="4194570336751258953">启用点按单击</translation>
@@ -5020,7 +5018,6 @@
 <translation id="6635362468090274700">任何人都无法与您分享内容，除非您将自己设为可见。<ph name="BR" /><ph name="BR" />若要将自己设为暂时可见，请打开状态区，然后开启“附近分享”的高可见度模式。</translation>
 <translation id="6635944431854494329">所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。</translation>
 <translation id="6635956300022133031">选择和自定义文字转语音的语音</translation>
-<translation id="6636588250634969791">插入 SIM 卡才能继续操作</translation>
 <translation id="6639554308659482635">SQLite 使用的内存</translation>
 <translation id="6642720633335369752">要查看所有已打开的应用窗口，请从屏幕底部向上滑动并按住屏幕。</translation>
 <translation id="664290675870910564">选择网络</translation>

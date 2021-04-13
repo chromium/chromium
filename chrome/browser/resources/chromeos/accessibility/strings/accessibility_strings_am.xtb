@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">የChromeVox አጋዥ ስልጠናን ዝጋ</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ክፍት ቅንፍ}one{# ክፍት ቅንፎች}other{# ክፍት ቅንፎች}}</translation>
+<translation id="270523456882008230">ፍንጭ፦ የአሁኑን ንጥል ለማግበር በአንድ ጣት ሁለቴ መታ ያድርጉ።</translation>
 <translation id="2705875883745373140">አልተጫነም</translation>
 <translation id="2708078563826046398">ኮክ ቀለም</translation>
 <translation id="2713444072780614174">ነጭ</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">ጠቃሚ የመሣሪያ ምክር</translation>
 <translation id="2976476721782829799">እንዲሁም በማያ ገጹ አካባቢ አንድ ጣት በመጎተት መውሰድ ይችላሉ። ይህ በመንካት ማሰስ ይባላል። የተቀረውን የዚህን ትምህርት ክፍል ለማንበብ ጣትዎን በአካባቢው ላይ ለመጎተት ይሞክሩ።</translation>
 <translation id="297825089465017871">ሁለት ጣቶችን ወደ ግራ ያንሸራትቱ</translation>
+<translation id="2988364959384217951">ፍንጭ፦ ከዚህ አጋዥ ሥልጠና ለመውጣት ከፈለጉ በሁለት ጣቶች ከቀኝ ወደ ግራ ያንሸራትቱ።</translation>
 <translation id="2998131015536248178">ቀዳሚ ቁምፊ</translation>
 <translation id="2999559350546931576">የድምጽ ቅጥነት ይቀንሱ</translation>
 <translation id="3009352964623081324">+ O፣ ከዚያ Sን ይፈልጉ። ድምፆችን ለመጫን፣ ለማቀናበር እና ብጁ ለማድረግ ይጠቀሙ።</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">የChromeVox ምናሌዎችን ክፈት</translation>
 <translation id="7799302833060027366">ሒሳብን ለማሰስ ወደ ላይ፣ ወደ ታች፣ ወደ ግራ ወይም ወደ ቀኝ ይጫኑ</translation>
 <translation id="7800558923657349506">ድሕረ ታሪክ</translation>
+<translation id="7801768143868631306">ፍንጭ፦ ለማሰስ በአንድ ጣት ወደ ግራ ወይም ወደ ቀኝ ያንሸራትቱ።</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7810781339813764006">ቀጣይ ቡድን</translation>
 <translation id="7813616274030162878">የመቀየሪያ መዳረሻ ምናሌ</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">ቅርጸ-ቁምፊ <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">የስርዓተ ነጥብ ማስተጋባት ዑደት</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">እርምጃዎች ይገኛሉ። ለመመልከት ፍለጋ+Ctrl+Aን ይጫኑ</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">መቀየሪያ ቁልፎች</translation>
 <translation id="8943282376843390568">ሎሚ ቀለም</translation>

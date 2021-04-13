@@ -266,6 +266,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder kvar</translation>
 <translation id="2779651927720337254">misslyckades</translation>
 <translation id="2781151931089541271">1 sekund kvar</translation>
+<translation id="279827439955962619">Ta bort markering</translation>
 <translation id="2801022321632964776">Uppdatera och få ditt språk i den senaste versionen av Chrome</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="281504910091592009">Visa och hantera sparade lösenord i <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="4487967297491345095">All appdata i Chrome raderas permanent. Detta omfattar alla filer, inställningar, konton, databaser osv.</translation>
 <translation id="449126573531210296">Kryptera synkroniserade lösenord med ditt Google-konto</translation>
 <translation id="4493497663118223949">Begränsat läge har aktiverats</translation>
+<translation id="4504667196171871375">Via Wi-Fi och mobildata</translation>
 <translation id="4508528996305412043">Menyn med flödeskort är öppen</translation>
 <translation id="4508642716788467538">Välj språk</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{för # dag sedan}other{för # dagar sedan}}</translation>
@@ -917,6 +919,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="702463548815491781">Rekommenderas när TalkBack eller brytarstyrning är aktiverat</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> återställdes</translation>
 <translation id="7029809446516969842">Lösenord</translation>
+<translation id="7040531500313579672">Dela markering</translation>
 <translation id="7054588988317389591">Vill du få bildbeskrivningar?</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
 <translation id="7063006564040364415">Det gick inte att ansluta till synkroniseringsservern.</translation>

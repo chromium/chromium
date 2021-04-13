@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">Скріпити внизу праворуч</translation>
 <translation id="2523886232349826891">Збережено лише на цьому пристрої</translation>
 <translation id="2524461107774643265">Додайте більше інформації</translation>
+<translation id="2526590354069164005">Google Desktop</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{і ще 1}one{і ще #}few{і ще #}many{і ще #}other{і ще #}}</translation>
 <translation id="2536110899380797252">Додати адресу</translation>
 <translation id="2539524384386349900">Визначити</translation>
@@ -2052,7 +2053,6 @@
 <translation id="8798099450830957504">За умовчанням</translation>
 <translation id="8805819170075074995">Елемент списку <ph name="LANGUAGE_ID" />: елемент ігнорується, оскільки його також включено в правило SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Обрізати після кожної сторінки</translation>
-<translation id="881292005876822445">Увімкнути розгортання?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="883848425547221593">Інші закладки</translation>

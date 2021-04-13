@@ -2009,7 +2009,6 @@
 <translation id="3183143381919926261">மொபைல் டேட்டா நெட்வொர்க்குகள்</translation>
 <translation id="3183944777708523606">மானிட்டரை ஒழுங்கமைத்தல்</translation>
 <translation id="3184536091884214176">CUPS பிரிண்டர்களை அமைத்தல் அல்லது நிர்வகித்தல். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">செருகக்கூடிய SIM</translation>
 <translation id="3188257591659621405">எனது கோப்புகள்</translation>
 <translation id="3188465121994729530">நகரும் சராசரி</translation>
 <translation id="3189187154924005138">பெரிய கர்சர்</translation>
@@ -2688,7 +2687,6 @@
 <translation id="3925573269917483990">கேமரா:</translation>
 <translation id="3926002189479431949">Smart Lockகின் ஃபோன் மாற்றப்பட்டது</translation>
 <translation id="3927932062596804919">மறு</translation>
-<translation id="392803502090869922">eSIM அமைவு</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" /> இல் மாற்றங்களைச் சேமிக்கவா?</translation>
 <translation id="3928659086758780856">மை குறைவாக உள்ளது</translation>
 <translation id="3929426037718431833">இந்தத் தளத்திலுள்ள தகவலை இந்த நீட்டிப்புகளால் பார்க்கவும் மாற்றவும் முடியும்.</translation>
@@ -2808,6 +2806,7 @@
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome ஆப்ஸைப் பயன்படுத்த உங்கள் பெற்றோர் அமைத்த நேர வரம்பை அடைந்துவிட்டீர்கள். நாளை <ph name="TIME_LIMIT" /> பயன்படுத்திக் கொள்ளலாம்.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">அங்காடியில் காட்டு</translation>
+<translation id="4057991113334098539">செயலாக்குகிறது...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">ஆவணத்தை இப்போது சரிபார்</translation>
 <translation id="406070391919917862">பின்புல ஆப்ஸ்</translation>
@@ -2907,7 +2906,6 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">மொழிகள்</translation>
 <translation id="4184885522552335684">திரையை நகர்த்த, இழுக்கவும்</translation>
-<translation id="4186763173530196927">கேமராவை ஓர் ஆப்ஸ் அணுக முயல்கிறது. அணுகலை அனுமதிக்க கேமரா தனியுரிமை ஸ்விட்சை முடக்குங்கள்.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> ஆப்ஸை அமைக்கிறது...</translation>
 <translation id="4190828427319282529">கீபோர்டு ஃபோக்கஸைத் தனிப்படுத்து</translation>
 <translation id="4194570336751258953">கிளிக்குக்கு தட்டுவதை இயக்கு</translation>
@@ -5026,7 +5024,6 @@
 <translation id="6635362468090274700">மற்றவர்கள் உங்களுடன் பகிர உங்கள் சாதனம் அவர்களுக்குத் தெரியும் வகையில் அமைக்க வேண்டும்.<ph name="BR" /><ph name="BR" />தற்காலிகமாகக் காட்டப்படுவதற்கு நிலைப் பகுதியைத் திறந்து ‘அருகில் பகிர்தல்’ அம்சத்தை ஆன் செய்யவும்.</translation>
 <translation id="6635944431854494329">"அமைப்புகள் &gt; மேம்பட்டவை &gt; கண்டறிதல் தரவையும் உபயோகத் தரவையும் தானாக Googleளுக்கு அனுப்பு" என்பதற்குச் சென்று இந்த அம்சத்தை உரிமையாளர் கட்டுப்படுத்தலாம்.</translation>
 <translation id="6635956300022133031">உரையிலிருந்து பேச்சுக்கான குரல்களைத் தேர்ந்தெடுக்கலாம், தனிப்பயனாக்கலாம்</translation>
-<translation id="6636588250634969791">தொடர்வதற்கு முன் SIMமைச் செருகவும்</translation>
 <translation id="6639554308659482635">SQLite நினைவகம்</translation>
 <translation id="6642720633335369752">திறந்துள்ள ஆப்ஸ் சாளரங்கள் அனைத்தையும் காண கீழிருந்து மேல்நோக்கி ஸ்வைப் செய்து பிடிக்கவும்.</translation>
 <translation id="664290675870910564">நெட்வொர்க் தேர்வு</translation>

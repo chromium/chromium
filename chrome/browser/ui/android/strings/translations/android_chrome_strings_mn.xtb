@@ -266,6 +266,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> секунд үлдсэн</translation>
 <translation id="2779651927720337254">татаж чадсангүй</translation>
 <translation id="2781151931089541271">1 секунд үлдсэн</translation>
+<translation id="279827439955962619">Тодруулгыг хасах</translation>
 <translation id="2801022321632964776">Chrome-н хамгийн сүүлийн хувилбарт хэлээ авахын тулд шинэчилнэ үү</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google Бүртгэл<ph name="END_LINK" />-дээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>
@@ -503,6 +504,7 @@ Privacy Sandbox нь идэвхтэй хөгжүүлэлтэд байгаа бө
 <translation id="4487967297491345095">Chrome-н бүх аппын өгөгдлийг бүрмөсөн устгана. Үүнд бүх файл, тохиргоо, бүртгэл, өгөгдлийн сан орно.</translation>
 <translation id="449126573531210296">Google Бүртгэлээрээ синк хийсэн нууц үгнүүдийг шифрлэх</translation>
 <translation id="4493497663118223949">Энгийн горим асаалттай байна</translation>
+<translation id="4504667196171871375">Wi-Fi болон мобайл датагаар</translation>
 <translation id="4508528996305412043">Сувгийн картын цэсийг нээсэн байна</translation>
 <translation id="4508642716788467538">Хэлээ сонгох</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# өдрийн өмнө}other{# өдрийн өмнө}}</translation>
@@ -916,6 +918,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="702463548815491781">TalkBack эсвэл Хандалтыг сэлгэх асаалттай үед тохиромжтой</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" />-г сэргээсэн</translation>
 <translation id="7029809446516969842">Нууц үг</translation>
+<translation id="7040531500313579672">Тодруулгыг хуваалцах</translation>
 <translation id="7054588988317389591">Зургийн тайлбар авах уу?</translation>
 <translation id="7055152154916055070">Дахин чиглүүлэлтийг блоклосон:</translation>
 <translation id="7063006564040364415">Синхийн сервер лүү холбогдож чадсангүй.</translation>

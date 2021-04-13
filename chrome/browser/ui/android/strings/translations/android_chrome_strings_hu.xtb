@@ -266,6 +266,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2777555524387840389"><ph name="SECONDS" /> másodperc van hátra</translation>
 <translation id="2779651927720337254">sikertelen</translation>
 <translation id="2781151931089541271">1 másodperc van hátra</translation>
+<translation id="279827439955962619">Kiemelés eltávolítása</translation>
 <translation id="2801022321632964776">Frissítsen, hogy a saját nyelvén használhassa a Chrome legújabb verzióját</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="281504910091592009">Mentett jelszavait megtekintheti és kezelheti <ph name="BEGIN_LINK" />Google-fiókjában<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="4487967297491345095">A Chrome összes alkalmazásadata véglegesen törlődik, beleértve a fájlokat, beállításokat, fiókokat, adatbázisokat stb.</translation>
 <translation id="449126573531210296">Szinkronizált jelszavak titkosítása a Google-fiókkal</translation>
 <translation id="4493497663118223949">Az Egyszerűsített mód be van kapcsolva</translation>
+<translation id="4504667196171871375">Wi-Fi- és mobilhálózaton</translation>
 <translation id="4508528996305412043">A hírcsatornakártya menüje meg van nyitva</translation>
 <translation id="4508642716788467538">Válassza ki az Ön nyelvét</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# napja}other{# napja}}</translation>
@@ -917,6 +919,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="702463548815491781">Ajánlott, amikor a TalkBack vagy a Kapcsolóalapú hozzáférés be van kapcsolva</translation>
 <translation id="7027549951530753705">Visszaállítás dátuma: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Jelszavak</translation>
+<translation id="7040531500313579672">Kiemelés megosztása</translation>
 <translation id="7054588988317389591">Lekéri a képleírásokat?</translation>
 <translation id="7055152154916055070">Átirányítás letiltva:</translation>
 <translation id="7063006564040364415">Nem sikerült csatlakozni a szinkronizálószerverhez.</translation>

@@ -241,6 +241,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2684412629217766642">Lukk ChromeVox-veiledningen</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{venstreparentes}other{# venstreparenteser}}</translation>
+<translation id="270523456882008230">Tips: Dobbelttrykk med én finger for å aktivere det gjeldende elementet.</translation>
 <translation id="2705875883745373140">Ikke trykket på</translation>
 <translation id="2708078563826046398">Fersken</translation>
 <translation id="2713444072780614174">Hvit</translation>
@@ -285,6 +286,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2972205263822847197">Verktøytips</translation>
 <translation id="2976476721782829799">Du kan også bevege deg rundt ved å dra én finger rundt på skjermen. Dette kalles berøringsutforskning. Prøv å dra fingeren rundt for å lese resten av denne leksjonen.</translation>
 <translation id="297825089465017871">Sveip to fingre til venstre</translation>
+<translation id="2988364959384217951">Tips: Sveip fra høyre til venstre med to fingre hvis du vil gå ut av denne veiledningen.</translation>
 <translation id="2998131015536248178">Forrige tegn</translation>
 <translation id="2999559350546931576">Reduser stemmeleiet</translation>
 <translation id="3009352964623081324">Søk + O og deretter S. Bruk for å installere, administrere og tilpasse stemmer.</translation>
@@ -941,6 +943,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="7776293189010177726">Åpne ChromeVox-menyene</translation>
 <translation id="7799302833060027366">Trykk opp, ned, til venstre eller til høyre for å utforske matematikk</translation>
 <translation id="7800558923657349506">Epilog</translation>
+<translation id="7801768143868631306">Tips: Sveip til venstre eller høyre med én finger for å navigere.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7810781339813764006">Neste gruppe</translation>
 <translation id="7813616274030162878">Meny for brytertilgang</translation>
@@ -1080,6 +1083,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8897030325301866860">Skrifttype <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Slå av eller på tegnsettingsekko</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Det finnes tilgjengelige handlinger. Trykk på søketasten + Ctrl + A for å se dem</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Modifikatortaster</translation>
 <translation id="8943282376843390568">Limegrønn</translation>

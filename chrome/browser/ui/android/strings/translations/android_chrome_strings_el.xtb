@@ -266,6 +266,7 @@
 <translation id="2777555524387840389">Απομένουν <ph name="SECONDS" /> δευτερόλεπτα</translation>
 <translation id="2779651927720337254">απέτυχε</translation>
 <translation id="2781151931089541271">Απομένει 1 δευτερόλεπτο</translation>
+<translation id="279827439955962619">Κατάργηση επισήμανσης</translation>
 <translation id="2801022321632964776">Ενημερώστε για να χρησιμοποιείτε τη γλώσσα σας στην πιο πρόσφατη έκδοση του Chrome</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="281504910091592009">Προβολή και διαχείριση αποθηκευμένων κωδικών πρόσβασης στον <ph name="BEGIN_LINK" />Λογαριασμό σας Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">Όλα τα δεδομένα εφαρμογών του Chrome θα διαγραφούν οριστικά. Σε αυτά περιλαμβάνονται όλα τα αρχεία, οι ρυθμίσεις, οι λογαριασμοί, οι βάσεις δεδομένων, κ.λπ.</translation>
 <translation id="449126573531210296">Κρυπτογραφήστε συγχρονισμένους κωδικούς πρόσβασης με τον Λογαριασμό σας Google</translation>
 <translation id="4493497663118223949">Η λειτουργία Lite είναι ενεργή</translation>
+<translation id="4504667196171871375">Σε Wi-Fi και δεδομένα κινητής τηλεφωνίας</translation>
 <translation id="4508528996305412043">Το μενού της κάρτας ροής είναι ανοικτό</translation>
 <translation id="4508642716788467538">Επιλέξτε τη γλώσσα σας</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Πριν από # ημέρα}other{Πριν από # ημέρες}}</translation>
@@ -917,6 +919,7 @@
 <translation id="702463548815491781">Συνιστάται όταν έχει ενεργοποιηθεί το TalkBack ή η πρόσβαση με διακόπτη</translation>
 <translation id="7027549951530753705">Έγινε επαναφορά του στοιχείου <ph name="ITEM_TITLE" />.</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
+<translation id="7040531500313579672">Κοινοποίηση επισήμανσης</translation>
 <translation id="7054588988317389591">Λήψη περιγραφών εικόνων;</translation>
 <translation id="7055152154916055070">Αποκλεισμένη ανακατεύθυνση:</translation>
 <translation id="7063006564040364415">Δεν ήταν δυνατή η σύνδεση στον διακομιστή συγχρονισμού.</translation>

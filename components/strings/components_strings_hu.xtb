@@ -425,6 +425,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2521385132275182522">Kapocs jobbra lent</translation>
 <translation id="2523886232349826891">Csak erre az eszközre mentve</translation>
 <translation id="2524461107774643265">További adatok hozzáadása</translation>
+<translation id="2526590354069164005">Asztal</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{és 1 további}other{és # további}}</translation>
 <translation id="2536110899380797252">Cím hozzáadása</translation>
 <translation id="2539524384386349900">Felismerés</translation>
@@ -1169,6 +1170,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5327248766486351172">Név</translation>
 <translation id="5329858041417644019">A böngésző nem áll felügyelet alatt</translation>
 <translation id="5332219387342487447">Szállítási mód</translation>
+<translation id="5333022057423422993">A Chrome észlelte, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonsága érdekében javasoljuk a mentett jelszavak ellenőrzését.</translation>
 <translation id="5334013548165032829">Részletes rendszernaplók</translation>
 <translation id="5340250774223869109">Alkalmazás letiltva</translation>
 <translation id="534295439873310000">NFC-eszközök</translation>
@@ -1283,6 +1285,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5784606427469807560">A kártya ellenőrzése során hiba történt. Ellenőrizze az internetkapcsolatot, majd próbálkozzon újra.</translation>
 <translation id="5785756445106461925">Emellett az oldal azonban más forrásokat is tartalmaz, amelyek nem biztonságosak. Ezeket a forrásokat mások is megtekinthetik átvitel közben, és megváltoztatásukkal a támadók módosíthatják az oldal viselkedését.</translation>
 <translation id="5786044859038896871">Ki szeretné tölteni a kártyaadatait?</translation>
+<translation id="578633867165174378">A Chrome észlelte, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Javasoljuk a jelszó azonnali módosítását.</translation>
 <translation id="5798290721819630480">Elveti a módosításokat?</translation>
 <translation id="5803412860119678065">Ki szeretné tölteni <ph name="CARD_DETAIL" /> kártyájának adataival?</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
@@ -1472,6 +1475,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6579630537141957243">Csatlakoztatja a MIDI-eszközt?</translation>
 <translation id="6579990219486187401">Világos rózsaszín</translation>
 <translation id="6583674473685352014">B6 (boríték)</translation>
+<translation id="6587182488465657433">A Chrome észlelte, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonsága érdekében javasoljuk ennek a jelszónak az azonnali módosítását, majd a mentett jelszavai ellenőrzését.</translation>
 <translation id="6587923378399804057">Vágólapra másolt link</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> eszköze nem áll felügyelet alatt</translation>
 <translation id="6592952801936330159">Webhelybeállítások kezelése gomb. Nyomja le az Enter billentyűt a webhelyek engedélyeinek és tárolt adatainak a Chrome-beállítások közötti kezeléséhez.</translation>
@@ -2050,7 +2054,6 @@ További részletek:
 <translation id="8798099450830957504">Alapértelmezett</translation>
 <translation id="8805819170075074995">„<ph name="LANGUAGE_ID" />” listabejegyzés: A bejegyzést figyelmen kívül hagyja a rendszer, mert szerepel a SpellcheckLanguage házirendben is.</translation>
 <translation id="8807160976559152894">Vágás minden oldal után</translation>
-<translation id="881292005876822445">Engedélyezi a teljes méretre állítást?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a Chrome-nak a Chrome beállításaiban való frissítéséhez</translation>
 <translation id="8820817407110198400">Könyvjelzők</translation>
 <translation id="883848425547221593">Egyéb könyvjelzők</translation>

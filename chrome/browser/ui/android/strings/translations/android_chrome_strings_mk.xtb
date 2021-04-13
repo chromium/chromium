@@ -266,6 +266,7 @@
 <translation id="2777555524387840389">Останаа <ph name="SECONDS" /> секунди</translation>
 <translation id="2779651927720337254">не успеа</translation>
 <translation id="2781151931089541271">Остана 1 секунда</translation>
+<translation id="279827439955962619">Отстрани го нагласеното</translation>
 <translation id="2801022321632964776">Ажурирајте за да го добиете вашиот јазик во најновата верзија на Chrome</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="281504910091592009">Прегледајте ги и управувајте со зачуваните лозинки во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4487967297491345095">Сите податоци од апликациите на Chrome ќе се избришат трајно. Тука спаѓаат сите датотеки, поставки, сметки, бази на податоци итн.</translation>
 <translation id="449126573531210296">Шифрирај синхронизирани лозинки со сметката на Google</translation>
 <translation id="4493497663118223949">„Лесниот режим“ е вклучен</translation>
+<translation id="4504667196171871375">Преку Wi-Fi и мобилен интернет</translation>
 <translation id="4508528996305412043">Менито на картичката за активност е отворено</translation>
 <translation id="4508642716788467538">Изберете јазик</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Пред # ден}one{Пред # ден}other{Пред # дена}}</translation>
@@ -917,6 +919,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="702463548815491781">Препорачано при вклучен TalkBack или „Пристап со прекинувачи“</translation>
 <translation id="7027549951530753705">Преземањето на <ph name="ITEM_TITLE" /> е вратено</translation>
 <translation id="7029809446516969842">Лозинки</translation>
+<translation id="7040531500313579672">Сподели го нагласеното</translation>
 <translation id="7054588988317389591">Сакате ли да добивате описи на слики?</translation>
 <translation id="7055152154916055070">Пренасочувањето е блокирано:</translation>
 <translation id="7063006564040364415">Не може да се поврзе на серверот за синхронизација.</translation>

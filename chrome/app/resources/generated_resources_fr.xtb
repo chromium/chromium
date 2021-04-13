@@ -2010,7 +2010,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3183143381919926261">Réseaux de données mobiles</translation>
 <translation id="3183944777708523606">Mode d'affichage du moniteur</translation>
 <translation id="3184536091884214176">Configurer ou gérer des imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">Carte SIM physique</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3188465121994729530">Moyenne glissante</translation>
 <translation id="3189187154924005138">Grand curseur</translation>
@@ -2689,7 +2688,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3925573269917483990">Caméra :</translation>
 <translation id="3926002189479431949">Le téléphone Smart Lock a changé</translation>
 <translation id="3927932062596804919">Refuser</translation>
-<translation id="392803502090869922">Configuration de l'eSIM</translation>
 <translation id="3928570707778085600">Enregistrer les modifications apportées à "<ph name="FILE_OR_FOLDER_NAME" />" ?</translation>
 <translation id="3928659086758780856">Niveau d'encre bas</translation>
 <translation id="3929426037718431833">Ces extensions peuvent voir et modifier des informations sur ce site.</translation>
@@ -2809,6 +2807,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4056908315660577142">Tu as atteint la limite de temps fixée par l'un de tes parents pour l'application Chrome <ph name="APP_NAME" />. Tu pourras l'utiliser demain pendant <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Afficher dans la boutique</translation>
+<translation id="4057991113334098539">Activation...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Vérifier le document maintenant</translation>
 <translation id="406070391919917862">Applications en arrière-plan</translation>
@@ -2908,7 +2907,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4184885522552335684">Faites glisser un affichage pour le déplacer</translation>
-<translation id="4186763173530196927">Une application tente d'accéder à la caméra. Pour lui accorder l'accès, désactivez le paramètre de confidentialité de la caméra.</translation>
 <translation id="4187424053537113647">Configuration de <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Mettre en surbrillance l'objet sélectionné au clavier</translation>
 <translation id="4194570336751258953">Activer la fonction "Taper pour cliquer"</translation>
@@ -5027,7 +5025,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6635362468090274700">Personne ne peut partager du contenu avec vous tant que vous n'avez pas choisi d'être visible.<ph name="BR" /><ph name="BR" />Pour devenir visible temporairement, ouvrez la zone d'état, puis activez "Visibilité à proximité".</translation>
 <translation id="6635944431854494329">Le propriétaire peut contrôler cette fonctionnalité dans Paramètres &gt; Paramètres avancés &gt; Envoyer automatiquement des données de diagnostic et d'utilisation à Google.</translation>
 <translation id="6635956300022133031">Sélectionner et personnaliser les voix de la synthèse vocale</translation>
-<translation id="6636588250634969791">Insérez une carte SIM avant de continuer</translation>
 <translation id="6639554308659482635">Mémoire SQLite</translation>
 <translation id="6642720633335369752">Pour afficher toutes les fenêtres d'application ouvertes, balayez l'écran de bas en haut sans retirer votre doigt.</translation>
 <translation id="664290675870910564">Sélection du réseau</translation>

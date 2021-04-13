@@ -425,6 +425,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2521385132275182522">Kram regs onder</translation>
 <translation id="2523886232349826891">Net op hierdie toestel gestoor</translation>
 <translation id="2524461107774643265">Voeg meer inligting by</translation>
+<translation id="2526590354069164005">Rekenaar</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
 <translation id="2536110899380797252">Voeg adres by</translation>
 <translation id="2539524384386349900">Bespeur</translation>
@@ -1173,6 +1174,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5329858041417644019">Jou blaaier word nie bestuur nie</translation>
 <translation id="5332219387342487447">Versendingmetode</translation>
+<translation id="5333022057423422993">Chrome het die wagwoord wat jy sopas gebruik het, in 'n dataskending gekry. Gaan jou gestoorde wagwoorde na om jou rekeninge te beveilig.</translation>
 <translation id="5334013548165032829">Gedetailleerde stelselloglêers</translation>
 <translation id="5340250774223869109">Program word geblokkeer</translation>
 <translation id="534295439873310000">NFC-toestelle</translation>
@@ -1287,6 +1289,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5784606427469807560">Kon nie jou kaart bevestig nie. Gaan jou internetverbinding na en probeer weer.</translation>
 <translation id="5785756445106461925">Hierdie bladsy sluit verder ander hulpbronne in wat nie veilig is nie. Hierdie hulpbronne kan deur ander mense bekyk word terwyl hulle op pad is, en kan deur 'n aanvaller aangepas word om die bladsy se voorkoms te verander.</translation>
 <translation id="5786044859038896871">Wil jy jou kaartinligting invul?</translation>
+<translation id="578633867165174378">Chrome het die wagwoord wat jy sopas gebruik het, in 'n dataskending gekry. Ons beveel aan dat jy hierdie wagwoord nou verander.</translation>
 <translation id="5798290721819630480">Gooi veranderinge weg?</translation>
 <translation id="5803412860119678065">Wil jy jou <ph name="CARD_DETAIL" /> invul?</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
@@ -1476,6 +1479,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6579630537141957243">Koppel MIDI-toestel?</translation>
 <translation id="6579990219486187401">Ligpienk</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6587182488465657433">Chrome het die wagwoord wat jy sopas gebruik het, in 'n dataskending gekry. Ons beveel aan dat jy dit nou verander en jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
 <translation id="6587923378399804057">Skakel wat jy gekopieer het</translation>
 <translation id="6591833882275308647">Jou <ph name="DEVICE_TYPE" /> word nie bestuur nie</translation>
 <translation id="6592952801936330159">Bestuur Werfinstellings-knoppie, druk Enter om toestemmings en data wat op werwe geberg is in Chrome-instellings uit te vee</translation>
@@ -2053,7 +2057,6 @@ Bykomende besonderhede:
 <translation id="8798099450830957504">Verstek</translation>
 <translation id="8805819170075074995">Lysinskrywing "<ph name="LANGUAGE_ID" />": Inskrywing word geïgnoreer omdat dit ook by die SpellcheckLanguage-beleid ingesluit word.</translation>
 <translation id="8807160976559152894">Knip ná elke bladsy</translation>
-<translation id="881292005876822445">Aktiveer maksimering?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om Chrome vanuit jou Chrome-instellings op te dateer</translation>
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="883848425547221593">Ander boekmerke</translation>

@@ -266,6 +266,7 @@
 <translation id="2777555524387840389">Засталося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не выканана</translation>
 <translation id="2781151931089541271">Засталася 1 секунда</translation>
+<translation id="279827439955962619">Выдаліць вылучэнне</translation>
 <translation id="2801022321632964776">Каб атрымаць інтэрфейс на сваёй мове ў апошняй версіі браўзера Chrome, абнавіце яго</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="281504910091592009">Праглядайце захаваныя паролі і кіруйце імі праз <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4487967297491345095">Усе даныя праграмы Chrome будуць назаўсёды выдалены. Гэта датычыцца ўсіх файлаў, налад, уліковых запісаў, баз даных і г. д.</translation>
 <translation id="449126573531210296">Шыфраваць сінхранізаваныя паролі з дапамогай даных Уліковага запісу Google</translation>
 <translation id="4493497663118223949">Лёгкі рэжым уключаны</translation>
+<translation id="4504667196171871375">Выкарыстоўваць Wi-Fi і мабільную перадачу даных</translation>
 <translation id="4508528996305412043">Меню карткі стужкі адкрыта</translation>
 <translation id="4508642716788467538">Выберыце мову</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# дзень таму}one{# дзень таму}few{# дні таму}many{# дзён таму}other{# дня таму}}</translation>
@@ -587,6 +589,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4941179133499732445">Каб шукаць з дапамогай голасу, націсніце на значок мікрафона</translation>
 <translation id="4943703118917034429">Віртуальная рэальнасць</translation>
 <translation id="4943872375798546930">Няма вынікаў</translation>
+<translation id="4957722034734105353">Даведацца больш...</translation>
 <translation id="4961107849584082341">Гэту старонку можна перакласці на любую мову</translation>
 <translation id="4970824347203572753">Недаступна ў вашым рэгіёне</translation>
 <translation id="4971735654804503942">Больш хуткая актыўная абарона ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Папярэджвае пра ўцечкі пароляў. Патрабуе адпраўкі даных прагляду сайтаў у Google.</translation>
@@ -916,6 +919,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="702463548815491781">Рэкамендуецца, калі ўключаны TalkBack або доступ праз пераключальнікі</translation>
 <translation id="7027549951530753705">Адноўлена: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Паролі</translation>
+<translation id="7040531500313579672">Абагуліць вылучанае</translation>
 <translation id="7054588988317389591">Атрымліваць апісанні відарысаў?</translation>
 <translation id="7055152154916055070">Перанакіраванне заблакіравана:</translation>
 <translation id="7063006564040364415">Не ўдалося падключыцца да сервера сінхранізацыі.</translation>
@@ -1149,6 +1153,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8559990750235505898">Прапаноўваць перакладаць старонкі на іншых мовах</translation>
 <translation id="8560602726703398413">Шукайце спіс чытання ў Закладках</translation>
 <translation id="8562452229998620586">Захаваныя паролі з'явяцца тут.</translation>
+<translation id="856481929701340285">Запытаць версію для настольнага камп'ютара</translation>
 <translation id="8569404424186215731">з <ph name="DATE" /></translation>
 <translation id="8571213806525832805">За апошнія 4 тыдні</translation>
 <translation id="8572344201470131220">Відарыс скапіраваны</translation>

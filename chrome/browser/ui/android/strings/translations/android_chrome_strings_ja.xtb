@@ -266,6 +266,7 @@
 <translation id="2777555524387840389">残り <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失敗</translation>
 <translation id="2781151931089541271">残り 1 秒</translation>
+<translation id="279827439955962619">テキストの選択を解除</translation>
 <translation id="2801022321632964776">Chrome を更新し、最新バージョンでお使いの言語を入手してください</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />での保存パスワードの表示と管理</translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">Chrome のすべてのアプリデータを完全に削除します。削除されるデータには、すべてのファイル、設定、アカウント、データベースなどが含まれます。</translation>
 <translation id="449126573531210296">Google アカウントで同期パスワードを暗号化する</translation>
 <translation id="4493497663118223949">ライトモードはオンです</translation>
+<translation id="4504667196171871375">Wi-Fi、モバイルデータ接続時</translation>
 <translation id="4508528996305412043">フィードカード メニューが開いています</translation>
 <translation id="4508642716788467538">言語を選択してください</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# 日前}other{# 日前}}</translation>
@@ -917,6 +919,7 @@
 <translation id="702463548815491781">TalkBack またはスイッチ アクセスを有効にしている場合におすすめです</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> を復元しました</translation>
 <translation id="7029809446516969842">パスワード</translation>
+<translation id="7040531500313579672">選択したテキストを共有</translation>
 <translation id="7054588988317389591">画像の説明文を取得しますか？</translation>
 <translation id="7055152154916055070">リダイレクトがブロックされました</translation>
 <translation id="7063006564040364415">同期サーバーに接続できませんでした。</translation>

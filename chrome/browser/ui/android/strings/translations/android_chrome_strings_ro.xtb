@@ -266,6 +266,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2777555524387840389"><ph name="SECONDS" /> sec. rămase</translation>
 <translation id="2779651927720337254">nereușită</translation>
 <translation id="2781151931089541271">1 sec. rămasă</translation>
+<translation id="279827439955962619">Elimină evidențierea</translation>
 <translation id="2801022321632964776">Actualizează pentru a descărca limba ta în cea mai recentă versiune de Chrome</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="281504910091592009">Vezi și gestionează parolele salvate în <ph name="BEGIN_LINK" />Contul Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="4487967297491345095">Toate datele aplicației Chrome vor fi șterse definitiv. Sunt incluse toate fișierele, setările, conturile, bazele de date etc.</translation>
 <translation id="449126573531210296">Criptează parolele sincronizate folosind Contul Google</translation>
 <translation id="4493497663118223949">Modul Lite este activat</translation>
+<translation id="4504667196171871375">Pe Wi-Fi și date mobile</translation>
 <translation id="4508528996305412043">Meniul cardului din feed este deschis</translation>
 <translation id="4508642716788467538">Alege limba</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Acum # zi}few{Acum # zile}other{Acum # de zile}}</translation>
@@ -917,6 +919,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="702463548815491781">Recomandat atunci când este activată opțiunea TalkBack sau Acces prin comutare</translation>
 <translation id="7027549951530753705">S-a restabilit <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Parole</translation>
+<translation id="7040531500313579672">Trimite evidențierea</translation>
 <translation id="7054588988317389591">Vrei să generezi descrieri ale imaginilor?</translation>
 <translation id="7055152154916055070">Redirecționarea a fost blocată:</translation>
 <translation id="7063006564040364415">Nu s-a putut stabili conexiunea cu serverul de sincronizare.</translation>

@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox практик хичээлийг хаах</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{зүүн талын хаалт}other{# зүүн талын хаалтууд}}</translation>
+<translation id="270523456882008230">Заавар: Одоогийн зүйлийг идэвхжүүлэхийн тулд нэг хуруугаараа хоёр товшино уу.</translation>
 <translation id="2705875883745373140">Дараагүй</translation>
 <translation id="2708078563826046398">Бүдэг ягаан (Тоор жимсний өнгө)</translation>
 <translation id="2713444072780614174">Цагаан</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Хэрэгслийн зөвлөмж</translation>
 <translation id="2976476721782829799">Та мөн нэг хуруугаа дэлгэц дээр чирснээр эргэн тойронд шилжих боломжтой. Үүнийг хүрэлтээр сонсох гэж нэрлэдэг. Энэ хичээлийн үлдсэн хэсгийг уншихын тулд хуруугаа чирч үзнэ үү.</translation>
 <translation id="297825089465017871">Хоёр хурууг зүүн тийш шудрах</translation>
+<translation id="2988364959384217951">Заавар: Хэрэв та энэ практик хичээлээс гарахыг хүсвэл хоёр хуруугаараа баруунаас зүүн тийш шударна уу.</translation>
 <translation id="2998131015536248178">Өмнөх тэмдэгт</translation>
 <translation id="2999559350546931576">Түвшинг бууруулах</translation>
 <translation id="3009352964623081324">Search + O, дараа нь S. Дуу хоолойг суулгах, удирдах болон өөрчлөхийн тулд ашиглана уу.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox цэсийг нээх</translation>
 <translation id="7799302833060027366">Дээш, доош, зүүн эсвэл баруун чигийн товчлуурыг дарж математик судална уу</translation>
 <translation id="7800558923657349506">Төгсгөлийн үг</translation>
+<translation id="7801768143868631306">Заавар: Шилжихийн тулд нэг хуруугаараа зүүнээс баруун тийш шударна уу.</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7810781339813764006">Дараагийн бүлэг</translation>
 <translation id="7813616274030162878">Хандалтыг сэлгэх цэс</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Фонт <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Цэг таслалын давтамж</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Үйлдэл хийх боломжтой. Үзэхийн тулд Search+Ctrl+A-г дарна уу</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Засагч түлхүүрүүд</translation>
 <translation id="8943282376843390568">Нимбэгний ногоон</translation>

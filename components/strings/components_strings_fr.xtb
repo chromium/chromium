@@ -425,6 +425,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2521385132275182522">Agrafe en bas à droite</translation>
 <translation id="2523886232349826891">Enregistrée sur cet appareil uniquement</translation>
 <translation id="2524461107774643265">Ajouter des informations</translation>
+<translation id="2526590354069164005">Bureau</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
 <translation id="2536110899380797252">Ajouter une adresse</translation>
 <translation id="2539524384386349900">Détecter</translation>
@@ -462,7 +463,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Taille optimale</translation>
-<translation id="2688969097326701645">Continuer</translation>
+<translation id="2688969097326701645">Oui, continuer</translation>
 <translation id="2691924980723297736">Avertissement de sécurité</translation>
 <translation id="2699302886720511147">Cartes acceptées</translation>
 <translation id="2701514975700770343">Vers le bas</translation>
@@ -1088,7 +1089,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5043480802608081735">Lien copié</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="5056549851600133418">Articles pour vous</translation>
-<translation id="5061227663725596739">Essayez avec <ph name="LOOKALIKE_DOMAIN" /></translation>
+<translation id="5061227663725596739">Vous vouliez dire <ph name="LOOKALIKE_DOMAIN" /> ?</translation>
 <translation id="5066056036849835175">Historique d'impression</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 en cours d'utilisation)}one{(# en cours d'utilisation)}other{(# en cours d'utilisation)}}</translation>
@@ -2051,7 +2052,6 @@ Informations supplémentaires :
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8805819170075074995">Entrée de la liste "<ph name="LANGUAGE_ID" />" : entrée ignorée, car elle est aussi incluse dans la règle SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Couper après chaque page</translation>
-<translation id="881292005876822445">Activer l'agrandissement ?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis Entrée pour mettre à jour Chrome depuis les paramètres du navigateur</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="883848425547221593">Autres favoris</translation>

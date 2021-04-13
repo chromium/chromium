@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">Aşağı sağdan ştapel vurun</translation>
 <translation id="2523886232349826891">Yalnız bu cihaz yadda saxlanıldı</translation>
 <translation id="2524461107774643265">Ətraflı Məlumat Əlavə Edin</translation>
+<translation id="2526590354069164005">Masaüstü</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{və daha 1}other{and daha #}}</translation>
 <translation id="2536110899380797252">Ünvan Əlavə Edin</translation>
 <translation id="2539524384386349900">Aşkarlayın</translation>
@@ -2048,7 +2049,6 @@
 <translation id="8798099450830957504">Defolt</translation>
 <translation id="8805819170075074995">Siyahı daxiletməsi "<ph name="LANGUAGE_ID" />": Daxiletmə SpellcheckLanguage siyasətində də əlavə edildiyinə görə qəbul edilmədi.</translation>
 <translation id="8807160976559152894">Hər səhifədən sonra kəsin</translation>
-<translation id="881292005876822445">Böyütmə aktiv edilsin?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında Chrome'u güncəlləyin</translation>
 <translation id="8820817407110198400">Əlfəcinlər</translation>
 <translation id="883848425547221593">Digər Əlfəcinlər</translation>

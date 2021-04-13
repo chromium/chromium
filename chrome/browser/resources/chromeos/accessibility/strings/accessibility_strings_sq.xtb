@@ -241,6 +241,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2684412629217766642">Mbyll udhëzuesin e ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{kllapë e majtë}other{# kllapa të majta}}</translation>
+<translation id="270523456882008230">Sugjerim: Trokit dy herë me një gisht për të aktivizuar artikullin aktual.</translation>
 <translation id="2705875883745373140">Nuk është shtypur</translation>
 <translation id="2708078563826046398">Pjeshkë e pjekur</translation>
 <translation id="2713444072780614174">E bardhë</translation>
@@ -285,6 +286,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2972205263822847197">Informacion mbi veglën</translation>
 <translation id="2976476721782829799">Mund të lëvizësh duke zvarritur një gisht nëpër ekran. Ky quhet "Eksplorimi me prekje". Provo ta zvarritësh gishtin nëpër ekran për të lexuar pjesën tjetër të mësimit.</translation>
 <translation id="297825089465017871">Rrëshqit shpejt dy gishta majtas</translation>
+<translation id="2988364959384217951">Sugjerim: Rrëshqit shpejt nga e djathta në të majtë me dy gishta nëse dëshiron të dalësh nga ky udhëzues.</translation>
 <translation id="2998131015536248178">Karakteri i mëparshëm</translation>
 <translation id="2999559350546931576">Ul tonin</translation>
 <translation id="3009352964623081324">Tasti "Search" + O, më pas S. Përdore për të instaluar, menaxhuar dhe personalizuar zërat.</translation>
@@ -941,6 +943,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="7776293189010177726">Hap menytë e ChromeVox</translation>
 <translation id="7799302833060027366">Shtyp lart, poshtë, majtas ose djathtas për të eksploruar matematikën</translation>
 <translation id="7800558923657349506">Epilog</translation>
+<translation id="7801768143868631306">Sugjerim: Rrëshqit shpejt majtas ose djathtas me një gisht për të naviguar.</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7810781339813764006">Grupi tjetër</translation>
 <translation id="7813616274030162878">Menyja e "Qasjes me çelës"</translation>
@@ -1080,6 +1083,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="8897030325301866860">Fonti <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Jehona e pikësimit për cikël</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Veprimet e mundshme. Shtyp Search+Ctrl+A për të shikuar</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Çelësat e modifikuesit</translation>
 <translation id="8943282376843390568">Ngjyrë limoni jeshil</translation>

@@ -108,7 +108,7 @@
 <translation id="1122198203221319518">&amp;Tools</translation>
 <translation id="1122242684574577509">Fehler bei der Authentifizierung. Klicken Sie hier, um die Anmeldeseite für das verwendete WLAN aufzurufen (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Name des Lesezeichens</translation>
-<translation id="1123753900084781868">Die Funktion "Automatische Untertitel" ist derzeit nicht verfügbar</translation>
+<translation id="1123753900084781868">Die Funktion „Automatische Untertitel“ ist derzeit nicht verfügbar</translation>
 <translation id="1124772482545689468">Nutzer</translation>
 <translation id="1125550662859510761">Auflösung <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativ)</translation>
 <translation id="1126809382673880764">Sie werden nicht vor schädlichen Websites, Downloads und Erweiterungen geschützt. Sofern verfügbar, sind Sie in anderen Google-Diensten, wie Gmail und der Google Suche, durch Safe Browsing geschützt.</translation>
@@ -2005,7 +2005,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3183143381919926261">Mobile Datennetzwerke</translation>
 <translation id="3183944777708523606">Monitoranordnung</translation>
 <translation id="3184536091884214176">CUPS-Drucker einrichten oder verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">Physische SIM</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3188465121994729530">Gleitender Durchschnitt</translation>
 <translation id="3189187154924005138">Großer Cursor</translation>
@@ -2684,7 +2683,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3926002189479431949">Telefon für Smart Lock geändert</translation>
 <translation id="3927932062596804919">Ablehnen</translation>
-<translation id="392803502090869922">eSIM-Einrichtung</translation>
 <translation id="3928570707778085600">Änderungen an "<ph name="FILE_OR_FOLDER_NAME" />" speichern?</translation>
 <translation id="3928659086758780856">Tinte fast leer</translation>
 <translation id="3929426037718431833">Diese Erweiterungen können Daten dieser Website abrufen und verändern.</translation>
@@ -2804,6 +2802,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4056908315660577142">Du hast das Zeitlimit erreicht, das deine Eltern für die Chrome-App <ph name="APP_NAME" /> festgelegt haben. Morgen kannst du die App wieder <ph name="TIME_LIMIT" /> lang nutzen.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Im Store ansehen</translation>
+<translation id="4057991113334098539">Wird aktiviert...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Dokument jetzt prüfen</translation>
 <translation id="406070391919917862">Apps im Hintergrund</translation>
@@ -2903,7 +2902,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4181602000363099176">20-fach</translation>
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="4184885522552335684">Ziehen, um einen Bildschirm zu verschieben</translation>
-<translation id="4186763173530196927">Eine App versucht, auf die Kamera zuzugreifen. Schalten Sie den Vertraulichkeitsmodus der Kamera aus, um den Zugriff zu erlauben.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> wird eingerichtet…</translation>
 <translation id="4190828427319282529">Tastaturfokus hervorheben</translation>
 <translation id="4194570336751258953">Touchpad-Klick aktivieren</translation>
@@ -5021,7 +5019,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6635362468090274700">Andere Personen können nur Daten mit Ihnen teilen, wenn Sie sich sichtbar machen.<ph name="BR" /><ph name="BR" />Wenn Sie sich vorübergehend sichtbar machen möchten, öffnen Sie den Statusbereich und schalten Sie „Nearby-Sichtbarkeit“ ein.</translation>
 <translation id="6635944431854494329">Diese Funktion kann vom Inhaber über "Einstellungen" &gt; "Erweitert" &gt; "Diagnose- und Nutzungsdaten automatisch an Google senden" gesteuert werden.</translation>
 <translation id="6635956300022133031">Stimmen für die Sprachausgabe auswählen und anpassen</translation>
-<translation id="6636588250634969791">SIM-Karte einlegen, um fortzufahren</translation>
 <translation id="6639554308659482635">SQLite-Speicher</translation>
 <translation id="6642720633335369752">Sie können sich alle geöffneten App-Fenster ansehen, indem Sie von unten nach oben wischen und das Display gedrückt halten.</translation>
 <translation id="664290675870910564">Netzwerk-Auswahl</translation>

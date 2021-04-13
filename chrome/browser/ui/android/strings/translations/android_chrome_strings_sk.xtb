@@ -266,6 +266,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="2777555524387840389">Zostáva: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">neúspešné</translation>
 <translation id="2781151931089541271">Zostáva: 1 s</translation>
+<translation id="279827439955962619">Odstrániť zvýraznenie</translation>
 <translation id="2801022321632964776">Ak chcete získať svoj jazyk v najnovšej verzii Chromu, aktualizujte ho</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="281504910091592009">Zobrazenie a správa uložených hesiel v <ph name="BEGIN_LINK" />účte Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Na vývoji technológií Privacy Sandbox sa stále aktívne pracuje a je k dis
 <translation id="4487967297491345095">Všetky dáta aplikácií v Chrome budú natrvalo odstránené. Platí to aj pre všetky súbory, nastavenia, účty, databázy atď.</translation>
 <translation id="449126573531210296">Šifrovať synchronizované heslá pomocou účtu Google</translation>
 <translation id="4493497663118223949">Zjednodušený režim je zapnutý</translation>
+<translation id="4504667196171871375">Cez Wi-Fi alebo mobilné dáta</translation>
 <translation id="4508528996305412043">Ponuka karty feedu je otvorená</translation>
 <translation id="4508642716788467538">Vyberte jazyk</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{pred # dňom}few{pred # dňami}many{pred # dňom}other{pred # dňami}}</translation>
@@ -917,6 +919,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="702463548815491781">Odporúčané, keď je zapnutá aplikácia TalkBack alebo prístup s prepínačmi</translation>
 <translation id="7027549951530753705">Obnovili ste položku <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Heslá</translation>
+<translation id="7040531500313579672">Zdieľať zvýraznenie</translation>
 <translation id="7054588988317389591">Chcete získať popisy obrázkov?</translation>
 <translation id="7055152154916055070">Presmerovanie bolo zablokované:</translation>
 <translation id="7063006564040364415">Nepodarilo sa pripojiť k synchronizačnému serveru.</translation>

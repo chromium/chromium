@@ -266,6 +266,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekuntia jäljellä</translation>
 <translation id="2779651927720337254">epäonnistui</translation>
 <translation id="2781151931089541271">1 sekunti jäljellä</translation>
+<translation id="279827439955962619">Poista korostus</translation>
 <translation id="2801022321632964776">Päivitä Chrome uusimpaan versioon, niin se toimii omalla kielelläsi</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="281504910091592009">Katso ja ylläpidä <ph name="BEGIN_LINK" />Google-tilille<ph name="END_LINK" /> tallennettuja salasanoja</translation>
@@ -503,6 +504,7 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="4487967297491345095">Kaikki Chromen sovellustiedot, mukaan lukien tiedostot, asetukset, tilit ja tietokannat, poistetaan pysyvästi.</translation>
 <translation id="449126573531210296">Salaa synkronoidut salasanat Google-tilisi avulla</translation>
 <translation id="4493497663118223949">Yksinkertaistettu tila on päällä</translation>
+<translation id="4504667196171871375">Wi-Fillä ja mobiilidatalla</translation>
 <translation id="4508528996305412043">Fiidikorttien valikko on avattu</translation>
 <translation id="4508642716788467538">Valitse kieli</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# päivä sitten}other{# päivää sitten}}</translation>
@@ -917,6 +919,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="702463548815491781">Suositellaan käytettäväksi, kun TalkBack tai Kytkimen käyttö on päällä</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> palautettu</translation>
 <translation id="7029809446516969842">Salasanat</translation>
+<translation id="7040531500313579672">Jaa korostus</translation>
 <translation id="7054588988317389591">Muodostetaanko kuvaselitykset?</translation>
 <translation id="7055152154916055070">Uudelleenohjaus estetty:</translation>
 <translation id="7063006564040364415">Synkronointipalvelimeen ei saada yhteyttä.</translation>

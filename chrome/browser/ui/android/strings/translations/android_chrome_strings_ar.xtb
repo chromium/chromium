@@ -266,6 +266,7 @@
 <translation id="2777555524387840389">عدد الثواني المتبقية: <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">تعذَّر التنزيل</translation>
 <translation id="2781151931089541271">يتبقى ثانية واحدة</translation>
+<translation id="279827439955962619">إزالة النص المميّز</translation>
 <translation id="2801022321632964776">‏يمكنك إجراء التحديث للحصول على لغتك في أحدث إصدار من Chrome.</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="281504910091592009">‏بإمكانك عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />.</translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">‏سيتم حذف جميع بيانات تطبيق Chrome نهائيًا. ويشمل ذلك جميع الملفات والإعدادات والحسابات وقواعد البيانات وما إلى ذلك.</translation>
 <translation id="449126573531210296">‏ترميز كلمات المرور التي تمت مزامنتها باستخدام حسابك على Google</translation>
 <translation id="4493497663118223949">الوضع البسيط مفعَّل</translation>
+<translation id="4504667196171871375">‏على شبكة Wi-Fi وبيانات الجوّال</translation>
 <translation id="4508528996305412043">قائمة بطاقة الخلاصة مفتوحة</translation>
 <translation id="4508642716788467538">اختيار اللغة</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{قبل يوم واحد (#)}zero{قبل # يوم}two{قبل يومين (#)}few{قبل # أيام}many{قبل # يومًا}other{قبل # يوم}}</translation>
@@ -917,6 +919,7 @@
 <translation id="702463548815491781">‏يُوصى به عند تفعيل TalkBack أو الوصول عبر مفتاح التحويل</translation>
 <translation id="7027549951530753705">تمّت استعادة <ph name="ITEM_TITLE" />.</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
+<translation id="7040531500313579672">مشاركة النص المميّز</translation>
 <translation id="7054588988317389591">هل تريد عرض أوصاف الصور؟</translation>
 <translation id="7055152154916055070">تم حظر إعادة توجيه:</translation>
 <translation id="7063006564040364415">تعذر الاتصال بخادم المزامنة.</translation>

@@ -2009,7 +2009,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3183143381919926261">Mạng dữ liệu di động</translation>
 <translation id="3183944777708523606">Sắp xếp màn hình</translation>
 <translation id="3184536091884214176">Thiết lập hoặc quản lý máy in CUPS. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">SIM vật lý</translation>
 <translation id="3188257591659621405">Tệp của tôi</translation>
 <translation id="3188465121994729530">Trung bình động</translation>
 <translation id="3189187154924005138">Con trỏ lớn</translation>
@@ -2688,7 +2687,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3925573269917483990">Máy ảnh:</translation>
 <translation id="3926002189479431949">Đã thay đổi điện thoại Smart Lock</translation>
 <translation id="3927932062596804919">Từ chối</translation>
-<translation id="392803502090869922">Thiết lập eSIM</translation>
 <translation id="3928570707778085600">Lưu các thay đổi vào <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Sắp hết mực</translation>
 <translation id="3929426037718431833">Các tiện ích này có thể xem và thay đổi thông tin trên trang web này.</translation>
@@ -2808,6 +2806,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4056908315660577142">Bạn đã đạt tới giới hạn thời gian mà cha mẹ bạn đặt cho ứng dụng <ph name="APP_NAME" /> trên Chrome. Bạn có thể dùng ứng dụng này trong <ph name="TIME_LIMIT" /> vào ngày mai.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Xem trong cửa hàng</translation>
+<translation id="4057991113334098539">Đang kích hoạt...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Kiểm tra Tài liệu Ngay bây giờ</translation>
 <translation id="406070391919917862">Ứng dụng nền</translation>
@@ -2907,7 +2906,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
 <translation id="4184885522552335684">Kéo để di chuyển màn hình</translation>
-<translation id="4186763173530196927">Một ứng dụng đang cố truy cập vào máy ảnh. Hãy tắt nút quyền riêng tư khi dùng máy ảnh để cho phép truy cập.</translation>
 <translation id="4187424053537113647">Đang thiết lập <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">Làm nổi tâm điểm trên bàn phím</translation>
 <translation id="4194570336751258953">Cho phép gõ để nhấp</translation>
@@ -5025,7 +5023,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6635362468090274700">Không ai có thể chia sẻ với bạn cho đến khi bạn cho phép mọi người thấy thiết bị của mình.<ph name="BR" /><ph name="BR" />Để tạm thời cho phép mọi người thấy thiết bị của bạn, hãy mở khu vực trạng thái, sau đó bật Chế độ hiển thị lân cận.</translation>
 <translation id="6635944431854494329">Chủ sở hữu có thể kiểm soát tính năng này trong phần Cài đặt &gt; Nâng cao &gt; Tự động gửi dữ liệu chẩn đoán và dữ liệu sử dụng cho Google.</translation>
 <translation id="6635956300022133031">Chọn và tùy chỉnh giọng nói của tính năng chuyển văn bản sang lời nói</translation>
-<translation id="6636588250634969791">Lắp SIM trước khi tiếp tục</translation>
 <translation id="6639554308659482635">Bộ nhớ SQLite</translation>
 <translation id="6642720633335369752">Để xem tất cả các cửa sổ ứng dụng đang mở, hãy vuốt từ cuối màn hình lên rồi giữ.</translation>
 <translation id="664290675870910564">Chọn mạng</translation>

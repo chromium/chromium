@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">منگنه در پایین سمت راست</translation>
 <translation id="2523886232349826891">فقط در این دستگاه ذخیره شد</translation>
 <translation id="2524461107774643265">افزودن اطلاعات بیشتر</translation>
+<translation id="2526590354069164005">دسک تاپ</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{و ۱ مورد دیگر}one{و # مورد دیگر}other{و # مورد دیگر}}</translation>
 <translation id="2536110899380797252">افزودن نشانی</translation>
 <translation id="2539524384386349900">تشخیص</translation>
@@ -1171,6 +1172,7 @@
 <translation id="5327248766486351172">نام</translation>
 <translation id="5329858041417644019">مرورگرتان مدیریت نمی‌شود</translation>
 <translation id="5332219387342487447">روش ارسال کالا</translation>
+<translation id="5333022057423422993">‏Chrome گذرواژه‌ای را که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا کرده است. برای ایمن کردن حساب‌هایتان، توصیه می‌کنیم گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="5334013548165032829">گزارش دقیق سیستم</translation>
 <translation id="5340250774223869109">برنامه مسدود شده است</translation>
 <translation id="534295439873310000">‏دستگاه‌های NFC</translation>
@@ -1285,6 +1287,7 @@
 <translation id="5784606427469807560">هنگام تأیید کارت مشکلی پیش آمد. اتصال اینترنتتان را بررسی و دوباره امتحان کنید.</translation>
 <translation id="5785756445106461925">علاوه بر این، این صفحه دارای منابع دیگری است که امن نیستند. دیگران می‌توانند در حین انتقال، این منابع را ببینند و این منابع می‌توانند برای تغییر قفل صفحه، توسط یک مهاجم تغییر داده شوند.</translation>
 <translation id="5786044859038896871">می‌خواهید اطلاعات کارتتان را وارد کنید؟</translation>
+<translation id="578633867165174378">‏Chrome گذرواژه‌ای را که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا کرده است. توصیه می‌کنیم این گذرواژه را همین حالا تغییر دهید.</translation>
 <translation id="5798290721819630480">از تغییرات صرف‌‌نظر می‌کنید؟</translation>
 <translation id="5803412860119678065">می‌خواهید <ph name="CARD_DETAIL" /> خود را وارد کنید؟</translation>
 <translation id="5804241973901381774">مجوزها</translation>
@@ -1474,6 +1477,7 @@
 <translation id="6579630537141957243">‏دستگاه MIDI متصل شود؟</translation>
 <translation id="6579990219486187401">صورتی کم‌رنگ</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6587182488465657433">‏Chrome گذرواژه‌ای را که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا کرده است. برای ایمن کردن حساب‌هایتان، توصیه می‌کنیم این گذرواژه را اکنون تغییر دهید، سپس گذارواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="6587923378399804057">پیوندی که کپی کرده‌اید</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> شما تحت مدیریت نیست</translation>
 <translation id="6592952801936330159">‏دکمه مدیریت تنظیمات سایت، کلید «ورود» را فشار دهید تا اجازه‌ها و داده‌های ذخیره‌شده در سایت‌ها را در تنظیمات Chrome مدیریت کنید</translation>
@@ -2051,7 +2055,6 @@
 <translation id="8798099450830957504">پیش‌فرض</translation>
 <translation id="8805819170075074995">‏ورودی فهرست «<ph name="LANGUAGE_ID" />»: ورودی نادیده گرفته شد زیرا در خط‌مشی SpellcheckLanguage نیز لحاظ شده است.</translation>
 <translation id="8807160976559152894">برش دادن بعد از چاپ هر صفحه</translation>
-<translation id="881292005876822445">حداکثرسازی فعال شود؟</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای به‌روزرسانی Chrome ازطریق تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="883848425547221593">نشانک‌های دیگر</translation>

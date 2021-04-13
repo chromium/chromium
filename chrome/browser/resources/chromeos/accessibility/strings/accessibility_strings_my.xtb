@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox သင်ခန်းစာကို ပိတ်ပါ</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ကွင်းစ}other{# ကွင်းစများ}}</translation>
+<translation id="270523456882008230">သဲလွန်စ- လက်ရှိအရာကို စတင်ရန် လက်တစ်ချောင်းဖြင့် နှစ်ချက်တို့ပါ။</translation>
 <translation id="2705875883745373140">နှိပ် မထား</translation>
 <translation id="2708078563826046398">မက်မွန်ဖျော့</translation>
 <translation id="2713444072780614174">အဖြူ</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">ကိရိယာ အကြံပေးချက်</translation>
 <translation id="2976476721782829799">ဖန်သားပြင်ပေါ်တွင် လက်တစ်ချောင်းဖြင့် ဖိဆွဲ၍လည်း ရွှေ့ကြည့်နိုင်သည်။ ၎င်းကို ထိပြီး ရှာဖွေစူးစမ်းခြင်း ဟုခေါ်သည်။ ဤသင်ခန်းစာ၏ ကျန်ရှိသောအပိုင်းကို ဖတ်ရန် လက်ချောင်းဖြင့် ဖိဆွဲကြည့်ပါ။</translation>
 <translation id="297825089465017871">ဘယ်ဘက်သို့ လက်နှစ်ချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
+<translation id="2988364959384217951">သဲလွန်စ- ဤရှင်းလင်းပို့ချချက်မှ ထွက်လိုလျှင် လက်နှစ်ချောင်းဖြင့် ညာမှဘယ်သို့ ပွတ်ဆွဲနိုင်သည်။</translation>
 <translation id="2998131015536248178">ယခင် သင်္ကေတ</translation>
 <translation id="2999559350546931576">ပတ်ချ်အသံ လျော့မည်</translation>
 <translation id="3009352964623081324">Search + O၊ ၎င်းနောက် S။ စကားသံများကို ထည့်သွင်းရန်၊ စီမံရန်နှင့် စိတ်ကြိုက်ပြုလုပ်ရန် အသုံးပြုနိုင်သည်။</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox မီနူးများအား ဖွင့်ပါ</translation>
 <translation id="7799302833060027366">တွက်ချက်ခြင်းများကို စူးစမ်းရန် အပေါ်၊ အောက်၊ ဘယ် သို့မဟုတ် ညာမြားခလုတ်ကို နှိပ်ပါ</translation>
 <translation id="7800558923657349506">နိဂုံး</translation>
+<translation id="7801768143868631306">သဲလွန်စ- ရွှေ့ကြည့်ရန် လက်တစ်ချောင်းဖြင့် ဘယ် (သို့) ညာသို့ ပွတ်ဆွဲပါ။</translation>
 <translation id="7805768142964895445">အခြေအနေ</translation>
 <translation id="7810781339813764006">နောက် အုပ်စု</translation>
 <translation id="7813616274030162878">လှည့်ပြောင်းခြင်းအသုံးပြုခွင့် မီနူး</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860"><ph name="FONT_FAMILY" /> ဖောင့်</translation>
 <translation id="8898516272131543774">ပုဒ်ဖြတ်ပုဒ်ရပ် ပဲ့တင့်သံ စက်ဝန်း</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">လုပ်ဆောင်ချက်များ ရနိုင်သည်။ ကြည့်ရန် Search+Ctrl+A နှိပ်ပါ</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">မွမ်းမံရေး ကီးများ</translation>
 <translation id="8943282376843390568">သံပုရာ</translation>

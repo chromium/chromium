@@ -2009,7 +2009,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3183143381919926261">Mobil veri ağları</translation>
 <translation id="3183944777708523606">Monitör düzenlemesi</translation>
 <translation id="3184536091884214176">CUPS yazıcıları kurun veya yönetin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">Fiziksel SIM kart</translation>
 <translation id="3188257591659621405">Dosyalarım</translation>
 <translation id="3188465121994729530">Hareketli Ortalama</translation>
 <translation id="3189187154924005138">Büyük imleç</translation>
@@ -2688,7 +2687,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3926002189479431949">Smart Lock telefonu değişti</translation>
 <translation id="3927932062596804919">Reddet</translation>
-<translation id="392803502090869922">eSim kurulumu</translation>
 <translation id="3928570707778085600">Değişiklikler <ph name="FILE_OR_FOLDER_NAME" /> içine kaydedilsin mi?</translation>
 <translation id="3928659086758780856">Mürekkep az</translation>
 <translation id="3929426037718431833">Bu uzantılar, bu sitedeki bilgileri görebilir ve değiştirebilir.</translation>
@@ -2808,6 +2806,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4056908315660577142">Ebeveyninizin <ph name="APP_NAME" /> Chrome uygulaması için belirlediği süre sınırına ulaştınız. Bu uygulamayı yarın <ph name="TIME_LIMIT" /> kullanabilirsiniz.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Mağazada Görüntüle</translation>
+<translation id="4057991113334098539">Etkinleştiriliyor...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Dokümanı Şimdi Denetle</translation>
 <translation id="406070391919917862">Arka Plan Uygulamaları</translation>
@@ -2907,7 +2906,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Diller</translation>
 <translation id="4184885522552335684">Ekranı taşımak için sürükleyin</translation>
-<translation id="4186763173530196927">Bir uygulama kameraya erişmeye çalışıyor. Erişime izin vermek için kamera gizliliğini kapatın.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> kuruluyor...</translation>
 <translation id="4190828427319282529">Klavye odağını vurgula</translation>
 <translation id="4194570336751258953">Tıklamak için hafifçe vur'u etkinleştir</translation>
@@ -5026,7 +5024,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6635362468090274700">Kendinizi görünür hale getirmedikçe hiç kimse sizinle içerik paylaşamaz.<ph name="BR" /><ph name="BR" />Kendinizi geçici olarak görünür hale getirmek için durum alanını açıp Yakındakiler görünürlüğünü etkinleştirin.</translation>
 <translation id="6635944431854494329">Sahip, Ayarlar &gt; Gelişmiş &gt; Teşhis ve kullanım verilerini Google'a otomatik olarak gönder adımlarını izleyerek bu özelliği kontrol edebilir.</translation>
 <translation id="6635956300022133031">Metin okuma seslerini seçer ve özelleştirir</translation>
-<translation id="6636588250634969791">Devam etmeden önce SIM kartı takın</translation>
 <translation id="6639554308659482635">SQLite belleği</translation>
 <translation id="6642720633335369752">Tüm açık pencereleri görmek için düğmeden yukarı kaydırıp basılı tutun.</translation>
 <translation id="664290675870910564">Ağ Seçimi</translation>

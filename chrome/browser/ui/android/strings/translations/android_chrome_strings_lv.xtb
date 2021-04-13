@@ -266,6 +266,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="2777555524387840389">Atlikušas <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">neizdevās</translation>
 <translation id="2781151931089541271">Atlikusi 1 s</translation>
+<translation id="279827439955962619">Noņemt atzīmēto tekstu</translation>
 <translation id="2801022321632964776">Veiciet atjaunināšanu, lai varētu lasīt savā valodā jaunākajā pārlūka Chrome versijā</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="281504910091592009">Skatiet un pārvaldiet saglabātās paroles savā <ph name="BEGIN_LINK" />Google kontā<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="4487967297491345095">Visi lietotnes Chrome dati tiks neatgriezeniski izdzēsti. Tas attiecas uz visiem failiem, iestatījumiem, kontiem, datu bāzēm un citiem datiem.</translation>
 <translation id="449126573531210296">Šifrēt sinhronizētās paroles, izmantojot jūsu Google konta datus</translation>
 <translation id="4493497663118223949">Vienkāršotais režīms ir ieslēgts</translation>
+<translation id="4504667196171871375">Wi-Fi tīklā un mobilo datu savienojumā</translation>
 <translation id="4508528996305412043">Plūsmas kartītes izvēlne ir atvērta</translation>
 <translation id="4508642716788467538">Izvēlieties valodu</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{pirms # dienas}zero{pirms # dienām}one{pirms # dienas}other{pirms # dienām}}</translation>
@@ -917,6 +919,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="702463548815491781">Ieteicams, ja ir ieslēgta lietotne TalkBack vai slēdžu piekļuves funkcija.</translation>
 <translation id="7027549951530753705">Atjaunots vienums <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Paroles</translation>
+<translation id="7040531500313579672">Kopīgot atzīmēto tekstu</translation>
 <translation id="7054588988317389591">Vai vēlaties iespējot attēlu aprakstus?</translation>
 <translation id="7055152154916055070">Novirzīšana ir bloķēta:</translation>
 <translation id="7063006564040364415">Nevarēja izveidot savienojumu ar sinhronizācijas serveri.</translation>

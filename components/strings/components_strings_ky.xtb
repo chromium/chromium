@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">Төмөнк оң жагын илмек менен бекитүү</translation>
 <translation id="2523886232349826891">Ушул түзмөккө гана сакталды</translation>
 <translation id="2524461107774643265">Көбүрөөк маалымат кошуу</translation>
+<translation id="2526590354069164005">Иштакта</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{жана дагы 1}other{жана дагы #}}</translation>
 <translation id="2536110899380797252">Дарегин кошуу</translation>
 <translation id="2539524384386349900">Аныктоо</translation>
@@ -2052,7 +2053,6 @@
 <translation id="8798099450830957504">Демейки</translation>
 <translation id="8805819170075074995">Тизмедеги жазуу "<ph name="LANGUAGE_ID" />": SpellcheckLanguage саясатында камтылгандыктан, киргизүү этибарга алынган жок.</translation>
 <translation id="8807160976559152894">Ар бир барактан кийин кыркуу</translation>
-<translation id="881292005876822445">Чоңойтулсунбу?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome жөндөөлөрүңүздөн Chrome'ду жаңыртуу үчүн, Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="8820817407110198400">Кыстармалар</translation>
 <translation id="883848425547221593">Башка кыстармалар</translation>

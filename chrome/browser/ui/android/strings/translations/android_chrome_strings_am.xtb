@@ -266,6 +266,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ሰከንዶች ይቀራሉ</translation>
 <translation id="2779651927720337254">አልተሳካም</translation>
 <translation id="2781151931089541271">1 ሰከንድ ይቀራል</translation>
+<translation id="279827439955962619">ማድመቅን ያስወግዱ</translation>
 <translation id="2801022321632964776">ቋንቋዎን በቅርብ ጊዜው የChrome ስሪት ለማግኘት ያዘምኑ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="281504910091592009">የተቀመጡ የይለፍ ቃላትን በእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ውስጥ ይመልከቱ እና ያስተዳድሩ</translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">ሁሉንም የChrome መተግበሪያ ውሂብ እስከመጨረሻው ይሰረዛል። ይሄ ሁሉንም ፋይሎች፣ ቅንብሮች፣ መለያዎች፣ የውሂብ ጎታዎች፣ ወዘተ. ያካትታል።</translation>
 <translation id="449126573531210296">የሰመረውን የይለፍ ቃላት ከGoogle መለያዎች ጋር ይመስጥሩ</translation>
 <translation id="4493497663118223949">ቀላል ሁነታ በርቷል</translation>
+<translation id="4504667196171871375">በWi-Fi እና የተንቀሳቃሽ ስልክ ውሂብ ላይ</translation>
 <translation id="4508528996305412043">የምግብ ካርድ ምናሌ ተከፍቷል</translation>
 <translation id="4508642716788467538">ቋንቋዎን ይምረጡ</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{ከ# ቀን በፊት}one{ከ# ቀኖች በፊት}other{ከ# ቀኖች በፊት}}</translation>
@@ -917,6 +919,7 @@
 <translation id="702463548815491781">TalkBack ወይም መዳረሻ ቀይር ሲበሩ የሚመከር</translation>
 <translation id="7027549951530753705">ወደነበረበት የተመለሰው በ<ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
+<translation id="7040531500313579672">ማድመቅን ያጋሩ</translation>
 <translation id="7054588988317389591">የምስል መግለጫዎችን ያግኙ?</translation>
 <translation id="7055152154916055070">አቅጣጫ ማዞር ታግዷል፦</translation>
 <translation id="7063006564040364415">ከማመሳሰያ አገልጋዩ ጋር መገናኘት አልተቻለም።</translation>

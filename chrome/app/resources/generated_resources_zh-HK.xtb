@@ -2008,7 +2008,6 @@
 <translation id="3183143381919926261">流動數據網絡</translation>
 <translation id="3183944777708523606">顯示器排列</translation>
 <translation id="3184536091884214176">設定或管理 CUPS 打印機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">實體 SIM 卡</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
@@ -2687,7 +2686,6 @@
 <translation id="3925573269917483990">相機：</translation>
 <translation id="3926002189479431949">Smart Lock 配對手機已變更</translation>
 <translation id="3927932062596804919">拒絕</translation>
-<translation id="392803502090869922">eSIM 卡設定</translation>
 <translation id="3928570707778085600">要儲存變更至「<ph name="FILE_OR_FOLDER_NAME" />」嗎？</translation>
 <translation id="3928659086758780856">墨水不足</translation>
 <translation id="3929426037718431833">這些擴充程式可查看並變更此網站的資料。</translation>
@@ -2807,6 +2805,7 @@
 <translation id="4056908315660577142">您已達到家長為「<ph name="APP_NAME" />」Chrome 應用程式設定的使用時間限制。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">前往商店檢視</translation>
+<translation id="4057991113334098539">啟用中...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">立即檢查文件</translation>
 <translation id="406070391919917862">背景應用程式</translation>
@@ -2906,7 +2905,6 @@
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4184885522552335684">拖曳即可移動顯示屏</translation>
-<translation id="4186763173530196927">一個應用程式正在嘗試存取攝錄機。如要允許存取，請將攝錄機的私隱開關切換至關閉。</translation>
 <translation id="4187424053537113647">正在設定 <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">突顯鍵盤焦點</translation>
 <translation id="4194570336751258953">啟用輕按點擊功能</translation>
@@ -5024,7 +5022,6 @@
 <translation id="6635362468090274700">您需要將自己的狀態設定為顯示，其他人才能與您分享內容。<ph name="BR" /><ph name="BR" />如要將狀態設定為暫時顯示，請開啟狀態區，再啟用「咫尺共享」分享設定。</translation>
 <translation id="6635944431854494329">擁有者可前往「設定」&gt;「進階」&gt;「自動將診斷和使用情況資料傳送給 Google」，以控制此功能。</translation>
 <translation id="6635956300022133031">選取及自訂文字轉語音的聲音</translation>
-<translation id="6636588250634969791">請先插入 SIM 卡再繼續</translation>
 <translation id="6639554308659482635">SQLite 記憶體使用量</translation>
 <translation id="6642720633335369752">如要查看所有已開啟的應用程式視窗，請從底部向上滑動，然後長按。</translation>
 <translation id="664290675870910564">選取網絡</translation>

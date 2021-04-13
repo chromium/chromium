@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox ਟਿਊਟੋਰੀਅਲ ਬੰਦ ਕਰੋ</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ਪੈਰਨ ਖੋਲ੍ਹੋ}one{# ਪੈਰਨ ਖੋਲ੍ਹੋ}other{# ਪੈਰਨ ਖੋਲ੍ਹੋ}}</translation>
+<translation id="270523456882008230">ਸੰਕੇਤ: ਮੌਜੂਦਾ ਆਈਟਮ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਇੱਕ ਉਂਗਲ ਨਾਲ ਡਬਲ ਟੈਪ ਕਰੋ।</translation>
 <translation id="2705875883745373140">ਦਬਾਇਆ ਨਹੀਂ</translation>
 <translation id="2708078563826046398">ਜੋਗੀਆ</translation>
 <translation id="2713444072780614174">ਸਫ਼ੈਦ</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">ਟੂਲ-ਟਿੱਪ</translation>
 <translation id="2976476721782829799">ਤੁਸੀਂ ਸਕ੍ਰੀਨ ਦੇ ਦੁਆਲੇ ਇੱਕ ਉਂਗਲ ਘਸੀਟ ਕੇ ਵੀ ਇੱਧਰ-ਉੱਧਰ ਜਾ ਸਕਦੇ ਹੋ। ਇਸਨੂੰ ਸਪਰਸ਼ ਰਾਹੀਂ ਪੜਚੋਲ ਕਰਨਾ ਕਿਹਾ ਜਾਂਦਾ ਹੈ। ਬਾਕੀ ਦੇ ਪਾਠ ਨੂੰ ਪੜ੍ਹਨ ਲਈ ਆਪਣੀ ਉਂਗਲ ਨੂੰ ਇੱਧਰ-ਉੱਧਰ ਘਸੀਟਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="297825089465017871">ਦੋ ਉਂਗਲਾਂ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
+<translation id="2988364959384217951">ਸੰਕੇਤ: ਜੇ ਤੁਸੀਂ ਇਸ ਟਿਊਟੋਰੀਅਲ ਤੋਂ ਬਾਹਰ ਨਿਕਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਦੋ ਉਂਗਲਾਂ ਨਾਲ ਸੱਜੇ ਤੋਂ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ।</translation>
 <translation id="2998131015536248178">ਪਿਛਲਾ ਅੱਖਰ</translation>
 <translation id="2999559350546931576">ਪਿਚ ਘਟਾਓ</translation>
 <translation id="3009352964623081324">Search + O, ਫਿਰ S. ਇਸਨੂੰ ਸਥਾਪਤ ਕਰਨ, ਪ੍ਰਬੰਧਨ ਕਰਨ ਅਤੇ ਅਵਾਜ਼ਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਵਰਤੋ।</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7799302833060027366">ਗਣਿਤ ਦੀ ਪੜਚੋਲ ਕਰਨ ਲਈ ਉੱਪਰ, ਹੇਠਾਂ, ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਤੀਰ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="7800558923657349506">ਸਾਹਿਤ ਰਚਨਾ ਦਾ ਅੰਤਿਮ ਭਾਗ</translation>
+<translation id="7801768143868631306">ਸੰਕੇਤ: ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਇੱਕ ਉਂਗਲ ਨਾਲ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ।</translation>
 <translation id="7805768142964895445">ਸਥਿਤੀ</translation>
 <translation id="7810781339813764006">ਅਗਲਾ ਸਮੂਹ</translation>
 <translation id="7813616274030162878">ਸਵਿੱਚ ਪਹੁੰਚ ਦਾ ਮੀਨੂ</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">ਫੌਂਟ <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">ਸਾਈਕਲ ਵਿਸ਼ਰਾਮ ਚਿੰਨ੍ਹ ਧੁਨੀ</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">ਕਾਰਵਾਈਆਂ ਉਪਲਬਧ ਹਨ। ਦੇਖਣ ਲਈ Search+Ctrl+A ਦਬਾਓ</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">ਵਿਸ਼ੇਸ਼ਕ ਕੁੰਜੀਆਂ</translation>
 <translation id="8943282376843390568">ਪੀਲਾ-ਹਰਾ</translation>

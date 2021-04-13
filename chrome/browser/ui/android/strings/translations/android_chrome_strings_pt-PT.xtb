@@ -266,6 +266,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2777555524387840389">Faltam <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">falhou</translation>
 <translation id="2781151931089541271">Falta 1 segundo</translation>
+<translation id="279827439955962619">Remover realce</translation>
 <translation id="2801022321632964776">Atualize o Chrome para a versão mais recente de modo a obter o seu idioma.</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Veja e faça a gestão das palavras-passe guardadas na sua <ph name="BEGIN_LINK" />Conta Google<ph name="END_LINK" />.</translation>
@@ -503,6 +504,7 @@ A Privacy Sandbox está em desenvolvimento e está disponível em regiões selec
 <translation id="4487967297491345095">Todos os dados de apps do Chrome são eliminados permanentemente, incluindo todos os ficheiros, definições, contas, bases de dados, etc.</translation>
 <translation id="449126573531210296">Encriptar palavras-passe sincronizadas com a sua Conta Google</translation>
 <translation id="4493497663118223949">O Modo Lite está ativado.</translation>
+<translation id="4504667196171871375">Com Wi-Fi e dados móveis</translation>
 <translation id="4508528996305412043">O menu do cartão do feed está aberto.</translation>
 <translation id="4508642716788467538">Selecione o seu idioma</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Há # dia}other{Há # dias}}</translation>
@@ -917,6 +919,7 @@ Os dados da sua sessão de Navegação anónima apenas serão limpos do Chrome q
 <translation id="702463548815491781">Recomendado quando o TalkBack ou o Acesso por comutador estão ativados.</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> restaurado</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
+<translation id="7040531500313579672">Partilhar realce</translation>
 <translation id="7054588988317389591">Pretende obter descrições de imagens?</translation>
 <translation id="7055152154916055070">Redirecionamento bloqueado:</translation>
 <translation id="7063006564040364415">Não foi possível estabelecer ligação ao servidor de sincronização.</translation>
@@ -1045,7 +1048,7 @@ Os dados da sua sessão de Navegação anónima apenas serão limpos do Chrome q
 <translation id="7903184275147100332">Pode demorar alguns minutos.</translation>
 <translation id="7919123827536834358">Traduza automaticamente estes idiomas</translation>
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{A transferir o ficheiro…}other{A transferir # ficheiros…}}</translation>
-<translation id="7926975587469166629">Pseudónimo do cartão</translation>
+<translation id="7926975587469166629">Alcunha do cartão</translation>
 <translation id="7929962904089429003">Abrir o menu</translation>
 <translation id="7930998711684428189">Envia-lhe um aviso se as palavras-passe forem expostas numa violação de dados.</translation>
 <translation id="7942131818088350342">O <ph name="PRODUCT_NAME" /> está desatualizado.</translation>

@@ -421,6 +421,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2521385132275182522">Zošiť spinkou vpravo dolu</translation>
 <translation id="2523886232349826891">Uložené iba na tomto zariadení</translation>
 <translation id="2524461107774643265">Pridanie ďalších informácií</translation>
+<translation id="2526590354069164005">Pracovná plocha</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{a 1 ďalšia}few{a # ďalšie}many{and # more}other{a # ďalších}}</translation>
 <translation id="2536110899380797252">Pridať adresu</translation>
 <translation id="2539524384386349900">Rozpoznávať</translation>
@@ -1158,6 +1159,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5327248766486351172">Názov</translation>
 <translation id="5329858041417644019">Váš prehliadač nie je spravovaný</translation>
 <translation id="5332219387342487447">Spôsob dodania</translation>
+<translation id="5333022057423422993">Chrome našiel heslo, ktoré ste práve použili, v zozname hesiel odhalených pri porušení ochrany údajov. V rámci zabezpečenia účtov vám odporúčame skontrolovať uložené heslá.</translation>
 <translation id="5334013548165032829">Podrobné denníky systému</translation>
 <translation id="5340250774223869109">Aplikácia je blokovaná</translation>
 <translation id="534295439873310000">Zariadenia NFC</translation>
@@ -1272,6 +1274,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5784606427469807560">Pri overovaní karty sa vyskytol problém. Skontrolujte pripojenie k internetu a skúste to znova.</translation>
 <translation id="5785756445106461925">Táto stránka obsahuje aj iné zdroje, ktoré nie sú zabezpečené. Tieto zdroje môžu pri prenose vidieť ostatní používatelia a útočník ich môže upraviť tak, aby zmenil vzhľad stránky.</translation>
 <translation id="5786044859038896871">Chcete vyplniť informácie o karte?</translation>
+<translation id="578633867165174378">Chrome našiel heslo, ktoré ste práve použili, v zozname hesiel odhalených pri porušení ochrany údajov. Odporúčame, aby ste si ho okamžite zmenili.</translation>
 <translation id="5798290721819630480">Chcete zahodiť zmeny?</translation>
 <translation id="5803412860119678065">Chcete vyplniť informácie o karte <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Povolenia</translation>
@@ -1460,6 +1463,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6579630537141957243">Chcete pripojiť zariadenie MIDI?</translation>
 <translation id="6579990219486187401">Svetloružová</translation>
 <translation id="6583674473685352014">B6 (obálka)</translation>
+<translation id="6587182488465657433">Chrome našiel heslo, ktoré ste práve použili, v zozname hesiel odhalených pri porušení ochrany údajov. V rámci zabezpečenia účtov vám odporúčame heslo okamžite zmeniť a skontrolovať všetky uložené heslá.</translation>
 <translation id="6587923378399804057">Skopírovaný odkaz</translation>
 <translation id="6591833882275308647">Zariadenie <ph name="DEVICE_TYPE" /> nie je spravované</translation>
 <translation id="6592952801936330159">Tlačidlo Spravovať nastavenia webov. Stlačením klávesa Enter môžete v nastaveniach Chromu spravovať povolenia a údaje uložené na rôznych weboch.</translation>
@@ -2038,7 +2042,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8798099450830957504">Predvolené</translation>
 <translation id="8805819170075074995">Položka zoznamu <ph name="LANGUAGE_ID" />: položka bola ignorovaná, pretože je tiež zahrnutá v pravidle SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Orezať po každej strane</translation>
-<translation id="881292005876822445">Chcete povoliť maximalizovanie?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter aktualizujte Chrome v jeho nastaveniach</translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="883848425547221593">Iné záložky</translation>

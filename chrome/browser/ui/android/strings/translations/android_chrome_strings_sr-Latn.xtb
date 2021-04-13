@@ -266,6 +266,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2777555524387840389">Još <ph name="SECONDS" /> sek</translation>
 <translation id="2779651927720337254">nije uspelo</translation>
 <translation id="2781151931089541271">Još 1 sek</translation>
+<translation id="279827439955962619">Ukloni isticanje</translation>
 <translation id="2801022321632964776">Ažurirajte na najnoviju verziju Chrome-a da biste imali svoj jezik u njoj</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="281504910091592009">Pregledajte sačuvane lozinke i upravljajte njima na <ph name="BEGIN_LINK" />Google nalogu<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Aktivno programiranje Zaštićenog okruženja privatnosti je još uvek u toku i
 <translation id="4487967297491345095">Svi podaci Chrome aplikacija će biti trajno izbrisani. To obuhvata sve datoteke, podešavanja, naloge, baze podataka itd.</translation>
 <translation id="449126573531210296">Šifruj sinhronizovane lozinke pomoću Google naloga</translation>
 <translation id="4493497663118223949">Lite režim je uključen</translation>
+<translation id="4504667196171871375">Na WiFi i mobilnoj mreži</translation>
 <translation id="4508528996305412043">Meni kartice fida je otvoren</translation>
 <translation id="4508642716788467538">Izaberite jezik</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Pre # dana}one{Pre # dana}few{Pre # dana}other{Pre # dana}}</translation>
@@ -917,6 +919,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="702463548815491781">Preporučujemo vam kada uključite TalkBack ili pristup pomoću prekidača</translation>
 <translation id="7027549951530753705">Vraćena je stavka <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Lozinke</translation>
+<translation id="7040531500313579672">Deli isticanje</translation>
 <translation id="7054588988317389591">Želite da dobijate opise slika?</translation>
 <translation id="7055152154916055070">Blokirano je preusmeravanje:</translation>
 <translation id="7063006564040364415">Nije moguće povezivanje sa serverom za sinhronizaciju.</translation>

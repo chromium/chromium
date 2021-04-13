@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Maak ChromeVox-tutoriaal toe</translation>
 <translation id="2697408785920771974">outo-inlyn</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{oop hakie}other{# oop hakies}}</translation>
+<translation id="270523456882008230">Wenk: Dubbeltik met een vinger om die huidige item te aktiveer.</translation>
 <translation id="2705875883745373140">Nie gedruk nie</translation>
 <translation id="2708078563826046398">Perskekleurig</translation>
 <translation id="2713444072780614174">Wit</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Nutswenk</translation>
 <translation id="2976476721782829799">Jy kan ook een vinger op die skerm rondsleep om rond te beweeg. Dit word Verken-met-aanraking genoem. Probeer jou vinger rondsleep om die res van hierdie les te lees.</translation>
 <translation id="297825089465017871">Swiep twee vingers na links</translation>
+<translation id="2988364959384217951">Wenk: Swiep met twee vingers van regs na links as jy hierdie tutoriaal wil verlaat.</translation>
 <translation id="2998131015536248178">Vorige karakter</translation>
 <translation id="2999559350546931576">Verlaag toonhoogte</translation>
 <translation id="3009352964623081324">Soek + O, dan S. Gebruik om stemme te installeer, te bestuur en te pasmaak.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Maak ChromeVox-kieslyste oop</translation>
 <translation id="7799302833060027366">Druk op, af, links of regs om wiskunde te verken</translation>
 <translation id="7800558923657349506">Epiloog</translation>
+<translation id="7801768143868631306">Wenk: Swiep met een vinger links of regs om te navigeer.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7810781339813764006">Volgende groep</translation>
 <translation id="7813616274030162878">Skakelaartoegang-kieslys</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Lettertipe <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Siklusleestekeneggo</translation>
 <translation id="8908714597367957477">kolomopskrif</translation>
+<translation id="8910180774920883033">Handelinge beskikbaar. Druk Search+Ctrl+A om te bekyk</translation>
 <translation id="8937112856099038376">interne skakel</translation>
 <translation id="8940925288729953902">Wysigersleutels</translation>
 <translation id="8943282376843390568">Lemmetjiegroen</translation>

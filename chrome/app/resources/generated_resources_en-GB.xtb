@@ -2014,7 +2014,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3183143381919926261">Mobile data networks</translation>
 <translation id="3183944777708523606">Monitor arrangement</translation>
 <translation id="3184536091884214176">Set up or manage CUPS printers. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">Physical SIM</translation>
 <translation id="3188257591659621405">My files</translation>
 <translation id="3188465121994729530">Moving Average</translation>
 <translation id="3189187154924005138">Large cursor</translation>
@@ -2695,7 +2694,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3925573269917483990">Camera:</translation>
 <translation id="3926002189479431949">Smart Lock phone changed</translation>
 <translation id="3927932062596804919">Deny</translation>
-<translation id="392803502090869922">eSIM setup</translation>
 <translation id="3928570707778085600">Save changes to <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Low on ink</translation>
 <translation id="3929426037718431833">These extensions can see and change information on this site.</translation>
@@ -2815,6 +2813,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4056908315660577142">You reached the time limit that your parent set for <ph name="APP_NAME" /> Chrome app. You can use it for <ph name="TIME_LIMIT" /> tomorrow.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">View in Store</translation>
+<translation id="4057991113334098539">Activating...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Check Document Now</translation>
 <translation id="406070391919917862">Background Apps</translation>
@@ -2914,7 +2913,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Languages</translation>
 <translation id="4184885522552335684">Drag to move a display</translation>
-<translation id="4186763173530196927">An app is trying to access camera. Turn off the camera privacy switch to allow access.</translation>
 <translation id="4187424053537113647">Setting up <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Highlight keyboard focus</translation>
 <translation id="4194570336751258953">Enable tap-to-click</translation>
@@ -5038,7 +5036,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6635362468090274700">No one can share with you until you make yourself visible.<ph name="BR" /><ph name="BR" />To make yourself visible temporarily, open the status area, then turn on Nearby visibility.</translation>
 <translation id="6635944431854494329">The owner can control this feature from Settings &gt; Advanced &gt; Automatically send diagnostic and usage data to Google.</translation>
 <translation id="6635956300022133031">Select and customise text-to-speech voices</translation>
-<translation id="6636588250634969791">Insert SIM before proceeding</translation>
 <translation id="6639554308659482635">SQLite memory</translation>
 <translation id="6640268266988685324">Open tab</translation>
 <translation id="6642720633335369752">To see all open app windows, swipe up from the bottom and hold.</translation>

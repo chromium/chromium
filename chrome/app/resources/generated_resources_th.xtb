@@ -2009,7 +2009,6 @@
 <translation id="3183143381919926261">เครือข่ายอินเทอร์เน็ตมือถือ</translation>
 <translation id="3183944777708523606">การจัดตำแหน่งจอภาพ</translation>
 <translation id="3184536091884214176">ตั้งค่าหรือจัดการเครื่องพิมพ์ CUPS <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">ซิมจริง</translation>
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
 <translation id="3188465121994729530">ค่าเฉลี่ยเคลื่อนที่</translation>
 <translation id="3189187154924005138">เคอร์เซอร์ขนาดใหญ่</translation>
@@ -2688,7 +2687,6 @@
 <translation id="3925573269917483990">กล้อง:</translation>
 <translation id="3926002189479431949">โทรศัพท์ของ Smart Lock มีการเปลี่ยนแปลง</translation>
 <translation id="3927932062596804919">ปฏิเสธ</translation>
-<translation id="392803502090869922">การตั้งค่า eSIM</translation>
 <translation id="3928570707778085600">บันทึกการเปลี่ยนแปลงลงใน <ph name="FILE_OR_FOLDER_NAME" /> ใช่ไหม</translation>
 <translation id="3928659086758780856">หมึกเหลือน้อย</translation>
 <translation id="3929426037718431833">ส่วนขยายเหล่านี้เห็นและเปลี่ยนแปลงข้อมูลในเว็บไซต์นี้ได้</translation>
@@ -2808,6 +2806,7 @@
 <translation id="4056908315660577142">คุณใช้งานแอป <ph name="APP_NAME" /> สำหรับ Chrome ถึงขีดจำกัดเวลาที่ผู้ปกครองตั้งไว้แล้ว พรุ่งนี้คุณจะใช้แอปได้ <ph name="TIME_LIMIT" /></translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">ดูในสโตร์</translation>
+<translation id="4057991113334098539">กำลังเปิดการใช้งาน...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">ตรวจสอบเอกสารทันที</translation>
 <translation id="406070391919917862">แอปพลิเคชันพื้นหลัง</translation>
@@ -2907,7 +2906,6 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ภาษา</translation>
 <translation id="4184885522552335684">ลากเพื่อย้ายการแสดงผล</translation>
-<translation id="4186763173530196927">มีแอปพยายามเข้าถึงกล้อง ปิดสวิตช์ความเป็นส่วนตัวของกล้องถ่ายรูปเพื่ออนุญาตการเข้าถึง</translation>
 <translation id="4187424053537113647">กำลังตั้งค่า <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">ไฮไลต์โฟกัสแป้นพิมพ์</translation>
 <translation id="4194570336751258953">เปิดการใช้งานแตะเพื่อคลิก</translation>
@@ -5025,7 +5023,6 @@
 <translation id="6635362468090274700">ไม่มีคนที่แชร์ได้จนกว่าคุณจะทำให้คนอื่นมองเห็นได้<ph name="BR" /><ph name="BR" />หากต้องการดำเนินการดังกล่าวชั่วคราว ให้เปิดพื้นที่แสดงสถานะ แล้วเปิด "การมองเห็นใกล้เคียง"</translation>
 <translation id="6635944431854494329">เจ้าของควบคุมฟีเจอร์นี้ได้จากการตั้งค่า &gt; ขั้นสูง &gt; ส่งข้อมูลการวินิจฉัยและการใช้งานให้ Google โดยอัตโนมัติ</translation>
 <translation id="6635956300022133031">เลือกและปรับแต่งเสียงของการอ่านออกเสียงข้อความ</translation>
-<translation id="6636588250634969791">ใส่ซิมก่อนดำเนินการต่อ</translation>
 <translation id="6639554308659482635">หน่วยความจำ SQLite</translation>
 <translation id="6642720633335369752">หากต้องการดูหน้าต่างแอปที่เปิดอยู่ทั้งหมด ให้เลื่อนขึ้นจากด้านล่างแล้วค้างไว้</translation>
 <translation id="664290675870910564">การเลือกเครือข่าย</translation>

@@ -2008,7 +2008,6 @@
 <translation id="3183143381919926261">行動數據網路</translation>
 <translation id="3183944777708523606">顯示器排列位置</translation>
 <translation id="3184536091884214176">設定或管理 CUPS 印表機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">實體 SIM 卡</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
@@ -2687,7 +2686,6 @@
 <translation id="3925573269917483990">相機：</translation>
 <translation id="3926002189479431949">Smart Lock 手機已變更</translation>
 <translation id="3927932062596804919">拒絕</translation>
-<translation id="392803502090869922">eSIM 卡設定</translation>
 <translation id="3928570707778085600">要將變更儲存至「<ph name="FILE_OR_FOLDER_NAME" />」嗎？</translation>
 <translation id="3928659086758780856">墨水即將用盡</translation>
 <translation id="3929426037718431833">這些擴充功能可以查看並變更這個網站上的資訊。</translation>
@@ -2806,6 +2804,7 @@
 <translation id="4056908315660577142">你已達到貴家長為「<ph name="APP_NAME" />」這款 Chrome 應用程式設定的使用時間限制。你明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">前往商店查看</translation>
+<translation id="4057991113334098539">啟用中...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">立即檢查文件</translation>
 <translation id="406070391919917862">背景應用程式</translation>
@@ -2905,7 +2904,6 @@
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4184885522552335684">拖曳即可移動顯示畫面</translation>
-<translation id="4186763173530196927">有一個應用程式正在嘗試存取攝影機。如要允許存取，請將攝影機的隱私權開關切換為關閉。</translation>
 <translation id="4187424053537113647">正在設定「<ph name="APP_NAME" />」...</translation>
 <translation id="4190828427319282529">醒目顯示鍵盤焦點</translation>
 <translation id="4194570336751258953">啟用點按功能</translation>
@@ -5023,7 +5021,6 @@
 <translation id="6635362468090274700">你必須讓其他裝置可以偵測到這部裝置，其他人才能與你分享內容。<ph name="BR" /><ph name="BR" />如要暫時讓其他裝置可以偵測到這部裝置，請開啟狀態區，再啟用鄰近分享瀏覽權限。</translation>
 <translation id="6635944431854494329">裝置擁有者可依序前往「設定」&gt; [進階] &gt; [自動將診斷資料和使用情況資料傳送給 Google] 來控管這項功能。</translation>
 <translation id="6635956300022133031">選取及自訂文字轉語音的聲音</translation>
-<translation id="6636588250634969791">請先插入 SIM 卡再繼續</translation>
 <translation id="6639554308659482635">SQLite 記憶體使用量</translation>
 <translation id="6642720633335369752">如要查看所有已開啟的應用程式視窗，請從底部向上滑動然後按住螢幕。</translation>
 <translation id="664290675870910564">網路選取</translation>

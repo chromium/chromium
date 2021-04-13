@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">‏סגירת מערך השיעור של ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{פתח סוגריים}two{# סימני פתח סוגריים}many{# סימני פתח סוגריים}other{# סימני פתח סוגריים}}</translation>
+<translation id="270523456882008230">רמז: להפעלת הפריט הנוכחי, יש ללחוץ פעמיים בעזרת אצבע אחת.</translation>
 <translation id="2705875883745373140">לא לחוץ</translation>
 <translation id="2708078563826046398">אפרסק בהיר</translation>
 <translation id="2713444072780614174">לבן</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">הסבר קצר</translation>
 <translation id="2976476721782829799">אפשר גם לגרור אצבע אחת ברחבי המסך כדי לנוע. תנועה זו נקראת 'גילוי באמצעות מגע'. ניתן לנסות לגרור את האצבע כדי לקרוא את שאר המידע בשיעור הזה.</translation>
 <translation id="297825089465017871">החלקה שמאלה עם שתי אצבעות</translation>
+<translation id="2988364959384217951">רמז: כדי לצאת מהמדריך הזה, ניתן להחליק משמאל לימין בעזרת שתי אצבעות.</translation>
 <translation id="2998131015536248178">התו הקודם</translation>
 <translation id="2999559350546931576">הורדת גובה הצליל</translation>
 <translation id="3009352964623081324">‏מקש החיפוש + O, ואז S. אפשר להשתמש במקשי הקיצור האלה לצורך התקנה, ניהול והתאמה אישית של קולות.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">‏פתיחת תפריטי ChromeVox</translation>
 <translation id="7799302833060027366">כדי לעיין בחישובים, ניתן ללחוץ על החיצים למעלה, למטה, שמאלה או ימינה</translation>
 <translation id="7800558923657349506">אפילוג</translation>
+<translation id="7801768143868631306">רמז: לניווט, יש להחליק שמאלה או ימינה.</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7810781339813764006">הקבוצה הבאה</translation>
 <translation id="7813616274030162878">התפריט 'גישה באמצעות מתג'</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">גופן <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">הד סימני ניקוד מחזוריים</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">‏יש פעולות שאפשר לבצע. כדי להציג אותן, יש להקיש על 'חיפוש'+Ctrl+‏A</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">מקשי צירוף</translation>
 <translation id="8943282376843390568">ליים</translation>

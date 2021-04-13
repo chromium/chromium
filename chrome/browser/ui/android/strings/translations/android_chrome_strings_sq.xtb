@@ -266,6 +266,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekonda të mbetura</translation>
 <translation id="2779651927720337254">dështoi</translation>
 <translation id="2781151931089541271">1 sekondë e mbetur</translation>
+<translation id="279827439955962619">Hiq theksimin</translation>
 <translation id="2801022321632964776">Kryej përditësimin për të marrë gjuhën tënde në versionin më të fundit të Chrome</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="281504910091592009">Shfaq dhe menaxho fjalëkalimet e ruajtura në <ph name="BEGIN_LINK" />llogarinë tënde të Google<ph name="END_LINK" /></translation>
@@ -503,6 +504,7 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="4487967297491345095">Të gjitha të dhënat e aplikacionit të Chrome do të fshihen përgjithmonë. Kjo përfshin të gjithë skedarët, cilësimet, llogaritë, bazat e të dhënave etj.</translation>
 <translation id="449126573531210296">Enkripto fjalëkalimet e sinkronizuara me "Llogarinë tënde të Google"</translation>
 <translation id="4493497663118223949">"Modaliteti i lehtë" është aktiv</translation>
+<translation id="4504667196171871375">Me Wi-Fi dhe të dhëna celulare</translation>
 <translation id="4508528996305412043">Menyja e kartave të furnizimit është hapur</translation>
 <translation id="4508642716788467538">Zgjidh gjuhën tënde</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# ditë më parë}other{# ditë më parë}}</translation>
@@ -917,6 +919,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="702463548815491781">Rekomandohet kur është aktiv TalkBack ose "Qasja me çelës"</translation>
 <translation id="7027549951530753705">Restauruar në datën <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
+<translation id="7040531500313579672">Ndaj tekstin e theksuar</translation>
 <translation id="7054588988317389591">Të merren përshkrimet e imazheve?</translation>
 <translation id="7055152154916055070">Ridrejtimi u bllokua:</translation>
 <translation id="7063006564040364415">Nuk mund të lidhej me serverin e sinkronizimit.</translation>

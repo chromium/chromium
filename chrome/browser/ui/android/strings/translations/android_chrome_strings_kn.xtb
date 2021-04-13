@@ -267,6 +267,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ಸೆಕೆಂಡುಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="2779651927720337254">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="2781151931089541271">1 ಸೆಕೆಂಡು ಉಳಿದಿದೆ</translation>
+<translation id="279827439955962619">ಹೈಲೈಟ್ ಮಾಡುವುದನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2801022321632964776">ನಿಮ್ಮ ಭಾಷೆಯನ್ನು Chrome ನ ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯಲ್ಲಿ ಪಡೆದುಕೊಳ್ಳಲು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="281504910091592009">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆಯಲ್ಲಿ<ph name="END_LINK" /> ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
@@ -504,6 +505,7 @@
 <translation id="4487967297491345095">ಎಲ್ಲಾ Chrome ಅಪ್ಲಿಕೇಶನ್ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ. ಇದು ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು, ಖಾತೆಗಳು, ಡೇಟಾಬೇಸ್‌ಗಳು, ಇತ್ಯಾದಿಗಳನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ.</translation>
 <translation id="449126573531210296">ನಿಮ್ಮ Google ಖಾತೆಯ ಜೊತೆಗೆ ಸಿಂಕ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಿ</translation>
 <translation id="4493497663118223949">ಲೈಟ್ ಮೋಡ್ ಆನ್ ಆಗಿದೆ</translation>
+<translation id="4504667196171871375">ವೈ-ಫೈ ಅಥವಾ ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="4508528996305412043">ಫೀಡ್ ಕಾರ್ಡ್ ಮೆನು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="4508642716788467538">ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆರಿಸಿ</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# ದಿನದ ಹಿಂದೆ}one{# ದಿನಗಳ ಹಿಂದೆ}other{# ದಿನಗಳ ಹಿಂದೆ}}</translation>
@@ -917,6 +919,7 @@
 <translation id="702463548815491781">TalkBack ಅಥವಾ ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ ಆನ್ ಆಗಿದ್ದಾಗ ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
+<translation id="7040531500313579672">ಹೈಲೈಟ್ ಮಾಡುವುದನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="7054588988317389591">ಚಿತ್ರದ ವಿವರಣೆ ಪಡೆಯಬೇಕೇ?</translation>
 <translation id="7055152154916055070">ಮರುನಿರ್ದೇಶಿಸುವಿಕೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ:</translation>
 <translation id="7063006564040364415">ಸಿಂಕ್ ಸರ್ವರ್‌ಗೆ ಸಂಪರ್ಕ ಹೊಂದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>

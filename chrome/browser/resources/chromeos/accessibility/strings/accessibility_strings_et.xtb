@@ -241,6 +241,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2684412629217766642">Sule ChromeVoxi õpetus</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{vasak ümarsulg}other{# vasakut ümarsulgu}}</translation>
+<translation id="270523456882008230">Vihje. Praeguse üksuse aktiveerimiseks topeltpuudutage ühe sõrmega.</translation>
 <translation id="2705875883745373140">Pole vajutatud</translation>
 <translation id="2708078563826046398">Virsikuroosa</translation>
 <translation id="2713444072780614174">Valge</translation>
@@ -285,6 +286,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2972205263822847197">Tööriista nõuanne</translation>
 <translation id="2976476721782829799">Ringiliikumiseks saate ka ühte sõrme ekraanil lohistada. Seda nimetatakse puudutusega uurimiseks. Proovige sõrmega lohistada, et ülejäänud õppetundi lugeda.</translation>
 <translation id="297825089465017871">Pühkige kahe sõrmega vasakule</translation>
+<translation id="2988364959384217951">Vihje. Pühkige õpetustest väljumiseks kahe sõrmega paremalt vasakule.</translation>
 <translation id="2998131015536248178">Eelmine tärk</translation>
 <translation id="2999559350546931576">Vähenda helikõrgust</translation>
 <translation id="3009352964623081324">Otsinguklahv + O, seejärel S. Kasutage seda häälte installimiseks, haldamiseks ja kohandamiseks.</translation>
@@ -941,6 +943,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="7776293189010177726">ChromeVoxi menüüde avamine</translation>
 <translation id="7799302833060027366">Matemaatilise tehte uurimiseks vajutage üles-, alla-, vasak- või paremnoolt</translation>
 <translation id="7800558923657349506">Epiloog</translation>
+<translation id="7801768143868631306">Vihje. Pühkige navigeerimiseks ühe sõrmega vasakule või paremale.</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7810781339813764006">Järgmine rühm</translation>
 <translation id="7813616274030162878">Lülitiga juurdepääsu menüü</translation>
@@ -1080,6 +1083,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="8897030325301866860">Font <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Kirjavahemärkide kaja tsükkel</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Saadaval on toimingud. Vaatamiseks vajutage klahvikombinatsiooni Otsing + Ctrl + A</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Muuteklahvid</translation>
 <translation id="8943282376843390568">Laimiroheline</translation>

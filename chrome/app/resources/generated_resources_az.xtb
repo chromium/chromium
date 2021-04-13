@@ -1835,7 +1835,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2989786307324390836">DER-kodlaşdırılmış binar, tək sertifikat</translation>
 <translation id="2990313168615879645">Google Hesabı əlavə edin</translation>
 <translation id="2990583317361835189">Saytlara hərəkət sensorlarından istifadə etmək icazəsi verməyin</translation>
-<translation id="2992931425024192067">Bütün bildiriş kontentini göstərin</translation>
+<translation id="2992931425024192067">Bütün bildirişlər göstərilsin</translation>
 <translation id="2993517869960930405">Tətbiq məlumatı</translation>
 <translation id="2996286169319737844">Data sinxronizasiya parolunuz ilə şifrələndi. Google Pay'dəki ödəniş metodları və ünvanlar bura daxil deyil.</translation>
 <translation id="2996722619877761919">Uzun kənardan çevirin</translation>
@@ -2004,7 +2004,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3183143381919926261">Mobil data şəbəkələri</translation>
 <translation id="3183944777708523606">Monitorun tənzimlənməsi</translation>
 <translation id="3184536091884214176">CUPS printerlərini quraşdırın və ya idarə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">Fiziki SIM</translation>
 <translation id="3188257591659621405">Fayllarım</translation>
 <translation id="3188465121994729530">Hərəkətli Ortalama</translation>
 <translation id="3189187154924005138">Böyük kursor</translation>
@@ -2683,7 +2682,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3926002189479431949">Smart Kilid telefonu dəyişdi</translation>
 <translation id="3927932062596804919">Rədd edin</translation>
-<translation id="392803502090869922">eSIM ayarlaması</translation>
 <translation id="3928570707778085600">Dəyişikliklər <ph name="FILE_OR_FOLDER_NAME" /> ünvanında yadda saxlanılsın?</translation>
 <translation id="3928659086758780856">Mürəkkəb azdır</translation>
 <translation id="3929426037718431833">Bu artırmalar bu saytdakı məlumatları görə və dəyişə bilər.</translation>
@@ -2900,7 +2898,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Dillər</translation>
 <translation id="4184885522552335684">Ekranı hərəkət etdirmək üçün çəkin</translation>
-<translation id="4186763173530196927">Tətbiq kameraya giriş etməyə çalışır. Girişə icazə vermək üçün kamera məxfilik dəyişdiricisini deaktiv edin.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> tətbiqi ayarlanır...</translation>
 <translation id="4190828427319282529">Klaviatura fokusu ilə vurğulama</translation>
 <translation id="4194570336751258953">Toxunaraq klikləməni aktiv edin</translation>
@@ -4300,7 +4297,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5814126672212206791">Bağlantı növü</translation>
 <translation id="5815645614496570556">X.400 Ünvanı</translation>
 <translation id="5816434091619127343">Təklif edilən printer dəyişiklikləri printeri yarasız hala sala bilər.</translation>
-<translation id="5817918615728894473">Cütləndirin</translation>
+<translation id="5817918615728894473">Qoşulsun</translation>
 <translation id="5821565227679781414">Qısayol Yaradın</translation>
 <translation id="5825412242012995131">Aktiv (Tövsiyə edilir)</translation>
 <translation id="5826395379250998812"><ph name="DEVICE_TYPE" /> cihazını telefona qoşun. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -5017,7 +5014,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6635362468090274700">Özünüzü görünən edənə qədər heç kim sizinlə paylaşa bilməz.<ph name="BR" /><ph name="BR" />Özünüzü müvəqqəti görünən etmək üçün status sahəsini açın, sonra Yaxınlıqda görünməni aktiv edin.</translation>
 <translation id="6635944431854494329">Sahib bu xüsusiyyəti Ayarlar &gt; Qabaqcıl &gt; Diaqnostika və istifadə datasını avtomatik Google'a göndərin bölməsində idarə edə bilər.</translation>
 <translation id="6635956300022133031">Mətndən-nitqə səslərini seçin və fərdiləşdirin</translation>
-<translation id="6636588250634969791">Başlamazdan əvvəl SIM kartı daxil edin</translation>
 <translation id="6639554308659482635">SQLite yaddaş</translation>
 <translation id="6642720633335369752">Bütün açıq tətbiq pəncərələrini görmək üçün aşağıdan yuxarıya sürüşdürüb saxlayın.</translation>
 <translation id="664290675870910564">Şəbəkə Seçimi</translation>
@@ -6744,7 +6740,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - Qulaqlıq üçün göstərilən VR</translation>
 <translation id="8590375307970699841">Avtomatik güncəlləşmələri quraşdırın</translation>
 <translation id="8591783563402255548">1 saniyə</translation>
-<translation id="8592141010104017453">Bildirişləri göstərməyin</translation>
+<translation id="8592141010104017453">Bildirişlər heç göstərilməsin</translation>
 <translation id="859246725979739260">Bu saytın məkanınıza girişi blok edilib.</translation>
 <translation id="8593121833493516339">İstifadə və diaqnostika datasını göndərin. Google'a diaqnostika, cihaz və tətbiq istifadə datasını avtomatik göndərməklə övladınızın Android təcrübəsini təkmilləşdirin. Bu, övladınızı müəyyən etmək üçün istifadə edilməyəcək, eyni zamanda, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Ümumi data, həmçinin, Google tətbiqləri və Android developerləri kimi partnyorlara kömək edəcək. Övladınız üçün əlavə Veb və Tətbiq Fəaliyyəti aktiv edilərsə, həmin data Google hesabında yadda saxlana bilər. <ph name="BEGIN_LINK1" />Ətraflı Məlumat<ph name="END_LINK1" /></translation>
 <translation id="8594908476761052472">Video çəkin</translation>

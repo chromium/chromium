@@ -2009,7 +2009,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3183143381919926261">Mobiele datanetwerken</translation>
 <translation id="3183944777708523606">Monitorindeling</translation>
 <translation id="3184536091884214176">CUPS-printers instellen of beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
-<translation id="3184809672319591980">Fysieke simkaart</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
 <translation id="3188465121994729530">Voortschrijdend gemiddelde</translation>
 <translation id="3189187154924005138">Grote cursor</translation>
@@ -2688,7 +2687,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3925573269917483990">Camera:</translation>
 <translation id="3926002189479431949">Smart Lock-telefoon gewijzigd</translation>
 <translation id="3927932062596804919">Weigeren</translation>
-<translation id="392803502090869922">E-simkaart instellen</translation>
 <translation id="3928570707778085600">Wijzigingen in <ph name="FILE_OR_FOLDER_NAME" /> opslaan?</translation>
 <translation id="3928659086758780856">Inkt is bijna op</translation>
 <translation id="3929426037718431833">Deze extensies kunnen informatie op deze site bekijken en wijzigen.</translation>
@@ -2808,6 +2806,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4056908315660577142">Je hebt de tijdslimiet bereikt die je ouder heeft ingesteld voor de <ph name="APP_NAME" />-app voor Chrome. Je kunt de app morgen <ph name="TIME_LIMIT" /> gebruiken.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Bekijken in de Web Store</translation>
+<translation id="4057991113334098539">Wordt geactiveerd...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Controleer document nu</translation>
 <translation id="406070391919917862">Achtergrondapplicaties</translation>
@@ -2907,7 +2906,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Talen</translation>
 <translation id="4184885522552335684">Slepen om een scherm te verplaatsen</translation>
-<translation id="4186763173530196927">Een app probeert toegang te krijgen tot de camera. Zet de privacyschakelaar voor de camera uit om de toegang toe te staan.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> instellen…</translation>
 <translation id="4190828427319282529">Toetsenbordfocus uitlichten</translation>
 <translation id="4194570336751258953">Tikken-om-te-klikken aanzetten</translation>
@@ -5025,7 +5023,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6635362468090274700">Mensen kunnen pas met je delen als je jezelf zichtbaar maakt.<ph name="BR" /><ph name="BR" />Als je jezelf tijdelijk zichtbaar wilt maken, open je het statusgedeelte en zet je 'Dichtbij aan' aan.</translation>
 <translation id="6635944431854494329">De eigenaar kan deze functie beheren via Instellingen &gt; Geavanceerd &gt; Automatisch diagnostische en gebruiksgegevens verzenden naar Google.</translation>
 <translation id="6635956300022133031">Stemmen voor tekst-naar-spraak selecteren en aanpassen</translation>
-<translation id="6636588250634969791">Plaats een simkaart voordat je doorgaat</translation>
 <translation id="6639554308659482635">SQLite-geheugen</translation>
 <translation id="6642720633335369752">Als je alle geopende app-vensters wilt bekijken, swipe je omhoog vanaf de onderkant en houd je het scherm vast.</translation>
 <translation id="664290675870910564">Netwerk selecteren</translation>

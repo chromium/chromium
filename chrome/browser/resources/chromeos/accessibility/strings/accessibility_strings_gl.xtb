@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Pechar titorial de ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{paréntese de apertura}other{# parénteses de apertura}}</translation>
+<translation id="270523456882008230">Consello: Para activar o elemento actual, toca a pantalla dúas veces cun dedo.</translation>
 <translation id="2705875883745373140">Non premido</translation>
 <translation id="2708078563826046398">Melocotón claro</translation>
 <translation id="2713444072780614174">Branco</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Suxestión</translation>
 <translation id="2976476721782829799">Tamén podes desprazarte arrastrando un dedo pola pantalla. Esta función chámase "Exploración táctil". Para ler o resto desta lección, arrastra o dedo.</translation>
 <translation id="297825089465017871">Pasa dous dedos cara á esquerda</translation>
+<translation id="2988364959384217951">Consello: Se queres saír deste titorial, pasa dous dedos da dereita á esquerda.</translation>
 <translation id="2998131015536248178">Carácter anterior</translation>
 <translation id="2999559350546931576">Reducir ton</translation>
 <translation id="3009352964623081324">Buscar + O e despois S. Utilízao para instalar, xestionar e personalizar as voces.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Abre menús de ChromeVox</translation>
 <translation id="7799302833060027366">Preme cara arriba, abaixo, á esquerda ou á dereita para explorar a expresión matemática</translation>
 <translation id="7800558923657349506">Epílogo</translation>
+<translation id="7801768143868631306">Consello: Se queres navegar, pasa un dedo cara á esquerda ou cara á dereita.</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7810781339813764006">Seguinte grupo</translation>
 <translation id="7813616274030162878">Menú de Acceso con interruptores</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Tipo de letra <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Retorno da puntuación do ciclo</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Hai accións dispoñibles. Para velas, preme Buscar + Ctrl + A</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Teclas modificadoras</translation>
 <translation id="8943282376843390568">Verde lima</translation>

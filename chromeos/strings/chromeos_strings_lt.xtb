@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
 <translation id="1703835215927279855">Laiškas</translation>
 <translation id="1706391837335750954">DNS pavadinimų vertimo programos aptikimas</translation>
+<translation id="1715359911173058521">Užmezgant ryšį su skaitytuvu kilo problema. Patikrinkite tinklo arba USB ryšį ir bandykite dar kartą.</translation>
 <translation id="1717874160321062422">Tvarko <ph name="FIRST_MANAGER" /> ir <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Atšaukiamas nuskaitymas</translation>
@@ -216,6 +217,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="54609108002486618">Valdoma</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Liko {0} bandymas}one{Liko {0} bandymas}few{Liko {0} bandymai}many{Liko {0} bandymo}other{Liko {0} bandymų}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">Nepavyko užbaigti nuskaitymo</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Aktyvinama</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5916084858004523819">Draudžiama</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Failas sėkmingai nuskaitytas ir išsaugotas aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}one{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}few{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}many{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}other{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Failas nerastas</translation>
+<translation id="6037291330010597344">Skaitytuvo dokumentų tiektuvas tuščias. Pridėkite dokumentų ir bandykite dar kartą.</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6040852767465482106">Anoniminė tapatybė</translation>
 <translation id="604124094241169006">Automatinis</translation>
@@ -252,6 +255,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6302401976930124515">Bandymas „<ph name="TEST_NAME" />“ atšauktas</translation>
 <translation id="6325525973963619867">Nepavyko</translation>
 <translation id="636850387210749493">Įmonės registracija</translation>
+<translation id="6388847657025262518">Skaitytuvo dokumentų tiektuvas užstrigo. Patikrinkite tiektuvą ir bandykite dar kartą.</translation>
 <translation id="641081527798843608">Temos atitiktis</translation>
 <translation id="6423239382391657905">Atidaryti virtualųjį privatųjį tinklą</translation>
 <translation id="6456394469623773452">Geras</translation>
@@ -273,6 +277,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6766275201586212568">Nepavykę DNS nustatymo veiksmai</translation>
 <translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
 <translation id="6853312040151791195">Išsikrovimo rodiklis</translation>
+<translation id="6910312834584889076">Skaitytuvo dangtis atidarytas. Uždarykite dangtį ir bandykite dar kartą.</translation>
 <translation id="6911383237894364323">Nepavyko prisijungti prie medijos serverių</translation>
 <translation id="6957231940976260713">Paslaugos pavadinimas</translation>
 <translation id="6977381486153291903">Programinės aparatinės įrangos taisymas</translation>
@@ -287,6 +292,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
+<translation id="7271040990581020067">Skaitytuvas šiuo metu naudojamas. Vėliau bandykite dar kartą.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">Tinklo įrenginiai</translation>
 <translation id="7359657277149375382">Failo tipas</translation>
