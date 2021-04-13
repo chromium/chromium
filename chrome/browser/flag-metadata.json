@@ -2142,8 +2142,8 @@
   },
   {
     "name": "enable-new-profile-picker",
-    "owners": [ "msalama" ],
-    "expiry_milestone": 91
+    "owners": [ "msalama", "my-chrome-everywhere@google.com" ],
+    "expiry_milestone": 92
   },
   {
     "name": "enable-noscript-previews",
@@ -2383,7 +2383,7 @@
   {
     "name": "enable-sign-in-profile-creation",
     "owners": [ "jkrcal", "my-chrome-everywhere@google.com" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 92
   },
   {
     "name": "enable-sign-in-profile-creation-enterprise",
