@@ -13,7 +13,7 @@ package speech.soda.chrome;
 option optimize_for = LITE_RUNTIME;
 option java_multiple_files = true;
 
-// Next ID to use: 12
+// Next ID to use: 13
 message ExtendedSodaConfigMsg {
   // Number of channels in RAW audio that will be provided to SODA.
   optional int32 channel_count = 1;
@@ -53,13 +53,8 @@ message ExtendedSodaConfigMsg {
   // What kind of recognition to execute here. Impacts model usage.
   optional RecognitionMode recognition_mode = 8 [default = IME];
 
-  // Whether terse_processor should force a new session after every final
-  // recognition result.
-  // This will cause the terse processor to stop processing new audio once an
-  // endpoint event is detected and wait for it to generate a final event using
-  // audio up to the endpoint. This will cause processing bursts when a new
-  // session starts.
-  optional bool reset_on_final_result = 9 [default = true];
+  // No impact in current code.
+  optional bool reset_on_final_result = 9 [default = true, deprecated = true];
 
   // Whether to populate the timing_metrics field on Recognition and Endpoint
   // events.
@@ -67,6 +62,9 @@ message ExtendedSodaConfigMsg {
 
   // Whether or not to request lang id events.
   optional bool enable_lang_id = 11 [default = false];
+
+  // Whether to enable formatting and punctuation in the recognition results.
+  optional bool enable_formatting = 12 [default = true];
 }
 
 // Next id: 5
@@ -87,7 +85,17 @@ message TimingMetrics {
   optional int64 event_end_time_usec = 4;
 }
 
-// Next id: 5
+// Next item: 3.
+message HypothesisPart {
+  // Typically 1 item for a word/piece of text. If formatting is enabled, the
+  // raw text will be the second item.
+  repeated string text = 1;
+  // Offset in ms of the beginning of this part of the hypothesis from this
+  // events audio_start_time_usec.
+  optional int64 alignment_ms = 2;
+}
+
+// Next id: 6
 message SodaRecognitionResult {
   // Hypothesis from recognition, in order of probability. We don't get the
   // probability from SODA, so the only given is that the first is the "best".
@@ -126,6 +134,9 @@ message SodaRecognitionResult {
 
   // Timing information for the event.
   optional TimingMetrics timing_metrics = 4;
+
+  // For final results. The first hypothesis split into word level timing.
+  repeated HypothesisPart hypothesis_part = 5;
 }
 
 // Next id: 3
