@@ -5,7 +5,9 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UTILS_MAC_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UTILS_MAC_H_
 
+#include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
+#include "ui/accessibility/platform/inspect/ax_tree_indexer.h"
 
 namespace ui {
 class AXPropertyNode;
@@ -14,37 +16,22 @@ class AXPropertyNode;
 namespace content {
 namespace a11y {
 
-/**
- * Converts accessible node object to a line index in the formatted
- * accessibility tree, the node is placed at, and vice versa.
- */
-class CONTENT_EXPORT LineIndexer final {
- public:
-  explicit LineIndexer(const gfx::NativeViewAccessible node);
-  virtual ~LineIndexer();
-
-  std::string IndexBy(const gfx::NativeViewAccessible node) const;
-  gfx::NativeViewAccessible NodeBy(const std::string& index) const;
-
- private:
-  void Build(const gfx::NativeViewAccessible node, int* counter);
-
-  struct NodeIdentifier {
-    std::string line_index;
-    std::string DOMid;
-  };
-
-  // IsBrowserAccessibilityCocoa or IsAXUIElement accessible nodes comparator.
-  struct NodeComparator {
-    constexpr bool operator()(const gfx::NativeViewAccessible& lhs,
-                              const gfx::NativeViewAccessible& rhs) const;
-  };
-
-  // Map between accessible objects and their identificators which can be a line
-  // index the object is placed at in an accessible tree or its DOM id
-  // attribute.
-  std::map<const gfx::NativeViewAccessible, NodeIdentifier, NodeComparator> map;
+// IsBrowserAccessibilityCocoa or IsAXUIElement accessible node comparator.
+struct NodeComparator {
+  constexpr bool operator()(const gfx::NativeViewAccessible& lhs,
+                            const gfx::NativeViewAccessible& rhs) const {
+    if (IsAXUIElement(lhs)) {
+      DCHECK(IsAXUIElement(rhs));
+      return CFHash(lhs) < CFHash(rhs);
+    }
+    DCHECK(IsBrowserAccessibilityCocoa(lhs));
+    DCHECK(IsBrowserAccessibilityCocoa(rhs));
+    return lhs < rhs;
+  }
 };
+
+using LineIndexer =
+    ui::AXTreeIndexer<GetDOMId, NSArray*, ChildrenOf, NodeComparator>;
 
 // Implements stateful id values. Can be either id or be in
 // error or not applciable state. Similar to base::Optional, but tri-state

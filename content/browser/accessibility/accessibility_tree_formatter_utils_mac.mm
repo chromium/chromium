@@ -5,7 +5,6 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_mac.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
@@ -45,65 +44,6 @@ namespace {
   return nil;
 
 }  // namespace
-
-// Line indexers
-
-LineIndexer::LineIndexer(const gfx::NativeViewAccessible node) {
-  int counter = 0;
-  Build(node, &counter);
-}
-
-LineIndexer::~LineIndexer() {}
-
-constexpr bool LineIndexer::NodeComparator::operator()(
-    const gfx::NativeViewAccessible& lhs,
-    const gfx::NativeViewAccessible& rhs) const {
-  if (IsAXUIElement(lhs)) {
-    DCHECK(IsAXUIElement(rhs));
-    return CFHash(lhs) < CFHash(rhs);
-  }
-  DCHECK(IsBrowserAccessibilityCocoa(lhs));
-  DCHECK(IsBrowserAccessibilityCocoa(rhs));
-  return lhs < rhs;
-}
-
-std::string LineIndexer::IndexBy(const gfx::NativeViewAccessible node) const {
-  std::string line_index = ":unknown";
-  auto iter = map.find(node);
-  if (iter != map.end()) {
-    line_index = iter->second.line_index;
-  }
-  return line_index;
-}
-
-gfx::NativeViewAccessible LineIndexer::NodeBy(
-    const std::string& identifier) const {
-  // Finds a first match either by a line number in :LINE_NUM format or by DOM
-  // id.
-  for (auto& item : map) {
-    if (item.second.line_index == identifier ||
-        item.second.DOMid == identifier) {
-      return item.first;
-    }
-  }
-  return nil;
-}
-
-void LineIndexer::Build(const gfx::NativeViewAccessible node, int* counter) {
-  const std::string line_index =
-      std::string(1, ':') + base::NumberToString(++(*counter));
-
-  const id domid_value =
-      AttributeValueOf(node, base::SysUTF8ToNSString("AXDOMIdentifier"));
-  const std::string domid =
-      base::SysNSStringToUTF8(static_cast<NSString*>(domid_value));
-
-  map.insert({node, {line_index, domid}});
-  NSArray* children = ChildrenOf(node);
-  for (gfx::NativeViewAccessible child in children) {
-    Build(child, counter);
-  }
-}
 
 // OptionalNSObject
 

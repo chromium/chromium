@@ -5,17 +5,12 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_MAC_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_MAC_H_
 
-#include "content/browser/accessibility/browser_accessibility_cocoa.h"
+#include "content/browser/accessibility/accessibility_tree_formatter_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 @class BrowserAccessibilityCocoa;
 
 namespace content {
-
-namespace a11y {
-class LineIndexer;
-class OptionalNSObject;
-}
 
 class CONTENT_EXPORT AccessibilityTreeFormatterMac
     : public ui::AXTreeFormatterBase {

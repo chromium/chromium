@@ -209,6 +209,12 @@ void SetAttributeValueOf(const id node, NSString* attribute, id value) {
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
 }
 
+std::string GetDOMId(const id node) {
+  const id domid_value =
+      AttributeValueOf(node, base::SysUTF8ToNSString("AXDOMIdentifier"));
+  return base::SysNSStringToUTF8(static_cast<NSString*>(domid_value));
+}
+
 AXUIElementRef FindAXUIElement(const AXUIElementRef node,
                                const FindCriteria& criteria) {
   if (criteria.Run(node))

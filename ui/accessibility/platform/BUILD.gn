@@ -71,6 +71,7 @@ source_set("platform") {
     "inspect/ax_tree_formatter.h",
     "inspect/ax_tree_formatter_base.cc",
     "inspect/ax_tree_formatter_base.h",
+    "inspect/ax_tree_indexer.h",
   ]
 
   public_deps = [

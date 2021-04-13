@@ -69,6 +69,12 @@ CONTENT_EXPORT void SetAttributeValueOf(const id node,
                                         id value);
 
 //
+// Returns DOM id of a given node (either AXUIElement or
+// BrowserAccessibilityCocoa).
+//
+CONTENT_EXPORT std::string GetDOMId(const id node);
+
+//
 // Return AXElement in a tree by a given criteria.
 //
 using FindCriteria = base::RepeatingCallback<bool(const AXUIElementRef)>;
