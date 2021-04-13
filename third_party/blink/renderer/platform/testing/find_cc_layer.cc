@@ -49,7 +49,7 @@ const cc::Layer* ScrollingContentsCcLayerByScrollElementId(
   return nullptr;
 }
 
-const cc::ScrollbarLayerBase* ScrollbarLayerForScrollNode(
+cc::ScrollbarLayerBase* ScrollbarLayerForScrollNode(
     const cc::Layer* root,
     const cc::ScrollNode* scroll_node,
     cc::ScrollbarOrientation orientation) {
@@ -58,8 +58,7 @@ const cc::ScrollbarLayerBase* ScrollbarLayerForScrollNode(
   for (auto& layer : root->children()) {
     if (!layer->IsScrollbarLayerForTesting())
       continue;
-    const auto* scrollbar_layer =
-        static_cast<const cc::ScrollbarLayerBase*>(layer.get());
+    auto* scrollbar_layer = static_cast<cc::ScrollbarLayerBase*>(layer.get());
     if (scrollbar_layer->scroll_element_id() == scroll_node->element_id &&
         scrollbar_layer->orientation() == orientation)
       return scrollbar_layer;

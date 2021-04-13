@@ -608,14 +608,21 @@ void ScrollableArea::RecalculateScrollbarOverlayColorTheme(
 
 void ScrollableArea::SetScrollbarNeedsPaintInvalidation(
     ScrollbarOrientation orientation) {
-  if (orientation == kHorizontalScrollbar) {
-    if (cc::Layer* layer = LayerForHorizontalScrollbar())
-      layer->SetNeedsDisplay();
+  if (orientation == kHorizontalScrollbar)
     horizontal_scrollbar_needs_paint_invalidation_ = true;
-  } else {
-    if (cc::Layer* layer = LayerForVerticalScrollbar())
-      layer->SetNeedsDisplay();
+  else
     vertical_scrollbar_needs_paint_invalidation_ = true;
+
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    auto* frame_view = GetLayoutBox()->GetFrameView();
+    if (auto* compositor = frame_view->GetPaintArtifactCompositor())
+      compositor->SetScrollbarNeedsDisplay(GetScrollbarElementId(orientation));
+  } else {
+    cc::Layer* layer = orientation == kHorizontalScrollbar
+                           ? LayerForHorizontalScrollbar()
+                           : LayerForVerticalScrollbar();
+    if (layer)
+      layer->SetNeedsDisplay();
   }
 
   ScrollControlWasSetNeedsPaintInvalidation();

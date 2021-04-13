@@ -243,13 +243,7 @@ PaintArtifactCompositor::ScrollbarLayerForPendingLayer(
   DCHECK_EQ(FloatPoint(), pending_layer.offset_of_decomposited_transforms);
 
   const auto& scrollbar_item = static_cast<const ScrollbarDisplayItem&>(item);
-  cc::ScrollbarLayerBase* existing_layer = nullptr;
-  for (auto& layer : scrollbar_layers_) {
-    if (layer->element_id() == scrollbar_item.ElementId()) {
-      existing_layer = layer.get();
-      break;
-    }
-  }
+  auto* existing_layer = ScrollbarLayer(scrollbar_item.ElementId());
   return scrollbar_item.CreateOrReuseLayer(existing_layer);
 }
 
@@ -1496,12 +1490,7 @@ void PaintArtifactCompositor::UpdateRepaintedLayer(
       DCHECK(item.IsScrollbar());
       const auto& scrollbar_item =
           static_cast<const ScrollbarDisplayItem&>(item);
-      for (auto& existing_layer : scrollbar_layers_) {
-        if (existing_layer->element_id() == scrollbar_item.ElementId()) {
-          layer = existing_layer.get();
-          break;
-        }
-      }
+      layer = ScrollbarLayer(scrollbar_item.ElementId());
     } break;
     default: {
       ContentLayerClientImpl* content_layer_client = nullptr;
@@ -1903,6 +1892,15 @@ void PaintArtifactCompositor::UpdateDebugInfo() const {
   }
 }
 
+cc::ScrollbarLayerBase* PaintArtifactCompositor::ScrollbarLayer(
+    CompositorElementId element_id) {
+  for (auto& layer : scrollbar_layers_) {
+    if (layer->element_id() == element_id)
+      return layer.get();
+  }
+  return nullptr;
+}
+
 CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
     const PendingLayer& layer,
     const PendingLayer* previous_layer) const {
@@ -2007,6 +2005,12 @@ size_t PaintArtifactCompositor::ApproximateUnsharedMemoryUsage() const {
     result += chunks_size - sizeof(layer.chunks);
   }
   return result;
+}
+
+void PaintArtifactCompositor::SetScrollbarNeedsDisplay(
+    CompositorElementId element_id) {
+  if (auto* scrollbar_layer = ScrollbarLayer(element_id))
+    scrollbar_layer->SetNeedsDisplay();
 }
 
 void LayerListBuilder::Add(scoped_refptr<cc::Layer> layer) {

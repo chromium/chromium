@@ -34,7 +34,7 @@ const cc::Layer* ScrollingContentsCcLayerByScrollElementId(
     const cc::Layer* root,
     const CompositorElementId& scroll_element_id);
 
-const cc::ScrollbarLayerBase* ScrollbarLayerForScrollNode(
+cc::ScrollbarLayerBase* ScrollbarLayerForScrollNode(
     const cc::Layer* root,
     const cc::ScrollNode* scroll_node,
     cc::ScrollbarOrientation orientation);
