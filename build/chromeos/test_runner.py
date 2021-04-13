@@ -723,7 +723,7 @@ def host_cmd(args, cmd_args):
       '--board',
       args.board,
       '--cache-dir',
-      args.cros_cache,
+      os.path.join(CHROMIUM_SRC_PATH, args.cros_cache),
   ]
   if args.use_vm:
     cros_run_test_cmd += [
@@ -758,7 +758,7 @@ def host_cmd(args, cmd_args):
 
     cros_run_test_cmd += [
         '--build-dir',
-        os.path.abspath(args.path_to_outdir),
+        os.path.join(CHROMIUM_SRC_PATH, args.path_to_outdir)
     ]
 
   cros_run_test_cmd += [
@@ -993,7 +993,6 @@ def main():
                     LAB_DUT_HOSTNAME)
       return 1
 
-  args.cros_cache = os.path.abspath(args.cros_cache)
   return args.func(args, unknown_args)
 
 
