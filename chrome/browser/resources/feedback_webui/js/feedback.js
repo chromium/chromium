@@ -228,6 +228,12 @@ const nearbyShareRegEx = new RegExp('nearby|phone', 'i');
  * @param {Event} fileSelectedEvent The onChanged event for the file input box.
  */
 function onFileSelected(fileSelectedEvent) {
+  // <if expr="chromeos">
+  // This is needed on CrOS. Otherwise, the feedback window will stay behind
+  // the Chrome window.
+  feedbackHelper.showDialog();
+  // </if>
+
   const file = fileSelectedEvent.target.files[0];
   if (!file) {
     // User canceled file selection.
