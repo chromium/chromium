@@ -718,8 +718,10 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<payments::mojom::PaymentManager>(base::BindRepeating(
       &RenderFrameHostImpl::CreatePaymentManager, base::Unretained(host)));
 
-  map->Add<handwriting::mojom::HandwritingRecognitionService>(
-      base::BindRepeating(&CreateHandwritingRecognitionService));
+  if (base::FeatureList::IsEnabled(features::kHandwritingRecognitionEnabled)) {
+    map->Add<handwriting::mojom::HandwritingRecognitionService>(
+        base::BindRepeating(&CreateHandwritingRecognitionService));
+  }
 
   map->Add<blink::mojom::WebBluetoothService>(base::BindRepeating(
       &RenderFrameHostImpl::CreateWebBluetoothService, base::Unretained(host)));

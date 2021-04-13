@@ -301,6 +301,12 @@ const base::Feature kNetworkQualityEstimatorWebHoldback{
 // (activated by kUserAgentClientHint)
 const base::Feature kGreaseUACH{"GreaseUACH", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether the handwriting recognition feature is enabled. This feature is also
+// controlled by the HandwritingRecognition web platform feature. Both must be
+// enabled for the feature to work.
+const base::Feature kHandwritingRecognitionEnabled{
+    "HandwritingRecognitionEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If a page does a client side redirect or adds to the history without a user
 // gesture, then skip it on back/forward UI.
 const base::Feature kHistoryManipulationIntervention{
