@@ -204,8 +204,7 @@ dev_list="\
   patch
   perl
   pkg-config
-  python
-  python-dev
+  python2-dev
   python-setuptools
   rpm
   ruby
@@ -218,6 +217,12 @@ dev_list="\
   zip
   $chromeos_dev_list
 "
+
+if package_exists python-is-python2; then
+  dev_list="${dev_list} python-is-python2"
+else
+  dev_list="${dev_list} python"
+fi
 
 # 64-bit systems need a minimum set of 32-bit compat packages for the pre-built
 # NaCl binaries.
@@ -335,6 +340,7 @@ backwards_compatible_list="\
   libgtk2.0-dev
   mesa-common-dev
   msttcorefonts
+  python-dev
   ttf-dejavu-core
   ttf-indic-fonts
   ttf-kochi-gothic
