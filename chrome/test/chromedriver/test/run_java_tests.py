@@ -5,6 +5,7 @@
 
 """Runs the WebDriver Java acceptance tests."""
 
+from __future__ import print_function
 import optparse
 import os
 import re
@@ -125,7 +126,7 @@ def _RunTest(java_tests_src_dir, jvm_args, sys_props, tests_report_file):
                          tests_report_file)
 
   if code != 0:
-    print 'FAILED to run java tests of ChromeDriverTests'
+    print('FAILED to run java tests of ChromeDriverTests')
 
 def _PrintTestResults(results_path):
   """Prints the given results in a format recognized by the buildbot."""
@@ -145,7 +146,7 @@ def _PrintTestResults(results_path):
   print("============================")
   start = 'There w'
   end = 'FAILURES!!!'
-  print contents[contents.find(start):contents.rfind(end)]
+  print(contents[contents.find(start):contents.rfind(end)])
 
   print("============================")
   print("SUMMARY")
@@ -163,7 +164,7 @@ def _PrintTestResults(results_path):
     testName = test.split('(')[0]
     testClass = test.split('(')[1].split('.')[-1]
     testsToReRun.append(testClass[0:-1] + '.' + testName)
-  print 'Rerun failing tests with filter: ' + ':'.join(testsToReRun)
+  print('Rerun failing tests with filter: ' + ':'.join(testsToReRun))
 
   myfile.close()
   return failuresCount.group(1)

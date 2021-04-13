@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import platform
 import sys
 import util
@@ -141,13 +142,13 @@ class ChromeDriver(object):
         if server_pid:
           processes = psutil.Process(server_pid).children(recursive=True)
           if len(processes):
-            print 'Terminating ', len(processes), ' processes'
+            print('Terminating', len(processes), 'processes')
             for p in processes:
               p.terminate()
 
             gone, alive = psutil.wait_procs(processes, timeout=3)
             if len(alive):
-              print 'Killing ', len(alive), ' processes'
+              print('Killing', len(alive), 'processes')
               for p in alive:
                 p.kill()
 
@@ -157,7 +158,7 @@ class ChromeDriver(object):
             self._InternalInit(server_url, **kwargs)
           except:
             # Only count it as retry if failed
-            print 'Retry ', ChromeDriver.retry_count, ' failed'
+            print('Retry', ChromeDriver.retry_count, 'failed')
             ChromeDriver.retry_count = ChromeDriver.retry_count + 1
             raise
         else:
@@ -380,7 +381,7 @@ class ChromeDriver(object):
       # Print the exception as it may give information on the Chrome state
       # but Page.crash will also generate exception, so filter that out
       if 'session deleted because of page crash' not in e.message:
-        print '\n Exception from Page.crash: ' + str(e.message) + '\n'
+        print('\n Exception from Page.crash: ' + str(e.message) + '\n')
     tempDriver.Quit()
 
   def ExecuteCommand(self, command, params={}):

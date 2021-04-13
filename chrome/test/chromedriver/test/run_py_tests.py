@@ -11,6 +11,7 @@
 # TODO (crbug.com/857239): Remove above comment when adb version
 # is updated in Devil.
 
+from __future__ import print_function
 import base64
 import json
 import math
@@ -2233,19 +2234,21 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
 
   def testCanSwitchToPrintPreviewDialog(self):
     old_handles = self._driver.GetWindowHandles()
-    print >> sys.stdout, "Test debug: actual len of old_handles: " \
-                         + str(len(old_handles))
+    print("Test debug: actual len of old_handles: " + str(len(old_handles)),
+            file = sys.stdout)
     self.assertEquals(1, len(old_handles))
     self._driver.ExecuteScript('setTimeout(function(){window.print();}, 0);')
     new_window_handle = self.WaitForNewWindow(self._driver, old_handles)
     if new_window_handle is None:
-      print >> sys.stdout, "Test debug: new_window_handle is None"
+      print("Test debug: new_window_handle is None", file = sys.stdout)
     else:
-      print >> sys.stdout, "Test debug: new_window_handle is not None"
+      print("Test debug: new_window_handle is not None", file = sys.stdout)
+
     self.assertNotEqual(None, new_window_handle)
     self._driver.SwitchToWindow(new_window_handle)
-    print >> sys.stdout, "Test debug: actual GetCurrentUrl: " \
-                         + self._driver.GetCurrentUrl()
+    print("Test debug: actual GetCurrentUrl: " + self._driver.GetCurrentUrl(),
+            file = sys.stdout)
+
     self.assertEquals('chrome://print/', self._driver.GetCurrentUrl())
 
   def testCanClickInIframes(self):
@@ -3913,7 +3916,7 @@ class ChromeDriverAndroidTest(ChromeDriverBaseTest):
             return
       raise RuntimeError('Malformed omaha JSON')
     except urllib2.URLError as e:
-      print 'Unable to fetch current version info from omahaproxy (%s)' % e
+      print('Unable to fetch current version info from omahaproxy (%s)' % e)
 
   def testDeviceManagement(self):
     self._drivers = [self.CreateDriver()
@@ -4630,7 +4633,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
     for _ in range(3):
       port = ports_generator.next()
       temp_dir = util.MakeTempDir()
-      print 'temp dir is ' + temp_dir
+      print('temp dir is ' + temp_dir)
       cmd = [_CHROME_BINARY,
              '--remote-debugging-port=%d' % port,
              '--user-data-dir=%s' % temp_dir,
@@ -4651,7 +4654,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
           for _ in range(20):
             if process.poll() is not None:
               break
-            print 'continuing to wait for Chrome to exit'
+            print('continuing to wait for Chrome to exit')
             time.sleep(.05)
           else:
             process.kill()
@@ -4670,7 +4673,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
       for _ in range(3):
         port = ports_generator.next()
         temp_dir = util.MakeTempDir()
-        print 'temp dir is ' + temp_dir
+        print('temp dir is ' + temp_dir)
         cmd = [_CHROME_BINARY,
               '--headless',
               '--remote-debugging-address=%s' % debug_addr,
@@ -4695,7 +4698,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
             for _ in range(20):
               if process.poll() is not None:
                 break
-              print 'continuing to wait for Chrome to exit'
+              print('continuing to wait for Chrome to exit')
               time.sleep(.05)
             else:
               process.kill()
@@ -4794,7 +4797,7 @@ class PerfTest(ChromeDriverBaseTest):
     def PrintResult(result):
       mean = sum(result) / len(result)
       avg_dev = sum([abs(sample - mean) for sample in result]) / len(result)
-      print 'perf result', name, mean, avg_dev, result
+      print('perf result', name, mean, avg_dev, result)
       util.AddBuildStepText('%s: %.3f+-%.3f' % (
           name, mean, avg_dev))
 
@@ -4843,13 +4846,13 @@ class HeadlessInvalidCertificateTest(ChromeDriverBaseTestWithWebServer):
                                      accept_insecure_certs = True)
 
   def testLoadsPage(self):
-    print "loading"
+    print("loading")
     self._driver.Load(self.GetHttpsUrlForFile('/chromedriver/page_test.html'))
     # Verify that page content loaded.
     self._driver.FindElement('css selector', '#link')
 
   def testNavigateNewWindow(self):
-    print "loading"
+    print("loading")
     self._driver.Load(self.GetHttpsUrlForFile('/chromedriver/page_test.html'))
     self._driver.ExecuteScript(
         'document.getElementById("link").href = "page_test.html";')
@@ -5132,7 +5135,7 @@ if __name__ == '__main__':
     for e in result.errors:
       retry_test_suite.addTest(e[0])
     test_suites.append(retry_test_suite)
-    print '\nRetrying failed tests\n'
+    print('\nRetrying failed tests\n')
     retry_result = runner.run(retry_test_suite)
     results.append(retry_result)
 

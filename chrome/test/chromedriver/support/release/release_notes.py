@@ -8,13 +8,14 @@
 # https://crbug.com/chromedriver?can=1&sort=id&q=label:ChromeDriver-81
 # to ~/Download/chromedriver-issues.csv. Output is ./notes.txt.
 
+from __future__ import print_function
 import csv
 import datetime
 import os
 import sys
 
 if len(sys.argv) != 2:
-  print 'usage: python %s version' % sys.argv[0]
+  print('usage: python %s version' % sys.argv[0])
   sys.exit(1)
 
 version = sys.argv[1]
@@ -41,7 +42,7 @@ for issue in csv.reader(lines):
         elif title == 'Summary':
           summary_col = i
       if pri_col is None or summary_col is None:
-        print 'Missing Pri or Summary in headers'
+        print('Missing Pri or Summary in headers')
         sys.exit(1)
       seen_header = True
     continue
