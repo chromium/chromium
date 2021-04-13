@@ -12,8 +12,6 @@ static_library("multidevice_setup") {
     "account_status_change_delegate_notifier_impl.h",
     "android_sms_app_installing_status_observer.cc",
     "android_sms_app_installing_status_observer.h",
-    "device_reenroller.cc",
-    "device_reenroller.h",
     "device_with_connectivity_status.cc",
     "device_with_connectivity_status.h",
     "eligible_host_devices_provider.h",
@@ -134,7 +132,6 @@ source_set("unit_tests") {
   sources = [
     "account_status_change_delegate_notifier_impl_unittest.cc",
     "android_sms_app_installing_status_observer_unittest.cc",
-    "device_reenroller_unittest.cc",
     "eligible_host_devices_provider_impl_unittest.cc",
     "feature_state_manager_impl_unittest.cc",
     "grandfathered_easy_unlock_host_disabler_unittest.cc",
