@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/external_web_app_utils.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -52,7 +52,7 @@ constexpr char kCreateShortcuts[] = "create_shortcuts";
 
 // kFeatureName is an optional string parameter specifying a feature
 // associated with this app. The feature must be present in
-// |kExternalAppInstallFeatures| to be applicable.
+// |kPreinstalledAppInstallFeatures| to be applicable.
 // If specified:
 //  - if the feature is enabled, the app will be installed
 //  - if the feature is not enabled, the app will be removed.
@@ -547,7 +547,7 @@ bool IsReinstallPastMilestoneNeeded(
 
 bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
   const base::ListValue* migrated_apps =
-      profile->GetPrefs()->GetList(prefs::kWebAppsMigratedDefaultApps);
+      profile->GetPrefs()->GetList(prefs::kWebAppsMigratedPreinstalledApps);
   if (!migrated_apps)
     return false;
 
@@ -563,7 +563,7 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
                                const std::string& app_id,
                                bool was_migrated) {
   ListPrefUpdate update(profile->GetPrefs(),
-                        prefs::kWebAppsMigratedDefaultApps);
+                        prefs::kWebAppsMigratedPreinstalledApps);
   if (was_migrated)
     update->Append(app_id);
   else
@@ -595,7 +595,8 @@ void SetMigrationRun(Profile* profile,
     update->EraseListValue(base::Value(feature_name));
 }
 
-bool WasDefaultAppUninstalled(Profile* profile, const std::string& app_id) {
+bool WasPreinstalledAppUninstalled(Profile* profile,
+                                   const std::string& app_id) {
   const base::ListValue* uninstalled_apps =
       profile->GetPrefs()->GetList(prefs::kWebAppsUninstalledDefaultChromeApps);
   if (!uninstalled_apps)
@@ -609,8 +610,9 @@ bool WasDefaultAppUninstalled(Profile* profile, const std::string& app_id) {
   return false;
 }
 
-void MarkDefaultAppAsUninstalled(Profile* profile, const std::string& app_id) {
-  if (WasDefaultAppUninstalled(profile, app_id))
+void MarkPreinstalledAppAsUninstalled(Profile* profile,
+                                      const std::string& app_id) {
+  if (WasPreinstalledAppUninstalled(profile, app_id))
     return;
   ListPrefUpdate update(profile->GetPrefs(),
                         prefs::kWebAppsUninstalledDefaultChromeApps);

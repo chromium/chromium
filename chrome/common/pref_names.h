@@ -24,7 +24,7 @@ namespace prefs {
 
 // Profile prefs. Please add Local State prefs below instead.
 extern const char kChildAccountStatusKnown[];
-extern const char kDefaultApps[];
+extern const char kPreinstalledApps[];
 extern const char kSafeBrowsingForTrustedSourcesEnabled[];
 extern const char kDisableScreenshots[];
 extern const char kDownloadRestrictions[];
@@ -211,7 +211,7 @@ extern const char kNetworkEasterEggHighScore[];
 extern const char kLastPolicyCheckTime[];
 #endif
 extern const char kNetworkPredictionOptions[];
-extern const char kDefaultAppsInstallState[];
+extern const char kPreinstalledAppsInstallState[];
 extern const char kHideWebStoreIcon[];
 #if defined(OS_CHROMEOS)
 extern const char kAttestationExtensionAllowlist[];
@@ -665,7 +665,7 @@ extern const char kWebAppsDailyMetricsDate[];
 extern const char kWebAppsExtensionIDs[];
 extern const char kWebAppsAppAgnosticIphState[];
 extern const char kWebAppsLastPreinstallSynchronizeVersion[];
-extern const char kWebAppsMigratedDefaultApps[];
+extern const char kWebAppsMigratedPreinstalledApps[];
 extern const char kWebAppsDidMigrateDefaultChromeApps[];
 extern const char kWebAppsUninstalledDefaultChromeApps[];
 extern const char kWebAppsPreferences[];

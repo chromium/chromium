@@ -1468,8 +1468,8 @@ void ExtensionService::CheckPermissionsIncrease(const Extension* extension,
   // can upgrade without requiring this user's approval.
   int disable_reasons = extension_prefs_->GetDisableReasons(extension->id());
 
-  // Silently grant all active permissions to default apps and apps installed
-  // in kiosk mode.
+  // Silently grant all active permissions to pre-installed apps and apps
+  // installed in kiosk mode.
   bool auto_grant_permission =
       extension->was_installed_by_default() ||
       ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode();
@@ -1871,15 +1871,16 @@ bool ExtensionService::OnExternalExtensionFileFound(
       info.extension_id, ExtensionRegistry::EVERYTHING);
 
   if (existing) {
-    // The default apps will have the location set as INTERNAL. Since older
-    // default apps are installed as EXTERNAL, we override them. However, if the
-    // app is already installed as internal, then do the version check.
+    // The pre-installed apps will have the location set as INTERNAL. Since
+    // older pre-installed apps are installed as EXTERNAL, we override them.
+    // However, if the app is already installed as internal, then do the version
+    // check.
     // TODO(grv) : Remove after Q1-2013.
-    bool is_default_apps_migration =
+    bool is_preinstalled_apps_migration =
         (info.crx_location == mojom::ManifestLocation::kInternal &&
          Manifest::IsExternalLocation(existing->location()));
 
-    if (!is_default_apps_migration) {
+    if (!is_preinstalled_apps_migration) {
       switch (existing->version().CompareTo(info.version)) {
         case -1:  // existing version is older, we should upgrade
           break;

@@ -8,9 +8,9 @@
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
+#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
-#include "chrome/browser/web_applications/external_web_app_manager.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -21,9 +21,9 @@ namespace web_app {
 class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest {
  public:
   PreinstalledWebAppsBrowserTest() {
-    ExternalWebAppManager::SkipStartupForTesting();
+    PreinstalledWebAppManager::SkipStartupForTesting();
     // Ignore any default app configs on disk.
-    ExternalWebAppManager::SetConfigDirForTesting(&empty_path_);
+    PreinstalledWebAppManager::SetConfigDirForTesting(&empty_path_);
     ForceUsePreinstalledWebAppsForTesting();
     WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
         [](Profile* profile) -> std::unique_ptr<OsIntegrationManager> {
@@ -37,7 +37,7 @@ class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   base::AutoReset<bool> scope =
-      SetExternalAppInstallFeatureAlwaysEnabledForTesting();
+      SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 
   auto& provider = *WebAppProvider::Get(browser()->profile());
 
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   size_t kExpectedCount = sizeof(kExpectations) / sizeof(kExpectations[0]);
 
   base::RunLoop run_loop;
-  provider.external_web_app_manager().LoadAndSynchronizeForTesting(
+  provider.preinstalled_web_app_manager().LoadAndSynchronizeForTesting(
       base::BindLambdaForTesting(
           [&](std::map<GURL, PendingAppManager::InstallResult> install_results,
               std::map<GURL, bool> uninstall_results) {

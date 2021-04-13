@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNAL_WEB_APP_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNAL_WEB_APP_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -40,7 +40,7 @@ class PendingAppManager;
 // start up. Will keep the apps installed on the device in sync with the set of
 // apps configured for preinstall, adding or removing as necessary. Works very
 // similar to WebAppPolicyManager.
-class ExternalWebAppManager {
+class PreinstalledWebAppManager {
  public:
   using ConsumeLoadedConfigs = base::OnceCallback<void(LoadedConfigs)>;
   using ConsumeParsedConfigs = base::OnceCallback<void(ParsedConfigs)>;
@@ -62,10 +62,11 @@ class ExternalWebAppManager {
   static void SetConfigsForTesting(const std::vector<base::Value>* configs);
   static void SetFileUtilsForTesting(const FileUtilsWrapper* file_utils);
 
-  explicit ExternalWebAppManager(Profile* profile);
-  ExternalWebAppManager(const ExternalWebAppManager&) = delete;
-  ExternalWebAppManager& operator=(const ExternalWebAppManager&) = delete;
-  ~ExternalWebAppManager();
+  explicit PreinstalledWebAppManager(Profile* profile);
+  PreinstalledWebAppManager(const PreinstalledWebAppManager&) = delete;
+  PreinstalledWebAppManager& operator=(const PreinstalledWebAppManager&) =
+      delete;
+  ~PreinstalledWebAppManager();
 
   void SetSubsystems(PendingAppManager* pending_app_manager);
 
@@ -132,9 +133,9 @@ class ExternalWebAppManager {
 
   std::unique_ptr<DebugInfo> debug_info_;
 
-  base::WeakPtrFactory<ExternalWebAppManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PreinstalledWebAppManager> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_EXTERNAL_WEB_APP_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_MANAGER_H_

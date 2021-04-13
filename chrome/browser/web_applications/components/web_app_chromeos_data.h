@@ -19,7 +19,7 @@ struct WebAppChromeOsData {
   bool is_disabled = false;
   // True if the app was installed by the device OEM and should be shown
   // in an OEM folder in the app launcher. This could also be stored as a Source
-  // on the WebApp, which would require refactoring ExternalWebAppManager to
+  // on the WebApp, which would require refactoring PreinstalledWebAppManager to
   // manage multiple Sources for a single app.
   bool oem_installed = false;
 };

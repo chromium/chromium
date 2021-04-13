@@ -100,7 +100,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     ChromeAshTestBase::SetUp();
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableDefaultApps);
+        switches::kDisablePreinstalledApps);
 
     profile_ = std::make_unique<TestingProfile>();
 

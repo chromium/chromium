@@ -100,7 +100,7 @@ TEST(WebAppTest, CanUserUninstallExternalApp) {
   WebApp app{GenerateAppIdFromURL(GURL("https://example.com"))};
 
   app.AddSource(Source::kDefault);
-  EXPECT_TRUE(app.IsDefaultApp());
+  EXPECT_TRUE(app.IsPreinstalledApp());
   EXPECT_TRUE(app.CanUserUninstallExternalApp());
 
   app.AddSource(Source::kSync);
@@ -124,9 +124,9 @@ TEST(WebAppTest, CanUserUninstallExternalApp) {
   app.RemoveSource(Source::kPolicy);
   EXPECT_TRUE(app.CanUserUninstallExternalApp());
 
-  EXPECT_TRUE(app.IsDefaultApp());
+  EXPECT_TRUE(app.IsPreinstalledApp());
   app.RemoveSource(Source::kDefault);
-  EXPECT_FALSE(app.IsDefaultApp());
+  EXPECT_FALSE(app.IsPreinstalledApp());
 }
 
 }  // namespace web_app

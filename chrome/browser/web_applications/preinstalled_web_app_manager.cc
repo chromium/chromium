@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/external_web_app_manager.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 
 #include <iterator>
 #include <map>
@@ -32,13 +32,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
-#include "chrome/browser/web_applications/external_web_app_utils.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -149,12 +149,12 @@ ParsedConfigs ParseConfigsBlocking(LoadedConfigs loaded_configs) {
 base::Optional<std::string> GetDisableReason(
     const ExternalInstallOptions& options,
     Profile* profile,
-    bool default_apps_enabled_in_prefs,
+    bool preinstalled_apps_enabled_in_prefs,
     bool is_new_user,
     const std::string& user_type) {
-  if (!default_apps_enabled_in_prefs) {
+  if (!preinstalled_apps_enabled_in_prefs) {
     return options.install_url.spec() +
-           " disabled by default_apps pref setting.";
+           " disabled by preinstalled_apps pref setting.";
   }
 
   // Remove if not applicable to current user type.
@@ -165,7 +165,7 @@ base::Optional<std::string> GetDisableReason(
 
   // Remove if gated on a disabled feature.
   if (options.gate_on_feature &&
-      !IsExternalAppInstallFeatureEnabled(*options.gate_on_feature)) {
+      !IsPreinstalledAppInstallFeatureEnabled(*options.gate_on_feature)) {
     return options.install_url.spec() +
            " disabled because feature is disabled: " + *options.gate_on_feature;
   }
@@ -216,14 +216,14 @@ base::Optional<std::string> GetDisableReason(
   // Remove if it's a default app and the apps to replace are not installed and
   // default extension apps are not performing new installation.
   if (options.gate_on_feature && !options.uninstall_and_replace.empty() &&
-      !extensions::DidDefaultAppsPerformNewInstallation(profile)) {
+      !extensions::DidPreinstalledAppsPerformNewInstallation(profile)) {
     for (const AppId& app_id : options.uninstall_and_replace) {
       // First time migration and the app to replace is uninstalled as it passed
       // the last code block. Save the information that the app was
       // uninstalled by user.
       if (!WasMigrationRun(profile, *options.gate_on_feature)) {
-        if (extensions::IsDefaultAppId(app_id)) {
-          MarkDefaultAppAsUninstalled(profile, app_id);
+        if (extensions::IsPreinstalledAppId(app_id)) {
+          MarkPreinstalledAppAsUninstalled(profile, app_id);
           return options.install_url.spec() +
                  "disabled because it's default app and apps to replace were "
                  "uninstalled.";
@@ -232,7 +232,7 @@ base::Optional<std::string> GetDisableReason(
         // Not first time migration, can't determine if the app to replace is
         // uninstalled by user as the migration is already run, use the pref
         // saved in first migration.
-        if (WasDefaultAppUninstalled(profile, app_id)) {
+        if (WasPreinstalledAppUninstalled(profile, app_id)) {
           return options.install_url.spec() +
                  "disabled because it's default app and apps to replace were "
                  "uninstalled.";
@@ -264,104 +264,106 @@ std::string GetExtraConfigSubdirectory() {
 
 }  // namespace
 
-const char* ExternalWebAppManager::kHistogramEnabledCount =
+const char* PreinstalledWebAppManager::kHistogramEnabledCount =
     "WebApp.Preinstalled.EnabledCount";
-const char* ExternalWebAppManager::kHistogramDisabledCount =
+const char* PreinstalledWebAppManager::kHistogramDisabledCount =
     "WebApp.Preinstalled.DisabledCount";
-const char* ExternalWebAppManager::kHistogramConfigErrorCount =
+const char* PreinstalledWebAppManager::kHistogramConfigErrorCount =
     "WebApp.Preinstalled.ConfigErrorCount";
-const char* ExternalWebAppManager::kHistogramInstallResult =
+const char* PreinstalledWebAppManager::kHistogramInstallResult =
     "Webapp.InstallResult.Default";
-const char* ExternalWebAppManager::kHistogramUninstallAndReplaceCount =
+const char* PreinstalledWebAppManager::kHistogramUninstallAndReplaceCount =
     "WebApp.Preinstalled.UninstallAndReplaceCount";
 
-void ExternalWebAppManager::RegisterProfilePrefs(
+void PreinstalledWebAppManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kWebAppsLastPreinstallSynchronizeVersion,
                                "");
-  registry->RegisterListPref(prefs::kWebAppsMigratedDefaultApps);
+  registry->RegisterListPref(prefs::kWebAppsMigratedPreinstalledApps);
   registry->RegisterListPref(prefs::kWebAppsDidMigrateDefaultChromeApps);
   registry->RegisterListPref(prefs::kWebAppsUninstalledDefaultChromeApps);
 }
 
-void ExternalWebAppManager::SkipStartupForTesting() {
+void PreinstalledWebAppManager::SkipStartupForTesting() {
   g_skip_startup_for_testing_ = true;
 }
 
-void ExternalWebAppManager::BypassOfflineManifestRequirementForTesting() {
+void PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting() {
   g_bypass_offline_manifest_requirement_for_testing_ = true;
 }
 
-void ExternalWebAppManager::SetConfigDirForTesting(
+void PreinstalledWebAppManager::SetConfigDirForTesting(
     const base::FilePath* config_dir) {
   g_config_dir_for_testing = config_dir;
 }
 
-void ExternalWebAppManager::SetConfigsForTesting(
+void PreinstalledWebAppManager::SetConfigsForTesting(
     const std::vector<base::Value>* configs) {
   g_configs_for_testing = configs;
 }
 
-void ExternalWebAppManager::SetFileUtilsForTesting(
+void PreinstalledWebAppManager::SetFileUtilsForTesting(
     const FileUtilsWrapper* file_utils) {
   g_file_utils_for_testing = file_utils;
 }
 
-ExternalWebAppManager::ExternalWebAppManager(Profile* profile)
+PreinstalledWebAppManager::PreinstalledWebAppManager(Profile* profile)
     : profile_(profile) {
   if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
     debug_info_ = std::make_unique<DebugInfo>();
   }
 }
 
-ExternalWebAppManager::~ExternalWebAppManager() = default;
+PreinstalledWebAppManager::~PreinstalledWebAppManager() = default;
 
-void ExternalWebAppManager::SetSubsystems(
+void PreinstalledWebAppManager::SetSubsystems(
     PendingAppManager* pending_app_manager) {
   pending_app_manager_ = pending_app_manager;
 }
 
-void ExternalWebAppManager::Start() {
+void PreinstalledWebAppManager::Start() {
   if (!g_skip_startup_for_testing_) {
     LoadAndSynchronize(
-        base::BindOnce(&ExternalWebAppManager::OnStartUpTaskCompleted,
+        base::BindOnce(&PreinstalledWebAppManager::OnStartUpTaskCompleted,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void ExternalWebAppManager::LoadForTesting(ConsumeInstallOptions callback) {
+void PreinstalledWebAppManager::LoadForTesting(ConsumeInstallOptions callback) {
   Load(std::move(callback));
 }
 
-void ExternalWebAppManager::LoadAndSynchronizeForTesting(
+void PreinstalledWebAppManager::LoadAndSynchronizeForTesting(
     SynchronizeCallback callback) {
   LoadAndSynchronize(std::move(callback));
 }
 
-void ExternalWebAppManager::LoadAndSynchronize(SynchronizeCallback callback) {
+void PreinstalledWebAppManager::LoadAndSynchronize(
+    SynchronizeCallback callback) {
   // Make sure ExtensionSystem is ready to know if default apps new installation
   // will be performed.
   extensions::OnExtensionSystemReady(
       profile_,
       base::BindOnce(
-          &ExternalWebAppManager::Load, weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(&ExternalWebAppManager::Synchronize,
+          &PreinstalledWebAppManager::Load, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&PreinstalledWebAppManager::Synchronize,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
-void ExternalWebAppManager::Load(ConsumeInstallOptions callback) {
-  if (!base::FeatureList::IsEnabled(features::kDefaultWebAppInstallation)) {
+void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
+  if (!base::FeatureList::IsEnabled(
+          features::kPreinstalledWebAppInstallation)) {
     std::move(callback).Run({});
     return;
   }
 
   LoadConfigs(base::BindOnce(
-      &ExternalWebAppManager::ParseConfigs, weak_ptr_factory_.GetWeakPtr(),
-      base::BindOnce(&ExternalWebAppManager::PostProcessConfigs,
+      &PreinstalledWebAppManager::ParseConfigs, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&PreinstalledWebAppManager::PostProcessConfigs,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
-void ExternalWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
+void PreinstalledWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
   if (g_configs_for_testing) {
     LoadedConfigs loaded_configs;
     for (const base::Value& config : *g_configs_for_testing) {
@@ -397,8 +399,8 @@ void ExternalWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
       std::move(callback));
 }
 
-void ExternalWebAppManager::ParseConfigs(ConsumeParsedConfigs callback,
-                                         LoadedConfigs loaded_configs) {
+void PreinstalledWebAppManager::ParseConfigs(ConsumeParsedConfigs callback,
+                                             LoadedConfigs loaded_configs) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -407,8 +409,9 @@ void ExternalWebAppManager::ParseConfigs(ConsumeParsedConfigs callback,
       std::move(callback));
 }
 
-void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
-                                               ParsedConfigs parsed_configs) {
+void PreinstalledWebAppManager::PostProcessConfigs(
+    ConsumeInstallOptions callback,
+    ParsedConfigs parsed_configs) {
   // Add hard coded configs.
   for (ExternalInstallOptions& options : GetPreinstalledWebApps())
     parsed_configs.options_list.push_back(std::move(options));
@@ -438,27 +441,27 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
 
   // TODO(crbug.com/1175196): Move this constant into some shared constants.h
   // file.
-  bool default_apps_enabled_in_prefs =
-      profile_->GetPrefs()->GetString(prefs::kDefaultApps) == "install";
+  bool preinstalled_apps_enabled_in_prefs =
+      profile_->GetPrefs()->GetString(prefs::kPreinstalledApps) == "install";
   bool is_new_user = IsNewUser();
   std::string user_type = apps::DetermineUserType(profile_);
   size_t disabled_count = 0;
-  base::EraseIf(
-      parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
-        base::Optional<std::string> disable_reason =
-            GetDisableReason(options, profile_, default_apps_enabled_in_prefs,
-                             is_new_user, user_type);
-        if (disable_reason) {
-          VLOG(1) << *disable_reason;
-          ++disabled_count;
-          if (debug_info_) {
-            debug_info_->disabled_configs.emplace_back(
-                std::move(options), std::move(*disable_reason));
-          }
-          return true;
-        }
-        return false;
-      });
+  base::EraseIf(parsed_configs.options_list,
+                [&](const ExternalInstallOptions& options) {
+                  base::Optional<std::string> disable_reason = GetDisableReason(
+                      options, profile_, preinstalled_apps_enabled_in_prefs,
+                      is_new_user, user_type);
+                  if (disable_reason) {
+                    VLOG(1) << *disable_reason;
+                    ++disabled_count;
+                    if (debug_info_) {
+                      debug_info_->disabled_configs.emplace_back(
+                          std::move(options), std::move(*disable_reason));
+                    }
+                    return true;
+                  }
+                  return false;
+                });
 
   if (debug_info_) {
     debug_info_->parse_errors = parsed_configs.errors;
@@ -484,7 +487,7 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
   std::move(callback).Run(parsed_configs.options_list);
 }
 
-void ExternalWebAppManager::Synchronize(
+void PreinstalledWebAppManager::Synchronize(
     PendingAppManager::SynchronizeCallback callback,
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
   DCHECK(pending_app_manager_);
@@ -498,12 +501,12 @@ void ExternalWebAppManager::Synchronize(
   pending_app_manager_->SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
       ExternalInstallSource::kExternalDefault,
-      base::BindOnce(&ExternalWebAppManager::OnExternalWebAppsSynchronized,
+      base::BindOnce(&PreinstalledWebAppManager::OnExternalWebAppsSynchronized,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(desired_uninstalls)));
 }
 
-void ExternalWebAppManager::OnExternalWebAppsSynchronized(
+void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
     PendingAppManager::SynchronizeCallback callback,
     std::map<GURL, std::vector<AppId>> desired_uninstalls,
     std::map<GURL, PendingAppManager::InstallResult> install_results,
@@ -537,10 +540,10 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
                            uninstall_and_replace_count);
 
   SetMigrationRun(profile_, kMigrateDefaultChromeAppToWebAppsGSuite.name,
-                  IsExternalAppInstallFeatureEnabled(
+                  IsPreinstalledAppInstallFeatureEnabled(
                       kMigrateDefaultChromeAppToWebAppsGSuite.name));
   SetMigrationRun(profile_, kMigrateDefaultChromeAppToWebAppsNonGSuite.name,
-                  IsExternalAppInstallFeatureEnabled(
+                  IsPreinstalledAppInstallFeatureEnabled(
                       kMigrateDefaultChromeAppToWebAppsNonGSuite.name));
 
   if (callback) {
@@ -549,7 +552,7 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
   }
 }
 
-void ExternalWebAppManager::OnStartUpTaskCompleted(
+void PreinstalledWebAppManager::OnStartUpTaskCompleted(
     std::map<GURL, PendingAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   if (debug_info_) {
@@ -559,7 +562,7 @@ void ExternalWebAppManager::OnStartUpTaskCompleted(
   }
 }
 
-base::FilePath ExternalWebAppManager::GetConfigDir() {
+base::FilePath PreinstalledWebAppManager::GetConfigDir() {
   base::FilePath dir;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -587,7 +590,7 @@ base::FilePath ExternalWebAppManager::GetConfigDir() {
   return dir;
 }
 
-bool ExternalWebAppManager::IsNewUser() {
+bool PreinstalledWebAppManager::IsNewUser() {
   PrefService* prefs = profile_->GetPrefs();
   std::string last_version =
       prefs->GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion);
@@ -601,7 +604,7 @@ bool ExternalWebAppManager::IsNewUser() {
   return ExternallyInstalledWebAppPrefs(prefs).HasNoApps();
 }
 
-bool ExternalWebAppManager::IsReinstallPastMilestoneNeededSinceLastSync(
+bool PreinstalledWebAppManager::IsReinstallPastMilestoneNeededSinceLastSync(
     int force_reinstall_for_milestone) {
   PrefService* prefs = profile_->GetPrefs();
   std::string last_preinstall_synchronize_milestone =
@@ -612,8 +615,8 @@ bool ExternalWebAppManager::IsReinstallPastMilestoneNeededSinceLastSync(
                                         force_reinstall_for_milestone);
 }
 
-ExternalWebAppManager::DebugInfo::DebugInfo() = default;
+PreinstalledWebAppManager::DebugInfo::DebugInfo() = default;
 
-ExternalWebAppManager::DebugInfo::~DebugInfo() = default;
+PreinstalledWebAppManager::DebugInfo::~DebugInfo() = default;
 
 }  //  namespace web_app

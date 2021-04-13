@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/default_apps.h"
+#include "chrome/browser/extensions/preinstalled_apps.h"
 
 #include <memory>
 
@@ -17,8 +17,8 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using default_apps::Provider;
 using extensions::mojom::ManifestLocation;
+using preinstalled_apps::Provider;
 
 namespace extensions {
 
@@ -32,80 +32,84 @@ class MockExternalLoader : public ExternalLoader {
   ~MockExternalLoader() override {}
 };
 
-class DefaultAppsTest : public testing::Test {
+class PreinstalledAppsTest : public testing::Test {
  public:
-  DefaultAppsTest()
+  PreinstalledAppsTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
-  ~DefaultAppsTest() override {}
+  ~PreinstalledAppsTest() override {}
 
  private:
   content::BrowserTaskEnvironment task_environment_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Chrome OS has different way of installing default apps.
+// Chrome OS has different way of installing pre-installed apps.
 // Android does not currently support installing apps via Chrome.
-TEST_F(DefaultAppsTest, Install) {
+TEST_F(PreinstalledAppsTest, Install) {
   TestingProfile profile;
   scoped_refptr<ExternalLoader> loader =
       base::MakeRefCounted<MockExternalLoader>();
 
   auto get_install_state = [](Profile* profile) {
-    return profile->GetPrefs()->GetInteger(prefs::kDefaultAppsInstallState);
+    return profile->GetPrefs()->GetInteger(
+        prefs::kPreinstalledAppsInstallState);
   };
   auto set_install_state = [](Profile* profile,
-                              default_apps::InstallState state) {
-    return profile->GetPrefs()->SetInteger(prefs::kDefaultAppsInstallState,
+                              preinstalled_apps::InstallState state) {
+    return profile->GetPrefs()->SetInteger(prefs::kPreinstalledAppsInstallState,
                                            state);
   };
 
-  EXPECT_EQ(default_apps::kUnknown, get_install_state(&profile));
+  EXPECT_EQ(preinstalled_apps::kUnknown, get_install_state(&profile));
 
   {
-    // The default apps should be installed if kDefaultAppsInstallState
-    // is unknown.
+    // The pre-installed apps should be installed if
+    // kPreinstalledAppsInstallState is unknown.
     Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
                       ManifestLocation::kInternal, Extension::NO_FLAGS);
-    EXPECT_TRUE(provider.default_apps_enabled());
+    EXPECT_TRUE(provider.preinstalled_apps_enabled());
     EXPECT_FALSE(provider.is_migration());
     EXPECT_TRUE(provider.perform_new_installation());
-    EXPECT_EQ(default_apps::kAlreadyInstalledDefaultApps,
+    EXPECT_EQ(preinstalled_apps::kAlreadyInstalledPreinstalledApps,
               get_install_state(&profile));
   }
 
   {
-    // The default apps should only be installed once.
+    // The pre-installed apps should only be installed once.
     Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
                       ManifestLocation::kInternal, Extension::NO_FLAGS);
-    EXPECT_TRUE(provider.default_apps_enabled());
+    EXPECT_TRUE(provider.preinstalled_apps_enabled());
     EXPECT_FALSE(provider.is_migration());
     EXPECT_FALSE(provider.perform_new_installation());
-    EXPECT_EQ(default_apps::kAlreadyInstalledDefaultApps,
+    EXPECT_EQ(preinstalled_apps::kAlreadyInstalledPreinstalledApps,
               get_install_state(&profile));
   }
 
   {
-    // The default apps should not be installed if the state is
-    // kNeverProvideDefaultApps
-    set_install_state(&profile, default_apps::kNeverInstallDefaultApps);
+    // The pre-installed apps should not be installed if the state is
+    // kNeverProvidePreinstalledApps
+    set_install_state(&profile,
+                      preinstalled_apps::kNeverInstallPreinstalledApps);
     Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
                       ManifestLocation::kInternal, Extension::NO_FLAGS);
-    EXPECT_TRUE(provider.default_apps_enabled());
+    EXPECT_TRUE(provider.preinstalled_apps_enabled());
     EXPECT_FALSE(provider.is_migration());
     EXPECT_FALSE(provider.perform_new_installation());
-    EXPECT_EQ(default_apps::kNeverInstallDefaultApps,
+    EXPECT_EQ(preinstalled_apps::kNeverInstallPreinstalledApps,
               get_install_state(&profile));
   }
 
   {
-    // The old default apps with kAlwaysInstallDefaultApps should be migrated.
-    set_install_state(&profile, default_apps::kProvideLegacyDefaultApps);
+    // The old pre-installed apps with kAlwaysInstallPreinstalledApps should be
+    // migrated.
+    set_install_state(&profile,
+                      preinstalled_apps::kProvideLegacyPreinstalledApps);
     Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
                       ManifestLocation::kInternal, Extension::NO_FLAGS);
-    EXPECT_TRUE(provider.default_apps_enabled());
+    EXPECT_TRUE(provider.preinstalled_apps_enabled());
     EXPECT_TRUE(provider.is_migration());
     EXPECT_FALSE(provider.perform_new_installation());
-    EXPECT_EQ(default_apps::kAlreadyInstalledDefaultApps,
+    EXPECT_EQ(preinstalled_apps::kAlreadyInstalledPreinstalledApps,
               get_install_state(&profile));
   }
 
@@ -116,17 +120,17 @@ TEST_F(DefaultAppsTest, Install) {
   };
   {
     DefaultTestingProfile default_testing_profile;
-    // The old default apps with kProvideLegacyDefaultApps should be migrated
-    // even if the profile version is older than Chrome version.
+    // The old pre-installed apps with kProvideLegacyPreinstalledApps should be
+    // migrated even if the profile version is older than Chrome version.
     set_install_state(&default_testing_profile,
-                      default_apps::kProvideLegacyDefaultApps);
+                      preinstalled_apps::kProvideLegacyPreinstalledApps);
     Provider provider(&default_testing_profile, nullptr, loader,
                       ManifestLocation::kInternal, ManifestLocation::kInternal,
                       Extension::NO_FLAGS);
-    EXPECT_TRUE(provider.default_apps_enabled());
+    EXPECT_TRUE(provider.preinstalled_apps_enabled());
     EXPECT_TRUE(provider.is_migration());
     EXPECT_FALSE(provider.perform_new_installation());
-    EXPECT_EQ(default_apps::kAlreadyInstalledDefaultApps,
+    EXPECT_EQ(preinstalled_apps::kAlreadyInstalledPreinstalledApps,
               get_install_state(&default_testing_profile));
   }
 }

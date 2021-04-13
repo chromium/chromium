@@ -207,7 +207,7 @@ const base::Feature kDMServerOAuthForChildUser{
 
 #if !defined(OS_ANDROID)
 // Whether to allow installed-by-default web apps to be installed or not.
-const base::Feature kDefaultWebAppInstallation{
+const base::Feature kPreinstalledWebAppInstallation{
     "DefaultWebAppInstallation", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 

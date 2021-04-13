@@ -152,7 +152,7 @@ extern const base::Feature kDMServerOAuthForChildUser;
 
 #if !defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kDefaultWebAppInstallation;
+extern const base::Feature kPreinstalledWebAppInstallation;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)

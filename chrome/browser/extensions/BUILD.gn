@@ -1148,8 +1148,8 @@ static_library("extensions") {
       "api/image_writer_private/operation_nonchromeos.cc",
       "api/tabs/tabs_util.cc",
       "chrome_kiosk_delegate.cc",
-      "default_apps.cc",
-      "default_apps.h",
+      "preinstalled_apps.cc",
+      "preinstalled_apps.h",
     ]
     deps += [
       "//components/enterprise",

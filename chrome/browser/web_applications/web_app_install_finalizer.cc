@@ -270,7 +270,7 @@ void WebAppInstallFinalizer::UninstallExternalAppByUser(
   DCHECK(app->CanUserUninstallExternalApp());
   const bool is_synced = app->IsSynced();
 
-  if (app->IsDefaultApp()) {
+  if (app->IsPreinstalledApp()) {
     UpdateBoolWebAppPref(profile_->GetPrefs(), app_id,
                          kWasExternalAppUninstalledByUser, true);
   }

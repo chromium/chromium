@@ -30,7 +30,7 @@ namespace web_app {
 // Forward declarations of generalized interfaces.
 class AppRegistryController;
 class AppIconManager;
-class ExternalWebAppManager;
+class PreinstalledWebAppManager;
 class InstallFinalizer;
 class ManifestUpdateManager;
 class SystemWebAppManager;
@@ -97,8 +97,8 @@ class WebAppProvider : public WebAppProviderBase {
     return on_registry_ready_;
   }
 
-  ExternalWebAppManager& external_web_app_manager() {
-    return *external_web_app_manager_;
+  PreinstalledWebAppManager& preinstalled_web_app_manager() {
+    return *preinstalled_web_app_manager_;
   }
 
  protected:
@@ -133,7 +133,7 @@ class WebAppProvider : public WebAppProviderBase {
   // Generalized subsystems:
   std::unique_ptr<AppRegistrar> registrar_;
   std::unique_ptr<AppRegistryController> registry_controller_;
-  std::unique_ptr<ExternalWebAppManager> external_web_app_manager_;
+  std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
   std::unique_ptr<AppIconManager> icon_manager_;
   std::unique_ptr<InstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;

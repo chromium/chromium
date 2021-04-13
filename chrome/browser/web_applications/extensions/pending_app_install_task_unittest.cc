@@ -593,7 +593,7 @@ TEST_F(PendingAppInstallTaskTest, InstallForcedContainerTab) {
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest, InstallDefaultApp) {
+TEST_F(PendingAppInstallTaskTest, InstallPreinstalledApp) {
   auto install_options =
       ExternalInstallOptions(WebAppUrl(), DisplayMode::kUndefined,
                              ExternalInstallSource::kInternalDefault);

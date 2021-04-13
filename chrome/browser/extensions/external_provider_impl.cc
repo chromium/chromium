@@ -35,7 +35,7 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
+#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -67,7 +67,7 @@
 #include "components/arc/arc_util.h"
 #include "extensions/common/constants.h"
 #else
-#include "chrome/browser/extensions/default_apps.h"
+#include "chrome/browser/extensions/preinstalled_apps.h"
 #endif
 
 #if defined(OS_WIN)
@@ -83,8 +83,8 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Certain default extensions are no longer needed on ARC devices as they were
-// replaced by their ARC counterparts.
+// Certain pre-installed extensions are no longer needed on ARC devices as they
+// were replaced by their ARC counterparts.
 bool ShouldUninstallExtensionReplacedByArcApp(const std::string& extension_id) {
   if (!arc::IsArcAvailable())
     return false;
@@ -370,7 +370,8 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
         extension->FindStringPath(kWebAppMigrationFlag);
     bool is_migrating_to_web_app =
         web_app_migration_flag &&
-        web_app::IsExternalAppInstallFeatureEnabled(*web_app_migration_flag);
+        web_app::IsPreinstalledAppInstallFeatureEnabled(
+            *web_app_migration_flag);
     bool keep_if_present =
         extension->FindBoolPath(kKeepIfPresent).value_or(false);
     if (keep_if_present || is_migrating_to_web_app) {
@@ -727,10 +728,10 @@ void ExternalProviderImpl::CreateExternalProviders(
     provider_list->push_back(std::move(recommended_provider));
   }
 
-  // In tests don't install extensions from default external sources.
+  // In tests don't install pre-installed apps.
   // It would only slowdown tests and make them flaky.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kDisableDefaultApps)) {
+          ::switches::kDisablePreinstalledApps)) {
     return;
   }
 
@@ -765,7 +766,7 @@ void ExternalProviderImpl::CreateExternalProviders(
         ManifestLocation::kExternalPrefDownload,
         bundled_extension_creation_flags));
 
-    // OEM default apps.
+    // OEM pre-installed apps.
     int oem_extension_creation_flags =
         bundled_extension_creation_flags | Extension::WAS_INSTALLED_BY_OEM;
     chromeos::ServicesCustomizationDocument* customization =
@@ -838,9 +839,9 @@ void ExternalProviderImpl::CreateExternalProviders(
   }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // The default apps are installed as INTERNAL but use the external
+  // The pre-installed apps are installed as INTERNAL but use the external
   // extension installer codeflow.
-  provider_list->push_back(std::make_unique<default_apps::Provider>(
+  provider_list->push_back(std::make_unique<preinstalled_apps::Provider>(
       profile, service,
       base::MakeRefCounted<ExternalPrefLoader>(
           chrome::DIR_DEFAULT_APPS, ExternalPrefLoader::NONE, nullptr),

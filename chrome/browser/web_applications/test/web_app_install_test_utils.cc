@@ -42,7 +42,7 @@ void WaitUntilReady(WebAppProvider* provider) {
 
 void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableDefaultApps);
+      switches::kDisablePreinstalledApps);
   TestWebAppProvider* provider = TestWebAppProvider::Get(profile);
   DCHECK(provider);
   provider->SetRunSubsystemStartupTasks(true);

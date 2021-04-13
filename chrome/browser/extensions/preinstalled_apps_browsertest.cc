@@ -14,12 +14,12 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
+#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
-#include "chrome/browser/web_applications/external_web_app_manager.h"
-#include "chrome/browser/web_applications/external_web_app_utils.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -46,7 +46,7 @@ constexpr const char kTestAppConfig[] =
          "uninstall_and_replace": ["kbmnembihfiondgfjekmnmcbddelicoi"]
        })";
 
-base::FilePath GetTestDefaultAppsDir() {
+base::FilePath GetTestPreinstalledAppsDir() {
   base::FilePath path;
   CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
   path = path.AppendASCII("extensions/test_default_apps");
@@ -55,21 +55,23 @@ base::FilePath GetTestDefaultAppsDir() {
 
 }  // namespace
 
-class DefaultAppsBrowserTest : public ExtensionBrowserTest {
+class PreinstalledAppsBrowserTest : public ExtensionBrowserTest {
  public:
-  DefaultAppsBrowserTest()
-      : default_apps_(chrome::DIR_DEFAULT_APPS, GetTestDefaultAppsDir()) {}
-  DefaultAppsBrowserTest(const DefaultAppsBrowserTest&) = delete;
-  DefaultAppsBrowserTest& operator=(const DefaultAppsBrowserTest&) = delete;
-  ~DefaultAppsBrowserTest() override = default;
+  PreinstalledAppsBrowserTest()
+      : preinstalled_apps_(chrome::DIR_DEFAULT_APPS,
+                           GetTestPreinstalledAppsDir()) {}
+  PreinstalledAppsBrowserTest(const PreinstalledAppsBrowserTest&) = delete;
+  PreinstalledAppsBrowserTest& operator=(const PreinstalledAppsBrowserTest&) =
+      delete;
+  ~PreinstalledAppsBrowserTest() override = default;
 
   // Note: This is different than SetUpCommandLine();
   // SetUpDefaultCommandLine() is called second (surprisingly), so removing
-  // the disable default apps switch in SetUpCommandLine is insufficient.
+  // the disable pre-installed apps switch in SetUpCommandLine is insufficient.
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     ExtensionBrowserTest::SetUpDefaultCommandLine(command_line);
-    // We rely on default apps being present for these tests.
-    command_line->RemoveSwitch(::switches::kDisableDefaultApps);
+    // We rely on pre-installed apps being present for these tests.
+    command_line->RemoveSwitch(::switches::kDisablePreinstalledApps);
 
     if (ShouldEnableWebAppMigration()) {
       feature_list_.InitAndEnableFeature(
@@ -115,42 +117,43 @@ class DefaultAppsBrowserTest : public ExtensionBrowserTest {
   ExtensionRegistry* registry() { return ExtensionRegistry::Get(profile()); }
 
  private:
-  base::ScopedPathOverride default_apps_;
+  base::ScopedPathOverride preinstalled_apps_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-class DefaultAppsMigrationBrowserTest : public DefaultAppsBrowserTest {
+class PreinstalledAppsMigrationBrowserTest
+    : public PreinstalledAppsBrowserTest {
  public:
-  DefaultAppsMigrationBrowserTest()
+  PreinstalledAppsMigrationBrowserTest()
       : test_web_app_provider_creator_(base::BindRepeating(
-            &DefaultAppsMigrationBrowserTest::CreateTestWebAppProvider,
+            &PreinstalledAppsMigrationBrowserTest::CreateTestWebAppProvider,
             base::Unretained(this))) {
     // Skip migration on startup because we override the configs used, and need
     // to do that a little later (because we need the embedded test server up
     // and running).
-    web_app::ExternalWebAppManager::SkipStartupForTesting();
-    SetDefaultAppIdForTesting(kDefaultInstalledId);
+    web_app::PreinstalledWebAppManager::SkipStartupForTesting();
+    SetPreinstalledAppIdForTesting(kDefaultInstalledId);
   }
-  DefaultAppsMigrationBrowserTest(const DefaultAppsMigrationBrowserTest&) =
-      delete;
-  DefaultAppsMigrationBrowserTest& operator=(
-      const DefaultAppsMigrationBrowserTest&) = delete;
-  ~DefaultAppsMigrationBrowserTest() override = default;
+  PreinstalledAppsMigrationBrowserTest(
+      const PreinstalledAppsMigrationBrowserTest&) = delete;
+  PreinstalledAppsMigrationBrowserTest& operator=(
+      const PreinstalledAppsMigrationBrowserTest&) = delete;
+  ~PreinstalledAppsMigrationBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    DefaultAppsBrowserTest::SetUpOnMainThread();
-    web_app::ExternalWebAppManager::
+    PreinstalledAppsBrowserTest::SetUpOnMainThread();
+    web_app::PreinstalledWebAppManager::
         BypassOfflineManifestRequirementForTesting();
     ASSERT_TRUE(embedded_test_server()->Start());
 
     app_configs_.push_back(*base::JSONReader::Read(
         base::StringPrintf(kTestAppConfig, GetAppUrl().spec().c_str())));
-    web_app::ExternalWebAppManager::SetConfigsForTesting(&app_configs_);
+    web_app::PreinstalledWebAppManager::SetConfigsForTesting(&app_configs_);
   }
 
   void TearDownOnMainThread() override {
-    web_app::ExternalWebAppManager::SetConfigsForTesting(nullptr);
-    DefaultAppsBrowserTest::TearDownOnMainThread();
+    web_app::PreinstalledWebAppManager::SetConfigsForTesting(nullptr);
+    PreinstalledAppsBrowserTest::TearDownOnMainThread();
   }
 
   bool ShouldEnableWebAppMigration() override {
@@ -174,9 +177,9 @@ class DefaultAppsMigrationBrowserTest : public DefaultAppsBrowserTest {
     return enable_feature;
   }
 
-  // We override this to also wait for the ExternalWebAppManager.
+  // We override this to also wait for the PreinstalledWebAppManager.
   void WaitForSystemReady() override {
-    DefaultAppsBrowserTest::WaitForSystemReady();
+    PreinstalledAppsBrowserTest::WaitForSystemReady();
 
     // For web app migration tests, we want to set up extension app shortcut
     // locations to test that they are preserved.
@@ -189,8 +192,9 @@ class DefaultAppsMigrationBrowserTest : public DefaultAppsBrowserTest {
     }
 
     {
-      web_app::ExternalWebAppManager& web_app_manager =
-          web_app::WebAppProvider::Get(profile())->external_web_app_manager();
+      web_app::PreinstalledWebAppManager& web_app_manager =
+          web_app::WebAppProvider::Get(profile())
+              ->preinstalled_web_app_manager();
       base::RunLoop run_loop;
       auto quit = [this, quit_closure = run_loop.QuitClosure()](
                       std::map<GURL, web_app::PendingAppManager::InstallResult>
@@ -210,14 +214,14 @@ class DefaultAppsMigrationBrowserTest : public DefaultAppsBrowserTest {
     return embedded_test_server()->GetURL("/web_apps/basic.html");
   }
 
-  // Returns true if the default app was migrated to a web app, according to
-  // prefs.
+  // Returns true if the pre-installed app was migrated to a web app, according
+  // to prefs.
   bool WasMigratedToWebApp() {
     return web_app::WasAppMigratedToWebApp(profile(), kDefaultInstalledId);
   }
 
   // Returns true if the web app was installed, according to the result
-  // from the ExternalWebAppManager.
+  // from the PreinstalledWebAppManager.
   bool WasWebAppInstalledInThisRun() {
     auto iter = install_results_.find(GetAppUrl());
     return iter != install_results_.end() &&
@@ -258,14 +262,14 @@ class DefaultAppsMigrationBrowserTest : public DefaultAppsBrowserTest {
   std::map<GURL, web_app::PendingAppManager::InstallResult> install_results_;
 };
 
-class DefaultAppsMigrationEnabledBrowserTest
-    : public DefaultAppsMigrationBrowserTest {
+class PreinstalledAppsMigrationEnabledBrowserTest
+    : public PreinstalledAppsMigrationBrowserTest {
  public:
   bool ShouldEnableWebAppMigration() override { return true; }
 };
 
-class DefaultAppsMigrationEnabledThenRolledBackBrowserTest
-    : public DefaultAppsMigrationBrowserTest {
+class PreinstalledAppsMigrationEnabledThenRolledBackBrowserTest
+    : public PreinstalledAppsMigrationBrowserTest {
  public:
   bool ShouldEnableWebAppMigration() override {
     // Simulate the switch going back and forth between states.
@@ -286,22 +290,23 @@ class DefaultAppsMigrationEnabledThenRolledBackBrowserTest
 // Default apps are handled differently on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Install default apps, then uninstall one. It should not return on next run.
-IN_PROC_BROWSER_TEST_F(DefaultAppsBrowserTest, PRE_TestUninstall) {
+// Install pre-installed apps, then uninstall one. It should not return on next
+// run.
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsBrowserTest, PRE_TestUninstall) {
   WaitForSystemReady();
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 
   UninstallExtension(kDefaultInstalledId);
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
-IN_PROC_BROWSER_TEST_F(DefaultAppsBrowserTest, TestUninstall) {
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsBrowserTest, TestUninstall) {
   WaitForSystemReady();
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 
 // A fun back-and-forth with enabling-and-disabling the web app migration
 // feature. This is designed to exercise the flow needed in case of a rollback.
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
                        PRE_PRE_PRE_PRE_TestRollbackCompatibility) {
   // Initially, the migration feature is disabled, and the extension app should
   // be installed.
@@ -312,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   EXPECT_FALSE(IsWebAppCurrentlyInstalled());
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
                        PRE_PRE_PRE_TestRollbackCompatibility) {
   // Next, the feature is enabled. The web app should be installed, and the
   // extension app uninstalled.
@@ -331,12 +336,12 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   EXPECT_FALSE(options->add_to_quick_launch_bar);
 
   // Subtle: The uninstallation happens extra-asynchronously (even after it's
-  // reported as happening through the ExternalWebAppManager).
+  // reported as happening through the PreinstalledWebAppManager).
   ASSERT_TRUE(observer.WaitForExtensionUninstalled());
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
                        PRE_PRE_TestRollbackCompatibility) {
   // Now, the feature is disabled again (simulating an experiment rollback).
   // The extension app should be re-installed.
@@ -347,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   EXPECT_FALSE(IsWebAppCurrentlyInstalled());
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
                        PRE_TestRollbackCompatibility) {
   // Finally, re-enable the feature (simulating us fixing the glitch).
   // The extension app should be re-uninstalled.
@@ -366,12 +371,12 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   EXPECT_FALSE(options->add_to_quick_launch_bar);
 
   // Subtle: The uninstallation happens extra-asynchronously (even after it's
-  // reported as happening through the ExternalWebAppManager).
+  // reported as happening through the PreinstalledWebAppManager).
   ASSERT_TRUE(observer.WaitForExtensionUninstalled());
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
                        TestRollbackCompatibility) {
   // Web app should stay installed and extension stay uninstalled on second
   // launch.
@@ -387,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
                        PRE_PRE_TestExtensionWasAlreadyUninstalled) {
   // To start, the feature is disabled. Wait for the extension to be added,
   // and then uninstall it.
@@ -400,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   UninstallExtension(kDefaultInstalledId);
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
                        PRE_TestExtensionWasAlreadyUninstalled) {
   // Now, the feature is enabled. But since the extension was uninstalled, it
   // should not be migrated (or marked as migrated in prefs).
@@ -412,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
                        TestExtensionWasAlreadyUninstalled) {
   // Web app should stay uninstalled on second launch.
   WaitForSystemReady();
@@ -421,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationEnabledBrowserTest,
                        PRE_TestAppInstalled) {
   // Migration feature enabled on first launch. Web app should be installed
   WaitForSystemReady();
@@ -432,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledBrowserTest,
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationEnabledBrowserTest,
                        TestAppInstalled) {
   // Web app should stay installed on second launch.
   WaitForSystemReady();
@@ -441,8 +446,9 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledBrowserTest,
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledThenRolledBackBrowserTest,
-                       PRE_TestAppInstalled) {
+IN_PROC_BROWSER_TEST_F(
+    PreinstalledAppsMigrationEnabledThenRolledBackBrowserTest,
+    PRE_TestAppInstalled) {
   // Migration feature enabled on first launch. Web app should be installed
   WaitForSystemReady();
   EXPECT_TRUE(WasMigratedToWebApp());
@@ -452,8 +458,9 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledThenRolledBackBrowserTest,
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledThenRolledBackBrowserTest,
-                       TestAppInstalled) {
+IN_PROC_BROWSER_TEST_F(
+    PreinstalledAppsMigrationEnabledThenRolledBackBrowserTest,
+    TestAppInstalled) {
   // Extension app should be installed on second launch.
   WaitForSystemReady();
   EXPECT_FALSE(IsWebAppCurrentlyInstalled());

@@ -20,11 +20,11 @@
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
-#include "chrome/browser/web_applications/external_web_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/pending_app_manager_impl.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_file_handler_manager.h"
@@ -189,7 +189,8 @@ void WebAppProvider::CreateCommonSubsystems(Profile* profile) {
   install_manager_ = std::make_unique<WebAppInstallManager>(profile);
   manifest_update_manager_ = std::make_unique<ManifestUpdateManager>();
   pending_app_manager_ = std::make_unique<PendingAppManagerImpl>(profile);
-  external_web_app_manager_ = std::make_unique<ExternalWebAppManager>(profile);
+  preinstalled_web_app_manager_ =
+      std::make_unique<PreinstalledWebAppManager>(profile);
   system_web_app_manager_ = std::make_unique<SystemWebAppManager>(profile);
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
 }
@@ -275,7 +276,7 @@ void WebAppProvider::ConnectSubsystems() {
   pending_app_manager_->SetSubsystems(
       registrar_.get(), os_integration_manager_.get(), ui_manager_.get(),
       install_finalizer_.get(), install_manager_.get());
-  external_web_app_manager_->SetSubsystems(pending_app_manager_.get());
+  preinstalled_web_app_manager_->SetSubsystems(pending_app_manager_.get());
   system_web_app_manager_->SetSubsystems(
       pending_app_manager_.get(), registrar_.get(), registry_controller_.get(),
       ui_manager_.get(), os_integration_manager_.get(),
@@ -306,7 +307,7 @@ void WebAppProvider::OnRegistryControllerReady() {
   install_finalizer_->Start();
   icon_manager_->Start();
   install_manager_->Start();
-  external_web_app_manager_->Start();
+  preinstalled_web_app_manager_->Start();
   web_app_policy_manager_->Start();
   system_web_app_manager_->Start();
   manifest_update_manager_->Start();
@@ -327,7 +328,7 @@ void WebAppProvider::CheckIsConnected() const {
 void WebAppProvider::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   ExternallyInstalledWebAppPrefs::RegisterProfilePrefs(registry);
-  ExternalWebAppManager::RegisterProfilePrefs(registry);
+  PreinstalledWebAppManager::RegisterProfilePrefs(registry);
   WebAppPolicyManager::RegisterProfilePrefs(registry);
   SystemWebAppManager::RegisterProfilePrefs(registry);
   WebAppPrefsUtilsRegisterProfilePrefs(registry);

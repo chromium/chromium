@@ -27,7 +27,7 @@ const char kChildAccountStatusKnown[] = "child_account_status_known";
 // "noinstall" to disable them.  This property is usually set in the
 // master_preferences and copied into the profile preferences on first run.
 // Defaults apps are installed only when creating a new profile.
-const char kDefaultApps[] = "default_apps";
+const char kPreinstalledApps[] = "default_apps";
 
 // Disable SafeBrowsing checks for files coming from trusted URLs when false.
 const char kSafeBrowsingForTrustedSourcesEnabled[] =
@@ -460,7 +460,7 @@ const char kNetworkPredictionOptions[] = "net.network_prediction_options";
 // the profile is opened, the process will continue from where it left off.
 //
 // See possible values in external_provider_impl.cc.
-const char kDefaultAppsInstallState[] = "default_apps_install_state";
+const char kPreinstalledAppsInstallState[] = "default_apps_install_state";
 
 // A boolean pref set to true if the Chrome Web Store icons should be hidden
 // from the New Tab Page and app launcher.
@@ -1977,7 +1977,8 @@ const char kWebAppsLastPreinstallSynchronizeVersion[] =
     "web_apps.last_preinstall_synchronize_version";
 
 // A list of all apps that have been migrated to web apps.
-const char kWebAppsMigratedDefaultApps[] = "web_apps.migrated_default_apps";
+const char kWebAppsMigratedPreinstalledApps[] =
+    "web_apps.migrated_default_apps";
 
 // A list of migrated features for migrating default chrome apps.
 const char kWebAppsDidMigrateDefaultChromeApps[] =

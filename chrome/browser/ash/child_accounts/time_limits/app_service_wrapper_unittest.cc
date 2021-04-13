@@ -99,7 +99,7 @@ class AppServiceWrapperTest : public ::testing::Test {
     testing::Test::SetUp();
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableDefaultApps);
+        switches::kDisablePreinstalledApps);
 
     extensions::TestExtensionSystem* extension_system(
         static_cast<extensions::TestExtensionSystem*>(

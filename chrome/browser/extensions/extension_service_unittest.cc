@@ -48,7 +48,6 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/default_apps.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -70,6 +69,7 @@
 #include "chrome/browser/extensions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/plugin_manager.h"
+#include "chrome/browser/extensions/preinstalled_apps.h"
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -80,7 +80,7 @@
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/global_error/global_error_waiter.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
+#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -1929,8 +1929,8 @@ TEST_F(ExtensionServiceTest, UpdateIncognitoMode) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // This tests that the granted permissions preferences are correctly set for
-// default apps.
-TEST_F(ExtensionServiceTest, DefaultAppsGrantedPermissions) {
+// pre-installed apps.
+TEST_F(ExtensionServiceTest, PreinstalledAppsGrantedPermissions) {
   InitializeEmptyExtensionService();
   base::FilePath path = data_dir().AppendASCII("permissions");
 
@@ -4557,15 +4557,15 @@ TEST_F(ExtensionServiceTest, ExternalExtensionRemainsDisabledIfIgnored) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// This tests if default apps are installed correctly.
-TEST_F(ExtensionServiceTest, DefaultAppsInstall) {
+// This tests if pre-installed apps are installed correctly.
+TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {
   InitializeEmptyExtensionService();
 
   {
-    // Initializing the ExtensionService will have set the default app
+    // Initializing the ExtensionService will have set the pre-installed app
     // state; reset it for the sake of testing.
-    profile()->GetPrefs()->SetInteger(prefs::kDefaultAppsInstallState,
-                                      default_apps::kUnknown);
+    profile()->GetPrefs()->SetInteger(prefs::kPreinstalledAppsInstallState,
+                                      preinstalled_apps::kUnknown);
     std::string json_data =
         "{"
         "  \"ldnnhddmnhbkjipkidpdiheffobcpfmf\" : {"
@@ -4574,7 +4574,7 @@ TEST_F(ExtensionServiceTest, DefaultAppsInstall) {
         "    \"is_bookmark_app\": false"
         "  }"
         "}";
-    default_apps::Provider* provider = new default_apps::Provider(
+    preinstalled_apps::Provider* provider = new preinstalled_apps::Provider(
         profile(), service(), new ExternalTestingLoader(json_data, data_dir()),
         ManifestLocation::kInternal, ManifestLocation::kInvalidLocation,
         Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT);
@@ -5876,7 +5876,7 @@ TEST_F(ExtensionServiceTest, ExternalPrefProvider) {
 
     {
       base::AutoReset<bool> testing_scope =
-          web_app::SetExternalAppInstallFeatureAlwaysEnabledForTesting();
+          web_app::SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
       EXPECT_EQ(0, visitor.Visit(json_data));
       visitor.provider().HasExtension("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }

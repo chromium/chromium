@@ -33,7 +33,7 @@ using DemoModeApp = DemoSessionMetricsRecorder::DemoModeApp;
 // How often to sample.
 constexpr auto kSamplePeriod = base::TimeDelta::FromSeconds(1);
 
-// Redefining chromeos::default_web_apps::kHelpAppId as ash can't depend on
+// Redefining chromeos::preinstalled_web_apps::kHelpAppId as ash can't depend on
 // chrome.
 constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 

@@ -18041,8 +18041,8 @@ regressions. -->
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
     Records how many preinstalled web app config files failed to parse as valid
-    JSON with valid fields. See external_web_app_utils.cc ParseConfig(). This is
-    recorded at start up.
+    JSON with valid fields. See preinstalled_web_app_utils.cc ParseConfig().
+    This is recorded at start up.
   </summary>
 </histogram>
 

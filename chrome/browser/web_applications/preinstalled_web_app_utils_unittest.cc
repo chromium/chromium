@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/external_web_app_utils.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,10 +21,10 @@
 
 namespace web_app {
 
-class ExternalWebAppUtilsTest : public testing::Test {
+class PreinstalledWebAppUtilsTest : public testing::Test {
  public:
-  ExternalWebAppUtilsTest() = default;
-  ~ExternalWebAppUtilsTest() override = default;
+  PreinstalledWebAppUtilsTest() = default;
+  ~PreinstalledWebAppUtilsTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -75,7 +76,7 @@ class ExternalWebAppUtilsTest : public testing::Test {
   std::unique_ptr<TestFileUtils> file_utils_;
 };
 
-// ParseConfig() is also tested by ExternalWebAppManagerTest.
+// ParseConfig() is also tested by PreinstalledWebAppManagerTest.
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -91,22 +92,22 @@ using IsArcSupported = bool;
 
 }  // namespace
 
-class ExternalWebAppUtilsTabletTest
-    : public ExternalWebAppUtilsTest,
+class PreinstalledWebAppUtilsTabletTest
+    : public PreinstalledWebAppUtilsTest,
       public ::testing::WithParamInterface<IsTablet> {
  public:
-  ExternalWebAppUtilsTabletTest() {
+  PreinstalledWebAppUtilsTabletTest() {
     if (GetParam()) {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
           chromeos::switches::kEnableTabletFormFactor);
     }
   }
-  ~ExternalWebAppUtilsTabletTest() override = default;
+  ~PreinstalledWebAppUtilsTabletTest() override = default;
 
   bool is_tablet() const { return GetParam(); }
 };
 
-TEST_P(ExternalWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
+TEST_P(PreinstalledWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
   base::Optional<ExternalInstallOptions> disable_true_options = ParseConfig(R"(
     {
       "app_url": "https://test.org",
@@ -129,26 +130,26 @@ TEST_P(ExternalWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         ExternalWebAppUtilsTabletTest,
+                         PreinstalledWebAppUtilsTabletTest,
                          ::testing::Values(true, false),
                          BoolParamToString);
 
-class ExternalWebAppUtilsArcTest
-    : public ExternalWebAppUtilsTest,
+class PreinstalledWebAppUtilsArcTest
+    : public PreinstalledWebAppUtilsTest,
       public ::testing::WithParamInterface<IsArcSupported> {
  public:
-  ExternalWebAppUtilsArcTest() {
+  PreinstalledWebAppUtilsArcTest() {
     if (GetParam()) {
       base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
           chromeos::switches::kArcAvailability, "officially-supported");
     }
   }
-  ~ExternalWebAppUtilsArcTest() override = default;
+  ~PreinstalledWebAppUtilsArcTest() override = default;
 
   bool is_arc_supported() const { return GetParam(); }
 };
 
-TEST_P(ExternalWebAppUtilsArcTest, DisableIfArcSupported) {
+TEST_P(PreinstalledWebAppUtilsArcTest, DisableIfArcSupported) {
   base::Optional<ExternalInstallOptions> disable_true_options = ParseConfig(R"(
     {
       "app_url": "https://test.org",
@@ -171,7 +172,7 @@ TEST_P(ExternalWebAppUtilsArcTest, DisableIfArcSupported) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         ExternalWebAppUtilsArcTest,
+                         PreinstalledWebAppUtilsArcTest,
                          ::testing::Values(true, false),
                          BoolParamToString);
 
@@ -183,7 +184,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 #else
 #define MAYBE_OfflineManifestValid OfflineManifestValid
 #endif
-TEST_F(ExternalWebAppUtilsTest, MAYBE_OfflineManifestValid) {
+TEST_F(PreinstalledWebAppUtilsTest, MAYBE_OfflineManifestValid) {
   std::unique_ptr<WebApplicationInfo> app_info = ParseOfflineManifest(R"(
     {
       "name": "Test App",
@@ -206,7 +207,7 @@ TEST_F(ExternalWebAppUtilsTest, MAYBE_OfflineManifestValid) {
   EXPECT_EQ(app_info->theme_color, SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
 }
 
-TEST_F(ExternalWebAppUtilsTest, OfflineManifestName) {
+TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestName) {
   EXPECT_FALSE(ParseOfflineManifest(R"(
     {
       "start_url": "https://test.org/start.html",
@@ -237,7 +238,7 @@ TEST_F(ExternalWebAppUtilsTest, OfflineManifestName) {
   )")) << "name is non-empty";
 }
 
-TEST_F(ExternalWebAppUtilsTest, OfflineManifestStartUrl) {
+TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestStartUrl) {
   EXPECT_FALSE(ParseOfflineManifest(R"(
     {
       "name": "Test App",
@@ -268,7 +269,7 @@ TEST_F(ExternalWebAppUtilsTest, OfflineManifestStartUrl) {
   )")) << "start_url is within scope";
 }
 
-TEST_F(ExternalWebAppUtilsTest, OfflineManifestScope) {
+TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestScope) {
   EXPECT_FALSE(ParseOfflineManifest(R"(
     {
       "name": "Test App",
@@ -295,7 +296,7 @@ TEST_F(ExternalWebAppUtilsTest, OfflineManifestScope) {
 #else
 #define MAYBE_OfflineManifestDisplay OfflineManifestDisplay
 #endif
-TEST_F(ExternalWebAppUtilsTest, MAYBE_OfflineManifestDisplay) {
+TEST_F(PreinstalledWebAppUtilsTest, MAYBE_OfflineManifestDisplay) {
   EXPECT_FALSE(ParseOfflineManifest(R"(
     {
       "name": "Test App",
@@ -353,7 +354,7 @@ TEST_F(ExternalWebAppUtilsTest, MAYBE_OfflineManifestDisplay) {
   )")) << "display can be fullscreen";
 }
 
-TEST_F(ExternalWebAppUtilsTest, OfflineManifestIconAnyPngs) {
+TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestIconAnyPngs) {
   EXPECT_FALSE(ParseOfflineManifest(R"(
     {
       "name": "Test App",
@@ -408,7 +409,7 @@ TEST_F(ExternalWebAppUtilsTest, OfflineManifestIconAnyPngs) {
   )")) << "icon_any_pngs is a PNG";
 }
 
-TEST_F(ExternalWebAppUtilsTest, OfflineManifestThemeColorArgbHex) {
+TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestThemeColorArgbHex) {
   EXPECT_FALSE(ParseOfflineManifest(R"(
     {
       "name": "Test App",
@@ -443,7 +444,7 @@ TEST_F(ExternalWebAppUtilsTest, OfflineManifestThemeColorArgbHex) {
   )")) << "theme_color_argb_hex is valid";
 }
 
-TEST_F(ExternalWebAppUtilsTest, ForceReinstallForMilestone) {
+TEST_F(PreinstalledWebAppUtilsTest, ForceReinstallForMilestone) {
   base::Optional<ExternalInstallOptions> non_number = ParseConfig(R"(
     {
       "app_url": "https://test.org",
@@ -466,7 +467,7 @@ TEST_F(ExternalWebAppUtilsTest, ForceReinstallForMilestone) {
   EXPECT_EQ(89, number->force_reinstall_for_milestone);
 }
 
-TEST_F(ExternalWebAppUtilsTest, IsReinstallPastMilestoneNeeded) {
+TEST_F(PreinstalledWebAppUtilsTest, IsReinstallPastMilestoneNeeded) {
   // Arguments: last_preinstall_synchronize_milestone, current_milestone,
   // force_reinstall_for_milestone.
   EXPECT_FALSE(IsReinstallPastMilestoneNeeded("87", "87", 89));
@@ -490,7 +491,7 @@ TEST_F(ExternalWebAppUtilsTest, IsReinstallPastMilestoneNeeded) {
   EXPECT_FALSE(IsReinstallPastMilestoneNeeded("error", "error", 0));
 }
 
-TEST_F(ExternalWebAppUtilsTest, OemInstalled) {
+TEST_F(PreinstalledWebAppUtilsTest, OemInstalled) {
   base::Optional<ExternalInstallOptions> non_bool = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",

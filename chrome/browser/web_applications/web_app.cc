@@ -76,7 +76,7 @@ bool WebApp::IsSynced() const {
   return sources_[Source::kSync];
 }
 
-bool WebApp::IsDefaultApp() const {
+bool WebApp::IsPreinstalledApp() const {
   return sources_[Source::kDefault];
 }
 

@@ -16,10 +16,6 @@ source_set("web_applications") {
     "daily_metrics_helper.cc",
     "daily_metrics_helper.h",
     "extension_status_utils.h",
-    "external_web_app_manager.cc",
-    "external_web_app_manager.h",
-    "external_web_app_utils.cc",
-    "external_web_app_utils.h",
     "file_utils_wrapper.cc",
     "file_utils_wrapper.h",
     "manifest_update_manager.cc",
@@ -35,6 +31,10 @@ source_set("web_applications") {
     "policy/web_app_policy_manager.cc",
     "policy/web_app_policy_manager.h",
     "policy/web_app_policy_manager_observer.h",
+    "preinstalled_web_app_manager.cc",
+    "preinstalled_web_app_manager.h",
+    "preinstalled_web_app_utils.cc",
+    "preinstalled_web_app_utils.h",
     "system_web_apps/system_web_app_background_task.cc",
     "system_web_apps/system_web_app_background_task.h",
     "system_web_apps/system_web_app_manager.cc",
@@ -226,10 +226,10 @@ source_set("web_applications_unit_tests") {
 
   sources = [
     "daily_metrics_helper_unittest.cc",
-    "external_web_app_manager_unittest.cc",
-    "external_web_app_utils_unittest.cc",
     "manifest_update_task_unittest.cc",
     "pending_app_manager_impl_unittest.cc",
+    "preinstalled_web_app_manager_unittest.cc",
+    "preinstalled_web_app_utils_unittest.cc",
     "system_web_apps/test/system_web_app_manager_unittest.cc",
     "web_app_database_unittest.cc",
     "web_app_icon_manager_unittest.cc",
@@ -287,10 +287,10 @@ source_set("web_applications_browser_tests") {
   testonly = true
 
   sources = [
-    "external_web_app_manager_browsertest.cc",
-    "external_web_app_migration_browsertest.cc",
     "manifest_update_manager_browsertest.cc",
     "pending_app_manager_impl_browsertest.cc",
+    "preinstalled_web_app_manager_browsertest.cc",
+    "preinstalled_web_app_migration_browsertest.cc",
     "preinstalled_web_apps_browsertest.cc",
     "system_web_apps/test/system_web_app_manager_browsertest.cc",
     "web_app_audio_focus_browsertest.cc",

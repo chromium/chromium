@@ -238,7 +238,7 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
   void SetUp() override {
     AppServiceAppModelBuilderTest::SetUp();
 
-    default_apps_ = {"Hosted App", "Packaged App 1", "Packaged App 2"};
+    preinstalled_apps_ = {"Hosted App", "Packaged App 1", "Packaged App 2"};
     CreateBuilder();
   }
 
@@ -301,7 +301,7 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
                                                   &result));
   }
 
-  std::vector<std::string> default_apps_;
+  std::vector<std::string> preinstalled_apps_;
 };
 
 class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
@@ -417,7 +417,7 @@ TEST_F(BuiltInAppTest, BuildGuestMode) {
 TEST_F(ExtensionAppTest, Build) {
   // The apps list would have 3 extension apps in the profile.
   EXPECT_EQ(kDefaultAppCount, model_updater_->ItemCount());
-  EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
+  EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 }
 
 TEST_F(ExtensionAppTest, HideWebStore) {
@@ -469,11 +469,11 @@ TEST_F(ExtensionAppTest, DisableAndEnable) {
   service_->DisableExtension(kHostedAppId,
                              extensions::disable_reason::DISABLE_USER_ACTION);
   app_service_test_.FlushMojoCalls();
-  EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
+  EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 
   service_->EnableExtension(kHostedAppId);
   app_service_test_.FlushMojoCalls();
-  EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
+  EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 }
 
 TEST_F(ExtensionAppTest, Uninstall) {
@@ -502,7 +502,7 @@ TEST_F(ExtensionAppTest, UninstallTerminatedApp) {
 }
 
 TEST_F(ExtensionAppTest, Reinstall) {
-  EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
+  EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 
   // Install kPackagedApp1Id again should not create a new entry.
   extensions::InstallTracker* tracker =
@@ -512,7 +512,7 @@ TEST_F(ExtensionAppTest, Reinstall) {
   tracker->OnBeginExtensionInstall(params);
   app_service_test_.FlushMojoCalls();
 
-  EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
+  EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 }
 
 TEST_F(ExtensionAppTest, OrdinalPrefsChange) {
@@ -524,7 +524,7 @@ TEST_F(ExtensionAppTest, OrdinalPrefsChange) {
   app_service_test_.FlushMojoCalls();
   // Old behavior: This would be "Hosted App,Packaged App 1,Packaged App 2"
   // New behavior: Sorting order doesn't change.
-  EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
+  EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 
   syncer::StringOrdinal app1_ordinal =
       sorting->GetAppLaunchOrdinal(kPackagedApp1Id);
@@ -536,7 +536,7 @@ TEST_F(ExtensionAppTest, OrdinalPrefsChange) {
   app_service_test_.FlushMojoCalls();
   // Old behavior: This would be "Packaged App 1,Hosted App,Packaged App 2"
   // New behavior: Sorting order doesn't change.
-  EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
+  EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 }
 
 TEST_F(ExtensionAppTest, OnExtensionMoved) {
@@ -548,19 +548,19 @@ TEST_F(ExtensionAppTest, OnExtensionMoved) {
   app_service_test_.FlushMojoCalls();
   // Old behavior: This would be "Packaged App 1,Hosted App,Packaged App 2"
   // New behavior: Sorting order doesn't change.
-  EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
+  EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 
   sorting->OnExtensionMoved(kHostedAppId, kPackagedApp2Id, std::string());
   app_service_test_.FlushMojoCalls();
   // Old behavior: This would be restored to the default order.
   // New behavior: Sorting order still doesn't change.
-  EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
+  EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 
   sorting->OnExtensionMoved(kHostedAppId, std::string(), kPackagedApp1Id);
   app_service_test_.FlushMojoCalls();
   // Old behavior: This would be "Hosted App,Packaged App 1,Packaged App 2"
   // New behavior: Sorting order doesn't change.
-  EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
+  EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 }
 
 TEST_F(ExtensionAppTest, InvalidOrdinal) {

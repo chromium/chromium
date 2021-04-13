@@ -91,7 +91,7 @@ struct ExternalInstallOptions {
   std::vector<std::string> user_type_allowlist;
 
   // Which feature flag should be enabled to install this app. See
-  // chrome/browser/web_applications/components/external_app_install_features.h
+  // chrome/browser/web_applications/components/preinstalled_app_install_features.h
   // for available features to gate on.
   base::Optional<std::string> gate_on_feature;
 

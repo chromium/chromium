@@ -570,7 +570,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   EXPECT_EQ(user_display_mode, app->user_display_mode());
   EXPECT_EQ(is_locally_installed, app->is_locally_installed());
   EXPECT_TRUE(app->IsSynced());
-  EXPECT_FALSE(app->IsDefaultApp());
+  EXPECT_FALSE(app->IsPreinstalledApp());
 
   if (IsChromeOs()) {
     EXPECT_FALSE(app->chromeos_data()->show_in_launcher);

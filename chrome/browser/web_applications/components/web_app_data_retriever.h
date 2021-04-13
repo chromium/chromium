@@ -95,7 +95,7 @@ class WebAppDataRetriever : content::WebContentsObserver {
   void CallCallbackOnError();
   bool ShouldStopRetrieval() const;
 
-  std::unique_ptr<WebApplicationInfo> default_web_application_info_;
+  std::unique_ptr<WebApplicationInfo> preinstalled_web_application_info_;
   GetWebApplicationInfoCallback get_web_app_info_callback_;
 
   CheckInstallabilityCallback check_installability_callback_;

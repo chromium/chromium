@@ -26,7 +26,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
+#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -107,10 +107,11 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     service()->updater()->SetExtensionCacheForTesting(
         test_extension_cache_.get());
 
-    // Don't install default apps. Some of the default apps are downloaded from
-    // the webstore, ignoring the url we pass to kAppsGalleryUpdateURL, which
-    // would cause the external updates to never finish install.
-    profile_->GetPrefs()->SetString(prefs::kDefaultApps, "");
+    // Don't install pre-installed apps. Some of the pre-installed apps are
+    // downloaded from the webstore, ignoring the url we pass to
+    // kAppsGalleryUpdateURL, which would cause the external updates to never
+    // finish install.
+    profile_->GetPrefs()->SetString(prefs::kPreinstalledApps, "");
   }
 
   void InitServiceWithExternalProviders(
@@ -306,7 +307,7 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
   // App is not installed, we should not install if the flag is enabled.
   {
     base::AutoReset<bool> testing_scope =
-        web_app::SetExternalAppInstallFeatureAlwaysEnabledForTesting();
+        web_app::SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
     AwaitCheckForExternalUpdates();
     EXPECT_FALSE(registry()->GetInstalledExtension(kGoodApp.app_id));
   }
@@ -320,7 +321,7 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
   // App is now installed, we should not uninstall if the flag is enabled.
   {
     base::AutoReset<bool> testing_scope =
-        web_app::SetExternalAppInstallFeatureAlwaysEnabledForTesting();
+        web_app::SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
     AwaitCheckForExternalUpdates();
     EXPECT_TRUE(registry()->GetInstalledExtension(kGoodApp.app_id));
   }

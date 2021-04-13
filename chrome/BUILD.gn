@@ -1125,7 +1125,7 @@ if (is_win) {
     ]
 
     if (is_chrome_branded) {
-      deps += [ ":default_apps" ]
+      deps += [ ":preinstalled_apps" ]
     }
 
     ldflags = [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name" ]
@@ -1476,12 +1476,12 @@ group("extra_resources") {
 
 if (is_chrome_branded && !is_android) {
   if (!is_mac) {
-    _default_apps_target_type = "copy"
+    _preinstalled_apps_target_type = "copy"
   } else {
-    _default_apps_target_type = "bundle_data"
+    _preinstalled_apps_target_type = "bundle_data"
   }
 
-  target(_default_apps_target_type, "default_apps") {
+  target(_preinstalled_apps_target_type, "preinstalled_apps") {
     visibility = [ ":packed_resources" ]
     if (is_mac) {
       visibility += [
@@ -1524,7 +1524,7 @@ if (!is_android) {
     }
 
     if (is_chrome_branded && !is_mac) {
-      public_deps = [ ":default_apps" ]
+      public_deps = [ ":preinstalled_apps" ]
     }
   }
 }

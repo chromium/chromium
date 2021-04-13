@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/default_apps.h"
+#include "chrome/browser/extensions/preinstalled_apps.h"
 
 #include <stddef.h>
 
@@ -15,8 +15,8 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
-#include "chrome/browser/web_applications/external_web_app_utils.h"
+#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -28,15 +28,15 @@
 
 namespace {
 
-// Returns true if the app was a default app in Chrome 22
-bool IsOldDefaultApp(const std::string& extension_id) {
+// Returns true if the app was a pre-installed app in Chrome 22
+bool IsOldPreinstalledApp(const std::string& extension_id) {
   return extension_id == extension_misc::kGmailAppId ||
          extension_id == extension_misc::kYoutubeAppId;
 }
 
 bool IsLocaleSupported() {
-  // Don't bother installing default apps in locales where it is known that
-  // they don't work.
+  // Don't bother installing pre-installed apps in locales where it is known
+  // that they don't work.
   // TODO(rogerta): Do this check dynamically once the webstore can expose
   // an API. See http://crbug.com/101357
   const std::string& locale = g_browser_process->GetApplicationLocale();
@@ -54,10 +54,10 @@ base::LazyInstance<std::set<Profile*>>::Leaky g_perform_new_installation =
     LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
-namespace default_apps {
+namespace preinstalled_apps {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterIntegerPref(prefs::kDefaultAppsInstallState, kUnknown);
+  registry->RegisterIntegerPref(prefs::kPreinstalledAppsInstallState, kUnknown);
 }
 
 // static
@@ -66,52 +66,52 @@ bool Provider::DidPerformNewInstallationForProfile(Profile* profile) {
 }
 
 void Provider::InitProfileState() {
-  // We decide to install or not install default apps based on the following
-  // criteria, from highest priority to lowest priority:
+  // We decide to install or not install pre-installed apps based on the
+  // following criteria, from highest priority to lowest priority:
   //
-  // - If the locale is not compatible with the defaults, don't install them.
-  // - The kDefaultApps preferences value in the profile.  This value is
+  // - If the locale is not compatible with the pre-installed apps, don't
+  // install them.
+  // - The kPreinstalledApps preferences value in the profile.  This value is
   //   usually set in the master_preferences file.
   // - If they have already been installed, don't reinstall them.
 
-  default_apps_enabled_ =
+  preinstalled_apps_enabled_ =
       IsLocaleSupported() &&
-      profile_->GetPrefs()->GetString(prefs::kDefaultApps) == "install";
+      profile_->GetPrefs()->GetString(prefs::kPreinstalledApps) == "install";
   DCHECK(!perform_new_installation_);
 
-  InstallState state =
-      static_cast<InstallState>(profile_->GetPrefs()->GetInteger(
-          prefs::kDefaultAppsInstallState));
+  InstallState state = static_cast<InstallState>(
+      profile_->GetPrefs()->GetInteger(prefs::kPreinstalledAppsInstallState));
 
   base::Optional<InstallState> new_install_state;
 
   switch (state) {
     case kUnknown: {
-      // Default apps are only installed on profile creation or a new chrome
-      // download.
+      // Pre-installed apps are only installed on profile creation or a new
+      // chrome download.
       bool is_new_profile = profile_->WasCreatedByVersionOrLater(
           version_info::GetVersionNumber());
-      if (is_new_profile && default_apps_enabled_) {
-        new_install_state = kAlreadyInstalledDefaultApps;
+      if (is_new_profile && preinstalled_apps_enabled_) {
+        new_install_state = kAlreadyInstalledPreinstalledApps;
         perform_new_installation_ = true;
       } else {
-        new_install_state = kNeverInstallDefaultApps;
+        new_install_state = kNeverInstallPreinstalledApps;
       }
       break;
     }
 
-    // The old default apps were provided as external extensions and were
+    // The old pre-installed apps were provided as external extensions and were
     // installed everytime Chrome was run. Thus, changing the list of default
-    // apps affected all users. Migrate old default apps to new mechanism where
-    // they are installed only once as INTERNAL.
+    // apps affected all users. Migrate old pre-installed apps to new mechanism
+    // where they are installed only once as INTERNAL.
     // TODO(grv) : remove after Q1-2013.
-    case kProvideLegacyDefaultApps:
+    case kProvideLegacyPreinstalledApps:
       is_migration_ = true;
-      new_install_state = kAlreadyInstalledDefaultApps;
+      new_install_state = kAlreadyInstalledPreinstalledApps;
       break;
 
-    case kAlreadyInstalledDefaultApps:
-    case kNeverInstallDefaultApps:
+    case kAlreadyInstalledPreinstalledApps:
+    case kNeverInstallPreinstalledApps:
       break;
 
     default:
@@ -119,7 +119,7 @@ void Provider::InitProfileState() {
   }
 
   if (new_install_state) {
-    profile_->GetPrefs()->SetInteger(prefs::kDefaultAppsInstallState,
+    profile_->GetPrefs()->SetInteger(prefs::kPreinstalledAppsInstallState,
                                      *new_install_state);
   }
   if (perform_new_installation_)
@@ -146,9 +146,9 @@ Provider::Provider(Profile* profile,
 }
 
 void Provider::VisitRegisteredExtension() {
-  if (!default_apps_enabled_) {
-    // If default apps aren't enabled for the profile, we short-circuit the
-    // flow to load them from the file (which happens as a result of
+  if (!preinstalled_apps_enabled_) {
+    // If pre-installed apps aren't enabled for the profile, we short-circuit
+    // the flow to load them from the file (which happens as a result of
     // VisitRegisteredExtension()), and immediately set empty prefs.
     ExternalProviderImpl::SetPrefs(std::make_unique<base::DictionaryValue>());
     return;
@@ -158,17 +158,17 @@ void Provider::VisitRegisteredExtension() {
 }
 
 void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
-  DCHECK(default_apps_enabled_);
+  DCHECK(preinstalled_apps_enabled_);
 
   // First, check if this is for a migration from around 2013. Likely not.
   if (is_migration_) {
     DCHECK(!perform_new_installation_);
     std::set<std::string> keys_to_erase;
-    // Filter out the new default apps for migrating users, so that we don't
-    // randomly install them out of the blue.
-    // Two-pass to keep iterators nice and happy.
+    // Filter out the new pre-installed apps for migrating users, so that we
+    // don't randomly install them out of the blue. Two-pass to keep iterators
+    // nice and happy.
     for (const auto& entry : prefs->DictItems()) {
-      if (!IsOldDefaultApp(entry.first))
+      if (!IsOldPreinstalledApp(entry.first))
         keys_to_erase.insert(entry.first);
     }
     for (const auto& key : keys_to_erase)
@@ -188,7 +188,7 @@ void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
           pref.FindStringPath(kWebAppMigrationFlag);
       if (!web_app_flag)
         return false;  // Isn't migrating.
-      if (web_app::IsExternalAppInstallFeatureEnabled(*web_app_flag)) {
+      if (web_app::IsPreinstalledAppInstallFeatureEnabled(*web_app_flag)) {
         // The feature is still enabled; it's responsible for the behavior.
         return false;
       }
@@ -222,4 +222,4 @@ void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
   ExternalProviderImpl::SetPrefs(std::move(prefs));
 }
 
-}  // namespace default_apps
+}  // namespace preinstalled_apps

@@ -9,7 +9,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/external_web_app_manager.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -84,8 +84,8 @@ void WebAppInternalsPageHandlerImpl::GetPreinstalledWebAppDebugInfo(
     return;
   }
 
-  const web_app::ExternalWebAppManager::DebugInfo* debug_info =
-      provider->external_web_app_manager().debug_info();
+  const web_app::PreinstalledWebAppManager::DebugInfo* debug_info =
+      provider->preinstalled_web_app_manager().debug_info();
   if (!debug_info) {
     std::move(callback).Run({});
     return;

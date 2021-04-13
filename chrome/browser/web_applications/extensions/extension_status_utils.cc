@@ -5,8 +5,8 @@
 #include "chrome/browser/web_applications/extension_status_utils.h"
 
 #include "base/one_shot_event.h"
-#include "chrome/browser/extensions/default_apps.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/preinstalled_apps.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -15,7 +15,7 @@
 
 namespace {
 
-const char* g_default_app_for_testing = nullptr;
+const char* g_preinstalled_app_for_testing = nullptr;
 
 }  // namespace
 
@@ -58,16 +58,18 @@ void OnExtensionSystemReady(content::BrowserContext* context,
   ExtensionSystem::Get(context)->ready().Post(FROM_HERE, std::move(callback));
 }
 
-bool DidDefaultAppsPerformNewInstallation(Profile* profile) {
+bool DidPreinstalledAppsPerformNewInstallation(Profile* profile) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  return default_apps::Provider::DidPerformNewInstallationForProfile(profile);
+  return preinstalled_apps::Provider::DidPerformNewInstallationForProfile(
+      profile);
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-bool IsDefaultAppId(const std::string& app_id) {
-  if (g_default_app_for_testing && app_id == g_default_app_for_testing)
+bool IsPreinstalledAppId(const std::string& app_id) {
+  if (g_preinstalled_app_for_testing &&
+      app_id == g_preinstalled_app_for_testing)
     return true;
 
   return app_id == extension_misc::kGmailAppId ||
@@ -78,8 +80,8 @@ bool IsDefaultAppId(const std::string& app_id) {
          app_id == extension_misc::kYoutubeAppId;
 }
 
-void SetDefaultAppIdForTesting(const char* app_id) {
-  g_default_app_for_testing = app_id;
+void SetPreinstalledAppIdForTesting(const char* app_id) {
+  g_preinstalled_app_for_testing = app_id;
 }
 
 }  // namespace extensions

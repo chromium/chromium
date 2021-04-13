@@ -172,7 +172,7 @@ constexpr char kLaunchURL[] = "https://foo.example/";
 constexpr char kCrxAppPrefix[] = "_crx_";
 
 // Dummy app id is used to put at least one pin record to prevent initializing
-// pin model with default apps that can affect some tests.
+// pin model with preinstalled apps that can affect some tests.
 constexpr char kDummyAppId[] = "dummyappid_dummyappid_dummyappid";
 
 std::unique_ptr<KeyedService> BuildTestSyncService(
@@ -349,9 +349,9 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kUseFirstDisplayAsInternal);
-    // Prevent default apps from installing so these tests can control when they
-    // are installed.
-    command_line->AppendSwitch(switches::kDisableDefaultApps);
+    // Prevent preinstalled apps from installing so these tests can control when
+    // they are installed.
+    command_line->AppendSwitch(switches::kDisablePreinstalledApps);
 
     chromeos::DBusThreadManager::Initialize();
 
@@ -1382,21 +1382,21 @@ class ChromeLauncherControllerMultiProfileWithArcTest
   ~ChromeLauncherControllerMultiProfileWithArcTest() override = default;
 };
 
-TEST_F(ChromeLauncherControllerTest, DefaultApps) {
+TEST_F(ChromeLauncherControllerTest, PreinstalledApps) {
   InitLauncherController();
 
   // The model should only contain the browser shortcut item.
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
 
-  // Pinning the non-default app. It should appear at the end. No default app
-  // is currently installed.
+  // Pinning the non-preinstalled app. It should appear at the end. No
+  // preinstalled app is currently installed.
   extension_service_->AddExtension(extension1_.get());
   launcher_controller_->PinAppWithID(extension1_->id());
   EXPECT_EQ("Chrome, App1", GetPinnedAppStatus());
 
-  // Install default apps in reverse order, compared how they are declared.
+  // Install preinstalled apps in reverse order, compared how they are declared.
   // However pin positions should be in the order as they declared. Note,
-  // default apps appear on shelf between manually pinned App1.
+  // preinstalled apps appear on shelf between manually pinned App1.
 
   // Prefs are not yet synced. No default pin appears.
   AddWebApp(web_app::kYoutubeAppId);
@@ -1420,7 +1420,7 @@ TEST_F(ChromeLauncherControllerTest, DefaultApps) {
             GetPinnedAppStatus());
 }
 
-TEST_F(ChromeLauncherControllerSplitSettingsSyncTest, DefaultApps) {
+TEST_F(ChromeLauncherControllerSplitSettingsSyncTest, PreinstalledApps) {
   // Simulate a user who opted out of sync.
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile());
@@ -1429,7 +1429,7 @@ TEST_F(ChromeLauncherControllerSplitSettingsSyncTest, DefaultApps) {
   InitLauncherController();
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
 
-  // Simulate the default app loader installing some apps. Don't start the
+  // Simulate the preinstalled app loader installing some apps. Don't start the
   // pref sync service, because this user opted out of sync.
   AddWebApp(web_app::kYoutubeAppId);
   AddWebApp(web_app::kMessagesAppId);
@@ -1621,7 +1621,7 @@ TEST_F(ChromeLauncherControllerTest, MergePolicyAndUserPrefPinnedApps) {
 // Check that the restauration of launcher items is happening in the same order
 // as the user has pinned them (on another system) when they are synced reverse
 // order.
-TEST_F(ChromeLauncherControllerTest, RestoreDefaultAppsReverseOrder) {
+TEST_F(ChromeLauncherControllerTest, RestorePreinstalledAppsReverseOrder) {
   InitLauncherController();
 
   syncer::SyncChangeList sync_list;
@@ -1659,7 +1659,7 @@ TEST_F(ChromeLauncherControllerTest, RestoreDefaultAppsReverseOrder) {
 // Check that the restauration of launcher items is happening in the same order
 // as the user has pinned them (on another system) when they are synced random
 // order.
-TEST_F(ChromeLauncherControllerTest, RestoreDefaultAppsRandomOrder) {
+TEST_F(ChromeLauncherControllerTest, RestorePreinstalledAppsRandomOrder) {
   InitLauncherController();
 
   syncer::SyncChangeList sync_list;
@@ -1696,7 +1696,8 @@ TEST_F(ChromeLauncherControllerTest, RestoreDefaultAppsRandomOrder) {
 // Check that the restauration of launcher items is happening in the same order
 // as the user has pinned / moved them (on another system) when they are synced
 // random order - including the chrome icon.
-TEST_F(ChromeLauncherControllerTest, RestoreDefaultAppsRandomOrderChromeMoved) {
+TEST_F(ChromeLauncherControllerTest,
+       RestorePreinstalledAppsRandomOrderChromeMoved) {
   InitLauncherController();
 
   syncer::SyncChangeList sync_list;
@@ -1733,7 +1734,7 @@ TEST_F(ChromeLauncherControllerTest, RestoreDefaultAppsRandomOrderChromeMoved) {
 }
 
 // Check that syncing to a different state does the correct thing.
-TEST_F(ChromeLauncherControllerTest, RestoreDefaultAppsResyncOrder) {
+TEST_F(ChromeLauncherControllerTest, RestorePreinstalledAppsResyncOrder) {
   InitLauncherController();
 
   syncer::SyncChangeList sync_list0;

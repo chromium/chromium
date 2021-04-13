@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNAL_WEB_APP_UTILS_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNAL_WEB_APP_UTILS_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_UTILS_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_UTILS_H_
 
 #include <string>
 
@@ -57,8 +57,9 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
                                bool was_migrated);
 
 // Returns and sets whether the app indicated by `app_id` was unisntalled
-bool WasDefaultAppUninstalled(Profile* profile, const std::string& app_id);
-void MarkDefaultAppAsUninstalled(Profile* profile, const std::string& app_id);
+bool WasPreinstalledAppUninstalled(Profile* profile, const std::string& app_id);
+void MarkPreinstalledAppAsUninstalled(Profile* profile,
+                                      const std::string& app_id);
 
 // Returns and sets whether the migration was run for the feature.
 bool WasMigrationRun(Profile* profile, base::StringPiece feature_name);
@@ -68,4 +69,4 @@ void SetMigrationRun(Profile* profile,
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_EXTERNAL_WEB_APP_UTILS_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_UTILS_H_

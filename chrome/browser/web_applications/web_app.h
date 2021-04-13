@@ -195,7 +195,7 @@ class WebApp {
   bool HasOnlySource(Source::Type source) const;
 
   bool IsSynced() const;
-  bool IsDefaultApp() const;
+  bool IsPreinstalledApp() const;
   bool IsPolicyInstalledApp() const;
   bool IsSystemApp() const;
   bool CanUserUninstallExternalApp() const;

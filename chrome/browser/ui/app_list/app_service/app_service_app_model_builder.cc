@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
+#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "extensions/common/extension_features.h"

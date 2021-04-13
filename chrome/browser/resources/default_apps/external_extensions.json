@@ -2,8 +2,8 @@
 // the extension's id to its crx's path (relative to this file) and the version
 // of the extension contained in the crx.
 //
-// When an extension is added or removed here, the two lists 'default_apps_list'
-// and 'default_apps_list_linux_dest' in build/common.gypi must also be updated.
+// When an extension is added or removed here, the two lists 'preinstalled_apps_list'
+// and 'preinstalled_apps_list_linux_dest' in build/common.gypi must also be updated.
 {
   "blpcfgokakmgnkcojhhkbfbldkacnbeo" : {
     "external_crx": "youtube.crx",
