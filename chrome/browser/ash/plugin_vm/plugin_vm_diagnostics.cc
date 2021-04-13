@@ -81,7 +81,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     }
 
     {
-      EntryBuilder entry("Policy are configured correctly");
+      EntryBuilder entry("Policies are configured correctly");
       const std::string standard_top_error =
           "One or more policies are not configured correctly. Please contact "
           "your administrator";
