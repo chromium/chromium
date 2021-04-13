@@ -325,6 +325,16 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestRedirects) {
   StopWhenLoad();
 }
 
+// Tests partial response after a redirect.
+TEST_F(ResourceMultiBufferDataProviderTest, TestRedirectedPartialResponse) {
+  Initialize(kHttpUrl, 0);
+  Start();
+  PartialResponse(0, 2048, 32000);
+  Redirect(kHttpRedirect);
+  PartialResponse(2048, 4096, 32000);
+  StopWhenLoad();
+}
+
 TEST_F(ResourceMultiBufferDataProviderTest, TestSaveDataFRFRPreviewsState) {
   struct TestCase {
     std::string label;

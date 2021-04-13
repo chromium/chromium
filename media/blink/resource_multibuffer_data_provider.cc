@@ -564,7 +564,7 @@ bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
     return false;
   }
 
-  if (url_data_->length() == kPositionNotSpecified) {
+  if (url_data->length() == kPositionNotSpecified) {
     url_data->set_length(instance_size);
   }
 
