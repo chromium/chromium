@@ -234,11 +234,8 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
     case base::Value::Type::NONE:
       return v8::Null(isolate);
 
-    case base::Value::Type::BOOLEAN: {
-      bool val = false;
-      CHECK(value->GetAsBoolean(&val));
-      return v8::Boolean::New(isolate, val);
-    }
+    case base::Value::Type::BOOLEAN:
+      return v8::Boolean::New(isolate, value->GetBool());
 
     case base::Value::Type::INTEGER: {
       int val = 0;

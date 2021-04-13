@@ -1173,12 +1173,10 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
       break;
     }
     case base::Value::Type::BOOLEAN: {
-      bool bool_value = 0;
-      value->GetAsBoolean(&bool_value);
-          WriteAttribute(false,
-                         base::StringPrintf("%s=%s", name.c_str(),
-                                            (bool_value ? "true" : "false")),
-                         &line);
+      WriteAttribute(false,
+                     base::StringPrintf("%s=%s", name.c_str(),
+                                        (value->GetBool() ? "true" : "false")),
+                     &line);
       break;
     }
     case base::Value::Type::INTEGER: {

@@ -200,8 +200,7 @@ jvalue CoerceJavaScriptBooleanToJavaValue(JNIEnv* env,
                                           bool coerce_to_string,
                                           GinJavaBridgeError* error) {
   // See http://jdk6.java.net/plugin2/liveconnect/#JS_BOOLEAN_VALUES.
-  bool boolean_value;
-  value->GetAsBoolean(&boolean_value);
+  bool boolean_value = value->GetBool();
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeBoolean:
