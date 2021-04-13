@@ -146,18 +146,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
       NO;
   self.contentSuggestionsViewController.collectionView.scrollEnabled = NO;
 
-  // Overscroll action does not work well with content offset, so set this
-  // to never and internally offset the UI to account for safe area insets.
-  self.discoverFeedWrapperViewController.feedCollectionView
-      .contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-
-  self.overscrollActionsController = [[OverscrollActionsController alloc]
-      initWithScrollView:self.discoverFeedWrapperViewController
-                             .feedCollectionView];
-  [self.overscrollActionsController
-      setStyle:OverscrollStyle::NTP_NON_INCOGNITO];
-  self.overscrollActionsController.delegate = self.overscrollDelegate;
-  [self updateOverscrollActionsState];
+  [self configureOverscrollActionsController];
 
   self.view.backgroundColor = ntp_home::kNTPBackgroundColor();
 
@@ -473,6 +462,27 @@ const CGFloat kOffsetToPinOmnibox = 100;
 }
 
 #pragma mark - Private
+
+// Configures overscroll actions controller.
+- (void)configureOverscrollActionsController {
+  // Ensure the feed's scroll view exists to prevent crashing the overscroll
+  // controller.
+  if (!self.discoverFeedWrapperViewController.feedCollectionView) {
+    return;
+  }
+  // Overscroll action does not work well with content offset, so set this
+  // to never and internally offset the UI to account for safe area insets.
+  self.discoverFeedWrapperViewController.feedCollectionView
+      .contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+
+  self.overscrollActionsController = [[OverscrollActionsController alloc]
+      initWithScrollView:self.discoverFeedWrapperViewController
+                             .feedCollectionView];
+  [self.overscrollActionsController
+      setStyle:OverscrollStyle::NTP_NON_INCOGNITO];
+  self.overscrollActionsController.delegate = self.overscrollDelegate;
+  [self updateOverscrollActionsState];
+}
 
 // Enables or disables overscroll actions.
 - (void)updateOverscrollActionsState {

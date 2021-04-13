@@ -266,7 +266,8 @@
 
   // Offset to maintain Discover feed scroll position.
   CGFloat offset = 0;
-  if (IsDiscoverFeedEnabled() && self.contentSuggestionsEnabled) {
+  if (IsDiscoverFeedEnabled() &&
+      (!IsRefactoredNTP() || ![self isDiscoverFeedVisible])) {
     web::NavigationManager* navigationManager =
         self.webState->GetNavigationManager();
     web::NavigationItem* item = navigationManager->GetVisibleItem();
@@ -763,7 +764,8 @@
 // Creates, configures and returns a DiscoverFeed ViewController.
 - (UIViewController*)discoverFeed {
   if (!IsDiscoverFeedEnabled() || IsRefactoredNTP() ||
-      tests_hook::DisableContentSuggestions())
+      tests_hook::DisableContentSuggestions() ||
+      tests_hook::DisableDiscoverFeed())
     return nil;
 
   UIViewController* discoverFeed = ios::GetChromeBrowserProvider()
@@ -813,7 +815,8 @@
 // visibility logic lives in there.
 - (BOOL)isDiscoverFeedVisible {
   return self.contentSuggestionsEnabled &&
-         [self.contentSuggestionsExpanded value];
+         [self.contentSuggestionsExpanded value] &&
+         !tests_hook::DisableDiscoverFeed();
 }
 
 @end

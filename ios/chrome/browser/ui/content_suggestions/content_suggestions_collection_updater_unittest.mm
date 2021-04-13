@@ -40,7 +40,7 @@ TEST_F(ContentSuggestionsCollectionUpdaterTest, addEmptyItemToEmptySection) {
   suggestion.suggestionIdentifier = [[ContentSuggestionIdentifier alloc] init];
   suggestion.suggestionIdentifier.sectionInfo =
       [[ContentSuggestionsSectionInformation alloc]
-          initWithSectionID:ContentSuggestionsSectionArticles];
+          initWithSectionID:ContentSuggestionsSectionMostVisited];
   suggestion.suggestionIdentifier.sectionInfo.showIfEmpty = YES;
   suggestion.suggestionIdentifier.sectionInfo.emptyText = emptyString;
   [updater addSectionsForSectionInfoToModel:@[
@@ -77,7 +77,7 @@ TEST_F(ContentSuggestionsCollectionUpdaterTest,
   suggestion.suggestionIdentifier = [[ContentSuggestionIdentifier alloc] init];
   suggestion.suggestionIdentifier.sectionInfo =
       [[ContentSuggestionsSectionInformation alloc]
-          initWithSectionID:ContentSuggestionsSectionArticles];
+          initWithSectionID:ContentSuggestionsSectionMostVisited];
   suggestion.suggestionIdentifier.sectionInfo.showIfEmpty = YES;
   suggestion.suggestionIdentifier.sectionInfo.emptyText = nil;
   [updater addSectionsForSectionInfoToModel:@[
@@ -109,7 +109,7 @@ TEST_F(ContentSuggestionsCollectionUpdaterTest, addEmptyItemToSection) {
   suggestion.suggestionIdentifier = [[ContentSuggestionIdentifier alloc] init];
   suggestion.suggestionIdentifier.sectionInfo =
       [[ContentSuggestionsSectionInformation alloc]
-          initWithSectionID:ContentSuggestionsSectionArticles];
+          initWithSectionID:ContentSuggestionsSectionMostVisited];
   suggestion.suggestionIdentifier.sectionInfo.showIfEmpty = YES;
   suggestion.suggestionIdentifier.sectionInfo.emptyText = @"empty";
   [updater addSectionsForSectionInfoToModel:@[

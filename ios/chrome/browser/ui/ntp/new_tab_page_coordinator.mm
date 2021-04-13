@@ -13,6 +13,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/default_search_manager.h"
+#include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
@@ -556,7 +557,7 @@
 // YES if we're using the refactored NTP and the Discover Feed is visible.
 - (BOOL)isNTPRefactoredAndFeedVisible {
   return IsRefactoredNTP() && [self.discoverFeedExpanded value] &&
-         self.discoverFeedEnabled;
+         self.discoverFeedEnabled && !tests_hook::DisableDiscoverFeed();
 }
 
 @end

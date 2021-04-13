@@ -16,6 +16,9 @@ bool DisableAppGroupAccess() {
 bool DisableContentSuggestions() {
   return false;
 }
+bool DisableDiscoverFeed() {
+  return false;
+}
 bool DisableFirstRun() {
   return false;
 }

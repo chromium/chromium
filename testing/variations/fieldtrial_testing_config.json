@@ -5692,6 +5692,21 @@
             ]
         }
     ],
+    "RefactoredNTP": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RefactoredNTP"
+                    ]
+                }
+            ]
+        }
+    ],
     "RelatedSearches": [
         {
             "platforms": [

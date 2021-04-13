@@ -37,13 +37,17 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  UIView* discoverView = self.discoverFeed.view;
-  [self.discoverFeed willMoveToParentViewController:self];
-  [self addChildViewController:self.discoverFeed];
-  [self.view addSubview:discoverView];
-  [self.discoverFeed didMoveToParentViewController:self];
-  discoverView.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(discoverView, self.view);
+  // |discoverFeed| is not guaranteed to not be nil, so we check to prevent
+  // crashing when attempting to it as a child view controller.
+  if (self.discoverFeed) {
+    UIView* discoverView = self.discoverFeed.view;
+    [self.discoverFeed willMoveToParentViewController:self];
+    [self addChildViewController:self.discoverFeed];
+    [self.view addSubview:discoverView];
+    [self.discoverFeed didMoveToParentViewController:self];
+    discoverView.translatesAutoresizingMaskIntoConstraints = NO;
+    AddSameConstraints(discoverView, self.view);
+  }
 }
 
 @end

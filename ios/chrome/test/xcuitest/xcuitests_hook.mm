@@ -18,6 +18,10 @@ bool DisableContentSuggestions() {
   return true;
 }
 
+bool DisableDiscoverFeed() {
+  return true;
+}
+
 bool DisableFirstRun() {
   return true;
 }

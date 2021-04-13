@@ -20,6 +20,10 @@ bool DisableAppGroupAccess();
 // run unimpeded.
 bool DisableContentSuggestions();
 
+// Returns true if Discover feed should be disabled to allow tests to run
+// without it.
+bool DisableDiscoverFeed();
+
 // Returns true if the first_run path should be disabled to allow other tests to
 // run unimpeded.
 bool DisableFirstRun();
