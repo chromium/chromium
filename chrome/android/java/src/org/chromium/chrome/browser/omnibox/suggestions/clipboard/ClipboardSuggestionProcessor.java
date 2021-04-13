@@ -9,19 +9,27 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.Arrays;
 
 /** A class that handles model and view creation for the clipboard suggestions. */
 public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
@@ -64,8 +72,49 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, !isUrlSuggestion);
         model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT,
                 new SuggestionSpannable(suggestion.getDescription()));
-        model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT,
-                new SuggestionSpannable(suggestion.getDisplayText()));
+
+        setupContentField(suggestion, model, /* showContent = */ !contentHiddenEnabled());
+    }
+
+    /**
+     * Set the content related properties for the suggestion.
+     * @param suggestion The current suggestion.
+     * @param model Model representing current suggestion.
+     * @param showContent Whether the contents should be shown.
+     */
+    private void setupContentField(@NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model, boolean showContent) {
+        String displayText = showContent ? suggestion.getDisplayText() : "";
+        model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, new SuggestionSpannable(displayText));
+
+        updateSuggestionIcon(suggestion, model, showContent);
+        updateActionButton(suggestion, model, showContent);
+    }
+
+    /**
+     * Update the icon for the current suggestion.
+     * If CLIPBOARD_SUGGESTION_CONTENT_HIDDEN is enabled, the content of the clipboard suggestion
+     * will not be shown by default until users clicked reveal button. If
+     * CLIPBOARD_SUGGESTION_CONTENT_HIDDEN is not enabled, the content of the clipboard suggestion
+     * will be shown if it is available.
+     * @param suggestion The current suggestion.
+     * @param model Model representing current suggestion.
+     * @param showContent Whether the contents should be shown.
+     */
+    private void updateSuggestionIcon(@NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model, boolean showContent) {
+        boolean isUrlSuggestion = suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_URL;
+        @DrawableRes
+        final int icon =
+                isUrlSuggestion ? R.drawable.ic_globe_24dp : R.drawable.ic_suggestion_magnifier;
+        setSuggestionDrawableState(model,
+                SuggestionDrawableState.Builder.forDrawableRes(getContext(), icon)
+                        .setAllowTint(true)
+                        .build());
+
+        if (!showContent) {
+            return;
+        }
 
         // Show thumbnail for image suggestion if thumbnail available.
         if (suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
@@ -96,22 +145,43 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
             }
         }
 
-        @DrawableRes
-        final int icon =
-                isUrlSuggestion ? R.drawable.ic_globe_24dp : R.drawable.ic_suggestion_magnifier;
-        setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder.forDrawableRes(getContext(), icon)
-                        .setAllowTint(true)
-                        .build());
-
         if (isUrlSuggestion) {
             // Update favicon for URL if it is available.
             fetchSuggestionFavicon(model, suggestion.getUrl(), mIconBridgeSupplier.get(), null);
         }
     }
 
+    /**
+     * Update the action button for the current suggestion.
+     * @param suggestion The current suggestion.
+     * @param model Model representing current suggestion.
+     * @param showContent Whether the contents should be shown.
+     */
+    private void updateActionButton(@NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model, boolean showContent) {
+        if (!contentHiddenEnabled()) {
+            return;
+        }
+
+        int icon =
+                showContent ? R.drawable.ic_visibility_off_black : R.drawable.ic_visibility_black;
+        String iconString = getContext().getResources().getString(showContent
+                        ? R.string.accessibility_omnibox_conceal_clipboard_contents
+                        : R.string.accessibility_omnibox_reveal_clipboard_contents);
+        Runnable action = showContent ? ()
+                -> concealButtonClickHandler(suggestion, model)
+                : () -> revealButtonClickHandler(suggestion, model);
+        setCustomActions(model,
+                Arrays.asList(new Action(
+                        SuggestionDrawableState.Builder.forDrawableRes(getContext(), icon)
+                                .setLarge(true)
+                                .setAllowTint(true)
+                                .build(),
+                        iconString, action)));
+    }
+
     @Override
-    protected void onSuggestionClicked(AutocompleteMatch suggestion, int position) {
+    protected void onSuggestionClicked(@NonNull AutocompleteMatch suggestion, int position) {
         if (!suggestion.getUrl().isEmpty()) {
             super.onSuggestionClicked(suggestion, position);
             return;
@@ -120,5 +190,42 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         // Retrieve suggestion content before propagating the Click event.
         suggestion.updateWithClipboardContent(
                 () -> { super.onSuggestionClicked(suggestion, position); });
+    }
+
+    /**
+     * Handle the click event for the reveal button.
+     * @param suggestion Selected suggestion.
+     * @param model Model representing current suggestion.
+     */
+    // TODO(crbug.com/1198295): Make revealButtonClickHandler and concealButtonClickHandler private.
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void revealButtonClickHandler(AutocompleteMatch suggestion, PropertyModel model) {
+        RecordUserAction.record("Omnibox.ClipboardSuggestion.Reveal");
+        if (suggestion.getUrl().isEmpty()) {
+            suggestion.updateWithClipboardContent(
+                    () -> setupContentField(suggestion, model, /* showContent = */ true));
+            return;
+        }
+        setupContentField(suggestion, model, /* showContent = */ true);
+    }
+
+    /**
+     * Handle the click event for the conceal button.
+     * @param suggestion Selected suggestion.
+     * @param model Model representing current suggestion.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void concealButtonClickHandler(
+            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model) {
+        RecordUserAction.record("Omnibox.ClipboardSuggestion.Conceal");
+        setupContentField(suggestion, model, /* showContent = */ false);
+    }
+
+    /**
+     * Check whether the content hidden feature is enabled.
+     * @return True if the feature is enabled.
+     */
+    private boolean contentHiddenEnabled() {
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN);
     }
 }

@@ -280,6 +280,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &offline_pages::kOfflinePagesLivePageSharingFeature,
     &offline_pages::kPrefetchingOfflinePagesFeature,
     &omnibox::kAdaptiveSuggestionsCount,
+    &omnibox::kClipboardSuggestionContentHidden,
     &omnibox::kCompactSuggestions,
     &omnibox::kHideVisitsFromCct,
     &omnibox::kMostVisitedTiles,

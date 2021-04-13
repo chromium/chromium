@@ -15,6 +15,7 @@ include_rules = [
 
   "+base/android/java/src/org/chromium/base",
   "+chrome/browser/feature_engagement",
+  "+chrome/browser/flags",
   "+chrome/browser/lens",
   "+chrome/browser/privacy/settings",
   "+chrome/browser/profiles/android",

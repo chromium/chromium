@@ -17418,6 +17418,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Omnibox.ClipboardSuggestion.Conceal">
+  <owner>gangwu@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.comg</owner>
+  <description>
+    User clicks on a clipboard suggestion's conceal button to hide the contents
+    of the clipboard on Android.
+  </description>
+</action>
+
+<action name="Omnibox.ClipboardSuggestion.Reveal">
+  <owner>gangwu@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <description>
+    User clicks on a clipboard suggestion's reveal button to show the contents
+    of the clipboard on Android.
+  </description>
+</action>
+
 <action name="Omnibox.ClipboardSuggestionRemoved">
   <owner>gangwu@chromium.org</owner>
   <owner>lzbylut@google.com</owner>
