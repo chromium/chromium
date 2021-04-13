@@ -37,7 +37,6 @@
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -240,7 +239,7 @@ class WebAppInstallTaskTest : public WebAppTest {
     install_task_->InstallWebAppFromManifestWithFallback(
         web_contents(), force_shortcut_app,
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
-        base::BindOnce(test::TestAcceptDialogCallback),
+        base::BindOnce(TestAcceptDialogCallback),
         base::BindLambdaForTesting(
             [&](const AppId& installed_app_id, InstallResultCode code) {
               result.app_id = installed_app_id;
@@ -415,7 +414,7 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), force_shortcut_app,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
@@ -468,7 +467,7 @@ TEST_F(WebAppInstallTaskTest, ForceReinstall) {
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), force_shortcut_app,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& force_installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
@@ -494,7 +493,7 @@ TEST_F(WebAppInstallTaskTest, GetWebApplicationInfoFailed) {
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), force_shortcut_app,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kGetWebApplicationInfoFailed, code);
@@ -519,7 +518,7 @@ TEST_F(WebAppInstallTaskTest, WebContentsDestroyed) {
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), force_shortcut_app,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kWebContentsDestroyed, code);
@@ -570,7 +569,7 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), force_shortcut_app,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
@@ -745,7 +744,7 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDiskFailed) {
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), force_shortcut_app,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kWriteDataFailed, code);
@@ -780,7 +779,7 @@ TEST_F(WebAppInstallTaskTest, UserInstallDeclined) {
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), force_shortcut_app,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestDeclineDialogCallback),
+      base::BindOnce(TestDeclineDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kUserInstallDeclined, code);
@@ -847,7 +846,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_Success) {
   install_task_->InstallWebAppFromManifest(
       web_contents(), /*bypass_service_worker_check=*/false,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
@@ -941,7 +940,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifestWithFallback_NoIcons) {
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), /*force_shortcut_app=*/true,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                      InstallResultCode code) {
         EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
@@ -994,7 +993,7 @@ TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), /*force_shortcut_app=*/false,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kIntentToPlayStore, code);
@@ -1247,7 +1246,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), force_shortcut_app,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
@@ -1294,7 +1293,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
   install_task_->InstallWebAppFromManifestWithFallback(
       web_contents(), force_shortcut_app,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
@@ -1369,7 +1368,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
     install_task_->InstallWebAppFromManifest(
         web_contents(), /*bypass_service_worker_check=*/false,
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
-        base::BindOnce(test::TestAcceptDialogCallback),
+        base::BindOnce(TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                        InstallResultCode code) {
           result.app_id = installed_app_id;

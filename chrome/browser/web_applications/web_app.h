@@ -301,13 +301,7 @@ class WebApp {
   ClientData client_data_;
   GURL manifest_url_;
   base::Optional<std::string> manifest_id_;
-  // New fields must be added to:
-  //  - |operator==|
-  //  - |operator<<|
-  //  - WebAppDatabase::CreateWebApp()
-  //  - WebAppDatabase::CreateWebAppProto()
-  //  - CreateRandomWebApp()
-  //  - ManifestUpdateTask::IsUpdateNeededForManifest()
+  // New fields must be added to |operator==| and |operator<<|.
 };
 
 // For logging and debug purposes.

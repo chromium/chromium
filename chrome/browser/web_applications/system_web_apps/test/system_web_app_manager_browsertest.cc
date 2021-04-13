@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInLauncherTest,
   // removed from the |AppList| when they are hidden.
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   ASSERT_TRUE(client);
-  AppListModelUpdater* model_updater = ::test::GetModelUpdater(client);
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
   const ChromeAppListItem* mock_app = model_updater->FindItem(app_id);
   // |mock_app| shouldn't be found in |AppList| because it should be hidden in
   // launcher.

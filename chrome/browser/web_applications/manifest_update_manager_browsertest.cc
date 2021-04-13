@@ -39,7 +39,6 @@
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -283,7 +282,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents(),
         /*force_shortcut_app=*/false,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        base::BindOnce(test::TestAcceptDialogCallback),
+        base::BindOnce(TestAcceptDialogCallback),
         base::BindLambdaForTesting(
             [&](const AppId& new_app_id, InstallResultCode code) {
               EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
