@@ -42,6 +42,8 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
 
   void Flush(StatusCB done_cb) override;
 
+  static constexpr int kMinBitrate = 6000;
+
  private:
   // Called synchronously by |fifo_| once enough audio frames have been
   // buffered. Calls libopus to do actual encoding.
