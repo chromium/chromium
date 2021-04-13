@@ -16,8 +16,9 @@ using content::BrowserThread;
 // static
 IconLoader* IconLoader::Create(const base::FilePath& file_path,
                                IconSize size,
+                               float scale,
                                IconLoadedCallback callback) {
-  return new IconLoader(file_path, size, std::move(callback));
+  return new IconLoader(file_path, size, scale, std::move(callback));
 }
 
 void IconLoader::Start() {
@@ -30,11 +31,13 @@ void IconLoader::Start() {
 
 IconLoader::IconLoader(const base::FilePath& file_path,
                        IconSize size,
+                       float scale,
                        IconLoadedCallback callback)
     : file_path_(file_path),
 #if !defined(OS_ANDROID)
       icon_size_(size),
 #endif  // defined(OS_ANDROID)
+      scale_(scale),
       callback_(std::move(callback)) {
 }
 

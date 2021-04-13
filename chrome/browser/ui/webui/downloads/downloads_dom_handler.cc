@@ -43,6 +43,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -51,6 +52,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/filename_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
 
 using content::BrowserThread;
@@ -149,10 +151,11 @@ void DownloadsDOMHandler::Drag(const std::string& id) {
 
   if (file->GetState() != download::DownloadItem::COMPLETE)
     return;
-
-  gfx::Image* icon = g_browser_process->icon_manager()->LookupIconFromFilepath(
-      file->GetTargetFilePath(), IconLoader::NORMAL);
+  const display::Screen* const screen = display::Screen::GetScreen();
   gfx::NativeView view = web_contents->GetNativeView();
+  gfx::Image* icon = g_browser_process->icon_manager()->LookupIconFromFilepath(
+      file->GetTargetFilePath(), IconLoader::NORMAL,
+      screen->GetDisplayNearestView(view).device_scale_factor());
   {
     // Enable nested tasks during DnD, while |DragDownload()| blocks.
     base::CurrentThread::ScopedNestableTaskAllower allow;

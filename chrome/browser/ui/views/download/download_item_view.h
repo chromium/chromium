@@ -80,6 +80,7 @@ class DownloadItemView : public views::View,
   ~DownloadItemView() override;
 
   // views::View:
+  void AddedToWidget() override;
   void Layout() override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
@@ -116,6 +117,10 @@ class DownloadItemView : public views::View,
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
+  // ui::LayerDelegate:
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override;
+
  private:
   // Returns the mode that best reflects the current model state.
   Mode GetDesiredMode() const;
@@ -128,6 +133,9 @@ class DownloadItemView : public views::View,
   // various sizes. This may eventually result in a callback to
   // OnFileIconLoaded().
   void UpdateFilePathAndIcons();
+
+  // Begins loading the file icon in various sizes.
+  void StartLoadIcons();
 
   // Updates the visibility, text, size, etc. of all labels.
   void UpdateLabels();
@@ -302,6 +310,8 @@ class DownloadItemView : public views::View,
 
   // Forces reading the current alert text the next time it updates.
   bool announce_accessible_alert_soon_ = false;
+
+  float current_scale_;
 
   base::ScopedObservation<DownloadUIModel, DownloadUIModel::Observer>
       observation_{this};

@@ -18,7 +18,8 @@ enum IconSize {
 // Utility process interface exposed to the browser process on OS_WIN. Allows
 // for sandboxing when reading icons from downloaded files.
 interface UtilReadIcon {
-  // Reads the primary icon from |file| using |size| as a hint.
-  ReadIcon(mojo_base.mojom.FilePath filename, IconSize size) =>
+  // Reads the primary icon from |file| with the scaling factor |scale|
+  // using |size| as a hint.
+  ReadIcon(mojo_base.mojom.FilePath filename, IconSize size, float scale) =>
       (gfx.mojom.ImageSkia? icon,  mojo_base.mojom.String16 group);
 };

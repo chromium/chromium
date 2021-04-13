@@ -63,6 +63,7 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
@@ -235,6 +236,12 @@ bool has_warning_label(DownloadItemView::Mode mode) {
   return is_download_warning(mode) || is_mixed_content(mode);
 }
 
+float GetDPIScaleForView(views::View* view) {
+  const display::Screen* const screen = display::Screen::GetScreen();
+  DCHECK(screen);
+  return screen->GetDisplayNearestView(view->GetWidget()->GetNativeView())
+      .device_scale_factor();
+}
 }  // namespace
 
 DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
@@ -258,7 +265,8 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
           FROM_HERE,
           base::TimeDelta::FromMinutes(3),
           base::BindRepeating(&DownloadItemView::AnnounceAccessibleAlert,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      current_scale_(/*AddedToWidget() set the right DPI*/ 1.0f) {
   views::InstallRectHighlightPathGenerator(this);
   observation_.Observe(this->model());
 
@@ -330,6 +338,10 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
 
 DownloadItemView::~DownloadItemView() = default;
 
+void DownloadItemView::AddedToWidget() {
+  current_scale_ = GetDPIScaleForView(this);
+}
+
 void DownloadItemView::Layout() {
   // TODO(crbug.com/1005568): Replace Layout()/CalculatePreferredSize() with a
   // LayoutManager.
@@ -392,7 +404,7 @@ bool DownloadItemView::OnMouseDragged(const ui::MouseEvent& event) {
              model_->download()) {
     const gfx::Image* const file_icon =
         g_browser_process->icon_manager()->LookupIconFromFilepath(
-            model_->GetTargetFilePath(), IconLoader::SMALL);
+            model_->GetTargetFilePath(), IconLoader::SMALL, current_scale_);
     const views::Widget* const widget = GetWidget();
     // TODO(shaktisahu): Make DragDownloadItem work with a model.
     DragDownloadItem(model_->download(), file_icon,
@@ -564,7 +576,7 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
 
   const gfx::Image* const file_icon_image =
       g_browser_process->icon_manager()->LookupIconFromFilepath(
-          model_->GetTargetFilePath(), IconLoader::SMALL);
+          model_->GetTargetFilePath(), IconLoader::SMALL, current_scale_);
   const gfx::ImageSkia* file_icon = (file_icon_image && mode_ == Mode::kNormal)
                                         ? file_icon_image->ToImageSkia()
                                         : nullptr;
@@ -651,6 +663,14 @@ void DownloadItemView::OnThemeChanged() {
   shelf_->ConfigureButtonForTheme(scan_button_);
 
   UpdateDropdownButtonImage();
+}
+
+// ui::LayerDelegate:
+void DownloadItemView::OnDeviceScaleFactorChanged(
+    float old_device_scale_factor,
+    float new_device_scale_factor) {
+  current_scale_ = new_device_scale_factor;
+  StartLoadIcons();
 }
 
 DownloadItemView::Mode DownloadItemView::GetDesiredMode() const {
@@ -741,15 +761,19 @@ void DownloadItemView::UpdateFilePathAndIcons() {
   file_path_ = file_path;
   cancelable_task_tracker_.TryCancelAll();
 
+  StartLoadIcons();
+}
+
+void DownloadItemView::StartLoadIcons() {
   // The small icon is not stored directly, but will be requested in other
   // functions, so ask the icon manager to load it so it's cached.
   IconManager* const im = g_browser_process->icon_manager();
-  im->LoadIcon(file_path_, IconLoader::SMALL,
+  im->LoadIcon(file_path_, IconLoader::SMALL, current_scale_,
                base::BindOnce(&DownloadItemView::OnFileIconLoaded,
                               base::Unretained(this), IconLoader::SMALL),
                &cancelable_task_tracker_);
 
-  im->LoadIcon(file_path_, IconLoader::NORMAL,
+  im->LoadIcon(file_path_, IconLoader::NORMAL, current_scale_,
                base::BindOnce(&DownloadItemView::OnFileIconLoaded,
                               base::Unretained(this), IconLoader::NORMAL),
                &cancelable_task_tracker_);

@@ -50,6 +50,7 @@ class IconLoader {
   // the caller, be sure to use a weak pointer in the |callback|.
   static IconLoader* Create(const base::FilePath& file_path,
                             IconSize size,
+                            float scale,
                             IconLoadedCallback callback);
 
   // Starts the process of reading the icon. When the reading of the icon is
@@ -60,6 +61,7 @@ class IconLoader {
  private:
   IconLoader(const base::FilePath& file_path,
              IconSize size,
+             float scale,
              IconLoadedCallback callback);
 
   ~IconLoader();
@@ -96,7 +98,7 @@ class IconLoader {
 #if !defined(OS_ANDROID)
   IconSize icon_size_;
 #endif  // !defined(OS_ANDROID)
-
+  const float scale_;
   IconLoadedCallback callback_;
 
   DISALLOW_COPY_AND_ASSIGN(IconLoader);

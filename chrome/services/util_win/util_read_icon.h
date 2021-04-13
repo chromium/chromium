@@ -22,6 +22,7 @@ class UtilReadIcon : public chrome::mojom::UtilReadIcon {
   // chrome::mojom::UtilReadIcon:
   void ReadIcon(const base::FilePath& filename,
                 chrome::mojom::IconSize icon_size,
+                float scale,
                 ReadIconCallback callback) override;
 
   mojo::Receiver<chrome::mojom::UtilReadIcon> receiver_;

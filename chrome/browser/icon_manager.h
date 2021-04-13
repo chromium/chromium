@@ -66,7 +66,8 @@ class IconManager {
   // must not be free'd by the caller. If the caller needs to modify the icon,
   // it must make a copy and modify the copy.
   gfx::Image* LookupIconFromFilepath(const base::FilePath& file_path,
-                                     IconLoader::IconSize size);
+                                     IconLoader::IconSize size,
+                                     float scale);
 
   using IconRequestCallback = base::OnceCallback<void(gfx::Image)>;
 
@@ -83,6 +84,7 @@ class IconManager {
   base::CancelableTaskTracker::TaskId LoadIcon(
       const base::FilePath& file_name,
       IconLoader::IconSize size,
+      float scale,
       IconRequestCallback callback,
       base::CancelableTaskTracker* tracker);
 
@@ -90,17 +92,21 @@ class IconManager {
   void OnIconLoaded(IconRequestCallback callback,
                     base::FilePath file_path,
                     IconLoader::IconSize size,
+                    float scale,
                     gfx::Image result,
                     const IconLoader::IconGroup& group);
 
   struct CacheKey {
-    CacheKey(const IconLoader::IconGroup& group, IconLoader::IconSize size);
+    CacheKey(const IconLoader::IconGroup& group,
+             IconLoader::IconSize size,
+             float scale);
 
     // Used as a key in the map below, so we need this comparator.
     bool operator<(const CacheKey &other) const;
 
     IconLoader::IconGroup group;
     IconLoader::IconSize size;
+    float scale;
   };
 
   std::map<base::FilePath, IconLoader::IconGroup> group_cache_;

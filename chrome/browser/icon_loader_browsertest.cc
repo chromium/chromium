@@ -13,6 +13,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/image/image.h"
 
+#if defined(OS_WIN)
+#include "ui/display/win/dpi.h"
+#endif
+
 using IconLoaderBrowserTest = InProcessBrowserTest;
 
 class TestIconLoader {
@@ -28,11 +32,13 @@ class TestIconLoader {
 
   bool load_succeeded() const { return load_succeeded_; }
 
-  bool TryLoadIcon(const base::FilePath& file_path, IconLoader::IconSize size) {
+  bool TryLoadIcon(const base::FilePath& file_path,
+                   IconLoader::IconSize size,
+                   float scale) {
     // |loader| is self deleting. |this| will live as long as the
     // test.
     auto* loader = IconLoader::Create(
-        file_path, size,
+        file_path, size, scale,
         base::BindOnce(&TestIconLoader::OnIconLoaded, base::Unretained(this)));
     loader->Start();
     return true;
@@ -62,14 +68,17 @@ const base::FilePath::CharType kGroupOnlyFilename[] =
 
 // Under GTK, the icon providing functions do not return icons.
 IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadGroup) {
+  float scale = 1.0;
+#if defined(OS_WIN)
+  scale = display::win::GetDPIScale();
+#endif
+
   // Test that an icon for a file type (group) can be loaded even
   // where a file does not exist. Should work cross platform.
   base::RunLoop runner;
-
   TestIconLoader test_loader(runner.QuitClosure());
-
   test_loader.TryLoadIcon(base::FilePath(kGroupOnlyFilename),
-                          IconLoader::NORMAL);
+                          IconLoader::NORMAL, scale);
 
   runner.Run();
   EXPECT_TRUE(test_loader.load_succeeded());
@@ -79,13 +88,14 @@ IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadGroup) {
 
 #if defined(OS_WIN)
 IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadExeIcon) {
+  float scale = display::win::GetDPIScale();
   base::RunLoop runner;
 
   TestIconLoader test_loader(runner.QuitClosure());
 
   base::FilePath exe_path;
   base::PathService::Get(base::FILE_EXE, &exe_path);
-  test_loader.TryLoadIcon(exe_path, IconLoader::NORMAL);
+  test_loader.TryLoadIcon(exe_path, IconLoader::NORMAL, scale);
 
   runner.Run();
   EXPECT_TRUE(test_loader.load_succeeded());
@@ -95,12 +105,14 @@ const base::FilePath::CharType kNotExistingExeFile[] =
     FILE_PATH_LITERAL("unlikely-to-exist-file.exe");
 
 IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadDefaultExeIcon) {
+  float scale = display::win::GetDPIScale();
+
   base::RunLoop runner;
 
   TestIconLoader test_loader(runner.QuitClosure());
 
   test_loader.TryLoadIcon(base::FilePath(kNotExistingExeFile),
-                          IconLoader::NORMAL);
+                          IconLoader::NORMAL, scale);
 
   runner.Run();
   EXPECT_TRUE(test_loader.load_succeeded());
