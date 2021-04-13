@@ -137,12 +137,12 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, OpenDialogFromAppMenu) {
   EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
 }
 
-// TODO(crbug.com/1004635) Disabled due to flake on Windows and Linux
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_EphemeralToolbarIconForDialog EphemeralToolbarIconForDialog
-#else
+// TODO(crbug.com/1004635) Disabled on Linux due to flakiness.
+#if defined(OS_LINUX)
 #define MAYBE_EphemeralToolbarIconForDialog \
   DISABLED_EphemeralToolbarIconForDialog
+#else
+#define MAYBE_EphemeralToolbarIconForDialog EphemeralToolbarIconForDialog
 #endif
 IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
                        MAYBE_EphemeralToolbarIconForDialog) {
@@ -236,8 +236,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
 #define MAYBE_OpenDialogWithMediaRouterAction \
   DISABLED_OpenDialogWithMediaRouterAction
 #else
-#define MAYBE_OpenDialogWithMediaRouterAction \
-  OpenDialogWithMediaRouterAction
+#define MAYBE_OpenDialogWithMediaRouterAction OpenDialogWithMediaRouterAction
 #endif
 
 IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
