@@ -229,7 +229,7 @@ void PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest(
 
   DCHECK(!it->second.empty());
 
-  const int request_id = it->second.begin()->first;
+  const int64_t request_id = it->second.begin()->first;
   const content::MediaStreamRequest& request =
       it->second.begin()->second.request;
 #if defined(OS_ANDROID)
@@ -290,7 +290,7 @@ void PermissionBubbleMediaAccessHandler::RegisterProfilePrefs(
 
 void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
     content::WebContents* web_contents,
-    int request_id,
+    int64_t request_id,
     content::MediaStreamRequest request,
     const blink::MediaStreamDevices& devices,
     blink::mojom::MediaStreamRequestResult result,
@@ -322,7 +322,7 @@ void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
 
 void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
     content::WebContents* web_contents,
-    int request_id,
+    int64_t request_id,
     const blink::MediaStreamDevices& devices,
     blink::mojom::MediaStreamRequestResult result,
     std::unique_ptr<content::MediaStreamUI> ui) {

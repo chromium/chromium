@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_PERMISSION_BUBBLE_MEDIA_ACCESS_HANDLER_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_PERMISSION_BUBBLE_MEDIA_ACCESS_HANDLER_H_
 
+#include <stdint.h>
+
 #include <map>
 
 #include "base/memory/weak_ptr.h"
@@ -50,13 +52,13 @@ class PermissionBubbleMediaAccessHandler
 
  private:
   struct PendingAccessRequest;
-  using RequestsMap = std::map<int, PendingAccessRequest>;
+  using RequestsMap = std::map<int64_t, PendingAccessRequest>;
   using RequestsMaps = std::map<content::WebContents*, RequestsMap>;
 
   void ProcessQueuedAccessRequest(content::WebContents* web_contents);
   void OnMediaStreamRequestResponse(
       content::WebContents* web_contents,
-      int request_id,
+      int64_t request_id,
       content::MediaStreamRequest request,
       const blink::MediaStreamDevices& devices,
       blink::mojom::MediaStreamRequestResult result,
@@ -64,7 +66,7 @@ class PermissionBubbleMediaAccessHandler
       ContentSetting audio_setting,
       ContentSetting video_setting);
   void OnAccessRequestResponse(content::WebContents* web_contents,
-                               int request_id,
+                               int64_t request_id,
                                const blink::MediaStreamDevices& devices,
                                blink::mojom::MediaStreamRequestResult result,
                                std::unique_ptr<content::MediaStreamUI> ui);
@@ -74,7 +76,7 @@ class PermissionBubbleMediaAccessHandler
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
-  int next_request_id_ = 0;
+  int64_t next_request_id_ = 0;
   RequestsMaps pending_requests_;
   content::NotificationRegistrar notifications_registrar_;
 
