@@ -7397,6 +7397,7 @@ void LayoutBox::CopyVisualOverflowFromFragmentsRecursively() {
 // Copy visual overflow from |PhysicalFragments()|. Returns whether the copy
 // succeeded or not.
 bool LayoutBox::CopyVisualOverflowFromFragments() {
+  NOT_DESTROYED();
   const LayoutRect previous_visual_overflow = VisualOverflowRect();
   if (!CopyVisualOverflowFromFragmentsWithoutInvalidations()) {
     DCHECK_EQ(previous_visual_overflow, VisualOverflowRect());
