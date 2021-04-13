@@ -62,6 +62,21 @@ void KeyPermissionsServiceImpl::CanUserGrantPermissionForKeyWithLocations(
     CanUserGrantPermissionForKeyCallback callback,
     const std::vector<TokenId>& key_locations,
     Status key_locations_retrieval_status) {
+  if (key_locations_retrieval_status != Status::kSuccess) {
+    LOG(ERROR) << "Key locations retrieval failed: "
+               << StatusToString(key_locations_retrieval_status);
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
+
+  // It only makes sense to store the sign_unlimited flag for a key if it is on
+  // a user slot. Currently, system-slot keys are implicitly corporate, so
+  // CanUserGrantPermissionForKey should return false for them.
+  if ((key_locations.size() != 1) || key_locations.front() != TokenId::kUser) {
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
+
   auto bound_callback = base::BindOnce(
       &KeyPermissionsServiceImpl::
           CanUserGrantPermissionForKeyWithLocationsAndFlag,
@@ -79,11 +94,6 @@ void KeyPermissionsServiceImpl::
         Status status,
         bool corporate_key) {
   if (status != Status::kSuccess) {
-    std::move(callback).Run(/*allowed=*/false);
-    return;
-  }
-
-  if (key_locations.empty()) {
     std::move(callback).Run(/*allowed=*/false);
     return;
   }

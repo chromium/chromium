@@ -28,7 +28,6 @@ class PolicyService;
 namespace chromeos {
 namespace platform_keys {
 
-class PlatformKeysService;
 class KeyPermissionsService;
 
 // PlatformKeys is a field stored in each extension's state store. It saves
@@ -102,7 +101,6 @@ class ExtensionKeyPermissionsService {
       extensions::StateStore* state_store,
       std::unique_ptr<base::Value> state_store_value,
       policy::PolicyService* profile_policies,
-      PlatformKeysService* platform_keys_service,
       KeyPermissionsService* key_permissions_service);
 
   ExtensionKeyPermissionsService(const ExtensionKeyPermissionsService&) =
@@ -195,43 +193,19 @@ class ExtensionKeyPermissionsService {
 
   bool PolicyAllowsCorporateKeyUsage() const;
 
-  void CanUseKeyForSigningWithLocations(
-      const std::string& public_key_spki_der,
-      CanUseKeyForSigningCallback callback,
-      const std::vector<TokenId>& key_locations,
-      Status key_locations_retrieval_status);
   void CanUseKeyForSigningWithFlags(CanUseKeyForSigningCallback callback,
                                     bool sign_unlimited_allowed,
                                     bool is_corporate_key);
 
-  void SetKeyUsedForSigningWithLocations(
-      const std::string& public_key_spki_der,
-      SetKeyUsedForSigningCallback callback,
-      const std::vector<TokenId>& key_locations,
-      Status key_locations_retrieval_status);
-  void RegisterKeyForCorporateUsageWithLocations(
-      const std::string& public_key_spki_der,
-      RegisterKeyForCorporateUsageCallback callback,
-      const std::vector<TokenId>& key_locations,
-      Status key_locations_retrieval_status);
-
-  void SetUserGrantedPermissionWithLocations(
+  void SetUserGrantedPermissionWithFlag(
       const std::string& public_key_spki_der,
       SetUserGrantedPermissionCallback callback,
-      const std::vector<TokenId>& key_locations,
-      Status key_locations_retrieval_status);
-  void SetUserGrantedPermissionWithLocationsAndFlag(
-      const std::string& public_key_spki_der,
-      SetUserGrantedPermissionCallback callback,
-      const std::vector<TokenId>& key_locations,
-      Status key_locations_retrieval_status,
       bool can_user_grant_permission);
 
   const std::string extension_id_;
   extensions::StateStore* extensions_state_store_ = nullptr;
   std::vector<KeyEntry> state_store_entries_;
   policy::PolicyService* const profile_policies_;
-  PlatformKeysService* const platform_keys_service_;
   KeyPermissionsService* const key_permissions_service_;
   base::WeakPtrFactory<ExtensionKeyPermissionsService> weak_factory_{this};
 };
