@@ -9,6 +9,7 @@
 
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 namespace gfx {
 
@@ -120,6 +121,24 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   }
 
   bool HasActiveTime(base::TimeTicks monotonic_time) const;
+
+  template <typename T>
+  void Retarget(base::TimeTicks now,
+                int property_id,
+                const T& new_target_value) {
+    if (!curve_)
+      return;
+    base::TimeDelta now_delta = TrimTimeToCurrentIteration(now);
+
+    DCHECK_EQ(CalculatePhase(now_delta), KeyframeModel::Phase::ACTIVE);
+    auto* keyframed_curve = AnimationTraits<T>::ToKeyframedCurve(curve_.get());
+    DCHECK(keyframed_curve);
+    auto new_curve = keyframed_curve->Retarget(now_delta, new_target_value);
+    if (new_curve) {
+      curve_ = std::move(new_curve);
+      curve_->Tick(now_delta, property_id, this);
+    }
+  }
 
   // Some clients may run threaded animations and may need to defer starting
   // until the animation on the other thread has been started.

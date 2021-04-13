@@ -81,6 +81,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT AnimationCurve {
   int Type() const override;                                                 \
   const char* TypeName() const override;                                     \
                                                                              \
+ protected:                                                                  \
+  Target* target() const { return target_; }                                 \
+                                                                             \
  private:                                                                    \
   Target* target_ = nullptr;
 

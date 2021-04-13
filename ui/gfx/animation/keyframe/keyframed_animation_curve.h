@@ -168,6 +168,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedColorAnimationCurve
   // BackgrounColorAnimationCurve implementation
   SkColor GetValue(base::TimeDelta t) const override;
 
+  std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
+                                           SkColor new_target) const;
+
   using Keyframes = std::vector<std::unique_ptr<ColorKeyframe>>;
   const Keyframes& keyframes_for_testing() const { return keyframes_; }
 
@@ -214,6 +217,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedFloatAnimationCurve
   // FloatAnimationCurve implementation
   float GetValue(base::TimeDelta t) const override;
 
+  std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
+                                           float new_target) const;
+
   using Keyframes = std::vector<std::unique_ptr<FloatKeyframe>>;
   const Keyframes& keyframes_for_testing() const { return keyframes_; }
 
@@ -259,6 +265,10 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedTransformAnimationCurve
   bool PreservesAxisAlignment() const override;
   bool MaximumScale(float* max_scale) const override;
 
+  std::unique_ptr<AnimationCurve> Retarget(
+      base::TimeDelta t,
+      const gfx::TransformOperations& new_target) const;
+
  private:
   KeyframedTransformAnimationCurve();
 
@@ -297,6 +307,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedSizeAnimationCurve
 
   // SizeAnimationCurve implementation
   gfx::SizeF GetValue(base::TimeDelta t) const override;
+
+  std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
+                                           const gfx::SizeF& new_target) const;
 
  private:
   KeyframedSizeAnimationCurve();
@@ -337,6 +350,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedRectAnimationCurve
   // RectAnimationCurve implementation
   gfx::Rect GetValue(base::TimeDelta t) const override;
 
+  std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
+                                           const gfx::Rect& new_target) const;
+
  private:
   KeyframedRectAnimationCurve();
 
@@ -346,6 +362,46 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedRectAnimationCurve
   std::unique_ptr<TimingFunction> timing_function_;
   double scaled_duration_ = 0.;
 };
+
+template <typename T>
+struct AnimationTraits {};
+
+#define DEFINE_ANIMATION_TRAITS(value_type, name)                           \
+  template <>                                                               \
+  struct AnimationTraits<value_type> {                                      \
+    typedef value_type ValueType;                                           \
+    typedef name##AnimationCurve::Target TargetType;                        \
+    typedef name##AnimationCurve CurveType;                                 \
+    typedef Keyframed##name##AnimationCurve KeyframedCurveType;             \
+    typedef name##Keyframe KeyframeType;                                    \
+    static const CurveType* ToDerivedCurve(const AnimationCurve* curve) {   \
+      return name##AnimationCurve::To##name##AnimationCurve(curve);         \
+    }                                                                       \
+    static const KeyframedCurveType* ToKeyframedCurve(                      \
+        const AnimationCurve* curve) {                                      \
+      return static_cast<const KeyframedCurveType*>(ToDerivedCurve(curve)); \
+    }                                                                       \
+    static void OnValueAnimated(name##AnimationCurve::Target* target,       \
+                                const ValueType& target_value,              \
+                                int target_property) {                      \
+      target->On##name##Animated(target_value, target_property, nullptr);   \
+    }                                                                       \
+  }
+
+DEFINE_ANIMATION_TRAITS(float, Float);
+DEFINE_ANIMATION_TRAITS(TransformOperations, Transform);
+DEFINE_ANIMATION_TRAITS(SizeF, Size);
+DEFINE_ANIMATION_TRAITS(SkColor, Color);
+DEFINE_ANIMATION_TRAITS(Rect, Rect);
+
+#undef DEFINE_ANIMATION_TRAITS
+
+bool SufficientlyEqual(float lhs, float rhs);
+bool SufficientlyEqual(const TransformOperations& lhs,
+                       const TransformOperations& rhs);
+bool SufficientlyEqual(const SizeF& lhs, const SizeF& rhs);
+bool SufficientlyEqual(SkColor lhs, SkColor rhs);
+bool SufficientlyEqual(const Rect& lhs, const Rect& rhs);
 
 }  // namespace gfx
 
