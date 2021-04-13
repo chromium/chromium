@@ -15,7 +15,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/power_monitor_test_base.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"

@@ -13,7 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
 #include "base/test/mock_callback.h"
-#include "base/test/power_monitor_test_base.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"

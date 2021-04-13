@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TEST_POWER_MONITOR_TEST_BASE_H_
-#define BASE_TEST_POWER_MONITOR_TEST_BASE_H_
+#ifndef BASE_TEST_POWER_MONITOR_TEST_H_
+#define BASE_TEST_POWER_MONITOR_TEST_H_
 
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
@@ -103,4 +103,4 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
 
 }  // namespace base
 
-#endif  // BASE_TEST_POWER_MONITOR_TEST_BASE_H_
+#endif  // BASE_TEST_POWER_MONITOR_TEST_H_

@@ -10,7 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/power_monitor_test_base.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
