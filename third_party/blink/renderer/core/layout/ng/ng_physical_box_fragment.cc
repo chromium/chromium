@@ -539,8 +539,7 @@ bool NGPhysicalBoxFragment::CanUseFragmentsForInkOverflow() const {
     return false;
   // TODO(crbug.com/1144203): Following conditions are not supported in NG
   // visual overflow yet.
-  if (IsTableNGRow() || IsTableNG() || IsRenderedLegend() ||
-      IsColumnSpanAll() || IsMathML())
+  if (IsTableNGRow() || IsRenderedLegend() || IsColumnSpanAll() || IsMathML())
     return false;
   DCHECK(IsInlineBox() || OwnerLayoutBox());
   return true;
@@ -987,11 +986,33 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
 PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   DCHECK_EQ(PostLayout(), this);
   const ComputedStyle& style = Style();
-  if (!style.HasVisualOverflowingEffect())
+  const bool has_visual_overflowing_effect = style.HasVisualOverflowingEffect();
+  const bool is_table = IsTableNG();
+  if (!has_visual_overflowing_effect && !is_table)
     return LocalRect();
 
   PhysicalRect ink_overflow(LocalRect());
+  if (UNLIKELY(is_table)) {
+    // Table's collapsed borders contribute to visual overflow.
+    // In the inline direction, table's border box does not include
+    // visual border width (largest border), but does include
+    // layout border width (border of first cell).
+    // Expands border box to include visual border width.
+    if (const NGTableBorders* collapsed_borders = TableCollapsedBorders()) {
+      PhysicalRect borders_overflow = LocalRect();
+      NGBoxStrut visual_size_diff =
+          collapsed_borders->GetCollapsedBorderVisualSizeDiff();
+      borders_overflow.Expand(
+          visual_size_diff.ConvertToPhysical(style.GetWritingDirection()));
+      ink_overflow.Unite(borders_overflow);
+    }
+  }
+
+  if (!has_visual_overflowing_effect)
+    return ink_overflow;
+
   ink_overflow.Expand(style.BoxDecorationOutsets());
+
   if (style.HasOutline() && IsOutlineOwner()) {
     Vector<PhysicalRect> outline_rects;
     // The result rects are in coordinates of this object's border box.

@@ -253,6 +253,10 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
   return clip_rect;
 }
 
+// TODO(crbug.com/1144203): This is computed in
+// |NGPhysicalBoxFragment::ComputeSelfInkOverflow| and that we should not reach
+// here, except when this table needs fallback such as when it is a rendered
+// legend.
 void LayoutNGTable::AddVisualEffectOverflow() {
   NOT_DESTROYED();
   // TODO(1061423) Fragment painting: need a correct fragment.
