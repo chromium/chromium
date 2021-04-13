@@ -586,18 +586,10 @@ void InspectorAccessibilityAgent::AddAncestors(
     std::unique_ptr<protocol::Array<AXNode>>& nodes,
     AXObjectCacheImpl& cache) const {
   AXObject* ancestor = &first_ancestor;
-  AXObject* child = inspected_ax_object;
   while (ancestor) {
     std::unique_ptr<AXNode> parent_node_object = BuildProtocolAXObject(
         *ancestor, inspected_ax_object, true, nodes, cache);
-    auto child_ids = std::make_unique<protocol::Array<AXNodeId>>();
-    if (child)
-      child_ids->emplace_back(String::Number(child->AXObjectID()));
-    else
-      child_ids->emplace_back(String::Number(kIDForInspectedNodeWithNoAXNode));
-    parent_node_object->setChildIds(std::move(child_ids));
     nodes->emplace_back(std::move(parent_node_object));
-    child = ancestor;
     ancestor = ancestor->ParentObjectUnignored();
   }
 }
@@ -674,8 +666,27 @@ void InspectorAccessibilityAgent::PopulateDOMNodeAncestors(
   if (!parent_ax_object)
     return;
 
-  // Populate parent and ancestors.
-  AddAncestors(*parent_ax_object, nullptr, nodes, cache);
+  std::unique_ptr<AXNode> parent_node_object =
+      BuildProtocolAXObject(*parent_ax_object, nullptr, true, nodes, cache);
+  auto child_ids = std::make_unique<protocol::Array<AXNodeId>>();
+  auto* existing_child_ids = parent_node_object->getChildIds(nullptr);
+
+  // put the Ignored node first regardless of DOM structure
+  child_ids->insert(child_ids->begin(),
+                    String::Number(kIDForInspectedNodeWithNoAXNode));
+  if (existing_child_ids) {
+    for (auto id : *existing_child_ids)
+      child_ids->push_back(id);
+  }
+
+  parent_node_object->setChildIds(std::move(child_ids));
+  nodes->emplace_back(std::move(parent_node_object));
+
+  parent_ax_object = parent_ax_object->ParentObjectUnignored();
+  if (parent_ax_object) {
+    // Populate ancestors.
+    AddAncestors(*parent_ax_object, nullptr, nodes, cache);
+  }
 }
 
 std::unique_ptr<AXNode> InspectorAccessibilityAgent::BuildProtocolAXObject(
@@ -901,14 +912,18 @@ void InspectorAccessibilityAgent::AddChildren(
   for (unsigned i = 0; i < children.size(); i++) {
     AXObject& child_ax_object = *children[i].Get();
     child_ids->emplace_back(String::Number(child_ax_object.AXObjectID()));
+
     if (&child_ax_object == inspected_ax_object)
       continue;
+
     if (&ax_object != inspected_ax_object) {
       if (!inspected_ax_object)
         continue;
-      if (&ax_object != inspected_ax_object->ParentObjectUnignored() &&
-          ax_object.GetNode())
+
+      if (ax_object.ParentObject() != inspected_ax_object ||
+          ax_object.GetNode()) {
         continue;
+      }
     }
 
     // Only add children of inspected node (or un-inspectable children of
