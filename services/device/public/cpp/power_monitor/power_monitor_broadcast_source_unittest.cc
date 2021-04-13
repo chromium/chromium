@@ -44,7 +44,7 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
 };
 
 TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
-  base::PowerMonitorTestObserver observer;
+  base::test::PowerMonitorTestObserver observer;
   base::PowerMonitor::AddPowerSuspendObserver(&observer);
   base::PowerMonitor::AddPowerStateObserver(&observer);
 

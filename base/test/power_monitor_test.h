@@ -54,9 +54,6 @@ class ScopedPowerMonitorTestSource {
   PowerMonitorTestSource* power_monitor_test_source_ = nullptr;
 };
 
-}  // namespace test
-
-// TODO(crbug/1188692): Move `PowerMonitorTestObserver` into `test` namespace.
 class PowerMonitorTestObserver : public PowerSuspendObserver,
                                  public PowerThermalObserver,
                                  public PowerStateObserver {
@@ -101,6 +98,7 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
       PowerThermalObserver::DeviceThermalState::kUnknown;
 };
 
+}  // namespace test
 }  // namespace base
 
 #endif  // BASE_TEST_POWER_MONITOR_TEST_H_

@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
+namespace test {
 
 class PowerMonitorTest : public testing::Test {
  protected:
@@ -18,13 +19,13 @@ class PowerMonitorTest : public testing::Test {
 
   void PowerMonitorInitialize() { power_monitor_source_.emplace(); }
 
-  test::ScopedPowerMonitorTestSource& source() {
+  ScopedPowerMonitorTestSource& source() {
     return power_monitor_source_.value();
   }
 
  private:
-  test::TaskEnvironment task_environment_;
-  base::Optional<test::ScopedPowerMonitorTestSource> power_monitor_source_;
+  TaskEnvironment task_environment_;
+  base::Optional<ScopedPowerMonitorTestSource> power_monitor_source_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorTest);
 };
@@ -232,4 +233,5 @@ TEST_F(PowerMonitorTest, PowerStateReturnedFromAddObserver) {
   PowerMonitor::RemovePowerStateObserver(&observer2);
 }
 
+}  // namespace test
 }  // namespace base

@@ -133,8 +133,6 @@ void ScopedPowerMonitorTestSource::GenerateThermalThrottlingEvent(
   power_monitor_test_source_->GenerateThermalThrottlingEvent(new_thermal_state);
 }
 
-}  // namespace test
-
 PowerMonitorTestObserver::PowerMonitorTestObserver() = default;
 PowerMonitorTestObserver::~PowerMonitorTestObserver() = default;
 
@@ -157,4 +155,5 @@ void PowerMonitorTestObserver::OnThermalStateChange(
   last_thermal_state_ = new_state;
 }
 
+}  // namespace test
 }  // namespace base

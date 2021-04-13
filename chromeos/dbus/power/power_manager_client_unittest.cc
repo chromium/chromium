@@ -196,16 +196,17 @@ class TestDelegate : public PowerManagerClient::RenderProcessManagerDelegate {
   DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
-// Local implementation of base::PowerMonitorTestObserver to add callback to
-// OnThermalStateChange.
-class PowerMonitorTestObserverLocal : public base::PowerMonitorTestObserver {
+// Local implementation of base::test::PowerMonitorTestObserver to add callback
+// to OnThermalStateChange.
+class PowerMonitorTestObserverLocal
+    : public base::test::PowerMonitorTestObserver {
  public:
-  using base::PowerMonitorTestObserver::PowerMonitorTestObserver;
+  using base::test::PowerMonitorTestObserver::PowerMonitorTestObserver;
 
   void OnThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state) override {
     ASSERT_TRUE(cb);
-    base::PowerMonitorTestObserver::OnThermalStateChange(new_state);
+    base::test::PowerMonitorTestObserver::OnThermalStateChange(new_state);
     std::move(cb).Run();
   }
 
