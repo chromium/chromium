@@ -29,6 +29,7 @@ def _append_to_expectation_dict(exp_dict,
                                 exp_file,
                                 test_path,
                                 test_statuses,
+                                is_default_pass=False,
                                 trailing_comments=""):
     """Appends expectation lines to an expectation dict.
 
@@ -39,10 +40,13 @@ def _append_to_expectation_dict(exp_dict,
         exp_file: str, name of the expectation file (eg: NeverFixTests, FooTests)
         test_path: str, the path to set expectations for
         test_status: str, the statuses of the test
+        is_default_pass: bool, is_default_pass flag for the new expectation
         trailing_comments: str, comments at the end of the expectation line.
     """
     if exp_file not in exp_dict:
         exp_dict[exp_file] = "# results: [ PASS FAILURE TIMEOUT CRASH SKIP ]\n"
+    if is_default_pass:
+        return
     exp_dict[exp_file] += ("%s [ %s ]%s\n" %
                            (test_path, test_statuses, trailing_comments))
 
@@ -64,6 +68,7 @@ def _make_expectation_with_dict(port, expectation_dict):
 def _make_expectation(port,
                       test_path,
                       test_statuses,
+                      is_default_pass=False,
                       trailing_comments=""):
     """Creates an expectation object for a single test or directory.
 
@@ -71,6 +76,7 @@ def _make_expectation(port,
         port: the port to run against
         test_path: str, the path to set expectations for
         test_status: str, the statuses of the test
+        is_default_pass: bool, is_default_pass flag for the new expectation
         trailing_comments: str, comments at the end of the expectation line.
 
     Returns:
@@ -78,7 +84,7 @@ def _make_expectation(port,
     """
     expectation_dict = OrderedDict()
     _append_to_expectation_dict(expectation_dict, "expectations", test_path,
-                                test_statuses, trailing_comments)
+                                test_statuses, is_default_pass, trailing_comments)
     return _make_expectation_with_dict(port, expectation_dict)
 
 
@@ -534,8 +540,7 @@ class WPTMetadataBuilderTest(unittest.TestCase):
         test_and_status_dict = metadata_builder.get_tests_needing_metadata()
         self.assertEqual(1, len(test_and_status_dict))
         self.assertTrue(test_name in test_and_status_dict)
-        self.assertEqual(TEST_TIMEOUT | SUBTEST_FAIL,
-                         test_and_status_dict[test_name])
+        self.assertEqual(TEST_TIMEOUT, test_and_status_dict[test_name])
 
     def test_expectations_across_files(self):
         """Check the inheritance order of expectations across several files."""
@@ -648,14 +653,11 @@ class WPTMetadataBuilderTest(unittest.TestCase):
         self.assertEqual("test.html.ini", filename)
         self.assertEqual("[test.html]\n  expected: [FAIL, ERROR]\n", contents)
 
-    def test_use_subtest_results_flag_with_baseline(self):
-        """A test may have a failing baseline because there are subtest failures.
-        When the wptrunner see's the failing subtest it will return failure
-        for the test since we are not setting expectations for the subtest in
-        the metadata. However the expected result will be set to FAIL in the
-        JSON results and the CI will stay green."""
-        test_name = "external/wpt/test.html"
+    def test_use_subtest_results_flag_with_baseline_and_timeout(self):
+        """If a test has both baseline and a non-default-pass expectation, do not
+        derive expectation from the baseline"""
         # Create a baseline with a failing subtest, and a TIMEOUT expectation
+        test_name = "external/wpt/test.html"
         baseline_filename = self.port.expected_filename(test_name, '.txt')
         self.host.filesystem.write_text_file(
             baseline_filename,
@@ -670,13 +672,42 @@ class WPTMetadataBuilderTest(unittest.TestCase):
 
         self.assertEqual(1, len(test_and_status_dict))
         self.assertTrue(test_name in test_and_status_dict)
-        self.assertEqual(SUBTEST_FAIL | TEST_TIMEOUT,
-                         test_and_status_dict[test_name])
+        self.assertEqual(TEST_TIMEOUT, test_and_status_dict[test_name])
 
         filename, contents = metadata_builder.get_metadata_filename_and_contents(
             test_name, test_and_status_dict[test_name])
         self.assertEqual("test.html.ini", filename)
-        self.assertEqual("[test.html]\n  expected: [FAIL, ERROR, TIMEOUT]\n",
+        self.assertEqual("[test.html]\n  expected: [TIMEOUT]\n",
+                         contents)
+
+    def test_use_subtest_results_flag_with_baseline_and_default_pass(self):
+        """A test may have a failing baseline because there are subtest failures.
+        When the wptrunner see's the failing subtest it will return failure
+        for the test since we are not setting expectations for the subtest in
+        the metadata. However the expected result will be set to FAIL in the
+        JSON results and the CI will stay green."""
+        # Create a baseline with a failing subtest, and a default pass expectation
+        test_name = "external/wpt/test.html"
+        baseline_filename = self.port.expected_filename(test_name, '.txt')
+        self.host.filesystem.write_text_file(
+            baseline_filename,
+            "This is a test\nFAIL some subtest\nPASS another subtest\n")
+        expectations = _make_expectation(self.port, test_name,
+                                         "Pass", is_default_pass=True)
+
+        metadata_builder = WPTMetadataBuilder(expectations, self.port)
+        metadata_builder.use_subtest_results = True
+
+        test_and_status_dict = metadata_builder.get_tests_needing_metadata()
+
+        self.assertEqual(1, len(test_and_status_dict))
+        self.assertTrue(test_name in test_and_status_dict)
+        self.assertEqual(SUBTEST_FAIL, test_and_status_dict[test_name])
+
+        filename, contents = metadata_builder.get_metadata_filename_and_contents(
+            test_name, test_and_status_dict[test_name])
+        self.assertEqual("test.html.ini", filename)
+        self.assertEqual("[test.html]\n  expected: [FAIL, ERROR]\n",
                          contents)
 
     def test_without_use_subtest_results_flag_with_baseline(self):
@@ -696,7 +727,7 @@ class WPTMetadataBuilderTest(unittest.TestCase):
 
         self.assertEqual(1, len(test_and_status_dict))
         self.assertTrue(test_name in test_and_status_dict)
-        self.assertEqual(TEST_TIMEOUT | SUBTEST_FAIL,
+        self.assertEqual(TEST_TIMEOUT,
                          test_and_status_dict[test_name])
 
         filename, contents = metadata_builder.get_metadata_filename_and_contents(
