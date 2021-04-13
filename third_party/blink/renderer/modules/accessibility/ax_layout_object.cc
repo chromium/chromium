@@ -174,6 +174,9 @@ static bool ShouldIgnoreListItem(Node* node) {
   // A list item is presentational if its parent is a native list but
   // it has an explicit ARIA role set on it that's anything other than "list".
   Element* parent = FlatTreeTraversal::ParentElement(*node);
+  if (!parent)
+    return false;
+
   if (IsA<HTMLMenuElement>(*parent) || IsA<HTMLUListElement>(*parent) ||
       IsA<HTMLOListElement>(*parent)) {
     AtomicString role = AccessibleNode::GetPropertyOrARIAAttribute(
