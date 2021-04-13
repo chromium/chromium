@@ -285,6 +285,8 @@ void ImageReaderGLOwner::UpdateTexImage() {
     return_code = loader_.AImageReader_acquireLatestImageAsync(
         image_reader_, &image, &acquire_fence_fd);
   }
+  base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
+                           return_code);
 
   // TODO(http://crbug.com/846050).
   // Need to add some better error handling if below error occurs. Currently we
@@ -292,24 +294,16 @@ void ImageReaderGLOwner::UpdateTexImage() {
   switch (return_code) {
     case AMEDIA_ERROR_INVALID_PARAMETER:
       LOG(ERROR) << " Image is null";
-      base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
-                               return_code);
       return;
     case AMEDIA_IMGREADER_MAX_IMAGES_ACQUIRED:
       LOG(ERROR)
           << "number of concurrently acquired images has reached the limit";
-      base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
-                               return_code);
       return;
     case AMEDIA_IMGREADER_NO_BUFFER_AVAILABLE:
       LOG(ERROR) << "no buffers currently available in the reader queue";
-      base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
-                               return_code);
       return;
     case AMEDIA_ERROR_UNKNOWN:
       LOG(ERROR) << "method fails for some other reasons";
-      base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
-                               return_code);
       return;
     case AMEDIA_OK:
       // Method call succeeded.
