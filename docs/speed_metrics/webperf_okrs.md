@@ -2,6 +2,37 @@
 
 [TOC]
 
+## 2021 Q2 Objectives
+
+* Publish public proposal on **smoothness**.
+* **Responsiveness**:
+  * Socialize publicly our definition of interactions and normalization options.
+  * Implement [interactionID](https://docs.google.com/presentation/d/1nxNFwsGqYy7WmIZ3uv_0HsSIQMSXQA9_PqlOD3V74Us/edit#slide=id.p).
+* Enable exposing information about **Single Page Apps** via
+  [navigation IDs](https://docs.google.com/presentation/d/1snPIu2GJ_JO7esJ_3YmOAiXC_g4PeQW3jclYx1u3Qzs/edit#slide=id.p).
+* Expose performance information about **back-forward cache** navigations to performance timeline.
+* Specify and launch redefined (window-based) **Cumulative Layout Shift**.
+* Ship **JS Sampling Profiler**.
+* Facilitate **Resource Timing** integration into Fetch and change implementation as needed.
+* Obtain more accurate **abandonment** rates on Chrome to determine what to do about the problem.
+* Implement and ship [droppedEntriesCount](https://w3c.github.io/performance-timeline/#dom-performanceobservercallbackoptions-droppedentriescount).
+
+## 2021 Q1 Progress
+
+* **performance.measureMemory** was shipped! See the blog [post](https://web.dev/monitor-total-page-memory-usage/).
+* **Single Page Apps**:
+  * Provided feedback to the AppHistory [explainer](https://github.com/WICG/app-history/blob/main/README.md).
+  * Discussed how to extend performance timeline to include SPAs in the WebPerf WG.
+* Improved **abandonment** data on Chrome to account for FCP more accurately.
+* Continued work on **smoothness** and **responsiveness** proposals.
+* Proposed way to include **back-forward cache** performance information to the WebPerf WG.
+* Organized **A/B testing workshop** to better understand the problem space: see
+  [notes](https://docs.google.com/document/d/1rmVjH7-5hGk_VB0EwErM1tcEVz100XZDYlaSd75WbRE/edit?ts=601c4a9c).
+* Completed GC integration work for the **JS Sampling Profiler**.
+* Various improvements for **Layout Instability** which especially impact carousels. See
+  [changelog](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/metrics_changelog/cls.md).
+* Decided redefinition of **Cumulative Layout Shift** and announced in [post](https://web.dev/evolving-cls/).
+
 ## 2021 Q1 Objectives
 
 * **performance.measureMemory**: ship the API.
