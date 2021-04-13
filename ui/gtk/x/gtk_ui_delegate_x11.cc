@@ -15,7 +15,6 @@
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
-#include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/x/gtk_event_loop_x11.h"
 #include "ui/platform_window/x11/x11_window.h"
 #include "ui/platform_window/x11/x11_window_manager.h"
@@ -39,8 +38,6 @@ namespace ui {
 GtkUiDelegateX11::GtkUiDelegateX11(x11::Connection* connection)
     : connection_(connection) {
   DCHECK(connection_);
-  CHECK(gtk::LoadGtk());
-
   gdk_set_allowed_backends("x11");
   // GDK_BACKEND takes precedence over gdk_set_allowed_backends(), so override
   // it to ensure we get the x11 backend.

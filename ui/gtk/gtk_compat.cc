@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/no_destructor.h"
-#include "ui/gtk/gtk_buildflags.h"
 #include "ui/gtk/gtk_stubs.h"
 
 namespace gtk {
@@ -68,7 +67,13 @@ void* GetLibGtk() {
   return GetLibGtk3();
 }
 
-bool LoadGtkImpl(int gtk_version) {
+gfx::Insets InsetsFromGtkBorder(const GtkBorder& border) {
+  return gfx::Insets(border.top, border.left, border.bottom, border.right);
+}
+
+}  // namespace
+
+bool LoadGtk(int gtk_version) {
   if (gtk_version < 4) {
     ui_gtk::InitializeGdk_pixbuf(GetLibGdkPixbuf());
     ui_gtk::InitializeGdk(GetLibGdk3());
@@ -85,17 +90,6 @@ bool LoadGtkImpl(int gtk_version) {
     ui_gtk::InitializeGtk(GetLibGtk4());
   }
   return true;
-}
-
-gfx::Insets InsetsFromGtkBorder(const GtkBorder& border) {
-  return gfx::Insets(border.top, border.left, border.bottom, border.right);
-}
-
-}  // namespace
-
-bool LoadGtk() {
-  static bool loaded = LoadGtkImpl(BUILDFLAG(GTK_VERSION));
-  return loaded;
 }
 
 const base::Version& GtkVersion() {

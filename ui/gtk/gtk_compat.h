@@ -31,7 +31,7 @@ extern "C" {
 namespace gtk {
 
 // Loads libgtk and related libraries and returns true on success.
-COMPONENT_EXPORT(GTK) bool LoadGtk();
+COMPONENT_EXPORT(GTK) bool LoadGtk(int gtk_version);
 
 const base::Version& GtkVersion();
 
