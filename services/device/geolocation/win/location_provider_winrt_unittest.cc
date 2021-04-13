@@ -4,9 +4,11 @@
 
 #include "services/device/geolocation/win/location_provider_winrt.h"
 
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/win/core_winrt_util.h"
+#include "base/win/scoped_winrt_initializer.h"
+#include "base/win/windows_version.h"
 #include "services/device/geolocation/win/fake_geocoordinate_winrt.h"
 #include "services/device/geolocation/win/fake_geolocator_winrt.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
@@ -80,17 +82,20 @@ class TestingLocationProviderWinrt : public LocationProviderWinrt {
 };
 
 class LocationProviderWinrtTest : public testing::Test {
- public:
-  static void SetUpTestSuite() {
-    base::win::RoInitialize(RO_INIT_TYPE::RO_INIT_MULTITHREADED);
-  }
-
  protected:
   LocationProviderWinrtTest()
       : observer_(
             std::make_unique<MockLocationObserver>(run_loop_.QuitClosure())),
         callback_(base::BindRepeating(&MockLocationObserver::OnLocationUpdate,
                                       base::Unretained(observer_.get()))) {}
+
+  void SetUp() override {
+    if (base::win::GetVersion() < base::win::Version::WIN8)
+      GTEST_SKIP();
+
+    winrt_initializer_.emplace();
+    ASSERT_TRUE(winrt_initializer_->Succeeded());
+  }
 
   void InitializeProvider(
       PositionStatus position_status = PositionStatus::PositionStatus_Ready) {
@@ -112,6 +117,7 @@ class LocationProviderWinrtTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
+  base::Optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
   const std::unique_ptr<MockLocationObserver> observer_;
   const LocationProvider::LocationProviderUpdateCallback callback_;
   std::unique_ptr<TestingLocationProviderWinrt> provider_;
