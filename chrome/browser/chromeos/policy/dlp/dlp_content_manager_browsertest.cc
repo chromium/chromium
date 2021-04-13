@@ -19,6 +19,7 @@
 #include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
@@ -53,8 +54,9 @@ constexpr char kScreenCapturePausedNotificationId[] =
     "screen_capture_dlp_paused-label";
 constexpr char kScreenCaptureResumedNotificationId[] =
     "screen_capture_dlp_resumed-label";
+constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
 
-constexpr char kAllowedUrl[] = "https://example.com";
+constexpr char kExampleUrl[] = "https://example.com";
 constexpr char kUrl1[] = "https://example1.com";
 constexpr char kUrl2[] = "https://example2.com";
 constexpr char kUrl3[] = "https://example3.com";
@@ -425,7 +427,51 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
   EXPECT_EQ(kScreenShareRestricted,
             helper_.GetRestrictionSetForURL(GURL(kUrl4)));
   EXPECT_EQ(DlpContentRestrictionSet(),
-            helper_.GetRestrictionSetForURL(GURL(kAllowedUrl)));
+            helper_.GetRestrictionSetForURL(GURL(kExampleUrl)));
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingRestricted) {
+  ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  DlpContentManager* manager = DlpContentManager::Get();
+
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  // Set up printing restriction.
+  EXPECT_FALSE(manager->IsPrintingRestricted(web_contents));
+  helper_.ChangeConfidentiality(web_contents, kPrintRestricted);
+  EXPECT_TRUE(manager->IsPrintingRestricted(web_contents));
+
+  // Start printing and check for notification about printing restriction.
+  printing::StartPrint(web_contents,
+                       /*print_renderer=*/mojo::NullAssociatedRemote(),
+                       /*print_preview_disabled=*/false,
+                       /*print_only_selection=*/false);
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNoRestriction) {
+  ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  DlpContentManager* manager = DlpContentManager::Get();
+
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  EXPECT_FALSE(manager->IsPrintingRestricted(web_contents));
+
+  // Start printing and check that there is no notification when printing is not
+  // restricted.
+  printing::StartPrint(web_contents,
+                       /*print_renderer=*/mojo::NullAssociatedRemote(),
+                       /*print_preview_disabled=*/false,
+                       /*print_only_selection=*/false);
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kPrintBlockedNotificationId));
 }
 
 }  // namespace policy
