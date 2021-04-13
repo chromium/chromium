@@ -222,6 +222,13 @@ ALWAYS_INLINE uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr,
       root.AdjustPointerForExtrasAdd(allocation_start));
 }
 
+enum class Context {
+  // For tasks executed from mutator threads (safepoints).
+  kMutator,
+  // For concurrent scanner tasks.
+  kScanner
+};
+
 #if DCHECK_IS_ON()
 bool IsScannerQuarantineBitmapEmpty(char* super_page, size_t epoch) {
   auto* bitmap = QuarantineBitmapFromPointer(QuarantineBitmapType::kScanner,
@@ -257,13 +264,6 @@ class StatsCollector final {
     FOR_ALL_PCSCAN_MUTATOR_SCOPES(DECLARE_ENUM)
 #undef DECLARE_ENUM
         kNumIds,
-  };
-
-  enum class Context {
-    // For tasks executed from mutator threads (safepoints).
-    kMutator,
-    // For concurrent scanner tasks.
-    kScanner
   };
 
   template <Context context>
@@ -904,14 +904,31 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask> {
     const PCScanSnapshot& snapshot;
   };
 
-  // Used to notify other scanning threads about one thread being done.
+  // This is used:
+  // - to synchronize all scanning threads (mutators and the scanner);
+  // - for the scanner, to transition through the state machine
+  //   (kScheduled -> kScanning (ctor) -> kSweepingAndFinishing (dtor).
+  template <Context context>
   class SyncScope final {
    public:
     explicit SyncScope(PCScanTask& task) : task_(task) {
       task_.number_of_scanning_threads_.fetch_add(1, std::memory_order_relaxed);
+      if (context == Context::kScanner) {
+        // Publish the change of the state so that the mutators can join
+        // scanning and expect the consistent state.
+        task_.pcscan_.state_.store(PCScan::State::kScanning,
+                                   std::memory_order_release);
+      }
     }
     ~SyncScope() {
-      // Notify other scanning threads that this thread is done.
+      // First, notify other scanning threads that this thread is done.
+      NotifyThreads();
+      // Then, wait for other threads to finish scanning.
+      WaitForOtherThreads();
+    }
+
+   private:
+    void NotifyThreads() {
       {
         // The lock is required as otherwise there is a race between
         // fetch_sub/notify in the mutator and checking
@@ -919,11 +936,24 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask> {
         std::lock_guard<std::mutex> lock(task_.mutex_);
         task_.number_of_scanning_threads_.fetch_sub(1,
                                                     std::memory_order_relaxed);
+        if (context == Context::kScanner) {
+          // Notify mutators that scan is done and there is no need to enter
+          // or reenter the safepoint.
+          task_.pcscan_.state_.store(PCScan::State::kSweepingAndFinishing,
+                                     std::memory_order_relaxed);
+        }
       }
       task_.condvar_.notify_all();
     }
 
-   private:
+    void WaitForOtherThreads() {
+      std::unique_lock<std::mutex> lock(task_.mutex_);
+      task_.condvar_.wait(lock, [this] {
+        return !task_.number_of_scanning_threads_.load(
+            std::memory_order_relaxed);
+      });
+    }
+
     PCScanTask& task_;
   };
 
@@ -942,11 +972,6 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask> {
   // Scans all registeres partitions and marks reachable quarantined objects.
   // Returns the size of marked objects.
   void ScanPartitions();
-
-  // Waits for other scanning threads to finish. This makes sure that a mutator
-  // thread doesn't do potentially malicious work while other threads are still
-  // scanning.
-  void SynchronizeAllScanningThreads();
 
   // Clear quarantined objects and prepare card table for fast lookup
   void ClearQuarantinedObjectsAndPrepareCardTable();
@@ -1302,13 +1327,6 @@ void PCScanTask::ScanPartitions() {
   stats_.IncreaseSurvivedQuarantineSize(quarantine_size);
 }
 
-void PCScanTask::SynchronizeAllScanningThreads() {
-  std::unique_lock<std::mutex> lock(mutex_);
-  condvar_.wait(lock, [this] {
-    return !number_of_scanning_threads_.load(std::memory_order_relaxed);
-  });
-}
-
 void PCScanTask::SweepQuarantine() {
   using AccessType = QuarantineBitmap::AccessType;
 
@@ -1376,7 +1394,7 @@ void PCScanTask::RunFromMutator() {
   StatsCollector::MutatorScope overall_scope(
       stats_, StatsCollector::MutatorId::kOverall);
   {
-    SyncScope sync_scope(*this);
+    SyncScope<Context::kMutator> sync_scope(*this);
     // Mutator might start entering the safepoint while scanning was already
     // finished.
     if (!pcscan_.IsJoinable())
@@ -1396,7 +1414,6 @@ void PCScanTask::RunFromMutator() {
       ScanPartitions();
     }
   }
-  SynchronizeAllScanningThreads();
 }
 
 void PCScanTask::RunFromScanner() {
@@ -1405,7 +1422,7 @@ void PCScanTask::RunFromScanner() {
     StatsCollector::ScannerScope overall_scope(
         stats_, StatsCollector::ScannerId::kOverall);
     {
-      SyncScope sync_scope(*this);
+      SyncScope<Context::kScanner> sync_scope(*this);
       // Take snapshot of partition-alloc heap.
       snapshot_.EnsureTaken(pcscan_epoch_);
       {
@@ -1421,12 +1438,6 @@ void PCScanTask::RunFromScanner() {
         ScanPartitions();
       }
     }
-    SynchronizeAllScanningThreads();
-    // Notify mutators that scan is done and there is no need to enter
-    // or reenter the safepoint. This must be acquire-release to make sure
-    // that scanning has indeed finished.
-    pcscan_.state_.store(PCScan::State::kSweepingAndFinishing,
-                         std::memory_order_release);
     {
       // Sweep unreachable quarantined objects.
       StatsCollector::ScannerScope sweep_scope(
@@ -1510,26 +1521,16 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
 
   scheduler_.scheduling_backend().ScanStarted();
 
-  // Create PCScan task.
+  // Create PCScan task and set it as current.
   auto task = base::MakeRefCounted<PCScanTask>(*this);
-
-  // Set current task and change the state. The acquire-release semantics is
-  // needed to "publish" the change, so that mutators can expect consistent
-  // state.
   PCScanInternal::Instance().set_current_pcscan_task(task);
-  // Make sure PCScanThread is initialized since initialization can allocate and
-  // we don't want to enter safepoint yet.
-  auto& thread = PCScanThread::Instance();
-  // Publish the change of the state, so that mutators can expect consistent
-  // state.
-  state_.store(State::kScanning, std::memory_order_release);
 
   if (UNLIKELY(invocation_mode == InvocationMode::kScheduleOnlyForTesting))
     return;
 
   // Post PCScan task.
   if (LIKELY(invocation_mode == InvocationMode::kNonBlocking)) {
-    thread.PostTask(std::move(task));
+    PCScanThread::Instance().PostTask(std::move(task));
   } else {
     PA_DCHECK(InvocationMode::kBlocking == invocation_mode ||
               InvocationMode::kForcedBlocking == invocation_mode);
