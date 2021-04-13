@@ -180,6 +180,14 @@ void AppServiceAppWindowArcTracker::OnTaskDescriptionChanged(
 
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) ||
       icon.icon_png_data.has_value()) {
+    // If |icon| is empty, and non-adaptive icon as the default value, don't
+    // call ArcRawIconPngDataToImageSkia, because it might return the default
+    // play store icon to replace the app icon.
+    if (!icon.is_adaptive_icon && (!icon.icon_png_data.has_value() ||
+                                   icon.icon_png_data.value().empty())) {
+      return;
+    }
+
     apps::ArcRawIconPngDataToImageSkia(
         icon.Clone(), kArcAppWindowIconSize,
         base::BindOnce(&AppServiceAppWindowArcTracker::OnIconLoaded,
