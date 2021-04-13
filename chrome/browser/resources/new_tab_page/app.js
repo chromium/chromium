@@ -22,7 +22,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {BackgroundManager} from './background_manager.js';
 import {BackgroundSelection, BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
 import {recordLoadDuration} from './metrics_utils.js';
-import {Module} from './modules/module_descriptor.js';
+import {ModuleDescriptor} from './modules/module_descriptor.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {oneGoogleBarApi} from './one_google_bar_api.js';
@@ -244,8 +244,8 @@ class AppElement extends PolymerElement {
        */
       lazyRender_: Boolean,
 
-      /** @private {!Array<!Module>} */
-      modules_: Object,
+      /** @private {!Array<!ModuleDescriptor>} */
+      moduleDescriptors_: Object,
 
       /** @private {!Array<string>} */
       dismissedModules_: {
@@ -553,15 +553,15 @@ class AppElement extends PolymerElement {
         !loadTimeData.getBoolean('modulesEnabled')) {
       return;
     }
-    const modules = await ModuleRegistry.getInstance().initializeModules(
+    const descriptors = await ModuleRegistry.getInstance().initializeModules(
         loadTimeData.getInteger('modulesLoadTimeout'));
-    if (modules) {
+    if (descriptors) {
       this.pageHandler_.onModulesLoadedWithData();
     }
     if (!loadTimeData.getBoolean('modulesEnabled')) {
       return;
     }
-    this.modules_ = modules;
+    this.moduleDescriptors_ = descriptors;
   }
 
   /** @private */
@@ -654,7 +654,7 @@ class AppElement extends PolymerElement {
         loadTimeData.getBoolean('modulesEnabled')) {
       recordLoadDuration(
           'NewTabPage.Modules.ShownTime', WindowProxy.getInstance().now());
-      this.modules_.forEach(({descriptor: {id}}) => {
+      this.moduleDescriptors_.forEach(({id}) => {
         chrome.metricsPrivate.recordBoolean(
             `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
             !this.disabledModules_.all &&
@@ -898,7 +898,7 @@ class AppElement extends PolymerElement {
    * @private
    */
   onDismissModule_(e) {
-    const id = $$(this, '#modules').itemForElement(e.target).descriptor.id;
+    const id = $$(this, '#modules').itemForElement(e.target).id;
     const restoreCallback = e.detail.restoreCallback;
     this.removedModuleData_ = {
       message: e.detail.message,
@@ -925,7 +925,7 @@ class AppElement extends PolymerElement {
    * @private
    */
   onDisableModule_(e) {
-    const id = $$(this, '#modules').itemForElement(e.target).descriptor.id;
+    const id = $$(this, '#modules').itemForElement(e.target).id;
     const restoreCallback = e.detail.restoreCallback;
     this.removedModuleData_ = {
       message: e.detail.message,

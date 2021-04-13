@@ -10,11 +10,10 @@ import {WindowProxy} from '../window_proxy.js';
  * module descriptor and register it at the NTP.
  */
 
-/** @typedef {function(): !Promise<?HTMLElement>} */
+/**
+ * @typedef {function(): !Promise<?HTMLElement>}
+ */
 let InitializeModuleCallback;
-
-/** @typedef {{element: !HTMLElement, descriptor: !ModuleDescriptor}} */
-export let Module;
 
 export class ModuleDescriptor {
   /**
@@ -27,6 +26,8 @@ export class ModuleDescriptor {
     this.id_ = id;
     /** @private {string} */
     this.name_ = name;
+    /** @private {HTMLElement} */
+    this.element_ = null;
     /** @private {!InitializeModuleCallback} */
     this.initializeCallback_ = initializeCallback;
   }
@@ -41,23 +42,29 @@ export class ModuleDescriptor {
     return this.name_;
   }
 
+  /** @return {?HTMLElement} */
+  get element() {
+    return this.element_;
+  }
+
   /**
-   * Initializes the module and returns the module element on success.
+   * Initializes the module. On success, |this.element| will be populated after
+   * the returned promise has resolved.
    * @param {number} timeout Timeout in milliseconds after which initialization
    *     aborts.
-   * @return {!Promise<?HTMLElement>}
+   * @return {!Promise}
    */
   async initialize(timeout) {
     const loadStartTime = WindowProxy.getInstance().now();
-    const element = await Promise.race([
+    this.element_ = await Promise.race([
       this.initializeCallback_(), new Promise(resolve => {
         WindowProxy.getInstance().setTimeout(() => {
           resolve(null);
         }, timeout);
       })
     ]);
-    if (!element) {
-      return null;
+    if (!this.element_) {
+      return;
     }
     const loadEndTime = WindowProxy.getInstance().now();
     const duration = loadEndTime - loadStartTime;
@@ -65,6 +72,5 @@ export class ModuleDescriptor {
     recordLoadDuration(`NewTabPage.Modules.Loaded.${this.id_}`, loadEndTime);
     recordDuration('NewTabPage.Modules.LoadDuration', duration);
     recordDuration(`NewTabPage.Modules.LoadDuration.${this.id_}`, duration);
-    return element;
   }
 }

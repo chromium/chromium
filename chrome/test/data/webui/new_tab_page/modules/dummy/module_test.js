@@ -37,7 +37,8 @@ suite('NewTabPageModulesDummyModuleTest', () => {
       },
     ];
     testProxy.handler.setResultFor('getData', Promise.resolve({data}));
-    const module = await dummyDescriptor.initialize();
+    await dummyDescriptor.initialize();
+    const module = dummyDescriptor.element;
     document.body.append(module);
     module.$.tileList.render();
 
@@ -52,7 +53,8 @@ suite('NewTabPageModulesDummyModuleTest', () => {
 
   test('creates module without data', async () => {
     // Act.
-    const module = await dummyDescriptor.initialize();
+    await dummyDescriptor.initialize();
+    const module = dummyDescriptor.element;
     document.body.append(module);
     module.$.tileList.render();
 

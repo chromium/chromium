@@ -50,7 +50,8 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     };
     testProxy.handler.setResultFor('getFiles', Promise.resolve(data));
 
-    const module = await driveDescriptor.initialize();
+    await driveDescriptor.initialize();
+    const module = driveDescriptor.element;
     document.body.append(module);
     await testProxy.handler.whenCalled('getFiles');
     module.$.fileRepeat.render();
@@ -83,8 +84,8 @@ suite('NewTabPageModulesDriveModuleTest', () => {
   test('documents do not show without data', async () => {
     testProxy.handler.setResultFor('getFiles', Promise.resolve({files: []}));
 
-    const module = await driveDescriptor.initialize();
+    await driveDescriptor.initialize();
     await testProxy.handler.whenCalled('getFiles');
-    assertFalse(!!module);
+    assertFalse(!!driveDescriptor.element);
   });
 });

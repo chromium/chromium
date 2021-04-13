@@ -38,10 +38,10 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
     windowProxy.setResultFor('now', 123);
 
     // Act.
-    const moduleElement = await moduleDescriptor.initialize();
+    await moduleDescriptor.initialize();
 
     // Assert.
-    assertEquals(element, moduleElement);
+    assertEquals(element, moduleDescriptor.element);
     assertEquals(1, metrics.count('NewTabPage.Modules.Loaded'));
     assertEquals(1, metrics.count('NewTabPage.Modules.Loaded', 128));
     assertEquals(1, metrics.count('NewTabPage.Modules.Loaded.foo'));
@@ -58,10 +58,10 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
         new ModuleDescriptor('foo', 'bar', () => Promise.resolve(null));
 
     // Act.
-    const moduleElement = await moduleDescriptor.initialize();
+    await moduleDescriptor.initialize();
 
     // Assert.
-    assertEquals(null, moduleElement);
+    assertEquals(null, moduleDescriptor.element);
     assertEquals(0, metrics.count('NewTabPage.Modules.Loaded'));
     assertEquals(0, metrics.count('NewTabPage.Modules.Loaded.foo'));
     assertEquals(0, metrics.count('NewTabPage.Modules.LoadDuration'));
@@ -77,10 +77,10 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
     const initializePromise = moduleDescriptor.initialize(123);
     const [callback, timeout] = await windowProxy.whenCalled('setTimeout');
     callback();
-    const moduleElement = await initializePromise;
+    await initializePromise;
 
     // Assert.
-    assertEquals(null, moduleElement);
+    assertEquals(null, moduleDescriptor.element);
     assertEquals(123, timeout);
   });
 });

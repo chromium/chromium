@@ -28,11 +28,11 @@ suite('NewTabPageModulesTaskModuleTest', () => {
         'getPrimaryTask', Promise.resolve({task: null}));
 
     // Act.
-    const moduleElement = await shoppingTasksDescriptor.initialize();
+    await shoppingTasksDescriptor.initialize();
 
     // Assert.
     assertEquals(1, testProxy.handler.getCallCount('getPrimaryTask'));
-    assertEquals(null, moduleElement);
+    assertEquals(null, shoppingTasksDescriptor.element);
   });
 
   test('creates module if task', async () => {
@@ -69,7 +69,8 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     testProxy.handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
     // Act.
-    const moduleElement = await shoppingTasksDescriptor.initialize();
+    await shoppingTasksDescriptor.initialize();
+    const moduleElement = shoppingTasksDescriptor.element;
     document.body.append(moduleElement);
     moduleElement.$.taskItemsRepeat.render();
     moduleElement.$.relatedSearchesRepeat.render();
@@ -122,7 +123,8 @@ suite('NewTabPageModulesTaskModuleTest', () => {
                                     })),
       }
     }));
-    const moduleElement = await shoppingTasksDescriptor.initialize();
+    await shoppingTasksDescriptor.initialize();
+    const moduleElement = shoppingTasksDescriptor.element;
     document.body.append(moduleElement);
     moduleElement.$.taskItemsRepeat.render();
     moduleElement.$.relatedSearchesRepeat.render();
@@ -179,7 +181,8 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     testProxy.handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
     // Arrange.
-    const moduleElement = await shoppingTasksDescriptor.initialize();
+    await shoppingTasksDescriptor.initialize();
+    const moduleElement = shoppingTasksDescriptor.element;
     document.body.append(moduleElement);
     await flushTasks();
 
