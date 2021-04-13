@@ -67,6 +67,10 @@
 #include "chrome/browser/ui/profile_picker.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/profiles/profiles_state.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using base::UserMetricsAction;
 using content::BrowserThread;
 
@@ -167,6 +171,13 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
     }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!AreSecondaryProfilesAllowed() && !profile->IsMainProfile()) {
+    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (unblock_extensions)

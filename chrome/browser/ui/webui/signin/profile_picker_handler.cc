@@ -193,6 +193,22 @@ base::Value CreateProfileEntry(const ProfileAttributesEntry* entry,
   return profile_entry;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+Profile* FindPrimaryProfile() {
+  const auto profiles =
+      g_browser_process->profile_manager()->GetLoadedProfiles();
+  const auto primary_profile_iter = std::find_if(
+      profiles.cbegin(), profiles.cend(),
+      [](const Profile* const profile) { return profile->IsMainProfile(); });
+
+  if (primary_profile_iter == profiles.cend()) {
+    return nullptr;
+  }
+
+  return *primary_profile_iter;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 }  // namespace
 
 ProfilePickerHandler::ProfilePickerHandler() = default;
@@ -357,6 +373,20 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
     }
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profiles::AreSecondaryProfilesAllowed()) {
+    Profile* primary_profile = FindPrimaryProfile();
+    if (primary_profile && primary_profile->GetPath() != *profile_path) {
+      LoginUIServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui())->GetOriginalProfile())
+          ->SetProfileBlockingErrorMessage();
+      ProfilePickerForceSigninDialog::ShowDialogAndDisplayErrorMessage(
+          web_ui()->GetWebContents()->GetBrowserContext());
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   profiles::SwitchToProfile(
       *profile_path, /*always_create=*/false,
