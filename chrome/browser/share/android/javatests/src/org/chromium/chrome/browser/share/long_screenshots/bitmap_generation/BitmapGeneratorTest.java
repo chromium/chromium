@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
@@ -60,6 +61,7 @@ public class BitmapGeneratorTest {
     @Test
     @LargeTest
     @Feature({"LongScreenshots"})
+    @DisabledTest(message = "https://crbug.com/1183524")
     public void testCapturedNewOne() throws Exception {
         Runnable onErrorCallback = new Runnable() {
             @Override
