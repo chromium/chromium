@@ -553,6 +553,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
+  if (init->hasDuration()) {
+    frame->metadata().frame_duration =
+        base::TimeDelta::FromMicroseconds(init->duration());
+  }
+
   for (wtf_size_t i = 0; i < planes.size(); ++i) {
     const auto minimum_size =
         media::VideoFrame::PlaneSize(media_fmt, i, coded_size);
