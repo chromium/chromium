@@ -35,6 +35,7 @@
 #include "pdf/ppapi_migration/url_loader.h"
 #include "ppapi/c/pp_errors.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -54,6 +55,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/events/blink/blink_event_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
@@ -224,7 +226,24 @@ void PdfViewWebPlugin::UpdateVisibility(bool visibility) {}
 blink::WebInputEventResult PdfViewWebPlugin::HandleInputEvent(
     const blink::WebCoalescedInputEvent& event,
     ui::Cursor* cursor) {
-  return blink::WebInputEventResult::kNotHandled;
+  // TODO(crbug.com/702993): The input events received by the Pepper plugin
+  // already have the device scale applied. The scaling done here should be
+  // moved into `PdfViewPluginBase::HandleInputEvent()` once the Pepper plugin
+  // is removed.
+  std::unique_ptr<blink::WebInputEvent> scaled_event =
+      ui::ScaleWebInputEvent(event.Event(), device_scale());
+
+  const blink::WebInputEvent& event_to_handle =
+      scaled_event ? *scaled_event : event.Event();
+
+  const blink::WebInputEventResult result =
+      PdfViewPluginBase::HandleInputEvent(event_to_handle)
+          ? blink::WebInputEventResult::kHandledApplication
+          : blink::WebInputEventResult::kNotHandled;
+
+  // TODO(crbug.com/1191817): Accordingly change `cursor`.
+
+  return result;
 }
 
 void PdfViewWebPlugin::DidReceiveResponse(
