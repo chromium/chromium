@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
-import org.chromium.chrome.browser.feed.webfeed.R; // TODO(petewil): move to feed.feedmanagement?
+import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
