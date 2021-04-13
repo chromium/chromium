@@ -3608,7 +3608,9 @@ void LocalFrame::ExtractSmartClipData(const gfx::Rect& rect,
   String clip_html;
   gfx::Rect clip_rect;
   ExtractSmartClipDataInternal(rect, clip_text, clip_html, clip_rect);
-  std::move(callback).Run(clip_text, clip_html, clip_rect);
+  std::move(callback).Run(clip_text.IsNull() ? g_empty_string : clip_text,
+                          clip_html.IsNull() ? g_empty_string : clip_html,
+                          clip_rect);
 }
 #endif  // defined(OS_ANDROID)
 
