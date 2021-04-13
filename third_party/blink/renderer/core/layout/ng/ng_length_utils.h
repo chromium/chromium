@@ -68,12 +68,13 @@ CORE_EXPORT bool BlockLengthUnresolvable(
 //  - |border_padding| the resolved border, and padding of the node.
 //  - |MinMaxSizes| is only used when the length is intrinsic (fit-content).
 //  - |Length| is the length to resolve.
-CORE_EXPORT LayoutUnit
-ResolveInlineLengthInternal(const NGConstraintSpace&,
-                            const ComputedStyle&,
-                            const NGBoxStrut& border_padding,
-                            const base::Optional<MinMaxSizes>&,
-                            const Length&);
+CORE_EXPORT LayoutUnit ResolveInlineLengthInternal(
+    const NGConstraintSpace&,
+    const ComputedStyle&,
+    const NGBoxStrut& border_padding,
+    const base::Optional<MinMaxSizes>&,
+    const Length&,
+    LayoutUnit available_inline_size_adjustment = LayoutUnit());
 
 // Same as ResolveInlineLengthInternal, except here |intrinsic_size| roughly
 // plays the part of |MinMaxSizes|.
@@ -94,7 +95,8 @@ inline LayoutUnit ResolveMinInlineLength(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const MinMaxSizesFunc& min_max_sizes_func,
-    const Length& length) {
+    const Length& length,
+    LayoutUnit available_inline_size_adjustment = LayoutUnit()) {
   if (LIKELY(length.IsAuto() ||
              InlineLengthUnresolvable(constraint_space, length)))
     return border_padding.InlineSum();
@@ -108,7 +110,8 @@ inline LayoutUnit ResolveMinInlineLength(
   }
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes, length);
+                                     min_max_sizes, length,
+                                     available_inline_size_adjustment);
 }
 
 template <>
@@ -117,13 +120,15 @@ inline LayoutUnit ResolveMinInlineLength<base::Optional<MinMaxSizes>>(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const base::Optional<MinMaxSizes>& min_max_sizes,
-    const Length& length) {
+    const Length& length,
+    LayoutUnit available_inline_size_adjustment) {
   if (LIKELY(length.IsAuto() ||
              InlineLengthUnresolvable(constraint_space, length)))
     return border_padding.InlineSum();
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes, length);
+                                     min_max_sizes, length,
+                                     available_inline_size_adjustment);
 }
 
 // Used for resolving max inline lengths, (|ComputedStyle::MaxLogicalWidth|).
@@ -133,7 +138,8 @@ inline LayoutUnit ResolveMaxInlineLength(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const MinMaxSizesFunc& min_max_sizes_func,
-    const Length& length) {
+    const Length& length,
+    LayoutUnit available_inline_size_adjustment = LayoutUnit()) {
   if (LIKELY(length.IsNone() ||
              InlineLengthUnresolvable(constraint_space, length)))
     return LayoutUnit::Max();
@@ -147,7 +153,8 @@ inline LayoutUnit ResolveMaxInlineLength(
   }
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes, length);
+                                     min_max_sizes, length,
+                                     available_inline_size_adjustment);
 }
 
 template <>
@@ -156,13 +163,15 @@ inline LayoutUnit ResolveMaxInlineLength<base::Optional<MinMaxSizes>>(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const base::Optional<MinMaxSizes>& min_max_sizes,
-    const Length& length) {
+    const Length& length,
+    LayoutUnit available_inline_size_adjustment) {
   if (LIKELY(length.IsNone() ||
              InlineLengthUnresolvable(constraint_space, length)))
     return LayoutUnit::Max();
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes, length);
+                                     min_max_sizes, length,
+                                     available_inline_size_adjustment);
 }
 
 // Used for resolving main inline lengths, (|ComputedStyle::LogicalWidth|).
@@ -172,7 +181,8 @@ inline LayoutUnit ResolveMainInlineLength(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const MinMaxSizesFunc& min_max_sizes_func,
-    const Length& length) {
+    const Length& length,
+    LayoutUnit available_inline_size_adjustment = LayoutUnit()) {
   DCHECK(!length.IsAuto());
   base::Optional<MinMaxSizes> min_max_sizes;
   if (length.IsContentOrIntrinsic()) {
@@ -183,7 +193,8 @@ inline LayoutUnit ResolveMainInlineLength(
   }
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes, length);
+                                     min_max_sizes, length,
+                                     available_inline_size_adjustment);
 }
 
 template <>
@@ -192,10 +203,12 @@ inline LayoutUnit ResolveMainInlineLength<base::Optional<MinMaxSizes>>(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const base::Optional<MinMaxSizes>& min_max_sizes,
-    const Length& length) {
+    const Length& length,
+    LayoutUnit available_inline_size_adjustment) {
   DCHECK(!length.IsAuto());
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes, length);
+                                     min_max_sizes, length,
+                                     available_inline_size_adjustment);
 }
 
 // Used for resolving min block lengths, (|ComputedStyle::MinLogicalHeight|).

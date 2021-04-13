@@ -99,21 +99,25 @@ LayoutUnit ResolveInlineLengthInternal(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const base::Optional<MinMaxSizes>& min_max_sizes,
-    const Length& length) {
+    const Length& length,
+    LayoutUnit available_inline_size_adjustment) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   switch (length.GetType()) {
     case Length::kFillAvailable: {
       DCHECK_GE(constraint_space.AvailableSize().inline_size, LayoutUnit());
-      LayoutUnit content_size = constraint_space.AvailableSize().inline_size;
-      NGBoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
+      const LayoutUnit available_size =
+          (constraint_space.AvailableSize().inline_size -
+           available_inline_size_adjustment)
+              .ClampNegativeToZero();
+      const NGBoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       return std::max(border_padding.InlineSum(),
-                      content_size - margins.InlineSum());
+                      available_size - margins.InlineSum());
     }
     case Length::kPercent:
     case Length::kFixed:
     case Length::kCalculated: {
-      LayoutUnit percentage_resolution_size =
+      const LayoutUnit percentage_resolution_size =
           constraint_space.PercentageResolutionInlineSize();
       DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize);
       LayoutUnit value =
@@ -141,9 +145,11 @@ LayoutUnit ResolveInlineLengthInternal(
         value = min_max_sizes->max_size;
       } else {
         DCHECK_GE(available_size, LayoutUnit());
+        available_size = (available_size - available_inline_size_adjustment)
+                             .ClampNegativeToZero();
         NGBoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
         LayoutUnit fill_available =
-            std::max(LayoutUnit(), available_size - margins.InlineSum());
+            (available_size - margins.InlineSum()).ClampNegativeToZero();
         value = min_max_sizes->ShrinkToFit(fill_available);
       }
       return value;
@@ -174,17 +180,18 @@ LayoutUnit ResolveBlockLengthInternal(
   switch (length.GetType()) {
     case Length::kFillAvailable: {
       DCHECK_GE(constraint_space.AvailableSize().block_size, LayoutUnit());
-      LayoutUnit available_size = (constraint_space.AvailableSize().block_size -
-                                   available_block_size_adjustment)
-                                      .ClampNegativeToZero();
-      NGBoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
+      const LayoutUnit available_size =
+          (constraint_space.AvailableSize().block_size -
+           available_block_size_adjustment)
+              .ClampNegativeToZero();
+      const NGBoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       return std::max(border_padding.BlockSum(),
                       available_size - margins.BlockSum());
     }
     case Length::kPercent:
     case Length::kFixed:
     case Length::kCalculated: {
-      LayoutUnit percentage_resolution_size =
+      const LayoutUnit percentage_resolution_size =
           opt_percentage_resolution_block_size_for_min_max
               ? *opt_percentage_resolution_block_size_for_min_max
               : constraint_space.PercentageResolutionBlockSize();
