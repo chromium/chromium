@@ -560,7 +560,7 @@ static Position MostBackwardOrForwardCaretPosition(
   Node* position_anchor = position.AnchorNode();
   if (!position_anchor)
     return Position();
-  DCHECK(position.IsValidFor(*position.GetDocument()));
+  DCHECK(position.IsValidFor(*position.GetDocument())) << position;
 
   // Find the most backward or forward caret position in the flat tree.
   const Position& candidate = ToPositionInDOMTree(
