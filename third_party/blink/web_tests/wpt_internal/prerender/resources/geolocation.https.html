@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<script src="deferred-promise-utils.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+
+// The main test page (restriction-geolocation.html) loads the initiator page,
+// then the initiator page will prerender itself with the `prerendering`
+// parameter.
+const isPrerendering = params.has('prerendering');
+
+if (!isPrerendering) {
+  loadInitiatorPage();
+} else {
+  const prerenderEventCollector = new PrerenderEventCollector();
+  const promise = new Promise((resolve, reject) => {
+    // We expect an error from getCurrentPosition() since we don't set the
+    // permission of geolocation and deny the permission by default.
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        reject("Unexpected success");
+      }, function(e) {
+        prerenderEventCollector.addEvent(
+            `getCurrentPosition error: ${e.toString()}`);
+        resolve();
+      });
+  });
+  prerenderEventCollector.start(
+      promise, 'navigator.geolocation.getCurrentPosition');
+}
+
+</script>

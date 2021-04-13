@@ -46,14 +46,21 @@ class PrerenderEventCollector {
   async start(promise, promiseName) {
     assert_true(document.prerendering);
     this.addEvent(`started waiting ${promiseName}`);
-    promise.then(() => {
-      this.addEvent(`finished waiting ${promiseName}`);
-      // Send the observed events back to the main test page.
-      this.testChannel_.postMessage(this.eventsSeen_);
-      this.prerenderChannel_.close();
-      this.testChannel_.close();
-      window.close();
-    });
+    promise
+        .then(
+            () => {
+              this.addEvent(`finished waiting ${promiseName}`);
+            },
+            (error) => {
+              this.addEvent(`${promiseName} rejected: ${error}`);
+            })
+        .finally(() => {
+          // Send the observed events back to the main test page.
+          this.testChannel_.postMessage(this.eventsSeen_);
+          this.prerenderChannel_.close();
+          this.testChannel_.close();
+          window.close();
+        });
     document.addEventListener('prerenderingchange', () => {
       this.addEvent('prerendering change');
     });
