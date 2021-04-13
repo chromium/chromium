@@ -219,13 +219,33 @@ class WebNavigationApiTest : public ExtensionApiTest {
   DISALLOW_COPY_AND_ASSIGN(WebNavigationApiTest);
 };
 
+using ContextType = extensions::ExtensionBrowserTest::ContextType;
+
+class WebNavigationApiTestWithContextType
+    : public WebNavigationApiTest,
+      public testing::WithParamInterface<ContextType> {
+ protected:
+  bool RunTest(const char* name) WARN_UNUSED_RESULT {
+    return RunExtensionTest(
+        {.name = name},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, Api) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/api")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, GetFrame) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/getFrame")) << message_;
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, GetFrame) {
+  ASSERT_TRUE(RunTest("webnavigation/getFrame")) << message_;
 }
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         WebNavigationApiTestWithContextType,
+                         testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         WebNavigationApiTestWithContextType,
+                         testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ClientRedirect) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/clientRedirect")) << message_;

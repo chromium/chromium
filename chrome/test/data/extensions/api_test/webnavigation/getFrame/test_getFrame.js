@@ -2,7 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-onload = async function() {
+const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
+const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
+let ready;
+
+// Note: Importing scripts is different depending on if this script is
+// executing in a Service Worker context.
+if (inServiceWorker) {
+  importScripts(scriptUrl);
+  ready = Promise.resolve();
+} else {
+  let script = document.createElement('script');
+  let onScriptLoad = new Promise((resolve) => {
+    script.onload = resolve;
+  });
+  script.src = scriptUrl;
+  document.body.appendChild(script);
+
+  let onWindowLoad = new Promise((resolve) => {
+    window.onload = resolve;
+  });
+
+  ready = Promise.all([onWindowLoad, onScriptLoad]);
+}
+
+ready.then(async function() {
   var URL = chrome.extension.getURL("a.html");
   var URL_FRAMES = chrome.extension.getURL("b.html");
   var processId = -1;
@@ -52,6 +76,11 @@ onload = async function() {
     // Load an URL with a frame which is detached during load.
     // getAllFrames should only return the remaining (main) frame.
     async function testFrameDetach() {
+      // TODO(crbug.com/1194800): Extremely flaky for Service Worker. Note that
+      // this test is also (very infrequently) flaky for non-Service Worker.
+      if (inServiceWorker)
+        chrome.test.succeed();
+
       let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
       var done = chrome.test.listenForever(
         chrome.webNavigation.onCommitted,
@@ -75,4 +104,4 @@ onload = async function() {
       chrome.tabs.update(tab.id, {url: URL_FRAMES});
     },
   ]);
-}
+});
