@@ -4,7 +4,7 @@
 
 // SettingsAccessibilityV3Test fixture.
 GEN_INCLUDE([
-  'settings_accessibility_v3_test.js',
+  'settings_accessibility_test.js',
 ]);
 
 GEN('#include "build/branding_buildflags.h"');
@@ -35,20 +35,18 @@ const violationFilterExcludeCustomInputAndTabindex =
       },
     });
 
-[[
-  'About', 'about_a11y_v3_test.js', {options: axeOptionsExcludeLinkInTextBlock}
-],
- ['Accessibility', 'accessibility_a11y_v3_test.js'],
- ['Basic', 'basic_a11y_v3_test.js'],
- ['Passwords', 'passwords_a11y_v3_test.js'],
+[['About', 'about_a11y_test.js', {options: axeOptionsExcludeLinkInTextBlock}],
+ ['Accessibility', 'accessibility_a11y_test.js'],
+ ['Basic', 'basic_a11y_test.js'],
+ ['Passwords', 'passwords_a11y_test.js'],
 ].forEach(test => defineTest(...test));
 
 GEN('#if !defined(OS_CHROMEOS)');
 [[
-  'ManageProfile', 'manage_profile_a11y_v3_test.js',
+  'ManageProfile', 'manage_profile_a11y_test.js',
   {filter: violationFilterExcludeCustomInputAndTabindex}
 ],
- ['Signout', 'sign_out_a11y_v3_test.js'],
+ ['Signout', 'sign_out_a11y_test.js'],
 ].forEach(test => defineTest(...test));
 GEN('#endif  // !defined(OS_CHROMEOS)');
 
@@ -57,7 +55,7 @@ GEN('#endif  // !defined(OS_CHROMEOS)');
 // TODO(crbug.com/1012370) flaky on Win the same way
 GEN('#if !defined(OS_MAC) && !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_WIN)');
 defineTest(
-    'EditDictionary', 'edit_dictionary_a11y_v3_test.js',
+    'EditDictionary', 'edit_dictionary_a11y_test.js',
     {filter: violationFilterExcludeCustomInputAndTabindex});
 GEN('#endif');
 

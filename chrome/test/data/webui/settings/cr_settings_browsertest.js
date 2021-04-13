@@ -476,7 +476,8 @@ TEST_F(
 
 // TODO(crbug.com/1113912): flaky failure on multiple platforms
 TEST_F(
-    'CrSettingsPrivacyPageV3Test', 'DISABLED_HappinessTrackingSurveysTests', function() {
+    'CrSettingsPrivacyPageV3Test', 'DISABLED_HappinessTrackingSurveysTests',
+    function() {
       runMochaSuite('HappinessTrackingSurveys');
     });
 
@@ -559,7 +560,7 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['DownloadsPage', 'downloads_page_test.js'],
  ['DropdownMenu', 'dropdown_menu_tests.js'],
  ['ExtensionControlledIndicator', 'extension_controlled_indicator_tests.js'],
- ['HelpPage', 'help_page_v3_test.js'],
+ ['HelpPage', 'help_page_test.js'],
  ['Languages', 'languages_tests.js'],
  ['Menu', 'settings_menu_test.js'],
  ['OnStartupPage', 'on_startup_page_tests.js'],
