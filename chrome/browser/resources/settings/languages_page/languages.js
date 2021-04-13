@@ -912,35 +912,10 @@ Polymer({
     if (!this.isChromeOSLanguageSettingsV2Update2_()) {
       this.deletePrefListItem('spellcheck.dictionaries', languageCode);
     }
-
-    // For language settings V2, languages and input methods are decoupled
-    // so there's no need to remove related input methods.
-    // TODO(crbug.com/1097328): Remove this as LSV2 has launched to 100%.
-    if (!this.isChromeOSLanguageSettingsV2_()) {
-      // Remove input methods that don't support any other enabled language.
-      const inputMethods = this.languageInputMethods_.get(languageCode) || [];
-      for (const inputMethod of inputMethods) {
-        const supportsOtherEnabledLanguages = inputMethod.languageCodes.some(
-            otherLanguageCode => otherLanguageCode !== languageCode &&
-                this.isLanguageEnabled(otherLanguageCode));
-        if (!supportsOtherEnabledLanguages) {
-          this.removeInputMethod(inputMethod.id);
-        }
-      }
-    }
     // </if>
 
     // Remove the language from preferred languages.
     this.languageSettingsPrivate_.disableLanguage(languageCode);
-  },
-
-  // TODO(crbug.com/1097328): Delete this.
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isChromeOSLanguageSettingsV2_() {
-    return isChromeOS;
   },
 
   // <if expr="chromeos">
@@ -949,8 +924,7 @@ Polymer({
    * @private
    */
   isChromeOSLanguageSettingsV2Update2_() {
-    return this.isChromeOSLanguageSettingsV2_() &&
-        loadTimeData.valueExists('enableLanguageSettingsV2Update2') &&
+    return loadTimeData.valueExists('enableLanguageSettingsV2Update2') &&
         loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
   },
   // </if>
@@ -971,12 +945,13 @@ Polymer({
    */
   canDisableLanguage(languageState) {
     // Cannot disable the prospective UI language.
-    // Exception for Chrome OS language settings V2 as we are decoupling
-    // language preference from UI language.
-    if (languageState.language.code === this.languages.prospectiveUILanguage &&
-        !this.isChromeOSLanguageSettingsV2_()) {
+    // Exception for Chrome OS as language preference is decoupled from
+    // UI language.
+    // <if expr="not chromeos">
+    if (languageState.language.code === this.languages.prospectiveUILanguage) {
       return false;
     }
+    // </if>
 
     // Cannot disable the only enabled language.
     if (this.languages.enabled.length === 1) {
@@ -988,33 +963,7 @@ Polymer({
       return false;
     }
 
-    if (!isChromeOS) {
-      return true;
-    }
-
-    // ChromeOS language settings V2 does not remove input methods when removing
-    // languages, so there's no need to check for other enabled input methods
-    // below.
-    if (this.isChromeOSLanguageSettingsV2_()) {
-      return true;
-    }
-
-    // If this is the only enabled language that is supported by all enabled
-    // component IMEs, it cannot be disabled because we need those IMEs.
-    const otherInputMethodsEnabled =
-        this.languages.enabled.some(function(otherLanguageState) {
-          const otherLanguageCode = otherLanguageState.language.code;
-          if (otherLanguageCode === languageState.language.code) {
-            return false;
-          }
-          const inputMethods =
-              this.languageInputMethods_.get(otherLanguageCode);
-          return inputMethods && inputMethods.some(function(inputMethod) {
-            return this.isComponentIme(inputMethod) &&
-                this.supportedInputMethodMap_.get(inputMethod.id).enabled;
-          }, this);
-        }, this);
-    return otherInputMethodsEnabled;
+    return true;
   },
 
   /**
