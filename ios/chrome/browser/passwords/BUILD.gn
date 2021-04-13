@@ -68,6 +68,7 @@ source_set("passwords") {
     "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/autofill:autofill_shared",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",

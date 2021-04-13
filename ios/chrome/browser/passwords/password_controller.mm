@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -48,6 +49,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -81,12 +83,14 @@
 
 using autofill::FormActivityObserverBridge;
 using autofill::FormData;
+using autofill::JsSuggestionManager;
 using autofill::PasswordFormGenerationData;
 using password_manager::PasswordForm;
 using autofill::FormRendererId;
 using autofill::FieldRendererId;
 using base::SysNSStringToUTF16;
 using base::SysUTF16ToNSString;
+using base::SysUTF8ToNSString;
 using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
 using password_manager::metrics_util::LogPasswordDropdownShown;
@@ -576,11 +580,26 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     [weakSelf generatePasswordPopupDismissed];
   };
 
+  auto closeKeyboard = ^{
+    if (!weakSelf.webState) {
+      return;
+    }
+    FormInputAccessoryViewHandler* handler =
+        [[FormInputAccessoryViewHandler alloc] init];
+    handler.JSSuggestionManager =
+        JsSuggestionManager::GetOrCreateForWebState(weakSelf.webState);
+    NSString* mainFrameID =
+        SysUTF8ToNSString(web::GetMainWebFrameId(weakSelf.webState));
+    [handler setLastFocusFormActivityWebFrameID:mainFrameID];
+    [handler closeKeyboardWithoutButtonPress];
+  };
+
   [self.actionSheetCoordinator
       addItemWithTitle:GetNSString(IDS_IOS_USE_SUGGESTED_PASSWORD)
                 action:^{
                   decisionHandler(YES);
                   popupDismissed();
+                  closeKeyboard();
                 }
                  style:UIAlertActionStyleDefault];
 
