@@ -405,7 +405,8 @@ struct ClientHintsExtendedData {
       RenderFrameHostImpl* main_frame =
           frame_tree_node->frame_tree()->GetMainFrame();
       main_frame_url = main_frame->GetLastCommittedURL();
-      permissions_policy = main_frame->permissions_policy();
+      permissions_policy = blink::PermissionsPolicy::CopyStateFrom(
+          main_frame->permissions_policy());
       is_1p_origin = resource_origin.IsSameOriginWith(
           main_frame->GetLastCommittedOrigin());
     }
@@ -417,7 +418,7 @@ struct ClientHintsExtendedData {
   url::Origin resource_origin;
   bool is_main_frame = false;
   GURL main_frame_url;
-  const blink::PermissionsPolicy* permissions_policy = nullptr;
+  std::unique_ptr<blink::PermissionsPolicy> permissions_policy;
   bool is_1p_origin = false;
 };
 
@@ -598,13 +599,23 @@ void UpdateNavigationRequestClientUaHeaders(
 
 namespace {
 
-void AddRequestClientHintsHeaders(const GURL& url,
-                                  net::HttpRequestHeaders* headers,
-                                  BrowserContext* context,
-                                  ClientHintsControllerDelegate* delegate,
-                                  bool is_ua_override_on,
-                                  FrameTreeNode* frame_tree_node) {
-  const ClientHintsExtendedData data(url, frame_tree_node, delegate);
+void AddRequestClientHintsHeaders(
+    const GURL& url,
+    net::HttpRequestHeaders* headers,
+    BrowserContext* context,
+    ClientHintsControllerDelegate* delegate,
+    bool is_ua_override_on,
+    FrameTreeNode* frame_tree_node,
+    const blink::ParsedPermissionsPolicy& container_policy) {
+  ClientHintsExtendedData data(url, frame_tree_node, delegate);
+
+  // If there is a container policy, use the same logic as when a new frame is
+  // committed to combine with the parent policy.
+  if (!container_policy.empty()) {
+    data.permissions_policy = blink::PermissionsPolicy::CreateFromParentPolicy(
+        data.permissions_policy.get(), container_policy,
+        url::Origin::Create(url));
+  }
 
   // Add Headers
   if (ShouldAddClientHint(data,
@@ -679,7 +690,7 @@ void AddPrefetchNavigationRequestClientHintsHeaders(
   }
 
   AddRequestClientHintsHeaders(url, headers, context, delegate,
-                               is_ua_override_on, nullptr);
+                               is_ua_override_on, nullptr, {});
 }
 
 void AddNavigationRequestClientHintsHeaders(
@@ -688,7 +699,8 @@ void AddNavigationRequestClientHintsHeaders(
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
-    FrameTreeNode* frame_tree_node) {
+    FrameTreeNode* frame_tree_node,
+    const blink::ParsedPermissionsPolicy& container_policy) {
   DCHECK(frame_tree_node);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
@@ -702,7 +714,8 @@ void AddNavigationRequestClientHintsHeaders(
   }
 
   AddRequestClientHintsHeaders(url, headers, context, delegate,
-                               is_ua_override_on, frame_tree_node);
+                               is_ua_override_on, frame_tree_node,
+                               container_policy);
 }
 
 base::Optional<std::vector<network::mojom::WebClientHintsType>>

@@ -1336,7 +1336,8 @@ NavigationRequest::NavigationRequest(
       net::HttpRequestHeaders client_hints_headers;
       AddNavigationRequestClientHintsHeaders(
           common_params_->url, &client_hints_headers, browser_context,
-          client_hints_delegate, is_overriding_user_agent(), frame_tree_node_);
+          client_hints_delegate, is_overriding_user_agent(), frame_tree_node_,
+          commit_params_->frame_policy.container_policy);
       headers.MergeFrom(client_hints_headers);
     }
 
@@ -3534,7 +3535,8 @@ void NavigationRequest::OnRedirectChecksComplete(
         browser_context, client_hints_delegate, frame_tree_node_);
     AddNavigationRequestClientHintsHeaders(
         common_params_->url, &client_hints_extra_headers, browser_context,
-        client_hints_delegate, is_overriding_user_agent(), frame_tree_node_);
+        client_hints_delegate, is_overriding_user_agent(), frame_tree_node_,
+        commit_params_->frame_policy.container_policy);
     modified_headers.MergeFrom(client_hints_extra_headers);
   }
 
