@@ -125,4 +125,26 @@ TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityAny) {
   EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser());
 }
 
+// Tests most recent interest type.
+TEST_F(DefaultBrowserUtilsTest, MostRecentInterestDefaultPromoType) {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    // iOS < 14 not supported.
+    return;
+  }
+  DefaultPromoType type = MostRecentInterestDefaultPromoType();
+  EXPECT_EQ(type, DefaultPromoTypeGeneral);
+
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  type = MostRecentInterestDefaultPromoType();
+  EXPECT_EQ(type, DefaultPromoTypeAllTabs);
+
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+  type = MostRecentInterestDefaultPromoType();
+  EXPECT_EQ(type, DefaultPromoTypeStaySafe);
+
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+  type = MostRecentInterestDefaultPromoType();
+  EXPECT_EQ(type, DefaultPromoTypeMadeForIOS);
+}
+
 }  // namespace

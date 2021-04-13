@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// Enum for the different types of default browser modal promo. This are stored
+// Enum for the different types of default browser modal promo. These are stored
 // as values, if adding a new one, make sure to add it at the end.
 typedef NS_ENUM(NSUInteger, DefaultPromoType) {
   DefaultPromoTypeGeneral = 0,
@@ -113,5 +113,9 @@ bool IsLikelyInterestedDefaultBrowserUser();
 // the categorization that would likely benefit from having Chrome set as their
 // default browser for the passed |type|. Returns false otherwise.
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type);
+
+// Returns the most recent promo the user showed interest in. Defaults to
+// DefaultPromoTypeGeneral if no interest is found.
+DefaultPromoType MostRecentInterestDefaultPromoType();
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_UTILS_H_

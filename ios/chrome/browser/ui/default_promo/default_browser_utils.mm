@@ -96,6 +96,14 @@ NSString* NSUserDefaultKeyForType(DefaultPromoType type) {
   NOTREACHED();
   return nil;
 }
+
+// Returns the most recent event for a given promo type or nil if none.
+NSDate* MostRecentDateForType(DefaultPromoType type) {
+  NSString* key = NSUserDefaultKeyForType(type);
+  NSMutableArray<NSDate*>* pastUserEvents =
+      [[[NSUserDefaults standardUserDefaults] arrayForKey:key] mutableCopy];
+  return pastUserEvents.lastObject;
+}
 }
 
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
@@ -115,6 +123,8 @@ const char kDefaultPromoTailoredVariantIOSParam[] = "variant_ios_enabled";
 const char kDefaultPromoTailoredVariantSafeParam[] = "variant_safe_enabled";
 
 const char kDefaultPromoTailoredVariantTabsParam[] = "variant_tabs_enabled";
+
+#pragma mark - Public
 
 void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type) {
   NSString* key = NSUserDefaultKeyForType(type);
@@ -263,4 +273,27 @@ bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type) {
       [[[NSUserDefaults standardUserDefaults] arrayForKey:key] mutableCopy];
   pastUserEvents = SanitizePastUserEvents(pastUserEvents);
   return [pastUserEvents count] > 0 && base::ios::IsRunningOnIOS14OrLater();
+}
+
+DefaultPromoType MostRecentInterestDefaultPromoType() {
+  DefaultPromoType mostRecentType = DefaultPromoTypeGeneral;
+  NSDate* mostRecentDate = [NSDate distantPast];
+  NSArray* promoTypes = @[
+    @(DefaultPromoTypeStaySafe), @(DefaultPromoTypeAllTabs),
+    @(DefaultPromoTypeMadeForIOS)
+  ];
+
+  for (NSNumber* wrappedType in promoTypes) {
+    DefaultPromoType type =
+        static_cast<DefaultPromoType>(wrappedType.unsignedIntegerValue);
+    if (IsLikelyInterestedDefaultBrowserUser(type)) {
+      NSDate* interestDate = MostRecentDateForType(type);
+      if (interestDate &&
+          [interestDate laterDate:mostRecentDate] == interestDate) {
+        mostRecentDate = interestDate;
+        mostRecentType = type;
+      }
+    }
+  }
+  return mostRecentType;
 }

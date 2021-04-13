@@ -44,8 +44,25 @@
   // qualifications to be shown the promo.
   if (level == SceneActivationLevelForegroundActive &&
       appState.shouldShowDefaultBrowserPromo && !appState.currentUIBlocker) {
-    [HandlerForProtocol(self.dispatcher, WhatsNewCommands)
-        showDefaultBrowserFullscreenPromo];
+    id<DefaultPromoCommands> defaultPromoHandler =
+        HandlerForProtocol(self.dispatcher, DefaultPromoCommands);
+
+    DefaultPromoType type = MostRecentInterestDefaultPromoType();
+    switch (type) {
+      case DefaultPromoTypeGeneral:
+        [defaultPromoHandler showDefaultBrowserFullscreenPromo];
+        break;
+      case DefaultPromoTypeStaySafe:
+        [defaultPromoHandler showTailoredPromoStaySafe];
+        break;
+      case DefaultPromoTypeMadeForIOS:
+        [defaultPromoHandler showTailoredPromoMadeForIOS];
+        break;
+      case DefaultPromoTypeAllTabs:
+        [defaultPromoHandler showTailoredPromoAllTabs];
+        break;
+    }
+
     appState.shouldShowDefaultBrowserPromo = NO;
   }
 }

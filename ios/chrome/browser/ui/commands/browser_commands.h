@@ -32,7 +32,7 @@ class GURL;
                            PopupMenuCommands,
                            QRScannerCommands,
                            SnackbarCommands,
-                           WhatsNewCommands>
+                           DefaultPromoCommands>
 
 // Closes the current tab.
 - (void)closeCurrentTab;

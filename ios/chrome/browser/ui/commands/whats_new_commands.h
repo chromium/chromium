@@ -6,9 +6,22 @@
 #define IOS_CHROME_BROWSER_UI_COMMANDS_WHATS_NEW_COMMANDS_H_
 
 // Commands to control the display of user eduction promotional UI.
-@protocol WhatsNewCommands <NSObject>
+@protocol DefaultPromoCommands <NSObject>
 
-// Display a modal promotional UI about the iOS14 default browser feature.
+// Display a tailored modal promotional UI about the iOS14 default browser
+// feature.
+- (void)showTailoredPromoStaySafe;
+
+// Display a tailored modal promotional UI about the iOS14 default browser
+// feature.
+- (void)showTailoredPromoMadeForIOS;
+
+// Display a tailored modal promotional UI about the iOS14 default browser
+// feature.
+- (void)showTailoredPromoAllTabs;
+
+// Display a regular modal promotional UI about the iOS14 default browser
+// feature.
 - (void)showDefaultBrowserFullscreenPromo;
 
 @end
