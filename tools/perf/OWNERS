@@ -21,5 +21,12 @@ sullivan@chromium.org
 # For page_cycler and loading benchmarks related changes.
 kouhei@chromium.org
 
+# Perf bot sheriffs can disable stories.
+per-file expectations.config=oysteine@chromium.org
+per-file expectations.config=skyostil@chromium.org
+per-file expectations.config=nuskos@chromium.org
+per-file expectations.config=sadrul@chromium.org
+per-file expectations.config=eseckler@chromium.org
+
 # emeritus:
 # perezju@chromium.org
