@@ -611,8 +611,7 @@ TEST_F(ThreadCacheTest, DynamicCountPerBucketClamping) {
       EXPECT_EQ(g_root->buckets[i].active_slot_spans_head, nullptr);
       continue;
     }
-    EXPECT_GE(tcache->buckets_[i].limit.load(std::memory_order_relaxed),
-              2 * ThreadCache::kBatchFillRatio);
+    EXPECT_GE(tcache->buckets_[i].limit.load(std::memory_order_relaxed), 1u);
   }
 
   ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(

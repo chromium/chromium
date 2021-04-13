@@ -332,14 +332,16 @@ void ThreadCache::SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
       value = initial_value;
     } else if (slot_size <= 256) {
       value = initial_value / 2;
-    } else {
+    } else if (slot_size <= 512) {
       value = initial_value / 4;
+    } else {
+      value = initial_value / 8;
     }
 
-    // Clamp the limit between two constraints:
-    // - Batch fill should fill at least 2 elements at a time.
-    // - |PutInBucket()| is called on a full bucket, which should not overflow.
-    constexpr uint8_t kMinLimit = 2 * kBatchFillRatio;
+    // Bare minimum so that malloc() / free() in a loop will not hit the central
+    // allocator each time.
+    constexpr uint8_t kMinLimit = 1;
+    // |PutInBucket()| is called on a full bucket, which should not overflow.
     constexpr uint8_t kMaxLimit = std::numeric_limits<uint8_t>::max() - 1;
     global_limits_[index] = std::max(kMinLimit, {std::min(value, {kMaxLimit})});
     PA_DCHECK(global_limits_[index] >= kMinLimit);
@@ -469,8 +471,14 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   INCREMENT_COUNTER(stats_.batch_fill_count);
 
   Bucket& bucket = buckets_[bucket_index];
-  int count = bucket.limit.load(std::memory_order_relaxed) / kBatchFillRatio;
-  PA_DCHECK(count > 1);
+  // Some buckets may have a limit lower than |kBatchFillRatio|, but we still
+  // want to at least allocate a single slot, otherwise we wrongly return
+  // nullptr, which ends up deactivating the bucket.
+  //
+  // In these cases, we do not really batch bucket filling, but this is expected
+  // to be used for the largest buckets, where over-allocating is not advised.
+  int count = std::max(
+      1, bucket.limit.load(std::memory_order_relaxed) / kBatchFillRatio);
 
   size_t usable_size;
   bool is_already_zeroed;

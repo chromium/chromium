@@ -225,8 +225,11 @@ class BASE_EXPORT ThreadCache {
   // |kLargeSizeThreshold|.
   static void SetLargestCachedSize(size_t size);
 
-  // TODO(lizeb): Once we have periodic purge, lower the ratio.
+  // Fill 1 / kBatchFillRatio * bucket.limit slots at a time.
   static constexpr uint16_t kBatchFillRatio = 8;
+
+  // Limit for the smallest bucket will be kDefaultMultiplier *
+  // kSmallBucketBaseCount by default.
   static constexpr float kDefaultMultiplier = 2.;
   static constexpr uint8_t kSmallBucketBaseCount = 64;
 
