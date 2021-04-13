@@ -39,6 +39,7 @@ sandbox/win/sandbox_poc/pocdll
 # Exclude directories that don't depend on //base, because nothing there uses
 # anything from /base.
 sandbox/linux/system_headers/
+components/history_clusters/core/
 
 # The folder holds headers that are duplicated in the Android source and need to
 # provide a stable C ABI. Can't depend on //base.
