@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "gin/public/isolate_holder.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
@@ -26,6 +27,9 @@ namespace auction_worklet {
 // lock).
 class AuctionV8Helper {
  public:
+  // Timeout for script execution.
+  static const base::TimeDelta kScriptTimeout;
+
   // Helper class to set up v8 scopes to use Isolate. All methods expect a
   // FullIsolateScope to be have been created on the current thread, and a
   // context to be entered.
@@ -117,9 +121,15 @@ class AuctionV8Helper {
                                       std::vector<v8::Local<v8::Value>> args =
                                           std::vector<v8::Local<v8::Value>>());
 
+  void set_script_timeout_for_testing(base::TimeDelta script_timeout) {
+    script_timeout_ = script_timeout;
+  }
+
  private:
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   v8::Global<v8::Context> scratch_context_;
+  // Script timeout. Can be changed for testing.
+  base::TimeDelta script_timeout_ = kScriptTimeout;
 };
 
 }  // namespace auction_worklet

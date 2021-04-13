@@ -59,7 +59,96 @@ void InitV8() {
                                  gin::ArrayBufferAllocator::SharedInstance());
 }
 
+// Utility class to timeout running a v8::Script or calling a v8::Function.
+// Instantiate a ScriptTimeoutHelper, and it will terminate script if
+// kScriptTimeout passes before it is destroyed.
+//
+// Creates a v8::SafeForTerminationScope(), so the caller doesn't have to.
+class ScriptTimeoutHelper {
+ public:
+  ScriptTimeoutHelper(v8::Isolate* isolate, base::TimeDelta script_timeout)
+      : termination_scope_(isolate),
+        timer_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
+        off_thread_timer_(std::make_unique<OffThreadTimer>(timer_task_runner_,
+                                                           isolate,
+                                                           script_timeout)) {}
+
+  ScriptTimeoutHelper(const ScriptTimeoutHelper&) = delete;
+  ScriptTimeoutHelper& operator=(const ScriptTimeoutHelper&) = delete;
+
+  ~ScriptTimeoutHelper() {
+    off_thread_timer_->CancelTimer();
+    timer_task_runner_->DeleteSoon(FROM_HERE, std::move(off_thread_timer_));
+  }
+
+ private:
+  // Class to call TerminateExecution on an Isolate on a specified thread once
+  // `AuctionV8Helper::kScriptTimeout` has passed. Create on the sequence the
+  // Isolate is running scripts on, but must be destroyed on the task runner the
+  // timer is run on.
+  class OffThreadTimer {
+   public:
+    OffThreadTimer(scoped_refptr<base::SequencedTaskRunner> timer_task_runner,
+                   v8::Isolate* isolate,
+                   base::TimeDelta script_timeout)
+        : isolate_(isolate) {
+      timer_task_runner->PostTask(
+          FROM_HERE, base::BindOnce(&OffThreadTimer::StartTimer,
+                                    base::Unretained(this), script_timeout));
+    }
+
+    ~OffThreadTimer() { DCHECK(!isolate_); }
+
+    // Must be called on the Isolate sequence before a task is posted to destroy
+    // the OffThreadTimer on the timer sequence.
+    void CancelTimer() {
+      base::AutoLock autolock(lock_);
+      // In the unlikely case AbortScript() was executed just after a script
+      // completed, but before CancelTimer() was invoked, clear the exception.
+      if (terminate_execution_called_)
+        isolate_->CancelTerminateExecution();
+      isolate_ = nullptr;
+    }
+
+   private:
+    void StartTimer(base::TimeDelta script_timeout) {
+      timer_.Start(
+          FROM_HERE, script_timeout,
+          base::BindOnce(&OffThreadTimer::AbortScript, base::Unretained(this)));
+    }
+
+    void AbortScript() {
+      base::AutoLock autolock(lock_);
+      if (!isolate_)
+        return;
+      terminate_execution_called_ = true;
+      isolate_->TerminateExecution();
+    }
+
+    // Used solely on `timer_task_runner`.
+    base::OneShotTimer timer_;
+
+    base::Lock lock_;
+
+    // Isolate to terminate execution of when time expires. Set to nullptr on
+    // the Isolate thread before destruction, to avoid any teardown races with
+    // script execution ending.
+    v8::Isolate* isolate_ GUARDED_BY(lock_);
+
+    bool terminate_execution_called_ GUARDED_BY(lock_) = false;
+  };
+
+  v8::Isolate::SafeForTerminationScope termination_scope_;
+
+  scoped_refptr<base::SequencedTaskRunner> timer_task_runner_;
+
+  std::unique_ptr<OffThreadTimer> off_thread_timer_;
+};
+
 }  // namespace
+
+constexpr base::TimeDelta AuctionV8Helper::kScriptTimeout =
+    base::TimeDelta::FromMilliseconds(50);
 
 AuctionV8Helper::FullIsolateScope::FullIsolateScope(AuctionV8Helper* v8_helper)
     : locker_(v8_helper->isolate()),
@@ -207,6 +296,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
 
   // Run script.
   v8::TryCatch try_catch(isolate());
+  ScriptTimeoutHelper timeout_helper(isolate(), script_timeout_);
   auto result = local_script->Run(context);
   if (result.IsEmpty() || try_catch.HasCaught())
     return v8::MaybeLocal<v8::Value>();
