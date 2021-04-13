@@ -12,7 +12,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_function.h"
-#include "extensions/common/mojom/frame.mojom-forward.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "ipc/ipc_sender.h"
 
 namespace content {
@@ -72,12 +72,18 @@ class ExtensionFunctionDispatcher
       content::BrowserContext* browser_context);
   ~ExtensionFunctionDispatcher();
 
-  // Message handlers.
-  // The response is sent to the corresponding render view in an
-  // ExtensionMsg_Response message.
-  void Dispatch(const mojom::RequestParams& params,
+  // Dispatches a request and the response is sent in |callback| that is a reply
+  // of mojom::LocalFrameHost::Request.
+  void Dispatch(mojom::RequestParamsPtr params,
                 content::RenderFrameHost* render_frame_host,
-                int render_process_id);
+                int render_process_id,
+                mojom::LocalFrameHost::RequestCallback callback);
+
+  // Message handlers.
+  // Dispatches a request for service woker and the response is sent to the
+  // corresponding render process in an ExtensionMsg_ResponseWorker message.
+  void DispatchForServiceWorker(const mojom::RequestParams& params,
+                                int render_process_id);
 
   // Called when an ExtensionFunction is done executing, after it has sent
   // a response (if any) to the extension.

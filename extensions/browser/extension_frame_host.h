@@ -17,7 +17,7 @@ class WebContents;
 namespace extensions {
 
 // Implements the mojo interface of extensions::mojom::LocalFrameHost.
-// ExtensionWebContentsObserver creates this class and it's destroyed with it
+// ExtensionWebContentsObserver creates and owns this class and it's destroyed
 // when WebContents is destroyed.
 class ExtensionFrameHost : public mojom::LocalFrameHost {
  public:
@@ -34,8 +34,16 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
       RequestScriptInjectionPermissionCallback callback) override;
   void GetAppInstallState(const GURL& requestor_url,
                           GetAppInstallStateCallback callback) override;
+  void Request(mojom::RequestParamsPtr params,
+               RequestCallback callback) override;
+
+ protected:
+  content::WebContents* web_contents() { return web_contents_; }
 
  private:
+  // This raw pointer is safe to use because ExtensionWebContentsObserver whose
+  // lifetime is tied to the WebContents owns this instance.
+  content::WebContents* web_contents_;
   content::WebContentsFrameReceiverSet<mojom::LocalFrameHost> receivers_;
 };
 

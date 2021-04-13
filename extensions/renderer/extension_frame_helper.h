@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -23,10 +24,6 @@
 
 struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabConnectionInfo;
-
-namespace base {
-class ListValue;
-}
 
 namespace extensions {
 
@@ -178,10 +175,6 @@ class ExtensionFrameHelper
                                        const PortId& id,
                                        const std::string& error_message);
   void OnUpdateBrowserWindowId(int browser_window_id);
-  void OnExtensionResponse(int request_id,
-                           bool success,
-                           const base::ListValue& response,
-                           const std::string& error);
 
   // Type of view associated with the RenderFrame.
   mojom::ViewType view_type_ = mojom::ViewType::kInvalid;
