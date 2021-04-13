@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.photo_picker;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,6 +35,7 @@ import androidx.core.view.GestureDetectorCompat;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.UiUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -110,8 +113,8 @@ public class PickerVideoPlayer
     // durations are 1/10th of normal length.
     private static boolean sShortAnimationTimesForTesting;
 
-    // The DecorView for the dialog the player is shown in.
-    private View mDecorView;
+    // The Window for the dialog the player is shown in.
+    private Window mWindow;
 
     // The Context to use.
     private Context mContext;
@@ -177,6 +180,15 @@ public class PickerVideoPlayer
 
     // The previous options for the System UI visibility.
     private int mPreviousSystemUiVisibilityOptions;
+
+    // Keeps track of the previous navigation bar color when colors switch due to playback.
+    private int mPreviousNavBarColor;
+
+    // Keeps track of the previous navigation bar divider color when colors switch due to playback.
+    private int mPreviousNavBarDividerColor;
+
+    // Keeps track of whether navigation colors have been saved previously.
+    private boolean mPreviousNavBarColorsSaved;
 
     // The object to convert touch events into gestures.
     private GestureDetectorCompat mGestureDetector;
@@ -247,10 +259,11 @@ public class PickerVideoPlayer
     /**
      * Start playback of a video in an overlay above the photo picker.
      * @param uri The uri of the video to start playing.
-     * @param decorView The decorView for the dialog.
+     * @param window The window for the dialog.
      */
-    public void startVideoPlaybackAsync(Uri uri, View decorView) {
-        mDecorView = decorView;
+    public void startVideoPlaybackAsync(Uri uri, Window window) {
+        mWindow = window;
+        syncNavBarColorToPlaybackStatus(/* playerOpening= */ true);
 
         // Make the filename (uri) of the video visible at the top and de-emphasize the scheme part.
         SpannableString fileName = new SpannableString(uri.toString());
@@ -316,7 +329,31 @@ public class PickerVideoPlayer
         stopVideoPlayback();
         mVideoView.setMediaController(null);
         mMuteButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
+        syncNavBarColorToPlaybackStatus(/* playerOpening= */ false);
         return true;
+    }
+
+    /**
+     * Updates the color of the navigation bar, divider and icons to reflect whether in playback
+     * mode or not. This function does nothing on Android O and older.
+     * @param playerOpening True when the video player is opening (false when closing).
+     */
+    private void syncNavBarColorToPlaybackStatus(boolean playerOpening) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (playerOpening) {
+                if (mPreviousNavBarColorsSaved) {
+                    return; // Don't overwrite previously saved colors.
+                }
+                mPreviousNavBarColor = mWindow.getNavigationBarColor();
+                mPreviousNavBarDividerColor = mWindow.getNavigationBarDividerColor();
+            }
+            mWindow.setNavigationBarColor(playerOpening ? Color.BLACK : mPreviousNavBarColor);
+            mWindow.setNavigationBarDividerColor(
+                    playerOpening ? Color.BLACK : mPreviousNavBarDividerColor);
+            UiUtils.setNavigationBarIconColor(mWindow.getDecorView().getRootView(), !playerOpening);
+
+            mPreviousNavBarColorsSaved = playerOpening;
+        }
     }
 
     private void adjustVideoLayoutParamsToOrientation() {
@@ -422,7 +459,7 @@ public class PickerVideoPlayer
     @Override
     public void onSystemUiVisibilityChange(int visibility) {
         if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-            mDecorView.setOnSystemUiVisibilityChangeListener(null);
+            mWindow.getDecorView().setOnSystemUiVisibilityChangeListener(null);
             onExitFullScreenMode();
 
             if (!mFullScreenToggledInApp) {
@@ -755,15 +792,16 @@ public class PickerVideoPlayer
 
     private void toggleAndroidSystemUiForFullscreen() {
         mFullScreenToggledInApp = true;
+        View decorView = mWindow.getDecorView();
         if (!mFullScreenEnabled) {
-            mDecorView.setOnSystemUiVisibilityChangeListener(this);
-            mPreviousSystemUiVisibilityOptions = mDecorView.getSystemUiVisibility();
-            mDecorView.setSystemUiVisibility(mPreviousSystemUiVisibilityOptions
+            decorView.setOnSystemUiVisibilityChangeListener(this);
+            mPreviousSystemUiVisibilityOptions = decorView.getSystemUiVisibility();
+            decorView.setSystemUiVisibility(mPreviousSystemUiVisibilityOptions
                     | View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LOW_PROFILE);
         } else {
-            mDecorView.setSystemUiVisibility(mPreviousSystemUiVisibilityOptions);
+            decorView.setSystemUiVisibility(mPreviousSystemUiVisibilityOptions);
         }
 
         // Calling setSystemUiVisibility will result in Android showing/hiding its system UI to go

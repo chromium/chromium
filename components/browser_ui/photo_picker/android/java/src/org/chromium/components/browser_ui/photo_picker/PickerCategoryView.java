@@ -288,7 +288,7 @@ public class PickerCategoryView extends RelativeLayout
      */
     public void startVideoPlaybackAsync(Uri uri) {
         if (mDialog == null) return;
-        mVideoPlayer.startVideoPlaybackAsync(uri, mDialog.getWindow().getDecorView());
+        mVideoPlayer.startVideoPlaybackAsync(uri, mDialog.getWindow());
     }
 
     /**
