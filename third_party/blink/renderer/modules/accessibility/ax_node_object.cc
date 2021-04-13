@@ -323,6 +323,8 @@ AXObject* AXNodeObject::ActiveDescendant() {
 
 AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     IgnoredReasons* ignored_reasons) const {
+  DCHECK(GetDocument());
+
   // If this element is within a parent that cannot have children, it should not
   // be exposed.
   if (IsDescendantOfLeafNode()) {
@@ -342,9 +344,16 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // their contents as the contents are not focusable (portals do not currently
   // support input events). Portals do use their contents to compute a default
   // accessible name.
-  if (GetDocument() && GetDocument()->GetPage() &&
-      GetDocument()->GetPage()->InsidePortal()) {
+  if (GetDocument()->GetPage() && GetDocument()->GetPage()->InsidePortal())
     return kIgnoreObject;
+
+  Node* node = GetNode();
+  if (!node) {
+    // TODO(accessibility) Nodeless pseudo element images are currently
+    // included, even if they don't have CSS alt text. Is this even useful?
+    if (IsImage())
+      return kIncludeObject;
+    return kDefaultBehavior;
   }
 
   if (IsTableLikeRole() || IsTableRowLikeRole() || IsTableCellLikeRole())
@@ -372,7 +381,8 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIgnoreObject;
   }
 
-  if (GetNode() && !IsA<HTMLBodyElement>(GetNode()) && CanSetFocusAttribute())
+  // All focusable elements except the <body> are included.
+  if (!IsA<HTMLBodyElement>(node) && CanSetFocusAttribute())
     return kIncludeObject;
 
   if (IsLink() || IsInPageLinkTarget())
@@ -390,8 +400,8 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
 
   // Header and footer tags may also be exposed as landmark roles but not
   // always.
-  if (GetNode() && (GetNode()->HasTagName(html_names::kHeaderTag) ||
-                    GetNode()->HasTagName(html_names::kFooterTag)))
+  if (node->HasTagName(html_names::kHeaderTag) ||
+      node->HasTagName(html_names::kFooterTag))
     return kIncludeObject;
 
   // All controls are accessible.
@@ -410,7 +420,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIncludeObject;
 
   // Don't ignore labels, because they serve as TitleUIElements.
-  Node* node = GetNode();
   if (IsA<HTMLLabelElement>(node))
     return kIncludeObject;
 
@@ -469,22 +478,17 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // check if there's some kind of accessible name for the element)
   // to decide an element's visibility is not as definitive as
   // previous checks, so this should remain as one of the last.
-  //
-  // These checks are simplified in the interest of execution speed;
-  // for example, any element having an alt attribute will make it
-  // not ignored, rather than just images.
-  if (HasAriaAttribute() || !GetAttribute(kTitleAttr).IsEmpty() ||
-      !GetAttribute(kAltAttr).IsEmpty()) {
+  if (HasAriaAttribute() || !GetAttribute(kTitleAttr).IsEmpty())
     return kIncludeObject;
-  }
 
   if (IsImage()) {
+    String alt = GetAttribute(kAltAttr);
     // A null alt attribute means the attribute is not present. We assume this
     // is a mistake, and expose the image so that it can be repaired.
     // In contrast, alt="" is treated as intentional markup to ignore the image.
-    if (GetAttribute(kAltAttr).IsNull())
+    if (!alt.IsEmpty() || alt.IsNull())
       return kIncludeObject;
-    else if (ignored_reasons)
+    if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXEmptyAlt));
     return kIgnoreObject;
   }
@@ -492,7 +496,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // <span> tags are inline tags and not meant to convey information if they
   // have no other ARIA information on them. If we don't ignore them, they may
   // emit signals expected to come from their parent.
-  if (node && IsA<HTMLSpanElement>(node)) {
+  if (IsA<HTMLSpanElement>(node)) {
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
     return kIgnoreObject;
