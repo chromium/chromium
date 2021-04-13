@@ -4,6 +4,8 @@
 
 #import "ios/showcase/first_run/sc_first_run_hero_screen_view_controller.h"
 
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -24,8 +26,28 @@
   self.bannerImage = [UIImage imageNamed:@"Sample-banner-tall"];
   self.isTallBanner = YES;
 
-  // TODO(crbug.com/1186762): Add screen-specific content to the shared
-  // container view once it's added.
+  // Add some screen-specific content and its constraints.
+  UILabel* label = [[UILabel alloc] init];
+  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  label.numberOfLines = 0;
+  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  label.text = @"Screen-specific content created by derived VC";
+  label.textAlignment = NSTextAlignmentCenter;
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.adjustsFontForContentSizeCategory = YES;
+  [self.specificContentView addSubview:label];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [label.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.specificContentView
+                                                 .topAnchor],
+    [label.centerXAnchor
+        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+    [label.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
+    [label.bottomAnchor
+        constraintEqualToAnchor:self.specificContentView.bottomAnchor],
+  ]];
 
   [super viewDidLoad];
 }

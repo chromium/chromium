@@ -9,6 +9,7 @@ source_set("first_run") {
   ]
   deps = [
     "//ios/chrome/browser/ui/first_run",
+    "//ios/chrome/common/ui/colors",
     "//ios/showcase/common",
   ]
   frameworks = [ "UIKit.framework" ]

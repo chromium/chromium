@@ -35,10 +35,10 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 
 @interface FirstRunScreenViewController ()
 
-// UIView that contains the title, subtitle and screen-specific content.
 @property(nonatomic, strong) UIScrollView* scrollView;
 @property(nonatomic, strong) UIImageView* imageView;
-@property(nonatomic, strong) UIView* wrapperView;
+// UIView that wraps the scrollable content.
+@property(nonatomic, strong) UIView* scrollContentView;
 @property(nonatomic, strong) UILabel* titleLabel;
 @property(nonatomic, strong) UILabel* subtitleLabel;
 @property(nonatomic, strong) UIButton* primaryActionButton;
@@ -56,16 +56,16 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
-  // TODO(crbug.com/1186762): Add screen-specific content view.
-  self.wrapperView = [[UIView alloc] init];
-  self.wrapperView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.wrapperView addSubview:self.titleLabel];
-  [self.wrapperView addSubview:self.subtitleLabel];
+  self.scrollContentView = [[UIView alloc] init];
+  self.scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.scrollContentView addSubview:self.imageView];
+  [self.scrollContentView addSubview:self.titleLabel];
+  [self.scrollContentView addSubview:self.subtitleLabel];
+  [self.scrollContentView addSubview:self.specificContentView];
 
   // Wrap everything except the action buttons in a scroll view, to support
   // dynamic types.
-  [self.scrollView addSubview:self.imageView];
-  [self.scrollView addSubview:self.wrapperView];
+  [self.scrollView addSubview:self.scrollContentView];
   [self.view addSubview:self.scrollView];
 
   UIStackView* actionStackView = [[UIStackView alloc] init];
@@ -89,7 +89,7 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
   CGFloat bannerMultiplier =
       self.isTallBanner ? kTallBannerMultiplier : kDefaultBannerMultiplier;
 
-  CGFloat extraMargin =
+  CGFloat extraBottomMargin =
       (self.secondaryActionString || self.tertiaryActionString)
           ? 0
           : kActionsBottomMargin;
@@ -105,45 +105,61 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
         constraintEqualToAnchor:actionStackView.topAnchor
                        constant:actionStackViewTopMargin],
 
-    // Banner image constraints. Scale the image vertically so its height takes
-    // a certain % of the view height while maintaining its aspect ratio.
-    [self.imageView.topAnchor
+    // Scroll content view constraints. Constrain its edges to the scroll view
+    // edges with some margins on the sides, but also constrain its height to at
+    // least the scroll view height, so that derived VCs can pin UI elements
+    // just above the buttons.
+    [self.scrollContentView.topAnchor
         constraintEqualToAnchor:self.scrollView.topAnchor],
+    [self.scrollContentView.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+                       constant:kDefaultMargin],
+    [self.scrollContentView.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
+                       constant:-kDefaultMargin],
+    [self.scrollContentView.bottomAnchor
+        constraintEqualToAnchor:self.scrollView.bottomAnchor],
+    [self.scrollContentView.heightAnchor
+        constraintGreaterThanOrEqualToAnchor:self.scrollView.heightAnchor],
+
+    // Banner image constraints. Scale the image vertically so its height takes
+    // a certain % of the view height while maintaining its aspect ratio. Don't
+    // constrain the width so that the image extends all the way to the edges of
+    // the view, outside the scrollContentView.
+    [self.imageView.topAnchor
+        constraintEqualToAnchor:self.scrollContentView.topAnchor],
     [self.imageView.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
     [self.imageView.heightAnchor constraintEqualToAnchor:self.view.heightAnchor
                                               multiplier:bannerMultiplier],
 
-    // Shared content wrapper view constraints.
-    [self.wrapperView.topAnchor
-        constraintEqualToAnchor:self.imageView.bottomAnchor],
-    [self.wrapperView.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kDefaultMargin],
-    [self.wrapperView.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kDefaultMargin],
-    [self.wrapperView.bottomAnchor
-        constraintEqualToAnchor:self.scrollView.bottomAnchor],
-    // TODO(crbug.com/1186762): Anchor wrapperView.bottomAnchor to the bottom of
-    // the screen-specific content view (when it's added) instead of the
-    // subtitle.
-    [self.wrapperView.bottomAnchor
-        constraintEqualToAnchor:self.subtitleLabel.bottomAnchor],
-
+    // Labels contraints. Attach them to the top of the scroll content view, and
+    // center them horizontally.
     [self.titleLabel.topAnchor
-        constraintEqualToAnchor:self.wrapperView.topAnchor],
+        constraintEqualToAnchor:self.imageView.bottomAnchor],
     [self.titleLabel.centerXAnchor
-        constraintEqualToAnchor:self.wrapperView.centerXAnchor],
+        constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
     [self.titleLabel.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.wrapperView.widthAnchor],
+        constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
     [self.subtitleLabel.topAnchor
         constraintEqualToAnchor:self.titleLabel.bottomAnchor
                        constant:kDefaultMargin],
     [self.subtitleLabel.centerXAnchor
-        constraintEqualToAnchor:self.wrapperView.centerXAnchor],
+        constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
     [self.subtitleLabel.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.wrapperView.widthAnchor],
+        constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
+
+    // Constraints for the screen-specific content view. It should take the
+    // remaining scroll view area, with some margins on the top and sides.
+    [self.specificContentView.topAnchor
+        constraintEqualToAnchor:self.subtitleLabel.bottomAnchor
+                       constant:kDefaultMargin],
+    [self.specificContentView.leadingAnchor
+        constraintEqualToAnchor:self.scrollContentView.leadingAnchor],
+    [self.specificContentView.trailingAnchor
+        constraintEqualToAnchor:self.scrollContentView.trailingAnchor],
+    [self.specificContentView.bottomAnchor
+        constraintEqualToAnchor:self.scrollContentView.bottomAnchor],
 
     // Action stack view constraints. Constrain the bottom of the action stack
     // view to both the bottom of the screen and the bottom of the safe area, to
@@ -156,11 +172,12 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
                        constant:-kDefaultMargin],
     [actionStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
-                                 constant:-kActionsBottomMargin - extraMargin],
+                                 constant:-kActionsBottomMargin -
+                                          extraBottomMargin],
     [actionStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                               .bottomAnchor
-                                 constant:-extraMargin]
+                                 constant:-extraBottomMargin]
   ]];
 
   // Also constrain the bottom of the action stack view to the bottom of the
@@ -229,11 +246,20 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
   return _subtitleLabel;
 }
 
+- (UIView*)specificContentView {
+  if (!_specificContentView) {
+    _specificContentView = [[UIView alloc] init];
+    _specificContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+  return _specificContentView;
+}
+
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
     _primaryActionButton = PrimaryActionButton(YES);
     [_primaryActionButton setTitle:self.primaryActionString
                           forState:UIControlStateNormal];
+    _primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
     _primaryActionButton.accessibilityIdentifier =
         kFirstRunPrimaryActionAccessibilityIdentifier;
   }
@@ -275,6 +301,7 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
   button.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.titleLabel.adjustsFontForContentSizeCategory = YES;
   button.accessibilityIdentifier = accessibilityIdentifier;
 
   if (@available(iOS 13.4, *)) {
