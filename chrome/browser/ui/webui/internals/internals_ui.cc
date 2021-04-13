@@ -29,6 +29,10 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
       base::make_span(kInternalsResources, kInternalsResourcesSize));
   source_->DisableTrustedTypesCSP();
 
+  // chrome://internals/
+  source_->SetDefaultResource(IDR_INTERNALS_HTML);
+  source_->AddResourcePath("internals.js", IDR_INTERNALS_JS);
+
   // Add your sub-URL internals WebUI here.
   // Keep this set of sub-URLs in sync with |kChromeInternalsPathURLs|.
 #if defined(OS_ANDROID)

@@ -557,7 +557,9 @@ std::string ChromeURLs() {
         "<li><a href='chrome://" + host + "/'>chrome://" + host + "</a></li>\n";
   }
 
-  html += "</ul><h2>List of chrome://internals pages</h2>\n<ul>\n";
+  html +=
+      "</ul><a id=\"internals\"><h2>List of chrome://internals "
+      "pages</h2></a>\n<ul>\n";
   std::vector<std::string> internals_paths(
       chrome::kChromeInternalsPathURLs,
       chrome::kChromeInternalsPathURLs +
