@@ -25,7 +25,7 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+import six
 from six.moves import cPickle
 
 from blinkpy.web_tests.controllers import repaint_overlay
@@ -139,10 +139,12 @@ class AbstractTestResultType(object):
                                                      artifact_filename)
             if (force_overwrite or self.result != ResultType.Pass
                     or not self.filesystem.exists(artifacts_abspath)):
+                command = self.actual_driver_output.command.encode(
+                    'utf8', 'replace')
                 self._write_to_artifacts(typ_artifacts,
                                          'command',
                                          artifact_filename,
-                                         self.actual_driver_output.command,
+                                         command,
                                          force_overwrite=True)
 
         if self.actual_driver_output.error:
@@ -150,17 +152,23 @@ class AbstractTestResultType(object):
                 self.test_name, FILENAME_SUFFIX_STDERR, '.txt')
             artifacts_abspath = self.filesystem.join(typ_artifacts_dir,
                                                      artifact_filename)
+            # TODO(crbug/1197331): Investigate why some cases in PY2
+            # throw DecodeError while encoding the 'str' type here.
+            if six.PY3:
+                error = self.actual_driver_output.error.encode(
+                    'utf8', 'replace')
+            else:
+                error = self.actual_driver_output.error
             # If a test has multiple stderr results, keep that of the last
             # failure, which is useful for debugging flaky tests with
             # --iterations=n or --repeat-each=n.
             if (force_overwrite or self.result != ResultType.Pass
                     or not self.filesystem.exists(artifacts_abspath)):
-                self._write_to_artifacts(
-                    typ_artifacts,
-                    'stderr',
-                    artifact_filename,
-                    self.actual_driver_output.error,
-                    force_overwrite=True)
+                self._write_to_artifacts(typ_artifacts,
+                                         'stderr',
+                                         artifact_filename,
+                                         error,
+                                         force_overwrite=True)
 
     @staticmethod
     def loads(s):
@@ -245,9 +253,10 @@ class FailureCrash(AbstractTestResultType):
         if self.crash_log:
             artifact_filename = self.port.output_filename(
                 self.test_name, FILENAME_SUFFIX_CRASH_LOG, '.txt')
-            self._write_to_artifacts(
-                typ_artifacts, 'crash_log', artifact_filename,
-                self.crash_log.encode('utf8', 'replace'), force_overwrite)
+            crash_log = self.crash_log.encode('utf8', 'replace')
+            self._write_to_artifacts(typ_artifacts, 'crash_log',
+                                     artifact_filename, crash_log,
+                                     force_overwrite)
 
     def message(self):
         if self.pid:
@@ -269,8 +278,9 @@ class FailureLeak(TestFailure):
         artifact_filename = self.port.output_filename(
             self.test_name, FILENAME_SUFFIX_LEAK_LOG, '.txt')
         self.log = self.actual_driver_output.leak_log
+        log = self.log.encode('utf8', 'replace')
         self._write_to_artifacts(typ_artifacts, 'leak_log', artifact_filename,
-                                 self.log, force_overwrite)
+                                 log, force_overwrite)
 
     def message(self):
         return 'leak detected: %s' % (self.log)
@@ -285,16 +295,21 @@ class ActualAndBaselineArtifacts(TestFailure):
         self.expected_artifact_filename = self.port.output_filename(
             self.test_name, FILENAME_SUFFIX_EXPECTED, self.file_ext)
         attr = _ext_to_file_type[self.file_ext]
+        # TODO(crbug/1197331): Investigate why some cases in PY2
+        # throw DecodeError while encoding the 'str' type here.
+        if six.PY3:
+            file_ext = getattr(self.actual_driver_output,
+                               attr).encode('utf8', 'replace')
+        else:
+            file_ext = getattr(self.actual_driver_output, attr)
         if getattr(self.actual_driver_output, attr):
             self._write_to_artifacts(typ_artifacts, 'actual_%s' % attr,
-                                     self.actual_artifact_filename,
-                                     getattr(self.actual_driver_output,
-                                             attr), force_overwrite)
+                                     self.actual_artifact_filename, file_ext,
+                                     force_overwrite)
         if getattr(self.expected_driver_output, attr):
-            self._write_to_artifacts(
-                typ_artifacts, 'expected_%s' % attr,
-                self.expected_artifact_filename,
-                getattr(self.expected_driver_output, attr), force_overwrite)
+            self._write_to_artifacts(typ_artifacts, 'expected_%s' % attr,
+                                     self.expected_artifact_filename, file_ext,
+                                     force_overwrite)
 
     def message(self):
         raise NotImplementedError
@@ -331,6 +346,14 @@ class FailureText(ActualAndBaselineArtifacts):
         html_diff_content = html_diff(expected_text, actual_text)
         html_diff_filename = self.port.output_filename(
             self.test_name, FILENAME_SUFFIX_HTML_DIFF, '.html')
+        # TODO(crbug/1197331): Investigate why some cases in PY2
+        # throw DecodeError while encoding the 'str' type here.
+        if six.PY3:
+            diff_content = diff_content.encode('utf8', 'replace')
+            html_diff_content = html_diff_content.encode('utf8', 'replace')
+        else:
+            diff_content = diff_content
+            html_diff_content = html_diff_content
         self._write_to_artifacts(typ_artifacts, 'text_diff', diff_filename,
                                  diff_content, force_overwrite)
         self._write_to_artifacts(typ_artifacts, 'pretty_text_diff',
@@ -364,6 +387,7 @@ class FailureTextMismatch(FailureText):
         if html:
             overlay_filename = self.port.output_filename(
                 self.test_name, FILENAME_SUFFIX_OVERLAY, '.html')
+            html = html.encode('utf8', 'replace')
             self._write_to_artifacts(typ_artifacts, 'overlay',
                                      overlay_filename, html, force_overwrite)
 

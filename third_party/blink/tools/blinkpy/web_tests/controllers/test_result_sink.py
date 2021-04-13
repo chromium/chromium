@@ -136,7 +136,7 @@ class TestResultSink(object):
         ret = {}
         summaries = []
         base_dir = self._port.results_directory()
-        for name, paths in result.artifacts.artifacts.iteritems():
+        for name, paths in result.artifacts.artifacts.items():
             for p in paths:
                 art_id = name
                 i = 1

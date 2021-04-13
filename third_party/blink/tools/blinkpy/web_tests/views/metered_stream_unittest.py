@@ -131,8 +131,9 @@ class TtyTest(RegularTest):
     def test_bytestream(self):
         self.meter.write('German umlauts: \xe4\xf6\xfc')
         self.meter.write(u'German umlauts: \xe4\xf6\xfc')
-        self.assertEqual(self.buflist,
-                         ['German umlauts: ???', 'German umlauts: ???'])
+        self.assertEqual(
+            self.buflist,
+            ['German umlauts: \xe4\xf6\xfc', u'German umlauts: \xe4\xf6\xfc'])
 
 
 class VerboseTest(RegularTest):

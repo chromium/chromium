@@ -524,7 +524,7 @@ class Manager(object):
         test_failures.AbstractTestResultType.result_directory = self._results_directory
         test_failures.AbstractTestResultType.filesystem = self._filesystem
 
-        for test, result in run_results.unexpected_results_by_name.iteritems():
+        for test, result in run_results.unexpected_results_by_name.items():
             if result.type != ResultType.Crash:
                 continue
             for failure in result.failures:
@@ -537,7 +537,7 @@ class Manager(object):
 
         sample_files = self._port.look_for_new_samples(crashed_processes,
                                                        start_time) or {}
-        for test, sample_file in sample_files.iteritems():
+        for test, sample_file in sample_files.items():
             test_failures.AbstractTestResultType.test_name = test
             test_result = run_results.unexpected_results_by_name[test]
             artifact_relative_path = self._port.output_filename(
@@ -556,7 +556,7 @@ class Manager(object):
 
         new_crash_logs = self._port.look_for_new_crash_logs(
             crashed_processes, start_time) or {}
-        for test, (crash_log, crash_site) in new_crash_logs.iteritems():
+        for test, (crash_log, crash_site) in new_crash_logs.items():
             test_failures.AbstractTestResultType.test_name = test
             failure.crash_log = crash_log
             failure.has_log = self._port.output_contains_sanitizer_messages(
@@ -724,6 +724,6 @@ class Manager(object):
                                 int(result.total_run_time * 1000))
                 }
         stats_trie = {}
-        for name, value in stats.iteritems():
+        for name, value in stats.items():
             json_results_generator.add_path_to_trie(name, value, stats_trie)
         return stats_trie
