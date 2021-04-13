@@ -22,6 +22,22 @@
 
 namespace blink {
 
+namespace {
+
+bool ShouldPaintCursorCaret(const LayoutBlock& block) {
+  return block.GetFrame()->Selection().ShouldPaintCaret(block);
+}
+
+bool ShouldPaintDragCaret(const LayoutBlock& block) {
+  return block.GetFrame()->GetPage()->GetDragCaret().ShouldPaintCaret(block);
+}
+
+bool ShouldPaintCarets(const LayoutBlock& block) {
+  return ShouldPaintCursorCaret(block) || ShouldPaintDragCaret(block);
+}
+
+}  // namespace
+
 DISABLE_CFI_PERF
 void BlockPainter::Paint(const PaintInfo& paint_info) {
   ScopedPaintState paint_state(layout_block_, paint_info);
@@ -82,7 +98,7 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
   // properties block. Note that caret painting does not seem to correspond to
   // any painting order steps within the CSS spec.
   if (original_phase == PaintPhase::kForeground &&
-      layout_block_.ShouldPaintCarets()) {
+      ShouldPaintCarets(layout_block_)) {
     // Apply overflow clip if needed. TODO(wangxianzhu): Move PaintCarets()
     // under |contents_paint_state| in the above block and let the caret
     // painters paint in the space of scrolling contents.
@@ -320,10 +336,10 @@ void BlockPainter::PaintCarets(const PaintInfo& paint_info,
                                const PhysicalOffset& paint_offset) {
   LocalFrame* frame = layout_block_.GetFrame();
 
-  if (layout_block_.ShouldPaintCursorCaret())
+  if (ShouldPaintCursorCaret(layout_block_))
     frame->Selection().PaintCaret(paint_info.context, paint_offset);
 
-  if (layout_block_.ShouldPaintDragCaret()) {
+  if (ShouldPaintDragCaret(layout_block_)) {
     frame->GetPage()->GetDragCaret().PaintDragCaret(frame, paint_info.context,
                                                     paint_offset);
   }

@@ -2083,16 +2083,6 @@ inline bool LayoutBlock::IsInlineBoxWrapperActuallyChild() const {
          EditingIgnoresContent(*GetNode());
 }
 
-bool LayoutBlock::ShouldPaintCursorCaret() const {
-  NOT_DESTROYED();
-  return GetFrame()->Selection().ShouldPaintCaret(*this);
-}
-
-bool LayoutBlock::ShouldPaintDragCaret() const {
-  NOT_DESTROYED();
-  return GetFrame()->GetPage()->GetDragCaret().ShouldPaintCaret(*this);
-}
-
 LayoutRect LayoutBlock::LocalCaretRect(
     const InlineBox* inline_box,
     int caret_offset,

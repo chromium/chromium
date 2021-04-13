@@ -577,14 +577,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void ComputeBlockPreferredLogicalWidths(LayoutUnit& min_logical_width,
                                           LayoutUnit& max_logical_width) const;
 
- public:
-  bool ShouldPaintCursorCaret() const;
-  bool ShouldPaintDragCaret() const;
-  bool ShouldPaintCarets() const {
-    NOT_DESTROYED();
-    return ShouldPaintCursorCaret() || ShouldPaintDragCaret();
-  }
-
  protected:
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
 
