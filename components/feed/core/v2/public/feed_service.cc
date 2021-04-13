@@ -91,8 +91,10 @@ class FeedService::HistoryObserverImpl
 
 class FeedService::NetworkDelegateImpl : public FeedNetworkImpl::Delegate {
  public:
-  explicit NetworkDelegateImpl(FeedService::Delegate* service_delegate)
-      : service_delegate_(service_delegate) {}
+  NetworkDelegateImpl(FeedService::Delegate* service_delegate,
+                      signin::IdentityManager* identity_manager)
+      : service_delegate_(service_delegate),
+        identity_manager_(identity_manager) {}
   NetworkDelegateImpl(const NetworkDelegateImpl&) = delete;
   NetworkDelegateImpl& operator=(const NetworkDelegateImpl&) = delete;
 
@@ -101,8 +103,14 @@ class FeedService::NetworkDelegateImpl : public FeedNetworkImpl::Delegate {
     return service_delegate_->GetLanguageTag();
   }
 
+  std::string GetSyncSignedInGaia() override {
+    return identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        .gaia;
+  }
+
  private:
   FeedService::Delegate* service_delegate_;
+  signin::IdentityManager* identity_manager_;
 };
 
 class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
@@ -208,7 +216,8 @@ FeedService::FeedService(
       refresh_task_scheduler_(std::move(refresh_task_scheduler)) {
   stream_delegate_ = std::make_unique<StreamDelegateImpl>(
       local_state, delegate_.get(), identity_manager);
-  network_delegate_ = std::make_unique<NetworkDelegateImpl>(delegate_.get());
+  network_delegate_ =
+      std::make_unique<NetworkDelegateImpl>(delegate_.get(), identity_manager);
   metrics_reporter_ = std::make_unique<MetricsReporter>(profile_prefs);
   feed_network_ = std::make_unique<FeedNetworkImpl>(
       network_delegate_.get(), identity_manager, api_key, url_loader_factory,

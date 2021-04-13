@@ -4,6 +4,8 @@
 
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
+#include "components/feed/core/v2/enums.h"
+#include "components/feed/core/v2/feed_network.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #include "base/callback.h"
@@ -262,10 +264,9 @@ TestFeedNetwork::~TestFeedNetwork() = default;
 void TestFeedNetwork::SendQueryRequest(
     NetworkRequestType request_type,
     const feedwire::Request& request,
-    bool force_signed_out_request,
     const std::string& gaia,
     base::OnceCallback<void(QueryRequestResult)> callback) {
-  forced_signed_out_request = force_signed_out_request;
+  last_gaia = gaia;
   ++send_query_call_count;
   // Emulate a successful response.
   // The response body is currently an empty message, because most of the
@@ -298,34 +299,44 @@ void DebugLogApiResponse(std::string request_bytes,
   }
 }
 
-void DebugLogResponse(base::StringPiece api_path,
+void DebugLogResponse(NetworkRequestType request_type,
+                      base::StringPiece api_path,
                       base::StringPiece method,
                       std::string request_bytes,
                       const FeedNetwork::RawResponse& raw_response) {
   VLOG(1) << "TestFeedNetwork responding to request " << method << " "
           << api_path;
-  if (api_path == UploadActionsDiscoverApi::RequestPath()) {
+  if (request_type == UploadActionsDiscoverApi::kRequestType) {
     DebugLogApiResponse<UploadActionsDiscoverApi>(request_bytes, raw_response);
-  } else if (api_path == ListRecommendedWebFeedDiscoverApi::RequestPath()) {
+  } else if (request_type == ListRecommendedWebFeedDiscoverApi::kRequestType) {
     DebugLogApiResponse<ListRecommendedWebFeedDiscoverApi>(request_bytes,
                                                            raw_response);
-  } else if (api_path == ListWebFeedsDiscoverApi::RequestPath()) {
+  } else if (request_type == ListWebFeedsDiscoverApi::kRequestType) {
     DebugLogApiResponse<ListWebFeedsDiscoverApi>(request_bytes, raw_response);
   }
 }
 
 void TestFeedNetwork::SendDiscoverApiRequest(
+    NetworkRequestType request_type,
     base::StringPiece api_path,
     base::StringPiece method,
     std::string request_bytes,
     const std::string& gaia,
     base::OnceCallback<void(RawResponse)> callback) {
-  api_requests_sent_[api_path.as_string()] = request_bytes;
-  ++api_request_count_[api_path.as_string()];
+  last_gaia = gaia;
+  api_requests_sent_[request_type] = request_bytes;
+  ++api_request_count_[request_type];
   std::vector<RawResponse>& injected_responses =
-      injected_api_responses_[api_path.as_string()];
+      injected_api_responses_[request_type];
 
-  if (api_path == WebFeedListContentsDiscoverApi::RequestPath()) {
+  bool is_feed_query_request =
+      request_type == NetworkRequestType::kFeedQuery ||
+      request_type == WebFeedListContentsDiscoverApi::kRequestType ||
+      request_type == QueryInteractiveFeedDiscoverApi::kRequestType ||
+      request_type == QueryBackgroundFeedDiscoverApi::kRequestType ||
+      request_type == QueryNextPageDiscoverApi::kRequestType;
+
+  if (is_feed_query_request) {
     feedwire::Request request_proto;
     request_proto.ParseFromString(request_bytes);
     query_request_sent = request_proto;
@@ -334,39 +345,65 @@ void TestFeedNetwork::SendDiscoverApiRequest(
 
   // If there is no injected response, create a default response.
   if (injected_responses.empty()) {
-    if (api_path == UploadActionsDiscoverApi::RequestPath()) {
-      feedwire::UploadActionsRequest request;
-      ASSERT_TRUE(request.ParseFromString(request_bytes));
-      feedwire::UploadActionsResponse response_message;
-      response_message.mutable_consistency_token()->set_token(
-          consistency_token);
-      InjectApiResponse<UploadActionsDiscoverApi>(response_message);
-    }
-    if (api_path == ListRecommendedWebFeedDiscoverApi::RequestPath()) {
-      feedwire::webfeed::ListRecommendedWebFeedsRequest request;
-      ASSERT_TRUE(request.ParseFromString(request_bytes));
-      feedwire::webfeed::ListRecommendedWebFeedsResponse response_message;
-      InjectResponse(response_message);
-    }
-    if (api_path == ListWebFeedsDiscoverApi::RequestPath()) {
-      feedwire::webfeed::ListWebFeedsRequest request;
-      ASSERT_TRUE(request.ParseFromString(request_bytes));
-      feedwire::webfeed::ListWebFeedsResponse response_message;
-      InjectResponse(response_message);
-    }
-    if (api_path == WebFeedListContentsDiscoverApi::RequestPath()) {
-      // Emulate a successful response.
-      // The response body is currently an empty message, because most of the
-      // time we want to inject a translated response for ease of test-writing.
-      feedwire::Response response;
-      InjectApiResponse<WebFeedListContentsDiscoverApi>(response);
+    switch (request_type) {
+      case UploadActionsDiscoverApi::kRequestType: {
+        feedwire::UploadActionsRequest request;
+        ASSERT_TRUE(request.ParseFromString(request_bytes));
+        feedwire::UploadActionsResponse response_message;
+        response_message.mutable_consistency_token()->set_token(
+            consistency_token);
+        InjectApiResponse<UploadActionsDiscoverApi>(response_message);
+        break;
+      }
+      case ListRecommendedWebFeedDiscoverApi::kRequestType: {
+        feedwire::webfeed::ListRecommendedWebFeedsRequest request;
+        ASSERT_TRUE(request.ParseFromString(request_bytes));
+        feedwire::webfeed::ListRecommendedWebFeedsResponse response_message;
+        InjectResponse(response_message);
+        break;
+      }
+      case ListWebFeedsDiscoverApi::kRequestType: {
+        feedwire::webfeed::ListWebFeedsRequest request;
+        ASSERT_TRUE(request.ParseFromString(request_bytes));
+        feedwire::webfeed::ListWebFeedsResponse response_message;
+        InjectResponse(response_message);
+        break;
+      }
+
+        // For FeedQuery requests, emulate a successful response.
+        // The response body is currently an empty message, because most of the
+        // time we want to inject a translated response for ease of
+        // test-writing.
+
+      case WebFeedListContentsDiscoverApi::kRequestType: {
+        feedwire::Response response;
+        InjectApiResponse<WebFeedListContentsDiscoverApi>(response);
+        break;
+      }
+      case QueryInteractiveFeedDiscoverApi::kRequestType: {
+        feedwire::Response response;
+        InjectApiResponse<QueryInteractiveFeedDiscoverApi>(response);
+        break;
+      }
+      case QueryBackgroundFeedDiscoverApi::kRequestType: {
+        feedwire::Response response;
+        InjectApiResponse<QueryBackgroundFeedDiscoverApi>(response);
+        break;
+      }
+      case QueryNextPageDiscoverApi::kRequestType: {
+        feedwire::Response response;
+        InjectApiResponse<QueryNextPageDiscoverApi>(response);
+        break;
+      }
+      default:
+        break;
     }
   }
 
   if (!injected_responses.empty()) {
     RawResponse response = injected_responses[0];
     injected_responses.erase(injected_responses.begin());
-    DebugLogResponse(api_path, method, request_bytes, response);
+    DebugLogResponse(request_type, api_path, method, request_bytes, response);
     Reply(base::BindOnce(std::move(callback), std::move(response)));
     return;
   }

@@ -73,7 +73,17 @@ feedwire::UploadActionsResponse GetTestActionResponse() {
 
 class TestDelegate : public FeedNetworkImpl::Delegate {
  public:
+  explicit TestDelegate(signin::IdentityTestEnvironment* identity_test_env)
+      : identity_test_env_(identity_test_env) {}
+
   std::string GetLanguageTag() override { return "en"; }
+  std::string GetSyncSignedInGaia() override {
+    return identity_test_env_->identity_manager()
+        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        .gaia;
+  }
+
+  signin::IdentityTestEnvironment* identity_test_env_;
 };
 
 class FeedNetworkTest : public testing::Test {
@@ -103,11 +113,7 @@ class FeedNetworkTest : public testing::Test {
     return &identity_test_env_;
   }
 
-  std::string gaia() {
-    return identity_test_env_.identity_manager()
-        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-        .gaia;
-  }
+  std::string gaia() { return delegate_.GetSyncSignedInGaia(); }
 
   network::TestURLLoaderFactory* test_factory() { return &test_factory_; }
 
@@ -203,8 +209,8 @@ class FeedNetworkTest : public testing::Test {
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 
  private:
-  TestDelegate delegate_;
   signin::IdentityTestEnvironment identity_test_env_;
+  TestDelegate delegate_{&identity_test_env_};
   std::unique_ptr<FeedNetwork> feed_network_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
@@ -215,7 +221,7 @@ class FeedNetworkTest : public testing::Test {
 TEST_F(FeedNetworkTest, SendQueryRequestEmpty) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   feedwire::Request(), false, gaia(),
+                                   feedwire::Request(), gaia(),
                                    receiver.Bind());
 
   ASSERT_TRUE(receiver.GetResult());
@@ -227,7 +233,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestEmpty) {
 TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToQueryRequest("", net::HTTP_OK);
@@ -248,9 +254,9 @@ TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
 
 TEST_F(FeedNetworkTest, SendQueryRequestForceSignedOut) {
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(
-      NetworkRequestType::kFeedQuery, GetTestFeedRequest(),
-      /*force_signed_out_request=*/true, gaia(), receiver.Bind());
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), /*gaia=*/"",
+                                   receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToQueryRequest("", net::HTTP_OK);
 
@@ -264,7 +270,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestForceSignedOut) {
 TEST_F(FeedNetworkTest, SendQueryRequestInvalidResponse) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
   RespondToQueryRequest("invalid", net::HTTP_OK);
 
@@ -277,7 +283,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestInvalidResponse) {
 TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
 
@@ -296,7 +302,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
 TEST_F(FeedNetworkTest, SendQueryRequestIgnoresBodyForNon200Response) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_FORBIDDEN);
 
@@ -312,8 +318,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestIgnoresBodyForNon200Response) {
 TEST_F(FeedNetworkTest, SendQueryRequestFailsForWrongUser) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false,
-                                   "some_other_gaia", receiver.Bind());
+                                   GetTestFeedRequest(), "some_other_gaia",
+                                   receiver.Bind());
   task_environment_.RunUntilIdle();
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_factory()->GetPendingRequest(0);
@@ -331,7 +337,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestFailsForWrongUser) {
 TEST_F(FeedNetworkTest, CancelRequest) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
   feed_network()->CancelRequests();
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -343,7 +349,7 @@ TEST_F(FeedNetworkTest, RequestTimeout) {
   base::HistogramTester histogram_tester;
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
   task_environment_.FastForwardBy(TimeDelta::FromSeconds(30));
 
@@ -358,13 +364,13 @@ TEST_F(FeedNetworkTest, RequestTimeout) {
 TEST_F(FeedNetworkTest, ParallelRequests) {
   CallbackReceiver<QueryRequestResult> receiver1, receiver2;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver1.Bind());
   // Make another request with a different URL so Respond() won't affect both
   // requests.
   feed_network()->SendQueryRequest(
       NetworkRequestType::kFeedQuery,
-      GetTestFeedRequest(feedwire::FeedQuery::NEXT_PAGE_SCROLL), false, gaia(),
+      GetTestFeedRequest(feedwire::FeedQuery::NEXT_PAGE_SCROLL), gaia(),
       receiver2.Bind());
 
   // Respond to both requests, avoiding FastForwardUntilNoTasksRemain until
@@ -388,7 +394,7 @@ TEST_F(FeedNetworkTest, ShouldReportResponseStatusCode) {
   CallbackReceiver<QueryRequestResult> receiver;
   base::HistogramTester histogram_tester;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_FORBIDDEN);
 
@@ -404,7 +410,7 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForAuthError) {
   base::HistogramTester histogram_tester;
 
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(
@@ -431,7 +437,7 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForNoSignedInUser) {
   identity_env()->ClearPrimaryAccount();
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
 
   network::ResourceRequest resource_request =
@@ -448,7 +454,7 @@ TEST_F(FeedNetworkTest, TestDurationHistogram) {
   const TimeDelta kDuration = TimeDelta::FromMilliseconds(12345);
 
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
   task_environment_.FastForwardBy(kDuration);
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
@@ -465,7 +471,7 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithAuthHeader) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/");
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
 
   ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
@@ -486,7 +492,7 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithPath) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/testpath");
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
 
   ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
@@ -499,7 +505,7 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithPathTrailingSlash) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/testpath/");
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), false, gaia(),
+                                   GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
 
   ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());

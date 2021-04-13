@@ -497,6 +497,21 @@ void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
           "ContentSuggestions.Feed.Network.ResponseStatus.WebFeedListContents",
           http_status_code);
       return;
+    case NetworkRequestType::kQueryInteractiveFeed:
+      base::UmaHistogramSparse(
+          "ContentSuggestions.Feed.Network.ResponseStatus.QueryInteractiveFeed",
+          http_status_code);
+      return;
+    case NetworkRequestType::kQueryBackgroundFeed:
+      base::UmaHistogramSparse(
+          "ContentSuggestions.Feed.Network.ResponseStatus.QueryBackgroundFeed",
+          http_status_code);
+      return;
+    case NetworkRequestType::kQueryNextPage:
+      base::UmaHistogramSparse(
+          "ContentSuggestions.Feed.Network.ResponseStatus.QueryNextPage",
+          http_status_code);
+      return;
   }
 }
 

@@ -155,7 +155,7 @@ class FeedNetworkImpl::NetworkFetch {
   NetworkFetch(const GURL& url,
                base::StringPiece request_method,
                std::string request_body,
-               bool force_signed_out_request,
+               FeedNetworkImpl::Delegate* delegate,
                signin::IdentityManager* identity_manager,
                network::SharedURLLoaderFactory* loader_factory,
                const std::string& api_key,
@@ -164,7 +164,7 @@ class FeedNetworkImpl::NetworkFetch {
       : url_(url),
         request_method_(request_method),
         request_body_(std::move(request_body)),
-        force_signed_out_request_(force_signed_out_request),
+        delegate_(delegate),
         identity_manager_(identity_manager),
         loader_factory_(loader_factory),
         api_key_(api_key),
@@ -178,8 +178,7 @@ class FeedNetworkImpl::NetworkFetch {
   void Start(base::OnceCallback<void(RawResponse)> done_callback) {
     done_callback_ = std::move(done_callback);
 
-    if (force_signed_out_request_ ||
-        !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    if (gaia_.empty()) {
       StartLoader();
       return;
     }
@@ -201,6 +200,7 @@ class FeedNetworkImpl::NetworkFetch {
   void AccessTokenFetchFinished(base::TimeTicks token_start_ticks,
                                 GoogleServiceAuthError error,
                                 signin::AccessTokenInfo access_token_info) {
+    DCHECK(!gaia_.empty());
     UMA_HISTOGRAM_ENUMERATION(
         "ContentSuggestions.Feed.Network.TokenFetchStatus", error.state(),
         GoogleServiceAuthError::NUM_STATES);
@@ -211,19 +211,17 @@ class FeedNetworkImpl::NetworkFetch {
 
     access_token_ = access_token_info.token;
 
-    // Verify the correct user is logged in before issuing the request.
-    if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-      if (identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-              .gaia == gaia_) {
-        StartLoader();
-        return;
-      }
+    // Abort if the signed-in user doesn't match.
+    if (delegate_->GetSyncSignedInGaia() != gaia_) {
+      NetworkResponseInfo response_info;
+      RawResponse raw_response;
+      response_info.status_code = net::ERR_INVALID_ARGUMENT;
+      raw_response.response_info = std::move(response_info);
+      std::move(done_callback_).Run(std::move(raw_response));
+      return;
     }
-    NetworkResponseInfo response_info;
-    RawResponse raw_response;
-    response_info.status_code = net::ERR_INVALID_ARGUMENT;
-    raw_response.response_info = std::move(response_info);
-    std::move(done_callback_).Run(std::move(raw_response));
+
+    StartLoader();
   }
 
   void StartLoader() {
@@ -400,12 +398,11 @@ class FeedNetworkImpl::NetworkFetch {
     std::move(done_callback_).Run(std::move(raw_response));
   }
 
- private:
   GURL url_;
   const std::string request_method_;
   std::string access_token_;
   const std::string request_body_;
-  bool force_signed_out_request_;
+  FeedNetworkImpl::Delegate* delegate_;
   signin::IdentityManager* const identity_manager_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
@@ -441,7 +438,6 @@ FeedNetworkImpl::~FeedNetworkImpl() = default;
 void FeedNetworkImpl::SendQueryRequest(
     NetworkRequestType request_type,
     const feedwire::Request& request,
-    bool force_signed_out_request,
     const std::string& gaia,
     base::OnceCallback<void(QueryRequestResult)> callback) {
   std::string binary_proto;
@@ -488,7 +484,7 @@ void FeedNetworkImpl::SendQueryRequest(
 
   AddMothershipPayloadQueryParams(base64proto, delegate_->GetLanguageTag(),
                                   url);
-  Send(url, "GET", /*request_body=*/{}, force_signed_out_request,
+  Send(url, "GET", /*request_body=*/{},
        /*allow_bless_auth=*/host_overridden, gaia,
        base::BindOnce(&ParseAndForwardQueryResponse, request_type,
                       std::move(callback)));
@@ -501,12 +497,11 @@ void FeedNetworkImpl::CancelRequests() {
 void FeedNetworkImpl::Send(const GURL& url,
                            base::StringPiece request_method,
                            std::string request_body,
-                           bool force_signed_out_request,
                            bool allow_bless_auth,
                            const std::string& gaia,
                            base::OnceCallback<void(RawResponse)> callback) {
   auto fetch = std::make_unique<NetworkFetch>(
-      url, request_method, std::move(request_body), force_signed_out_request,
+      url, request_method, std::move(request_body), delegate_,
       identity_manager_, loader_factory_.get(), api_key_, gaia,
       allow_bless_auth);
   NetworkFetch* fetch_unowned = fetch.get();
@@ -520,6 +515,7 @@ void FeedNetworkImpl::Send(const GURL& url,
 }
 
 void FeedNetworkImpl::SendDiscoverApiRequest(
+    NetworkRequestType request_type,
     base::StringPiece request_path,
     base::StringPiece method,
     std::string request_body,
@@ -537,7 +533,6 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
   }
 
   Send(url, method, std::move(request_body),
-       /*force_signed_out_request=*/false,
        /*allow_bless_auth=*/false, gaia, std::move(callback));
 }
 

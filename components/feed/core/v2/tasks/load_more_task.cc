@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
@@ -22,6 +23,7 @@
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/wire_response_translator.h"
+#include "components/feed/feed_feature_list.h"
 
 namespace feed {
 
@@ -78,33 +80,55 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   // content determines the sign-in state of the subsequent load more requests.
   // This avoids a possible situation where there would be a mix of signed-in
   // and signed-out content, which we don't want.
-  bool force_signed_out_request = !model->signed_in();
+  std::string gaia =
+      model->signed_in() ? stream_->GetSyncSignedInGaia() : std::string();
   // Send network request.
   fetch_start_time_ = base::TimeTicks::Now();
-  // TODO(crbug/1152592): Send a different network request type for WebFeeds.
-  stream_->GetNetwork()->SendQueryRequest(
-      NetworkRequestType::kNextPage,
-      CreateFeedQueryLoadMoreRequest(
-          stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/true),
-          stream_->GetMetadata().consistency_token(),
-          stream_->GetModel(stream_type_)->GetNextPageToken()),
-      force_signed_out_request, stream_->GetSyncSignedInGaia(),
-      base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr()));
+
+  feedwire::Request request = CreateFeedQueryLoadMoreRequest(
+      stream_->GetRequestMetadata(stream_type_,
+                                  /*is_for_next_page=*/true),
+      stream_->GetMetadata().consistency_token(),
+      stream_->GetModel(stream_type_)->GetNextPageToken());
+
+  // TODO(crbug/1152592): Send a different network request type for
+  // WebFeeds.
+  if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
+    stream_->GetNetwork()->SendApiRequest<QueryNextPageDiscoverApi>(
+        request, gaia,
+        base::BindOnce(&LoadMoreTask::QueryApiRequestComplete, GetWeakPtr()));
+  } else {
+    stream_->GetNetwork()->SendQueryRequest(
+        NetworkRequestType::kNextPage, request, gaia,
+        base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr()));
+  }
+}
+
+void LoadMoreTask::QueryApiRequestComplete(
+    FeedNetwork::ApiResult<feedwire::Response> result) {
+  ProcessNetworkResponse(std::move(result.response_body),
+                         std::move(result.response_info));
 }
 
 void LoadMoreTask::QueryRequestComplete(
     FeedNetwork::QueryRequestResult result) {
+  ProcessNetworkResponse(std::move(result.response_body),
+                         std::move(result.response_info));
+}
+
+void LoadMoreTask::ProcessNetworkResponse(
+    std::unique_ptr<feedwire::Response> response_body,
+    NetworkResponseInfo response_info) {
   StreamModel* model = stream_->GetModel(stream_type_);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
-  if (!result.response_body)
+  if (!response_body)
     return Done(LoadStreamStatus::kNoResponseBody);
 
   RefreshResponseData translated_response =
       stream_->GetWireResponseTranslator()->TranslateWireResponse(
-          *result.response_body,
-          StreamModelUpdateRequest::Source::kNetworkLoadMore,
-          result.response_info.was_signed_in, base::Time::Now());
+          *response_body, StreamModelUpdateRequest::Source::kNetworkLoadMore,
+          response_info.was_signed_in, base::Time::Now());
 
   if (!translated_response.model_update_request)
     return Done(LoadStreamStatus::kProtoTranslationFailed);

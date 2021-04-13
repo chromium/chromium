@@ -151,11 +151,11 @@ class TestFeedNetwork : public FeedNetwork {
   void SendQueryRequest(
       NetworkRequestType request_type,
       const feedwire::Request& request,
-      bool force_signed_out_request,
       const std::string& gaia,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
 
   void SendDiscoverApiRequest(
+      NetworkRequestType request_type,
       base::StringPiece api_path,
       base::StringPiece method,
       std::string request_bytes,
@@ -168,9 +168,9 @@ class TestFeedNetwork : public FeedNetwork {
 
   template <typename API>
   void InjectApiRawResponse(RawResponse result) {
-    injected_api_responses_[API::RequestPath().as_string()].push_back(result);
+    NetworkRequestType request_type = API::kRequestType;
+    injected_api_responses_[request_type].push_back(result);
   }
-
   template <typename API>
   void InjectApiResponse(const typename API::Response& response_message) {
     RawResponse response;
@@ -206,7 +206,8 @@ class TestFeedNetwork : public FeedNetwork {
   template <typename API>
   base::Optional<typename API::Request> GetApiRequestSent() {
     base::Optional<typename API::Request> result;
-    auto iter = api_requests_sent_.find(API::RequestPath().as_string());
+    NetworkRequestType request_type = API::kRequestType;
+    auto iter = api_requests_sent_.find(request_type);
     if (iter != api_requests_sent_.end()) {
       typename API::Request message;
       if (!iter->second.empty()) {
@@ -224,7 +225,8 @@ class TestFeedNetwork : public FeedNetwork {
 
   template <typename API>
   int GetApiRequestCount() const {
-    auto iter = api_request_count_.find(API::RequestPath().as_string());
+    NetworkRequestType request_type = API::kRequestType;
+    auto iter = api_request_count_.find(request_type);
     return iter == api_request_count_.end() ? 0 : iter->second;
   }
   int GetActionRequestCount() const;
@@ -252,6 +254,7 @@ class TestFeedNetwork : public FeedNetwork {
   base::Optional<feedwire::Request> query_request_sent;
   // Number of FeedQuery requests sent (including Web Feed ListContents).
   int send_query_call_count = 0;
+  std::string last_gaia;
   std::string consistency_token;
   bool forced_signed_out_request = false;
 
@@ -261,9 +264,10 @@ class TestFeedNetwork : public FeedNetwork {
   bool send_responses_on_command_ = false;
   std::vector<base::OnceClosure> reply_closures_;
   base::RepeatingClosure on_reply_added_;
-  std::map<std::string, std::vector<RawResponse>> injected_api_responses_;
-  std::map<std::string, std::string> api_requests_sent_;
-  std::map<std::string, int> api_request_count_;
+  std::map<NetworkRequestType, std::vector<RawResponse>>
+      injected_api_responses_;
+  std::map<NetworkRequestType, std::string> api_requests_sent_;
+  std::map<NetworkRequestType, int> api_request_count_;
   base::Optional<feedwire::Response> injected_response_;
 };
 

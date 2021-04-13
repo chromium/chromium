@@ -55,6 +55,8 @@ const base::Feature kInterestFeedSpinnerAlwaysAnimate{
 const base::Feature kFeedShare{"FeedShare", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kWebFeed{"WebFeed", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDiscoFeedEndpoint{"DiscoFeedEndpoint",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kXsurfaceMetricsReporting{
     "XsurfaceMetricsReporting", base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
@@ -25,6 +26,7 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
+#include "components/feed/feed_feature_list.h"
 
 namespace feed {
 namespace {
@@ -151,19 +153,38 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       stream_type_, GetRequestReason(stream_type_, load_type_),
       stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/false),
       stream_->GetMetadata().consistency_token());
-  std::string gaia = stream_->GetSyncSignedInGaia();
+
+  const std::string gaia =
+      force_signed_out_request ? std::string() : stream_->GetSyncSignedInGaia();
 
   if (stream_type_.IsForYou() ||
       GetFeedConfig().use_feed_query_requests_for_web_feeds) {
-    stream_->GetNetwork()->SendQueryRequest(
-        NetworkRequestType::kFeedQuery, request, force_signed_out_request, gaia,
-        base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
+    if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
+      switch (load_type_) {
+        case LoadType::kInitialLoad:
+          stream_->GetNetwork()
+              ->SendApiRequest<QueryInteractiveFeedDiscoverApi>(
+                  request, gaia,
+                  base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
+                                 GetWeakPtr()));
+          break;
+        case LoadType::kBackgroundRefresh:
+          stream_->GetNetwork()->SendApiRequest<QueryBackgroundFeedDiscoverApi>(
+              request, gaia,
+              base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
+                             GetWeakPtr()));
+          break;
+      }
+    } else {
+      stream_->GetNetwork()->SendQueryRequest(
+          NetworkRequestType::kFeedQuery, request, gaia,
+          base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
+    }
   } else {
     DCHECK(stream_type_.IsWebFeed());
     stream_->GetNetwork()->SendApiRequest<WebFeedListContentsDiscoverApi>(
         std::move(request), gaia,
-        base::BindOnce(&LoadStreamTask::WebFeedListContentsComplete,
-                       GetWeakPtr()));
+        base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
   }
 }
 
@@ -173,7 +194,7 @@ void LoadStreamTask::QueryRequestComplete(
                          std::move(result.response_info));
 }
 
-void LoadStreamTask::WebFeedListContentsComplete(
+void LoadStreamTask::QueryApiRequestComplete(
     FeedNetwork::ApiResult<feedwire::Response> result) {
   ProcessNetworkResponse(std::move(result.response_body),
                          std::move(result.response_info));

@@ -46,6 +46,9 @@ extern const base::Feature kFeedShare;
 // Feature that allows users to keep up with and consume web content.
 extern const base::Feature kWebFeed;
 
+// Use the new DiscoFeed endpoint.
+extern const base::Feature kDiscoFeedEndpoint;
+
 // Feature that enables xsurface to provide the metrics reporting state to an
 // xsurface feed.
 extern const base::Feature kXsurfaceMetricsReporting;

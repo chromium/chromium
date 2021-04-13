@@ -6716,6 +6716,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="ListRecommendedWebFeeds"
       label="Requests to list recommended web feeds"/>
   <suffix name="NextPage" label="Requests to fetch the next page of the feed"/>
+  <suffix name="QueryBackgroundFeed"
+      label="Background requests to DiscoFeed to fetch new feed content"/>
+  <suffix name="QueryInteractiveFeed"
+      label="Requests to DiscoFeed to fetch new feed content"/>
+  <suffix name="QueryNextPage"
+      label="Requests to DiscoFeed to fetch the next page of content"/>
   <suffix name="UnfollowWebFeed" label="Requests to unfollow a web feed"/>
   <suffix name="UploadActions" label="Requests to upload user action data"/>
   <affected-histogram name="ContentSuggestions.Feed.Network.ResponseStatus"/>

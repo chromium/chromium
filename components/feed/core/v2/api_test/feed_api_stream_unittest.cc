@@ -5,14 +5,18 @@
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
+#include "components/feed/core/v2/test/stream_builder.h"
+#include "components/feed/feed_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -283,6 +287,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   ASSERT_TRUE(network_.query_request_sent);
+  EXPECT_EQ(0, network_.GetApiRequestCount<QueryInteractiveFeedDiscoverApi>());
   EXPECT_EQ(
       "token",
       network_.query_request_sent->feed_request().consistency_token().token());
@@ -296,6 +301,49 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
   // Verify the data was written to the store.
   EXPECT_STRINGS_EQUAL(ModelStateFor(MakeTypicalInitialModelState()),
                        ModelStateFor(GetStreamType(), store_.get()));
+}
+
+// Test that we use QueryInteractiveFeedDiscoverApi and QueryNextPageDiscoverApi
+// when kDiscoFeedEndpoint is enabled.
+TEST_F(FeedApiTest, LoadFromNetworkDiscoFeedEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kDiscoFeedEndpoint);
+
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  response_translator_.InjectResponse(MakeTypicalNextPageState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ(1, network_.GetApiRequestCount<QueryInteractiveFeedDiscoverApi>());
+
+  stream_->LoadMore(surface, base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(1, network_.GetApiRequestCount<QueryNextPageDiscoverApi>());
+  EXPECT_EQ("loading -> 2 slices -> 2 slices +spinner -> 4 slices",
+            surface.DescribeUpdates());
+}
+
+// Perform a background refresh when DiscoFeedEndpoint is enabled. A
+// QueryBackgroundFeedDiscoverApi request should be made.
+TEST_F(FeedApiTest, BackgroundRefreshDiscoFeedEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kDiscoFeedEndpoint);
+
+  // Trigger a background refresh.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
+  WaitForIdleTaskQueue();
+
+  // Verify the refresh happened and that we can load a stream without the
+  // network.
+  ASSERT_TRUE(refresh_scheduler_.completed_tasks.count(
+      RefreshTaskId::kRefreshForYouFeed));
+  EXPECT_EQ(1, network_.GetApiRequestCount<QueryBackgroundFeedDiscoverApi>());
+  EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
+            metrics_reporter_->background_refresh_status);
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, ForceRefreshForDebugging) {
@@ -581,7 +629,7 @@ TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
 
   // Validate that the network request was sent as signed out.
   ASSERT_EQ(1, network_.send_query_call_count);
-  EXPECT_TRUE(network_.forced_signed_out_request);
+  EXPECT_EQ("", network_.last_gaia);
   EXPECT_TRUE(network_.query_request_sent->feed_request()
                   .client_info()
                   .chrome_client_info()
@@ -606,7 +654,7 @@ TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
   // Validate that the network request was sent as signed out and
   // contained the session id.
   ASSERT_EQ(2, network_.send_query_call_count);
-  EXPECT_TRUE(network_.forced_signed_out_request);
+  EXPECT_EQ("", network_.last_gaia);
   EXPECT_EQ(kSessionId, stream_->GetMetadata().session_id().token());
   EXPECT_EQ(network_.query_request_sent->feed_request()
                 .client_info()
@@ -627,7 +675,7 @@ TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
 
   // Validate that a signed-in request was sent.
   ASSERT_EQ(3, network_.send_query_call_count);
-  EXPECT_FALSE(network_.forced_signed_out_request);
+  EXPECT_NE("", network_.last_gaia);
 
   // The model should now be in the signed-in state.
   EXPECT_TRUE(stream_->GetModel(kForYouStream)->signed_in());
@@ -642,7 +690,7 @@ TEST_F(FeedApiTest, WebFeedUsesSignedInRequestAfterHistoryIsDeleted) {
   WaitForIdleTaskQueue();
 
   ASSERT_EQ(1, network_.send_query_call_count);
-  EXPECT_FALSE(network_.forced_signed_out_request);
+  EXPECT_NE("", network_.last_gaia);
 }
 
 TEST_F(FeedApiTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
@@ -654,7 +702,7 @@ TEST_F(FeedApiTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
-  EXPECT_FALSE(network_.forced_signed_out_request);
+  EXPECT_NE("", network_.last_gaia);
   EXPECT_TRUE(stream_->GetMetadata().session_id().token().empty());
 }
 

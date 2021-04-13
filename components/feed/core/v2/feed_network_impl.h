@@ -12,6 +12,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/version_info/channel.h"
 #include "url/gurl.h"
@@ -35,6 +36,9 @@ class FeedNetworkImpl : public FeedNetwork {
     // Returns a string which represents the top locale and region of the
     // device.
     virtual std::string GetLanguageTag() = 0;
+    // Returns the GAIA string for the signed in user if they are sync-enabled,
+    // or the empty string otherwise.
+    virtual std::string GetSyncSignedInGaia() = 0;
   };
 
   FeedNetworkImpl(Delegate* delegate,
@@ -51,11 +55,11 @@ class FeedNetworkImpl : public FeedNetwork {
   void SendQueryRequest(
       NetworkRequestType request_type,
       const feedwire::Request& request,
-      bool force_signed_out_request,
       const std::string& gaia,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
 
   void SendDiscoverApiRequest(
+      NetworkRequestType request_type,
       base::StringPiece api_path,
       base::StringPiece method,
       std::string request_bytes,
@@ -74,7 +78,6 @@ class FeedNetworkImpl : public FeedNetwork {
   void Send(const GURL& url,
             base::StringPiece request_method,
             std::string request_body,
-            bool force_signed_out_request,
             bool allow_bless_auth,
             const std::string& gaia,
             base::OnceCallback<void(FeedNetworkImpl::RawResponse)> callback);
