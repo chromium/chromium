@@ -242,6 +242,8 @@ bool FeaturePromoControllerViews::MaybeShowPromoImpl(
                                 snooze_count,
                                 snooze_service_->kUmaMaxSnoozeCount);
 
+  snooze_service_->OnPromoShown(iph_feature);
+
   ShowPromoBubbleImpl(params);
   close_callback_ = std::move(close_callback);
 
