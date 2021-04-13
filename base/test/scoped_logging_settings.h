@@ -5,6 +5,9 @@
 #ifndef BASE_TEST_SCOPED_LOGGING_SETTINGS_H_
 #define BASE_TEST_SCOPED_LOGGING_SETTINGS_H_
 
+#include <memory>
+
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 
@@ -12,7 +15,8 @@ namespace logging {
 // Saves the current logging settings and restores them when destroyed.
 // This is used by logging tests to avoid affecting later tests that
 // may run afterward, in the same process.
-// Note that the log_file setting is not currently saved/restored.
+// Note that this helper cannot be used when an un-named log-file is configured
+// via |LoggingSettings::log_file|.
 class BASE_EXPORT ScopedLoggingSettings {
  public:
   ScopedLoggingSettings();
@@ -26,16 +30,25 @@ class BASE_EXPORT ScopedLoggingSettings {
 #endif
 
  private:
-  bool enable_process_id_;
-  bool enable_thread_id_;
-  bool enable_timestamp_;
-  bool enable_tickcount_;
-  int min_log_level_;
-  LogMessageHandlerFunction message_handler_;
+  // Please keep the following fields in the same order as the corresponding
+  // globals in //base/logging.cc
+
+  const int min_log_level_;
+  const int logging_destination_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  LogFormat log_format_;
+  const LogFormat log_format_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  std::unique_ptr<base::FilePath::StringType> log_file_name_;
+
+  const bool enable_process_id_;
+  const bool enable_thread_id_;
+  const bool enable_timestamp_;
+  const bool enable_tickcount_;
+  const char* const log_prefix_;
+
+  const LogMessageHandlerFunction message_handler_;
 };
 }  // namespace logging
 
