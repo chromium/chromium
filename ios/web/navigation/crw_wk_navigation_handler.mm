@@ -691,6 +691,12 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 
   self.webStateImpl->GetNavigationManagerImpl().OnNavigationStarted(webViewURL);
 
+  // When a client-side redirect occurs while an interstitial warning is
+  // displayed, clear the warning and its navigation item, so that a new
+  // pending item is created for |context| in |registerLoadRequestForURL|. See
+  // crbug.com/861836.
+  self.webStateImpl->ClearTransientContent();
+
   BOOL isPlaceholderURL =
       base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)
           ? NO

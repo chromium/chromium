@@ -96,3 +96,5 @@ void LegacyTLSBlockingPage::HandleScriptCommand(
     controller_->Proceed();
   }
 }
+
+void LegacyTLSBlockingPage::AfterShow() {}

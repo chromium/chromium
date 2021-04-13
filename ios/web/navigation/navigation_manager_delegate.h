@@ -24,6 +24,10 @@ class NavigationManagerDelegate {
  public:
   virtual ~NavigationManagerDelegate() {}
 
+  // Instructs the delegate to clear any transient content to prepare for new
+  // navigation.
+  virtual void ClearTransientContent() = 0;
+
   // Instructs the delegate to clear any presented dialogs to prepare for a new
   // navigation.
   virtual void ClearDialogs() = 0;

@@ -40,6 +40,7 @@ class TestInterstitialPage : public IOSSecurityInterstitialPage {
   bool ShouldCreateNewNavigation() const override { return false; }
   void PopulateInterstitialStrings(
       base::DictionaryValue* load_time_data) const override {}
+  void AfterShow() override {}
 
   bool* destroyed_tracker_ = nullptr;
 };

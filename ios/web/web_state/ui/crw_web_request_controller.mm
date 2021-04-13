@@ -83,6 +83,8 @@ enum class BackForwardNavigationType {
     [self.navigationHandler stopLoading];
   }
 
+  self.webState->ClearTransientContent();
+
   web::NavigationItem* item = self.currentNavItem;
   const GURL currentURL = item ? item->GetURL() : GURL::EmptyGURL();
   const bool isCurrentURLAppSpecific =
@@ -165,6 +167,8 @@ enum class BackForwardNavigationType {
   }
 
   DCHECK(HTML.length);
+  // Remove the transient content view.
+  self.webState->ClearTransientContent();
 
   self.navigationHandler.navigationState = web::WKNavigationState::REQUESTED;
 

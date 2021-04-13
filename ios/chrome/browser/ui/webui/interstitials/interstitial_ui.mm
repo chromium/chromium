@@ -15,7 +15,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_constants.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_util.h"
-#include "ios/components/security_interstitials/ios_security_interstitial_page.h"
+#import "ios/web/public/security/web_interstitial_delegate.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
 #include "ios/web/public/webui/web_ui_ios.h"
@@ -46,7 +46,7 @@ class InterstitialHTMLSource : public web::URLDataSourceIOS {
   std::string GetMimeType(const std::string& path) const override;
 
   // The ChromeBrowserState passed on initialization.  Used to construct
-  // WebStates that are passed to IOSSecurityInterstitialPages.
+  // WebStates that are passed to WebInterstitialDelegates.
   ChromeBrowserState* browser_state_ = nullptr;
 };
 
@@ -76,27 +76,28 @@ void InterstitialHTMLSource::StartDataRequest(
     web::URLDataSourceIOS::GotDataCallback callback) {
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(web::WebState::CreateParams(browser_state_));
-  std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
-      interstitial_page;
+  std::unique_ptr<web::WebInterstitialDelegate> interstitial_delegate;
   std::string html;
   // Using this form of the path so we can do exact matching, while ignoring the
   // query (everything after the ? character).
   GURL url = GURL(kChromeUIIntersitialsURL).GetWithEmptyPath().Resolve(path);
   std::string path_without_query = url.path();
   if (path_without_query == kChromeInterstitialSslPath) {
-    interstitial_page = CreateSslBlockingPage(web_state.get(), url);
+    interstitial_delegate = CreateSslBlockingPageDelegate(web_state.get(), url);
   } else if (path_without_query == kChromeInterstitialCaptivePortalPath) {
-    interstitial_page = CreateCaptivePortalBlockingPage(web_state.get());
+    interstitial_delegate =
+        CreateCaptivePortalBlockingPageDelegate(web_state.get());
   } else if (path_without_query == kChromeInterstitialSafeBrowsingPath) {
-    interstitial_page = CreateSafeBrowsingBlockingPage(web_state.get(), url);
+    interstitial_delegate =
+        CreateSafeBrowsingBlockingPageDelegate(web_state.get(), url);
   }
   // TODO(crbug.com/1064805): Update the page HTML when a link for an
   // unsupported interstitial type is tapped.
 
-  // Use the HTML generated from the interstitial page if created
+  // Use the HTML generated from the interstitial delegate if created
   // successfully.  Otherwise, return the default chrome://interstitials HTML.
-  if (interstitial_page) {
-    html = interstitial_page->GetHtmlContents();
+  if (interstitial_delegate) {
+    html = interstitial_delegate->GetHtmlContents();
   } else {
     html = ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
         IDR_SECURITY_INTERSTITIAL_UI_HTML);

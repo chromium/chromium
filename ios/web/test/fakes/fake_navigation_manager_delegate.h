@@ -13,6 +13,7 @@ namespace web {
 
 class FakeNavigationManagerDelegate : public NavigationManagerDelegate {
  public:
+  void ClearTransientContent() override;
   void ClearDialogs() override;
   void RecordPageStateInNavigationItem() override;
   void LoadCurrentItem(NavigationInitiationType type) override;

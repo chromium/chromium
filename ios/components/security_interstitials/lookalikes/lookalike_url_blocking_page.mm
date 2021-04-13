@@ -117,3 +117,5 @@ void LookalikeUrlBlockingPage::HandleScriptCommand(
     controller_->Proceed();
   }
 }
+
+void LookalikeUrlBlockingPage::AfterShow() {}

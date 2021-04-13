@@ -45,6 +45,7 @@ class NavigationContextImpl;
 class NavigationManager;
 class SessionCertificatePolicyCacheImpl;
 class WebFrame;
+class WebInterstitialImpl;
 class WebUIIOS;
 
 // Implementation of WebState.
@@ -217,6 +218,8 @@ class WebStateImpl : public WebState,
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
+  bool IsShowingWebInterstitial() const override;
+  WebInterstitial* GetWebInterstitial() const override;
   base::CallbackListSubscription AddScriptCommandCallback(
       const ScriptCommandCallback& callback,
       const std::string& command_prefix) override;
@@ -244,6 +247,9 @@ class WebStateImpl : public WebState,
   // will return |user_agent|.
   // GetUserAgentForSessionRestoration() will always return |user_agent|.
   void SetUserAgent(UserAgentType user_agent);
+
+  // Adds |interstitial|'s view to the web controller's content view.
+  void ShowWebInterstitial(WebInterstitialImpl* interstitial);
 
   // Notifies the delegate that the load progress was updated.
   void SendChangeLoadProgress(double progress);
@@ -278,6 +284,7 @@ class WebStateImpl : public WebState,
   void CancelDialogs();
 
   // NavigationManagerDelegate:
+  void ClearTransientContent() override;
   void ClearDialogs() override;
   void RecordPageStateInNavigationItem() override;
   void LoadCurrentItem(NavigationInitiationType type) override;
@@ -364,6 +371,9 @@ class WebStateImpl : public WebState,
   base::ObserverList<WebStatePolicyDecider, true>::Unchecked policy_deciders_;
 
   std::string mime_type_;
+
+  // Weak pointer to the interstitial page being displayed, if any.
+  WebInterstitialImpl* interstitial_;
 
   // Returned by reference.
   std::u16string empty_string16_;

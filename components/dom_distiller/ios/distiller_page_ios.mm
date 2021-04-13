@@ -240,7 +240,8 @@ void DistillerPageIOS::DidStartLoading(web::WebState* web_state) {
 
 void DistillerPageIOS::DidStopLoading(web::WebState* web_state) {
   DCHECK_EQ(web_state_.get(), web_state);
-  if (media_blocker_->main_frame_navigation_blocked()) {
+  if (web_state->IsShowingWebInterstitial() ||
+      media_blocker_->main_frame_navigation_blocked()) {
     // If there is an interstitial, stop the distillation.
     // The interstitial is not displayed to the user who cannot choose to
     // continue.

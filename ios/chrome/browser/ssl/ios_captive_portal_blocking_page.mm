@@ -24,11 +24,13 @@ IOSCaptivePortalBlockingPage::IOSCaptivePortalBlockingPage(
     web::WebState* web_state,
     const GURL& request_url,
     const GURL& landing_url,
+    base::OnceCallback<void(bool)> callback,
     security_interstitials::IOSBlockingPageControllerClient* client)
     : security_interstitials::IOSSecurityInterstitialPage(web_state,
                                                           request_url,
                                                           client),
-      landing_url_(landing_url) {
+      landing_url_(landing_url),
+      callback_(std::move(callback)) {
   captive_portal::CaptivePortalMetrics::LogCaptivePortalBlockingPageEvent(
       captive_portal::CaptivePortalMetrics::SHOW_ALL);
 }
@@ -84,6 +86,32 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
   load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
 }
 
+void IOSCaptivePortalBlockingPage::AfterShow() {}
+
+void IOSCaptivePortalBlockingPage::OnDontProceed() {
+  // It's possible that callback_ may not exist if the user clicks "Proceed"
+  // followed by pressing the back button before the interstitial is hidden.
+  // In that case the certificate will still be treated as allowed.
+  if (callback_.is_null())
+    return;
+
+  std::move(callback_).Run(false);
+}
+
+void IOSCaptivePortalBlockingPage::CommandReceived(const std::string& command) {
+  int command_num = 0;
+  bool command_is_num = base::StringToInt(command, &command_num);
+  DCHECK(command_is_num) << command;
+  // Any command other than "open the login page" is ignored.
+  if (command_num == security_interstitials::CMD_OPEN_LOGIN) {
+    captive_portal::CaptivePortalMetrics::LogCaptivePortalBlockingPageEvent(
+        captive_portal::CaptivePortalMetrics::OPEN_LOGIN_PAGE);
+
+    CaptivePortalDetectorTabHelper::FromWebState(web_state())
+        ->DisplayCaptivePortalLoginPage(landing_url_);
+  }
+}
+
 void IOSCaptivePortalBlockingPage::HandleScriptCommand(
     const base::DictionaryValue& message,
     const GURL& origin_url,
@@ -94,23 +122,13 @@ void IOSCaptivePortalBlockingPage::HandleScriptCommand(
     LOG(ERROR) << "JS message parameter not found: command";
     return;
   }
-
+  // Non-proceed commands are handled the same between committed and
+  // non-committed interstitials, so the CommandReceived method can be used.
   // Remove the command prefix since it is ignored when converting the value
   // to a SecurityInterstitialCommand.
   std::size_t delimiter = command.find(".");
-  if (delimiter == std::string::npos)
-    return;
-
-  std::string command_suffix = command.substr(delimiter + 1);
-  int command_num = 0;
-  bool command_is_num = base::StringToInt(command_suffix, &command_num);
-  DCHECK(command_is_num) << command_suffix;
-  // Any command other than "open the login page" is ignored.
-  if (command_num == security_interstitials::CMD_OPEN_LOGIN) {
-    captive_portal::CaptivePortalMetrics::LogCaptivePortalBlockingPageEvent(
-        captive_portal::CaptivePortalMetrics::OPEN_LOGIN_PAGE);
-
-    CaptivePortalDetectorTabHelper::FromWebState(web_state())
-        ->DisplayCaptivePortalLoginPage(landing_url_);
+  if (delimiter != std::string::npos) {
+    IOSCaptivePortalBlockingPage::CommandReceived(
+        command.substr(delimiter + 1));
   }
 }

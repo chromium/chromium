@@ -12,6 +12,7 @@
 
 namespace web {
 
+void FakeNavigationManagerDelegate::ClearTransientContent() {}
 void FakeNavigationManagerDelegate::ClearDialogs() {}
 void FakeNavigationManagerDelegate::RecordPageStateInNavigationItem() {}
 void FakeNavigationManagerDelegate::LoadCurrentItem(

@@ -82,6 +82,7 @@ class MockNavigationManagerDelegate : public NavigationManagerDelegate {
     mock_web_view_ = nil;
   }
 
+  MOCK_METHOD0(ClearTransientContent, void());
   MOCK_METHOD0(ClearDialogs, void());
   MOCK_METHOD0(RecordPageStateInNavigationItem, void());
   MOCK_METHOD1(LoadCurrentItem, void(NavigationInitiationType type));
@@ -1087,6 +1088,7 @@ TEST_F(NavigationManagerTest, ReloadWithUserAgentType) {
       .andReturn([[NSURL alloc] initWithString:@"http://www.1.com"]);
 
   EXPECT_CALL(navigation_manager_delegate(), RecordPageStateInNavigationItem());
+  EXPECT_CALL(navigation_manager_delegate(), ClearTransientContent());
   EXPECT_CALL(navigation_manager_delegate(), ClearDialogs());
   EXPECT_CALL(navigation_manager_delegate(),
               LoadCurrentItem(NavigationInitiationType::BROWSER_INITIATED));
@@ -1613,6 +1615,7 @@ TEST_F(NavigationManagerTest, LoadURLWithParamsWithExtraHeadersAndPostData) {
 
   EXPECT_CALL(navigation_manager_delegate(), RecordPageStateInNavigationItem())
       .Times(1);
+  EXPECT_CALL(navigation_manager_delegate(), ClearTransientContent()).Times(1);
   EXPECT_CALL(navigation_manager_delegate(), ClearDialogs()).Times(1);
   EXPECT_CALL(navigation_manager_delegate(),
               LoadCurrentItem(NavigationInitiationType::BROWSER_INITIATED))
@@ -1645,6 +1648,7 @@ TEST_F(NavigationManagerTest, LoadURLWithParamsSavesStateOnCurrentItem) {
 
   EXPECT_CALL(navigation_manager_delegate(), RecordPageStateInNavigationItem())
       .Times(1);
+  EXPECT_CALL(navigation_manager_delegate(), ClearTransientContent()).Times(1);
   EXPECT_CALL(navigation_manager_delegate(), ClearDialogs()).Times(1);
   EXPECT_CALL(navigation_manager_delegate(),
               LoadCurrentItem(NavigationInitiationType::BROWSER_INITIATED))
@@ -1717,6 +1721,7 @@ TEST_F(NavigationManagerTest, GoToIndexDifferentDocument) {
                ui::PAGE_TRANSITION_FORWARD_BACK);
 
   EXPECT_CALL(navigation_manager_delegate(), RecordPageStateInNavigationItem());
+  EXPECT_CALL(navigation_manager_delegate(), ClearTransientContent());
   EXPECT_CALL(navigation_manager_delegate(), ClearDialogs());
 
   navigation_manager()->GoToIndex(0);
@@ -1748,6 +1753,7 @@ TEST_F(NavigationManagerTest, GoToIndexSameDocument) {
                ui::PAGE_TRANSITION_FORWARD_BACK);
 
   EXPECT_CALL(navigation_manager_delegate(), RecordPageStateInNavigationItem());
+  EXPECT_CALL(navigation_manager_delegate(), ClearTransientContent());
   EXPECT_CALL(navigation_manager_delegate(), ClearDialogs());
 
   navigation_manager()->GoToIndex(0);

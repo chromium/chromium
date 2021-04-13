@@ -13,6 +13,8 @@ source_set("security") {
     "certificate_policy_cache.h",
     "security_style.h",
     "ssl_status.h",
+    "web_interstitial.h",
+    "web_interstitial_delegate.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

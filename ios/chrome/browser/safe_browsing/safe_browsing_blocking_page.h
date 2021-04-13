@@ -58,7 +58,7 @@ class SafeBrowsingBlockingPage
   // Setter for the client.
   void SetClient(std::unique_ptr<SafeBrowsingControllerClient> client);
 
-  // security_interstitials::IOSSecurityInterstitialPage:
+  // web::WebInterstitialDelegate:
   std::string GetHtmlContents() const override;
   void HandleScriptCommand(const base::DictionaryValue& message,
                            const GURL& origin_url,
@@ -67,6 +67,7 @@ class SafeBrowsingBlockingPage
   bool ShouldCreateNewNavigation() const override;
   void PopulateInterstitialStrings(
       base::DictionaryValue* load_time_data) const override;
+  void AfterShow() override;
 
   // The unsafe resource triggering the blocking page.
   security_interstitials::UnsafeResource resource_;

@@ -17,7 +17,6 @@
 #include "ios/web/common/features.h"
 #include "ios/web/common/url_util.h"
 #import "ios/web/js_messaging/crw_js_injector.h"
-#import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"
@@ -39,6 +38,7 @@
 #import "ios/web/public/web_state_delegate.h"
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/webui/web_ui_ios_controller.h"
+#import "ios/web/security/web_interstitial_impl.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/global_web_state_event_tracker.h"
 #import "ios/web/web_state/policy_decision_state_tracker.h"
@@ -86,6 +86,7 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
       is_being_destroyed_(false),
       web_controller_(nil),
       web_frames_manager_(*this),
+      interstitial_(nullptr),
       created_with_opener_(params.created_with_opener),
       user_agent_type_(features::UseWebClientDefaultUserAgent()
                            ? UserAgentType::AUTOMATIC
@@ -335,6 +336,25 @@ const std::u16string& WebStateImpl::GetTitle() const {
   // Display title for the visible item makes more sense.
   item = navigation_manager_->GetVisibleItem();
   return item ? item->GetTitleForDisplay() : empty_string16_;
+}
+
+bool WebStateImpl::IsShowingWebInterstitial() const {
+  // Technically we could have |interstitial_| set but its view isn't
+  // being displayed, but there's no code path where that could occur.
+  return interstitial_ != nullptr;
+}
+
+WebInterstitial* WebStateImpl::GetWebInterstitial() const {
+  return interstitial_;
+}
+
+void WebStateImpl::ShowWebInterstitial(WebInterstitialImpl* interstitial) {
+  DCHECK(Configured());
+  interstitial_ = interstitial;
+
+  DCHECK(interstitial_->GetContentView());
+  DCHECK(interstitial_->GetContentView().scrollView);
+  [web_controller_ showTransientContentView:interstitial_->GetContentView()];
 }
 
 void WebStateImpl::SendChangeLoadProgress(double progress) {
@@ -597,6 +617,7 @@ BrowserState* WebStateImpl::GetBrowserState() const {
 
 void WebStateImpl::OpenURL(const WebState::OpenURLParams& params) {
   DCHECK(Configured());
+  ClearTransientContent();
   if (delegate_)
     delegate_->OpenURLFromWebState(this, params);
 }
@@ -849,6 +870,30 @@ void WebStateImpl::OnNavigationFinished(web::NavigationContextImpl* context) {
 }
 
 #pragma mark - NavigationManagerDelegate implementation
+
+void WebStateImpl::ClearTransientContent() {
+  if (interstitial_) {
+    // |visible_item| can be null if non-committed entries where discarded.
+    NavigationItem* visible_item = navigation_manager_->GetVisibleItem();
+    const SSLStatus old_status =
+        visible_item ? visible_item->GetSSL() : SSLStatus();
+    // Store the currently displayed interstitial in a local variable and reset
+    // |interstitial_| early.  This is to prevent an infinite loop, as
+    // |DontProceed()| internally calls |ClearTransientContent()|.
+    web::WebInterstitial* interstitial = interstitial_;
+    interstitial_ = nullptr;
+    interstitial->DontProceed();
+    // Don't access |interstitial| after calling |DontProceed()|, as it triggers
+    // deletion.
+
+    const web::NavigationItem* new_item = navigation_manager_->GetVisibleItem();
+    if (!new_item || !visible_item || !new_item->GetSSL().Equals(old_status)) {
+      // Visible SSL state has actually changed after interstitial dismissal.
+      DidChangeVisibleSecurityState();
+    }
+  }
+  [web_controller_ clearTransientContentView];
+}
 
 void WebStateImpl::ClearDialogs() {
   CancelDialogs();

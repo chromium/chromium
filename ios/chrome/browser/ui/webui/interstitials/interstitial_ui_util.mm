@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_util.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
+#import "ios/web/public/security/web_interstitial_delegate.h"
 #include "ios/web/public/web_state.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
 #include "ios/web/public/webui/web_ui_ios.h"
@@ -62,8 +63,9 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
 
 }
 
-std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
-CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
+std::unique_ptr<web::WebInterstitialDelegate> CreateSslBlockingPageDelegate(
+    web::WebState* web_state,
+    const GURL& url) {
   DCHECK_EQ(kChromeInterstitialSslPath, url.path());
   // Fake parameters for SSL blocking page.
   GURL request_url("https://example.com");
@@ -120,7 +122,7 @@ CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
 
   return std::make_unique<IOSSSLBlockingPage>(
       web_state, cert_error, ssl_info, request_url, options_mask,
-      base::Time::NowFromSystemTime(),
+      base::Time::NowFromSystemTime(), base::OnceCallback<void(bool)>(),
       std::make_unique<security_interstitials::IOSBlockingPageControllerClient>(
           web_state,
           std::make_unique<
@@ -129,8 +131,8 @@ CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
           GetApplicationContext()->GetApplicationLocale()));
 }
 
-std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
-CreateCaptivePortalBlockingPage(web::WebState* web_state) {
+std::unique_ptr<web::WebInterstitialDelegate>
+CreateCaptivePortalBlockingPageDelegate(web::WebState* web_state) {
   GURL landing_url("https://captive.portal/login");
   GURL request_url("https://google.com");
 
@@ -138,7 +140,7 @@ CreateCaptivePortalBlockingPage(web::WebState* web_state) {
   reporting_info.metric_prefix = "ssl_nonoverridable";
 
   return std::make_unique<IOSCaptivePortalBlockingPage>(
-      web_state, request_url, landing_url,
+      web_state, request_url, landing_url, base::OnceCallback<void(bool)>(),
       new security_interstitials::IOSBlockingPageControllerClient(
           web_state,
           std::make_unique<
@@ -147,8 +149,9 @@ CreateCaptivePortalBlockingPage(web::WebState* web_state) {
           GetApplicationContext()->GetApplicationLocale()));
 }
 
-std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
-CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
+std::unique_ptr<web::WebInterstitialDelegate>
+CreateSafeBrowsingBlockingPageDelegate(web::WebState* web_state,
+                                       const GURL& url) {
   safe_browsing::SBThreatType threat_type =
       safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");

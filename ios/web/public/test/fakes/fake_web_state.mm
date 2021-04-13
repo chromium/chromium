@@ -237,6 +237,14 @@ base::CallbackListSubscription FakeWebState::AddScriptCommandCallback(
   return callback_list_.Add(callback);
 }
 
+bool FakeWebState::IsShowingWebInterstitial() const {
+  return false;
+}
+
+WebInterstitial* FakeWebState::GetWebInterstitial() const {
+  return nullptr;
+}
+
 void FakeWebState::SetBrowserState(BrowserState* browser_state) {
   browser_state_ = browser_state;
 }
