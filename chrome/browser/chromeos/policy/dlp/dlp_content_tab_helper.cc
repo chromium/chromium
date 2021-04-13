@@ -28,6 +28,25 @@ void DlpContentTabHelper::RenderFrameDeleted(
   RemoveFrame(render_frame_host);
 }
 
+void DlpContentTabHelper::RenderFrameHostStateChanged(
+    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost::LifecycleState old_state,
+    content::RenderFrameHost::LifecycleState new_state) {
+  const DlpContentRestrictionSet restriction_set =
+      DlpContentManager::Get()->GetRestrictionSetForURL(
+          render_frame_host->GetLastCommittedURL());
+
+  using LifecycleState = content::RenderFrameHost::LifecycleState;
+  if (old_state != LifecycleState::kActive &&
+      new_state == LifecycleState::kActive) {
+    if (!restriction_set.IsEmpty())
+      AddFrame(render_frame_host, restriction_set);
+  } else if (old_state == LifecycleState::kActive &&
+             new_state != LifecycleState::kActive) {
+    RemoveFrame(render_frame_host);
+  }
+}
+
 void DlpContentTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage())
