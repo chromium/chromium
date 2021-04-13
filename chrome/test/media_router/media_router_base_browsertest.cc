@@ -112,20 +112,6 @@ void MediaRouterBaseBrowserTest::ParseCommandLine() {
   DVLOG(0) << "ParseCommandLine";
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   extension_unpacked_ = command_line->GetSwitchValuePath(kExtensionUnpacked);
-
-  // No extension provided. Use the default component extension in Chromium.
-  if (extension_unpacked_.empty()) {
-    base::FilePath base_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &base_dir));
-    base::FilePath extension_path = base_dir.Append(FILE_PATH_LITERAL(
-        "gen/chrome/browser/resources/media_router/extension"));
-    if (PathExists(extension_path)) {
-      extension_unpacked_ = extension_path;
-    }
-  }
-
-  // An unpacked component extension must be provided.
-  ASSERT_FALSE(extension_unpacked_.empty());
 }
 
 Browser* MediaRouterBaseBrowserTest::browser() {

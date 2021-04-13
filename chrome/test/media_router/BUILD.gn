@@ -51,10 +51,7 @@ source_set("browser_tests") {
     "//ui/views:test_support",
     "//url",
   ]
-  data_deps = [
-    ":browser_test_resources",
-    "//chrome/browser/resources/media_router/extension:media_router",
-  ]
+  data_deps = [ ":browser_test_resources" ]
 }
 
 copy("browser_test_resources") {
