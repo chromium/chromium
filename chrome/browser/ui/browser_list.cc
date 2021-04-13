@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -23,6 +24,10 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/notification_service.h"
+
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+#include "chrome/browser/sessions/app_session_service_factory.h"
+#endif
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -162,7 +167,10 @@ void BrowserList::CloseAllBrowsersWithProfile(
     bool skip_beforeunload) {
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   SessionServiceFactory::ShutdownForProfile(profile);
-#endif
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+  AppSessionServiceFactory::ShutdownForProfile(profile);
+#endif  //  BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+#endif  //  BUILDFLAG(ENABLE_SESSION_SERVICE)
 
   TryToCloseBrowserList(GetBrowsersToClose(profile), on_close_success,
                         on_close_aborted, profile->GetPath(),

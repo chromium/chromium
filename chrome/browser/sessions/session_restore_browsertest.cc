@@ -25,7 +25,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
@@ -54,9 +56,11 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -93,6 +97,12 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
+
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+#include "chrome/browser/sessions/app_session_service.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
+#include "chrome/browser/sessions/app_session_service_test_helper.h"
+#endif
 
 #if defined(OS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
@@ -2835,3 +2845,610 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(back_observer.has_committed());
   EXPECT_FALSE(back_observer.was_same_document());
 }
+
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+class AppSessionRestoreTest : public SessionRestoreTest {
+ public:
+  AppSessionRestoreTest() = default;
+  ~AppSessionRestoreTest() override = default;
+
+ protected:
+  void ShutdownServices(Profile* profile) {
+    // Pretend to 'close the browser'.
+    // Just shutdown the services as we would if the browser is shutting down
+    // for real.
+    AppSessionServiceFactory::ShutdownForProfile(profile);
+    SessionServiceFactory::ShutdownForProfile(profile);
+  }
+
+  void StartupServices(Profile* profile) {
+    // We need to start up the services again before restoring.
+    AppSessionServiceFactory::GetForProfileForSessionRestore(profile);
+    SessionServiceFactory::GetForProfileForSessionRestore(profile);
+  }
+
+  web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
+    web_app_info->open_as_window = true;
+    web_app_info->title = u"A Web App";
+    return web_app::InstallWebApp(profile, std::move(web_app_info));
+  }
+};
+
+// This is disabled on mac pending http://crbug.com/1194201
+#if defined(OS_MAC)
+#define MAYBE_BasicAppSessionRestore DISABLED_BasicAppSessionRestore
+#else
+#define MAYBE_BasicAppSessionRestore BasicAppSessionRestore
+#endif
+// A simple test that apps are being tracked by AppSessionService correctly.
+// Open 1 app for a total of 1 app, 1 browser.
+// Do a simulated shutdown and restore, check for 2 apps 2 browsers.
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
+  Profile* profile = browser()->profile();
+
+  auto example_url = GURL("http://www.example.com");
+  auto example_url2 = GURL("http://www.example2.com");
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  web_app::AppId app_id = InstallPWA(profile, example_url);
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+
+  EXPECT_TRUE(app_browser->is_type_app());
+
+  // At this point, we have a browser and an app.
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  int apps = 0;
+  int browsers = 0;
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    if (browser->type() == Browser::Type::TYPE_APP) {
+      apps++;
+      EXPECT_EQ(browser, app_browser);
+    } else if (browser->type() == Browser::Type::TYPE_NORMAL) {
+      browsers++;
+      EXPECT_EQ(browser->tab_strip_model()->count(), 2);
+      auto tab1_url = browser->tab_strip_model()->GetWebContentsAt(0)->GetURL();
+      auto tab2_url = browser->tab_strip_model()->GetWebContentsAt(1)->GetURL();
+      EXPECT_EQ(tab2_url, example_url2);
+    }
+  }
+  EXPECT_EQ(browsers, 1);
+  EXPECT_EQ(apps, 1);
+
+  // Pretend to 'close the browser'.
+  ShutdownServices(profile);
+
+  // Now trigger a restore.
+  // We need to start up the services again before restoring.
+  StartupServices(profile);
+
+  SessionRestore::RestoreSession(
+      profile, nullptr,
+      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_APPS, {});
+
+  // We should get +1 browser +1 app.
+  // Ensure the apps are the same, and ensure the browsers are the same.
+  ASSERT_EQ(4u, BrowserList::GetInstance()->size());
+  apps = 0;
+  browsers = 0;
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    if (browser->type() == Browser::Type::TYPE_APP) {
+      EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
+      apps++;
+      auto url = browser->tab_strip_model()->GetWebContentsAt(0)->GetURL();
+      EXPECT_EQ(url, example_url);
+    } else if (browser->type() == Browser::Type::TYPE_NORMAL) {
+      browsers++;
+      // Every browser should look the same, with two tabs and example_url2
+      // on the second tab.
+      EXPECT_EQ(browser->tab_strip_model()->count(), 2);
+      auto tab1_url = browser->tab_strip_model()->GetWebContentsAt(0)->GetURL();
+      auto tab2_url = browser->tab_strip_model()->GetWebContentsAt(1)->GetURL();
+      EXPECT_EQ(tab2_url, example_url2);
+    }
+  }
+  EXPECT_EQ(browsers, 2);
+  EXPECT_EQ(apps, 2);
+}
+
+// This is disabled on mac pending http://crbug.com/1194201
+#if defined(OS_MAC)
+#define MAYBE_IsolatedFromBrowserRestore DISABLED_IsolatedFromBrowserRestore
+#else
+#define MAYBE_IsolatedFromBrowserRestore IsolatedFromBrowserRestore
+#endif
+// This test ensures browser sessions are preserved no matter what happens to
+// apps. In particular this is important when apps are still open when there are
+// no browser windows open, then a browser reopens.
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
+                       MAYBE_IsolatedFromBrowserRestore) {
+  Profile* profile = browser()->profile();
+  auto example_url = GURL("http://www.example.com");
+  auto example_url2 = GURL("http://www.example2.com");
+
+  // Add a tab so we can recognize if this browser gets restored correctly.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Open a PWA.
+  web_app::AppId app_id = InstallPWA(profile, example_url);
+  // App #1
+  web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+
+  // Close the browser.
+  CloseBrowserSynchronously(browser());
+
+  // Open a few more PWAs.
+  web_app::LaunchWebAppBrowserAndWait(profile, app_id);  // App #2
+  web_app::LaunchWebAppBrowserAndWait(profile, app_id);  // #3
+  web_app::LaunchWebAppBrowserAndWait(profile, app_id);  // #4
+
+  // Verify there are 4 apps.
+  ASSERT_EQ(4u, BrowserList::GetInstance()->size());
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    ASSERT_EQ(browser->type(), Browser::Type::TYPE_APP);
+    EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
+  }
+
+  // Now open the browser window.
+  // This should be treated the same as a browser opening when nothing,
+  // i.e. it will trigger a browser restore.
+  SessionRestoreTestHelper restore_observer;
+  chrome::NewEmptyWindow(profile);
+  restore_observer.Wait();
+
+  // Ensure there's 4 apps and 1 restored window
+  int apps = 0;
+  int browsers = 0;
+  Browser* restored_browser = nullptr;
+  ASSERT_EQ(5u, BrowserList::GetInstance()->size());
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    if (browser->type() == Browser::Type::TYPE_NORMAL) {
+      restored_browser = browser;
+      browsers++;
+    } else if (browser->type() == Browser::Type::TYPE_APP) {
+      apps++;
+    }
+  }
+  ASSERT_EQ(apps, 4);
+  ASSERT_EQ(browsers, 1);
+  ASSERT_NE(restored_browser, nullptr);
+
+  // now check we restored the browser correctly.
+  EXPECT_EQ(restored_browser->tab_strip_model()->count(), 2);
+  auto tab1_url =
+      restored_browser->tab_strip_model()->GetWebContentsAt(0)->GetURL();
+  auto tab2_url =
+      restored_browser->tab_strip_model()->GetWebContentsAt(1)->GetURL();
+  EXPECT_EQ(tab2_url, example_url2);
+}
+
+// This is disabled on mac pending http://crbug.com/1194201
+// These tests currently fail on linux due to http://crbug.com/1196493.
+// To keep the coverage from the rest of the test, we disable the failing check
+// on linux for window-maximization.
+#if defined(OS_MAC)
+#define MAYBE_RestoreAppMinimized DISABLED_RestoreAppMinimized
+#else
+#define MAYBE_RestoreAppMinimized RestoreAppMinimized
+#endif
+// This test minimizes an app, ensures it restores correctly.
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
+  Profile* profile = browser()->profile();
+  auto example_url = GURL("http://www.example.com");
+
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Open a PWA.
+  web_app::AppId app_id = InstallPWA(profile, example_url);
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+
+  app_browser->window()->Minimize();
+
+  // Pretend to 'close the browser'.
+  // Just shutdown the services as we would if the browser is shutting down for
+  // real.
+  ShutdownServices(profile);
+
+  // Now that SessionServices are off, we can close stuff to simulate a closure.
+  CloseBrowserSynchronously(app_browser);
+  CloseBrowserSynchronously(browser());
+
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  StartupServices(profile);
+
+  SessionRestore::RestoreSession(
+      profile, nullptr,
+      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_APPS, {});
+
+  // It opens up the browser and the app.
+  app_browser = nullptr;
+  Browser* normal_browser = nullptr;
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    if (browser->type() == Browser::Type::TYPE_APP) {
+      EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
+#if !defined(OS_LINUX)
+      EXPECT_TRUE(browser->window()->IsMinimized());
+#endif
+      EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+                example_url);
+      app_browser = browser;
+    } else {
+      normal_browser = browser;
+    }
+  }
+
+  ASSERT_NE(app_browser, nullptr);
+  ASSERT_NE(normal_browser, nullptr);
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+
+// This is disabled on mac pending http://crbug.com/1194201
+// These tests currently fail on linux due to http://crbug.com/1196493.
+// In order to keep the coverage from the rest of the test, the checks that
+// fail on linux are explicitly disabled.
+#if defined(OS_MAC)
+#define MAYBE_RestoreMaximizedApp DISABLED_RestoreMaximizedApp
+#else
+#define MAYBE_RestoreMaximizedApp RestoreMaximizedApp
+#endif
+// This test maximizes an app, ensures it restores correctly.
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
+  Profile* profile = browser()->profile();
+  auto example_url = GURL("http://www.example.com");
+
+  // Open a PWA.
+  web_app::AppId app_id = InstallPWA(profile, example_url);
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+
+  // Maximize.
+  app_browser->window()->Maximize();
+
+  // Pretend to 'close the browser'.
+  // Just shutdown the services as we would if the browser is shutting down for
+  // real.
+  ShutdownServices(profile);
+
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Now that SessionServices are off, we can close stuff to simulate a closure.
+  CloseBrowserSynchronously(app_browser);
+  CloseBrowserSynchronously(browser());
+
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Now trigger a restore.
+  // We need to start up the services again before restoring.
+  StartupServices(profile);
+
+  SessionRestore::RestoreSession(
+      profile, nullptr,
+      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_APPS, {});
+
+  app_browser = nullptr;
+  Browser* normal_browser = nullptr;
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    if (browser->type() == Browser::Type::TYPE_APP) {
+      EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
+#if !defined(OS_LINUX)
+      EXPECT_TRUE(browser->window()->IsMaximized());
+#endif
+      EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+                example_url);
+      app_browser = browser;
+    } else {
+      normal_browser = browser;
+    }
+  }
+
+  // It opens up the browser and the app.
+  ASSERT_NE(app_browser, nullptr);
+  ASSERT_NE(normal_browser, nullptr);
+  profile = normal_browser->profile();
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+
+#if !defined(OS_MAC)
+// This test does not make sense on mac, since when apps are opened,
+// the browser must open. This test opens an app when nothing is open,
+// then closes it. Then opens a browser to ensure the user's previous browser
+// session was preserved.
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
+                       OpeningAppDoesNotAffectBrowserSession) {
+  Profile* profile = browser()->profile();
+  auto example_url = GURL("http://www.example.com");
+  auto example_url2 = GURL("http://www.example2.com");
+
+  // Add two tabs to the normal browser.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), example_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  CloseBrowserSynchronously(browser());
+
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Pretend to 'close the browser'.
+  // Just shutdown the services as we would if the browser is shutting down for
+  // real.
+  ShutdownServices(profile);
+
+  // 'open the browser' again
+  StartupServices(profile);
+
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Open a PWA.
+  web_app::AppId app_id = InstallPWA(profile, example_url);
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+
+  CloseBrowserSynchronously(app_browser);
+
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Now restore.
+  SessionRestore::RestoreSession(profile, nullptr, SessionRestore::SYNCHRONOUS,
+                                 {});
+
+  // There's just one window open at the moment.
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Check we got all the tabs back.
+  Browser* browser = BrowserList::GetInstance()->get(0);
+  EXPECT_TRUE(browser->type() == Browser::Type::TYPE_NORMAL);
+  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+            example_url);
+  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(2)->GetURL(),
+            example_url2);
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+#endif  //  #if !defined(OS_MAC)
+
+// This tests if an app being the last remaining window does not interfere
+// with the last browser window being restored later.
+// This test also tests that apps aren't restored on normal startups.
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
+                       AppWindowsDontIntefereWithBrowserSessionRestore) {
+  auto example_url = GURL("http://www.example.com");
+  auto example_url2 = GURL("http://www.example2.com");
+  auto app_url = GURL("http://www.example3.com");
+
+  // Add two tabs to the normal browser. So we can tell it restored correctly.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), example_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  Profile* profile = browser()->profile();
+
+  // Open a PWA.
+  web_app::AppId app_id = InstallPWA(profile, app_url);
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+
+  // App and 3 tab browser.
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+
+  // Don't kill the test.
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Note the ordering here is important. The browser is closed first,
+  // then the app. This means previously, nothing would be restored.
+  CloseBrowserSynchronously(browser());
+  CloseBrowserSynchronously(app_browser);
+
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Now open a browser window.
+  // This should be treated the same as a browser opening when nothing,
+  // i.e. it will trigger a browser restore.
+  SessionRestoreTestHelper restore_observer;
+  chrome::NewEmptyWindow(profile);
+  restore_observer.Wait();
+
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Check we got all the tabs back.
+  Browser* browser = BrowserList::GetInstance()->get(0);
+  EXPECT_EQ(browser->tab_strip_model()->count(), 3);
+  EXPECT_TRUE(browser->type() == Browser::Type::TYPE_NORMAL);
+  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+            example_url);
+  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(2)->GetURL(),
+            example_url2);
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+
+// This test ensures AppSessionService is notified of app restorations
+// correctly.
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, CtrlShiftTRestoresAppsCorrectly) {
+  Profile* profile = browser()->profile();
+  auto example_url = GURL("http://www.example.com");
+  auto example_url2 = GURL("http://www.example2.com");
+  auto example_url3 = GURL("http://www.example3.com");
+
+  // Install 3 PWAs.
+  web_app::AppId app_id = InstallPWA(profile, example_url);
+  web_app::AppId app_id2 = InstallPWA(profile, example_url2);
+  web_app::AppId app_id3 = InstallPWA(profile, example_url3);
+
+  // Open all 3.
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  Browser* app_browser2 = web_app::LaunchWebAppBrowserAndWait(profile, app_id2);
+  Browser* app_browser3 = web_app::LaunchWebAppBrowserAndWait(profile, app_id3);
+
+  // 3 apps + basic browser.
+  ASSERT_EQ(4u, BrowserList::GetInstance()->size());
+
+  // Close all 3.
+  CloseBrowserSynchronously(app_browser);
+  CloseBrowserSynchronously(app_browser2);
+  CloseBrowserSynchronously(app_browser3);
+
+  // Just the basic browser.
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Ctrl-Shift-T 3 times.
+  chrome::RestoreTab(browser());
+  chrome::RestoreTab(browser());
+  chrome::RestoreTab(browser());
+
+  // Ensure there's 4. Three apps, plus 1 basic test browser.
+  bool app1_seen = false;
+  bool app2_seen = false;
+  bool app3_seen = false;
+  ASSERT_EQ(4u, BrowserList::GetInstance()->size());
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    if (browser->type() == Browser::Type::TYPE_APP) {
+      if (web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
+        EXPECT_FALSE(app1_seen);
+        app1_seen = true;
+      } else if (web_app::AppBrowserController::IsForWebApp(browser, app_id2)) {
+        EXPECT_FALSE(app2_seen);
+        app2_seen = true;
+      } else if (web_app::AppBrowserController::IsForWebApp(browser, app_id3)) {
+        EXPECT_FALSE(app3_seen);
+        app3_seen = true;
+      }
+    }
+  }
+  EXPECT_TRUE(app1_seen);
+  EXPECT_TRUE(app2_seen);
+  EXPECT_TRUE(app3_seen);
+}
+
+// Request a no app restore and ensure no app was reopened.
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
+  Profile* profile = browser()->profile();
+
+  auto app_url = GURL("http://www.example.com");
+  auto example_url2 = GURL("http://www.example2.com");
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  web_app::AppId app_id = InstallPWA(profile, app_url);
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+
+  // Don't kill the test.
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  CloseBrowserSynchronously(browser());
+
+  ShutdownServices(profile);
+
+  CloseBrowserSynchronously(app_browser);
+
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // 'open the browser' again
+  StartupServices(profile);
+
+  // Now restore.
+  SessionRestore::RestoreSession(profile, nullptr, SessionRestore::SYNCHRONOUS,
+                                 {});
+
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Check we got all the tabs back.
+  Browser* browser = BrowserList::GetInstance()->get(0);
+  EXPECT_EQ(browser->tab_strip_model()->count(), 2);
+  EXPECT_TRUE(browser->type() == Browser::Type::TYPE_NORMAL);
+  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+            example_url2);
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+
+// Do a complex scenario that should only restore an app.
+// Have a browser session saved in disk, then open and close two separate
+// apps in sequence. Now try to restore that browser.
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, InvokeTwoAppsThenRestore) {
+  Profile* profile = browser()->profile();
+  auto app_url = GURL("http://www.example.com");
+  auto app_url2 = GURL("http://www.example.com");
+  auto example_url2 = GURL("http://www.example2.com");
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Don't kill the test.
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  web_app::AppId app_id = InstallPWA(profile, app_url);
+  web_app::AppId app_id2 = InstallPWA(profile, app_url2);
+
+  CloseBrowserSynchronously(browser());
+
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  CloseBrowserSynchronously(app_browser);
+
+  app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id2);
+  CloseBrowserSynchronously(app_browser);
+
+  // Now open a browser window.
+  // This should be treated the same as a browser opening when nothing,
+  // i.e. it will trigger a browser restore.
+  SessionRestoreTestHelper restore_observer;
+  chrome::NewEmptyWindow(profile);
+  restore_observer.Wait();
+
+  // Check we got all the tabs back.
+  Browser* browser = BrowserList::GetInstance()->get(0);
+  EXPECT_EQ(browser->tab_strip_model()->count(), 2);
+  EXPECT_TRUE(browser->type() == Browser::Type::TYPE_NORMAL);
+  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+            example_url2);
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+#endif  //  BUILDFLAG(ENABLE_APP_SESSION_SERVICE)

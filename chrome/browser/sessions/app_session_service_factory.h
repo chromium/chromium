@@ -16,10 +16,6 @@ class Profile;
 // the associated SessionService.
 class AppSessionServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
-  // Returns whether or not the Browser::Type specified is accepted and
-  // tracked by AppSessionService instances.
-  static bool RelevantToAppSessionService(Browser::Type type);
-
   // Returns the session service for |profile|. This may return NULL. If this
   // profile supports a session service (it isn't incognito), and the session
   // service hasn't yet been created, this forces creation of the session

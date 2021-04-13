@@ -6,7 +6,11 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_service_base.h"
+#include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -25,12 +29,23 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+#include "chrome/browser/sessions/app_session_service.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
+#endif
+
 namespace {
 
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            Browser* target_browser) {
   DCHECK(target_browser->is_type_app());
   Browser* source_browser = chrome::FindBrowserWithWebContents(contents);
+
+  // In a reparent, the owning session service needs to be told it's tab
+  // has been removed, otherwise it will reopen the tab on restoration.
+  SessionServiceBase* service =
+      GetAppropriateSessionServiceForProfile(source_browser);
+  service->TabClosing(contents);
 
   TabStripModel* source_tabstrip = source_browser->tab_strip_model();
   // Avoid causing the existing browser window to close if this is the last tab
@@ -42,6 +57,15 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
           source_tabstrip->GetIndexOfWebContents(contents)),
       true);
   target_browser->window()->Show();
+
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+  // The app window will be registered correctly, however the tab will not
+  // be correctly tracked. We need to do a reset to get the tab correctly
+  // tracked by the app service.
+  AppSessionService* app_service =
+      AppSessionServiceFactory::GetForProfile(target_browser->profile());
+  app_service->ResetFromCurrentBrowsers();
+#endif
 
   return target_browser;
 }

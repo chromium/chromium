@@ -32,20 +32,17 @@ class AppSessionService : public SessionServiceBase {
   ~AppSessionService() override;
 
   // SessionServiceBase:
-  bool ShouldRestoreWindowOfType(
-      sessions::SessionWindow::WindowType window_type) const override;
-  bool ShouldTrackChangesToWindow(const SessionID& window_id) const override;
-  void RebuildCommandsIfRequired() override;
-  void MaybeDeleteSessionOnlyData() override;
   void TabClosed(const SessionID& window_id, const SessionID& tab_id) override;
   void WindowOpened(Browser* browser) override;
   void WindowClosing(const SessionID& window_id) override;
   void WindowClosed(const SessionID& window_id) override;
-  void BuildCommandsForBrowser(Browser* browser,
-                               IdToRange* tab_to_available_range,
-                               std::set<SessionID>* windows_to_track) override;
   void SetWindowType(const SessionID& window_id, Browser::Type type) override;
+  Browser::Type GetDesiredBrowserTypeForWebContents() override;
+  bool ShouldRestoreWindowOfType(
+      sessions::SessionWindow::WindowType window_type) const override;
   void ScheduleResetCommands() override;
+  void RebuildCommandsIfRequired() override;
+  void MaybeDeleteSessionOnlyData() override;
 
  private:
   base::WeakPtrFactory<AppSessionService> weak_factory_{this};

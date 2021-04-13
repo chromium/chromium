@@ -38,7 +38,7 @@ class SessionRestore {
 
   enum {
     // Indicates the active tab of the supplied browser should be closed.
-    CLOBBER_CURRENT_TAB          = 1 << 0,
+    CLOBBER_CURRENT_TAB = 1 << 0,
 
     // Indicates that if there is a problem restoring the last session then a
     // new tabbed browser should be created.
@@ -46,7 +46,10 @@ class SessionRestore {
 
     // Restore blocks until complete. This is intended for use during startup
     // when we want to block until restore is complete.
-    SYNCHRONOUS                  = 1 << 2,
+    SYNCHRONOUS = 1 << 2,
+
+    // Restore apps as well.
+    RESTORE_APPS = 1 << 3,
   };
 
   // Notification callback list.

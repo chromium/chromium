@@ -41,6 +41,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
@@ -114,6 +115,10 @@
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_service_factory.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SESSION_SERVICE) && BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+#include "chrome/browser/sessions/app_session_service_factory.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -471,9 +476,16 @@ void ProfileManager::ShutdownSessionServices() {
   ProfileManager* pm = g_browser_process->profile_manager();
   if (!pm)  // Is nullptr when running unit tests.
     return;
-  std::vector<Profile*> profiles(pm->GetLoadedProfiles());
-  for (size_t i = 0; i < profiles.size(); ++i)
-    SessionServiceFactory::ShutdownForProfile(profiles[i]);
+  for (auto* profile : pm->GetLoadedProfiles()) {
+    // Don't construct SessionServices for every type just to
+    // shut them down. If they were never created, just skip.
+    if (SessionServiceFactory::GetForProfileIfExisting(profile))
+      SessionServiceFactory::ShutdownForProfile(profile);
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+    if (AppSessionServiceFactory::GetForProfileIfExisting(profile))
+      AppSessionServiceFactory::ShutdownForProfile(profile);
+#endif
+  }
 }
 #endif
 

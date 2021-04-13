@@ -1314,7 +1314,8 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
       SessionService* sessionService =
           SessionServiceFactory::GetForProfileForSessionRestore(lastProfile);
       if (sessionService &&
-          sessionService->RestoreIfNecessary(std::vector<GURL>()))
+          sessionService->RestoreIfNecessary(std::vector<GURL>(),
+                                             /* restore_apps */ false))
         return NO;
     }
   }
