@@ -314,14 +314,17 @@ void ToolbarButton::UpdateIconsWithColors(const gfx::VectorIcon& icon,
                                           SkColor hovered_color,
                                           SkColor pressed_color,
                                           SkColor disabled_color) {
+  const int icon_size = ui::TouchUiController::Get()->touch_ui()
+                            ? kDefaultTouchableIconSize
+                            : kDefaultIconSize;
   SetImageModel(ButtonState::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(icon, normal_color));
+                ui::ImageModel::FromVectorIcon(icon, normal_color, icon_size));
   SetImageModel(ButtonState::STATE_HOVERED,
-                ui::ImageModel::FromVectorIcon(icon, hovered_color));
+                ui::ImageModel::FromVectorIcon(icon, hovered_color, icon_size));
   SetImageModel(ButtonState::STATE_PRESSED,
-                ui::ImageModel::FromVectorIcon(icon, pressed_color));
-  SetImageModel(Button::STATE_DISABLED,
-                ui::ImageModel::FromVectorIcon(icon, disabled_color));
+                ui::ImageModel::FromVectorIcon(icon, pressed_color, icon_size));
+  SetImageModel(Button::STATE_DISABLED, ui::ImageModel::FromVectorIcon(
+                                            icon, disabled_color, icon_size));
 }
 
 void ToolbarButton::SetVectorIcon(const gfx::VectorIcon& icon) {
@@ -336,6 +339,9 @@ void ToolbarButton::SetVectorIcons(const gfx::VectorIcon& icon,
 }
 
 void ToolbarButton::UpdateIcon() {
+  // TODO(pbos): See if the default can turn into a DCHECK, if we don't provide
+  // vector icons we need to override this to properly update icons. This is a
+  // foot shooter.
   if (vector_icons_) {
     UpdateIconsWithStandardColors(ui::TouchUiController::Get()->touch_ui()
                                       ? vector_icons_->touch_icon
