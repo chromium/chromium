@@ -10,9 +10,9 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from './i18n_setup.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 

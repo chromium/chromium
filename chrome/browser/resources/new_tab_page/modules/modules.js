@@ -6,7 +6,7 @@
  * @fileoverview Registers all NTP modules given their respective descriptors.
  */
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from '../i18n_setup.js';
 
 import {chromeCartDescriptor} from './cart/module.js';
 import {driveDescriptor} from './drive/module.js';

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
 import './iframe.js';
 import './realbox/realbox.js';
 import './logo.js';
@@ -16,12 +15,12 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundManager} from './background_manager.js';
 import {BackgroundSelection, BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
+import {loadTimeData} from './i18n_setup.js';
 import {recordLoadDuration} from './metrics_utils.js';
 import {ModuleDescriptor} from './modules/module_descriptor.js';
 import {ModuleRegistry} from './modules/module_registry.js';

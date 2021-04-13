@@ -14,10 +14,10 @@ import './customize_shortcuts.js';
 import './customize_modules.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundSelection, BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
+import {loadTimeData} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {createScrollBorders} from './utils.js';
 

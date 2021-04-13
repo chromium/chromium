@@ -8,9 +8,9 @@ import '../../strings.m.js';
 import '../module_header.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {FooProxy} from './foo_proxy.js';

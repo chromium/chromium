@@ -9,11 +9,11 @@ js_library("module") {
   deps = [
     ":task_module_handler_proxy",
     "..:module_descriptor",
+    "../..:i18n_setup",
     "../..:img",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_grid",
     "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

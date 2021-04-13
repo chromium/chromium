@@ -7,10 +7,10 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import './mini_page.js';
 import './iframe.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundSelection, BackgroundSelectionType} from './customize_dialog_types.js';
+import {loadTimeData} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 /** Element that lets the user configure the background. */

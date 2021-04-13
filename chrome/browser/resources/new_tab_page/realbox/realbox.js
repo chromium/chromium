@@ -7,9 +7,9 @@ import './realbox_icon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';

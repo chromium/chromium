@@ -19,6 +19,7 @@ js_library("module_descriptor") {
 js_library("modules") {
   deps = [
     ":module_registry",
+    "..:i18n_setup",
     "cart:module",
     "drive:module",
     "task_module:module",

@@ -7,9 +7,9 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
