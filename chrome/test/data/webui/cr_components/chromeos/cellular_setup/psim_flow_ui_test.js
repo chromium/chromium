@@ -207,6 +207,27 @@ suite('CrComponentsPsimFlowUiTest', function() {
     endFlowAndVerifyResult(PSimSetupFlowResult.SUCCESS);
   });
 
+  test('Already activated forward navigate exits cellular setup', async () => {
+    cellularActivationDelegate =
+        cellularSetupRemote.getLastActivationDelegate();
+    cellularActivationDelegate.onActivationFinished(
+        chromeos.cellularSetup.mojom.ActivationResult.kAlreadyActivated);
+
+    await flushAsync();
+
+    assertEquals(pSimPage.forwardButtonLabel, 'Done');
+    let exitCellularSetupEventFired = false;
+    pSimPage.addEventListener('exit-cellular-setup', () => {
+      exitCellularSetupEventFired = true;
+    });
+    pSimPage.navigateForward();
+
+    await flushAsync();
+    assertTrue(exitCellularSetupEventFired);
+
+    endFlowAndVerifyResult(PSimSetupFlowResult.SUCCESS);
+  });
+
   test('Activation failure metric logged', async () => {
     cellularActivationDelegate =
         cellularSetupRemote.getLastActivationDelegate();
