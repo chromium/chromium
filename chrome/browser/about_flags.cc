@@ -3356,6 +3356,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kVmCameraMicIndicatorsAndNotifications)},
+    {"vm-status-page", flag_descriptions::kVmStatusPageName,
+     flag_descriptions::kVmStatusPageDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kVmStatusPage)},
     {"crostini-reset-lxd-db", flag_descriptions::kCrostiniResetLxdDbName,
      flag_descriptions::kCrostiniResetLxdDbDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCrostiniResetLxdDb)},

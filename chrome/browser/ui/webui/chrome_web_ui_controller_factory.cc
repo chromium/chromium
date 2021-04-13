@@ -835,7 +835,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)) {
     return &NewWebUI<chromeos::eche_app::EcheAppUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIVmHost) {
+  if (url.host_piece() == chrome::kChromeUIVmHost &&
+      base::FeatureList::IsEnabled(chromeos::features::kVmStatusPage)) {
     return &NewWebUI<chromeos::VmUI>;
   }
   if (url.host_piece() == chromeos::kChromeUIPersonalizationAppHost &&
