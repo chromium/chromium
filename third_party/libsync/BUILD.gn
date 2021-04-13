@@ -23,10 +23,7 @@ if (!use_system_libsync) {
 
   config("libsync_private_config") {
     # To suppress the warning caused by strlcpy.
-    cflags = [
-      "-Wno-implicit-function-declaration",
-      "-Wno-free-nonheap-object",
-    ]
+    cflags = [ "-Wno-implicit-function-declaration" ]
   }
 
   source_set("libsync") {
