@@ -52,10 +52,10 @@ class MediaLog;
 // video accelerator.
 // Threading model:
 // * The GpuVideoAcceleratorFactories may be constructed on any thread.
-// * The GpuVideoAcceleratorFactories has an associated message loop, which may
-//   be retrieved as |GetMessageLoop()|.
-// * All calls to the Factories after construction must be made on its message
-//   loop, unless otherwise documented below.
+// * The GpuVideoAcceleratorFactories has an associated task runner, which may
+//   be retrieved as |GetTaskRunner()|.
+// * All calls to the Factories after construction must be made on its task
+//   runnner, unless otherwise documented below.
 class MEDIA_EXPORT GpuVideoAcceleratorFactories {
  public:
   enum class OutputFormat {
