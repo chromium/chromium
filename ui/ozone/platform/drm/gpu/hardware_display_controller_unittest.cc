@@ -945,3 +945,51 @@ TEST_F(HardwareDisplayControllerTest, Disable) {
   // No plane should be in use.
   ASSERT_EQ(0, planes_in_use);
 }
+
+TEST_F(HardwareDisplayControllerTest, PageflipAfterModeset) {
+  scoped_refptr<ui::DrmFramebuffer> buffer = CreateBuffer();
+  ui::DrmOverlayPlane plane1(buffer, nullptr);
+
+  ModesetWithPlane(plane1);
+
+  EXPECT_EQ(drm_->plane_manager()
+                ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                .modeset_framebuffer,
+            buffer);
+
+  std::vector<ui::DrmOverlayPlane> planes;
+  planes.push_back(plane1.Clone());
+  SchedulePageFlip(std::move(planes));
+  drm_->RunCallbacks();
+
+  // modeset_framebuffer should be cleared after the pageflip is complete.
+  EXPECT_EQ(drm_->plane_manager()
+                ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                .modeset_framebuffer,
+            nullptr);
+}
+
+TEST_F(HardwareDisplayControllerTest, PageflipBeforeModeset) {
+  scoped_refptr<ui::DrmFramebuffer> buffer = CreateBuffer();
+  ui::DrmOverlayPlane plane1(buffer, nullptr);
+
+  EXPECT_TRUE(ModesetWithPlane(ui::DrmOverlayPlane(CreateBuffer(), nullptr)));
+
+  std::vector<ui::DrmOverlayPlane> planes;
+  planes.push_back(plane1.Clone());
+  SchedulePageFlip(std::move(planes));
+
+  EXPECT_TRUE(ModesetWithPlane(plane1));
+  EXPECT_EQ(drm_->plane_manager()
+                ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                .modeset_framebuffer,
+            buffer);
+
+  // modeset_framebuffer should not be cleared when a pageflip callback is run
+  // after a modeset
+  drm_->RunCallbacks();
+  EXPECT_EQ(drm_->plane_manager()
+                ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                .modeset_framebuffer,
+            buffer);
+}

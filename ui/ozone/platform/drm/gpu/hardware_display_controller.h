@@ -168,6 +168,7 @@ class HardwareDisplayController {
   scoped_refptr<DrmDevice> GetDrmDevice() const;
 
   void OnPageFlipComplete(
+      int modeset_sequence,
       DrmOverlayPlaneList pending_planes,
       const gfx::PresentationFeedback& presentation_feedback);
 
