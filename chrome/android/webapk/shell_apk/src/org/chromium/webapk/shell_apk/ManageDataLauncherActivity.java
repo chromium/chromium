@@ -130,7 +130,7 @@ public class ManageDataLauncherActivity extends Activity {
     private static boolean siteSettingsShortcutEnabled(Context context, String providerPackage) {
         Bundle metadata = WebApkUtils.readMetaData(context);
         if (metadata == null
-                || !metadata.getBoolean(WebApkMetaDataKeys.ENABLE_SITE_SETTINGS_SHORTCUT)) {
+                || !metadata.getBoolean(WebApkMetaDataKeys.ENABLE_SITE_SETTINGS_SHORTCUT, false)) {
             return false;
         }
 
