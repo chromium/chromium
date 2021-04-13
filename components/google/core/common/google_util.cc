@@ -145,7 +145,7 @@ bool HasGoogleSearchQueryParam(base::StringPiece str) {
   url::Component query(0, static_cast<int>(str.length())), key, value;
   while (url::ExtractQueryKeyValue(str.data(), &query, &key, &value)) {
     base::StringPiece key_str = str.substr(key.begin, key.len);
-    if (key_str == "q" || key_str == "as_q")
+    if (key_str == "q" || key_str == "as_q" || key_str == "imgurl")
       return true;
   }
   return false;
@@ -257,7 +257,7 @@ bool IsGoogleSearchUrl(const GURL& url) {
   // Make sure the path is a known search path.
   base::StringPiece path(url.path_piece());
   bool is_home_page_base = IsPathHomePageBase(path);
-  if (!is_home_page_base && (path != "/search"))
+  if (!is_home_page_base && path != "/search" && path != "/imgres")
     return false;
 
   // Check for query parameter in URL parameter and hash fragment, depending on

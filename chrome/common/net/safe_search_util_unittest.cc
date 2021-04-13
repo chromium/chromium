@@ -118,6 +118,10 @@ TEST(SafeSearchUtilTest, AddGoogleSafeSearchParams) {
   CheckAddedParameters("http://google.com/?q=%26%26%26&" + kSsuiParameter +
                            "&" + kSafeParameter + "&param=%26%26%26",
                        "q=%26%26%26&param=%26%26%26&" + kBothParameters);
+
+  // Test with image search
+  CheckAddedParameters("http://google.com/imgres?imgurl=https://image",
+                       "imgurl=https://image&" + kBothParameters);
 }
 
 TEST(SafeSearchUtilTest, SetYoutubeHeader) {
