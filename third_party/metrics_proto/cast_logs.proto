@@ -17,7 +17,7 @@ message CastLogsProto {
   // Next tag: 7
   message CastDeviceInfo {
     // The product type of Cast device sent from Cast-enabled devices.
-    // Next tag: 10
+    // Next tag: 11
     enum CastProductType {
       CAST_PRODUCT_TYPE_UNKNOWN = 0;
       CAST_PRODUCT_TYPE_CHROMECAST = 1;
@@ -29,6 +29,7 @@ message CastLogsProto {
       CAST_PRODUCT_TYPE_CHROME_OS = 7;
       CAST_PRODUCT_TYPE_FUCHSIA_OS = 8;
       CAST_PRODUCT_TYPE_LITE = 9;
+      CAST_PRODUCT_TYPE_CORE = 10;
     }
     optional CastProductType type = 1;
 
@@ -164,7 +165,7 @@ message CastLogsProto {
   repeated CastConnectionInfo cast_connection_info = 2;
 
   // Stores Cast-enabled device specific events with a various context data.
-  // Next tag: 27
+  // Next tag: 28
   message CastEventProto {
     // The name of the action, hashed by same logic used to hash user action
     // event and histogram.
@@ -257,6 +258,15 @@ message CastLogsProto {
       FROM_CCS = 4;
     }
     optional LaunchFrom launch_from = 26;
+
+    enum RuntimeType {
+      RUNTIME_TYPE_UNKNOWN = 0;
+      RUNTIME_TYPE_CAST_WEB = 1;
+      RUNTIME_TYPE_CAST_LITE = 2;
+      RUNTIME_TYPE_NATIVE = 3;
+    }
+    // The Cast Core runtime type associated with this event.
+    optional RuntimeType runtime_type = 27;
   }
   repeated CastEventProto cast_event = 3;
 

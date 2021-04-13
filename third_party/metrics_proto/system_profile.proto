@@ -369,6 +369,9 @@ message SystemProfileProto {
       WIFI_PHY_LAYER_PROTOCOL_G = 4;
       WIFI_PHY_LAYER_PROTOCOL_N = 5;
       WIFI_PHY_LAYER_PROTOCOL_UNKNOWN = 6;
+      WIFI_PHY_LAYER_PROTOCOL_AC = 7;
+      WIFI_PHY_LAYER_PROTOCOL_AD = 8;
+      WIFI_PHY_LAYER_PROTOCOL_AX = 9;
     }
     // The physical layer mode of the associated wifi access point, if any.
     optional WifiPHYLayerProtocol wifi_phy_layer_protocol = 4;
