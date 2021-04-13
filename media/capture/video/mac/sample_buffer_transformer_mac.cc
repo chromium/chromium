@@ -15,9 +15,6 @@
 
 namespace media {
 
-const base::Feature kInCaptureConvertToNv12{"InCaptureConvertToNv12",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 namespace {
 
 // NV12 a.k.a. 420v

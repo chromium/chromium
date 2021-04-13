@@ -29,8 +29,7 @@ namespace media {
 TEST(VideoCaptureDeviceAVFoundationMacTest,
      OutputsNv12WithoutScalingByDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kInCaptureConvertToNv12, kInCapturerScaling}, {});
+  scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
@@ -76,7 +75,6 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 TEST(VideoCaptureDeviceAVFoundationMacTest,
      SpecifiedScalingIsIgnoredWhenInCapturerScalingIsNotEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kInCaptureConvertToNv12);
   // By default, kInCapturerScaling is false.
   EXPECT_FALSE(base::FeatureList::IsEnabled(kInCapturerScaling));
 
@@ -127,8 +125,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 
 TEST(VideoCaptureDeviceAVFoundationMacTest, SpecifiedScalingOutputsNv12) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kInCaptureConvertToNv12, kInCapturerScaling}, {});
+  scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
@@ -183,8 +180,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, SpecifiedScalingOutputsNv12) {
 TEST(VideoCaptureDeviceAVFoundationMacTest,
      SpecifiedScalingCanChangeDuringCapture) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kInCaptureConvertToNv12, kInCapturerScaling}, {});
+  scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
@@ -254,8 +250,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 TEST(VideoCaptureDeviceAVFoundationMacTest,
      SpecifiedScalingUsesGoodSizesButNotBadSizes) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kInCaptureConvertToNv12, kInCapturerScaling}, {});
+  scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
   RunTestCase(base::BindOnce([] {
     VideoCaptureDeviceFactoryMac video_capture_device_factory;

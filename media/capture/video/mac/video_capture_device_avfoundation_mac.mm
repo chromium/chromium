@@ -178,10 +178,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
             self);
     [self setFrameReceiver:frameReceiver];
     _captureSession.reset([[AVCaptureSession alloc] init]);
-    if (base::FeatureList::IsEnabled(media::kInCaptureConvertToNv12)) {
-      _sampleBufferTransformer = media::SampleBufferTransformer::Create();
-      VLOG(1) << "Capturing with SampleBufferTransformer enabled";
-    }
+    _sampleBufferTransformer = media::SampleBufferTransformer::Create();
   }
   return self;
 }
@@ -903,7 +900,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // back on the M87 code path if this is the case.
   // TODO(https://crbug.com/1160315): When the SampleBufferTransformer is
   // patched to support non-MJPEG-and-non-pixel-buffer sample buffers, remove
-  // this workaround.
+  // this workaround and the fallback other code path.
   bool sampleHasPixelBufferOrIsMjpeg =
       CMSampleBufferGetImageBuffer(sampleBuffer) ||
       CMFormatDescriptionGetMediaSubType(CMSampleBufferGetFormatDescription(
@@ -913,9 +910,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // formats to an IOSurface-backed NV12 pixel buffer.
   // TODO(https://crbug.com/1175142): Refactor to not hijack the code paths
   // below the transformer code.
-  // TODO(hbos): When |_sampleBufferTransformer| gets shipped 100%, delete the
-  // other code paths.
-  if (_sampleBufferTransformer && sampleHasPixelBufferOrIsMjpeg) {
+  if (sampleHasPixelBufferOrIsMjpeg) {
     _sampleBufferTransformer->Reconfigure(
         media::SampleBufferTransformer::GetBestTransformerForNv12Output(
             sampleBuffer),
