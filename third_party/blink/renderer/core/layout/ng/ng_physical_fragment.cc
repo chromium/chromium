@@ -593,22 +593,6 @@ TextDirection NGPhysicalFragment::ResolvedDirection() const {
   return TextDirection::kLtr;
 }
 
-bool NGPhysicalFragment::ShouldPaintCursorCaret() const {
-  // TODO(xiaochengh): Merge cursor caret painting functions from LayoutBlock to
-  // FrameSelection.
-  if (const auto* block = DynamicTo<LayoutBlock>(GetLayoutObject()))
-    return block->ShouldPaintCursorCaret();
-  return false;
-}
-
-bool NGPhysicalFragment::ShouldPaintDragCaret() const {
-  // TODO(xiaochengh): Merge drag caret painting functions from LayoutBlock to
-  // DragCaret.
-  if (const auto* block = DynamicTo<LayoutBlock>(GetLayoutObject()))
-    return block->ShouldPaintDragCaret();
-  return false;
-}
-
 LogicalRect NGPhysicalFragment::ConvertChildToLogical(
     const PhysicalRect& physical_rect) const {
   return WritingModeConverter(Style().GetWritingDirection(), Size())

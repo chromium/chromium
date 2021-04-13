@@ -439,14 +439,6 @@ class CORE_EXPORT NGPhysicalFragment
   LogicalRect ConvertChildToLogical(const PhysicalRect& physical_rect) const;
   PhysicalRect ConvertChildToPhysical(const LogicalRect& logical_rect) const;
 
-  // Utility functions for caret painting. Note that carets are painted as part
-  // of the containing block's foreground.
-  bool ShouldPaintCursorCaret() const;
-  bool ShouldPaintDragCaret() const;
-  bool ShouldPaintCarets() const {
-    return ShouldPaintCursorCaret() || ShouldPaintDragCaret();
-  }
-
   String ToString() const;
 
   void CheckType() const;

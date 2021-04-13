@@ -329,6 +329,24 @@ unsigned FragmentainerUniqueIdentifier(const NGPhysicalBoxFragment& fragment) {
   return 0;
 }
 
+bool ShouldPaintCursorCaret(const NGPhysicalBoxFragment& fragment) {
+  if (const auto* block = DynamicTo<LayoutBlock>(fragment.GetLayoutObject()))
+    return block->GetFrame()->Selection().ShouldPaintCaret(*block);
+  return false;
+}
+
+bool ShouldPaintDragCaret(const NGPhysicalBoxFragment& fragment) {
+  if (const auto* block = DynamicTo<LayoutBlock>(fragment.GetLayoutObject())) {
+    return block->GetFrame()->GetPage()->GetDragCaret().ShouldPaintCaret(
+        *block);
+  }
+  return false;
+}
+
+bool ShouldPaintCarets(const NGPhysicalBoxFragment& fragment) {
+  return ShouldPaintCursorCaret(fragment) || ShouldPaintDragCaret(fragment);
+}
+
 }  // anonymous namespace
 
 PhysicalRect NGBoxFragmentPainter::SelfInkOverflow() const {
@@ -420,7 +438,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
   // If the caret's node's fragment's containing block is this block, and
   // the paint action is PaintPhaseForeground, then paint the caret.
   if (original_phase == PaintPhase::kForeground &&
-      box_fragment_.ShouldPaintCarets()) {
+      ShouldPaintCarets(box_fragment_)) {
     // Apply overflow clip if needed.
     // reveal-caret-of-multiline-contenteditable.html needs this.
     // TDOO(yoisn): We should share this code with |BlockPainter::Paint()|
@@ -575,10 +593,10 @@ void NGBoxFragmentPainter::PaintCarets(const PaintInfo& paint_info,
                                        const PhysicalOffset& paint_offset) {
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
   LocalFrame* frame = fragment.GetLayoutObject()->GetFrame();
-  if (fragment.ShouldPaintCursorCaret())
+  if (ShouldPaintCursorCaret(fragment))
     frame->Selection().PaintCaret(paint_info.context, paint_offset);
 
-  if (fragment.ShouldPaintDragCaret()) {
+  if (ShouldPaintDragCaret(fragment)) {
     frame->GetPage()->GetDragCaret().PaintDragCaret(frame, paint_info.context,
                                                     paint_offset);
   }
